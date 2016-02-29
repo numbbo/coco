@@ -111,33 +111,37 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 Introduction
 ============
 
-.. note:: search problem rather than optimization problem? 
-
-We consider the continuous black-box optimization problem
+We consider the continuous black-box optimization or search problem to minimize
 
 .. math::
 
     f: X\subset\mathbb{R}^n \to \mathbb{R}^m \qquad n,m\ge1 
 
-    g: X\subset\mathbb{R}^n \to \mathbb{R}^l \qquad l\ge0 \enspace.
-    
-.. old such that with :math:`g: X\subset\mathbb{R}^n \to \mathbb{R}^l` we have :math:`g_i(\x)\le0` for all :math:`i=1\dots l`. 
+such that for the constraints
 
-More specifically, we aim to find, as quickly as possible, one or several solutions |x| in the search space :math:`X` with *small* value(s) of :math:`f(\x)\in\mathbb{R}^m` satisfying :math:`g_i(\x)\le0` for all :math:`i=1\dots l`. 
+.. math::
+
+    g: X\subset\mathbb{R}^n \to \mathbb{R}^l \qquad l\ge0 
+
+we have :math:`g_i(\x)\le0` for all :math:`i=1\dots l`.
+More specifically, we aim to find, as quickly as possible, one or several solutions |x| in the search space :math:`X` with *small* value(s) of :math:`f(\x)\in\mathbb{R}^m` that satisfy the above constraints |g|. 
 We consider *time* to be the number of calls to the function |f|. 
 
-A continuous optimization algorithm, also known as *solver*, addresses the above problem. 
-Here, we assume that :math:`X` is known but no prior knowledge about |f| or |g| are available to the algorithm, that is, 
-they are considered as a black-box which the algorithm can query with solutions 
-:math:`\x\in\mathbb{R}^n`.
+A continuous optimization algorithm, also known as *solver*, addresses the
+above problem. 
+Here, we assume that :math:`X` is known, but no prior knowledge about |f| or
+|g| is available to the algorithm. 
+That is, |f| and |g| are considered as a black-box which the algorithm can
+query with solutions :math:`\x\in\mathbb{R}^n` to get the respective values
+:math:`f(\x)` and :math:`g(\x)`.
 
 From these prerequisits, benchmarking optimization algorithms seems to be a
 rather simple and straightforward task. We run an algorithm on a collection of
 problems and display the results. However, under closer inspection,
 benchmarking turns out to be surprisingly tedious, and it appears to be
 difficult to get results that can be meaningfully interpreted beyond the
-standard claim that one algorithm is better than another on some problems, and
-vice versa. [#]_ Here, we offer a conceptual guideline for benchmarking
+standard claim that one algorithm is better than another on some problems --- 
+and vice versa. [#]_ Here, we offer a conceptual guideline for benchmarking
 continuous optimization algorithms which tries to address this challenge and
 has been implemented within the COCO_ framework. [#]_ 
 
@@ -181,19 +185,19 @@ Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data.
 
 The COCO_ framework provides currently
 
-- an interface to several languages in which the benchmarked optimizer
-  can be written, currently C/C++, Java, Matlab/Octave, Python
-- several benchmark suites or testbeds, currently all written in C
-- data logging facilities via the ``Observer``
-- data post-processing in Python and data display facilities in ``html``
-- article LaTeX templates
+ - an interface to several languages in which the benchmarked optimizer
+   can be written, currently C/C++, Java, Matlab/Octave, Python
+ - several benchmark suites or testbeds, currently all written in C
+ - data logging facilities via the ``Observer``
+ - data post-processing in Python and data display facilities in ``html``
+ - article LaTeX templates
 
 The underlying philosophy of COCO_ is to provide everything which most experimenters 
-needed to setup and implement if they wanted to benchmark an algorithm properly.
+needed to setup and implement themselves otherwise, if they wanted to benchmark an algorithm properly.
 
-.. [#] It remains to be a standard procedure to present tens or even hundreds 
-    of numbers in one or several tables, left to the reader to scan and compare 
-    to each other [SUG2015]. 
+.. [#] It remains to be a standard procedure to present as main output
+    tens or even hundreds of numbers in one or several tables, left to the
+    reader to scan and compare to each other [SUG2015]. 
     
     .. todo:: add reference
 
@@ -204,7 +208,7 @@ Why COCO_?
 ----------
 
 Appart from diminishing the burden (time) and the pitfalls (and bugs
-and omissions) of the repetitive coding task by many experimenters, our aim is to
+or omissions) of the repetitive coding task by many experimenters, our aim is to
 provide a *conceptual guideline for better benchmarking*. Our guideline has 
 the following defining features.  
 
@@ -223,7 +227,7 @@ the following defining features.
     #. scalable with the input dimension [WHI1996]_.
 
 #. There is no predefined budget (number of |f|-evaluations) for running an
-   experiment, the experimental procedure is budget-free [BBO2016ex]_.
+   experiment, the experimental procedure is *budget-free* [BBO2016ex]_.
 
 #. A single performance  measure is used, namely runtime measured in 
    number of |f|-evaluations [BBO2016perf]_. Runtime has the advantage to 
@@ -236,9 +240,9 @@ the following defining features.
    A missing runtime value is considered as possible outcome (see below).
 
     
-#. The display is as comprehensible, intuitive and informative as as possible. 
+#. The display is as comprehensible, intuitive and informative as possible. 
    Aggregation over dimension is avoided, because dimension is a known parameter 
-   that can and should use for algorithm selection. 
+   that can and should be used for algorithm selection decisions. 
 
 .. [#] For example, the optimum is not in all-zeros, optima are not placed 
     on a regular grid, the function is not separable [WHI1996]_. Which 
@@ -271,17 +275,14 @@ We specify a few terms which are used later.
   A problem
   can be evaluated and returns an |f|-value or -vector and, in case,
   a |g|-vector. 
-  In the context of performance
-  assessment, a target :math:`f`- or indicator-value is attached 
-  to each problem. That is, a target value is added to the 
-  above triple to define a single problem in this case. 
+  In the context of performance assessment, a target :math:`f`- or
+  indicator-value is added to define a problem. 
   
 *runtime*
-  We define *runtime*, or *run-length* [HOO1998]_
-  as the *number of evaluations* 
-  conducted on a given problem, also referred to as number of *function* evaluations. 
-  Our central performance measure is the runtime until a given target value 
-  is hit.
+  We define *runtime*, or *run-length* [HOO1998]_ as the *number of
+  evaluations* conducted on a given problem until a prescribed target value is
+  hit, also referred to as number of *function* evaluations. Runtime is our 
+  central performance measure.
 
 *suite*
   A test- or benchmark-suite is a collection of problems, typically between
@@ -306,7 +307,7 @@ Functions, Instances, Problems, and Targets
 In the COCO_ framework we consider functions, |fi|, which are for each suite
 distinguished by their identifier :math:`i=1,2,\dots`. Functions are
 *parametrized* by dimension, |n|, and instance number, |j|, [#]_
-that is for a given |m| we have
+that is, for a given |m| we have
 
 .. math::
 
@@ -335,37 +336,42 @@ As the formalization above suggests, the differentiation between function (index
 and instance index is of purely semantic nature. 
 This semantics however has important implications in how we display and
 interpret the results. We interpret varying the instance parameter as 
-a natural randomization [#]_ in order to 
+a natural randomization for experiments [#]_ in order to 
 
-  - generate repetitions on the functions and
-  - average away irrelevant aspects of the function thereby providing
+ - generate repetitions on the functions and
+ - average away irrelevant aspects of the function thereby providing
 
-      - generality which alleviates the problem of overfitting, and
-      - a fair setup which prevents intentional or unintentional exploitation of 
-        irrelevant or artificial function properties. 
+    - generality which alleviates the problem of overfitting, and
+    - a fair setup which prevents intentional or unintentional exploitation of 
+      irrelevant or artificial function properties. 
 
 For example, we consider the absolute location of the optimum not a defining
-function feature. Consequently, conducting several trials either with a
-randomized initial solution or on instances with randomized search space
-translations is equivalent, given that the optimizer behaves translation
-invariant and we disregard domain bounds. 
+function feature. Consequently, in a typical COCO_ benchmark suite, instances
+with randomized search space translations are presented to the optimizer. [#]_
+
 
 .. [#] Changing or sweeping through a relevant feature of the problem class,
        systematically or randomized, is another possible usage of instance
        parametrization. 
 
+.. [#] Conducting either several trials on instances with randomized search space
+   translations or with a randomized initial solution is equivalent, given
+   that the optimizer behaves translation invariant (disregarding domain
+   boundaries). 
+
+
 Runtime and Target Values
 =========================
 
-In order to measure the runtime of an algorithm on a problem, we need to
-establish a termination condition. 
-For this end, we set a **target value**, |t|, which is an |f|- or
+In order to measure the runtime of an algorithm on a problem, we
+establish a hitting time condition. 
+We prescribe a **target value**, |t|, which is an |f|- or
 indicator-value [BBO2016biobj]_. 
-For a single run, when an algorithm hits the target |t| on problem |p|, we
-say it has *solved the problem* |pt|. [#]_
+For a single run, when an algorithm reaches or surpasses the target value |t|
+on problem |p|, we say it has *solved the problem* |pt|, it was successul. [#]_
 
 Now, the **runtime** is the evaluation count when the target value |t| was
-hit for the first time, that is, runtime is the number of evaluations needed to 
+reached or surpassed for the first time. That is, runtime is the number of |f|-evaluations needed to 
 solve the problem |pt| (but see also Recommendations_ in [BBO2016ex]_). 
 Runtime can be formally written as |RT(pt)|. 
 
@@ -377,18 +383,21 @@ Runtime can be formally written as |RT(pt)|.
    An algorithm solves a problem |pt| if it hits the target |t|. 
    In the context of performance evaluation, we refer to such a quadruple itself also as a *problem*. 
 
-If the algorithm never hits the target, the runtime remains undefined --- while
-it has been bound to lie in the interval  :math:`[k+1,\infty]`, where |k| is the number of
-evaluations of the unsuccessful run. 
-The number of determined runtime values depends on the budget the 
-algorithm has been explored. Therefore, larger budgets are preferable. 
+If an algorithm does not hit the target in a single run, the runtime remains 
+undefined --- while
+it has been bound to be at least :math:`k+1`, where |k| is the number of 
+evaluations in this unsuccessful run. 
+The number of defined runtime values depends on the budget the 
+algorithm has been explored. 
+Therefore, larger budgets are preferable --- however
+they should not come at the expense of abandoning reasonable termination conditions, but rather by introducing restarts. 
 
 .. [#] Note the use of the term *problem* in two meanings: as the problem the
   algorithm is benchmarked on, |p|, and as the problem, |pt|, an algorithm can
   solve with a certain runtime, |RT(pt)|, or may fail to solve. Each problem
   |p| gives raise to a collection of dependent problems |pt|. Viewed as random
-  variables, the events |RT(pt)| are not independent events for different values
-  of |t|, but given |p|. 
+  variables, the events |RT(pt)| given |p| are not independent events for
+  different values of |t|. 
 
 .. |k| replace:: :math:`k`
 .. |p| replace:: :math:`(f_i, n, j)`
@@ -399,48 +408,74 @@ algorithm has been explored. Therefore, larger budgets are preferable.
 Restarts and Simulated Restarts
 -------------------------------
 
-An optimization algorithm is bound to terminate and return a recommended 
-solution to the problem |p|. 
+An optimization algorithm is bound to terminate and, in the single-objective case, return a recommended 
+solution, |x|, for the problem, |p|. 
+It solves thereby all problems |pt| for which :math:`f(\x)\le t`. 
 Independent restarts from different, randomized initial solutions are a simple
-but powerful tool to increase the number of solved problems |pt| for an increasing number of |t|. [#]_
+but powerful tool to increase the number of solved problems [HAR1999]_ --- namely by increasing the number of |t|-values, for which the problem |p|
+was solved. [#]_ 
+Independent restarts tend to increase the success rate, but they generally do
+not *change* the performance assessment, because the successes materialize at
+greater runtimes. 
+Therefore, we call our approach *budget-free*. 
+Restarts however "*improve the reliability, comparability, precision, and "visibility" of the measured results*" [BBO2016ex]_.
 
-The experimenter is free to 
-
-The runtime is monotonuous decreasing in |t|. 
-
-
-
-Related to budget, budget-free...
-
- - missing value is interpreted as being above the explored budget. 
-    - bla
-
-A simulated restart adds at least the minimum runtime from a successful trial. 
+*Simulated restarts* [HAN2010b]_ [BBO2016perf]_ are used to determine a runtime for unsuccessful runs. Resembling the bootstrapping method [ERF1993]_, 
+we draw uniformly at random a new |j| until we find an instance where |pt| was 
+solved. [#]_
+The evaluations from the drawn instances are summed up to determine the runtime. 
+This method is applied if at least one problem instance was not solved and is
+(only) available if at least one problem instance was solved.
+The minimum runtime determined by a simulated restart is the minimum number of
+evaluations in an unsuccessful run plus the minimum runtime from a successful
+run. [#]_
 
 
-.. todo::
+.. [#] For a given problem |p|, the number of acquired runtime values, |RT(pt)|
+  is monotonous increasing with the budget used. Considered as random
+  variables, these runtimes are not independent. 
 
+.. [#] More specifically, we consider the problems :math:`(f_i, n, j, t(j))` for
+  all benchmarked instances |j|. The targets :math:`t(j)` depend on the instance 
+  in a way to make the instances comparable [BBO2016perf]_. 
 
-.. [#] For a given problem |p|, the runtime values, |RT(pt)|
-  are monotonuous increasing in |t|. Considered as randomvariables, these 
-  runtimes are not independent. 
-
+.. [#] The minimum runtime which is affected by simulated restarts is the 
+   minimum runtime over all solved instances, if it is accompanied by at least
+   on unsolved instance.
 
 Aggregation
 ------------
 
+A typical benchmark suite consists of about 20 to 100 functions with 5 to 15 instances for each function. For each instance, up to about 100 targets are considered for the 
+performance assessment. This means we want to consider at least :math:`20\times5=100`, and 
+up to :math:`100\times15\times100=150\,000` runtimes for the performance assessment. 
+To make them amenable to the experimenter, we need to summarize these data. 
+
+Our idea behind an aggregation is to make a statistical summary over a set or
+subset of "problems of interested" for which we assume a uniform distribution
+of this set. From a practical perspective this means that we assume to have no
+simple way to distinguish between these problems to begin with (select an
+optimizer). 
+
+.. todo: we prefer/have adopted data profiles over performance profiles
+
+.. Note:: We do not aggregate over dimensions, h
+
+
 .. note::
 
-  - Missing values can be integrated over within instances [BBO2016perf]_. 
+  - we do not integrate over dimension
+
+  - typical number of measured runtimes is XXXX (even more with simulated runs), therefore 
+    some aggregation is needed. 
+    
+  - two ways: ECDFs and ERTs. 
+  
+  - Missing values can be integrated over simulated restarts (see above) [BBO2016perf]_. 
 
   - interpretation of aggregations, like that we draw a problem uniform at random (over all problems or over all instances), but see also [BBO2016perf]_. 
 
-
 .. todo::
-
-
-.. todo::
-
 
 
 General Code Structure
@@ -525,9 +560,9 @@ __ https://www.github.com
    
 .. .. [BAR1995] R. Barr, ?. Golden, J. Kelly, M Resende, and Jr. W. Stewart. Designing and Reporting on Computational Experiments with Heuristic Methods. Journal of Heuristics, 1:9–32, 1995. 
 
-.. .. [Efron:1993] B. Efron and R. Tibshirani. *An introduction to the
+.. [ERF1993] B. Efron and R. Tibshirani. *An introduction to the
    bootstrap.* Chapman & Hall/CRC, 1993.
-.. .. [HAR1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
+.. [HAR1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
    algorithm. In *Proceedings of the Genetic and Evolutionary Computation
    Conference (GECCO)*, volume 1, pages 258-265. ACM, 1999.
 .. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
