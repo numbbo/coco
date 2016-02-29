@@ -233,13 +233,13 @@ termination of a stagnating run can improve the performance. [#]_
 To exploit a large number of function evaluations effectively, we encourage to
 use independent restarts [#]_, in particular for algorithms which terminate
 naturally within a comparatively small budget. Independent restarts do not
-change the central performance measure, however they improve the reliability, comparability [#]_, precision, and "visibility" of the measured results. 
+change the central performance measure,[#]_ however they improve the reliability, comparability [#]_, precision, and "visibility" of the measured results. 
 
-Moreover, any multistart procedure (which relies on an interim termination of the algorithm) is
-encouraged. Multistarts may not be independent as they can feature a parameter sweep (e.g., increasing population size [HAR1999]_ [AUG2005]_) or can be based on the outcome of the previous starts. 
+Moreover, any multistart procedure (which relies on an interim termination of the algorithm) is encouraged. 
+Multistarts may not be independent as they can feature a parameter sweep (e.g., increasing population size [HAR1999]_ [AUG2005]_) or can be based on the outcome of the previous starts. 
 
-An algorithm can be conclusively terminated if
-|coco_problem_final_target_hit|_ returns 1. This saves CPU cycles without affecting the performance assessment, because there is no target left to hit for the first time. 
+An algorithm can be conclusively terminated if |coco_problem_final_target_hit|_ returns 1. 
+This saves CPU cycles without affecting the performance assessment, because there is no target left to hit for the first time. 
 
 .. [#] In the single objective case care should be 
   taken to apply termination conditions that allow to hit the final target on
@@ -248,9 +248,14 @@ An algorithm can be conclusively terminated if
 
 .. [#] The COCO_ platform provides example code to implement independent restarts. 
 
+.. [#] Therefore we call the experimental approach budget-free. This claim 
+  however makes the assumption that the runtime distribution is the same on all 
+  instances |j| of the problem |p|. This assumption cannot be proven in general 
+  and might be violated in some cases for some algorithms. 
+
 .. [#] Algorithms are only comparable up to the smallest budget given to 
   any of them. 
-  
+
 
 
 .. For example, using a fast algorithm
