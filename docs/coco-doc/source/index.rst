@@ -100,7 +100,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. |f| replace:: :math:`f`
 .. |g| replace:: :math:`g`
-.. |x| replace:: :math:`x`
+.. |x| replace:: :math:`\x`
 
 
 .. #################################################################################
@@ -123,11 +123,11 @@ We consider the continuous black-box optimization problem
     
 .. old such that with :math:`g: X\subset\mathbb{R}^n \to \mathbb{R}^l` we have :math:`g_i(\x)\le0` for all :math:`i=1\dots l`. 
 
-More specifically, we aim to find, as quickly as possible, one or several solutions :math:`\x\in X` with *small* value(s) of :math:`f(\x)\in\mathbb{R}^m` satisfying :math:`g_i(\x)\le0` for all :math:`i=1\dots l`. 
+More specifically, we aim to find, as quickly as possible, one or several solutions |x| in the search space :math:`X` with *small* value(s) of :math:`f(\x)\in\mathbb{R}^m` satisfying :math:`g_i(\x)\le0` for all :math:`i=1\dots l`. 
 We consider *time* to be the number of calls to the function |f|. 
 
 A continuous optimization algorithm, also known as *solver*, addresses the above problem. 
-Here, we assume that no prior knowledge about |f| or |g| are available to the algorithm, that is, 
+Here, we assume that :math:`X` is known but no prior knowledge about |f| or |g| are available to the algorithm, that is, 
 they are considered as a black-box which the algorithm can query with solutions 
 :math:`\x\in\mathbb{R}^n`.
 
@@ -143,7 +143,7 @@ has been implemented within the COCO_ framework. [#]_
 
 The COCO_ framework provides the practical means for an automatized
 benchmarking procedure. Benchmarking an optimization algorithm, say,
-implemented in the function ``fmin``, on a benchmark suite becomes (in Python)
+implemented in the function ``fmin`` in Python, on a benchmark suite becomes 
 as simple as
 
 .. raw:: latex
@@ -169,7 +169,7 @@ as simple as
 .. raw:: latex 
 
     \caption[Minimal benchmarking code in Python]{
-    Code to benchmark \texttt{fmin} on the \texttt{bbob} suite and
+    Python code to benchmark \texttt{fmin} on the \texttt{bbob} suite and
     display the results.
 
 Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
@@ -182,14 +182,22 @@ Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data.
 The COCO_ framework provides currently
 
 - an interface to several languages in which the benchmarked optimizer
-  might be written, currently C/C++, Java, Matlab/Octave, Python
+  can be written, currently C/C++, Java, Matlab/Octave, Python
 - several benchmark suites or testbeds, currently all written in C
 - data logging facilities via the ``Observer``
 - data post-processing in Python and data display facilities in ``html``
 - article LaTeX templates
 
 The underlying philosophy of COCO_ is to provide everything which most experimenters 
-needed to implement if they wanted to benchmark an algorithm properly.
+needed to setup and implement if they wanted to benchmark an algorithm properly.
+
+.. [#] It remains to be a standard procedure to present tens or even hundreds 
+    of numbers in one or several tables, left to the reader to scan and compare 
+    to each other [SUG2015]. 
+    
+    .. todo:: add reference
+
+.. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
 
 
 Why COCO_?
@@ -227,57 +235,10 @@ the following defining features.
      
    A missing runtime value is considered as possible outcome (see below).
 
-   .. todo:: add link
     
 #. The display is as comprehensible, intuitive and informative as as possible. 
-   Aggregation over dimension is avoided, because dimension is a parameter 
-   a practitioner can and should use to select an optimizer. 
-
-
-.. todo:: 
-
-
-Terminology
------------
-.. todo:: this is a duplicate, should become shorter or go away
-
-We specify a few terms which are used later. 
-
-*function*
-  We talk about a *function* as a mapping
-  :math:`\mathbb{R}^n\to\mathbb{R}^m` with scalable input space, that is,
-  :math:`n` is not (yet) determined, and usually :math:`m\in\{1,2\}`.
-  Functions are commonly parametrized such that different *instances* of the
-  "same" function are available, e.g. translated or shifted versions. 
-  
-*problem*
-  We talk about a *problem*, |coco_problem_t|_, as a specific *function
-  instance* on which the optimization algorithm is run. Specifically, a problem
-  can be described as the triple ``(dimension, function, instantiation)``. A problem
-  can be evaluated and returns an |f|-value or -vector and, in case,
-  a |g|-vector. 
-  In the context of performance
-  assessment, additionally one or several target :math:`f`- or :math:`\Delta f`-values
-  are attached to each problem. That is, a target value is added to the 
-  above triple to define a single problem. 
-  
-*runtime*
-  We define *runtime*, or *run-length* [HOO1998]_
-  as the *number of evaluations* 
-  conducted on a given problem, also referred to as number of *function* evaluations. 
-  Our central performance measure is the runtime until a given target :math:`f`-value 
-  is hit.
-
-*suite*
-  A test- or benchmark-suite is a collection of problems, typically between
-  twenty and a hundred, where the number of objectives :math:`m` is fixed. 
-
-
-.. [#] It remains to be a standard procedure to present tens or even hundreds 
-    of numbers in one or several tables, left to the reader to scan and compare 
-    to each other [SUG2015]. 
-
-.. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
+   Aggregation over dimension is avoided, because dimension is a known parameter 
+   that can and should use for algorithm selection. 
 
 .. [#] For example, the optimum is not in all-zeros, optima are not placed 
     on a regular grid, the function is not separable [WHI1996]_. Which 
@@ -292,8 +253,39 @@ We specify a few terms which are used later.
 .. .. __ http://en.wikipedia.org/w/index.php?title=Level_of_measurement&oldid=478392481
 
 
+Terminology
+-----------
+.. todo:: this is a duplicate, should become shorter or go away
 
-.. Note:: (old) Reasons for having the platform - Overall appraoch in COCO ("what other do wrong and we do better")
+We specify a few terms which are used later. 
+
+*function*
+  We talk about a *function* as a parametrized mapping
+  :math:`\mathbb{R}^n\to\mathbb{R}^m` with scalable input space, and usually :math:`m\in\{1,2\}`.
+  Functions are parametrized such that different *instances* of the
+  "same" function are available, e.g. translated or shifted versions. 
+  
+*problem*
+  We talk about a *problem*, |coco_problem_t|_, as a specific *function
+  instance* on which the optimization algorithm is run. 
+  A problem
+  can be evaluated and returns an |f|-value or -vector and, in case,
+  a |g|-vector. 
+  In the context of performance
+  assessment, a target :math:`f`- or indicator-value is attached 
+  to each problem. That is, a target value is added to the 
+  above triple to define a single problem in this case. 
+  
+*runtime*
+  We define *runtime*, or *run-length* [HOO1998]_
+  as the *number of evaluations* 
+  conducted on a given problem, also referred to as number of *function* evaluations. 
+  Our central performance measure is the runtime until a given target value 
+  is hit.
+
+*suite*
+  A test- or benchmark-suite is a collection of problems, typically between
+  twenty and a hundred, where the number of objectives :math:`m` is fixed. 
 
 
 .. |n| replace:: :math:`n`
@@ -305,12 +297,15 @@ We specify a few terms which are used later.
 .. |fi| replace:: :math:`f_i`
 
 
-Functions, Instances, and Problems 
-==========================================
+Functions, Instances, Problems, and Targets 
+============================================
+
+.. Note:: The following would probably best fit into a generic document about 
+   functions and test suites. 
 
 In the COCO_ framework we consider functions, |fi|, which are for each suite
 distinguished by their identifier :math:`i=1,2,\dots`. Functions are
-*parametrized* by dimension, |n|, and instance number, |j|,
+*parametrized* by dimension, |n|, and instance number, |j|, [#]_
 that is for a given |m| we have
 
 .. math::
@@ -321,12 +316,16 @@ that is for a given |m| we have
 Varying |n| or |j| leads to a variation of the problem over the same function
 |i| of a given suite. 
 By fixing |n| and |j| for function |fi|, we define an optimization problem
-that can be presented to an optimization algorithm, that is, 
+that can be presented to an optimization algorithm. That is, 
 for each test suite,
 the triple :math:`(n, i, j)\equiv(f_i, n, j)` uniquely defines a problem. 
 Each problem receives again
 an index in the suite, mapping the triple :math:`(n, i, j)` to a single
 number. 
+
+.. [#] We can think of |j| as a continuous parameter vector, as it 
+  parametrizes, among others things, translations and rotations. In practice, 
+  |j| is a discrete identifier for single instantiations of these parameters. 
 
 
 The Instance Concept
@@ -335,48 +334,97 @@ The Instance Concept
 As the formalization above suggests, the differentiation between function (index) 
 and instance index is of purely semantic nature. 
 This semantics however has important implications in how we display and
-interpret the results. We interpret varying the instance parameter in the following ways. 
+interpret the results. We interpret varying the instance parameter as 
+a natural randomization [#]_ in order to 
 
-- generate repetitions on the functions
-- natural randomization 
-- averaging away irrelevant aspects of the function hence providing
+  - generate repetitions on the functions and
+  - average away irrelevant aspects of the function thereby providing
 
-  - generality
-  - a fair setup by preventing intentional (cheating) or unintentional exploitation of 
-    artificial function properties
+      - generality which alleviates the problem of overfitting, and
+      - a fair setup which prevents intentional or unintentional exploitation of 
+        irrelevant or artificial function properties. 
 
 For example, we consider the absolute location of the optimum not a defining
 function feature. Consequently, conducting several trials either with a
 randomized initial solution or on instances with randomized search space
-translations is equivalent (given that the optimizer behaves translation
-invariant). 
+translations is equivalent, given that the optimizer behaves translation
+invariant and we disregard domain bounds. 
 
-.. todo:: Changing significant features/parameters of the problem class (systematically or randomized)
+.. [#] Changing or sweeping through a relevant feature of the problem class,
+       systematically or randomized, is another possible usage of instance
+       parametrization. 
 
-Targets
-========
+Runtime and Target Values
+=========================
 
-In order to measure the runtime of an algorithm on a problem, we need to establish a termination condition. For this end, we set a target (|f|- or indicator-) value, |t|. Runtime is then defined as the evaluation count when the target was first hit (see also Recommendations_ in [BBO2016ex]_). 
-To each problem, :math:`(n, i, j)`, we attach a collection of target values. 
+In order to measure the runtime of an algorithm on a problem, we need to
+establish a termination condition. 
+For this end, we set a **target value**, |t|, which is an |f|- or
+indicator-value [BBO2016biobj]_. 
+For a single run, when an algorithm hits the target |t| on problem |p|, we
+say it has *solved the problem* |pt|. [#]_
+
+Now, the **runtime** is the evaluation count when the target value |t| was
+hit for the first time, that is, runtime is the number of evaluations needed to 
+solve the problem |pt| (but see also Recommendations_ in [BBO2016ex]_). 
+Runtime can be formally written as |RT(pt)|. 
 
 .. _Recommendations: https://www.github.com
+
+.. old For each target value, |t|, the quadruple :math:`(f_i, n, j, t)` gives 
+       raise to a runtime, |RT(pt)|, 
+   When the problem :math:`(f_i, n, j)` has been solved up to the target quality |t|. 
+   An algorithm solves a problem |pt| if it hits the target |t|. 
+   In the context of performance evaluation, we refer to such a quadruple itself also as a *problem*. 
+
+If the algorithm never hits the target, the runtime remains undefined --- while
+it has been bound to lie in the interval  :math:`[k+1,\infty]`, where |k| is the number of
+evaluations of the unsuccessful run. 
+The number of determined runtime values depends on the budget the 
+algorithm has been explored. Therefore, larger budgets are preferable. 
+
+.. [#] Note the use of the term *problem* in two meanings: as the problem the
+  algorithm is benchmarked on, |p|, and as the problem, |pt|, an algorithm can
+  solve with a certain runtime, |RT(pt)|, or may fail to solve. Each problem
+  |p| gives raise to a collection of dependent problems |pt|. Viewed as random
+  variables, the events |RT(pt)| are not independent events for different values
+  of |t|, but given |p|. 
+
+.. |k| replace:: :math:`k`
+.. |p| replace:: :math:`(f_i, n, j)`
+.. |pt| replace:: :math:`(f_i, n, j, t)`
+.. |RT(pt)| replace:: :math:`\mathrm{RT}(f_i, n, j, t)`
+
+
+Restarts and Simulated Restarts
+-------------------------------
+
+An optimization algorithm is bound to terminate and return a recommended 
+solution to the problem |p|. 
+Independent restarts from different, randomized initial solutions are a simple
+but powerful tool to increase the number of solved problems |pt| for an increasing number of |t|. [#]_
+
+The experimenter is free to 
+
+The runtime is monotonuous decreasing in |t|. 
+
+
+
+Related to budget, budget-free...
+
+ - missing value is interpreted as being above the explored budget. 
+    - bla
+
+A simulated restart adds at least the minimum runtime from a successful trial. 
+
+
 .. todo::
 
-Runtime
--------
 
-For each target value, |t|, the quadruple :math:`(f_i, n, j, t)` gives raise to a 
-runtime, the runtime when this problem is solved up to the target quality |t|. In the context of performance evaluation, we refer to such a quadruple also as a *problem*. 
+.. [#] For a given problem |p|, the runtime values, |RT(pt)|
+  are monotonuous increasing in |t|. Considered as randomvariables, these 
+  runtimes are not independent. 
 
-
-.. todo::
-
-Runtime
-========
-
-- missing value is interpreted as being above the explored budget. A simulated restart adds at least the minimum runtime from a successful trial. 
-
-.. todo::
 
 Aggregation
 ------------
@@ -390,10 +438,6 @@ Aggregation
 
 .. todo::
 
-Restarts
-=========
-
-Related to budget, budget-free...
 
 .. todo::
 
@@ -442,6 +486,8 @@ Currently, the COCO_ framework provides three different test suites.
     <H2>References</H2>
     
 .. author list yet to be defined
+
+.. [BBO2016biobj] The BBOBies: Biobjective function benchmark suite. 
 
 .. [BBO2016ex] The BBOBies: `Experimental Setup`__. 
 __ https://www.github.com
