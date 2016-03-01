@@ -19,6 +19,14 @@ typedef struct {
 } transform_vars_round_step_data_t;
 
 /**
+ * @brief Data type to be used in problem->versatile_data
+ */
+typedef struct {
+  double zhat_1; /**< @brief contains the value of \hat{z}_1 that is used to compute the fintess */ 
+} f_step_ellipsoid_versatile_data_t;
+
+
+/**
  * @brief Evaluates the transformation.
  */
 static void transform_vars_round_step_evaluate(coco_problem_t *problem, const double *x, double *y) {
@@ -29,7 +37,7 @@ static void transform_vars_round_step_evaluate(coco_problem_t *problem, const do
   data = (transform_vars_round_step_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
   /* multiplication by d to counter-balance the normalization by d*/
-  data->rounded_x[inner_problem->number_of_variables] = x[0] * (double) inner_problem->number_of_variables;/* only works because rounded is applied just after the value that is used in the max() of the raw function */
+  ((f_step_ellipsoid_versatile_data_t *) problem->versatile_data)->zhat_1 = x[0] * (double) inner_problem->number_of_variables;
   for (i = 0; i < inner_problem->number_of_variables; ++i) {
     if (fabs(x[i]) > 0.5){
       data->rounded_x[i] = coco_double_round(x[i]);

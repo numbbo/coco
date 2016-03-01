@@ -146,8 +146,10 @@ def getConvLink(algorithmType):
     
 def getRldLink(algorithmType):
     if genericsettings.isRldOnSingleFcts and algorithmType is not AlgorithmCount.NON_SPECIFIED:
-        return '<H3><a href="pprldmany-single-functions/%s_02D.html">[Runlength distribution plots]</a></H3>' % genericsettings.pprldmany_file_name
-    
+        links = '<H3><a href="pprldmany-single-functions/%s.html">[Runlength distribution plots]</a></H3>\n' % genericsettings.pprldmany_file_name
+        links += '<H3><a href="pprldmany-single-functions/%s_02D.html">[Runlength distribution plots (per dimension)]</a></H3>' % genericsettings.pprldmany_file_name
+        return links
+        
     return ''
 
 def getParentLink(algorithmType, parentFileName):
