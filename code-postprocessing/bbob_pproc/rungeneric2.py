@@ -455,6 +455,7 @@ def main(argv=None):
                 # ECDFs for each function
                 pprldmany.all_single_functions(dictAlg, 
                                                dsList[0].isBiobjective(),
+                                               False,
                                                sortedAlgs,
                                                outputdir, 
                                                genericsettings.verbose,
