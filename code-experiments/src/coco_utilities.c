@@ -589,7 +589,7 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
 
       /* Stop if this is the last substring (contains a value and no key) */
       if ((i > 0) && (*(keys + i + 1) == NULL)) {
-        coco_free_memory(*(keys + i + 1));
+        coco_free_memory(string_to_parse);
         break;
       }
 
