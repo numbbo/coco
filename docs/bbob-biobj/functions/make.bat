@@ -174,9 +174,9 @@ if "%1" == "latexpdf" (
 	cd %BUILDDIR%/latex
 	make all-pdf
 	cd %~dp0 
-	move %BUILDDIR%\latex\%PDF% ..\
+	move %BUILDDIR%\latex\%PDF% ..\..\
 	echo.
-	echo.Build finished; see ../%PDF%.
+	echo.Build finished; see ../../%PDF%.
 	goto end
 )
 
