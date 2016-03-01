@@ -60,7 +60,7 @@ static void test_coco_archive(void **state) {
   assert(about_equal_value(hypervolume_computed, hypervolume_read));
 
   i = 0;
-  while ((text = coco_archive_get_next_solution_text(archive)) != NULL) {
+  while ((text = coco_archive_get_next_solution_text(archive)) != "") {
     number = (size_t) strtol(text, NULL, 10);
     assert(numbers[i] == number);
     i++;
