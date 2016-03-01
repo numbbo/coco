@@ -496,9 +496,8 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
     fprintf(indicator->info_file, "algorithm = '%s', indicator = '%s', folder = '%s'\n%% %s", observer->algorithm_name,
         indicator_name, problem->problem_type, observer->algorithm_info);
   }
-  if (observer_biobj->previous_function != problem->suite_dep_function 
-    || observer_biobj->previous_number_of_variables != problem->number_of_variables
-  ) {
+  if ((observer_biobj->previous_function != problem->suite_dep_function)
+    || (observer_biobj->previous_dimension != problem->number_of_variables)) {
     fprintf(indicator->info_file, "\nfunction = %2lu, ", problem->suite_dep_function);
     fprintf(indicator->info_file, "dim = %2lu, ", problem->number_of_variables);
     fprintf(indicator->info_file, "%s", file_name);
@@ -840,7 +839,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
       logger_biobj->indicators[i] = logger_biobj_indicator(logger_biobj, observer, inner_problem, logger_biobj_indicators[i]);
 
     observer_biobj->previous_function = (long) inner_problem->suite_dep_function;
-    observer_biobj->previous_number_of_variables = (long) inner_problem->number_of_variables;
+    observer_biobj->previous_dimension = (long) inner_problem->number_of_variables;
   }
 
   problem = coco_problem_transformed_allocate(inner_problem, logger_biobj, logger_biobj_free, observer->observer_name);
