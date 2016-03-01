@@ -593,15 +593,15 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
         break;
       }
 
-	  /* Disregard everything before the last space */
-	  key = strrchr(string_to_parse, ' ');
+      /* Disregard everything before the last space */
+      key = strrchr(string_to_parse, ' ');
 	  if ((key == NULL) || (i == 0)) {
-		/* No spaces left (or this is the first key), everything is the key */
-		key = string_to_parse;
-	  } else {
-		/* Move to the start of the key (one char after the space) */
-		key++;
-	  }
+        /* No spaces left (or this is the first key), everything is the key */
+        key = string_to_parse;
+      } else {
+        /* Move to the start of the key (one char after the space) */
+        key++;
+      }
 
       /* Put the key in keys */
       coco_free_memory(*(keys + i));
