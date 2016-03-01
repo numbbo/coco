@@ -486,6 +486,8 @@ def all_single_functions(dictAlg, isBiobjective, sortedAlgs=None,
                      verbose=verbose,
                      parentHtmlFileName=parentHtmlFileName)
 
+
+
 def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
          dimension=None, verbose=True, parentHtmlFileName=None):
     """Generates a figure showing the performance of algorithms.
@@ -588,11 +590,14 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                     keyValue = '%d-D' % (dim) if len(dimList) > 1 else alg
                     dictData.setdefault(keyValue, []).extend(x)
                     dictMaxEvals.setdefault(keyValue, []).extend(runlengthunsucc)
-    
+
             displaybest2009 = not isBiobjective #disabled for bi-objective case
+            bestalgentries = bestalg.loadBestAlgorithm(isBiobjective) #no extra loading since force is default to False
+            if (dim, f) not in bestalgentries.keys(): #dimension/function not present in best2009
+                displaybest2009 = False
             if displaybest2009:
                 #set_trace()
-                bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+                #bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)# Wassim: now done above
                 bestalgentry = bestalgentries[(dim, f)]
                 bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
                 # print bestalgevals
@@ -606,51 +611,12 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                         x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                              percentiles=[50],
                                              samplesize=perfprofsamplesize)[1]
-<<<<<<< HEAD
-                except (KeyError, IndexError):
-                    #set_trace()
-                    warntxt = ('Data for algorithm %s on function %d in %d-D '
-                           % (alg, f, dim)
-                           + 'are missing.\n')
-                    warnings.warn(warntxt)
-
-                dictData.setdefault(alg, []).extend(x)
-                dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
-
-        displaybest2009 = not isBiobjective #disabled for bi-objective case
-        bestalgentries = bestalg.loadBestAlgorithm(isBiobjective) #no extra loading since force is default to False
-        if (dim, f) not in bestalgentries.keys(): #dimension/function not present in best2009
-              displaybest2009 = False
-        if displaybest2009:
-            #set_trace()
-            #bestalgentries = bestalg.loadBestAlgorithm(isBiobjective) # now done above
-            bestalgentry = bestalgentries[(dim, f)]
-            bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
-            # print bestalgevals
-            for j in range(len(bestalgevals[0])):
-                if bestalgevals[1][j]:
-                    evals = bestalgevals[0][j]
-                    #set_trace()
-                    assert dim == bestalgentry.dim
-                    runlengthsucc = evals[np.isnan(evals) == False] / divisor
-                    runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][np.isnan(evals)] / divisor
-                    x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
-                                         percentiles=[50],
-                                         samplesize=perfprofsamplesize)[1]
-                else:
-                    x = perfprofsamplesize * [np.inf]
-                    runlengthunsucc = []
-                xbest2009.extend(x)
-                maxevalsbest2009.extend(runlengthunsucc)
-                
-=======
                     else:
                         x = perfprofsamplesize * [np.inf]
                         runlengthunsucc = []
                     xbest2009.extend(x)
                     maxevalsbest2009.extend(runlengthunsucc)
-                    
->>>>>>> 077a3ac3e8d78eb3fa1e66df770d10211dca2cd4
+
     if order is None:
         order = dictData.keys()
 
