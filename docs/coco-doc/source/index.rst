@@ -175,6 +175,9 @@ as simple as
     \caption[Minimal benchmarking code in Python]{
     Python code to benchmark \texttt{fmin} on the \texttt{bbob} suite and
     display the results.
+    
+.. Anne  IMHO would not be too bad to have some comments within the code
+.. Anne in particular  close to cocopp.main 
 
 Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
 
