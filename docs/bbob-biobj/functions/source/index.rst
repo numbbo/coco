@@ -28,7 +28,7 @@ Table of Contents:
 
 .. toctree::
    :maxdepth: 2
-   :numbered: 3
+   :numbered: 2
 
    introduction
    state-of-the-art

@@ -354,6 +354,7 @@ def main(argv=None):
                 if 1 < 3:
                     pprldmany.all_single_functions(dictAlg, 
                                                    dsList[0].isBiobjective(),
+                                                   False,
                                                    sortedAlgs,
                                                    outputdir, 
                                                    genericsettings.verbose,
