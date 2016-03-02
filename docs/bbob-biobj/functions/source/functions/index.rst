@@ -496,13 +496,20 @@ Combination of separable ellipsoid function (:math:`f_2` in the
 ``bbob`` suite) and Schwefel function (:math:`f_{20}`
 in the ``bbob`` suite).
 
-.. todo::
-   Give more details.
+The first objective is unimodal, separable and highly ill-conditioned.
+The second objective is partially separable and highly multimodal---having
+the most prominent :math:`2^D` minima located comparatively close to the
+corners of the unpenalized search area. 
+
 
 Contained in the *separable - weakly-structured* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+
+.. todo::
+   Give some details.
+
 
 
 .. _f19:
@@ -513,13 +520,26 @@ Combination of separable ellipsoid function (:math:`f_2` in the
 ``bbob`` suite) and Gallagher function with 101 peaks (:math:`f_{21}`
 in the ``bbob`` suite).
 
-.. todo::
-   Give more details.
+The first objective is unimodal, besides small local non-linearities symmetric,
+separable and highly ill-conditioned while the second objective is highly
+
+While the first objective function is separable, unimodal, and
+highly ill-conditioned (condition number of about :math:`10^6`),
+the second objective function is non-separable and consists
+of 101 optima with position and height being unrelated and
+randomly chosen (different for each instantiation of the function).
+The conditioning around the global optimum of the second
+objective function is about 30.
 
 Contained in the *separable - weakly-structured* function class.
 
 Information gained from this function:
 """"""""""""""""""""""""""""""""""""""
+
+* Is the search effective without any global structure?
+* What is the effect of the different condition numbers
+  of the two objectives, in particular when combined
+  to reach the middle of the Pareto front?
 
 
 .. _f20:
