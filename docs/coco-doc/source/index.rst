@@ -441,7 +441,7 @@ run. [#]_
 
 .. [#] The minimum runtime which is affected by simulated restarts is the 
    minimum runtime over all solved instances, if it is accompanied by at least
-   on unsolved instance.
+   one unsolved instance.
 
 Aggregation
 ------------
@@ -459,20 +459,11 @@ optimizer).
 
 .. todo: we prefer/have adopted data profiles over performance profiles
 
-.. Note:: We do not aggregate over dimensions, h
+.. Note:: 
 
-
-.. note::
-
-  - we do not integrate over dimension
-
-  - typical number of measured runtimes is XXXX (even more with simulated runs), therefore 
-    some aggregation is needed. 
-    
+  - we do not integrate over dimension    
   - two ways: ECDFs and ERTs. 
-  
   - Missing values can be integrated over simulated restarts (see above) [BBO2016perf]_. 
-
   - interpretation of aggregations, like that we draw a problem uniform at random (over all problems or over all instances), but see also [BBO2016perf]_. 
 
 .. todo::
