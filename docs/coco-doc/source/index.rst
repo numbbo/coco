@@ -446,23 +446,26 @@ run. [#]_
 Aggregation
 ------------
 
-A typical benchmark suite consists of about 20 to 100 functions with 5 to 15 instances for each function. For each instance, up to about 100 targets are considered for the 
+A typical benchmark suite consists of about 20--100 functions with 5--15 instances for each function. For each instance, up to about 100 targets are considered for the 
 performance assessment. This means we want to consider at least :math:`20\times5=100`, and 
 up to :math:`100\times15\times100=150\,000` runtimes for the performance assessment. 
 To make them amenable to the experimenter, we need to summarize these data. 
 
 Our idea behind an aggregation is to make a statistical summary over a set or
-subset of "problems of interested" for which we assume a uniform distribution
-of this set. From a practical perspective this means that we assume to have no
-simple way to distinguish between these problems to begin with (select an
-optimizer). 
+subset of *problems of interested* for which we assume a uniform distribution
+over this subset. From a practical perspective this means to assume to have no
+simple way to distinguish between these problems (and select an
+optimization algorithm accordingly) and that we are likely to face each of them with similar probability. We do not aggregate over dimension, because dimension can and 
+should be used for algorithm selection. 
 
-.. todo: we prefer/have adopted data profiles over performance profiles
+
+
+
 
 .. Note:: 
 
-  - we do not integrate over dimension    
   - two ways: ECDFs and ERTs. 
+  - ECDFs: we prefer/have adopted data profiles over performance profiles
   - Missing values can be integrated over simulated restarts (see above) [BBO2016perf]_. 
   - interpretation of aggregations, like that we draw a problem uniform at random (over all problems or over all instances), but see also [BBO2016perf]_. 
 
