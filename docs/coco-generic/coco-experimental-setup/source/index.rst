@@ -7,8 +7,6 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$
 ...
 %%%
 
-.. .. image:: _images/title-image.png
-
 .. |
 .. |
 .. .. sectnum::
@@ -17,9 +15,9 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. |
 .. |
 
-.. LaTeX put abstract manually, the command is defined in 
-     'preamble' of latex_elements in source/conf.py, the text
-     is defined in `abstract` of conf.py. To flip abstract an 
+.. Here we put the abstract when using LaTeX, the \abstractinrst command is defined in 
+     the 'preamble' of latex_elements in source/conf.py, the text
+     is defined in `abstract` of conf.py. To flip abstract and 
      table of contents, or update the table of contents, toggle 
      the \generatetoc command in the 'preamble' accordingly. 
 .. raw:: latex
@@ -193,6 +191,8 @@ any (other) known characteristics of the problem are not
 allowed as input to the algorithm, see also Section
 :ref:`sec:tuning`.
 
+
+
 During an optimization run, the following (new) information is available to
 the algorithm: 
 
@@ -323,19 +323,21 @@ algorithms" on an entire test suite is encouraged.
 Recommendations
 ===============
 
-The performance assessment is based on the :math:`f`-values of the
-evaluated solutions and their respective evaluation count. 
-By default, each evaluation is associated with the evaluated
+The performance assessment is based on a set of evaluation counts
+associated with the :math:`f`-value of a solution. 
+By default, each evaluation count is associated with the respectively *evaluated*
 solution and hence its :math:`f`-value. 
-The solution, and hence the :math:`f`-value, associated *to the current (last) evaluation* can be changed by calling |coco_recommend_solution|_. 
-A recommendation is best viewed as the currently best known approximation of the
+The solution associated *to the current (last) evaluation* can be changed by calling |coco_recommend_solution|_, thereby associating the :math:`f`-value of the
+*recommended* solution (instead of the *evaluated* solution) with the current evaluation count. 
+A recommendation is best viewed as the *currently best known approximation* of the
 optimum delivered by the optimization algorithm, or as the currently most 
 desirable return value of the algorithm. 
 
-Recommendations allow the algorithm to explore (in particular bad) solutions
-without affecting the performance assessment. 
-On non-noisy suites it is neither
-necessary nor advantageous to recommend the same solutions repeatedly.
+Recommendations allow the algorithm to explore solutions without affecting the
+performance assessment. For example, a surrogate-based algorithm can explore
+(i.e. evaluate) an arbitrarily bad solution, update the surrogate model and
+then recommend the (new) model optimizer. On non-noisy suites it is neither
+necessary nor advantageous to recommend the same solution repeatedly.
 
 .. On non-noisy suites the last evaluation changes the assessment only if the :math:`f`-value is better than all :math:`f`-values from previous evaluations. 
 
@@ -344,21 +346,24 @@ Time Complexity Experiment
 ==========================
 
 In order to get a rough measurement of the time complexity of the algorithm,
-the overall CPU time should be measured when running the algorithm on a single
-function for at least a few tens of seconds (and at least a few iterations) in
-all available dimensions. [#]_ The chosen setup should reflect a "realistic
-average scenario". If another termination criterion is reached, the algorithm
-is restarted (like for a new trial). The *CPU-time per function evaluation* is
-reported for each dimension. The chosen setup, coding language, compiler and
+the wall-clock or CPU time should be measured when running the algorithm on
+the benchmark suite. The chosen setup should reflect a "realistic average
+scenario". [#]_ The **time divided by the number of function evaluations is
+presented separately for each dimension** for which the suite provides
+benchmark problems. The chosen setup, coding language, compiler and
 computational architecture for conducting these experiments are described.
 
-.. The :file:`exampletiming.*` code template is provided to run this experiment. For CPU-inexpensive algorithms the timing might mainly reflect the time spent in function :meth:`fgeneric`.
+.. The :file:`exampletiming.*` code template is provided to run this experiment. For CPU-inexpensive algorithms the timing might mainly reflect the time spent in function :math:`fgeneric`.
 
-.. [#] On the ``bbob`` test suite the first instance of the 
-  Rosenbrock function :math:`f_8` is used, that is, 
-  the suite indices 105, 465, 825, 1185, 1545, 1905. 
-
-
+.. [#] 
+  The example experiment code provides the timing output measured over all
+  problems of a single dimension by default. It also can be used to make a record
+  of the same timing experiment with "pure random search", which can serve as 
+  additional base-line data. On the ``bbob`` test suite, also only the
+  first instance of the Rosenbrock function :math:`f_8` had been used for this
+  experiment previously, that is, the suite indices 105, 465, 825, 1185, 1545,
+  1905. 
+  
 .. ############################# References #########################################
 
 

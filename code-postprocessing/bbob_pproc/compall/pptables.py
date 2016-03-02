@@ -517,7 +517,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
                     curlineHtml.append('<td>&nbsp;</td>')
                 else:
-                    if not bestalgentries or numpy.isinf(refalgert[j]):
+                    if bestalgentries and numpy.isinf(refalgert[j]):
                         tableentry = r'\textbf{%s}' % writeFEvalsMaxPrec(algerts[i][j], 2)
                         tableentryHtml = '<b>%s</b>' % writeFEvalsMaxPrec(algerts[i][j], 2)
                         if dispersion and numpy.isfinite(dispersion):
