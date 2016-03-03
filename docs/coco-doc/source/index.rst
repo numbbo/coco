@@ -468,8 +468,10 @@ performance assessment. This means we want to consider at least :math:`20\times5
 up to :math:`100\times15\times100=150\,000` runtimes for the performance assessment. 
 To make them amenable to the experimenter, we need to summarize these data. 
 
+.. Anne: I cannot decode the 20 times 5
+
 Our idea behind an aggregation is to make a statistical summary over a set or
-subset of *problems of interested* over which we assume a uniform distribution [BBO2016perf]_. 
+subset of *problems of interest* over which we assume a uniform distribution [BBO2016perf]_. 
 From a practical perspective this means to have no simple way to distinguish
 between these problems and select an optimization algorithm accordingly --- in
 which case an aggregation would have no significance --- and that we are likely
