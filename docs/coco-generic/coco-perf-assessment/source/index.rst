@@ -42,12 +42,12 @@ Terminology and Definitions
 *problem*
  A COCO problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`\mathcal{P}=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is a dimension, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem :math:`\mathcal{P}` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`\mathcal{P}=(n,f_\theta,\theta)`.
  
- In the performance assessment setting, we associate to a problem :math:`\mathcal{P}`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However commonly :math:`f_{\rm target} - f_{\rm opt}`  that can be thought as ``precision``, does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a similar precision. :math:`\R`
+ In the performance assessment setting, we associate to a problem :math:`\mathcal{P}`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However commonly :math:`f_{\rm target} - f_{\rm opt}`  that can be thought as **precision**, does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a similar precision. :math:`\R`
 
 *instance*
- Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ... 
+ Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero). 
   
- We **interpret the different runs performed on different instances** of the same parametrized function in a given dimension as if they are just a repetition of the same function. Put differently the runs performed on :math:`f_{\theta_1}, \ldots,f_{\theta_K}` with :math:`\theta_1,\ldots,\theta_K`, :math:`K` different instances of a parametrized problem :math:`f_\theta`, are assumed to be independent identically distributed.
+ We **interpret the different runs performed on different instances** of the same parametrized function in a given dimension as if they are just **independent repetitions** of the optimization algorithm on the same function. Put differently the runs performed on :math:`f_{\theta_1}, \ldots,f_{\theta_K}` with :math:`\theta_1,\ldots,\theta_K`, :math:`K` different instances of a parametrized problem :math:`f_\theta`, are assumed to be independent identically distributed.
   
 *runtime*
   We define *runtime*, or *run-length* [HOO1998]_
@@ -71,7 +71,9 @@ We advocate **performance measures** that are:
 * as simple as possible
 * independent of the programming language and computer where the algorithm was run.
 
-For these reasons we measure runtime to reach a target function value, that is the number of function evaluations needed to reach a target function value denoted as fixed-target scenario in the following. 
+This latter point excludes to use CPU time as a basis for performance measure. The shortcomings and consequences of using CPU was discussed in [Hooker:1995]_.
+
+For these reasons we measure **runtime** to reach a target function value, that is the number of function evaluations needed to reach a target function value denoted as fixed-target scenario in the following. 
 
 
 .. _sec:verthori:
@@ -137,7 +139,25 @@ of all resulting data.
 Run-length over Problems
 =========================
 
-From the previous section we know that we want to collect run-length for different targets in order to display quantitative measurements. 
+In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtime for different target values. Those target values can be a :math:`f` or indicator value. 
+In the performance assessment setting, we associate to a problem a target value that is a problem is denoted as :math:`\mathcal{P}=(n,f_\theta,\theta,f^{\rm target}_\theta)`. Hence, we collect runtime over different problems. 
+
+Formally, the runtime of a problem is denoted as
+:math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)` and it corresponds to the number of function evaluations needed to reach a function value lower or equal than :math:`f_{\rm target}`  for the first time.
+
+We have explained above that runs associated to different instances of the same parametrized function are interpreted as independent repetitions of the optimization procedure of the same function.
+Runtimes collected for different instances of the same parametrized function and with respective targets associated to the same precision (see above) are naturally interpreted as repetitions.
+
+Hence as explained above runs on different instances are interpreted as repetitions of the optimization of the same function. Naturally, the runtime 
+ 
+
+Formally the runtime of a problem is 
+
+.. todo:: 
+		  formal definition of RT (depends on target) - given that we  :math:`RT(n,f_\theta,\theta_j,f_{\rm target})`
+		  swipping over function instance = repetition, i.e. iid (given what comes above)
+          aggregation of distribution of RT (read COCO + proceed)
+
 
 A problem is defined as the quadruplet ``(function, dimension, instance, function target)``. 
 
@@ -344,4 +364,8 @@ Understanding the different plots
 .. [Price:1997] K. Price. Differential evolution vs. the functions of
    the second ICEO. In Proceedings of the IEEE International Congress on
    Evolutionary Computation, pages 153–157, 1997.
+.. [Hooker:1995] J. N. Hooker Testing heuristics: We have it all wrong. In Journal of
+    Heuristics, pages 33-42, 1995.
+
+   
 
