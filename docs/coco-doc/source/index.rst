@@ -165,10 +165,10 @@ as simple as
   observer = cocoex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
     
   for p in suite:
-      observer.observe(p)
+      observer.observe(p)  # logging of necessary data
       fmin(p, p.initial_solution)
         
-  cocopp.main('exdata/myoptimizer-on-bbob')
+  cocopp.main('exdata/myoptimizer-on-bbob')  # invoke post-processing
 
 .. raw:: latex 
 
@@ -202,8 +202,6 @@ needed to setup and implement themselves otherwise, if they wanted to benchmark 
     tens or even hundreds of numbers in one or several tables, left to the
     reader to scan and compare to each other [SUG2015]. 
     
-    .. todo:: add reference
-
 .. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
 
 
@@ -232,21 +230,26 @@ the following defining features.
 #. There is no predefined budget (number of |f|-evaluations) for running an
    experiment, the experimental procedure is *budget-free* [BBO2016ex]_.
 
-#. A single performance  measure is used, namely runtime measured in 
-   number of |f|-evaluations [BBO2016perf]_. Runtime has the advantage to 
+#. A single performance measure is used --- and thereafter displayed and 
+   aggregated in 
+   several ways --- namely **runtime**, *measured in 
+   number of |f|-evaluations* [BBO2016perf]_. Runtime has the advantage to 
 
+     - be independent of the computational platform and language and coding 
+       style and other specific experimental conditions, [#]_ hence they are
+       comparable and designed to stay
      - be easily interpretable without expert domain knowledge
      - be quantitative on the ratio scale [STE1946]_ [#]_
      - assume a wide range of values
      - aggregate over a collection of values in a very meaningful way
      
-   A missing runtime value is considered as possible outcome (see below).
+   A *missing* runtime value is considered as possible outcome (see below).
 
-.. Anne: when we write "a single performance measure" it is about what we extract from a
-.. Anne: given run, right? Because we can argue that we have several aggregated 
-.. Anne: performance measure: ERT or log ERT (as area below the ECDF graphs) or that itself
-.. Anne: the ECDF graph is a performance measure. All this to say that I find the wording
-.. Anne: a single performance measure ambiguous.
+.. DONE Anne : when we write "a single performance measure" it is about what we 
+  extract from a given run, right? Because we can argue that we have several
+  aggregated performance measure: ERT or log ERT (as area below the ECDF
+  graphs) or that itself the ECDF graph is a performance measure. All this to
+  say that I find the wording a single performance measure ambiguous. 
 
     
 #. The display is as comprehensible, intuitive and informative as possible. 
@@ -254,9 +257,13 @@ the following defining features.
    that can and should be used for algorithm selection decisions. 
 
 .. [#] For example, the optimum is not in all-zeros, optima are not placed 
-    on a regular grid, the function is not separable [WHI1996]_. Which 
-    regularities are common place in real-world optimization problems remains 
-    an open question. 
+    on a regular grid, most functions are not separable [WHI1996]_. The
+    objective to remain comprehensible makes it more challenging to design
+    non-regular functions. Which regularities are common place in real-world
+    optimization problems remains an open question. 
+
+.. [#] The experimental procedure [BBO2016exp] includes however a timing experiment 
+  which records the internal computational effort of the algorithm. 
 
 .. [#] As opposed to ranking algorithm based on their solution quality achieved
   after a given runtime.  
@@ -265,6 +272,8 @@ the following defining features.
 .. .. was 261754099
 .. .. __ http://en.wikipedia.org/w/index.php?title=Level_of_measurement&oldid=478392481
 
+
+.. Note:: Do we want to mention the area under log ERT? 
 
 Terminology
 -----------
@@ -313,8 +322,8 @@ Functions, Instances, Problems, and Targets
 .. Note:: The following would probably best fit into a generic document about 
    functions and test suites. 
 
-In the COCO_ framework we consider functions, |fi|, which are for each suite
-distinguished by their identifier :math:`i=1,2,\dots`. Functions are
+In the COCO_ framework we consider **functions**, |fi|, which are for each suite
+distinguished by their identifier :math:`i=1,2,\dots`. Functions are further
 *parametrized* by dimension, |n|, and instance number, |j|, [#]_
 that is, for a given |m| we have
 
@@ -323,9 +332,9 @@ that is, for a given |m| we have
     \finstance_i \equiv f(n, i, j):\R^n \to \mathbb{R}^m \quad
     \x \mapsto \finstance_i (\x) = f(n, i, j)(\x)\enspace. 
     
-Varying |n| or |j| leads to a variation of the problem over the same function
+Varying |n| or |j| leads to a variation of the same function
 |i| of a given suite. 
-By fixing |n| and |j| for function |fi|, we define an optimization problem
+By fixing |n| and |j| for function |fi|, we define an optimization **problem**
 that can be presented to an optimization algorithm. That is, 
 for each test suite,
 the triple :math:`(n, i, j)\equiv(f_i, n, j)` uniquely defines a problem. 
@@ -414,6 +423,8 @@ they should not come at the expense of abandoning reasonable termination conditi
 .. |RT(pt)| replace:: :math:`\mathrm{RT}(f_i, n, j, t)`
 
 
+.. _sec:Restarts:
+
 Restarts and Simulated Restarts
 -------------------------------
 
@@ -435,14 +446,10 @@ solved. [#]_
 The evaluations from the drawn instances are summed up to determine the runtime. 
 This method is applied if at least one problem instance was not solved and is
 (only) available if at least one problem instance was solved.
-The minimum runtime determined by a simulated restart is the minimum number of
-evaluations in an unsuccessful run plus the minimum runtime from a successful
-run. [#]_
+The minimum runtime determined by a simulated restart is the 
+minimum runtime from those solved instances which accompanied by at least
+one unsolved instance (that is, for the same |pt| except of |j|).
 
-.. Anne: I am missing something here: "The minimum runtime determined by a simulated restart"
-.. Anne: in simulated restart I can be lucky and draw a successful run right away, so I would say:
-.. Anne: "The minimum runtime determined by a simulated restart is the minimum number of
-.. Anne: evaluations in a successful run". You want to say something different, or what do I miss?
 
 .. [#] For a given problem |p|, the number of acquired runtime values, |RT(pt)|
   is monotonous increasing with the budget used. Considered as random
@@ -452,9 +459,6 @@ run. [#]_
   all benchmarked instances |j|. The targets :math:`t(j)` depend on the instance 
   in a way to make the instances comparable [BBO2016perf]_. 
 
-.. [#] The minimum runtime which is affected by simulated restarts is the 
-   minimum runtime over all solved instances, if it is accompanied by at least
-   one unsolved instance.
 
 Aggregation
 ------------
@@ -465,35 +469,34 @@ up to :math:`100\times15\times100=150\,000` runtimes for the performance assessm
 To make them amenable to the experimenter, we need to summarize these data. 
 
 Our idea behind an aggregation is to make a statistical summary over a set or
-subset of *problems of interested* for which we assume a uniform distribution
-over this subset [BBO2016perf]_. 
-From a practical perspective this means to have no simple way to
-distinguish between these problems (and select an optimization algorithm
-accordingly in which case an aggregation would have no significance) and that we are likely to face each problem with similar
-probability. 
+subset of *problems of interested* over which we assume a uniform distribution [BBO2016perf]_. 
+From a practical perspective this means to have no simple way to distinguish
+between these problems and select an optimization algorithm accordingly --- in
+which case an aggregation would have no significance --- and that we are likely
+to face each problem with similar probability. 
 We do not aggregate over dimension, because dimension can and 
 should be used for algorithm selection. 
 
-We have two ways to aggregate the resulting runtimes. 
+We several ways to aggregate the resulting runtimes. 
 
  - Empirical cumulative distribution functions (|ECDF|). In the domain of optimization
-   they are also known as *data profiles* [MOR20xx]_. We prefer the |ECDF| over performance profiles [MORxxxx]_ for two reasons. |ECDF| do not depend on the algorithms presented, that is, they are comparable across different publications. 
-   |ECDF| separate well easy problems from difficult problems. 
+   they are also known as *data profiles* [MOR20xx]_. We prefer the |ECDF| over performance profiles [MORxxxx]_ for two reasons. |ECDF| do not depend on any other algorithms presented, that is, they are entirely comparable across different publications. 
+   |ECDF| separate in a natural way easy problems from difficult problems for the considered algorithm. We usually display |ECDF| on the log scale, which makes 
+   the area above the curve and the *difference area* between two curves a 
+   meaningful conception [BBO2016perf]. 
+   
+   .. object/concept/element/notion/aspect/component. 
  
- - Averaging, as an estimator of the expected runtime, |ERT|. Estimated |ERT| is
+ - Averaging, as an estimator of the expected runtime. The average runtime, that
+   is estimated expected runtime, is
    often plotted against dimension to indicate scaling with dimension. 
-
+   
+ - Restarts and simulated restarts, see Section :ref:`sec:Restarts`, do not 
+   aggregate runtimes, but they aggregate the data to possibly supplement
+   missing runtime values, see also [BBO2016perf]_. 
 
 .. |ERT| replace:: ERT
 .. |ECDF| replace:: ECDF
-
-.. Note:: 
-
-  - ECDFs: we prefer/have adopted data profiles over performance profiles
-  - Missing values can be integrated over simulated restarts (see above) [BBO2016perf]_. 
-  - interpretation of aggregations, like that we draw a problem uniform at random (over all problems or over all instances), but see also [BBO2016perf]_. 
-
-.. todo::
 
 
 General Code Structure
@@ -502,14 +505,18 @@ General Code Structure
 The code bases consists of two parts. 
 
 The *Experiments* part
-  defines test suites and allows to conduct experiments providing the output data. The `code base is written in C`__, and wrapped in different languages (currently Java, Python, Matlab/Octave). An amalgamation technique is used that outputs two files ``coco.h`` and ``coco.c`` which suffice to use the experiments part of the framework. 
+  defines test suites, allows to conduct experiments, and provides the output
+  data. The `code base is written in C`__, and wrapped in different languages
+  (currently Java, Python, Matlab/Octave). An amalgamation technique is used
+  that outputs two files ``coco.h`` and ``coco.c`` which suffice to run
+  experiments within the COCO_ framework. 
 
   .. __: http://numbbo.github.io/coco-doc/C
 
 
 The *post-processing* part
-  processes the data and display the results. This part is entirely written in 
-  Python and relies heavily on |matplotlib|_ [HUN2007]_.  
+  processes the data and displays the resulting runtimes. This part is
+  entirely written in Python and heavily relies on |matplotlib|_ [HUN2007]_.  
 
 .. |matplotlib| replace:: ``matplotlib``
 .. _matplotlib: http://matplotlib.org/
