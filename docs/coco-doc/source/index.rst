@@ -165,10 +165,10 @@ as simple as
   observer = cocoex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
     
   for p in suite:
-      observer.observe(p)  # logging of necessary data
+      observer.observe(p)  # prepare logging of necessary data
       fmin(p, p.initial_solution)
         
-  cocopp.main('exdata/myoptimizer-on-bbob')  # invoke post-processing
+  cocopp.main('exdata/myoptimizer-on-bbob')  # invoke data post-processing
 
 .. raw:: latex 
 
@@ -176,8 +176,6 @@ as simple as
     Python code to benchmark \texttt{fmin} on the \texttt{bbob} suite and
     display the results.
     
-.. Anne  IMHO would not be too bad to have some comments within the code
-.. Anne in particular  close to cocopp.main 
 
 Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
 
@@ -233,24 +231,16 @@ the following defining features.
 #. A single performance measure is used --- and thereafter displayed and 
    aggregated in 
    several ways --- namely **runtime**, *measured in 
-   number of |f|-evaluations* [BBO2016perf]_. Runtime has the advantage to 
+   number of* |f|-*evaluations* [BBO2016perf]_. Runtime has the advantage to 
 
-     - be independent of the computational platform and language and coding 
-       style and other specific experimental conditions, [#]_ hence they are
-       comparable and designed to stay
+     - be independent of the computational platform and language, coding 
+       style, and other specific experimental conditions [#]_
      - be easily interpretable without expert domain knowledge
      - be quantitative on the ratio scale [STE1946]_ [#]_
      - assume a wide range of values
      - aggregate over a collection of values in a very meaningful way
      
    A *missing* runtime value is considered as possible outcome (see below).
-
-.. DONE Anne : when we write "a single performance measure" it is about what we 
-  extract from a given run, right? Because we can argue that we have several
-  aggregated performance measure: ERT or log ERT (as area below the ECDF
-  graphs) or that itself the ECDF graph is a performance measure. All this to
-  say that I find the wording a single performance measure ambiguous. 
-
     
 #. The display is as comprehensible, intuitive and informative as possible. 
    Aggregation over dimension is avoided, because dimension is a known parameter 
@@ -262,8 +252,11 @@ the following defining features.
     non-regular functions. Which regularities are common place in real-world
     optimization problems remains an open question. 
 
-.. [#] The experimental procedure [BBO2016exp] includes however a timing experiment 
-  which records the internal computational effort of the algorithm. 
+.. [#] Runtimes measured in |f|-evaluations are widely
+       comparable and designed to stay. The experimental procedure
+       [BBO2016exp] includes however a timing experiment which records the
+       more volatile
+       internal computational effort of the algorithm. 
 
 .. [#] As opposed to ranking algorithm based on their solution quality achieved
   after a given runtime.  
@@ -277,7 +270,6 @@ the following defining features.
 
 Terminology
 -----------
-.. todo:: this is a duplicate, should become shorter or go away
 
 We specify a few terms which are used later. 
 
@@ -289,7 +281,7 @@ We specify a few terms which are used later.
   
 *problem*
   We talk about a *problem*, |coco_problem_t|_, as a specific *function
-  instance* on which the optimization algorithm is run. 
+  instance* on which an optimization algorithm is run. 
   A problem
   can be evaluated and returns an |f|-value or -vector and, in case,
   a |g|-vector. 
@@ -322,9 +314,9 @@ Functions, Instances, Problems, and Targets
 .. Note:: The following would probably best fit into a generic document about 
    functions and test suites. 
 
-In the COCO_ framework we consider **functions**, |fi|, which are for each suite
+In the COCO_ framework we consider **functions**, |fi|, for each suite
 distinguished by their identifier :math:`i=1,2,\dots`. Functions are further
-*parametrized* by dimension, |n|, and instance number, |j|, [#]_
+*parametrized* by the (input) dimension, |n|, and the instance number, |j|, [#]_
 that is, for a given |m| we have
 
 .. math::
@@ -336,7 +328,7 @@ Varying |n| or |j| leads to a variation of the same function
 |i| of a given suite. 
 By fixing |n| and |j| for function |fi|, we define an optimization **problem**
 that can be presented to an optimization algorithm. That is, 
-for each test suite,
+for each benchmark suite,
 the triple :math:`(n, i, j)\equiv(f_i, n, j)` uniquely defines a problem. 
 Each problem receives again
 an index in the suite, mapping the triple :math:`(n, i, j)` to a single
@@ -352,12 +344,12 @@ The Instance Concept
 
 As the formalization above suggests, the differentiation between function (index) 
 and instance index is of purely semantic nature. 
-This semantics however has important implications in how we display and
+This semantics however is important in how we display and
 interpret the results. We interpret varying the instance parameter as 
 a natural randomization for experiments [#]_ in order to 
 
- - generate repetitions on the functions and
- - average away irrelevant aspects of the function thereby providing
+ - generate repetitions on a function and
+ - average away irrelevant aspects of a function thereby providing
 
     - generality which alleviates the problem of overfitting, and
     - a fair setup which prevents intentional or unintentional exploitation of 
@@ -386,7 +378,7 @@ establish a hitting time condition.
 We prescribe a **target value**, |t|, which is an |f|- or
 indicator-value [BBO2016biobj]_. 
 For a single run, when an algorithm reaches or surpasses the target value |t|
-on problem |p|, we say it has *solved the problem* |pt|, it was successul. [#]_
+on problem |p|, we say it has *solved the problem* |pt| --- it was successul. [#]_
 
 Now, the **runtime** is the evaluation count when the target value |t| was
 reached or surpassed for the first time. That is, runtime is the number of |f|-evaluations needed to 
@@ -435,7 +427,7 @@ Independent restarts from different, randomized initial solutions are a simple
 but powerful tool to increase the number of solved problems [HAR1999]_ --- namely by increasing the number of |t|-values, for which the problem |p|
 was solved. [#]_ 
 Independent restarts tend to increase the success rate, but they generally do
-not *change* the performance assessment, because the successes materialize at
+not *change* the performance *assessment*, because the successes materialize at
 greater runtimes. 
 Therefore, we call our approach *budget-free*. 
 Restarts however "*improve the reliability, comparability, precision, and "visibility" of the measured results*" [BBO2016ex]_.
@@ -523,7 +515,6 @@ The *post-processing* part
 .. _matplotlib: http://matplotlib.org/
 
 
-
 Test Suites
 =====================
 Currently, the COCO_ framework provides three different test suites. 
@@ -539,6 +530,12 @@ Currently, the COCO_ framework provides three different test suites.
   contains 55 bi-objective (:math:`m=2`) functions in 15 subgroups [BBO2016fun]_. 
   
 .. _`old code basis`: http://coco.gforge.inria.fr/doku.php?id=downloads
+
+
+Acknowledgments
+================
+The authors would like to thank Raymond Ros, Steffen Finck, Marc Schoenauer, 
+and Petr Posik for their many invaluable contributions to this work. 
 
 
 .. ############################# References #########################################

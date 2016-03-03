@@ -200,8 +200,8 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=10 + 990 
     Details:
        A single successful running length is computed by adding
        uniformly randomly chosen running lengths until the first time a
-       successful one is chosen. In case of no successful run the sum of
-       unsuccessful runs is bootstrapped. 
+       successful one is chosen. In case of no successful run an
+       exception is raised. 
 
     """
     # TODO: for efficiency reasons a special treatment in the case, 
