@@ -175,6 +175,9 @@ as simple as
     \caption[Minimal benchmarking code in Python]{
     Python code to benchmark \texttt{fmin} on the \texttt{bbob} suite and
     display the results.
+    
+.. Anne  IMHO would not be too bad to have some comments within the code
+.. Anne in particular  close to cocopp.main 
 
 Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
 
@@ -231,13 +234,19 @@ the following defining features.
 
 #. A single performance  measure is used, namely runtime measured in 
    number of |f|-evaluations [BBO2016perf]_. Runtime has the advantage to 
-    
+
      - be easily interpretable without expert domain knowledge
      - be quantitative on the ratio scale [STE1946]_ [#]_
      - assume a wide range of values
      - aggregate over a collection of values in a very meaningful way
      
    A missing runtime value is considered as possible outcome (see below).
+
+.. Anne: when we write "a single performance measure" it is about what we extract from a
+.. Anne: given run, right? Because we can argue that we have several aggregated 
+.. Anne: performance measure: ERT or log ERT (as area below the ECDF graphs) or that itself
+.. Anne: the ECDF graph is a performance measure. All this to say that I find the wording
+.. Anne: a single performance measure ambiguous.
 
     
 #. The display is as comprehensible, intuitive and informative as possible. 
@@ -430,6 +439,10 @@ The minimum runtime determined by a simulated restart is the minimum number of
 evaluations in an unsuccessful run plus the minimum runtime from a successful
 run. [#]_
 
+.. Anne: I am missing something here: "The minimum runtime determined by a simulated restart"
+.. Anne: in simulated restart I can be lucky and draw a successful run right away, so I would say:
+.. Anne: "The minimum runtime determined by a simulated restart is the minimum number of
+.. Anne: evaluations in a successful run". You want to say something different, or what do I miss?
 
 .. [#] For a given problem |p|, the number of acquired runtime values, |RT(pt)|
   is monotonous increasing with the budget used. Considered as random
