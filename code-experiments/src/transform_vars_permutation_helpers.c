@@ -31,6 +31,7 @@ static int f_compare_doubles_for_random_permutation(const void *a, const void *b
 
 /**
  * @brief generates a random, uniformly sampled, permutation and puts it in P
+ * Wassim: move to coco_utilities?
  */
 static void coco_compute_random_permutation(size_t *P, long seed, size_t n) {
   long i;
@@ -47,7 +48,7 @@ static void coco_compute_random_permutation(size_t *P, long seed, size_t n) {
 
 /**
  * @brief returns a uniformly distributed integer between lower_bound and upper_bound using seed.
- * Wassim: move to coco_utilities? 
+ * Wassim: move to coco_utilities?
  */
 static long coco_random_unif_int(long lower_bound, long upper_bound, coco_random_state_t *rng){
   long range;
