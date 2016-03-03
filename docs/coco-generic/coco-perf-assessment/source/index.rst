@@ -29,17 +29,25 @@ COCO: Performance Assessment
 Introduction
 =============
 
-In this document we explain the rationale behind the performance assessment within the COCO platform. The simple but central idea is that we advocate *quantitative* performance measures as opposed to simple rankings of algorithm performances. From there on follows that run-length for function value targets are collected. We then either display expected run-length through the `Expected Running Time`_ (ERT) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF).
+In this document we explain the rationale behind the performance assessment within the COCO platform. The simple but central idea is that we advocate *quantitative* performance measures as opposed to simple rankings of algorithm performances. From there on follows that our performance measures and displays are based on the runtime or run-length to reach a target function value.
+
+We then either display average run-length through the `Average Running Time`_ (aRT) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF).
+
+When displaying the distribution of run-length, we consider the aggregation of run-length over subclasses of problems.
+
+.. budget-free
 
 Terminology and Definitions
 ----------------------------
 *problem*
- A COCO problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`\mathcal{P}=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is a dimension, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem :math:`\mathcal{P}` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`.
+ A COCO problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`\mathcal{P}=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is a dimension, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem :math:`\mathcal{P}` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`\mathcal{P}=(n,f_\theta,\theta)`.
  
- In the performance assessment setting, we associate to a problem :math:`\mathcal{P}`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\bar{\theta}}(\mathbf{x})` depends on the specific instance :math:`\bar{\theta}`, the :math:`{\rm target}` function values also depends on the instance :math:`\bar{\theta}`. However commonly :math:`f_{\rm target} - f_{\rm opt}`  that can be thought as ``precision``, does not depend on the instance :math:`\bar{\theta}` such that we can unambiguously consider for different instances :math:`({\bar{\theta}}_1, \ldots,{\bar{\theta}}_K)` of a parametrized problem :math:`f_{\bar{\theta}}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\bar{\theta}}_1}, \ldots,f^{\rm target}_{{\bar{\theta}}_K}` associated to a similar precision. :math:`\R`
+ In the performance assessment setting, we associate to a problem :math:`\mathcal{P}`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However commonly :math:`f_{\rm target} - f_{\rm opt}`  that can be thought as ``precision``, does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a similar precision. :math:`\R`
 
 *instance*
-  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...
+ Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ... 
+  
+ We **interpret the different runs performed on different instances** of the same parametrized function in a given dimension as if they are just a repetition of the same function. Put differently the runs performed on :math:`f_{\theta_1}, \ldots,f_{\theta_K}` with :math:`\theta_1,\ldots,\theta_K`, :math:`K` different instances of a parametrized problem :math:`f_\theta`, are assumed to be independent identically distributed.
   
 *runtime*
   We define *runtime*, or *run-length* [HOO1998]_
@@ -61,8 +69,9 @@ We advocate **performance measures** that are:
   to the numbers
 * relevant with respect to the "real world"
 * as simple as possible
+* independent of the programming language and computer where the algorithm was run.
 
-For these reasons we measure runtime to reach a target function value, denoted as fixed-target scenario in the following. 
+For these reasons we measure runtime to reach a target function value, that is the number of function evaluations needed to reach a target function value denoted as fixed-target scenario in the following. 
 
 
 .. _sec:verthori:
@@ -128,7 +137,11 @@ of all resulting data.
 Run-length over Problems
 =========================
 
-From the previous section we know that we want to collect run-length for different targets in order to display quantitative measurements. A problem is defined as the quadruplet ``(function, dimension, instance, function target)``. We **interpret the different instances** of a function (in a given dimension) as if they are just a repetition of the same function. More precisely while instances typically change the exact definition of the function (for instance two different instances of the sphere function will typically have shifted optima), we consider that the run-length for two different instances of a given function (for example the sphere function) in a given dimension and for a given target are just independent identically distributed random variables.
+From the previous section we know that we want to collect run-length for different targets in order to display quantitative measurements. 
+
+A problem is defined as the quadruplet ``(function, dimension, instance, function target)``. 
+
+More precisely while instances typically change the exact definition of the function (for instance two different instances of the sphere function will typically have shifted optima), we consider that the run-length for two different instances of a given function (for example the sphere function) in a given dimension and for a given target are just independent identically distributed random variables.
 
 Hence **our display of performance** starts from the following collected data: given a function, dimension, function target, we have a collection of run-length that correspond to the number of function evaluations needed to reach the target for all the instances where the algorithm was run. When the target was not reached we collect the number of function evaluations till the algorithm is stopped.
 
@@ -165,8 +178,8 @@ We use bootstrapping to provide dispersion measures and provide some percentiles
 
 .. _sec:ERT:
 
-Expected Running Time
-======================
+Average Running Time
+=====================
 
 We use the *expected running time* (|ERT|, introduced in [Price:1997]_ as
 ENES and analyzed in [Auger:2005b]_ as success performance) as most
