@@ -473,6 +473,7 @@ simple way to distinguish between these problems (and select an
 optimization algorithm accordingly) and that we are likely to face each of them with similar probability. We do not aggregate over dimension, because dimension can and 
 should be used for algorithm selection. 
 
+.. Anne: "problems of interested" -> "problems of interest" ?
 
 
 
