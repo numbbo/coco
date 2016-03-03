@@ -79,7 +79,6 @@ html_header_ext = html_header + """
 %s
 %s
 %s
-<H2 style="color:red"> %s </H2>
 """
 
 
@@ -171,14 +170,12 @@ def save_single_functions_html(filename,
     name = filename.split(os.sep)[-1]
     with open(filename + add_to_names + '.html', 'w') as f:
         header_title = algname + ' ' + name + add_to_names
-        imageWarning = '' if extension in genericsettings.getFigFormats() else 'For generating figures use the --svg option.'
         f.write(html_header_ext % (header_title.strip().replace(' ', ', '), 
                                    algname, 
                                    getHomeLink(algorithmCount),
                                    getConvLink(algorithmCount),
                                    getRldLink(algorithmCount),
-                                   getParentLink(algorithmCount, parentFileName),
-                                   imageWarning))
+                                   getParentLink(algorithmCount, parentFileName)))
             
         if functionGroups is None:
             functionGroups = OrderedDict([])
@@ -620,7 +617,6 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
         succ = []
         unsucc = []
         displaynumber = []
-        data = []
 
         dictX = transform(dsList)
         for x in sorted(dictX.keys()):

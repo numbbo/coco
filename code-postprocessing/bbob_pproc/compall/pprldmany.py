@@ -53,6 +53,8 @@ from .. import pprldistr # plotECDF, beautifyECDF
 from .. import ppfig  # consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
 from .. import pptex  # numtotex
 
+PlotType = ppfig.enum('ALG', 'DIM', 'FUNC')
+
 displaybest2009 = True
 x_limit = None  # not sure whether this is necessary/useful
 x_limit_default = 1e7 # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
@@ -454,7 +456,7 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
             res = h # so the last element in res still has the label.
     return res
 
-def all_single_functions(dictAlg, isBiobjective, sortedAlgs=None, 
+def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=None, 
                          outputdir='.', verbose=0, parentHtmlFileName=None):
 
         single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
@@ -467,14 +469,15 @@ def all_single_functions(dictAlg, isBiobjective, sortedAlgs=None,
         dictFG = pp.dictAlgByFun(dictAlg)
         for fg, tmpdictAlg in dictFG.iteritems():
 
-            if len(tmpdictAlg.keys()) == 1:
+            if isSingleAlgorithm:
                 main(tmpdictAlg,
                      isBiobjective,
                      order=sortedAlgs,
                      outputdir=single_fct_output_dir,
                      info='f%03d' % (fg),
                      verbose=verbose,
-                     parentHtmlFileName=parentHtmlFileName)
+                     parentHtmlFileName=parentHtmlFileName,
+                     plotType=PlotType.DIM)
 
             dictDim = pp.dictAlgByDim(tmpdictAlg)
             for d, entries in dictDim.iteritems():
@@ -486,10 +489,23 @@ def all_single_functions(dictAlg, isBiobjective, sortedAlgs=None,
                      verbose=verbose,
                      parentHtmlFileName=parentHtmlFileName)
 
+        if isSingleAlgorithm:
+            dictFG = pp.dictAlgByFuncGroup(dictAlg)
+            for fg, tmpdictAlg in dictFG.iteritems():
 
+                dictDim = pp.dictAlgByDim(tmpdictAlg)
+                for d, entries in dictDim.iteritems():
+                    main(entries,
+                         isBiobjective,
+                         order=sortedAlgs,
+                         outputdir=single_fct_output_dir,
+                         info='%s_%02dD' % (fg, d),
+                         verbose=verbose,
+                         parentHtmlFileName=parentHtmlFileName,
+                         plotType=PlotType.FUNC)
 
 def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
-         dimension=None, verbose=True, parentHtmlFileName=None):
+         dimension=None, verbose=True, parentHtmlFileName=None, plotType=PlotType.ALG):
     """Generates a figure showing the performance of algorithms.
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
@@ -537,9 +553,14 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 CrE = 0.5117
             elif tmp.keys()[0] == 'nzall':
                 CrE = 0.6572
-        if len(dimList) > 1:
+        if plotType == PlotType.DIM:
             for dim in dimList:
                 keyValue = '%d-D' % (dim)
+                CrEperAlg[keyValue] = CrE
+        elif plotType == PlotType.FUNC:
+            tmp = pp.dictAlgByFun(dictAlg)
+            for f, dictAlgperFunc in tmp.iteritems():
+                keyValue = 'f%d' % (f)
                 CrEperAlg[keyValue] = CrE
         else:
             CrEperAlg[alg] = CrE
@@ -587,11 +608,15 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                                + 'are missing.\n')
                         warnings.warn(warntxt)
     
-                    keyValue = '%d-D' % (dim) if len(dimList) > 1 else alg
+                    keyValue = alg
+                    if plotType == PlotType.DIM: 
+                        keyValue = '%d-D' % (dim)
+                    elif plotType == PlotType.FUNC:
+                        keyValue = 'f%d' % (f)
                     dictData.setdefault(keyValue, []).extend(x)
                     dictMaxEvals.setdefault(keyValue, []).extend(runlengthunsucc)
 
-            displaybest2009 = not isBiobjective #disabled for bi-objective case
+            displaybest2009 = not isBiobjective and plotType == PlotType.ALG #disabled for bi-objective case
             bestalgentries = bestalg.loadBestAlgorithm(isBiobjective) #no extra loading since force is default to False
             if (dim, f) not in bestalgentries.keys(): #dimension/function not present in best2009
                 displaybest2009 = False
@@ -697,8 +722,14 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     #beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
     beautify()
 
-    text = ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f')
-    if len(dimList) == 1:    
+    if plotType == PlotType.FUNC:
+        dictFG = pp.dictAlgByFuncGroup(dictAlg)
+        dictKey = dictFG.keys()[0]
+        functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
+        text = functionGroups[dictKey]
+    else:
+        text = ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f')
+    if not (plotType == PlotType.DIM):    
         text += ',%d-D' % dimList[0]
     plt.text(0.01, 0.98, text, horizontalalignment="left",
              verticalalignment="top", transform=plt.gca().transAxes)
@@ -716,11 +747,20 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     if save_figure:
         ppfig.saveFigure(figureName, verbose=verbose)
-        if len(dictFunc) == 1 or len(dimList) > 1:
+        if len(dictFunc) == 1 or plotType == PlotType.DIM:
+            fileName = 'pprldmany'
+            add_to_names = ''
+
+            if plotType == PlotType.FUNC:
+                fileName += '_%s' % pp.dictAlgByFuncGroup(dictAlg).keys()[0]
+
+            if plotType in (PlotType.ALG, PlotType.FUNC):
+                add_to_names += '_%02dD' % (dim)
+
             ppfig.save_single_functions_html(
-                os.path.join(outputdir, 'pprldmany'),
+                os.path.join(outputdir, fileName),
                 '', # algorithms names are clearly visible in the figure
-                add_to_names = '_%02dD' % (dim) if len(dimList) == 1 else '',
+                add_to_names = add_to_names,
                 algorithmCount = ppfig.AlgorithmCount.NON_SPECIFIED,
                 isBiobjective = isBiobjective,
                 parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None
