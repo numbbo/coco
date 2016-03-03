@@ -416,6 +416,7 @@ def main(argv=None):
                 # ECDFs for each function
                 pprldmany.all_single_functions(dictAlg, 
                                                dsList.isBiobjective(),
+                                               True,
                                                None,
                                                outputdir,
                                                genericsettings.verbose,
