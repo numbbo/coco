@@ -438,7 +438,10 @@ This method is applied if at least one problem instance was not solved and is
 The minimum runtime determined by a simulated restart is the minimum number of
 evaluations in an unsuccessful run plus the minimum runtime from a successful
 run. [#]_
-
+.. Anne: I am missing something here: "The minimum runtime determined by a simulated restart"
+.. Anne: in simulated restart I can be lucky and draw a successful run right away, so I would say:
+.. Anne: "The minimum runtime determined by a simulated restart is the minimum number of
+.. Anne: evaluations in a successful run". You want to say something different, or what do I miss?
 
 .. [#] For a given problem |p|, the number of acquired runtime values, |RT(pt)|
   is monotonous increasing with the budget used. Considered as random
