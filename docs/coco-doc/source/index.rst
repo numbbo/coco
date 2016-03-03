@@ -234,13 +234,19 @@ the following defining features.
 
 #. A single performance  measure is used, namely runtime measured in 
    number of |f|-evaluations [BBO2016perf]_. Runtime has the advantage to 
-    
+
      - be easily interpretable without expert domain knowledge
      - be quantitative on the ratio scale [STE1946]_ [#]_
      - assume a wide range of values
      - aggregate over a collection of values in a very meaningful way
      
    A missing runtime value is considered as possible outcome (see below).
+
+.. Anne: when we write "a single performance measure" it is about what we extract from a
+.. Anne: given run, right? Because we can argue that we have several aggregated 
+.. Anne: performance measure: ERT or log ERT (as area below the ECDF graphs) or that itself
+.. Anne: the ECDF graph is a performance measure. All this to say that I find the wording
+.. Anne: a single performance measure ambiguous.
 
     
 #. The display is as comprehensible, intuitive and informative as possible. 
