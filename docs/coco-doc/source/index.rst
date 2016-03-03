@@ -453,18 +453,29 @@ To make them amenable to the experimenter, we need to summarize these data.
 
 Our idea behind an aggregation is to make a statistical summary over a set or
 subset of *problems of interested* for which we assume a uniform distribution
-over this subset. From a practical perspective this means to assume to have no
-simple way to distinguish between these problems (and select an
-optimization algorithm accordingly) and that we are likely to face each of them with similar probability. We do not aggregate over dimension, because dimension can and 
+over this subset [BBO2016perf]_. 
+From a practical perspective this means to have no simple way to
+distinguish between these problems (and select an optimization algorithm
+accordingly in which case an aggregation would have no significance) and that we are likely to face each problem with similar
+probability. 
+We do not aggregate over dimension, because dimension can and 
 should be used for algorithm selection. 
 
+We have two ways to aggregate the resulting runtimes. 
+
+ - Empirical cumulative distribution functions (|ECDF|). In the domain of optimization
+   they are also known as *data profiles* [MOR20xx]_. We prefer the |ECDF| over performance profiles [MORxxxx]_ for two reasons. |ECDF| do not depend on the algorithms presented, that is, they are comparable across different publications. 
+   |ECDF| separate well easy problems from difficult problems. 
+ 
+ - Averaging, as an estimator of the expected runtime, |ERT|. Estimated |ERT| is
+   often plotted against dimension to indicate scaling with dimension. 
 
 
-
+.. |ERT| replace:: ERT
+.. |ECDF| replace:: ECDF
 
 .. Note:: 
 
-  - two ways: ECDFs and ERTs. 
   - ECDFs: we prefer/have adopted data profiles over performance profiles
   - Missing values can be integrated over simulated restarts (see above) [BBO2016perf]_. 
   - interpretation of aggregations, like that we draw a problem uniform at random (over all problems or over all instances), but see also [BBO2016perf]_. 
