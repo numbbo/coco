@@ -42,7 +42,7 @@ Terminology and Definitions
 *problem*
  A COCO problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`\mathcal{P}=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is a dimension, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem :math:`\mathcal{P}` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`\mathcal{P}=(n,f_\theta,\theta)`.
  
- In the performance assessment setting, we associate to a problem :math:`\mathcal{P}`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However commonly :math:`f_{\rm target} - f_{\rm opt}`  that can be thought as **precision**, does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a similar precision. :math:`\R`
+ In the performance assessment setting, we associate to a problem :math:`\mathcal{P}`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However commonly :math:`f_{\rm target} - f_{\rm opt}`  that can be thought as **precision**, does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a similar precision. 
 
 *instance*
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero). 
@@ -136,8 +136,9 @@ of all resulting data.
 Runtime over Problems
 =========================
 
+
 In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtime for different target values. Those target values can be a :math:`f-` or indicator value (see [BBO2016biobj]_). 
-In the performance assessment setting, we associate to a problem a target value. More precisely, a problem is denoted as :math:`\mathcal{P}=(n,f_\theta,\theta,f^{\rm target}_\theta)`. Hence, we collect runtime over different problems. 
+In the performance assessment setting, a problem is the quadruple :math:`\mathcal{P}=(n,f_\theta,\theta,f^{\rm target}_\theta)` where :math:`f^{\rm target}_\theta` is the target function value. This means that we collect runtime of problems.
 
 Formally, the runtime of a problem is denoted as
 :math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)` and it corresponds to the number of function evaluations needed to reach a function value lower or equal than :math:`f^{\rm target}_{\theta}`  for the first time.
@@ -149,12 +150,18 @@ Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` 
 Dealing with Unsuccessful Trials
 ================================
 
-Formally the runtime of a problem is 
+A run or trial that reached a target function value |ftarget| is called successful, in which case we collect the running time to reach this target :math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. When a trial does not reach a target, it is call unsuccessful with respect to reaching the target. We then record the number of function evaluations till the algorithm is stopped that we denote :math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
+
+We want to have a fair way to compare algorithms with unsuccessful and successful trials. For this we consider the conceptual restart algorithm.
+
+.. todo::
+	* restart algorithm
+	* simulated restarts (at least one success - when not all runs are successful)
+     
+
 
 .. todo:: 
-		  formal definition of RT (depends on target) - given that we  :math:`RT(n,f_\theta,\theta_j,f_{\rm target})`
-		  swipping over function instance = repetition, i.e. iid (given what comes above)
-          aggregation of distribution of RT (read COCO + proceed)
+		            aggregation of distribution of RT (read COCO + proceed)
 
 
 A problem is defined as the quadruplet ``(function, dimension, instance, function target)``. 
@@ -180,7 +187,7 @@ Hence **our display of performance** starts from the following collected data: g
   
 .. Niko: let me know what/where I can/should start to do/change here. 
 
-The display of results is hence based on those collected run-length. We either used displays  based on the expected run-length |ERT| described in Section `Expected Running Time`_  or based on the distribution of run-length using empirical cumulative distribution as described in Section `Empirical Cumulative Distribution Functions`_
+The display of results is hence based on those collected run-length. We either used displays  based on the expected run-length |ERT| described in Section `Average Running Time`_  or based on the distribution of run-length using empirical cumulative distribution as described in Section `Empirical Cumulative Distribution Functions`_
 
 
 Simulated Run-length and Bootstrapping
