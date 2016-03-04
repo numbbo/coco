@@ -292,7 +292,7 @@ def beautify(legend=False, rightlegend=False):
     axisHandle.set_yticklabels(tmp2)
 
     if legend:
-        plt.legend(loc=0, numpoints=1)
+        toolsdivers.legend(loc=0, numpoints=1)
 
 def generateData(dataSet, target):
     """Returns an array of results to be plotted.
@@ -531,7 +531,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
             plotLegend(handles)
         else:
             if f in (1, 24, 101, 130):
-                plt.legend()
+                toolsdivers.legend()
 
         saveFigure(filename, figFormat=genericsettings.getFigFormats(), verbose=verbose)
 
