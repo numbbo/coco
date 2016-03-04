@@ -55,7 +55,7 @@ import os
 import warnings
 import matplotlib.pyplot as plt
 import numpy as np
-from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam, htmldesc
+from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam, htmldesc, toolsdivers
 
 xlim_max = None
 ynormalize_by_dimension = True  # not at all tested yet
@@ -582,7 +582,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         plt.text(plt.xlim()[0], plt.ylim()[0],
                  _valuesOfInterest.short_info, fontsize=14)
         if func in genericsettings.current_testbed.functions_with_legend:
-            plt.legend(loc="best", framealpha=0.2)
+            toolsdivers.legend(loc="best")
         if func in funInfos.keys():
             # print(plt.rcParams['axes.titlesize'])
             # print(plt.rcParams['font.size'])
