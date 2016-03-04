@@ -489,19 +489,33 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
                      parentHtmlFileName=parentHtmlFileName)
 
         if isSingleAlgorithm:
-            dictFG = pp.dictAlgByFuncGroup(dictAlg)
-            for fg, tmpdictAlg in dictFG.iteritems():
+            functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
 
-                dictDim = pp.dictAlgByDim(tmpdictAlg)
-                for d, entries in dictDim.iteritems():
+            dictDim = pp.dictAlgByDim(dictAlg)
+            for d, tmpdictAlg in dictDim.iteritems():
+
+                dictFG = pp.dictAlgByFuncGroup(tmpdictAlg)
+                for fg, entries in dictFG.iteritems():
+
                     main(entries,
                          isBiobjective,
                          order=sortedAlgs,
                          outputdir=single_fct_output_dir,
-                         info='%s_%02dD' % (fg, d),
+                         info='gr_%s_%02dD' % (fg, d),
                          verbose=verbose,
                          parentHtmlFileName=parentHtmlFileName,
                          plotType=PlotType.FUNC)
+            
+                ppfig.save_single_functions_html(
+                    os.path.join(single_fct_output_dir, genericsettings.pprldmany_group_file_name),
+                    '',
+                    add_to_names = '_%02dD' % (d),
+                    htmlPage = ppfig.HtmlPage.PPRLDMANY_BY_GROUP,
+                    isBiobjective = isBiobjective,
+                    functionGroups = functionGroups,
+                    parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None
+                )
+         
 
 def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
          dimension=None, verbose=True, parentHtmlFileName=None, plotType=PlotType.ALG):
@@ -681,7 +695,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     labels, handles = plotLegend(lines, x_limit)
     if True:  # isLateXLeg:
-        fileName = os.path.join(outputdir,'pprldmany_%s.tex' % (info))
+        fileName = os.path.join(outputdir,'%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
         with open(fileName, 'w') as f:
             f.write(r'\providecommand{\nperfprof}{7}')
             algtocommand = {}  # latex commands
@@ -714,7 +728,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             if verbose:
                 print 'Wrote right-hand legend in %s' % fileName
 
-    figureName = os.path.join(outputdir,'pprldmany_%s' % (info))
+    figureName = os.path.join(outputdir,'%s_%s' % (genericsettings.pprldmany_file_name, info))
     #beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
     beautify()
 
@@ -744,20 +758,16 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     if save_figure:
         ppfig.saveFigure(figureName, verbose=verbose)
         if len(dictFunc) == 1 or plotType == PlotType.DIM:
-            fileName = 'pprldmany'
+            fileName = genericsettings.pprldmany_file_name
             add_to_names = ''
-
-            if plotType == PlotType.FUNC:
-                fileName += '_%s' % pp.dictAlgByFuncGroup(dictAlg).keys()[0]
-
-            if plotType in (PlotType.ALG, PlotType.FUNC):
+            if plotType == PlotType.ALG:
                 add_to_names += '_%02dD' % (dim)
 
             ppfig.save_single_functions_html(
                 os.path.join(outputdir, fileName),
                 '', # algorithms names are clearly visible in the figure
                 add_to_names = add_to_names,
-                algorithmCount = ppfig.AlgorithmCount.NON_SPECIFIED,
+                htmlPage = ppfig.HtmlPage.NON_SPECIFIED,
                 isBiobjective = isBiobjective,
                 parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None
             )

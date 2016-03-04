@@ -307,7 +307,7 @@ def main(argv=None):
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.many_algorithm_file_name),
             '', # algorithms names are clearly visible in the figure
-            algorithmCount = ppfig.AlgorithmCount.MANY,
+            htmlPage = ppfig.HtmlPage.MANY,
             isBiobjective = dsList[0].isBiobjective(),
             functionGroups = dictAlg[sortedAlgs[0]].getFuncGroups()
         )
