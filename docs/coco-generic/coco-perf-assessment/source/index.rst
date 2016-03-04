@@ -17,6 +17,7 @@ COCO: Performance Assessment
 .. _GECCO: http://www.sigevo.org/gecco-2012/
 .. _COCO: http://coco.gforge.inria.fr
 .. |ERT| replace:: :math:`\mathrm{ERT}`
+.. |aRT| replace:: :math:`\mathrm{aRT}`
 .. |dim| replace:: :math:`\mathrm{dim}`
 .. |function| replace:: :math:`\mathrm{function}`
 .. |instance| replace:: :math:`\mathrm{instance}`
@@ -151,9 +152,9 @@ In order to display quantitative measurements, we have seen in the previous sect
 In the performance assessment setting, a problem is the quadruple :math:`\mathcal{P}=(n,f_\theta,\theta,f^{\rm target}_\theta)` where :math:`f^{\rm target}_\theta` is the target function value. This means that **we collect runtime of problems**.
 
 Formally, the runtime of a problem is denoted as
-:math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)` and it corresponds to the number of function evaluations needed to reach a function value lower or equal than :math:`f^{\rm target}_{\theta}`  for the first time. A run or trial that reached a target function value |ftarget| is called *successful*.
+:math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. It is a random variable that counts the number of function evaluations needed to reach a function value lower or equal than :math:`f^{\rm target}_{\theta}`  for the first time. A run or trial that reached a target function value |ftarget| is called *successful*.
 
-We also have to **deal with unsuccessful trials**, that is a run that did not reach a target. We then record the number of function evaluations till the algorithm is stopped that we denote :math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
+We also have to **deal with unsuccessful trials**, that is a run that did not reach a target. We then record the number of function evaluations till the algorithm is stopped. We denote the respective random variable :math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
 
 In order to come up with a meaningful way to compare algorithms having different probability of success (that is different probability to reach a target), we consider the conceptual **restart algorithm**: We assume that an algorithm, say called A, has a strictly positive probability |ps| to successfully solve a problem (that is to reach the associated target). The restart-A algorithm consists in restarting A till the problem is solved. The running time of the restart-A algorithm equals
 
@@ -164,7 +165,7 @@ In order to come up with a meaningful way to compare algorithms having different
 	\mathbf{RT}(n,f_\theta,\theta,f^{\rm target}_\theta) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\theta,f^{\rm target}_\theta) + \mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)
 	\end{equation*}
 
-where :math:`J` is a random variable that models the number of unsuccessful runs till a success is observed and :math:`\mathrm{RT}^{\rm us}_j` are runtime of unsuccessful trials.
+where :math:`J` is a random variable that models the number of unsuccessful runs till a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random variables corresponding to the runtime of unsuccessful trials and :math:`\mathrm{RT}` is a random variable for the runtime of successful trial.
 
 Remark that if the probability of success is one, the restart algorithm and the original   algorithm coincide.
 	
@@ -179,15 +180,19 @@ The performance assessment in COCO heavily relies on this conceptual restart alg
       to each others or that there is  not too much discrepancy in the difficulty 
       of the problem for different instances.
 
-Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same precision :math:`\epsilon` (see above) are thus assumed independent identically distributed. We denote those runtime :math:`\mathrm{RT}(n,f_\theta,\epsilon)`. We hence have a collection of runtimes for a given parametrized function and a given precision that correspond to the number of instances of a parametrized function where the algorithms was run (typically between 10 and 15). Given that the specific instance does not matter, we write in the end the runtime of a restart algorithm of a parametrized family of function in order to reach a precision :math:`\epsilon` as
+Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same precision :math:`\epsilon` (see above) are thus assumed independent identically distributed. We denote the random variable modelling those runtimes :math:`\mathrm{RT}(n,f_\theta,\epsilon)`. We hence have a collection of runtimes (for a given parametrized function and a given precision) whose size corresponds to the number of instances of a parametrized function where the algorithm was run (typically between 10 and 15). Given that the specific instance does not matter, we write in the end the runtime of a restart algorithm of a parametrized family of function in order to reach a precision :math:`\epsilon` as
+
+.. _eq:RTrestart:
 
 .. math::
 	:nowrap:
+	:label: RTrestart 
 
-	\begin{equation}
+	\begin{equation*}\label{RTrestart}
 	\mathbf{RT}(n,f_\theta,\epsilon) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\epsilon) + \mathrm{RT}(n,f_\theta,\epsilon)
-	\end{equation}
-
+	\end{equation*}
+	
+	
 where as above :math:`J` is a random variable modelling the number of trials needed before to observe a success, :math:`\mathrm{RT}^{\rm us}_j` are random variables modeling the number of function evaluations of unsuccessful trials and :math:`\mathrm{RT}^{\rm us}` the one for successful trials.
 
 As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF` our performance display relies on the runtime of the restart algorithm, either considering the average runtime (Section :ref:`sec:ART`) or the distribution by displaying empirical cumulative distribution (Section :ref:`sec:ECDF`).
@@ -196,7 +201,6 @@ As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF` our perform
 .. todo::
 	* simulated restarts (at least one success - when not all runs are successful)
 	* aggregation of distribution of RT (read COCO + proceed)
-
 
 
 .. Niko: "function target" seems misleading, as the target depends also on the instance
@@ -214,86 +218,60 @@ As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF` our perform
   ``(function, dimension, instance)`` triplets. A single trial than generates the 
   quadruples. 
   
-.. Niko: let me know what/where I can/should start to do/change here. 
 
+Simulated Run-length 
+-----------------------
 
+The runtime of the conceptual restart algorithm given in Equation :eq:`RTrestart` is the basis for displaying performance within COCO. We simulate some approximate samples of the runtime of the restart algorithm by constructed some so-called **simulated run-length**.
 
-Simulated Run-length and Bootstrapping
----------------------------------------
+**Simulated Run-length:** Given the collection of runtimes for successful and unsuccessful trials to reach a given precision, we built a simulated run-length by repeatedly drawing with replacement among those runtimes till we draw a runtime of a successful trial. The simulated run-length is the sum of the drawn runtime.
 
-The collection of run-length available is typically small: maximally 15 for the data collected for the BBOB 2009-2015 workshops where the algorithms were run on 15 instances. In order to artificially generate more data, we use **bootstrapping** [Efron:1993]_.  More precisely we derive some simulated run-length as explained below.
+.. Note:: The construction of a simulated run-length assumes that we have at least one runtime associated to a successful trial.
 
-**Simulated Run-length:** We consider the run-length of trials that reached the target, those run-length are *run-length of successful trials* i.e., they correspond to runs of the algorithm that successfully reached the target (hence solved the problem). In addition, for the *unsuccessful trials* that did not reach the target, we consider the run-length before to stop, that is the number of function evaluations before to stop.
-
-We repeatedly draw among those successful and unsuccessful run-length, single trials with replacement until a successful trial is drawn.  The concatenation of those trials is called a **simulated run-length**. It simulates the run-length of an algorithm that would be restarted till a success is observed [Auger:2005b]_ [Auger:2009]_. The collection of simulated run-length is called bootstrapped distribution.
-
-We use bootstrapping to provide dispersion measures and provide some percentiles of the bootstrapped distribution. In addition the distribution of the bootstrapped runtimes is used as an approximation of the true runtime distribution.
+.. We call a simulated-restart, a simulated run-length concatenated to an unsuccessful 
+.. runtime. That is a simulated-restart always starts from an unsuccessful trial.
 
 .. _sec:ART:
 
 Average Running Time
 =====================
 
-We use the *expected running time* (|ERT|, introduced in [Price:1997]_ as
-ENES and analyzed in [Auger:2005b]_ as success performance) as most
-prominent performance measure. The Expected Running Time is defined as the
-average number of function evaluations while the best function value was not smaller than the target
-
-.. _eq:ERT:
+The average Running Time (|aRT|) (introduced in [Price:1997]_ as
+ENES and analyzed in [Auger:2005b]_ as success performance) is an estimate of the expected runtime of the restart algorithm given in Equation :eq:`RTrestart` that is used within the COCO framework. More precisely the expected runtime of the restart algorithm (on a parametrized family of function in order to reach a precision :math:`\epsilon`) writes
 
 .. math::
-   :nowrap:
+    :nowrap:
 
-   \begin{eqnarray}
-     \mathrm{ERT}(f_\mathrm{target}) &=& \frac{\#\mathrm{FEs}(f_\mathrm{best}\ge f_\mathrm{target})}{\#\mathrm{succ}}
-   \end{eqnarray}
+	\begin{eqnarray}
+	\mathbb{E}(\mathbf{RT}) & =  
+	& \mathbb{E}(\mathrm{RT}^{\rm s})  + \frac{1-p_s}{p_s} 	 \mathbb{E}(\mathrm{RT}^{\rm us}) 
+    \end{eqnarray}
+    
+    
+where |ps| is the probability of success of the algorithm (to reach the underlying precision) and :math:`\mathrm{RT}^s` denotes the random variable modeling the runtime of successful runs and :math:`\mathrm{RT}^{\rm us}` the runtime of unsuccessful runs (see [Auger:2005b]_). Given a finite number of realizations of the runtime of an algorithm (run on a parametrized family of functions to reach a certain precision) that comprise at least one successful run, say :math:`\{\mathrm{RT}^{\rm us}_i, \mathrm{RT}^{\rm s}_j \}`, we can estimate the expected runtime of the restart algorithm given in the previous equation as the average runtime defined as
 
+.. math::
+    :nowrap:
 
+	\begin{eqnarray}
+	\mathrm{aRT} & = & \mathrm{RT}_\mathrm{S} + \frac{1-p_{\mathrm{s}}}{p_{\mathrm{s}}} \,\mathrm{RT}_\mathrm{US} \\  & = & \frac{\sum_i \mathrm{RT}^{\rm us}_i + \sum_j \mathrm{RT}^{\rm us}_j }{\#\mathrm{succ}} \\
+	& = & \frac{\#\mathrm{FEs}}{\#\mathrm{succ}} 
+    \end{eqnarray}    
+ 
 .. |nbsucc| replace:: :math:`\#\mathrm{succ}`
-.. |ps| replace:: :math:`p_{\mathrm{s}}`
 .. |Ts| replace:: :math:`\mathrm{RT}_\mathrm{S}`
 .. |Tus| replace:: :math:`\mathrm{RT}_\mathrm{US}`
+.. |ps| replace:: :math:`p_{\mathrm{s}}`
 
-where |nbsucc| denotes the number of successful trials (successful trials are those that reached |ftarget|) and  :math:`\#\mathrm{FEs}(f_\mathrm{best}(\mathrm{FE}) \ge f_\mathrm{target})` is
+
+where where |Ts| and |Tus| denote the average runtime for successful and unsuccessful trials,  |nbsucc| denotes the number of successful trials and  :math:`\#\mathrm{FEs}` is
 the number of function evaluations
-conducted in all trials, while the best function value was not smaller than
-|ftarget| during the trial, i.e. the sum over all trials of:
+conducted in all trials (before to reach a given precision).
 
-.. _eq:SPone1:
-
-.. math::
-   \max \{\mathrm{FE} \mbox{ s.t. } f_\mathrm{best}(\mathrm{FE}) \ge f_\mathrm{target} \}.
+Remark that while not explicitly denoted, the average runtime depends on the target and more precisely on a precision. It also depends strongly on the termination criterion of the algorithm.
+    
 
 
-The |ERT| coincides with the estimate of the expected running time needed to reach |ftarget| by an (hypothetical) algorithm that would conduct restarts till a successful run (i.e. reaching the target) is observed. More precisely |ERT| writes also
-
-.. _eq:SPone2:
-
-.. math::
-   :nowrap:
-
-   \begin{eqnarray}
-     \mathrm{ERT}(f_\mathrm{target}) &=& \mathrm{RT}_\mathrm{S} + \frac{1-p_{\mathrm{s}}}{p_{\mathrm{s}}} \,\mathrm{RT}_\mathrm{US} \\
-                                     &=& \frac{p_{\mathrm{s}} \mathrm{RT}_\mathrm{S} + (1-p_{\mathrm{s}}) \mathrm{RT}_\mathrm{US}}{p_{\mathrm{s}}}
-   \end{eqnarray}
-
-
-
-where the *running times* |Ts| and |Tus| denote the average number of
-function evaluations for successful and unsuccessful trials, respectively (zero
-for none respective trial), and |ps| denotes the fraction of successful trials.
-Successful trials are those that reached |ftarget|; evaluations after
-|ftarget| was reached are disregarded.
-
-Note that|ERT| estimates the
-expected running time to reach |ftarget| [Auger:2005b]_, as a function of
-|ftarget|. In particular, |Ts| and |ps| depend on the |ftarget| value. Whenever
-not all trials were successful, ERT also depends (strongly) on the termination
-criteria of the algorithm.
-
-.. [#] Wikipedia__ gives a reasonable introduction to scale types.
-.. was 261754099
-__ http://en.wikipedia.org/w/index.php?title=Level_of_measurement&oldid=478392481
 
 
 .. _sec:ECDF:
@@ -303,7 +281,7 @@ Empirical Cumulative Distribution Functions
 
 We exploit the "horizontal and vertical" viewpoints introduced in the last
 Section :ref:`sec:verthori`. In Figure :ref:`fig:ecdf` we plot the :abbr:`ECDF
-(Empirical Cumulative Distribution Function)` [#]_ of the intersection point
+(Empirical Cumulative Distribution Function)` of the intersection point
 values (stars in Figure :ref:`fig:HorizontalvsVertical`) for 450 trials.
 
 .. [#] The empirical (cumulative) distribution function
@@ -351,26 +329,6 @@ function evaluations on the right. Graphs never cross each other. The
 :math:`y`-value at the transition between left and right subplot corresponds to
 the success probability. In the example, just under 50% for precision 10\
 :sup:`-8` (thick red) and just above 70% for precision 10\ :sup:`-1` (cyan).
-
-
-Simulated run-length
---------------------
-
-Based on the interpretation of instances as pure repetitions, we build some simulated run-length from the Nruns collected data, that is from the number of function evaluations needed to reach a given target or in case the target is not reached, the number of function evaluations of the unsuccessful run. The construction of a simulated run works as follow:
-
-We sample a run-length uniformly at random among the Nruns run-length. If this run-length correspond to a unsuccessful trial we draw uniformly again among the Nruns run-length a new run-length. We repeat this operation until we obtain a run-length corresponding to a successful trial. The simulated run-length sums up all the run-lengths till a successful trial has been sampled.
-
-We typically generate many more simulated run-length than the number of function instances (corresponding to Nruns). 
-
-
-Using simulated run-length for plotting ECDF graphs
----------------------------------------------------
-
-The simulated run-length are used to plot the ECDF graphs: the ECDF graphs correspond to the empirical cumulative distributions of some simulated run-length generated each time the post-processing is called. As a consequence the processus of producing an ECDF graph from the collected data is stochastic and some small variations between two independent post-processing from the same data can be observed.
-
-
-Understanding the different plots
-==================================
 
 
 
