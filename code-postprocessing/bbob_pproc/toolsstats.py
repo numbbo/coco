@@ -185,7 +185,7 @@ def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=genericsettin
     nanidx = np.isnan(evals)
     return drawSP(evals[~nanidx], data_set.maxevals[nanidx], percentiles, samplesize)
     
-def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=10 + 990 / (1 + 10 * genericsettings.in_a_hurry)):
+def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=genericsettings.simulated_runlength_bootstrap_sample_size):
     """Returns the percentiles of the bootstrapped distribution of
     'simulated' running lengths of successful runs.
 
