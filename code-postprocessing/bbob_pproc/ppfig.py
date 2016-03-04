@@ -24,7 +24,7 @@ def enum(*sequential, **named):
     enums = dict(zip(sequential, range(len(sequential))), **named)
     return type('Enum', (), enums)
     
-HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP')
+HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP', 'PPTABLE', 'PPRLDISTR', 'PPLOGLOSS')
 
 def saveFigure(filename, figFormat=(), verbose=True):
     """Save figure into an image file.
@@ -129,7 +129,7 @@ def save_index_html_file(filename, algorithmList):
         f.write("\n</BODY>\n</HTML>")
 
 def getHomeLink(htmlPage):
-    homeLink = '<H3><a href="%s%s.html">[Home]</a></H3>'    
+    homeLink = '<H3><a href="%s%s.html">Home</a></H3>'    
     if htmlPage is HtmlPage.ONE:
         return homeLink % ('../', genericsettings.index_html_file_name)
     elif htmlPage is HtmlPage.TWO or htmlPage is HtmlPage.MANY:
@@ -138,26 +138,26 @@ def getHomeLink(htmlPage):
     return ''
 
 def getConvLink(htmlPage):
-    if genericsettings.isConv and htmlPage not in (HtmlPage.NON_SPECIFIED, HtmlPage.PPRLDMANY_BY_GROUP):
-        return '<H3><a href="%s.html">[Convergence plots]</a></H3>' % genericsettings.ppconv_file_name
+    if genericsettings.isConv and htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
+        return '<H3><a href="%s.html">Convergence plots</a></H3>' % genericsettings.ppconv_file_name
     
     return ''
     
 def getRldLink(htmlPage):
-    if genericsettings.isRldOnSingleFcts and htmlPage not in (HtmlPage.NON_SPECIFIED, HtmlPage.PPRLDMANY_BY_GROUP):
+    if genericsettings.isRldOnSingleFcts and htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         links = ''        
         if htmlPage == HtmlPage.ONE:        
-            links += '<H3><a href="pprldmany-single-functions/%s.html">[Runlength distribution plots]</a></H3>\n' % genericsettings.pprldmany_file_name
-        links += '<H3><a href="pprldmany-single-functions/%s_02D.html">[Runlength distribution plots (per dimension)]</a></H3>' % genericsettings.pprldmany_file_name
+            links += '<H3><a href="pprldmany-single-functions/%s.html">Runlength distribution plots</a></H3>\n' % genericsettings.pprldmany_file_name
+        links += '<H3><a href="pprldmany-single-functions/%s_02D.html">Runlength distribution plots (per dimension)</a></H3>' % genericsettings.pprldmany_file_name
         if htmlPage == HtmlPage.ONE:        
-            links += '<H3><a href="pprldmany-single-functions/%s_02D.html">[Runlength distribution plots by group (per dimension)]</a></H3>' % genericsettings.pprldmany_group_file_name
+            links += '<H3><a href="pprldmany-single-functions/%s_02D.html">Runlength distribution plots by group (per dimension)</a></H3>' % genericsettings.pprldmany_group_file_name
         return links
         
     return ''
 
 def getParentLink(htmlPage, parentFileName):
-    if parentFileName and htmlPage in (HtmlPage.NON_SPECIFIED, HtmlPage.PPRLDMANY_BY_GROUP):
-        return '<H3><a href="%s.html">[Other plots]</a></H3>' % parentFileName
+    if parentFileName and htmlPage not in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
+        return '<H3><a href="%s.html">Overview page</a></H3>' % parentFileName
     
     return ''
 
@@ -169,7 +169,9 @@ def save_single_functions_html(filename,
                                values_of_interest = [],
                                isBiobjective = False, 
                                functionGroups = None,
-                               parentFileName = None): # used only with HtmlPage.NON_SPECIFIED
+                               parentFileName = None, # used only with HtmlPage.NON_SPECIFIED
+                               header = None, # used only with HtmlPage.NON_SPECIFIED
+                               caption = None): # used only with HtmlPage.NON_SPECIFIED
     
     name = filename.split(os.sep)[-1]
     with open(filename + add_to_names + '.html', 'w') as f:
@@ -184,7 +186,7 @@ def save_single_functions_html(filename,
         if functionGroups is None:
             functionGroups = OrderedDict([])
         
-        if htmlPage is not HtmlPage.PPRLDMANY_BY_GROUP:
+        if htmlPage not in (HtmlPage.PPRLDMANY_BY_GROUP, HtmlPage.PPRLDISTR):
             functionGroups.update({'noiselessall':'All functions'})
 
         maxFunctionIndex = 55 if isBiobjective else 24
@@ -195,27 +197,13 @@ def save_single_functions_html(filename,
         dimensions = genericsettings.htmlDimsOfInterest_ls if genericsettings.isLargeScale else genericsettings.htmlDimsOfInterest
 
         if htmlPage is HtmlPage.ONE:
+            f.write('<H3><a href="ppfigdim.html">Average number of f-evaluations versus dimension for selected targets</a></H3>\n')
+            f.write('<H3><a href="pptable.html">Average number of f-evaluations for selected targets</a></H3>\n')
+            f.write('<H3><a href="pprldistr.html">Number of f-evaluations for selected targets and f-distributions</a></H3>\n')
+            if not isBiobjective:            
+                f.write('<H3><a href="pplogloss.html">Number of f-evaluation loss ratios</a></H3>\n')
 
-            headerERT = 'Expected number of <i>f</i>-evaluations to reach target'
-            f.write("<H2> %s </H2>\n" % headerERT)
-            if addLinkForNextDim:
-                name_for_click = next_dimension_str(add_to_names)
-                f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
-            for ifun in range(1, maxFunctionIndex + 1):
-                f.write(addImage('ppfigdim_f%03d%s.%s' % (ifun, add_to_names, extension), not addLinkForNextDim))
-            if addLinkForNextDim:
-                f.write('"\n</A>\n')
 
-            key = 'bbobppfigdimlegendrlbased' if genericsettings.runlength_based_targets else 'bbobppfigdimlegendfixed'
-            joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
-            f.write(captionStringFormat % htmldesc.getValue('##' + key + '##')
-                .replace('valuesofinterest', joined_values_of_interest))
-
-            headerERT = 'ERT in number of function evaluations'
-            f.write("<H2> %s </H2>\n" % headerERT)
-            f.write("\n<!--pptableHtml-->\n")
-            f.write(captionStringFormat % htmldesc.getValue('##bbobpptablecaption##'))
-    
             names = ['pprldistr', 'ppfvdistr']
             #dimensions = [5, 20] # Wassim: now done earlier depending on genericsettings.isLargeScale
             #dimensions = [40, 80] # Wassim: for large scale
@@ -223,33 +211,12 @@ def save_single_functions_html(filename,
             headerECDF = ' Empirical cumulative distribution functions (ECDF)'
             f.write("<H2> %s </H2>\n" % headerECDF)
             for dimension in dimensions:
-                for typeKey, typeValue in functionGroups.iteritems():
-                    f.write('<p><b>%s in %d-D</b></p>' % (typeValue, dimension))
-                    f.write('<div>')
-                    for name in names:
-                        f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
-                    f.write('</div>')
-            
-            key = 'bbobpprldistrlegendrlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendfixed'
-            f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
+                f.write('<p><b>%s in %d-D</b></p>' % ('All functions', dimension))
+                f.write('<div>')
+                for name in names:
+                    f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, 'noiselessall', extension), True))
+                f.write('</div>')
 
-            if not isBiobjective:            
-                headerERTLoss = 'ERT loss ratios'
-                f.write("<H2> %s </H2>\n" % headerERTLoss)
-                for dimension in dimensions:
-                    f.write(addImage('pplogloss_%02dD_noiselessall.%s' % (dimension, extension), True))
-                f.write("\n<!--tables-->\n")
-                f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption##'))
-            
-                for typeKey, typeValue in functionGroups.iteritems():
-                    f.write('<p><b>%s in %s</b></p>' % (typeValue, '-D and '.join(str(x) for x in dimensions) + '-D'))
-                    f.write('<div>')
-                    for dimension in dimensions:
-                        f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, typeKey, extension), True))
-                    f.write('</div>')
-                        
-                f.write(captionStringFormat % htmldesc.getValue('##bbobloglossfigurecaption##'))
-        
         elif htmlPage is HtmlPage.TWO:
             headerERT = 'Scaling of ERT with dimension'
             f.write("\n<H2> %s </H2>\n" % headerERT)
@@ -314,7 +281,7 @@ def save_single_functions_html(filename,
             write_pptables(f, 20, captionStringFormat, maxFunctionIndex, bestAlgExists)
 
         elif htmlPage is HtmlPage.NON_SPECIFIED:
-            headerERT = 'Scaling of ERT with dimension'
+            headerERT = header
             f.write("\n<H2> %s </H2>\n" % headerERT)
             if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
@@ -323,9 +290,8 @@ def save_single_functions_html(filename,
                 f.write(addImage('%s_f%03d%s.%s' % (name, ifun, add_to_names, extension), not addLinkForNextDim))
             if addLinkForNextDim:
                 f.write('"\n</A>\n')
-
         elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP:
-            headerERT = 'Scaling of ERT with dimension'
+            headerERT = 'Scaling of ERT'
             f.write("\n<H2> %s </H2>\n" % headerERT)
             if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
@@ -335,6 +301,50 @@ def save_single_functions_html(filename,
                 f.write(addImage('%s_%s%s.%s' % (name, fg, add_to_names, extension), not addLinkForNextDim))
             if addLinkForNextDim:
                 f.write('"\n</A>\n')
+        elif htmlPage is HtmlPage.PPTABLE:
+            headerERT = 'ERT in number of function evaluations'
+            f.write("<H2> %s </H2>\n" % headerERT)
+            f.write("\n<!--pptableHtml-->\n")
+            f.write(captionStringFormat % htmldesc.getValue('##bbobpptablecaption##'))
+    
+        elif htmlPage is HtmlPage.PPRLDISTR:
+            names = ['pprldistr', 'ppfvdistr']
+            dimensions = [5, 20]
+            
+            headerECDF = ' Empirical cumulative distribution functions (ECDF)'
+            f.write("<H2> %s </H2>\n" % headerECDF)
+            for dimension in dimensions:
+                for typeKey, typeValue in functionGroups.iteritems():
+                    f.write('<p><b>%s in %d-D</b></p>' % (typeValue, dimension))
+                    f.write('<div>')
+                    for name in names:
+                        f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
+                    f.write('</div>')
+
+            key = 'bbobpprldistrlegendrlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendfixed'
+            f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
+
+        elif htmlPage is HtmlPage.PPLOGLOSS:
+            dimensions = [5, 20]
+            if not isBiobjective:            
+                headerERTLoss = 'ERT loss ratios'
+                f.write("<H2> %s </H2>\n" % headerERTLoss)
+                for dimension in dimensions:
+                    f.write(addImage('pplogloss_%02dD_noiselessall.%s' % (dimension, extension), True))
+                f.write("\n<!--tables-->\n")
+                f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption##'))
+            
+                for typeKey, typeValue in functionGroups.iteritems():
+                    f.write('<p><b>%s in %s</b></p>' % (typeValue, '-D and '.join(str(x) for x in dimensions) + '-D'))
+                    f.write('<div>')
+                    for dimension in dimensions:
+                        f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, typeKey, extension), True))
+                    f.write('</div>')
+                        
+                f.write(captionStringFormat % htmldesc.getValue('##bbobloglossfigurecaption##'))
+        
+        if caption:
+            f.write(captionStringFormat % caption)
 
         f.write("\n</BODY>\n</HTML>")
     
