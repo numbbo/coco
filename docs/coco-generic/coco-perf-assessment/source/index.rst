@@ -137,7 +137,7 @@ Runtime over Problems
 =========================
 
 
-In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtime for different target values. Those target values can be a :math:`f-` or indicator value (see [BBO2016biobj]_). 
+In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtime for different target values. Those target values can be a :math:`f`- or indicator value (see [BBO2016biobj]_). 
 In the performance assessment setting, a problem is the quadruple :math:`\mathcal{P}=(n,f_\theta,\theta,f^{\rm target}_\theta)` where :math:`f^{\rm target}_\theta` is the target function value. This means that we collect runtime of problems.
 
 Formally, the runtime of a problem is denoted as
@@ -150,9 +150,9 @@ Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` 
 Dealing with Unsuccessful Trials
 ================================
 
-A run or trial that reached a target function value |ftarget| is called successful, in which case we collect the running time to reach this target :math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. When a trial does not reach a target, it is call unsuccessful with respect to reaching the target. We then record the number of function evaluations till the algorithm is stopped that we denote :math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
+A run or trial that reached a target function value |ftarget| is called *successful*. In this case we collect the running time to reach this target :math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. When a trial does not reach a target, it is called *unsuccessful with respect to reaching the target*. We then record the number of function evaluations till the algorithm is stopped that we denote :math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
 
-We want to have a fair way to compare algorithms with unsuccessful and successful trials. For this we consider the conceptual restart algorithm.
+In order take into account that some trials are possibly unsuccessful, we consider the conceptual restart algorithm: We assume that an algorithm denoted A has a strictly positive probability |ps| to successfully solve a problem (that is to reach the associated target). The restart-A algorithm consists in restarting A till the problem is solved.
 
 .. todo::
 	* restart algorithm
