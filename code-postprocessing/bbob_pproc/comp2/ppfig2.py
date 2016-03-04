@@ -22,7 +22,7 @@ except ImportError:
 
 import numpy as np 
 
-from .. import toolsstats, readalign, ppfigparam, genericsettings
+from .. import toolsstats, readalign, ppfigparam, genericsettings, toolsdivers
 from ..toolsstats import ranksumtest
 from ..ppfig import saveFigure, plotUnifLogXMarkers
 #try:
@@ -422,7 +422,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             plt.title(funInfos[func])
 
         if func in genericsettings.current_testbed.functions_with_legend:
-            plt.legend(loc='best', framealpha=0.2)
+            toolsdivers.legend(loc='best')
 
         # save
         saveFigure(filename, verbose=verbose)

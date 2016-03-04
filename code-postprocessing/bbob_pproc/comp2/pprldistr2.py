@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import os
 import numpy
 import matplotlib.pyplot as plt
-from .. import toolsstats, pproc
+from .. import toolsstats, pproc, toolsdivers
 from ..ppfig import saveFigure, consecutiveNumbers, plotUnifLogXMarkers
 from pdb import set_trace
 
@@ -71,7 +71,7 @@ def beautify(handles):
         ydata = numpy.insert(ydata, len(ydata), ydata[-1])
         i.set_data(xdata, ydata)
 
-    plt.legend(loc='best', framealpha=0.2)
+    toolsdivers.legend(loc='best')
 
     # Inverted xticks
     x = axisHandle.get_xticks(minor=True)

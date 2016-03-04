@@ -70,7 +70,7 @@ ylabel('Best Function Values')
 # Plot median function values versus time
 loglog(budgets, median(funvals, axis=1), linewidth=3, color='r',
        label='median')
-legend(framealpha=0.2) # display legend
+legend() # display legend
 
 # Add another data set
 dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/NEWUOA.tar.gz'
@@ -87,7 +87,7 @@ for i in range(0, funvals1.shape[1]):
     loglog(budgets1, funvals1[:, i], linestyle='--')
 loglog(budgets1, median(funvals1, axis=1), linewidth=3, color='g',
        label='median NEWUOA')
-legend(framealpha=0.2) # updates legend
+legend() # updates legend
 savefig('examplefigure')  # save active figure as image
 
 # Plot function evaluations versus target precision
@@ -103,7 +103,7 @@ ylabel('Function Evaluations')
 loglog(d.target[d.target>=1e-8], d.ert[d.target>=1e-8], lw=3,
        color='r', label='ert')
 gca().invert_xaxis() # xaxis from the easiest to the hardest
-legend(framealpha=0.2)  # this operation updates the figure with the inverse axis.
+legend()  # this operation updates the figure with the inverse axis.
 
 # Plot target precision versus function evaluations
 # (swap x-y of previous figure)
@@ -115,7 +115,7 @@ xlabel('Function Evaluations')
 ylabel('Targets')
 loglog(d.ert[d.target>=1e-8], d.target[d.target>=1e-8], lw=3,
        color='r', label='ert')
-legend(framealpha=0.2)
+legend()
 
 # Plot target precision versus function evaluations with error bars
 figure() # open a new figure
@@ -131,7 +131,7 @@ yscale('log')
 xlabel('Function Evaluations')
 ylabel('Targets')
 grid()
-legend(framealpha=0.2)
+legend()
 
 # Empirical cumulative distribution function figure
 from bbob_pproc import pprldistr
