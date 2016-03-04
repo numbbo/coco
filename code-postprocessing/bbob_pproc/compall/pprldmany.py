@@ -62,8 +62,7 @@ divide_by_dimension = True
 annotation_line_end_relative = 1.11  # lines between graph and annotation
 annotation_space_end_relative = 1.24  # figure space end relative to x_limit
 save_zoom = False  # save zoom into left and right part of the figures
-perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size_rld  # number of bootstrap samples drawn for each fct+target in the performance profile
-dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
+perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
 median_max_evals_marker_format = ['x', 24, 3]
 label_fontsize = 18
@@ -773,8 +772,9 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 add_to_names = add_to_names,
                 htmlPage = ppfig.HtmlPage.NON_SPECIFIED,
                 isBiobjective = isBiobjective,
-                parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None
-            )
+                parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None,
+                header = 'Scaling of ERT with dimension')
+                
     if close_figure:
         plt.close()
 

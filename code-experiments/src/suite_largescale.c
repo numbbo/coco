@@ -54,7 +54,7 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
   const long rseed_17 = (long) (17 + 10000 * instance);
 
   /*TODO: finish implementing the large scale test-suite functions.
-          current list: 1-20*/
+          current list: 1-22*/
   if (function == 1) {
     problem = f_sphere_bbob_problem_allocate(function, dimension, instance, rseed,
                                              problem_id_template, problem_name_template);
@@ -116,11 +116,11 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_schwefel_bbob_problem_allocate(function, dimension, instance, rseed,
                                                problem_id_template, problem_name_template);
   } else if (function == 21) {
-    problem = NULL; /*f_gallagher_bbob_problem_allocate(function, dimension, instance, rseed, 101,
-                                                problem_id_template, problem_name_template);*/
+    problem = f_gallagher_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed, 101,
+                                                problem_id_template, problem_name_template);
   } else if (function == 22) {
-    problem = NULL; /*f_gallagher_bbob_problem_allocate(function, dimension, instance, rseed, 21,
-                                                problem_id_template, problem_name_template);*/
+    problem = f_gallagher_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed, 21,
+                                                problem_id_template, problem_name_template);
   } else if (function == 23) {
     problem = NULL; /*f_katsuura_bbob_problem_allocate(function, dimension, instance, rseed,
                                                problem_id_template, problem_name_template);*/
