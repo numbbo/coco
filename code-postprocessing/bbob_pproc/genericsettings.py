@@ -18,8 +18,6 @@ if 1 < 3 and test:
     np.seterr(all='raise')
 np.seterr(under='ignore')  # ignore underflow
 
-#global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest
-#set_trace()
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000 # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
@@ -38,13 +36,10 @@ xlimit_expensive = 1e3  # used in
 tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7) # used as input for pptables.main in rungenericmany 
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
 
-tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
+#tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
 
 rldDimsOfInterest = (5, 20)
-figValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # this is a bad name that should improve, which fig, what vals???
-# figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8) #in/outcomment if desired
-##Put backward to have the legend in the same order as the lines.
 
 simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max((0, in_a_hurry)))  # for tables and plots
 
@@ -303,7 +298,7 @@ class GECCOBBOBTestbed(Testbed):
         self.ppfigs_ftarget = 1e-8
         self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # possibly changed in config
         self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
-        self.pprldmany_target_values = targetValues(10**np.arange(2, -8, -0.2)) # possibly changed in config
+        self.pprldmany_target_values = targetValues(10**np.arange(2, -8.2, -0.2)) # possibly changed in config
         self.pprldmany_target_range_latex = '$10^{[-8..2]}$'
                 
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config

@@ -79,7 +79,9 @@ def ecdfs_figure_caption(target):
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
-                r"(FEvals/DIM) for 50 targets in " +
+                r"(FEvals/DIM) for " +
+                len(genericsettings.pprldmany_target_range_latex) +
+                r" targets in " + 
                 genericsettings.pprldmany_target_range_latex + " for all "+
                 r"functions and subgroups in #1-D. " + best2009text
                 )
