@@ -585,6 +585,7 @@ class DataSet():
         ert
         evals
         evals_
+        evals_with_restarts
         finalfunvals
         funcId
         funvals
