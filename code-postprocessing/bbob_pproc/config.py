@@ -44,8 +44,7 @@ def config(isBiobjective=None):
         if isBiobjective:
             # pptable:
             pptable.set_table_caption('biobjective')
-        
-        
+
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets 
     if genericsettings.runlength_based_targets in (True, 1):
         print 'Using bestGECCO2009 based target values: now for each function the target ' + \

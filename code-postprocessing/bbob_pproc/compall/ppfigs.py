@@ -39,29 +39,6 @@ scaling_figure_caption_end = (
                          if show_significance else ''
                 )
 
-ecdfs_figure_caption_standard = (
-                r"Bootstrapped empirical cumulative distribution of the number " +
-                r"of objective function evaluations divided by dimension " +
-                r"(FEvals/DIM) for 50 targets in $10^{[-8..2]}$ for all "+
-                r"functions and subgroups in #1-D. The ``best 2009'' line "+
-                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
-                r"for each single target."
-                )
-
-ecdfs_figure_caption_rlbased = (
-                r"Bootstrapped empirical cumulative distribution of the number " +
-                r"of objective function evaluations divided by dimension " +
-                r"(FEvals/DIM) for all functions and subgroups in #1-D." +
-                r" The targets are chosen from $10^{[-8..2]}$ " +
-                r"such that the REFERENCE_ALGORITHM artificial algorithm just " +
-                r"not reached them within a given budget of $k$ $\times$ DIM, " +
-                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. " +
-                r"The ``best 2009'' line " +
-                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
-                r"for each selected target."
-                )
-
-
 styles = genericsettings.line_styles
 def fix_styles(number, styles=styles):
     """a short hack to fix length of styles"""
@@ -93,6 +70,32 @@ def scaling_figure_caption(target):
 
 def ecdfs_figure_caption(target):
     assert len(target) == 1
+
+    best2009text = (
+                r"The ``best 2009'' line " +
+                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
+                r"for each selected target."
+                )
+    ecdfs_figure_caption_standard = (
+                r"Bootstrapped empirical cumulative distribution of the number " +
+                r"of objective function evaluations divided by dimension " +
+                r"(FEvals/DIM) for " +
+                len(genericsettings.pprldmany_target_range_latex) +
+                r" targets in " + 
+                genericsettings.pprldmany_target_range_latex + " for all "+
+                r"functions and subgroups in #1-D. " + best2009text
+                )
+    ecdfs_figure_caption_rlbased = (
+                r"Bootstrapped empirical cumulative distribution of the number " +
+                r"of objective function evaluations divided by dimension " +
+                r"(FEvals/DIM) for all functions and subgroups in #1-D." +
+                r" The targets are chosen from " +
+                genericsettings.pprldmany_target_range_latex +
+                r"such that the REFERENCE_ALGORITHM artificial algorithm just " +
+                r"not reached them within a given budget of $k$ $\times$ DIM, " +
+                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. " + best2009text
+                )    
+    
     if isinstance(target, pproc.RunlengthBasedTargetValues):
         s = ecdfs_figure_caption_rlbased.replace('REFERENCE_ALGORITHM', 
                                                          target.reference_algorithm)
