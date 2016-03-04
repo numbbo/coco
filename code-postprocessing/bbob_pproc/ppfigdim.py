@@ -55,7 +55,7 @@ import os
 import warnings
 import matplotlib.pyplot as plt
 import numpy as np
-from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam
+from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam, htmldesc
 
 xlim_max = None
 ynormalize_by_dimension = True  # not at all tested yet
@@ -538,6 +538,40 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
                                 values_of_interest = values_of_interest,
                                 isBiobjective = dsList.isBiobjective(),
                                 functionGroups = dsList.getFuncGroups())
+
+    key = 'bbobppfigdimlegendrlbased' if genericsettings.runlength_based_targets else 'bbobppfigdimlegendfixed'
+    joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
+    caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
+
+    ppfig.save_single_functions_html(
+        os.path.join(outputdir, 'ppfigdim'),
+        htmlPage = ppfig.HtmlPage.NON_SPECIFIED,
+        isBiobjective = dsList.isBiobjective(),
+        parentFileName=genericsettings.single_algorithm_file_name,
+        header = 'Expected number of <i>f</i>-evaluations to reach target',
+        caption = caption)
+
+    ppfig.save_single_functions_html(
+        os.path.join(outputdir, 'pptable'),
+        htmlPage = ppfig.HtmlPage.PPTABLE,
+        isBiobjective = dsList.isBiobjective(),
+        parentFileName=genericsettings.single_algorithm_file_name)
+
+    ppfig.save_single_functions_html(
+        os.path.join(outputdir, 'pprldistr'),
+        htmlPage = ppfig.HtmlPage.PPRLDISTR,
+        isBiobjective = dsList.isBiobjective(),
+        functionGroups = dsList.getFuncGroups(),
+        parentFileName=genericsettings.single_algorithm_file_name)
+
+    if not dsList.isBiobjective():    
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, 'pplogloss'),
+            htmlPage = ppfig.HtmlPage.PPLOGLOSS,
+            isBiobjective = dsList.isBiobjective(),
+            functionGroups = dsList.getFuncGroups(),
+            parentFileName=genericsettings.single_algorithm_file_name)
+
     ppfig.copy_js_files(outputdir)
     
     funInfos = ppfigparam.read_fun_infos(dsList.isBiobjective())
