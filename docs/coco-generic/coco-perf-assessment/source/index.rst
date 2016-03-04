@@ -138,7 +138,7 @@ Runtime over Problems
 
 
 In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtime for different target values. Those target values can be a :math:`f`- or indicator value (see [BBO2016biobj]_). 
-In the performance assessment setting, a problem is the quadruple :math:`\mathcal{P}=(n,f_\theta,\theta,f^{\rm target}_\theta)` where :math:`f^{\rm target}_\theta` is the target function value. This means that we collect runtime of problems.
+In the performance assessment setting, a problem is the quadruple :math:`\mathcal{P}=(n,f_\theta,\theta,f^{\rm target}_\theta)` where :math:`f^{\rm target}_\theta` is the target function value. This means that **we collect runtime of problems**.
 
 Formally, the runtime of a problem is denoted as
 :math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)` and it corresponds to the number of function evaluations needed to reach a function value lower or equal than :math:`f^{\rm target}_{\theta}`  for the first time.
@@ -152,7 +152,30 @@ Dealing with Unsuccessful Trials
 
 A run or trial that reached a target function value |ftarget| is called *successful*. In this case we collect the running time to reach this target :math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. When a trial does not reach a target, it is called *unsuccessful with respect to reaching the target*. We then record the number of function evaluations till the algorithm is stopped that we denote :math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
 
-In order take into account that some trials are possibly unsuccessful, we consider the conceptual restart algorithm: We assume that an algorithm denoted A has a strictly positive probability |ps| to successfully solve a problem (that is to reach the associated target). The restart-A algorithm consists in restarting A till the problem is solved.
+In order take into account that some trials are possibly unsuccessful, we consider the conceptual restart algorithm: We assume that an algorithm say called A has a strictly positive probability |ps| to successfully solve a problem (that is to reach the associated target). The restart-A algorithm consists in restarting A till the problem is solved. The running time of the restart-A algorithm equals
+
+.. math::
+	:nowrap:
+
+	\begin{equation}
+	\mathbf{RT}(n,f_\theta,\theta,f^{\rm target}_\theta) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\theta,f^{\rm target}_\theta) + \mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)
+	\end{equation}
+
+where :math:`J` is a random variable that models the number of unsuccessful runs till a success is observed and :math:`\mathrm{RT}^{\rm us}_j` are runtime of unsuccessful trials.
+
+Remark that if the probability of success is one, the restart algorithm and the original   algorithm coincide.
+	
+.. Note:: Considering the runtime of the restart algorithm allows to compare quantitatively the two different scenarios where
+
+	* an algorithm converges often but relatively slowly
+	* an algorithm converges less often, but once it converges, it converges fast.
+
+The performance assessment in COCO heavily relies on this conceptual restart algorithm. However, we collect only one single instance of (successful or unsuccessful) runtime per problem while more are needed to be able to display significant data. This is where the idea of instance comes into play.
+
+As we will see in Section :ref:`sec:ART`,
+
+ However given that we typically run algorithms on parametrized functio
+
 
 .. todo::
 	* restart algorithm
@@ -201,7 +224,7 @@ We repeatedly draw among those successful and unsuccessful run-length, single tr
 
 We use bootstrapping to provide dispersion measures and provide some percentiles of the bootstrapped distribution. In addition the distribution of the bootstrapped runtimes is used as an approximation of the true runtime distribution.
 
-.. _sec:ERT:
+.. _sec:ART:
 
 Average Running Time
 =====================
