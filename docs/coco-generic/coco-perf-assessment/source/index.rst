@@ -17,6 +17,7 @@ COCO: Performance Assessment
 .. _GECCO: http://www.sigevo.org/gecco-2012/
 .. _COCO: http://coco.gforge.inria.fr
 .. |ERT| replace:: :math:`\mathrm{ERT}`
+.. |aRT| replace:: :math:`\mathrm{aRT}`
 .. |dim| replace:: :math:`\mathrm{dim}`
 .. |function| replace:: :math:`\mathrm{function}`
 .. |instance| replace:: :math:`\mathrm{instance}`
@@ -29,17 +30,37 @@ COCO: Performance Assessment
 Introduction
 =============
 
-In this document we explain the rationale behind the performance assessment within the COCO platform. The simple but central idea is that we advocate *quantitative* performance measures as opposed to simple rankings of algorithm performances. From there on follows that run-length for function value targets are collected. We then either display expected run-length through the `Expected Running Time`_ (ERT) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF).
+In this document we explain the rationale behind the performance assessment within the COCO platform. The simple but central idea is that we advocate *quantitative* performance measures as opposed to simple rankings of algorithm performances. From there on follows that our performance measures and displays are based on the runtime or run-length to reach a target function value.
+
+We then either display average run-length through the `Average Running Time`_ (aRT) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF).
+
+When displaying the distribution of run-length, we consider the aggregation of run-length over subclasses of problems.
+
+.. budget-free
 
 Terminology and Definitions
 ----------------------------
 *problem*
- A COCO problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`\mathcal{P}=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is a dimension, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem :math:`\mathcal{P}` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`.
+ A COCO problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`\mathcal{P}=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is a dimension, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem :math:`\mathcal{P}` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`\mathcal{P}=(n,f_\theta,\theta)`.
  
- In the performance assessment setting, we associate to a problem :math:`\mathcal{P}`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\bar{\theta}}(\mathbf{x})` depends on the specific instance :math:`\bar{\theta}`, the :math:`{\rm target}` function values also depends on the instance :math:`\bar{\theta}`. However commonly :math:`f_{\rm target} - f_{\rm opt}`  that can be thought as ``precision``, does not depend on the instance :math:`\bar{\theta}` such that we can unambiguously consider for different instances :math:`({\bar{\theta}}_1, \ldots,{\bar{\theta}}_K)` of a parametrized problem :math:`f_{\bar{\theta}}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\bar{\theta}}_1}, \ldots,f^{\rm target}_{{\bar{\theta}}_K}` associated to a similar precision. :math:`\R`
+ In the performance assessment setting, we associate to a problem :math:`\mathcal{P}`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However commonly 
+ 
+ .. math::
+ 	:nowrap:
+
+	\begin{equation} 
+	\epsilon=f_{\rm target} - f_{\rm opt}
+ 	\end{equation}
+ 	
+ 	
+ that can be thought as **precision**, does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a similar precision. 
 
 *instance*
-  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...
+ Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero). 
+  
+ We **interpret the different runs performed on different instances** of the same parametrized function in a given dimension as if they are just **independent repetitions** of the optimization algorithm on the same function. Put differently the runs performed on :math:`f_{\theta_1}, \ldots,f_{\theta_K}` with :math:`\theta_1,\ldots,\theta_K`, :math:`K` different instances of a parametrized problem :math:`f_\theta`, are assumed to be independent identically distributed.
+ 
+ .. todo:: maybe we should insist more on this dual view of randomizing the problem class via problem isntance - choosing uniformly over set of parameters.
   
 *runtime*
   We define *runtime*, or *run-length* [HOO1998]_
@@ -61,8 +82,11 @@ We advocate **performance measures** that are:
   to the numbers
 * relevant with respect to the "real world"
 * as simple as possible
+* independent of the programming language and computer where the algorithm was run.
 
-For these reasons we measure runtime to reach a target function value, denoted as fixed-target scenario in the following. 
+This latter point excludes to use CPU time as a basis for performance measure. The shortcomings and consequences of using CPU was discussed in [Hooker:1995]_.
+
+For these reasons we measure **runtime** to reach a target function value, that is the number of function evaluations needed to reach a target function value denoted as fixed-target scenario in the following. 
 
 
 .. _sec:verthori:
@@ -105,18 +129,13 @@ than the currently available best solution or than a competitor.
 
 For benchmarking algorithms we prefer the fixed-target scenario over the
 fixed-cost scenario since it gives *quantitative and interpretable*
-data: the fixed-target scenario (horizontal cut) *measures a time*
-needed to reach a target function value and allows therefore conclusions
-of the type: Algorithm A is two/ten/hundred times faster than Algorithm
-B in solving this problem (i.e. reaching the given target function
-value). The fixed-cost scenario (vertical cut) does not give
-*quantitatively interpretable* data: there is no interpretable meaning
-to the fact that Algorithm A reaches a function value that is
-two/ten/hundred times smaller than the one reached by Algorithm B,
-mainly because there is no *a priori* evidence *how much* more difficult
-it is to reach a function value that is two/ten/hundred times smaller.
-This, indeed, largely depends on the specific function and on the
-specific function value reached. Furthermore, for algorithms
+data: 
+
+* the fixed-target scenario (horizontal cut) *measures a time* needed to reach a target  function value and allows therefore conclusions of the type: Algorithm A is two/ten/hundred times faster than Algorithm B in solving this problem (i.e. reaching the given target function value). 
+
+* The fixed-cost scenario (vertical cut) does not give *quantitatively interpretable*  data: there is no interpretable meaning to the fact that Algorithm A reaches a function  value that is two/ten/hundred times smaller than the one reached by Algorithm B, mainly because there is no *a priori* evidence *how much* more difficult it is to reach a function value that is two/ten/hundred times smaller. This, indeed, largely depends on the specific function and on the specific function value reached. 
+ 
+Furthermore, for algorithms
 that are invariant under certain transformations of the function value (for
 example under order-preserving transformations as algorithms based on
 comparisons like DE, ES, PSO), fixed-target measures can be made
@@ -125,12 +144,59 @@ target values while fixed-cost measures require the transformation
 of all resulting data.
 
 
-Run-length over Problems
+Runtime over Problems
 =========================
 
-From the previous section we know that we want to collect run-length for different targets in order to display quantitative measurements. A problem is defined as the quadruplet ``(function, dimension, instance, function target)``. We **interpret the different instances** of a function (in a given dimension) as if they are just a repetition of the same function. More precisely while instances typically change the exact definition of the function (for instance two different instances of the sphere function will typically have shifted optima), we consider that the run-length for two different instances of a given function (for example the sphere function) in a given dimension and for a given target are just independent identically distributed random variables.
 
-Hence **our display of performance** starts from the following collected data: given a function, dimension, function target, we have a collection of run-length that correspond to the number of function evaluations needed to reach the target for all the instances where the algorithm was run. When the target was not reached we collect the number of function evaluations till the algorithm is stopped.
+In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtime for different target values. Those target values can be a :math:`f`- or indicator value (see [BBO2016biobj]_). 
+In the performance assessment setting, a problem is the quadruple :math:`\mathcal{P}=(n,f_\theta,\theta,f^{\rm target}_\theta)` where :math:`f^{\rm target}_\theta` is the target function value. This means that **we collect runtime of problems**.
+
+Formally, the runtime of a problem is denoted as
+:math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. It is a random variable that counts the number of function evaluations needed to reach a function value lower or equal than :math:`f^{\rm target}_{\theta}`  for the first time. A run or trial that reached a target function value |ftarget| is called *successful*.
+
+We also have to **deal with unsuccessful trials**, that is a run that did not reach a target. We then record the number of function evaluations till the algorithm is stopped. We denote the respective random variable :math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
+
+In order to come up with a meaningful way to compare algorithms having different probability of success (that is different probability to reach a target), we consider the conceptual **restart algorithm**: We assume that an algorithm, say called A, has a strictly positive probability |ps| to successfully solve a problem (that is to reach the associated target). The restart-A algorithm consists in restarting A till the problem is solved. The running time of the restart-A algorithm equals
+
+.. math::
+	:nowrap:
+
+	\begin{equation*}
+	\mathbf{RT}(n,f_\theta,\theta,f^{\rm target}_\theta) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\theta,f^{\rm target}_\theta) + \mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)
+	\end{equation*}
+
+where :math:`J` is a random variable that models the number of unsuccessful runs till a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random variables corresponding to the runtime of unsuccessful trials and :math:`\mathrm{RT}` is a random variable for the runtime of successful trial.
+
+Remark that if the probability of success is one, the restart algorithm and the original   algorithm coincide.
+	
+.. Note:: Considering the runtime of the restart algorithm allows to compare quantitatively the two different scenarios where
+
+	* an algorithm converges often but relatively slowly
+	* an algorithm converges less often, but once it converges, it converges fast.
+
+The performance assessment in COCO heavily relies on this conceptual restart algorithm. However, we collect only one single sample of (successful or unsuccessful) runtime per problem while more are needed to be able to display significant data. This is where the idea of instance comes into play: We interpret different runs performed on different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` as repetitions, that is as if they were performed on the same function. [#]_ 
+
+.. [#] This assumes that instances of the same parametrized function are similar 
+      to each others or that there is  not too much discrepancy in the difficulty 
+      of the problem for different instances.
+
+Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same precision :math:`\epsilon` (see above) are thus assumed independent identically distributed. We denote the random variable modelling those runtimes :math:`\mathrm{RT}(n,f_\theta,\epsilon)`. We hence have a collection of runtimes (for a given parametrized function and a given precision) whose size corresponds to the number of instances of a parametrized function where the algorithm was run (typically between 10 and 15). Given that the specific instance does not matter, we write in the end the runtime of a restart algorithm of a parametrized family of function in order to reach a precision :math:`\epsilon` as
+
+.. _eq:RTrestart:
+
+.. math::
+	:nowrap:
+	:label: RTrestart 
+
+	\begin{equation*}\label{RTrestart}
+	\mathbf{RT}(n,f_\theta,\epsilon) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\epsilon) + \mathrm{RT}(n,f_\theta,\epsilon)
+	\end{equation*}
+	
+	
+where as above :math:`J` is a random variable modelling the number of trials needed before to observe a success, :math:`\mathrm{RT}^{\rm us}_j` are random variables modeling the number of function evaluations of unsuccessful trials and :math:`\mathrm{RT}^{\rm us}` the one for successful trials.
+
+As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF` our performance display relies on the runtime of the restart algorithm, either considering the average runtime (Section :ref:`sec:ART`) or the distribution by displaying empirical cumulative distribution (Section :ref:`sec:ECDF`).
+
 
 .. Niko: "function target" seems misleading, as the target depends also on the instance
   (and also on the dimension). |target value| might be a possible nomenclature, we also
@@ -147,87 +213,60 @@ Hence **our display of performance** starts from the following collected data: g
   ``(function, dimension, instance)`` triplets. A single trial than generates the 
   quadruples. 
   
-.. Niko: let me know what/where I can/should start to do/change here. 
 
-The display of results is hence based on those collected run-length. We either used displays  based on the expected run-length |ERT| described in Section `Expected Running Time`_  or based on the distribution of run-length using empirical cumulative distribution as described in Section `Empirical Cumulative Distribution Functions`_
+Simulated Run-length 
+-----------------------
 
+The runtime of the conceptual restart algorithm given in Equation :eq:`RTrestart` is the basis for displaying performance within COCO. We simulate some approximate samples of the runtime of the restart algorithm by constructed some so-called **simulated run-length**.
 
-Simulated Run-length and Bootstrapping
----------------------------------------
+**Simulated Run-length:** Given the collection of runtimes for successful and unsuccessful trials to reach a given precision, we built a simulated run-length by repeatedly drawing with replacement among those runtimes till we draw a runtime of a successful trial. The simulated run-length is the sum of the drawn runtime.
 
-The collection of run-length available is typically small: maximally 15 for the data collected for the BBOB 2009-2015 workshops where the algorithms were run on 15 instances. In order to artificially generate more data, we use **bootstrapping** [Efron:1993]_.  More precisely we derive some simulated run-length as explained below.
+.. Note:: The construction of a simulated run-length assumes that we have at least one runtime associated to a successful trial.
 
-**Simulated Run-length:** We consider the run-length of trials that reached the target, those run-length are *run-length of successful trials* i.e., they correspond to runs of the algorithm that successfully reached the target (hence solved the problem). In addition, for the *unsuccessful trials* that did not reach the target, we consider the run-length before to stop, that is the number of function evaluations before to stop.
+.. We call a simulated-restart, a simulated run-length concatenated to an unsuccessful 
+.. runtime. That is a simulated-restart always starts from an unsuccessful trial.
 
-We repeatedly draw among those successful and unsuccessful run-length, single trials with replacement until a successful trial is drawn.  The concatenation of those trials is called a **simulated run-length**. It simulates the run-length of an algorithm that would be restarted till a success is observed [Auger:2005b]_ [Auger:2009]_. The collection of simulated run-length is called bootstrapped distribution.
+.. _sec:ART:
 
-We use bootstrapping to provide dispersion measures and provide some percentiles of the bootstrapped distribution. In addition the distribution of the bootstrapped runtimes is used as an approximation of the true runtime distribution.
+Average Running Time
+=====================
 
-.. _sec:ERT:
-
-Expected Running Time
-======================
-
-We use the *expected running time* (|ERT|, introduced in [Price:1997]_ as
-ENES and analyzed in [Auger:2005b]_ as success performance) as most
-prominent performance measure. The Expected Running Time is defined as the
-average number of function evaluations while the best function value was not smaller than the target
-
-.. _eq:ERT:
+The average Running Time (|aRT|) (introduced in [Price:1997]_ as
+ENES and analyzed in [Auger:2005b]_ as success performance) is an estimate of the expected runtime of the restart algorithm given in Equation :eq:`RTrestart` that is used within the COCO framework. More precisely the expected runtime of the restart algorithm (on a parametrized family of function in order to reach a precision :math:`\epsilon`) writes
 
 .. math::
-   :nowrap:
+    :nowrap:
 
-   \begin{eqnarray}
-     \mathrm{ERT}(f_\mathrm{target}) &=& \frac{\#\mathrm{FEs}(f_\mathrm{best}\ge f_\mathrm{target})}{\#\mathrm{succ}}
-   \end{eqnarray}
+	\begin{eqnarray}
+	\mathbb{E}(\mathbf{RT}) & =  
+	& \mathbb{E}(\mathrm{RT}^{\rm s})  + \frac{1-p_s}{p_s} 	 \mathbb{E}(\mathrm{RT}^{\rm us}) 
+    \end{eqnarray}
+    
+    
+where |ps| is the probability of success of the algorithm (to reach the underlying precision) and :math:`\mathrm{RT}^s` denotes the random variable modeling the runtime of successful runs and :math:`\mathrm{RT}^{\rm us}` the runtime of unsuccessful runs (see [Auger:2005b]_). Given a finite number of realizations of the runtime of an algorithm (run on a parametrized family of functions to reach a certain precision) that comprise at least one successful run, say :math:`\{\mathrm{RT}^{\rm us}_i, \mathrm{RT}^{\rm s}_j \}`, we can estimate the expected runtime of the restart algorithm given in the previous equation as the average runtime defined as
 
+.. math::
+    :nowrap:
 
+	\begin{eqnarray}
+	\mathrm{aRT} & = & \mathrm{RT}_\mathrm{S} + \frac{1-p_{\mathrm{s}}}{p_{\mathrm{s}}} \,\mathrm{RT}_\mathrm{US} \\  & = & \frac{\sum_i \mathrm{RT}^{\rm us}_i + \sum_j \mathrm{RT}^{\rm us}_j }{\#\mathrm{succ}} \\
+	& = & \frac{\#\mathrm{FEs}}{\#\mathrm{succ}} 
+    \end{eqnarray}    
+ 
 .. |nbsucc| replace:: :math:`\#\mathrm{succ}`
-.. |ps| replace:: :math:`p_{\mathrm{s}}`
 .. |Ts| replace:: :math:`\mathrm{RT}_\mathrm{S}`
 .. |Tus| replace:: :math:`\mathrm{RT}_\mathrm{US}`
+.. |ps| replace:: :math:`p_{\mathrm{s}}`
 
-where |nbsucc| denotes the number of successful trials (successful trials are those that reached |ftarget|) and  :math:`\#\mathrm{FEs}(f_\mathrm{best}(\mathrm{FE}) \ge f_\mathrm{target})` is
+
+where where |Ts| and |Tus| denote the average runtime for successful and unsuccessful trials,  |nbsucc| denotes the number of successful trials and  :math:`\#\mathrm{FEs}` is
 the number of function evaluations
-conducted in all trials, while the best function value was not smaller than
-|ftarget| during the trial, i.e. the sum over all trials of:
+conducted in all trials (before to reach a given precision).
 
-.. _eq:SPone1:
-
-.. math::
-   \max \{\mathrm{FE} \mbox{ s.t. } f_\mathrm{best}(\mathrm{FE}) \ge f_\mathrm{target} \}.
+Remark that while not explicitly denoted, the average runtime depends on the target and more precisely on a precision. It also depends strongly on the termination criterion of the algorithm.
+    
 
 
-The |ERT| coincides with the estimate of the expected running time needed to reach |ftarget| by an (hypothetical) algorithm that would conduct restarts till a successful run (i.e. reaching the target) is observed. More precisely |ERT| writes also
-
-.. _eq:SPone2:
-
-.. math::
-   :nowrap:
-
-   \begin{eqnarray}
-     \mathrm{ERT}(f_\mathrm{target}) &=& \mathrm{RT}_\mathrm{S} + \frac{1-p_{\mathrm{s}}}{p_{\mathrm{s}}} \,\mathrm{RT}_\mathrm{US} \\
-                                     &=& \frac{p_{\mathrm{s}} \mathrm{RT}_\mathrm{S} + (1-p_{\mathrm{s}}) \mathrm{RT}_\mathrm{US}}{p_{\mathrm{s}}}
-   \end{eqnarray}
-
-
-
-where the *running times* |Ts| and |Tus| denote the average number of
-function evaluations for successful and unsuccessful trials, respectively (zero
-for none respective trial), and |ps| denotes the fraction of successful trials.
-Successful trials are those that reached |ftarget|; evaluations after
-|ftarget| was reached are disregarded.
-
-Note that|ERT| estimates the
-expected running time to reach |ftarget| [Auger:2005b]_, as a function of
-|ftarget|. In particular, |Ts| and |ps| depend on the |ftarget| value. Whenever
-not all trials were successful, ERT also depends (strongly) on the termination
-criteria of the algorithm.
-
-.. [#] Wikipedia__ gives a reasonable introduction to scale types.
-.. was 261754099
-__ http://en.wikipedia.org/w/index.php?title=Level_of_measurement&oldid=478392481
 
 
 .. _sec:ECDF:
@@ -235,9 +274,14 @@ __ http://en.wikipedia.org/w/index.php?title=Level_of_measurement&oldid=47839248
 Empirical Cumulative Distribution Functions
 ===========================================
 
+
+.. todo::
+	* aggregation of distribution of RT (read COCO + proceed)
+
+
 We exploit the "horizontal and vertical" viewpoints introduced in the last
 Section :ref:`sec:verthori`. In Figure :ref:`fig:ecdf` we plot the :abbr:`ECDF
-(Empirical Cumulative Distribution Function)` [#]_ of the intersection point
+(Empirical Cumulative Distribution Function)` of the intersection point
 values (stars in Figure :ref:`fig:HorizontalvsVertical`) for 450 trials.
 
 .. [#] The empirical (cumulative) distribution function
@@ -287,29 +331,9 @@ the success probability. In the example, just under 50% for precision 10\
 :sup:`-8` (thick red) and just above 70% for precision 10\ :sup:`-1` (cyan).
 
 
-Simulated run-length
---------------------
-
-Based on the interpretation of instances as pure repetitions, we build some simulated run-length from the Nruns collected data, that is from the number of function evaluations needed to reach a given target or in case the target is not reached, the number of function evaluations of the unsuccessful run. The construction of a simulated run works as follow:
-
-We sample a run-length uniformly at random among the Nruns run-length. If this run-length correspond to a unsuccessful trial we draw uniformly again among the Nruns run-length a new run-length. We repeat this operation until we obtain a run-length corresponding to a successful trial. The simulated run-length sums up all the run-lengths till a successful trial has been sampled.
-
-We typically generate many more simulated run-length than the number of function instances (corresponding to Nruns). 
 
 
-Using simulated run-length for plotting ECDF graphs
----------------------------------------------------
-
-The simulated run-length are used to plot the ECDF graphs: the ECDF graphs correspond to the empirical cumulative distributions of some simulated run-length generated each time the post-processing is called. As a consequence the processus of producing an ECDF graph from the collected data is stochastic and some small variations between two independent post-processing from the same data can be observed.
-
-
-Understanding the different plots
-==================================
-
-
-
-
-
+.. [BBO2016biobj] The BBOBies: Biobjective function benchmark suite. 
 .. [Auger:2005a] A Auger and N Hansen. A restart CMA evolution strategy with
    increasing population size. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1769–1776. IEEE Press, 2005.
@@ -331,4 +355,8 @@ Understanding the different plots
 .. [Price:1997] K. Price. Differential evolution vs. the functions of
    the second ICEO. In Proceedings of the IEEE International Congress on
    Evolutionary Computation, pages 153–157, 1997.
+.. [Hooker:1995] J. N. Hooker Testing heuristics: We have it all wrong. In Journal of
+    Heuristics, pages 33-42, 1995.
+
+   
 
