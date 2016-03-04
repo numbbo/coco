@@ -222,7 +222,7 @@ In order to evaluate the CPU timing of the algorithm, we have run the \change{MY
 
 Results of \algname\ from experiments according to \cite{biobj2016exp} on the benchmark
 functions given in \cite{biobj2016func} are presented in
-Figures~\ref{fig:ERTgraphs}, \ref{fig:ERTgraphsTwo} \ref{fig:RLDsGroupsOne}, and \ref{fig:RLDsGroupsTwo} and in
+Figures~\ref{fig:ECDFsingleOne}, \ref{fig:ECDFsingleTwo}, \ref{fig:ECDFsingleThree}, \ref{fig:RLDsGroupsOne}, and \ref{fig:RLDsGroupsTwo} and in
 Table~\ref{tab:ERTs}.
 
 
@@ -231,78 +231,88 @@ Table~\ref{tab:ERTs}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Scaling of ERT with dimension
+% Scaling of ECDFs with dimension
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
-\begin{tabular}{@{\hspace*{-0.018\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}}
-\includegraphics[width=0.223\textwidth]{ppfigdim_f001}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f002}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f003}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f004}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f005}\\[-1.8ex]
-\includegraphics[width=0.223\textwidth]{ppfigdim_f006}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f007}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f008}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f009}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f010}\\[-1.8ex]
-\includegraphics[width=0.223\textwidth]{ppfigdim_f011}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f012}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f013}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f014}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f015}\\[-1.8ex]
-\includegraphics[width=0.223\textwidth]{ppfigdim_f016}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f017}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f018}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f019}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f020}\\[-1.8ex]
-\includegraphics[width=0.223\textwidth]{ppfigdim_f021}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f022}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f023}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f024}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f025}\\[-1.8ex]
-\includegraphics[width=0.223\textwidth]{ppfigdim_f026}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f027}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f028}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f029}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f030}
+\centering
+\begin{tabular}{@{\hspace*{-0.018\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}}
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f001}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f002}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f003}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f004}\\[-1.8ex]
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f005}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f006}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f007}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f008}\\[-1.8ex]
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f009}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f010}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f011}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f012}\\[-1.8ex]
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f013}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f014}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f015}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f016}\\[-1.8ex]
 \end{tabular}
-\vspace{-3ex}
- \caption{\label{fig:ERTgraphs}
- \bbobppfigdimlegend{$f_1$ and $f_{30}$}
+ \caption{\label{fig:ECDFsingleOne}
+ \bbobppfigdimlegend{$f_1$ and $f_{16}$}
  }
 \end{figure*}
 \begin{figure*}
+\centering
 \begin{tabular}{@{\hspace*{-0.018\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}}
-\includegraphics[width=0.223\textwidth]{ppfigdim_f031}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f032}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f033}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f034}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f035}\\[-1.8ex]
-\includegraphics[width=0.223\textwidth]{ppfigdim_f036}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f037}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f038}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f039}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f040}\\[-1.8ex]
-\includegraphics[width=0.223\textwidth]{ppfigdim_f041}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f042}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f043}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f044}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f045}\\[-1.8ex]
-\includegraphics[width=0.223\textwidth]{ppfigdim_f046}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f047}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f048}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f049}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f050}\\[-1.8ex]
-\includegraphics[width=0.223\textwidth]{ppfigdim_f051}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f052}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f053}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f054}&
-\includegraphics[width=0.223\textwidth]{ppfigdim_f055}
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f017}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f018}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f019}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f020}\\[-1.8ex]
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f021}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f022}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f023}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f024}\\[-1.8ex]
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f025}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f026}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f027}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f028}\\[-1.8ex]
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f029}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f030}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f031}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f032}\\[-1.8ex]
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f033}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f034}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f035}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f036}\\[-1.8ex]
 \end{tabular}
-\vspace{-3ex}
- \caption{\label{fig:ERTgraphsTwo}
- ERT vs.\ dimension as in Fig.~\ref{fig:ERTgraphs} but for $f_{31}$ till $f_{55}$.
+ \caption{\label{fig:ECDFsingleTwo}
+ Empirical cumulative distribution function (ECDF) of the restarted algorithm per dimension for all targets of each function as in Fig.~\ref{fig:ECDFsingleOne} but for $f_{17}$ till $f_{36}$.
+ }
+\end{figure*}
+\begin{figure*}
+\centering
+\begin{tabular}{@{\hspace*{-0.018\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}}
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f037}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f038}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f039}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f040}\\[-1.8ex]
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f041}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f042}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f043}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f044}\\[-1.8ex]
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f045}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f046}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f047}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f048}\\[-1.8ex]
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f049}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f050}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f051}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f052}
+\end{tabular}
+\begin{tabular}{@{\hspace*{-0.018\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}}
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f053}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f054}&
+\includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f055}\\[-1.8ex]
+\end{tabular}
+ \caption{\label{fig:ECDFsingleThree}
+ Empirical cumulative distribution function (ECDF) of the restarted algorithm per dimension for all targets of each function as in Fig.~\ref{fig:ECDFsingleOne} but for $f_{37}$ till $f_{55}$.
  }
 \end{figure*}
 
@@ -422,6 +432,7 @@ aggregated over functions where the single objectives' BBOB function groups are 
 and chosen as indicated in the figure titles. 
  }
 \end{figure*}
+
 
 
 
