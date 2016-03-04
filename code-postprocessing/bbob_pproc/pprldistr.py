@@ -365,7 +365,7 @@ def _plotERTDistr(dsList, target, **plotArgs):
     """
     x = []
     nn = 0
-    samplesize = genericsettings.simulated_runlength_bootstrap_sample_size # samplesize should be at least 1000
+    samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
     percentiles = 0.5 # could be anything...
 
     for i in dsList:
