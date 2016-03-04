@@ -140,8 +140,8 @@ rather simple and straightforward task. We run an algorithm on a collection of
 problems and display the results. However, under closer inspection,
 benchmarking turns out to be surprisingly tedious, and it appears to be
 difficult to get results that can be meaningfully interpreted beyond the
-standard claim that one algorithm is better than another on some problems --- 
-and vice versa. [#]_ Here, we offer a conceptual guideline for benchmarking
+standard claim that one algorithm is better than another on some problems. [#]_ 
+Here, we offer a conceptual guideline for benchmarking
 continuous optimization algorithms which tries to address this challenge and
 has been implemented within the COCO_ framework. [#]_ 
 
@@ -156,8 +156,7 @@ as simple as
     
 .. code:: python
 
-  try: import cocoex  
-  except: import bbob_pproc as cocoex
+  import cocoex  # or: import bbob_pproc as cocoex
   import cocopp
   from myoptimizer import fmin
     
@@ -194,11 +193,12 @@ The COCO_ framework provides currently
  - article LaTeX templates
 
 The underlying philosophy of COCO_ is to provide everything which most experimenters 
-needed to setup and implement themselves otherwise, if they wanted to benchmark an algorithm properly.
+needed to setup and implement themselves otherwise, if they wanted to benchmark an algorithm properly. The framework has been used successfully for benchmarking hundreds of algorithms.  
 
 .. [#] It remains to be a standard procedure to present as main output
-    tens or even hundreds of numbers in one or several tables, left to the
-    reader to scan and compare to each other [SUG2015]. 
+   hundreds of numbers which are interpretable on an ordinal scale
+   [STE1946]_ only, left to the reader to scan and compare to each other, 
+   possibly across different articles. 
     
 .. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
 
@@ -228,23 +228,24 @@ the following defining features.
 #. There is no predefined budget (number of |f|-evaluations) for running an
    experiment, the experimental procedure is *budget-free* [BBO2016ex]_.
 
-#. A single performance measure is used --- and thereafter displayed and 
-   aggregated in 
+#. A single performance measure is used --- and thereafter aggregated and 
+   displayed in 
    several ways --- namely **runtime**, *measured in 
    number of* |f|-*evaluations* [BBO2016perf]_. Runtime has the advantage to 
 
-     - be independent of the computational platform and language, coding 
-       style, and other specific experimental conditions [#]_
+     - be independent of the computational platform, language, compiler, coding 
+       styles, and other specific experimental conditions [#]_
      - be easily interpretable without expert domain knowledge
      - be quantitative on the ratio scale [STE1946]_ [#]_
-     - assume a wide range of values
+     - assume a wide range of values 
      - aggregate over a collection of values in a very meaningful way
      
    A *missing* runtime value is considered as possible outcome (see below).
     
 #. The display is as comprehensible, intuitive and informative as possible. 
-   Aggregation over dimension is avoided, because dimension is a known parameter 
-   that can and should be used for algorithm selection decisions. 
+   Aggregation over dimension is avoided, because dimension is an a priori
+   known parameter that can and should be used for algorithm selection
+   decisions. 
 
 .. [#] For example, the optimum is not in all-zeros, optima are not placed 
     on a regular grid, most functions are not separable [WHI1996]_. The
@@ -265,8 +266,6 @@ the following defining features.
 .. .. was 261754099
 .. .. __ http://en.wikipedia.org/w/index.php?title=Level_of_measurement&oldid=478392481
 
-
-.. Note:: Do we want to mention the area under log ERT? 
 
 Terminology
 -----------
@@ -311,11 +310,9 @@ We specify a few terms which are used later.
 Functions, Instances, Problems, and Targets 
 ============================================
 
-.. Note:: The following would probably best fit into a generic document about 
-   functions and test suites. 
-
 In the COCO_ framework we consider **functions**, |fi|, for each suite
-distinguished by their identifier :math:`i=1,2,\dots`. Functions are further
+distinguished by their identifier :math:`i=1,2,\dots` 
+Functions are further
 *parametrized* by the (input) dimension, |n|, and the instance number, |j|, [#]_
 that is, for a given |m| we have
 
@@ -327,25 +324,18 @@ that is, for a given |m| we have
 Varying |n| or |j| leads to a variation of the same function
 |i| of a given suite. 
 By fixing |n| and |j| for function |fi|, we define an optimization **problem**
-that can be presented to an optimization algorithm. That is, 
-for each benchmark suite,
-the triple :math:`(n, i, j)\equiv(f_i, n, j)` uniquely defines a problem. 
-Each problem receives again
+:math:`(n, i, j)\equiv(f_i, n, j)` that can be presented to an optimization algorithm. Each problem receives again
 an index in the suite, mapping the triple :math:`(n, i, j)` to a single
 number. 
 
-.. [#] We can think of |j| as a continuous parameter vector, as it 
-  parametrizes, among others things, translations and rotations. In practice, 
-  |j| is a discrete identifier for single instantiations of these parameters. 
 
-
-The Instance Concept
------------------------
+.. The Instance Concept
+   -----------------------
 
 As the formalization above suggests, the differentiation between function (index) 
 and instance index is of purely semantic nature. 
 This semantics however is important in how we display and
-interpret the results. We interpret varying the instance parameter as 
+interpret the results. We interpret **varying the instance** parameter as 
 a natural randomization for experiments [#]_ in order to 
 
  - generate repetitions on a function and
@@ -358,6 +348,11 @@ a natural randomization for experiments [#]_ in order to
 For example, we consider the absolute location of the optimum not a defining
 function feature. Consequently, in a typical COCO_ benchmark suite, instances
 with randomized search space translations are presented to the optimizer. [#]_
+
+
+.. [#] We can think of |j| as a continuous parameter vector, as it 
+   parametrizes, among others things, translations and rotations. In practice, 
+   |j| is a discrete identifier for single instantiations of these parameters. 
 
 
 .. [#] Changing or sweeping through a relevant feature of the problem class,
@@ -382,8 +377,9 @@ on problem |p|, we say it has *solved the problem* |pt| --- it was successul. [#
 
 Now, the **runtime** is the evaluation count when the target value |t| was
 reached or surpassed for the first time. That is, runtime is the number of |f|-evaluations needed to 
-solve the problem |pt| (but see also Recommendations_ in [BBO2016ex]_). 
-Runtime can be formally written as |RT(pt)|. 
+solve the problem |pt| (but see also Recommendations_ in [BBO2016ex]_). [#]_
+
+.. Runtime can be formally written as |RT(pt)|. 
 
 .. _Recommendations: https://www.github.com
 
@@ -408,6 +404,14 @@ they should not come at the expense of abandoning reasonable termination conditi
   |p| gives raise to a collection of dependent problems |pt|. Viewed as random
   variables, the events |RT(pt)| given |p| are not independent events for
   different values of |t|. 
+  
+.. [#] Target values are directly linked to each problem, leaving the burden to 
+  properly define them with the designer of the benchmark suite. The alternative 
+  is to present final |f|- or indicator-values as 
+  results, leaving the (rather unsurmountable) burden to interpret these values to the 
+  reader. Fortunately, there is a automatized generic way to generate target
+  values from observed runtimes, the so-called run-length based target values
+  [BBO2016perf]. 
 
 .. |k| replace:: :math:`k`
 .. |p| replace:: :math:`(f_i, n, j)`
@@ -432,15 +436,17 @@ greater runtimes.
 Therefore, we call our approach *budget-free*. 
 Restarts however "*improve the reliability, comparability, precision, and "visibility" of the measured results*" [BBO2016ex]_.
 
-*Simulated restarts* [HAN2010b]_ [BBO2016perf]_ are used to determine a runtime for unsuccessful runs. Resembling the bootstrapping method [ERF1993]_, 
-we draw uniformly at random a new |j| until we find an instance where |pt| was 
-solved. [#]_
+*Simulated restarts* [HAN2010b]_ [BBO2016perf]_ are used to determine a runtime for unsuccessful runs. Semantically, this is only valid if we interpret different 
+instances as random repetitions. 
+Resembling the bootstrapping method [ERF1993]_, we draw uniformly at random a
+new |j| until we find an instance such that |pt| was solved. [#]_
 The evaluations from the drawn instances are summed up to determine the runtime. 
-This method is applied if at least one problem instance was not solved and is
+This method is applied if a problem instance was not solved and is
 (only) available if at least one problem instance was solved.
-The minimum runtime determined by a simulated restart is the 
-minimum runtime from those solved instances which accompanied by at least
-one unsolved instance (that is, for the same |pt| except of |j|).
+
+.. The minimum runtime determined by a simulated restart is the 
+   minimum runtime from those solved instances which are accompanied by at least
+   one unsolved instance (that is, for the same |pt| except of |j|).
 
 
 .. [#] For a given problem |p|, the number of acquired runtime values, |RT(pt)|
@@ -470,10 +476,10 @@ to face each problem with similar probability.
 We do not aggregate over dimension, because dimension can and 
 should be used for algorithm selection. 
 
-We several ways to aggregate the resulting runtimes. 
+We have several ways to aggregate the resulting runtimes. 
 
  - Empirical cumulative distribution functions (|ECDF|). In the domain of optimization
-   they are also known as *data profiles* [MOR20xx]_. We prefer the |ECDF| over performance profiles [MORxxxx]_ for two reasons. |ECDF| do not depend on any other algorithms presented, that is, they are entirely comparable across different publications. 
+   |ECDF| are also known as *data profiles* [MOR20xx]_. We prefer the |ECDF| over performance profiles [MORxxxx]_ for two reasons. |ECDF| do not depend on other presented algorithms, that is, they are entirely comparable across different publications. 
    |ECDF| separate in a natural way easy problems from difficult problems for the considered algorithm. We usually display |ECDF| on the log scale, which makes 
    the area above the curve and the *difference area* between two curves a 
    meaningful conception [BBO2016perf]. 
@@ -481,11 +487,11 @@ We several ways to aggregate the resulting runtimes.
    .. object/concept/element/notion/aspect/component. 
  
  - Averaging, as an estimator of the expected runtime. The average runtime, that
-   is estimated expected runtime, is
+   is the estimated expected runtime, is
    often plotted against dimension to indicate scaling with dimension. 
    
  - Restarts and simulated restarts, see Section :ref:`sec:Restarts`, do not 
-   aggregate runtimes, but they aggregate the data to possibly supplement
+   aggregate runtimes (which are literally define when |t| was hit), but they aggregate time data to possibly supplement
    missing runtime values, see also [BBO2016perf]_. 
 
 .. |ERT| replace:: ERT
@@ -495,7 +501,7 @@ We several ways to aggregate the resulting runtimes.
 General Code Structure
 ===============================================
 
-The code bases consists of two parts. 
+The code basis of the COCO_ code consists of two parts. 
 
 The *Experiments* part
   defines test suites, allows to conduct experiments, and provides the output
@@ -509,7 +515,7 @@ The *Experiments* part
 
 The *post-processing* part
   processes the data and displays the resulting runtimes. This part is
-  entirely written in Python and heavily relies on |matplotlib|_ [HUN2007]_.  
+  entirely written in Python and heavily depends on |matplotlib|_ [HUN2007]_.  
 
 .. |matplotlib| replace:: ``matplotlib``
 .. _matplotlib: http://matplotlib.org/
