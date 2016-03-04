@@ -198,11 +198,6 @@ where as above :math:`J` is a random variable modelling the number of trials nee
 As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF` our performance display relies on the runtime of the restart algorithm, either considering the average runtime (Section :ref:`sec:ART`) or the distribution by displaying empirical cumulative distribution (Section :ref:`sec:ECDF`).
 
 
-.. todo::
-	* simulated restarts (at least one success - when not all runs are successful)
-	* aggregation of distribution of RT (read COCO + proceed)
-
-
 .. Niko: "function target" seems misleading, as the target depends also on the instance
   (and also on the dimension). |target value| might be a possible nomenclature, we also
   have already |ftarget| defined above. 
@@ -278,6 +273,11 @@ Remark that while not explicitly denoted, the average runtime depends on the tar
 
 Empirical Cumulative Distribution Functions
 ===========================================
+
+
+.. todo::
+	* aggregation of distribution of RT (read COCO + proceed)
+
 
 We exploit the "horizontal and vertical" viewpoints introduced in the last
 Section :ref:`sec:verthori`. In Figure :ref:`fig:ecdf` we plot the :abbr:`ECDF
