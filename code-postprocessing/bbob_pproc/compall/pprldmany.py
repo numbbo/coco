@@ -769,8 +769,9 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 add_to_names = add_to_names,
                 htmlPage = ppfig.HtmlPage.NON_SPECIFIED,
                 isBiobjective = isBiobjective,
-                parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None
-            )
+                parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None,
+                header = 'Scaling of ERT with dimension')
+                
     if close_figure:
         plt.close()
 

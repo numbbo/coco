@@ -460,7 +460,6 @@ def main(argv=None):
             print_done()
 
         latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
-        html_file = os.path.join(outputdir, genericsettings.single_algorithm_file_name + '.html')
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglosstablecaption}[1]{', 
                          pplogloss.table_caption, '}'])
@@ -471,6 +470,7 @@ def main(argv=None):
                         ['\\providecommand{\\bbobpprldistrlegend}[1]{',
                          pprldistr.caption_single(np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()])),  # depends on the config setting, should depend on maxfevals
                          '}'])
+        html_file = os.path.join(outputdir, 'pprldistr.html')
         replace_in_file(html_file, r'TOBEREPLACED', 'D, '.join([str(i) for i in pprldistr.single_runlength_factors[:6]]) + 'D,&hellip;')
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{',
