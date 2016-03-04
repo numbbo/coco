@@ -24,13 +24,14 @@ import shlex
 # -- General configuration ------------------------------------------------
 authors = "The BBOBies"
 abstract = """COCO is a platform for Comparing Continuous Optimizers in a black-box
-  setting. It aims at automatizing the tedious and repetitive task of
+  setting. It aims at automatizing the repetitive and tedious task of
   benchmarking numerical optimization algorithms to the greatest possible
   extent. We present the rationals behind the development of the platform
-  and its basic structure. We furthermore detail underlying fundamental 
-  concepts of COCO such as its definition of a problem, the idea of
-  instances, or performance measures and give an overview of the
-  available test suites.
+  as a general proposition for a guideline for better benchmarking. 
+  We detail underlying fundamental concepts of COCO such as its definition of
+  a problem, the idea of instances, the relevance of target values and runtime
+  as central performance measure, Finally, we  give an overview of the basic
+  code structure and the available test suites.
 """
 
 # If your documentation needs a minimal Sphinx version, state it here.
