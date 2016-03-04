@@ -422,7 +422,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             plt.title(funInfos[func])
 
         if func in genericsettings.current_testbed.functions_with_legend:
-            plt.legend(loc='best')
+            plt.legend(loc='best', framealpha=0.2)
 
         # save
         saveFigure(filename, verbose=verbose)
