@@ -621,7 +621,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax = False,
         plt.axvline(max(i.mMaxEvals() / i.dim for i in dictdim1[d]),
                     marker = 'o', markersize = 15., color = 'k', markerfacecolor = 'None',
                     markeredgewidth = plt.getp(tmp[-1], 'linewidth'))
-        plt.legend(loc = 'best')
+        plt.legend(loc = 'best', framealpha=0.2)
         plt.text(0.5, 0.98, text, horizontalalignment = "center",
                  verticalalignment = "top", transform = plt.gca().transAxes) # bbox=dict(ec='k', fill=False),
         beautifyRLD(evalfmax)
@@ -839,7 +839,7 @@ def main(dsList, isStoringXMax = False, outputdir = '',
      #       pass
 
         plt.axvline(x = maxEvalsFactor, color = 'k') # vertical line at maxevals
-        plt.legend(loc = 'best')
+        plt.legend(loc = 'best', framealpha=0.2)
         plt.text(0.5, 0.98, text, horizontalalignment = "center",
                  verticalalignment = "top",
                  transform = plt.gca().transAxes

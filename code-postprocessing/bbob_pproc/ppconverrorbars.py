@@ -60,7 +60,7 @@ def rearrange(blist, flist):
 
 
 def beautify():
-    plt.legend(loc=3)
+    plt.legend(loc=3, framealpha=0.2)
     plt.grid(True)
     limits = plt.ylim()
     plt.ylim(max((limits[0], final_target)), limits[1])

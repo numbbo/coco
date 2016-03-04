@@ -71,7 +71,7 @@ def beautify(handles):
         ydata = numpy.insert(ydata, len(ydata), ydata[-1])
         i.set_data(xdata, ydata)
 
-    plt.legend(loc='best')
+    plt.legend(loc='best', framealpha=0.2)
 
     # Inverted xticks
     x = axisHandle.get_xticks(minor=True)

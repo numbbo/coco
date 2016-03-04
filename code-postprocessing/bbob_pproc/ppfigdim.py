@@ -582,7 +582,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         plt.text(plt.xlim()[0], plt.ylim()[0],
                  _valuesOfInterest.short_info, fontsize=14)
         if func in genericsettings.current_testbed.functions_with_legend:
-            plt.legend(loc="best")
+            plt.legend(loc="best", framealpha=0.2)
         if func in funInfos.keys():
             # print(plt.rcParams['axes.titlesize'])
             # print(plt.rcParams['font.size'])

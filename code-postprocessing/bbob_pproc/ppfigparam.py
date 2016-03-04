@@ -258,7 +258,7 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
             plt.setp(plt.gca(), 'ylabel', plt.getp(a, 'ylabel') + ' / ' + param[1])
 
         if func in (1, 24, 101, 130):
-            plt.legend(loc="best")
+            plt.legend(loc="best", framealpha=0.2)
         
         fontSize = genericsettings.getFontSize(funInfos.values())
         if func in funInfos.keys():
