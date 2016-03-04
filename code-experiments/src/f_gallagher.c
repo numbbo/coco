@@ -380,8 +380,6 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     problem_i = transform_vars_permutation(problem, P1, dimension);
     problem_i = transform_vars_conditioning(problem, sqrt(19));
     problem_i = transform_vars_shift(problem, &xopt[19], 0);
-
-    
   }/* TODO: free all this in the end */
 
   /*problem = transform_obj_norm_by_dim(problem);*/

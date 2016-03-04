@@ -171,3 +171,8 @@ static coco_problem_t *f_lunacek_bi_rastrigin_bbob_problem_allocate(const size_t
 
   return problem;
 }
+
+
+/* TODO: large-scale version, similarly to f_gallagher, use 2 additional problems, problem_1 and problem_2 that will serve to compute the value in the min, the main problem will compute the 10(...) part which is in the "final" transformed solution */
+
+

@@ -544,7 +544,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
     ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
                                 dictFunc[dictFunc.keys()[0]][0].algId,
-                                algorithmCount = ppfig.AlgorithmCount.ONE,
+                                htmlPage = ppfig.HtmlPage.ONE,
                                 values_of_interest = values_of_interest,
                                 isBiobjective = dsList.isBiobjective(),
                                 functionGroups = dsList.getFuncGroups())
