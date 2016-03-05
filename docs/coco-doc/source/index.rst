@@ -149,12 +149,12 @@ has been implemented within the COCO_ framework. [#]_
 The COCO_ framework provides the practical means for an automatized
 benchmarking procedure. Benchmarking an optimization algorithm, say,
 implemented in the function ``fmin`` in Python, on a benchmark ``suite`` becomes 
-as simple as
+as simple as [#]_
 
 .. raw:: latex
 
     in Figure 1. \begin{figure} %\begin{minipage}{\textwidth}
-    
+
 .. code:: python
 
   import cocoex  # or: import bbob_pproc as cocoex
@@ -198,6 +198,18 @@ most experimenters needed to setup and implement themselves, if they wanted to
 benchmark an algorithm properly. The framework has been used successfully for
 benchmarking far over hundred algorithms by many researchers.  
 
+.. [#] After the installation which can be as simple as 
+
+  .. code:: bash
+
+    $ git clone https://github.com/numbbo/coco.git  # get coco
+    $ cd coco
+    $ python do.py run-python  # install Python experimental module cocoex
+    $ python do.py install-postprocessing  # install post-processing :-)
+    $ cp code-experiments/build/python/example_experiment.py ./my_experiment_runner.py
+
+..    $ python my_experiment_runner.py  # run the "default" experiment
+    
 .. [#] One problem is that we often get, besides *statistical* significance, no
    indication of *how much* better an algorithm is. That is, benchmarking
    results often give no indication of *semantic* significance or *relevance*.
@@ -263,8 +275,7 @@ the following defining features.
 .. [#] Runtimes measured in |f|-evaluations are widely
        comparable and designed to stay. The experimental procedure
        [BBO2016exp] includes however a timing experiment which records the
-       more volatile
-       internal computational effort of the algorithm. 
+       internal computational effort of the algorithm in CPU or wall clock time. 
 
 .. [#] As opposed to ranking algorithm based on their solution quality achieved
   after a given runtime.  
@@ -297,8 +308,8 @@ We specify a few terms which are used later.
 *runtime*
   We define *runtime*, or *run-length* [HOO1998]_ as the *number of
   evaluations* conducted on a given problem until a prescribed target value is
-  hit, also referred to as number of *function* evaluations. Runtime is our 
-  central performance measure.
+  hit, also referred to as number of *function* evaluations or |f|-evaluations.
+  Runtime is our central performance measure.
 
 *suite*
   A test- or benchmark-suite is a collection of problems, typically between
@@ -318,7 +329,7 @@ Functions, Instances, Problems, and Targets
 ============================================
 
 In the COCO_ framework we consider **functions**, |fi|, for each suite
-distinguished by their identifier :math:`i=1,2,\dots` 
+distinguished by their identifier :math:`i=1,2,\dots` .  
 Functions are further
 *parametrized* by the (input) dimension, |n|, and the instance number, |j|, [#]_
 that is, for a given |m| we have
@@ -401,9 +412,10 @@ undefined --- while
 it has been bound to be at least :math:`k+1`, where |k| is the number of 
 evaluations in this unsuccessful run. 
 The number of defined runtime values depends on the budget the 
-algorithm has been explored. 
-Therefore, larger budgets are preferable --- however
-they should not come at the expense of abandoning reasonable termination conditions, but rather by introducing restarts. 
+algorithm has explored. 
+Therefore, larger budgets are preferable --- however they should not come at
+the expense of abandoning reasonable termination conditions. Instead,
+restarts should be done. 
 
 .. [#] Note the use of the term *problem* in two meanings: as the problem the
   algorithm is benchmarked on, |p|, and as the problem, |pt|, an algorithm can
@@ -445,9 +457,11 @@ Restarts however "*improve the reliability, comparability, precision, and "visib
 
 *Simulated restarts* [HAN2010b]_ [BBO2016perf]_ are used to determine a runtime for unsuccessful runs. Semantically, this is only valid if we interpret different 
 instances as random repetitions. 
-Resembling the bootstrapping method [ERF1993]_, we draw uniformly at random a
+Resembling the bootstrapping method [ERF1993]_, when we face an unsolved problem, we draw uniformly at random a
 new |j| until we find an instance such that |pt| was solved. [#]_
-The evaluations from the drawn instances are summed up to determine the runtime. 
+The evaluations done on the first unsolved problem and on all subsequently
+drawn unsolved problems are added to the runtime on the last problem and
+considered as runtime on the original unsolved problem.  
 This method is applied if a problem instance was not solved and is
 (only) available if at least one problem instance was solved.
 
@@ -462,7 +476,7 @@ This method is applied if a problem instance was not solved and is
 
 .. [#] More specifically, we consider the problems :math:`(f_i, n, j, t(j))` for
   all benchmarked instances |j|. The targets :math:`t(j)` depend on the instance 
-  in a way to make the instances comparable [BBO2016perf]_. 
+  in a way to make the problems comparable [BBO2016perf]_. 
 
 
 Aggregation
@@ -485,21 +499,31 @@ should be used for algorithm selection.
 
 We have several ways to aggregate the resulting runtimes. 
 
- - Empirical cumulative distribution functions (|ECDF|). In the domain of optimization
-   |ECDF| are also known as *data profiles* [MOR20xx]_. We prefer the |ECDF| over performance profiles [MORxxxx]_ for two reasons. |ECDF| do not depend on other presented algorithms, that is, they are entirely comparable across different publications. 
-   |ECDF| separate in a natural way easy problems from difficult problems for the considered algorithm. We usually display |ECDF| on the log scale, which makes 
-   the area above the curve and the *difference area* between two curves a 
-   meaningful conception [BBO2016perf]. 
+ - Empirical cumulative distribution functions (|ECDF|). In the domain of 
+   optimization, |ECDF| are also known as *data profiles* [MOR2009]_. We
+   prefer the simple |ECDF| over the more innovative performance profiles
+   [MOR2002]_ for two reasons.
+   |ECDF| do not depend on other presented algorithms, that is, they are
+   entirely comparable across different publications.  |ECDF| separate in a
+   natural way easy problems from difficult problems for the considered
+   algorithm. We usually display |ECDF| on the log scale, which makes the area
+   above the curve and the *difference area* between two curves a meaningful
+   conception [BBO2016perf]. 
    
    .. object/concept/element/notion/aspect/component. 
  
  - Averaging, as an estimator of the expected runtime. The average runtime, that
    is the estimated expected runtime, is
-   often plotted against dimension to indicate scaling with dimension. 
+   often plotted against dimension to indicate scaling with dimension. The 
+   arithmetic average
+   is only likely to be meaningful if the underlying distribution of the values
+   is similar. Otherwise, the average of log-runtimes, or geometric average, 
+   is more meaningful. 
    
  - Restarts and simulated restarts, see Section :ref:`sec:Restarts`, do not 
-   aggregate runtimes (which are literally define when |t| was hit), but they aggregate time data to possibly supplement
-   missing runtime values, see also [BBO2016perf]_. 
+   literally aggregate runtimes (which are literally define only when |t| was
+   hit).  They aggregate however time data to supplement missing runtime
+   values, see also [BBO2016perf]_. 
 
 .. |ERT| replace:: ERT
 .. |ECDF| replace:: ECDF
