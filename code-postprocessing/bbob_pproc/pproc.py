@@ -585,6 +585,7 @@ class DataSet():
         ert
         evals
         evals_
+        evals_with_restarts
         finalfunvals
         funcId
         funvals
@@ -958,6 +959,26 @@ class DataSet():
         self.ert = numpy.array(self.ert)
         self.target = numpy.array(self.target)
 
+    def evals_with_restarts(self, targets, sample_size_per_instance, sorted_runtimes=False):
+        """return runtimes (evals) where simulated restarts are used for unsuccessful runs.
+
+        The number of returned evals is ``self.nbRuns() * sample_size_per_instance``.
+
+        TODO: attaching a count to each point would help to reduce the data size (and
+        probably the plotting spead) significantly.
+
+        """
+        raise NotImplementedError()
+        data_rows = self.detEvals(targets)
+        all_evals, all_counts = [], []
+        for d in data_rows:
+            evals, counts = toolsstats.runtimes_with_restarts(d, sample_size_per_instance)
+            # this should become a runtimes class with a counts and an evals attribute
+            raise NotImplementedError()
+        if sorted_runtimes:
+            raise NotImplementedError()
+        return res
+    
     def __eq__(self, other):
         """Compare indexEntry instances."""
         res = (self.__class__ is other.__class__ and

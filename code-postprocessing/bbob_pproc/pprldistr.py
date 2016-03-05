@@ -48,7 +48,7 @@ import numpy as np
 import pickle, gzip
 import matplotlib.pyplot as plt
 from pdb import set_trace
-from . import toolsstats, genericsettings, pproc
+from . import toolsstats, genericsettings, pproc, toolsdivers
 from .ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 from .pptex import color_to_latex, marker_to_latex
 
@@ -365,7 +365,7 @@ def _plotERTDistr(dsList, target, **plotArgs):
     """
     x = []
     nn = 0
-    samplesize = genericsettings.simulated_runlength_bootstrap_sample_size # samplesize should be at least 1000
+    samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
     percentiles = 0.5 # could be anything...
 
     for i in dsList:
@@ -621,7 +621,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax = False,
         plt.axvline(max(i.mMaxEvals() / i.dim for i in dictdim1[d]),
                     marker = 'o', markersize = 15., color = 'k', markerfacecolor = 'None',
                     markeredgewidth = plt.getp(tmp[-1], 'linewidth'))
-        plt.legend(loc = 'best')
+        toolsdivers.legend(loc = 'best')
         plt.text(0.5, 0.98, text, horizontalalignment = "center",
                  verticalalignment = "top", transform = plt.gca().transAxes) # bbox=dict(ec='k', fill=False),
         beautifyRLD(evalfmax)
@@ -839,7 +839,7 @@ def main(dsList, isStoringXMax = False, outputdir = '',
      #       pass
 
         plt.axvline(x = maxEvalsFactor, color = 'k') # vertical line at maxevals
-        plt.legend(loc = 'best')
+        toolsdivers.legend(loc = 'best')
         plt.text(0.5, 0.98, text, horizontalalignment = "center",
                  verticalalignment = "top",
                  transform = plt.gca().transAxes

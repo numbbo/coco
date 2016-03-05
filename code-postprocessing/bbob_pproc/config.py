@@ -37,15 +37,16 @@ def config(isBiobjective=None):
     """called from a high level, e.g. rungeneric, to configure the lower level 
     modules via modifying parameter settings. 
     """
-
+	
     if isBiobjective is not None:
         genericsettings.loadCurrentTestbed(isBiobjective, pproc.TargetValues)
         
         if isBiobjective:
             # pptable:
             pptable.set_table_caption('biobjective')
-        
-        
+
+	genericsettings.simulated_runlength_bootstrap_sample_size = (10 + 990 / (1 + 10 * max(0, genericsettings.in_a_hurry)))
+			
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets 
     if genericsettings.runlength_based_targets in (True, 1):
         print 'Using bestGECCO2009 based target values: now for each function the target ' + \
