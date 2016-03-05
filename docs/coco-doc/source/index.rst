@@ -101,6 +101,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. |f| replace:: :math:`f`
 .. |g| replace:: :math:`g`
 .. |x| replace:: :math:`\x`
+.. |l| replace:: :math:`l`
 
 
 .. #################################################################################
@@ -117,15 +118,15 @@ We consider the continuous black-box optimization or search problem to minimize
 
     f: X\subset\mathbb{R}^n \to \mathbb{R}^m \qquad n,m\ge1 
 
-such that for the constraints
+such that for the |l| constraints
 
 .. math::
 
     g: X\subset\mathbb{R}^n \to \mathbb{R}^l \qquad l\ge0 
 
 we have :math:`g_i(\x)\le0` for all :math:`i=1\dots l`.
-More specifically, we aim to find, as quickly as possible, one or several solutions |x| in the search space :math:`X` with *small* value(s) of :math:`f(\x)\in\mathbb{R}^m` that satisfy the above constraints |g|. 
-We consider *time* to be the number of calls to the function |f|. 
+More specifically, we aim to find, as quickly as possible, one or several solutions |x| in the search space :math:`X` with *small* value(s) of :math:`f(\x)\in\mathbb{R}^m` that satisfy all above constraints |g|. 
+We consider *time* to be defined as the number of calls to the function |f|. 
 
 A continuous optimization algorithm, also known as *solver*, addresses the
 above problem. 
@@ -147,7 +148,7 @@ has been implemented within the COCO_ framework. [#]_
 
 The COCO_ framework provides the practical means for an automatized
 benchmarking procedure. Benchmarking an optimization algorithm, say,
-implemented in the function ``fmin`` in Python, on a benchmark suite becomes 
+implemented in the function ``fmin`` in Python, on a benchmark ``suite`` becomes 
 as simple as
 
 .. raw:: latex
@@ -192,13 +193,19 @@ The COCO_ framework provides currently
  - data post-processing in Python and data display facilities in ``html``
  - article LaTeX templates
 
-The underlying philosophy of COCO_ is to provide everything which most experimenters 
-needed to setup and implement themselves otherwise, if they wanted to benchmark an algorithm properly. The framework has been used successfully for benchmarking hundreds of algorithms.  
+The underlying philosophy of COCO_ is to provide everything which otherwise
+most experimenters needed to setup and implement themselves, if they wanted to
+benchmark an algorithm properly. The framework has been used successfully for
+benchmarking far over hundred algorithms by many researchers.  
 
-.. [#] It remains to be a standard procedure to present as main output
-   hundreds of numbers which are interpretable on an ordinal scale
-   [STE1946]_ only, left to the reader to scan and compare to each other, 
-   possibly across different articles. 
+.. [#] One problem is that we often get, besides *statistical* significance, no
+   indication of *how much* better an algorithm is. That is, benchmarking
+   results often give no indication of *semantic* significance or *relevance*.
+   The main output is often hundreds of tabulated numbers interpretable on an
+   ordinal scale [STE1946]_ only
+   
+.. left to the reader to
+   scan and compare to each other, possibly across different articles. 
     
 .. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
 
