@@ -145,8 +145,9 @@ def batch_loop(solver, suite, observer, budget,
             continue
         observer.observe(problem)
         short_info.print(problem) if verbose else None
-        coco_optimize(solver, problem, budget * problem.dimension, max_runs)
-        print_flush(".") if verbose else None
+        res = coco_optimize(solver, problem, budget * problem.dimension, max_runs)
+        if verbose:
+            print_flush("!" if res > 2 else ":" if res > 1 else ".")
         short_info.add_evals(problem.evaluations)
         problem.free()
         addressed_problems += [problem.id]
@@ -169,6 +170,8 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
     until either the `max_evals` are exhausted or `max_run` solver calls
     have been made or the `solver` has not called `fun` even once
     in the last run.
+
+    Return number of (almost) independent runs.
     """
     range_ = fun.upper_bounds - fun.lower_bounds
     center = fun.lower_bounds + range_ / 2
@@ -184,13 +187,13 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
         if solver.__name__ in ("random_search", ):
             solver(fun, fun.lower_bounds, fun.upper_bounds,
                    remaining_evals)
-        elif solver.__name__ == 'fmin' and solver.func_globals['__name__'] == 'cma':
+        elif solver.__name__ == 'fmin' and solver.__globals__['__name__'] == 'cma':
             x0 = "%f + %f * np.random.rand(%d)" % (center[0], 0.8 * range_[0],
                                             fun.dimension)
-            solver(fun, x0, 0.2 * range_[0], restarts=8,
+            solver(fun, x0, 0.2 / 10**(restarts == 0) * range_[0], restarts=6,
                    options=dict(scaling=range_/range_[0], maxfevals=remaining_evals,
                                 termination_callback=lambda es: fun.final_target_hit,
-                                verbose=-9))
+                                verb_log=0, verb_disp=0, verbose=-9))
         elif solver.__name__ == 'fmin_slsqp':
             solver(fun, x0, iter=1 + remaining_evals / fun.dimension,
                    iprint=-1)
@@ -212,9 +215,7 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
             if fun.evaluations < max_evals - remaining_evals:
                 raise RuntimeError("function evaluations decreased")
             break
-
-    if restarts > 0:
-        print("%d runs, " % (restarts + 1), end="")
+    return restarts + 1
 
 # ===============================================
 # set up: CHANGE HERE SOLVER AND FURTHER SETTINGS AS DESIRED
@@ -230,11 +231,11 @@ SOLVER = random_search
 #SOLVER = my_solver # fmin_slsqp # SOLVER = cma.fmin
 suite_name = "bbob-biobj"
 #suite_name = "bbob"
-suite_instance = ""
+suite_instance = "year:2016"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
 observer_name = suite_name
 observer_options = (
-    ' result_folder: %s_on_%s_budget%04d '
+    ' result_folder: %s_on_%s_budget%04dxD '
                  % (SOLVER.__name__, suite_name, budget) +
     ' algorithm_name: %s ' % SOLVER.__name__ +
     ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
