@@ -35,9 +35,9 @@
 #include "coco_utilities.c"
 #include "coco_problem.c"
 #include "coco_string.c"
+#include "mo_avl_tree.c"
 #include "observer_biobj.c"
 
-#include "logger_biobj_avl_tree.c"
 #include "mo_utilities.c"
 
 /** @brief Number of implemented indicators */
@@ -124,7 +124,7 @@ typedef struct {
 } logger_biobj_data_t;
 
 /**
- * @brief The type for the node's item in the AVL tree.
+ * @brief The type for the node's item in the AVL tree as used by the bi-objective logger.
  */
 typedef struct {
   double *x;                 /**< @brief The decision values of this solution. */
@@ -179,26 +179,14 @@ static void logger_biobj_node_free(logger_biobj_avl_item_t *item, void *userdata
 }
 
 /**
- * @brief Checks if the given node is smaller than the nadir point, and stores this information in the node's
- * item->within_ROI field.
+ * @brief Checks if the given node item is within the ROI and stores this information in its
+ * within_ROI field.
  */
-static void logger_biobj_check_if_within_ROI(const coco_problem_t *problem, avl_node_t *node) {
+static void logger_biobj_check_within_ROI(const coco_problem_t *problem,
+                                          logger_biobj_avl_item_t *node_item) {
 
-  logger_biobj_avl_item_t *node_item = (logger_biobj_avl_item_t *) node->item;
-  size_t i;
-
-  node_item->within_ROI = 1;
-  for (i = 0; i < problem->number_of_objectives; i++)
-    if (node_item->y[i] > problem->nadir_value[i]) {
-      node_item->within_ROI = 0;
-      break;
-    }
-
-  if (!node_item->within_ROI)
-    for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++)
-      node_item->indicator_contribution[i] = 0;
-
-  return;
+  node_item->within_ROI = mo_solution_is_within_ROI(node_item->y, problem->best_value, problem->nadir_value,
+      problem->number_of_objectives);
 }
 
 /**
@@ -352,7 +340,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
     avl_item_insert(logger->buffer_tree, node_item);
 
     if (logger->compute_indicators) {
-      logger_biobj_check_if_within_ROI(problem, new_node);
+      logger_biobj_check_within_ROI(problem, node_item);
       if (node_item->within_ROI) {
         /* Compute indicator value for new node and update the indicator value of the affected nodes */
         logger_biobj_avl_item_t *next_item, *previous_item;
@@ -508,9 +496,8 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
     fprintf(indicator->info_file, "algorithm = '%s', indicator = '%s', folder = '%s'\n%% %s", observer->algorithm_name,
         indicator_name, problem->problem_type, observer->algorithm_info);
   }
-  if (observer_biobj->previous_function != problem->suite_dep_function 
-    || observer_biobj->previous_number_of_variables != problem->number_of_variables
-  ) {
+  if ((observer_biobj->previous_function != problem->suite_dep_function)
+    || (observer_biobj->previous_dimension != problem->number_of_variables)) {
     fprintf(indicator->info_file, "\nfunction = %2lu, ", problem->suite_dep_function);
     fprintf(indicator->info_file, "dim = %2lu, ", problem->number_of_variables);
     fprintf(indicator->info_file, "%s", file_name);
@@ -852,7 +839,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
       logger_biobj->indicators[i] = logger_biobj_indicator(logger_biobj, observer, inner_problem, logger_biobj_indicators[i]);
 
     observer_biobj->previous_function = (long) inner_problem->suite_dep_function;
-    observer_biobj->previous_number_of_variables = (long) inner_problem->number_of_variables;
+    observer_biobj->previous_dimension = (long) inner_problem->number_of_variables;
   }
 
   problem = coco_problem_transformed_allocate(inner_problem, logger_biobj, logger_biobj_free, observer->observer_name);
