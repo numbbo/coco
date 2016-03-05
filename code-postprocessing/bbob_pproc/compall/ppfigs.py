@@ -39,29 +39,6 @@ scaling_figure_caption_end = (
                          if show_significance else ''
                 )
 
-ecdfs_figure_caption_standard = (
-                r"Bootstrapped empirical cumulative distribution of the number " +
-                r"of objective function evaluations divided by dimension " +
-                r"(FEvals/DIM) for 50 targets in $10^{[-8..2]}$ for all "+
-                r"functions and subgroups in #1-D. The ``best 2009'' line "+
-                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
-                r"for each single target."
-                )
-
-ecdfs_figure_caption_rlbased = (
-                r"Bootstrapped empirical cumulative distribution of the number " +
-                r"of objective function evaluations divided by dimension " +
-                r"(FEvals/DIM) for all functions and subgroups in #1-D." +
-                r" The targets are chosen from $10^{[-8..2]}$ " +
-                r"such that the REFERENCE_ALGORITHM artificial algorithm just " +
-                r"not reached them within a given budget of $k$ $\times$ DIM, " +
-                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. " +
-                r"The ``best 2009'' line " +
-                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
-                r"for each selected target."
-                )
-
-
 styles = genericsettings.line_styles
 def fix_styles(number, styles=styles):
     """a short hack to fix length of styles"""
@@ -93,6 +70,34 @@ def scaling_figure_caption(target):
 
 def ecdfs_figure_caption(target):
     assert len(target) == 1
+
+    best2009text = (
+                r"The ``best 2009'' line " +
+                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
+                r"for each selected target."
+                )
+    ecdfs_figure_caption_standard = (
+                r"Bootstrapped empirical cumulative distribution of the number " +
+                r"of objective function evaluations divided by dimension " +
+                r"(FEvals/DIM) for " +
+                len(genericsettings.current_testbed.pprldmany_target_range_latex) +
+                r" targets in " + 
+                genericsettings.current_testbed.pprldmany_target_range_latex +
+                r" for all functions and subgroups in #1-D. " + ( best2009text
+                if genericsettings.current_testbed.name != 'bbob-biobj' 
+                else "")
+                )
+    ecdfs_figure_caption_rlbased = (
+                r"Bootstrapped empirical cumulative distribution of the number " +
+                r"of objective function evaluations divided by dimension " +
+                r"(FEvals/DIM) for all functions and subgroups in #1-D." +
+                r" The targets are chosen from " +
+                genericsettings.current_testbed.pprldmany_target_range_latex +
+                r"such that the REFERENCE_ALGORITHM artificial algorithm just " +
+                r"not reached them within a given budget of $k$ $\times$ DIM, " +
+                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. " + best2009text
+                )    
+    
     if isinstance(target, pproc.RunlengthBasedTargetValues):
         s = ecdfs_figure_caption_rlbased.replace('REFERENCE_ALGORITHM', 
                                                          target.reference_algorithm)
@@ -287,7 +292,7 @@ def beautify(legend=False, rightlegend=False):
     axisHandle.set_yticklabels(tmp2)
 
     if legend:
-        plt.legend(loc=0, numpoints=1)
+        toolsdivers.legend(loc=0, numpoints=1)
 
 def generateData(dataSet, target):
     """Returns an array of results to be plotted.
@@ -526,7 +531,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
             plotLegend(handles)
         else:
             if f in (1, 24, 101, 130):
-                plt.legend()
+                toolsdivers.legend()
 
         saveFigure(filename, figFormat=genericsettings.getFigFormats(), verbose=verbose)
 

@@ -36,7 +36,7 @@ finaltarget = 1e-8 # value for determining the success ratio
 targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
 targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
 targetf = 1e-8 # value for determining the success ratio
-samplesize = genericsettings.simulated_runlength_bootstrap_sample_size # TODO: change samplesize
+samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
 # def tablespec(targets):
 # 
 #     i = 0
@@ -529,7 +529,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         res = ("").join(str(item) for item in tableHtml)
         res = '<p><b>%d-D</b></p>\n<table>\n%s</table>\n' % (d, res)
 
-        filename = os.path.join(outputdir, genericsettings.single_algorithm_file_name + '.html')
+        filename = os.path.join(outputdir, 'pptable.html')
         lines = []
         with open(filename) as infile:
             for line in infile:
