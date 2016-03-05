@@ -465,6 +465,16 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
         if not os.path.exists(single_fct_output_dir):
             os.makedirs(single_fct_output_dir)
             
+        if isSingleAlgorithm:
+            main(dictAlg,
+                 isBiobjective,
+                 order=sortedAlgs,
+                 outputdir=single_fct_output_dir,
+                 info='',
+                 verbose=verbose,
+                 parentHtmlFileName=parentHtmlFileName,
+                 plotType=PlotType.DIM)
+
         dictFG = pp.dictAlgByFun(dictAlg)
         for fg, tmpdictAlg in dictFG.iteritems():
 
@@ -695,7 +705,10 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     labels, handles = plotLegend(lines, x_limit)
     if True:  # isLateXLeg:
-        fileName = os.path.join(outputdir,'%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
+        if info:        
+            fileName = os.path.join(outputdir,'%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
+        else:
+            fileName = os.path.join(outputdir,'%s.tex' % (genericsettings.pprldmany_file_name))
         with open(fileName, 'w') as f:
             f.write(r'\providecommand{\nperfprof}{7}')
             algtocommand = {}  # latex commands
@@ -728,7 +741,10 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             if verbose:
                 print 'Wrote right-hand legend in %s' % fileName
 
-    figureName = os.path.join(outputdir,'%s_%s' % (genericsettings.pprldmany_file_name, info))
+    if info:    
+        figureName = os.path.join(outputdir,'%s_%s' % (genericsettings.pprldmany_file_name, info))
+    else:
+        figureName = os.path.join(outputdir,'%s' % (genericsettings.pprldmany_file_name))
     #beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
     beautify()
 
