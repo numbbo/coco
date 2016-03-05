@@ -56,8 +56,7 @@ best = ('AMALGAM', 'iAMALGAM', 'VNS', 'MA-LS-CHAIN', 'BIPOP-CMA-ES', 'IPOP-ACTCM
    'DIRECT', 'DASA', 'POEMS', 'Cauchy-EDA', 'RANDOMSEARCH')
 
 # input parameter settings
-perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size_rld  # number of bootstrap samples drawn for each fct+target in the performance profile
-dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
+perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 3
 
 styles = [{'marker': 'o', 'linestyle': '-', 'color': 'b'},
