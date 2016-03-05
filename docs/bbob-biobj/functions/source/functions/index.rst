@@ -368,7 +368,6 @@ Combination of separable ellipsoid function (:math:`f_2` in the
 (:math:`f_{8}`
 in the ``bbob`` suite).
 
-
 Only the first objective is separable and unimodal. The second
 objective is partially separable (tri-band structure) and has a local
 optimum with an attraction volume of about 25\%.
@@ -562,29 +561,110 @@ Information gained from this function:
 
 
   
-.. todo::
-   finish with the last 25 functions
-
    
 .. _f21:
    
 :math:`f_{21}`: Attractive sector/Rosenbrock original
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of attractive sector function (:math:`f_6`
+in the ``bbob`` suite) and Rosenbrock function (:math:`f_{8}`
+in the ``bbob`` suite).
+
+The first function is unimodal but highly asymmetric, where only one
+*hypercone* (with angular base area) with a volume of
+roughly :math:`(1/2)^D` yields low function values (with the
+optimum at the tip of the cone). The second
+objective is partially separable (tri-band structure) and has a local
+optimum with an attraction volume of about 25\%.
+Note also that the first objective 
+function can be deceptive for cumulative step size adaptation.
+
+Contained in the *moderate - moderate* function class.
+
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of relatively large search space areas
+  leading to suboptimal values of the two objective
+  functions?
+
 
 .. _f22:
    
 :math:`f_{22}`: Attractive sector/Sharp ridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of attractive sector function (:math:`f_6`
+in the ``bbob`` suite) and sharp ridge function (:math:`f_{13}`
+in the ``bbob`` suite).
 
+Both objective functions are unimodal and non-separable. The
+first objective is highly asymmetric in the sense that only one
+*hypercone* (with angular base area) with a volume of
+roughly :math:`(1/2)^D` yields low function values (with the
+optimum at the tip of the cone). For optimizing the second
+objective, a sharp, i.e., non-differentiable ridge has to be followed.
+
+Contained in the *moderate - ill-conditioned* function class.
+
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What are the effects of assymmetries and non-differentiabilities
+  when approaching the Pareto front/Pareto set?
+
+  
 .. _f23:
    
 :math:`f_{23}`: Attractive sector/Sum of different powers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of attractive sector function (:math:`f_6`
+in the ``bbob`` suite) and sum of different powers function
+(:math:`f_{14}` in the ``bbob`` suite).
+
+Both objective functions are unimodal and non-separable. The
+first objective is highly asymmetric in the sense that only one
+*hypercone* (with angular base area) with a volume of
+roughly :math:`(1/2)^D` yields low function values (with the
+optimum at the tip of the cone). When approaching the second
+objective's optimum, the sensitivies of the variables in the
+rotated search space become more and more different.
+
+Contained in the *moderate - ill-conditioned* function class.
+
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What are the effects of assymmetries and an increasing
+  conditioning in one objective function (sum of different
+  powers function) when approaching Pareto-optimal points?
+  
 
 .. _f24:
    
 :math:`f_{24}`: Attractive sector/Rastrigin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of attractive sector function (:math:`f_6`
+in the ``bbob`` suite) and Rastrigin function
+(:math:`f_{15}` in the ``bbob`` suite).
+
+Both objectives are non-separable, and the second one
+is highly multi-modal (roughly :math:`10^D` local
+optima) while the first one is unimodal. Further
+properties are that the first objective is highly
+assymetric and the second has a conditioning of about 10.
+
+Contained in the *moderate - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* With respect to fully unimodal and rather symmetric functions:
+  what is the effect of multimodality and assymmetry?
+
+
+
+.. todo::
+   finish with the remaining functions
+
 
 .. _f25:
    
