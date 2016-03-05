@@ -147,10 +147,10 @@ def getRldLink(htmlPage):
     if genericsettings.isRldOnSingleFcts and htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         links = ''        
         if htmlPage == HtmlPage.ONE:        
-            links += '<H3><a href="pprldmany-single-functions/%s.html">Runlength distribution plots</a></H3>\n' % genericsettings.pprldmany_file_name
-        links += '<H3><a href="pprldmany-single-functions/%s_02D.html">Runlength distribution plots (per dimension)</a></H3>' % genericsettings.pprldmany_file_name
+            links += '<H3><a href="pprldmany-single-functions/%s.html">Runtime distribution plots</a></H3>\n' % genericsettings.pprldmany_file_name
+        links += '<H3><a href="pprldmany-single-functions/%s_02D.html">Runtime distribution plots (per dimension)</a></H3>' % genericsettings.pprldmany_file_name
         if htmlPage == HtmlPage.ONE:        
-            links += '<H3><a href="pprldmany-single-functions/%s_02D.html">Runlength distribution plots by group (per dimension)</a></H3>' % genericsettings.pprldmany_group_file_name
+            links += '<H3><a href="pprldmany-single-functions/%s_02D.html">Runtime distribution plots by group (per dimension)</a></H3>' % genericsettings.pprldmany_group_file_name
         return links
         
     return ''
@@ -186,7 +186,7 @@ def save_single_functions_html(filename,
         if functionGroups is None:
             functionGroups = OrderedDict([])
         
-        if htmlPage not in (HtmlPage.PPRLDMANY_BY_GROUP, HtmlPage.PPRLDISTR):
+        if not htmlPage == HtmlPage.PPRLDMANY_BY_GROUP:
             functionGroups.update({'noiselessall':'All functions'})
 
         maxFunctionIndex = 55 if isBiobjective else 24
@@ -195,11 +195,11 @@ def save_single_functions_html(filename,
         bestAlgExists = not isBiobjective
         
         if htmlPage is HtmlPage.ONE:
-            f.write('<H3><a href="ppfigdim.html">Average number of f-evaluations versus dimension for selected targets</a></H3>\n')
-            f.write('<H3><a href="pptable.html">Average number of f-evaluations for selected targets</a></H3>\n')
-            f.write('<H3><a href="pprldistr.html">Number of f-evaluations for selected targets and f-distributions</a></H3>\n')
+            f.write('<H3><a href="ppfigdim.html">Average runtime versus dimension for selected targets</a></H3>\n')
+            f.write('<H3><a href="pptable.html">Average runtime for selected targets</a></H3>\n')
+            f.write('<H3><a href="pprldistr.html">Runtime for selected targets and f-distributions</a></H3>\n')
             if not isBiobjective:            
-                f.write('<H3><a href="pplogloss.html">Number of f-evaluation loss ratios</a></H3>\n')
+                f.write('<H3><a href="pplogloss.html">Runtime loss ratios</a></H3>\n')
 
             names = ['pprldistr', 'ppfvdistr']
             dimensions = [5, 20]
@@ -286,12 +286,12 @@ def save_single_functions_html(filename,
             if addLinkForNextDim:
                 f.write('"\n</A>\n')
         elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP:
-            headerERT = 'Scaling of ERT'
+            headerERT = 'Runtime distributions (ECDF), function groups over all targets'
             f.write("\n<H2> %s </H2>\n" % headerERT)
             if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
                 f.write('<A HREF="%s">\n' % (name + name_for_click  + '.html'))
-            isBiobjective
+            
             for fg in functionGroups:
                 f.write(addImage('%s_%s%s.%s' % (name, fg, add_to_names, extension), not addLinkForNextDim))
             if addLinkForNextDim:

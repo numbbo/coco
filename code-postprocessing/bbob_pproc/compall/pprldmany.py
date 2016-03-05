@@ -763,6 +763,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             if plotType == PlotType.ALG:
                 add_to_names += '_%02dD' % (dim)
 
+            header = 'Runtime distributions (ECDF), single functions over all targets' if plotType == PlotType.DIM \
+                    else 'Runtime distributions (ECDF), single functions over all targets, single dimension'            
             ppfig.save_single_functions_html(
                 os.path.join(outputdir, fileName),
                 '', # algorithms names are clearly visible in the figure
@@ -770,7 +772,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 htmlPage = ppfig.HtmlPage.NON_SPECIFIED,
                 isBiobjective = isBiobjective,
                 parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None,
-                header = 'Scaling of ERT with dimension')
+                header = header)
                 
     if close_figure:
         plt.close()
