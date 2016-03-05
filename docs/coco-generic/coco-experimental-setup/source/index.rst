@@ -108,7 +108,7 @@ Based on [HAN2009]_ and [HAN2010]_, we describe a comparatively simple experimen
 set-up for *black-box optimization benchmarking*. We recommend to use this procedure
 within the COCO_ platform. [#]_ 
 
-Our central measure of performance, to which the experimental procedure is adapted, is the number of problem or function evaluations to reach a certain solution quality (function value or :math:`f`-value), also denoted as *runtime*. 
+Our central measure of performance, to which the experimental procedure is adapted, is the number of problem or function evaluations to reach a certain solution quality (function value or :math:`f`-value or indicator value), also denoted as *runtime*. 
 
 Terminology
 -----------
@@ -134,7 +134,7 @@ Terminology
   as the *number of evaluations* 
   conducted on a given problem, also referred to as number of *function* evaluations. 
   Our central performance measure is the runtime until a given target value 
-  is hit.
+  is hit [BBO2016perf]_.
 
 *suite*
   A test- or benchmark-suite is a collection of problems, typically between
@@ -228,7 +228,8 @@ We consider the budget, termination criteria, and restarts to be part of the
 benchmarked algorithm. Algorithms with any budget of function evaluations are eligible. 
 The choice of termination is a relevant part of the algorithm. 
 On the one hand, allowing a larger number of function evaluations increases the chance to achieve better function values. On the other hand, a timely
-termination of a stagnating run can improve the performance. [#]_
+termination of a stagnating run can improve the performance, as these evaluations
+can be used more effectively. [#]_
 
 To exploit a large number of function evaluations effectively, we encourage to
 use independent restarts [#]_, in particular for algorithms which terminate
@@ -239,7 +240,7 @@ Moreover, any multistart procedure (which relies on an interim termination of th
 Multistarts may not be independent as they can feature a parameter sweep (e.g., increasing population size [HAR1999]_ [AUG2005]_) or can be based on the outcome of the previous starts. 
 
 An algorithm can be conclusively terminated if |coco_problem_final_target_hit|_ returns 1. 
-This saves CPU cycles without affecting the performance assessment, because there is no target left to hit for the first time. 
+This saves CPU cycles without affecting the performance assessment, because there is no target left to hit. 
 
 .. [#] In the single objective case care should be 
   taken to apply termination conditions that allow to hit the final target on
@@ -250,13 +251,13 @@ This saves CPU cycles without affecting the performance assessment, because ther
 
 .. [#] Therefore we call the experimental approach budget-free. This claim 
   however makes the assumption that the runtime distribution is the same on all 
-  instances |j| of the problem |p|. This assumption cannot be proven in general 
-  and might be violated in some cases for some algorithms. 
+  instances of a function in a given dimension. This assumption cannot be
+  proven in general and might be violated in some cases for some algorithms. 
 
 .. [#] Algorithms are only comparable up to the smallest budget given to 
   any of them. 
 
-
+.. |j| replace:: :math:`j`
 
 .. For example, using a fast algorithm
    with a small success probability, say 5% (or 1%), chances are that not a
@@ -353,9 +354,8 @@ Time Complexity Experiment
 In order to get a rough measurement of the time complexity of the algorithm,
 the wall-clock or CPU time should be measured when running the algorithm on
 the benchmark suite. The chosen setup should reflect a "realistic average
-scenario". [#]_ The **time divided by the number of function evaluations is
-presented separately for each dimension** for which the suite provides
-benchmark problems. The chosen setup, coding language, compiler and
+scenario". [#]_ The **time divided by the number of function evaluations shall be
+presented separately for each dimension**. The chosen setup, coding language, compiler and
 computational architecture for conducting these experiments are described.
 
 .. The :file:`exampletiming.*` code template is provided to run this experiment. For CPU-inexpensive algorithms the timing might mainly reflect the time spent in function :math:`fgeneric`.
