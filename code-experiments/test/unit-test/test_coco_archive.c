@@ -30,7 +30,7 @@ static void test_coco_archive(void **state) {
     coco_error("test_coco_archive() failed to open file '%s'.", file_name);
   }
 
-  coco_warning("Before coco_archive");
+  coco_warning("Before coco_archive %p", f_results);
 
   archive = coco_archive("bbob-biobj", 23, 2, 5);
 
