@@ -209,6 +209,7 @@ benchmarking far over hundred algorithms by many researchers.
     $ cp code-experiments/build/python/example_experiment.py ./my_experiment_runner.py
 
 ..    $ python my_experiment_runner.py  # run the "default" experiment
+    $ python -m bbob_pproc exdata/...
     
 .. [#] One problem is that we often get, besides *statistical* significance, no
    indication of *how much* better an algorithm is. That is, benchmarking
