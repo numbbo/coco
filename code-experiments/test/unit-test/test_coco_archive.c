@@ -30,12 +30,18 @@ static void test_coco_archive(void **state) {
     coco_error("test_coco_archive() failed to open file '%s'.", file_name);
   }
 
+  coco_warning("Before coco_archive");
+
   archive = coco_archive("bbob-biobj", 23, 2, 5);
+
+  coco_warning("After coco_archive"); i = 0;
 
   while (f_results) {
     /* Reads the values from the file */
     scan_return = fscanf(f_results, "%lu\t%lf\t%lf\t%lf\t%lf\t%lf\n", &number_of_evaluations, &x[0], &x[1],
         &y[0], &y[1], &hypervolume_read);
+
+    coco_warning("In loop 1 %lu", i);
 
     if (scan_return != 6)
       break;
@@ -45,29 +51,34 @@ static void test_coco_archive(void **state) {
         hypervolume_read);
     coco_archive_add_solution(archive, y[0], y[1], line);
     coco_free_memory(line);
+
+    coco_warning("In loop 2 %lu", i++);
   }
   fclose(f_results);
 
   coco_free_memory(x);
   coco_free_memory(y);
 
-/* TODO: Enable this test again once you figure out the problem with the mingw compiler */
-#if 0
   /* Check if the values are correct */
   number_of_solutions = coco_archive_get_number_of_solutions(archive);
   assert(number_of_solutions == 11);
+
+  coco_warning("After number_of_solutions");
 
   /* Checks that the computed hypervolume is correct */
   hypervolume_computed = coco_archive_get_hypervolume(archive);
   assert(about_equal_value(hypervolume_computed, hypervolume_read));
 
+  coco_warning("After hypervolume_computed");
+
   i = 0;
   while ((text = coco_archive_get_next_solution_text(archive)) != "") {
+	coco_warning("In loop 3 %lu", i);
+
     number = (size_t) strtol(text, NULL, 10);
     assert(numbers[i] == number);
     i++;
   }
-#endif
 
   coco_archive_free(archive);
 
