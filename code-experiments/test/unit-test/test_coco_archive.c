@@ -47,8 +47,15 @@ static void test_coco_archive(void **state) {
       break;
 
     /* Add solution to the archive */
+    coco_warning("In loop 1 %lu", number_of_evaluations);
+    coco_warning("In loop 1 %lf", x[0]);
+    coco_warning("In loop 1 %lf", x[1]);
+    coco_warning("In loop 1 %lf", y[0]);
+    coco_warning("In loop 1 %lf", y[1]);
+    coco_warning("In loop 1 %lu", hypervolume_read);
     line = coco_strdupf("%lu\t%lf\t%lf\t%lf\t%lf\t%lf\n", number_of_evaluations, x[0], x[1], y[0], y[1],
         hypervolume_read);
+    coco_warning("In loop 1 %s", line);
     coco_archive_add_solution(archive, y[0], y[1], line);
     coco_free_memory(line);
 
