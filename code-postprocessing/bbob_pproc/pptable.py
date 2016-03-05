@@ -36,7 +36,7 @@ finaltarget = 1e-8 # value for determining the success ratio
 targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
 targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
 targetf = 1e-8 # value for determining the success ratio
-samplesize = genericsettings.simulated_runlength_bootstrap_sample_size # TODO: change samplesize
+samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
 # def tablespec(targets):
 # 
 #     i = 0
@@ -93,8 +93,31 @@ table_caption_rest = r"""%
     functions.
     """
 table_caption = table_caption_one + table_caption_two1 + table_caption_rest
-table_caption_rlbased = table_caption_one + table_caption_two2 + table_caption_rest
 
+
+def set_table_caption(setting):
+    """ Sets table caption, based on the setting which can be
+        either 'rlbased' or 'biobjective'.
+    """    
+    global table_caption    
+    
+
+    if setting == 'rlbased':
+        table_caption = table_caption_one + table_caption_two2 + table_caption_rest
+    elif setting == 'biobjective':
+        table_caption = r"""%
+                Expected running time (ERT in number of function 
+                evaluations) to reach given targets. For each function, the ERT 
+                and in braces, as dispersion measure, the half difference between 90 and 
+                10\%-tile of bootstrapped run lengths is shown for the different target
+                \Df-values as shown in the top row. 
+                \#succ is the number of trials that reached the (final) target 
+                $\fopt + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+                The median number of conducted function evaluations is additionally given in 
+                \textit{italics}, if the target in the last column was never reached. 
+                """        
+    else:
+        warnings.warn('Not supported table caption setting. Using default.')
 
 def _treat(ds):
 
@@ -506,7 +529,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         res = ("").join(str(item) for item in tableHtml)
         res = '<p><b>%d-D</b></p>\n<table>\n%s</table>\n' % (d, res)
 
-        filename = os.path.join(outputdir, genericsettings.single_algorithm_file_name + '.html')
+        filename = os.path.join(outputdir, 'pptable.html')
         lines = []
         with open(filename) as infile:
             for line in infile:

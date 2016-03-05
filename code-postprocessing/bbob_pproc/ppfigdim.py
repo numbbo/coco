@@ -55,7 +55,7 @@ import os
 import warnings
 import matplotlib.pyplot as plt
 import numpy as np
-from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam
+from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam, htmldesc, toolsdivers
 
 xlim_max = None
 ynormalize_by_dimension = True  # not at all tested yet
@@ -72,53 +72,58 @@ styles = [  # sort of rainbow style, most difficult (red) first
 
 refcolor = 'wheat'
 
-caption_part_one = r"""%
-    Expected number of $f$-evaluations (\ERT, lines) to reach $\fopt+\Df$;
-    median number of $f$-evaluations (+) to reach the most difficult
-    target that was reached not always but at least once; maximum number of
-    $f$-evaluations in any trial ({\color{red}$\times$}); """ + (r"""interquartile 
-    range with median (notched boxes) of simulated runlengths
-    to reach $\fopt+\Df$;""" if genericsettings.scaling_figures_with_boxes 
-    else "") + """ all values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """
-    plotted as $\log_{10}$ values versus dimension. %
-    """
-    
-#""" .replace('REPLACE_THIS', r"interquartile range with median (notched boxes) of simulated runlengths to reach $\fopt+\Df$;" 
-#                if genericsettings.scaling_figures_with_boxes else '')
-#    # r"(the exponent is given in the legend of #1). " + 
-#    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
-#    "divided by the number of successful trials, where a trial is " +
-#    "successful if $\\fopt+\\Df$ was surpassed. The " +
-#    "$\\nbFEs(\\Df)$ are the total number (the sum) of $f$-evaluations while " +
-#    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
-#    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
-#    "function value.  " +
-scaling_figure_caption_fixed = caption_part_one + r"""%
-    Shown are $\Df = 10^{\{values_of_interest\}}$.  
-    Numbers above \ERT-symbols (if appearing) indicate the number of trials reaching the respective target. 
-    The light thick line with diamonds indicates the respective best result from BBOB-2009 for $\Df=10^{-8}$. 
-    Horizontal lines mean linear scaling, slanted grid lines depict quadratic scaling.  
-    """
-scaling_figure_caption_rlbased = caption_part_one + r"""%
-    Shown is the \ERT\ for 
-    targets just not reached by
-%    the largest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of 
-    the artificial GECCO-BBOB-2009 best algorithm  
-    within the given budget $k\times\DIM$, where $k$ is shown in the legend.
-%    was above $\{values_of_interest\}\times\DIM$ evaluations. 
-    Numbers above \ERT-symbols indicate the number of trials reaching the respective target.  
-    The light thick line with diamonds indicates the respective best result from BBOB-2009 for 
-    the most difficult target. 
-    Slanted grid lines indicate a scaling with ${\cal O}(\DIM)$ compared to ${\cal O}(1)$  
-    when using the respective 2009 best algorithm. 
-    """
-    # r"Shown is the \ERT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of the GECCO-BBOB-2009 best algorithm " + 
-    # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
 
 # should correspond with the colors in pprldistr.
 dimensions = genericsettings.dimensions_to_display
 
 def scaling_figure_caption():
+
+    caption_part_one = r"""%
+        Expected number of $f$-evaluations (\ERT, lines) to reach $\fopt+\Df$;
+        median number of $f$-evaluations (+) to reach the most difficult
+        target that was reached not always but at least once; maximum number of
+        $f$-evaluations in any trial ({\color{red}$\times$}); """ + (r"""interquartile 
+        range with median (notched boxes) of simulated runlengths
+        to reach $\fopt+\Df$;""" if genericsettings.scaling_figures_with_boxes 
+        else "") + """ all values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """
+        plotted as $\log_{10}$ values versus dimension. %
+        """
+        
+    #""" .replace('REPLACE_THIS', r"interquartile range with median (notched boxes) of simulated runlengths to reach $\fopt+\Df$;" 
+    #                if genericsettings.scaling_figures_with_boxes else '')
+    #    # r"(the exponent is given in the legend of #1). " + 
+    #    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
+    #    "divided by the number of successful trials, where a trial is " +
+    #    "successful if $\\fopt+\\Df$ was surpassed. The " +
+    #    "$\\nbFEs(\\Df)$ are the total number (the sum) of $f$-evaluations while " +
+    #    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
+    #    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
+    #    "function value.  " +
+    scaling_figure_caption_fixed = caption_part_one + r"""%
+        Shown are $\Df = 10^{\{values_of_interest\}}$.  
+        Numbers above \ERT-symbols (if appearing) indicate the number of trials
+        reaching the respective target. """ + (r"""The light thick line with
+        diamonds indicates the respective best result from BBOB-2009 for
+        $\Df=10^{-8}$. """ if genericsettings.current_testbed.name !=
+        'bbob-biobj' else "") + """Horizontal lines mean linear scaling, slanted
+        grid lines depict quadratic scaling.  
+        """
+    scaling_figure_caption_rlbased = caption_part_one + r"""%
+        Shown is the \ERT\ for 
+        targets just not reached by
+    %    the largest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of 
+        the artificial GECCO-BBOB-2009 best algorithm  
+        within the given budget $k\times\DIM$, where $k$ is shown in the legend.
+    %    was above $\{values_of_interest\}\times\DIM$ evaluations. 
+        Numbers above \ERT-symbols indicate the number of trials reaching the respective target.  
+        The light thick line with diamonds indicates the respective best result from BBOB-2009 for 
+        the most difficult target. 
+        Slanted grid lines indicate a scaling with ${\cal O}(\DIM)$ compared to ${\cal O}(1)$  
+        when using the respective 2009 best algorithm. 
+        """
+        # r"Shown is the \ERT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of the GECCO-BBOB-2009 best algorithm " + 
+        # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
+
     
     values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
     if genericsettings.runlength_based_targets:
@@ -529,10 +534,44 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
     ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
                                 dictFunc[dictFunc.keys()[0]][0].algId,
-                                algorithmCount = ppfig.AlgorithmCount.ONE,
+                                htmlPage = ppfig.HtmlPage.ONE,
                                 values_of_interest = values_of_interest,
                                 isBiobjective = dsList.isBiobjective(),
                                 functionGroups = dsList.getFuncGroups())
+
+    key = 'bbobppfigdimlegendrlbased' if genericsettings.runlength_based_targets else 'bbobppfigdimlegendfixed'
+    joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
+    caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
+
+    ppfig.save_single_functions_html(
+        os.path.join(outputdir, 'ppfigdim'),
+        htmlPage = ppfig.HtmlPage.NON_SPECIFIED,
+        isBiobjective = dsList.isBiobjective(),
+        parentFileName=genericsettings.single_algorithm_file_name,
+        header = 'Expected number of <i>f</i>-evaluations to reach target',
+        caption = caption)
+
+    ppfig.save_single_functions_html(
+        os.path.join(outputdir, 'pptable'),
+        htmlPage = ppfig.HtmlPage.PPTABLE,
+        isBiobjective = dsList.isBiobjective(),
+        parentFileName=genericsettings.single_algorithm_file_name)
+
+    ppfig.save_single_functions_html(
+        os.path.join(outputdir, 'pprldistr'),
+        htmlPage = ppfig.HtmlPage.PPRLDISTR,
+        isBiobjective = dsList.isBiobjective(),
+        functionGroups = dsList.getFuncGroups(),
+        parentFileName=genericsettings.single_algorithm_file_name)
+
+    if not dsList.isBiobjective():    
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, 'pplogloss'),
+            htmlPage = ppfig.HtmlPage.PPLOGLOSS,
+            isBiobjective = dsList.isBiobjective(),
+            functionGroups = dsList.getFuncGroups(),
+            parentFileName=genericsettings.single_algorithm_file_name)
+
     ppfig.copy_js_files(outputdir)
     
     funInfos = ppfigparam.read_fun_infos(dsList.isBiobjective())
@@ -543,7 +582,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         plt.text(plt.xlim()[0], plt.ylim()[0],
                  _valuesOfInterest.short_info, fontsize=14)
         if func in genericsettings.current_testbed.functions_with_legend:
-            plt.legend(loc="best")
+            toolsdivers.legend(loc="best")
         if func in funInfos.keys():
             # print(plt.rcParams['axes.titlesize'])
             # print(plt.rcParams['font.size'])
