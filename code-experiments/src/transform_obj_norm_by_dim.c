@@ -24,7 +24,7 @@ static coco_problem_t *transform_obj_norm_by_dim(coco_problem_t *inner_problem) 
   coco_problem_t *problem;
   problem = coco_problem_transformed_allocate(inner_problem, NULL, NULL, "transform_obj_norm_by_dim");
   problem->evaluate_function = transform_obj_norm_by_dim_evaluate;
-  transform_obj_norm_by_dim_evaluate(problem, problem->best_parameter, problem->best_value);
+  /*transform_obj_norm_by_dim_evaluate(problem, problem->best_parameter, problem->best_value);*/
   problem->best_value[0] /= (double) inner_problem->number_of_variables; /*shouldn't matter as long as fopt = 0 originally*/
   return problem;
 }
