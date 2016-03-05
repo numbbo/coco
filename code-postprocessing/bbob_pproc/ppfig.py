@@ -201,17 +201,9 @@ def save_single_functions_html(filename,
             if not isBiobjective:            
                 f.write('<H3><a href="pplogloss.html">Runtime loss ratios</a></H3>\n')
 
-            names = ['pprldistr', 'ppfvdistr']
-            dimensions = [5, 20]
-            
-            headerECDF = ' Empirical cumulative distribution functions (ECDF)'
+            headerECDF = ' Runtime distributions (ECDF) over all targets'
             f.write("<H2> %s </H2>\n" % headerECDF)
-            for dimension in dimensions:
-                f.write('<p><b>%s in %d-D</b></p>' % ('All functions', dimension))
-                f.write('<div>')
-                for name in names:
-                    f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, 'noiselessall', extension), True))
-                f.write('</div>')
+            f.write(addImage('pprldmany.%s' % (extension), True))            
 
         elif htmlPage is HtmlPage.TWO:
             headerERT = 'Scaling of ERT with dimension'
