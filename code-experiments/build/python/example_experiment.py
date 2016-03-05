@@ -183,17 +183,22 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
         remaining_evals = max_evals - fun.evaluations
         x0 = center + (restarts > 0) * 0.8 * range_ * (
                 np.random.rand(fun.dimension) - 0.5)
+        fun(x0)  # can be incommented, if this is done by the solver
 
         if solver.__name__ in ("random_search", ):
             solver(fun, fun.lower_bounds, fun.upper_bounds,
                    remaining_evals)
         elif solver.__name__ == 'fmin' and solver.__globals__['__name__'] == 'cma':
-            x0 = "%f + %f * np.random.rand(%d)" % (center[0], 0.8 * range_[0],
-                                            fun.dimension)
-            solver(fun, x0, 0.2 / 10**(restarts == 0) * range_[0], restarts=6,
-                   options=dict(scaling=range_/range_[0], maxfevals=remaining_evals,
-                                termination_callback=lambda es: fun.final_target_hit,
-                                verb_log=0, verb_disp=0, verbose=-9))
+            for x0, sigma0, restarts in [
+                    [x0, 0.02, 0],
+                    ["%f + %f * np.random.rand(%d)" % (center[0], 0.8 * range_[0],
+                     fun.dimension), 0.2, 6]]:
+                solver(fun, x0, sigma0 * range_[0], restarts=restarts,
+                       options=dict(scaling=range_/range_[0], maxfevals=remaining_evals,
+                                    termination_callback=lambda es: fun.final_target_hit,
+                                    verb_log=0, verb_disp=0, verbose=-9))
+                if fun.evaluations >= max_evals or fun.final_target_hit:
+                    break
         elif solver.__name__ == 'fmin_slsqp':
             solver(fun, x0, iter=1 + remaining_evals / fun.dimension,
                    iprint=-1)
