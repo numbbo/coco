@@ -65,9 +65,9 @@ static void test_logger_biobj_evaluate(void **state) {
       /* Checks the hypervolume */
       assert(about_equal_value(hypervolume, indicator->current_value));
     }
-#endif
 
   }
+#endif
 
   fclose(f_results);
 
