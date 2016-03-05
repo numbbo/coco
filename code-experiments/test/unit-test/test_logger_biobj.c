@@ -36,9 +36,6 @@ static void test_logger_biobj_evaluate(void **state) {
   suite = coco_suite("bbob-biobj", "year: 2016", "dimensions: 2 function_indices: 23 instance_indices: 5");
   observer = coco_observer("bbob-biobj", "");
 
-/* TODO: Enable this test again once you figure out the problem with the mingw compiler */
-#if 0
-
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
 
     /* Tests the ideal and nadir points */
@@ -67,7 +64,6 @@ static void test_logger_biobj_evaluate(void **state) {
     }
 
   }
-#endif
 
   fclose(f_results);
 
