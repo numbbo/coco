@@ -68,7 +68,7 @@ class ShortInfo(object):
 
     """
     def __init__(self):
-        self.f_current = 0  # function id (not problem id)
+        self.f_current = None  # function id (not problem id)
         self.d_current = 0  # dimension
         self.t0_dimension = time.time()
         self.evals_dimension = 0
@@ -86,7 +86,7 @@ class ShortInfo(object):
         self.evals_dimension = 0
         return s
     def function_done(self):
-        s = "(%d runs)" % self.runs_function
+        s = "(%d)" % self.runs_function + (2 - int(np.log10(self.runs_function))) * ' '
         self.runs_function = 0
         return s
     def __call__(self, problem):
@@ -94,7 +94,7 @@ class ShortInfo(object):
         """
         f = "f" + problem.id.lower().split('_f')[1].split('_')[0]
         res = ""
-        if f != self.f_current:
+        if self.f_current and f != self.f_current:
             res += self.function_done() + ' '
         if problem.dimension != self.d_current:
             res += '%s%s, d=%d, running: ' % (self.dimension_done() + "\n\n" if self.d_current else '',
@@ -159,7 +159,7 @@ def batch_loop(solver, suite, observer, budget,
         short_info.add_evals(problem.evaluations, runs)
         problem.free()
         addressed_problems += [problem.id]
-    print(short_info.dimension_done())
+    print(short_info.function_done() + short_info.dimension_done())
     print("  %s done (%d of %d problems benchmarked%s)" %
            (suite_name, len(addressed_problems), len(suite),
              ((" in batch %d of %d" % (current_batch, number_of_batches))
@@ -197,16 +197,19 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
             solver(fun, fun.lower_bounds, fun.upper_bounds,
                    remaining_evals)
         elif solver.__name__ == 'fmin' and solver.__globals__['__name__'] == 'cma':
-            for x0, sigma0, restarts in [
-                    [x0, 0.02, 0],
-                    ["%f + %f * np.random.rand(%d)" % (center[0], 0.8 * range_[0],
-                     fun.dimension), 0.2, 6]]:
-                solver(fun, x0, sigma0 * range_[0], restarts=restarts,
-                       options=dict(scaling=range_/range_[0], maxfevals=remaining_evals,
-                                    termination_callback=lambda es: fun.final_target_hit,
-                                    verb_log=0, verb_disp=0, verbose=-9))
-                if fun.evaluations >= max_evals or fun.final_target_hit:
-                    break
+            if x0[0] == center[0]:
+                sigma0 = 0.02
+                restarts_ = 0
+            else:
+                x0 = "%f + %f * np.random.rand(%d)" % (
+                        center[0], 0.8 * range_[0], fun.dimension)
+                sigma0 = 0.2
+                restarts_ = 6 * (observer_options.find('IPOP') >= 0)
+
+            solver(fun, x0, sigma0 * range_[0], restarts=restarts_,
+                   options=dict(scaling=range_/range_[0], maxfevals=remaining_evals,
+                                termination_callback=lambda es: fun.final_target_hit,
+                                verb_log=0, verb_disp=0, verbose=-9))
         elif solver.__name__ == 'fmin_slsqp':
             solver(fun, x0, iter=1 + remaining_evals / fun.dimension,
                    iprint=-1)
