@@ -43,17 +43,17 @@ Terminology and Definitions
 *problem*
  A COCO problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`p=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is a dimension, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem :math:`p` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`p=(n,f_\theta,\theta)`.
  
- In the performance assessment setting, we associate to a problem :math:`p`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However commonly 
+ In the performance assessment setting, we associate to a problem :math:`p`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However the relative target or precision
  
  .. math::
  	:nowrap:
 
 	\begin{equation} 
-	\epsilon=f_{\rm target} - f_{\rm opt}
+	\Delta f = f_{\rm target} - f_{\rm opt}
  	\end{equation}
  	
  	
- that can be thought as **precision** (or relative targets), does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a similar precision. 
+ often does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a similar precision. 
 
 *instance*
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero). 
@@ -76,7 +76,7 @@ On Performance Measures
 We advocate **performance measures** that are:
 
 * quantitative, ideally with a ratio scale (opposed to interval or ordinal
-  scale) [#]_ and with a wide variation (i.e., for example, with values ranging
+  scale)  and with a wide variation (i.e., for example, with values ranging
   not only between 0.98 and 1.0)
 * well-interpretable, in particular by having a meaning and semantics attached
   to the numbers
@@ -180,7 +180,7 @@ The performance assessment in COCO heavily relies on this conceptual restart alg
       to each others or that there is  not too much discrepancy in the difficulty 
       of the problem for different instances.
 
-Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same precision :math:`\epsilon` (see above) are thus assumed independent identically distributed. We denote the random variable modelling those runtimes :math:`\mathrm{RT}(n,f_\theta,\epsilon)`. We hence have a collection of runtimes (for a given parametrized function and a given precision) whose size corresponds to the number of instances of a parametrized function where the algorithm was run (typically between 10 and 15). Given that the specific instance does not matter, we write in the end the runtime of a restart algorithm of a parametrized family of function in order to reach a precision :math:`\epsilon` as
+Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same relative target :math:`\Delta f` (see above) are thus assumed independent identically distributed. We denote the random variable modelling those runtimes :math:`\mathrm{RT}(n,f_\theta,\Delta f)`. We hence have a collection of runtimes (for a given parametrized function and a given precision) whose size corresponds to the number of instances of a parametrized function where the algorithm was run (typically between 10 and 15). Given that the specific instance does not matter, we write in the end the runtime of a restart algorithm of a parametrized family of function in order to reach a precision :math:`\epsilon` as
 
 .. _eq:RTrestart:
 
@@ -189,7 +189,7 @@ Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` 
 	:label: RTrestart 
 
 	\begin{equation*}\label{RTrestart}
-	\mathbf{RT}(n,f_\theta,\epsilon) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\epsilon) + \mathrm{RT}(n,f_\theta,\epsilon)
+	\mathbf{RT}(n,f_\theta,\Delta f) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta f) + \mathrm{RT}(n,f_\theta,\Delta f)
 	\end{equation*}
 	
 	
@@ -276,34 +276,21 @@ Empirical Cumulative Distribution Functions
 
 
 
-We display distribution of running times through empirical cumulative distribution functions (ECDF). Formally, let us consider a set of problems :math:`\mathcal{P}` and the collection of running times to solve those problems :math:`(\mathrm{RT}_p)_{p \in \mathcal{P}}`. When the problem is not solved, the running time is infinite. The ECDF that we display is defined as
+We display distribution of running times through empirical cumulative distribution functions (ECDF). Formally, let us consider a set of problems :math:`\mathcal{P}` and a collection of running times to solve those problems :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq k \leq K}` where :math:`K` is the number of running time per problem. When the problem is not solved, the running times are infinite. The ECDF that we display is defined as
 
 
 .. math::
 	:nowrap:
 
 	\begin{equation*}
-	\mathrm{ECDF}(\alpha) = \frac{1}{|\mathcal{P}|} \sum_{p \in \mathcal{P}} 1 \left\{ \log_{10}( \mathrm{RT}_p / n ) \leq \alpha \right\} \enspace.
+	\mathrm{ECDF}(\alpha) = \frac{1}{|\mathcal{P}| K} \sum_{p \in \mathcal{P},k} \mathbf{1} \left\{ \log_{10}( \mathrm{RT}_{p,k} / n ) \leq \alpha \right\} \enspace.
 	\end{equation*}
 
-For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure random search algorithm on the set of problems formed by the parametrized sphere function (first function of the single-objective testsuit) with 51 relative targets uniform on a log-scale between :math:`10^2` and :math:`10^{-8}`. We can read on this plot that 20 percent of the problems were solved in about :math:`10^3` function evaluations. 
+For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure random search algorithm on the set of problems formed by the parametrized sphere function (first function of the single-objective testsuit) with 51 relative targets uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and :math:`K=10^3`. We can read on this plot that 20 percent of the problems were solved in about :math:`10^3` function evaluations. 
+
+Note that we consider running times of the restart algorithm, that is, if at least one instance of the parametrized family is solved, we display running time of the restart algorithm generated via simulated run-length. Hence only when no instance is solved, we consider that the running time is infinite. To generate :math:`K` running times from the typically 10 or 15 instances, we either use simulated run-length or we duplicate runtimes.
 
 
-.. todo::
-	* aggregation of distribution of RT (read COCO + proceed)
-	* data profile.
-
-
-We exploit the "horizontal and vertical" viewpoints introduced in the last
-Section :ref:`sec:verthori`. In Figure :ref:`fig:ecdf` we plot the :abbr:`ECDF
-(Empirical Cumulative Distribution Function)` of the intersection point
-values (stars in Figure :ref:`fig:HorizontalvsVertical`) for 450 trials.
-
-.. [#] The empirical (cumulative) distribution function
-   :math:`F:\mathbb{R}\to[0,1]` is defined for a given set of real-valued data
-   :math:`S`, such that :math:`F(x)` equals the fraction of elements in
-   :math:`S` which are smaller than :math:`x`. The function :math:`F` is
-   monotonous and a lossless representation of the (unordered) set :math:`S`.
 
 .. _fig:ecdf:
 
@@ -313,21 +300,18 @@ values (stars in Figure :ref:`fig:HorizontalvsVertical`) for 450 trials.
 
    ECDF
 
-   Illustration of empirical (cumulative) distribution functions (ECDF) of
-   running length (left) and precision (right) arising respectively from the
-   fixed-target and the fixed-cost scenarios in Figure
-   :ref:`fig:HorizontalvsVertical`. In each graph the data of 450 trials are
-   shown. Left subplot: ECDF of the running time (number of function
-   evaluations), divided by search space dimension |DIM|, to fall below
-   :math:`f_\mathrm{opt} + \Delta f` with :math:`\Delta f = 10^{k}`, where
-   :math:`k=1,-1,-4,-8` is the first value in the legend. Data for algorithms
-   submitted for BBOB 2009 and :math:`\Delta f= 10^{-8}` are represented in the
-   background in light brown. Right subplot: ECDF of the best achieved
-   precision :math:`\Delta f` divided by 10\ :sup:`k` (thick red and upper left
-   lines in continuation of the left subplot), and best achieved precision
-   divided by 10\ :sup:`-8` for running times of :math:`D`, :math:`10\,D`, 
-   :math:`100\,D`, :math:`1000\,D`... function evaluations (from the rightmost
-   line to the left cycling through black-cyan-magenta-black).
+   Illustration of empirical (cumulative) distribution function (ECDF)
+   of running times on the sphere function using 51 relative targets
+   uniform on a log scale between :math:`10^2` and :math:`10^{-8}`. The
+   running times displayed correspond to the pure random search
+   algorithm.
+   
+   
+**Aggregation:**
+
+.. todo::
+	* aggregation of distribution of RT (read COCO + proceed)
+	* data profile.
 
 A cutting line in Figure :ref:`fig:HorizontalvsVertical` corresponds to a
 "data" line in Figure :ref:`fig:ecdf`, where 450 (30 x 15) convergence graphs
