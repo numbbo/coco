@@ -17,7 +17,7 @@ COCO: Performance Assessment
 .. _GECCO: http://www.sigevo.org/gecco-2012/
 .. _COCO: http://coco.gforge.inria.fr
 .. |ERT| replace:: :math:`\mathrm{ERT}`
-.. |aRT| replace:: :math:`\mathrm{aRT}`
+.. |ART| replace:: :math:`\mathrm{ART}`
 .. |dim| replace:: :math:`\mathrm{dim}`
 .. |function| replace:: :math:`\mathrm{function}`
 .. |instance| replace:: :math:`\mathrm{instance}`
@@ -32,7 +32,7 @@ Introduction
 
 In this document we explain the rationale behind the performance assessment within the COCO platform. The simple but central idea is that we advocate *quantitative* performance measures as opposed to simple rankings of algorithm performances. From there on follows that our performance measures and displays are based on the runtime or run-length to reach a target function value.
 
-We then either display average run-length through the `Average Running Time`_ (aRT) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF).
+We then either display average run-length through the `Average Running Time`_ (ART) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF).
 
 When displaying the distribution of run-length, we consider the aggregation of run-length over subclasses of problems.
 
@@ -41,9 +41,9 @@ When displaying the distribution of run-length, we consider the aggregation of r
 Terminology and Definitions
 ----------------------------
 *problem*
- A COCO problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`\mathcal{P}=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is a dimension, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem :math:`\mathcal{P}` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`\mathcal{P}=(n,f_\theta,\theta)`.
+ A COCO problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`p=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is a dimension, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem :math:`p` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`p=(n,f_\theta,\theta)`.
  
- In the performance assessment setting, we associate to a problem :math:`\mathcal{P}`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However commonly 
+ In the performance assessment setting, we associate to a problem :math:`p`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However commonly 
  
  .. math::
  	:nowrap:
@@ -53,7 +53,7 @@ Terminology and Definitions
  	\end{equation}
  	
  	
- that can be thought as **precision**, does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a similar precision. 
+ that can be thought as **precision** (or relative targets), does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a similar precision. 
 
 *instance*
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero). 
@@ -149,7 +149,7 @@ Runtime over Problems
 
 
 In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtime for different target values. Those target values can be a :math:`f`- or indicator value (see [BBO2016biobj]_). 
-In the performance assessment setting, a problem is the quadruple :math:`\mathcal{P}=(n,f_\theta,\theta,f^{\rm target}_\theta)` where :math:`f^{\rm target}_\theta` is the target function value. This means that **we collect runtime of problems**.
+In the performance assessment setting, a problem is the quadruple :math:`p=(n,f_\theta,\theta,f^{\rm target}_\theta)` where :math:`f^{\rm target}_\theta` is the target function value. This means that **we collect runtime of problems**.
 
 Formally, the runtime of a problem is denoted as
 :math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. It is a random variable that counts the number of function evaluations needed to reach a function value lower or equal than :math:`f^{\rm target}_{\theta}`  for the first time. A run or trial that reached a target function value |ftarget| is called *successful*.
@@ -231,7 +231,7 @@ The runtime of the conceptual restart algorithm given in Equation :eq:`RTrestart
 Average Running Time
 =====================
 
-The average Running Time (|aRT|) (introduced in [Price:1997]_ as
+The average Running Time (|ART|) (introduced in [Price:1997]_ as
 ENES and analyzed in [Auger:2005b]_ as success performance) is an estimate of the expected runtime of the restart algorithm given in Equation :eq:`RTrestart` that is used within the COCO framework. More precisely the expected runtime of the restart algorithm (on a parametrized family of function in order to reach a precision :math:`\epsilon`) writes
 
 .. math::
@@ -249,7 +249,7 @@ where |ps| is the probability of success of the algorithm (to reach the underlyi
     :nowrap:
 
 	\begin{eqnarray}
-	\mathrm{aRT} & = & \mathrm{RT}_\mathrm{S} + \frac{1-p_{\mathrm{s}}}{p_{\mathrm{s}}} \,\mathrm{RT}_\mathrm{US} \\  & = & \frac{\sum_i \mathrm{RT}^{\rm us}_i + \sum_j \mathrm{RT}^{\rm us}_j }{\#\mathrm{succ}} \\
+	\mathrm{ART} & = & \mathrm{RT}_\mathrm{S} + \frac{1-p_{\mathrm{s}}}{p_{\mathrm{s}}} \,\mathrm{RT}_\mathrm{US} \\  & = & \frac{\sum_i \mathrm{RT}^{\rm us}_i + \sum_j \mathrm{RT}^{\rm us}_j }{\#\mathrm{succ}} \\
 	& = & \frac{\#\mathrm{FEs}}{\#\mathrm{succ}} 
     \end{eqnarray}    
  
@@ -275,8 +275,23 @@ Empirical Cumulative Distribution Functions
 ===========================================
 
 
+
+We display distribution of running times through empirical cumulative distribution functions (ECDF). Formally, let us consider a set of problems :math:`\mathcal{P}` and the collection of running times to solve those problems :math:`(\mathrm{RT}_p)_{p \in \mathcal{P}}`. When the problem is not solved, the running time is infinite. The ECDF that we display is defined as
+
+
+.. math::
+	:nowrap:
+
+	\begin{equation*}
+	\mathrm{ECDF}(\alpha) = \frac{1}{|\mathcal{P}|} \sum_{p \in \mathcal{P}} 1 \left\{ \log_{10}( \mathrm{RT}_p / n ) \leq \alpha \right\} \enspace.
+	\end{equation*}
+
+For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure random search algorithm on the set of problems formed by the parametrized sphere function (first function of the single-objective testsuit) with 51 relative targets uniform on a log-scale between :math:`10^2` and :math:`10^{-8}`. We can read on this plot that 20 percent of the problems were solved in about :math:`10^3` function evaluations. 
+
+
 .. todo::
 	* aggregation of distribution of RT (read COCO + proceed)
+	* data profile.
 
 
 We exploit the "horizontal and vertical" viewpoints introduced in the last
@@ -292,8 +307,8 @@ values (stars in Figure :ref:`fig:HorizontalvsVertical`) for 450 trials.
 
 .. _fig:ecdf:
 
-.. figure:: ecdf.*
-   :width: 100%
+.. figure:: pics/plots-RS-2009-bbob/pprldmany_f001_05D.*
+   :width: 80%
    :align: center
 
    ECDF
