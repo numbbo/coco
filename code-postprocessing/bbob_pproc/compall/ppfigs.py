@@ -83,7 +83,8 @@ def ecdfs_figure_caption(target):
                 str(len(genericsettings.current_testbed.pprldmany_target_range_latex)) +
                 r" targets in " + 
                 str(genericsettings.current_testbed.pprldmany_target_range_latex) +
-                r" for all functions and subgroups in #1-D. " + ( best2009text if genericsettings.current_testbed.name != 'bbob-biobj' else "")
+                r" for all functions and subgroups in #1-D. " + ( best2009text
+                if genericsettings.current_testbed.name != 'bbob-biobj' else "")
                 )
     ecdfs_figure_caption_rlbased = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
@@ -101,10 +102,6 @@ def ecdfs_figure_caption(target):
                                                          target.reference_algorithm)
     else:
         s = ecdfs_figure_caption_standard
-        
-    print(type(s))
-    print(s)        
-        
     return s
 
 def scaling_figure_caption_html(target):
