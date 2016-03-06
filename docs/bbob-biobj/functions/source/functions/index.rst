@@ -825,7 +825,7 @@ in the ``bbob`` suite) and Schaffer F7 function with condition number 10
 
 The first objective function is partially separable (tri-band structure)
 and has a local optimum with an attraction volume of about 25\%.
-The second objective functions is non-separable, asymmetric, and 
+The second objective function is non-separable, asymmetric, and 
 highly multi-modal with a low conditioning where
 frequency and amplitude of the modulation vary.
 
@@ -888,47 +888,167 @@ Information gained from this function:
 * How much does the multi-modality play a role when compared to
   fully uni-modal functions?
 
-  
-  
-.. todo::
-   finish with the remaining functions
-
 
 .. _f35:
    
 :math:`f_{35}`: Sharp ridge/Sharp ridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of two sharp ridge functions (:math:`f_{13}`
+in the ``bbob`` suite).
 
+Both objective functions are unimodal and non-separable and, for
+optimizing them, two sharp, i.e., non-differentiable ridges have to be
+followed.
+
+Contained in the *ill-conditioned - ill-conditioned* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of having to follow non-smooth, non-differentiabale
+  ridges?
+
+  
 .. _f36:
    
 :math:`f_{36}`: Sharp ridge/Sum of different powers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sharp ridge function (:math:`f_{13}`
+in the ``bbob`` suite) and sum of different powers function
+(:math:`f_{14}` in the ``bbob`` suite).
+
+Both functions are uni-modal and non-separable.
+For optimizing the first objective, a sharp, i.e., non-differentiable
+ridge has to be followed.
+When approaching the second objective's optimum, the sensitivies of the
+variables in the rotated search space become more and more different.
+
+Contained in the *ill-conditioned - ill-conditioned* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What are the effects of having to follow a ridge when optimizing one
+  objective function and an increasing conditioning when solving the other,
+  in particular when trying to approximate the Pareto front/Pareto set not
+  close to their extremes?
+  
 
 .. _f37:
    
 :math:`f_{37}`: Sharp ridge/Rastrigin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sharp ridge function (:math:`f_{13}`
+in the ``bbob`` suite) and Rastrigin function
+(:math:`f_{15}` in the ``bbob`` suite).
+
+Both functions are non-separable. While the first one
+is unimodal and non-differentiable at its ridge, the second objective
+function is highly multi-modal (roughly :math:`10^D` local optima).
+
+Contained in the *ill-conditioned - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What are the effects of having to follow a ridge when optimizing one
+  objective function and the high multi-modality of the other,
+  in particular when trying to approximate the Pareto front/Pareto set not
+  close to their extremes?
+
 
 .. _f38:
    
 :math:`f_{38}`: Sharp ridge/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sharp ridge function (:math:`f_{13}`
+in the ``bbob`` suite) and Schaffer F7 function with condition number 10
+(:math:`f_{17}` in the ``bbob`` suite).
 
+Both functions are non-separable. While the first one
+is unimodal and non-differentiable at its ridge, the second objective
+function is asymmetric and highly multi-modal with a low conditioning where
+frequency and amplitude of the modulation vary.
+
+Contained in the *ill-conditioned - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of the different difficulties when approaching
+  the Pareto front/Pareto set, especially in the middle?
+
+  
 .. _f39:
    
 :math:`f_{39}`: Sharp ridge/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sharp ridge function (:math:`f_{13}`
+in the ``bbob`` suite) and Schwefel function (:math:`f_{20}`
+in the ``bbob`` suite).
 
+While the first objective function is unimodal, non-separable, and
+non-differentiable at its ridge, the second objective function is highly
+multimodal---having the most prominent :math:`2^D` minima located
+comparatively close to the corners of its unpenalized search area. 
+
+Contained in the *ill-conditioned - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of the different difficulties (in particular
+  the non-differentiability of the first and the high multi-modality
+  and weak global structure of the second objective) when approaching
+  the Pareto front/Pareto set, especially in the middle?
+  
+  
 .. _f40:
    
 :math:`f_{40}`: Sharp ridge/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sharp ridge function (:math:`f_{13}`
+in the ``bbob`` suite) and Gallagher function with 101 peaks (:math:`f_{21}`
+in the ``bbob`` suite).
+
+Both objective functions are non-separable.
+While the first objective function is unimodal and non-differentiable at
+its ridge, the second objective function
+has 101 optima with position and height being unrelated and randomly
+chosen (different for each instantiation of the function). The
+conditioning around the global optimum of the second objective function
+is about 30.
+
+Contained in the *ill-conditioned - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* Is the search effective without any global structure?
+* How much does the multi-modality of the second objective play a role
+  when compared to fully uni-modal functions?
+
 
 .. _f41:
    
 :math:`f_{41}`: Sum of different powers/Sum of different powers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of two sum of different powers functions
+(:math:`f_{14}` in the ``bbob`` suite).
 
+Both functions are uni-modal and non-separable where the sensitivies of
+the variables in the rotated search space become more and more different
+when approaching the objectives' optima.
+
+
+Contained in the *ill-conditioned - ill-conditioned* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* In comparison to :math:`f_{11}`:  What is the effect of rotations
+  of the search space and missing self-similarity?
+
+
+  
+ .. todo::
+   finish with the remaining functions
+
+   
+  
 .. _f42:
    
 :math:`f_{42}`: Sum of different powers/Rastrigin
