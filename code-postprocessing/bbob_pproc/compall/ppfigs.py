@@ -80,12 +80,10 @@ def ecdfs_figure_caption(target):
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
                 r"(FEvals/DIM) for " +
-                len(genericsettings.current_testbed.pprldmany_target_range_latex) +
+                str(len(genericsettings.current_testbed.pprldmany_target_range_latex)) +
                 r" targets in " + 
-                genericsettings.current_testbed.pprldmany_target_range_latex +
-                r" for all functions and subgroups in #1-D. " + ( best2009text
-                if genericsettings.current_testbed.name != 'bbob-biobj' 
-                else "")
+                str(genericsettings.current_testbed.pprldmany_target_range_latex) +
+                r" for all functions and subgroups in #1-D. " + ( best2009text if genericsettings.current_testbed.name != 'bbob-biobj' else "")
                 )
     ecdfs_figure_caption_rlbased = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
@@ -103,6 +101,10 @@ def ecdfs_figure_caption(target):
                                                          target.reference_algorithm)
     else:
         s = ecdfs_figure_caption_standard
+        
+    print(type(s))
+    print(s)        
+        
     return s
 
 def scaling_figure_caption_html(target):
