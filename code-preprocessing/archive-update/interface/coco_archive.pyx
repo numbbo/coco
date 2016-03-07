@@ -1,7 +1,6 @@
 # -*- mode: cython -*-
-#cython: c_string_type=str, c_string_encoding=ascii
+#interface: c_string_type=str, c_string_encoding=ascii
 from __future__ import absolute_import, division, print_function, unicode_literals
-import sys
 import numpy as np
 cimport numpy as np
 
@@ -32,8 +31,7 @@ cdef bytes _bstring(s):
         raise TypeError()
             
 cdef class Archive:
-    """Archive of bi-objective solutions, which serves as an interface to the
-       COCO archive implemented in C.
+    """Archive of bi-objective solutions, which serves as an interface to the COCO archive implemented in C.
     """
     cdef coco_archive_t* archive # AKA _self
     cdef bytes _suite_name  
@@ -62,16 +60,17 @@ cdef class Archive:
         coco_archive_free(self.archive)
                             
     def add_solution(self, f1, f2, text):        
-        updated = coco_archive_add_solution(self.archive, f1, f2, text)            
+        updated = coco_archive_add_solution(self.archive, f1, f2, _bstring(text))
         if updated:
             self.up_to_date = False            
         return updated
         
     def get_next_solution_text(self):            
         self._tmp_text = coco_archive_get_next_solution_text(self.archive)
-        if self._tmp_text == "":
+        tmp_text = self._tmp_text.decode('ascii')
+        if tmp_text == "":
             return None
-        return self._tmp_text
+        return tmp_text
         
     def update(self):
         if not self.up_to_date:
@@ -88,13 +87,13 @@ cdef class Archive:
     def hypervolume(self):
         self.update()
         return self._hypervolume
-    
+
+
 def log_level(level=None):
-    """`log_level(level=None)` return current log level and
-    set new log level if `level is not None and level`.
-    
-    `level` must be 'error' or 'warning' or 'info' or 'debug', listed
-    with increasing verbosity, or '' which doesn't change anything.
+    """Returns current log level and sets new log level if level is not None.
+       :param level: Supported values: 'error' or 'warning' or 'info' or 'debug', listed with increasing verbosity,
+       or '', which doesn't change anything
     """
     cdef bytes _level = _bstring(level if level is not None else "")
     return coco_set_log_level(_level)
+
