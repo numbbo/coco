@@ -30,11 +30,15 @@ COCO: Performance Assessment
 Introduction
 =============
 
-In this document we explain the rationale behind the performance assessment within the COCO platform. The simple but central idea is that we advocate *quantitative* performance measures as opposed to simple rankings of algorithm performances. From there on follows that our performance measures and displays are based on the runtime or run-length to reach a target function value.
+This document presents the main ideas and concepts of the performance assessment within the COCO platform. We start from a collection of recorded data from the algorithm benchmarked that is function (indicator in the case of multi-objective, function and constraint in the case of constraint optimization) values together with number of calls to the function to reach this function value that represents the cost of the algorithm. This means that we exclude measuring cost of the algorithm in terms of CPU time to avoid measurement that depends on the programming language, the computer where the experiments were run [#]_. The shortcomings and unfortunate consequences of benchmarking based on CPU was discussed in [Hooker:1995]_.
 
-We then either display average run-length through the `Average Running Time`_ (ART) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF).
+From the collection of function values, number of function evaluations we extract runtime to reach target function values. This comes as a natural consequence of our prerequisite to present *quantitative* performance measures (as opposed to simple rankings of algorithm performances).
 
-When displaying the distribution of run-length, we consider the aggregation of run-length over subclasses of problems.
+We then either display average runtime through the `Average Running Time`_ (ART) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF). When displaying the distribution of runtime, we consider the aggregation of run-length over subclasses of problems.
+
+
+.. [#] We however require to provide CPU timing experiments to get a
+	rough measurement of the time complexity of the algorithm.
 
 .. budget-free
 
@@ -73,7 +77,8 @@ Terminology and Definitions
 On Performance Measures
 =======================
 
-We advocate **performance measures** that are:
+
+As it was already explain in [HAN2009]_, we advocate **performance measures** that are:
 
 * quantitative, ideally with a ratio scale (opposed to interval or ordinal
   scale)  and with a wide variation (i.e., for example, with values ranging
@@ -82,9 +87,7 @@ We advocate **performance measures** that are:
   to the numbers
 * relevant with respect to the "real world"
 * as simple as possible
-* independent of the programming language and computer where the algorithm was run.
 
-This latter point excludes to use CPU time as a basis for performance measure. The shortcomings and consequences of using CPU was discussed in [Hooker:1995]_.
 
 For these reasons we measure **runtime** to reach a target function value, that is the number of function evaluations needed to reach a target function value denoted as fixed-target scenario in the following. 
 
@@ -330,6 +333,7 @@ the success probability. In the example, just under 50% for precision 10\
 :sup:`-8` (thick red) and just above 70% for precision 10\ :sup:`-1` (cyan).
 
 
+.. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
 
 .. [BBO2016biobj] The BBOBies: Biobjective function benchmark suite. 
