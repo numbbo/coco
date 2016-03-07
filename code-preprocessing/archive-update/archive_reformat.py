@@ -68,8 +68,8 @@ def reformat_archives(input_path, output_path):
                         continue
 
                     if dimension <= 5:
-                        f_out.write('1 \t{} \t{}\n'.format(' \t'.join(line.split()[0:dimension]),
-                                                           ' \t'.join(line.split()[dimension:dimension+2])))
+                        f_out.write('1 \t{} \t{}\n'.format(' \t'.join(line.split()[dimension:dimension+2]),
+                                                           ' \t'.join(line.split()[0:dimension])))
                     else:
                         f_out.write('1 \t{}\n'.format(' \t'.join(line.split()[0:2])))
 
