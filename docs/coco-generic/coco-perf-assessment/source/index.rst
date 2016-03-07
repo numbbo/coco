@@ -30,11 +30,11 @@ COCO: Performance Assessment
 Introduction
 =============
 
-This document presents the main ideas and concepts of the performance assessment within the COCO platform. We start from a collection of recorded data from the algorithm benchmarked that is function (indicator in the case of multi-objective, function and constraint in the case of constraint optimization) values together with number of calls to the function to reach this function value that represents the cost of the algorithm. This means that we exclude measuring cost of the algorithm in terms of CPU time to avoid measurement that depends on the programming language, the computer where the experiments were run [#]_. The shortcomings and unfortunate consequences of benchmarking based on CPU was discussed in [Hooker:1995]_.
+This document presents the main ideas and concepts of the performance assessment within the COCO platform. We start from a collection of recorded data from the algorithm benchmarked that is function (indicator in the case of multi-objective, function and constraint in the case of constraint optimization) values together with number of calls to the function to reach this function value. This latter represents the cost of the algorithm. This means that we exclude measuring cost in terms of CPU or wall-clock time to avoid measurement that depends on the programming language, the computer where the experiments were run [#]_. The shortcomings and unfortunate consequences of benchmarking based on CPU was discussed in [Hooker:1995]_.
 
 From the collection of function values, number of function evaluations we extract runtime to reach target function values. This comes as a natural consequence of our prerequisite to present *quantitative* performance measures (as opposed to simple rankings of algorithm performances).
 
-We then either display average runtime through the `Average Running Time`_ (ART) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF). When displaying the distribution of runtime, we consider the aggregation of run-length over subclasses of problems.
+We then either display average runtime through the `Average Running Time`_ (ART) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF). When displaying the distribution of runtime, we consider the aggregation of runtime over subclasses of problems excluding aggregation over dimensions given that the dimension of the problem is an information available that should be exploited (for instance for deciding on which algorithm to choose).
 
 
 .. [#] We however require to provide CPU timing experiments to get a
@@ -64,7 +64,7 @@ Terminology and Definitions
   
  We **interpret the different runs performed on different instances** of the same parametrized function in a given dimension as if they are just **independent repetitions** of the optimization algorithm on the same function. Put differently the runs performed on :math:`f_{\theta_1}, \ldots,f_{\theta_K}` with :math:`\theta_1,\ldots,\theta_K`, :math:`K` different instances of a parametrized problem :math:`f_\theta`, are assumed to be independent identically distributed.
  
- .. todo:: maybe we should insist more on this dual view of randomizing the problem class via problem isntance - choosing uniformly over set of parameters.
+ .. Anne: maybe we should insist more on this dual view of randomizing the problem class via problem isntance - choosing uniformly over set of parameters.
   
 *runtime*
   We define *runtime*, or *run-length* [HOO1998]_
@@ -86,7 +86,7 @@ As it was already explain in [HAN2009]_, we advocate **performance measures** th
 * well-interpretable, in particular by having a meaning and semantics attached
   to the numbers
 * relevant with respect to the "real world"
-* as simple as possible
+* as simple as possible.
 
 
 For these reasons we measure **runtime** to reach a target function value, that is the number of function evaluations needed to reach a target function value denoted as fixed-target scenario in the following. 
@@ -97,8 +97,16 @@ For these reasons we measure **runtime** to reach a target function value, that 
 Fixed-Cost versus Fixed-Target Scenario
 ----------------------------------------
 
-Two different approaches for collecting data and making measurements from
-experiments are schematically depicted in Figure :ref:`fig:HorizontalvsVertical`.
+Starting from some convergence graphs we can use two different approaches for collecting data and making measurements from
+experiments:
+
+* On the one hand we can fix a cost, that is a number of function evaluations and collect the function values reached. This is referred to as **fixed-cost scenario** and corresponds to vertical cuts. Fixing search costs can be pictured as drawing a vertical line on the convergence graphs (see Figure :ref:`fig:HorizontalvsVertical` where
+  the line is depicted in red).
+
+* On the other hand we can fix a target and measure the number of function evaluations to reach this target. This is referred to as **fixed-target scenario** and corresponds to horizontal cuts. Fixing a target can
+  be pictured as drawing a horizontal line in the convergence graphs
+  (Figure :ref:`fig:HorizontalvsVertical` where the line is depicted in blue).
+
 
 .. _fig:HorizontalvsVertical:
 
@@ -112,17 +120,6 @@ experiments are schematically depicted in Figure :ref:`fig:HorizontalvsVertical`
    (horizontal cuts). Black lines depict the best function value plotted versus
    number of function evaluations.
 
-**Fixed-cost scenario (vertical cuts)**
-  Fixing a number of function evaluations (this corresponds to fixing a cost)
-  and measuring the function values reached for this given number of function
-  evaluations. Fixing search costs can be pictured as drawing a vertical line
-  on the convergence graphs (see Figure :ref:`fig:HorizontalvsVertical` where
-  the line is depicted in red).
-**Fixed-target scenario (horizontal cuts)**
-  Fixing a target function value and measuring the number of function
-  evaluations needed to reach this target function value. Fixing a target can
-  be pictured as drawing a horizontal line in the convergence graphs
-  (Figure :ref:`fig:HorizontalvsVertical` where the line is depicted in blue).
 
 It is often argued that the fixed-cost approach is close to what is needed for
 real word applications where the total number of function evaluations is
