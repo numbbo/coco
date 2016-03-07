@@ -34,7 +34,7 @@ This document presents the main ideas and concepts of the performance assessment
 
 From the collection of function values, number of function evaluations we extract runtime to reach target function values. This comes as a natural consequence of our prerequisite to present *quantitative* performance measures (as opposed to simple rankings of algorithm performances).
 
-We then either display average runtime through the `Average Running Time`_ (ART) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF). When displaying the distribution of runtime, we consider the aggregation of runtime over subclasses of problems excluding aggregation over dimensions given that the dimension of the problem is an information available that should be exploited (for instance for deciding on which algorithm to choose).
+We then either display average runtime through the `Average Runtime`_ (ART) measure or distribution of run-length through `Empirical Cumulative Distribution Functions`_ (ECDF). When displaying the distribution of runtime, we consider the aggregation of runtime over subclasses of problems excluding aggregation over dimensions given that the dimension of the problem is an information available that should be exploited (for instance for deciding on which algorithm to choose).
 
 
 .. [#] We however require to provide CPU timing experiments to get a
@@ -180,7 +180,7 @@ The performance assessment in COCO heavily relies on this conceptual restart alg
       to each others or that there is  not too much discrepancy in the difficulty 
       of the problem for different instances.
 
-Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same relative target :math:`\Delta f` (see above) are thus assumed independent identically distributed. We denote the random variable modelling those runtimes :math:`\mathrm{RT}(n,f_\theta,\Delta f)`. We hence have a collection of runtimes (for a given parametrized function and a given precision) whose size corresponds to the number of instances of a parametrized function where the algorithm was run (typically between 10 and 15). Given that the specific instance does not matter, we write in the end the runtime of a restart algorithm of a parametrized family of function in order to reach a precision :math:`\epsilon` as
+Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same relative target :math:`\Delta f` (see above) are thus assumed independent identically distributed. We denote the random variable modelling those runtimes :math:`\mathrm{RT}(n,f_\theta,\Delta f)`. We hence have a collection of runtimes (for a given parametrized function and a given precision) whose size corresponds to the number of instances of a parametrized function where the algorithm was run (typically between 10 and 15). Given that the specific instance does not matter, we write in the end the runtime of a restart algorithm of a parametrized family of function in order to reach a relative target :math:`\Delta f` as
 
 .. _eq:RTrestart:
 
@@ -217,7 +217,7 @@ As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF` our perform
 Simulated Run-length and Simulated Restarts
 --------------------------------------------
 
-The runtime of the conceptual restart algorithm given in Equation :eq:`RTrestart` is the basis for displaying performance within COCO. We simulate some approximate samples of the runtime of the restart algorithm by constructed some so-called **simulated run-length**.
+The runtime of the conceptual restart algorithm given in Equation :eq:`RTrestart` is the basis for displaying performance within COCO. We simulate some approximate samples of the runtime of the restart algorithm by constructing some so-called **simulated run-length**.
 
 **Simulated Run-length:** Given the collection of runtimes for successful and unsuccessful trials to reach a given precision, we build a simulated run-length by repeatedly drawing with replacement among those runtimes till we draw a runtime of a successful trial. The simulated run-length is the sum of the drawn runtime.
 
@@ -288,9 +288,9 @@ We display distribution of runtimes through empirical cumulative distribution fu
 	\mathrm{ECDF}(\alpha) = \frac{1}{|\mathcal{P}| K} \sum_{p \in \mathcal{P},k} \mathbf{1} \left\{ \log_{10}( \mathrm{RT}_{p,k} / n ) \leq \alpha \right\} \enspace.
 	\end{equation*}
 
-For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure random search algorithm on the set of problems formed by the parametrized sphere function (first function of the single-objective testsuit) with 51 relative targets uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and :math:`K=10^3`. We can read on this plot that 20 percent of the problems were solved in about :math:`10^3` function evaluations. 
+For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure random search algorithm on the set of problems formed by the parametrized sphere function (first function of the single-objective testsuit) with 51 relative targets uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and :math:`K=10^3`. We can read on this plot that 20 percent of the problems were solved in (about) less than :math:`10^3` function evaluations. 
 
-Note that we consider **runtimes of the restart algorithm**, that is, if one instance of the parametrized family of function is not solved but at least another one is solved, we use a simulated-restart (see above) to built a runtime approximating the runtime of the restart algorithm. Hence only when no instance is solved, we consider that the runtime is infinite. To generate :math:`K` runtimes from the typically 10 or 15 instances, we either use simulated run-length (or restarts) or we duplicate runtimes.
+Note that we consider **runtimes of the restart algorithm**, that is, if one instance of the parametrized family of function is not solved but at least another one is solved, we use a simulated-restart (see above) to build a runtime approximating the runtime of the restart algorithm. Hence only when no instance is solved, we consider that the runtime is infinite. To generate :math:`K` runtimes from the typically 10 or 15 instances, we either use simulated run-length (or restarts) or we duplicate runtimes.
 
 
 
