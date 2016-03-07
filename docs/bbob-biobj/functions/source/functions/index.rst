@@ -1279,7 +1279,6 @@ Information gained from this function:
 .. _f53:
    
 :math:`f_{53}`: Schwefel x*sin(x)/Schwefel x*sin(x)
-
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Combination of two Schwefel functions (:math:`f_{20}`
 in the ``bbob`` suite).
