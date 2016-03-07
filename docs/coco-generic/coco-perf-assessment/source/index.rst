@@ -214,17 +214,19 @@ As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF` our perform
   quadruples. 
   
 
-Simulated Run-length 
------------------------
+Simulated Run-length and Simulated Restarts
+--------------------------------------------
 
 The runtime of the conceptual restart algorithm given in Equation :eq:`RTrestart` is the basis for displaying performance within COCO. We simulate some approximate samples of the runtime of the restart algorithm by constructed some so-called **simulated run-length**.
 
-**Simulated Run-length:** Given the collection of runtimes for successful and unsuccessful trials to reach a given precision, we built a simulated run-length by repeatedly drawing with replacement among those runtimes till we draw a runtime of a successful trial. The simulated run-length is the sum of the drawn runtime.
+**Simulated Run-length:** Given the collection of runtimes for successful and unsuccessful trials to reach a given precision, we build a simulated run-length by repeatedly drawing with replacement among those runtimes till we draw a runtime of a successful trial. The simulated run-length is the sum of the drawn runtime.
 
 .. Note:: The construction of a simulated run-length assumes that we have at least one runtime associated to a successful trial.
 
-.. We call a simulated-restart, a simulated run-length concatenated to an unsuccessful 
-.. runtime. That is a simulated-restart always starts from an unsuccessful trial.
+Simulated run-length are interesting in the case where at least one trial is not successful. Given the runtime of one unsuccessful trial, we are are then indeed interested to simulate the restart algorithm. For this, we draw runtime with replacement till we find a runtime associated to a successful trial. We then concatenate the runtimes to the unsuccessful one. This construction is then called a simulated restart. More precisely:
+
+**Simulated Restart:** Similar to the concept of simulated run-length we call a simulated restart, a simulated run-length concatenated to an unsuccessful runtime. 
+
 
 .. _sec:ART:
 
@@ -288,7 +290,7 @@ We display distribution of running times through empirical cumulative distributi
 
 For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure random search algorithm on the set of problems formed by the parametrized sphere function (first function of the single-objective testsuit) with 51 relative targets uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and :math:`K=10^3`. We can read on this plot that 20 percent of the problems were solved in about :math:`10^3` function evaluations. 
 
-Note that we consider running times of the restart algorithm, that is, if at least one instance of the parametrized family is solved, we display running time of the restart algorithm generated via simulated run-length. Hence only when no instance is solved, we consider that the running time is infinite. To generate :math:`K` running times from the typically 10 or 15 instances, we either use simulated run-length or we duplicate runtimes.
+Note that we consider **running times of the restart algorithm**, that is, if one instance of the parametrized family of function is not solved but at least another one is solved, we use a simulated-restart (see above) to built a runtime approximating the runtime of the restart algorithm. Hence only when no instance is solved, we consider that the running time is infinite. To generate :math:`K` running times from the typically 10 or 15 instances, we either use simulated run-length (or restarts) or we duplicate runtimes.
 
 
 
