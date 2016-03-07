@@ -68,10 +68,10 @@ def reformat_archives(input_path, output_path):
                         continue
 
                     if dimension <= 5:
-                        f_out.write('1\t{}\t{}'.format('\t '.join(line.split(' ')[0:dimension-1]),
-                                                       '\t '.join(line.split(' ')[dimension:dimension+1])))
+                        f_out.write('1 \t{} \t{}\n'.format(' \t'.join(line.split()[0:dimension]),
+                                                           ' \t'.join(line.split()[dimension:dimension+2])))
                     else:
-                        f_out.write('1\t{}'.format('\t '.join(line.split(' ')[0:2])))
+                        f_out.write('1 \t{}\n'.format(' \t'.join(line.split()[0:2])))
 
             f_out.close()
         f_in.close()
@@ -85,4 +85,5 @@ if __name__ == '__main__':
     """
 
     # Reformat the archives
-    reformat_archives('archives-old', 'archives-new')
+    reformat_archives('/Volumes/STORAGE/Data/mobbob-data/data/REFSET_5_instances',
+                      '/Volumes/STORAGE/Data/archives')
