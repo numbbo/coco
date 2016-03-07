@@ -30,7 +30,7 @@ COCO: Performance Assessment
 Introduction
 =============
 
-This document presents the main ideas and concepts of the performance assessment within the COCO platform. We start from a collection of recorded data from the algorithm benchmarked that is function (indicator in the case of multi-objective, function and constraint in the case of constraint optimization) values together with number of calls to the function to reach this function value. This latter represents the cost of the algorithm. This means that we exclude measuring cost in terms of CPU or wall-clock time to avoid measurement that depends on the programming language, the computer where the experiments were run [#]_. The shortcomings and unfortunate consequences of benchmarking based on CPU was discussed in [Hooker:1995]_.
+This document presents the main ideas and concepts of the performance assessment within the COCO platform. We start from a collection of recorded data from the algorithm benchmarked that is function (indicator in the case of multi-objective, function and constraint in the case of constraint optimization) values together with number of calls to the function to reach this function value. This latter represents the cost of the algorithm. This means that we exclude measuring cost in terms of CPU or wall-clock time to avoid measurement that depends on the programming language or the computer where the experiments were run [#]_. The shortcomings and unfortunate consequences of benchmarking based on CPU was discussed in [Hooker:1995]_.
 
 From the collection of function values, number of function evaluations we extract runtime to reach target function values. This comes as a natural consequence of our prerequisite to present *quantitative* performance measures (as opposed to simple rankings of algorithm performances).
 
@@ -47,7 +47,7 @@ Terminology and Definitions
 *problem*
  A COCO problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`p=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is a dimension, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem :math:`p` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`p=(n,f_\theta,\theta)`.
  
- In the performance assessment setting, we associate to a problem :math:`p`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the running time of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However the relative target or precision
+ In the performance assessment setting, we associate to a problem :math:`p`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the runtime of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However the relative target or precision
  
  .. math::
  	:nowrap:
@@ -156,7 +156,7 @@ Formally, the runtime of a problem is denoted as
 
 We also have to **deal with unsuccessful trials**, that is a run that did not reach a target. We then record the number of function evaluations till the algorithm is stopped. We denote the respective random variable :math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
 
-In order to come up with a meaningful way to compare algorithms having different probability of success (that is different probability to reach a target), we consider the conceptual **restart algorithm**: We assume that an algorithm, say called A, has a strictly positive probability |ps| to successfully solve a problem (that is to reach the associated target). The restart-A algorithm consists in restarting A till the problem is solved. The running time of the restart-A algorithm equals
+In order to come up with a meaningful way to compare algorithms having different probability of success (that is different probability to reach a target), we consider the conceptual **restart algorithm**: We assume that an algorithm, say called A, has a strictly positive probability |ps| to successfully solve a problem (that is to reach the associated target). The restart-A algorithm consists in restarting A till the problem is solved. The runtime of the restart-A algorithm equals
 
 .. math::
 	:nowrap:
@@ -230,10 +230,10 @@ Simulated run-length are interesting in the case where at least one trial is not
 
 .. _sec:ART:
 
-Average Running Time
+Average Runtime
 =====================
 
-The average Running Time (|ART|) (introduced in [Price:1997]_ as
+The average runtime (|ART|) (introduced in [Price:1997]_ as
 ENES and analyzed in [Auger:2005b]_ as success performance) is an estimate of the expected runtime of the restart algorithm given in Equation :eq:`RTrestart` that is used within the COCO framework. More precisely the expected runtime of the restart algorithm (on a parametrized family of function in order to reach a precision :math:`\epsilon`) writes
 
 .. math::
@@ -278,7 +278,7 @@ Empirical Cumulative Distribution Functions
 
 
 
-We display distribution of running times through empirical cumulative distribution functions (ECDF). Formally, let us consider a set of problems :math:`\mathcal{P}` and a collection of running times to solve those problems :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq k \leq K}` where :math:`K` is the number of running time per problem. When the problem is not solved, the running times are infinite. The ECDF that we display is defined as
+We display distribution of runtimes through empirical cumulative distribution functions (ECDF). Formally, let us consider a set of problems :math:`\mathcal{P}` and a collection of runtimes to solve those problems :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq k \leq K}` where :math:`K` is the number of runtime per problem. When the problem is not solved, the runtimes are infinite. The ECDF that we display is defined as
 
 
 .. math::
@@ -290,7 +290,7 @@ We display distribution of running times through empirical cumulative distributi
 
 For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure random search algorithm on the set of problems formed by the parametrized sphere function (first function of the single-objective testsuit) with 51 relative targets uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and :math:`K=10^3`. We can read on this plot that 20 percent of the problems were solved in about :math:`10^3` function evaluations. 
 
-Note that we consider **running times of the restart algorithm**, that is, if one instance of the parametrized family of function is not solved but at least another one is solved, we use a simulated-restart (see above) to built a runtime approximating the runtime of the restart algorithm. Hence only when no instance is solved, we consider that the running time is infinite. To generate :math:`K` running times from the typically 10 or 15 instances, we either use simulated run-length (or restarts) or we duplicate runtimes.
+Note that we consider **runtimes of the restart algorithm**, that is, if one instance of the parametrized family of function is not solved but at least another one is solved, we use a simulated-restart (see above) to built a runtime approximating the runtime of the restart algorithm. Hence only when no instance is solved, we consider that the runtime is infinite. To generate :math:`K` runtimes from the typically 10 or 15 instances, we either use simulated run-length (or restarts) or we duplicate runtimes.
 
 
 
@@ -303,9 +303,9 @@ Note that we consider **running times of the restart algorithm**, that is, if on
    ECDF
 
    Illustration of empirical (cumulative) distribution function (ECDF)
-   of running times on the sphere function using 51 relative targets
+   of runtimes on the sphere function using 51 relative targets
    uniform on a log scale between :math:`10^2` and :math:`10^{-8}`. The
-   running times displayed correspond to the pure random search
+   runtimes displayed correspond to the pure random search
    algorithm.
    
    
