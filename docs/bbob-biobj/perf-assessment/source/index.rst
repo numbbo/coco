@@ -30,6 +30,15 @@ Choice of Target Difficulties
 -----------------------------
 Choice of the targets based on best estimation of Pareto front (using all the data we have) - chosen instance wise
 
+relative targets (in terms of the hypervolume difference to the hypervolume of the reference set)
+are chosen the same for all functions, dimensions, and instances: recorded are 100 targets per order of magnitude,
+equi-distantly chosen on the log-scale. Displayed are finally only 10 targets per order of magnitude, in total
+51 of them between :math:`10^0` and :math:`10^{-5}`
+
+Note that due to the approximative nature of the reference set and its hypervolume, negative hypervolume values are
+possible. The Coco platform stores all
+
+
 
 Instances and Generalization Experiment
 ---------------------------------------
