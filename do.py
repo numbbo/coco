@@ -568,6 +568,17 @@ def test_postprocessing():
                                             'RS_on_bbob-biobj'])
 
 ################################################################################
+## Pre-processing
+def install_preprocessing():
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-preprocessing/archive-update/interface/coco.c', release)
+    copy_file('code-experiments/src/coco.h', 'code-preprocessing/archive-update/interface/coco.h')
+    python('code-preprocessing/archive-update', ['setup.py', 'install', '--user'])
+    
+def run_preprocessing():
+    install_preprocessing()
+    python('code-preprocessing/archive-update', ['archive_update.py'])
+
+################################################################################
 ## Global
 def build():
     builders = [
@@ -681,7 +692,9 @@ Available commands for developers:
   test-octave          - Build and run example experiment in Octave
   test-postprocessing  - Runs post-processing tests.
   leak-check           - Check for memory leaks in C
-
+  
+  install-preprocessing - Install preprocessing (user-locally)
+  run-preprocessing    - Run preprocessing (update archives)
 
 To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
@@ -723,6 +736,8 @@ def main(args):
     elif cmd == 'test-octave': test_octave()
     elif cmd == 'test-postprocessing': test_postprocessing()
     elif cmd == 'leak-check': leak_check()
+    elif cmd == 'install-preprocessing': install_preprocessing()
+    elif cmd == 'run-preprocessing': run_preprocessing()
     else: help()
 
 if __name__ == '__main__':
