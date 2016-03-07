@@ -288,14 +288,13 @@ We display distribution of runtimes through empirical cumulative distribution fu
 	\mathrm{ECDF}(\alpha) = \frac{1}{|\mathcal{P}| K} \sum_{p \in \mathcal{P},k} \mathbf{1} \left\{ \log_{10}( \mathrm{RT}_{p,k} / n ) \leq \alpha \right\} \enspace.
 	\end{equation*}
 
-For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure random search algorithm on the set of problems formed by the parametrized sphere function (first function of the single-objective testsuit) with 51 relative targets uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and :math:`K=10^3`. We can read on this plot that 20 percent of the problems were solved in (about) less than :math:`10^3` function evaluations. 
+It gives the *proportion of problems solved in less than a specified budget* which is read on the x-axis. For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure random search algorithm on the set of problems formed by the parametrized sphere function (first function of the single-objective testsuit) with 51 relative targets uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and :math:`K=10^3`. We can read on this plot that 20 percent of the problems were solved in (about) less than :math:`10^3` function evaluations. 
 
 Note that we consider **runtimes of the restart algorithm**, that is, if one instance of the parametrized family of function is not solved but at least another one is solved, we use a simulated-restart (see above) to build a runtime approximating the runtime of the restart algorithm. Hence only when no instance is solved, we consider that the runtime is infinite. To generate :math:`K` runtimes from the typically 10 or 15 instances, we either use simulated run-length (or restarts) or we duplicate runtimes [#]_. 
 
 .. [#] Remark that here (again) we consider that the runtimes of the same
 		(parametrized) function for different instances on the same relative targets
 		are repetitions.
-
 
 
 .. _fig:ecdf:
@@ -316,9 +315,9 @@ Note that we consider **runtimes of the restart algorithm**, that is, if one ins
       
 **Aggregation:**
 
-In the ECDF displayed in Figure :ref:`fig:ecdf` we have aggregated the runtime on several problems by considering 51 targets between :math:`10^2` and :math:`10^{-8}`. However those problems concern the same parametrized family of function, namely the sphere function. We consider also aggregation:
+In the ECDF displayed in Figure :ref:`fig:ecdf` we have **aggregated** the runtime on several problems by considering 51 targets between :math:`10^2` and :math:`10^{-8}`, that is we have displayed the runtime of the pure random search on the set of problems formed by aggregating all problems induced by  51 targets between :math:`10^2` and :math:`10^{-8}` on the parametrized sphere in dimension 5.
 
- * over several parametrized functions. We usually divide the set of parametrized functions into subgroups sharing similar properties (for instance separable, unimodal, ...) and display ECDF aggregating the problems induced by those functions and by all targets. See Figure :ref:`fig:ecdfgroup`.
+Those problems concern the same parametrized family of function, namely the sphere function. We consider also aggregation **over several parametrized functions**. We usually divide the set of parametrized functions into subgroups sharing similar properties (for instance separable, unimodal, ...) and display ECDF aggregating the problems induced by those functions and by all targets. See Figure :ref:`fig:ecdfgroup`.
 
 
 .. _fig:ecdfgroup:
@@ -329,41 +328,42 @@ In the ECDF displayed in Figure :ref:`fig:ecdf` we have aggregated the runtime o
    
    ECDF for subgroup of functions
 
-   Illustration of empirical (cumulative) distribution function (ECDF)
-   of runtimes on the sphere function using 51 relative targets
-   uniform on a log scale between :math:`10^2` and :math:`10^{-8}`. The
-   runtimes displayed correspond to the pure random search
-   algorithm.
+   Left ECDF of the runtime of the pure random search algorithm for
+   functions f1, f2, f3, f4 and f5 that constitute the group of
+   separable functions for the ``bbob`` testsuit. Right ECDF aggregated
+   over all targets and functions f1, f2, f3, f4 and f5.
    
 
+We can also naturally aggregate over all functions and hence obtain one single ECDF per algorithm per dimension. The ECDF of different algorithms can be displayed on the same graph as depicted in Figure :ref:`fig:ecdfall`.
 
-We can also naturally aggregate over all functions and hence obtain one single ECDF per algorithm per dimension.
+.. _fig:ecdfall:
 
-Having summarized benchmarking data through ECDF seems to be a very nice alternative to table of numbers to visualize results.
+.. figure:: pics/plots-RS-2009-bbob/gr_separ_05D_05D_separ-combined.* 
+   :width: 100%
+   :align: center
+   
+   ECDF over all functions and all targets
 
-over all targets, all functions.
+   ECDF of several algorithms benchmarked during the BBOB 2009 workshop
+   in dimension 5 aggregated over all functions of the ``bbob`` suite.
+   
+   
+.. Note::  
+ 	The ECDF graphs are also known in optimization under the name data
+ 	profile (see [More:2009]_). Note however that the definition of data profiles does not consider a log scale for the runtime and data profiles are standardly used without a log scale [Rios:2012]_.
+	
+	We advocate not to aggregate over dimension. Indeed the dimension is an input
+ 	parameter to the  algorithm that can be exploited to choose an
+ 	algorithm.
+
 
 
 .. todo::
-	* aggregation of distribution of RT (read COCO + proceed)
 	* data profile.
+	* ECDF and uniform pick of a problem
+	* clean up bibliography
 
 
-A cutting line in Figure :ref:`fig:HorizontalvsVertical` corresponds to a
-"data" line in Figure :ref:`fig:ecdf`, where 450 (30 x 15) convergence graphs
-are evaluated. For example, the thick red graph in Figure :ref:`fig:ecdf` shows
-on the left the distribution of the running length (number of function
-evaluations) [HOO1998]_ for reaching precision
-:math:`\Delta f = 10^{-8}` (horizontal cut). The graph continues on the right
-as a vertical cut for the maximum number of function evaluations, showing the
-distribution of the best achieved :math:`\Delta f` values, divided by 10\
-:sup:`-8`. Run length distributions are shown for different target precisions
-:math:`\Delta f` on the left (by moving the horizontal cutting line up- or
-downwards). Precision distributions are shown for different fixed number of
-function evaluations on the right. Graphs never cross each other. The
-:math:`y`-value at the transition between left and right subplot corresponds to
-the success probability. In the example, just under 50% for precision 10\
-:sup:`-8` (thick red) and just above 70% for precision 10\ :sup:`-1` (cyan).
 
 
 .. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
@@ -388,6 +388,8 @@ the success probability. In the example, just under 50% for precision 10\
    algorithms—pitfalls and remedies. In *Proceedings of the Fourteenth 
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
    pages 238–245, 1998.
+.. [More:2009] Jorge J. Moré and Stefan M. Wild. Benchmarking
+	Derivative-Free Optimization Algorithms, SIAM J. Optim., 20(1), 172–191, 2009.
 .. [Price:1997] K. Price. Differential evolution vs. the functions of
    the second ICEO. In Proceedings of the IEEE International Congress on
    Evolutionary Computation, pages 153–157, 1997.
