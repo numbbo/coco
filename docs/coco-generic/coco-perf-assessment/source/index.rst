@@ -261,7 +261,7 @@ where |ps| is the probability of success of the algorithm (to reach the underlyi
 .. |ps| replace:: :math:`p_{\mathrm{s}}`
 
 
-where where |Ts| and |Tus| denote the average runtime for successful and unsuccessful trials,  |nbsucc| denotes the number of successful trials and  :math:`\#\mathrm{FEs}` is
+where |Ts| and |Tus| denote the average runtime for successful and unsuccessful trials,  |nbsucc| denotes the number of successful trials and  :math:`\#\mathrm{FEs}` is
 the number of function evaluations
 conducted in all trials (before to reach a given precision).
 
@@ -276,7 +276,7 @@ Remark that while not explicitly denoted, the average runtime depends on the tar
 Empirical Cumulative Distribution Functions
 ===========================================
 
-
+.. Anne: to be discussed - I talk about infinite runtime to make the definition below .. .. Anne: fine. However it's probably not precise given that runtime above :math:`10^7` are .. Anne: infinite.
 
 We display distribution of runtimes through empirical cumulative distribution functions (ECDF). Formally, let us consider a set of problems :math:`\mathcal{P}` and a collection of runtimes to solve those problems :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq k \leq K}` where :math:`K` is the number of runtime per problem. When the problem is not solved, the runtimes are infinite. The ECDF that we display is defined as
 
@@ -290,7 +290,11 @@ We display distribution of runtimes through empirical cumulative distribution fu
 
 For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure random search algorithm on the set of problems formed by the parametrized sphere function (first function of the single-objective testsuit) with 51 relative targets uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and :math:`K=10^3`. We can read on this plot that 20 percent of the problems were solved in (about) less than :math:`10^3` function evaluations. 
 
-Note that we consider **runtimes of the restart algorithm**, that is, if one instance of the parametrized family of function is not solved but at least another one is solved, we use a simulated-restart (see above) to build a runtime approximating the runtime of the restart algorithm. Hence only when no instance is solved, we consider that the runtime is infinite. To generate :math:`K` runtimes from the typically 10 or 15 instances, we either use simulated run-length (or restarts) or we duplicate runtimes.
+Note that we consider **runtimes of the restart algorithm**, that is, if one instance of the parametrized family of function is not solved but at least another one is solved, we use a simulated-restart (see above) to build a runtime approximating the runtime of the restart algorithm. Hence only when no instance is solved, we consider that the runtime is infinite. To generate :math:`K` runtimes from the typically 10 or 15 instances, we either use simulated run-length (or restarts) or we duplicate runtimes [#]_. 
+
+.. [#] Remark that here (again) we consider that the runtimes of the same
+		(parametrized) function for different instances on the same relative targets
+		are repetitions.
 
 
 
@@ -308,12 +312,42 @@ Note that we consider **runtimes of the restart algorithm**, that is, if one ins
    runtimes displayed correspond to the pure random search
    algorithm.
    
-   
+
+      
 **Aggregation:**
+
+In the ECDF displayed in Figure :ref:`fig:ecdf` we have aggregated the runtime on several problems by considering 51 targets between :math:`10^2` and :math:`10^{-8}`. However those problems concern the same parametrized family of function, namely the sphere function. We consider also aggregation:
+
+ * over several parametrized functions. We usually divide the set of parametrized functions into subgroups sharing similar properties (for instance separable, unimodal, ...) and display ECDF aggregating the problems induced by those functions and by all targets. See Figure :ref:`fig:ecdfgroup`.
+
+
+.. _fig:ecdfgroup:
+
+.. figure:: pics/plots-RS-2009-bbob/gr_separ_05D_05D_separ-combined.* 
+   :width: 100%
+   :align: center
+   
+   ECDF for subgroup of functions
+
+   Illustration of empirical (cumulative) distribution function (ECDF)
+   of runtimes on the sphere function using 51 relative targets
+   uniform on a log scale between :math:`10^2` and :math:`10^{-8}`. The
+   runtimes displayed correspond to the pure random search
+   algorithm.
+   
+
+
+We can also naturally aggregate over all functions and hence obtain one single ECDF per algorithm per dimension.
+
+Having summarized benchmarking data through ECDF seems to be a very nice alternative to table of numbers to visualize results.
+
+over all targets, all functions.
+
 
 .. todo::
 	* aggregation of distribution of RT (read COCO + proceed)
 	* data profile.
+
 
 A cutting line in Figure :ref:`fig:HorizontalvsVertical` corresponds to a
 "data" line in Figure :ref:`fig:ecdf`, where 450 (30 x 15) convergence graphs
