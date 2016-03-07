@@ -78,7 +78,7 @@ On Performance Measures
 =======================
 
 
-As it was already explain in [HAN2009]_, we advocate **performance measures** that are:
+As it was already explained in [HAN2009]_, we advocate **performance measures** that are:
 
 * quantitative, ideally with a ratio scale (opposed to interval or ordinal
   scale)  and with a wide variation (i.e., for example, with values ranging
