@@ -62,7 +62,7 @@ Terminology and Definitions
 *instance*
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero). 
   
- We **interpret the different runs performed on different instances** of the same parametrized function in a given dimension as if they are just **independent repetitions** of the optimization algorithm on the same function. Put differently the runs performed on :math:`f_{\theta_1}, \ldots,f_{\theta_K}` with :math:`\theta_1,\ldots,\theta_K`, :math:`K` different instances of a parametrized problem :math:`f_\theta`, are assumed to be independent identically distributed.
+ We **interpret the different runs performed on different instances** of the same parametrized function in a given dimension as if they are just **independent repetitions** of the optimization algorithm on the same function. Put differently the runs performed on :math:`f_{\theta_1}, \ldots,f_{\theta_K}` with :math:`\theta_1,\ldots,\theta_K`, :math:`K` different instances of a parametrized problem :math:`f_\theta`, are assumed to be independent and identically distributed.
  
  .. Anne: maybe we should insist more on this dual view of randomizing the problem class via problem isntance - choosing uniformly over set of parameters.
   
@@ -162,10 +162,10 @@ In order to come up with a meaningful way to compare algorithms having different
 	:nowrap:
 
 	\begin{equation*}
-	\mathbf{RT}(n,f_\theta,\theta,f^{\rm target}_\theta) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\theta,f^{\rm target}_\theta) + \mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)
+	\mathbf{RT}(n,f_\theta,\theta,f^{\rm target}_\theta) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\theta,f^{\rm target}_\theta) + \mathrm{RT}^{\rm s}(n,f_\theta,\theta,f^{\rm target}_\theta)
 	\end{equation*}
 
-where :math:`J` is a random variable that models the number of unsuccessful runs till a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random variables corresponding to the runtime of unsuccessful trials and :math:`\mathrm{RT}` is a random variable for the runtime of successful trial.
+where :math:`J` is a random variable that models the number of unsuccessful runs till a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random variables corresponding to the runtime of unsuccessful trials and :math:`\mathrm{RT}^{\rm s}` is a random variable for the runtime of a successful trial.
 
 Remark that if the probability of success is one, the restart algorithm and the original   algorithm coincide.
 	
@@ -174,13 +174,13 @@ Remark that if the probability of success is one, the restart algorithm and the 
 	* an algorithm converges often but relatively slowly
 	* an algorithm converges less often, but once it converges, it converges fast.
 
-The performance assessment in COCO heavily relies on this conceptual restart algorithm. However, we collect only one single sample of (successful or unsuccessful) runtime per problem while more are needed to be able to display significant data. This is where the idea of instance comes into play: We interpret different runs performed on different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` as repetitions, that is as if they were performed on the same function. [#]_ 
+The performance assessment in COCO heavily relies on this conceptual restart algorithm. However, we collect only one single sample of (successful or unsuccessful) runtime per problem while more are needed to be able to display significant data. This is where the idea of instances comes into play: We interpret different runs performed on different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` as repetitions, that is, as if they were performed on the same function. [#]_ 
 
 .. [#] This assumes that instances of the same parametrized function are similar 
       to each others or that there is  not too much discrepancy in the difficulty 
       of the problem for different instances.
 
-Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same relative target :math:`\Delta f` (see above) are thus assumed independent identically distributed. We denote the random variable modelling those runtimes :math:`\mathrm{RT}(n,f_\theta,\Delta f)`. We hence have a collection of runtimes (for a given parametrized function and a given precision) whose size corresponds to the number of instances of a parametrized function where the algorithm was run (typically between 10 and 15). Given that the specific instance does not matter, we write in the end the runtime of a restart algorithm of a parametrized family of function in order to reach a relative target :math:`\Delta f` as
+Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same relative target :math:`\Delta f` (see above) are thus assumed independent and identically distributed. We denote the random variable modeling those runtimes :math:`\mathrm{RT}(n,f_\theta,\Delta f)`. We hence have a collection of runtimes (for a given parametrized function and a given precision) whose size corresponds to the number of instances of a parametrized function where the algorithm was run (typically between 10 and 15). Given that the specific instance does not matter, we write in the end the runtime of a restart algorithm of a parametrized family of function in order to reach a relative target :math:`\Delta f` as
 
 .. _eq:RTrestart:
 
@@ -189,13 +189,13 @@ Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` 
 	:label: RTrestart 
 
 	\begin{equation*}\label{RTrestart}
-	\mathbf{RT}(n,f_\theta,\Delta f) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta f) + \mathrm{RT}(n,f_\theta,\Delta f)
+	\mathbf{RT}(n,f_\theta,\Delta f) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta f) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta f)
 	\end{equation*}
 	
 	
-where as above :math:`J` is a random variable modelling the number of trials needed before to observe a success, :math:`\mathrm{RT}^{\rm us}_j` are random variables modeling the number of function evaluations of unsuccessful trials and :math:`\mathrm{RT}^{\rm us}` the one for successful trials.
+where as above :math:`J` is a random variable modeling the number of trials needed before to observe a success, :math:`\mathrm{RT}^{\rm us}_j` are random variables modeling the number of function evaluations of unsuccessful trials and :math:`\mathrm{RT}^{\rm s}` the one for successful trials.
 
-As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF` our performance display relies on the runtime of the restart algorithm, either considering the average runtime (Section :ref:`sec:ART`) or the distribution by displaying empirical cumulative distribution (Section :ref:`sec:ECDF`).
+As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF`, our performance display relies on the runtime of the restart algorithm, either considering the average runtime (Section :ref:`sec:ART`) or the distribution by displaying empirical cumulative distribution functions (Section :ref:`sec:ECDF`).
 
 
 .. Niko: "function target" seems misleading, as the target depends also on the instance
@@ -214,18 +214,23 @@ As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF` our perform
   quadruples. 
   
 
-Simulated Run-length and Simulated Restarts
---------------------------------------------
+Simulated Run-lengths of Restart Algorithms
+-------------------------------------------
 
-The runtime of the conceptual restart algorithm given in Equation :eq:`RTrestart` is the basis for displaying performance within COCO. We simulate some approximate samples of the runtime of the restart algorithm by constructing some so-called **simulated run-length**.
+The runtime of the conceptual restart algorithm given in Equation :eq:`RTrestart` is the basis for displaying performance within COCO. We can simulate some (approximate) samples of the runtime of the restart algorithm by constructing so-called simulated run-lengths from the available empirical data:
 
-**Simulated Run-length:** Given the collection of runtimes for successful and unsuccessful trials to reach a given precision, we build a simulated run-length by repeatedly drawing with replacement among those runtimes till we draw a runtime of a successful trial. The simulated run-length is the sum of the drawn runtime.
+**Simulated Run-length:** Given a collection of runtimes for successful and unsuccessful trials to reach a given precision, we draw a simulated run-length of the restart algorithm by repeatedly drawing uniformly at random and with replacement among all given runtimes till we draw a runtime from a successful trial. The simulated run-length is then the sum of the drawn runtimes.
 
-.. Note:: The construction of a simulated run-length assumes that we have at least one runtime associated to a successful trial.
+.. Note:: The construction of simulated run-lengths assumes that at least one runtime is associated to a successful trial.
 
-Simulated run-length are interesting in the case where at least one trial is not successful. Given the runtime of one unsuccessful trial, we are are then indeed interested to simulate the restart algorithm. For this, we draw runtime with replacement till we find a runtime associated to a successful trial. We then concatenate the runtimes to the unsuccessful one. This construction is then called a simulated restart. More precisely:
+Simulated run-lengths are in particular only interesting in the case where at least one trial is not successful. In order to remove unnecessary stochastics in the case that many (or all) trials are successful, we advocate for a derandomized version of simulated run-lengths when we are interested in drawing a batch of :math:`N` simulated run-lengths:
 
-**Simulated Restart:** Similar to the concept of simulated run-length we call a simulated restart, a simulated run-length concatenated to an unsuccessful runtime. 
+**Simulated Run-lengths (derandomized version):** Given a collection of runtimes for successful and unsuccessful trials to reach a given precision, we deterministically sweep through the trials and define the next simulated run-length as the run-length associated to the trial if it is successful and in the case of an unsuccessful trial as the sum of the associated run-length of the trial and the simulated run-length of the restarted algorithm as described above.
+
+Note that the latter derandomized version to draw simulated run-lengths has the minor disadvantage that the number of samples :math:`N` is restricted to a multiple of the trials in the data set.
+
+.. maybe we should indeed put a picture here
+
 
 
 .. _sec:ART:
