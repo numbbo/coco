@@ -57,7 +57,7 @@ while true
     while BUDGET_MULTIPLIER*dimension > cocoCall('cocoProblemGetEvaluations', problem)
         i = i+1;
         if (i > 0)
-            fprintf('INFO: algorithm restarted');
+            fprintf('INFO: algorithm restarted\n');
         end
         doneEvalsBefore = cocoCall('cocoProblemGetEvaluations', problem);
         
