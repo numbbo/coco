@@ -312,4 +312,3 @@ static coco_problem_t *f_step_ellipsoid_permblockdiag_bbob_problem_allocate(cons
 
   return problem;
 }
-
