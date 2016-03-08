@@ -58,6 +58,9 @@ static double f_gallagher_raw(const double *x, const size_t number_of_variables,
   double fac;
   double result;
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   fac = -0.5 / (double) number_of_variables;
 
   /* Boundary handling */

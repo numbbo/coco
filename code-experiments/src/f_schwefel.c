@@ -26,6 +26,9 @@ static double f_schwefel_raw(const double *x, const size_t number_of_variables) 
   double result;
   double penalty, sum;
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   /* Boundary handling*/
   penalty = 0.0;
   for (i = 0; i < number_of_variables; ++i) {

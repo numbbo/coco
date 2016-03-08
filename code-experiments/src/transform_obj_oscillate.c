@@ -15,7 +15,13 @@
 static void transform_obj_oscillate_evaluate(coco_problem_t *problem, const double *x, double *y) {
   static const double factor = 0.1;
   size_t i;
+
+  if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
+  	coco_vector_set_to_nan(y, coco_problem_get_number_of_objectives(problem));
+  	return;
+  }
   coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
+
   for (i = 0; i < problem->number_of_objectives; i++) {
       if (y[i] != 0) {
           double log_y;
