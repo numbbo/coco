@@ -896,7 +896,7 @@ static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, 
 static int coco_vector_contains_nan(const double *x, const size_t dim) {
 	size_t i;
 	for (i = 0; i < dim; i++) {
-		if ((TRUE_NAN && (x[i] != x[i])) || (!TRUE_NAN && (x[i] >= NAN)))
+		if ((TRUE_NAN && (x[i] != x[i])) || (!TRUE_NAN && (x[i] != x[i])))
 		  return 1;
 	}
 	return 0;
