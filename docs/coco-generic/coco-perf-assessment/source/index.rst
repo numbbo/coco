@@ -195,7 +195,7 @@ Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` 
 	
 where as above :math:`J` is a random variable modeling the number of trials needed before to observe a success, :math:`\mathrm{RT}^{\rm us}_j` are random variables modeling the number of function evaluations of unsuccessful trials and :math:`\mathrm{RT}^{\rm s}` the one for successful trials.
 
-As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF`, our performance display relies on the runtime of the restart algorithm, either considering the average runtime (Section :ref:`sec:ART`) or the distribution by displaying empirical cumulative distribution (Section :ref:`sec:ECDF`).
+As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF`, our performance display relies on the runtime of the restart algorithm, either considering the average runtime (Section :ref:`sec:ART`) or the distribution by displaying empirical cumulative distribution functions (Section :ref:`sec:ECDF`).
 
 
 .. Niko: "function target" seems misleading, as the target depends also on the instance
@@ -214,18 +214,23 @@ As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF`, our perfor
   quadruples. 
   
 
-Simulated Run-length and Simulated Restarts
---------------------------------------------
+Simulated Run-lengths of Restart Algorithms
+-------------------------------------------
 
-The runtime of the conceptual restart algorithm given in Equation :eq:`RTrestart` is the basis for displaying performance within COCO. We simulate some approximate samples of the runtime of the restart algorithm by constructing some so-called **simulated run-lengths**.
+The runtime of the conceptual restart algorithm given in Equation :eq:`RTrestart` is the basis for displaying performance within COCO. We can simulate some (approximate) samples of the runtime of the restart algorithm by constructing so-called simulated run-lengths from the available empirical data:
 
-**Simulated Run-length:** Given the collection of runtimes for successful and unsuccessful trials to reach a given precision, we build a simulated run-length by repeatedly drawing uniformly and with replacement among those runtimes till we draw a runtime of a successful trial. The simulated run-length is the sum of the drawn runtimes.
+**Simulated Run-length:** Given a collection of runtimes for successful and unsuccessful trials to reach a given precision, we draw a simulated run-length of the restart algorithm by repeatedly drawing uniformly at random and with replacement among all given runtimes till we draw a runtime from a successful trial. The simulated run-length is then the sum of the drawn runtimes.
 
-.. Note:: The construction of a simulated run-lengths assumes that we have at least one runtime associated to a successful trial.
+.. Note:: The construction of simulated run-lengths assumes that at least one runtime is associated to a successful trial.
 
-Simulated run-lengths are interesting in the case where at least one trial is not successful. Given the runtime of one unsuccessful trial, we are then indeed interested to simulate the restart algorithm. For this, we draw runtimes with replacement till we find a runtime associated to a successful trial. We then concatenate the runtimes to the unsuccessful one. This construction is then called a simulated restart. More precisely:
+Simulated run-lengths are in particular only interesting in the case where at least one trial is not successful. In order to remove unnecessary stochastics in the case that many (or all) trials are successful, we advocate for a derandomized version of simulated run-lengths when we are interested in drawing a batch of :math:`N` simulated run-lengths:
 
-**Simulated Restart:** Similar to the concept of simulated run-lengths we call a simulated restart, a simulated run-length concatenated to an unsuccessful runtime. 
+**Simulated Run-lengths (derandomized version):** Given a collection of runtimes for successful and unsuccessful trials to reach a given precision, we deterministically sweep through the trials and define the next simulated run-length as the run-length associated to the trial if it is successful and in the case of an unsuccessful trial as the sum of the associated run-length of the trial and the simulated run-length of the restarted algorithm as described above.
+
+Note that the latter derandomized version to draw simulated run-lengths has the minor disadvantage that the number of samples :math:`N` is restricted to a multiple of the trials in the data set.
+
+.. maybe we should indeed put a picture here
+
 
 
 .. _sec:ART:
