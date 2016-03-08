@@ -32,9 +32,9 @@ Introduction
 
 This document presents the main ideas and concepts of the performance assessment within the COCO platform. We start from a collection of recorded data from the algorithm benchmarked that are function values (indicator values in the case of multi-objective, function and constraint values in the case of constraint optimization) together with the number of calls to the function to reach these values. The latter represents the cost of the algorithm. This means that we exclude measuring cost in terms of CPU or wall-clock time to avoid measurement that depends on the programming language or the computer where the experiments were run [#]_. The shortcomings and unfortunate consequences of benchmarking based on CPU was discussed in [Hooker:1995]_.
 
-From the collection of (function value, number of function evaluations) pairs, we extract runtimes to reach target function values. This comes as a natural consequence of our prerequisite to present *quantitative* performance measures (as opposed to simple rankings of algorithm performances).
+From the collection of (function value, number of function evaluations) pairs, we extract runtimes (or run-length) to reach target function values. This comes as a natural consequence of our prerequisite to present *quantitative* performance measures (as opposed to simple rankings of algorithm performances).
 
-We then either display average runtime through the `Average Runtime`_ (ART) measure or the distribution of run-lengths through `Empirical Cumulative Distribution Functions`_ (ECDF). When displaying the distribution of runtimes, we consider the aggregation of runtimes over subclasses of problems excluding aggregation over dimensions given that the dimension of the problem is an information available that should be exploited (for instance for deciding on which algorithm to choose).
+We then either display average runtime through the `Average Runtime`_ (ART) measure or the distribution of runtimes through `Empirical Cumulative Distribution Functions`_ (ECDF). When displaying the distribution of runtimes, we consider the aggregation of runtimes over subclasses of problems excluding aggregation over dimensions given that the dimension of the problem is an information available that should be exploited (for instance for deciding on which algorithm to choose).
 
 
 .. [#] We however require to provide CPU timing experiments to get a
@@ -44,8 +44,11 @@ We then either display average runtime through the `Average Runtime`_ (ART) meas
 
 Terminology and Definitions
 ----------------------------
-*problem*
- A COCO problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`p=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is a dimension, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the COCO problem :math:`p` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`p=(n,f_\theta,\theta)`.
+
+We introduce a few terms and definitions that are used in the rest of the document.
+
+*problem, function*
+ In the COCO framework, a problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`p=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the  problem :math:`p` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`p=(n,f_\theta,\theta)`.
  
  In the performance assessment setting, we associate to a problem :math:`p`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the runtime of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However the relative target or precision
  
