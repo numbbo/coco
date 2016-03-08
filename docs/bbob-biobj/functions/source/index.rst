@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to the documentation of the bbob-biobj functions!
-=========================================================
+COCO: the Black Box Optimization Benchmarking Bi-objective (bbob-biobj) Test Suite
+==================================================================================
 
 The ``bbob-biobj`` test suite contains 55 bi-objective functions in continuous domain which are derived from combining
 functions of the well-known single-objective noiseless ``bbob`` test suite. It will be used as the main test suite of
