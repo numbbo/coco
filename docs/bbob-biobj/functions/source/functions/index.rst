@@ -368,7 +368,6 @@ Combination of separable ellipsoid function (:math:`f_2` in the
 (:math:`f_{8}`
 in the ``bbob`` suite).
 
-
 Only the first objective is separable and unimodal. The second
 objective is partially separable (tri-band structure) and has a local
 optimum with an attraction volume of about 25\%.
@@ -520,9 +519,6 @@ Combination of separable ellipsoid function (:math:`f_2` in the
 ``bbob`` suite) and Gallagher function with 101 peaks (:math:`f_{21}`
 in the ``bbob`` suite).
 
-The first objective is unimodal, besides small local non-linearities symmetric,
-separable and highly ill-conditioned while the second objective is highly
-
 While the first objective function is separable, unimodal, and
 highly ill-conditioned (condition number of about :math:`10^6`),
 the second objective function is non-separable and consists
@@ -562,181 +558,788 @@ Information gained from this function:
 
 
   
-.. todo::
-   finish with the last 25 functions
-
    
 .. _f21:
    
 :math:`f_{21}`: Attractive sector/Rosenbrock original
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of attractive sector function (:math:`f_6`
+in the ``bbob`` suite) and Rosenbrock function (:math:`f_{8}`
+in the ``bbob`` suite).
+
+The first function is unimodal but highly asymmetric, where only one
+*hypercone* (with angular base area) with a volume of
+roughly :math:`(1/2)^D` yields low function values (with the
+optimum at the tip of the cone). The second
+objective is partially separable (tri-band structure) and has a local
+optimum with an attraction volume of about 25\%.
+Note also that the first objective 
+function can be deceptive for cumulative step size adaptation.
+
+Contained in the *moderate - moderate* function class.
+
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of relatively large search space areas
+  leading to suboptimal values of the two objective
+  functions?
+
 
 .. _f22:
    
 :math:`f_{22}`: Attractive sector/Sharp ridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of attractive sector function (:math:`f_6`
+in the ``bbob`` suite) and sharp ridge function (:math:`f_{13}`
+in the ``bbob`` suite).
 
+Both objective functions are unimodal and non-separable. The
+first objective is highly asymmetric in the sense that only one
+*hypercone* (with angular base area) with a volume of
+roughly :math:`(1/2)^D` yields low function values (with the
+optimum at the tip of the cone). For optimizing the second
+objective, a sharp, i.e., non-differentiable ridge has to be followed.
+
+Contained in the *moderate - ill-conditioned* function class.
+
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What are the effects of assymmetries and non-differentiabilities
+  when approaching the Pareto front/Pareto set?
+
+  
 .. _f23:
    
 :math:`f_{23}`: Attractive sector/Sum of different powers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of attractive sector function (:math:`f_6`
+in the ``bbob`` suite) and sum of different powers function
+(:math:`f_{14}` in the ``bbob`` suite).
+
+Both objective functions are unimodal and non-separable. The
+first objective is highly asymmetric in the sense that only one
+*hypercone* (with angular base area) with a volume of
+roughly :math:`(1/2)^D` yields low function values (with the
+optimum at the tip of the cone). When approaching the second
+objective's optimum, the sensitivies of the variables in the
+rotated search space become more and more different.
+
+Contained in the *moderate - ill-conditioned* function class.
+
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What are the effects of assymmetries and an increasing
+  conditioning in one objective function (sum of different
+  powers function) when approaching Pareto-optimal points?
+  
 
 .. _f24:
    
 :math:`f_{24}`: Attractive sector/Rastrigin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of attractive sector function (:math:`f_6`
+in the ``bbob`` suite) and Rastrigin function
+(:math:`f_{15}` in the ``bbob`` suite).
+
+Both objectives are non-separable, and the second one
+is highly multi-modal (roughly :math:`10^D` local
+optima) while the first one is unimodal. Further
+properties are that the first objective is highly
+assymetric and the second has a conditioning of about 10.
+
+Contained in the *moderate - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* With respect to fully unimodal and rather symmetric functions:
+  what is the effect of multimodality and assymmetry?
+
 
 .. _f25:
    
 :math:`f_{25}`: Attractive sector/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of attractive sector function (:math:`f_6`
+in the ``bbob`` suite) and Schaffer F7 function with condition number 10
+(:math:`f_{17}` in the ``bbob`` suite).
+
+Both objectives are non-separable and asymmetric.
+While the first objective is unimodal, the second one is
+a highly multi-modal function with a low conditioning where
+frequency and amplitude of the modulation vary.
+
+Contained in the *moderate - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of having to solve the relatively` simple, but
+  asymmetric first objective together with the highly multi-modal
+  second objective with less regularities when the Pareto front/Pareto
+  Pareto set is approached?
+
 
 .. _f26:
    
 :math:`f_{26}`: Attractive sector/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of attractive sector function (:math:`f_6`
+in the ``bbob`` suite) and Schwefel function (:math:`f_{20}`
+in the ``bbob`` suite).
 
+The first objective is non-separable, unimodal, and asymmetric.
+The second objective is partially separable and highly multimodal---having
+the most prominent :math:`2^D` minima located comparatively close to the
+corners of the unpenalized search area. 
+
+Contained in the *moderate - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What are the effects of asymmetries and a weak global structure when
+  different parts of the Pareto front/Pareto set are approached?
+
+  
 .. _f27:
    
 :math:`f_{27}`: Attractive sector/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of attractive sector function (:math:`f_6`
+in the ``bbob`` suite) and Gallagher function with 101 peaks (:math:`f_{21}`
+in the ``bbob`` suite).
+
+Both objective functions are non-separable but only the first
+is unimodal. The first objective function is furthermore asymmetric.
+The second objective function has 101 optima with position and height
+being unrelated and randomly chosen (different for each instantiation
+of the function). The conditioning around the global optimum of the second
+objective function is about 30.
+
+Contained in the *moderate - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* Is the search effective without any global structure?
+* What is the effect of the different condition numbers
+  of the two objectives, in particular when combined
+  to reach the middle of the Pareto front?
+
 
 .. _f28:
    
 :math:`f_{28}`: Rosenbrock original/Rosenbrock original
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of two Rosenbrock functions (:math:`f_{8}`
+in the ``bbob`` suite).
+
+Both objectives are partially separable (tri-band structure) and have
+a local optimum with an attraction volume of about 25\%.
+
+Contained in the *moderate - moderate* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* Can the search follow different long paths with $D-1$ changes in the
+  direction when approaching the extremes of the Pareto front/Pareto set?
+* What is the effect when a combination of the two paths have to 
+  be solved when a point in the middle of the Pareto front/Pareto set
+  is sought?
 
 .. _f29:
    
 :math:`f_{29}`: Rosenbrock original/Sharp ridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of Rosenbrock functions (:math:`f_{8}`
+in the ``bbob`` suite) and sharp ridge function (:math:`f_{13}`
+in the ``bbob`` suite).
+
+The first objective function is partially separable (tri-band structure)
+and has a local optimum with an attraction volume of about 25\%.
+The second objective is unimodal and non-separable and, for
+optimizing it, a sharp, i.e., non-differentiable ridge has to be followed.
+
+Contained in the *moderate - ill-conditioned* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of the opposing difficulties posed by the
+  single objectives when parts of the Pareto front (at the extremes, in the
+  middle, ...) are explored?
+
 
 .. _f30:
    
 :math:`f_{30}`: Rosenbrock original/Sum of different powers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of Rosenbrock functions (:math:`f_{8}`
+in the ``bbob`` suite) and sum of different powers function
+(:math:`f_{14}` in the ``bbob`` suite).
+
+The first objective function is partially separable (tri-band structure)
+and has a local optimum with an attraction volume of about 25\%.
+The second objective function is unimodal and non-separable. When
+approaching the second objective's optimum, the sensitivies of the
+variables in the rotated search space become more and more different.
+
+Contained in the *moderate - ill-conditioned* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What are the effects of having to follow a long path with $D-1$ changes
+  in the direction when optimizing one objective function and an increasing
+  conditioning when solving the other, in particular when trying to
+  approximate the Pareto front/Pareto set not close to their extremes?
+  
 
 .. _f31:
    
 :math:`f_{31}`: Rosenbrock original/Rastrigin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of Rosenbrock functions (:math:`f_{8}`
+in the ``bbob`` suite) and Rastrigin function
+(:math:`f_{15}` in the ``bbob`` suite).
+
+The first objective function is partially separable (tri-band structure)
+and has a local optimum with an attraction volume of about 25\%.
+The second objective function is non-separable and
+highly multi-modal (roughly :math:`10^D` local
+optima).
+
+Contained in the *moderate - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* With respect to fully unimodal functions:
+  what is the effect of multimodality?
+
 
 .. _f32:
    
 :math:`f_{32}`: Rosenbrock original/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of Rosenbrock functions (:math:`f_{8}`
+in the ``bbob`` suite) and Schaffer F7 function with condition number 10
+(:math:`f_{17}` in the ``bbob`` suite).
+
+The first objective function is partially separable (tri-band structure)
+and has a local optimum with an attraction volume of about 25\%.
+The second objective function is non-separable, asymmetric, and 
+highly multi-modal with a low conditioning where
+frequency and amplitude of the modulation vary.
+
+Contained in the *moderate - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of the different difficulties (in particular
+  the high multi-modality of the second objective) when approaching
+  the Pareto front/Pareto set, especially in the middle?
+
 
 .. _f33:
    
 :math:`f_{33}`: Rosenbrock original/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of Rosenbrock functions (:math:`f_{8}`
+in the ``bbob`` suite) and Schwefel function (:math:`f_{20}`
+in the ``bbob`` suite).
+
+Both objective functions are partially separable.
+While the first objective function has a local optimum with an attraction
+volume of about 25\%, the second objective function is highly
+multimodal---having the most prominent :math:`2^D` minima located
+comparatively close to the corners of its unpenalized search area. 
+
+Contained in the *moderate - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of the different difficulties (in particular
+  the high multi-modality and weak global structure of the second
+  objective) when approaching the Pareto front/Pareto set,
+  especially in the middle?
+* Can the partial separability of the two objectives be detected
+  and exploited?
+
 
 .. _f34:
    
 :math:`f_{34}`: Rosenbrock original/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of Rosenbrock functions (:math:`f_{8}`
+in the ``bbob`` suite) and Gallagher function with 101 peaks (:math:`f_{21}`
+in the ``bbob`` suite).
+
+The first objective function is partially separable, the second one
+non-separable. While the first objective function has a local optimum
+with an attraction volume of about 25\%, the second objective function
+has 101 optima with position and height being unrelated and randomly
+chosen (different for each instantiation of the function). The
+conditioning around the global optimum of the second objective function
+is about 30.
+
+Contained in the *moderate - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* Is the search effective without any global structure?
+* How much does the multi-modality play a role when compared to
+  fully uni-modal functions?
+
 
 .. _f35:
    
 :math:`f_{35}`: Sharp ridge/Sharp ridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of two sharp ridge functions (:math:`f_{13}`
+in the ``bbob`` suite).
 
+Both objective functions are unimodal and non-separable and, for
+optimizing them, two sharp, i.e., non-differentiable ridges have to be
+followed.
+
+Contained in the *ill-conditioned - ill-conditioned* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of having to follow non-smooth, non-differentiabale
+  ridges?
+
+  
 .. _f36:
    
 :math:`f_{36}`: Sharp ridge/Sum of different powers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sharp ridge function (:math:`f_{13}`
+in the ``bbob`` suite) and sum of different powers function
+(:math:`f_{14}` in the ``bbob`` suite).
+
+Both functions are uni-modal and non-separable.
+For optimizing the first objective, a sharp, i.e., non-differentiable
+ridge has to be followed.
+When approaching the second objective's optimum, the sensitivies of the
+variables in the rotated search space become more and more different.
+
+Contained in the *ill-conditioned - ill-conditioned* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What are the effects of having to follow a ridge when optimizing one
+  objective function and an increasing conditioning when solving the other,
+  in particular when trying to approximate the Pareto front/Pareto set not
+  close to their extremes?
+  
 
 .. _f37:
    
 :math:`f_{37}`: Sharp ridge/Rastrigin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sharp ridge function (:math:`f_{13}`
+in the ``bbob`` suite) and Rastrigin function
+(:math:`f_{15}` in the ``bbob`` suite).
+
+Both functions are non-separable. While the first one
+is unimodal and non-differentiable at its ridge, the second objective
+function is highly multi-modal (roughly :math:`10^D` local optima).
+
+Contained in the *ill-conditioned - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What are the effects of having to follow a ridge when optimizing one
+  objective function and the high multi-modality of the other,
+  in particular when trying to approximate the Pareto front/Pareto set not
+  close to their extremes?
+
 
 .. _f38:
    
 :math:`f_{38}`: Sharp ridge/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sharp ridge function (:math:`f_{13}`
+in the ``bbob`` suite) and Schaffer F7 function with condition number 10
+(:math:`f_{17}` in the ``bbob`` suite).
 
+Both functions are non-separable. While the first one
+is unimodal and non-differentiable at its ridge, the second objective
+function is asymmetric and highly multi-modal with a low conditioning where
+frequency and amplitude of the modulation vary.
+
+Contained in the *ill-conditioned - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of the different difficulties when approaching
+  the Pareto front/Pareto set, especially in the middle?
+
+  
 .. _f39:
    
 :math:`f_{39}`: Sharp ridge/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sharp ridge function (:math:`f_{13}`
+in the ``bbob`` suite) and Schwefel function (:math:`f_{20}`
+in the ``bbob`` suite).
 
+While the first objective function is unimodal, non-separable, and
+non-differentiable at its ridge, the second objective function is highly
+multimodal---having the most prominent :math:`2^D` minima located
+comparatively close to the corners of its unpenalized search area. 
+
+Contained in the *ill-conditioned - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of the different difficulties (in particular
+  the non-differentiability of the first and the high multi-modality
+  and weak global structure of the second objective) when approaching
+  the Pareto front/Pareto set, especially in the middle?
+  
+  
 .. _f40:
    
 :math:`f_{40}`: Sharp ridge/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sharp ridge function (:math:`f_{13}`
+in the ``bbob`` suite) and Gallagher function with 101 peaks (:math:`f_{21}`
+in the ``bbob`` suite).
+
+Both objective functions are non-separable.
+While the first objective function is unimodal and non-differentiable at
+its ridge, the second objective function
+has 101 optima with position and height being unrelated and randomly
+chosen (different for each instantiation of the function). The
+conditioning around the global optimum of the second objective function
+is about 30.
+
+Contained in the *ill-conditioned - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* Is the search effective without any global structure?
+* How much does the multi-modality of the second objective play a role
+  when compared to fully uni-modal functions?
+
 
 .. _f41:
    
 :math:`f_{41}`: Sum of different powers/Sum of different powers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of two sum of different powers functions
+(:math:`f_{14}` in the ``bbob`` suite).
 
+Both functions are uni-modal and non-separable where the sensitivies of
+the variables in the rotated search space become more and more different
+when approaching the objectives' optima.
+
+
+Contained in the *ill-conditioned - ill-conditioned* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* In comparison to :math:`f_{11}`:  What is the effect of rotations
+  of the search space and missing self-similarity?
+   
+  
 .. _f42:
    
 :math:`f_{42}`: Sum of different powers/Rastrigin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sum of different powers functions
+(:math:`f_{14}` in the ``bbob`` suite) and Rastrigin function
+(:math:`f_{15}` in the ``bbob`` suite).
+
+Both objective functions are non-separable. While the first one
+is unimodal, the second objective
+function is highly multi-modal (roughly :math:`10^D` local optima).
+
+Contained in the *ill-conditioned - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What are the effects of having to cope with an increasing conditioning
+  when optimizing one objective function and the high multi-modality of the
+  other, in particular when trying to approximate the Pareto front/Pareto set
+  not close to their extremes?
+
 
 .. _f43:
    
 :math:`f_{43}`: Sum of different powers/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sum of different powers functions
+(:math:`f_{14}` in the ``bbob`` suite) and Schaffer F7 function with
+condition number 10 (:math:`f_{17}` in the ``bbob`` suite).
+
+Both objective functions are non-separable. While the first one
+is unimodal with an increasing conditioning once the optimum is approached,
+the second objective function is asymmetric and highly multi-modal with a
+low conditioning where frequency and amplitude of the modulation vary.
+
+Contained in the *ill-conditioned - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of the different difficulties when approaching
+  the Pareto front/Pareto set, especially in the middle?  
+  
 
 .. _f44:
    
 :math:`f_{44}`: Sum of different powers/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sum of different powers functions
+(:math:`f_{14}` in the ``bbob`` suite) and Schwefel function (:math:`f_{20}`
+in the ``bbob`` suite).
+
+Both objectives are non-separable.
+While the first objective function is unimodal,
+the second objective function is highly multimodal---having the most
+prominent :math:`2^D` minima located comparatively close to the corners
+of its unpenalized search area. 
+
+Contained in the *ill-conditioned - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of the different difficulties (in particular
+  the increasing conditioning close to the first objective's optimum
+  and the high multi-modality and weak global structure of the second
+  objective) when approaching the Pareto front/Pareto set, especially in
+  the middle?
+
 
 .. _f45:
    
 :math:`f_{45}`: Sum of different powers/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of sum of different powers functions
+(:math:`f_{14}` in the ``bbob`` suite) and Gallagher function with
+101 peaks (:math:`f_{21}` in the ``bbob`` suite).
+
+Both objective functions are non-separable.
+While the first objective function is unimodal, the second objective function
+has 101 optima with position and height being unrelated and randomly
+chosen (different for each instantiation of the function). The
+conditioning around the global optimum of the second objective function
+is about 30.
+
+Contained in the *ill-conditioned - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* Is the search effective without any global structure?
+* How much does the multi-modality of the second objective play a role
+  when compared to fully uni-modal functions?
+
 
 .. _f46:
    
 :math:`f_{46}`: Rastrigin/Rastrigin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of two Rastrigin functions
+(:math:`f_{15}` in the ``bbob`` suite).
+
+Both objective functions are non-separable and highly multi-modal
+(roughly :math:`10^D` local optima).
+
+Contained in the *multi-modal - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* When compared to :math:`f_{11}`: What is the effect of non-separability and
+  multi-modality?
+
 
 .. _f47:
    
 :math:`f_{47}`: Rastrigin/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of Rastrigin function
+(:math:`f_{15}` in the ``bbob`` suite) and Schaffer F7 function with
+condition number 10 (:math:`f_{17}` in the ``bbob`` suite).
+
+Both objective functions are non-separable and highly multi-modal.
+
+Contained in the *multi-modal - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of the different distributions of local minima 
+  when approaching the Pareto front/Pareto set, especially in the middle?  
+  
 
 .. _f48:
    
 :math:`f_{48}`: Rastrigin/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of Rastrigin function
+(:math:`f_{15}` in the ``bbob`` suite) and Schwefel function (:math:`f_{20}`
+in the ``bbob`` suite).
 
+Both objective functions are non-separable and highly multi-modal where
+the first has roughly :math:`10^D` local optima and the most prominent
+:math:`2^D` minima of the second objective function are located
+comparatively close to the corners of its unpenalized search area. 
+
+Contained in the *multi-modal - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What is the effect of the large amount of local optima in both objectives 
+  when approaching the Pareto front/Pareto set, especially in the middle?
+  
+  
 .. _f49:
    
 :math:`f_{49}`: Rastrigin/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of Rastrigin function
+(:math:`f_{15}` in the ``bbob`` suite) and Gallagher function with
+101 peaks (:math:`f_{21}` in the ``bbob`` suite).
+
+Both objective functions are non-separable and highly multi-modal where
+the first has roughly :math:`10^D` local optima and the second has 
+101 optima with position and height being unrelated and randomly
+chosen (different for each instantiation of the function).
+
+Contained in the *multi-modal - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* Is the search effective without any global structure?
+* What is the effect of the differing distributions of local optima
+  in the two objective functions? 
+
 
 .. _f50:
    
 :math:`f_{50}`: Schaffer F7, condition 10/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of two Schaffer F7 functions with
+condition number 10 (:math:`f_{17}` in the ``bbob`` suite).
+
+Both objective functions are non-separable and highly multi-modal.
+
+Contained in the *multi-modal - multi-modal* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* In comparison to :math:`f_{46}`: What is the effect of multimodality
+  on a less regular function?
+  
 
 .. _f51:
    
 :math:`f_{51}`: Schaffer F7, condition 10/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of Schaffer F7 function with
+condition number 10 (:math:`f_{17}` in the ``bbob`` suite)
+and Schwefel function (:math:`f_{20}` in the ``bbob`` suite).
+
+Both objective functions are non-separable and highly multi-modal.
+While frequency and amplitude of the modulation vary in an almost
+regular fashion in the first objective function, the second objective
+function posseses less global structure.
+
+
+Contained in the *multi-modal - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* What are the effects of different global structures in the two
+  objective functions?
+
 
 .. _f52:
    
 :math:`f_{52}`: Schaffer F7, condition 10/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of Schaffer F7 function with
+condition number 10 (:math:`f_{17}` in the ``bbob`` suite)
+and Gallagher function with
+101 peaks (:math:`f_{21}` in the ``bbob`` suite).
+
+Both objective functions are non-separable and highly multi-modal.
+While frequency and amplitude of the modulation vary in an almost
+regular fashion in the first objective function, the second has 
+101 optima with position and height being unrelated and randomly
+chosen (different for each instantiation of the function).
+
+Contained in the *multi-modal - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* Similar to :math:`f_{51}`: What are the effects of different
+  global structures in the two objective functions?
+
 
 .. _f53:
    
 :math:`f_{53}`: Schwefel x*sin(x)/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of two Schwefel functions (:math:`f_{20}`
+in the ``bbob`` suite).
+
+Both objective functions are non-separable and highly multi-modal where
+the most prominent :math:`2^D` minima of each objective function are
+located comparatively close to the corners of its unpenalized search area.
+Due to the combinatorial nature of the Schwefel function, it is likely
+in low dimensions that the Pareto set goes through the origin of the
+search space.
+
+Contained in the *weakly-structured - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* In comparison with :math:`f_{50}`: What is the effect of a weak global
+  structure?
+* Can the search algorithm benefit from Pareto-optimal search points
+  it can get from random samples close to the origin on some of the
+  function' instances?
+
 
 .. _f54:
    
 :math:`f_{54}`: Schwefel x*sin(x)/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of Schwefel function (:math:`f_{20}`
+in the ``bbob`` suite) and Gallagher function with
+101 peaks (:math:`f_{21}` in the ``bbob`` suite).
+
+Both objective functions are non-separable and highly multi-modal.
+For the first objective function, the most prominent :math:`2^D` minima
+are located comparatively close to the corners of its unpenalized search
+area. For the second objective, position and height of all  
+101 optima are unrelated and randomly
+chosen (different for each instantiation of the function).
+
+Contained in the *weakly-structured - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* In comparison to :math:`f_{53}`: Does the total absence of a global
+  structure in one objective change anything in the performance of the
+  algorithm?
+
 
 .. _f55:
    
 :math:`f_{55}`: Gallagher 101 peaks/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Combination of two Gallagher functions with
+101 peaks (:math:`f_{21}` in the ``bbob`` suite).
+
+Both objective functions are non-separable and highly multi-modal.
+Position and height of all 101 optima in each objective function
+are unrelated and randomly chosen and thus, no global structure
+is present.
+
+Contained in the *weakly-structured - weakly-structured* function class.
+
+Information gained from this function:
+""""""""""""""""""""""""""""""""""""""
+* Can the Pareto front/Pareto set be found efficiently when no global
+  structure can be exploited?

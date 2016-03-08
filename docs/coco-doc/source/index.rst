@@ -222,6 +222,14 @@ benchmarking far over hundred algorithms by many researchers.
     
 .. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
 
+.. Anne: Maybe we could actually make the point that with the COCO
+.. Anne: framework the focus can be on the algorithm design rather that on the
+.. Anne: implementation of the benchmarking test. Sadly, I have the feeling that some other
+.. Anne: benchmarking / challenge sessions are still popular because the people have the
+.. Anne: feeling they do more work (hence it's better). More precisely while they do not focus on
+.. Anne: the difficult task of designing a good algorithm (only need a small fancy idea like 
+.. Anne: imitating the fly of a chicken), they still have the feeling they achieve a consequent work 
+.. Anne: because they focus on implementing those long tests and writing their data in the latex.
 
 Why COCO_?
 ----------
