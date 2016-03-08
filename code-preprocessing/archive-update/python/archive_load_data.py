@@ -61,6 +61,50 @@ def parse_archive_file_name(file_name):
     return suite_name, function, dimension
 
 
+def parse_old_arhive_file_name(file_name):
+    """Retrieves information from the given old archive file name and returns it in the following form:
+       function, dimension, instance
+       :param file_name: old archive file name in form f[f1]-[f2]_i[i1]-[i2]_[d]D.txt
+    """
+    split = os.path.basename(file_name).split('_')
+    if (len(split) != 3) or (split[0][0] != 'f') or (split[1][0] != 'i'):
+        raise PreprocessingWarning('File name \'{}\' not in expected format '
+                                   '\'f[f1]-[f2]_i[i1]-[i2]_[d]D.txt\''.format(file_name))
+
+    function = split[0][1:]  # in form x-y
+    function1 = function[:function.find("-")]
+    function2 = function[function.find("-")+1:]
+    chosen_functions = [1, 2, 6, 8, 13, 14, 15, 17, 20, 21]
+    try:
+        function1id = chosen_functions.index(int(function1))
+        function2id = chosen_functions.index(int(function2))
+        function = 10 * function1id + function2id - (function1id * (function1id + 1) / 2) + 1
+        function = int(function)
+    except ValueError:
+        function = None
+
+    instance = split[1][1:]  # in form x-y
+    if instance == '2-4':
+        instance = 1
+    elif instance == '3-5':
+        instance = 2
+    elif instance == '7-8':
+        instance = 3
+    elif instance == '9-10':
+        instance = 4
+    elif instance == '11-12':
+        instance = 5
+    else:
+        instance = None
+
+    try:
+        dimension = int(split[2].split('D.')[0])
+    except ValueError:
+        dimension = None
+
+    return function, dimension, instance
+
+
 def get_instances(file_name):
     """Returns the list of instances contained in the given archive file's comments (lines beginning with %).
        :param file_name: archive file name
@@ -136,5 +180,3 @@ def write_best_values(dic, file_name):
         for key, value in sorted(dic.items()):
             f.write('  \"{} {:.15f}\",\n'.format(key, value))
         f.close()
-
-
