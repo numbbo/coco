@@ -11,7 +11,12 @@ Welcome to the experimental setup description for the bbob-biobj suite!
 This document details the specificities of Coco's performance assessment with respect to the biobjective test suite
 ``bbob-biobj`` described in more detail in [bbob-biobj-functions-doc]_ .
 
-.. todo::  * we do not have the optimum (except for f1)
+.. todo::   * perf assessement is relative - we face a problem: we do not have the optimum.
+			* How do we deal with this problem? [ this should probably be a section]
+				* estimate the optimum
+				* but approximation, meant to change / be improved - therefore need to ensure compatibility
+				* compatibility + easy re-estimation of the performance when the reference set is improved	
+			* we do not have the optimum (except for f1)
  			* we estimate it (how: running some algorithms) and it is meant to be changed with time (improved with time)
  			* things are based on the archive of nondominated solutions
  			* we measure the hypervolume difference between the dynamic archive and this reference set.
@@ -27,6 +32,7 @@ is the same than in the single-objective case: for each optimization algorithm, 
 A problem thereby consists of an objective function, its dimension, and an concrete instantiation
 of it (see [coco-functions-doc]_ )
 
+* why hypervolume (can also be in principle with other indicators)
 
 * Evaluation based on the complete archive of nondominated solutions, independent of population size (Tobias)
 
