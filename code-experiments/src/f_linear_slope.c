@@ -23,6 +23,9 @@ static double f_linear_slope_raw(const double *x,
   size_t i;
   double result = 0.0;
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   for (i = 0; i < number_of_variables; ++i) {
     double base, exponent, si;
 

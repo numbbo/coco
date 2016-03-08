@@ -25,6 +25,12 @@ static void transform_obj_penalize_evaluate(coco_problem_t *problem, const doubl
   const double *upper_bounds = problem->largest_values_of_interest;
   double penalty = 0.0;
   size_t i;
+
+  if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
+  	coco_vector_set_to_nan(y, coco_problem_get_number_of_objectives(problem));
+  	return;
+  }
+
   for (i = 0; i < problem->number_of_variables; ++i) {
     const double c1 = x[i] - upper_bounds[i];
     const double c2 = lower_bounds[i] - x[i];
@@ -37,6 +43,7 @@ static void transform_obj_penalize_evaluate(coco_problem_t *problem, const doubl
   }
   assert(coco_problem_transformed_get_inner_problem(problem) != NULL);
   coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
+
   for (i = 0; i < problem->number_of_objectives; ++i) {
     y[i] += data->factor * penalty;
   }

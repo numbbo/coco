@@ -25,6 +25,9 @@ static double f_katsuura_raw(const double *x, const size_t number_of_variables) 
   double tmp, tmp2;
   double result;
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   /* Computation core */
   result = 1.0;
   for (i = 0; i < number_of_variables; ++i) {

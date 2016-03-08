@@ -26,6 +26,9 @@ typedef unsigned __int64 uint64_t;
 #ifndef NAN
 /** @brief To be used only if undefined by the included headers */
 #define NAN 8.8888e88
+#define TRUE_NAN 0
+#else
+#define TRUE_NAN 1
 #endif
 
 #ifdef __cplusplus
