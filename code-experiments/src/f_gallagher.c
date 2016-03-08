@@ -287,7 +287,7 @@ static void f_gallagher_versatile_data_free(coco_problem_t *problem) {
   size_t i;
   f_gallagher_versatile_data_t *versatile_data = (f_gallagher_versatile_data_t *) problem->versatile_data;
   /*free the problems one by one*/
-  if (versatile_data->number_of_peaks > 0 && versatile_data->sub_problems != NULL) {
+  if (versatile_data->sub_problems != NULL) {
     for (i = 0; i < versatile_data->number_of_peaks; i++) {
       coco_problem_free(versatile_data->sub_problems[i]);
     }
@@ -310,15 +310,17 @@ static double f_gallagher_sub_core(const double *x, const size_t number_of_varia
   double result, w_i, tmp;
   size_t i;
 
-  if (versatile_data->peak_index == 1) {
+  if (versatile_data->peak_index == 0) {
     w_i = 10;
   } else {
-    w_i = 1.1 + 8.0 * (((double)versatile_data->peak_index) - 2.0) / (((double)versatile_data->number_of_peaks) - 2.0);
+    w_i = 1.1 + 8.0 * (((double) versatile_data->peak_index + 1) - 2.0) / (((double)versatile_data->number_of_peaks) - 2.0);
   }
   tmp = 0;
+
   for (i = 0; i < number_of_variables; i++) { /*compute x^T x */
     tmp += x[i] * x[i];
   }
+
   result = w_i * exp(- 1.0 / (2.0 * ((double)number_of_variables)) * tmp);
 
   return result;
@@ -337,16 +339,16 @@ static void f_gallagher_sub_evaluate_core(coco_problem_t *problem, const double 
 /**
  * @brief Allocates the basic gallagher sub problem.
  */
-static coco_problem_t *f_gallagher_sub_problem_allocate(const size_t number_of_variables, int peak_index) {
+static coco_problem_t *f_gallagher_sub_problem_allocate(const size_t number_of_variables, int peak_index, size_t number_of_peaks) {
   
   coco_problem_t *problem_i = coco_problem_allocate_from_scalars("gallagher_sub function",
                                                                f_gallagher_sub_evaluate_core, f_gallagher_versatile_data_free, number_of_variables, -5.0, 5.0, 0.0);
   f_gallagher_versatile_data_t *versatile_data_tmp;
   problem_i->versatile_data = (f_gallagher_versatile_data_t *) coco_allocate_memory(sizeof(f_gallagher_versatile_data_t));
   versatile_data_tmp = ((f_gallagher_versatile_data_t *) problem_i->versatile_data);
-  versatile_data_tmp->number_of_peaks = 0;/*sub-problem*/
+  versatile_data_tmp->number_of_peaks = number_of_peaks;/*needed for w_i Wassim: consider moving the w_i computation to the global eval instead of the sub eval*/
   versatile_data_tmp->sub_problems = NULL;
-  versatile_data_tmp->peak_index = peak_index + 1;/*consistent with doc*/
+  versatile_data_tmp->peak_index = peak_index;/*consistent with doc*/
 
   coco_problem_set_id(problem_i, "%s_d%04lu", "gallagher_sub", number_of_variables);
 
@@ -372,12 +374,11 @@ static double f_gallagher_core(const double *x, f_gallagher_versatile_data_t *f_
   for (i = 0; i < f_gallagher_versatile_data->number_of_peaks; i++) {
     problem_i = f_gallagher_versatile_data->sub_problems[i];
     problem_i->evaluate_function(problem_i, x, &y);
-    /*f_gallagher_sub_evaluate_core(problem_i, x, &y);*/
     if ( i == 0 || maxf < y ) {
       maxf = y;
     }
   }
-  result = 10 - maxf;
+  result = 10.0 - maxf;
   
   return result;
 }
@@ -424,9 +425,9 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   
   size_t i;
   int peak_index;
-  double *xopt, fopt, *y_i;
+  double fopt, *y_i;
   double penalty_factor = 1.0;
-  coco_problem_t *problem = NULL, *problem_i;
+  coco_problem_t *problem = NULL, **problem_i;
   double **B;
   const double *const *B_copy;
   size_t *P1, *P2;
@@ -445,7 +446,6 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
    * probability, not the largest condition level!!! */
   
   fopt = bbob2009_compute_fopt(function, instance);
-  xopt = coco_allocate_vector(dimension);/*xopt is y1 */
   if (number_of_peaks == peaks_101) {
     maxcondition = sqrt(maxcondition);
     b = 10.0;
@@ -482,8 +482,8 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   
   for (peak_index = 0; peak_index < number_of_peaks; peak_index++) {
     /* allocate sub-problem */
-    ((f_gallagher_versatile_data_t *) problem->versatile_data)->sub_problems[peak_index] = f_gallagher_sub_problem_allocate(dimension, peak_index);
-    problem_i = ((f_gallagher_versatile_data_t *) problem->versatile_data)->sub_problems[peak_index];
+    ((f_gallagher_versatile_data_t *) problem->versatile_data)->sub_problems[peak_index] = f_gallagher_sub_problem_allocate(dimension, peak_index, number_of_peaks);
+    problem_i = &(((f_gallagher_versatile_data_t *) problem->versatile_data)->sub_problems[peak_index]);
     /* compute transformation parameters*/
     /* y_i */
     y_i = coco_allocate_vector(dimension);
@@ -500,24 +500,27 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
       alpha_i = alpha_i_vals[P_alpha_i[peak_index - 1]];/*already square-rooted */
     }
 
-
+    (*problem_i)->best_value[0] = 0;/* to prevent raising the assert */
     /* P_Lambda the permutation */
     P_Lambda = coco_allocate_vector_size_t(dimension);/* random permutation of the alpha_i's */
     coco_compute_random_permutation(P_Lambda, rseed + 5000000, dimension);
 
     /* apply var transformations to sub problem*/
-    problem_i = transform_vars_scale(problem, sqrt(sqrt(sqrt(alpha_i))));/* sqrt( alpha^1/4) */
-    problem_i = transform_vars_conditioning(problem, alpha_i);
-    problem_i = transform_vars_permutation(problem, P_Lambda, dimension);/* Wassim: only works because sphere like*/
-    problem_i = transform_vars_permutation(problem, P2, dimension);
-    problem_i = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
-    problem_i = transform_vars_permutation(problem, P1, dimension);
-    problem_i = transform_vars_shift(problem, y_i, 0);
-    problem_i = transform_obj_norm_by_dim(problem_i);/* for the scalar product */
+    *problem_i = transform_vars_scale(*problem_i, sqrt(sqrt(sqrt(alpha_i))));/* sqrt( alpha^1/4) */
+    *problem_i = transform_vars_conditioning(*problem_i, alpha_i);
+    *problem_i = transform_vars_permutation(*problem_i, P_Lambda, dimension);/* Wassim: only works because sphere like*/
+    *problem_i = transform_vars_permutation(*problem_i, P2, dimension);
+    *problem_i = transform_vars_blockrotation(*problem_i, B_copy, dimension, block_sizes, nb_blocks);
+    *problem_i = transform_vars_permutation(*problem_i, P1, dimension);
+    *problem_i = transform_vars_shift(*problem_i, y_i, 0);
 
+    *problem_i = transform_obj_norm_by_dim(*problem_i);/* for the scalar product */
+    
     coco_free_memory(P_Lambda);
     coco_free_memory(y_i);
+    y_i = NULL;
   }
+  f_gallagher_evaluate_core(problem, problem->best_parameter, problem->best_value);
 
   /*transform global objective function*/
   problem = transform_obj_oscillate(problem);
@@ -534,7 +537,6 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   coco_free_memory(P1);
   coco_free_memory(P2);
   coco_free_memory(block_sizes);
-  coco_free_memory(xopt);
   coco_free_memory(alpha_i_vals);
   coco_free_memory(P_alpha_i);
   return problem;
