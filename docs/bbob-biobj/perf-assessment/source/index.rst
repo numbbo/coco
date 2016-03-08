@@ -1,6 +1,6 @@
-
+#########################################################
 Biobjective Performance Assessment with the Coco Platform
-=========================================================
+#########################################################
 
 This document details the specificities when assessing the performance of numerical black-box optimizers
 on multi-objective problems within the Coco platform and in particular on the biobjective test suite
@@ -11,6 +11,14 @@ not provide analytical forms of its optima, i.e. the Pareto set/Pareto front exc
 its 55 functions. The performance assessment therefore has to be relative to the best known
 approximations and this document details how this is implemented.
 
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+   
+   
 
 
 .. todo::   * perf assessement is relative - we face a problem: we do not have the optimum.
@@ -27,14 +35,18 @@ approximations and this document details how this is implemented.
 
 			
 Dealing with Unknown Optima
----------------------------
+===========================
 The equivalent of a global optimum in the multi-objective case is the set of Pareto-optimal
 or efficient solutions, also known as Pareto set. If we assume the search space to be
-:math:`\IR^n` and the minimization of two objective
-functions :math:`f_1: x\in \IR^n \mapsto f_1(x)\in\IR` and :math:`f_1: x\in \IR^n \mapsto f_1(x)\in\IR`,
-a solution :math`:x\in\IR^n` is called Pareto-optimal if it is not dominated
-by any other solution :math:`y\in\IR^n` or, in other words, if
-:math:`\not\exist y \text{ s.t. } (f_1(y)< f_1(x) \text{ and } f_2(y)\leq f_2(x)) \text{ or } (f_2(y)\leq f_2(x) \text{ and } f_2(y)< f_2(x))`.
+:math:`\mathbb{R}^n` and the minimization of two objective
+functions :math:`f_1: x\in \mathbb{R}^n \mapsto f_1(x)\in\mathbb{R}` and :math:`f_1: x\in \mathbb{R}^n \mapsto f_1(x)\in\mathbb{R}`,
+a solution :math:`x\in\mathbb{R}^n` is called Pareto-optimal if it is not dominated
+by any other solution :math:`y\in\mathbb{R}^n` or, in other words, if
+
+.. math::
+  
+  \not\exists y \text{ s.t. } (f_1(y)< f_1(x) \text{ and } f_2(y)\leq f_2(x)) \text{ or } (f_2(y)\leq f_2(x) \text{ and } f_2(y)< f_2(x)).
+
 The image of the Pareto set under the vector-valued objective function
 :math:`f(x)= (f_1(x), f_2(x))` is called Pareto front.
 
@@ -47,22 +59,24 @@ case, where with the Pareto set a set of solutions is sought, we call this appro
 of algorithms on the considered problem ahead of the performance assessment.
 
 This has two main implications:
+
 * Performance can only be judged relatively to the reference set. The better the algorithms
   used to create the reference set have been, the more accurate the performance assessment.
+
 * The reference set is expected to evolve over time, in terms of becoming a better and better
   approximation of the actual Pareto set/Pareto front if more and more algorithms are
   compared.
 
 The performance assessment via the Coco platform addresses both issues, see
 `Choice of Reference Set and Target Difficulties`_ and
-`Data storage and recalculation of indicator values`_ below for details. Before we discuss
-these issues, however, let us have a look on the actual performance criterion used for the
-``bbob-biobj`` test suite, assuming that a reference set is given.
+`Data storage and Future Recalculations of Indicator Values`_ below for details.
+Before we discuss these issues, however, let us have a look on the actual performance
+criterion used for the ``bbob-biobj`` test suite, assuming that a reference set is given.
 
 
 
 Biobjective Performance Assessment in Coco: A Set-Indicator Value Replaces the Objective Function
--------------------------------------------------------------------------------------------------
+=================================================================================================
 The general concepts of how the Coco platform suggests to benchmark multi-objective algorithms
 is the same than in the single-objective case: for each optimization algorithm, we record the
 (expected) runtimes to reach given target precisions for each problem in a given benchmark suite.
@@ -75,9 +89,47 @@ one.
 
 In particular, we suggest to (mainly) use the hypervolume indicator of the archive of all non-dominated
 solutions evaluated so far as the quality of an algorithm but principally, other quality indicators
-of the archive can be used as well. The reason for proposing to use the quality of the archive is that
-in practice 
+of the archive can be used as well.
 
+
+
+
+
+.. figure:: pics/IHDinside.*
+
+.. figure:: pics/IHDoutside.*
+
+
+
+
+Specificities for the ``bbob-biobj`` performance criterion
+
+* algorithm performance = quality of archive of non-dominated solutions found so far
+
+* normalization of objective space before indicator calculation such that the
+  region of interest (ROI) :math:`[z_{\text{ideal}}, z_{\text{nadir}}]`, defined by
+  the ideal and nadir point is mapped to :math:`[0, 1]^2`
+
+* if nadir point is dominated by a point in the archive: quality = hypervolume of archive wrt nadir point
+  as hypervolume reference point
+
+* if nadir point is not dominated by archive: quality = negative distance of archive to the ROI
+
+* what is of actual interest is the quality indicator difference to the reference set
+
+Implications on the performance criterion:
+
+* As the reference set approaches the Pareto set, the optimal quality indicator difference goes to 0`
+
+* Because the reference set is always a finite approximation of the Pareto set, negative quality
+  indicator differences can occur.
+
+* Because the quality of the archive is used as performance criterion, no population size has to be
+  prescribed to the algorithm. In particular, steady-state and generational algorithms can be 
+  compared directly as well as algorithms with varying population size and algorithms which carry
+  along their external archive themselves.
+  
+---
 
 * why hypervolume (can also be in principle with other indicators)
 
@@ -88,12 +140,15 @@ in practice
 
 
 Choice of Reference Set and Target Difficulties
------------------------------------------------
+===============================================
 Choice of the targets based on best estimation of Pareto front (using all the data we have) - chosen instance wise
 
 relative targets (in terms of the hypervolume difference to the hypervolume of the reference set)
 are chosen the same for all functions, dimensions, and instances: recorded are 100 targets per order of magnitude,
-equi-distantly chosen on the log-scale. Displayed are finally only 10 targets per order of magnitude, in total
+equi-distantly chosen on the log-scale.
+
+
+Displayed are finally only 10 targets per order of magnitude, in total
 51 of them between :math:`10^0` and :math:`10^{-5}`
 
 Note that due to the approximative nature of the reference set and its hypervolume, negative hypervolume values are
@@ -105,26 +160,40 @@ to be reploted.
 
 
 
-Data storage and recalculation of indicator values
---------------------------------------------------
-We store everything (while not used at the moment in the postprocessing)
-but such that we can recompute things if needed. All this will
-be used to recompute the reference set.
+Data storage and Future Recalculations of Indicator Values
+==========================================================
+Having a good approximation of the Pareto set/Pareto front is crucial in accessing
+algorithm performance with the above suggested performance criterion. In order to allow
+the reference set to approximate the Pareto set/Pareto front better and better over time,
+the Coco platform records every non-dominated solution over the algorithm run.
+Algorithm data sets, submitted through the Coco platform's web page, can therefore
+be used to improve the quality of the reference set by adding all solutions to the
+reference set which are non-dominated to it. 
+
+Recording every new non-dominated solution within every algorithm run also allows to
+recover the algorithm runs after the experiment and to recalculate the corresponding
+hypervolume difference values if the reference set changes in the future.
+
 
 
 
 Instances and Generalization Experiment
----------------------------------------
+=======================================
 * we record for 10 instances but display result for only 5. This will allow us to generate data for an unbiased
   generalization test on the unseen instances
 
+  
+  
 
-Contents:
+Acknowledgements
+================
+This work was supported by the grant ANR-12-MONU-0009 (NumBBO) 
+of the French National Research Agency.
+  
+   
 
-.. toctree::
-   :maxdepth: 2
-
-
+References
+==========
 
    
 .. [bbob-biobj-functions-doc] The BBOBies. **Function Documentation of the bbob-biobj Test Suite**. http://numbbo.github.io/coco-doc/bbob-biobj/functions/
