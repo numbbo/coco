@@ -23,6 +23,11 @@ static void test_coco_evaluate_function(void **state) {
   	x[0] = 0;
   	x[1] = NAN;
     coco_evaluate_function(problem, x, y);
+
+    if (!coco_vector_contains_nan(y, coco_problem_get_number_of_objectives(problem))) {
+    	coco_warning("nan = %f, y0 = %f, y1 = %f", NAN, y[0], y[1]);
+    }
+
     assert(coco_vector_contains_nan(y, coco_problem_get_number_of_objectives(problem)));
 
   }
