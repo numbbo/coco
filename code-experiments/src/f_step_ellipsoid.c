@@ -35,7 +35,6 @@ typedef struct {
   double **rot1, **rot2;
 } f_step_ellipsoid_data_t;
 
-
 /**
  * @brief Implements the step ellipsoid function without connections to any COCO structures.
  */
@@ -175,7 +174,7 @@ static coco_problem_t *f_step_ellipsoid_bbob_problem_allocate(const size_t funct
 /**
  * @brief Implements the step ellipsoid function without connections to any COCO structures.
  */
-static double f_step_ellipsoid_core(const double *x, const size_t number_of_variables) {
+static double f_step_ellipsoid_core(const double *x, const size_t number_of_variables, f_step_ellipsoid_versatile_data_t *f_step_ellipsoid_versatile_data) {
   
   static const double condition = 100;
   size_t i;
@@ -186,9 +185,8 @@ static double f_step_ellipsoid_core(const double *x, const size_t number_of_vari
     double exponent;
     exponent = (double) (long) i / ((double) (long) number_of_variables - 1.0);
     result += pow(condition, exponent) * x[i] * x[i];
-    ;
   }
-  result = 0.1 * coco_double_max(x[number_of_variables] * 1.0e-4, result); /*x[number_of_variables] is \hat{z}_1 thanks to transform_vars_round_step.c */
+  result = 0.1 * coco_double_max(f_step_ellipsoid_versatile_data->zhat_1 * 1.0e-4, result);
   return result;
 }
 
@@ -198,9 +196,21 @@ static double f_step_ellipsoid_core(const double *x, const size_t number_of_vari
  */
 static void f_step_ellipsoid_permblock_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
-  y[0] = f_step_ellipsoid_core(x, problem->number_of_variables);
+  y[0] = f_step_ellipsoid_core(x, problem->number_of_variables, (f_step_ellipsoid_versatile_data_t *) problem->versatile_data);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
+
+/**
+ * @brief allows to free the versatile_data part of the problem.
+ */
+static void f_step_ellipsoid_versatile_data_free(coco_problem_t *problem) {
+  coco_free_memory((f_step_ellipsoid_versatile_data_t *) problem->versatile_data);
+  problem->versatile_data = NULL;
+  problem->problem_free_function = NULL;
+  coco_problem_free(problem);
+}
+
+
 
 /**
  * @brief Allocates the basic step ellipsoid problem.
@@ -209,16 +219,19 @@ static void f_step_ellipsoid_permblock_evaluate(coco_problem_t *problem, const d
 static coco_problem_t *f_step_ellipsoid_allocate(const size_t number_of_variables) {
   
   coco_problem_t *problem = coco_problem_allocate_from_scalars("step ellipsoid function",
-                                          f_step_ellipsoid_permblock_evaluate, NULL, number_of_variables + 1, -5.0, 5.0, 0.0);
-  problem->number_of_variables = number_of_variables; /* force it since otherwise it would be set to dim+1 and used so everywhere*/
-  problem->best_parameter[number_of_variables] = -1.0;
-  
-  coco_problem_set_id(problem, "%s_d%02lu", "step_ellipsoid", number_of_variables);
-  /* Compute best solution */
-  f_step_ellipsoid_permblock_evaluate(problem, problem->best_parameter, problem->best_value);
+                                          f_step_ellipsoid_permblock_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
+  problem->versatile_data = (f_step_ellipsoid_versatile_data_t *) coco_allocate_memory(sizeof(f_step_ellipsoid_versatile_data_t));
+  ((f_step_ellipsoid_versatile_data_t *) problem->versatile_data)->zhat_1 = 0;/*needed for xopt evaluation*/
+  /* add the free function of the allocated versatile_data*/
+  problem->problem_free_function = f_step_ellipsoid_versatile_data_free;
 
+  coco_problem_set_id(problem, "%s_d%02lu", "step_ellipsoid", number_of_variables);
+  /* Compute best solution, here done outside after the zhat is set to the best_value */
+  f_step_ellipsoid_permblock_evaluate(problem, problem->best_parameter, problem->best_value);
   return problem;
 }
+
+
 
 /**
  * @brief Creates the BBOB permuted block-rotated step ellipsoid problem.
@@ -238,11 +251,11 @@ static coco_problem_t *f_step_ellipsoid_permblockdiag_bbob_problem_allocate(cons
   size_t *P11, *P12, *P21, *P22;
   size_t *block_sizes1, *block_sizes2, nb_blocks1, nb_blocks2, swap_range1, swap_range2, nb_swaps1, nb_swaps2;
   double penalty_factor = 1.;
-    
+  
   xopt = coco_allocate_vector(dimension);
   fopt = bbob2009_compute_fopt(function, instance);
   bbob2009_compute_xopt(xopt, rseed, dimension);
-    
+  
   block_sizes1 = coco_get_block_sizes(&nb_blocks1, dimension, "bbob-largescale");
   block_sizes2 = coco_get_block_sizes(&nb_blocks2, dimension, "bbob-largescale");
   swap_range1 = coco_get_swap_range(dimension, "bbob-largescale");
@@ -256,7 +269,7 @@ static coco_problem_t *f_step_ellipsoid_permblockdiag_bbob_problem_allocate(cons
   B2_copy = (const double *const *)B2;
   coco_compute_blockrotation(B1, rseed + 1000000, dimension, block_sizes1, nb_blocks1);
   coco_compute_blockrotation(B2, rseed, dimension, block_sizes2, nb_blocks2);
-
+  
   P11 = coco_allocate_vector_size_t(dimension);
   P12 = coco_allocate_vector_size_t(dimension);
   P21 = coco_allocate_vector_size_t(dimension);
@@ -278,7 +291,7 @@ static coco_problem_t *f_step_ellipsoid_permblockdiag_bbob_problem_allocate(cons
   problem = transform_vars_blockrotation(problem, B1_copy, dimension, block_sizes1, nb_blocks1);
   problem = transform_vars_permutation(problem, P11, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
-
+  
   problem = transform_obj_norm_by_dim(problem);
   problem = transform_obj_penalize(problem, penalty_factor);
   problem = transform_obj_shift(problem, fopt);
@@ -286,17 +299,16 @@ static coco_problem_t *f_step_ellipsoid_permblockdiag_bbob_problem_allocate(cons
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "large_scale_block_rotated");
-
+  
   coco_free_block_matrix(B1, dimension);
   coco_free_block_matrix(B2, dimension);
   coco_free_memory(P11);
-  coco_free_memory(P21);
   coco_free_memory(P12);
+  coco_free_memory(P21);
   coco_free_memory(P22);
   coco_free_memory(block_sizes1);
   coco_free_memory(block_sizes2);
   coco_free_memory(xopt);
 
-return problem;
+  return problem;
 }
-
