@@ -11,6 +11,13 @@ Welcome to the experimental setup description for the bbob-biobj suite!
 This document details the specificities of Coco's performance assessment with respect to the biobjective test suite
 ``bbob-biobj`` described in more detail in [bbob-biobj-functions-doc]_ .
 
+.. todo::  * we do not have the optimum (except for f1)
+ 			* we estimate it (how: running some algorithms) and it is meant to be changed with time (improved with time)
+ 			* things are based on the archive of nondominated solutions
+ 			* we measure the hypervolume difference between the dynamic archive and this reference set.
+			* negative hyp-vol diff values are expected (means the algorithm improves over the current reference set)
+			* archive is improved over time, whenever we have a new point entering the archive we recompute and log the hyp-vol difference.
+
 
 A Set-Indicator Value Replaces the Objective Function (Tobias)
 --------------------------------------------------------------
@@ -25,6 +32,12 @@ of it (see [coco-functions-doc]_ )
 
 * explain - give formula for the computation of the hypervolume (if there are no points dominating the Nadir)
 
+Data storage and recalculation of indicator values
+--------------------------------------------------
+
+We store everything (while not used at the moment in the postprocessing)
+but such that we can recompute things if needed. All this will
+be used to recompute the reference set.
 
 Choice of Target Difficulties
 -----------------------------
