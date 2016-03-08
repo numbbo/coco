@@ -51,6 +51,9 @@ equi-distantly chosen on the log-scale. Displayed are finally only 10 targets pe
 Note that due to the approximative nature of the reference set and its hypervolume, negative hypervolume values are
 possible. The Coco platform stores all
 
+Remind that performance assessment is "relative" because best
+estimation of the front is meant to change. Hence ECDF plots are meant
+to be reploted.
 
 
 Instances and Generalization Experiment
