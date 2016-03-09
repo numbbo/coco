@@ -836,14 +836,14 @@ static size_t coco_double_to_size_t(const double number) {
 }
 
 /* Commented to silence the compiler (unused function warning) */
-#if 0
+
 /**
  * @brief  Returns 1 if |a - b| < accuracy and 0 otherwise.
  */
 static int coco_double_almost_equal(const double a, const double b, const double accuracy) {
   return ((fabs(a - b) < accuracy) == 0);
 }
-#endif
+
 /**@}*/
 
 /***********************************************************************************************************/
@@ -900,8 +900,8 @@ static int coco_vector_contains_nan(const double *x, const size_t dim) {
 		  return 1;
 		/* TODO: Delete these lines: */
 		if (x[i] > 1e10) {
-			coco_warning("x[%lu] = %f\nnan = %f\n(x[%lu] == nan) = %d\n(x[%lu] != nan) = %d", i, x[i], NAN, i,
-					x[i] == NAN, i, x[i] != NAN);
+			coco_warning("x[%lu] = %f\nnan = %f\n(x[%lu] == nan) = %d\n(x[%lu] != nan) = %d\n almost equal = %d",
+					i, x[i], NAN, i, x[i] == NAN, i, x[i] != NAN, coco_double_almost_equal(x[i], NAN, 1.0));
 		}
 	}
 	return 0;
