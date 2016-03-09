@@ -26,7 +26,7 @@ static void test_coco_evaluate_function(void **state) {
     coco_evaluate_function(problem, x, y);
     if (!coco_vector_contains_nan(y, coco_problem_get_number_of_objectives(problem))) {
     	coco_warning("problem_id = %s, true nan = %d\nnan = %f\ny0 = %f\n(nan != nan) = %d, (y0 != y0) = %d",
-    			coco_problem_get_id(problem), TRUE_NAN, NAN, y[0], nan != nan, y[0] != y[0]);
+    			coco_problem_get_id(problem), TRUE_NAN, NAN, y[0], NAN != NAN, y[0] != y[0]);
     }
     assert(coco_vector_contains_nan(y, coco_problem_get_number_of_objectives(problem)));
   }
