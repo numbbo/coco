@@ -849,6 +849,64 @@ static int coco_double_almost_equal(const double a, const double b, const double
 /***********************************************************************************************************/
 
 /**
+ * @name Methods handling NAN and INFINITY
+ */
+/**@{*/
+
+/**
+ * @brief Returns 1 if x is NAN and 0 otherwise.
+ */
+static int coco_is_nan(const double x) {
+  return ((x != x) || !(x == x) || (x == 8.8888e88) || isnan(x));
+}
+
+/**
+ * @brief Returns 1 if the input vector of dimension dim contains any NAN values and 0 otherwise.
+ */
+static int coco_vector_contains_nan(const double *x, const size_t dim) {
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		if (coco_is_nan(x[i]))
+		  return 1;
+	}
+	return 0;
+}
+
+/**
+ * @brief Sets all dim values of y to NAN.
+ */
+static void coco_vector_set_to_nan(double *y, const size_t dim) {
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		y[i] = NAN;
+		coco_warning("y[%lu] = %f", i, y[i]);
+	}
+}
+
+/**
+ * @brief Returns 1 if x is INFINITY and 0 otherwise.
+ */
+static int coco_is_inf(const double x) {
+	return (isinf(x) || (x < -9e99) || (x > 9e99));
+}
+
+/**
+ * @brief Returns 1 if the input vector of dimension dim contains any INFINITY values and 0 otherwise.
+ */
+static int coco_vector_contains_inf(const double *x, const size_t dim) {
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		if (coco_is_inf(x[i]))
+		  return 1;
+	}
+	return 0;
+}
+
+/**@}*/
+
+/***********************************************************************************************************/
+
+/**
  * @name Miscellaneous methods
  */
 /**@{*/
@@ -888,34 +946,6 @@ static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, 
   }
 
   return count;
-}
-
-/**
- * @brief Returns 1 if the input vector of dimension dim contains any NAN values and 0 otherwise.
- */
-static int coco_vector_contains_nan(const double *x, const size_t dim) {
-	size_t i;
-	for (i = 0; i < dim; i++) {
-		if ((TRUE_NAN && (x[i] != x[i])) || (!TRUE_NAN && (x[i] == NAN)))
-		  return 1;
-		/* TODO: Delete these lines: */
-		if (x[i] > 1e10) {
-			coco_warning("x[%lu] = %f\nnan = %f\n(x[%lu] == nan) = %d\n(x[%lu] != nan) = %d\n almost equal = %d",
-					i, x[i], NAN, i, x[i] == NAN, i, x[i] != NAN, coco_double_almost_equal(x[i], NAN, 1.0));
-		}
-	}
-	return 0;
-}
-
-/**
- * @brief Sets all dim values of y to NAN.
- */
-static void coco_vector_set_to_nan(double *y, const size_t dim) {
-	size_t i;
-	for (i = 0; i < dim; i++) {
-		y[i] = NAN;
-		coco_warning("y[%lu] = %f", i, y[i]);
-	}
 }
 
 /**@}*/

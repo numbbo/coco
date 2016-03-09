@@ -24,11 +24,22 @@ typedef unsigned __int64 uint64_t;
 /* Include definition for NAN among other things */
 #include <math.h>
 #ifndef NAN
-/** @brief To be used only if undefined by the included headers */
+/** @brief Definition of NAN to be used only if undefined by the included headers */
 #define NAN 8.8888e88
-#define TRUE_NAN 0
-#else
-#define TRUE_NAN 1
+#endif
+#ifndef isnan
+/** @brief Definition of isnan to be used only if undefined by the included headers */
+int isnan(double x) {
+	(void) x; /* To silence the compiler */
+	return 0;
+}
+#endif
+#ifndef isinf
+/** @brief Definition of isinf to be used only if undefined by the included headers */
+int isinf(double x) {
+	(void) x; /* To silence the compiler */
+	return 0;
+}
 #endif
 
 #ifdef __cplusplus
