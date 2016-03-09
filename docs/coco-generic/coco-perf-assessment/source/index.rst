@@ -138,7 +138,7 @@ experiments:
 
 
 It is often argued that the fixed-cost approach is close to what is needed for
-real word applications where the total number of function evaluations is
+real world applications where the total number of function evaluations is
 limited. On the other hand, also a minimum target requirement needs to be
 achieved in real world applications, for example, getting (noticeably) better
 than the currently available best solution or than a competitor.
@@ -188,7 +188,7 @@ Remark that if the probability of success is one, the restart algorithm and the 
 .. Note:: Considering the runtime of the restart algorithm allows to compare quantitatively the two different scenarios where
 
 	* an algorithm converges often but relatively slowly
-	* an algorithm converges less often, but once it converges, it converges fast.
+	* an algorithm converges less often, but whenever it converges, it is with a fast convergence rate.
 
 The performance assessment in COCO heavily relies on this conceptual restart algorithm. However, we collect only one single sample of (successful or unsuccessful) runtime per problem while more are needed to be able to display significant data. This is where the idea of instances comes into play: We interpret different runs performed on different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` as repetitions, that is, as if they were performed on the same function. [#]_ 
 
