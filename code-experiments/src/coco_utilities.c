@@ -900,7 +900,8 @@ static int coco_vector_contains_nan(const double *x, const size_t dim) {
 		  return 1;
 		/* TODO: Delete these lines: */
 		if (x[i] > 1e10) {
-			coco_warning("x[%lu] = %f\nnan = %f\n(x[%lu] == nan) = %d", i, x[i], NAN, i, x[i] == NAN);
+			coco_warning("x[%lu] = %f\nnan = %f\n(x[%lu] == nan) = %d\n(x[%lu] != nan) = %d", i, x[i], NAN, i,
+					x[i] == NAN, i, x[i] != NAN);
 		}
 	}
 	return 0;
