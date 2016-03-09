@@ -24,7 +24,7 @@ static void test_coco_evaluate_function(void **state) {
   	x[0] = 0;
   	x[1] = NAN;
     coco_evaluate_function(problem, x, y);
-    assert(coco_vector_contains_nan(y, coco_problem_get_number_of_objectives(problem)));
+    assert(coco_vector_contains_nan(y, 1));
   }
   coco_suite_free(suite);
   coco_free_memory(x);
@@ -39,7 +39,7 @@ static void test_coco_evaluate_function(void **state) {
   	x[0] = 0;
   	x[1] = NAN;
     coco_evaluate_function(problem, x, y);
-    assert(coco_vector_contains_nan(y, coco_problem_get_number_of_objectives(problem)));
+    assert(coco_vector_contains_nan(y, 2));
   }
   coco_suite_free(suite);
   coco_free_memory(x);
