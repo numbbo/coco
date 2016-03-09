@@ -29,17 +29,11 @@ typedef unsigned __int64 uint64_t;
 #endif
 #ifndef isnan
 /** @brief Definition of isnan to be used only if undefined by the included headers */
-int isnan(double x) {
-	(void) x; /* To silence the compiler */
-	return 0;
-}
+#define isnan(x) (0)
 #endif
 #ifndef isinf
 /** @brief Definition of isinf to be used only if undefined by the included headers */
-int isinf(double x) {
-	(void) x; /* To silence the compiler */
-	return 0;
-}
+#define isinf(x) (0)
 #endif
 
 #ifdef __cplusplus
