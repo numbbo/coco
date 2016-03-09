@@ -13,7 +13,7 @@ if __name__ == '__main__':
     from cocoprep import merge_archives, update_best_hypervolume
 
     # Merge the archives
-    new_hypervolumes = merge_archives('archives-input', 'archives-output')
+    new_hypervolumes = merge_archives('/Volumes/STORAGE/Data/archives-input', '/Volumes/STORAGE/Data/archives-output')
 
     # Use files with best hypervolume values from the src folder and update them with the new best values
     base_path = os.path.dirname(__file__)
