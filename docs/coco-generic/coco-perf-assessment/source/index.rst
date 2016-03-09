@@ -369,16 +369,41 @@ We can also naturally aggregate over all functions and hence obtain one single E
  	The ECDF graphs are also known under the name data
  	profile (see [More:2009]_). Note, however, that the original definition of data profiles does not consider a log scale for the runtime and that data profiles are standardly used without a log scale [Rios:2012]_.
 	
-	We advocate not to aggregate over dimension as the dimension is 
+	We advocate **not to aggregate** over dimension as the dimension is 
 	typically an input parameter to the algorithm that can be
 	exploited to run different types of algorithms on different dimensions.
+	
+	The COCO platform does not provides ECDF aggregated over dimension.
 
 
 
 .. todo::
 	* ECDF and uniform pick of a problem
-	* clean up bibliography
+	* log ERT can be read on the ECDF graphs [requires some assumptions]
 
+The Different Plots Provided by the COCO Platform
+=================================================
+
+Best 2009 Algorithm
+-------------------
+
+.. In several displays we use the best 2009 algorithm
+
+ART Scaling Graphs (see Figure :ref:`fig:artscaling`) 
+-----------------------------------------------------
+
+The ART scaling graphs present the average running time to reach a certain precision (relative target) divided by the dimension versus the dimension. Hence an horizontal line means a linear scaling with respect to the dimension.
+
+.. _fig:artscaling:
+
+.. figure:: pics/plots-all2009/pprldmany_noiselessall-5and20D.* 
+   :width: 100%
+   :align: center
+   
+   ART Scaling Graph
+
+ART Loss Graphs
+---------------
 
 Acknowledgements
 ================
@@ -390,24 +415,13 @@ References
 ==========
 	
 
-.. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
-
-
-.. [BBO2016biobj] The BBOBies: Biobjective function benchmark suite. 
-.. [Auger:2005a] A Auger and N Hansen. A restart CMA evolution strategy with
-   increasing population size. In *Proceedings of the IEEE Congress on
-   Evolutionary Computation (CEC 2005)*, pages 1769–1776. IEEE Press, 2005.
 .. [Auger:2005b] A. Auger and N. Hansen. Performance evaluation of an advanced
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
-   Evolutionary Computation (CEC 2005)*, pages 1777–1784, 2005.
-.. [Auger:2009] Anne Auger and Raymond Ros. Benchmarking the pure
-   random search on the BBOB-2009 testbed. In Franz Rothlauf, editor, *GECCO
-   (Companion)*, pages 2479–2484. ACM, 2009.
-.. [Efron:1993] B. Efron and R. Tibshirani. *An introduction to the
-   bootstrap.* Chapman & Hall/CRC, 1993.
-.. [Harik:1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
-   algorithm. In *Proceedings of the Genetic and Evolutionary Computation
-   Conference (GECCO)*, volume 1, pages 258–265. ACM, 1999.
+   Evolutionary Computation (CEC 2005)*, pages 1777–1784, 2005.   
+.. [BBO2016biobj] The BBOBies: Biobjective function benchmark suite.
+.. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter
+	Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria
+	Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 .. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
    algorithms—pitfalls and remedies. In *Proceedings of the Fourteenth 
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
@@ -417,8 +431,23 @@ References
 .. [Price:1997] K. Price. Differential evolution vs. the functions of
    the second ICEO. In Proceedings of the IEEE International Congress on
    Evolutionary Computation, pages 153–157, 1997.
+.. [Rios:2012] Luis Miguel Rios and Nikolaos V Sahinidis. Derivative-free optimization:
+	A review of algorithms and comparison of software implementations.
+	Journal of Global Optimization, 56(3):1247– 1293, 2013.   
 .. [Hooker:1995] J. N. Hooker Testing heuristics: We have it all wrong. In Journal of
     Heuristics, pages 33-42, 1995.
 
    
 
+.. old-bib [Auger:2005a] A Auger and N Hansen. A restart CMA evolution strategy with
+   increasing population size. In *Proceedings of the IEEE Congress on
+   Evolutionary Computation (CEC 2005)*, pages 1769–1776. IEEE Press, 2005.
+.. old-bib 
+.. old-bib [Auger:2009] Anne Auger and Raymond Ros. Benchmarking the pure
+   random search on the BBOB-2009 testbed. In Franz Rothlauf, editor, *GECCO
+   (Companion)*, pages 2479–2484. ACM, 2009.
+.. old-bib [Efron:1993] B. Efron and R. Tibshirani. *An introduction to the
+   bootstrap.* Chapman & Hall/CRC, 1993.
+.. old-bib [Harik:1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
+   algorithm. In *Proceedings of the Genetic and Evolutionary Computation
+   Conference (GECCO)*, volume 1, pages 258–265. ACM, 1999.
