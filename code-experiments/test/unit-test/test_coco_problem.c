@@ -5,7 +5,7 @@
 #include "coco.h"
 
 /**
- * Tests that the coco_evaluate_function returns a vector of NANs when given a vector with one or more
+ * Tests whether the coco_evaluate_function returns a vector of NANs when given a vector with one or more
  * NAN values.
  */
 static void test_coco_evaluate_function(void **state) {
@@ -25,7 +25,8 @@ static void test_coco_evaluate_function(void **state) {
   	x[1] = NAN;
     coco_evaluate_function(problem, x, y);
     if (!coco_vector_contains_nan(y, coco_problem_get_number_of_objectives(problem))) {
-    	coco_warning("true nan = %d, nan = %f, y0 = %f, (nan == y0) = %d", TRUE_NAN, NAN, y[0], y[0] == NAN);
+    	coco_warning("problem_id = %s, true nan = %d\nnan = %f\ny0 = %f\n(nan != nan) = %d, (y0 != y0) = %d",
+    			coco_problem_get_id(problem), TRUE_NAN, NAN, y[0], nan != nan, y[0] != y[0]);
     }
     assert(coco_vector_contains_nan(y, coco_problem_get_number_of_objectives(problem)));
   }
@@ -42,10 +43,6 @@ static void test_coco_evaluate_function(void **state) {
   	x[0] = 0;
   	x[1] = NAN;
     coco_evaluate_function(problem, x, y);
-    if (!coco_vector_contains_nan(y, coco_problem_get_number_of_objectives(problem))) {
-    	coco_warning("true nan = %d, nan = %f, y0 = %f, y1 = %f, (nan == y0) = %d, (nan == y1) = %d", TRUE_NAN,
-    			NAN, y[0], y[1], y[0] == NAN, y[1] == NAN);
-    }
     assert(coco_vector_contains_nan(y, coco_problem_get_number_of_objectives(problem)));
   }
   coco_suite_free(suite);
