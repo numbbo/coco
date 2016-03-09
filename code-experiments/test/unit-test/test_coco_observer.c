@@ -111,7 +111,8 @@ static void test_coco_observer_evaluations_trigger(void **state) {
       }
     }
     if (update != found) {
-      coco_warning("test_coco_observer_evaluations_trigger(): Assert fails for evaluation number = %lu", i);
+      coco_warning("test_coco_observer_evaluations_trigger(): Assert fails for evaluation number = %lu",
+      		(unsigned long) i);
     }
     assert(update == found);
   }
