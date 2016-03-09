@@ -879,7 +879,6 @@ static void coco_vector_set_to_nan(double *y, const size_t dim) {
 	size_t i;
 	for (i = 0; i < dim; i++) {
 		y[i] = NAN;
-		coco_warning("y[%lu] = %f", i, y[i]);
 	}
 }
 
