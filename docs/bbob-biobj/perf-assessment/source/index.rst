@@ -95,9 +95,25 @@ of the archive can be used as well.
 
 
 
-.. figure:: pics/IHDinside.*
-
 .. figure:: pics/IHDoutside.*
+   :align: center
+   :width: 60%
+
+   Illustration of Coco's performance criterion in the bi-objective case if no solution of the
+   archive (blue filled circles) dominates the nadir point (black filled circle), i.e., the
+   hypervolume of the reference set (aka the best known Pareto front approximation, red triangles)
+   plus the shortest distance of an archive member to the region of interest (ROI), delimited by
+   the nadir point. Here, it is the forth point from the left that defines the smallest distance.
+   
+.. figure:: pics/IHDinside.*
+   :align: center
+   :width: 60%
+
+   Illustration of Coco's performance criterion in the bi-objective case if the nadir point
+   (black filled circle) is dominated by a solution in the archive (blue filled circles):
+   the difference between the hypervolume of the reference
+   set (aka Pareto front approximation, red triangles) and the hypervolume of the archive is given
+   as the size of the two blue shaded areas minus the size of the green area.
 
 
 
