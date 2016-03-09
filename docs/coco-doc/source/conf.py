@@ -48,6 +48,7 @@ extensions = [
 #    'matplotlib.sphinxext.mathmpl',  # low resolution
 ]
 
+
 pngmath_use_preview = True  # "When this is enabled, the images put into the HTML document will get a vertical-align style that correctly aligns the baselines."
 pngmath_dvipng_args = [ # see http://www.nongnu.org/dvipng/dvipng_4.html#Command_002dline-options
     '-gamma', '1.5',  # heavyness of color 0.5 is between black and background, 1.5 is blacker than black, --gamma works as well?
@@ -69,6 +70,8 @@ latex_commands = r"""
 
 pngmath_latex_preamble = latex_commands
 
+
+# Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
@@ -142,6 +145,8 @@ todo_include_todos = True
 
 
 # -- Options for HTML output ----------------------------------------------
+
+
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
@@ -319,6 +324,7 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_domain_indices = True
 
+# pngmath_latex_preamble = r"\newcommand{\R}{\mathbb{R}}"
 
 # -- Options for manual page output ---------------------------------------
 

@@ -1,3 +1,5 @@
+.. title:: COCO: Performance Assessment
+
 ##############################
 COCO: Performance Assessment
 ##############################
@@ -26,6 +28,17 @@ COCO: Performance Assessment
 
 ..
    sectnum::
+
+.. Here we put the abstract when using LaTeX, the \abstractinrst command is defined in 
+     the 'preamble' of latex_elements in source/conf.py, the text
+     is defined in `abstract` of conf.py. To flip abstract and 
+     table of contents, or update the table of contents, toggle 
+     the \generatetoc command in the 'preamble' accordingly. 
+.. raw:: latex
+
+    \abstractinrst
+    \newpage 
+
 
 Introduction
 =============

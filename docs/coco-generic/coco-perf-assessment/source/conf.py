@@ -36,7 +36,10 @@ abstract = """We explain how performance assessement is done with the COCO platf
 # ones.
 extensions = [
     'sphinx.ext.todo',
-    'sphinx.ext.pngmath',
+    'sphinx.ext.pngmath',  # low resolution
+#    'sphinx.ext.jsmath',  # javascript, older than mathjax, needs jsmath_path set
+#    'sphinx.ext.mathjax',
+#    'matplotlib.sphinxext.mathmpl',  # low resolution
 ]
 
 
@@ -255,19 +258,23 @@ latex_elements = {
 # Additional stuff for the LaTeX preamble.
 'preamble': r"""
   \usepackage{amssymb}
+  \pagestyle{plain}
   \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
   \newcommand{\ignore}[1]{}
-  \newcommand{\abstractinconf}{""" + abstract + r"""}
-  \newcommand{\abstractinrst}{\begin{abstract}\abstractinconf\end{abstract}}
+  \newcommand{\abstracttextinconfpy}{""" + abstract + r"""}
 
 %%%%%% TOGGLE the renewcommand to update toc / show abstract first %%%%%%
   \newcommand{\generatetoc}{\boolean{true}}  % (re-)generate toc
-  \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
+%  \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
 
-  \ifthenelse{\generatetoc}{}{
+  % abstract is latex-only in rst
+  \newcommand{\abstractinrst}{\begin{abstract}\abstracttextinconfpy\end{abstract}} 
+  % abstract via redefinition of \tableofcontents
+  \ifthenelse{\generatetoc}{% do nothing here, \tableofcontents does the work
+    }{% redefine \tableofcontents such that the abstract can go first:
     \renewcommand{\abstractinrst}{}
     \renewcommand{\tableofcontents}{
-      \begin{abstract}\abstractinconf\end{abstract}
+      \begin{abstract}\abstracttextinconfpy\end{abstract}
       \par\par
       \section*{Contents}
       \begin{minipage}{\textwidth}\setlength{\baselineskip}{3ex}
@@ -281,12 +288,13 @@ latex_elements = {
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
 }
+
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'coco-perf-assessment.tex', u'General Performance Assessment Documentation in the Comparing Continuous Optimizers Platform Coco',
-   u'The BBOBies', 'manual'),
+  (master_doc, 'coco-perf-assessment.tex', u'{COCO}: Performance Assessment',
+   u'The BBOBies', 'article'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -309,7 +317,7 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_domain_indices = True
 
-pngmath_latex_preamble = r"\newcommand{\R}{\mathbb{R}}"
+# pngmath_latex_preamble = r"\newcommand{\R}{\mathbb{R}}"
 
 # -- Options for manual page output ---------------------------------------
 
