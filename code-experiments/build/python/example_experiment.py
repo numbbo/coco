@@ -68,26 +68,34 @@ class ShortInfo(object):
 
     """
     def __init__(self):
-        self.f_current = 0  # function id (not problem id)
+        self.f_current = None  # function id (not problem id)
         self.d_current = 0  # dimension
         self.t0_dimension = time.time()
         self.evals_dimension = 0
+        self.runs_function = 0
     def print(self, problem, end="", **kwargs):
         print(self(problem), end=end, **kwargs)
         sys.stdout.flush()
-    def add_evals(self, evals):
+    def add_evals(self, evals, runs):
         self.evals_dimension += evals
+        self.runs_function += runs
     def dimension_done(self):
         s = '\n    done in %.1e seconds/evaluation' % ((time.time() - self.t0_dimension) / self.evals_dimension)
         # print(self.evals_dimension)
         self.t0_dimension = time.time()
         self.evals_dimension = 0
         return s
+    def function_done(self):
+        s = "(%d)" % self.runs_function + (2 - int(np.log10(self.runs_function))) * ' '
+        self.runs_function = 0
+        return s
     def __call__(self, problem):
         """uses `problem.id` and `problem.dimension` to decide what to print.
         """
         f = "f" + problem.id.lower().split('_f')[1].split('_')[0]
         res = ""
+        if self.f_current and f != self.f_current:
+            res += self.function_done() + ' '
         if problem.dimension != self.d_current:
             res += '%s%s, d=%d, running: ' % (self.dimension_done() + "\n\n" if self.d_current else '',
                         ShortInfo.short_time_stap(), problem.dimension)
@@ -145,13 +153,13 @@ def batch_loop(solver, suite, observer, budget,
             continue
         observer.observe(problem)
         short_info.print(problem) if verbose else None
-        res = coco_optimize(solver, problem, budget * problem.dimension, max_runs)
+        runs = coco_optimize(solver, problem, budget * problem.dimension, max_runs)
         if verbose:
-            print_flush("!" if res > 2 else ":" if res > 1 else ".")
-        short_info.add_evals(problem.evaluations)
+            print_flush("!" if runs > 2 else ":" if runs > 1 else ".")
+        short_info.add_evals(problem.evaluations, runs)
         problem.free()
         addressed_problems += [problem.id]
-    print(short_info.dimension_done())
+    print(short_info.function_done() + short_info.dimension_done())
     print("  %s done (%d of %d problems benchmarked%s)" %
            (suite_name, len(addressed_problems), len(suite),
              ((" in batch %d of %d" % (current_batch, number_of_batches))
@@ -183,14 +191,22 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
         remaining_evals = max_evals - fun.evaluations
         x0 = center + (restarts > 0) * 0.8 * range_ * (
                 np.random.rand(fun.dimension) - 0.5)
+        fun(x0)  # can be incommented, if this is done by the solver
 
         if solver.__name__ in ("random_search", ):
             solver(fun, fun.lower_bounds, fun.upper_bounds,
                    remaining_evals)
         elif solver.__name__ == 'fmin' and solver.__globals__['__name__'] == 'cma':
-            x0 = "%f + %f * np.random.rand(%d)" % (center[0], 0.8 * range_[0],
-                                            fun.dimension)
-            solver(fun, x0, 0.2 / 10**(restarts == 0) * range_[0], restarts=6,
+            if x0[0] == center[0]:
+                sigma0 = 0.02
+                restarts_ = 0
+            else:
+                x0 = "%f + %f * np.random.rand(%d)" % (
+                        center[0], 0.8 * range_[0], fun.dimension)
+                sigma0 = 0.2
+                restarts_ = 6 * (observer_options.find('IPOP') >= 0)
+
+            solver(fun, x0, sigma0 * range_[0], restarts=restarts_,
                    options=dict(scaling=range_/range_[0], maxfevals=remaining_evals,
                                 termination_callback=lambda es: fun.final_target_hit,
                                 verb_log=0, verb_disp=0, verbose=-9))
