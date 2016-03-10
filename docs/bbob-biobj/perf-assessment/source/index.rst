@@ -2,6 +2,13 @@
 Biobjective Performance Assessment with the Coco Platform
 #########################################################
 
+.. |coco_problem_t| replace:: 
+  ``coco_problem_t``
+.. _coco_problem_t: 
+  http://numbbo.github.io/coco-doc/C/coco_8h.html#a408ba01b98c78bf5be3df36562d99478
+
+
+
 This document details the specificities when assessing the performance of numerical black-box optimizers
 on multi-objective problems within the Coco platform and in particular on the biobjective test suite
 ``bbob-biobj``, described in more detail in [bbob-biobj-functions-doc]_ .
@@ -72,6 +79,18 @@ The performance assessment via the Coco platform addresses both issues, see
 `Data storage and Future Recalculations of Indicator Values`_ below for details.
 Before we discuss these issues, however, let us have a look on the actual performance
 criterion used for the ``bbob-biobj`` test suite, assuming that a reference set is given.
+
+
+
+Bounded vs. Unbounded Domain
+============================
+All bi-objective functions, provided in the ``bbob-biobj`` suite are unbounded, i.e., defined
+on the entire real-valued space :math:`\mathbb{R}^n` with :math:`n` the search space dimension.
+Nevertheless, the implementation in the Coco platform as |coco_problem_t| allows the optimizer
+to retrieve a **search domain of interest** to get an idea about where reasonable intial
+search points shall lie. Note that, due to the nature of the ``bbob-biobj`` function definitions,
+however, there is no guarantee that also the entire Pareto set lies within this search domain of
+interest---it is only guaranteed that the extremal solutions of the Pareto set lie within this region.
 
 
 
