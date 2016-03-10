@@ -48,3 +48,19 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+
+Definitions and Terminology
+---------------------------
+We remind in this section different definitions.
+
+*function, instance*
+ A function within COCO is a parametrized function :math:`f_\theta:
+ \mathbb{R}^n \to \mathbb{R}^m` with :math:`\theta \in \Theta` a set of
+ parameters. A parameter determines a so-called instance. For example,
+ :math:`\theta` encodes the location of the optimum and two different
+ instances have shifted optima.
+ 
+ The integer :math:`n` is the dimension of the search space and
+ :math:`m=2` for the  ``bbob-biobj`` test suite. 
+ 
+ 
