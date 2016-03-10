@@ -227,8 +227,10 @@ of the French National Research Agency.
   
    
 
-References
-==========
+.. ############################# References #########################################
+.. raw:: html
+    
+    <H2>References</H2>
 
    
 .. [bbob-biobj-functions-doc] The BBOBies. **Function Documentation of the bbob-biobj Test Suite**. http://numbbo.github.io/coco-doc/bbob-biobj/functions/
