@@ -4,8 +4,6 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$
 COCO: Experimental Procedure
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-...
-%%%
 
 .. |
 .. |
@@ -134,7 +132,7 @@ Terminology
   as the *number of evaluations* 
   conducted on a given problem, also referred to as number of *function* evaluations. 
   Our central performance measure is the runtime until a given target value 
-  is hit [BBO2016perf]_.
+  is hit [CocoPerf]_.
 
 *suite*
   A test- or benchmark-suite is a collection of problems, typically between
@@ -155,7 +153,7 @@ Conducting the Experiment
 The optimization algorithm to be benchmarked is run on each problem 
 of the given test suite once. There is no prescribed minimal or maximally allowed 
 runtime. The longer the experiment, the more data are available to assess 
-the performance accurately. See also Section :ref:`sec:stopping`. 
+the performance accurately. See also Section :ref:`sec:budget`. 
 
 .. _sec:input:
 
@@ -178,7 +176,7 @@ An algorithm can use the following input information from each problem. For init
       one or more constraints. 
 
 *Search domain of interest*
-  defined from |coco_problem_get_largest_values_of_interest|_ and |coco_problem_get_smallest_values_of_interest|_. The optimum (or the pareto set) lies within the search domain of interested. If the optimizer operates on a bounded domain only, the domain of interest can be interpreted as lower and upper bounds.
+  defined from |coco_problem_get_largest_values_of_interest|_ and |coco_problem_get_smallest_values_of_interest|_. The optimum (or each extremal solution of the Pareto set) lies within the search domain of interest. If the optimizer operates on a bounded domain only, the domain of interest can be interpreted as lower and upper bounds [#]_.
 
 *Feasible (initial) solution* 
   provided by |coco_problem_get_initial_solution|_. 
@@ -212,13 +210,15 @@ The number of evaluations of the problem and/or constraints are the search
 costs, also referred to as runtime, and used for the performance 
 assessment of the algorithm. [#]_
 
+.. [#] Note, however, that the Pareto set in the bi-objective case is not always guaranteed to lie in its entirety within the region of interest.
+
 .. [#] |coco_problem_get_evaluations(const coco_problem_t * problem)|_ is a
-  convenience functions that returns the number of evaluations done on ``problem``. 
+  convenience function that returns the number of evaluations done on ``problem``. 
   Because this information is available to the optimization algorithm anyway, 
   the convenience function might be used additionally. 
   
 
-.. _sec:stopping:
+
 .. _sec:budget:
 
 Budget, Termination Criteria, and Restarts
@@ -234,7 +234,7 @@ can be used more effectively. [#]_
 To exploit a large number of function evaluations effectively, we encourage to
 use independent restarts [#]_, in particular for algorithms which terminate
 naturally within a comparatively small budget. Independent restarts do not
-change the central performance measure,[#]_ however they improve the reliability, comparability [#]_, precision, and "visibility" of the measured results. 
+change the central performance measure [#]_, however, they improve the reliability, comparability [#]_, precision, and "visibility" of the measured results. 
 
 Moreover, any multistart procedure (which relies on an interim termination of the algorithm) is encouraged. 
 Multistarts may not be independent as they can feature a parameter sweep (e.g., increasing population size [HAR1999]_ [AUG2005]_) or can be based on the outcome of the previous starts. 
@@ -302,7 +302,7 @@ algorithms" on an entire test suite is encouraged.
 .. In order to combine
    different parameter settings within a single algorithm, one can use multiple runs with
    different parameters (for example restarts, see also Section
-   :ref:`sec:stopping`), or probing techniques to identify
+   :ref:`sec:budget`), or probing techniques to identify
    problem-wise the appropriate parameters online. The underlying assumption in
    this experimental setup is that also in practice we do not know in advance
    whether the algorithm will face :math:`f_1` or :math:`f_2`, a unimodal or a
@@ -356,7 +356,7 @@ the wall-clock or CPU time should be measured when running the algorithm on
 the benchmark suite. The chosen setup should reflect a "realistic average
 scenario". [#]_ The **time divided by the number of function evaluations shall be
 presented separately for each dimension**. The chosen setup, coding language, compiler and
-computational architecture for conducting these experiments are described.
+computational architecture for conducting these experiments are to be described.
 
 .. The :file:`exampletiming.*` code template is provided to run this experiment. For CPU-inexpensive algorithms the timing might mainly reflect the time spent in function :math:`fgeneric`.
 
@@ -372,21 +372,22 @@ computational architecture for conducting these experiments are described.
 .. ############################# References #########################################
 
 
-.. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
+.. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
-.. [HAN2010] Hansen, N., A. Auger, S. Finck R. and Ros (2010), Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
+.. [HAN2010] N. Hansen, A. Auger, S. Finck, and R. Ros (2010), Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
 
-.. [AUG2005] A Auger and N Hansen. A restart CMA evolution strategy with
+.. [AUG2005] A. Auger and N. Hansen. A restart CMA evolution strategy with
    increasing population size. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1769--1776. IEEE Press, 2005.
 .. .. [Auger:2005b] A. Auger and N. Hansen. Performance evaluation of an advanced
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1777-1784, 2005.
-.. .. [Auger:2009] Anne Auger and Raymond Ros. Benchmarking the pure
-   random search on the BBOB-2009 testbed. In Franz Rothlauf, editor, *GECCO
+.. .. [Auger:2009] A. Auger and R. Ros. Benchmarking the pure
+   random search on the BBOB-2009 testbed. In F. Rothlauf, editor, *GECCO
    (Companion)*, pages 2479-2484. ACM, 2009.
 .. .. [Efron:1993] B. Efron and R. Tibshirani. *An introduction to the
    bootstrap.* Chapman & Hall/CRC, 1993.
+.. [CocoPerf] The BBOBies: COCO: Performance Assessment http://numbbo.github.io/coco-doc/perf-assessment/
 .. [HAR1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
    algorithm. In *Proceedings of the Genetic and Evolutionary Computation
    Conference (GECCO)*, volume 1, pages 258-265. ACM, 1999.
