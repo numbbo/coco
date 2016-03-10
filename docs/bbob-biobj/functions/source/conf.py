@@ -227,6 +227,7 @@ latex_elements = {
 
     'preamble': '''
         \\usepackage{amssymb}
+        \\newcommand[1]{\ff}{f_{#1}}
      '''
 }
 

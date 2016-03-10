@@ -18,7 +18,7 @@ The Single-objective ``bbob`` Functions Used
 The ``bbob-biobj`` test suite is designed to be able to assess  performance of algorithms with respect to well-identified difficulties in optimization typically  occurring in real-world problems. A multi-objective problem being a combination of single-objective problems, one can obtain multi-objective problems with representative difficulties by simply combining single objective functions with representative difficulties observed in real-world problems. For this purpose we naturally use the single-objective ``bbob`` suite.
 
 Combining all 24 ``bbob`` functions in pairs thereby results in
-:math:`24^2=576` bi-objective functions overall. We however assume that multi-objective optimization algorithms are invariant or not very sensitive to permutations of the objective functions such that combining the 24  ``bbob`` functions results in :math:`24+ {24 \choose 2} = 300` functions [#]_.
+:math:`24^2=576` bi-objective functions overall. We however assume that multi-objective optimization algorithms are invariant or not very sensitive to permutations of the objective functions such that combining the 24  ``bbob`` functions and taking out the function :math:`(g_2,g_1)` if the function :math:`(g_1,g_2)` is present results in :math:`24+ {24 \choose 2} = 300` functions [#]_.
 
 .. Given that most (if not all) multi-objective optimization algorithms are
 .. invariant to permutations of the objective functions, a bi-objective
@@ -35,95 +35,103 @@ Combining all 24 ``bbob`` functions in pairs thereby results in
 
 Some first tests, e.g. in [BTH2015a]_, showed that having 300 functions
 in Coco's first bi-objective suite is impracticable in terms
-of the overall running time of the benchmarking experiment. Hence,
-we consider only the following 10 of the 24 ``bbob``
-functions:
+of the overall running time of the benchmarking experiment.  We then decided to exploit the organization of the ``bbob`` functions into classes to choose a subset of functions. More precisely the 24 original ``bbob`` functions are grouped into five function
+classes where each class gathers functions with similar properties, namely
+ 1. separable functions
+ 2. functions with low or moderate conditioning
+ 3. functions with high conditioning and unimodal
+ 4. multi-modal functions with adequate global structure, 
+ 5. multi-modal functions with weak global structure.
+
+
+
+To create the ``bbob-biobj`` suite, we choose two functions within each class. This way we do not introduce any bias towards a specific class. In addition within each class, the functions are chosen to be the most
+representative without repeating similar functions. For example,
+only one Ellipsoid, one Rastrigin, and one Gallagher function are
+included in the ``bbob-biobj`` suite although they appear in
+separate versions in the ``bbob`` suite. Finally our choice of  10 ``bbob`` functions for creating the ``bbob-biobj`` test suite is the following:
+
+.. We chose two functions within each class
+..  consider only the following 10 of the 24 ``bbob``
+.. functions:
+
+
+.. The above ten ``bbob`` functions have been chosen for the creation
+.. of the ``bbob-biobj`` suite in a way to not introduce any bias
+.. towards a specific class
+.. by choosing exactly two functions per ``bbob`` function class.
+.. Within each class, the functions were chosen to be the most
+.. representative without repeating similar functions. For example,
+.. only one Ellipsoid, one Rastrigin, and one Gallagher function are
+.. included in the ``bbob-biobj`` suite although they appear in
+.. separate versions in the ``bbob`` suite.
+
 
 * Separable functions
 
-  - Sphere (:math:`f_1` in ``bbob`` suite)
-  - Ellipsoid separable (:math:`f_2` in ``bbob`` suite)
+  - Sphere (function 1 in ``bbob`` suite)
+  - Ellipsoid separable (function 2 in ``bbob`` suite)
 
 * Functions with low or moderate conditioning 
 
-  - Attractive sector (:math:`f_6` in ``bbob`` suite)
-  - Rosenbrock original (:math:`f_8` in ``bbob`` suite)
+  - Attractive sector (function 6 in ``bbob`` suite)
+  - Rosenbrock original (function 8 in ``bbob`` suite)
 
 * Functions with high conditioning and unimodal 
 
-  - Sharp ridge (:math:`f_{13}` in ``bbob`` suite)
-  - Sum of different powers (:math:`f_{14}` in ``bbob`` suite)
+  - Sharp ridge (function 13 in ``bbob`` suite)
+  - Sum of different powers (function 14 in ``bbob`` suite)
 
 * Multi-modal functions with adequate global structure 
 
-  - Rastrigin (:math:`f_{15}` in ``bbob`` suite)
-  - Schaffer F7, condition 10 (:math:`f_{17}` in ``bbob`` suite)
+  - Rastrigin (function 15 in ``bbob`` suite)
+  - Schaffer F7, condition 10 (function 17 in ``bbob`` suite)
 
 * Multi-modal functions with weak global structure 
 
-  - Schwefel x*sin(x) (:math:`f_{20}` in ``bbob`` suite)
-  - Gallagher 101 peaks (:math:`f_{21}` in ``bbob`` suite)
+  - Schwefel x*sin(x) (function 20 in ``bbob`` suite)
+  - Gallagher 101 peaks (function 21 in ``bbob`` suite)
 
   
 Using the above described pairwise combinations, this results in
 having :math:`10+{10 \choose 2} = 55` bi-objective functions in
-the final `bbob-biobj` suite. The next section gives the
-reasoning behind choosing exactly these 10 functions.
+the final `bbob-biobj` suite. Those functions are denoted :math:`f_1` to :math:`f_{55}` in the sequel.
+
+.. The next section gives the
+.. reasoning behind choosing exactly these 10 functions.
 
   
 
-Function Groups and the Rational Behind Our Choice of Functions
+Function Groups
 ---------------------------------------------------------------
-The 24 original ``bbob`` suite are grouped into five function
-classes namely
- * separable functions
- * functions with low or moderate conditioning
- * functions with high conditioning and unimodal
- * multi-modal functions with adequate global structure, 
- * multi-modal functions with weak global structure.
 
 
-.. which represent common difficulties obtained in practice
- 
-The idea behind the ``bbob`` function classes is that functions
-within a class should share common properties and the performance
-of algorithms will be more similar within than across groups.
 
-.. Anne: to be discussed - I am not sure to see that there is a real point
-.. Anne: in the previous sentence.
+From combining the original ``bbob`` function classes, we obtain 15 function classes to structure the 55 bi-objective functions of the ``bbob-biobj`` testsuit. Each function class contains three or four functions. We are listing below the function classes and in parenthesis  the functions that belong to the respective class:
+ 1. separable - separable (functions :math:`f_1`, :math:`f_2`, :math:`f_{11}`)
+ 2. separable - moderate (:math:`f_3`, :math:`f_4`, :math:`f_{12}`, :math:`f_{13}`)
+ 3. separable - ill-conditioned (:math:`f_5`, :math:`f_6`, :math:`f_{14}`, :math:`f_{15}`)
+ 4. separable - multi-modal (:math:`f_7`, :math:`f_8`, :math:`f_{16}`, :math:`f_{17}`)
+ 5. separable - weakly-structured (f9, f10, f18, f19)
+ 6. moderate - moderate (f20, f21, f28)
+ 7. moderate - ill-conditioned (f22, f23, f29, f30)
+ 8. moderate - multi-modal (f24, f25, f31, f32)
+ 9. moderate - weakly-structured (f26, f27, f33, f34)
+ 10. ill-conditioned - ill-conditioned (f35, f36, f41)
+ 11. ill-conditioned - multi-modal (f37, f28, f42, f43)
+ 12. ill-conditioned - weakly-structured (f39, f40, f44, f45)
+ 13. multi-modal - multi-modal (f46, f47, f50)
+ 14. multi-modal - weakly structured (f48, f49, f51, f52)
+ 15. weakly structured - weakly structured (f53, f54, f55)
 
-The above ten ``bbob`` functions have been chosen for the creation
-of the ``bbob-biobj`` suite in a way to not introduce any bias
-towards a specific class
-by choosing exactly two functions per ``bbob`` function class.
-Within each class, the functions were chosen to be the most
-representative without repeating similar functions. For example,
-only one Ellipsoid, one Rastrigin, and one Gallagher function is
-included in the ``bbob-biobj`` suite although they appear in
-separate versions in the ``bbob`` suite.
 
-The original ``bbob`` function classes also allow to group the
-55 ``bbob-biobj`` functions, dependend on the
-classes of the individual objective functions. Depending
-on whether two functions of the same class are combined
-or not, these resulting 15 new function classes contain three
-or four functions:
+.. The original ``bbob`` function classes also allow to group the
+.. 55 ``bbob-biobj`` functions, dependend on the
+.. classes of the individual objective functions. Depending
+.. on whether two functions of the same class are combined
+.. or not, these resulting 15 new function classes contain three
+.. or four functions:
 
-* separable - separable (functions f1, f2, f11)
-* separable - moderate (f3, f4, f12, f13)
-* separable - ill-conditioned (f5, f6, f14, f15)
-* separable - multi-modal (f7, f8, f16, f17)
-* separable - weakly-structured (f9, f10, f18, f19)
-* moderate - moderate (f20, f21, f28)
-* moderate - ill-conditioned (f22, f23, f29, f30)
-* moderate - multi-modal (f24, f25, f31, f32)
-* moderate - weakly-structured (f26, f27, f33, f34)
-* ill-conditioned - ill-conditioned (f35, f36, f41)
-* ill-conditioned - multi-modal (f37, f28, f42, f43)
-* ill-conditioned - weakly-structured (f39, f40, f44, f45)
-* multi-modal - multi-modal (f46, f47, f50)
-* multi-modal - weakly structured (f48, f49, f51, f52)
-* weakly structured - weakly structured (f53, f54, f55)
 
 More details about the single functions can be found in the next
 section whereas we first describe their common properties here.
