@@ -320,6 +320,7 @@ It gives the *proportion of problems solved in less than a specified budget* whi
 Note that we consider **runtimes of the restart algorithm**, that is, we use the idea of simulated run-lengths of the restart algorithm as described above to generate :math:`K` runtimes from typically 10 or 15 instances per function and dimension. Hence, only when no instance is solved, we consider that the runtime is infinite.
 
 
+
 .. _fig:ecdf:
 
 .. figure:: pics/plots-RS-2009-bbob/pprldmany_f001_05D.*
@@ -385,7 +386,7 @@ We can also naturally aggregate over all functions and hence obtain one single E
 
 .. todo::
 	* ECDF and uniform pick of a problem
-	* log ERT can be read on the ECDF graphs [requires some assumptions]
+	* log ART can be read on the ECDF graphs [requires some assumptions]
 
 The Different Plots Provided by the COCO Platform
 =================================================
