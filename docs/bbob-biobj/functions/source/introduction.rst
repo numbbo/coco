@@ -69,5 +69,17 @@ We remind in this section different definitions.
      \sup_{x \in \mathcal{PO}} f_\beta(x)  \right)
     \end{equation*} 
     
+ In the case of two objectives with unicity of the global minimum of each objective (that
+ is a single point in the search space maps to the global minimum) then 
     
+ .. math::
+    :nowrap:
+
+	\begin{equation*}
+	z_{\rm nadir}  =   \left( f_\alpha(x_{\rm opt,\beta}),
+      f_\beta(x_{\rm opt,\alpha})  \right)
+    \end{equation*} 
     
+   
+ where :math:`x_{\rm opt,\alpha}= \arg \min f_\alpha(x)` and 
+ :math:`x_{\rm opt,\beta}= \arg \min f_\beta(x)`.
