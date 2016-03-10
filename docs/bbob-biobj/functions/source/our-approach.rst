@@ -142,13 +142,19 @@ None of the 55 ``bbob-biobj`` functions is explicitly normalized and the
 optimization algorithms therefore have to cope with different scalings
 in the two objective functions. Typically, different orders of magnitude
 between the objective values can be observed.
+
+
 However, to facilitate comparison between functions, a
 normalization can take place as both the ideal and the nadir point are
-known internally. Note that, for example, the ``bbob-biobj`` observer of
-the `Coco framework`_ takes this into account and normalizes the objective
-space, see the `bbob-biobj-specific performance assessment documentation 
+known internally. In the performance assessment we are using this normalization (see `bbob-biobj-specific performance assessment documentation 
 <http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/>`_ for
-details.
+details).
+
+.. Note that, for example, the ``bbob-biobj`` observer of
+.. the `Coco framework`_ takes this into account and normalizes the objective
+.. space, see the `bbob-biobj-specific performance assessment documentation 
+.. <http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/>`_ for
+.. details.
 
 The reasons for having knowledge about the location of both the ideal and
 the nadir point are
@@ -161,11 +167,11 @@ the nadir point are
   ``bbob`` test suite which have a unique optimum.
 
 The ideal point is then always given by the objective vector
-:math:`(f_1(x_{\text{opt},1}), f_2(x_{\text{opt},2}))` and the nadir point by the
-objective vector :math:`(f_1(x_{\text{opt},2}), f_2(x_{\text{opt},1}))`
-with :math:`x_{\text{opt},1}` being the optimal solution for the first
-objective function :math:`f_1` and :math:`x_{\text{opt},2}` being the
-optimal solution for the second objective function :math:`f_2`.
+:math:`(f_\alpha(x_{\text{opt},\alpha}), f_\beta(x_{\text{opt},\beta}))` and the nadir point by the
+objective vector :math:`(f_\alpha(x_{\text{opt},\beta}), f_\beta(x_{\text{opt},\alpha}))`
+with :math:`x_{\text{opt},\alpha}` being the optimal solution for the first
+objective function :math:`f_\alpha` and :math:`x_{\text{opt},\beta}` being the
+optimal solution for the second objective function :math:`f_\beta`.
 Note that in the black-box case, we typically assume for the functions
 provided with the `Coco framework`_, that information about ideal and
 nadir points, scaling etc. is not provided to the algorithm.
@@ -174,26 +180,29 @@ nadir points, scaling etc. is not provided to the algorithm.
 
 Instances
 ---------
-Instances are the way in the `Coco framework`_ to perform multiple
-algorithm runs on the same function. More concretely, the original
-Coco documentation states
-
-::
-
-  All functions can be instantiated in different *versions* (with
-  different location of the global optimum and different optimal
-  function value). Overall *Ntrial* runs are conducted on different
-  instantiations.
-
-Also in the bi-objective case, we provide the idea of instances by
-relying on the instances provided within the single-objective
-``bbob`` suite. In addition, we assert that
-  
+Our test functions are parametrized and instances are instantiations of the underlying parameters (see [COCO:2016]_). The instances for the bi-objective functions are using instances of each single objective function composing the bi-objective one. However, in addition, we assert that
   * the distance (Euclidean norm) between the ideal and the nadir
     point (in objective space) is at least 1e-1 and that
 	
   * the two single-objective optima (in search space, also called
     the extreme optimal points) are not closer than :math:`10^{-4}`.
+
+.. Instances are the way in the `Coco framework`_ to perform multiple
+.. algorithm runs on the same function. More concretely, the original
+.. Coco documentation states
+
+.. ::
+
+..   All functions can be instantiated in different *versions* (with
+..   different location of the global optimum and different optimal
+..  function value). Overall *Ntrial* runs are conducted on different
+..  instantiations.
+
+.. Also in the bi-objective case, we provide the idea of instances by
+.. relying on the instances provided within the single-objective
+.. ``bbob`` suite. 
+.. However, in addition, we assert that
+
 	 
 In general, the two single-objective problem instances 
 
@@ -229,4 +238,7 @@ recommend to use 5 to 15 instances for the actual benchmarking.
 .. [BTH2015a] Dimo Brockhoff, Thanh-Do Tran, Nikolaus Hansen:
    Benchmarking Numerical Multiobjective Optimizers Revisited.
    GECCO 2015: 639-646
+   
+.. [COCO:2016] The BBOBies, COCO: A platform for Comparing Continuous Optimizers in a
+	Black-Box Setting.   
 
