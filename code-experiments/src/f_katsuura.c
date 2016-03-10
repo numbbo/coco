@@ -15,6 +15,7 @@
 #include "transform_vars_affine.c"
 #include "transform_vars_shift.c"
 #include "transform_obj_penalize.c"
+#include "transform_obj_scale.c"
 
 /**
  * @brief Implements the Katsuura function without connections to any COCO structures.
@@ -188,7 +189,7 @@ static coco_problem_t *f_katsuura_permblockdiag_bbob_problem_allocate(const size
     problem = transform_vars_permutation(problem, P12, dimension);
     
     problem = transform_vars_shift(problem, xopt, 0);
-    problem = transform_obj_norm_by_dim(problem);
+    problem = transform_obj_scale(problem, 1.0 / (double) dimension);
     problem = transform_obj_penalize(problem, penalty_factor);
     problem = transform_obj_shift(problem, fopt); /*There is no fopt in the definition of this function*/
     

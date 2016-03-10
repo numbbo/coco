@@ -14,7 +14,7 @@
 
 #include "transform_vars_permutation.c"
 #include "transform_vars_blockrotation.c"
-#include "transform_obj_norm_by_dim.c"
+#include "transform_obj_scale.c"
 #include "transform_vars_permutation_helpers.c"
 #include "transform_vars_scale.c"
 
@@ -514,7 +514,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     *problem_i = transform_vars_permutation(*problem_i, P1, dimension);
     *problem_i = transform_vars_shift(*problem_i, y_i, 0);
 
-    *problem_i = transform_obj_norm_by_dim(*problem_i);/* for the scalar product */
+    *problem_i = transform_obj_scale(*problem_i, 1.0 / (double) dimension);/* for the scalar product */
     
     coco_free_memory(P_Lambda);
     coco_free_memory(y_i);

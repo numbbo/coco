@@ -10,6 +10,7 @@
 #include "coco_problem.c"
 #include "suite_bbob_legacy_code.c"
 #include "transform_obj_shift.c"
+#include "transform_obj_scale.c"
 
 /**
  * @brief Data type for the Lunacek bi-Rastrigin problem.
@@ -173,6 +174,10 @@ static coco_problem_t *f_lunacek_bi_rastrigin_bbob_problem_allocate(const size_t
 }
 
 
-/* TODO: large-scale version, similarly to f_gallagher, use 2 additional problems, problem_1 and problem_2 that will serve to compute the value in the min, the main problem will compute the 10(...) part which is in the "final" transformed solution */
+
+
+
+
+
 
 

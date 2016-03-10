@@ -15,7 +15,7 @@
 
 #include "transform_vars_permutation.c"
 #include "transform_vars_blockrotation.c"
-#include "transform_obj_norm_by_dim.c"
+#include "transform_obj_scale.c"
 
 /**
  * @brief Implements the Rosenbrock function without connections to any COCO structures.
@@ -94,7 +94,7 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
     
   /*if large scale test-bed, normalize by dim*/
   if (coco_strfind(problem_name_template, "BBOB large-scale suite") >= 0){
-        problem = transform_obj_norm_by_dim(problem);
+        problem = transform_obj_scale(problem, 1.0 / (double) dimension);
   }
     
   problem = transform_obj_shift(problem, fopt);
@@ -204,7 +204,7 @@ static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const si
     problem = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
     problem = transform_vars_permutation(problem, P1, dimension);
     
-    problem = transform_obj_norm_by_dim(problem);
+    problem = transform_obj_scale(problem, 1.0 / (double) dimension);
     problem = transform_obj_shift(problem, fopt);
     
     coco_problem_set_id(problem, problem_id_template, function, instance, dimension);

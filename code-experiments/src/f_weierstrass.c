@@ -18,7 +18,7 @@
 
 #include "transform_vars_permutation.c"
 #include "transform_vars_blockrotation.c"
-#include "transform_obj_norm_by_dim.c"
+#include "transform_obj_scale.c"
 
 /** @brief Number of summands in the Weierstrass problem. */
 #define F_WEIERSTRASS_SUMMANDS 12
@@ -217,7 +217,7 @@ static coco_problem_t *f_weierstrass_permblockdiag_bbob_problem_allocate(const s
     problem = transform_vars_permutation(problem, P12, dimension);
 
     problem = transform_vars_shift(problem, xopt, 0);
-    problem = transform_obj_norm_by_dim(problem);
+    problem = transform_obj_scale(problem, 1.0 / (double) dimension);
     problem = transform_obj_penalize(problem, penalty_factor);
     problem = transform_obj_shift(problem, fopt);
     
