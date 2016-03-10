@@ -15,26 +15,25 @@ them together with their common properties.
 
 The Single-objective ``bbob`` Functions Used
 --------------------------------------------
-The ``bbob-biobj`` test suite is designed to represent typical difficulties obverved in
-real-world optimization problems. It is based on the fact that a multi-objective problem is a combination of single-objective functions and that thus one can build multi-objective problems with representative difficulties by simply combining single objective functions with representative difficulties observed in real-world problems.
-We naturally use the single-objective ``bbob`` suite designed to be representative of many difficulties observed in real-world problems.
-
+The ``bbob-biobj`` test suite is designed to be able to assess  performance of algorithms with respect to well-identified difficulties in optimization typically  occurring in real-world problems. A multi-objective problem being a combination of single-objective problems, one can obtain multi-objective problems with representative difficulties by simply combining single objective functions with representative difficulties observed in real-world problems. For this purpose we naturally use the single-objective ``bbob`` suite.
 
 Combining all 24 ``bbob`` functions in pairs thereby results in
-:math:`24^2=576` bi-objective functions overall. Given
-that most (if not all) multi-objective optimization algorithms are
-invariant to permutations of the objective functions, a
-bi-objective function combining for example the sphere function
-as the first objective with the Rastrigin function as the second
-objective will result in the same performance than if the Rastrigin
-function is the first and the sphere function is the second
-objective function. Hence, we should keep only one of the resulting
-bi-objective functions. Combining then all 24 ``bbob`` functions
-in the way that the first objective is chosen as ``bbob`` function
-*i* and the second as ``bbob`` function *j* with *i* :math:`\leq` *j*,
-results in :math:`24+ {24 \choose 2} = 300` functions.
+:math:`24^2=576` bi-objective functions overall. We however assume that multi-objective optimization algorithms are invariant or not very sensitive to permutations of the objective functions such that combining the 24  ``bbob`` functions results in :math:`24+ {24 \choose 2} = 300` functions [#]_.
 
-First tests, e.g. in [BTH2015a]_, showed that having 300 functions
+.. Given that most (if not all) multi-objective optimization algorithms are
+.. invariant to permutations of the objective functions, a bi-objective
+.. function combining for example the sphere function as the first
+.. objective with the Rastrigin function as the second objective will
+.. result in the same performance than if the Rastrigin function is the
+.. first and the sphere function is the second objective function. 
+.. Hence, we should keep only one of the resulting
+.. bi-objective functions. Combining then all 24 ``bbob`` functions
+
+.. [#] The first objective is chosen as ``bbob`` function *i*
+  and the second as ``bbob`` function *j* with *i* :math:`\leq` *j*,
+  results in :math:`24+ {24 \choose 2} = 300` functions.
+
+Some first tests, e.g. in [BTH2015a]_, showed that having 300 functions
 in Coco's first bi-objective suite is impracticable in terms
 of the overall running time of the benchmarking experiment. Hence,
 we consider only the following 10 of the 24 ``bbob``
@@ -76,18 +75,26 @@ reasoning behind choosing exactly these 10 functions.
 Function Groups and the Rational Behind Our Choice of Functions
 ---------------------------------------------------------------
 The 24 original ``bbob`` suite are grouped into five function
-classes which represent common difficulties obtained in practice
-(separable functions, functions with low or moderate conditioning,
-functions with high conditioning and unimodal, multi-modal
-functions with adequate global structure, and multi-modal
-functions with weak global structure).
+classes namely
+ * separable functions
+ * functions with low or moderate conditioning
+ * functions with high conditioning and unimodal
+ * multi-modal functions with adequate global structure, 
+ * multi-modal functions with weak global structure.
+
+
+.. which represent common difficulties obtained in practice
+ 
 The idea behind the ``bbob`` function classes is that functions
 within a class should share common properties and the performance
 of algorithms will be more similar within than across groups.
 
+.. Anne: to be discussed - I am not sure to see that there is a real point
+.. Anne: in the previous sentence.
+
 The above ten ``bbob`` functions have been chosen for the creation
 of the ``bbob-biobj`` suite in a way to not introduce any bias
-towards a specific difficulty
+towards a specific class
 by choosing exactly two functions per ``bbob`` function class.
 Within each class, the functions were chosen to be the most
 representative without repeating similar functions. For example,
