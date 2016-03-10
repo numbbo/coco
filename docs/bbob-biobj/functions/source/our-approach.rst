@@ -202,32 +202,31 @@ Our test functions are parametrized and instances are instantiations of the unde
 .. However, in addition, we assert that
 
 	 
-We associate to an instance, an instance-id which is an integer. The relation between the instance-id of a bi-objective function and the instance-id of the single-objective functions composing the bi-objective problem is the following.
+We associate to an instance, an instance-id which is an integer. The relation between the instance-id, :math:`K^{\rm biobj}_{\rm id}`, of a bi-objective function and the instance-ids of the single-objective functions (:math:`K_{\rm id}^{f_\alpha}` and :math:`K_{\rm id}^{f_\beta}`) composing the bi-objective problem is the following:
 
-Let :math:`K^{\rm biobj}_{\rm id}` be an instance-id of a bi-objective problem. Then the associated instance-id of the two single-objective functions composing the bi-objective ones are:
+ * :math:`K_{\rm id}^{f_\alpha}` =  2 \* :math:`K^{\rm biobj}_{\rm id}` + 1 and
+ * :math:`K_{\rm id}^{f_\beta}` =  :math:`K_{\rm id}^{f_\alpha}` + 1
 
- * instance-id of first objective =  2 \* :math:`K^{\rm biobj}_{\rm id}` + 1 and
- * instance-id of second objective = instance-id of first objective + 1
-
-If conditions a. and b. above are not satisfied, then we increase the instance-id of the second objective successfully until both properties are fulfilled. 
-For example, the ``bbob-biobj`` instance
-8 consists of instance 17 for the first objective and instance 18 for
-the second objective while for the ``bbob-biobj`` instance 9, the
-first instance is 19 but for the second objective, instance 21 is chosen
-instead of instance 20.
+If we find that conditions a. and b. above are not satisfied for all dimensions and functions in the ``bbob-biobj`` suite, we increase the instance-id of the second objective successfully until both properties are fulfilled. 
+For example, the ``bbob-biobj`` instance-id
+8 corresponds to the instance-id 17 for the first objective and instance-id 18 for
+the second objective while for the ``bbob-biobj`` instance-id 9, the
+first instance-id is 19 but for the second objective, instance-id 21 is chosen
+instead of instance-id 20.
 
 Exceptions to the above rule are, for historical reasons, the
-``bbob-biobj`` instances 1 and 2 in order to match the instances
+``bbob-biobj`` instance-ids 1 and 2 in order to match the instance-ids
 1 to 5 with the ones proposed in [BTH2015a]_. The ``bbob-biobj``
-instance 1 contains the single-objective instances 2 and 4 and
-the ``bbob-biobj`` instance 2 contains the two instances 3 and 5.
+instance-id 1 contains the single-objective instance-ids 2 and 4 and
+the ``bbob-biobj`` instance-id 2 contains the two instance-ids 3 and 5.
 
-Note that the number of instances from the ``bbob-biobj`` suite is neither
-limited from above nor from below. However, less than 3 instances will
-render the potential statistics and their interpretation problematic
-while even the smallest difference can be made statistically
-significant with a high enough number of instances. Thus, we
-recommend to use 5 to 15 instances for the actual benchmarking.
+Note that the number of instances from the ``bbob-biobj`` suite is
+neither limited from above nor from below. However, running some tests
+with less than 3 instances will render the potential statistics and
+their interpretation problematic while even the smallest difference can
+be made statistically significant with a high enough number of
+instances. Thus, we recommend to use between 5 to 15 instances for the actual
+benchmarking.
 
 
   

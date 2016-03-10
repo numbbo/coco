@@ -39,14 +39,13 @@ general properties of objective functions will be mentioned that
 shall be quickly defined here.
 
 A *separable* function does not show any dependencies between the
-variables and can therefore solves by applying :math:`D` consecutive
+variables and can therefore be solved by applying :math:`n` consecutive
 one-dimensional optimizations along the coordinate axes while
 keeping the other variables fixed. Consequently, *non-separable*
-problems must be considered much more difficult and most of the
-proposed benchmark functions are designed being non-separable. The
+problems must be considered. They are much more difficult to solve. The
 typical well-established technique to generate non-separable
-functions from separable ones is the application of a rotation matrix
-:math:`\mathbf R`.
+functions from separable ones :math:`x \in \mathbb{R}^n \mapsto g(x)` is the application of a rotation matrix
+:math:`\mathbf R` to :math:`x`, that is :math:`x \in \mathbb{R}^n \mapsto g(\mathbf R x)`.
 
 A *unimodal* function has only one local minimum which is at the same
 time also its global one. The opposite is a *multimodal* function
