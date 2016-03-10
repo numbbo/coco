@@ -139,6 +139,7 @@ static coco_problem_t *f_katsuura_permblockdiag_bbob_problem_allocate(const size
     double **B2;
     const double *const *B1_copy;
     const double *const *B2_copy;
+    const double penalty_factor = 1.0;
     size_t *P11 = coco_allocate_vector_size_t(dimension);
     size_t *P21 = coco_allocate_vector_size_t(dimension);
     size_t *P12 = coco_allocate_vector_size_t(dimension);
@@ -154,9 +155,7 @@ static coco_problem_t *f_katsuura_permblockdiag_bbob_problem_allocate(const size
     block_sizes2 = coco_get_block_sizes(&nb_blocks2, dimension, "bbob-largescale");
     swap_range = coco_get_swap_range(dimension, "bbob-largescale");
     nb_swaps = coco_get_nb_swaps(dimension, "bbob-largescale");
-    
-    const double penalty_factor = 1.0;
-    
+
     xopt = coco_allocate_vector(dimension);
     fopt = bbob2009_compute_fopt(function, instance);
     bbob2009_compute_xopt(xopt, rseed, dimension);
