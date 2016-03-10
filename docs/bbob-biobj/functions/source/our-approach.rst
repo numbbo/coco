@@ -181,11 +181,9 @@ nadir points, scaling etc. is not provided to the algorithm.
 Instances
 ---------
 Our test functions are parametrized and instances are instantiations of the underlying parameters (see [COCO:2016]_). The instances for the bi-objective functions are using instances of each single objective function composing the bi-objective one. However, in addition, we assert that
-  * the distance (Euclidean norm) between the ideal and the nadir
-    point (in objective space) is at least 1e-1 and that
-	
-  * the two single-objective optima (in search space, also called
-    the extreme optimal points) are not closer than :math:`10^{-4}`.
+
+  a. the distance (Euclidean norm) between the ideal and the nadir point (in objective space) is at least 1e-1 and that
+  b. the two single-objective optima (in search space, also called the extreme optimal points) are not closer than :math:`10^{-4}`.
 
 .. Instances are the way in the `Coco framework`_ to perform multiple
 .. algorithm runs on the same function. More concretely, the original
@@ -204,14 +202,15 @@ Our test functions are parametrized and instances are instantiations of the unde
 .. However, in addition, we assert that
 
 	 
-In general, the two single-objective problem instances 
+We associate to an instance, an instance-id which is an integer. The relation between the instance-id of a bi-objective function and the instance-id of the single-objective functions composing the bi-objective problem is the following.
 
- * problem1_instance = 2 \* biobj_instance + 1 and
- * problem2_instance = problem1_instance + 1
+Let :math:`K^{\rm biobj}_{\rm id}` be an instance-id of a bi-objective problem. Then the associated instance-id of the two single-objective functions composing the bi-objective ones are:
 
-are chosen to create the bi-objective problem instance ``biobj_instance``
-while ``problem2_instance`` is increased successively until the two above
-properties are fullfilled. For example, the ``bbob-biobj`` instance
+ * instance-id of first objective =  2 \* :math:`K^{\rm biobj}_{\rm id}` + 1 and
+ * instance-id of second objective = instance-id of first objective + 1
+
+If conditions a. and b. above are not satisfied, then we increase the instance-id of the second objective successfully until both properties are fulfilled. 
+For example, the ``bbob-biobj`` instance
 8 consists of instance 17 for the first objective and instance 18 for
 the second objective while for the ``bbob-biobj`` instance 9, the
 first instance is 19 but for the second objective, instance 21 is chosen
