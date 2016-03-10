@@ -558,9 +558,12 @@ def test_java():
 
 ################################################################################
 ## Post processing
-def test_postprocessing():
+def test_postprocessing(allTests=False):
     install_postprocessing()
-    python('code-postprocessing/bbob_pproc', ['__main__.py'])
+    if allTests:
+		python('code-postprocessing/bbob_pproc', ['__main__.py', 'all'])
+    else:
+		python('code-postprocessing/bbob_pproc', ['__main__.py'])
     # python('code-postprocessing', ['-m', 'bbob_pproc'])
     if 11 < 3:  # provisorial test fo biobj data
         run_c()
@@ -734,7 +737,8 @@ def main(args):
     elif cmd == 'test-python2': test_python2()
     elif cmd == 'test-python3': test_python3()
     elif cmd == 'test-octave': test_octave()
-    elif cmd == 'test-postprocessing': test_postprocessing()
+    elif cmd == 'test-postprocessing': 
+        test_postprocessing(True) if len(args) > 1 and args[1] == 'all' else test_postprocessing()
     elif cmd == 'leak-check': leak_check()
     elif cmd == 'install-preprocessing': install_preprocessing()
     elif cmd == 'run-preprocessing': run_preprocessing()
