@@ -857,7 +857,7 @@ static int coco_double_almost_equal(const double a, const double b, const double
  * @brief Returns 1 if x is NAN and 0 otherwise.
  */
 static int coco_is_nan(const double x) {
-  return ((x != x) || !(x == x) || (x == 8.8888e88) || isnan(x));
+  return ((x != x) || !(x == x) || (x == 8.8888e88) || isnan(x) || (x == NAN));
 }
 
 /**
