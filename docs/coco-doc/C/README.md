@@ -24,7 +24,7 @@ __Pointers to the source code and other documentation__
 The actual source code of COCO can be found at http://github.com/numbbo/coco
 
 More information about the biobjective test suite (bbob-biobj) can be found at
-http://numbbo.github.io/bbob-biobj-functions-doc
+http://numbbo.github.io/coco-doc/bbob-biobj/functions/
 
 How to conduct experiments in all supported languages is described at
 http://numbbo.github.io/bbob-biobj-experiments-doc (coming soon)
@@ -155,8 +155,8 @@ dimensions (skipping dimension 40) and the first five instances (i.e. instances 
 
 This kind of filtering can be helpful when parallelizing the benchmark.
 
-See [biobjective test suite](http://numbbo.github.io/bbob-biobj-functions-doc) and 
-[bbob test sute](http://numbbo.github.io/bbob-functions-doc) for more detailed information on the two 
+See [biobjective test suite](http://numbbo.github.io/coco-doc/bbob-biobj/functions/) and 
+[bbob test sute](http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf) for more detailed information on the two 
 currently supported suites.
 
 ### Observer parameters <a name="observer-parameters"></a>
