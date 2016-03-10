@@ -142,7 +142,7 @@ None of the 55 ``bbob-biobj`` functions is explicitly normalized and the
 optimization algorithms therefore have to cope with different scalings
 in the two objective functions. Typically, different orders of magnitude
 between the objective values can be observed.
-However, to facilitate comparision between functions, a
+However, to facilitate comparison between functions, a
 normalization can take place as both the ideal and the nadir point are
 known internally. Note that, for example, the ``bbob-biobj`` observer of
 the `Coco framework`_ takes this into account and normalizes the objective

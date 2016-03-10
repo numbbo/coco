@@ -6,15 +6,15 @@ In the following, we consider bi-objective, unconstrained **minimization**
 problems of the form
 
 .. math::
-  \min_{x \in \mathbb{R}^n} f(x)=(f_1(x),f_2(x))
+  \min_{x \in \mathbb{R}^n} f(x)=(f_\alpha(x),f_\beta(x))
 
 with :math:`n` being the number of variables of the problem (also called
-the problem dimension), :math:`f_1: \mathbb{R}^n \rightarrow \mathbb{R}`
-and :math:`f_2: \mathbb{R}^n \rightarrow \mathbb{R}` being the two unconstrained
+the problem dimension), :math:`f_\alpha: \mathbb{R}^n \rightarrow \mathbb{R}`
+and :math:`f_\beta: \mathbb{R}^n \rightarrow \mathbb{R}` being the two unconstrained
 objective functions, and the :math:`\min` operator related to the
 standard *dominance relation*. A solution :math:`x\in\mathbb{R}^n`
 is thereby said to *dominate* another solution :math:`y\in\mathbb{R}^n` if
-:math:`f_1(x) \leq f_1(y)` and :math:`f_2(x) \leq f_2(y)` hold and at
+:math:`f_\alpha(x) \leq f_\alpha(y)` and :math:`f_\beta(x) \leq f_\beta(y)` hold and at
 least one of the inequalities is strict.
 
 Solutions which are not dominated by any other solution in the search
@@ -44,14 +44,14 @@ We remind in this section different definitions.
 *ideal point*
  The ideal point is defined as the vector (in objective space)
  containing the optimal function values of the (two) objective
- functions. More precisely let :math:`f_1^{\rm opt}:= \inf_{x\in \mathbb{R}^n} f_1(x)` and
- :math:`f_2^{\rm opt}:= \sup_{x\in \mathbb{R}^n} f_2(x)`, the ideal point is given by
+ functions. More precisely let :math:`f_\alpha^{\rm opt}:= \inf_{x\in \mathbb{R}^n} f_\alpha(x)` and
+ :math:`f_\beta^{\rm opt}:= \sup_{x\in \mathbb{R}^n} f_\beta(x)`, the ideal point is given by
  
  .. math::
     :nowrap:
 
 	\begin{equation*}
-	z_{\rm ideal}  =  (f_1^{\rm opt},f_2^{\rm opt})
+	z_{\rm ideal}  =  (f_\alpha^{\rm opt},f_\beta^{\rm opt})
     \end{equation*}
     
 
@@ -65,8 +65,8 @@ We remind in this section different definitions.
     :nowrap:
 
 	\begin{equation*}
-	z_{\rm nadir}  =   \left( \sup_{x \in \mathcal{PO}} f_1(x),
-     \sup_{x \in \mathcal{PO}} f_2(x)  \right)
+	z_{\rm nadir}  =   \left( \sup_{x \in \mathcal{PO}} f_\alpha(x),
+     \sup_{x \in \mathcal{PO}} f_\beta(x)  \right)
     \end{equation*} 
     
     
