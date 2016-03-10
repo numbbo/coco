@@ -369,8 +369,12 @@ computational architecture for conducting these experiments are to be described.
   experiment previously, that is, the suite indices 105, 465, 825, 1185, 1545,
   1905. 
   
-.. ############################# References #########################################
 
+.. ############################# References #########################################
+.. raw:: html
+    
+    <H2>References</H2>
+	
 
 .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
