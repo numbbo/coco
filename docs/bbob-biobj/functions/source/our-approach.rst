@@ -133,8 +133,7 @@ From combining the original ``bbob`` function classes, we obtain 15 function cla
 .. or four functions:
 
 
-More details about the single functions can be found in the next
-section whereas we first describe their common properties here.
+More details about the single functions can be found in Section :ref:`sec-test-functions`. We however first describe their common properties in the coming sections.
 
 
 Normalization, Ideal and Nadir Point
