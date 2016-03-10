@@ -198,6 +198,14 @@ most experimenters needed to setup and implement themselves, if they wanted to
 benchmark an algorithm properly. The framework has been used successfully for
 benchmarking far over hundred algorithms by many researchers.  
 
+.. [#] One problem is that we often get, besides *statistical* significance, no
+   indication of *how much* better an algorithm is. That is, benchmarking
+   results often give no indication of *semantic* significance or *relevance*.
+   The main output is often hundreds of tabulated numbers interpretable on an
+   ordinal scale [STE1946]_ only
+   
+.. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
+   
 .. [#] After the installation which can be as simple as 
 
   .. code:: bash
@@ -210,18 +218,10 @@ benchmarking far over hundred algorithms by many researchers.
 
 ..    $ python my_experiment_runner.py  # run the "default" experiment
     $ python -m bbob_pproc exdata/...
-    
-.. [#] One problem is that we often get, besides *statistical* significance, no
-   indication of *how much* better an algorithm is. That is, benchmarking
-   results often give no indication of *semantic* significance or *relevance*.
-   The main output is often hundreds of tabulated numbers interpretable on an
-   ordinal scale [STE1946]_ only
-   
+       
 .. left to the reader to
    scan and compare to each other, possibly across different articles. 
     
-.. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
-
 .. Anne: Maybe we could actually make the point that with the COCO
 .. Anne: framework the focus can be on the algorithm design rather that on the
 .. Anne: implementation of the benchmarking test. Sadly, I have the feeling that some other
@@ -583,6 +583,9 @@ Acknowledgments
 The authors would like to thank Raymond Ros, Steffen Finck, Marc Schoenauer, 
 and Petr Posik for their many invaluable contributions to this work. 
 
+The authors also acknowledge support by the grant ANR-12-MONU-0009 (NumBBO) 
+of the French National Research Agency.
+
 
 .. ############################# References #########################################
 .. raw:: html
@@ -591,50 +594,50 @@ and Petr Posik for their many invaluable contributions to this work.
     
 .. author list yet to be defined
 
-.. [BBO2016biobj] The BBOBies: Biobjective function benchmark suite. 
+.. [BBO2016biobj] The BBOBies: `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) Test Suite`__.
+__ http://numbbo.github.io/coco-doc/bbob-biobj/functions/ 
 
-.. [BBO2016ex] The BBOBies: `Experimental Setup`__. 
-__ https://www.github.com
+.. [BBO2016ex] The BBOBies: `COCO: Experimental Procedure`__. 
+__ http://numbbo.github.io/coco-doc/experimental-setup/
 
 .. [BBO2016perf] The BBOBies: `Performance Assessment`__. 
 __ https://www.github.com
 
 .. [BBO2016fun] The BBOBies: Biobjective Function Definitions. 
 
-.. .. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
+.. .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
-.. .. [HAN2010] Hansen, N., A. Auger, S. Finck R. and Ros (2010), Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
+.. .. [HAN2010] N. Hansen, A. Auger, S. Finck, and R. Ros (2010), Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
 
-.. [HAN2009fun] N.Hansen, S. Finck, R. Ros, and A. Auger. `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, 2009, updated February 2010.
+.. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger. `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, 2009, updated February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
 
-.. [HAN2009noi] N.Hansen, S. Finck, R. Ros, and A. Auger. `Real-Parameter Black-Box Optimization Benchmarking 2009: Noisy Functions Definitions`__. `Technical Report RR-6869`__, Inria, 2009, updated February 2010.
+.. [HAN2009noi] N. Hansen, S. Finck, R. Ros, and A. Auger. `Real-Parameter Black-Box Optimization Benchmarking 2009: Noisy Functions Definitions`__. `Technical Report RR-6869`__, Inria, 2009, updated February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00369466
 
-.. [HUN2007] Hunter, J. D. (2007). Matplotlib: A 2D graphics environment, 
+.. [HUN2007] J. D. Hunter (2007). Matplotlib: A 2D graphics environment, 
   *Computing In Science \& Engineering*, 9(3): 90-95. 
 
-
-.. .. [AUG2005] A Auger and N Hansen. A restart CMA evolution strategy with
+.. .. [AUG2005] A. Auger and N. Hansen. A restart CMA evolution strategy with
    increasing population size. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1769--1776. IEEE Press, 2005.
 .. .. [Auger:2005b] A. Auger and N. Hansen. Performance evaluation of an advanced
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1777-1784, 2005.
-.. .. [Auger:2009] Anne Auger and Raymond Ros. Benchmarking the pure
+.. .. [Auger:2009] A. Auger and R. Ros. Benchmarking the pure
    random search on the BBOB-2009 testbed. In Franz Rothlauf, editor, *GECCO
    (Companion)*, pages 2479-2484. ACM, 2009.
    
-.. .. [BAR1995] R. Barr, ?. Golden, J. Kelly, M Resende, and Jr. W. Stewart. Designing and Reporting on Computational Experiments with Heuristic Methods. Journal of Heuristics, 1:9–32, 1995. 
+.. .. [BAR1995] R. S. Barr, B. L. Golden, J. P. Kelly, M. G. C. Resende, and W. R. Stewart Jr. Designing and Reporting on Computational Experiments with Heuristic Methods. Journal of Heuristics, 1:9–32, 1995. 
 
 .. [ERF1993] B. Efron and R. Tibshirani. *An introduction to the
    bootstrap.* Chapman & Hall/CRC, 1993.
-.. [HAR1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
+.. [HAR1999] G. R. Harik and F. G. Lobo. A parameter-less genetic
    algorithm. In *Proceedings of the Genetic and Evolutionary Computation
    Conference (GECCO)*, volume 1, pages 258-265. ACM, 1999.
-.. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
+.. [HOO1998] H. H. Hoos and T. Stützle. Evaluating Las Vegas
    algorithms: pitfalls and remedies. In *Proceedings of the Fourteenth 
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
    pages 238-245, 1998.
@@ -642,9 +645,9 @@ __ https://www.github.com
    the second ICEO. In Proceedings of the IEEE International Congress on
    Evolutionary Computation, pages 153--157, 1997.
    
-.. [STE1946] Stevens, S.S. On the theory of scales of measurement. *Science* 103(2684), pp. 677-680, 1946.
+.. [STE1946] S.S. Stevens. On the theory of scales of measurement. *Science* 103(2684), pp. 677-680, 1946.
 
-.. [WHI1996] Whitley, D., Rana, S., Dzubera, J., Mathias, K. E. Evaluating evolutionary algorithms. *Artificial intelligence*, 85(1), 245-276, 1996.
+.. [WHI1996] D. Whitley, S. Rana, J. Dzubera, K. E. Mathias. Evaluating evolutionary algorithms. *Artificial intelligence*, 85(1), 245-276, 1996.
 
 
 .. ############################## END Document #######################################
