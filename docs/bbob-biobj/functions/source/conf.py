@@ -55,7 +55,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'bbob-biobj-functions-doc'
-copyright = u'2015, The BBOBies'
+copyright = u'2015-2016, The BBOBies'
 author = u'The BBOBies'
 
 # The version info for the project you're documenting, acts as replacement for
