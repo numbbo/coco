@@ -427,6 +427,8 @@ Links and Documentation <a name="Links"></a>
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
   by registering at http://coco.gforge.inria.fr/register
+* Please refer to http://numbbo.github.io/coco-doc/experimental-setup/ for more details on the
+  experimental set-up for black-box optimization benchmarking.
 * More detailed documentation of the existing benchmark suites can be found here:
   - for the **`BBOB`** problem suite at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
