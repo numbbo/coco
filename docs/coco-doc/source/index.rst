@@ -470,7 +470,7 @@ Resembling the bootstrapping method [ERF1993]_, when we face an unsolved problem
 new |j| until we find an instance such that |pt| was solved. [#]_
 The evaluations done on the first unsolved problem and on all subsequently
 drawn unsolved problems are added to the runtime on the last problem and
-considered as runtime on the original unsolved problem.  
+are considered as runtime on the original unsolved problem.  
 This method is applied if a problem instance was not solved and is
 (only) available if at least one problem instance was solved.
 
@@ -480,7 +480,7 @@ This method is applied if a problem instance was not solved and is
 
 
 .. [#] For a given problem |p|, the number of acquired runtime values, |RT(pt)|
-  is monotonous increasing with the budget used. Considered as random
+  is monotonously increasing with the budget used. Considered as random
   variables, these runtimes are not independent. 
 
 .. [#] More specifically, we consider the problems :math:`(f_i, n, j, t(j))` for
@@ -500,22 +500,22 @@ To make them amenable to the experimenter, we need to summarize these data.
 Our idea behind an aggregation is to make a statistical summary over a set or
 subset of *problems of interest* over which we assume a uniform distribution [BBO2016perf]_. 
 From a practical perspective this means to have no simple way to distinguish
-between these problems and select an optimization algorithm accordingly --- in
-which case an aggregation would have no significance --- and that we are likely
+between these problems and to select an optimization algorithm accordingly---in
+which case an aggregation would have no significance---and that we are likely
 to face each problem with similar probability. 
 We do not aggregate over dimension, because dimension can and 
 should be used for algorithm selection. 
 
 We have several ways to aggregate the resulting runtimes. 
 
- - Empirical cumulative distribution functions (|ECDF|). In the domain of 
-   optimization, |ECDF| are also known as *data profiles* [MOR2009]_. We
-   prefer the simple |ECDF| over the more innovative performance profiles
+ - Empirical cumulative distribution functions (|ECDFs|). In the domain of 
+   optimization, |ECDFs| are also known as *data profiles* [MOR2009]_. We
+   prefer the simple |ECDFs| over the more innovative performance profiles
    [MOR2002]_ for two reasons.
-   |ECDF| do not depend on other presented algorithms, that is, they are
-   entirely comparable across different publications.  |ECDF| separate in a
+   |ECDFs| do not depend on other presented algorithms, that is, they are
+   entirely comparable across different publications.  |ECDFs| separate in a
    natural way easy problems from difficult problems for the considered
-   algorithm. We usually display |ECDF| on the log scale, which makes the area
+   algorithm. We usually display |ECDFs| on the log scale, which makes the area
    above the curve and the *difference area* between two curves a meaningful
    conception [BBO2016perf]. 
    
@@ -530,13 +530,13 @@ We have several ways to aggregate the resulting runtimes.
    is more meaningful. 
    
  - Restarts and simulated restarts, see Section :ref:`sec:Restarts`, do not 
-   literally aggregate runtimes (which are literally define only when |t| was
-   hit).  They aggregate however time data to supplement missing runtime
+   literally aggregate runtimes (which are literally defined only when |t| was
+   hit).  They aggregate, however, time data to supplement missing runtime
    values, see also [BBO2016perf]_. 
 
 .. |ERT| replace:: ERT
 .. |ECDF| replace:: ECDF
-
+.. |ECDFs| replace:: ECDFs
 
 General Code Structure
 ===============================================
