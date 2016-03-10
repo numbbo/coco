@@ -235,6 +235,9 @@ static coco_problem_t *f_step_ellipsoid_allocate(const size_t number_of_variable
 
 /**
  * @brief Creates the BBOB permuted block-rotated step ellipsoid problem.
+ *
+ * Wassim: TODO: consider implementing it sub-problem style
+ * Wassim: TODO: make the zhat1 value default to x1 when no transformation is applied and the data type defined here
  */
 static coco_problem_t *f_step_ellipsoid_permblockdiag_bbob_problem_allocate(const size_t function,
                                                                             const size_t dimension,
@@ -284,7 +287,7 @@ static coco_problem_t *f_step_ellipsoid_permblockdiag_bbob_problem_allocate(cons
   problem = transform_vars_permutation(problem, P22, dimension);
   problem = transform_vars_blockrotation(problem, B2_copy, dimension, block_sizes2, nb_blocks2);
   problem = transform_vars_permutation(problem, P21, dimension);
-  problem = transform_vars_round_step(problem, alpha);/* also puts \hat{z}_1 in x[dimension]*/
+  problem = transform_vars_round_step(problem, alpha);
   
   problem = transform_vars_conditioning(problem, 10.0);
   problem = transform_vars_permutation(problem, P12, dimension);
