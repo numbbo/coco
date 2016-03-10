@@ -17,7 +17,7 @@
 
 #include "transform_vars_permutation.c"
 #include "transform_vars_blockrotation.c"
-#include "transform_obj_norm_by_dim.c"
+#include "transform_obj_scale.c"
 #include "transform_vars_conditioning.c"
 
 /**
@@ -192,7 +192,7 @@ static coco_problem_t *f_attractive_sector_permblockdiag_bbob_problem_allocate(c
 
   
   problem = f_attractive_sector_allocate(dimension, xopt);
-  problem = transform_obj_norm_by_dim(problem);
+  problem = transform_obj_scale(problem, 1. / (double) dimension);
   problem = transform_obj_oscillate(problem);
   problem = transform_obj_power(problem, 0.9);
   problem = transform_obj_shift(problem, fopt);

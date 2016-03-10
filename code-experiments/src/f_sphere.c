@@ -11,7 +11,7 @@
 #include "suite_bbob_legacy_code.c"
 #include "transform_obj_shift.c"
 #include "transform_vars_shift.c"
-#include "transform_obj_norm_by_dim.c"
+#include "transform_obj_scale.c"
 
 /**
  * @brief Implements the sphere function without connections to any COCO structures.
@@ -74,7 +74,7 @@ static coco_problem_t *f_sphere_bbob_problem_allocate(const size_t function,
 
   /*if large scale test-bed, normalize by dim*/
   if (coco_strfind(problem_name_template, "BBOB large-scale suite") >= 0){
-    problem = transform_obj_norm_by_dim(problem);
+    problem = transform_obj_scale(problem, 1.0 / (double) dimension);
   }
   problem = transform_obj_shift(problem, fopt);
 
