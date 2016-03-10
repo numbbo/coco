@@ -362,6 +362,7 @@ static coco_problem_t *f_gallagher_sub_problem_allocate(const size_t number_of_v
 /**
  * @brief Implements the gallagher function without connections to any COCO structures.
  * Wassim: core to differentiate it from raw for now
+ * Wassim: TODO: compute the w_i here and make that the subproblems become simple sphere problems and use the f_sphere_raw
  */
 static double f_gallagher_core(const double *x, f_gallagher_versatile_data_t *f_gallagher_versatile_data) {
 
