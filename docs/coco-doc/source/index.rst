@@ -400,7 +400,7 @@ establish a hitting time condition.
 We prescribe a **target value**, |t|, which is an |f|- or
 indicator-value [BBO2016biobj]_. 
 For a single run, when an algorithm reaches or surpasses the target value |t|
-on problem |p|, we say it has *solved the problem* |pt| --- it was successul. [#]_
+on problem |p|, we say it has *solved the problem* |pt| --- it was successful. [#]_
 
 Now, the **runtime** is the evaluation count when the target value |t| was
 reached or surpassed for the first time. That is, runtime is the number of |f|-evaluations needed to 
@@ -437,9 +437,9 @@ restarts should be done.
   properly define them with the designer of the benchmark suite. The alternative 
   is to present final |f|- or indicator-values as 
   results, leaving the (rather unsurmountable) burden to interpret these values to the 
-  reader. Fortunately, there is a automatized generic way to generate target
+  reader. Fortunately, there is an automatized generic way to generate target
   values from observed runtimes, the so-called run-length based target values
-  [BBO2016perf]. 
+  [BBO2016perf]_. 
 
 .. |k| replace:: :math:`k`
 .. |p| replace:: :math:`(f_i, n, j)`

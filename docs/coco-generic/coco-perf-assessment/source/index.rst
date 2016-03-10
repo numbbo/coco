@@ -161,6 +161,11 @@ target values while fixed-cost measures require the transformation
 of all resulting data.
 
 
+.. todo::
+
+  mention and explain the third scenario: runlength-based targets
+  
+
 Runtime over Problems
 =========================
 
