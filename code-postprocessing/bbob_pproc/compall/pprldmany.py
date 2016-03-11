@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generates figure of the bootstrap distribution of ERT.
+"""Generates figure of the bootstrap distribution of ART.
     
 The main method in this module generates figures of Empirical
 Cumulative Distribution Functions of the bootstrap distribution of
-the Expected Running Time (ERT) divided by the dimension for many
+the Average Running Time (ART) divided by the dimension for many
 algorithms.
 
 The outputs show the ECDFs of the running times of the simulated runs
@@ -31,7 +31,7 @@ function evaluations of unsuccessful runs divided by dimension.
     archivefile = tarfile.open(filename)
     archivefile.extractall()
     
-    # Empirical cumulative distribution function of bootstrapped ERT figure
+    # Empirical cumulative distribution function of bootstrapped ART figure
     ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
     figure()
     bb.compall.pprldmany.plot(ds) # must rather call main instead of plot?
@@ -533,7 +533,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
     generates the cumulative distribution function of the bootstrap
-    distribution of ERT for algorithms on multiple functions for
+    distribution of ART for algorithms on multiple functions for
     multiple targets altogether.
 
     :param dict dictAlg: dictionary of :py:class:`DataSetList` instances
@@ -592,7 +592,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     dictData = {} # list of (ert per function) per algorithm
     dictMaxEvals = {} # list of (maxevals per function) per algorithm
-    bestERT = [] # best ert per function
+
     # funcsolved = [set()] * len(targets) # number of functions solved per target
     xbest2009 = []
     maxevalsbest2009 = []

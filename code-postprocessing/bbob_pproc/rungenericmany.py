@@ -104,7 +104,7 @@ def main(argv=None):
         --tab-only, --rld-only, --fig-only
             these options can be used to output respectively the
             comparison TeX tables, the run lengths distributions or the
-            figures of ERT/dim vs dim only. A combination of any two or
+            figures of ART/dim vs dim only. A combination of any two or
             more of these options results in no output.
         --conv
             if this option is chosen, additionally convergence

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Creates ERT-ratio comparison figures (ECDF) and convergence figures for the comparison of 2 algorithms.
+"""Creates ART-ratio comparison figures (ECDF) and convergence figures for the comparison of 2 algorithms.
 
 Scale up figures for two algorithms can be done with compall/ppfigs.py
 
@@ -251,7 +251,7 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
                          transform=trans, clip_on=False)
 
 def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
-    """Returns ERT1/ERT0 comparison figure."""
+    """Returns ART1/ART0 comparison figure."""
 
     #plt.rc("axes", labelsize=20, titlesize=24)
     #plt.rc("xtick", labelsize=20)

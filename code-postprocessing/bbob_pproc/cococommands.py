@@ -137,8 +137,8 @@ def systeminfo():
 #    minirun
 #    minirun_2
 #    ppfig
-#    ppfigdim -> ERT vs dim 1 alg: 1 DataSetList ok
-#    pplogloss -> ERT loss vs ? 1 alg, 1 dim: 1 DataSetList ok
+#    ppfigdim -> ART vs dim 1 alg: 1 DataSetList ok
+#    pplogloss -> ART loss vs ? 1 alg, 1 dim: 1 DataSetList ok
 #    pprldistr -> Runevals (or?) vs %) 1 alg 1 dim: 1 DataSet... ?
 #    comp2 (package)
 #        ppfig2 ->
@@ -152,7 +152,7 @@ def systeminfo():
 #        pptables ->
 #    pproc
 #    pprocold
-#    pptable -> ERT, etc... vs target 1 alg
+#    pptable -> ART, etc... vs target 1 alg
 #    pptex
 #    ranksumtest
 #    readalign
