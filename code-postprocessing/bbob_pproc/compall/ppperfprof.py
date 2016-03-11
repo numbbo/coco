@@ -86,7 +86,7 @@ def beautify():
     a.set_xscale('log')
     #Tick label handling
 
-    plt.xlabel('log10 of (ART / ARTref)')
+    plt.xlabel('log10 of (aRT / aRTref)')
     plt.ylabel('Proportion of functions')
     logxticks()
     beautifyECDF()
@@ -127,9 +127,9 @@ def plot(dsList, dsref, targets=defaulttargets, istoolsstats=False, **kwargs):
     """Generates a graph showing the performance profile of an algorithm.
 
     We display the empirical cumulative distribution function ECDF of
-    the bootstrapped distribution of the average running time (ART)
+    the bootstrapped distribution of the average running time (aRT)
     for an algorithm to reach the function value :py:data:`targets`
-    normalized by the ART of the reference algorithm for these
+    normalized by the aRT of the reference algorithm for these
     targets.
 
     :param DataSetList dsList: data set for one algorithm
@@ -146,7 +146,7 @@ def plot(dsList, dsref, targets=defaulttargets, istoolsstats=False, **kwargs):
     for entry in dsList:
         for t in targets:
             # TODO: alternative: min(dsref[(entry.dim, entry.funcId)].detEvals((t,))[0]) 
-            #       is the min from the alg with the best ART 
+            #       is the min from the alg with the best aRT 
             flg_ert = 1
             if flg_ert:
                 normalizer = dsref[(entry.dim, entry.funcId)].detERT((t,))[0]

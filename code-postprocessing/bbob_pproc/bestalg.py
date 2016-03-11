@@ -89,7 +89,7 @@ class BestAlgSet():
     numbers of function evaluations for evals or function values for
     funvals.
 
-    Known bug: algorithms where the ART is NaN or Inf are not taken into
+    Known bug: algorithms where the aRT is NaN or Inf are not taken into
     account!?
     
     """
@@ -140,7 +140,7 @@ class BestAlgSet():
         sortedAlgs = dictAlg.keys()
         # algorithms will be sorted along sortedAlgs which is now a fixed list
 
-        # Align ART
+        # Align aRT
         erts = list(np.transpose(np.vstack([dictAlg[i].target, dictAlg[i].ert]))
                     for i in sortedAlgs)
         res = readalign.alignArrayData(readalign.HArrayMultiReader(erts, False))
@@ -159,7 +159,7 @@ class BestAlgSet():
                     continue # TODO: don't disregard these entries
                 if tmpert == currentbestert:
                     # TODO: what do we do in case of ties?
-                    # look at function values corresponding to the ART?
+                    # look at function values corresponding to the aRT?
                     # Look at the function evaluations? the success ratio?
                     pass
                 elif tmpert < currentbestert:
@@ -557,7 +557,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
                                        target_ub=1e2):
     """Computes first the artificial best algorithm from given algorithm list
        algnamelist, constructed by extracting for each target/function pair
-       the algorithm with best ART among the given ones. Returns then the list
+       the algorithm with best aRT among the given ones. Returns then the list
        of algorithms that are contributing to the definition of the best
        algorithm, separated by dimension, and sorted by importance (i.e. with
        respect to the number of target/function pairs where each algorithm is
@@ -627,9 +627,9 @@ def extractBestAlgorithms(args = algs2009, f_factor=2,
     """Returns (and prints) per dimension a list of algorithms within
     algorithm list args that contains an algorithm if for any
         dimension/target/function pair this algorithm:
-        - is the best algorithm wrt ART
-        - its own ART lies within a factor f_factor of the best ART
-        - there is no algorithm within a factor of f_factor of the best ART
+        - is the best algorithm wrt aRT
+        - its own aRT lies within a factor f_factor of the best aRT
+        - there is no algorithm within a factor of f_factor of the best aRT
           and the current algorithm is the second best.
 
     """
@@ -663,7 +663,7 @@ def extractBestAlgorithms(args = algs2009, f_factor=2,
                     # add best for this target:
                     selectedAlgsPerProblemDF.append(best.algs[i])
                 
-                    # add second best or all algorithms that have an ART
+                    # add second best or all algorithms that have an aRT
                     # within a factor of f_factor of the best:
                     secondbest_ERT = np.infty
                     secondbest_str = ''

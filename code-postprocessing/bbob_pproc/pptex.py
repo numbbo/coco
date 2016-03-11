@@ -252,7 +252,7 @@ def writeFEvalsMaxSymbols(fevals, maxsymbols, isscientific=False):
     2) float notation
 
     :returns: string representation of a number of function evaluations
-              or ART.
+              or aRT.
 
     """
 
@@ -321,7 +321,7 @@ def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=1e5):
        exponent)
 
     :returns: string representation of a number of function evaluations
-              or ART.
+              or aRT.
 
     """
     #CAVE: what if entry is smaller than 10**(-SIG)?

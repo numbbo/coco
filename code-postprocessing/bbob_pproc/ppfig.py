@@ -206,7 +206,7 @@ def save_single_functions_html(filename,
             f.write(addImage('pprldmany.%s' % (extension), True))            
 
         elif htmlPage is HtmlPage.TWO:
-            currentHeader = 'Scaling of ART with dimension'
+            currentHeader = 'Scaling of aRT with dimension'
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             for ifun in range(1, maxFunctionIndex + 1):
                 f.write(addImage('ppfigs_f%03d%s.%s' % (ifun, add_to_names, extension), True))
@@ -240,16 +240,16 @@ def save_single_functions_html(filename,
             key = 'bbobpprldistrlegendtworlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendtwofixed'
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
-            currentHeader = 'Table showing the ART in number of function evaluations'
+            currentHeader = 'Table showing the aRT in number of function evaluations'
             if bestAlgExists:
-                currentHeader += ' divided by the best ART measured during BBOB-2009'
+                currentHeader += ' divided by the best aRT measured during BBOB-2009'
                 
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             f.write("\n<!--pptable2Html-->\n")
             f.write(captionStringFormat % '##bbobpptablestwolegend##')
             
         elif htmlPage is HtmlPage.MANY:
-            currentHeader = 'Scaling of ART with dimension'
+            currentHeader = 'Scaling of aRT with dimension'
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
@@ -289,7 +289,7 @@ def save_single_functions_html(filename,
             if addLinkForNextDim:
                 f.write('"\n</A>\n')
         elif htmlPage is HtmlPage.PPTABLE:
-            currentHeader = 'ART in number of function evaluations'
+            currentHeader = 'aRT in number of function evaluations'
             f.write("<H2> %s </H2>\n" % currentHeader)
             f.write("\n<!--pptableHtml-->\n")
             f.write(captionStringFormat % htmldesc.getValue('##bbobpptablecaption##'))
@@ -314,7 +314,7 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.PPLOGLOSS:
             dimensions = [5, 20]
             if not isBiobjective:            
-                currentHeader = 'ART loss ratios'
+                currentHeader = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % currentHeader)
                 for dimension in dimensions:
                     f.write(addImage('pplogloss_%02dD_noiselessall.%s' % (dimension, extension), True))
@@ -352,8 +352,8 @@ def write_ECDF(f, dimension, extension, captionStringFormat, functionGroups):
 def write_pptables(f, dimension, captionStringFormat, maxFunctionIndex, bestAlgExists):
     """Writes line for pptables images."""
 
-    additionalText = 'divided by the best ART measured during BBOB-2009' if bestAlgExists else ''
-    currentHeader = 'Table showing the ART in number of function evaluations %s ' \
+    additionalText = 'divided by the best aRT measured during BBOB-2009' if bestAlgExists else ''
+    currentHeader = 'Table showing the aRT in number of function evaluations %s ' \
                 'for dimension %d' % (additionalText, dimension)
     
     f.write("\n<H2> %s </H2>\n" % currentHeader)
@@ -556,7 +556,7 @@ def beautify():
     for i in tmp:
         tmp2.append('%d' % round(np.log10(i)))
     axisHandle.set_yticklabels(tmp2)
-    axisHandle.set_ylabel('log10 of ART')
+    axisHandle.set_ylabel('log10 of aRT')
 
 def generateData(dataSet, targetFuncValue):
     """Returns an array of results to be plotted.
@@ -586,7 +586,7 @@ def generateData(dataSet, targetFuncValue):
     else:
         med = np.nan
 
-    # prepare to compute runlengths / ART with restarts (AKA SP1)
+    # prepare to compute runlengths / aRT with restarts (AKA SP1)
     data[np.isnan(data)] = dataSet.maxevals[np.isnan(data)]
 
     res = []
@@ -647,7 +647,7 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
 
         if succ:
             tmp = np.vstack(succ)
-            #ART
+            #aRT
             res.extend(plt.plot(tmp[:, 0], tmp[:, 1], **kwargs))
             #median
             tmp2 = plt.plot(tmp[:, 0], tmp[:, -1], **kwargs)
