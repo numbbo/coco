@@ -155,8 +155,9 @@ static coco_problem_t *f_attractive_sector_permblockdiag_bbob_problem_allocate(c
   double **B1, **B2;
   const double *const *B1_copy;
   const double *const *B2_copy;
+  const double condition = 10.0;
   size_t *P11, *P12, *P21, *P22;
-  size_t *block_sizes1, *block_sizes2;/*each of R and Q migh have its own parameter values*/
+  size_t *block_sizes1, *block_sizes2;/* each of R and Q migh have its own parameter values */
   size_t nb_blocks1, nb_blocks2;
   size_t swap_range1, swap_range2;
   size_t nb_swaps1, nb_swaps2;
@@ -166,21 +167,19 @@ static coco_problem_t *f_attractive_sector_permblockdiag_bbob_problem_allocate(c
   bbob2009_compute_xopt(xopt, rseed, dimension);
 
   block_sizes1 = coco_get_block_sizes(&nb_blocks1, dimension, "bbob-largescale");
-  block_sizes2 = coco_get_block_sizes(&nb_blocks2, dimension, "bbob-largescale");/*for potential future compatibility*/
+  block_sizes2 = coco_get_block_sizes(&nb_blocks2, dimension, "bbob-largescale");
   swap_range1 = coco_get_swap_range(dimension, "bbob-largescale");
   swap_range2 = coco_get_swap_range(dimension, "bbob-largescale");
   nb_swaps1 = coco_get_nb_swaps(dimension, "bbob-largescale");
   nb_swaps2 = coco_get_nb_swaps(dimension, "bbob-largescale");
 
-
   B1 = coco_allocate_blockmatrix(dimension, block_sizes1, nb_blocks1);
   B2 = coco_allocate_blockmatrix(dimension, block_sizes2, nb_blocks2);
-  B1_copy = (const double *const *)B1;/*TODO: silences the warning, not sure if it prevents the modification of B at all levels*/
+  B1_copy = (const double *const *)B1;/* Wassim: silences the warning, not sure it prevents the modification of B at all levels*/
   B2_copy = (const double *const *)B2;
   coco_compute_blockrotation(B1, rseed + 1000000, dimension, block_sizes1, nb_blocks1);
   coco_compute_blockrotation(B2, rseed, dimension, block_sizes2, nb_blocks2);
 
-  
   P11 = coco_allocate_vector_size_t(dimension);
   P12 = coco_allocate_vector_size_t(dimension);
   P21 = coco_allocate_vector_size_t(dimension);
@@ -190,7 +189,6 @@ static coco_problem_t *f_attractive_sector_permblockdiag_bbob_problem_allocate(c
   coco_compute_truncated_uniform_swap_permutation(P21, rseed + 4000000, dimension, nb_swaps2, swap_range2);
   coco_compute_truncated_uniform_swap_permutation(P22, rseed + 5000000, dimension, nb_swaps2, swap_range2);
 
-  
   problem = f_attractive_sector_allocate(dimension, xopt);
   problem = transform_obj_scale(problem, 1. / (double) dimension);
   problem = transform_obj_oscillate(problem);
@@ -200,7 +198,7 @@ static coco_problem_t *f_attractive_sector_permblockdiag_bbob_problem_allocate(c
   problem = transform_vars_permutation(problem, P22, dimension);
   problem = transform_vars_blockrotation(problem, B2_copy, dimension, block_sizes2, nb_blocks2);
   problem = transform_vars_permutation(problem, P21, dimension);
-  problem = transform_vars_conditioning(problem, 10.0);/*uses directly the tranformation instead of manually computed the product matrix*/
+  problem = transform_vars_conditioning(problem, condition);
   problem = transform_vars_permutation(problem, P12, dimension);
   problem = transform_vars_blockrotation(problem, B1_copy, dimension, block_sizes1, nb_blocks1);
   problem = transform_vars_permutation(problem, P11, dimension);
@@ -208,7 +206,7 @@ static coco_problem_t *f_attractive_sector_permblockdiag_bbob_problem_allocate(c
   
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
-  coco_problem_set_type(problem, "large_scale_block_rotated");
+  coco_problem_set_type(problem, "block_rotated_moderate");
   
   coco_free_block_matrix(B1, dimension);
   coco_free_block_matrix(B2, dimension);
