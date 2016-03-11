@@ -4,8 +4,8 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 COCO: A platform for Comparing Continuous Optimizers in a Black-Box Setting
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-...
-%%%
+.. ...
+.. %%%
 
 .. |
 .. |
@@ -25,14 +25,14 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     \abstractinrst
     \newpage 
 
-.. COCO is a platform for Comparing Continuous Optimizers in a black-box
-  setting. It aims at automatizing the tedious and repetitive task of
-  benchmarking numerical optimization algorithms to the greatest possible
-  extent. We present the rationals behind the development of the platform
-  and its basic structure. We furthermore detail underlying fundamental 
-  concepts of COCO such as its definition of a problem, the idea of
-  instances, or performance measures and give an overview of the
-  available test suites.
+COCO is a platform for Comparing Continuous Optimizers in a black-box
+setting. It aims at automatizing the tedious and repetitive task of
+benchmarking numerical optimization algorithms to the greatest possible
+extent. We present the rationals behind the development of the platform
+and its basic structure. We furthermore detail underlying fundamental 
+concepts of COCO such as its definition of a problem, the idea of
+instances, or performance measures and give an overview of the
+available test suites.
   
   
 .. _2009: http://www.sigevo.org/gecco-2009/workshops.html#bbob
@@ -464,9 +464,9 @@ greater runtimes.
 Therefore, we call our approach *budget-free*. 
 Restarts however "*improve the reliability, comparability, precision, and "visibility" of the measured results*" [BBO2016ex]_.
 
-*Simulated restarts* [HAN2010b]_ [BBO2016perf]_ are used to determine a runtime for unsuccessful runs. Semantically, this is only valid if we interpret different 
+*Simulated restarts* [HAN2010]_ [HAN2010b]_ [BBO2016perf]_ are used to determine a runtime for unsuccessful runs. Semantically, this is only valid if we interpret different 
 instances as random repetitions. 
-Resembling the bootstrapping method [ERF1993]_, when we face an unsolved problem, we draw uniformly at random a
+Resembling the bootstrapping method [EFR1993]_, when we face an unsolved problem, we draw uniformly at random a
 new |j| until we find an instance such that |pt| was solved. [#]_
 The evaluations done on the first unsolved problem and on all subsequently
 drawn unsolved problems are added to the runtime on the last problem and
@@ -573,7 +573,7 @@ Currently, the COCO_ framework provides three different test suites.
   currently only implemented in the `old code basis`_.
 
 ``bbob-biobj``
-  contains 55 bi-objective (:math:`m=2`) functions in 15 subgroups [BBO2016fun]_. 
+  contains 55 bi-objective (:math:`m=2`) functions in 15 subgroups [BBO2016biobj]_. 
   
 .. _`old code basis`: http://coco.gforge.inria.fr/doku.php?id=downloads
 
@@ -603,17 +603,19 @@ __ http://numbbo.github.io/coco-doc/experimental-setup/
 .. [BBO2016perf] The BBOBies: `Performance Assessment`__. 
 __ https://www.github.com
 
-.. [BBO2016fun] The BBOBies: Biobjective Function Definitions. 
+.. .. [BBO2016fun] The BBOBies: Biobjective Function Definitions. 
 
 .. .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
-.. .. [HAN2010] N. Hansen, A. Auger, S. Finck, and R. Ros (2010), Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
+.. [HAN2010] N. Hansen, A. Auger, S. Finck, and R. Ros (2010), Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
 
-.. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger. `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, 2009, updated February 2010.
+.. [HAN2010b] N. Hansen, A. Auger, R. Ros, S. Finck, and P. Posik (2010). Comparing Results of 31 Algorithms from the Black-Box Optimization Benchmarking BBOB-2009. Workshop Proceedings of the GECCO Genetic and Evolutionary Computation Conference 2010, ACM, pp. 1689-1696
+
+.. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, updated February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
 
-.. [HAN2009noi] N. Hansen, S. Finck, R. Ros, and A. Auger. `Real-Parameter Black-Box Optimization Benchmarking 2009: Noisy Functions Definitions`__. `Technical Report RR-6869`__, Inria, 2009, updated February 2010.
+.. [HAN2009noi] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). `Real-Parameter Black-Box Optimization Benchmarking 2009: Noisy Functions Definitions`__. `Technical Report RR-6869`__, Inria, updated February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00369466
 
@@ -632,22 +634,27 @@ __ https://www.github.com
    
 .. .. [BAR1995] R. S. Barr, B. L. Golden, J. P. Kelly, M. G. C. Resende, and W. R. Stewart Jr. Designing and Reporting on Computational Experiments with Heuristic Methods. Journal of Heuristics, 1:9–32, 1995. 
 
-.. [ERF1993] B. Efron and R. Tibshirani. *An introduction to the
-   bootstrap.* Chapman & Hall/CRC, 1993.
-.. [HAR1999] G. R. Harik and F. G. Lobo. A parameter-less genetic
+.. [EFR1993] B. Efron and R. Tibshirani (1993). An introduction to the
+   bootstrap. Chapman & Hall/CRC.
+.. [HAR1999] G. R. Harik and F. G. Lobo (1999). A parameter-less genetic
    algorithm. In *Proceedings of the Genetic and Evolutionary Computation
-   Conference (GECCO)*, volume 1, pages 258-265. ACM, 1999.
-.. [HOO1998] H. H. Hoos and T. Stützle. Evaluating Las Vegas
+   Conference (GECCO)*, volume 1, pages 258-265. ACM.
+.. [HOO1998] H. H. Hoos and T. Stützle (1998). Evaluating Las Vegas
    algorithms: pitfalls and remedies. In *Proceedings of the Fourteenth 
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
-   pages 238-245, 1998.
-.. .. [PRI1997] K. Price. Differential evolution vs. the functions of
-   the second ICEO. In Proceedings of the IEEE International Congress on
-   Evolutionary Computation, pages 153--157, 1997.
+   pages 238-245.
    
-.. [STE1946] S.S. Stevens. On the theory of scales of measurement. *Science* 103(2684), pp. 677-680, 1946.
+.. [MOR2009] J. Moré and S. Wild (2009). Benchmarking Derivative-Free Optimization Algorithms. *SIAM J. Optimization*, 20(1):172-191.
+   
+.. [MOR2002] D. Dolan and J. J. Moré (2002). Benchmarking Optimization Software with Performance Profiles. *Mathematical Programming*, 91:201-213.
+   
+.. .. [PRI1997] K. Price (1997). Differential evolution vs. the functions of
+   the second ICEO. In *Proceedings of the IEEE International Congress on
+   Evolutionary Computation*, pages 153--157.
+   
+.. [STE1946] S.S. Stevens (1946). On the theory of scales of measurement. *Science* 103(2684), pp. 677-680.
 
-.. [WHI1996] D. Whitley, S. Rana, J. Dzubera, K. E. Mathias. Evaluating evolutionary algorithms. *Artificial intelligence*, 85(1), 245-276, 1996.
+.. [WHI1996] D. Whitley, S. Rana, J. Dzubera, K. E. Mathias (1996). Evaluating evolutionary algorithms. *Artificial intelligence*, 85(1), 245-276.
 
 
 .. ############################## END Document #######################################
