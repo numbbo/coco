@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generates figure of the bootstrap distribution of ART.
+"""Generates figure of the bootstrap distribution of aRT.
     
 The main method in this module generates figures of Empirical
 Cumulative Distribution Functions of the bootstrap distribution of
-the Average Running Time (ART) divided by the dimension for many
+the Average Running Time (aRT) divided by the dimension for many
 algorithms.
 
 The outputs show the ECDFs of the running times of the simulated runs
@@ -31,7 +31,7 @@ function evaluations of unsuccessful runs divided by dimension.
     archivefile = tarfile.open(filename)
     archivefile.extractall()
     
-    # Empirical cumulative distribution function of bootstrapped ART figure
+    # Empirical cumulative distribution function of bootstrapped aRT figure
     ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
     figure()
     bb.compall.pprldmany.plot(ds) # must rather call main instead of plot?
@@ -533,7 +533,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
     generates the cumulative distribution function of the bootstrap
-    distribution of ART for algorithms on multiple functions for
+    distribution of aRT for algorithms on multiple functions for
     multiple targets altogether.
 
     :param dict dictAlg: dictionary of :py:class:`DataSetList` instances

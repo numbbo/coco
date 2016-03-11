@@ -36,7 +36,7 @@ def beautify(handles):
 
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-    plt.axvline(1, ls='-', color='k');  # symmetry line for ART1/ART0 = 1
+    plt.axvline(1, ls='-', color='k');  # symmetry line for aRT1/aRT0 = 1
     xlim = max(numpy.abs(numpy.log10(plt.xlim())))
     xlim = (min(0.1, 10.**(-xlim)), max(10., 10.**(xlim)))
     plt.axhline(0.5, ls=':', color='k', lw=2);  # symmetry line at y=0.5

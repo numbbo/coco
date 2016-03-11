@@ -107,8 +107,8 @@ def sp1(data, maxvalue=np.Inf, issuccessful=None):
 def sp(data, maxvalue=np.Inf, issuccessful=None, allowinf=True):
     """sp(data, issuccessful=None) computes the sum of the function
     evaluations over all runs divided by the number of success,
-    the so-called success performance which estimates the expected
-    runtime ART.
+    the so-called success performance which estimates the average
+    runtime aRT.
 
     Input:
       data -- array contains, e.g., number of function
@@ -173,8 +173,8 @@ def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=genericsettin
         idx_nan = np.isnan(evals)  # nan == did not reach ftarget
         return drawSP(evals[~idx_nan], data_set.maxevals[idx_nan], percentiles, samplesize)
     
-    The expected value of ``all_sampled_values_sorted`` is the expected 
-    runtime ART, as obtained by ``data_set.detERT([ftarget])[0]``. 
+    The expected value of ``all_sampled_values_sorted`` is the average 
+    runtime aRT, as obtained by ``data_set.detERT([ftarget])[0]``. 
     
     """
     try:
