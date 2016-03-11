@@ -737,8 +737,8 @@ def main(args):
     elif cmd == 'test-python2': test_python2()
     elif cmd == 'test-python3': test_python3()
     elif cmd == 'test-octave': test_octave()
-    elif cmd == 'test-postprocessing': 
-        test_postprocessing(True) if len(args) > 1 and args[1] == 'all' else test_postprocessing()
+    elif cmd == 'test-postprocessing': test_postprocessing()
+    elif cmd == 'test-postprocessing-all': test_postprocessing(True)
     elif cmd == 'leak-check': leak_check()
     elif cmd == 'install-preprocessing': install_preprocessing()
     elif cmd == 'run-preprocessing': run_preprocessing()
