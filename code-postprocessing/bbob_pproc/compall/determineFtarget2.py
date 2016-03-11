@@ -16,7 +16,7 @@ minimal_target_value = 1e-6   # must be given, also final value is only appended
 display_all_final_targets = False  # ie. repeat minimal_target, should be False for overall plots, maybe True for single RT-target plots of small groups of functions (to be tested)
 
 rank_of_reference_algorithm = 1  # (2nd) best algorithm needs more than xy fevals
-use_single_runs_as_reference = False  # was True until July 17th, now ERT is used again 
+use_single_runs_as_reference = False  # was True until July 17th, now ART is used again 
 
 last_target_value_replacement = None  # 1e-5 + 0e-9       # replace with min of given and actual value, None for do nothing
 final_target_value_append_threshold = 1e-5 # append another value if last value is above threshold, None for do nothing
@@ -49,10 +49,10 @@ class FunTarget:
                      within D, 10D, 100D,... evaluations for 
                      given dimension, function (array)
         medianFtarget - target function values that could never be 
-                     achieved within an ERT of D,10D, 100D,... for 
+                     achieved within an ART of D,10D, 100D,... for 
                      given dimension, function (array)
         ert - (E)RT/DIM corresponding to minFtarget (array)
-        ertbest - best ERT for a given target function value (array)
+        ertbest - best ART for a given target function value (array)
     """
 
     def detertbest(self, dataset):
@@ -114,7 +114,7 @@ class FunTarget:
                 continue
             ilast = i 
 
-            # collect smallest function value reached within ERT <= D * 10**i for all algorithms
+            # collect smallest function value reached within ART <= D * 10**i for all algorithms
             targetValues = []
             for alg in dataset:
                 targetValues.append(alg.target[sum(alg.ert <= dim * 10**i) - 1])
@@ -235,7 +235,7 @@ def writeTable(data,dim,suffix=None, whichvalue = 'min'):
     
     # define header and format of columns
     header = ['$evals/D$'] 
-    header = ['ERT$_\mathrm{best}/D$']   
+    header = ['ART$_\mathrm{best}/D$']   
     format = ['%1e']
     for id in range(0,len(data)):
         header.append('$f_{' + str(data[id]['funcId']) + '}$')

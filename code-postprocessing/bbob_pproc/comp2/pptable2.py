@@ -26,19 +26,19 @@ targetf = 1e-8 # value for determining the success ratio
 samplesize = genericsettings.simulated_runlength_bootstrap_sample_size 
 
 table_caption_one = r"""%
-    Expected running time (ERT in number of function 
-    evaluations) divided by the respective best ERT measured during BBOB-2009 in
+    Average running time (ART in number of function 
+    evaluations) divided by the respective best ART measured during BBOB-2009 in
     dimensions 5 (left) and 20 (right).
-    The ERT and in braces, as dispersion measure, the half difference between 90 and 
+    The ART and in braces, as dispersion measure, the half difference between 90 and 
     10\%-tile of bootstrapped run lengths appear for each algorithm and 
     """
 table_caption_two1 = r"""%
-    target, the corresponding best ERT
+    target, the corresponding best ART
     in the first row. The different target \Df-values are shown in the top row. 
     \#succ is the number of trials that reached the (final) target $\fopt + 10^{-8}$.
     """
 table_caption_two2 = r"""%
-    run-length based target, the corresponding best ERT
+    run-length based target, the corresponding best ART
     (preceded by the target \Df-value in \textit{italics}) in the first row. 
     \#succ is the number of trials that reached the target value of the last column.
     """
@@ -326,7 +326,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
                         else:
                             z, p = testresbestvs1[i]
     
-                        #The conditions are now that ERT < ERT_best
+                        #The conditions are now that ART < ART_best
                         if ((nbtests * p) < 0.05 and dati - bestalgdata[i] < 0.
                             and z < 0.):
                             nbstars = -numpy.ceil(numpy.log10(nbtests * p))

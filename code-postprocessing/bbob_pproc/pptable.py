@@ -3,9 +3,9 @@
 
 """Module for generating tables used by rungeneric1.py.
 
-The generated tables give the ERT and in brackets the 10th to 90th
+The generated tables give the ART and in brackets the 10th to 90th
 percentile range divided by two of 100 simulated runs divided by the
-best ERT measured during BBOB-2009 (given in the respective first row)
+best ART measured during BBOB-2009 (given in the respective first row)
 for different target precisions for different functions. If no algorithm
 in BBOB-2009 reached the target precision, the absolute values are
 given.
@@ -43,7 +43,7 @@ samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
 #     tspec = {'col%d' % i: {'what': 'fname', 'header': r'$\Delta f$', 'format': None}}
 #     for t in targets:
 #         i =  i + 1
-#         tspec.update({'col%d' % i: {'what': 'ERT ratio for df=%e' % t,
+#         tspec.update({'col%d' % i: {'what': 'ART ratio for df=%e' % t,
 #                                     'header': r'\multicolumn{2}{@{}c@{}}{1e%+d}' % (int(np.log10(t)),
 #                                     'format': writeFEval}})
 #     i = i + 1
@@ -55,9 +55,9 @@ old_legend = r"""
  \newcommand{\tablecaption}[1]{Shown are, for functions #1 and for a
  given target difference to the optimal function value \Df: the number
  of successful trials (\textbf{$\#$}); the expected running time to
- surpass $\fopt+\Df$ (\ERT, see Figure~\ref{fig:ERTgraphs}); the
+ surpass $\fopt+\Df$ (\ART, see Figure~\ref{fig:ERTgraphs}); the
  \textbf{10\%}-tile and \textbf{90\%}-tile of the bootstrap
- distribution of \ERT; the average number of function evaluations in
+ distribution of \ART; the average number of function evaluations in
  successful trials or, if none was successful, as last entry the median
  number of function evaluations to reach the best function value
  ($\text{RT}_\text{succ}$).  If $\fopt+\Df$ was never reached, figures in
@@ -69,11 +69,11 @@ old_legend = r"""
 """
 
 table_caption_one = r"""%
-    Expected running time (ERT in number of function 
-    evaluations) divided by the best ERT measured during BBOB-2009. The ERT 
+    Expected running time (ART in number of function 
+    evaluations) divided by the best ART measured during BBOB-2009. The ART 
     and in braces, as dispersion measure, the half difference between 90 and 
     10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
-    the best ERT
+    the best ART
     """
 table_caption_two1 = r"""%
     in the first. The different target \Df-values are shown in the top row. 
@@ -106,8 +106,8 @@ def set_table_caption(setting):
         table_caption = table_caption_one + table_caption_two2 + table_caption_rest
     elif setting == 'biobjective':
         table_caption = r"""%
-                Expected running time (ERT in number of function 
-                evaluations) to reach given targets. For each function, the ERT 
+                Expected running time (ART in number of function 
+                evaluations) to reach given targets. For each function, the ART 
                 and in braces, as dispersion measure, the half difference between 90 and 
                 10\%-tile of bootstrapped run lengths is shown for the different target
                 \Df-values as shown in the top row. 
@@ -138,8 +138,8 @@ def _treat(ds):
     dtype = []
     bestdtype = []
     for i, t in enumerate(targets):
-        dtype.append((('ERT ratio (iq 10-90), df=%e' % t, 'df=%e' % t), '2f')) 
-        bestdtype.append((('best ERT df=%e' % t, 'df=%e' % t), 'f'))
+        dtype.append((('ART ratio (iq 10-90), df=%e' % t, 'df=%e' % t), '2f')) 
+        bestdtype.append((('best ART df=%e' % t, 'df=%e' % t), 'f'))
     dtype.append((('nb success final target=%e' % t, 'finaltarget=%e' % t), 'i8'))
     dtype.append(('nbruns', 'i8'))
     bestdtype.append((('nb success finaltarget=%e' % t, 'finaltarget=%e' % t), 'i8'))
@@ -173,7 +173,7 @@ def _table(data):
     return res
 
 def main2(dsList, dimsOfInterest, outputdir='.', info='', verbose=True):
-    """Generate a table of ratio ERT/ERTbest vs target precision.
+    """Generate a table of ratio ART/ARTbest vs target precision.
     
     1 table per dimension will be generated.
 
@@ -206,7 +206,7 @@ def main2(dsList, dimsOfInterest, outputdir='.', info='', verbose=True):
             print "Table written in %s" % outputfile
 
 def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
-    """Generate a table of ratio ERT/ERTbest vs target precision.
+    """Generate a table of ratio ART/ARTbest vs target precision.
     
     1 table per dimension will be generated.
 
@@ -365,7 +365,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                         evals = np.array(sorted(evals))[0:min(len(evals), len(bestevals))]
                         bestevals = np.array(sorted(bestevals))[0:min(len(evals), len(bestevals))]
     
-                    #The conditions for significance are now that ERT < ERT_best and
+                    #The conditions for significance are now that ART < ART_best and
                     # all(sorted(FEvals_best) > sorted(FEvals_current)).
                     if ((nbtests * p) < 0.05 and ert - bestalgdata[i] < 0.
                         and z < 0.
