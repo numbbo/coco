@@ -53,8 +53,6 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
   const long rseed_3 = (long) (3 + 10000 * instance);
   const long rseed_17 = (long) (17 + 10000 * instance);
 
-  /*TODO: finish implementing the large scale test-suite functions.
-          current list: 1-22*/
   if (function == 1) {
     problem = f_sphere_bbob_problem_allocate(function, dimension, instance, rseed,
                                              problem_id_template, problem_name_template);
