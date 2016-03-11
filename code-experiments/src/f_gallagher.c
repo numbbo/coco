@@ -300,8 +300,6 @@ static void f_gallagher_versatile_data_free(coco_problem_t *problem) {
 }
 
 
-
-
 /**
  * @brief Implements the gallagher function subproblems without connections to any COCO structures.
  * Wassim: core to differentiate it from raw for now
