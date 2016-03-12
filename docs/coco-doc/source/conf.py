@@ -23,14 +23,20 @@ import shlex
 
 # -- General configuration ------------------------------------------------
 authors = "The BBOBies"
-abstract = """COCO is a platform for Comparing Continuous Optimizers in a black-box
-  setting. It aims at automatizing the repetitive and tedious task of
+# WHEN CHANGING THIS CHANGE ALSO the abstract in index.rst accordingly
+abstract = """
+  COCO is a platform for Comparing Continuous Optimizers in a black-box
+  setting. 
+  It aims at automatizing the tedious and repetitive task of
   benchmarking numerical optimization algorithms to the greatest possible
-  extent. We present the rationals behind the development of the platform
-  as a general proposition for a guideline for better benchmarking. 
-  We detail underlying fundamental concepts of COCO such as its definition of
+  extent. 
+  We present the rationals behind the development of the platform
+  as a general proposition for a guideline towards better benchmarking. 
+  We detail underlying fundamental concepts of 
+  COCO such as its definition of
   a problem, the idea of instances, the relevance of target values and runtime
-  as central performance measure, Finally, we  give an overview of the basic
+  as central performance measure. 
+  Finally, we  give a quick overview of the basic
   code structure and the available test suites.
 """
 
@@ -265,25 +271,25 @@ latex_elements = {
   \pagestyle{plain}
   \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
   \newcommand{\ignore}[1]{}
-  \newcommand{\abstracttextinconfpy}{""" + abstract + r"""}
+  \newcommand{\abstracttext}{""" + abstract + r"""}
 
 %%%%%% TOGGLE the renewcommand to update toc / show abstract first %%%%%%
   \newcommand{\generatetoc}{\boolean{true}}  % (re-)generate toc
-%  \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
+  \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
 
   % abstract is latex-only in rst
-  \newcommand{\abstractinrst}{\begin{abstract}\abstracttextinconfpy\end{abstract}} 
+  \newcommand{\abstractinrst}{\begin{abstract}\abstracttext\end{abstract}} 
   % abstract via redefinition of \tableofcontents
   \ifthenelse{\generatetoc}{% do nothing here, \tableofcontents does the work
     }{% redefine \tableofcontents such that the abstract can go first:
     \renewcommand{\abstractinrst}{}
     \renewcommand{\tableofcontents}{
-      \begin{abstract}\abstracttextinconfpy\end{abstract}
+      \begin{abstract}\abstracttext\end{abstract}
       \par\par
       \section*{Contents}
       \begin{minipage}{\textwidth}\setlength{\baselineskip}{3ex}
         \makeatletter % changes the catcode of @ to 11  % see http://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
-        \input{coco-experimental-setup.toc}
+        \input{coco-doc.toc}
         \makeatother % changes the catcode of @ back to 12
       \end{minipage}
     }

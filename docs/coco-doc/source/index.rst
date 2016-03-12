@@ -20,19 +20,29 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
      is defined in `abstract` of conf.py. To flip abstract and 
      table of contents, or update the table of contents, toggle 
      the \generatetoc command in the 'preamble' accordingly. 
+
 .. raw:: latex
 
     \abstractinrst
     \newpage 
 
-COCO is a platform for Comparing Continuous Optimizers in a black-box
-setting. It aims at automatizing the tedious and repetitive task of
-benchmarking numerical optimization algorithms to the greatest possible
-extent. We present the rationals behind the development of the platform
-and its basic structure. We furthermore detail underlying fundamental 
-concepts of COCO such as its definition of a problem, the idea of
-instances, or performance measures and give an overview of the
-available test suites.
+.. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY
+
+.. raw:: html
+
+  COCO is a platform for Comparing Continuous Optimizers in a black-box
+  setting. 
+  It aims at automatizing the tedious and repetitive task of
+  benchmarking numerical optimization algorithms to the greatest possible
+  extent. 
+  We present the rationals behind the development of the platform
+  as a general proposition for a guideline towards better benchmarking. 
+  We detail underlying fundamental concepts of 
+  COCO such as its definition of
+  a problem, the idea of instances, the relevance of target values and runtime
+  as central performance measure. 
+  Finally, we  give a quick overview of the basic
+  code structure and the available test suites.
   
   
 .. _2009: http://www.sigevo.org/gecco-2009/workshops.html#bbob
@@ -208,13 +218,13 @@ benchmarking far over hundred algorithms by many researchers.
    
 .. [#] After the installation which can be as simple as 
 
-  .. code:: bash
+.. code:: bash
 
-    $ git clone https://github.com/numbbo/coco.git  # get coco
-    $ cd coco
-    $ python do.py run-python  # install Python experimental module cocoex
-    $ python do.py install-postprocessing  # install post-processing :-)
-    $ cp code-experiments/build/python/example_experiment.py ./my_experiment_runner.py
+  $ git clone https://github.com/numbbo/coco.git  # get coco
+  $ cd coco
+  $ python do.py run-python  # install Python experimental module cocoex
+  $ python do.py install-postprocessing  # install post-processing :-)
+  $ cp code-experiments/build/python/example_experiment.py ./my_experiment_runner.py
 
 ..    $ python my_experiment_runner.py  # run the "default" experiment
     $ python -m bbob_pproc exdata/...
@@ -244,14 +254,14 @@ the following defining features.
 
 #. Benchmark functions are 
 
-    #. used as black boxes for the algorithm, however they 
-       are explicitly known to the scientific community. 
-    #. designed to be comprehensible, to allow a meaningful 
-       interpretation of performance results.
-    #. difficult to "defeat", that is, they do not 
-       have artificial regularities that can be (intentionally or unintentionally) 
-       exploited by an algorithm. [#]_
-    #. scalable with the input dimension [WHI1996]_.
+  #. used as black boxes for the algorithm, however they 
+     are explicitly known to the scientific community. 
+  #. designed to be comprehensible, to allow a meaningful 
+     interpretation of performance results.
+  #. difficult to "defeat", that is, they do not 
+     have artificial regularities that can be (intentionally or unintentionally) 
+     exploited by an algorithm. [#]_
+  #. scalable with the input dimension [WHI1996]_.
 
 #. There is no predefined budget (number of |f|-evaluations) for running an
    experiment, the experimental procedure is *budget-free* [BBO2016ex]_.
@@ -261,12 +271,12 @@ the following defining features.
    several ways --- namely **runtime**, *measured in 
    number of* |f|-*evaluations* [BBO2016perf]_. Runtime has the advantage to 
 
-     - be independent of the computational platform, language, compiler, coding 
-       styles, and other specific experimental conditions [#]_
-     - be easily interpretable without expert domain knowledge
-     - be quantitative on the ratio scale [STE1946]_ [#]_
-     - assume a wide range of values 
-     - aggregate over a collection of values in a very meaningful way
+   - be independent of the computational platform, language, compiler, coding 
+     styles, and other specific experimental conditions [#]_
+   - be easily interpretable without expert domain knowledge
+   - be quantitative on the ratio scale [STE1946]_ [#]_
+   - assume a wide range of values 
+   - aggregate over a collection of values in a very meaningful way
      
    A *missing* runtime value is considered as possible outcome (see below).
     
