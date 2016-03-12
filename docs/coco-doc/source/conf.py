@@ -168,6 +168,7 @@ html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
 # further.  For a list of options available for each theme, see the
 # documentation.
 # html_theme_options = {'font_family': 'goudy old style'}
+# sticky_navigation
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
