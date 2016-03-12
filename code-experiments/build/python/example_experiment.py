@@ -196,7 +196,7 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
         if solver.__name__ in ("random_search", ):
             solver(fun, fun.lower_bounds, fun.upper_bounds,
                    remaining_evals)
-        elif solver.__name__ == 'fmin' and solver.__globals__['__name__'] == 'cma':
+        elif solver.__name__ == 'fmin' and solver.__globals__['__name__'] in ['cma', 'cma.evolution_strategy', 'cma.es']:
             if x0[0] == center[0]:
                 sigma0 = 0.02
                 restarts_ = 0
