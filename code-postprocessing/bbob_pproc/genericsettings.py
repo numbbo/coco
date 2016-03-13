@@ -18,8 +18,6 @@ if 1 < 3 and test:
     np.seterr(all='raise')
 np.seterr(under='ignore')  # ignore underflow
 
-#global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest
-#set_trace()
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000 # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
@@ -38,16 +36,12 @@ xlimit_expensive = 1e3  # used in
 tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7) # used as input for pptables.main in rungenericmany 
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
 
-tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
+#tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
 
 rldDimsOfInterest = (5, 20)
-figValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # this is a bad name that should improve, which fig, what vals???
-# figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8) #in/outcomment if desired
-##Put backward to have the legend in the same order as the lines.
 
-simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max((0, in_a_hurry)))
-simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a_hurry)))
+simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max((0, in_a_hurry)))  # for tables and plots
 
 # single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default in pprldistr.plot method, on graph for each
 # single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each, seems not in use
@@ -212,6 +206,7 @@ many_algorithm_file_name = 'templateBBOBmany'
 index_html_file_name = 'ppdata'
 ppconv_file_name = 'ppconv'
 pprldmany_file_name = 'pprldmany'
+pprldmany_group_file_name = 'pprldmany_gr'
 
 latex_commands_for_html = 'latex_commands_for_html'    
 
@@ -297,11 +292,15 @@ class GECCOBBOBTestbed(Testbed):
         # not a testbed setting
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
+        self.name = 'bbob'
         self.short_names = {}
+        self.hardesttargetlatex = '10^{-8}'
         self.ppfigs_ftarget = 1e-8
         self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # possibly changed in config
         self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
-        self.pprldmany_target_values = targetValues(10**np.arange(2, -8, -0.2)) # possibly changed in config
+        self.pprldmany_target_values = targetValues(10**np.arange(2, -8.2, -0.2)) # possibly changed in config
+        self.pprldmany_target_range_latex = '$10^{[-8..2]}$'
+                
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
         self.ppfvdistr_min_target = 1e-8
         self.functions_with_legend = (1, 24, 101, 130)
@@ -327,12 +326,15 @@ class GECCOBiobjBBOBTestbed(Testbed):
         # not a testbed setting
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
+        self.name = 'bbob-biobj'
         self.short_names = {}
-        self.ppfigs_ftarget = 1e-4
-        self.ppfigdim_target_values = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
-        self.pprldistr_target_values = targetValues((1e-1, 1e-3, 1e-5)) # possibly changed in config
-        self.pprldmany_target_values = targetValues(10**np.arange(0, -5, -0.2)) # possibly changed in config
-        self.rldValsOfInterest = (1e-1, 1e-3, 1e-5) # possibly changed in config
+        self.hardesttargetlatex = '10^{-5}'
+        self.ppfigs_ftarget = 1e-5
+        self.ppfigdim_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config
+        self.pprldistr_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
+        self.pprldmany_target_values = targetValues(10**np.arange(0, -5.1, -0.1)) # possibly changed in config
+        self.pprldmany_target_range_latex = '$10^{[-5..0]}$'
+        self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5) # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)
 

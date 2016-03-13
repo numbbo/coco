@@ -27,7 +27,8 @@ from cocoutils import git_version, git_revision
 
 core_files = ['code-experiments/src/coco_random.c',
               'code-experiments/src/coco_suite.c',
-              'code-experiments/src/coco_observer.c'
+              'code-experiments/src/coco_observer.c',
+              'code-experiments/src/coco_archive.c'
               ]
 
 ################################################################################
@@ -35,7 +36,7 @@ core_files = ['code-experiments/src/coco_random.c',
 def build_c():
     """ Builds the C source code """
     global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-experiments/build/c/coco.c', release)
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'], 'code-experiments/build/c/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/c/coco.h')
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/examples/bbob2009-c-cmaes/coco.c')
     copy_file('code-experiments/build/c/coco.h', 'code-experiments/examples/bbob2009-c-cmaes/coco.h')
@@ -557,14 +558,28 @@ def test_java():
 
 ################################################################################
 ## Post processing
-def test_postprocessing():
+def test_postprocessing(allTests=False):
     install_postprocessing()
-    python('code-postprocessing/bbob_pproc', ['__main__.py'])
+    if allTests:
+		python('code-postprocessing/bbob_pproc', ['__main__.py', 'all'])
+    else:
+		python('code-postprocessing/bbob_pproc', ['__main__.py'])
     # python('code-postprocessing', ['-m', 'bbob_pproc'])
     if 11 < 3:  # provisorial test fo biobj data
         run_c()
         python('code-experiments/build/c', ['-m', 'bbob_pproc',
                                             'RS_on_bbob-biobj'])
+
+################################################################################
+## Pre-processing
+def install_preprocessing():
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],  'code-preprocessing/archive-update/interface/coco.c', release)
+    copy_file('code-experiments/src/coco.h', 'code-preprocessing/archive-update/interface/coco.h')
+    python('code-preprocessing/archive-update', ['setup.py', 'install', '--user'])
+    
+def run_preprocessing():
+    install_preprocessing()
+    python('code-preprocessing/archive-update', ['archive_update.py'])
 
 ################################################################################
 ## Global
@@ -640,47 +655,50 @@ and you are all set.
 
 Available commands for users:
 
-  build-c              - Build C module
-  build-java           - Build Java module
-  build-matlab         - Build Matlab module
-  build-matlab-sms     - Build SMS-EMOA example in Matlab
-  build-octave         - Build Matlab module in Octave
-  build-python         - Build Python modules
-  build-python2        - Build Python 2 modules
-  build-python3        - Build Python 3 modules
-  install-postprocessing - Install postprocessing (user-locally)
+  build-c                 - Build C module
+  build-java              - Build Java module
+  build-matlab            - Build Matlab module
+  build-matlab-sms        - Build SMS-EMOA example in Matlab
+  build-octave            - Build Matlab module in Octave
+  build-python            - Build Python modules
+  build-python2           - Build Python 2 modules
+  build-python3           - Build Python 3 modules
+  install-postprocessing  - Install postprocessing (user-locally)
 
-  run-c                - Build and run example experiment in C
-  run-java             - Build and run example experiment in Java
-  run-matlab           - Build and run example experiment in MATLAB
-  run-matlab-sms       - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
-  run-octave           - Build and run example experiment in Octave
-  run-python           - Build and install COCO module and run tests and the
-                         example experiment in Python, "no-tests" omits tests
+  run-c                   - Build and run example experiment in C
+  run-java                - Build and run example experiment in Java
+  run-matlab              - Build and run example experiment in MATLAB
+  run-matlab-sms          - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
+  run-octave              - Build and run example experiment in Octave
+  run-python              - Build and install COCO module and run tests and the
+                            example experiment in Python, "no-tests" omits tests
 
 Available commands for developers:
 
-  build                - Build C, Java and Python modules
-  run                  - Run example experiments in C, Java and Python
-  silent cmd ...       - Calls "do.py cmd ..." and remains silent if no error occurs
-  test                 - Test C, Java and Python modules
+  build                   - Build C, Java and Python modules
+  run                     - Run example experiments in C, Java and Python
+  silent cmd ...          - Calls "do.py cmd ..." and remains silent if no error occurs
+  test                    - Test C, Java and Python modules
 
-  run-sandbox-python   - Run a Python script with installed COCO module
-                         Takes a single argument (name of Python script file)
+  run-sandbox-python      - Run a Python script with installed COCO module
+                            Takes a single argument (name of Python script file)
 
-  test-c               - Build and run unit tests, integration tests 
-                         and an example experiment test in C 
-  test-c-unit          - Build and run unit tests in C
-  test-c-integration   - Build and run integration tests in C
-  test-c-example       - Build and run an example experiment test in C 
-  test-java            - Build and run a test in Java
-  test-python          - Build and run minimal test of Python module
-  test-python2         - Build and run minimal test of Python 2 module
-  test-python3         - Build and run minimal test of Python 3 module
-  test-octave          - Build and run example experiment in Octave
-  test-postprocessing  - Runs post-processing tests.
-  leak-check           - Check for memory leaks in C
-
+  test-c                  - Build and run unit tests, integration tests 
+                            and an example experiment test in C 
+  test-c-unit             - Build and run unit tests in C
+  test-c-integration      - Build and run integration tests in C
+  test-c-example          - Build and run an example experiment test in C 
+  test-java               - Build and run a test in Java
+  test-python             - Build and run minimal test of Python module
+  test-python2            - Build and run minimal test of Python 2 module
+  test-python3            - Build and run minimal test of Python 3 module
+  test-octave             - Build and run example experiment in Octave
+  test-postprocessing     - Runs some of the post-processing tests.
+  test-postprocessing-all - Runs all of the post-processing tests.
+  leak-check              - Check for memory leaks in C
+  
+  install-preprocessing   - Install preprocessing (user-locally)
+  run-preprocessing       - Run preprocessing (update archives)
 
 To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
@@ -721,7 +739,10 @@ def main(args):
     elif cmd == 'test-python3': test_python3()
     elif cmd == 'test-octave': test_octave()
     elif cmd == 'test-postprocessing': test_postprocessing()
+    elif cmd == 'test-postprocessing-all': test_postprocessing(True)
     elif cmd == 'leak-check': leak_check()
+    elif cmd == 'install-preprocessing': install_preprocessing()
+    elif cmd == 'run-preprocessing': run_preprocessing()
     else: help()
 
 if __name__ == '__main__':

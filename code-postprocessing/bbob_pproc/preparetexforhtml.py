@@ -34,7 +34,7 @@ header = """
 
 % pre-defined commands
 \\newcommand{\\DIM}{\ensuremath{\mathrm{DIM}}}
-\\newcommand{\\ERT}{\ensuremath{\mathrm{ERT}}}
+\\newcommand{\\aRT}{\ensuremath{\mathrm{aRT}}}
 \\newcommand{\\FEvals}{\ensuremath{\mathrm{FEvals}}}
 \\newcommand{\\nruns}{\ensuremath{\mathrm{Nruns}}}
 \\newcommand{\\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}

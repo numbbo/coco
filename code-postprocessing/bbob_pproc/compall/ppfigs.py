@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Creates ERTs and convergence figures for multiple algorithms."""
+"""Creates aRTs and convergence figures for multiple algorithms."""
 from __future__ import absolute_import
 import os
 import matplotlib.pyplot as plt
@@ -20,14 +20,14 @@ from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
 
 show_significance = 0.01  # for zero nothing is shown
-scaling_figure_caption_start_fixed = (r"""Expected running time (\ERT\ in number of $f$-evaluations 
+scaling_figure_caption_start_fixed = (r"""Average running time (\aRT\ in number of $f$-evaluations 
                 as $\log_{10}$ value), divided by dimension for target function value $BBOBPPFIGSFTARGET$ 
                 versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. """
                 )
-scaling_figure_caption_start_rlbased = (r"""Expected running time (\ERT\ in number of $f$-evaluations 
+scaling_figure_caption_start_rlbased = (r"""Average running time (\aRT\ in number of $f$-evaluations 
                 as $\log_{10}$ value) divided by dimension versus dimension. The target function value 
                 is chosen such that the REFERENCE_ALGORITHM artificial algorithm just failed to achieve 
-                an \ERT\ of $BBOBPPFIGSFTARGET\times\DIM$. """
+                an \aRT\ of $BBOBPPFIGSFTARGET\times\DIM$. """
                 )
 scaling_figure_caption_end = (
                 r"Different symbols " +
@@ -38,29 +38,6 @@ scaling_figure_caption_end = (
                  r"with $p<0.01$ and Bonferroni correction number of dimensions (six).  ") 
                          if show_significance else ''
                 )
-
-ecdfs_figure_caption_standard = (
-                r"Bootstrapped empirical cumulative distribution of the number " +
-                r"of objective function evaluations divided by dimension " +
-                r"(FEvals/DIM) for 50 targets in $10^{[-8..2]}$ for all "+
-                r"functions and subgroups in #1-D. The ``best 2009'' line "+
-                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
-                r"for each single target."
-                )
-
-ecdfs_figure_caption_rlbased = (
-                r"Bootstrapped empirical cumulative distribution of the number " +
-                r"of objective function evaluations divided by dimension " +
-                r"(FEvals/DIM) for all functions and subgroups in #1-D." +
-                r" The targets are chosen from $10^{[-8..2]}$ " +
-                r"such that the REFERENCE_ALGORITHM artificial algorithm just " +
-                r"not reached them within a given budget of $k$ $\times$ DIM, " +
-                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. " +
-                r"The ``best 2009'' line " +
-                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
-                r"for each selected target."
-                )
-
 
 styles = genericsettings.line_styles
 def fix_styles(number, styles=styles):
@@ -93,6 +70,33 @@ def scaling_figure_caption(target):
 
 def ecdfs_figure_caption(target):
     assert len(target) == 1
+
+    best2009text = (
+                r"The ``best 2009'' line " +
+                r"corresponds to the best \aRT\ observed during BBOB 2009 " +
+                r"for each selected target."
+                )
+    ecdfs_figure_caption_standard = (
+                r"Bootstrapped empirical cumulative distribution of the number " +
+                r"of objective function evaluations divided by dimension " +
+                r"(FEvals/DIM) for " +
+                str(len(genericsettings.current_testbed.pprldmany_target_range_latex)) +
+                r" targets in " + 
+                str(genericsettings.current_testbed.pprldmany_target_range_latex) +
+                r" for all functions and subgroups in #1-D. " + ( best2009text
+                if genericsettings.current_testbed.name != 'bbob-biobj' else "")
+                )
+    ecdfs_figure_caption_rlbased = (
+                r"Bootstrapped empirical cumulative distribution of the number " +
+                r"of objective function evaluations divided by dimension " +
+                r"(FEvals/DIM) for all functions and subgroups in #1-D." +
+                r" The targets are chosen from " +
+                genericsettings.current_testbed.pprldmany_target_range_latex +
+                r"such that the REFERENCE_ALGORITHM artificial algorithm just " +
+                r"not reached them within a given budget of $k$ $\times$ DIM, " +
+                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. " + best2009text
+                )    
+    
     if isinstance(target, pproc.RunlengthBasedTargetValues):
         s = ecdfs_figure_caption_rlbased.replace('REFERENCE_ALGORITHM', 
                                                          target.reference_algorithm)
@@ -287,7 +291,7 @@ def beautify(legend=False, rightlegend=False):
     axisHandle.set_yticklabels(tmp2)
 
     if legend:
-        plt.legend(loc=0, numpoints=1)
+        toolsdivers.legend(loc=0, numpoints=1)
 
 def generateData(dataSet, target):
     """Returns an array of results to be plotted.
@@ -313,7 +317,7 @@ def generateData(dataSet, target):
     return res
 
 def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, outputdir='ppdata', verbose=True):
-    """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
+    """From a DataSetList, returns figures showing the scaling: aRT/dim vs dim.
     
     One function and one target per figure.
     
@@ -526,7 +530,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
             plotLegend(handles)
         else:
             if f in (1, 24, 101, 130):
-                plt.legend()
+                toolsdivers.legend()
 
         saveFigure(filename, figFormat=genericsettings.getFigFormats(), verbose=verbose)
 

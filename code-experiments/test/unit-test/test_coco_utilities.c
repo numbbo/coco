@@ -370,6 +370,42 @@ static void test_coco_string_parse_ranges(void **state) {
   (void)state; /* unused */
 }
 
+/**
+ * Tests the function coco_option_keys.
+ */
+static void test_coco_option_keys(void **state) {
+
+  coco_option_keys_t *option_keys = NULL;
+
+  option_keys = coco_option_keys("key");
+  assert_true(option_keys->count == 1);
+  coco_free_memory(option_keys);
+
+  option_keys = coco_option_keys("key: ");
+  assert_true(option_keys->count == 1);
+  coco_free_memory(option_keys);
+
+  option_keys = coco_option_keys("key1 key2: ");
+  assert_true(option_keys->count == 1);
+  coco_free_memory(option_keys);
+
+  option_keys = coco_option_keys("key1: value1 key2");
+  /* In this case we would rather have detected two keys, but this should also trigger a warning,
+   * which is OK. */
+  assert_true(option_keys->count == 1);
+  coco_free_memory(option_keys);
+
+  option_keys = coco_option_keys("key1: value1 key2: value2");
+  assert_true(option_keys->count == 2);
+  coco_free_memory(option_keys);
+
+  option_keys = coco_option_keys("key: \"A multi-word value\"");
+  assert_true(option_keys->count == 1);
+  coco_free_memory(option_keys);
+
+  (void) state; /* unused */
+}
+
 static int test_all_coco_utilities(void) {
 
   const struct CMUnitTest tests[] =
@@ -378,6 +414,7 @@ static int test_all_coco_utilities(void) {
       cmocka_unit_test(test_coco_double_max_min),
       cmocka_unit_test(test_coco_double_round),
       cmocka_unit_test(test_coco_string_split),
+      cmocka_unit_test(test_coco_option_keys),
       cmocka_unit_test(test_coco_string_parse_ranges),
       cmocka_unit_test_setup_teardown(
           test_coco_create_remove_directory,

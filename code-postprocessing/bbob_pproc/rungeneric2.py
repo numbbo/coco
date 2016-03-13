@@ -107,7 +107,7 @@ def main(argv=None):
             output figures. SETTING can be either "grayscale", "color"
             or "black-white". The default setting is "color".
         --fig-only, --rld-only, --tab-only, --sca-only
-            these options can be used to output respectively the ERT
+            these options can be used to output respectively the aRT
             graphs figures, run length distribution figures or the
             comparison tables scatter plot figures only. Any combination
             of these options results in no output.
@@ -352,7 +352,7 @@ def main(argv=None):
             plt.rc('pdf', fonttype = 42)
             ppfig2.main(dsList0, dsList1, ppfig2_ftarget,
                         outputdir, genericsettings.verbose)
-            print "log ERT1/ERT0 vs target function values done."
+            print "log aRT1/aRT0 vs target function values done."
 
         plt.rc("axes", **inset.rcaxes)
         plt.rc("xtick", **inset.rctick)
@@ -370,7 +370,7 @@ def main(argv=None):
             dictDim0 = dsList0.dictByDim()
             dictDim1 = dsList1.dictByDim()
 
-            # ECDFs of ERT ratios
+            # ECDFs of aRT ratios
             for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
                 if dim in inset.rldDimsOfInterest:
                     # ECDF for all functions altogether
@@ -455,6 +455,7 @@ def main(argv=None):
                 # ECDFs for each function
                 pprldmany.all_single_functions(dictAlg, 
                                                dsList[0].isBiobjective(),
+                                               False,
                                                sortedAlgs,
                                                outputdir, 
                                                genericsettings.verbose,
