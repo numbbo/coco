@@ -624,15 +624,19 @@ __ https://www.github.com
 
 .. .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
-.. [HAN2010] N. Hansen, A. Auger, S. Finck, and R. Ros (2010), Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
+.. [HAN2010] N. Hansen, A. Auger, S. Finck, and R. Ros (2010), 
+  Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
 
-.. [HAN2010b] N. Hansen, A. Auger, R. Ros, S. Finck, and P. Posik (2010). Comparing Results of 31 Algorithms from the Black-Box Optimization Benchmarking BBOB-2009. Workshop Proceedings of the GECCO Genetic and Evolutionary Computation Conference 2010, ACM, pp. 1689-1696
+.. [HAN2010b] N. Hansen, A. Auger, R. Ros, S. Finck, and P. Posik (2010). 
+  Comparing Results of 31 Algorithms from the Black-Box Optimization Benchmarking BBOB-2009. Workshop Proceedings of the GECCO Genetic and Evolutionary Computation Conference 2010, ACM, pp. 1689-1696
 
-.. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, updated February 2010.
+.. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
+  `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, updated February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
 
-.. [HAN2009noi] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). `Real-Parameter Black-Box Optimization Benchmarking 2009: Noisy Functions Definitions`__. `Technical Report RR-6869`__, Inria, updated February 2010.
+.. [HAN2009noi] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
+  `Real-Parameter Black-Box Optimization Benchmarking 2009: Noisy Functions Definitions`__. `Technical Report RR-6869`__, Inria, updated February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00369466
 
@@ -661,17 +665,21 @@ __ https://www.github.com
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
    pages 238-245.
    
-.. [MOR2009] J. Moré and S. Wild (2009). Benchmarking Derivative-Free Optimization Algorithms. *SIAM J. Optimization*, 20(1):172-191.
+.. [MOR2009] J. Moré and S. Wild (2009). 
+  Benchmarking Derivative-Free Optimization Algorithms. *SIAM J. Optimization*, 20(1):172-191.
    
-.. [MOR2002] D. Dolan and J. J. Moré (2002). Benchmarking Optimization Software with Performance Profiles. *Mathematical Programming*, 91:201-213.
+.. [MOR2002] D. Dolan and J. J. Moré (2002). 
+  Benchmarking Optimization Software with Performance Profiles. *Mathematical Programming*, 91:201-213.
    
 .. .. [PRI1997] K. Price (1997). Differential evolution vs. the functions of
    the second ICEO. In *Proceedings of the IEEE International Congress on
    Evolutionary Computation*, pages 153--157.
    
-.. [STE1946] S.S. Stevens (1946). On the theory of scales of measurement. *Science* 103(2684), pp. 677-680.
+.. [STE1946] S.S. Stevens (1946). 
+  On the theory of scales of measurement. *Science* 103(2684), pp. 677-680.
 
-.. [WHI1996] D. Whitley, S. Rana, J. Dzubera, K. E. Mathias (1996). Evaluating evolutionary algorithms. *Artificial intelligence*, 85(1), 245-276.
+.. [WHI1996] D. Whitley, S. Rana, J. Dzubera, K. E. Mathias (1996). 
+  Evaluating evolutionary algorithms. *Artificial intelligence*, 85(1), 245-276.
 
 
 .. ############################## END Document #######################################
