@@ -25,7 +25,7 @@ import shlex
 authors = "The BBOBies"
 # WHEN CHANGING THIS CHANGE ALSO the abstract in index.rst accordingly
 abstract = """
-  COCO is a platform for Comparing Continuous Optimizers in a black-box
+  \COCO\ is a platform for Comparing Continuous Optimizers in a black-box
   setting. 
   It aims at automatizing the tedious and repetitive task of
   benchmarking numerical optimization algorithms to the greatest possible
@@ -33,7 +33,7 @@ abstract = """
   We present the rationals behind the development of the platform
   as a general proposition for a guideline towards better benchmarking. 
   We detail underlying fundamental concepts of 
-  COCO such as its definition of
+  \COCO\ such as its definition of
   a problem, the idea of instances, the relevance of target values and runtime
   as central performance measure. 
   Finally, we  give a quick overview of the basic
@@ -272,6 +272,7 @@ latex_elements = {
   \pagestyle{plain}
   \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
   \newcommand{\ignore}[1]{}
+  \newcommand{\COCO}{\href{https://githum.com/numbbo/coco}{COCO}}
   \newcommand{\abstracttext}{""" + abstract + r"""}
 
 %%%%%% TOGGLE the renewcommand to update toc / show abstract first %%%%%%

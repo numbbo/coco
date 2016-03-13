@@ -158,7 +158,7 @@ has been implemented within the COCO_ framework. [#]_
 
 The COCO_ framework provides the practical means for an automatized
 benchmarking procedure. Benchmarking an optimization algorithm, say,
-implemented in the function ``fmin`` in Python, on a benchmark ``suite`` becomes 
+implemented in the function ``fmin`` in Python, on a benchmark suite becomes 
 as simple as [#]_
 
 .. raw:: latex
@@ -174,7 +174,7 @@ as simple as [#]_
   suite = cocoex.Suite("bbob", "year: 2016", "")
   observer = cocoex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
     
-  for p in suite:
+  for p in suite:  # loop over all problems
       observer.observe(p)  # prepare logging of necessary data
       fmin(p, p.initial_solution)
         
@@ -205,14 +205,15 @@ The COCO_ framework provides currently
 
 The underlying philosophy of COCO_ is to provide everything which otherwise
 most experimenters needed to setup and implement themselves, if they wanted to
-benchmark an algorithm properly. The framework has been used successfully for
-benchmarking far over hundred algorithms by many researchers.  
+benchmark an algorithm properly. So far, the framework has been used successfully for
+benchmarking far over a hundred algorithms by many researchers.  
 
-.. [#] One problem is that we often get, besides *statistical* significance, no
-   indication of *how much* better an algorithm is. That is, benchmarking
-   results often give no indication of *semantic* significance or *relevance*.
-   The main output is often hundreds of tabulated numbers interpretable on an
-   ordinal scale [STE1946]_ only
+.. [#] One major flaw is that we often get, besides *statistical* significance, no
+   indication of *how much* better an algorithm is. 
+   That is, the results of benchmarking often provide no indication of 
+   *relevance*;
+   the main output often consists of hundreds of tabulated numbers
+   interpretable on an *ordinal scale* [STE1946]_ only. 
    
 .. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
    
@@ -253,15 +254,14 @@ the following defining features.
      https://gist.github.com/dupuy/1855764
 
 #. Benchmark functions are 
-
-  #. used as black boxes for the algorithm, however they 
-     are explicitly known to the scientific community. 
-  #. designed to be comprehensible, to allow a meaningful 
-     interpretation of performance results.
-  #. difficult to "defeat", that is, they do not 
-     have artificial regularities that can be (intentionally or unintentionally) 
-     exploited by an algorithm. [#]_
-  #. scalable with the input dimension [WHI1996]_.
+    #. used as black boxes for the algorithm, however they 
+       are explicitly known to the scientific community. 
+    #. designed to be comprehensible, to allow a meaningful 
+       interpretation of performance results.
+    #. difficult to "defeat", that is, they do not 
+       have artificial regularities that can be (intentionally or unintentionally) 
+       exploited by an algorithm. [#]_
+    #. scalable with the input dimension [WHI1996]_.
 
 #. There is no predefined budget (number of |f|-evaluations) for running an
    experiment, the experimental procedure is *budget-free* [BBO2016ex]_.
@@ -296,8 +296,8 @@ the following defining features.
        [BBO2016exp] includes however a timing experiment which records the
        internal computational effort of the algorithm in CPU or wall clock time. 
 
-.. [#] As opposed to ranking algorithm based on their solution quality achieved
-  after a given runtime.  
+.. [#] As opposed to a ranking of algorithm based on their solution quality
+       achieved after a given budget.  
 
 .. .. [#] Wikipedia__ gives a reasonable introduction to scale types.
 .. .. was 261754099
@@ -361,7 +361,7 @@ that is, for a given |m| we have
 Varying |n| or |j| leads to a variation of the same function
 |i| of a given suite. 
 By fixing |n| and |j| for function |fi|, we define an optimization **problem**
-:math:`(n, i, j)\equiv(f_i, n, j)` that can be presented to an optimization algorithm. Each problem receives again
+:math:`(n, i, j)\equiv(f_i, n, j)` that can be presented to the optimization algorithm. Each problem receives again
 an index in the suite, mapping the triple :math:`(n, i, j)` to a single
 number. 
 
@@ -377,7 +377,6 @@ a natural randomization for experiments [#]_ in order to
 
  - generate repetitions on a function and
  - average away irrelevant aspects of a function thereby providing
-
     - generality which alleviates the problem of overfitting, and
     - a fair setup which prevents intentional or unintentional exploitation of 
       irrelevant or artificial function properties. 
@@ -413,8 +412,11 @@ For a single run, when an algorithm reaches or surpasses the target value |t|
 on problem |p|, we say it has *solved the problem* |pt| --- it was successful. [#]_
 
 Now, the **runtime** is the evaluation count when the target value |t| was
-reached or surpassed for the first time. That is, runtime is the number of |f|-evaluations needed to 
-solve the problem |pt| (but see also Recommendations_ in [BBO2016ex]_). [#]_
+reached or surpassed for the first time. 
+That is, runtime is the number of |f|-evaluations needed to solve the problem
+|pt| (but see also Recommendations_ in [BBO2016ex]_). [#]_
+*Measured runtimes are the only way of how we assess the performance of an 
+algorithm.* [#]_
 
 .. Runtime can be formally written as |RT(pt)|. 
 
@@ -437,19 +439,23 @@ the expense of abandoning reasonable termination conditions. Instead,
 restarts should be done. 
 
 .. [#] Note the use of the term *problem* in two meanings: as the problem the
-  algorithm is benchmarked on, |p|, and as the problem, |pt|, an algorithm can
-  solve with a certain runtime, |RT(pt)|, or may fail to solve. Each problem
-  |p| gives raise to a collection of dependent problems |pt|. Viewed as random
-  variables, the events |RT(pt)| given |p| are not independent events for
-  different values of |t|. 
+    algorithm is benchmarked on, |p|, and as the problem, |pt|, an algorithm can
+    solve by hitting the target |t| with the runtime, |RT(pt)|, or may fail to solve. 
+    Each problem |p| gives raise to a collection of dependent problems |pt|. 
+    Viewed as random variables, the events |RT(pt)| given |p| are not
+    independent events for different values of |t|. 
   
-.. [#] Target values are directly linked to each problem, leaving the burden to 
-  properly define them with the designer of the benchmark suite. The alternative 
-  is to present final |f|- or indicator-values as 
-  results, leaving the (rather unsurmountable) burden to interpret these values to the 
-  reader. Fortunately, there is an automatized generic way to generate target
-  values from observed runtimes, the so-called run-length based target values
-  [BBO2016perf]_. 
+.. [#] Target values are directly linked to a problem, leaving the burden to 
+    properly define the targets with the designer of the benchmark suite. 
+    The alternative is to present final |f|- or indicator-values as results,
+    leaving the (rather unsurmountable) burden to interpret these values to the
+    reader. 
+    Fortunately, there is an automatized generic way to generate target values
+    from observed runtimes, the so-called run-length based target values
+    [BBO2016perf]_. 
+    
+.. [#] Observed success rates can (and should) be translated into lower bounds 
+    on runtimes on a subset of problems. 
 
 .. |k| replace:: :math:`k`
 .. |p| replace:: :math:`(f_i, n, j)`
@@ -520,33 +526,33 @@ We have several ways to aggregate the resulting runtimes.
 
  - Empirical cumulative distribution functions (|ECDFs|). In the domain of 
    optimization, |ECDFs| are also known as *data profiles* [MOR2009]_. We
-   prefer the simple |ECDFs| over the more innovative performance profiles
+   prefer the simple |ECDF| over the more innovative performance profiles
    [MOR2002]_ for two reasons.
-   |ECDFs| do not depend on other presented algorithms, that is, they are
-   entirely comparable across different publications.  |ECDFs| separate in a
+   |ECDFs| (i) do not depend on other presented algorithms, that is, they are
+   entirely comparable across different publications, and (ii) let us distinguish in a
    natural way easy problems from difficult problems for the considered
    algorithm. We usually display |ECDFs| on the log scale, which makes the area
    above the curve and the *difference area* between two curves a meaningful
-   conception [BBO2016perf]. 
+   conception [BBO2016perf]_. 
    
    .. object/concept/element/notion/aspect/component. 
  
  - Averaging, as an estimator of the expected runtime. The average runtime, that
    is the estimated expected runtime, is
    often plotted against dimension to indicate scaling with dimension. The 
-   arithmetic average
-   is only likely to be meaningful if the underlying distribution of the values
-   is similar. Otherwise, the average of log-runtimes, or geometric average, 
-   is more meaningful. 
+   *arithmetic* average
+   is only meaningful if the underlying distribution of the values
+   is similar. Otherwise, the average of log-runtimes, or *geometric* average, 
+   is useful. 
    
  - Restarts and simulated restarts, see Section :ref:`sec:Restarts`, do not 
    literally aggregate runtimes (which are literally defined only when |t| was
-   hit).  They aggregate, however, time data to supplement missing runtime
+   hit).  They aggregate, however, time data to eventually supplement missing runtime
    values, see also [BBO2016perf]_. 
 
 .. |ERT| replace:: ERT
 .. |ECDF| replace:: ECDF
-.. |ECDFs| replace:: ECDFs
+.. |ECDFs| replace:: ECDF
 
 General Code Structure
 ===============================================
