@@ -225,8 +225,9 @@ benchmarking far over a hundred algorithms by many researchers.
    That is, the results of benchmarking often provide no indication of 
    *relevance*;
    the main output often consists of hundreds of tabulated numbers
-   interpretable on an *ordinal scale* [STE1946]_ only. *Statistical significance*
-   is only a secondary, and by no means a sufficient condition for *relevance*. 
+   only interpretable on an *ordinal scale* [STE1946]_. Addressing a point of a
+   common confusion, *statistical significance* is only a secondary, and by no
+   means a *sufficient* condition for *relevance*. 
    
 .. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
    
@@ -242,6 +243,16 @@ benchmarking far over a hundred algorithms by many researchers.
 .. Anne: the difficult task of designing a good algorithm (only need a small fancy idea like 
 .. Anne: imitating the fly of a chicken), they still have the feeling they achieve a consequent work 
 .. Anne: because they focus on implementing those long tests and writing their data in the latex.
+
+.. Niko: I see your point, but I not sure I am ready to even mention that 
+  unnecessary work is not an achievement in itself. Secondly, at the moment
+  I don't want to push the design aspect, because I don't think heavily using an
+  entire COCO suite during the design process is the right way to go. This is
+  probably a point which should be made though. 
+
+.. technical hint @Anne: a comment is continued
+    on the next line by simple indentation, like in this comment. 
+  
 
 Why COCO_?
 ----------
