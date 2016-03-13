@@ -225,8 +225,8 @@ benchmarking far over a hundred algorithms by many researchers.
    That is, the results of benchmarking often provide no indication of 
    *relevance*;
    the main output often consists of hundreds of tabulated numbers
-   interpretable on an *ordinal scale* [STE1946]_ only. *Statistical* significance
-   is a necessary but not a sufficient condition for *relevance*. 
+   interpretable on an *ordinal scale* [STE1946]_ only. *Statistical significance*
+   is only a secondary, and by no means a sufficient condition for *relevance*. 
    
 .. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
    
