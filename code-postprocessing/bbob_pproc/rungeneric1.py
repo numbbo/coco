@@ -103,8 +103,8 @@ def main(argv=None):
             "black-white". The default setting is "color".
         --tab-only, --fig-only, --rld-only, --los-only
             these options can be used to output respectively the TeX
-            tables, convergence and ERTs graphs figures, run length
-            distribution figures, ERT loss ratio figures only. A
+            tables, convergence and aRTs graphs figures, run length
+            distribution figures, aRT loss ratio figures only. A
             combination of any two of these options results in no
             output.
         --conv
@@ -342,7 +342,7 @@ def main(argv=None):
         if genericsettings.isFig:
             print "Scaling figures...",
             sys.stdout.flush()
-            # ERT/dim vs dim.
+            # aRT/dim vs dim.
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
             plt.rc("ytick", **inset.rcticklarger)
@@ -414,6 +414,7 @@ def main(argv=None):
                 # ECDFs for each function
                 pprldmany.all_single_functions(dictAlg, 
                                                dsList.isBiobjective(),
+                                               True,
                                                None,
                                                outputdir,
                                                genericsettings.verbose,
@@ -421,7 +422,7 @@ def main(argv=None):
             print_done()
 
         if genericsettings.isLogLoss:
-            print "ERT loss ratio figures and tables...",
+            print "aRT loss ratio figures and tables...",
             sys.stdout.flush()
             for ng, sliceNoise in dsList.dictByNoise().iteritems():
                 if ng == 'noiselessall':
@@ -459,7 +460,6 @@ def main(argv=None):
             print_done()
 
         latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
-        html_file = os.path.join(outputdir, genericsettings.single_algorithm_file_name + '.html')
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglosstablecaption}[1]{', 
                          pplogloss.table_caption, '}'])
@@ -470,6 +470,7 @@ def main(argv=None):
                         ['\\providecommand{\\bbobpprldistrlegend}[1]{',
                          pprldistr.caption_single(np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()])),  # depends on the config setting, should depend on maxfevals
                          '}'])
+        html_file = os.path.join(outputdir, 'pprldistr.html')
         replace_in_file(html_file, r'TOBEREPLACED', 'D, '.join([str(i) for i in pprldistr.single_runlength_factors[:6]]) + 'D,&hellip;')
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{',

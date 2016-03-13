@@ -29,7 +29,8 @@ typedef struct {
   int compute_indicators;                      /**< @brief Whether to compute indicators. */
   int produce_all_data;                        /**< @brief Whether to produce all data. */
 
-  long previous_function;                      /**< @brief Information on the previous logged problem. */
+  long previous_function;                      /**< @brief Function of the previous logged problem. */
+  long previous_dimension;                     /**< @brief Dimension of the previous logged problem */
 
 } observer_biobj_data_t;
 
@@ -105,6 +106,7 @@ static void observer_biobj(coco_observer_t *observer, const char *options, coco_
 
   if (observer_biobj->compute_indicators) {
     observer_biobj->previous_function = -1;
+    observer_biobj->previous_dimension = -1;
   }
 
   observer->logger_allocate_function = logger_biobj;

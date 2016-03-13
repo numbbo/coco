@@ -104,7 +104,7 @@ def main(argv=None):
         --tab-only, --rld-only, --fig-only
             these options can be used to output respectively the
             comparison TeX tables, the run lengths distributions or the
-            figures of ERT/dim vs dim only. A combination of any two or
+            figures of aRT/dim vs dim only. A combination of any two or
             more of these options results in no output.
         --conv
             if this option is chosen, additionally convergence
@@ -307,7 +307,7 @@ def main(argv=None):
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.many_algorithm_file_name),
             '', # algorithms names are clearly visible in the figure
-            algorithmCount = ppfig.AlgorithmCount.MANY,
+            htmlPage = ppfig.HtmlPage.MANY,
             isBiobjective = dsList[0].isBiobjective(),
             functionGroups = dictAlg[sortedAlgs[0]].getFuncGroups()
         )
@@ -354,6 +354,7 @@ def main(argv=None):
                 if 1 < 3:
                     pprldmany.all_single_functions(dictAlg, 
                                                    dsList[0].isBiobjective(),
+                                                   False,
                                                    sortedAlgs,
                                                    outputdir, 
                                                    genericsettings.verbose,
