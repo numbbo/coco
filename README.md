@@ -15,8 +15,9 @@ Contributions to link further languages (including a better
 example in `C++`) are more than welcome.
 
 For more information, 
-- [benchmarking guidline introduction](none) (link is coming soon)
-- the [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup)
+- [benchmarking guidlines introduction](none) (link is coming soon)
+- [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
+- [`bbob-biobj` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation
 - consult the [BBOB workshops series](http://numbbo.github.io/workshops),
 - consider to [register here](http://numbbo.github.io/register) for news, 
 - see the [previous COCO home page here](http://coco.gforge.inria.fr/) and 
