@@ -157,18 +157,30 @@ continuous optimization algorithms which tries to address this challenge and
 has been implemented within the COCO_ framework. [#]_ 
 
 The COCO_ framework provides the practical means for an automatized
-benchmarking procedure. Benchmarking an optimization algorithm, say,
-implemented in the function ``fmin`` in Python, on a benchmark suite becomes 
-as simple as [#]_
+benchmarking procedure. Installing COCO_ (in a shell) and benchmarking an
+optimization algorithm, say, implemented in the function ``fmin`` in Python,
+becomes as simple as
 
 .. raw:: latex
 
     in Figure 1. \begin{figure} %\begin{minipage}{\textwidth}
 
+.. code:: bash
+
+     $ git clone https://github.com/numbbo/coco.git  # get coco
+     $ cd coco
+     $ python do.py run-python  # install Python experimental module cocoex
+     $ python do.py install-postprocessing  # install post-processing :-)
+..     $ cp code-experiments/build/python/example_experiment.py ./my_experiment_runner.py
+
+..    $ python my_experiment_runner.py  # run the "default" experiment
+    $ python -m bbob_pproc exdata/...
+
 .. code:: python
 
-  import cocoex  # or: import bbob_pproc as cocoex
-  import cocopp
+  #!/usr/bin/env python
+  import cocoex  
+  import cocopp  # or: import bbob_pproc as cocopp
   from myoptimizer import fmin
     
   suite = cocoex.Suite("bbob", "year: 2016", "")
@@ -183,8 +195,8 @@ as simple as [#]_
 .. raw:: latex 
 
     \caption[Minimal benchmarking code in Python]{
-    Python code to benchmark \texttt{fmin} on the \texttt{bbob} suite and
-    display the results.
+    Shell code for installation of \COCO\ (above), and Python code to benchmark 
+    \texttt{fmin} on the \texttt{bbob} suite and display the results.
     
 
 Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
@@ -208,27 +220,16 @@ most experimenters needed to setup and implement themselves, if they wanted to
 benchmark an algorithm properly. So far, the framework has been used successfully for
 benchmarking far over a hundred algorithms by many researchers.  
 
-.. [#] One major flaw is that we often get, besides *statistical* significance, no
+.. [#] One major flaw is that we often get no
    indication of *how much* better an algorithm is. 
    That is, the results of benchmarking often provide no indication of 
    *relevance*;
    the main output often consists of hundreds of tabulated numbers
-   interpretable on an *ordinal scale* [STE1946]_ only. 
+   interpretable on an *ordinal scale* [STE1946]_ only. *Statistical* significance
+   is a necessary but not a sufficient condition for *relevance*. 
    
 .. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
    
-.. [#] After the installation which can be as simple as 
-
-.. code:: bash
-
-  $ git clone https://github.com/numbbo/coco.git  # get coco
-  $ cd coco
-  $ python do.py run-python  # install Python experimental module cocoex
-  $ python do.py install-postprocessing  # install post-processing :-)
-  $ cp code-experiments/build/python/example_experiment.py ./my_experiment_runner.py
-
-..    $ python my_experiment_runner.py  # run the "default" experiment
-    $ python -m bbob_pproc exdata/...
        
 .. left to the reader to
    scan and compare to each other, possibly across different articles. 
