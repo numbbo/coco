@@ -135,8 +135,9 @@ coco_archive_t *coco_archive(const char *suite_name,
   coco_archive_t *archive = coco_archive_allocate();
   int output_precision = 15;
   coco_suite_t *suite;
-  char *suite_instance = coco_strdupf("instances: %lu", instance);
-  char *suite_options = coco_strdupf("dimensions: %lu function_indices: %lu", dimension, function);
+  char *suite_instance = coco_strdupf("instances: %lu", (unsigned long) instance);
+  char *suite_options = coco_strdupf("dimensions: %lu function_indices: %lu", (unsigned long) dimension,
+  		(unsigned long) function);
   coco_problem_t *problem;
   char *text;
   int update;
@@ -148,8 +149,8 @@ coco_archive_t *coco_archive(const char *suite_name,
   }
   problem = coco_suite_get_next_problem(suite, NULL);
   if (problem == NULL) {
-    coco_error("coco_archive(): cannot create problem f%02lu_i%02lu_d%02lu in suite '%s'", function, instance,
-        dimension, suite_name);
+    coco_error("coco_archive(): cannot create problem f%02lu_i%02lu_d%02lu in suite '%s'",
+    		(unsigned long) function, (unsigned long) instance, (unsigned long) dimension, suite_name);
     return NULL; /* Never reached */
   }
 
