@@ -375,7 +375,8 @@ class HArrayMultiReader(ArrayMultiReader, HMultiReader):
         #TODO: Should this use super?
         self.nbPtsF = nbPtsFBi if isBiobjective else nbPtsFSingle
         self.idxCurrentF = numpy.inf #Minimization
-
+        self.isNegative = False
+        self.idxCurrentFOld = 0.
 
 #FUNCTION DEFINITIONS
 
