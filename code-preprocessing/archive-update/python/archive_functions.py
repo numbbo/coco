@@ -73,7 +73,11 @@ class ProblemInstanceInfo:
                             if not stop_reading:
                                 stop_reading = True
                             # Solution found, feed it to the archive
-                            archive.add_solution(float(line.split('\t')[1]), float(line.split('\t')[2]), line)
+                            try:
+                                archive.add_solution(float(line.split('\t')[1]), float(line.split('\t')[2]), line)
+                            except IndexError:
+                                print('Problem in file {}, line {}, skipping line'.format(f_name, line))
+                                continue
 
                 f.close()
                 if not instance_found:
@@ -122,6 +126,7 @@ class ArchiveInfo:
 
         archive_info_list = []
         for input_file in input_files:
+            print(input_file)
             try:
                 archive_info_set = get_archive_file_info(input_file)
             # If any problems are encountered, the file is skipped
@@ -194,16 +199,20 @@ def update_best_hypervolume(old_best_files, new_best_data, new_best_file):
         problem_names = set(old_best_data.keys()).union(set(new_best_data.keys()))
         result = {}
 
-        # Iterate over all problem names and store only the best hypervolumes
+        # Iterate over all problem names and store only the best (i.e. largest) hypervolumes
         for problem_name in problem_names:
             new_value = new_best_data.get(problem_name)
             old_value = old_best_data.get(problem_name)
             if new_value is None:
                 result.update({problem_name: float(old_value)})
-            elif old_value is None:
+            elif old_value is None or (abs(float(old_value) - 1) < 1e-8):
+                # New value is always better when old_value equals 1
                 result.update({problem_name: float(new_value)})
             else:
-                result.update({problem_name: min(float(new_value), float(old_value))})
+                result.update({problem_name: max(float(new_value), float(old_value))})
+
+            if new_value is not None and old_value is not None and float(new_value) > float(old_value):
+                print('{} HV improved by {:.15f}'.format(problem_name, float(new_value) - float(old_value)))
 
     # Write the best values
     write_best_values(result, new_best_file)
@@ -227,7 +236,6 @@ def merge_archives(input_path, output_path):
         problem_instance_info = archive_info.get_next_problem_instance_info()
         if problem_instance_info is None:
             break
-        print(problem_instance_info)
 
         old_level = log_level('warning')
 
@@ -242,6 +250,7 @@ def merge_archives(input_path, output_path):
         problem_instance_info.write_archive_solutions(output_path, archive)
 
         result.update({str(problem_instance_info): archive.hypervolume})
+        print('{}: {:.15f}'.format(problem_instance_info, archive.hypervolume))
 
         log_level(old_level)
 
