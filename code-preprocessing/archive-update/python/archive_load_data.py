@@ -16,6 +16,8 @@ def get_file_name_list(path):
     """
     file_name_list = []
     for dir_path, dir_names, file_names in os.walk(path):
+        dir_names.sort()
+        file_names.sort()
         for file_name in file_names:
             file_name_list.append(os.path.join(dir_path, file_name))
     return file_name_list
