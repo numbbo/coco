@@ -239,6 +239,7 @@ static size_t *coco_string_parse_ranges(const char *string,
   /* Check for empty string */
   if ((str == NULL) || (strlen(str) == 0)) {
     coco_warning("coco_string_parse_ranges(): cannot parse empty ranges");
+    coco_free_memory(str);
     return NULL;
   }
 
@@ -248,6 +249,7 @@ static size_t *coco_string_parse_ranges(const char *string,
     if ((*ptr != '-') && (*ptr != ',') && !isdigit((unsigned char )*ptr)) {
       coco_warning("coco_string_parse_ranges(): problem parsing '%s' - cannot parse ranges with '%c'", str,
           *ptr);
+      coco_free_memory(str);
       return NULL;
     } else
       ptr++;
@@ -256,6 +258,7 @@ static size_t *coco_string_parse_ranges(const char *string,
   /* Check for incorrect boundaries */
   if ((max > 0) && (min > max)) {
     coco_warning("coco_string_parse_ranges(): incorrect boundaries");
+    coco_free_memory(str);
     return NULL;
   }
 

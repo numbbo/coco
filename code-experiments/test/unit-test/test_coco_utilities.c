@@ -193,11 +193,15 @@ static void test_coco_string_split(void **state) {
 
   char **result;
   char *converted_result;
+  size_t i;
 
   result = coco_string_split("1-3,5-6,7,-3,15-", ',');
   converted_result = convert_to_string_with_newlines(result);
   assert_true(converted_result);
   assert_true(strcmp(converted_result, "1-3\n5-6\n7\n-3\n15-\n") == 0);
+  for (i = 0; *(result + i); i++) {
+    coco_free_memory(*(result + i));
+  }
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
@@ -205,6 +209,9 @@ static void test_coco_string_split(void **state) {
   converted_result = convert_to_string_with_newlines(result);
   assert_true(converted_result);
   assert_true(strcmp(converted_result, "a\nb\nc\nd\ne\nf\n") == 0);
+  for (i = 0; *(result + i); i++) {
+    coco_free_memory(*(result + i));
+  }
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
@@ -379,29 +386,29 @@ static void test_coco_option_keys(void **state) {
 
   option_keys = coco_option_keys("key");
   assert_true(option_keys->count == 1);
-  coco_free_memory(option_keys);
+  coco_option_keys_free(option_keys);
 
   option_keys = coco_option_keys("key: ");
   assert_true(option_keys->count == 1);
-  coco_free_memory(option_keys);
+  coco_option_keys_free(option_keys);
 
   option_keys = coco_option_keys("key1 key2: ");
   assert_true(option_keys->count == 1);
-  coco_free_memory(option_keys);
+  coco_option_keys_free(option_keys);
 
   option_keys = coco_option_keys("key1: value1 key2");
   /* In this case we would rather have detected two keys, but this should also trigger a warning,
    * which is OK. */
   assert_true(option_keys->count == 1);
-  coco_free_memory(option_keys);
+  coco_option_keys_free(option_keys);
 
   option_keys = coco_option_keys("key1: value1 key2: value2");
   assert_true(option_keys->count == 2);
-  coco_free_memory(option_keys);
+  coco_option_keys_free(option_keys);
 
   option_keys = coco_option_keys("key: \"A multi-word value\"");
   assert_true(option_keys->count == 1);
-  coco_free_memory(option_keys);
+  coco_option_keys_free(option_keys);
 
   (void) state; /* unused */
 }
