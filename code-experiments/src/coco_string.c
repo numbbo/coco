@@ -114,8 +114,8 @@ static long coco_strfind(const char *base, const char *seq) {
       }
       if (j == strlen_seq) {
         if (i > 1e9)
-          coco_error("coco_strfind(): strange values observed i=%lu, j=%lu, strlen(base)=%lu", i, j,
-              strlen(base));
+          coco_error("coco_strfind(): strange values observed i=%lu, j=%lu, strlen(base)=%lu",
+          		(unsigned long) i, (unsigned long) j, (unsigned long) strlen(base));
         return (long) i;
       }
     }
@@ -239,6 +239,7 @@ static size_t *coco_string_parse_ranges(const char *string,
   /* Check for empty string */
   if ((str == NULL) || (strlen(str) == 0)) {
     coco_warning("coco_string_parse_ranges(): cannot parse empty ranges");
+    coco_free_memory(str);
     return NULL;
   }
 
@@ -248,6 +249,7 @@ static size_t *coco_string_parse_ranges(const char *string,
     if ((*ptr != '-') && (*ptr != ',') && !isdigit((unsigned char )*ptr)) {
       coco_warning("coco_string_parse_ranges(): problem parsing '%s' - cannot parse ranges with '%c'", str,
           *ptr);
+      coco_free_memory(str);
       return NULL;
     } else
       ptr++;
@@ -256,6 +258,7 @@ static size_t *coco_string_parse_ranges(const char *string,
   /* Check for incorrect boundaries */
   if ((max > 0) && (min > max)) {
     coco_warning("coco_string_parse_ranges(): incorrect boundaries");
+    coco_free_memory(str);
     return NULL;
   }
 
@@ -376,11 +379,13 @@ static size_t *coco_string_parse_ranges(const char *string,
       /* Make sure the boundaries are taken into account */
       if ((min > 0) && (num[0] < min)) {
         num[0] = min;
-        coco_warning("coco_string_parse_ranges(): '%s' ranges adjusted to be >= %lu", name, min);
+        coco_warning("coco_string_parse_ranges(): '%s' ranges adjusted to be >= %lu", name,
+        		(unsigned long) min);
       }
       if ((max > 0) && (num[1] > max)) {
         num[1] = max;
-        coco_warning("coco_string_parse_ranges(): '%s' ranges adjusted to be <= %lu", name, max);
+        coco_warning("coco_string_parse_ranges(): '%s' ranges adjusted to be <= %lu", name,
+        		(unsigned long) max);
       }
       if (num[0] > num[1]) {
         coco_warning("coco_string_parse_ranges(): '%s' ranges not within boundaries; some ranges ignored", name);

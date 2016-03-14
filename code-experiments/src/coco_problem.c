@@ -320,6 +320,21 @@ size_t coco_problem_get_evaluations(const coco_problem_t *problem) {
 }
 
 /**
+ * @brief Returns 1 if the best parameter is (close to) zero and 0 otherwise.
+ */
+static int coco_problem_is_best_parameter_zero(const coco_problem_t *problem) {
+	size_t i = 0;
+	int zero = 1;
+
+	while (i < problem->number_of_variables && zero) {
+	      zero = coco_double_almost_equal(problem->best_parameter[i], 0, 1e-9);
+	      i++;
+	  }
+
+	return zero;
+}
+
+/**
  * @note Can be used to prevent unnecessary burning of CPU time.
  */
 int coco_problem_final_target_hit(const coco_problem_t *problem) {
@@ -332,6 +347,7 @@ int coco_problem_final_target_hit(const coco_problem_t *problem) {
   return problem->best_observed_fvalue[0] <= problem->best_value[0] + problem->final_target_delta[0] ?
     1 : 0;
 }
+
 /**
  * @note Tentative...
  */

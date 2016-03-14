@@ -134,7 +134,6 @@ void cocoProblemFinalTargetHit(int nlhs, mxArray *plhs[], int nrhs, const mxArra
 
 void cocoProblemFree(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    char *problem_suite;
     coco_problem_t *problem = NULL;
     size_t *ref;
 
@@ -213,8 +212,6 @@ void cocoProblemGetInitialSolution(int nlhs, mxArray *plhs[], int nrhs, const mx
     size_t *ref;
     coco_problem_t *problem = NULL;
     size_t nb_dim;
-    const double *res;
-    int i;
     double *v; /* intermediate variable that allows to set plhs[0] */
 
     /* check for proper number of arguments */
@@ -303,7 +300,8 @@ void cocoProblemGetSmallestValuesOfInterest(int nlhs, mxArray *plhs[], int nrhs,
 {
     size_t *ref;
     coco_problem_t *problem = NULL;
-    size_t nb_dim, i;
+    size_t nb_dim;
+    size_t i;
     const double *res;
     double *v; /* intermediate variable that aloows to set plhs[0] */
 
@@ -344,7 +342,8 @@ void cocoProblemRemoveObserver(int nlhs, mxArray *plhs[], int nrhs, const mxArra
     coco_problem_t *problem;
     coco_observer_t *observer;
     coco_problem_t *unobservedproblem;
-    size_t *ref, *ref2;
+    size_t *ref;
+    size_t *ref2;
     
     /* check for proper number of arguments */
     if(nrhs!=2) {
@@ -432,7 +431,8 @@ void cocoSuiteGetNextProblem(int nlhs, mxArray *plhs[], int nrhs, const mxArray 
     coco_suite_t *suite;
     coco_observer_t *observer;
     coco_problem_t *problem;
-    size_t *ref, *ref2;
+    size_t *ref;
+    size_t *ref2;
     
     /* check for proper number of arguments */
     if(nrhs!=2) {
@@ -551,4 +551,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     } else {
         coco_warning("Function string '%s' not supported", cocofunction);
     }
+    
+    mxFree(cocofunction);
 }
