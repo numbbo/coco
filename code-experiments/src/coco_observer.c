@@ -156,8 +156,7 @@ static int coco_observer_targets_trigger(coco_observer_targets_t *targets, const
     /* Compute the adjusted_exponent in such a way, that it is always diminishing in value. The adjusted
      * exponent can only be used to verify if a new target has been hit. To compute the actual target
      * value, the current_exponent needs to be used. */
-    /* TODO: Check that something does not break here if 0 is added as a target!!! */
-    adjusted_exponent = 2 * (int) (ceil(log10(targets->precision) * number_of_targets_double))
+    adjusted_exponent = 2 * (int) (ceil(log10(targets->precision / 10.0) * number_of_targets_double))
         - current_exponent - 1;
 
     if (adjusted_exponent < last_exponent) {
