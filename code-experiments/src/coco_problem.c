@@ -327,7 +327,7 @@ static int coco_problem_is_best_parameter_zero(const coco_problem_t *problem) {
 	int zero = 1;
 
 	while (i < problem->number_of_variables && zero) {
-	      zero = coco_double_almost_equal(problem->best_parameter[i], 0, 1e-9);
+	      zero = !coco_double_almost_equal(problem->best_parameter[i], 0, 1e-9);
 	      i++;
 	  }
 
