@@ -80,7 +80,7 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
       i++;
   }
   if (!zero) {
-      coco_warning("f_transform_vars_affine(): 'best_parameter' not updated");
+      coco_warning("transform_vars_affine(): 'best_parameter' not updated");
   }
   return problem;
 }

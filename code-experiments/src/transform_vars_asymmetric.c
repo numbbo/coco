@@ -64,7 +64,7 @@ static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, 
       i++;
   }
   if (!zero) {
-      coco_warning("f_transform_vars_asymmetric(): 'best_parameter' not updated");
+      coco_warning("transform_vars_asymmetric(): 'best_parameter' not updated");
   }
   return problem;
 }
