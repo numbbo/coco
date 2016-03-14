@@ -135,8 +135,9 @@ coco_archive_t *coco_archive(const char *suite_name,
   coco_archive_t *archive = coco_archive_allocate();
   int output_precision = 15;
   coco_suite_t *suite;
-  char *suite_instance = coco_strdupf("instances: %lu", instance);
-  char *suite_options = coco_strdupf("dimensions: %lu function_indices: %lu", dimension, function);
+  char *suite_instance = coco_strdupf("instances: %lu", (unsigned long) instance);
+  char *suite_options = coco_strdupf("dimensions: %lu function_indices: %lu",
+  		(unsigned long) dimension, (unsigned long) function);
   coco_problem_t *problem;
   char *text;
   int update;
@@ -148,8 +149,8 @@ coco_archive_t *coco_archive(const char *suite_name,
   }
   problem = coco_suite_get_next_problem(suite, NULL);
   if (problem == NULL) {
-    coco_error("coco_archive(): cannot create problem f%02lu_i%02lu_d%02lu in suite '%s'", function, instance,
-        dimension, suite_name);
+    coco_error("coco_archive(): cannot create problem f%02lu_i%02lu_d%02lu in suite '%s'",
+    		(unsigned long) function, (unsigned long) instance, (unsigned long) dimension, suite_name);
     return NULL; /* Never reached */
   }
 
@@ -204,8 +205,11 @@ int coco_archive_add_solution(coco_archive_t *archive, const double f1, const do
       update = 1;
       next_node = node->next;
       if (dominance == 1) {
-        /* The new point dominates the next point, remove the next point */
-        avl_node_delete(archive->tree, node);
+        /* The new point dominates the next point, remove the next point (as long as it's not an extreme point) */
+      	if ((node == archive->extreme1) || (node == archive->extreme2))
+      		update = 0;
+      	else
+      		avl_node_delete(archive->tree, node);
       }
     } else {
       /* The new point is dominated, nothing more to do */
@@ -226,9 +230,14 @@ int coco_archive_add_solution(coco_archive_t *archive, const double f1, const do
       dominance = mo_get_dominance(insert_objectives, node_objectives, archive->number_of_objectives);
       coco_free_memory(node_objectives);
       if (dominance == 1) {
-        /* The new point dominates the next point, remove the next point */
+        /* The new point dominates the next point, remove the next point (as long as it's not an extreme point) */
         next_node = node->next;
-        avl_node_delete(archive->tree, node);
+      	if ((node == archive->extreme1) || (node == archive->extreme2)) {
+      		update = 0;
+      		break;
+      	}
+      	else
+      		avl_node_delete(archive->tree, node);
       } else {
         break;
       }
