@@ -758,12 +758,13 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
         coco_info_partial("done\n");
       else
         coco_info_partial("\n");
-      coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string, suite->dimensions[dimension_idx], suite->functions[function_idx]);
+      coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string,
+      		(unsigned long) suite->dimensions[dimension_idx], (unsigned long) suite->functions[function_idx]);
       coco_free_memory(time_string);
     }
     else if ((long) function_idx != previous_function_idx){
       /* A new function started */
-      coco_info_partial("f%02lu", suite->functions[function_idx]);
+      coco_info_partial("f%02lu", (unsigned long) suite->functions[function_idx]);
     }
     /* One dot for each instance */
     coco_info_partial(".", suite->instances[instance_idx]);
