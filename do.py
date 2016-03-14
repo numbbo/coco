@@ -596,9 +596,9 @@ def test_java():
 def test_postprocessing(allTests=False):
     install_postprocessing()
     if allTests:
-		python('code-postprocessing/bbob_pproc', ['__main__.py', 'all'])
+        python('code-postprocessing/bbob_pproc', ['__main__.py', 'all'])
     else:
-		python('code-postprocessing/bbob_pproc', ['__main__.py'])
+        python('code-postprocessing/bbob_pproc', ['__main__.py'])
     # python('code-postprocessing', ['-m', 'bbob_pproc'])
     if 11 < 3:  # provisorial test fo biobj data
         run_c()
