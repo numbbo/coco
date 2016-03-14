@@ -940,7 +940,7 @@ static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, 
     count++;
   }
   if (count == max_count) {
-    coco_error("coco_count_numbers(): over %lu numbers in %s", max_count, name);
+    coco_error("coco_count_numbers(): over %lu numbers in %s", (unsigned long) max_count, name);
     return 0; /* Never reached*/
   }
 
