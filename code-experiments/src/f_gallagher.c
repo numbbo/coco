@@ -181,7 +181,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
     c = 4.9;
   } else {
     coco_error("f_gallagher_bbob_problem_allocate(): '%lu' is a non-supported number of peaks",
-        number_of_peaks);
+    		(unsigned long) number_of_peaks);
   }
   data->rseed = rseed;
   bbob2009_compute_rotation(data->rotation, rseed, dimension);
