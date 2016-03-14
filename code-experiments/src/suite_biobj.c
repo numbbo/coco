@@ -202,7 +202,8 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
 
   /* Use the standard stacked problem_id as problem_name and construct a new suite-specific problem_id */
   coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "bbob-biobj_f%02d_i%02ld_d%02d", function, instance, dimension);
+  coco_problem_set_id(problem, "bbob-biobj_f%02lu_i%02lu_d%02lu", (unsigned long) function,
+  		(unsigned long) instance, (unsigned long) dimension);
 
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem1->problem_type, problem2->problem_type);
@@ -305,8 +306,8 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
     } else {
       /* An appropriate instance was found */
       appropriate_instance_found = 1;
-      coco_info("suite_biobj_set_new_instance(): Instance %lu created from instances %lu and %lu", instance,
-          instance1, instance2);
+      coco_info("suite_biobj_set_new_instance(): Instance %lu created from instances %lu and %lu",
+      		(unsigned long) instance, (unsigned long) instance1, (unsigned long) instance2);
 
       /* Save the instance to new_instances */
       for (i = 0; i < data->max_new_instances; i++) {
@@ -321,7 +322,8 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
   }
 
   if (!appropriate_instance_found) {
-    coco_error("suite_biobj_get_new_instance(): Could not find suitable instance %lu in $lu tries", instance, num_tries);
+    coco_error("suite_biobj_get_new_instance(): Could not find suitable instance %lu in %lu tries",
+    		(unsigned long) instance, (unsigned long) num_tries);
     return 0; /* Never reached */
   }
 

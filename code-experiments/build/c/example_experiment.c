@@ -147,8 +147,8 @@ void example_experiment(const char *suite_name,
 
       /* Break the loop if the algorithm performed no evaluations or an unexpected thing happened */
       if (coco_problem_get_evaluations(PROBLEM) == evaluations_done) {
-        printf("WARNING: Budget has not been exhausted (%lu/%lu evaluations done)!\n", evaluations_done,
-            dimension * BUDGET_MULTIPLIER);
+        printf("WARNING: Budget has not been exhausted (%lu/%lu evaluations done)!\n",
+        		(unsigned long) evaluations_done, (unsigned long) dimension * BUDGET_MULTIPLIER);
         break;
       }
       else if (coco_problem_get_evaluations(PROBLEM) < evaluations_done)
