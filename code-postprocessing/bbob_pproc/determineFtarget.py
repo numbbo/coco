@@ -32,16 +32,16 @@ except:
 ## old stuff ##
 class FunTarget:
     """ Determines the best and median function value from the data of all 
-        algorithms for ERT between 2*Dim*10**(i-1) and 2*Dim*10**i for i = 0,1,2,... 
+        algorithms for aRT between 2*Dim*10**(i-1) and 2*Dim*10**i for i = 0,1,2,... 
         The search stops if the minimal target function values of 1e-8 is reached
-        or no more data for ERT>2*Dim*10**i exist.
+        or no more data for aRT>2*Dim*10**i exist.
 
         Class Attributes:
         minFtarget - minimal function value over all algorithms for given 
-                     dimension, function, and ERT (array)
+                     dimension, function, and aRT (array)
         medianFtarget - median function value over all algorithms for given 
-                       dimension, function, and ERT (array)
-        ert - corresponds to ERT/DIM for minFtarget (array)
+                       dimension, function, and aRT (array)
+        ert - corresponds to aRT/DIM for minFtarget (array)
     """
 
     def __init__(self, dataset, dim):
@@ -53,7 +53,7 @@ class FunTarget:
         self.ert = []
         maxErtAll = 0
 
-        # loop through all ERT values (2*dim*10**i)
+        # loop through all aRT values (2*dim*10**i)
         while True:
 
             targetValues = []
@@ -101,7 +101,7 @@ class TargetList(dict):
     """Trying to improve on FunTarget:
     one inconvenient was the target function values could not be accessed
     indifferently from the dimension, the function or the difficulty.
-    Another thing is: the best ERT is not recorded...
+    Another thing is: the best aRT is not recorded...
     algSet
     bestERT
     """
@@ -117,7 +117,7 @@ class TargetList(dict):
                 pass
                 
                 # We need the function, dimension, the function value, the
-                # best algorithm, best ERT (for this target function value)
+                # best algorithm, best aRT (for this target function value)
                 #FunTarget.__init__(self, fentries, d)
                 #set_trace()
 
