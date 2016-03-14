@@ -103,8 +103,8 @@ def main(argv=None):
             "black-white". The default setting is "color".
         --tab-only, --fig-only, --rld-only, --los-only
             these options can be used to output respectively the TeX
-            tables, convergence and ERTs graphs figures, run length
-            distribution figures, ERT loss ratio figures only. A
+            tables, convergence and aRTs graphs figures, run length
+            distribution figures, aRT loss ratio figures only. A
             combination of any two of these options results in no
             output.
         --conv
@@ -342,7 +342,7 @@ def main(argv=None):
         if genericsettings.isFig:
             print "Scaling figures...",
             sys.stdout.flush()
-            # ERT/dim vs dim.
+            # aRT/dim vs dim.
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
             plt.rc("ytick", **inset.rcticklarger)
@@ -422,7 +422,7 @@ def main(argv=None):
             print_done()
 
         if genericsettings.isLogLoss:
-            print "ERT loss ratio figures and tables...",
+            print "aRT loss ratio figures and tables...",
             sys.stdout.flush()
             for ng, sliceNoise in dsList.dictByNoise().iteritems():
                 if ng == 'noiselessall':

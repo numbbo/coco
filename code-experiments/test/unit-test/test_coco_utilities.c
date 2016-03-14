@@ -224,7 +224,7 @@ static char *convert_to_string(size_t *array) {
   result[0] = '\0';
 
   while (array[i] > 0) {
-    sprintf(tmp, "%lu,", array[i++]);
+    sprintf(tmp, "%lu,", (unsigned long) array[i++]);
     strcat(result, tmp);
   }
   strcat(result, "0");
