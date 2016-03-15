@@ -64,14 +64,14 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
                                              const double *b,
                                              const size_t number_of_variables) {
   /*
-   * TODOs:
+   * TODO:
    * - Calculate new smallest/largest values of interest?
    * - Resize bounds vectors if input and output dimensions do not match
    */
 
   coco_problem_t *problem;
   transform_vars_affine_data_t *data;
-  size_t entries_in_M, i = 0, zero = 1;
+  size_t entries_in_M;
 
   entries_in_M = inner_problem->number_of_variables * number_of_variables;
   data = (transform_vars_affine_data_t *) coco_allocate_memory(sizeof(*data));
@@ -80,12 +80,8 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_affine_free, "transform_vars_affine");
   problem->evaluate_function = transform_vars_affine_evaluate;
-  while (i < inner_problem->number_of_variables && zero) {
-      zero = (inner_problem->best_parameter[i] == 0);
-      i++;
-  }
-  if (!zero) {
-      coco_warning("f_transform_vars_affine(): 'best_parameter' not updated");
+  if (!coco_problem_is_best_parameter_zero(inner_problem)) {
+      coco_warning("transform_vars_affine(): 'best_parameter' not updated");
   }
   return problem;
 }

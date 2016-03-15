@@ -835,8 +835,6 @@ static size_t coco_double_to_size_t(const double number) {
   return (size_t) coco_double_round(number);
 }
 
-/* Commented to silence the compiler (unused function warning) */
-
 /**
  * @brief  Returns 1 if |a - b| < accuracy and 0 otherwise.
  */

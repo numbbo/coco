@@ -63,6 +63,7 @@ static coco_problem_t *transform_vars_z_hat(coco_problem_t *inner_problem, const
 
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_z_hat_free, "transform_vars_z_hat");
   problem->evaluate_function = transform_vars_z_hat_evaluate;
-  coco_warning("f_transform_vars_z_hat(): 'best_parameter' not updated");
+  /* TODO: When should this warning be output?
+   coco_warning("transform_vars_z_hat(): 'best_parameter' not updated"); */
   return problem;
 }
