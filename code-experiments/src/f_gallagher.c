@@ -277,7 +277,6 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
 typedef struct {
   size_t number_of_peaks;
   coco_problem_t **sub_problems;
-  int peak_index;
 } f_gallagher_versatile_data_t;
 
 /**
@@ -332,16 +331,15 @@ static void f_gallagher_sub_evaluate_core(coco_problem_t *problem, const double 
 /**
  * @brief Allocates the basic gallagher sub problem.
  */
-static coco_problem_t *f_gallagher_sub_problem_allocate(const size_t number_of_variables, int peak_index, size_t number_of_peaks) {
+static coco_problem_t *f_gallagher_sub_problem_allocate(const size_t number_of_variables) {
   
   coco_problem_t *problem_i = coco_problem_allocate_from_scalars("gallagher_sub function",
                                                                f_gallagher_sub_evaluate_core, f_gallagher_versatile_data_free, number_of_variables, -5.0, 5.0, 0.0);
   f_gallagher_versatile_data_t *versatile_data_tmp;
   problem_i->versatile_data = (f_gallagher_versatile_data_t *) coco_allocate_memory(sizeof(f_gallagher_versatile_data_t));
   versatile_data_tmp = ((f_gallagher_versatile_data_t *) problem_i->versatile_data);
-  versatile_data_tmp->number_of_peaks = number_of_peaks;/*needed for w_i Wassim: consider moving the w_i computation to the global eval instead of the sub eval*/
+  versatile_data_tmp->number_of_peaks = 0;/* not needed by the sub-problem */
   versatile_data_tmp->sub_problems = NULL;
-  versatile_data_tmp->peak_index = peak_index;/*consistent with doc*/
 
   coco_problem_set_id(problem_i, "%s_d%04lu", "gallagher_sub", number_of_variables);
 
@@ -407,7 +405,6 @@ static coco_problem_t *f_gallagher_problem_allocate(const size_t number_of_varia
   versatile_data_tmp = (f_gallagher_versatile_data_t *)problem->versatile_data;
   versatile_data_tmp->number_of_peaks = number_of_peaks;
   versatile_data_tmp->sub_problems = (coco_problem_t **) coco_allocate_memory(number_of_peaks * sizeof(coco_problem_t *));
-  versatile_data_tmp->peak_index = -1;/*since global problem*/
 
   coco_problem_set_id(problem, "%s_d%04lu", "gallagher", number_of_variables);
 
@@ -484,7 +481,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   
   for (peak_index = 0; peak_index < number_of_peaks; peak_index++) {
     /* allocate sub-problem */
-    ((f_gallagher_versatile_data_t *) problem->versatile_data)->sub_problems[peak_index] = f_gallagher_sub_problem_allocate(dimension, peak_index, number_of_peaks);
+    ((f_gallagher_versatile_data_t *) problem->versatile_data)->sub_problems[peak_index] = f_gallagher_sub_problem_allocate(dimension);
     problem_i = &(((f_gallagher_versatile_data_t *) problem->versatile_data)->sub_problems[peak_index]);
     /* compute transformation parameters*/
     /* y_i */
