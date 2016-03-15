@@ -194,7 +194,7 @@ is present results in :math:`24+ {24 \choose 2} = 300` functions.
 Some first tests, e.g. in [BTH2015a]_, showed that having 300 functions is
 impracticable in terms of the overall running time of the benchmarking
 experiment.  We then decided to exploit the organization of the ``bbob``
-functions into classes to choose a subset of functions. More precisely the 24
+functions into classes to choose a subset of functions. More precisely, the 24
 original ``bbob`` functions are grouped into five function classes where each
 class gathers functions with similar properties, namely
 
@@ -302,12 +302,22 @@ optimization algorithms therefore have to cope with different scalings
 in the two objective functions. Typically, different orders of magnitude
 between the objective values can be observed.
 
+However, to facilitate a comparison between functions in the performance
+assessment, we use a normalization based on the ideal and the nadir point 
+to compute the hypervolume indicator (see
+`bbob-biobj-specific performance assessment documentation
+<http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/>`_ for details).
+Both, ideal and nadir point can be computed, because the global 
+optimum is known and is unique for the 10 ``bbob`` base functions. 
+In the black-box optimization benchmarking setup however, the values of the
+ideal and nadir point are not accessible to the optimization algorithm
+[BBO2016ex]_.
 
-However, to facilitate comparison between functions, a
-normalization can take place as both the ideal and the nadir point are
-known internally. In the performance assessment we are using this normalization (see `bbob-biobj-specific performance assessment documentation 
-<http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/>`_ for
-details).
+
+.. TODO: this should become a reference
+
+.. deleted: a normalization can take place as both the ideal and the nadir point are
+   known internally. 
 
 .. Note that, for example, the ``bbob-biobj`` observer of
 .. the `Coco framework`_ takes this into account and normalizes the objective
@@ -315,34 +325,37 @@ details).
 .. <http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/>`_ for
 .. details.
 
-The reasons for having knowledge about the location of both the ideal and
-the nadir point are
-
-* the definitions of the single-objective ``bbob`` test functions for 
+.. deleted: The reasons for having knowledge about the location of both the ideal and
+  the nadir point are
+  * the definitions of the single-objective ``bbob`` test functions for 
   which the optimal function value and the optimal solution are known
   by design and
-
-* the fact that we explicitly chose only functions from the original
+  * the fact that we explicitly chose only functions from the original
   ``bbob`` test suite which have a unique optimum.
 
-The ideal point is then always given by the objective vector
-:math:`(f_\alpha(x_{\text{opt},\alpha}), f_\beta(x_{\text{opt},\beta}))` and the nadir point by the
-objective vector :math:`(f_\alpha(x_{\text{opt},\beta}), f_\beta(x_{\text{opt},\alpha}))`
-with :math:`x_{\text{opt},\alpha}` being the optimal solution for the first
-objective function :math:`f_\alpha` and :math:`x_{\text{opt},\beta}` being the
-optimal solution for the second objective function :math:`f_\beta`.
-Note that in the black-box case, we typically assume for the functions
-provided with the `Coco framework`_, that information about ideal and
-nadir points, scaling etc. is not provided to the algorithm.
-
+.. deleted (this was a repetition from a previous section) 
+   The ideal point is then always given by the objective 
+   vector :math:`(f_\alpha(x_{\text{opt},\alpha}),
+   f_\beta(x_{\text{opt},\beta}))` and the nadir point by the objective
+   vector :math:`(f_\alpha(x_{\text{opt},\beta}),
+   f_\beta(x_{\text{opt},\alpha}))` with :math:`x_{\text{opt},\alpha}` being
+   the optimal solution for the first objective function :math:`f_\alpha` and
+   :math:`x_{\text{opt},\beta}` being the optimal solution for the second
+   objective function :math:`f_\beta`. Note that in the black-box case, we
+   typically assume for the functions provided with the `Coco framework`_,
+   that information about ideal and nadir points, scaling etc. is not
+   provided to the algorithm.
 
 
 Instances
 ---------
 Our test functions are parametrized and instances are instantiations of the underlying parameters (see [COCO:2016]_). The instances for the bi-objective functions are using instances of each single objective function composing the bi-objective one. However, in addition, we assert that
 
-  a. the distance (Euclidean norm) between the ideal and the nadir point (in objective space) is at least 1e-1 and that
-  b. the two single-objective optima (in search space, also called the extreme optimal points) are not closer than :math:`10^{-4}`.
+  #. the two single-objective optima (in search space, also called the extreme optimal points) are not closer than :math:`10^{-4}`.
+
+  #. the distance (Euclidean norm) between the ideal and the nadir point (in objective space) is at least :math:`10^{-1}` and that
+
+.. TODO:: it remains to be explained *how* this is done. 
 
 .. Instances are the way in the `Coco framework`_ to perform multiple
 .. algorithm runs on the same function. More concretely, the original
@@ -360,7 +373,7 @@ Our test functions are parametrized and instances are instantiations of the unde
 .. ``bbob`` suite. 
 .. However, in addition, we assert that
 
-	 
+
 We associate to an instance, an instance-id which is an integer. The relation between the instance-id, :math:`K^{\rm biobj}_{\rm id}`, of a bi-objective function and the instance-ids of the single-objective functions (:math:`K_{\rm id}^{f_\alpha}` and :math:`K_{\rm id}^{f_\beta}`) composing the bi-objective problem is the following:
 
  * :math:`K_{\rm id}^{f_\alpha}` =  2 \* :math:`K^{\rm biobj}_{\rm id}` + 1 and
@@ -1781,6 +1794,7 @@ Contained in the *weakly-structured - weakly-structured* function class.
   structure can be exploited?
 
 
+.. _`Coco framework`: https://github.com/numbbo/coco
 
 
  
@@ -1790,13 +1804,15 @@ Contained in the *weakly-structured - weakly-structured* function class.
     <H2>References</H2>
  
   
-.. _`Coco framework`: https://github.com/numbbo/coco
+
+.. [BBO2016ex] The BBOBies (2016). `COCO: Experimental Procedure`__. 
+__ http://numbbo.github.io/coco-doc/experimental-setup/
 
 .. [BTH2015a] Dimo Brockhoff, Thanh-Do Tran, Nikolaus Hansen:
    Benchmarking Numerical Multiobjective Optimizers Revisited.
    GECCO 2015: 639-646
    
-.. [COCO:2016] The BBOBies, COCO: A platform for Comparing Continuous Optimizers in a
+.. [COCO:2016] The BBOBies (2016). COCO: A platform for Comparing Continuous Optimizers in a
     Black-Box Setting.   
 
 .. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
