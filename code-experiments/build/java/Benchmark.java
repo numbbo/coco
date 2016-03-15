@@ -23,7 +23,7 @@ public class Benchmark {
 	public Problem getNextProblem() throws Exception {
 		
 		try {		
-			long problemPointer = CocoJNI.cocoGetNextProblem(suite.getPointer(), observer.getPointer());
+			long problemPointer = CocoJNI.cocoSuiteGetNextProblem(suite.getPointer(), observer.getPointer());
 			
 			if (problemPointer == 0)
 				return null;

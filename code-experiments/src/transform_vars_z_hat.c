@@ -25,7 +25,7 @@ static void transform_vars_z_hat_evaluate(coco_problem_t *problem, const double 
   transform_vars_z_hat_data_t *data;
   coco_problem_t *inner_problem;
 
-  data = coco_problem_transformed_get_data(problem);
+  data = (transform_vars_z_hat_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
   data->z[0] = x[0];
@@ -41,7 +41,7 @@ static void transform_vars_z_hat_evaluate(coco_problem_t *problem, const double 
  * @brief Frees the data object.
  */
 static void transform_vars_z_hat_free(void *thing) {
-  transform_vars_z_hat_data_t *data = thing;
+  transform_vars_z_hat_data_t *data = (transform_vars_z_hat_data_t *) thing;
   coco_free_memory(data->xopt);
   coco_free_memory(data->z);
 }
@@ -52,12 +52,13 @@ static void transform_vars_z_hat_free(void *thing) {
 static coco_problem_t *transform_vars_z_hat(coco_problem_t *inner_problem, const double *xopt) {
   transform_vars_z_hat_data_t *data;
   coco_problem_t *problem;
-
   data = (transform_vars_z_hat_data_t *) coco_allocate_memory(sizeof(*data));
   data->xopt = coco_duplicate_vector(xopt, inner_problem->number_of_variables);
   data->z = coco_allocate_vector(inner_problem->number_of_variables);
 
-  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_z_hat_free);
+  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_z_hat_free, "transform_vars_z_hat");
   problem->evaluate_function = transform_vars_z_hat_evaluate;
+  /* TODO: When should this warning be output?
+   coco_warning("transform_vars_z_hat(): 'best_parameter' not updated"); */
   return problem;
 }

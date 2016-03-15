@@ -17,6 +17,7 @@ import os, sys
 import warnings
 import numpy
 from pdb import set_trace
+from . import toolsdivers
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -60,12 +61,12 @@ def rearrange(blist, flist):
 
 
 def beautify():
-    plt.legend(loc=3)
+    toolsdivers.legend(loc=3)
     plt.grid(True)
     limits = plt.ylim()
     plt.ylim(max((limits[0], final_target)), limits[1])
 
-def main(dictAlg, outputdir='.', verbose=True):
+def main(dictAlg, isBiobjective, outputdir='.', verbose=True, parentHtmlFileName = None):
     """Main routine for generating convergence plots
 
     """
@@ -115,7 +116,9 @@ def main(dictAlg, outputdir='.', verbose=True):
     except KeyError:
         algname = str(dictFun[l].keys()[0])
     save_single_functions_html(os.path.join(outputdir, 'ppconv'),
-                               algname)  # first try
+                               algname,
+                               isBiobjective = isBiobjective,
+                               parentFileName = parentHtmlFileName)  # first try
     print("Convergence plots done.")
         
 if __name__ == "__main__":

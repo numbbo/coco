@@ -93,33 +93,35 @@ def run_doctests():
     testmod(interface)
     testmod(example_experiment)
 
-def _clean_up(start_matches, protected):
-    """permanently remove entries in the current folder which begin with any of
+def _clean_up(folder, start_matches, protected):
+    """permanently remove entries in `folder` which begin with any of
     `start_matches`, where `""` matches any string, and which are not in
     `protected`.
 
-    CAVEAT: use with care, as with `"", ""` as arguments this deletes all folder
-    entries like `rm *` does. """
+    CAVEAT: use with care, as with `"", ""` as second and third arguments 
+    this deletes all folder entries like `rm *` does. """
+    if not os.path.isdir(folder):
+        return
     if not protected and "" in start_matches:
         raise ValueError(
-            '_clean_up([..., "", ...], []) is not permitted, resembles "rm *"')
-    for d in os.listdir('.'):
+            '_clean_up(folder, [..., "", ...], []) is not permitted, resembles "rm *"')
+    for d in os.listdir(folder):
         if d not in protected:
             for name in start_matches:
                 if d.startswith(name):
-                    shutil.rmtree(d)
+                    shutil.rmtree(os.path.join(folder, d))
                     break
 
 
 def main(args):
-    list_before = os.listdir('.')
+    list_before = os.listdir('exdata') if os.path.isdir('exdata') else []
     print('Running doctests...'), sys.stdout.flush()
     run_doctests()
     print('doctests done.\nRunning example_experiment:'), sys.stdout.flush()
     example_experiment.main()
     for arg in args if args else default_testcases:
         process_testfile(arg) if args or os.path.isfile(arg) else None
-    _clean_up(["random_search_on_bbob", "results"], list_before)
+    _clean_up('exdata', ['random_search_on_bbob', 'doctest', 'default'], list_before)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

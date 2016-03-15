@@ -16,7 +16,7 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 /**
  * @brief Sets the dimensions and default instances for the bbob large-scale suite.
  */
-static coco_suite_t *suite_largescale_allocate(void) {
+static coco_suite_t *suite_largescale_initialize(void) {
   
   coco_suite_t *suite;
   /*const size_t dimensions[] = { 8, 16, 32, 64, 128, 256,512,1024};*/
@@ -43,8 +43,8 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_ellipsoid_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else {
-    coco_error("coco_get_largescale_problem(): cannot retrieve problem f%lu instance %lu in %luD", function,
-        instance, dimension);
+    coco_error("coco_get_largescale_problem(): cannot retrieve problem f%lu instance %lu in %luD",
+    		(unsigned long) function, (unsigned long) instance, (unsigned long) dimension);
     return NULL; /* Never reached */
   }
 

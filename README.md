@@ -1,45 +1,59 @@
 numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
-This code reimplements the original Comparing Continous Optimizer platform, now 
-rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
+[This code](https://github.com/numbbo/coco) reimplements the original Comparing Continous Optimizer platform, 
+now rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
 the code provides a platform to benchmark and compare continuous optimizers, AKA non-linear 
-solvers for numerical optimization. Languages currently available are `C`, `Java`, 
-`MATLAB/Octave`, and `Python`. Support for `C++` is expected to be available in the near 
-future. Contributions to link further languages (including `C++`) are more than welcome.
+solvers for numerical optimization. Languages currently available are 
 
-See the [workshops page](http://numbbo.github.io/workshops), the [previous COCO home page](http://coco.gforge.inria.fr/) 
-and [further links below](#Further-Links) to learn more about the ideas behind CoCO.
+  - `C/C++`
+  - `Java`
+  - `MATLAB/Octave`
+  - `Python`
+
+Contributions to link further languages (including a better
+example in `C++`) are more than welcome.
+
+For more information, 
+- [benchmarking guidlines introduction](none) (link is coming soon)
+- [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
+- [`bbob-biobj` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation
+- consult the [BBOB workshops series](http://numbbo.github.io/workshops),
+- consider to [register here](http://numbbo.github.io/register) for news, 
+- see the [previous COCO home page here](http://coco.gforge.inria.fr/) and 
+- see the [links below](#Links) to learn more about the ideas behind CoCO.
 
 Requirements  <a name="Requirements"></a>
 ------------
 1. For a machine running experiments 
   - A `C` compiler, such as gcc
-  - make, such as GNU make
   - Python >=2.6 with `setuptools` installed
   - optional: `git`
 2. For a machine running the post-processing
   - Python 2.6 or 2.7 with `numpy` (preferably >=1.7) and `matplotlib` installed. 
-    We recommend to install the [Anaconda library](https://www.continuum.io/downloads). 
+    We recommend to install the [Anaconda Python 2.7 library](https://www.continuum.io/downloads). 
     Python 3 is not yet supported with the post-processing part of NumBBO/CoCO!
 
 ### Windows Specifics
 Under Windows, two alternative compile toolchains can be used: 
 
 1. [Cygwin](https://www.cygwin.com/) which comes with gcc and make, available in 32- and 64-bit versions.  
-2. MinGW's gcc (http://www.mingw.org/) and GNU make (http://gnuwin32.sourceforge.net/packages/make.htm).
-  MinGW only comes in 32-bit, but also runs on 64-bit machines. 
+2. MinGW's gcc (http://www.mingw.org/), which only comes in 32-bit, but also runs on 64-bit machines. 
 
 For using `git` under Windows (optional), we recommend installing [TortoiseGit](https://tortoisegit.org/).
 
-### Language Specifics
+### Language Specifics  <a name="Language-Specifics"></a>
 _Additional_ requirements for running an algorithm in a specific language.
 
-* Java: any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
+* **C**: make, such as GNU make ([GNU make for Windows](http://gnuwin32.sourceforge.net/packages/make.htm)). 
+* **Java**: `gcc` and any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
   (i.e. in the system path). 
-* MATLAB: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
-* Octave: tested with Octave 4.0.0 but older versions might work. Make sure `octave` can be called from
-  the shell without closing the shell on exit, for details, see [here](./code-experiments/build/matlab/README.md)
+* **MATLAB**: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
+* **Python on Windows with MinGW**: Python 2.7 and the Microsoft compiler package for Python 2.7 
+  containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
+  These are necessary to build the C extensions for the Python `cocoex` module for Windows. 
+  The package contains 32-bit and 64-bit compilers and the Windows SDK headers.
+* **Octave**: Octave 4.0.0 or later. On operating systems other than Windows, earlier versions might work.
 
 ### Guaranties (None)
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
@@ -51,7 +65,7 @@ Otherwise we will be happy if you can document them in detail on the
 [issue tracker](https://github.com/numbbo/coco/issues). 
 
 
- Getting Started <a name="Getting-Started"></a>
+Getting Started <a name="Getting-Started"></a>
 ---------------
 0. Check out the [_Requirements_](#Requirements) above.
 
@@ -60,13 +74,13 @@ Otherwise we will be happy if you can document them in detail on the
 
   - either by clicking [here](https://github.com/numbbo/coco/archive/master.zip) and unzip the 
     `zip` file, 
-  - or by typing `git clone https://github.com/numbbo/coco.git`, preferred, as it 
+  - or (preferred) by typing `git clone https://github.com/numbbo/coco.git`. This way 
     allows to remain up-to-date easily (but needs `git` to be installed). After 
     cloning, `git pull` keeps the code up-to-date with the latest release. 
 
   **CAVEAT: this code is still under heavy development**. The record of official releases can 
   be found [here](https://github.com/numbbo/coco/releases). The latest release corresponds 
-  to the [master branch](https://github.com/numbbo/coco/tree/master) as liked above. 
+  to the [master branch](https://github.com/numbbo/coco/tree/master) as linked above. 
 
 2. In a system shell, **`cd` into** the `coco` or `coco-<version>` folder (framework root), 
   where the file `do.py` can be found. Type, i.e. **execute**, one of the following commands once
@@ -123,7 +137,7 @@ Otherwise we will be happy if you can document them in detail on the
 6.  **Postprocess** the data from the results folder by typing
 
     ```
-    python -m bbob_pproc YOURDATAFOLDER [MORE_FOLDERS]
+    python -m bbob_pproc [-o OUTPUT_FOLDERNAME] YOURDATAFOLDER [MORE_DATAFOLDERS]
     ```
 
   The name `bbob_pproc` will become `cocopp` in future. Any subfolder in the
@@ -133,13 +147,11 @@ Otherwise we will be happy if you can document them in detail on the
   several data result folders generated by different algorithms.
   
   A folder, `ppdata` by default, will be generated, which contains all output from 
-  the post-processing. Data are overwritten, it is therefore useful to change the 
-  output folder name with the `-o FOLDERNAME` option.
+  the post-processing, including a `ppdata.html` file, useful as main entry point to 
+  explore the result with a browser. Data might be overwritten, 
+  it is therefore useful to change the output folder name with the `-o OUTPUT_FOLDERNAME` 
+  option.
 
-  Within the postprocessing's output folder, you will find pdfs of all kinds
-  of plots (e.g. data profiles). With the `--svg` option, figures for the
-  `template*.html` file are generated, which can be explored in a browser. 
-  
   For the single-objective `bbob` suite, a summary pdf can be produced via 
   LaTeX. The corresponding templates in ACM format can be found in the
   `code-postprocessing/latex-templates` folder. LaTeX templates for the
@@ -248,7 +260,8 @@ Traceback (most recent call last):
     raise error
 subprocess.CalledProcessError: Command '['locate', 'jni.h']' returned non-zero exit status 1
 ```
-check out [this](http://stackoverflow.com/questions/13526701/javah-missing-after-jdk-install-linux)
+it means `javah` is either not installed (see above) or cannot be found in the system
+path, see [this](http://stackoverflow.com/questions/13526701/javah-missing-after-jdk-install-linux)
 and possibly [this](https://github.com/numbbo/coco/issues/416) for a solution. 
 
 ### Matlab
@@ -292,7 +305,7 @@ Windows path. For instance, the `etc/paths` should look like something like this
 /Applications/MATLAB_R2012a.app/bin/
 ```
 
-#### SMA-EMOA example does not compile under Mac 
+#### SMS-EMOA example does not compile under Mac 
 With the more complex SMS-EMOA example. The problem is related to the compilation
 of the external C++ hypervolume calculation in `hv.cpp`. 
 
@@ -326,19 +339,8 @@ processes if there is any) before to run the `do.py` command again.
 
 
 ### Octave
+none for the moment
 
-#### Command Window Closes Unexpectedly Under Windows
-If it happens that the command window, from which the
-`python do.py run-octave` is run, closes unexpectely under Windows, you might
-want to change the general way, Octave is called. Find your `octave.bat` file,
-which is in your Octave installation folder (typically something like
-`C:\Octave\Octave-4.0.0\` and remove or outcomment the last line, saying
-```
-Rem   Close the batch file's cmd.exe window
-exit
-```
-We think already about a way to solve this issue directly in the `do.py` but it
-has low priority for the moment.
 
 ### Python
 
@@ -389,13 +391,19 @@ Under Linux
 ```
 should do the trick. 
 
+#### Module Update/Install Does Not Propagate
+We have observed a case where the update of the `cocoex` Python module seemed to have no 
+effect. In this case it has been successful to remove all previously installed versions, 
+see [here](https://github.com/numbbo/coco/issues/586) for a few more details. 
+
 
 Details
 -------
 - The C code features an object oriented implementation, where the
   `coco_problem_t` is the most central data structure / object. `coco.h`,
   `example_experiment.c` and `coco_internal.h` are probably the best pointers to
-  start __to investigate the code__ (but see also ). `coco_problem_t`
+  start __to investigate the code__ (but see also 
+  [here](https://numbbo.github.io/coco-doc/C/annotated.html)). `coco_problem_t`
   defines a benchmark function instance (in a given dimension), and is called
   via `coco_evaluate_function`.
 
@@ -415,17 +423,19 @@ Details
   Windows 7 machine with cygwin.
 
 
-Further Links and Documentation <a name="Further-Links"></a>
--------------------------------
+Links and Documentation <a name="Links"></a>
+-----------------------
 * The [_BBOB workshop series_](http://numbbo.github.io/workshops), which uses the
   NumBBO/Coco framework extensively, can be tracked at 
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
   by registering at http://coco.gforge.inria.fr/register
+* Please refer to http://numbbo.github.io/coco-doc/experimental-setup/ for more details on the
+  experimental set-up for black-box optimization benchmarking.
 * More detailed documentation of the existing benchmark suites can be found here:
   - for the **`BBOB`** problem suite at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
-  - for the **`bbob-biobj`** problem suite at http://numbbo.github.io/bbob-biobj-functions-doc
+  - for the **`bbob-biobj`** problem suite at http://numbbo.github.io/coco-doc/bbob-biobj/functions
 * Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
   http://numbbo.github.io/coco-doc/C
 * Downloading this repository 

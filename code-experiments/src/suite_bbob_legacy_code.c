@@ -100,7 +100,7 @@ static void bbob2009_unif(double *r, size_t N, long inseed) {
 /**
  * @brief Converts from packed matrix storage to an array of array of double representation.
  */
-static double **bbob2009_reshape(double **B, double *vector, size_t m, size_t n) {
+static double **bbob2009_reshape(double **B, double *vector, const size_t m, const size_t n) {
   size_t i, j;
   for (i = 0; i < m; i++) {
     for (j = 0; j < n; j++) {
@@ -113,7 +113,7 @@ static double **bbob2009_reshape(double **B, double *vector, size_t m, size_t n)
 /**
  * @brief Generates N Gaussian random numbers using the given seed and stores them in g.
  */
-static void bbob2009_gauss(double *g, size_t N, long seed) {
+static void bbob2009_gauss(double *g, const size_t N, const long seed) {
   size_t i;
   double uniftmp[6000];
   assert(2 * N < 6000);
@@ -130,7 +130,7 @@ static void bbob2009_gauss(double *g, size_t N, long seed) {
 /**
  * @brief Computes a DIM by DIM rotation matrix based on seed and stores it in B.
  */
-static void bbob2009_compute_rotation(double **B, long seed, size_t DIM) {
+static void bbob2009_compute_rotation(double **B, const long seed, const size_t DIM) {
   /* To ensure temporary data fits into gvec */
   double prod;
   double gvect[2000];
@@ -174,7 +174,7 @@ static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b, co
 /**
  * @brief Randomly computes the location of the global optimum.
  */
-static void bbob2009_compute_xopt(double *xopt, long seed, size_t DIM) {
+static void bbob2009_compute_xopt(double *xopt, const long seed, const size_t DIM) {
   long i;
   bbob2009_unif(xopt, DIM, seed);
   for (i = 0; i < DIM; i++) {
@@ -187,7 +187,7 @@ static void bbob2009_compute_xopt(double *xopt, long seed, size_t DIM) {
 /**
  * @brief Randomly chooses the objective offset for the given function and instance.
  */
-static double bbob2009_compute_fopt(size_t function, size_t instance) {
+static double bbob2009_compute_fopt(const size_t function, const size_t instance) {
   long rseed, rrseed;
   double gval, gval2;
 

@@ -47,7 +47,7 @@ static double f_attractive_sector_raw(const double *x,
  */
 static void f_attractive_sector_evaluate(coco_problem_t *problem, const double *x, double *y) {
   assert(problem->number_of_objectives == 1);
-  y[0] = f_attractive_sector_raw(x, problem->number_of_variables, problem->data);
+  y[0] = f_attractive_sector_raw(x, problem->number_of_variables, (f_attractive_sector_data_t *) problem->data);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
@@ -56,7 +56,7 @@ static void f_attractive_sector_evaluate(coco_problem_t *problem, const double *
  */
 static void f_attractive_sector_free(coco_problem_t *problem) {
   f_attractive_sector_data_t *data;
-  data = problem->data;
+  data = (f_attractive_sector_data_t *) problem->data;
   coco_free_memory(data->xopt);
   problem->problem_free_function = NULL;
   coco_problem_free(problem);
