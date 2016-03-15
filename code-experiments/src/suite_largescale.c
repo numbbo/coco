@@ -15,7 +15,7 @@
 #include "f_linear_slope.c"
 #include "f_rastrigin.c"
 #include "f_schaffers.c"
-#include "f_schwefel.c"
+#include "f_schwefel_generalized.c"
 #include "f_sharp_ridge.c"
 #include "f_sphere.c"
 #include "f_step_ellipsoid.c"
@@ -111,7 +111,7 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_allocate(function, dimension, instance, rseed,
                                                           problem_id_template, problem_name_template);
   } else if (function == 20) {
-    problem = f_schwefel_bbob_problem_allocate(function, dimension, instance, rseed,
+    problem = f_schwefel_generalized_bbob_problem_allocate(function, dimension, instance, rseed,
                                                problem_id_template, problem_name_template);
   } else if (function == 21) {
     problem = f_gallagher_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed, 101,
