@@ -80,9 +80,14 @@ space are called *Pareto-optimal* or *efficient solutions*. All
 Pareto-optimal solutions constitute the *Pareto set* of which an 
 approximation is sought. The Pareto set's image in the
 objective space :math:`f(\mathbb{R}^n)` is called *Pareto front*.
+
 The objective of the minimization problem is to find, with as few evaluations
 of |f| as possible, a set of non-dominated solutions which is (i) as large
-as possible and (ii) has |f|-values as close to the pareto front as possible . 
+as possible and (ii) has |f|-values as close to the pareto front as possible. [#]_ 
+
+.. [#] Distance in |f| space is defined here such that nadir and ideal point 
+  have in each coordinate distance one. Neither of these points is however
+  freely accessible to the optimization algorithm. 
 
 .. The *ideal point* is defined as the vector (in objective space) 
 .. containing the optimal function values of the (two) objective functions.
@@ -101,7 +106,8 @@ We remind in this section different definitions.
  instances have shifted optima.
  
  The integer :math:`n` is the dimension of the search space and
- :math:`m=2` for the  ``bbob-biobj`` test suite. 
+ :math:`m=2` for the  ``bbob-biobj`` test suite. For each function instance, 
+ also called a *problem*, furthermore :math:`(n, \theta)` are fixed.
 
 *ideal point*
  The ideal point is defined as the vector in objective space that
@@ -151,12 +157,12 @@ Overview of the Proposed ``bbob-biobj`` Test Suite
 ==================================================
 
 The ``bbob-biobj`` test suite provides 55 bi-objective functions in six
-dimensions (2, 3, 5, 10, 20, and 40) with arbitrary many instances. 
+dimensions (2, 3, 5, 10, 20, and 40) with a large number of possible instances. 
 The 55 functions are derived from combining a subset of the 24 well-known
-single-objective functions of the ``bbob`` test suite which
+single-objective functions of the ``bbob`` test suite [HAN2009fun]_ which
 has been used since 2009 in the `BBOB workshop series
 <http://numbbo.github.io/workshops/>`_ . While concrete details on each of
-the 55 ``bbob-biobj`` functions will be given in
+the 55 ``bbob-biobj`` functions are given in Section
 :ref:`sec-test-functions`, we will detail here the main rationals behind
 them together with their common properties.
 
@@ -166,7 +172,11 @@ The Single-objective ``bbob`` Functions Used
 The ``bbob-biobj`` test suite is designed to be able to assess  performance of algorithms with respect to well-identified difficulties in optimization typically  occurring in real-world problems. A multi-objective problem being a combination of single-objective problems, one can obtain multi-objective problems with representative difficulties by simply combining single objective functions with representative difficulties observed in real-world problems. For this purpose we naturally use the single-objective ``bbob`` suite.
 
 Combining all 24 ``bbob`` functions in pairs thereby results in
-:math:`24^2=576` bi-objective functions overall. We however assume that multi-objective optimization algorithms are invariant or not very sensitive to permutations of the objective functions such that combining the 24  ``bbob`` functions and taking out the function :math:`(g_2,g_1)` if the function :math:`(g_1,g_2)` is present results in :math:`24+ {24 \choose 2} = 300` functions [#]_.
+:math:`24^2=576` bi-objective functions overall. We however assume that
+multi-objective optimization algorithms are not sensitive to permutations of
+the objective functions such that combining the 24  ``bbob`` functions and
+taking out the function :math:`(g_2,g_1)` if the function :math:`(g_1,g_2)`
+is present results in :math:`24+ {24 \choose 2} = 300` functions.
 
 .. Given that most (if not all) multi-objective optimization algorithms are
 .. invariant to permutations of the objective functions, a bi-objective
@@ -177,14 +187,16 @@ Combining all 24 ``bbob`` functions in pairs thereby results in
 .. Hence, we should keep only one of the resulting
 .. bi-objective functions. Combining then all 24 ``bbob`` functions
 
-.. [#] The first objective is chosen as ``bbob`` function *i*
+.. The first objective is chosen as ``bbob`` function *i*
   and the second as ``bbob`` function *j* with *i* :math:`\leq` *j*,
   results in :math:`24+ {24 \choose 2} = 300` functions.
 
-Some first tests, e.g. in [BTH2015a]_, showed that having 300 functions
-in Coco's first bi-objective suite is impracticable in terms
-of the overall running time of the benchmarking experiment.  We then decided to exploit the organization of the ``bbob`` functions into classes to choose a subset of functions. More precisely the 24 original ``bbob`` functions are grouped into five function
-classes where each class gathers functions with similar properties, namely
+Some first tests, e.g. in [BTH2015a]_, showed that having 300 functions is
+impracticable in terms of the overall running time of the benchmarking
+experiment.  We then decided to exploit the organization of the ``bbob``
+functions into classes to choose a subset of functions. More precisely the 24
+original ``bbob`` functions are grouped into five function classes where each
+class gathers functions with similar properties, namely
 
   1. separable functions
   2. functions with low or moderate conditioning
@@ -1785,4 +1797,13 @@ Contained in the *weakly-structured - weakly-structured* function class.
    GECCO 2015: 639-646
    
 .. [COCO:2016] The BBOBies, COCO: A platform for Comparing Continuous Optimizers in a
-	Black-Box Setting.   
+    Black-Box Setting.   
+
+.. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
+  `Real-parameter black-box optimization benchmarking 2009: Noiseless
+  functions definitions`__. `Technical Report RR-6829`__, Inria, updated
+  February 2010.
+
+.. __: http://coco.gforge.inria.fr/
+.. __: https://hal.inria.fr/inria-00362633
+
