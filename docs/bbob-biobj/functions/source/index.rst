@@ -60,16 +60,16 @@ normalization.
 Introduction
 ============
 
-In the following, we consider bi-objective, unconstrained **minimization**
-problems of the form
+In the following, we consider bi-objective, unconstrained and bound-constraint
+**minimization** problems of the form
 
 .. math::
   \min_{x \in \mathbb{R}^n} f(x)=(f_\alpha(x),f_\beta(x))
 
-with :math:`n` being the number of variables of the problem (also called
+where :math:`n` is the number of variables of the problem (also called
 the problem dimension), :math:`f_\alpha: \mathbb{R}^n \rightarrow \mathbb{R}`
-and :math:`f_\beta: \mathbb{R}^n \rightarrow \mathbb{R}` being the two unconstrained
-objective functions, and the :math:`\min` operator related to the
+and :math:`f_\beta: \mathbb{R}^n \rightarrow \mathbb{R}` are the two
+objective functions, and the :math:`\min` operator is related to the
 standard *dominance relation*. A solution :math:`x\in\mathbb{R}^n`
 is thereby said to *dominate* another solution :math:`y\in\mathbb{R}^n` if
 :math:`f_\alpha(x) \leq f_\alpha(y)` and :math:`f_\beta(x) \leq f_\beta(y)` hold and at
@@ -80,6 +80,9 @@ space are called *Pareto-optimal* or *efficient solutions*. All
 Pareto-optimal solutions constitute the *Pareto set* of which an 
 approximation is sought. The Pareto set's image in the
 objective space :math:`f(\mathbb{R}^n)` is called *Pareto front*.
+The objective of the minimization problem is to find, with as few evaluations
+of :math:`f` as possible, a set of non-dominated solutions which is (i) as large
+as possible and (ii) as close to the pareto front as possible . 
 
 .. The *ideal point* is defined as the vector (in objective space) 
 .. containing the optimal function values of the (two) objective functions.
