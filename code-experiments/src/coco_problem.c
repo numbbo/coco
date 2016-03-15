@@ -31,7 +31,13 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
 	assert(problem != NULL);
   assert(problem->evaluate_function != NULL);
 
-  /* Set objective vector to NAN values if the decision vector contains any NAN values */
+  /* Set objective vector to INFINITY if the decision vector contains any INFINITY values */
+  if (coco_vector_contains_inf(x, coco_problem_get_dimension(problem))) {
+  	coco_vector_set_to_inf(y, coco_problem_get_number_of_objectives(problem));
+  	return;
+  }
+
+  /* Set objective vector to NAN if the decision vector contains any NAN values */
   if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
   	coco_vector_set_to_nan(y, coco_problem_get_number_of_objectives(problem));
   	return;
