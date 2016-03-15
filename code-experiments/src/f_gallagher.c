@@ -309,7 +309,7 @@ static double f_gallagher_sub_core(const double *x, const size_t number_of_varia
 
   tmp = 0;
 
-  for (i = 0; i < number_of_variables; i++) { /*compute x^T x */
+  for (i = 0; i < number_of_variables; i++) {
     tmp += x[i] * x[i];
   }
 
@@ -502,7 +502,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     (*problem_i)->best_value[0] = 0;/* to prevent raising the assert */
     /* P_Lambda the permutation */
     P_Lambda = coco_allocate_vector_size_t(dimension);/* random permutation of the alpha_i's */
-    coco_compute_random_permutation(P_Lambda, rseed + 5000000, dimension);
+    coco_compute_random_permutation(P_Lambda, rseed + 5000000 + peak_index, dimension);
 
     /* apply var transformations to sub problem*/
     *problem_i = transform_vars_scale(*problem_i, sqrt(sqrt(sqrt(alpha_i))));/* sqrt( alpha^1/4) */
