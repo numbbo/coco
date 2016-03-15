@@ -25,7 +25,7 @@ static void transform_vars_x_hat_evaluate(coco_problem_t *problem, const double 
   size_t i;
   transform_vars_x_hat_data_t *data;
   coco_problem_t *inner_problem;
-  data = coco_problem_transformed_get_data(problem);
+  data = (transform_vars_x_hat_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
   do {
     bbob2009_unif(data->x, problem->number_of_variables, data->seed);
@@ -46,32 +46,38 @@ static void transform_vars_x_hat_evaluate(coco_problem_t *problem, const double 
  * @brief Frees the data object.
  */
 static void transform_vars_x_hat_free(void *thing) {
-  transform_vars_x_hat_data_t *data = thing;
+  transform_vars_x_hat_data_t *data = (transform_vars_x_hat_data_t *) thing;
   coco_free_memory(data->x);
 }
 
 /**
  * @brief Creates the transformation.
  */
-static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, long seed) {
+static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, const long seed) {
   transform_vars_x_hat_data_t *data;
   coco_problem_t *problem;
+  char *result;
   size_t i;
 
   data = (transform_vars_x_hat_data_t *) coco_allocate_memory(sizeof(*data));
   data->seed = seed;
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
-  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_x_hat_free);
+  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_x_hat_free, "transform_vars_x_hat");
   problem->evaluate_function = transform_vars_x_hat_evaluate;
   /* Dirty way of setting the best parameter of the transformed f_schwefel... */
   bbob2009_unif(data->x, problem->number_of_variables, data->seed);
-  for (i = 0; i < problem->number_of_variables; ++i) {
-      if (data->x[i] - 0.5 < 0.0) {
-          problem->best_parameter[i] = -0.5 * 4.2096874633;
-      } else {
-          problem->best_parameter[i] = 0.5 * 4.2096874633;
+  result = strstr(coco_problem_get_id(inner_problem), "schwefel");
+  if (result != NULL) {
+      for (i = 0; i < problem->number_of_variables; ++i) {
+          if (data->x[i] - 0.5 < 0.0) {
+              problem->best_parameter[i] = -0.5 * 4.2096874633;
+          } else {
+              problem->best_parameter[i] = 0.5 * 4.2096874633;
+          }
       }
+  } else if (!coco_problem_is_best_parameter_zero(inner_problem)) {
+      coco_warning("transform_vars_x_hat(): 'best_parameter' not updated");
   }
   return problem;
 }

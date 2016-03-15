@@ -64,7 +64,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
 /**
  * @brief Sets the dimensions and default instances for the bbob-biobj suite.
  */
-static coco_suite_t *suite_biobj_allocate(void) {
+static coco_suite_t *suite_biobj_initialize(void) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
@@ -78,7 +78,7 @@ static coco_suite_t *suite_biobj_allocate(void) {
 /**
  * @brief Sets the instances associated with years for the bbob-biobj suite.
  */
-static char *suite_biobj_get_instances_by_year(const int year) {
+static const char *suite_biobj_get_instances_by_year(const int year) {
 
   if (year == 2016) {
     return "1-10";
@@ -131,8 +131,9 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   int instance_found = 0;
 
   /* A "magic" formula to compute the BBOB function index from the bi-objective function index */
-  function1_idx = num_bbob_functions -
-      (size_t) (-0.5 + sqrt(0.25 + 2.0 * (double) (suite->number_of_functions - function_idx - 1))) - 1;
+  function1_idx = num_bbob_functions
+      - coco_double_to_size_t(
+          floor(-0.5 + sqrt(0.25 + 2.0 * (double) (suite->number_of_functions - function_idx - 1)))) - 1;
   function2_idx = function_idx - (function1_idx * num_bbob_functions) +
       (function1_idx * (function1_idx + 1)) / 2;
 
@@ -176,7 +177,7 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
 
       data->new_instances = (size_t **) coco_allocate_memory(data->max_new_instances * sizeof(size_t *));
       for (i = 0; i < data->max_new_instances; i++) {
-        data->new_instances[i] = malloc(3 * sizeof(size_t));
+        data->new_instances[i] = (size_t *) malloc(3 * sizeof(size_t));
         for (j = 0; j < 3; j++) {
           data->new_instances[i][j] = 0;
         }
@@ -201,7 +202,8 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
 
   /* Use the standard stacked problem_id as problem_name and construct a new suite-specific problem_id */
   coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "bbob-biobj_f%02d_i%02ld_d%02d", function, instance, dimension);
+  coco_problem_set_id(problem, "bbob-biobj_f%02lu_i%02lu_d%02lu", (unsigned long) function,
+  		(unsigned long) instance, (unsigned long) dimension);
 
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem1->problem_type, problem2->problem_type);
@@ -304,8 +306,8 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
     } else {
       /* An appropriate instance was found */
       appropriate_instance_found = 1;
-      coco_info("suite_biobj_set_new_instance(): Instance %lu created from instances %lu and %lu", instance,
-          instance1, instance2);
+      coco_info("suite_biobj_set_new_instance(): Instance %lu created from instances %lu and %lu",
+      		(unsigned long) instance, (unsigned long) instance1, (unsigned long) instance2);
 
       /* Save the instance to new_instances */
       for (i = 0; i < data->max_new_instances; i++) {
@@ -320,7 +322,8 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
   }
 
   if (!appropriate_instance_found) {
-    coco_error("suite_biobj_get_new_instance(): Could not find suitable instance %lu in $lu tries", instance, num_tries);
+    coco_error("suite_biobj_get_new_instance(): Could not find suitable instance %lu in %lu tries",
+    		(unsigned long) instance, (unsigned long) num_tries);
     return 0; /* Never reached */
   }
 
@@ -336,7 +339,7 @@ static void suite_biobj_free(void *stuff) {
   size_t i;
 
   assert(stuff != NULL);
-  data = stuff;
+  data = (suite_biobj_t *) stuff;
 
   if (data->new_instances) {
     for (i = 0; i < data->max_new_instances; i++) {
