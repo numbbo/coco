@@ -349,12 +349,17 @@ ideal and nadir point are not accessible to the optimization algorithm
 
 Instances
 ---------
-Our test functions are parametrized and instances are instantiations of the underlying parameters (see [COCO:2016]_). The instances for the bi-objective functions are using instances of each single objective function composing the bi-objective one. However, in addition, we assert that
+Our test functions are parametrized and instances are instantiations of the
+underlying parameters (see [COCO:2016]_). The instances for the bi-objective
+functions are using instances of each single objective function composing the
+bi-objective one. However, in addition, we assert two conditions. 
 
-  #. the two single-objective optima (also called the extreme optimal points) are not closer than :math:`10^{-4}` in search space, and that
+  #. The two single-objective optima (also called the extreme optimal points) are not closer than :math:`10^{-4}` in search space. 
 
-  #. the Euclidean distance between the ideal and the nadir point (in objective 
-     space considering raw |f|-values) is at least :math:`10^{-1}`. 
+  #. The Euclidean distance between the ideal and the nadir point (in objective 
+     space, considering raw |f|-values) is at least :math:`10^{-1}`. 
+     
+.. TODO:: fact-check this
 
 .. Instances are the way in the `Coco framework`_ to perform multiple
 .. algorithm runs on the same function. More concretely, the original
@@ -362,8 +367,8 @@ Our test functions are parametrized and instances are instantiations of the unde
 
 .. ::
 
-..   All functions can be instantiated in different *versions* (with
-..   different location of the global optimum and different optimal
+..  All functions can be instantiated in different *versions* (with
+..  different location of the global optimum and different optimal
 ..  function value). Overall *Ntrial* runs are conducted on different
 ..  instantiations.
 
@@ -375,8 +380,15 @@ Our test functions are parametrized and instances are instantiations of the unde
 
 We associate to an instance, an instance-id which is an integer. The relation between the instance-id, :math:`K^{\rm biobj}_{\rm id}`, of a bi-objective function and the instance-ids of the single-objective functions (:math:`K_{\rm id}^{f_\alpha}` and :math:`K_{\rm id}^{f_\beta}`) composing the bi-objective problem is the following:
 
- * :math:`K_{\rm id}^{f_\alpha}` =  2 \* :math:`K^{\rm biobj}_{\rm id}` + 1 and
- * :math:`K_{\rm id}^{f_\beta}` =  :math:`K_{\rm id}^{f_\alpha}` + 1
+ * :math:`K_{\rm id}^{f_\alpha} = 2 K^{\rm biobj}_{\rm id} + 1` and
+ * :math:`K_{\rm id}^{f_\beta} = K_{\rm id}^{f_\alpha} + 1`
+
+
+.. TODO:: should be :math:`2 K - 1` instead of :math:`2 K + 1`, no?
+
+
+.. * :math:`K_{\rm id}^{f_\alpha}` =  2 \* :math:`K^{\rm biobj}_{\rm id}` + 1 and
+.. * :math:`K_{\rm id}^{f_\beta}` =  :math:`K_{\rm id}^{f_\alpha}` + 1
 
 If we find that above conditions are not satisfied for all dimensions and
 functions in the ``bbob-biobj`` suite, we increase the instance-id of the
@@ -393,19 +405,19 @@ Exceptions to the above rule are, for historical reasons, the
 instance-id 1 contains the single-objective instance-ids 2 and 4 and
 the ``bbob-biobj`` instance-id 2 contains the two instance-ids 3 and 5.
 
-Note that the number of instances from the ``bbob-biobj`` suite is
-neither limited from above nor from below. However, running some tests
-with less than 3 instances will render the potential statistics and
-their interpretation problematic while even the smallest difference can
-be made statistically significant with a high enough number of
-instances. Thus, we recommend to use between 5 to 15 instances for the actual
-benchmarking.
+For each bi-objective function and given dimension, the ``bbob-biobj`` suite
+contains 10 instances. 
+
+.. Note that the number of instances from the ``bbob-biobj`` suite is
+   neither limited from above nor from below. However, running some tests
+   with less than 3 instances will render the potential statistics and
+   their interpretation problematic while even the smallest difference can
+   be made statistically significant with a high enough number of
+   instances. Thus, we recommend to use between 5 to 15 instances for the actual
+   benchmarking.
+.. The user does not have a choice over the number of instances. 
 
 
-  
-
-
- 
 
 .. _sec-test-functions:
 
@@ -421,7 +433,7 @@ and their properties.
    - plots of the best known approximations of the Pareto set and the Pareto front
    - potentially the outcomes of example algorithms
    - plots (in objective space) of randomly sampled search points
-   - potentially function value distributions along cuts through the search space
+   - potentially function value distributions along cuts through the search space 
 
 Quick access to the functions: :ref:`f1 <f1>`, :ref:`f2 <f2>`, :ref:`f3 <f3>`,
 :ref:`f4 <f4>`, :ref:`f5 <f5>`, :ref:`f6 <f6>`, :ref:`f7 <f7>`,
@@ -455,9 +467,9 @@ functions from separable ones :math:`x \in \mathbb{R}^n \mapsto g(x)` is the app
 :math:`\mathbf R` to :math:`x`, that is :math:`x \in \mathbb{R}^n \mapsto g(\mathbf R x)`.
 
 A *unimodal* function has only one local minimum which is at the same
-time also its global one. The opposite is a *multimodal* function
-which appears to have at least one local minimum and which is
-highly common in practical optimization problems.
+time also its global one. 
+A *multimodal* function has at least two local minima which is highly common
+in practical optimization problems.
 
 *Ill-conditioning* is a another typical challenge in real-parameter
 optimization and, besides multimodality, probably the most common one.
@@ -470,6 +482,10 @@ are ellipsoids, the condition number corresponds to the square root of
 the ratio between the largest axis of the ellipsoid and the shortest axis.
 For more general functions, conditioning loosely refers to the square of
 the ratio between the largest and smallest direction of a contour line. 
+
+.. TODO:: it is not quite clear what a large or small direction of a line is. 
+   Ill-conditioning is IMHO related to change of curvature. 
+
 The proposed ``bbob-biobj`` testbed contains ill-conditioned functions
 with a typical conditioning of :math:`10^6`. We believe this a realistic
 requirement, while we have seen practical problems with conditioning
