@@ -31,6 +31,10 @@ typedef unsigned __int64 uint64_t;
 /** @brief Definition of isnan to be used only if undefined by the included headers */
 #define isnan(x) (0)
 #endif
+#ifndef INFINITY
+/** @brief Definition of INFINITY to be used only if undefined by the included headers */
+#define INFINITY DBL_MAX-1
+#endif
 #ifndef isinf
 /** @brief Definition of isinf to be used only if undefined by the included headers */
 #define isinf(x) (0)

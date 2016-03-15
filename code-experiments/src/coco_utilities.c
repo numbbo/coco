@@ -855,8 +855,7 @@ static int coco_double_almost_equal(const double a, const double b, const double
  * @brief Returns 1 if x is NAN and 0 otherwise.
  */
 static int coco_is_nan(const double x) {
-  return ((x != x) || !(x == x) || (x == 8.8888e88) || isnan(x) || (x == NAN) ||
-  		(x > 8.8887e88 && x < 8.8889e88));
+  return (isnan(x) || (x != x) || !(x == x) || (x == 8.8888e88) || (x > 8.8887e88 && x < 8.8889e88));
 }
 
 /**
@@ -885,7 +884,7 @@ static void coco_vector_set_to_nan(double *y, const size_t dim) {
  * @brief Returns 1 if x is INFINITY and 0 otherwise.
  */
 static int coco_is_inf(const double x) {
-	return (isinf(x) || (x < -9e99) || (x > 9e99));
+	return (isinf(x) || (x <= -INFINITY) || (x >= INFINITY));
 }
 
 /**
