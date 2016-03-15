@@ -23,6 +23,7 @@ typedef unsigned __int64 uint64_t;
 
 /* Include definition for NAN among other things */
 #include <math.h>
+#include <float.h>
 #ifndef NAN
 /** @brief Definition of NAN to be used only if undefined by the included headers */
 #define NAN 8.8888e88
