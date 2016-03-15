@@ -351,11 +351,10 @@ Instances
 ---------
 Our test functions are parametrized and instances are instantiations of the underlying parameters (see [COCO:2016]_). The instances for the bi-objective functions are using instances of each single objective function composing the bi-objective one. However, in addition, we assert that
 
-  #. the two single-objective optima (in search space, also called the extreme optimal points) are not closer than :math:`10^{-4}`.
+  #. the two single-objective optima (also called the extreme optimal points) are not closer than :math:`10^{-4}` in search space, and that
 
-  #. the distance (Euclidean norm) between the ideal and the nadir point (in objective space) is at least :math:`10^{-1}` and that
-
-.. TODO:: it remains to be explained *how* this is done. 
+  #. the Euclidean distance between the ideal and the nadir point (in objective 
+     space considering raw |f|-values) is at least :math:`10^{-1}`. 
 
 .. Instances are the way in the `Coco framework`_ to perform multiple
 .. algorithm runs on the same function. More concretely, the original
@@ -379,7 +378,9 @@ We associate to an instance, an instance-id which is an integer. The relation be
  * :math:`K_{\rm id}^{f_\alpha}` =  2 \* :math:`K^{\rm biobj}_{\rm id}` + 1 and
  * :math:`K_{\rm id}^{f_\beta}` =  :math:`K_{\rm id}^{f_\alpha}` + 1
 
-If we find that conditions a. and b. above are not satisfied for all dimensions and functions in the ``bbob-biobj`` suite, we increase the instance-id of the second objective successfully until both properties are fulfilled. 
+If we find that above conditions are not satisfied for all dimensions and
+functions in the ``bbob-biobj`` suite, we increase the instance-id of the
+second objective successively until both properties are fulfilled. 
 For example, the ``bbob-biobj`` instance-id
 8 corresponds to the instance-id 17 for the first objective and instance-id 18 for
 the second objective while for the ``bbob-biobj`` instance-id 9, the
