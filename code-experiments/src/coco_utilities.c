@@ -855,7 +855,7 @@ static int coco_double_almost_equal(const double a, const double b, const double
  * @brief Returns 1 if x is NAN and 0 otherwise.
  */
 static int coco_is_nan(const double x) {
-  return (isnan(x) || (x != x) || !(x == x) || (x == 8.8888e88) || (x > 8.8887e88 && x < 8.8889e88));
+  return (isnan(x) || (x != x) || !(x == x) || ((x >= NAN / (1 + 1e-9)) && (x <= NAN * (1 + 1e-9))));
 }
 
 /**
@@ -885,28 +885,6 @@ static void coco_vector_set_to_nan(double *y, const size_t dim) {
  */
 static int coco_is_inf(const double x) {
 	return (isinf(x) || (x <= -INFINITY) || (x >= INFINITY));
-}
-
-/**
- * @brief Returns 1 if the input vector of dimension dim contains any INFINITY values and 0 otherwise.
- */
-static int coco_vector_contains_inf(const double *x, const size_t dim) {
-	size_t i;
-	for (i = 0; i < dim; i++) {
-		if (coco_is_inf(x[i]))
-		  return 1;
-	}
-	return 0;
-}
-
-/**
- * @brief Sets all dim values of y to INFINITY.
- */
-static void coco_vector_set_to_inf(double *y, const size_t dim) {
-	size_t i;
-	for (i = 0; i < dim; i++) {
-		y[i] = INFINITY;
-	}
 }
 
 /**@}*/

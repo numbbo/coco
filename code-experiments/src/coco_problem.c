@@ -28,12 +28,17 @@
  */
 void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y) {
   /* implements a safer version of problem->evaluate(problem, x, y) */
+	size_t i, j;
 	assert(problem != NULL);
   assert(problem->evaluate_function != NULL);
 
   /* Set objective vector to INFINITY if the decision vector contains any INFINITY values */
-  if (coco_vector_contains_inf(x, coco_problem_get_dimension(problem))) {
-  	coco_vector_set_to_inf(y, coco_problem_get_number_of_objectives(problem));
+	for (i = 0; i < coco_problem_get_dimension(problem); i++) {
+		if (coco_is_inf(x[i])) {
+			for (j = 0; j < coco_problem_get_number_of_objectives(problem); j++) {
+				y[j] = x[i];
+			}
+		}
   	return;
   }
 
