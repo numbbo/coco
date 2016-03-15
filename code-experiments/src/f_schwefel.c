@@ -81,7 +81,6 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
   size_t i;
-  const double schwefel_const = 4.199999;
   double *tmp1 = coco_allocate_vector(dimension);
   double *tmp2 = coco_allocate_vector(dimension);
 
@@ -108,12 +107,6 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
   problem = transform_vars_z_hat(problem, xopt);
   problem = transform_vars_scale(problem, 2);
   problem = transform_vars_x_hat(problem, rseed);
-  /*if large scale test-bed, normalize by dim*/
-  if (coco_strfind(problem_name_template, "BBOB large-scale suite") >= 0){
-     problem = transform_obj_scale(problem, 1.0 / (double) dimension);
-  }
-  
-  problem = transform_obj_shift(problem, schwefel_const);  
   problem = transform_obj_shift(problem, fopt);
 
 
