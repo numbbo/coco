@@ -1,3 +1,8 @@
+/**
+ * @file f_griewank_rosenbrock.c
+ * @brief Implementation of the Griewank-Rosenbrock function and problem.
+ */
+
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
@@ -9,6 +14,9 @@
 #include "transform_vars_shift.c"
 #include "transform_obj_shift.c"
 
+/**
+ * @brief Implements the Griewank-Rosenbrock function without connections to any COCO structures.
+ */
 static double f_griewank_rosenbrock_raw(const double *x, const size_t number_of_variables) {
 
   size_t i = 0;
@@ -28,11 +36,18 @@ static double f_griewank_rosenbrock_raw(const double *x, const size_t number_of_
   return result;
 }
 
-static void f_griewank_rosenbrock_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_griewank_rosenbrock_raw(x, self->number_of_variables);
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
+static void f_griewank_rosenbrock_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_griewank_rosenbrock_raw(x, problem->number_of_variables);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Allocates the basic Griewank-Rosenbrock problem.
+ */
 static coco_problem_t *f_griewank_rosenbrock_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Griewank Rosenbrock function",
@@ -44,6 +59,9 @@ static coco_problem_t *f_griewank_rosenbrock_allocate(const size_t number_of_var
   return problem;
 }
 
+/**
+ * @brief Creates the BBOB Griewank-Rosenbrock problem.
+ */
 static coco_problem_t *f_griewank_rosenbrock_bbob_problem_allocate(const size_t function,
                                                                    const size_t dimension,
                                                                    const size_t instance,
@@ -66,7 +84,7 @@ static coco_problem_t *f_griewank_rosenbrock_bbob_problem_allocate(const size_t 
 
   rot1 = bbob2009_allocate_matrix(dimension, dimension);
   bbob2009_compute_rotation(rot1, rseed, dimension);
-  scales = coco_max_double(1., sqrt((double) dimension) / 8.);
+  scales = coco_double_max(1., sqrt((double) dimension) / 8.);
   for (i = 0; i < dimension; ++i) {
     for (j = 0; j < dimension; ++j) {
       rot1[i][j] *= scales;
@@ -74,10 +92,10 @@ static coco_problem_t *f_griewank_rosenbrock_bbob_problem_allocate(const size_t 
   }
 
   problem = f_griewank_rosenbrock_allocate(dimension);
-  problem = f_transform_obj_shift(problem, fopt);
-  problem = f_transform_vars_shift(problem, shift, 0);
+  problem = transform_obj_shift(problem, fopt);
+  problem = transform_vars_shift(problem, shift, 0);
   bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
-  problem = f_transform_vars_affine(problem, M, b, dimension);
+  problem = transform_vars_affine(problem, M, b, dimension);
 
   bbob2009_free_matrix(rot1, dimension);
 

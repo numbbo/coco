@@ -19,6 +19,8 @@ setup(
                           'best*algentries*.pickle',
                           'best*algentries*.pickle.gz',
                           'pprldistr2009*.pickle.gz',
+    # this is not supposed to copy to the subfolder, see https://docs.python.org/2/distutils/setupscript.html
+    # but it does. 
                           'js/*', 'tth/*']},
     url = 'https://github.com/numbbo/coco',
     license = 'BSD',
