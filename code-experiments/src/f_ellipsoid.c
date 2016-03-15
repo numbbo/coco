@@ -182,7 +182,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
-  coco_problem_set_type(problem, "large_scale_block_rotated");/*TODO: no large scale prefix*/
+  coco_problem_set_type(problem, "block-rotated_ill-conditionned");
   
   coco_free_block_matrix(B, dimension);
   coco_free_memory(P1);

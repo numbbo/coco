@@ -304,22 +304,17 @@ static void f_gallagher_versatile_data_free(coco_problem_t *problem) {
  * @brief Implements the gallagher function subproblems without connections to any COCO structures.
  * Wassim: core to differentiate it from raw for now
  */
-static double f_gallagher_sub_core(const double *x, const size_t number_of_variables, f_gallagher_versatile_data_t *versatile_data) {
-  double result, w_i, tmp;
+static double f_gallagher_sub_core(const double *x, const size_t number_of_variables) {
+  double result, tmp;
   size_t i;
 
-  if (versatile_data->peak_index == 0) {
-    w_i = 10;
-  } else {
-    w_i = 1.1 + 8.0 * (((double) versatile_data->peak_index + 1) - 2.0) / (((double)versatile_data->number_of_peaks) - 2.0);
-  }
   tmp = 0;
 
   for (i = 0; i < number_of_variables; i++) { /*compute x^T x */
     tmp += x[i] * x[i];
   }
 
-  result = w_i * exp(- 1.0 / (2.0 * ((double)number_of_variables)) * tmp);
+  result = exp(- 1.0 / (2.0 * ((double)number_of_variables)) * tmp);
 
   return result;
 }
@@ -330,7 +325,7 @@ static double f_gallagher_sub_core(const double *x, const size_t number_of_varia
 static void f_gallagher_sub_evaluate_core(coco_problem_t *problem, const double *x, double *y) {
 
   assert(problem->number_of_objectives == 1);
-  y[0] = f_gallagher_sub_core(x, problem->number_of_variables, (f_gallagher_versatile_data_t *) problem->versatile_data);
+  y[0] = f_gallagher_sub_core(x, problem->number_of_variables);
   /*assert(y[0] + 1e-13 >= problem->best_value[0]);*/
 }
 
@@ -366,13 +361,21 @@ static double f_gallagher_core(const double *x, f_gallagher_versatile_data_t *f_
 
   coco_problem_t *problem_i;
   double result = 0;
-  double y;
+  double y, w_i;
   size_t i;
   double maxf;
 
+  
+  
   for (i = 0; i < f_gallagher_versatile_data->number_of_peaks; i++) {
     problem_i = f_gallagher_versatile_data->sub_problems[i];
     problem_i->evaluate_function(problem_i, x, &y);
+    if (i == 0) {
+      w_i = 10;
+    } else {
+      w_i = 1.1 + 8.0 * (((double) i + 1) - 2.0) / (((double)f_gallagher_versatile_data->number_of_peaks) - 2.0);
+    }
+    y *= w_i;
     if ( i == 0 || maxf < y ) {
       maxf = y;
     }
