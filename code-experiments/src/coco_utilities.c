@@ -899,6 +899,16 @@ static int coco_vector_contains_inf(const double *x, const size_t dim) {
 	return 0;
 }
 
+/**
+ * @brief Sets all dim values of y to INFINITY.
+ */
+static void coco_vector_set_to_inf(double *y, const size_t dim) {
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		y[i] = INFINITY;
+	}
+}
+
 /**@}*/
 
 /***********************************************************************************************************/
