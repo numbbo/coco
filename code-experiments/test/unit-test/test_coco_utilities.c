@@ -428,8 +428,10 @@ static void test_coco_is_nan(void **state) {
  */
 static void test_coco_is_inf(void **state) {
 
-  assert_true(coco_is_inf(1e100));
-  assert_true(coco_is_inf(-1e100));
+  assert_true(coco_is_inf(INFINITY));
+  assert_true(coco_is_inf(-INFINITY));
+  assert_true(coco_is_inf(2*INFINITY));
+  assert_true(coco_is_inf(-2*INFINITY));
   assert_true(!coco_is_inf(NAN));
   (void) state; /* unused */
 }
