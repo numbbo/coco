@@ -26,7 +26,7 @@ typedef unsigned __int64 uint64_t;
 #include <float.h>
 #ifndef NAN
 /** @brief Definition of NAN to be used only if undefined by the included headers */
-#define NAN 8.8888e88
+#define NAN DBL_MAX - 1e-1
 #endif
 #ifndef isnan
 /** @brief Definition of isnan to be used only if undefined by the included headers */
@@ -34,7 +34,7 @@ typedef unsigned __int64 uint64_t;
 #endif
 #ifndef INFINITY
 /** @brief Definition of INFINITY to be used only if undefined by the included headers */
-#define INFINITY DBL_MAX-1
+#define INFINITY DBL_MAX - 1
 #endif
 #ifndef isinf
 /** @brief Definition of isinf to be used only if undefined by the included headers */
