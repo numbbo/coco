@@ -81,12 +81,13 @@ Pareto-optimal solutions constitute the *Pareto set* of which an
 approximation is sought. The Pareto set's image in the
 objective space :math:`f(\mathbb{R}^n)` is called *Pareto front*.
 The objective of the minimization problem is to find, with as few evaluations
-of :math:`f` as possible, a set of non-dominated solutions which is (i) as large
-as possible and (ii) as close to the pareto front as possible . 
+of |f| as possible, a set of non-dominated solutions which is (i) as large
+as possible and (ii) has |f|-values as close to the pareto front as possible . 
 
 .. The *ideal point* is defined as the vector (in objective space) 
 .. containing the optimal function values of the (two) objective functions.
 
+.. |f| replace:: :math:`f`
 
 Definitions and Terminology
 ---------------------------
@@ -103,19 +104,18 @@ We remind in this section different definitions.
  :math:`m=2` for the  ``bbob-biobj`` test suite. 
 
 *ideal point*
- The ideal point is defined as the vector (in objective space)
- containing the optimal function values of the (two) objective
- functions. More precisely let :math:`f_\alpha^{\rm opt}:= \inf_{x\in \mathbb{R}^n} f_\alpha(x)` and
- :math:`f_\beta^{\rm opt}:= \sup_{x\in \mathbb{R}^n} f_\beta(x)`, the ideal point is given by
+ The ideal point is defined as the vector in objective space that
+ contains the optimal |f|-value for each objective *independently*. 
+ More precisely let :math:`f_\alpha^{\rm opt}:= \inf_{x\in \mathbb{R}^n} f_\alpha(x)` and
+ :math:`f_\beta^{\rm opt}:= \inf_{x\in \mathbb{R}^n} f_\beta(x)`, the ideal point is given by
  
  .. math::
     :nowrap:
 
 	\begin{equation*}
-	z_{\rm ideal}  =  (f_\alpha^{\rm opt},f_\beta^{\rm opt})
+	z_{\rm ideal}  =  (f_\alpha^{\rm opt},f_\beta^{\rm opt}) \enspace.
     \end{equation*}
     
-
  
 *nadir point* 
  The *nadir point* (in objective space) consists in each objective of
@@ -127,11 +127,11 @@ We remind in this section different definitions.
 
 	\begin{equation*}
 	z_{\rm nadir}  =   \left( \sup_{x \in \mathcal{PO}} f_\alpha(x),
-     \sup_{x \in \mathcal{PO}} f_\beta(x)  \right)
+     \sup_{x \in \mathcal{PO}} f_\beta(x)  \right) \enspace.
     \end{equation*} 
     
- In the case of two objectives with unicity of the global minimum of each objective (that
- is a single point in the search space maps to the global minimum) then 
+ In the case of two objectives with a unique global minimum each (that
+ is a single point in the search space maps to the global minimum) 
     
  .. math::
     :nowrap:
@@ -151,7 +151,7 @@ Overview of the Proposed ``bbob-biobj`` Test Suite
 ==================================================
 
 The ``bbob-biobj`` test suite provides 55 bi-objective functions in six
-dimensions (2, 3, 5, 10, 20, and 40) with arbitrary many instances (10 of them being typically fixed for a BBOB workshop).
+dimensions (2, 3, 5, 10, 20, and 40) with arbitrary many instances. 
 The 55 functions are derived from combining a subset of the 24 well-known
 single-objective functions of the ``bbob`` test suite which
 has been used since 2009 in the `BBOB workshop series
