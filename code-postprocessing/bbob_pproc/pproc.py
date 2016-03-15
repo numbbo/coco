@@ -891,6 +891,7 @@ class DataSet():
         
         instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))        
         
+        expectedNumberOfInstances = 10 if self.isBiobjective() else 15        
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
             # check exception of 2009 data sets with 3 times instances 1:5
             for i in set(self.instancenumbers):
@@ -905,15 +906,17 @@ class DataSet():
                                 str(self.instancenumbers) + 
                                 ' (f' + str(self.funcId) + ', ' + str(self.dim)
                                 + 'D)')
-        elif len(self.instancenumbers) < 15:
+        elif len(self.instancenumbers) < expectedNumberOfInstances:
             is_consistent = False
-            warnings.warn('  less than 15 instances in ' + 
+            warnings.warn('  less than ' + str(expectedNumberOfInstances) +
+                                ' instances in ' + 
                                 str(self.instancenumbers) + 
                                 ' (f' + str(self.funcId) + ', ' +
                                 str(self.dim) + 'D)')
-        elif len(self.instancenumbers) > 15:
+        elif len(self.instancenumbers) > expectedNumberOfInstances:
             is_consistent = False
-            warnings.warn('  more than 15 instances in ' + 
+            warnings.warn('  more than ' + str(expectedNumberOfInstances) + 
+                                ' instances in ' + 
                                 str(self.instancenumbers)+ 
                                 ' (f' + str(self.funcId) + ', ' + 
                                 str(self.dim) + 'D)')
@@ -921,9 +924,11 @@ class DataSet():
                 and (instancedict != genericsettings.instancesOfInterest2010)
                 and (instancedict != genericsettings.instancesOfInterest2012)
                 and (instancedict != genericsettings.instancesOfInterest2013)
-                and (instancedict != genericsettings.instancesOfInterest2015)):
+                and (instancedict != genericsettings.instancesOfInterest2015)
+                and (instancedict != genericsettings.instancesOfInterest2016)
+                and (instancedict != genericsettings.instancesOfInterestBiobj2016)):
             is_consistent = False
-            warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, or 2015')
+            warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, 2015 or 2016')
         return is_consistent
             
     def computeERTfromEvals(self):
