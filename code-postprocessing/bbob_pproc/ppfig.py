@@ -189,7 +189,7 @@ def save_single_functions_html(filename,
         if not htmlPage == HtmlPage.PPRLDMANY_BY_GROUP:
             functionGroups.update({'noiselessall':'All functions'})
 
-        maxFunctionIndex = 55 if isBiobjective else 24
+        maxFunctionIndex = genericsettings.current_testbed.number_of_functions
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
         addLinkForNextDim = add_to_names.endswith('D')
         bestAlgExists = not isBiobjective
