@@ -93,7 +93,7 @@ int main(int argc, char **argv) {
       ret = fscanf(testfile, "%30lf", &testvectors[i].x[j]);
       if (ret != 1) {
         fprintf(stderr, "ERROR: Failed to parse testvector %lu element %lu.\n",
-                i + 1, j + 1);
+        		(unsigned long) i + 1, (unsigned long) j + 1);
       }
     }
   }
@@ -115,7 +115,8 @@ int main(int argc, char **argv) {
       if (NULL != problem)
         coco_problem_free(problem);
       if (problem_index > coco_suite_get_number_of_problems(suite) - 1) {
-        fprintf(stdout, "problem index = %lu, maximum index = %lu \n", problem_index, coco_suite_get_number_of_problems(suite) - 1);
+        fprintf(stdout, "problem index = %lu, maximum index = %lu \n", (unsigned long) problem_index,
+        		(unsigned long) coco_suite_get_number_of_problems(suite) - 1);
       }
       problem = coco_suite_get_problem(suite, problem_index);
       previous_problem_index = (long) problem_index;

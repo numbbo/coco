@@ -304,6 +304,7 @@ class GECCOBBOBTestbed(Testbed):
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
         self.ppfvdistr_min_target = 1e-8
         self.functions_with_legend = (1, 24, 101, 130)
+        self.number_of_functions = 24
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
@@ -337,6 +338,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5) # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)
+        self.number_of_functions = 55
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 

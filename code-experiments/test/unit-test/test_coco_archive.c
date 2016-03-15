@@ -41,8 +41,8 @@ static void test_coco_archive(void **state) {
       break;
 
     /* Add solution to the archive */
-    line = coco_strdupf("%lu\t%f\t%f\t%f\t%f\t%f\n", number_of_evaluations, x[0], x[1], y[0], y[1],
-        hypervolume_read);
+    line = coco_strdupf("%lu\t%f\t%f\t%f\t%f\t%f\n", (unsigned long) number_of_evaluations, x[0], x[1], y[0],
+    		y[1], hypervolume_read);
     coco_archive_add_solution(archive, y[0], y[1], line);
     coco_free_memory(line);
   }
@@ -60,7 +60,7 @@ static void test_coco_archive(void **state) {
   assert(about_equal_value(hypervolume_computed, hypervolume_read));
 
   i = 0;
-  while ((text = coco_archive_get_next_solution_text(archive)) != "") {
+  while (strcmp(text = coco_archive_get_next_solution_text(archive), "") != 0) {
     number = (size_t) strtol(text, NULL, 10);
     assert(numbers[i] == number);
     i++;
