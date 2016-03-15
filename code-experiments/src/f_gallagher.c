@@ -18,7 +18,6 @@
 #include "transform_vars_permutation_helpers.c"
 #include "transform_vars_scale.c"
 
-#include "f_sphere.c"
 /**
  * @brief A random permutation type for the Gallagher problem.
  *
@@ -304,7 +303,7 @@ static void f_gallagher_versatile_data_free(coco_problem_t *problem) {
  * @brief Implements the gallagher function subproblems without connections to any COCO structures.
  * Wassim: core to differentiate it from raw for now
  */
-/*static double f_gallagher_sub_core(const double *x, const size_t number_of_variables) {
+static double f_gallagher_sub_core(const double *x, const size_t number_of_variables) {
   double result, tmp;
   size_t i;
 
@@ -317,7 +316,7 @@ static void f_gallagher_versatile_data_free(coco_problem_t *problem) {
   result = exp(- 1.0 / (2.0 * ((double)number_of_variables)) * tmp);
 
   return result;
-}*/ /* Wassim: now uses f_sphere_raw, TODO: delete if maintained*/
+}
 
 /**
  * @brief Uses the core function to evaluate the sub problem.
@@ -335,7 +334,7 @@ static void f_gallagher_sub_evaluate_core(coco_problem_t *problem, const double 
 static coco_problem_t *f_gallagher_sub_problem_allocate(const size_t number_of_variables) {
   
   coco_problem_t *problem_i = coco_problem_allocate_from_scalars("gallagher_sub function",
-                                                               f_sphere_raw, f_gallagher_versatile_data_free, number_of_variables, -5.0, 5.0, 0.0);
+                                                               f_gallagher_sub_evaluate_core, f_gallagher_versatile_data_free, number_of_variables, -5.0, 5.0, 0.0);
   f_gallagher_versatile_data_t *versatile_data_tmp;
   problem_i->versatile_data = (f_gallagher_versatile_data_t *) coco_allocate_memory(sizeof(f_gallagher_versatile_data_t));
   versatile_data_tmp = ((f_gallagher_versatile_data_t *) problem_i->versatile_data);
@@ -374,7 +373,7 @@ static double f_gallagher_core(const double *x, f_gallagher_versatile_data_t *f_
     } else {
       w_i = 1.1 + 8.0 * (((double) i + 1) - 2.0) / (((double)f_gallagher_versatile_data->number_of_peaks) - 2.0);
     }
-    y = w_i * exp(- 1.0 / (2.0 * ((double)number_of_variables)) * y);/* Wassim: problem_i->evaluate_function is the sphere on a transformed coordiante system with conditioning */
+    y *= w_i;
     if ( i == 0 || maxf < y ) {
       maxf = y;
     }
