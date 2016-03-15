@@ -17,4 +17,5 @@
 %      5.9543e+002  1.6626e+008
 %   >> cocoCall('cocoProblemFree', problem);
 %   >> cocoCall('cocoSuiteFree', suite);
-%
+function problem = cocoSuiteGetProblem(suite, problem_index)
+problem = cocoCall('cocoSuiteGetProblem', suite, problem_index);
