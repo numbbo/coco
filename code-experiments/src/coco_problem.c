@@ -28,17 +28,24 @@
  */
 void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y) {
   /* implements a safer version of problem->evaluate(problem, x, y) */
-  assert(problem != NULL);
+	assert(problem != NULL);
   assert(problem->evaluate_function != NULL);
+
+  /* Set objective vector to NAN values if the decision vector contains any NAN values */
+  if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
+  	coco_vector_set_to_nan(y, coco_problem_get_number_of_objectives(problem));
+  	return;
+  }
+
   problem->evaluate_function(problem, x, y);
   problem->evaluations++; /* each derived class has its own counter, only the most outer will be visible */
-#if 1
+
   /* A little bit of bookkeeping */
   if (y[0] < problem->best_observed_fvalue[0]) {
     problem->best_observed_fvalue[0] = y[0];
     problem->best_observed_evaluation[0] = problem->evaluations;
   }
-#endif
+
 }
 
 /**

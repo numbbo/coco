@@ -24,6 +24,9 @@ static double f_rosenbrock_raw(const double *x, const size_t number_of_variables
 
   assert(number_of_variables > 1);
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   for (i = 0; i < number_of_variables - 1; ++i) {
     tmp = (x[i] * x[i] - x[i + 1]);
     s1 += tmp * tmp;

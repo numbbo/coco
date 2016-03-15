@@ -413,10 +413,33 @@ static void test_coco_option_keys(void **state) {
   (void) state; /* unused */
 }
 
+/**
+ * Tests the function coco_is_nan.
+ */
+static void test_coco_is_nan(void **state) {
+
+  assert_true(coco_is_nan(NAN));
+  assert_true(!coco_is_nan(1e100));
+  (void) state; /* unused */
+}
+
+/**
+ * Tests the function coco_is_inf.
+ */
+static void test_coco_is_inf(void **state) {
+
+  assert_true(coco_is_inf(1e100));
+  assert_true(coco_is_inf(-1e100));
+  assert_true(!coco_is_inf(NAN));
+  (void) state; /* unused */
+}
+
 static int test_all_coco_utilities(void) {
 
   const struct CMUnitTest tests[] =
   {
+      cmocka_unit_test(test_coco_is_nan),
+      cmocka_unit_test(test_coco_is_inf),
       cmocka_unit_test(test_coco_set_log_level),
       cmocka_unit_test(test_coco_double_max_min),
       cmocka_unit_test(test_coco_double_round),
