@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """Scatter Plots.
 
-For two algorithms, this generates the scatter plot of log(ERT1(df)) vs.
-log(ERT0(df)), where ERT0(df) is the ERT of the reference algorithm,
-ERT1(df) is the ERT of the algorithm of concern, both for target
+For two algorithms, this generates the scatter plot of log(aRT1(df)) vs.
+log(aRT0(df)), where aRT0(df) is the aRT of the reference algorithm,
+aRT1(df) is the aRT of the algorithm of concern, both for target
 precision df.
 
 Different symbols are used for different dimension (see
@@ -20,8 +20,8 @@ each algorithm in each dimension.
 """
 from __future__ import absolute_import
 
-"""For two algorithms, ERTs(given target function value) can also be
-plotted in a scatter plot (log(ERT0) vs. log(ERT1)), which results in a
+"""For two algorithms, aRTs(given target function value) can also be
+plotted in a scatter plot (log(aRT0) vs. log(aRT1)), which results in a
 very attractive presentation, see the slides of Frank Hutter at
 http://www.msr-inria.inria.fr/events-news/first-search-biology-day. The
 advantage is that the absolute values do not get lost. The disadvantage
@@ -40,7 +40,7 @@ except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from .. import genericsettings, htmldesc, ppfigparam
-from ..ppfig import saveFigure, save_single_functions_html, AlgorithmCount
+from ..ppfig import saveFigure, save_single_functions_html, HtmlPage
 from .. import toolsdivers
 from .. import pproc
 
@@ -60,13 +60,13 @@ linewidth_rld_based = 2  # show lines because only 8 symbols are used
 max_evals_line_length = 9  # length away from the diagonal as a factor, line indicates maximal evaluations for each data
 offset = 0. #0.02 offset provides a way to move away the box boundaries to display the outer markers fully, clip_on=False is more effective 
 
-caption_start_fixed = r"""Expected running time (\ERT\ in $\log_{10}$ of number of function evaluations) 
+caption_start_fixed = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations) 
     of \algorithmB\ ($x$-axis) versus \algorithmA\ ($y$-axis) for $NBTARGETS$ target values 
     $\Df \in [NBLOW, NBUP]$ in each dimension on functions #1. """
-caption_start_rlbased = r"""Expected running time (\ERT\ in $\log_{10}$ of number of function evaluations) 
+caption_start_rlbased = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations) 
     of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $NBTARGETS$ runlength-based target 
     function values for budgets between $NBLOW$ and $NBUP$ evaluations. 
-    Each runlength-based target $f$-value is chosen such that the \ERT{}s of the 
+    Each runlength-based target $f$-value is chosen such that the \aRT{}s of the 
     REFERENCE_ALGORITHM artificial algorithm for the given and a slightly easier 
     target bracket the reference budget. """
 caption_finish = r"""Markers on the upper or right edge indicate that the respective target
@@ -116,8 +116,8 @@ def beautify():
     a = plt.gca()
     a.set_xscale('log')
     a.set_yscale('log')
-    #a.set_xlabel('ERT0')
-    #a.set_ylabel('ERT1')
+    #a.set_xlabel('aRT0')
+    #a.set_ylabel('aRT1')
     xmin, xmax = plt.xlim()
     ymin, ymax = plt.ylim()
     minbnd = min(xmin, ymin)
@@ -178,14 +178,14 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                 entry1 = dictDim1[d][0] # should be only one element
             except (IndexError, KeyError):
                 continue
-            if linewidth:  # plot all reliable ERT values as a line
+            if linewidth:  # plot all reliable aRT values as a line
                 all_targets = np.array(sorted(set(entry0.target).union(entry1.target), reverse=True))
                 assert entry0.detSuccessRates([all_targets[0]]) == 1.0
                 assert entry1.detSuccessRates([all_targets[0]]) == 1.0
                 all_targets = all_targets[np.where(all_targets <= targets((f, d))[0])[0]]  # 
                 xdata_all = np.array(entry0.detERT(all_targets))
                 ydata_all = np.array(entry1.detERT(all_targets))
-                # idx of reliable targets: last index where success rate >= 1/2 and ERT <= maxevals
+                # idx of reliable targets: last index where success rate >= 1/2 and aRT <= maxevals
                 idx = []
                 for ari in (np.where(entry0.detSuccessRates(all_targets) >= 0.5)[0], 
                          np.where(entry1.detSuccessRates(all_targets) >= 0.5)[0], 
@@ -346,8 +346,9 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             #plt.axvline(entry0.mMaxEvals(), ls='--', color=colors[i])
             #plt.axhline(entry1.mMaxEvals(), ls='--', color=colors[i])
 
+        fontSize = genericsettings.getFontSize(funInfos.values())
         if f in funInfos.keys():        
-            plt.ylabel(funInfos[f])
+            plt.ylabel(funInfos[f], fontsize=fontSize)
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
         saveFigure(filename, verbose=verbose)
@@ -357,7 +358,9 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             save_single_functions_html(
                 os.path.join(outputdir, genericsettings.two_algorithm_file_name),
                 "%s vs %s" % (algName1, algName0),
-                algorithmCount=AlgorithmCount.TWO)
+                htmlPage = HtmlPage.TWO,
+                isBiobjective = dsList0.isBiobjective(),
+                functionGroups = dsList0.getFuncGroups())
         plt.close()
 
     #plt.rcdefaults()

@@ -9,10 +9,6 @@
 #ifndef __COCO_H__
 #define __COCO_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stddef.h>
 
 /* Definitions of some 32 and 64-bit types (used by the random number generator) */
@@ -30,6 +26,10 @@ typedef unsigned __int64 uint64_t;
 #ifndef NAN
 /** @brief To be used only if undefined by the included headers */
 #define NAN 8.8888e88
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /**
@@ -53,40 +53,49 @@ typedef enum {
 /***********************************************************************************************************/
 
 /** @brief Structure containing a COCO problem. */
-struct coco_problem;
+struct coco_problem_s;
 
 /**
  * @brief The COCO problem type.
  *
- * See coco_problem for more information on its fields. */
-typedef struct coco_problem coco_problem_t;
+ * See coco_problem_s for more information on its fields. */
+typedef struct coco_problem_s coco_problem_t;
 
 /** @brief Structure containing a COCO suite. */
-struct coco_suite;
+struct coco_suite_s;
 
 /**
  * @brief The COCO suite type.
  *
- * See coco_suite for more information on its fields. */
-typedef struct coco_suite coco_suite_t;
+ * See coco_suite_s for more information on its fields. */
+typedef struct coco_suite_s coco_suite_t;
 
 /** @brief Structure containing a COCO observer. */
-struct coco_observer;
+struct coco_observer_s;
 
 /**
  * @brief The COCO observer type.
  *
- * See coco_observer for more information on its fields. */
-typedef struct coco_observer coco_observer_t;
+ * See coco_observer_s for more information on its fields. */
+typedef struct coco_observer_s coco_observer_t;
+
+/** @brief Structure containing a COCO archive. */
+struct coco_archive_s;
+
+/**
+ * @brief The COCO archive type.
+ *
+ * See coco_archive_s for more information on its fields. */
+typedef struct coco_archive_s coco_archive_t;
 
 /** @brief Structure containing a COCO random state. */
-struct coco_random_state;
+struct coco_random_state_s;
 
 /**
  * @brief The COCO random state type.
  *
- * See coco_random_state for more information on its fields. */
-typedef struct coco_random_state coco_random_state_t;
+ * See coco_random_state_s for more information on its fields. */
+typedef struct coco_random_state_s coco_random_state_t;
 
 /***********************************************************************************************************/
 
@@ -113,27 +122,27 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
 /**
  * @brief Returns the problem of the suite defined by problem_index.
  */
-coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, size_t problem_index);
+coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, const size_t problem_index);
 
 /**
  * @brief Returns the number of problems in the given suite.
  */
-size_t coco_suite_get_number_of_problems(coco_suite_t *suite);
+size_t coco_suite_get_number_of_problems(const coco_suite_t *suite);
 
 /**
  * @brief Returns the function number in the suite in position function_idx (counting from 0).
  */
-size_t coco_suite_get_function_from_function_index(coco_suite_t *suite, size_t function_idx);
+size_t coco_suite_get_function_from_function_index(const coco_suite_t *suite, const size_t function_idx);
 
 /**
  * @brief Returns the dimension number in the suite in position dimension_idx (counting from 0).
  */
-size_t coco_suite_get_dimension_from_dimension_index(coco_suite_t *suite, size_t dimension_idx);
+size_t coco_suite_get_dimension_from_dimension_index(const coco_suite_t *suite, const size_t dimension_idx);
 
 /**
  * @brief Returns the instance number in the suite in position instance_idx (counting from 0).
  */
-size_t coco_suite_get_instance_from_instance_index(coco_suite_t *suite, size_t instance_idx);
+size_t coco_suite_get_instance_from_instance_index(const coco_suite_t *suite, const size_t instance_idx);
 /**@}*/
 
 /**
@@ -197,9 +206,9 @@ size_t coco_suite_get_instance_from_instance_index(coco_suite_t *suite, size_t i
 /**@{*/
 /**
  * @brief Computes the index of the problem in the suite that corresponds to the given function, dimension
- * and instance indexes.
+ * and instance indices.
  */
-size_t coco_suite_encode_problem_index(coco_suite_t *suite,
+size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
                                        const size_t function_idx,
                                        const size_t dimension_idx,
                                        const size_t instance_idx);
@@ -208,11 +217,11 @@ size_t coco_suite_encode_problem_index(coco_suite_t *suite,
  * @brief Computes the function, dimension and instance indexes of the problem with problem_index in the
  * given suite.
  */
-void coco_suite_decode_problem_index(coco_suite_t *suite,
+void coco_suite_decode_problem_index(const coco_suite_t *suite,
                                      const size_t problem_index,
                                      size_t *function_idx,
-                                     size_t *instance_idx,
-                                     size_t *dimension_idx);
+                                     size_t *dimension_idx,
+                                     size_t *instance_idx);
 /**@}*/
 
 /***********************************************************************************************************/
@@ -235,6 +244,11 @@ void coco_observer_free(coco_observer_t *observer);
  * @brief Adds an observer to the given problem.
  */
 coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer_t *observer);
+
+/**
+ * @brief Removes an observer from the given problem.
+ */
+coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_observer_t *observer);
 
 /**@}*/
 
@@ -292,7 +306,12 @@ size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
 /**
  * @brief Returns the number of evaluations done on the problem.
  */
-size_t coco_problem_get_evaluations(coco_problem_t *problem);
+size_t coco_problem_get_evaluations(const coco_problem_t *problem);
+
+/**
+ * @brief Returns 1 if the final target was hit, 0 otherwise.
+ */
+int coco_problem_final_target_hit(const coco_problem_t *problem);
 
 /**
  * @brief Returns the best observed value for the first objective.
@@ -302,7 +321,7 @@ double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem);
 /**
  * @brief Returns the target value for the first objective.
  */
-double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem);
+double depreciated_coco_problem_get_final_target_fvalue1(const coco_problem_t *problem);
 
 /**
  * @brief Returns a vector of size 'dimension' with lower bounds of the region of interest in
@@ -319,7 +338,7 @@ const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *
 /**
  * @brief Returns the problem_index of the problem in its current suite.
  */
-size_t coco_problem_get_suite_dep_index(coco_problem_t *problem);
+size_t coco_problem_get_suite_dep_index(const coco_problem_t *problem);
 
 /**
  * @brief Returns an initial solution, i.e. a feasible variable setting, to the problem.
@@ -400,6 +419,16 @@ void coco_warning(const char *message, ...);
 void coco_info(const char *message, ...);
 
 /**
+ * @brief Prints only the given message without any prefix and new line.
+ *
+ * A function similar to coco_info but producing no additional text than
+ * the given message.
+ *
+ * The output is only produced if coco_log_level >= COCO_INFO.
+ */
+void coco_info_partial(const char *message, ...);
+
+/**
  * @brief Outputs detailed information usually used for debugging.
  */
 void coco_debug(const char *message, ...);
@@ -408,6 +437,49 @@ void coco_debug(const char *message, ...);
  * @brief Sets the COCO log level to the given value and returns the previous value of the log level.
  */
 const char *coco_set_log_level(const char *level);
+/**@}*/
+
+/***********************************************************************************************************/
+
+/**
+ * @name Methods regarding COCO archives (used when pre-processing MO data)
+ */
+/**@{*/
+
+/**
+ * @brief Constructs a COCO archive.
+ */
+coco_archive_t *coco_archive(const char *suite_name,
+                             const size_t function,
+                             const size_t dimension,
+                             const size_t instance);
+/**
+ * @brief Adds a solution with objectives (f1, f2) to the archive if none of the existing solutions in the
+ * archive dominates it. In this case, returns 1, otherwise the archive is not updated and the method
+ * returns 0.
+ */
+int coco_archive_add_solution(coco_archive_t *archive, const double f1, const double f2, const char *text);
+
+/**
+ * @brief Returns the number of (non-dominated) solutions in the archive (computed first, if needed).
+ */
+size_t coco_archive_get_number_of_solutions(coco_archive_t *archive);
+
+/**
+ * @brief Returns the hypervolume of the archive (computed first, if needed).
+ */
+double coco_archive_get_hypervolume(coco_archive_t *archive);
+
+/**
+ * @brief Returns the text of the next (non-dominated) solution in the archive and "" when there are no
+ * solutions left. The first two solutions are always the extreme ones.
+ */
+const char *coco_archive_get_next_solution_text(coco_archive_t *archive);
+
+/**
+ * @brief Frees the archive.
+ */
+void coco_archive_free(coco_archive_t *archive);
 /**@}*/
 
 /***********************************************************************************************************/

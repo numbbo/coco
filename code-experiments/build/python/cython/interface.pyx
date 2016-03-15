@@ -36,24 +36,26 @@ cdef extern from "coco.h":
     void coco_suite_free(coco_suite_t *suite)
     void coco_problem_free(coco_problem_t *problem)
 
-    void coco_evaluate_function(coco_problem_t *problem, double *x, double *y)
+    void coco_problem_get_initial_solution(coco_problem_t *problem, double *x)
+    void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
     void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
     void coco_recommend_solution(coco_problem_t *problem, const double *x)
 
     coco_problem_t* coco_suite_get_next_problem(coco_suite_t*, coco_observer_t*)
-    coco_problem_t* coco_suite_get_problem(coco_suite_t *, size_t)
+    coco_problem_t* coco_suite_get_problem(coco_suite_t *, const size_t)
 
-    size_t coco_problem_get_suite_dep_index(coco_problem_t* )
-    size_t coco_problem_get_dimension(coco_problem_t *problem)
-    size_t coco_problem_get_number_of_objectives(coco_problem_t *problem)
-    size_t coco_problem_get_number_of_constraints(coco_problem_t *problem)
-    const char *coco_problem_get_id(coco_problem_t *problem)
-    const char *coco_problem_get_name(coco_problem_t *problem)
-    const double *coco_problem_get_smallest_values_of_interest(coco_problem_t *problem)
-    const double *coco_problem_get_largest_values_of_interest(coco_problem_t *problem)
-    double coco_problem_get_final_target_fvalue1(coco_problem_t *problem)
-    size_t coco_problem_get_evaluations(coco_problem_t *problem)
-    double coco_problem_get_best_observed_fvalue1(coco_problem_t *problem)
+    size_t coco_problem_get_suite_dep_index(const coco_problem_t* problem)
+    size_t coco_problem_get_dimension(const coco_problem_t *problem)
+    size_t coco_problem_get_number_of_objectives(const coco_problem_t *problem)
+    size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem)
+    const char *coco_problem_get_id(const coco_problem_t *problem)
+    const char *coco_problem_get_name(const coco_problem_t *problem)
+    const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *problem)
+    const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem)
+    double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem)
+    size_t coco_problem_get_evaluations(const coco_problem_t *problem)
+    double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
+    int coco_problem_final_target_hit(const coco_problem_t *problem)
 
 cdef bytes _bstring(s):
     if type(s) is bytes:
@@ -82,7 +84,7 @@ cdef class Suite:
 
     >>> import cocoex as ex
     >>> suite = ex.Suite("bbob-biobj", "", "")
-    >>> observer = ex.Observer("bbob-biobj", "exdata-doctest")
+    >>> observer = ex.Observer("bbob-biobj", "result_folder:doctest")
     >>> for fun in suite:
     ...     if fun.index == 0:
     ...         print("Number of objectives %d, %d, %d" %
@@ -111,15 +113,16 @@ cdef class Suite:
     >>> solver = random_search
     >>> suite = Suite("bbob", "year:2009", "")
     >>> observer = Observer("bbob",
-    ...              "result_folder: exdata-%s_on_%s" % (solver.__name__, "bbob2009"))
+    ...              "result_folder: %s_on_%s" % (solver.__name__, "bbob2009"))
     >>> for fun in suite:
     ...     print('Current problem index = %d' % fun.index)
     ...     observer.observe(fun)
     ...     solver(fun, fun.lower_bounds, fun.upper_bounds, MAX_FE)
-    ...   # data should be now in the "exdata-random_search_on_bbob2009" folder
+    ...   # data should be now in the "exdata/random_search_on_bbob2009" folder
     ...   # doctest: +ELLIPSIS
     Current problem index = 0...
-    >>>   # Exactly the same using another looping technique:
+    >>> #
+    >>> # Exactly the same using another looping technique:
     >>> for id in suite.ids():
     ...     fun = suite.get_problem(id, observer)
     ...     _ = solver(fun, fun.lower_bounds, fun.upper_bounds, MAX_FE)
@@ -131,8 +134,13 @@ cdef class Suite:
     We can select a single function, say BBOB f9 in 20D, of a given suite like::
 
     >>> import cocoex as ex
-    >>> suite = ex.Suite("bbob", "", "dimensions:20 instance_idx:1")
+    >>> suite = ex.Suite("bbob", "", "dimensions:20 instance_indices:1")
+    >>> len(suite)
+    24
     >>> f9 = suite.get_problem(8)
+    >>> x = f9.initial_solution  # a copy of a feasible point
+    >>> all(x == 0)
+    True
 
     See module attribute `cocoex.known_suite_names` for known suite names::
 
@@ -362,7 +370,7 @@ also report back a missing name to https://github.com/numbbo/coco/issues
 
         >>> import cocoex as ex
         >>> f9 = ex.Suite("bbob", "",
-        ...               "function_idx:9 dimensions:20 instance_idx:1-5")[0]
+        ...               "function_indices:9 dimensions:20 instance_indices:1-5")[0]
         >>> print(f9.id)
         bbob_f009_i01_d20
 
@@ -574,7 +582,9 @@ cdef class Problem:
     objective function value when called with a candidate solution as input.
     """
     cdef coco_problem_t* problem
-    cdef np.ndarray y  # argument for coco_evaluate
+    cdef np.ndarray y_values  # argument for coco_evaluate
+    cdef np.ndarray constraint_values  # argument for coco_evaluate
+    cdef np.ndarray x_initial  # argument for coco_problem_get_initial_solution
     # cdef public const double[:] test_bounds
     # cdef public np.ndarray lower_bounds
     # cdef public np.ndarray upper_bounds
@@ -608,7 +618,9 @@ cdef class Problem:
         self._number_of_variables = coco_problem_get_dimension(self.problem)
         self._number_of_objectives = coco_problem_get_number_of_objectives(self.problem)
         self._number_of_constraints = coco_problem_get_number_of_constraints(self.problem)
-        self.y = np.zeros(self._number_of_objectives)
+        self.y_values = np.zeros(self._number_of_objectives)
+        self.constraint_values = np.zeros(self._number_of_constraints)
+        self.x_initial = np.zeros(self._number_of_variables)
         ## FIXME: Inefficient because we copy the bounds instead of
         ## sharing the data.
         self._lower_bounds = -np.inf * np.ones(self._number_of_variables)
@@ -639,8 +651,8 @@ cdef class Problem:
             raise InvalidProblemException()
         coco_evaluate_constraint(self.problem,
                                <double *>np.PyArray_DATA(_x),
-                               <double *>np.PyArray_DATA(self.y))
-        return self.y
+                               <double *>np.PyArray_DATA(self.constraint_values))
+        return np.array(self.constraint_values, copy=True)
     def recommend(self, arx):
         """Recommend a solution, return `None`.
 
@@ -677,6 +689,12 @@ cdef class Problem:
         return self(x) - self.final_target_fvalue1
 
     @property
+    def initial_solution(self):
+        """return feasible initial solution"""
+        coco_problem_get_initial_solution(self.problem,
+                                          <double *>np.PyArray_DATA(self.x_initial))
+        return np.array(self.x_initial, copy=True)
+    @property
     def list_of_observers(self):
         return self._list_of_observers
     property number_of_variables:  # this is cython syntax, not known in Python
@@ -709,6 +727,12 @@ cdef class Problem:
     @property
     def evaluations(self):
         return coco_problem_get_evaluations(self.problem)
+    @property
+    def final_target_hit(self):
+        """return 1 if the final target is known and has been hit, 0 otherwise
+        """
+        assert(self.problem)
+        return coco_problem_final_target_hit(self.problem)
     @property
     def final_target_fvalue1(self):
         assert(self.problem)
@@ -754,20 +778,22 @@ cdef class Problem:
             raise InvalidProblemException()
         coco_evaluate_function(self.problem,
                                <double *>np.PyArray_DATA(_x),
-                               <double *>np.PyArray_DATA(self.y))
-        return self.y[0] if self._number_of_objectives == 1 else self.y
+                               <double *>np.PyArray_DATA(self.y_values))
+        if self._number_of_objectives == 1:
+            return self.y_values[0]
+        return np.array(self.y_values, copy=True)
 
     @property
-    def id(self): 
+    def id(self):
         "id as string without spaces or weird characters"
         if self.problem is not NULL:
             return coco_problem_get_id(self.problem)
-    
-    @property    
+
+    @property
     def name(self):
         if self.problem is not NULL:
             return coco_problem_get_name(self.problem)
-            
+
     @property
     def index(self):
         """problem index in the benchmark `Suite` of origin"""
@@ -777,7 +803,7 @@ cdef class Problem:
     def suite(self):
         """benchmark suite this problem is from"""
         return self._suite_name
-    
+
     @property
     def info(self):
         return str(self)

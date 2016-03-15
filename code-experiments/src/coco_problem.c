@@ -123,7 +123,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
 /**
  * @brief Creates a duplicate of the 'other' problem for all fields except for data, which points to NULL.
  */
-static coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
+static coco_problem_t *coco_problem_duplicate(const coco_problem_t *other) {
   size_t i;
   coco_problem_t *problem;
   problem = coco_problem_allocate(other->number_of_variables, other->number_of_objectives,
@@ -133,7 +133,7 @@ static coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
   problem->evaluate_function = other->evaluate_function;
   problem->evaluate_constraint = other->evaluate_constraint;
   problem->recommend_solution = other->recommend_solution;
-  problem->problem_free_function = NULL;
+  problem->problem_free_function = other->problem_free_function;
 
   for (i = 0; i < problem->number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = other->smallest_values_of_interest[i];
@@ -177,10 +177,10 @@ static coco_problem_t *coco_problem_duplicate(coco_problem_t *other) {
 static coco_problem_t *coco_problem_allocate_from_scalars(const char *problem_name,
                                                           coco_evaluate_function_t evaluate_function,
                                                           coco_problem_free_function_t problem_free_function,
-                                                          size_t number_of_variables,
-                                                          double smallest_value_of_interest,
-                                                          double largest_value_of_interest,
-                                                          double best_parameter) {
+                                                          const size_t number_of_variables,
+                                                          const double smallest_value_of_interest,
+                                                          const double largest_value_of_interest,
+                                                          const double best_parameter) {
   size_t i;
   coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
 
@@ -314,9 +314,38 @@ static void coco_problem_set_type(coco_problem_t *problem, const char *type, ...
   va_end(args);
 }
 
-size_t coco_problem_get_evaluations(coco_problem_t *problem) {
+size_t coco_problem_get_evaluations(const coco_problem_t *problem) {
   assert(problem != NULL);
   return problem->evaluations;
+}
+
+/**
+ * @brief Returns 1 if the best parameter is (close to) zero and 0 otherwise.
+ */
+static int coco_problem_is_best_parameter_zero(const coco_problem_t *problem) {
+	size_t i = 0;
+	int zero = 1;
+
+	while (i < problem->number_of_variables && zero) {
+	      zero = !coco_double_almost_equal(problem->best_parameter[i], 0, 1e-9);
+	      i++;
+	  }
+
+	return zero;
+}
+
+/**
+ * @note Can be used to prevent unnecessary burning of CPU time.
+ */
+int coco_problem_final_target_hit(const coco_problem_t *problem) {
+  assert(problem != NULL);
+  if (coco_problem_get_number_of_objectives(problem) != 1 ||
+      coco_problem_get_evaluations(problem) < 1) 
+    return 0;
+  if (problem->best_value == NULL)
+    return 0;
+  return problem->best_observed_fvalue[0] <= problem->best_value[0] + problem->final_target_delta[0] ?
+    1 : 0;
 }
 
 /**
@@ -328,8 +357,8 @@ double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem) {
 }
 
 /**
- * @note This function breaks the black-box property: the returned  value is not meant to be used by the
- * optimization algorithm other than for testing termination conditions.
+ * @note This function breaks the black-box property: the returned  value is not
+ * meant to be used by the optimization algorithm.
  */
 double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem) {
   assert(problem != NULL);
@@ -413,23 +442,24 @@ void coco_problem_get_initial_solution(const coco_problem_t *problem, double *in
     assert(problem->smallest_values_of_interest != NULL);
     assert(problem->largest_values_of_interest != NULL);
     for (i = 0; i < problem->number_of_variables; ++i)
-      initial_solution[i] = 0.5
-          * (problem->smallest_values_of_interest[i] + problem->largest_values_of_interest[i]);
+      initial_solution[i] = problem->smallest_values_of_interest[i] + 0.5
+          * (problem->largest_values_of_interest[i] - problem->smallest_values_of_interest[i]);
   }
 }
 
-size_t coco_problem_get_suite_dep_index(coco_problem_t *problem) {
+
+size_t coco_problem_get_suite_dep_index(const coco_problem_t *problem) {
   assert(problem != NULL);
   return problem->suite_dep_index;
 }
 
-size_t coco_problem_get_suite_dep_function(coco_problem_t *problem) {
+size_t coco_problem_get_suite_dep_function(const coco_problem_t *problem) {
   assert(problem != NULL);
   assert(problem->suite_dep_function > 0);
   return problem->suite_dep_function;
 }
 
-size_t coco_problem_get_suite_dep_instance(coco_problem_t *problem) {
+size_t coco_problem_get_suite_dep_instance(const coco_problem_t *problem) {
   assert(problem != NULL);
   assert(problem->suite_dep_instance > 0);
   return problem->suite_dep_instance;
@@ -446,7 +476,7 @@ size_t coco_problem_get_suite_dep_instance(coco_problem_t *problem) {
 /**
  * @brief Returns the data of the transformed problem.
  */
-static void *coco_problem_transformed_get_data(coco_problem_t *problem) {
+static void *coco_problem_transformed_get_data(const coco_problem_t *problem) {
   assert(problem != NULL);
   assert(problem->data != NULL);
   assert(((coco_problem_transformed_data_t *) problem->data)->data != NULL);
@@ -457,7 +487,7 @@ static void *coco_problem_transformed_get_data(coco_problem_t *problem) {
 /**
  * @brief Returns the inner problem of the transformed problem.
  */
-static coco_problem_t *coco_problem_transformed_get_inner_problem(coco_problem_t *problem) {
+static coco_problem_t *coco_problem_transformed_get_inner_problem(const coco_problem_t *problem) {
   assert(problem != NULL);
   assert(problem->data != NULL);
   assert(((coco_problem_transformed_data_t *) problem->data)->inner_problem != NULL);
@@ -472,7 +502,7 @@ static void coco_problem_transformed_evaluate_function(coco_problem_t *problem, 
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_transformed_data_t *) problem->data;
   assert(data->inner_problem != NULL);
 
   coco_evaluate_function(data->inner_problem, x, y);
@@ -485,7 +515,7 @@ static void coco_problem_transformed_evaluate_constraint(coco_problem_t *problem
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_transformed_data_t *) problem->data;
   assert(data->inner_problem != NULL);
 
   coco_evaluate_constraint(data->inner_problem, x, y);
@@ -498,27 +528,24 @@ static void coco_problem_transformed_recommend_solution(coco_problem_t *problem,
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_transformed_data_t *) problem->data;
   assert(data->inner_problem != NULL);
 
   coco_recommend_solution(data->inner_problem, x);
 }
 
 /**
- * @brief Frees the transformed problem.
+ * @brief Frees only the data of the transformed problem leaving the inner problem intact.
+ *
+ * @note If there is no other pointer to the inner problem, access to it will be lost.
  */
-static void coco_problem_transformed_free(coco_problem_t *problem) {
+static void coco_problem_transformed_free_data(coco_problem_t *problem) {
   coco_problem_transformed_data_t *data;
 
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
-  assert(data->inner_problem != NULL);
+  data = (coco_problem_transformed_data_t *) problem->data;
 
-  if (data->inner_problem != NULL) {
-    coco_problem_free(data->inner_problem);
-    data->inner_problem = NULL;
-  }
   if (data->data != NULL) {
     if (data->data_free_function != NULL) {
       data->data_free_function(data->data);
@@ -534,15 +561,35 @@ static void coco_problem_transformed_free(coco_problem_t *problem) {
 }
 
 /**
+ * @brief Frees the transformed problem.
+ */
+static void coco_problem_transformed_free(coco_problem_t *problem) {
+  coco_problem_transformed_data_t *data;
+
+  assert(problem != NULL);
+  assert(problem->data != NULL);
+  data = (coco_problem_transformed_data_t *) problem->data;
+  assert(data->inner_problem != NULL);
+  if (data->inner_problem != NULL) {
+    coco_problem_free(data->inner_problem);
+    data->inner_problem = NULL;
+  }
+  coco_problem_transformed_free_data(problem);
+}
+
+/**
  * @brief Allocates a transformed problem that wraps the inner_problem.
  *
- * By default all methods will dispatch to the inner_problem.
+ * By default all methods will dispatch to the inner_problem. A prefix is prepended to the problem name
+ * in order to reflect the transformation somewhere.
  */
 static coco_problem_t *coco_problem_transformed_allocate(coco_problem_t *inner_problem,
                                                          void *user_data,
-                                                         coco_data_free_function_t data_free_function) {
+                                                         coco_data_free_function_t data_free_function,
+                                                         const char *name_prefix) {
   coco_problem_transformed_data_t *problem;
   coco_problem_t *inner_copy;
+  char *old_name = coco_strdup(inner_problem->problem_name);
 
   problem = (coco_problem_transformed_data_t *) coco_allocate_memory(sizeof(*problem));
   problem->inner_problem = inner_problem;
@@ -555,6 +602,10 @@ static coco_problem_t *coco_problem_transformed_allocate(coco_problem_t *inner_p
   inner_copy->recommend_solution = coco_problem_transformed_recommend_solution;
   inner_copy->problem_free_function = coco_problem_transformed_free;
   inner_copy->data = problem;
+
+  coco_problem_set_name(inner_copy, "%s(%s)", name_prefix, old_name);
+  coco_free_memory(old_name);
+
   return inner_copy;
 }
 /**@}*/
@@ -608,7 +659,7 @@ static void coco_problem_stacked_free(coco_problem_t *problem) {
 
   assert(problem != NULL);
   assert(problem->data != NULL);
-  data = problem->data;
+  data = (coco_problem_stacked_data_t*) problem->data;
 
   if (data->problem1 != NULL) {
     coco_problem_free(data->problem1);
