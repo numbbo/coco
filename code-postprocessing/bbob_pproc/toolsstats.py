@@ -107,8 +107,8 @@ def sp1(data, maxvalue=np.Inf, issuccessful=None):
 def sp(data, maxvalue=np.Inf, issuccessful=None, allowinf=True):
     """sp(data, issuccessful=None) computes the sum of the function
     evaluations over all runs divided by the number of success,
-    the so-called success performance which estimates the expected
-    runtime ERT.
+    the so-called success performance which estimates the average
+    runtime aRT.
 
     Input:
       data -- array contains, e.g., number of function
@@ -173,8 +173,8 @@ def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=genericsettin
         idx_nan = np.isnan(evals)  # nan == did not reach ftarget
         return drawSP(evals[~idx_nan], data_set.maxevals[idx_nan], percentiles, samplesize)
     
-    The expected value of ``all_sampled_values_sorted`` is the expected 
-    runtime ERT, as obtained by ``data_set.detERT([ftarget])[0]``. 
+    The expected value of ``all_sampled_values_sorted`` is the average 
+    runtime aRT, as obtained by ``data_set.detERT([ftarget])[0]``. 
     
     """
     try:
@@ -184,8 +184,20 @@ def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=genericsettin
         raise 
     nanidx = np.isnan(evals)
     return drawSP(evals[~nanidx], data_set.maxevals[nanidx], percentiles, samplesize)
+
+def drawSP_from_dataset_new(data_set, ftarget, dummy,
+                            samplesize=genericsettings.simulated_runlength_bootstrap_sample_size):
+    """new implementation, old interface (which should also change at some point)
     
-def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=10 + 990 / (1 + 10 * genericsettings.in_a_hurry)):
+    returns (None, evals), that is, no percentiles, only the data=runtimes=evals
+    """
+    raise NotImplementedError()
+    sample_size_per_runtime = int(1 + samplesize / data_set.nbRuns())
+    # the second call makes a long list with all repetitions
+    return (None, data_set.evals_with_restarts([ftarget], sample_size_per_runtime)())
+
+def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
+           samplesize=genericsettings.simulated_runlength_bootstrap_sample_size):
     """Returns the percentiles of the bootstrapped distribution of
     'simulated' running lengths of successful runs.
 
@@ -200,8 +212,8 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles, samplesize=10 + 990 
     Details:
        A single successful running length is computed by adding
        uniformly randomly chosen running lengths until the first time a
-       successful one is chosen. In case of no successful run the sum of
-       unsuccessful runs is bootstrapped. 
+       successful one is chosen. In case of no successful run an
+       exception is raised.
 
     """
     # TODO: for efficiency reasons a special treatment in the case, 
@@ -799,3 +811,12 @@ def in_approximately(a, list_, abs=1e-11, rel=1e-11):
             return True
     return False
 
+
+class Evals(object):
+    def __init__(self, evals, counts):
+        self.evals = evals
+        self.counts = counts
+    def __call__(self):
+        return [val for i, val in enumerate(self.evals) for _ in range(self.counts[i])]
+    def sort(self):
+        raise NotImplementedError()

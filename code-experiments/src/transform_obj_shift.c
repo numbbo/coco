@@ -21,7 +21,7 @@ typedef struct {
 static void transform_obj_shift_evaluate(coco_problem_t *problem, const double *x, double *y) {
   transform_obj_shift_data_t *data;
   size_t i;
-  data = coco_problem_transformed_get_data(problem);
+  data = (transform_obj_shift_data_t *) coco_problem_transformed_get_data(problem);
   coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
   for (i = 0; i < problem->number_of_objectives; i++) {
       y[i] += data->offset;
@@ -39,7 +39,7 @@ static coco_problem_t *transform_obj_shift(coco_problem_t *inner_problem, const 
   data = (transform_obj_shift_data_t *) coco_allocate_memory(sizeof(*data));
   data->offset = offset;
 
-  problem = coco_problem_transformed_allocate(inner_problem, data, NULL);
+  problem = coco_problem_transformed_allocate(inner_problem, data, NULL, "transform_obj_shift");
   problem->evaluate_function = transform_obj_shift_evaluate;
   for (i = 0; i < problem->number_of_objectives; i++) {
       problem->best_value[0] += offset;

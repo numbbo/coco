@@ -19,6 +19,7 @@ the experimental data.
 
 from __future__ import absolute_import
 
+import os, sys
 import numpy
 import warnings
 
@@ -248,13 +249,17 @@ class HMultiReader(MultiReader):
         self.idxCurrentF = numpy.inf # Minimization
         # idxCurrentF is a float for the extreme case where it is infinite.
         # else it is an integer and then is the 'i' in 10**(i/nbPtsF)
+        self.isNegative = False
+        self.idxCurrentFOld = 0.
+
+    def calculateCurrentValue(self):
+        factor = -1. if self.isNegative else 1.        
+        return factor * numpy.power(10, self.idxCurrentF / self.nbPtsF)
 
     def isFinished(self):
         """Is finished when we found the last alignment value reached."""
 
-        currentValue = numpy.power(10, self.idxCurrentF / self.nbPtsF)
-        if currentValue == 0:
-            return True
+        currentValue = self.calculateCurrentValue()
 
         # It can be more than one line for the previous alignment value.
         # We iterate until we find a better value or to the end of the lines.
@@ -270,11 +275,17 @@ class HMultiReader(MultiReader):
         fvalues = self.currentValues()
         self.idxCurrentF = numpy.ceil(numpy.log10(max(fvalues) if max(fvalues) > 0 else 1e-19) * self.nbPtsF)
         # Returns the smallest 10^i/nbPtsF value larger than max(Fvalues)
-        return numpy.power(10, self.idxCurrentF / self.nbPtsF)
+        return self.calculateCurrentValue()
 
     def newCurrentValue(self):
-        self.idxCurrentF -= 1
-        return numpy.power(10, self.idxCurrentF / self.nbPtsF)
+        if self.idxCurrentF == -numpy.inf:
+            self.idxCurrentF = self.idxCurrentFOld
+            self.isNegative = True
+        elif self.isNegative:
+            self.idxCurrentF += 1
+        else:
+            self.idxCurrentF -= 1
+        return self.calculateCurrentValue()
 
     def align(self, currentValue):
         fvalues = []
@@ -291,8 +302,14 @@ class HMultiReader(MultiReader):
             raise ValueError, 'Value %g is not reached.'
 
         if max(fvalues) <= 0.:
-            self.idxCurrentF = -numpy.inf
-            currentValue = 0.
+            if currentValue > 0.:
+                self.idxCurrentFOld = self.idxCurrentF
+                self.idxCurrentF = -numpy.inf
+                currentValue = 0.
+            else:
+                self.idxCurrentF = max(self.idxCurrentF,
+                                       numpy.floor(numpy.log10(-max(fvalues)) * self.nbPtsF))
+                currentValue = self.calculateCurrentValue()
         else:
             self.idxCurrentF = min(self.idxCurrentF,
                                numpy.ceil(numpy.log10(max(fvalues)) * self.nbPtsF))
@@ -304,10 +321,9 @@ class HMultiReader(MultiReader):
 
             # The update of idxCurrentF is done so all the intermediate
             # function value trigger reached are not written, only the smallest
-            currentValue = numpy.power(10, self.idxCurrentF / self.nbPtsF)
+            currentValue = self.calculateCurrentValue()
 
         return numpy.insert(self.currentLine(), 0, currentValue)
-
 
 class ArrayMultiReader(MultiReader):
     """Class of *aligned* data arrays to be aligned together.
@@ -359,7 +375,8 @@ class HArrayMultiReader(ArrayMultiReader, HMultiReader):
         #TODO: Should this use super?
         self.nbPtsF = nbPtsFBi if isBiobjective else nbPtsFSingle
         self.idxCurrentF = numpy.inf #Minimization
-
+        self.isNegative = False
+        self.idxCurrentFOld = 0.
 
 #FUNCTION DEFINITIONS
 
@@ -416,12 +433,22 @@ def alignArrayData(data):
     # of the data.
 
 
-def split(dataFiles, dim=None):
+def openfile(filePath):
+    if not os.path.isfile(filePath):
+        if ('win32' in sys.platform) and len(filePath) > 259:
+            raise IOError(2, 'The path is too long for the file "%s".' % filePath)
+        else:
+            raise IOError(2, 'The file "%s" does not exist.' % filePath)
+    
+    return open(filePath, 'r')
+    
+    
+def split(dataFiles, isBiobjective, dim=None):
     """Split a list of data files into arrays corresponding to data sets."""
 
     dataSets = []
     for fil in dataFiles:
-        with open(fil, 'r') as f:
+        with openfile(fil) as f:
             # This doesnt work with windows.
             # content = numpy.loadtxt(fil, comments='%')
             lines = f.readlines()
@@ -435,6 +462,8 @@ def split(dataFiles, dim=None):
                 if content:
                     dataSets.append(numpy.vstack(content))
                     content = []
+                    if isBiobjective and len(dataSets) >= 5:
+                        break
                 continue
 
             # else remove end-of-line sign

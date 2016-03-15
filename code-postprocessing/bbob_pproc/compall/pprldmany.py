@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generates figure of the bootstrap distribution of ERT.
+"""Generates figure of the bootstrap distribution of aRT.
     
 The main method in this module generates figures of Empirical
 Cumulative Distribution Functions of the bootstrap distribution of
-the Expected Running Time (ERT) divided by the dimension for many
+the Average Running Time (aRT) divided by the dimension for many
 algorithms.
 
 The outputs show the ECDFs of the running times of the simulated runs
@@ -31,7 +31,7 @@ function evaluations of unsuccessful runs divided by dimension.
     archivefile = tarfile.open(filename)
     archivefile.extractall()
     
-    # Empirical cumulative distribution function of bootstrapped ERT figure
+    # Empirical cumulative distribution function of bootstrapped aRT figure
     ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
     figure()
     bb.compall.pprldmany.plot(ds) # must rather call main instead of plot?
@@ -53,16 +53,16 @@ from .. import pprldistr # plotECDF, beautifyECDF
 from .. import ppfig  # consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
 from .. import pptex  # numtotex
 
+PlotType = ppfig.enum('ALG', 'DIM', 'FUNC')
+
 displaybest2009 = True
-target_values = pp.TargetValues(10**np.arange(2, -8, -0.2)) # possibly changed in config
 x_limit = None  # not sure whether this is necessary/useful
 x_limit_default = 1e7 # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
 divide_by_dimension = True
 annotation_line_end_relative = 1.11  # lines between graph and annotation
 annotation_space_end_relative = 1.24  # figure space end relative to x_limit
 save_zoom = False  # save zoom into left and right part of the figures
-perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size_rld  # number of bootstrap samples drawn for each fct+target in the performance profile
-dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
+perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
 median_max_evals_marker_format = ['x', 24, 3]
 label_fontsize = 18
@@ -296,6 +296,24 @@ def plotLegend(handles, maxval):
     reshandles = []
     ys = {}
     lh = 0
+
+    def get_label_length(labelList):
+        """ Finds the minimal length of the names used in the label so that 
+        all the names are different. Always at least 9 character are displayed.
+        """
+        
+        numberOfCharacters = 7
+        firstPart = [i[:numberOfCharacters] for i in labelList]
+        maxLength = max(len(i) for i in labelList)
+        while (len(firstPart) > len(set(firstPart)) and numberOfCharacters <= maxLength):
+            numberOfCharacters += 1
+            firstPart = [i[:numberOfCharacters] for i in labelList]
+            
+        return min (numberOfCharacters + 2, maxLength) 
+
+    
+    labelList = [toolsdivers.strip_pathname1(plt.getp(h[-1], 'label')) for h in handles]
+    numberOfCharacters = get_label_length(labelList)
     for h in handles:
         x2 = []
         y2 = []
@@ -355,7 +373,7 @@ def plotLegend(handles, maxval):
                                       color=plt.getp(h, 'markeredgecolor'), **tmp))
                     reshandles.append(
                         plt.text(maxval**(0.02 + annotation_line_end_relative), y,
-                                 toolsdivers.str_to_latex(toolsdivers.strip_pathname1(plt.getp(h, 'label'))),
+                                 toolsdivers.str_to_latex(toolsdivers.strip_pathname1(plt.getp(h, 'label'))[:numberOfCharacters]),
                                  horizontalalignment="left",
                                  verticalalignment="center", size=fontsize))
                     reslabels.append(plt.getp(h, 'label'))
@@ -387,7 +405,7 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
 
     """
     if targets is None:
-        targets = target_values  # set above or in config.py
+        targets = genericsettings.current_testbed.pprldmany_target_values
     try:
         if np.min(targets) >= 1:
             ValueError('smallest target f-value is not smaller than one, use ``pproc.TargetValues(targets)`` to prevent this error')
@@ -437,32 +455,85 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
             res = h # so the last element in res still has the label.
     return res
 
-def all_single_functions(dictAlg, isBiobjective, sortedAlgs=None, 
-                         outputdir='.', verbose=0):
+def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=None, 
+                         outputdir='.', verbose=0, parentHtmlFileName=None):
+
+        single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
+                                 'pprldmany-single-functions'
+                                 # + os.sep + ('f%03d' % fg)
+                                 )
+        if not os.path.exists(single_fct_output_dir):
+            os.makedirs(single_fct_output_dir)
+            
+        if isSingleAlgorithm:
+            main(dictAlg,
+                 isBiobjective,
+                 order=sortedAlgs,
+                 outputdir=single_fct_output_dir,
+                 info='',
+                 verbose=verbose,
+                 parentHtmlFileName=parentHtmlFileName,
+                 plotType=PlotType.DIM)
+
         dictFG = pp.dictAlgByFun(dictAlg)
         for fg, tmpdictAlg in dictFG.iteritems():
+
+            if isSingleAlgorithm:
+                main(tmpdictAlg,
+                     isBiobjective,
+                     order=sortedAlgs,
+                     outputdir=single_fct_output_dir,
+                     info='f%03d' % (fg),
+                     verbose=verbose,
+                     parentHtmlFileName=parentHtmlFileName,
+                     plotType=PlotType.DIM)
+
             dictDim = pp.dictAlgByDim(tmpdictAlg)
             for d, entries in dictDim.iteritems():
-                single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
-                                         'pprldmany-single-functions'
-                                         # + os.sep + ('f%03d' % fg)
-                                         )
-                if not os.path.exists(single_fct_output_dir):
-                    os.makedirs(single_fct_output_dir)
                 main(entries,
                      isBiobjective,
                      order=sortedAlgs,
                      outputdir=single_fct_output_dir,
                      info='f%03d_%02dD' % (fg, d),
-                     verbose=verbose)
+                     verbose=verbose,
+                     parentHtmlFileName=parentHtmlFileName)
+
+        if isSingleAlgorithm:
+            functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
+
+            dictDim = pp.dictAlgByDim(dictAlg)
+            for d, tmpdictAlg in dictDim.iteritems():
+
+                dictFG = pp.dictAlgByFuncGroup(tmpdictAlg)
+                for fg, entries in dictFG.iteritems():
+
+                    main(entries,
+                         isBiobjective,
+                         order=sortedAlgs,
+                         outputdir=single_fct_output_dir,
+                         info='gr_%s_%02dD' % (fg, d),
+                         verbose=verbose,
+                         parentHtmlFileName=parentHtmlFileName,
+                         plotType=PlotType.FUNC)
+            
+                ppfig.save_single_functions_html(
+                    os.path.join(single_fct_output_dir, genericsettings.pprldmany_group_file_name),
+                    '',
+                    add_to_names = '_%02dD' % (d),
+                    htmlPage = ppfig.HtmlPage.PPRLDMANY_BY_GROUP,
+                    isBiobjective = isBiobjective,
+                    functionGroups = functionGroups,
+                    parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None
+                )
+         
 
 def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
-         dimension=None, verbose=True):
+         dimension=None, verbose=True, parentHtmlFileName=None, plotType=PlotType.ALG):
     """Generates a figure showing the performance of algorithms.
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
     generates the cumulative distribution function of the bootstrap
-    distribution of ERT for algorithms on multiple functions for
+    distribution of aRT for algorithms on multiple functions for
     multiple targets altogether.
 
     :param dict dictAlg: dictionary of :py:class:`DataSetList` instances
@@ -472,6 +543,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     :param str outputdir: output directory
     :param str info: output file name suffix
     :param bool verbose: controls verbosity
+    :param str parentHtmlFileName: defines the parent html page 
 
     """
     global x_limit  # late assignment of default, because it can be set to None in config 
@@ -480,21 +552,17 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         x_limit = x_limit_default
 
     tmp = pp.dictAlgByDim(dictAlg)
-    # tmp = pp.DictAlg(dictAlg).by_dim()
+    algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
 
-    if len(tmp) != 1 and dimension is None:
-        raise ValueError('We never integrate over dimension.')
+    if len(algorithms_with_data) > 1 and len(tmp) != 1 and dimension is None:
+        raise ValueError('We never integrate over dimension for than one algorithm.')
     if dimension is not None:
         if dimension not in tmp.keys():
             raise ValueError('dimension %d not in dictAlg dimensions %s'
                              % (dimension, str(tmp.keys())))
         tmp = {dimension: tmp[dimension]}
-    dim = tmp.keys()[0]
-    divisor = dim if divide_by_dimension else 1
+    dimList = tmp.keys()
 
-    algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
-
-    dictFunc = pp.dictAlgByFun(dictAlg)
 
     # Collect data
     # Crafting effort correction: should we consider any?
@@ -508,70 +576,92 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 CrE = 0.5117
             elif tmp.keys()[0] == 'nzall':
                 CrE = 0.6572
-        CrEperAlg[alg] = CrE
+        if plotType == PlotType.DIM:
+            for dim in dimList:
+                keyValue = '%d-D' % (dim)
+                CrEperAlg[keyValue] = CrE
+        elif plotType == PlotType.FUNC:
+            tmp = pp.dictAlgByFun(dictAlg)
+            for f, dictAlgperFunc in tmp.iteritems():
+                keyValue = 'f%d' % (f)
+                CrEperAlg[keyValue] = CrE
+        else:
+            CrEperAlg[alg] = CrE
         if CrE != 0.0: 
             print 'Crafting effort for', alg, 'is', CrE
 
     dictData = {} # list of (ert per function) per algorithm
     dictMaxEvals = {} # list of (maxevals per function) per algorithm
-    bestERT = [] # best ert per function
+
     # funcsolved = [set()] * len(targets) # number of functions solved per target
     xbest2009 = []
     maxevalsbest2009 = []
-    for f, dictAlgperFunc in dictFunc.iteritems():
-        if function_IDs and f not in function_IDs:
-            continue
-        # print target_values((f, dim))
-        for j, t in enumerate(target_values((f, dim))):
-        # for j, t in enumerate(genericsettings.getCurrentTestbed(isBiobjective).ecdf_target_values(1e2, f)):
-            # funcsolved[j].add(f)
+    target_values = genericsettings.current_testbed.pprldmany_target_values
 
-            for alg in algorithms_with_data:
-                x = [np.inf] * perfprofsamplesize
-                runlengthunsucc = []
-                try:
-                    entry = dictAlgperFunc[alg][0] # one element per fun and per dim.
-                    evals = entry.detEvals([t])[0]
-                    assert entry.dim == dim
-                    runlengthsucc = evals[np.isnan(evals) == False] / divisor
-                    runlengthunsucc = entry.maxevals[np.isnan(evals)] / divisor
-                    if len(runlengthsucc) > 0:
+    for dim, dictDim in pp.dictAlgByDim(dictAlg).iteritems():
+        divisor = dim if divide_by_dimension else 1
+
+        dictFunc = pp.dictAlgByFun(dictDim)
+        for f, dictAlgperFunc in dictFunc.iteritems():
+            if function_IDs and f not in function_IDs:
+                continue
+    
+            # print target_values((f, dim))
+            for j, t in enumerate(target_values((f, dim))):
+            # for j, t in enumerate(genericsettings.current_testbed.ecdf_target_values(1e2, f)):
+                # funcsolved[j].add(f)
+    
+                for alg in algorithms_with_data:
+                    x = [np.inf] * perfprofsamplesize
+                    runlengthunsucc = []
+                    try:
+                        entry = dictAlgperFunc[alg][0] # one element per fun and per dim.
+                        evals = entry.detEvals([t])[0]
+                        assert entry.dim == dim
+                        runlengthsucc = evals[np.isnan(evals) == False] / divisor
+                        runlengthunsucc = entry.maxevals[np.isnan(evals)] / divisor
+                        if len(runlengthsucc) > 0:
+                            x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
+                                                 percentiles=[50],
+                                                 samplesize=perfprofsamplesize)[1]
+                    except (KeyError, IndexError):
+                        #set_trace()
+                        warntxt = ('Data for algorithm %s on function %d in %d-D '
+                               % (alg, f, dim)
+                               + 'are missing.\n')
+                        warnings.warn(warntxt)
+    
+                    keyValue = alg
+                    if plotType == PlotType.DIM: 
+                        keyValue = '%d-D' % (dim)
+                    elif plotType == PlotType.FUNC:
+                        keyValue = 'f%d' % (f)
+                    dictData.setdefault(keyValue, []).extend(x)
+                    dictMaxEvals.setdefault(keyValue, []).extend(runlengthunsucc)
+    
+            displaybest2009 = not isBiobjective and plotType == PlotType.ALG  #disabled for bi-objective case
+            if displaybest2009:
+                #set_trace()
+                bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+                bestalgentry = bestalgentries[(dim, f)]
+                bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
+                # print bestalgevals
+                for j in range(len(bestalgevals[0])):
+                    if bestalgevals[1][j]:
+                        evals = bestalgevals[0][j]
+                        #set_trace()
+                        assert dim == bestalgentry.dim
+                        runlengthsucc = evals[np.isnan(evals) == False] / divisor
+                        runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][np.isnan(evals)] / divisor
                         x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                              percentiles=[50],
                                              samplesize=perfprofsamplesize)[1]
-                except (KeyError, IndexError):
-                    #set_trace()
-                    warntxt = ('Data for algorithm %s on function %d in %d-D '
-                           % (alg, f, dim)
-                           + 'are missing.\n')
-                    warnings.warn(warntxt)
-
-                dictData.setdefault(alg, []).extend(x)
-                dictMaxEvals.setdefault(alg, []).extend(runlengthunsucc)
-
-        displaybest2009 = not isBiobjective #disabled until we find the bug
-        if displaybest2009:
-            #set_trace()
-            bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
-            bestalgentry = bestalgentries[(dim, f)]
-            bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
-            # print bestalgevals
-            for j in range(len(bestalgevals[0])):
-                if bestalgevals[1][j]:
-                    evals = bestalgevals[0][j]
-                    #set_trace()
-                    assert dim == bestalgentry.dim
-                    runlengthsucc = evals[np.isnan(evals) == False] / divisor
-                    runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][np.isnan(evals)] / divisor
-                    x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
-                                         percentiles=[50],
-                                         samplesize=perfprofsamplesize)[1]
-                else:
-                    x = perfprofsamplesize * [np.inf]
-                    runlengthunsucc = []
-                xbest2009.extend(x)
-                maxevalsbest2009.extend(runlengthunsucc)
-                
+                    else:
+                        x = perfprofsamplesize * [np.inf]
+                        runlengthunsucc = []
+                    xbest2009.extend(x)
+                    maxevalsbest2009.extend(runlengthunsucc)
+                    
     if order is None:
         order = dictData.keys()
 
@@ -615,7 +705,10 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     labels, handles = plotLegend(lines, x_limit)
     if True:  # isLateXLeg:
-        fileName = os.path.join(outputdir,'pprldmany_%s.tex' % (info))
+        if info:        
+            fileName = os.path.join(outputdir,'%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
+        else:
+            fileName = os.path.join(outputdir,'%s.tex' % (genericsettings.pprldmany_file_name))
         with open(fileName, 'w') as f:
             f.write(r'\providecommand{\nperfprof}{7}')
             algtocommand = {}  # latex commands
@@ -648,17 +741,27 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             if verbose:
                 print 'Wrote right-hand legend in %s' % fileName
 
-    figureName = os.path.join(outputdir,'pprldmany_%s' % (info))
+    if info:    
+        figureName = os.path.join(outputdir,'%s_%s' % (genericsettings.pprldmany_file_name, info))
+    else:
+        figureName = os.path.join(outputdir,'%s' % (genericsettings.pprldmany_file_name))
     #beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
     beautify()
 
-    text = ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f')
-    text += ',%d-D' % dim  # TODO: this is strange when different dimensions are plotted
+    if plotType == PlotType.FUNC:
+        dictFG = pp.dictAlgByFuncGroup(dictAlg)
+        dictKey = dictFG.keys()[0]
+        functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
+        text = functionGroups[dictKey]
+    else:
+        text = ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f')
+    if not (plotType == PlotType.DIM):    
+        text += ',%d-D' % dimList[0]
     plt.text(0.01, 0.98, text, horizontalalignment="left",
              verticalalignment="top", transform=plt.gca().transAxes)
     if len(dictFunc) == 1:
         plt.title(' '.join((str(dictFunc.keys()[0]),
-                  genericsettings.getCurrentTestbed(isBiobjective).short_names[dictFunc.keys()[0]])))
+                  genericsettings.current_testbed.short_names[dictFunc.keys()[0]])))
     a = plt.gca()
 
     plt.xlim(xmin=1e-0, xmax=x_limit**annotation_space_end_relative)
@@ -670,13 +773,23 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     if save_figure:
         ppfig.saveFigure(figureName, verbose=verbose)
-        if len(dictFunc) == 1:
+        if len(dictFunc) == 1 or plotType == PlotType.DIM:
+            fileName = genericsettings.pprldmany_file_name
+            add_to_names = ''
+            if plotType == PlotType.ALG:
+                add_to_names += '_%02dD' % (dim)
+
+            header = 'Runtime distributions (ECDF), single functions over all targets' if plotType == PlotType.DIM \
+                    else 'Runtime distributions (ECDF), single functions over all targets, single dimension'            
             ppfig.save_single_functions_html(
-                os.path.join(outputdir, 'pprldmany'),
+                os.path.join(outputdir, fileName),
                 '', # algorithms names are clearly visible in the figure
-                add_to_names='_%02dD' %(dim),
-                algorithmCount=ppfig.AlgorithmCount.NON_SPECIFIED
-            )
+                add_to_names = add_to_names,
+                htmlPage = ppfig.HtmlPage.NON_SPECIFIED,
+                isBiobjective = isBiobjective,
+                parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None,
+                header = header)
+                
     if close_figure:
         plt.close()
 

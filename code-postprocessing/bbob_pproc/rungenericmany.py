@@ -23,7 +23,6 @@ import warnings
 import numpy
 import matplotlib
 
-ftarget = 1e-8
 target_runlength = 10 # used for ppfigs.main
 
 if __name__ == "__main__":
@@ -105,22 +104,19 @@ def main(argv=None):
         --tab-only, --rld-only, --fig-only
             these options can be used to output respectively the
             comparison TeX tables, the run lengths distributions or the
-            figures of ERT/dim vs dim only. A combination of any two or
+            figures of aRT/dim vs dim only. A combination of any two or
             more of these options results in no output.
         --conv
             if this option is chosen, additionally convergence
             plots for each function and algorithm are generated.
-        --rld-single-fcts
-            generate also runlength distribution figures for each
+        --no-rld-single-fcts
+            do not generate runlength distribution figures for each
             single function. 
         --expensive
             runlength-based f-target values and fixed display limits,
-            useful with comparatively small budgets. By default the
-            setting is based on the budget used in the data.
-        --not-expensive
-            expensive setting off. 
-        --svg
-            generate also the svg figures which are used in html files 
+            useful with comparatively small budgets.
+        --no-svg
+            do not generate the svg figures which are used in html files
         -
 
     Exceptions raised:
@@ -190,8 +186,8 @@ def main(argv=None):
             elif o == "--tab-only":
                 genericsettings.isRLDistr = False
                 genericsettings.isFig = False
-            elif o == "--rld-single-fcts":
-                genericsettings.isRldOnSingleFcts = True
+            elif o == "--no-rld-single-fcts":
+                genericsettings.isRldOnSingleFcts = False
             elif o == "--rld-only":
                 genericsettings.isTab = False
                 genericsettings.isFig = False
@@ -206,10 +202,8 @@ def main(argv=None):
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 genericsettings.isExpensive = True  # comprises runlength-based
-            elif o == "--not-expensive":
-                genericsettings.isExpensive = False  
-            elif o == "--svg":
-                genericsettings.generate_svg_files = True
+            elif o == "--no-svg":
+                genericsettings.generate_svg_files = False
             elif o == "--sca-only":
                 warnings.warn("option --sca-only will have no effect with rungenericmany.py")
             elif o == "--los-only":
@@ -225,7 +219,7 @@ def main(argv=None):
         # TODO: conditional imports are NOT the way to go here
         if genericsettings.inputsettings == "color":
             from . import config, genericsettings as inset # input settings
-            config.config(False)
+            config.config()
         elif genericsettings.inputsettings == "grayscale":
             # this settings strategy (by proving different settings files) is problematic, 
             # because it means copy-paste of the settings
@@ -287,17 +281,9 @@ def main(argv=None):
             if genericsettings.isNoiseFree and not genericsettings.isNoisy:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
 
-
-
-        # compute maxfuneval values
-        # TODO: we should rather take min_algorithm max_evals
-        dict_max_fun_evals = {}
-        for ds in dsList:
-            dict_max_fun_evals[ds.dim] = numpy.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(numpy.max(ds.maxevals))))
-            
         # set target values
         from . import config
-        config.target_values(genericsettings.isExpensive, dict_max_fun_evals)
+        config.target_values(genericsettings.isExpensive)
         config.config(dsList[0].isBiobjective())
 
 
@@ -321,14 +307,20 @@ def main(argv=None):
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.many_algorithm_file_name),
             '', # algorithms names are clearly visible in the figure
-            algorithmCount=ppfig.AlgorithmCount.MANY
+            htmlPage = ppfig.HtmlPage.MANY,
+            isBiobjective = dsList[0].isBiobjective(),
+            functionGroups = dictAlg[sortedAlgs[0]].getFuncGroups()
         )
 
         ppfig.copy_js_files(outputdir)
         
         # convergence plots
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, outputdir, genericsettings.verbose)
+            ppconverrorbars.main(dictAlg, 
+                                 dsList[0].isBiobjective(), 
+                                 outputdir, 
+                                 genericsettings.verbose,
+                                 genericsettings.many_algorithm_file_name)
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if genericsettings.isRLDistr:
             config.config(dsList[0].isBiobjective())
@@ -362,9 +354,11 @@ def main(argv=None):
                 if 1 < 3:
                     pprldmany.all_single_functions(dictAlg, 
                                                    dsList[0].isBiobjective(),
+                                                   False,
                                                    sortedAlgs,
                                                    outputdir, 
-                                                   genericsettings.verbose)
+                                                   genericsettings.verbose,
+                                                   genericsettings.many_algorithm_file_name)
                 else:  # subject to removal
                     dictFG = pproc.dictAlgByFun(dictAlg)
                     for fg, tmpdictAlg in dictFG.iteritems():
@@ -408,7 +402,6 @@ def main(argv=None):
                         
             print "Comparison tables done."
 
-        global ftarget  # not nice
         if genericsettings.isFig:
             plt.rc("axes", labelsize=20, titlesize=24)
             plt.rc("xtick", labelsize=20)
@@ -416,6 +409,8 @@ def main(argv=None):
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
             plt.rc('pdf', fonttype = 42)
+
+            ftarget = genericsettings.current_testbed.ppfigs_ftarget
             if genericsettings.runlength_based_targets:
                 reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
                 ftarget = pproc.RunlengthBasedTargetValues([target_runlength],  # TODO: make this more variable but also consistent
@@ -423,8 +418,8 @@ def main(argv=None):
             ppfigs.main(dictAlg, 
                         genericsettings.many_algorithm_file_name, 
                         dsList[0].isBiobjective(),
-                        sortedAlgs, 
                         ftarget,
+                        sortedAlgs, 
                         outputdir, 
                         genericsettings.verbose)
             plt.rcdefaults()
