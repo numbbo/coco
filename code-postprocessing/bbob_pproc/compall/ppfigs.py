@@ -453,11 +453,12 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
         if f in funInfos.keys():
             plt.gca().set_title(funInfos[f], fontsize=fontSize)
 
+        functions_with_legend = genericsettings.current_testbed.functions_with_legend
         isLegend = False
         if legend:
             plotLegend(handles)
         elif 1 < 3:
-            if f in (1, 24, 101, 130) and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
+            if f in functions_with_legend and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
                 isLegend = True
 
         beautify(legend=isLegend, rightlegend=legend)
@@ -529,7 +530,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
         if legend:
             plotLegend(handles)
         else:
-            if f in (1, 24, 101, 130):
+            if f in functions_with_legend:
                 toolsdivers.legend()
 
         saveFigure(filename, figFormat=genericsettings.getFigFormats(), verbose=verbose)

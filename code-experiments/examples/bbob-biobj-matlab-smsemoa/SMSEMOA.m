@@ -1,10 +1,9 @@
 function [paretoFront, ...   % objectives
-    paretoSet, ... % parameters
-    out] = SMSEMOA(... % struct with information
+    paretoSet]... % parameters
+    = SMSEMOA(...
     problem, ...             % function handle to the objective function
     rngMin, ...              % lower bound of decision variables
     rngMax, ...              % upper bound of decision variables
-    isInt, ...               % boolean determining integer variables (true)
     inopts, ...              % struct with options (optional)
     initPop)                 % initial population (optional)
 % smsemoa.m, Version 1.0, last change: August, 14, 2008
@@ -21,20 +20,9 @@ function [paretoFront, ...   % objectives
 % [PARETOFRONT, PARETOSET] = SMSEMOA(PROBLEM[, OPTS])
 %
 % Input arguments:
-%  PROBLEM is a string function name like 'Sympart'. PROBLEM.m
-%  takes as argument a row vector of parameters and returns [objectives,
-%     parameters] (both row vectors). The feedback of parameters can be
-%     used to repair illegal values.
-%     Additionally a corresponding initializePROBLEM.m is needed. It must
-%     return [nVar rngMin rngMax isInt nObj algoCall], where
-%     *  nVar is the dimension of the parameters
-%     *  rngMin is the minimum of the parameter values (row vector)
-%     *  rngMax is the maximum of the parameter values (row vector)
-%     *  isInt is a row vector of 0/1, indicating if parameter values are
-%        Integer
-%     *  nObj is the dimension of the objectives
-%     *  algoCall is a string to call the evaluation-function to get the
-%        objective values, usually PROBLEM
+%  PROBLEM is a function handle or a string function name like 'Sympart'.
+%  PROBLEM.m takes as argument a row vector of parameters and returns
+%  a row vector of objectives
 %  OPTS (an optional argument) is a struct holding additional input
 %     options. Valid field names and a short documentation can be
 %     discovered by looking at the default options (type 'smsemoa'
@@ -59,7 +47,7 @@ function [paretoFront, ...   % objectives
 % This software is Copyright (C) 2008
 % Tobias Wagner, Fabian Kretzschmar
 % ISF, TU Dortmund
-% July 4, 2008
+% February 3, 2016
 %
 % This program is free software (software libre); you can redistribute it
 % and/or modify it under the terms of the GNU General Public License as
@@ -102,8 +90,8 @@ function [paretoFront, ...   % objectives
 defopts.nPop              = '100           % size of the population';
 defopts.maxEval           = 'inf           % maximum number of evaluations';
 defopts.useOCD            = 'true          % use OCD to detect convergence';
-defopts.OCD_VarLimit      = '1e-9          % variance limit of OCD';
-defopts.OCD_nPreGen       = '10            % number of preceding generations used in OCD';
+defopts.OCD_VarLimit      = '1e-10         % variance limit of OCD';
+defopts.OCD_nPreGen       = '15            % number of preceding generations used in OCD';
 defopts.nPFevalHV         = 'inf           % evaluate 1st to this number paretoFronts with HV';
 defopts.outputGen         = 'inf           % rate of writing output files';
 defopts.outputType        = '0             % type of output (0 none, 1 population, 2 archive)';
@@ -117,15 +105,12 @@ defopts.var_swap_prob     = '0.5           % variable swap probability';
 defopts.DE_F              = '0.2+rand(1).*0.6% difference weight for DE';
 defopts.DE_CR             = '0.9           % crossover probability for differential evo';
 defopts.DE_CombinedCR     = 'true          % crossover of blocks instead of single variables';
-defopts.useDE             = 'true          % perform differential evo instead of SBX&PM';
+defopts.useDE             = 'false         % perform differential evo instead of SBX&PM';
 defopts.refPoint          = '0             % refPoint for HV; if 0, max(obj)+1 is used';
 
 % ---------------------- Handling Input Parameters ----------------------
 
 if nargin < 1 || isequal(problem, 'defaults') % pass default options
-    if nargin < 1
-        disp('Default options returned (type "help smsemoa" for help).');
-    end
     paretoFront = defopts;
     if nargin > 1 % supplement second argument with default options
         paretoFront = getoptions(inopts, defopts);
@@ -145,44 +130,34 @@ if ~ischar(problem) && ~isa(problem, 'function_handle')
     error('first argument ''problem'' must be a string or a fhandle');
 end
 
-if nargin < 4
-    error('problem, rngMin, rngMax, and isInt are required');
+if nargin < 3
+    error('problem, rngMin, and rngMax are required');
 end;
 
-% Compose options opts
-if nargin < 5 || isempty(inopts) % no input options available
+% compose options opts
+if nargin < 4 || isempty(inopts) % no input options available
     opts = defopts;
 else
     opts = getoptions(inopts, defopts);
 end
 
-if nargin < 6
+% initialize init pop param
+if nargin < 5
     initPop = '';
 end;
 
 % ------------------------ Initialization -------------------------------
-clc;
-disp('0 percent calculated');
 
-% Reset the random number generator to a different state each restart
-% ropt = rng('shuffle');
-% seed = ropt.Seed;
-seed  = 42;
-% prepare save directories
-if isa(problem, 'function_handle')
-    nameProblem = func2str(problem);
-    i = strfind(nameProblem, ')');
-    k = strfind(nameProblem, '(');
-    nameProblem = nameProblem(i(1)+1:k(2)-1);
+% reset the random number generator to a different state each restart
+[v, d] = version;
+if str2double(d(end-4:end)) > 2011
+    rng('default');
+    ropt = rng('shuffle');
+    seed = ropt.Seed;
 else
-    nameProblem = problem;
-end;
-outdir = sprintf('SMSEMOA_%s/%u/', nameProblem, seed);
-if ~isdir(sprintf('SMSEMOA_%s', nameProblem))
-    mkdir(sprintf('SMSEMOA_%s', nameProblem));
-end;
-if ~isdir(outdir)
-    mkdir(outdir);
+    d = clock;
+    seed = double(ceil(d(end)*1e9));
+    rand('seed', seed);
 end;
 
 % initialize auxiliary parameters
@@ -200,33 +175,56 @@ nPFevalHV = myeval(opts.nPFevalHV);
 outputGen = myeval(opts.outputGen);
 outputType = myeval(opts.outputType);
 
+% prepare save directories
+if isa(problem, 'function_handle')
+    nameProblem = func2str(problem);
+    i = strfind(nameProblem, ')');
+    k = strfind(nameProblem, '(');
+    nameProblem = nameProblem(i(1)+1:k(2)-1);
+else
+    nameProblem = problem;
+end;
+outdir = sprintf('SMSEMOA_%s/%u/', nameProblem, seed);
+if outputType>0 && ~isinf(outputGen) && ...
+        ~isdir(sprintf('SMSEMOA_%s', nameProblem))
+    mkdir(sprintf('SMSEMOA_%s', nameProblem));
+end;
+if outputType>0 && ~isinf(outputGen) && ~isdir(outdir)
+    mkdir(outdir);
+end;
+
 % calculate initial sampling
 ranks = inf(nPop+1,1);
 population = initialize_variables(nPop, nObj, nVar, rngMin, ...
     rngMax, problem, initPop);
-% set evaluation counter
 countEval = nPop;
+
 % initialize new Element position
 elementInd = nPop+1;
+
+% write output files
 if mod(countEval, outputGen)==0 && outputType > 0
     writeToFile(population, nPop, elementInd, nVar, nObj, ranks,...
         countEval, outdir)
 end;
+
+% OCD data structures
 if useOCD
+    PF = cell(OCD_nPreGen,1);
     PF{1} = population(paretofront(population(:,nVar+1:nVar+nObj)),...
         nVar+1:nVar+nObj);
 end;
 terminationCriterion = false;
+
+% initialize archive
 if outputType == 2
     archive = nan(maxEval, nVar+nObj);
     archive(1:countEval,:) = population(1:countEval,:);
 end;
+
+% evolutionary loop
 while ~terminationCriterion && (countEval < maxEval)
-    if ~useOCD && mod(countEval,floor(0.05.*maxEval)) == 0
-        clc;
-        disp(sprintf('%d percent calculated', floor((countEval./(maxEval-1))*100)));
-        disp(sprintf('%d fronts', nPV));
-    end;
+    
     % evaluate parameters
     variable_crossover_prob = myeval(opts.var_crossover_prob);
     variable_crossover_dist = myeval(opts.var_crossover_dist);
@@ -240,95 +238,88 @@ while ~terminationCriterion && (countEval < maxEval)
     refPoint = myeval(opts.refPoint);
     
     % generate and add offspring
-    % if useDE offsprings are generated by differential evolution
-    % else SBX and Mutation is used
     population(elementInd,:) = generate_offspring(population, ...
         nObj, nVar, rngMin, rngMax, problem, ranks, ...
         variable_crossover_prob, variable_crossover_dist, ...
-        variable_mutation_prob, variable_mutation_dist, variable_swap_prob, ...
-        useDE, DE_CombinedCR, DE_F, DE_CR);
+        variable_mutation_prob, variable_mutation_dist,...
+        variable_swap_prob, useDE, DE_CombinedCR, DE_F, DE_CR);
     countEval = countEval+1;
+    
+    % update archive
     if outputType == 2
         archive(countEval,:) = population(elementInd,:);
     end;
+    
+    % environmental selection
     ranks = paretoRank(population(:,nVar+1:nVar+nObj));
     nPV = max(ranks);
-    elementInd = select_element_to_remove(population, nPop, nObj, ...
-        nVar, nPV, ranks, nPFevalHV, refPoint);
+    elementInd = select_element_to_remove(population, nObj, nVar, nPV,...
+        ranks, nPFevalHV, refPoint);
+    
+    % perform OCD
     if useOCD && mod(countEval, nPop)==0
         iteration = int16(round(countEval./nPop));
         if iteration > OCD_nPreGen+1
+            % shift reference fronts
             for i = 2:OCD_nPreGen+1
                 PF{i-1} = PF{i};
             end;
-            PF{OCD_nPreGen+1} = population(ranks==1,nVar+1:nVar+nObj);
-            [OCD_termCrit OCD_lb OCD_ub OCD_pChi2 OCD_pReg] = OCD(PF, ...
-                OCD_VarLimit, 0.05, [1 1 1], ...
-                OCD_lb, OCD_ub, OCD_pChi2, OCD_pReg);
-            clc;
-            disp(sprintf('%d evaluations calculated', countEval));
-            disp(sprintf('maximum p-value variance test: %f', max(OCD_pChi2)));
-            disp(sprintf('p-value regression analysis: %f', OCD_pReg));
+            active = (1:nPop+1)'~=elementInd & ranks==1;
+            PF{OCD_nPreGen+1} = population(active,nVar+1:nVar+nObj);
+            [terminationCriterion, p] = OCD(PF, OCD_VarLimit, 0.05,...
+                refPoint, p);
         else
-            PF{iteration} = population(ranks==1,nVar+1:nVar+nObj);
+            active = (1:nPop+1)'~=elementInd & ranks==1;
+            PF{iteration} = population(active,nVar+1:nVar+nObj);
             if iteration == OCD_nPreGen+1
-                [OCD_termCrit OCD_lb OCD_ub OCD_pChi2 OCD_pReg] = OCD(PF,...
-                    OCD_VarLimit);
-                clc;
-                disp(sprintf('%d evaluations calculated', countEval));
-                disp(sprintf('maximum p-value variance test: %f', max(OCD_pChi2)));
-                disp(sprintf('p-value regression analysis: %f', OCD_pReg));
+                [terminationCriterion, p] = OCD(PF, OCD_VarLimit, 0.05,...
+                    refPoint);
             end;
         end;
-        if exist('OCD_termCrit', 'var') && any(OCD_termCrit)
-            terminationCriterion = any(OCD_termCrit);
-            if OCD_termCrit(1)
-                disp('OCD detected convergence due to the variance test');
-            else
-                disp('OCD detected convergence due to the regression analysis');
-            end;
+        if terminationCriterion
+            disp('OCD detected convergence due to the variance test');
         end;
     end;
     if mod(countEval, outputGen)==0 && outputType > 0
-        if exist('OCD_pReg', 'var')
-            writeToFile(population, nPop, elementInd, nVar, nObj, ranks,...
-                countEval, outdir, OCD_pReg, OCD_pChi2)
-        elseif outputType == 1
-            writeToFile(population, nPop, elementInd, nVar, nObj, ranks,...
-                countEval, outdir)
+        if outputType == 1
+            if useOCD && exist('p', 'var')
+                writeToFile(population, nPop, elementInd, nVar, nObj,...
+                    ranks, countEval, outdir, p);
+            else
+                writeToFile(population, nPop, elementInd, nVar, nObj,...
+                    ranks, countEval, outdir);
+            end;
         elseif outputType == 2
-            writeArchiveToFile(archive, nVar, nObj, countEval, outdir);
+            if useOCD && exist('p', 'var')
+                writeArchiveToFile(archive, nVar, nObj, countEval,...
+                    outdir, p);
+            else
+                writeArchiveToFile(archive, nVar, nObj, countEval, outdir);
+            end;
         end;
     end;
 end;
-if ~terminationCriterion
-    clc;
-    disp('maxEval evaluations have been reached');
-end
-if (outputType > 0) &&  mod(countEval, outputGen)~=0
-    if exist('OCD_pReg', 'var')
-        writeToFile(population, nPop, elementInd, nVar, nObj, ranks,...
-            countEval, outdir, OCD_pReg, OCD_pChi2)
-    elseif outputType == 1
-        writeToFile(population, nPop, elementInd, nVar, nObj, ranks,...
-            countEval, outdir)
+if outputType > 0 &&  mod(countEval, outputGen)~=0
+    if outputType == 1
+        if useOCD
+            writeToFile(population, nPop, elementInd, nVar, nObj, ranks,...
+                countEval, outdir);
+        else
+            writeToFile(population, nPop, elementInd, nVar, nObj, ranks,...
+                countEval, outdir, p);
+        end;
     elseif outputType == 2
-        writeArchiveToFile(archive, nVar, nObj, countEval, outdir);
+        if useOCD
+            writeArchiveToFile(archive, nVar, nObj, countEval,...
+                outdir, p);
+        else
+            writeArchiveToFile(archive, nVar, nObj, countEval, outdir);
+        end;
     end;
 end;
 population(elementInd,:) = [];
 paretoFront = population(:,nVar+1:nVar+nObj);
 paretoSet = population(:,1:nVar);
-if nargout == 3
-    if ~terminationCriterion
-        out.termCrit = 'evaluation limit';
-    elseif OCD_termCrit(1)
-        out.termCrit = 'variance test';
-    else
-        out.termCrit = 'regression analysis';
-    end;
-    out.nEval = countEval;
-end;
 end
 
 %%-------------------------------------------------------------------------
@@ -463,72 +454,71 @@ for i = 1 : nPop
 end;
 end
 %%-------------------------------------------------------------------------
-function elementInd = select_element_to_remove(population, nPop ,nObj, ...
-    nVar, nPV, ranks, nPFevalHV, refPoint)
-if nPV > nPFevalHV
-    elementsInd = find(ranks==nPV);
-    frontsize = size(elementsInd,1);
-    % remove random element
-    elementInd = ceil(rand(1)*frontsize);
-    if elementInd == 0
-        elementInd=1;
-    end
+%%-------------------------------------------------------------------------
+function elementInd = select_element_to_remove(population, nObj, nVar,...
+    nPV, ranks, nPFevalHV, refPoint)
+elementsInd = find(ranks==nPV);
+frontsize = size(elementsInd,1);
+if frontsize==1
+    elementInd = 1;
+elseif nPV > nPFevalHV
+    % current front is higher than the threshold, select index randomly
+    elementInd = int16(max(ceil(rand(1)*frontsize),1));
 else
-    % use HV
-    elementsInd = find(ranks==nPV);
-    frontsize = size(elementsInd,1);
-    if frontsize==1
-        elementInd = 1;
+    frontObjectives = population(elementsInd,nVar+1:nVar+nObj);
+    if refPoint==0
+        % adaptive reference point
+        refPoint = max(frontObjectives)+1;
     else
-        frontObjectives = population(elementsInd,nVar+1:nVar+nObj);
-        if refPoint==0
-            refPoint = max(frontObjectives)+1;
-        else
-            index = false(frontsize,1);
-            for i = 1:frontsize
-                if sum(frontObjectives(i,:) >= refPoint) > 0
-                    index(i) = true;
-                end;
+        % filter solutions not dominating the predefined reference point
+        index = false(frontsize,1);
+        for i = 1:frontsize
+            if any(frontObjectives(i,:) >= refPoint)
+                index(i) = true;
             end;
-            if sum(index) > 0
-                [maxVal, IX] = max(max(frontObjectives-...
-                    repmat(refPoint,frontsize,1), [], 2));
-                elementInd = elementsInd(IX(1));
-                return;
-            end;
-        end
-        if nObj == 2
-            [frontObjectives IX] = sortrows(frontObjectives, 1);
-            deltaHV(IX(1)) = ...
-                (frontObjectives(2,1) - frontObjectives(1,1)) .* ...
-                (refPoint(2) - frontObjectives(1,2));
-            for i = 2:frontsize-1
-                deltaHV(IX(i)) = ...
-                    (frontObjectives(i+1,1) - frontObjectives(i,1))...
-                    .* ...
-                    (frontObjectives(i-1,2) - frontObjectives(i,2));
-            end;
-            deltaHV(IX(frontsize)) = ...
-                (refPoint(1) - frontObjectives(frontsize,1)) .* ...
-                (frontObjectives(frontsize-1,2) - ...
-                frontObjectives(frontsize,2));
-        else
-            currentHV = hv(frontObjectives', refPoint);
-            deltaHV = zeros(1,frontsize);
-            for i=1:frontsize
-                myObjectives = frontObjectives;
-                myObjectives(i,:)=[];
-                myHV = hv(myObjectives', refPoint);
-                deltaHV(i) = currentHV - myHV;
-            end
-        end
-        [deltaHV,IX]=min(deltaHV);
-        elementInd = IX(1);
+        end;
+        if sum(index) > 0
+            % enough infeasible solutions, remove the one with the
+            % strongest individual violation
+            [maxVal, IX] = max(max(frontObjectives-...
+                repmat(refPoint,frontsize,1), [], 2));
+            elementInd = elementsInd(IX(1));
+            return;
+        end;
     end
-end
+    deltaHV = zeros(1,frontsize);
+    if nObj == 2
+        % use fast calculation of HV contributions
+        [frontObjectives, IX] = sortrows(frontObjectives, 1);
+        deltaHV(IX(1)) = ...
+            (frontObjectives(2,1) - frontObjectives(1,1)) .* ...
+            (refPoint(2) - frontObjectives(1,2));
+        for i = 2:frontsize-1
+            deltaHV(IX(i)) = ...
+                (frontObjectives(i+1,1) - frontObjectives(i,1))...
+                .* ...
+                (frontObjectives(i-1,2) - frontObjectives(i,2));
+        end;
+        deltaHV(IX(frontsize)) = ...
+            (refPoint(1) - frontObjectives(frontsize,1)) .* ...
+            (frontObjectives(frontsize-1,2) - ...
+            frontObjectives(frontsize,2));
+    else
+        % resort to general HV code for arbitrary dimension
+        currentHV = hv(frontObjectives', refPoint);
+        for i=1:frontsize
+            myObjectives = frontObjectives;
+            myObjectives(i,:)=[];
+            myHV = hv(myObjectives', refPoint);
+            deltaHV(i) = currentHV - myHV;
+        end
+    end
+    [minVal, IX]=min(deltaHV);
+    elementInd = IX(1);
+end;
 elementInd = elementsInd(elementInd);
 end
-
+%-------------------------------------------------------------------------
 %-------------------------------------------------------------------------
 function offspring = generate_offspring(population, ...
     nObj, nVar, rngMin, rngMax, problem, ranks, ...
@@ -706,28 +696,107 @@ offspring(1:nVar) = max([rngMin; offspring(1:nVar)]);
 offspring(nVar + 1: nVar + nObj) = feval(problem, offspring(1:nVar));
 end
 
+function [stopFlag, pNew] = OCD(PF, varLimit, alpha, ref, p)
+% Determination of convergence by means of statistical tests on the
+% variance of the internally optimized HV indicator
+%
+% Call: [stopFlag, pNew] = OCD(PF, varLimit, alpha, ref, p)
+%
+% Input arguments:
+% PF        is a 1xnPreGen+1 vector of cell arrays holding the current and
+%           the last nPreGen Pareto front approximations
+% varLimit  is the minimum variance limit (default: 1e-3)
+% alpha     is the significance level of the statistical tests
+%           (default: 0.05)
+% ref       is a 1xd vector with the reference point in the d-dimensional
+%           objective space (default: -inf(1,d))
+% pNew         is the p-value of the Chi^2 variance test in the last iteration
+%           (default: 1)
+%
+% Output arguments:
+% stopFlag  is a boolean indicating whether the test detect convergence
+% p         is the p-value of the variance test in the current iteration
+%
+% A detailed description of the procedure and the variables used in the
+% code can be found in:
+% Wagner, T.; Trautmann, H.: Online Convergence Detection for Evolutionary
+% Multi-Objective Algorithms Revisited. In: Proceedings of the 2010 IEEE
+% Congress on Evolutionary Computation (IEEE CEC 2010), July 18-23, 2010,
+% Barcelona, Spain, G. Fogel, H. Ishibuchi (eds.), pp. 3554-3561
+%
+% Author: Tobias Wagner, Institute of Machining Technology, TU Dortmund
+% License: GPLv2
+% Last Revision: 2016-02-03
+if nargin < 1
+    error('OCD requires Pareto front approximations to detect convergence');
+end;
+
+% check input and initialize variables
+nPreGen = length(PF)-1;
+PI = zeros(1,nPreGen);
+PFi = PF{nPreGen+1};
+d = size(PFi,2);
+if nargin < 5 || isempty(p)
+    p = 1;
+end
+if nargin < 4 || isempty(ref) || ref == 0
+    % determine ub from the data
+    ref = -inf(1,d);
+    for i = 1:nPreGen+1
+        ref = max([ref; PF{i}]);
+    end;
+    ref = ref+1;
+end;
+if nargin < 3 || isempty(alpha)
+    alpha = 0.05;
+end;
+if nargin < 2 || isempty(varLimit)
+    varLimit = 1e-3;
+end;
+
+% compute hypervolume of the reference set
+refValue = hv(PFi', ref);
+
+for k = 1:nPreGen
+    % compute indicator values
+    PI(k) = refValue-hv(PF{k}', ref);
+end;
+pNew = Chi2(PI, varLimit); % perform Chi^2 test
+% evaluate test-based termination criteria
+stopFlag = (pNew <= alpha) && (p <= alpha);
+end
+
+function p = Chi2(PI, VarLimit) % One-sided Chi^2 variance test
+N = size(PI,2)-1; % determine degrees of freedom
+Chi = (var(PI).*N)./VarLimit; % compute test statistic
+% look up p-value from Chi^2 distribution with N degrees of freedom
+p = chi2cdf(Chi, N);
+end
+
 function writeToFile(population, nPop, elementInd, nVar, nObj, ranks,...
-    countEval, outdir, OCD_pReg, OCD_pChi2)
+    countEval, outdir, p)
 active = setdiff(1:nPop+1,elementInd);
 PS = population(active,1:nVar);
 PF = population(active,nVar+1:nVar+nObj);
-dlmwrite(sprintf('%spar_%03d.txt',outdir,countEval), PS, ' ');
-dlmwrite(sprintf('%sobj_%03d.txt',outdir,countEval), PF, ' ');
-dlmwrite(sprintf('%sps_%03d.txt',outdir,countEval),...
+dlmwrite(sprintf('%spar_%03d.txt', outdir, countEval), PS, ' ');
+dlmwrite(sprintf('%sobj_%03d.txt', outdir, countEval), PF, ' ');
+dlmwrite(sprintf('%sps_%03d.txt', outdir, countEval),...
     PS(ranks(active)==1,:), ' ');
-dlmwrite(sprintf('%spf_%03d.txt',outdir,countEval),...
+dlmwrite(sprintf('%spf_%03d.txt', outdir, countEval),...
     PF(ranks(active)==1,:), ' ');
 if nargin > 8
-    dlmwrite(sprintf('pvalues_%03d.txt',countEval), ...
-        [OCD_pReg OCD_pChi2], ' ');
+    dlmwrite(sprintf('%spvalue_%03d.txt', outdir, countEval), p, ' ');
 end;
 end
 
-function writeArchiveToFile(archive, nVar, nObj, countEval,outdir)
+function writeArchiveToFile(archive, nVar, nObj, countEval, outdir, p)
 X = archive(1:countEval,1:nVar);
 Y = archive(1:countEval,nVar+1:nVar+nObj);
 PF = Y(paretofront(Y),:);
-dlmwrite(sprintf('%spar_%03d.txt',outdir,countEval), X, ' ');
-dlmwrite(sprintf('%sobj_%03d.txt',outdir,countEval), Y, ' ');
-dlmwrite(sprintf('%spf_%03d.txt',outdir,countEval), PF, ' ');
+dlmwrite(sprintf('%spar_%03d.txt', outdir, countEval), X, ' ');
+dlmwrite(sprintf('%sobj_%03d.txt', outdir, countEval), Y, ' ');
+dlmwrite(sprintf('%spf_%03d.txt', outdir, countEval), PF, ' ');
+if nargin > 5
+    dlmwrite(sprintf('%spvalue_%03d.txt', outdir, countEval), p, ' ');
+end;
 end
