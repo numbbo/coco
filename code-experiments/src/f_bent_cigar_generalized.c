@@ -75,7 +75,7 @@ static coco_problem_t *f_bent_cigar_generalized_allocate(const size_t number_of_
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("generalized bent cigar function",
                                                                f_bent_cigar_generalized_evaluate, f_bent_cigar_generalized_versatile_data_free, number_of_variables, -5.0, 5.0, 0.0);
-  coco_problem_set_id(problem, "%s_d%02lu", "bent_cigar", number_of_variables);
+  coco_problem_set_id(problem, "%s_d%04lu", "bent_cigar", number_of_variables);
   problem->versatile_data = (f_bent_cigar_generalized_versatile_data_t *) coco_allocate_memory(sizeof(f_bent_cigar_generalized_versatile_data_t));
   ((f_bent_cigar_generalized_versatile_data_t *) problem->versatile_data)->proportion_long_axes_denom = proportion_long_axes_denom;
 

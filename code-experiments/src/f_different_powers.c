@@ -138,7 +138,7 @@ static coco_problem_t *f_different_powers_permblockdiag_bbob_problem_allocate(co
   coco_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);
 
   problem = f_different_powers_allocate(dimension);
-  problem = transform_vars_permutation(problem, P2, dimension);/* LIFO */
+  problem = transform_vars_permutation(problem, P2, dimension);
   problem = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
   problem = transform_vars_permutation(problem, P1, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
@@ -148,7 +148,7 @@ static coco_problem_t *f_different_powers_permblockdiag_bbob_problem_allocate(co
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
-  coco_problem_set_type(problem, "large_scale_block_rotated");
+  coco_problem_set_type(problem, "block_rotated_ill-conditioned");
 
   coco_free_block_matrix(B, dimension);
   coco_free_memory(P1);
