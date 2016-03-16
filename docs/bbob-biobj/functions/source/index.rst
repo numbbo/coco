@@ -39,7 +39,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   functions of the well-known single-objective noiseless ``bbob`` test suite. It will be used as the main test suite of
   the upcoming `BBOB-2016 workshop <http://numbbo.github.io/workshops/BBOB-2016/>`_ at GECCO. Besides giving the actual
   function definitions and presenting their (known) properties, this documentation also aims at
-  giving the rational behind our approach in terms of function groups, instances, and potential objective space
+  giving the rationale behind our approach in terms of function groups, instances, and potential objective space
   normalization.
 
 .. summarizing the state-of-the-art in multi-objective black-box benchmarking, at 
@@ -169,7 +169,7 @@ single-objective functions of the ``bbob`` test suite [HAN2009fun]_ which
 has been used since 2009 in the `BBOB workshop series
 <http://numbbo.github.io/workshops/>`_ . While concrete details on each of
 the 55 ``bbob-biobj`` functions are given in Section
-:ref:`sec-test-functions`, we will detail here the main rationals behind
+:ref:`sec-test-functions`, we will detail here the main rationale behind
 them together with their common properties.
 
 
@@ -195,7 +195,7 @@ is present results in :math:`24+ {24 \choose 2} = 300` functions.
 
 .. The first objective is chosen as ``bbob`` function *i*
   and the second as ``bbob`` function *j* with *i* :math:`\leq` *j*,
-  results in :math:`24+ {24 \choose 2} = 300` functions.
+  resulting in :math:`24+ {24 \choose 2} = 300` functions.
 
 Some first tests, e.g. in [BTH2015a]_, showed that having 300 functions is
 impracticable in terms of the overall running time of the benchmarking
@@ -234,6 +234,7 @@ separate versions in the ``bbob`` suite. Finally our choice of  10 ``bbob`` func
 .. separate versions in the ``bbob`` suite.
 
 
+
 .. |f`1` in the bbob suite| replace:: :math:`f_1` in the ``bbob`` suite
 .. _f`1` in the bbob suite: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=5
 
@@ -269,6 +270,7 @@ separate versions in the ``bbob`` suite. Finally our choice of  10 ``bbob`` func
 
 * Separable functions
 
+  - Sphere (function 1 in |bbob suite|_)
   - Ellipsoid separable (function 2 in |bbob suite|_)
 
 * Functions with low or moderate conditioning 
@@ -304,7 +306,7 @@ the final `bbob-biobj` suite. Those functions are denoted :math:`f_1` to :math:`
 Function Groups
 ---------------------------------------------------------------
 
-From combining the original ``bbob`` function classes, we obtain 15 function classes to structure the 55 bi-objective functions of the ``bbob-biobj`` testsuit. Each function class contains three or four functions. We are listing below the function classes and in parenthesis  the functions that belong to the respective class:
+From combining the original ``bbob`` function classes, we obtain 15 function classes to structure the 55 bi-objective functions of the ``bbob-biobj`` test suite. Each function class contains three or four functions. We are listing below the function classes and in parenthesis  the functions that belong to the respective class:
  1. separable - separable (functions :math:`f_1`, :math:`f_2`, :math:`f_{11}`)
  2. separable - moderate (:math:`f_3`, :math:`f_4`, :math:`f_{12}`, :math:`f_{13}`)
  3. separable - ill-conditioned (:math:`f_5`, :math:`f_6`, :math:`f_{14}`, :math:`f_{15}`)
@@ -347,12 +349,13 @@ to compute the hypervolume indicator (see
 <http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/>`_ for details).
 Both, ideal and nadir point can be computed, because the global 
 optimum is known and is unique for the 10 ``bbob`` base functions. 
-In the black-box optimization benchmarking setup however, the values of the
+In the black-box optimization benchmarking setup, however, the values of the
 ideal and nadir point are not accessible to the optimization algorithm
 [BBO2016ex]_.
 
 
 .. TODO: this should become a reference
+.. Dimo: don't know what you mean here, Niko
 
 .. deleted: a normalization can take place as both the ideal and the nadir point are
    known internally. 
@@ -390,14 +393,15 @@ Instances
 Our test functions are parametrized and instances are instantiations of the
 underlying parameters (see [COCO:2016]_). The instances for the bi-objective
 functions are using instances of each single objective function composing the
-bi-objective one. However, in addition, we assert two conditions. 
+bi-objective one. In addition, we assert two conditions. 
 
   #. The two single-objective optima (also called the extreme optimal points) are not closer than :math:`10^{-4}` in search space. 
 
   #. The Euclidean distance between the ideal and the nadir point (in objective 
      space, considering raw |f|-values) is at least :math:`10^{-1}`. 
      
-.. TODO:: fact-check this: is it really raw |f|-values? 
+.. .. TODO:: fact-check this: is it really raw |f|-values? 
+.. Dimo: this has been already checked in a discussion with Tea and Tobias
 
 .. Instances are the way in the `Coco framework`_ to perform multiple
 .. algorithm runs on the same function. More concretely, the original
@@ -422,11 +426,9 @@ We associate to an instance, an instance-id which is an integer. The relation be
  * :math:`K_{\rm id}^{f_\beta} = K_{\rm id}^{f_\alpha} + 1`
 
 
-.. TODO:: should be :math:`2 K - 1` instead of :math:`2 K + 1`, no?
+.. .. TODO:: should be :math:`2 K - 1` instead of :math:`2 K + 1`, no?
+.. Dimo: no, the above and the examples below are correct (checked in code-experiments/src/suite_biobj.c, line 190)
 
-
-.. * :math:`K_{\rm id}^{f_\alpha}` =  2 \* :math:`K^{\rm biobj}_{\rm id}` + 1 and
-.. * :math:`K_{\rm id}^{f_\beta}` =  :math:`K_{\rm id}^{f_\alpha}` + 1
 
 If we find that above conditions are not satisfied for all dimensions and
 functions in the ``bbob-biobj`` suite, we increase the instance-id of the
@@ -576,7 +578,7 @@ one-dimensional optimizations along the coordinate axes while
 keeping the other variables fixed. Consequently, *non-separable*
 problems must be considered. They are much more difficult to solve. The
 typical well-established technique to generate non-separable
-functions from separable ones :math:`x \in \mathbb{R}^D \mapsto g(x)` is the application of a rotation matrix
+functions from separable ones such as :math:`x \in \mathbb{R}^D \mapsto g(x)` is the application of a rotation matrix
 :math:`\mathbf R` to :math:`x`, that is :math:`x \in \mathbb{R}^D \mapsto g(\mathbf R x)`.
 
 A *unimodal* function has only one local minimum which is at the same
@@ -584,7 +586,7 @@ time also its global one.
 A *multimodal* function has at least two local minima which is highly common
 in practical optimization problems.
 
-*Ill-conditioning* is a another typical challenge in real-parameter
+*Ill-conditioning* is another typical challenge in real-parameter
 optimization and, besides multimodality, probably the most common one.
 Conditioning of a function can be rigorously formalized in the
 case of convex quadratic functions,
@@ -593,14 +595,16 @@ positive definite matrix, as the condition number of the Hessian matrix
 :math:`H`. Since contour lines associated to a convex quadratic function
 are ellipsoids, the condition number corresponds to the square root of
 the ratio between the largest axis of the ellipsoid and the shortest axis.
-For more general functions, conditioning loosely refers to the square of
-the ratio between the largest and smallest direction of a contour line. 
+In the more general case, "we can call a function ill-conditioned if for points with similar function values the minimal displacement (in search space) that produces a given function value improvement differs by orders of magnitude." [HAN2011]_
 
-.. TODO:: it is not quite clear what a large or small direction of a line is. 
+
+.. .. TODO:: it is not quite clear what a large or small direction of a line is. 
    Ill-conditioning is IMHO related to change of curvature on a level-set. 
-
+.. Dimo: should be improved now by citing the Giens paper (many thanks to Anne for her help)
+   
+   
 The proposed ``bbob-biobj`` testbed contains ill-conditioned functions
-with a typical conditioning of :math:`10^6`. We believe this a realistic
+with a typical conditioning of :math:`10^6`. We believe this is a realistic
 requirement, while we have seen practical problems with conditioning
 as large as :math:`10^{10}`.
 
@@ -978,7 +982,7 @@ bbob suite|_) and Rastrigin function (|f`15` in the bbob suite|_).
 The objective functions show rather opposite properties.
 The first one is separable, the second not. The first one
 is unimodal, the second highly multimodal (roughly :math:`10^D` local
-optima). The first one s highly ill-conditioning (condition number of
+optima). The first one is highly ill-conditioning (condition number of
 :math:`10^6`), the second one has a conditioning of about 10. Local
 non-linear transformations are performed in both objective functions
 to alleviate the original symmetry and regularity of the two
@@ -1889,12 +1893,12 @@ Contained in the *weakly-structured - weakly-structured* function class.
 .. [BBO2016ex] The BBOBies (2016). `COCO: Experimental Procedure`__. 
 __ http://numbbo.github.io/coco-doc/experimental-setup/
 
-.. [BTH2015a] Dimo Brockhoff, Thanh-Do Tran, Nikolaus Hansen:
+.. [BTH2015a] D. Brockhoff, T.-D. Tran, and N. Hansen:
    Benchmarking Numerical Multiobjective Optimizers Revisited.
    GECCO 2015: 639-646
    
-.. [COCO:2016] The BBOBies (2016). COCO: A platform for Comparing Continuous Optimizers in a
-    Black-Box Setting.   
+.. [COCO:2016] The BBOBies (2016). `COCO: A platform for Comparing Continuous Optimizers in a Black-Box Setting`__.
+__ http://numbbo.github.io/coco-doc/
 
 .. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
   `Real-parameter black-box optimization benchmarking 2009: Noiseless
@@ -1904,3 +1908,8 @@ __ http://numbbo.github.io/coco-doc/experimental-setup/
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
 
+.. [HAN2011] N. Hansen, R. Ros, N. Mauny, M. Schoenauer, and A. Auger (2011). Impacts
+ of Invariance in Search: When CMA-ES and PSO Face Ill-Conditioned and
+ Non-Separable Problems. Applied Soft Computing. Vol. 11, pp. 5755-5769.
+ Elsevier.  
+  
