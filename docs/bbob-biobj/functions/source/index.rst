@@ -35,13 +35,15 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. raw:: html
 
-  The ``bbob-biobj`` test suite contains 55 bi-objective functions in continuous domain which are derived from combining
-  functions of the well-known single-objective noiseless ``bbob`` test suite. It will be used as the main test suite of
-  the upcoming `BBOB-2016 workshop <http://numbbo.github.io/workshops/BBOB-2016/>`_ at GECCO. Besides giving the actual
+  <p>The <code class="docutils literal"><span class="pre">bbob-biobj</span></code> test suite contains 55 bi-objective
+  functions in continuous domain which are derived from combining
+  functions of the well-known single-objective noiseless <code class="docutils literal"><span class="pre">bbob</span></code> test suite. It will be used as the main test suite of
+  the upcoming <a href="http://numbbo.github.io/workshops/BBOB-2016/">BBOB-2016 workshop</a> at GECCO. Besides giving the actual
   function definitions and presenting their (known) properties, this documentation also aims at
   giving the rationale behind our approach in terms of function groups, instances, and potential objective space
   normalization.
-
+  </p>
+  
 .. summarizing the state-of-the-art in multi-objective black-box benchmarking, at 
 .. and at providing a simple tutorial on how to use these functions for actual benchmarking within the Coco framework.
 
