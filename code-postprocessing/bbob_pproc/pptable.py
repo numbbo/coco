@@ -31,11 +31,8 @@ from .toolsstats import significancetest
 
 from pdb import set_trace
 
-targets = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
-targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
 targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
-#targetf = 1e-8 # value for determining the success ratio
-samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
+
 # def tablespec(targets):
 # 
 #     i = 0
@@ -106,92 +103,6 @@ def get_table_caption():
 
     return table_caption
         
-
-def _treat(ds):
-
-    bestalgentries = bestalg.loadBestAlgorithm(ds.isBiobjective())
-    
-    if not bestalgentries:
-        return None, None
-
-    # Rec array: http://docs.scipy.org/doc/numpy/user/basics.rec.html
-    bestentry = bestalgentries[(ds.dim, ds.funcId)]
-    bestert = bestentry.detERT(targets)
-    bestevals, bestalgs = bestentry.detEvals(targets)
-    bestfinaldata = bestentry.detEvals([genericsettings.current_testbed.pptable_ftarget])[0][0]
-    ert = ds.detERT(targets)
-    evals = ds.detEvals(targets)
-    finaldata = ds.detEvals([genericsettings.current_testbed.pptable_ftarget])[0]
-
-    dtype = []
-    bestdtype = []
-    for i, t in enumerate(targets):
-        dtype.append((('aRT ratio (iq 10-90), df=%e' % t, 'df=%e' % t), '2f')) 
-        bestdtype.append((('best aRT df=%e' % t, 'df=%e' % t), 'f'))
-    dtype.append((('nb success final target=%e' % t, 'finaltarget=%e' % t), 'i8'))
-    dtype.append(('nbruns', 'i8'))
-    bestdtype.append((('nb success finaltarget=%e' % t, 'finaltarget=%e' % t), 'i8'))
-    bestdtype.append(('nbruns', 'i8'))
-    besttable = np.zeros(1, dtype=bestdtype)
-    wholetable = np.zeros(1, dtype=dtype)
-    table = wholetable[0]
-    
-    bestdata = list()
-    bestdata.extend(bestert)
-    bestdata.append(np.sum(np.isnan(bestfinaldata) == False))
-    bestdata.append(len(bestfinaldata))
-    besttable[0] = tuple(bestdata)
-
-    data = list()
-    for i, e in enumerate(evals): # loop over targets
-        unsucc = np.isnan(e)
-        bt = toolsstats.drawSP(e[unsucc == False], ds.maxevals[unsucc],
-                               (10, 90), samplesize)[0]
-        data.append((ert[i] / bestert[i], (bt[-1] - bt[0]) / 2. / bestert[i]))
-    data.append(np.sum(np.isnan(finaldata) == False))
-    data.append(ds.nbRuns())
-    table = tuple(data) # fill with tuple not list nor array!
-
-    # TODO: do the significance test thing here.
-    return besttable, wholetable
-
-def _table(data):
-    res = []
-    
-    return res
-
-def main2(dsList, dimsOfInterest, outputdir='.', info='', verbose=True):
-    """Generate a table of ratio aRT/aRTbest vs target precision.
-    
-    1 table per dimension will be generated.
-
-    Rank-sum tests table on "Final Data Points" for only one algorithm.
-    that is, for example, using 1/#fevals(ftarget) if ftarget was
-    reached and -f_final otherwise as input for the rank-sum test, where
-    obviously the larger the better.
-
-    """
-    # TODO: remove dimsOfInterest, was added just for compatibility's sake
-    if info:
-        info = '_' + info
-        # insert a separator between the default file name and the additional
-        # information string.
-    
-    for d, dsdim in dsList.dictByDim().iteritems():
-        res = []
-        for f, dsfun in sorted(dsdim.dictByFunc().iteritems()):
-            assert len(dsfun) == 1, ('Expect one-element DataSetList for a '
-                                     'given dimension and function')
-            ds = dsfun[0]
-            data = _treat(ds)
-            res = _table(data)
-        res = []
-        outputfile = os.path.join(outputdir, 'pptable_%02dD%s.tex' % (d, info))
-        f = open(outputfile, 'w')
-        f.write(res)
-        f.close()
-        if verbose:
-            print "Table written in %s" % outputfile
 
 def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     """Generate a table of ratio aRT/aRTbest vs target precision.
@@ -331,7 +242,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     #set_trace()
                 if any(succ):
                     tmp2 = toolsstats.drawSP(tmp[succ], tmp[succ==False],
-                                            (10, 50, 90), samplesize)[0]
+                                (10, 50, 90), genericsettings.simulated_runlength_bootstrap_sample_size)[0]
                     dispersion.append((tmp2[-1] - tmp2[0]) / 2.)
                 else: 
                     dispersion.append(None)
