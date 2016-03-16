@@ -595,7 +595,10 @@ positive definite matrix, as the condition number of the Hessian matrix
 :math:`H`. Since contour lines associated to a convex quadratic function
 are ellipsoids, the condition number corresponds to the square root of
 the ratio between the largest axis of the ellipsoid and the shortest axis.
-In the more general case, "we can call a function ill-conditioned if for points with similar function values the minimal displacement (in search space) that produces a given function value improvement differs by orders of magnitude." [HAN2011]_
+In the more general case, "we can call a function ill-conditioned if for
+points with similar function values the minimal displacement (in search
+space) that produces a given function value improvement differs by
+orders of magnitude." [Han2011]_
 
 
 .. .. TODO:: it is not quite clear what a large or small direction of a line is. 
@@ -1887,8 +1890,7 @@ Contained in the *weakly-structured - weakly-structured* function class.
 .. raw:: html
     
     <H2>References</H2>
- 
-  
+   
 
 .. [BBO2016ex] The BBOBies (2016). `COCO: Experimental Procedure`__. 
 __ http://numbbo.github.io/coco-doc/experimental-setup/
@@ -1908,8 +1910,10 @@ __ http://numbbo.github.io/coco-doc/
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
 
-.. [HAN2011] N. Hansen, R. Ros, N. Mauny, M. Schoenauer, and A. Auger (2011). Impacts
- of Invariance in Search: When CMA-ES and PSO Face Ill-Conditioned and
- Non-Separable Problems. Applied Soft Computing. Vol. 11, pp. 5755-5769.
- Elsevier.  
+.. [Han2011] N. Hansen, R. Ros, N. Mauny, M. Schoenauer, and A. Auger (2011). Impacts
+	of Invariance in Search: When CMA-ES and PSO Face Ill-Conditioned and
+	Non-Separable Problems. Applied Soft Computing. Vol. 11, pp. 5755-5769.
+	Elsevier.  
+
+
   
