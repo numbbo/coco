@@ -307,7 +307,7 @@ class GECCOBBOBTestbed(Testbed):
         self.ppfvdistr_min_target = 1e-8
         self.functions_with_legend = (1, 24, 101, 130)
         self.number_of_functions = 24
-        self.pptabletargetf = 1e-8
+        self.pptable_ftarget = 1e-8
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
@@ -342,7 +342,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)
         self.number_of_functions = 55
-        self.pptabletargetf = 1e-5
+        self.pptable_ftarget = 1e-5
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
