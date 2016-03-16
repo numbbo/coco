@@ -28,7 +28,7 @@ abstract = """The ``bbob-biobj`` test suite contains 55 bi-objective functions
 in continuous domain which are derived from combining functions of the
 well-known single-objective noiseless ``bbob`` test suite. Besides giving the
 actual function definitions and presenting their (known) properties, this
-documentation also aims at giving the rational behind our approach in terms of
+documentation also aims at giving the rationale behind our approach in terms of
 function groups, instances, and potential objective space normalization.
 """
 
