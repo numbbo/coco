@@ -31,8 +31,6 @@ from .toolsstats import significancetest
 
 from pdb import set_trace
 
-targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
-
 # def tablespec(targets):
 # 
 #     i = 0
@@ -119,7 +117,10 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     #in the following the reference algorithm is the one given in
     #bestalg.bestalgentries which is the virtual best of BBOB
     dictDim = dsList.dictByDim()
-    targetf=genericsettings.current_testbed.pptable_ftarget
+
+    targetf = genericsettings.current_testbed.pptable_ftarget
+    targetsOfInterest = genericsettings.current_testbed.pptable_targetsOfInterest
+
     if info:
         info = '_' + info
         # insert a separator between the default file name and the additional
