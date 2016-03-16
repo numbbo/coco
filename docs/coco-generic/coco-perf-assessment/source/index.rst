@@ -261,7 +261,7 @@ Average Runtime
 =====================
 
 The average runtime (|ART|) (introduced in [Price:1997]_ as
-ENES and analyzed in [Auger:2005b]_ as success performance) is an estimate of the expected runtime of the restart algorithm given in Equation :eq:`RTrestart` that is used within the COCO framework. More precisely, the expected runtime of the restart algorithm (on a parametrized family of functions in order to reach a precision :math:`\epsilon`) writes
+ENES and analyzed in [Auger:2005b]_ as success performance and previously called ERT in [HAN2009]_) is an estimate of the expected runtime of the restart algorithm given in Equation :eq:`RTrestart` that is used within the COCO framework. More precisely, the expected runtime of the restart algorithm (on a parametrized family of functions in order to reach a precision :math:`\epsilon`) writes
 
 .. math::
     :nowrap:
@@ -294,7 +294,8 @@ conducted in all trials (before to reach a given precision).
 
 Remark that while not explicitly denoted, the average runtime depends on the target and more precisely on a precision. It also depends strongly on the termination criterion of the algorithm.
     
-
+.. Anne: Maybe it's not clear that we compute ERT by having RT of different
+.. Anne: instances associated to the same precision (though it is kind of said)
 
 
 
@@ -383,35 +384,32 @@ We can also naturally aggregate over all functions and hence obtain one single E
 	The COCO platform does not provides ECDF aggregated over dimension.
 
 
+.. Best 2009 "Algorithm"
+.. ---------------------
+.. Anne: Might be moved somewhere else when we will have an other section
+.. Anne: for all the graphs used within COCO
+.. We often display the performance of the best 2009 "algorithm". For instance in Figure .. Figure :ref:`fig:ecdfall` the leftmostleft curve displays the performance of the best .. 2009 "algorithm".
+
+
+
 
 .. todo::
 	* ECDF and uniform pick of a problem
 	* log ART can be read on the ECDF graphs [requires some assumptions]
-
-The Different Plots Provided by the COCO Platform
-=================================================
-
-Best 2009 Algorithm
--------------------
-
-.. In several displays we use the best 2009 algorithm
-
-ART Scaling Graphs (see Figure :ref:`fig:artscaling`) 
------------------------------------------------------
-
-The ART scaling graphs present the average running time to reach a certain precision (relative target) divided by the dimension versus the dimension. Hence an horizontal line means a linear scaling with respect to the dimension.
-
-.. _fig:artscaling:
-
-.. figure:: pics/plots-all2009/pprldmany_noiselessall-5and20D.* 
-   :width: 100%
-   :align: center
-   
-   ART Scaling Graph
-
-ART Loss Graphs
----------------
-
+	* The Different Plots Provided by the COCO Platform
+		** ART Scaling Graphs
+			The ART scaling graphs present the average running time to
+			reach a certain 			precision (relative target)
+			divided by the dimension versus the dimension. Hence an
+			horizontal line means a linear scaling with respect to the
+			dimension.
+		** ART Loss graphs
+		** Best 2009: actually now I am puzzled on this Best 2009
+		algorithm (I know what is the aRT of the best 2009, but I have
+		doubts on how we display the ECDF of the best 2009
+		
+		
+		
 Acknowledgements
 ================
 This work was supported by the grant ANR-12-MONU-0009 (NumBBO) 
