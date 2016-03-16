@@ -294,7 +294,8 @@ conducted in all trials (before to reach a given precision).
 
 Remark that while not explicitly denoted, the average runtime depends on the target and more precisely on a precision. It also depends strongly on the termination criterion of the algorithm.
     
-
+.. Anne: Maybe it's not clear that we compute ERT by having RT of different
+.. Anne: instances associated to the same precision (though it is kind of said)
 
 
 
