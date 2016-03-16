@@ -209,7 +209,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     #in the following the reference algorithm is the one given in
     #bestalg.bestalgentries which is the virtual best of BBOB
     dictDim = dsList.dictByDim()
-    targetf=genericsettings.current_testbed.pptabletargetf
+    targetf=genericsettings.current_testbed.pptable_ftarget
     if info:
         info = '_' + info
         # insert a separator between the default file name and the additional
