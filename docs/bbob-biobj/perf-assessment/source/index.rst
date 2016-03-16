@@ -26,8 +26,13 @@ numerical black-box optimizers on multi-objective problems within the COCO_
 platform and in particular on the biobjective test suite ``bbob-biobj``,
 described in more detail in [bbob-biobj-functions-doc]_ .
 
-The performance assessment is based on an indicator value computed from all 
-evaluated or recommended (see [BBO2016ex]_) solutions up to a give time step...
+The performance assessment in COCO_ is invariably based on the measurement of
+runtimes until a quality criterion reaches or succeeds some given, predefined
+target values [BBO2016perf]_. [#]_ 
+In the multi-objective case, the quality criterion for a given time step is the hypervolume indicator value [cite] computed from all evaluated or recommended (see [BBO2016ex]_) solutions up to the given time step.
+
+.. todo:: we need to define how hypervolume is computed, in particular the 
+  normalization with ideal and nadir point. 
 
 Opposed to the single-objective ``bbob`` test suite [HAN2009fun]_, the
 biobjective ``bbob-biobj`` test suite does not provide analytical forms of
@@ -43,7 +48,11 @@ Except for :math:`f_1`, the Pareto set and the Pareto front are unknown.
 .. .. toctree::
    :maxdepth: 2
 
-   
+.. todo::
+  * introduce the quality criterion, i.e. the normalized hypervolume indicator
+  * introduce the main target indicator values used, computed as 
+    a function of (the difference to) a reference value.
+  * (possibly) introduce the target values recorded. 
 
 .. todo:: REMARK: the performance assessment in itself is to the most part not 
               relative to the optimum or, more concisely, to an optimal indicator
@@ -68,6 +77,10 @@ Except for :math:`f_1`, the Pareto set and the Pareto front are unknown.
 			* archive is improved over time, whenever we have a new point entering the archive we recompute and log the hyp-vol difference.
 
 			
+			
+.. [#] As usual, time is considered as number of function evaluations and, 
+  consequently, runtime is measured in number of function evaluations.
+
 Dealing with Unknown Optima
 ===========================
 
@@ -276,6 +289,12 @@ of the French National Research Agency.
 .. [coco-functions-doc] The BBOBies. **COCO: Performance Assessment**. http://numbbo.github.io/coco-doc/perf-assessment/
 
 .. [coco-doc] The BBOBies. **COCO: A platform for Comparing Continuous Optimizers in a Black-Box Setting**. http://numbbo.github.io/coco-doc/
+
+.. [BBO2016ex] The BBOBies: `COCO: Experimental Procedure`__. 
+__ http://numbbo.github.io/coco-doc/experimental-setup/
+
+.. [BBO2016perf] The BBOBies: `Performance Assessment`__. 
+__ https://www.github.com
 
 .. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
   `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, updated February 2010.
