@@ -32,7 +32,6 @@ from .toolsstats import significancetest
 from pdb import set_trace
 
 targets = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
-finaltarget = 1e-8 # value for determining the success ratio
 targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
 targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
 #targetf = 1e-8 # value for determining the success ratio
@@ -119,10 +118,10 @@ def _treat(ds):
     bestentry = bestalgentries[(ds.dim, ds.funcId)]
     bestert = bestentry.detERT(targets)
     bestevals, bestalgs = bestentry.detEvals(targets)
-    bestfinaldata = bestentry.detEvals([finaltarget])[0][0]
+    bestfinaldata = bestentry.detEvals([genericsettings.current_testbed.pptable_ftarget])[0][0]
     ert = ds.detERT(targets)
     evals = ds.detEvals(targets)
-    finaldata = ds.detEvals([finaltarget])[0]
+    finaldata = ds.detEvals([genericsettings.current_testbed.pptable_ftarget])[0]
 
     dtype = []
     bestdtype = []

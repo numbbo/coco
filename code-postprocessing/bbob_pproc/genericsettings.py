@@ -302,12 +302,11 @@ class GECCOBBOBTestbed(Testbed):
         self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
         self.pprldmany_target_values = targetValues(10**np.arange(2, -8.2, -0.2)) # possibly changed in config
         self.pprldmany_target_range_latex = '$10^{[-8..2]}$'
-                
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
         self.ppfvdistr_min_target = 1e-8
         self.functions_with_legend = (1, 24, 101, 130)
         self.number_of_functions = 24
-        self.pptable_ftarget = 1e-8
+        self.pptable_ftarget = 1e-8 # value for determining the success ratio
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
@@ -342,7 +341,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)
         self.number_of_functions = 55
-        self.pptable_ftarget = 1e-5
+        self.pptable_ftarget = 1e-5 # value for determining the success ratio
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
