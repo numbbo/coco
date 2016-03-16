@@ -22,9 +22,9 @@ from pdb import set_trace
 import numpy
 import numpy as np
 import matplotlib
+from . import genericsettings
 
 ppfig2_ftarget = 1e-8  # a hack, used in ppfig2.main 
-target_runlength = 10 # used for ppfigs.main
 
 # genericsettings.summarized_target_function_values[0] might be another option
 
@@ -575,7 +575,7 @@ def main(argv=None):
             ftarget = genericsettings.current_testbed.ppfigs_ftarget
             if genericsettings.runlength_based_targets:
                 reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
-                ftarget = RunlengthBasedTargetValues([target_runlength],  # TODO: make this more variable but also consistent
+                ftarget = RunlengthBasedTargetValues([genericsettings.target_runlength],  # TODO: make this more variable but also consistent
                                                      reference_data = reference_data)
             ppfigs.main(dictAlg, 
                         genericsettings.two_algorithm_file_name, 

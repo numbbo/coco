@@ -22,8 +22,7 @@ from pdb import set_trace
 import warnings
 import numpy
 import matplotlib
-
-target_runlength = 10 # used for ppfigs.main
+from . import genericsettings
 
 if __name__ == "__main__":
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
@@ -413,7 +412,7 @@ def main(argv=None):
             ftarget = genericsettings.current_testbed.ppfigs_ftarget
             if genericsettings.runlength_based_targets:
                 reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
-                ftarget = pproc.RunlengthBasedTargetValues([target_runlength],  # TODO: make this more variable but also consistent
+                ftarget = pproc.RunlengthBasedTargetValues([genericsettings.target_runlength],  # TODO: make this more variable but also consistent
                                                            reference_data = reference_data)
             ppfigs.main(dictAlg, 
                         genericsettings.many_algorithm_file_name, 
