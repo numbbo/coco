@@ -383,10 +383,13 @@ We can also naturally aggregate over all functions and hence obtain one single E
 	The COCO platform does not provides ECDF aggregated over dimension.
 
 
-Best 2009 Algorithm
--------------------
+.. Best 2009 "Algorithm"
+.. ---------------------
 .. Anne: Might be moved somewhere else when we will have an other section
 .. Anne: for all the graphs used within COCO
+.. We often display the performance of the best 2009 "algorithm". For instance in Figure .. Figure :ref:`fig:ecdfall` the leftmostleft curve displays the performance of the best .. 2009 "algorithm".
+
+
 
 
 .. todo::
@@ -400,6 +403,11 @@ Best 2009 Algorithm
 			horizontal line means a linear scaling with respect to the
 			dimension.
 		** ART Loss graphs
+		** Best 2009: actually now I am puzzled on this Best 2009
+		algorithm (I know what is the aRT of the best 2009, but I have
+		doubts on how we display the ECDF of the best 2009
+		
+		
 		
 Acknowledgements
 ================
