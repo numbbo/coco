@@ -8,10 +8,10 @@
  *
  * @note Because this file is used for automatically retrieving the existing best hypervolume values for
  * pre-processing purposes, its formatting should not be altered. This means that there must be exactly one
- * string per line and no strings on the first line (line with {) and last line (line with }).
+ * string per line, the first string appearing on the next line after "static const char..." (no comments 
+ * allowed in between). No strings should be placed on and last line (line with }).
  */
-static const char *suite_biobj_best_values_hyp[] = {
-/* Best values on 16.03.2016 00:44:18 */
+static const char *suite_biobj_best_values_hyp[] = { /* Best values on 16.03.2016 00:44:18 */
   "bbob-biobj_f01_i01_d02 0.833332416739511",
   "bbob-biobj_f01_i01_d03 0.833330833540360",
   "bbob-biobj_f01_i01_d05 0.833325983938046",
