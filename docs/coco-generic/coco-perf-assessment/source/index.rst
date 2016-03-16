@@ -261,7 +261,7 @@ Average Runtime
 =====================
 
 The average runtime (|ART|) (introduced in [Price:1997]_ as
-ENES and analyzed in [Auger:2005b]_ as success performance) is an estimate of the expected runtime of the restart algorithm given in Equation :eq:`RTrestart` that is used within the COCO framework. More precisely, the expected runtime of the restart algorithm (on a parametrized family of functions in order to reach a precision :math:`\epsilon`) writes
+ENES and analyzed in [Auger:2005b]_ as success performance and previously called ERT in [HAN2009]_) is an estimate of the expected runtime of the restart algorithm given in Equation :eq:`RTrestart` that is used within the COCO framework. More precisely, the expected runtime of the restart algorithm (on a parametrized family of functions in order to reach a precision :math:`\epsilon`) writes
 
 .. math::
     :nowrap:
@@ -383,35 +383,24 @@ We can also naturally aggregate over all functions and hence obtain one single E
 	The COCO platform does not provides ECDF aggregated over dimension.
 
 
+Best 2009 Algorithm
+-------------------
+.. Anne: Might be moved somewhere else when we will have an other section
+.. Anne: for all the graphs used within COCO
+
 
 .. todo::
 	* ECDF and uniform pick of a problem
 	* log ART can be read on the ECDF graphs [requires some assumptions]
-
-The Different Plots Provided by the COCO Platform
-=================================================
-
-Best 2009 Algorithm
--------------------
-
-.. In several displays we use the best 2009 algorithm
-
-ART Scaling Graphs (see Figure :ref:`fig:artscaling`) 
------------------------------------------------------
-
-The ART scaling graphs present the average running time to reach a certain precision (relative target) divided by the dimension versus the dimension. Hence an horizontal line means a linear scaling with respect to the dimension.
-
-.. _fig:artscaling:
-
-.. figure:: pics/plots-all2009/pprldmany_noiselessall-5and20D.* 
-   :width: 100%
-   :align: center
-   
-   ART Scaling Graph
-
-ART Loss Graphs
----------------
-
+	* The Different Plots Provided by the COCO Platform
+		** ART Scaling Graphs
+			The ART scaling graphs present the average running time to
+			reach a certain 			precision (relative target)
+			divided by the dimension versus the dimension. Hence an
+			horizontal line means a linear scaling with respect to the
+			dimension.
+		** ART Loss graphs
+		
 Acknowledgements
 ================
 This work was supported by the grant ANR-12-MONU-0009 (NumBBO) 
