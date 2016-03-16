@@ -21,16 +21,21 @@ Biobjective Performance Assessment with the COCO Platform
 .. _COCO: https://github.com/numbbo/coco
 
 
-This document details the specificities when assessing the performance of numerical black-box optimizers
-on multi-objective problems within the COCO_ platform and in particular on the biobjective test suite
-``bbob-biobj``, described in more detail in [bbob-biobj-functions-doc]_ .
+This document details the specificities when assessing the performance of
+numerical black-box optimizers on multi-objective problems within the COCO_
+platform and in particular on the biobjective test suite ``bbob-biobj``,
+described in more detail in [bbob-biobj-functions-doc]_ .
+
+The performance assessment is based on an indicator value computed from all 
+evaluated or recommended (see [BBO2016ex]_) solutions up to a give time step...
 
 Opposed to the single-objective ``bbob`` test suite [HAN2009fun]_, the
 biobjective ``bbob-biobj`` test suite does not provide analytical forms of
 its optima. 
 Except for :math:`f_1`, the Pareto set and the Pareto front are unknown. 
-The performance assessment therefore has to be relative to the best known
-approximations and this document details how this is implemented.
+
+.. The performance assessment therefore has to be relative to the best 
+  known approximations and this document details how this is implemented.
 
 
 .. Contents:
@@ -68,7 +73,9 @@ Dealing with Unknown Optima
 
 .. note:: Why don't we just introduce the used indicator, as all assessment is
   based on it? It seems not necessary to introduce the 1001st time the 
-  definition of dominance. 
+  definition of dominance. The assessment is based only on an indicator value. 
+  As we use hypervolume, the indicator improves iff a new non-dominated 
+  solution is generated. 
 
 The equivalent of a global optimum in the multi-objective case is the set of Pareto-optimal
 or efficient solutions, also known as Pareto set. If we assume the search space to be
