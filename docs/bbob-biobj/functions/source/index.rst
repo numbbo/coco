@@ -475,21 +475,21 @@ and their properties.
 
 Quick access to the functions:
 
-|f1| |f2| |f3| |f4| |f5| |f6| |f7| |f8| |f9| |f10| 
+1--10: |f1| |f2| |f3| |f4| |f5| |f6| |f7| |f8| |f9| |f10| 
 
-|f11| |f12| |f13| |f14| |f15| |f16| |f17| |f18| |f19|
+11--20: |f11| |f12| |f13| |f14| |f15| |f16| |f17| |f18| |f19|
 |f20| 
 
-|f21| |f22| |f23| |f24| |f25| |f26| |f27| |f28| |f29| 
+21--30: |f21| |f22| |f23| |f24| |f25| |f26| |f27| |f28| |f29| 
 |f30| 
 
-|f31| |f32| |f33| |f34| |f35| |f36| |f37| |f38| |f39| 
+31--40: |f31| |f32| |f33| |f34| |f35| |f36| |f37| |f38| |f39| 
 |f40| 
 
-|f41| |f42| |f43| |f44| |f45| |f46| |f47| |f48| |f49| 
+41--50: |f41| |f42| |f43| |f44| |f45| |f46| |f47| |f48| |f49| 
 |f50| 
 
-|f51| |f52| |f53| |f54|  |f55|
+52--55: |f51| |f52| |f53| |f54|  |f55|
 
 .. |f1| replace:: :ref:`f1 <f1>`:math:`_{1.1}`
 .. |f2| replace:: :ref:`f2 <f2>`:math:`_{1.2}`
@@ -597,7 +597,7 @@ For more general functions, conditioning loosely refers to the square of
 the ratio between the largest and smallest direction of a contour line. 
 
 .. TODO:: it is not quite clear what a large or small direction of a line is. 
-   Ill-conditioning is IMHO related to change of curvature. 
+   Ill-conditioning is IMHO related to change of curvature on a level-set. 
 
 The proposed ``bbob-biobj`` testbed contains ill-conditioned functions
 with a typical conditioning of :math:`10^6`. We believe this a realistic
@@ -606,8 +606,6 @@ as large as :math:`10^{10}`.
 
 
 
-
-   
 
 The 55 ``bbob-biobj`` Functions
 -------------------------------
@@ -1061,10 +1059,10 @@ objective function is about 30.
 Contained in the *separable - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* Is the search effective without any global structure?
-* What is the effect of the different condition numbers
+.. * Is the search effective without any global structure?
+.. * What is the effect of the different condition numbers
   of the two objectives, in particular when combined
   to reach the middle of the Pareto front?
 
@@ -1081,7 +1079,7 @@ roughly :math:`(1/2)^D` yields low function values. The objective
 functions' optima are located at the tips of those two cones. 
 
 
-... . rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
 .. * In comparison to :math:`f_1` and :math:`f_{20}`:  What is the
   effect of a highly asymmetric landscape in both or one
@@ -1131,9 +1129,9 @@ objective, a sharp, i.e., non-differentiable ridge has to be followed.
 Contained in the *moderate - ill-conditioned* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What are the effects of assymmetries and non-differentiabilities
+.. * What are the effects of assymmetries and non-differentiabilities
   when approaching the Pareto front/Pareto set?
 
   
@@ -1156,9 +1154,9 @@ rotated search space become more and more different.
 Contained in the *moderate - ill-conditioned* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What are the effects of assymmetries and an increasing
+.. * What are the effects of assymmetries and an increasing
   conditioning in one objective function (sum of different
   powers function) when approaching Pareto-optimal points?
   
@@ -1180,9 +1178,9 @@ assymetric and the second has a conditioning of about 10.
 Contained in the *moderate - multi-modal* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* With respect to fully unimodal and rather symmetric functions:
+.. * With respect to fully unimodal and rather symmetric functions:
   what is the effect of multimodality and assymmetry?
 
 
@@ -1202,9 +1200,9 @@ frequency and amplitude of the modulation vary.
 Contained in the *moderate - multi-modal* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What is the effect of having to solve the relatively` simple, but
+.. * What is the effect of having to solve the relatively` simple, but
   asymmetric first objective together with the highly multi-modal
   second objective with less regularities when the Pareto front/Pareto
   Pareto set is approached?
@@ -1225,9 +1223,9 @@ corners of the unpenalized search area.
 Contained in the *moderate - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What are the effects of asymmetries and a weak global structure when
+.. * What are the effects of asymmetries and a weak global structure when
   different parts of the Pareto front/Pareto set are approached?
 
   
@@ -1248,10 +1246,10 @@ objective function is about 30.
 Contained in the *moderate - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* Is the search effective without any global structure?
-* What is the effect of the different condition numbers
+.. * Is the search effective without any global structure?
+.. * What is the effect of the different condition numbers
   of the two objectives, in particular when combined
   to reach the middle of the Pareto front?
 
@@ -1268,11 +1266,11 @@ a local optimum with an attraction volume of about 25\%.
 Contained in the *moderate - moderate* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* Can the search follow different long paths with $D-1$ changes in the
+.. * Can the search follow different long paths with $D-1$ changes in the
   direction when approaching the extremes of the Pareto front/Pareto set?
-* What is the effect when a combination of the two paths have to 
+.. * What is the effect when a combination of the two paths have to 
   be solved when a point in the middle of the Pareto front/Pareto set
   is sought?
 
@@ -1290,9 +1288,9 @@ optimizing it, a sharp, i.e., non-differentiable ridge has to be followed.
 Contained in the *moderate - ill-conditioned* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What is the effect of the opposing difficulties posed by the
+.. * What is the effect of the opposing difficulties posed by the
   single objectives when parts of the Pareto front (at the extremes, in the
   middle, ...) are explored?
 
@@ -1312,9 +1310,9 @@ variables in the rotated search space become more and more different.
 
 Contained in the *moderate - ill-conditioned* function class.
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What are the effects of having to follow a long path with $D-1$ changes
+.. * What are the effects of having to follow a long path with $D-1$ changes
   in the direction when optimizing one objective function and an increasing
   conditioning when solving the other, in particular when trying to
   approximate the Pareto front/Pareto set not close to their extremes?
@@ -1336,9 +1334,9 @@ optima).
 Contained in the *moderate - multi-modal* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* With respect to fully unimodal functions:
+.. * With respect to fully unimodal functions:
   what is the effect of multimodality?
 
 
@@ -1358,9 +1356,9 @@ frequency and amplitude of the modulation vary.
 Contained in the *moderate - multi-modal* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What is the effect of the different difficulties (in particular
+.. * What is the effect of the different difficulties (in particular
   the high multi-modality of the second objective) when approaching
   the Pareto front/Pareto set, especially in the middle?
 
@@ -1380,13 +1378,13 @@ comparatively close to the corners of its unpenalized search area.
 Contained in the *moderate - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What is the effect of the different difficulties (in particular
+.. * What is the effect of the different difficulties (in particular
   the high multi-modality and weak global structure of the second
   objective) when approaching the Pareto front/Pareto set,
   especially in the middle?
-* Can the partial separability of the two objectives be detected
+.. * Can the partial separability of the two objectives be detected
   and exploited?
 
 
@@ -1407,10 +1405,10 @@ is about 30.
 Contained in the *moderate - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* Is the search effective without any global structure?
-* How much does the multi-modality play a role when compared to
+.. * Is the search effective without any global structure?
+.. * How much does the multi-modality play a role when compared to
   fully uni-modal functions?
 
 
@@ -1427,9 +1425,9 @@ followed.
 Contained in the *ill-conditioned - ill-conditioned* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What is the effect of having to follow non-smooth, non-differentiabale
+.. * What is the effect of having to follow non-smooth, non-differentiabale
   ridges?
 
   
@@ -1449,9 +1447,9 @@ variables in the rotated search space become more and more different.
 Contained in the *ill-conditioned - ill-conditioned* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What are the effects of having to follow a ridge when optimizing one
+.. * What are the effects of having to follow a ridge when optimizing one
   objective function and an increasing conditioning when solving the other,
   in particular when trying to approximate the Pareto front/Pareto set not
   close to their extremes?
@@ -1471,9 +1469,9 @@ function is highly multi-modal (roughly :math:`10^D` local optima).
 Contained in the *ill-conditioned - multi-modal* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What are the effects of having to follow a ridge when optimizing one
+.. * What are the effects of having to follow a ridge when optimizing one
   objective function and the high multi-modality of the other,
   in particular when trying to approximate the Pareto front/Pareto set not
   close to their extremes?
@@ -1494,9 +1492,9 @@ frequency and amplitude of the modulation vary.
 Contained in the *ill-conditioned - multi-modal* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What is the effect of the different difficulties when approaching
+.. * What is the effect of the different difficulties when approaching
   the Pareto front/Pareto set, especially in the middle?
 
   
@@ -1514,9 +1512,9 @@ comparatively close to the corners of its unpenalized search area.
 Contained in the *ill-conditioned - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What is the effect of the different difficulties (in particular
+.. * What is the effect of the different difficulties (in particular
   the non-differentiability of the first and the high multi-modality
   and weak global structure of the second objective) when approaching
   the Pareto front/Pareto set, especially in the middle?
@@ -1538,10 +1536,10 @@ is about 30.
 
 Contained in the *ill-conditioned - weakly-structured* function class.
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* Is the search effective without any global structure?
-* How much does the multi-modality of the second objective play a role
+.. * Is the search effective without any global structure?
+.. * How much does the multi-modality of the second objective play a role
   when compared to fully uni-modal functions?
 
 
@@ -1560,9 +1558,9 @@ when approaching the objectives' optima.
 Contained in the *ill-conditioned - ill-conditioned* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* In comparison to :math:`f_{11}`:  What is the effect of rotations
+.. * In comparison to :math:`f_{11}`:  What is the effect of rotations
   of the search space and missing self-similarity?
    
   
@@ -1581,9 +1579,9 @@ function is highly multi-modal (roughly :math:`10^D` local optima).
 Contained in the *ill-conditioned - multi-modal* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What are the effects of having to cope with an increasing conditioning
+.. * What are the effects of having to cope with an increasing conditioning
   when optimizing one objective function and the high multi-modality of the
   other, in particular when trying to approximate the Pareto front/Pareto set
   not close to their extremes?
@@ -1605,9 +1603,9 @@ low conditioning where frequency and amplitude of the modulation vary.
 Contained in the *ill-conditioned - multi-modal* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What is the effect of the different difficulties when approaching
+.. * What is the effect of the different difficulties when approaching
   the Pareto front/Pareto set, especially in the middle?  
   
 
@@ -1627,9 +1625,9 @@ of its unpenalized search area.
 Contained in the *ill-conditioned - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What is the effect of the different difficulties (in particular
+.. * What is the effect of the different difficulties (in particular
   the increasing conditioning close to the first objective's optimum
   and the high multi-modality and weak global structure of the second
   objective) when approaching the Pareto front/Pareto set, especially in
@@ -1654,10 +1652,10 @@ is about 30.
 Contained in the *ill-conditioned - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* Is the search effective without any global structure?
-* How much does the multi-modality of the second objective play a role
+.. * Is the search effective without any global structure?
+.. * How much does the multi-modality of the second objective play a role
   when compared to fully uni-modal functions?
 
 
@@ -1674,9 +1672,9 @@ Both objective functions are non-separable and highly multi-modal
 Contained in the *multi-modal - multi-modal* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* When compared to :math:`f_{11}`: What is the effect of non-separability and
+.. * When compared to :math:`f_{11}`: What is the effect of non-separability and
   multi-modality?
 
 
@@ -1693,9 +1691,9 @@ Both objective functions are non-separable and highly multi-modal.
 Contained in the *multi-modal - multi-modal* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What is the effect of the different distributions of local minima 
+.. * What is the effect of the different distributions of local minima 
   when approaching the Pareto front/Pareto set, especially in the middle?  
   
 
@@ -1714,9 +1712,9 @@ comparatively close to the corners of its unpenalized search area.
 Contained in the *multi-modal - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What is the effect of the large amount of local optima in both objectives 
+.. * What is the effect of the large amount of local optima in both objectives 
   when approaching the Pareto front/Pareto set, especially in the middle?
   
   
@@ -1736,10 +1734,10 @@ chosen (different for each instantiation of the function).
 Contained in the *multi-modal - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* Is the search effective without any global structure?
-* What is the effect of the differing distributions of local optima
+.. * Is the search effective without any global structure?
+.. * What is the effect of the differing distributions of local optima
   in the two objective functions? 
 
 
@@ -1755,9 +1753,9 @@ Both objective functions are non-separable and highly multi-modal.
 Contained in the *multi-modal - multi-modal* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* In comparison to :math:`f_{46}`: What is the effect of multimodality
+.. * In comparison to :math:`f_{46}`: What is the effect of multimodality
   on a less regular function?
   
 
@@ -1777,9 +1775,9 @@ function posseses less global structure.
 Contained in the *multi-modal - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What are the effects of different global structures in the two
+.. * What are the effects of different global structures in the two
   objective functions?
 
 
@@ -1801,9 +1799,9 @@ chosen (different for each instantiation of the function).
 Contained in the *multi-modal - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* Similar to :math:`f_{51}`: What are the effects of different
+.. * Similar to :math:`f_{51}`: What are the effects of different
   global structures in the two objective functions?
 
 
@@ -1823,11 +1821,11 @@ search space.
 Contained in the *weakly-structured - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* In comparison with :math:`f_{50}`: What is the effect of a weak global
+.. * In comparison with :math:`f_{50}`: What is the effect of a weak global
   structure?
-* Can the search algorithm benefit from Pareto-optimal search points
+.. * Can the search algorithm benefit from Pareto-optimal search points
   it can get from random samples close to the origin on some of the
   function' instances?
 
@@ -1849,9 +1847,9 @@ chosen (different for each instantiation of the function).
 Contained in the *weakly-structured - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* In comparison to :math:`f_{53}`: Does the total absence of a global
+.. * In comparison to :math:`f_{53}`: Does the total absence of a global
   structure in one objective change anything in the performance of the
   algorithm?
 
@@ -1871,9 +1869,9 @@ is present.
 Contained in the *weakly-structured - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* Can the Pareto front/Pareto set be found efficiently when no global
+.. * Can the Pareto front/Pareto set be found efficiently when no global
   structure can be exploited?
 
 
