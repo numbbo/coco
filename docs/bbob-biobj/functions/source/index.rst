@@ -493,7 +493,7 @@ Quick access to the functions:
 41--50: |f41| |f42| |f43| |f44| |f45| |f46| |f47| |f48| |f49| 
 |f50| 
 
-52--55: |f51| |f52| |f53| |f54|  |f55|
+51--55: |f51| |f52| |f53| |f54|  |f55|
 
 .. |f1| replace:: :ref:`f1 <f1>`:math:`_{1.1}`
 .. |f2| replace:: :ref:`f2 <f2>`:math:`_{1.2}`
