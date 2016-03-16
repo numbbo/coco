@@ -1,32 +1,54 @@
 #########################################################
-Biobjective Performance Assessment with the Coco Platform
+Biobjective Performance Assessment with the COCO Platform
 #########################################################
+
+.. Here we put the abstract when using LaTeX, the \abstractinrst 
+   command is defined in the 'preamble' of latex_elements in source/conf.py,
+   the text is defined in `abstract` of conf.py. To flip abstract and table
+   of contents, or update the table of contents, toggle the \generatetoc
+   command in the 'preamble' accordingly. 
+
+.. raw:: latex
+
+    % \abstractinrst
+    % \tableofcontents
+    \newpage 
 
 .. |coco_problem_t| replace:: 
   ``coco_problem_t``
-.. _coco_problem_t: 
-  http://numbbo.github.io/coco-doc/C/coco_8h.html#a408ba01b98c78bf5be3df36562d99478
+.. _coco_problem_t: http://numbbo.github.io/coco-doc/C/coco_8h.html#a408ba01b98c78bf5be3df36562d99478
 
+.. _COCO: https://github.com/numbbo/coco
 
 
 This document details the specificities when assessing the performance of numerical black-box optimizers
-on multi-objective problems within the Coco platform and in particular on the biobjective test suite
+on multi-objective problems within the COCO_ platform and in particular on the biobjective test suite
 ``bbob-biobj``, described in more detail in [bbob-biobj-functions-doc]_ .
 
-Opposed to the single-objective ``bbob`` test suite, the biobjective ``bbob-biobj`` test suite does
-not provide analytical forms of its optima, i.e. the Pareto set/Pareto front except for one of
-its 55 functions. The performance assessment therefore has to be relative to the best known
+Opposed to the single-objective ``bbob`` test suite [HAN2009fun]_, the
+biobjective ``bbob-biobj`` test suite does not provide analytical forms of
+its optima. 
+Except for :math:`f_1`, the Pareto set and the Pareto front are unknown. 
+The performance assessment therefore has to be relative to the best known
 approximations and this document details how this is implemented.
 
 
-Contents:
+.. Contents:
 
-.. toctree::
+.. .. toctree::
    :maxdepth: 2
 
    
-   
 
+.. todo:: REMARK: the performance assessment in itself is to the most part not 
+              relative to the optimum or, more concisely, to an optimal indicator
+              value. Conceptually, we can and should consider the target values as
+              (i) absolute values and (ii) as variable input parameters for the 
+              assessment. The choice of targets relative to the best possible
+              indicator value is desirable but no necessity. Only the *uniform* 
+              choice of targets within the instances of a single problem poses a 
+              significant challenge. This challenge is however not even necessarily 
+              solved by knowing the best possible indicator value.
 
 .. todo::   * perf assessement is relative - we face a problem: we do not have the optimum.
 			* How do we deal with this problem? [ this should probably be a section]
@@ -43,6 +65,11 @@ Contents:
 			
 Dealing with Unknown Optima
 ===========================
+
+.. note:: Why don't we just introduce the used indicator, as all assessment is
+  based on it? It seems not necessary to introduce the 1001st time the 
+  definition of dominance. 
+
 The equivalent of a global optimum in the multi-objective case is the set of Pareto-optimal
 or efficient solutions, also known as Pareto set. If we assume the search space to be
 :math:`\mathbb{R}^n` and the minimization of two objective
@@ -66,6 +93,10 @@ case, where with the Pareto set a set of solutions is sought, we call this appro
 of algorithms on the considered problem ahead of the performance assessment.
 
 This has two main implications:
+
+.. todo:: "*Performance can only be judged relatively to the reference set*" seem
+  just false. We can defined a target hypervolume and measure runtime entirely
+  independent of the reference set. 
 
 * Performance can only be judged relatively to the reference set. The better the algorithms
   used to create the reference set have been, the more accurate the performance assessment.
@@ -227,7 +258,7 @@ of the French National Research Agency.
   
    
 
-.. ############################# References #########################################
+.. ############################# References ##################################
 .. raw:: html
     
     <H2>References</H2>
@@ -238,3 +269,8 @@ of the French National Research Agency.
 .. [coco-functions-doc] The BBOBies. **COCO: Performance Assessment**. http://numbbo.github.io/coco-doc/perf-assessment/
 
 .. [coco-doc] The BBOBies. **COCO: A platform for Comparing Continuous Optimizers in a Black-Box Setting**. http://numbbo.github.io/coco-doc/
+
+.. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
+  `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, updated February 2010.
+.. __: http://coco.gforge.inria.fr/
+.. __: https://hal.inria.fr/inria-00362633
