@@ -32,6 +32,8 @@ tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_table = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
+target_runlength = 10 # used in ppfigs.main
+
 xlimit_expensive = 1e3  # used in 
 tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7) # used as input for pptables.main in rungenericmany 
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
@@ -305,6 +307,7 @@ class GECCOBBOBTestbed(Testbed):
         self.ppfvdistr_min_target = 1e-8
         self.functions_with_legend = (1, 24, 101, 130)
         self.number_of_functions = 24
+        self.pptabletargetf = 1e-8
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
@@ -339,6 +342,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)
         self.number_of_functions = 55
+        self.pptabletargetf = 1e-5
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
@@ -368,10 +372,10 @@ def loadCurrentTestbed(isBiobjective, targetValues):
     
     global current_testbed
 
-    if not current_testbed:
-        if isBiobjective:        
-            current_testbed = GECCOBiobjBBOBNoisefreeTestbed(targetValues)
-        else:
-            current_testbed = GECCOBBOBNoisefreeTestbed(targetValues)
+    #if not current_testbed:
+    if isBiobjective:        
+        current_testbed = GECCOBiobjBBOBNoisefreeTestbed(targetValues)
+    else:
+        current_testbed = GECCOBBOBNoisefreeTestbed(targetValues)
 
     return current_testbed

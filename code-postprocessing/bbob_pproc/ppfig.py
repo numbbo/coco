@@ -237,7 +237,8 @@ def save_single_functions_html(filename,
                         f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
                     f.write('</div>')
 
-            key = 'bbobpprldistrlegendtworlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendtwofixed'
+            key = (('bbobpprldistrlegendtworlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendtwofixed')
+							if genericsettings.current_testbed.name != 'bbob-biobj' else 'bbobpprldistrlegendtwobiobj')
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
             currentHeader = 'Table showing the aRT in number of function evaluations'
@@ -292,7 +293,8 @@ def save_single_functions_html(filename,
             currentHeader = 'aRT in number of function evaluations'
             f.write("<H2> %s </H2>\n" % currentHeader)
             f.write("\n<!--pptableHtml-->\n")
-            f.write(captionStringFormat % htmldesc.getValue('##bbobpptablecaption##'))
+            key = (('bbobpptablecaptionrlbased' if genericsettings.runlength_based_targets else 'bbobpptablecaptionfixed') if genericsettings.current_testbed.name != 'bbob-biobj' else 'bbobpptablecaptionbiobjfixed')            
+            f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
     
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
@@ -308,7 +310,8 @@ def save_single_functions_html(filename,
                         f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
                     f.write('</div>')
 
-            key = 'bbobpprldistrlegendrlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendfixed'
+            key = (('bbobpprldistrlegendrlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendfixed')
+							if genericsettings.current_testbed.name != 'bbob-biobj' else 'bbobpprldistrlegendbiobjfixed')
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPLOGLOSS:

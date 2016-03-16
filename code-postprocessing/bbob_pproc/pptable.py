@@ -35,7 +35,7 @@ targets = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
 finaltarget = 1e-8 # value for determining the success ratio
 targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
 targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
-targetf = 1e-8 # value for determining the success ratio
+#targetf = 1e-8 # value for determining the success ratio
 samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
 # def tablespec(targets):
 # 
@@ -51,60 +51,41 @@ samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
 #                                  'format': '%d'}})
     
     
-old_legend = r""" 
- \newcommand{\tablecaption}[1]{Shown are, for functions #1 and for a
- given target difference to the optimal function value \Df: the number
- of successful trials (\textbf{$\#$}); the average running time to
- surpass $\fopt+\Df$ (\aRT, see Figure~\ref{fig:ERTgraphs}); the
- \textbf{10\%}-tile and \textbf{90\%}-tile of the bootstrap
- distribution of \aRT; the average number of function evaluations in
- successful trials or, if none was successful, as last entry the median
- number of function evaluations to reach the best function value
- ($\text{RT}_\text{succ}$).  If $\fopt+\Df$ was never reached, figures in
- \textit{italics} denote the best achieved \Df-value of the median
- trial and the 10\% and 90\%-tile trial.  Furthermore, N denotes the
- number of trials, and mFE denotes the maximum of number of function
- evaluations executed in one trial. See Figure~\ref{fig:ERTgraphs} for
- the names of functions. }
-"""
-
-table_caption_one = r"""%
-    Average running time (aRT in number of function 
-    evaluations) divided by the best aRT measured during BBOB-2009. The aRT 
-    and in braces, as dispersion measure, the half difference between 90 and 
-    10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
-    the best aRT
-    """
-table_caption_two1 = r"""%
-    in the first. The different target \Df-values are shown in the top row. 
-    \#succ is the number of trials that reached the (final) target $\fopt + 10^{-8}$.
-    """
-table_caption_two2 = r"""%
-    (preceded by the target \Df-value in \textit{italics}) in the first. 
-    \#succ is the number of trials that reached the target value of the last column.
-    """
-table_caption_rest = r"""%
-    The median number of conducted function evaluations is additionally given in 
-    \textit{italics}, if the target in the last column was never reached. 
-    \textbf{Bold} entries are statistically significantly better (according to
-    the rank-sum test) compared to the best algorithm in BBOB-2009, with
-    $p = 0.05$ or $p = 10^{-k}$ when the number $k > 1$ is following the
-    $\downarrow$ symbol, with Bonferroni correction by the number of
-    functions.
-    """
-table_caption = table_caption_one + table_caption_two1 + table_caption_rest
 
 
-def set_table_caption(setting):
-    """ Sets table caption, based on the setting which can be
-        either 'rlbased' or 'biobjective'.
+def get_table_caption():
+    """ Sets table caption, based on the genericsettings.current_testbed
+        and genericsettings.runlength_based_targets.
     """    
-    global table_caption    
     
+    table_caption_one = r"""%
+        Average running time (aRT in number of function 
+        evaluations) divided by the best aRT measured during BBOB-2009. The aRT 
+        and in braces, as dispersion measure, the half difference between 90 and 
+        10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
+        the best aRT
+        """
+    table_caption_two1 = (r"""%
+        in the first. The different target \Df-values are shown in the top row. 
+        \#succ is the number of trials that reached the (final) target $\fopt + """
+        + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+        """)
+    table_caption_two2 = r"""%
+        (preceded by the target \Df-value in \textit{italics}) in the first. 
+        \#succ is the number of trials that reached the target value of the last column.
+        """
+    table_caption_rest = r"""%
+        The median number of conducted function evaluations is additionally given in 
+        \textit{italics}, if the target in the last column was never reached. 
+        \textbf{Bold} entries are statistically significantly better (according to
+        the rank-sum test) compared to the best algorithm in BBOB-2009, with
+        $p = 0.05$ or $p = 10^{-k}$ when the number $k > 1$ is following the
+        $\downarrow$ symbol, with Bonferroni correction by the number of
+        functions.
+        """
 
-    if setting == 'rlbased':
-        table_caption = table_caption_one + table_caption_two2 + table_caption_rest
-    elif setting == 'biobjective':
+    if genericsettings.current_testbed.name == 'bbob-biobj':
+        # NOTE: no runlength-based targets supported yet
         table_caption = r"""%
                 Average running time (aRT in number of function 
                 evaluations) to reach given targets. For each function, the aRT 
@@ -116,8 +97,16 @@ def set_table_caption(setting):
                 The median number of conducted function evaluations is additionally given in 
                 \textit{italics}, if the target in the last column was never reached. 
                 """        
+    elif genericsettings.current_testbed.name == 'bbob':
+        if genericsettings.runlength_based_targets == True:
+            table_caption = table_caption_one + table_caption_two2 + table_caption_rest
+        else:
+            table_caption = table_caption_one + table_caption_two1 + table_caption_rest
     else:
-        warnings.warn('Not supported table caption setting. Using default.')
+        warnings.warn("Current settings do not support pptable caption.")
+
+    return table_caption
+        
 
 def _treat(ds):
 
@@ -220,7 +209,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     #in the following the reference algorithm is the one given in
     #bestalg.bestalgentries which is the virtual best of BBOB
     dictDim = dsList.dictByDim()
-    targetf=1e-8
+    targetf=genericsettings.current_testbed.pptabletargetf
     if info:
         info = '_' + info
         # insert a separator between the default file name and the additional
