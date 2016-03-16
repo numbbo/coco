@@ -5,6 +5,8 @@ COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) Test Sui
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
+.. ...
+.. %%%
 
 .. |
 .. |
@@ -23,18 +25,22 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
      is defined in `abstract` of conf.py. To flip abstract and 
      table of contents, or update the table of contents, toggle 
      the \generatetoc command in the 'preamble' accordingly. 
+
 .. raw:: latex
 
     \abstractinrst
     \newpage 
 
+.. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY
 
-The ``bbob-biobj`` test suite contains 55 bi-objective functions in continuous domain which are derived from combining
-functions of the well-known single-objective noiseless ``bbob`` test suite. It will be used as the main test suite of
-the upcoming `BBOB-2016 workshop <http://numbbo.github.io/workshops/BBOB-2016/>`_ at GECCO. Besides giving the actual
-function definitions and presenting their (known) properties, this documentation also aims at
-giving the rational behind our approach in terms of function groups, instances, and potential objective space
-normalization.
+.. raw:: html
+
+  The ``bbob-biobj`` test suite contains 55 bi-objective functions in continuous domain which are derived from combining
+  functions of the well-known single-objective noiseless ``bbob`` test suite. It will be used as the main test suite of
+  the upcoming `BBOB-2016 workshop <http://numbbo.github.io/workshops/BBOB-2016/>`_ at GECCO. Besides giving the actual
+  function definitions and presenting their (known) properties, this documentation also aims at
+  giving the rational behind our approach in terms of function groups, instances, and potential objective space
+  normalization.
 
 .. summarizing the state-of-the-art in multi-objective black-box benchmarking, at 
 .. and at providing a simple tutorial on how to use these functions for actual benchmarking within the Coco framework.
@@ -64,14 +70,14 @@ In the following, we consider bi-objective, unconstrained and bound-constraint
 **minimization** problems of the form
 
 .. math::
-  \min_{x \in \mathbb{R}^n} f(x)=(f_\alpha(x),f_\beta(x))
+  \min_{x \in \mathbb{R}^D} f(x)=(f_\alpha(x),f_\beta(x))
 
 where :math:`n` is the number of variables of the problem (also called
-the problem dimension), :math:`f_\alpha: \mathbb{R}^n \rightarrow \mathbb{R}`
-and :math:`f_\beta: \mathbb{R}^n \rightarrow \mathbb{R}` are the two
+the problem dimension), :math:`f_\alpha: \mathbb{R}^D \rightarrow \mathbb{R}`
+and :math:`f_\beta: \mathbb{R}^D \rightarrow \mathbb{R}` are the two
 objective functions, and the :math:`\min` operator is related to the
-standard *dominance relation*. A solution :math:`x\in\mathbb{R}^n`
-is thereby said to *dominate* another solution :math:`y\in\mathbb{R}^n` if
+standard *dominance relation*. A solution :math:`x\in\mathbb{R}^D`
+is thereby said to *dominate* another solution :math:`y\in\mathbb{R}^D` if
 :math:`f_\alpha(x) \leq f_\alpha(y)` and :math:`f_\beta(x) \leq f_\beta(y)` hold and at
 least one of the inequalities is strict.
 
@@ -79,7 +85,7 @@ Solutions which are not dominated by any other solution in the search
 space are called *Pareto-optimal* or *efficient solutions*. All
 Pareto-optimal solutions constitute the *Pareto set* of which an 
 approximation is sought. The Pareto set's image in the
-objective space :math:`f(\mathbb{R}^n)` is called *Pareto front*.
+objective space :math:`f(\mathbb{R}^D)` is called *Pareto front*.
 
 The objective of the minimization problem is to find, with as few evaluations
 of |f| as possible, a set of non-dominated solutions which is (i) as large
@@ -100,7 +106,7 @@ We remind in this section different definitions.
 
 *function, instance*
  A function within COCO is a parametrized function :math:`f_\theta:
- \mathbb{R}^n \to \mathbb{R}^m` with :math:`\theta \in \Theta` a set of
+ \mathbb{R}^D \to \mathbb{R}^m` with :math:`\theta \in \Theta` a set of
  parameters. A parameter determines a so-called instance. For example,
  :math:`\theta` encodes the location of the optimum and two different
  instances have shifted optima.
@@ -112,8 +118,8 @@ We remind in this section different definitions.
 *ideal point*
  The ideal point is defined as the vector in objective space that
  contains the optimal |f|-value for each objective *independently*. 
- More precisely let :math:`f_\alpha^{\rm opt}:= \inf_{x\in \mathbb{R}^n} f_\alpha(x)` and
- :math:`f_\beta^{\rm opt}:= \inf_{x\in \mathbb{R}^n} f_\beta(x)`, the ideal point is given by
+ More precisely let :math:`f_\alpha^{\rm opt}:= \inf_{x\in \mathbb{R}^D} f_\alpha(x)` and
+ :math:`f_\beta^{\rm opt}:= \inf_{x\in \mathbb{R}^D} f_\beta(x)`, the ideal point is given by
  
  .. math::
     :nowrap:
@@ -359,7 +365,7 @@ bi-objective one. However, in addition, we assert two conditions.
   #. The Euclidean distance between the ideal and the nadir point (in objective 
      space, considering raw |f|-values) is at least :math:`10^{-1}`. 
      
-.. TODO:: fact-check this
+.. TODO:: fact-check this: is it really raw |f|-values? 
 
 .. Instances are the way in the `Coco framework`_ to perform multiple
 .. algorithm runs on the same function. More concretely, the original
@@ -463,8 +469,8 @@ one-dimensional optimizations along the coordinate axes while
 keeping the other variables fixed. Consequently, *non-separable*
 problems must be considered. They are much more difficult to solve. The
 typical well-established technique to generate non-separable
-functions from separable ones :math:`x \in \mathbb{R}^n \mapsto g(x)` is the application of a rotation matrix
-:math:`\mathbf R` to :math:`x`, that is :math:`x \in \mathbb{R}^n \mapsto g(\mathbf R x)`.
+functions from separable ones :math:`x \in \mathbb{R}^D \mapsto g(x)` is the application of a rotation matrix
+:math:`\mathbf R` to :math:`x`, that is :math:`x \in \mathbb{R}^D \mapsto g(\mathbf R x)`.
 
 A *unimodal* function has only one local minimum which is at the same
 time also its global one. 
@@ -513,9 +519,9 @@ continuous domain.
 Contained in the *separable - separable* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What is the optimal convergence rate of a bi-objective algorithm?
+.. * What is the optimal convergence rate of a bi-objective algorithm?
 
 
 .. _f2:
@@ -534,9 +540,9 @@ about :math:`10^6`.
 Contained in the *separable - separable* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* In comparison to :math:`f_1`: Is symmetry exploited?
+.. * In comparison to :math:`f_1`: Is symmetry exploited?
 
 
 .. _f3:
@@ -551,15 +557,14 @@ separable and truly convex quadratic. The attractive sector
 function is highly asymmetric, where only one *hypercone* (with
 angular base area) with a volume of roughly :math:`(1/2)^D`
 yields low function values. The optimum of it is located at the tip
-of this cone. This function can be deceptive for cumulative step
-size adaptation.
+of this cone. 
 
 Contained in the *separable - moderate* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* In comparison to :math:`f_1` and :math:`f_{20}`:  What is the
+.. * In comparison to :math:`f_1` and :math:`f_{20}`:  What is the
   effect of a highly asymmetric landscape in both or one
   objective?
 
@@ -581,9 +586,9 @@ optimum with an attraction volume of about 25\%.
 Contained in the *separable - moderate* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* Can the search follow a long path with :math:`D-1` changes in
+.. * Can the search follow a long path with :math:`D-1` changes in
   the direction when it approaches one of the extremes of the
   Pareto front/Pareto set?
 
@@ -607,17 +612,17 @@ approached from a given point.
 Approaching the ridge is initially effective, but becomes ineffective
 close to the ridge when the rigde needs to be followed in direction
 to its optimum.  The necessary change in *search behavior* close to
-the ridge is diffiult to diagnose, because the gradient
+the ridge is difficult to diagnose, because the gradient
 towards the ridge does not flatten out.
 
 Contained in the *separable - ill-conditioned* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* Can the search continuously change its search direction when
+.. * Can the search continuously change its search direction when
   approaching one of the extremes of the Pareto front/Pareto set?
-* What is the effect of having a non-smooth, non-differentiabale
+.. * What is the effect of having a non-smooth, non-differentiable
   function to optimize?
 
 
@@ -631,24 +636,18 @@ suite).
 
 Both objective functions are unimodal. The first objective is
 separable, the second non-separable.
-When approaching the second objective's optimum, the sensitivies
-of the variables in the rotated search space become more and
-more different. In addition, the second objective function
-possesses a small solution volume.
+When approaching the second objective's optimum, the difference 
+in sensitivity between different directions in search space 
+increases unboundedly. 
 
-.. todo::
-
-   the above text should be checked for clarity and correctness
+.. In addition, the second objective function
+  possesses a small solution volume.
 
 
 Contained in the *separable - ill-conditioned* function class.
 
 
-.. rubric:: Information gained from this function:
-
-.. todo::
-
-   to be written
+.. .. rubric:: Information gained from this function:
    
 
 .. _f7:
@@ -671,9 +670,9 @@ about 10, and a large global amplitude compared to the local amplitudes.
 Contained in the *separable - multi-modal* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* With respect to fully unimodal functions: what is the effect of
+.. * With respect to fully unimodal functions: what is the effect of
   multimodality?
 
   
@@ -694,9 +693,9 @@ and thus the entire bi-objective function is low.
 Contained in the *separable - multi-modal* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* In comparison to :math:`f_7` and :math:`f_{50}`:  What is the
+.. * In comparison to :math:`f_7` and :math:`f_{50}`:  What is the
   effect of multimodality on a less regular function?
 
 
@@ -715,9 +714,9 @@ comparatively close to the corners of the unpenalized search area.
 Contained in the *separable - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* In comparison to e.g. :math:`f_8`: What is the effect of a weak
+.. * In comparison to e.g. :math:`f_8`: What is the effect of a weak
   global structure?
 
   
@@ -725,7 +724,7 @@ Contained in the *separable - weakly-structured* function class.
 
 :math:`f_{10}`: Sphere/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sphere function (:math:`f_1` in the ``bbob`` suite)
+Combination of sphere function (|:math:`f_1` in the ``bbob`` suite|_)
 and Gallagher function with 101 peaks (:math:`f_{21}` in the ``bbob``
 suite).
 
@@ -739,9 +738,9 @@ objective function is about 30.
 Contained in the *separable - weakly-structured* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* Is the search effective without any global structure?
+.. * Is the search effective without any global structure?
 
 
 .. _f11:
@@ -758,18 +757,17 @@ about :math:`10^6`.
 
 Contained in the *separable - separable* function class.
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* In comparison to :math:`f_1`: Is symmetry exploited?
+.. * In comparison to :math:`f_1`: Is symmetry (rather: separability) exploited?
 
 
 .. _f12:
 
 :math:`f_{12}`: Ellipsoid separable/Attractive sector
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of separable ellipsoid function (:math:`f_2` in the
-``bbob`` suite) and attractive sector function (:math:`f_{6}`
-in the ``bbob`` suite).
+Combination of separable ellipsoid function (:math:`f_2` in the ``bbob``
+suite) and attractive sector function (:math:`f_{6}` in the ``bbob`` suite).
 
 Both objective functions are unimodal but only the first
 one is separable. The first objective function, in addition,
@@ -779,16 +777,27 @@ highly ill-conditioned with a condition number of about
 asymmetric, where only one *hypercone* (with
 angular base area) with a volume of roughly :math:`(1/2)^D`
 yields low function values. The optimum of it is located at
-the tip of this cone. This function can be deceptive for
-cumulative step size adaptation.
+the tip of this cone. 
 
 Contained in the *separable - moderate* function class.
 
+.. |bbob-:math:`f1`| replace:: bbob-:math:`f_1`
+.. _bbob-:math:`f1`: http://coco.lri.fr/downloads/download15.01/bbobdocfunctions.pdf#page=5
+.. |:math:`f_1` in the ``bbob`` suite| replace:: :math:`f_1` in the ``bbob`` suite
+.. _:math:`f_1` in the ``bbob`` suite: http://coco.lri.fr/downloads/download15.01/bbobdocfunctions.pdf#page=5
+.. |:math:`f_2` in the ``bbob`` suite| replace:: :math:`f_2` in the ``bbob`` suite
+.. _:math:`f_2` in the ``bbob`` suite: http://coco.lri.fr/downloads/download15.01/bbobdocfunctions.pdf#page=9
 
-.. rubric:: Information gained from this function:
 
-* In comparison to, for example, :math:`f_1`: Is symmetry exploited?
+|bbob-:math:`f1`|_
+|:math:`f_1` in the ``bbob`` suite|_
+|:math:`f_2` in the ``bbob`` suite|_
 
+This is `f1` a test 
+
+.. .. rubric:: Information gained from this function:
+
+.. * In comparison to, for example, :math:`f_1`: Is symmetry exploited?
 
 .. _f13:
 
@@ -983,13 +992,12 @@ in the ``bbob`` suite).
 Both functions are unimodal and highly asymmetric, where only one
 *hypercone* (with angular base area) per objective with a volume of
 roughly :math:`(1/2)^D` yields low function values. The objective
-functions' optima are located at the tips of those two cones. This
-function can be deceptive for cumulative step size adaptation.
+functions' optima are located at the tips of those two cones. 
 
 
-.. rubric:: Information gained from this function:
+... . rubric:: Information gained from this function:
 
-* In comparison to :math:`f_1` and :math:`f_{20}`:  What is the
+.. * In comparison to :math:`f_1` and :math:`f_{20}`:  What is the
   effect of a highly asymmetric landscape in both or one
   objective?
 
@@ -1010,15 +1018,13 @@ roughly :math:`(1/2)^D` yields low function values (with the
 optimum at the tip of the cone). The second
 objective is partially separable (tri-band structure) and has a local
 optimum with an attraction volume of about 25\%.
-Note also that the first objective 
-function can be deceptive for cumulative step size adaptation.
 
 Contained in the *moderate - moderate* function class.
 
 
-.. rubric:: Information gained from this function:
+.. .. rubric:: Information gained from this function:
 
-* What is the effect of relatively large search space areas
+.. * What is the effect of relatively large search space areas
   leading to suboptimal values of the two objective
   functions?
 

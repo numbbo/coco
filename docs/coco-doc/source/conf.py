@@ -47,6 +47,10 @@ abstract = """
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
+    'sphinx.ext.coverage',
+    'sphinx.ext.viewcode',
     'sphinx.ext.todo',
     'sphinx.ext.pngmath',  # low resolution
 #    'sphinx.ext.jsmath',  # javascript, older than mathjax, needs jsmath_path set
@@ -152,8 +156,6 @@ todo_include_todos = True
 
 # -- Options for HTML output ----------------------------------------------
 
-
-
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
@@ -201,7 +203,7 @@ html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-#html_last_updated_fmt = '%b %d, %Y'
+html_last_updated_fmt = '%b %d, %Y'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
