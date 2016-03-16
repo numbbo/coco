@@ -40,10 +40,6 @@ def config(isBiobjective=None):
 	
     if isBiobjective is not None:
         genericsettings.loadCurrentTestbed(isBiobjective, pproc.TargetValues)
-        
-        if isBiobjective:
-            # pptable:
-            pptable.set_table_caption('biobjective')
 
 	genericsettings.simulated_runlength_bootstrap_sample_size = (10 + 990 / (1 + 10 * max(0, genericsettings.in_a_hurry)))
 			
@@ -103,8 +99,6 @@ def config(isBiobjective=None):
                     ] 
             
         # pptable:
-        #pptable.table_caption=pptable.table_caption_rlbased
-        pptable.set_table_caption('rlbased')
         pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
                                                                      reference_data = reference_data,
                                                                      force_different_targets_factor=10**-0.2)

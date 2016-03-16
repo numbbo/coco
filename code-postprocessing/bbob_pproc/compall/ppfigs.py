@@ -107,6 +107,9 @@ def ecdfs_figure_caption(target):
 def scaling_figure_caption_html(target):
     # need to be used in rungenericmany.py!?
     assert len(target) == 1
+    if genericsettings.current_testbed.name == 'bbob-biobj':
+        s = htmldesc.getValue('##bbobppfigslegendbiobjfixed##').replace('BBOBPPFIGSFTARGET', 
+                                                       toolsdivers.number_to_html(target.label(0)))        
     if isinstance(target, pproc.RunlengthBasedTargetValues):
         s = htmldesc.getValue('##bbobppfigslegendrlbased##').replace('BBOBPPFIGSFTARGET', 
                                                          toolsdivers.number_to_html(target.label(0)))
@@ -121,11 +124,14 @@ def scaling_figure_caption_html(target):
 
 def ecdfs_figure_caption_html(target, dimension):
     assert len(target) == 1
-    if isinstance(target, pproc.RunlengthBasedTargetValues):
+	
+    if genericsettings.current_testbed.name == 'bbob-biobj':
+        s = htmldesc.getValue('##bbobECDFslegendbiobjfixed%d##' % dimension)
+    elif isinstance(target, pproc.RunlengthBasedTargetValues):
         s = htmldesc.getValue('##bbobECDFslegendrlbased%d##' % dimension).replace('REFERENCEALGORITHM', 
                                                          target.reference_algorithm)
     else:
-        s = htmldesc.getValue('##bbobECDFslegendstandard%d##' % dimension)
+        s = htmldesc.getValue('##bbobECDFslegendfixed%d##' % dimension)
     return s
 
 
