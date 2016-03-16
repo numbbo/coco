@@ -307,7 +307,8 @@ class GECCOBBOBTestbed(Testbed):
         self.functions_with_legend = (1, 24, 101, 130)
         self.number_of_functions = 24
         self.pptable_ftarget = 1e-8 # value for determining the success ratio
-
+        self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
+        
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
                              getBenchmarksShortInfos(False)), 
@@ -342,6 +343,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.functions_with_legend = (1, 30, 31, 55)
         self.number_of_functions = 55
         self.pptable_ftarget = 1e-5 # value for determining the success ratio
+        self.pptable_targetsOfInterest = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
