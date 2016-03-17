@@ -150,10 +150,13 @@ Terminology
 Conducting the Experiment
 =========================
 
-The optimization algorithm to be benchmarked is run on each problem 
-of the given test suite once. There is no prescribed minimal or maximally allowed 
-runtime. The longer the experiment, the more data are available to assess 
-the performance accurately. See also Section :ref:`sec:budget`. 
+The optimization algorithm to be benchmarked is run on each problem of the
+given test suite once. On each problem, the very same algorithm with the same
+parameter setting, the same initialzation procedure, the same budget, the same
+termination and/or restart criteria etc. is used. 
+There is no prescribed minimal or maximally allowed budget. The longer the
+experiment, the more data are available to assess the performance accurately.
+See also Section :ref:`sec:budget`. 
 
 .. _sec:input:
 
@@ -207,7 +210,7 @@ the algorithm:
    function returns always zero. 
 
 The number of evaluations of the problem and/or constraints are the search
-costs, also referred to as runtime, and used for the performance 
+costs, also referred to as *runtime*, and used for the performance 
 assessment of the algorithm. [#]_
 
 .. [#] Note, however, that the Pareto set in the bi-objective case is not always guaranteed to lie in its entirety within the region of interest.
@@ -330,13 +333,13 @@ Recommendations
 ===============
 
 The performance assessment is based on a set of evaluation counts
-associated with the :math:`f`-value of a solution. 
+associated with the :math:`f`-value or -vector of a solution. 
 By default, each evaluation count is associated with the respectively *evaluated*
 solution and hence its :math:`f`-value. 
 The solution associated *to the current (last) evaluation* can be changed by calling |coco_recommend_solution|_, thereby associating the :math:`f`-value of the
 *recommended* solution (instead of the *evaluated* solution) with the current evaluation count. 
 A recommendation is best viewed as the *currently best known approximation* of the
-optimum delivered by the optimization algorithm, or as the currently most 
+optimum [#]_ delivered by the optimization algorithm, or as the currently most 
 desirable return value of the algorithm. 
 
 Recommendations allow the algorithm to explore solutions without affecting the
@@ -347,6 +350,10 @@ necessary nor advantageous to recommend the same solution repeatedly.
 
 .. On non-noisy suites the last evaluation changes the assessment only if the :math:`f`-value is better than all :math:`f`-values from previous evaluations. 
 
+.. [#] In the multi-objective scenario not only the last solution, but *all*
+  solutions are taken into account for this approximation. 
+  In the noisy scenario, a small number of the most current solutions will be
+  taken into account in future assessements. 
 
 Time Complexity Experiment
 ==========================
