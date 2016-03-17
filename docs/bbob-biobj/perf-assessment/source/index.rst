@@ -3,8 +3,8 @@ Biobjective Performance Assessment with the COCO Platform
 #########################################################
 
 .. Here we put the abstract when using LaTeX, the \abstractinrst 
-   command is defined in the 'preamble' of latex_elements in source/conf.py,
-   the text is defined in `abstract` of conf.py. To flip abstract and table
+   command must be defined in the 'preamble' of latex_elements in source/conf.py,
+   the text should be defined in `abstract` of conf.py. To flip abstract and table
    of contents, or update the table of contents, toggle the \generatetoc
    command in the 'preamble' accordingly. 
 
@@ -14,12 +14,17 @@ Biobjective Performance Assessment with the COCO Platform
     % \tableofcontents
     \newpage 
 
+.. Contents:
+
+.. .. toctree::
+   :maxdepth: 2
+
 .. |coco_problem_t| replace:: 
   ``coco_problem_t``
 .. _coco_problem_t: http://numbbo.github.io/coco-doc/C/coco_8h.html#a408ba01b98c78bf5be3df36562d99478
 
 .. _COCO: https://github.com/numbbo/coco
-
+.. |Iref| replace:: :math:`I_\mathrm{ref}`
 
 This document details the specificities when assessing the performance of
 numerical black-box optimizers on multi-objective problems within the COCO_
@@ -27,12 +32,16 @@ platform and in particular on the biobjective test suite ``bbob-biobj``,
 described in more detail in [bbob-biobj-functions-doc]_ .
 
 The performance assessment in COCO_ is invariably based on the measurement of
-runtimes until a quality criterion reaches or succeeds some given, predefined
-target values [BBO2016perf]_. [#]_ 
-In the multi-objective case, the quality criterion for a given time step is the hypervolume indicator value [cite] computed from all evaluated or recommended (see [BBO2016ex]_) solutions up to the given time step.
-
-.. todo:: we need to define how hypervolume is computed, in particular the 
-  normalization with ideal and nadir point. 
+the *runtime* until a *quality indicator* reaches a
+predefined *target value* [BBO2016perf]_. [#]_ 
+On each problem, several target values are defined and for each target
+value a runtime is measured. 
+In the single-objective, noise-free case, the quality indicator is the
+function value of the best solution the algorithm has delivered (evaluated or
+recommended, see [BBO2016ex]_) before a given time step. 
+In the multi-objective case, the assessed quality indicator 
+will a hypervolume indicator computed from all solutions evaluated (or,
+alternatively, recommended) before a given time step. 
 
 Opposed to the single-objective ``bbob`` test suite [HAN2009fun]_, the
 biobjective ``bbob-biobj`` test suite does not provide analytical forms of
@@ -42,11 +51,6 @@ Except for :math:`f_1`, the Pareto set and the Pareto front are unknown.
 .. The performance assessment therefore has to be relative to the best 
   known approximations and this document details how this is implemented.
 
-
-.. Contents:
-
-.. .. toctree::
-   :maxdepth: 2
 
 .. todo::
   * introduce the quality criterion, i.e. the normalized hypervolume indicator
@@ -81,8 +85,27 @@ Except for :math:`f_1`, the Pareto set and the Pareto front are unknown.
 .. [#] As usual, time is considered as number of function evaluations and, 
   consequently, runtime is measured in number of function evaluations.
 
+Hypervolume Computation
+=======================
+
+.. todo:: 
+  - define how hypervolume is computed, in particular the 
+    normalization with ideal and nadir point is done.
+  - define the HV surrogate value for points that do not dominated the 
+    nadir point
+
+
+Choice of Target Values
+=======================
+
+Given a reference hypervolume indicator value, |Iref|, the targets are chosen in the following
+way. 
+
+Choice of the Target Reference Value
+====================================
+
 Dealing with Unknown Optima
-===========================
+---------------------------
 
 .. note:: Why don't we just introduce the used indicator, as all assessment is
   based on it? It seems not necessary to introduce the 1001st time the 
