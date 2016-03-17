@@ -22,7 +22,7 @@ from pdb import set_trace
 import numpy
 import numpy as np
 import matplotlib
-from . import genericsettings
+from . import genericsettings, ppfig, toolsdivers
 
 ppfig2_ftarget = 1e-8  # a hack, used in ppfig2.main 
 
@@ -551,14 +551,21 @@ def main(argv=None):
                              '}'
                             ])
                             
+            algName0 = toolsdivers.str_to_latex(set(i[0] for i in dsList0.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
+            algName1 = toolsdivers.str_to_latex(set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
+            ppfig.save_single_functions_html(
+                os.path.join(outputdir, genericsettings.two_algorithm_file_name),
+                "%s vs %s" % (algName1, algName0),
+                htmlPage = ppfig.HtmlPage.TWO,
+                isBiobjective = dsList0.isBiobjective(),
+                functionGroups = dsList0.getFuncGroups())
+
             htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')            
             key =  '##bbobpptablestwolegendexpensive##' if isinstance(pptable2.targetsOfInterest, pproc.RunlengthBasedTargetValues) else '##bbobpptablestwolegend##'
             replace_in_file(htmlFileName, '##bbobpptablestwolegend##', htmldesc.getValue(key))
                         
-            alg0 = set(i[0] for i in dsList0.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, '')[0:3]
-            alg1 = set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, '')[0:3]
-            replace_in_file(htmlFileName, 'algorithmAshort', alg0)
-            replace_in_file(htmlFileName, 'algorithmBshort', alg1)
+            replace_in_file(htmlFileName, 'algorithmAshort', algName0[0:3])
+            replace_in_file(htmlFileName, 'algorithmBshort', algName1[0:3])
             
             for i, alg in enumerate(args):
                 replace_in_file(htmlFileName, 'algorithm' + abc[i], str_to_latex(strip_pathname1(alg)))
