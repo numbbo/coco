@@ -45,14 +45,19 @@ each given time step, the function value of the best solution the algorithm has
 obtained (evaluated or recommended, see [BBO2016ex]_) before or at this time
 step. 
 
-.. todo:: REMARK: the performance assessment in itself is to the most part not 
-              relative to the optimum or, more concisely, to an optimal indicator
-              value. Conceptually, we can and should consider the target values as
+In the bi- and multi-objective case, the assessed quality indicator at the
+given time step will be a hypervolume indicator computed from *all* solutions
+obtained (evaluated or recommended) before or at this time step. 
+
+
+.. todo:: REMARK: the performance assessment in itself is to the most part **not 
+              relative** to the optimum or, more concisely, to an optimal indicator
+              value. Conceptually, we should consider the target values as
               (i) absolute values and (ii) as variable input parameters for the 
               assessment. The choice of targets relative to the best possible
-              indicator value is desirable but no necessity. Only the *uniform* 
+              indicator value is a useful heuristic, but no necessity. Only the *uniform* 
               choice of targets within the instances of a single problem poses a 
-              significant challenge. This challenge is however not even necessarily 
+              significant challenge. This challenge is not necessarily 
               solved by knowing the best possible indicator value.
 
 .. todo::   * perf assessement is relative - we face a problem: we do not have the optimum.
@@ -156,14 +161,25 @@ Implications on the performance criterion:
 Choice of Target Values
 =======================
 
-Given a reference hypervolume indicator value, |Irefi|, chosen individually 
-for each problem instance, |i|, of the benchmark suite, the target values to
-measure runtime are chosen in the following way. 
+For each problem instance, |i|, of the benchmark suite, a *reference
+hypervolume indicator value*, |Irefi|, is computed (see below). 
+This reference value is determined to represent the value of a fairly adequate
+approximation of the Pareto set. [#]_ All target indicator values are computed as 
+a function of |Irefi|, namely as |Irefi| :math:`+\,t`, where |t| is chosen as
 
+.. math::
 
+  t \in \{ -10^{-4}, -10^{-4.2}, -10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.8}, 10^{-4.6}, \dots, 10^{-0.2}, 10^0 \}
+
+That is, if not stated otherwise, the runtimes of these 58 target values are
+presented (usually as empirical cumulative distribution function, ECDF). 
+It is not uncommon that the quality indicator value of the algorithm never surpasses some of
+these target values, which leads to missing runtime measurements. 
 
 .. |Irefi| replace:: :math:`I_i^\mathrm{ref}`
 .. |i| replace:: :math:`i`
+.. |t| replace:: :math:`t`
+
 
 .. Choice of Reference Set and Target Difficulties
    ===============================================
@@ -176,8 +192,7 @@ measure runtime are chosen in the following way.
   equi-distantly chosen on the log-scale.
 
 
-Displayed are finally only 10 targets per order of magnitude, in total
-51 of them between :math:`10^0` and :math:`10^{-5}`
+.. Displayed are finally only 10 targets per order of magnitude, in total 51 of them between :math:`10^0` and :math:`10^{-5}`
 
 .. Note that due to the approximative nature of the reference set and its hypervolume, negative hypervolume values are possible. The Coco platform stores all
 
@@ -185,14 +200,12 @@ Displayed are finally only 10 targets per order of magnitude, in total
    estimation of the front is meant to change. Hence ECDF plots are meant
    to be reploted.
 
+.. [#] As we do not know the Pareto set on any but one function, the approximation 
+  could be less adequate than we are hoping for. 
 
 
-Choice of the Target Reference Value
-====================================
-
-In the bi- and multi-objective case, the assessed quality indicator will be a
-hypervolume computed from *all* solutions obtained (evaluated or recommended)
-before or at the given time step. 
+Choice of the Reference Hypervolume Indicator Value
+===================================================
 
 Opposed to the single-objective ``bbob`` test suite [HAN2009fun]_, the
 biobjective ``bbob-biobj`` test suite does not provide analytical forms of
