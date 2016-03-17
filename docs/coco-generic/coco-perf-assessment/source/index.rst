@@ -43,11 +43,34 @@ COCO: Performance Assessment
 Introduction
 =============
 
-This document presents the main ideas and concepts of the performance assessment within the COCO platform. We start from a collection of recorded data from the algorithm benchmarked that are function values (indicator values in the case of multi-objective, function and constraint values in the case of constraint optimization) together with the number of calls to the function to reach these values. The latter represents the cost of the algorithm. This means that we exclude measuring cost in terms of CPU or wall-clock time to avoid measurement that depends on the programming language or the computer where the experiments were run [#]_. The shortcomings and unfortunate consequences of benchmarking based on CPU was discussed in [Hooker:1995]_.
+This document presents the main ideas and concepts of the performance
+assessment within the COCO platform. We start from a collection of recorded
+data from the benchmarked algorithm: *runtimes*, measured in number of
+function evaluations, to reach certain target :math:`f` or quality indicator
+values. 
+Runtimes represents the cost of the algorithm. 
+Apart from a rather exploratory short experiment, we avoid measuring cost in
+CPU or wall-clock time to avoid measurements that depend parameters which are
+difficult or impractical to control, like implementation details, the
+programming language, or the computer where the experiments were run [#]_.
+The shortcomings and unfortunate consequences of benchmarking based on CPU
+was discussed in [Hooker:1995]_.
 
-From the collection of (function value, number of function evaluations) pairs, we extract runtimes (or run-length) to reach target function values. This comes as a natural consequence of our prerequisite to present *quantitative* performance measures (as opposed to simple rankings of algorithm performances).
+.. From the collection of (function value, number of function evaluations)
+   pairs, we extract runtimes (or run-length) to reach target function values.
 
-We then either display average runtime through the `Average Runtime`_ (ART) measure or the distribution of runtimes through `Empirical Cumulative Distribution Functions`_ (ECDF). When displaying the distribution of runtimes, we consider the aggregation of runtimes over subclasses of problems excluding aggregation over dimensions given that the dimension of the problem is an information available that should be exploited (for instance for deciding on which algorithm to choose).
+Measuring runtimes comes as a natural consequence of our prerequisite to present
+*quantitative* performance measures (as opposed to simple rankings of
+algorithm performances).
+
+We then either display average runtime through the `Average Runtime`_ (aRT)
+measure or the distribution of runtimes through `Empirical Cumulative
+Distribution Functions`_ (ECDF). When displaying the distribution of
+runtimes, we consider the aggregation of runtimes over subclasses of problems 
+or over all problem. 
+We exclude aggregation over dimensions, because the dimension of the problem
+is an information available before-hand to decide on which algorithm, or
+algorithm variant or parameter setting, to choose.
 
 
 .. [#] We however require to provide CPU timing experiments to get a
@@ -397,16 +420,17 @@ We can also naturally aggregate over all functions and hence obtain one single E
 	* ECDF and uniform pick of a problem
 	* log ART can be read on the ECDF graphs [requires some assumptions]
 	* The Different Plots Provided by the COCO Platform
-		** ART Scaling Graphs
-			The ART scaling graphs present the average running time to
-			reach a certain 			precision (relative target)
-			divided by the dimension versus the dimension. Hence an
-			horizontal line means a linear scaling with respect to the
-			dimension.
-		** ART Loss graphs
-		** Best 2009: actually now I am puzzled on this Best 2009
-		algorithm (I know what is the aRT of the best 2009, but I have
-		doubts on how we display the ECDF of the best 2009
+		* ART Scaling Graphs
+		  The ART scaling graphs present the average running time to
+		  reach a certain 			precision (relative target)
+		  divided by the dimension versus the dimension. Hence an
+		  horizontal line means a linear scaling with respect to the
+		  dimension.
+		* ART Loss graphs
+		* Best 2009: actually now I am puzzled on this Best 2009
+		
+	  algorithm (I know what is the aRT of the best 2009, but I have
+	  doubts on how we display the ECDF of the best 2009
 		
 		
 		
