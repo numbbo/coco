@@ -285,7 +285,7 @@ the following defining features.
 
    - be independent of the computational platform, language, compiler, coding 
      styles, and other specific experimental conditions [#]_
-   - be easily interpretable without expert domain knowledge
+   - be relevant, meaningful and easily interpretable without expert domain knowledge
    - be quantitative on the ratio scale [STE1946]_ [#]_
    - assume a wide range of values 
    - aggregate over a collection of values in a very meaningful way
