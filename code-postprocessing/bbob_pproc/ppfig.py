@@ -72,15 +72,8 @@ html_header = """<HTML>
 <BODY>
 <H1> %s
 </H1>
-"""
-
-html_header_ext = html_header + """
-%s
-%s
-%s
 %s
 """
-
 
 def next_dimension_str(s):
     try:
@@ -108,23 +101,40 @@ def addImage(imageName, addLink):
     else:
         return '<IMG SRC="%s">' % imageName
 
-def save_index_html_file(filename, algorithmList):
+def addLink(currentDir, folder, fileName, label, indent = ''):
+
+    if folder:    
+        path = os.path.join(os.path.realpath(currentDir), folder, fileName)
+        href = '%s/%s' % (folder, fileName)
+    else:
+        path = os.path.join(os.path.realpath(currentDir), fileName)
+        href = fileName
+
+    if os.path.isfile(path):
+        return '<H3>%s<a href="%s">%s</a></H3>\n' % (indent, href, label)
+
+    return ''
+
+def save_index_html_file(filename):
 
     with open(filename + '.html', 'w') as f:
-        f.write(html_header % ('Post processing results', 'Post processing results'))
+        f.write(html_header % ('Post processing results', 'Post processing results', ''))
             
         f.write('<H2>Single algorithm data</H2>\n')
-        for algorithm in algorithmList:
-            algfolder = findfiles.get_output_directory_subfolder(algorithm)
-            link = '%s/templateBBOBarticle.html' % algfolder
-            f.write('<H3>&nbsp;<a href="%s">%s</a></H3>\n' % (link, algfolder))
+
+        currentDir = os.path.dirname(os.path.realpath(filename))
+        indent = '&nbsp;&nbsp;'
+        singleAlgFile = 'templateBBOBarticle.html'
+        for root, _dirs, files in os.walk(currentDir):
+            for elem in _dirs:
+                f.write(addLink(currentDir, elem, singleAlgFile, elem, indent))
         
-        if (len(algorithmList) >= 2):
+        comparisonLinks = ''    
+        comparisonLinks += addLink(currentDir, None, 'templateBBOBcmp.html', 'Two algorithm comparison', indent)
+        comparisonLinks += addLink(currentDir, None, 'templateBBOBmany.html', 'Many algorithm comparison', indent)
+        if comparisonLinks:
             f.write('<H2>Comparison data</H2>\n')
-            if (len(algorithmList) == 2):
-                f.write('<H3>&nbsp;<a href="templateBBOBcmp.html">Two algorithm comparison</a></H3>\n')
-            else:
-                f.write('<H3>&nbsp;<a href="templateBBOBmany.html">Many algorithm comparison</a></H3>\n')
+            f.write(comparisonLinks)
 
         f.write("\n</BODY>\n</HTML>")
 
@@ -137,23 +147,26 @@ def getHomeLink(htmlPage):
     
     return ''
 
-def getConvLink(htmlPage):
-    if genericsettings.isConv and htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        return '<H3><a href="%s.html">Convergence plots</a></H3>' % genericsettings.ppconv_file_name
+def getConvLink(htmlPage, currentDir):
+    if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
+        return addLink(currentDir, None, genericsettings.ppconv_file_name + '.html', 'Convergence plots')
     
     return ''
     
-def getRldLink(htmlPage):
+def getRldLink(htmlPage, currentDir):
+    
+    links = ''        
+    folder = 'pprldmany-single-functions'
+    
     if genericsettings.isRldOnSingleFcts and htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        links = ''        
-        if htmlPage == HtmlPage.ONE:        
-            links += '<H3><a href="pprldmany-single-functions/%s.html">Runtime distribution plots</a></H3>\n' % genericsettings.pprldmany_file_name
-        links += '<H3><a href="pprldmany-single-functions/%s_02D.html">Runtime distribution plots (per dimension)</a></H3>' % genericsettings.pprldmany_file_name
-        if htmlPage == HtmlPage.ONE:        
-            links += '<H3><a href="pprldmany-single-functions/%s_02D.html">Runtime distribution plots by group (per dimension)</a></H3>' % genericsettings.pprldmany_group_file_name
-        return links
-        
-    return ''
+        fileName = '%s.html' % genericsettings.pprldmany_file_name
+        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots')
+        fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
+        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)')
+        fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
+        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)')
+    
+    return links
 
 def getParentLink(htmlPage, parentFileName):
     if parentFileName and htmlPage not in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
@@ -174,14 +187,15 @@ def save_single_functions_html(filename,
                                caption = None): # used only with HtmlPage.NON_SPECIFIED
     
     name = filename.split(os.sep)[-1]
+    currentDir = os.path.dirname(os.path.realpath(filename))
     with open(filename + add_to_names + '.html', 'w') as f:
         header_title = algname + ' ' + name + add_to_names
-        f.write(html_header_ext % (header_title.strip().replace(' ', ', '), 
-                                   algname, 
-                                   getHomeLink(htmlPage),
-                                   getConvLink(htmlPage),
-                                   getRldLink(htmlPage),
-                                   getParentLink(htmlPage, parentFileName)))
+        links = getHomeLink(htmlPage)
+        links += getConvLink(htmlPage, currentDir)
+        links += getRldLink(htmlPage, currentDir)
+        links += getParentLink(htmlPage, parentFileName)
+
+        f.write(html_header % (header_title.strip().replace(' ', ', '), algname, links))
             
         if functionGroups is None:
             functionGroups = OrderedDict([])
