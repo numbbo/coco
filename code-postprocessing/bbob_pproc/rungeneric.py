@@ -271,23 +271,22 @@ def main(argv=None):
         for i in range(len(args)):  # prepend common path inputdir to all names
             args[i] = os.path.join(inputdir, args[i])
 
-        ppfig.save_index_html_file(
-            os.path.join(outputdir, genericsettings.index_html_file_name), 
-            args)
-
-        for i, alg in enumerate(args):
-            # remove '../' from algorithm output folder
-            if len(args) == 1 or '--omit-single' not in dict(opts):
-                rungeneric1.main(genopts
-                                + ["-o", outputdir, alg])
-
-        if len(args) == 2:
-            rungeneric2.main(genopts + ["-o", outputdir] + args)
-        elif len(args) > 2:
-            rungenericmany.main(genopts + ["-o", outputdir] + args)
+#        for i, alg in enumerate(args):
+#            # remove '../' from algorithm output folder
+#            if len(args) == 1 or '--omit-single' not in dict(opts):
+#                rungeneric1.main(genopts
+#                                + ["-o", outputdir, alg])
+#
+#        if len(args) == 2:
+#            rungeneric2.main(genopts + ["-o", outputdir] + args)
+#        elif len(args) > 2:
+#            rungenericmany.main(genopts + ["-o", outputdir] + args)
 
         open(os.path.join(outputdir,
                           'bbob_pproc_commands.tex'), 'a').close() 
+
+        ppfig.save_index_html_file(os.path.join(outputdir, 
+                                                genericsettings.index_html_file_name))
 
         print_done()
 
