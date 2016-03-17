@@ -34,6 +34,29 @@ extensions = [
     'sphinx.ext.pngmath',
 ]
 
+
+pngmath_use_preview = True  # "When this is enabled, the images put into the HTML document will get a vertical-align style that correctly aligns the baselines."
+pngmath_dvipng_args = [ # see http://www.nongnu.org/dvipng/dvipng_4.html#Command_002dline-options
+    '-gamma', '1.5',  # heavyness of color 0.5 is between black and background, 1.5 is blacker than black, --gamma works as well?
+    '-D', '109',  # size, 100=current font size
+#    '-D', '110',  # size, 100=current font size, 110 is default
+#    '-gif',  # doesn't work in browser and doesn't look less pixelated
+#    '--bdpi', '440',  # see man dvipng
+#    '-Q', '5',
+    '-bg', 'Transparent',
+#    '-T', '1.1in,1.3cm',   # image size, affects size, but nothing is rendered
+]
+
+latex_commands = r"""
+  \newcommand{\R}{\ensuremath{\mathbb{R}}}
+  \newcommand{\ve}[1]{{\boldsymbol{#1}}}
+  \newcommand{\x}{\ensuremath{\ve{x}}}
+  \newcommand{\finstance}{\ensuremath{f^j}}
+"""
+
+pngmath_latex_preamble = latex_commands
+
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
