@@ -119,23 +119,22 @@ We introduce a few terms and definitions that are used in the rest of the docume
   We define *runtime*, or *run-length* [HOO1998]_
   as the *number of evaluations* 
   conducted on a given problem, also referred to as number of *function* evaluations. 
-  Our central performance measure is the runtime until a given target :math:`f`-value 
-  is hit.
+  Our central performance measure is the runtime until a given target :math:`f`-
+  or indicator-value is hit.
   
 
 On Performance Measures
 =======================
 
+Following [HAN2009]_, we advocate **performance measures** that are
 
-As it was already explained in [HAN2009]_, we advocate **performance measures** that are:
-
-* quantitative, ideally with a ratio scale (opposed to interval or ordinal
-  scale)  and with a wide variation (i.e., for example, with values ranging
-  not only between 0.98 and 1.0)
-* well-interpretable, in particular by having a meaning and semantics attached
-  to the numbers
-* relevant with respect to the "real world"
-* as simple as possible.
+ * quantitative, ideally with a ratio scale (opposed to interval or ordinal
+   scale)  and with a wide variation (i.e., for example, with typical values 
+   ranging not only between 0.98 and 1.0)
+ * well-interpretable, in particular by having a meaning and semantics attached
+   to the numbers
+ * relevant and meaningful with respect to the "real world"
+ * as simple as possible.
 
 
 For these reasons we measure **runtime** to reach a target function value, that is the number of function evaluations needed to reach a target function value denoted as fixed-target scenario in the following. 
