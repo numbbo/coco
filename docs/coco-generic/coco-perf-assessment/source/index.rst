@@ -39,42 +39,44 @@ COCO: Performance Assessment
     \abstractinrst
     \newpage 
 
+.. raw:: html
 
+  TODO: here comes a short "abstract/summary/intro"
+  
 Introduction
 =============
 
 This document presents the main ideas and concepts of the performance
 assessment within the COCO platform. We start from a collection of recorded
-data from the benchmarked algorithm: *runtimes*, measured in number of
-function evaluations, to reach certain target :math:`f` or quality indicator
-values. 
-Runtimes represents the cost of the algorithm. 
-Apart from a rather exploratory short experiment, we avoid measuring cost in
-CPU or wall-clock time to avoid measurements that depend parameters which are
-difficult or impractical to control, like implementation details, the
-programming language, or the computer where the experiments were run [#]_.
-The shortcomings and unfortunate consequences of benchmarking based on CPU
+data from the benchmarked algorithm. 
+These data represent *runtimes*, measured in number of function evaluations,
+to reach certain target :math:`f` or target quality indicator value. 
+Runtimes represent the cost of the algorithm. 
+Apart from a short, exploratory experiment, we avoid measuring the cost in
+CPU or wall-clock time because these depend on parameters which are difficult
+or impractical to control, like the programming language, coding style, the
+computer where the experiments were run on... [#]_
+Shortcomings and unfortunate consequences of benchmarking based on CPU time
 was discussed in [Hooker:1995]_.
 
 .. From the collection of (function value, number of function evaluations)
    pairs, we extract runtimes (or run-length) to reach target function values.
 
-Measuring runtimes comes as a natural consequence of our prerequisite to present
-*quantitative* performance measures (as opposed to simple rankings of
-algorithm performances).
+Measuring runtimes comes as a natural consequence of our prerequisite to
+present a *quantitative* performance assessment, as opposed to simple
+rankings of algorithm performances.
 
-We then either display average runtime through the `Average Runtime`_ (aRT)
-measure or the distribution of runtimes through `Empirical Cumulative
-Distribution Functions`_ (ECDF). When displaying the distribution of
-runtimes, we consider the aggregation of runtimes over subclasses of problems 
-or over all problem. 
-We exclude aggregation over dimensions, because the dimension of the problem
-is an information available before-hand to decide on which algorithm, or
-algorithm variant or parameter setting, to choose.
+We then either display an average runtime (aRT, see Section `Average Runtime`_)
+or the distribution of runtimes (ECDF, see Section `Empirical Cumulative
+Distribution Functions`_). 
+When displaying the distribution of runtimes, we consider the aggregation of
+runtimes over subclasses of problems or over all problems. 
+We do not aggregate over dimensions, because the dimension of the problem
+is an information which is available to decide which algorithm, or
+which algorithm variant or which parameter setting to choose.
 
-
-.. [#] We however require to provide CPU timing experiments to get a
-	rough measurement of the time complexity of the algorithm.
+.. [#] We however require to provide a CPU timing experiments to get a
+	rough measurement of the time complexity of the algorithm [BBO2016ex]_.
 
 .. budget-free
 
