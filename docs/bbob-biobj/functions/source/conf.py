@@ -271,7 +271,7 @@ latex_elements = {# The paper size ('letterpaper' or 'a4paper').
 
 %%%%%% TOGGLE the renewcommand to update toc / show abstract first %%%%%%
   \newcommand{\generatetoc}{\boolean{true}}  % (re-)generate toc
-%  \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
+  % \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
 
   % abstract is latex-only in rst
   \newcommand{\abstractinrst}{\begin{abstract}\abstracttextinconfpy\end{abstract}} 
@@ -283,11 +283,13 @@ latex_elements = {# The paper size ('letterpaper' or 'a4paper').
       \begin{abstract}\abstracttextinconfpy\end{abstract}
       \par\par
       \section*{Contents}
-      \begin{minipage}{\textwidth}\setlength{\baselineskip}{3ex}
+      % \begin{minipage}{\textwidth}
+      { \setlength{\baselineskip}{2.5ex} % \setlength{\parskip}{3ex}
         \makeatletter % changes the catcode of @ to 11  % see http://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
-        \input{coco-experimental-setup.toc}
+        \input{bbob-biobj-functions.toc}
         \makeatother % changes the catcode of @ back to 12
-      \end{minipage}
+        }
+      % \end{minipage}
     }
   }
 """ + latex_commands,

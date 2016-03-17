@@ -190,7 +190,7 @@ Combining all 24 ``bbob`` functions in pairs thereby results in
 multi-objective optimization algorithms are not sensitive to permutations of
 the objective functions such that combining the 24  ``bbob`` functions and
 taking out the function :math:`(g_2,g_1)` if the function :math:`(g_1,g_2)`
-is present results in :math:`24+ {24 \choose 2} = 300` functions.
+is present results in :math:`24 + {24 \choose 2} = 24 + (24\times23)/2 = (24\times25)/2 = 300` functions.
 
 .. Given that most (if not all) multi-objective optimization algorithms are
 .. invariant to permutations of the objective functions, a bi-objective
@@ -614,7 +614,7 @@ requirement, while we have seen practical problems with conditioning
 as large as :math:`10^{10}`.
 
 
-Bounded vs. Unbounded Domain
+Bounded or Unbounded Domain
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 All bi-objective functions, provided in the ``bbob-biobj`` suite are unbounded, i.e., defined
 on the entire real-valued space :math:`\mathbb{R}^D`. 
@@ -626,10 +626,17 @@ of the ``bbob-biobj`` function definitions, there is no guarantee that this
 is the case --- it is only guaranteed that the extremal solutions and their
 neighborhood ball of radius one lie within this region.
 
-.. [#] The implementation in the COCO_ platform as |coco_problem_t| allows the optimizer
-  to retrieve the *search domain of interest*, for example to generate the initial
-  search points. 
+.. [#] The functions |coco_problem_get_smallest_value_of_interest|_ and 
+  |coco_problem_get_largest_value_of_interest|_ 
+  of the COCO_ platform allows the optimizer
+  to retrieve the *search domain of interest* from the |coco_problem_t|_, 
+  for example to generate the initial search points. 
 
+.. |coco_problem_get_largest_value_of_interest| replace:: ``coco_problem_get_largest_value_of_interest``
+.. _coco_problem_get_largest_value_of_interest: http://numbbo.github.io/coco-doc/C/coco_8h.html#a29c89e039494ae8b4f8e520cba1eb154
+
+.. |coco_problem_get_smallest_value_of_interest| replace:: ``coco_problem_get_smallest_value_of_interest``
+.. _coco_problem_get_smallest_value_of_interest: http://numbbo.github.io/coco-doc/C/coco_8h.html#a4ea6c067adfa866b0179329fe9b7c458
 
 The 55 ``bbob-biobj`` Functions
 -------------------------------
