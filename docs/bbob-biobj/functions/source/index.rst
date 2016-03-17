@@ -18,7 +18,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. |
 .. |
 
-   
+ 
 
 .. Here we put the abstract when using LaTeX, the \abstractinrst command is defined in 
      the 'preamble' of latex_elements in source/conf.py, the text
@@ -44,6 +44,12 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   normalization.
   </p>
   
+.. _COCO: https://github.com/numbbo/coco
+.. _COCOold: http://coco.gforge.inria.fr
+.. |coco_problem_t| replace:: 
+  ``coco_problem_t``
+.. _coco_problem_t: http://numbbo.github.io/coco-doc/C/coco_8h.html#a408ba01b98c78bf5be3df36562d99478
+
 .. summarizing the state-of-the-art in multi-objective black-box benchmarking, at 
 .. and at providing a simple tutorial on how to use these functions for actual benchmarking within the Coco framework.
 
@@ -597,23 +603,32 @@ positive definite matrix, as the condition number of the Hessian matrix
 :math:`H`. Since contour lines associated to a convex quadratic function
 are ellipsoids, the condition number corresponds to the square root of
 the ratio between the largest axis of the ellipsoid and the shortest axis.
-In the more general case, "we can call a function ill-conditioned if for
-points with similar function values the minimal displacement (in search
-space) that produces a given function value improvement differs by
-orders of magnitude." [Han2011]_
+In the more general case, we can consider a function as ill-conditioned if for
+solution points from the same level-set "the minimal displacement [...] that 
+produces a given function value improvement differs by
+orders of magnitude" [HAN2011]_.
 
-
-.. .. TODO:: it is not quite clear what a large or small direction of a line is. 
-   Ill-conditioning is IMHO related to change of curvature on a level-set. 
-.. Dimo: should be improved now by citing the Giens paper (many thanks to Anne for her help)
-   
-   
 The proposed ``bbob-biobj`` testbed contains ill-conditioned functions
 with a typical conditioning of :math:`10^6`. We believe this is a realistic
 requirement, while we have seen practical problems with conditioning
 as large as :math:`10^{10}`.
 
 
+Bounded vs. Unbounded Domain
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+All bi-objective functions, provided in the ``bbob-biobj`` suite are unbounded, i.e., defined
+on the entire real-valued space :math:`\mathbb{R}^D`. 
+Nevertheless, they are designed such that the search domain of interest is :math:`[-5,5]^D`
+and bound-constraint methods are likely to be competitive. [#]_
+
+While we believe that this domain contains the Pareto set, due to the nature
+of the ``bbob-biobj`` function definitions, there is no guarantee that this
+is the case --- it is only guaranteed that the extremal solutions and their
+neighborhood ball of radius one lie within this region.
+
+.. [#] The implementation in the COCO_ platform as |coco_problem_t| allows the optimizer
+  to retrieve the *search domain of interest*, for example to generate the initial
+  search points. 
 
 
 The 55 ``bbob-biobj`` Functions
@@ -1912,7 +1927,7 @@ __ http://numbbo.github.io/coco-doc/
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
 
-.. [Han2011] N. Hansen, R. Ros, N. Mauny, M. Schoenauer, and A. Auger (2011). Impacts
+.. [HAN2011] N. Hansen, R. Ros, N. Mauny, M. Schoenauer, and A. Auger (2011). Impacts
 	of Invariance in Search: When CMA-ES and PSO Face Ill-Conditioned and
 	Non-Separable Problems. Applied Soft Computing. Vol. 11, pp. 5755-5769.
 	Elsevier.  
