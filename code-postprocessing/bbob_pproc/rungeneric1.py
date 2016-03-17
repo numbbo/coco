@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
 import warnings, getopt, numpy as np
 
-from . import genericsettings, pptable, pprldistr, ppfigdim, pplogloss, findfiles
+from . import genericsettings, ppfig, pptable, pprldistr, ppfigdim, pplogloss, findfiles
 from .pproc import DataSetList
 from .toolsdivers import print_done, prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
 from . import ppconverrorbars
@@ -339,6 +339,7 @@ def main(argv=None):
                                  genericsettings.verbose,
                                  genericsettings.single_algorithm_file_name)
 
+        values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
         if genericsettings.isFig:
             print "Scaling figures...",
             sys.stdout.flush()
@@ -349,10 +350,7 @@ def main(argv=None):
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
             plt.rc('pdf', fonttype = 42)
-            ppfigdim.main(dsList, 
-                          genericsettings.current_testbed.ppfigdim_target_values,
-                          outputdir, 
-                          genericsettings.verbose)
+            ppfigdim.main(dsList, values_of_interest, outputdir, genericsettings.verbose)
             plt.rcdefaults()
             print_done()
 
@@ -458,6 +456,14 @@ def main(argv=None):
                     pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
 
             print_done()
+
+        dictFunc = dsList.dictByFunc()
+        ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
+                                    dictFunc[dictFunc.keys()[0]][0].algId,
+                                    htmlPage = ppfig.HtmlPage.ONE,
+                                    values_of_interest = values_of_interest,
+                                    isBiobjective = dsList.isBiobjective(),
+                                    functionGroups = dsList.getFuncGroups())
 
         latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
         prepend_to_file(latex_commands_file,

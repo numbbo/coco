@@ -143,17 +143,29 @@ def getConvLink(htmlPage):
     
     return ''
     
-def getRldLink(htmlPage):
-    if genericsettings.isRldOnSingleFcts and htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        links = ''        
-        if htmlPage == HtmlPage.ONE:        
-            links += '<H3><a href="pprldmany-single-functions/%s.html">Runtime distribution plots</a></H3>\n' % genericsettings.pprldmany_file_name
-        links += '<H3><a href="pprldmany-single-functions/%s_02D.html">Runtime distribution plots (per dimension)</a></H3>' % genericsettings.pprldmany_file_name
-        if htmlPage == HtmlPage.ONE:        
-            links += '<H3><a href="pprldmany-single-functions/%s_02D.html">Runtime distribution plots by group (per dimension)</a></H3>' % genericsettings.pprldmany_group_file_name
-        return links
-        
+def addLink(currentDir, folder, fileName, label):
+
+    path = os.path.join(os.path.realpath(currentDir), folder, fileName)
+    #print('This is the file %s' % path)    
+    if os.path.isfile(path):
+        return '<H3><a href="%s/%s">%s</a></H3>\n' % (folder, fileName, label)
+
     return ''
+
+def getRldLink(htmlPage, currentDir):
+    
+    links = ''        
+    folder = 'pprldmany-single-functions'
+    
+    if genericsettings.isRldOnSingleFcts and htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
+        fileName = '%s.html' % genericsettings.pprldmany_file_name
+        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots')
+        fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
+        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)')
+        fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
+        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)')
+    
+    return links
 
 def getParentLink(htmlPage, parentFileName):
     if parentFileName and htmlPage not in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
@@ -174,13 +186,14 @@ def save_single_functions_html(filename,
                                caption = None): # used only with HtmlPage.NON_SPECIFIED
     
     name = filename.split(os.sep)[-1]
+    currentDir = os.path.dirname(os.path.realpath(filename))
     with open(filename + add_to_names + '.html', 'w') as f:
         header_title = algname + ' ' + name + add_to_names
         f.write(html_header_ext % (header_title.strip().replace(' ', ', '), 
                                    algname, 
                                    getHomeLink(htmlPage),
                                    getConvLink(htmlPage),
-                                   getRldLink(htmlPage),
+                                   getRldLink(htmlPage, currentDir),
                                    getParentLink(htmlPage, parentFileName)))
             
         if functionGroups is None:
