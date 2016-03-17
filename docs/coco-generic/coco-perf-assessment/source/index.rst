@@ -17,7 +17,8 @@ COCO: Performance Assessment
 .. _BBOB-2010: http://coco.gforge.inria.fr/doku.php?id=bbob-2010-results
 .. _BBOB-2012: http://coco.gforge.inria.fr/doku.php?id=bbob-2012
 .. _GECCO: http://www.sigevo.org/gecco-2012/
-.. _COCO: http://coco.gforge.inria.fr
+.. _COCO: https://github.com/numbbo/coco
+.. .. _COCO: http://coco.gforge.inria.fr
 .. |ERT| replace:: :math:`\mathrm{ERT}`
 .. |ART| replace:: :math:`\mathrm{ART}`
 .. |dim| replace:: :math:`\mathrm{dim}`
@@ -67,13 +68,13 @@ present a *quantitative* performance assessment, as opposed to simple
 rankings of algorithm performances.
 
 We then either display an average runtime (aRT, see Section `Average Runtime`_)
-or the distribution of runtimes (ECDF, see Section `Empirical Cumulative
+or the empirical distribution of runtimes (ECDF, see Section `Empirical Cumulative
 Distribution Functions`_). 
 When displaying the distribution of runtimes, we consider the aggregation of
 runtimes over subclasses of problems or over all problems. 
-We do not aggregate over dimensions, because the dimension of the problem
-is an information which is available to decide which algorithm, or
-which algorithm variant or which parameter setting to choose.
+We do not aggregate over dimensions, because the dimension of the problem can
+be used to decide which algorithm, or which algorithm variant, or which
+parameter setting should be chosen.
 
 .. [#] We however require to provide a CPU timing experiments to get a
 	rough measurement of the time complexity of the algorithm [BBO2016ex]_.
@@ -85,10 +86,16 @@ Terminology and Definitions
 
 We introduce a few terms and definitions that are used in the rest of the document.
 
+.. todo:: in the context of assessment, a problem should probably be a quadruple
+  including the target value. 
+
 *problem, function*
- In the COCO framework, a problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` is an instantiation of the parameters. More precisely let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta` then a COCO problem corresponds to :math:`p=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the  problem :math:`p` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`p=(n,f_\theta,\theta)`.
+ In the COCO_ framework, a problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` describes an instantiation of the parameters. 
+ More precisely, let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO problem corresponds to :math:`p=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the  problem :math:`p` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`p=(n,f_\theta,\theta)`.
  
- In the performance assessment setting, we associate to a problem :math:`p`, a :math:`{\rm target}`, which is a function value :math:`f_{\rm target}` at which we extract the runtime of the algorithm. Given that the optimal function value, that is :math:`f_{\rm opt} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the :math:`{\rm target}` function values also depends on the instance :math:`\theta`. However the relative target or precision
+ In the performance assessment setting, we associate to a problem :math:`p`, 
+ one or several target values. For example, in the single-objective case, a 
+ target value is a function value :math:`f_{\rm target}` at which we extract the runtime of the algorithm. Given that the optimal function value, that is :math:`f_{\mathrm{opt}} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})` depends on the specific instance :math:`\theta`, the target function values also depend on the instance :math:`\theta`. However the relative target or precision
  
  .. math::
  	:nowrap:
@@ -104,7 +111,7 @@ We introduce a few terms and definitions that are used in the rest of the docume
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero). 
 
   
- We **interpret the different runs performed on different instances** of the same parametrized function in a given dimension as if they are just **independent repetitions** of the optimization algorithm on the same function. Put differently the runs performed on :math:`f_{\theta_1}, \ldots,f_{\theta_K}` with :math:`\theta_1,\ldots,\theta_K`, :math:`K` different instances of a parametrized problem :math:`f_\theta`, are assumed to be independent and identically distributed.
+ We often **interpret different runs performed on different instances** of the same parametrized function in a given dimension as **independent repetitions** of the optimization algorithm on the same function. Put differently, the runs performed on :math:`K` different instances, :math:`f_{\theta_1}, \ldots,f_{\theta_K}`, of a parametrized problem :math:`f_\theta`, are assumed to be independent and identically distributed.
  
  .. Anne: maybe we should insist more on this dual view of randomizing the problem class via problem isntance - choosing uniformly over set of parameters.
   
