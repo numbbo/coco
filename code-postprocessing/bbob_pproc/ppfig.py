@@ -39,14 +39,6 @@ def saveFigure(filename, figFormat=(), verbose=True):
     if isinstance(figFormat, basestring):
         figFormat = (figFormat, )
     for format in figFormat:
-        # a hack for making smaller figures for browser display 
-        if format == 'svg':
-            svg_downsize_factor = 0.8
-            # plt.rcParams['font.size'] *= 0.7
-            # plt.plot(plt.xlim()[0], plt.ylim()[0], '.')
-            # pretty desperate way to get a smaller figure
-            plt.gcf().set_size_inches([svg_downsize_factor * v for v in
-                                       plt.gcf().get_size_inches()])
         try:
             plt.savefig(filename + '.' + format,
                         dpi = 60 if genericsettings.in_a_hurry else 300,
@@ -57,9 +49,6 @@ def saveFigure(filename, figFormat=(), verbose=True):
                 print 'Wrote figure in %s.' %(filename + '.' + format)
         except IOError:
             warnings.warn('%s is not writeable.' % (filename + '.' + format))
-        if format == 'svg':
-            plt.gcf().set_size_inches([v / svg_downsize_factor for v in
-                                       plt.gcf().get_size_inches()])
 
 html_header = """<HTML>
 <HEAD>
