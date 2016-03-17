@@ -532,7 +532,8 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     dictFunc = dsList.dictByFunc()
     values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
 
-    key = 'bbobppfigdimlegendrlbased' if genericsettings.runlength_based_targets else 'bbobppfigdimlegendfixed'
+    key = (('bbobppfigdimlegendrlbased' if genericsettings.runlength_based_targets else 'bbobppfigdimlegendfixed')
+			if genericsettings.current_testbed.name != 'bbob-biobj' else 'bbobppfigdimlegendbiobjfixed')
     joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
     caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
 

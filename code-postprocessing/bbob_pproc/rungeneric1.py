@@ -474,7 +474,7 @@ def main(argv=None):
                          pplogloss.figure_caption, '}'])
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobpprldistrlegend}[1]{',
-                         pprldistr.caption_single(np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()])),  # depends on the config setting, should depend on maxfevals
+                         pprldistr.caption_single(),  # depends on the config setting, should depend on maxfevals
                          '}'])
         html_file = os.path.join(outputdir, 'pprldistr.html')
         replace_in_file(html_file, r'TOBEREPLACED', 'D, '.join([str(i) for i in pprldistr.single_runlength_factors[:6]]) + 'D,&hellip;')
@@ -484,7 +484,7 @@ def main(argv=None):
                          '}'])
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobpptablecaption}[1]{',
-                         pptable.table_caption,
+                         pptable.get_table_caption(),
                          '}'])
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\algfolder}{' + algfolder + '/}'])

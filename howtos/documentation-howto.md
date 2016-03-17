@@ -41,7 +41,7 @@ type `make html`, `make latex`, or `make latexpdf` in the corresponding subfolde
 For publishing the html to the web, you need to have, in addition, a clone of the numbbo/coco-doc or numbbo/workshops git
 repository at the same level than your numbbo/coco repository clone. Those documentation repositories have only one branch
 called `gh-pages` which is directly translated into the web page https://username.github.io/repositoryname, i.e., here for
-example https://numbbo.github.io/coco-doc.Once you have the clone of the documentation repository, you can type
+example https://numbbo.github.io/coco-doc. Once you have the clone of the documentation repository, you can type
 `make html-topublish` in the corresponding subfolder of the ../docs/ folder in the numbbo/coco repository. This will create the
 same html files than `make html` but instead of the build/ subfolder, it uses the correct folder in the gh-pages branch.
 A `git push` of these changes will then directly update the web page.
