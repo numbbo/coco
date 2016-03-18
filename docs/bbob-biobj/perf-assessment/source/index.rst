@@ -83,20 +83,18 @@ Biobjective Performance Assessment in Coco: A Set-Indicator Value Replaces the O
 The general concepts of how the Coco platform suggests to benchmark
 multi-objective algorithms is the same than in the single-objective case: for
 each optimization algorithm, we record the runtimes to reach given target
-precisions for each problem in a given benchmark suite. A problem thereby
+values for each problem in a given benchmark suite. A problem thereby
 consists of a (vector-valued) objective function, its search space dimension,
-and a concrete instantiation of it (see [coco-functions-doc]_ ). For defining
-the target value of such a problem, we assume a single-objective criterion
-which is to be optimized. In the single-objective case, this is the objective
-function, in the case of the ``bbob-biobj`` test suite, a so-called quality
-indicator can transform the multi-objective problem into a single-objective
-one.
+and a concrete instantiation of it (see [coco-functions-doc]_ ). 
+For defining the runtime on such a problem, we consider a quality indicator
+which is to be optimized (minimized). 
+In the single-objective case, the quality indicator is the objective
+function value. 
 
-In particular, we suggest to (mainly) use the hypervolume indicator of the archive of all non-dominated
-solutions evaluated so far as the quality of an algorithm but principally, other quality indicators
-of the archive can be used as well.
-
-
+In the case of the ``bbob-biobj`` test suite, the quality indicator will be a
+negative hypervolume indicator of the archive of all non-dominated solutions
+evaluated so far. In principal, other
+quality indicators of the archive can be used as well.
 
 
 
@@ -104,11 +102,13 @@ of the archive can be used as well.
    :align: center
    :width: 60%
 
-   Illustration of Coco's performance criterion in the bi-objective case if no solution of the
-   archive (blue filled circles) dominates the nadir point (black filled circle), i.e., the
-   hypervolume of the reference set (aka the best known Pareto front approximation, red triangles)
-   plus the shortest distance of an archive member to the region of interest (ROI), delimited by
-   the nadir point. Here, it is the forth point from the left that defines the smallest distance.
+   Illustration of Coco's quality indicator in the bi-objective case if
+   no solution of the archive (blue filled circles) dominates the nadir point
+   (black filled circle), i.e., the hypervolume of the reference set (aka the
+   best known Pareto front approximation, red triangles) plus the shortest
+   distance of an archive member to the region of interest (ROI), delimited
+   by the nadir point. Here, it is the forth point from the left that defines
+   the smallest distance.
    
 .. figure:: pics/IHDinside.*
    :align: center
