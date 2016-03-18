@@ -36,7 +36,7 @@ static double f_linear_slope_raw(const double *x,
     }
     result += 5.0 * fabs(si) - si * x[i];
   }
-
+  
   return result;
 }
 

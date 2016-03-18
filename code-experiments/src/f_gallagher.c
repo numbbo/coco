@@ -478,7 +478,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   for (i = 0; i < number_of_peaks - 1; i++) {
     alpha_i_vals[i] = pow(maxcondition, (double) (i) / ((double) (number_of_peaks - 2)));
   }
-  P_alpha_i = coco_allocate_vector_size_t(number_of_peaks - 1);/* random permutation of the alpha_i's */
+  P_alpha_i = coco_allocate_vector_size_t(number_of_peaks - 1);/* random permutation of the alpha_i's to allow sampling without replacement*/
   coco_compute_random_permutation(P_alpha_i, rseed + 4000000, number_of_peaks - 1);
   
   for (peak_index = 0; peak_index < number_of_peaks; peak_index++) {
@@ -503,7 +503,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
 
     (*problem_i)->best_value[0] = 0;/* to prevent raising the assert */
     /* P_Lambda the permutation */
-    P_Lambda = coco_allocate_vector_size_t(dimension);/* random permutation of the alpha_i's */
+    P_Lambda = coco_allocate_vector_size_t(dimension);/* random permutation of the values in C_i */
     coco_compute_random_permutation(P_Lambda, rseed + 5000000 + peak_index, dimension);
 
     /* apply var transformations to sub problem*/
