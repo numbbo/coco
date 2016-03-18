@@ -145,7 +145,10 @@ Specificities for the ``bbob-biobj`` performance criterion
 
 Implications on the performance criterion:
 
-* the quality indicator is bounded from below by :math:`-1`. 
+* the quality indicator value of an archive that contains the nadir point as 
+  non-dominated point is :math:`0`.
+
+* the quality indicator value is bounded from below by :math:`-1`. 
 
 * Because the quality of the archive is used as performance criterion, no population size has to be
   prescribed to the algorithm. In particular, steady-state and generational algorithms can be 
