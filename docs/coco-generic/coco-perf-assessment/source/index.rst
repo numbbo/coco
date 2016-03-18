@@ -117,11 +117,13 @@ We introduce a few terms and definitions that are used in the rest of the docume
   
 *runtime*
   We define *runtime*, or *run-length* [HOO1998]_
-  as the *number of evaluations* 
-  conducted on a given problem, also referred to as number of *function* evaluations. 
-  Our central performance measure is the runtime until a given target :math:`f`-
-  or indicator-value is hit.
-  
+  as the *number of evaluations*, also referred to as *function* evaluations, 
+  conducted on a given problem until a quality indicator target value is reached. 
+  Runtime is our central performance measure.
+
+.. Niko: **a** indicator or **the** indicator, depending on whether we consider the target
+  as being part of the problem. Only then the notion to *solve a problem* would 
+  make sense. 
 
 On Performance Measures
 =======================
@@ -130,30 +132,40 @@ Following [HAN2009]_, we advocate **performance measures** that are
 
  * quantitative, ideally with a ratio scale (opposed to interval or ordinal
    scale)  and with a wide variation (i.e., for example, with typical values 
-   ranging not only between 0.98 and 1.0)
+   ranging not only between 0.98 and 1.0) [#]_
  * well-interpretable, in particular by having a meaning and semantics attached
    to the numbers
  * relevant and meaningful with respect to the "real world"
  * as simple as possible.
 
 
-For these reasons we measure **runtime** to reach a target function value, that is the number of function evaluations needed to reach a target function value denoted as fixed-target scenario in the following. 
+For these reasons we measure **runtime** to reach a target value, that is the number of function evaluations needed to reach a quality indicator target value denoted as fixed-target scenario in the following. 
 
+
+.. [#] The transformation :math:`x\mapsto\log(1-x)` can alleviate the problem
+  in this case, given it actually zooms in mostly on relevant values. 
 
 .. _sec:verthori:
 
 Fixed-Cost versus Fixed-Target Scenario
 ----------------------------------------
 
-Starting from some convergence graphs we can use two different approaches for collecting data and making measurements from
-experiments:
+.. for collecting data and making measurements from experiments:
 
-* On the one hand we can fix a cost, that is a number of function evaluations and collect the function values reached. This is referred to as **fixed-cost scenario** and corresponds to vertical cuts. Fixing search costs can be pictured as drawing a vertical line on the convergence graphs (see Figure :ref:`fig:HorizontalvsVertical` where
-  the line is depicted in red).
+Starting from some convergence graphs which plot the quality indicator (to be minimized) against the number of function evaluations, we have two different approaches to measure performance. 
 
-* On the other hand we can fix a target and measure the number of function evaluations to reach this target. This is referred to as **fixed-target scenario** and corresponds to horizontal cuts. Fixing a target can
-  be pictured as drawing a horizontal line in the convergence graphs
-  (Figure :ref:`fig:HorizontalvsVertical` where the line is depicted in blue).
+  * On the one hand we can fix a cost, that is a budget of function evaluations, 
+    and collect the function values reached. This is referred to as
+    **fixed-cost scenario** and corresponds to vertical cuts. Fixing search
+    costs can be pictured as drawing a vertical line on the convergence
+    graphs (see Figure :ref:`fig:HorizontalvsVertical` where the line is
+    depicted in red).
+
+  * On the other hand we can fix a target and measure the number of function 
+    evaluations to reach this target. This is referred to as **fixed-target
+    scenario** and corresponds to horizontal cuts. Fixing a target can be
+    pictured as drawing a horizontal line in the convergence graphs (Figure
+    :ref:`fig:HorizontalvsVertical` where the line is depicted in blue).
 
 
 .. _fig:HorizontalvsVertical:
@@ -162,18 +174,18 @@ experiments:
    :align: center
    :width: 60%
 
-   Horizontal vs Vertical View
+   Horizontal versus Vertical View
 
-   Illustration of fixed-cost view (vertical cuts) and fixed-target view
-   (horizontal cuts). Black lines depict the best function value plotted versus
-   number of function evaluations.
+   Illustration of fixed-budget view (vertical cuts) and fixed-target view
+   (horizontal cuts). Black lines depict the best quality indicator value 
+   plotted versus number of function evaluations.
 
 
 It is often argued that the fixed-cost approach is close to what is needed for
-real world applications where the total number of function evaluations is
-limited. On the other hand, also a minimum target requirement needs to be
-achieved in real world applications, for example, getting (noticeably) better
-than the currently available best solution or than a competitor.
+   real world applications where the total number of function evaluations is
+   limited. On the other hand, also a minimum target requirement needs to be
+   achieved in real world applications, for example, getting (noticeably) better
+   than the currently available best solution or than a competitor.
 
 For benchmarking algorithms we prefer the fixed-target scenario over the
 fixed-cost scenario since it gives *quantitative and interpretable*
