@@ -475,6 +475,18 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
                  parentHtmlFileName=parentHtmlFileName,
                  plotType=PlotType.DIM)
 
+            dictFG = pp.dictAlgByFuncGroup(dictAlg)
+            for fg, entries in dictFG.iteritems():
+
+                main(entries,
+                     isBiobjective,
+                     order=sortedAlgs,
+                     outputdir=single_fct_output_dir,
+                     info='%s' % (fg),
+                     verbose=verbose,
+                     parentHtmlFileName=parentHtmlFileName,
+                     plotType=PlotType.DIM)
+        
         dictFG = pp.dictAlgByFun(dictAlg)
         for fg, tmpdictAlg in dictFG.iteritems():
 
