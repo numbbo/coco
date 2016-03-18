@@ -281,20 +281,21 @@ the following defining features.
 #. A single performance measure is used --- and thereafter aggregated and 
    displayed in 
    several ways --- namely **runtime**, *measured in 
-   number of* |f|-*evaluations* [BBO2016perf]_. Runtime has the advantage to 
+   number of* |f|-*evaluations* [BBO2016perf]_. Runtime has the advantages to 
 
    - be independent of the computational platform, language, compiler, coding 
      styles, and other specific experimental conditions [#]_
    - be relevant, meaningful and easily interpretable without expert domain knowledge
    - be quantitative on the ratio scale [STE1946]_ [#]_
    - assume a wide range of values 
-   - aggregate over a collection of values in a very meaningful way
+   - aggregate over a collection of values in a meaningful way
      
    A *missing* runtime value is considered as possible outcome (see below).
     
-#. The display is as comprehensible, intuitive and informative as possible. 
+#. The display is as comprehensible, intuitive and informative as possible, 
+   We believe that details matter. 
    Aggregation over dimension is avoided, because dimension is an a priori
-   known parameter that can and should be used for algorithm selection
+   known parameter that can and should be used for algorithm design or selection
    decisions. 
 
 .. [#] For example, the optimum is not in all-zeros, optima are not placed 
