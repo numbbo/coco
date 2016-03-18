@@ -296,7 +296,7 @@ class GECCOBBOBTestbed(Testbed):
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.name = 'bbob'
         self.short_names = {}
-        self.hardesttargetlatex = '10^{-8}'
+        self.hardesttargetlatex = '10^{-8}' # used for ppfigs and pptable
         self.ppfigs_ftarget = 1e-8
         self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # possibly changed in config
         self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
@@ -332,13 +332,13 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.name = 'bbob-biobj'
         self.short_names = {}
-        self.hardesttargetlatex = '10^{-5}'
+        self.hardesttargetlatex = '10^{-5}' # used for ppfigs and pptable
         self.ppfigs_ftarget = 1e-5
         self.ppfigdim_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config
         self.pprldistr_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
         target_values = np.append(np.append(10**np.arange(0, -5.1, -0.2), [0]), -10**np.arange(-5, -3.9, 0.2))
         self.pprldmany_target_values = targetValues(target_values) # possibly changed in config
-        self.pprldmany_target_range_latex = '$10^{[-5..0]}$'
+        self.pprldmany_target_range_latex = '$\{-10^{-4}, -10^{-4.2}, -10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.8}, 10^{-4.6}, \dots, 10^{-0.2}, 10^0\}$'
         self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5) # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)
