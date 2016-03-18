@@ -102,30 +102,35 @@ quality indicators of the archive can be used as well.
    :align: center
    :width: 60%
 
-   Illustration of Coco's quality indicator in the bi-objective case if
-   no solution of the archive (blue filled circles) dominates the nadir point
-   (black filled circle), i.e., the hypervolume of the reference set (aka the
-   best known Pareto front approximation, red triangles) plus the shortest
+   Illustration of Coco's quality indicator (to be minimized) in the
+   bi-objective case if no solution of the archive (blue filled circles)
+   dominates the nadir point (black filled circle), i.e., the shortest
    distance of an archive member to the region of interest (ROI), delimited
-   by the nadir point. Here, it is the forth point from the left that defines
+   by the nadir point. 
+   Here, it is the forth point from the left that defines
    the smallest distance.
    
+.. the hypervolume of the reference set (aka the
+   best known Pareto front approximation, red triangles) plus 
+
 .. figure:: pics/IHDinside.*
    :align: center
    :width: 60%
 
-   Illustration of Coco's performance criterion in the bi-objective case if the nadir point
-   (black filled circle) is dominated by a solution in the archive (blue filled circles):
-   the difference between the hypervolume of the reference
-   set (aka Pareto front approximation, red triangles) and the hypervolume of the archive is given
-   as the size of the two blue shaded areas minus the size of the green area.
-
-
+   Illustration of Coco's quality indicator (to be minized) in the
+   bi-objective case if the nadir point (black filled circle) is dominated by
+   a solution in the archive (blue filled circles). The indicator is the 
+   (negative) hypervolume of the archive with the nadir point as reference point. 
+   The difference between the hypervolume of the reference set (aka Pareto
+   front approximation, red triangles) and the hypervolume of the archive is
+   given as the size of the two blue shaded areas minus the size of the green
+   area.
 
 
 Specificities for the ``bbob-biobj`` performance criterion
 
-* algorithm performance = quality of archive of non-dominated solutions found so far
+* algorithm performance = runtime until the quality of the archive of non-dominated 
+  solutions found so far surpasses a target value
 
 * normalization of objective space before indicator calculation such that the
   region of interest (ROI) :math:`[z_{\text{ideal}}, z_{\text{nadir}}]`, defined by
