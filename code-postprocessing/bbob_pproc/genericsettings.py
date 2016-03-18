@@ -336,7 +336,8 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.ppfigs_ftarget = 1e-5
         self.ppfigdim_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config
         self.pprldistr_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
-        self.pprldmany_target_values = targetValues(10**np.arange(0, -5.1, -0.1)) # possibly changed in config
+        target_values = np.append(np.append(10**np.arange(0, -5.1, -0.2), [0]), -10**np.arange(-5, -3.9, 0.2))
+        self.pprldmany_target_values = targetValues(target_values) # possibly changed in config
         self.pprldmany_target_range_latex = '$10^{[-5..0]}$'
         self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5) # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
