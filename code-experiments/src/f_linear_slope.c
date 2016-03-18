@@ -23,7 +23,6 @@ static double f_linear_slope_raw(const double *x,
   static const double alpha = 100.0;
   size_t i;
   double result = 0.0;
-
   for (i = 0; i < number_of_variables; ++i) {
     double base, exponent, si;
 
@@ -34,9 +33,14 @@ static double f_linear_slope_raw(const double *x,
     } else {
       si = -pow(base, exponent);
     }
-    result += 5.0 * fabs(si) - si * x[i];
+    /* boundry handling */
+    if (x[i] * best_parameter[i] < 5.0 * 5.0) {
+      result += 5.0 * fabs(si) - si * x[i];
+    } else {
+      result += 5.0 * fabs(si) - si * best_parameter[i];
+    }
   }
-  
+
   return result;
 }
 
