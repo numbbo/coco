@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Creates ERTs and convergence figures for multiple algorithms."""
+"""Creates aRTs and convergence figures for multiple algorithms."""
 from __future__ import absolute_import
 import os
 import matplotlib.pyplot as plt
@@ -20,14 +20,14 @@ from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
 
 show_significance = 0.01  # for zero nothing is shown
-scaling_figure_caption_start_fixed = (r"""Expected running time (\ERT\ in number of $f$-evaluations 
+scaling_figure_caption_start_fixed = (r"""Average running time (\aRT\ in number of $f$-evaluations 
                 as $\log_{10}$ value), divided by dimension for target function value $BBOBPPFIGSFTARGET$ 
                 versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. """
                 )
-scaling_figure_caption_start_rlbased = (r"""Expected running time (\ERT\ in number of $f$-evaluations 
+scaling_figure_caption_start_rlbased = (r"""Average running time (\aRT\ in number of $f$-evaluations 
                 as $\log_{10}$ value) divided by dimension versus dimension. The target function value 
                 is chosen such that the REFERENCE_ALGORITHM artificial algorithm just failed to achieve 
-                an \ERT\ of $BBOBPPFIGSFTARGET\times\DIM$. """
+                an \aRT\ of $BBOBPPFIGSFTARGET\times\DIM$. """
                 )
 scaling_figure_caption_end = (
                 r"Different symbols " +
@@ -73,19 +73,18 @@ def ecdfs_figure_caption(target):
 
     best2009text = (
                 r"The ``best 2009'' line " +
-                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
+                r"corresponds to the best \aRT\ observed during BBOB 2009 " +
                 r"for each selected target."
                 )
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
                 r"(FEvals/DIM) for " +
-                len(genericsettings.current_testbed.pprldmany_target_range_latex) +
+                str(len(genericsettings.current_testbed.pprldmany_target_range_latex)) +
                 r" targets in " + 
-                genericsettings.current_testbed.pprldmany_target_range_latex +
+                str(genericsettings.current_testbed.pprldmany_target_range_latex) +
                 r" for all functions and subgroups in #1-D. " + ( best2009text
-                if genericsettings.current_testbed.name != 'bbob-biobj' 
-                else "")
+                if genericsettings.current_testbed.name != 'bbob-biobj' else "")
                 )
     ecdfs_figure_caption_rlbased = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
@@ -108,6 +107,9 @@ def ecdfs_figure_caption(target):
 def scaling_figure_caption_html(target):
     # need to be used in rungenericmany.py!?
     assert len(target) == 1
+    if genericsettings.current_testbed.name == 'bbob-biobj':
+        s = htmldesc.getValue('##bbobppfigslegendbiobjfixed##').replace('BBOBPPFIGSFTARGET', 
+                                                       toolsdivers.number_to_html(target.label(0)))        
     if isinstance(target, pproc.RunlengthBasedTargetValues):
         s = htmldesc.getValue('##bbobppfigslegendrlbased##').replace('BBOBPPFIGSFTARGET', 
                                                          toolsdivers.number_to_html(target.label(0)))
@@ -122,11 +124,14 @@ def scaling_figure_caption_html(target):
 
 def ecdfs_figure_caption_html(target, dimension):
     assert len(target) == 1
-    if isinstance(target, pproc.RunlengthBasedTargetValues):
+	
+    if genericsettings.current_testbed.name == 'bbob-biobj':
+        s = htmldesc.getValue('##bbobECDFslegendbiobjfixed%d##' % dimension)
+    elif isinstance(target, pproc.RunlengthBasedTargetValues):
         s = htmldesc.getValue('##bbobECDFslegendrlbased%d##' % dimension).replace('REFERENCEALGORITHM', 
                                                          target.reference_algorithm)
     else:
-        s = htmldesc.getValue('##bbobECDFslegendstandard%d##' % dimension)
+        s = htmldesc.getValue('##bbobECDFslegendfixed%d##' % dimension)
     return s
 
 
@@ -318,7 +323,7 @@ def generateData(dataSet, target):
     return res
 
 def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, outputdir='ppdata', verbose=True):
-    """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
+    """From a DataSetList, returns figures showing the scaling: aRT/dim vs dim.
     
     One function and one target per figure.
     
@@ -454,11 +459,12 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
         if f in funInfos.keys():
             plt.gca().set_title(funInfos[f], fontsize=fontSize)
 
+        functions_with_legend = genericsettings.current_testbed.functions_with_legend
         isLegend = False
         if legend:
             plotLegend(handles)
         elif 1 < 3:
-            if f in (1, 24, 101, 130) and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
+            if f in functions_with_legend and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
                 isLegend = True
 
         beautify(legend=isLegend, rightlegend=legend)
@@ -530,7 +536,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
         if legend:
             plotLegend(handles)
         else:
-            if f in (1, 24, 101, 130):
+            if f in functions_with_legend:
                 toolsdivers.legend()
 
         saveFigure(filename, figFormat=genericsettings.getFigFormats(), verbose=verbose)

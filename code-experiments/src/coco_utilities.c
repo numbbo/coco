@@ -568,9 +568,9 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
   coco_option_keys_t *option_keys = NULL;
   char *string_to_parse, *key;
 
-  /* Check for empty string and string without colons */
-  if ((option_string == NULL) || (strlen(option_string) == 0)|| (strchr(option_string, ':') == NULL)) {
-    return NULL;
+  /* Check for empty string */
+  if ((option_string == NULL) || (strlen(option_string) == 0)) {
+	    return NULL;
   }
 
   /* Split the options w.r.t ':' */
@@ -587,10 +587,16 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
         string_to_parse[j] = '\0';
       }
 
+      /* Stop if this is the last substring (contains a value and no key) */
+      if ((i > 0) && (*(keys + i + 1) == NULL)) {
+        coco_free_memory(string_to_parse);
+        break;
+      }
+
       /* Disregard everything before the last space */
       key = strrchr(string_to_parse, ' ');
-      if (key == NULL) {
-        /* No spaces left, everything is the key */
+	  if ((key == NULL) || (i == 0)) {
+        /* No spaces left (or this is the first key), everything is the key */
         key = string_to_parse;
       } else {
         /* Move to the start of the key (one char after the space) */
@@ -601,12 +607,6 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
       coco_free_memory(*(keys + i));
       *(keys + i) = coco_strdup(key);
       coco_free_memory(string_to_parse);
-
-      /* Stop if this is the last substring that contains a key */
-      if (*(keys + i + 1) == NULL) {
-        coco_free_memory(*(keys + i + 1));
-        break;
-      }
     }
 
     option_keys = coco_option_keys_allocate(i, (const char**) keys);
@@ -629,7 +629,7 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
 static char *coco_option_keys_get_output_string(const coco_option_keys_t *option_keys,
                                                 const char *info_string) {
   size_t i;
-  char *string, *new_string;
+  char *string = NULL, *new_string;
 
   if ((option_keys != NULL) && (option_keys->count > 0)) {
 
@@ -835,15 +835,12 @@ static size_t coco_double_to_size_t(const double number) {
   return (size_t) coco_double_round(number);
 }
 
-/* Commented to silence the compiler (unused function warning) */
-#if 0
 /**
  * @brief  Returns 1 if |a - b| < accuracy and 0 otherwise.
  */
 static int coco_double_almost_equal(const double a, const double b, const double accuracy) {
   return ((fabs(a - b) < accuracy) == 0);
 }
-#endif
 /**@}*/
 
 /***********************************************************************************************************/
@@ -883,7 +880,7 @@ static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, 
     count++;
   }
   if (count == max_count) {
-    coco_error("coco_count_numbers(): over %lu numbers in %s", max_count, name);
+    coco_error("coco_count_numbers(): over %lu numbers in %s", (unsigned long) max_count, name);
     return 0; /* Never reached*/
   }
 
