@@ -141,20 +141,22 @@ Specificities for the ``bbob-biobj`` performance criterion
 
 * if nadir point is not dominated by archive: quality = negative distance of archive to the ROI
 
-* what is of actual interest is the quality indicator difference to the reference set
+.. * what is of actual interest is the quality indicator difference to the reference set
 
 Implications on the performance criterion:
 
-* As the reference set approaches the Pareto set, the optimal quality indicator difference goes to 0`
-
-* Because the reference set is always a finite approximation of the Pareto set, negative quality
-  indicator differences can occur.
+* the quality indicator is bounded from below by :math:`-1`. 
 
 * Because the quality of the archive is used as performance criterion, no population size has to be
   prescribed to the algorithm. In particular, steady-state and generational algorithms can be 
   compared directly as well as algorithms with varying population size and algorithms which carry
   along their external archive themselves.
   
+.. * As the reference set approaches the Pareto set, the optimal quality indicator difference goes to 0`
+
+.. * Because the reference set is always a finite approximation of the Pareto set, negative quality
+  indicator differences can occur.
+
 ---
 
 * why hypervolume (can also be in principle with other indicators)
@@ -172,7 +174,8 @@ For each problem instance, |i|, of the benchmark suite, a *reference
 hypervolume indicator value*, |Irefi|, is computed (see below). 
 This reference value is determined to represent the value of a fairly adequate
 approximation of the Pareto set. [#]_ All target indicator values are computed as 
-a function of |Irefi|, namely as |Irefi| :math:`+\,t`, where |t| is chosen as
+a function of |Irefi|, namely as |Irefi| :math:`+\,t`, where the target precision 
+|t| is chosen as
 
 .. math::
 
