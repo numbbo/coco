@@ -222,7 +222,7 @@ In order to evaluate the CPU timing of the algorithm, we have run the \change{MY
 
 Results of \algname\ from experiments according to \cite{biobj2016exp} on the benchmark
 functions given in \cite{biobj2016func} are presented in
-Figures~\ref{fig:ECDFsingleOne}, \ref{fig:ECDFsingleTwo}, \ref{fig:ECDFsingleThree}, \ref{fig:RLDsGroupsOne}, and \ref{fig:RLDsGroupsTwo} and in
+Figures~\ref{fig:ECDFsingleOne}, \ref{fig:ECDFsingleTwo}, \ref{fig:ECDFsingleThree}, and \ref{fig:ECDFsGroups}, and in
 Table~\ref{tab:aRTs}.
 
 
@@ -254,7 +254,7 @@ Table~\ref{tab:aRTs}.
 \end{tabular}
  \caption{\label{fig:ECDFsingleOne}
  %\bbobppfigdimlegend{$f_1$ and $f_{16}$}
-\TODO{figure caption to be written}
+\bbobecdfcaptionsinglefcts{}
  }
 \end{figure*}
 \begin{figure*}
@@ -348,85 +348,37 @@ Table~\ref{tab:aRTs}.
 % Empirical cumulative distribution functions (ECDFs) per function group.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \newcommand{\rot}[2][2.5]{
   \hspace*{-3.5\baselineskip}%
   \begin{rotate}{90}\hspace{#1em}#2
   \end{rotate}}
 \begin{figure*}
-\begin{tabular}{l@{\hspace*{-0.025\textwidth}}l@{\hspace*{-0.00\textwidth}}|l@{\hspace*{-0.025\textwidth}}l}
-\multicolumn{2}{c}{$D=5$} & \multicolumn{2}{c}{$D=20$}\\[-0.5ex]
-\rot{separable fcts}
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_1-separable_1-separable} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_05D_1-separable_1-separable} &
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_1-separable_1-separable} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_20D_1-separable_1-separable} \\[-2ex]
-\rot[1]{misc.\ moderate fcts}
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_2-moderate_2-moderate} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_05D_2-moderate_2-moderate} &
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_2-moderate_2-moderate} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_20D_2-moderate_2-moderate} \\[-2ex]
-\rot[1.3]{ill-conditioned fcts}
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_3-ill-conditioned_3-ill-conditioned} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_05D_3-ill-conditioned_3-ill-conditioned} &
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_3-ill-conditioned_3-ill-conditioned} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_20D_3-ill-conditioned_3-ill-conditioned} \\[-2ex]
-\rot[1.6]{multi-modal fcts}
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_4-multi-modal_4-multi-modal} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_05D_4-multi-modal_4-multi-modal} &
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_4-multi-modal_4-multi-modal} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_20D_4-multi-modal_4-multi-modal} \\[-2ex]
-\rot[1.0]{weak structure fcts}
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_5-weakly-structured_5-weakly-structured} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_05D_5-weakly-structured_5-weakly-structured} &
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_5-weakly-structured_5-weakly-structured} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_20D_5-weakly-structured_5-weakly-structured}\\[-2ex]
-\rot{all functions}
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_noiselessall} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_05D_noiselessall} &
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_noiselessall} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_20D_noiselessall}
+\begin{tabular}{c@{\hspace*{-0.02\textwidth}}c@{\hspace*{-0.02\textwidth}}c@{\hspace*{-0.02\textwidth}}c}
+separable-separable & separable-moderate & separable-ill-cond. & separable-multimodal\\
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_1-separable_1-separable} &
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_1-separable_2-moderate} &
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_1-separable_3-ill-conditioned} &
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_1-separable_4-multi-modal}\\
+separable-weakstructure & moderate-moderate & moderate-ill-cond. & moderate-multimodal\\
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_1-separable_5-weakly-structured} &
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_2-moderate_2-moderate} &
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_2-moderate_3-ill-conditioned} &
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_2-moderate_4-multi-modal}\\
+moderate-weakstructure & ill-cond.-ill-cond. & ill-cond.-multimodal & ill-cond.-weakstructure\\
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_2-moderate_5-weakly-structured} &
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_3-ill-conditioned_3-ill-conditioned} &
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_3-ill-conditioned_4-multi-modal} &
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_3-ill-conditioned_5-weakly-structured} \\
+multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure & all 55 functions\\
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_4-multi-modal_4-multi-modal} &
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_4-multi-modal_5-weakly-structured} &
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany_5-weakly-structured_5-weakly-structured} &
+\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany-single-functions/pprldmany}
 \vspace*{-0.5ex}
 \end{tabular}
- \caption{\label{fig:RLDsGroupsOne}
- \bbobpprldistrlegend{}
- }
-\end{figure*}
-
-
-\begin{figure*}
-\begin{tabular}{@{\hspace*{-0.005\textwidth}}c@{\hspace*{-0.025\textwidth}}c@{\hspace*{-0.00\textwidth}}|c@{\hspace*{-0.025\textwidth}}c}
-\multicolumn{2}{c}{$D=5$} & \multicolumn{2}{c}{$D=20$}\\[-0.5ex]
-\small separable \& moderate & \small separable \& ill-conditioned & \small separable \& moderate & \small separable \& ill-conditioned\\ 
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_1-separable_2-moderate} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_1-separable_3-ill-conditioned} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_1-separable_2-moderate} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_1-separable_3-ill-conditioned} \\
-\small separable \& multi-modal & \small separable \& weakly-structured & \small separable \& multi-modal & \small separable \& weakly-structured\\ 
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_1-separable_4-multi-modal} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_1-separable_5-weakly-structured} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_1-separable_4-multi-modal} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_1-separable_5-weakly-structured} \\
-\small moderate \& ill-conditioned & \small moderate \& multi-modal & \small moderate \& ill-conditioned & \small moderate \& multi-modal\\ 
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_2-moderate_3-ill-conditioned} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_2-moderate_4-multi-modal} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_2-moderate_3-ill-conditioned} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_2-moderate_4-multi-modal} \\
-\small moderate \& weakly-structured & \small ill-conditioned \& multi-modal & \small moderate \& weakly-structured & \small ill-conditioned \& multi-modal\\ 
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_2-moderate_5-weakly-structured} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_3-ill-conditioned_4-multi-modal} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_2-moderate_5-weakly-structured} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_3-ill-conditioned_4-multi-modal} \\
-\small ill-conditioned \& w.-structured & \small multi-modal \& w.-structured & \small ill-conditioned \& w.-structured & \small multi-modal \& w.-structured\\ 
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_3-ill-conditioned_5-weakly-structured} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_05D_4-multi-modal_5-weakly-structured} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_3-ill-conditioned_5-weakly-structured} &
-\includegraphics[width=0.265\textwidth,trim=0 0 0 13mm, clip]{pprldistr_20D_4-multi-modal_5-weakly-structured}
-
-\end{tabular}
- \caption{\label{fig:RLDsGroupsTwo}
-Empirical cumulative distribution functions as in Fig.~\ref{fig:RLDsGroupsOne} but here
-aggregated over functions where the single objectives' BBOB function groups are different
-and chosen as indicated in the figure titles. 
+ \caption{\label{fig:ECDFsGroups}
+ \bbobecdfcaptionallgroups{}
  }
 \end{figure*}
 
