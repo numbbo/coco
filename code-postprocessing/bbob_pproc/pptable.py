@@ -53,11 +53,11 @@ def get_table_caption():
     """    
     
     table_caption_one = r"""%
-        Average running time (aRT in number of function 
-        evaluations) divided by the best aRT measured during BBOB-2009. The aRT 
+        Average running time (\aRT\ in number of function 
+        evaluations) divided by the best \aRT\ measured during BBOB-2009. The \aRT\ 
         and in braces, as dispersion measure, the half difference between 90 and 
         10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
-        the best aRT
+        the best \aRT\
         """
     table_caption_two1 = (r"""%
         in the first. The different target \Df-values are shown in the top row. 
@@ -81,8 +81,8 @@ def get_table_caption():
     if genericsettings.current_testbed.name == 'bbob-biobj':
         # NOTE: no runlength-based targets supported yet
         table_caption = r"""%
-                Average running time (aRT in number of function 
-                evaluations) to reach given targets. For each function, the aRT 
+                Average running time (\aRT\ in number of function 
+                evaluations) to reach given targets. For each function, the \aRT\ 
                 and in braces, as dispersion measure, the half difference between 90 and 
                 10\%-tile of bootstrapped run lengths is shown for the different target
                 \Df-values as shown in the top row. 
