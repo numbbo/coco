@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generates figure of the bootstrap distribution of ERT.
+"""Generates figure of the bootstrap distribution of aRT.
     
 The main method in this module generates figures of Empirical
 Cumulative Distribution Functions of the bootstrap distribution of
-the Expected Running Time (ERT) divided by the dimension for many
+the Average Running Time (aRT) divided by the dimension for many
 algorithms.
 
 The outputs show the ECDFs of the running times of the simulated runs
@@ -31,7 +31,7 @@ function evaluations of unsuccessful runs divided by dimension.
     archivefile = tarfile.open(filename)
     archivefile.extractall()
     
-    # Empirical cumulative distribution function of bootstrapped ERT figure
+    # Empirical cumulative distribution function of bootstrapped aRT figure
     ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
     figure()
     bb.compall.pprldmany.plot(ds) # must rather call main instead of plot?
@@ -465,6 +465,16 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
         if not os.path.exists(single_fct_output_dir):
             os.makedirs(single_fct_output_dir)
             
+        if isSingleAlgorithm:
+            main(dictAlg,
+                 isBiobjective,
+                 order=sortedAlgs,
+                 outputdir=single_fct_output_dir,
+                 info='',
+                 verbose=verbose,
+                 parentHtmlFileName=parentHtmlFileName,
+                 plotType=PlotType.DIM)
+
         dictFG = pp.dictAlgByFun(dictAlg)
         for fg, tmpdictAlg in dictFG.iteritems():
 
@@ -523,7 +533,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
     generates the cumulative distribution function of the bootstrap
-    distribution of ERT for algorithms on multiple functions for
+    distribution of aRT for algorithms on multiple functions for
     multiple targets altogether.
 
     :param dict dictAlg: dictionary of :py:class:`DataSetList` instances
@@ -582,7 +592,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     dictData = {} # list of (ert per function) per algorithm
     dictMaxEvals = {} # list of (maxevals per function) per algorithm
-    bestERT = [] # best ert per function
+
     # funcsolved = [set()] * len(targets) # number of functions solved per target
     xbest2009 = []
     maxevalsbest2009 = []
@@ -695,7 +705,10 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     labels, handles = plotLegend(lines, x_limit)
     if True:  # isLateXLeg:
-        fileName = os.path.join(outputdir,'%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
+        if info:        
+            fileName = os.path.join(outputdir,'%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
+        else:
+            fileName = os.path.join(outputdir,'%s.tex' % (genericsettings.pprldmany_file_name))
         with open(fileName, 'w') as f:
             f.write(r'\providecommand{\nperfprof}{7}')
             algtocommand = {}  # latex commands
@@ -728,7 +741,10 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             if verbose:
                 print 'Wrote right-hand legend in %s' % fileName
 
-    figureName = os.path.join(outputdir,'%s_%s' % (genericsettings.pprldmany_file_name, info))
+    if info:    
+        figureName = os.path.join(outputdir,'%s_%s' % (genericsettings.pprldmany_file_name, info))
+    else:
+        figureName = os.path.join(outputdir,'%s' % (genericsettings.pprldmany_file_name))
     #beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
     beautify()
 
@@ -763,6 +779,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             if plotType == PlotType.ALG:
                 add_to_names += '_%02dD' % (dim)
 
+            header = 'Runtime distributions (ECDF), single functions over all targets' if plotType == PlotType.DIM \
+                    else 'Runtime distributions (ECDF), single functions over all targets, single dimension'            
             ppfig.save_single_functions_html(
                 os.path.join(outputdir, fileName),
                 '', # algorithms names are clearly visible in the figure
@@ -770,7 +788,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 htmlPage = ppfig.HtmlPage.NON_SPECIFIED,
                 isBiobjective = isBiobjective,
                 parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None,
-                header = 'Scaling of ERT with dimension')
+                header = header)
                 
     if close_figure:
         plt.close()

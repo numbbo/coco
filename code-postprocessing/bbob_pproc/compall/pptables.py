@@ -23,19 +23,19 @@ http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
 """
 
 table_caption_one = r"""%
-    Expected running time (ERT in number of function 
-    evaluations) divided by the respective best ERT measured during BBOB-2009 in
+    Average running time (aRT in number of function 
+    evaluations) divided by the respective best aRT measured during BBOB-2009 in
     #1.
-    The ERT and in braces, as dispersion measure, the half difference between 90 and 
+    The aRT and in braces, as dispersion measure, the half difference between 90 and 
     10\%-tile of bootstrapped run lengths appear for each algorithm and 
     """
 table_caption_two1 = r"""%
-    target, the corresponding best ERT
+    target, the corresponding best aRT
     in the first row. The different target \Df-values are shown in the top row. 
     \#succ is the number of trials that reached the (final) target $\fopt + 10^{-8}$.
     """
 table_caption_two2 = r"""%
-    run-length based target, the corresponding best ERT
+    run-length based target, the corresponding best aRT
     (preceded by the target \Df-value in \textit{italics}) in the first row. 
     \#succ is the number of trials that reached the target value of the last column.
     """
@@ -388,8 +388,8 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         extraeol.append(r'\hline')
 #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
 
-        curline = [r'ERT$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
-        replaceValue = 'ERT<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
+        curline = [r'aRT$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
+        replaceValue = 'aRT<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
         if bestalgentries:
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
@@ -500,7 +500,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                             tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
                             bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
     
-                        #The conditions are now that ERT < ERT_best and
+                        #The conditions are now that aRT < aRT_best and
                         # all(sorted(FEvals_best) > sorted(FEvals_current)).
                         if numpy.isinf(refalgert[j]) or all(tmpevals < bestevals):
                             nbstars = -numpy.ceil(numpy.log10(nbtests * p))

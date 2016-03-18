@@ -29,7 +29,7 @@ static void valgrind_test(void) {
  */
 void my_optimizer(coco_problem_t *problem) {
 
-  const size_t budget = 10;
+  const size_t budget = 2;
   coco_random_state_t *rng = coco_random_new(0xdeadbeef);
   const double *lbounds = coco_problem_get_smallest_values_of_interest(problem);
   const double *ubounds = coco_problem_get_largest_values_of_interest(problem);
@@ -66,7 +66,7 @@ void run_once(char *observer_options) {
   printf("Running experiment with options %s\n", observer_options);
   fflush(stdout);
 
-  suite = coco_suite("bbob-biobj", NULL, "dimensions: 2 function_indices: 5-10 instance_indices: 2-3");
+  suite = coco_suite("bbob-biobj", NULL, "dimensions: 2 function_indices: 5-6 instance_indices: 2-3");
   observer = coco_observer("bbob-biobj", observer_options);
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
@@ -91,7 +91,7 @@ void multiple_observers(void) {
   coco_observer_t *observer_inner, *observer_middle, *observer_outer;
   coco_problem_t *problem_inner, *problem_middle, *problem_outer;
 
-  suite = coco_suite("bbob-biobj", "year: 2016", "dimensions: 2 function_indices: 1-3");
+  suite = coco_suite("bbob-biobj", "year: 2016", "dimensions: 2 function_indices: 1-3 instance_indices: 1-2");
 
   observer_inner = coco_observer("toy", "");
   observer_middle = coco_observer("bbob-biobj", "log_nondominated: final log_decision_variables: none");
@@ -124,7 +124,7 @@ int main( int argc, char *argv[] )  {
   }
   else {
     multiple_observers();
-    run_once("produce_all_data 1");
+    run_once("produce_all_data: 1");
     run_once("log_nondominated: none  compute_indicators: 0");
     run_once("log_nondominated: all   compute_indicators: 0");
     run_once("log_nondominated: final compute_indicators: 0");

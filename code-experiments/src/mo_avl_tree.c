@@ -35,6 +35,9 @@
 #include <stdlib.h>
 #include <errno.h>
 
+/* In order to easily (un)comment unused functions */
+#define AVL_TREE_COMMENT_UNUSED 1
+
 /* We need either depths, counts or both (the latter being the default) */
 #if !defined(AVL_DEPTH) && !defined(AVL_COUNT)
 #define AVL_DEPTH
@@ -150,8 +153,6 @@ static int avl_check_balance(avl_node_t *avlnode) {
 #endif
 }
 
-/* Commented to silence the compiler.
-
 #ifdef AVL_COUNT
 static unsigned long avl_count(const avl_tree_t *avltree) {
   if (!avltree)
@@ -159,6 +160,7 @@ static unsigned long avl_count(const avl_tree_t *avltree) {
   return AVL_NODE_COUNT(avltree->top);
 }
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_at(const avl_tree_t *avltree, unsigned long index) {
   avl_node_t *avlnode;
   unsigned long c;
@@ -182,7 +184,9 @@ static avl_node_t *avl_at(const avl_tree_t *avltree, unsigned long index) {
   }
   return NULL;
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static unsigned long avl_index(const avl_node_t *avlnode) {
   avl_node_t *next;
   unsigned long c;
@@ -201,7 +205,9 @@ static unsigned long avl_index(const avl_node_t *avlnode) {
   return c;
 }
 #endif
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static const avl_node_t *avl_search_leftmost_equal(const avl_tree_t *tree, const avl_node_t *node,
     const void *item) {
   avl_compare_t cmp = tree->cmpitem;
@@ -227,10 +233,10 @@ static const avl_node_t *avl_search_leftmost_equal(const avl_tree_t *tree, const
     r = node;
   }
 
-  return NULL; *//* To silence the compiler */
-/*
+  return NULL; /* To silence the compiler */
+
 }
-*/
+#endif
 
 static const avl_node_t *avl_search_rightmost_equal(const avl_tree_t *tree,
                                                     const avl_node_t *node,
@@ -269,8 +275,7 @@ static const avl_node_t *avl_search_rightmost_equal(const avl_tree_t *tree,
  *    1  if the returned node is equal
  * Returns NULL if no equal or larger element could be found.
  * O(lg n) */
-
-/* Commented to silence the compiler.
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_search_leftish(const avl_tree_t *tree, const void *item, int *exact) {
   avl_node_t *node;
   avl_compare_t cmp;
@@ -308,10 +313,10 @@ static avl_node_t *avl_search_leftish(const avl_tree_t *tree, const void *item, 
     }
   }
 
-  return NULL; *//* To silence the compiler */
-/*
+  return NULL; /* To silence the compiler */
+
 }
-*/
+#endif
 
 /* Searches for an item, returning either some exact
  * match, or (if no exact match could be found) the last (rightmost)
@@ -361,8 +366,7 @@ static avl_node_t *avl_search_rightish(const avl_tree_t *tree, const void *item,
   return NULL; /* To silence the compiler */
 }
 
-/* Commented to silence the compiler.
-
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_item_search_left(const avl_tree_t *tree, const void *item, int *exact) {
   avl_node_t *node;
   int c;
@@ -379,7 +383,7 @@ static avl_node_t *avl_item_search_left(const avl_tree_t *tree, const void *item
 
   return AVL_CONST_NODE(node);
 }
-*/
+#endif
 
 /* Searches for an item, returning either the last (rightmost) exact
  * match, or (if no exact match could be found) the last (rightmost)
@@ -633,20 +637,24 @@ static avl_node_t *avl_node_insert(avl_tree_t *avltree, avl_node_t *newnode) {
   return c ? NULL : avl_node_insert_after(avltree, node, newnode);
 }
 
-/* Commented to silence the compiler.
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_node_insert_left(avl_tree_t *avltree, avl_node_t *newnode) {
   return avl_node_insert_before(avltree, avl_item_search_left(avltree, newnode->item, NULL), newnode);
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_node_insert_right(avl_tree_t *avltree, avl_node_t *newnode) {
   return avl_node_insert_after(avltree, avl_item_search_right(avltree, newnode->item, NULL), newnode);
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_node_insert_somewhere(avl_tree_t *avltree, avl_node_t *newnode) {
   return avl_node_insert_after(avltree, avl_search_rightish(avltree, newnode->item, NULL), newnode);
 }
-*/
+#endif
 
 /* Insert an item into the tree and return the new node.
  * Returns NULL and sets errno if memory for the new node could not be
@@ -668,8 +676,7 @@ static avl_node_t *avl_item_insert(avl_tree_t *avltree, const void *item) {
   return NULL;
 }
 
-/* Commented to silence the compiler.
-
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_item_insert_somewhere(avl_tree_t *avltree, const void *item) {
   avl_node_t *newnode;
 
@@ -681,7 +688,9 @@ static avl_node_t *avl_item_insert_somewhere(avl_tree_t *avltree, const void *it
     return avl_node_insert_somewhere(avltree, newnode);
   return NULL;
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_item_insert_before(avl_tree_t *avltree, avl_node_t *node, const void *item) {
   avl_node_t *newnode;
 
@@ -693,7 +702,9 @@ static avl_node_t *avl_item_insert_before(avl_tree_t *avltree, avl_node_t *node,
     return avl_node_insert_before(avltree, node, newnode);
   return NULL;
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_item_insert_after(avl_tree_t *avltree, avl_node_t *node, const void *item) {
   avl_node_t *newnode;
 
@@ -705,7 +716,9 @@ static avl_node_t *avl_item_insert_after(avl_tree_t *avltree, avl_node_t *node, 
     return avl_node_insert_after(avltree, node, newnode);
   return NULL;
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_item_insert_left(avl_tree_t *avltree, const void *item) {
   avl_node_t *newnode;
 
@@ -717,7 +730,9 @@ static avl_node_t *avl_item_insert_left(avl_tree_t *avltree, const void *item) {
     return avl_node_insert_left(avltree, newnode);
   return NULL;
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_item_insert_right(avl_tree_t *avltree, const void *item) {
   avl_node_t *newnode;
 
@@ -729,7 +744,7 @@ static avl_node_t *avl_item_insert_right(avl_tree_t *avltree, const void *item) 
     return avl_node_insert_right(avltree, newnode);
   return NULL;
 }
-*/
+#endif
 
 /* Deletes a node from the tree.
  * Returns the value of the node (even if it's NULL).
@@ -817,8 +832,7 @@ static void *avl_item_delete(avl_tree_t *avltree, const void *item) {
   return avl_node_delete(avltree, avl_item_search(avltree, item));
 }
 
-/* Commented to silence the compiler.
-
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_node_fixup(avl_tree_t *avltree, avl_node_t *newnode) {
   avl_node_t *oldnode = NULL, *node;
 
@@ -854,7 +868,7 @@ static avl_node_t *avl_node_fixup(avl_tree_t *avltree, avl_node_t *newnode) {
 
   return oldnode;
 }
-*/
+#endif
 
 /**
  * avl_rebalance:
