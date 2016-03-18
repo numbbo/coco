@@ -31,7 +31,7 @@
 %                                 keep in the suite (range-style syntax is not
 %                                 allowed here),
 %                   "dimension_indices: VALUES", where VALUES is a list or a
-%                                 range of dimension indices (starting from 1) 
+%                                 range of dimension indices (starting from 1)
 %                                 to keep in the suite,
 %                   "function_indices: VALUES", where VALUES is a list or a
 %                                 range of function indices (starting from 1) to
@@ -39,18 +39,5 @@
 %                   "instance_indices: VALUES", where VALUES is a list or a
 %                                 range of instance indices (starting from 1) to
 %                                 keep in the suite.
-%
-% Example usage:
-%
-%   >> suite_name = 'bbob-biobj'; % works for 'bbob' as well
-%   >> suite = cocoCall('cocoSuite', suite_name, 'year: 2016', 'dimensions: 2,3,5,10,20,40');
-%   >> problem = cocoCall('cocoSuiteGetProblem', suite, 10);
-%   >> cocoCall('cocoProblemGetDimension', problem)
-%   ans = 2
-%   >> cocoCall('cocoEvaluateFunction', problem, [2, 10])
-%   ans =
-%
-%      5.9543e+002  1.6626e+008
-%   >> cocoCall('cocoProblemFree', problem);
-%   >> cocoCall('cocoSuiteFree', suite);
-%
+function suite = cocoSuite(suite_name, suite_instance, suite_options)
+suite = cocoCall('cocoSuite', suite_name, suite_instance, suite_options);

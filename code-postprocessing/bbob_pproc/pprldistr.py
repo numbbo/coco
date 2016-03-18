@@ -36,7 +36,7 @@ function evaluations.
    bb.pprldistr.plot(ds)
    bb.pprldistr.beautify() # resize the window to view whole figure
 
-CAVEAT: the naming conventions in this module mix up ERT (an estimate
+CAVEAT: the naming conventions in this module mix up ART (an estimate
 of the expected running length) and run lengths.
 
 """
@@ -133,7 +133,7 @@ def load_previous_RLBdata(filename = previous_RLBdata_filename):
     return None
 
 
-def caption_single(max_evals_div_dim):
+def caption_single():
     caption_part_one = r"""%
          Empirical cumulative distribution functions (ECDF), plotting the fraction of
          trials with an outcome not larger than the respective value on the $x$-axis.
@@ -147,7 +147,7 @@ def caption_single(max_evals_div_dim):
          Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$,
          to fall below $\fopt+\Df$ where \Df\ is the
          target just not reached by the GECCO-BBOB-2009 best algorithm within a budget of
-         % largest $\Df$-value $\ge10^{-8}$ for which the best \ERT\ seen in the GECCO-BBOB-2009 was yet above
+         % largest $\Df$-value $\ge10^{-8}$ for which the best \ART\ seen in the GECCO-BBOB-2009 was yet above
          $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
     caption_wrap_up = r"""%
          Legends indicate for each target the number of functions that were solved in at
@@ -352,7 +352,7 @@ def plotECDF(x, n = None, **plotArgs):
 
 def _plotERTDistr(dsList, target, **plotArgs):
     """This method is obsolete, should be removed? The replacement for simulated runlengths is in pprldmany?
-    Creates simulated run time distributions (it is not an ERT distribution) from a DataSetList.
+    Creates simulated run time distributions (it is not an ART distribution) from a DataSetList.
 
     :keyword DataSet dsList: Input data sets
     :keyword dict target: target precision
@@ -527,7 +527,7 @@ def plotFVDistr(dsList, budget, min_f = None, **plotArgs):
         # replace negative values to prevent problem with log of vals
         vals[vals <= 0] = min(np.append(vals[vals > 0], [min_f])) # works also when vals[vals > 0] is empty
         if genericsettings.runlength_based_targets:
-            NotImplementedError('related function vals with respective budget (e.g. ERT(val)) see pplogloss.generateData()')
+            NotImplementedError('related function vals with respective budget (e.g. ART(val)) see pplogloss.generateData()')
         x.extend(vals)
         nn += ds.nbRuns()
     

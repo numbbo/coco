@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Module for computing ERT loss ratio
+"""Module for computing aRT loss ratio
 
-This module outputs figures and tables showing ERT loss ratios.
-Comparisons are based on computing the ratio between an ERT value and a
-reference (best) ERT value (or the inverse)
+This module outputs figures and tables showing aRT loss ratios.
+Comparisons are based on computing the ratio between an aRT value and a
+reference (best) aRT value (or the inverse)
 
 """
 
@@ -30,14 +30,14 @@ from .pptex import writeFEvals2
 from .ppfig import saveFigure, consecutiveNumbers
 
 """
-ERT loss ratio of an algorithm A for comparison to BBOB-best2009. This works
+aRT loss ratio of an algorithm A for comparison to BBOB-best2009. This works
 only as comparison to a set of algorithms that reach at least the same
 target values. Let f=f_A(EVALS) be the smallest target value such that the
-expected running time of algorithm A was smaller than or equal to EVALS.
-Let ERT_A=EVALS, if ERT_best(next difficult f) < EVALS and
-ERT_A=ERT_A(f_A(EVALS)) otherwise (we have ERT_A(f_A(EVALS)) <= EVALS).
-The ERT loss ratio for algorithm A is defined as:
-    Loss_A = stat_fcts(exp(CrE_A) * ERT_A / ERT_best(f))
+average running time of algorithm A was smaller than or equal to EVALS.
+Let aRT_A=EVALS, if aRT_best(next difficult f) < EVALS and
+aRT_A=aRT_A(f_A(EVALS)) otherwise (we have aRT_A(f_A(EVALS)) <= EVALS).
+The aRT loss ratio for algorithm A is defined as:
+    Loss_A = stat_fcts(exp(CrE_A) * aRT_A / aRT_best(f))
 
     + where f is a function of EVALS and stat_fcts is the desired statistics
       over the values from all functions (or a subgroup of functions), for
@@ -48,15 +48,15 @@ The ERT loss ratio for algorithm A is defined as:
       10% and 90% (the box covers the line) and a single point for min, max.
       For a function subgroup the Box-Whisker is replaced with the four or five
       actual points with the function number written.
-      Caption: ERT loss ratio: expected running time, ERT (measured in number
-      of function evaluations), divided by the best ERT seen in BBOB-best2009 for
+      Caption: aRT loss ratio: average running time, aRT (measured in number
+      of function evaluations), divided by the best aRT seen in BBOB-best2009 for
       the respectively same function and target function value, plotted versus
       number of function evaluations for the functions $f_1$--$f_{24}$ in
       dimension $D=XXX$, corrected by the parameter-crafting-effort
       $\exp(CrE)==YYY$. Line: geometric mean over all functions. Box-Whisker
       error bars: 25-75\%-percentile range with median (box),
-      10-90\%-percentile range (line), and minimum and maximum ERT loss ratio
-      (points). Alternative Box-Whisker sentence: Points: ERT loss ratio for
+      10-90\%-percentile range (line), and minimum and maximum aRT loss ratio
+      (points). Alternative Box-Whisker sentence: Points: aRT loss ratio for
       each function
     + The problem: how to find out CrE_A? Possible solution: ask for input in
       the script and put the given number into the caption and put exp(CrE_A)
@@ -64,83 +64,83 @@ The ERT loss ratio for algorithm A is defined as:
     + This should make a collection of graphs for all functions and all
       subgroups which gives an additional page in the 'single algorithm'
       template. Respective tables could be side-by-side the graphs.
-    + Example for how to read the graph: a loss ratio of 4 for ERT=20D means,
-      that the function value reached with ERT=20D could be reached with the
-      respective best algorithm in ERT_best=5D function evaluations on average.
+    + Example for how to read the graph: a loss ratio of 4 for aRT=20D means,
+      that the function value reached with aRT=20D could be reached with the
+      respective best algorithm in aRT_best=5D function evaluations on average.
       Therefore, given a budget of 20*D function evaluations, the best
       algorithm could have further improved the function value using the
       remaining 15*D ($75\%=1-1/4$) function evaluations.
       
-Details: if ERT_A = ERT_A(f_A(EVALS)) always, the x-axis of plots between 
-different algorithms becomes incomparable. Also could ERT_A < ERT_best, 
-even though ERT_best reaches a better f-value for the given EVALS. 
+Details: if aRT_A = aRT_A(f_A(EVALS)) always, the x-axis of plots between 
+different algorithms becomes incomparable. Also could aRT_A < aRT_best, 
+even though aRT_best reaches a better f-value for the given EVALS. 
 
 """
 
 """OLD STUFF:
-ERT loss ratio: expected running time, ERT (measured in number
-      of function evaluations), divided by the best ERT seen in BBOB-best2009 for
+aRT loss ratio: average running time, aRT (measured in number
+      of function evaluations), divided by the best aRT seen in BBOB-best2009 for
       the respectively same function and target function value, plotted versus
       number of function evaluations for the functions $f_1$--$f_{24}$ in
       dimension $D=XXX$, corrected by the parameter-crafting-effort
       $\exp(CrE)==YYY$. Line: geometric mean over all functions. Box-Whisker
       error bars: 25-75\%-percentile range with median (box),
-      10-90\%-percentile range (line), and minimum and maximum ERT loss ratio
+      10-90\%-percentile range (line), and minimum and maximum aRT loss ratio
       (points). 
 Table: 
-\ERT\ loss ratio (see also Figure~\ref{fig:ERTgraphs}) vs.\ a given budget
+\aRT\ loss ratio (see also Figure~\ref{fig:ERTgraphs}) vs.\ a given budget
 $\FEvals$. Each cross ({\color{blue}$+$}) represents a single function. The
 target value \ftarget\ used for a given \FEvals\ is the smallest (best) recorded
-function value such that $\ERT(\ftarget)\le\FEvals$ for the presented algorithm.
-Shown is \FEvals\ divided by the respective best $\ERT(\ftarget)$ from BBOB-2009
+function value such that $\aRT(\ftarget)\le\FEvals$ for the presented algorithm.
+Shown is \FEvals\ divided by the respective best $\aRT(\ftarget)$ from BBOB-2009
 for functions $f_1$--$f_{24}$ in 5-D and 20-D. Line: geometric mean. Box-Whisker
 error bar: 25-75\%-ile with median (box), 10-90\%-ile (caps), and minimum and
-maximum \ERT\ loss ratio (points). The vertical line gives the maximal number of
+maximum \aRT\ loss ratio (points). The vertical line gives the maximal number of
 function evaluations in a single trial in this function subset.
 
-\ERT\ loss ratio. The ERT of the considered algorithm, the budget, is shown in
-the first column. For the loss ratio the budget is divided by the ERT for the
+\aRT\ loss ratio. The aRT of the considered algorithm, the budget, is shown in
+the first column. For the loss ratio the budget is divided by the aRT for the
 respective best result from BBOB-2009 (see also Table~\ref{tab:ERTloss}).
 The last row $\text{RL}_{\text{US}}/\text{D}$ gives the number of function
 evaluations in unsuccessful runs divided by dimension. Shown are the smallest,
 10\%-ile, 25\%-ile, 50\%-ile, 75\%-ile and 90\%-ile value (smaller values are
-better). The ERT Loss ratio equals to one for the respective best algorithm from
+better). The aRT Loss ratio equals to one for the respective best algorithm from
 BBOB-2009. Typical median values are between ten and hundred.
 
-\ERT\ loss ratio. The ERT of the considered algorithm, the budget, is shown in the first column. 
-For the loss ratio the budget is divided by the ERT for the respective best result from BBOB-2009 (see also Figure~\ref{fig:ERTlogloss}). The last row $\text{RL}_{\text{US}}/\text{D}$ gives the number of function evaluations in 
+\aRT\ loss ratio. The aRT of the considered algorithm, the budget, is shown in the first column. 
+For the loss ratio the budget is divided by the aRT for the respective best result from BBOB-2009 (see also Figure~\ref{fig:ERTlogloss}). The last row $\text{RL}_{\text{US}}/\text{D}$ gives the number of function evaluations in 
 unsuccessful runs divided by dimension. Shown are the smallest, 10\%-ile, 25\%-ile, 
 50\%-ile, 75\%-ile and 90\%-ile value (smaller values are better).
-The ERT Loss ratio equals to one for the respective best algorithm from BBOB-2009.
+The aRT Loss ratio equals to one for the respective best algorithm from BBOB-2009.
 Typical median values are between ten and hundred. 
 
-such that $\ERT(\ftarget)\le\FEvals$ for the 
-    Shown is \FEvals\ divided by the respective best $\ERT(\ftarget)$ from BBOB-2009 
+such that $\aRT(\ftarget)\le\FEvals$ for the 
+    Shown is \FEvals\ divided by the respective best $\aRT(\ftarget)$ from BBOB-2009 
     %
     for functions $f_1$--$f_{24}$ in 5-D and 20-D. 
     %
-    % Each \ERT\ is multiplied by $\exp(\CrE)$ correcting for the parameter crafting effort. 
+    % Each \aRT\ is multiplied by $\exp(\CrE)$ correcting for the parameter crafting effort. 
 """
 
 table_caption = r"""% \bbobloglosstablecaption{}
-    \ERT\ loss ratio versus the budget in number of $f$-evaluations
+    \aRT\ loss ratio versus the budget in number of $f$-evaluations
     divided by dimension.
     For each given budget \FEvals, the target value \ftarget\ is computed
     as the best target $f$-value reached within the
     budget by the given algorithm.
-    Shown is then the \ERT\ to reach \ftarget\ for the given algorithm
+    Shown is then the \aRT\ to reach \ftarget\ for the given algorithm
     or the budget, if the GECCO-BBOB-2009 best algorithm
     reached a better target within the budget,
-    divided by the best \ERT\
+    divided by the best \aRT\
     seen in GECCO-BBOB-2009 to reach \ftarget.
     Line: geometric mean. Box-Whisker error bar: 25-75\%-ile with median
-    (box), 10-90\%-ile (caps), and minimum and maximum \ERT\ loss ratio
+    (box), 10-90\%-ile (caps), and minimum and maximum \aRT\ loss ratio
     (points). The vertical line gives the maximal number of function evaluations
     in a single trial in this function subset. See also
     Figure~\ref{fig:ERTlogloss} for results on each function subgroup.
     """
 figure_caption = r"""%
-    \ERT\ loss ratios (see Figure~\ref{tab:ERTloss} for details).  
+    \aRT\ loss ratios (see Figure~\ref{tab:ERTloss} for details).  
     Each cross ({\color{blue}$+$}) represents a single function, the line
     is the geometric mean.
     """  # \bbobloglossfigurecaption{}
@@ -168,7 +168,7 @@ def detf(entry, evals):
     """Determines a function value given a number of evaluations.
 
     Let A be the algorithm considered. Let f=f_A(evals) be the smallest
-    target value such that the expected running time of algorithm A was
+    target value such that the average running time of algorithm A was
     smaller than or equal to evals.
 
     :keyword DataSet entry: data set
@@ -204,11 +204,11 @@ def generateData(dsList, evals, CrE_A):
 
         bestalgentry = bestalgentries[(D, fun)]
 
-        #ERT_A
+        #aRT_A
         f_A = detf(entry, evals)
 
-        ERT_best = detERT(bestalgentry, f_A)
-        ERT_A = detERT(entry, f_A)
+        aRT_best = detERT(bestalgentry, f_A)
+        aRT_A = detERT(entry, f_A)
         nextbestf = []
         for i in f_A:
             if i == 0.:
@@ -220,21 +220,21 @@ def generateData(dsList, evals, CrE_A):
                 except IndexError:
                     nextbestf.append(i * 10.**(-0.2)) # TODO: this is a hack
 
-        ERT_best_nextbestf = detERT(bestalgentry, nextbestf)
+        aRT_best_nextbestf = detERT(bestalgentry, nextbestf)
 
-        for i in range(len(ERT_A)):
+        for i in range(len(aRT_A)):
             # nextbestf[i] >= f_thresh: this is tested because if it is not true
-            # ERT_best_nextbestf[i] is supposed to be infinite.
-            if nextbestf[i] >= f_thresh and ERT_best_nextbestf[i] < evals[i]: # is different from the specification...
-                ERT_A[i] = evals[i]
+            # aRT_best_nextbestf[i] is supposed to be infinite.
+            if nextbestf[i] >= f_thresh and aRT_best_nextbestf[i] < evals[i]: # is different from the specification...
+                aRT_A[i] = evals[i]
 
         # For test purpose:
         #if fun % 10 == 0:
-        #    ERT_A[-2] = 1.
-        #    ERT_best[-2] = np.inf
-        ERT_A = np.array(ERT_A)
-        ERT_best = np.array(ERT_best)
-        loss_A = np.exp(CrE_A) * ERT_A / ERT_best
+        #    aRT_A[-2] = 1.
+        #    aRT_best[-2] = np.inf
+        aRT_A = np.array(aRT_A)
+        aRT_best = np.array(aRT_best)
+        loss_A = np.exp(CrE_A) * aRT_A / aRT_best
         assert (np.isnan(loss_A) == False).all()
         #set_trace()
         #if np.isnan(loss_A).any() or np.isinf(loss_A).any() or (loss_A == 0.).any():
@@ -410,7 +410,7 @@ def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
                 medians=medians, fliers=fliers)
 
 def plot(xdata, ydata):
-    """Plot the ERT log loss figures.
+    """Plot the aRT log loss figures.
 
     Two cases: box-whisker plot is used for representing the data of all
     functions, otherwise all data is represented using crosses.
@@ -506,12 +506,12 @@ def beautify():
     plt.yticks(ydata, yticklabels)
 
     plt.xlabel('log10 of FEvals / dimension')
-    plt.ylabel('log10 of ERT loss ratio')
+    plt.ylabel('log10 of aRT loss ratio')
     #a.yaxis.grid(True, which='minor')
     a.yaxis.grid(True, which='major')
 
 def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
-    """Generates ERT loss ratio tables.
+    """Generates aRT loss ratio tables.
 
     :param DataSetList dsList: input data set
     :param float CrE: crafting effort (see COCO documentation)
@@ -550,7 +550,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
         
 def generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS, data, 
                         outputdir='.', info='default', verbose=True):
-    """Generates single ERT loss ratio table.
+    """Generates single aRT loss ratio table.
 
     :param DataSetList dsList: input data set
     :param funcs:
@@ -643,11 +643,11 @@ def generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
     f.write(res)
     f.close()
     if verbose:
-        print "Wrote ERT loss ratio table in %s." % filename
+        print "Wrote aRT loss ratio table in %s." % filename
 
 def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data, 
                         outputdir='.', info='default', verbose=True):
-    """Generates single ERT loss ratio table.
+    """Generates single aRT loss ratio table.
 
     :param DataSetList dsList: input data set
     :param funcs:
@@ -765,11 +765,11 @@ def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
             outfile.write(line)     
         
     if verbose:
-        print "Wrote ERT loss ratio table in %s." % filename
+        print "Wrote aRT loss ratio table in %s." % filename
         
 def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
                    info='default', verbose=True):
-    """Generates ERT loss ratio figures.
+    """Generates aRT loss ratio figures.
 
     :param DataSetList dsList: input data set
     :param float CrE: crafting effort (see COCO documentation)
@@ -851,7 +851,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
 
 def main(dsList, CrE=0., isStoringXRange=True, outputdir='.', info='default',
          verbose=True):
-    """Generates ERT loss ratio boxplot figures.
+    """Generates aRT loss ratio boxplot figures.
     
     Calls method generateFigure.
 
