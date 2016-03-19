@@ -131,8 +131,8 @@ On Performance Measures
 Following [HAN2009]_, we advocate **performance measures** that are
 
  * quantitative, ideally with a ratio scale (opposed to interval or ordinal
-   scale)  and with a wide variation (i.e., for example, with typical values 
-   ranging not only between 0.98 and 1.0) [#]_
+   scale, [STE1946]_)  and with a wide variation (i.e., for example, with typical 
+   values ranging not only between 0.98 and 1.0) [#]_
  * well-interpretable, in particular by having a meaning and semantics attached
    to the numbers
  * relevant and meaningful with respect to the "real world"
@@ -147,24 +147,24 @@ For these reasons we measure **runtime** to reach a target value, that is the nu
 
 .. _sec:verthori:
 
-Fixed-Cost versus Fixed-Target Scenario
-----------------------------------------
+Fixed-Budget versus Fixed-Target Approach
+-----------------------------------------
 
 .. for collecting data and making measurements from experiments:
 
 Starting from some convergence graphs which plot the quality indicator (to be minimized) against the number of function evaluations, we have two different approaches to measure performance. 
 
-  * On the one hand we can fix a cost, that is a budget of function evaluations, 
-    and collect the function values reached. This is referred to as
-    **fixed-cost scenario** and corresponds to vertical cuts. Fixing search
-    costs can be pictured as drawing a vertical line on the convergence
+**fixed-budget approach**
+    We fix a budget of function evaluations, 
+    and collect the function values reached. Fixing the search
+    budget can be pictured as drawing a *vertical* line on the convergence
     graphs (see Figure :ref:`fig:HorizontalvsVertical` where the line is
     depicted in red).
 
-  * On the other hand we can fix a target and measure the number of function 
-    evaluations to reach this target. This is referred to as **fixed-target
-    scenario** and corresponds to horizontal cuts. Fixing a target can be
-    pictured as drawing a horizontal line in the convergence graphs (Figure
+**fixed-target approach**  
+    We fix a target value and measure the number of function 
+    evaluations, the *runtime*, to reach this target. Fixing a target can be
+    pictured as drawing a *horizontal* line in the convergence graphs (Figure
     :ref:`fig:HorizontalvsVertical` where the line is depicted in blue).
 
 
@@ -181,27 +181,41 @@ Starting from some convergence graphs which plot the quality indicator (to be mi
    plotted versus number of function evaluations.
 
 
-It is often argued that the fixed-cost approach is close to what is needed for
+.. It is often argued that the fixed-cost approach is close to what is needed for
    real world applications where the total number of function evaluations is
    limited. On the other hand, also a minimum target requirement needs to be
    achieved in real world applications, for example, getting (noticeably) better
    than the currently available best solution or than a competitor.
 
-For benchmarking algorithms we prefer the fixed-target scenario over the
-fixed-cost scenario since it gives *quantitative and interpretable*
-data: 
+For the performance assessment of algorithms the fixed-target approach is superior 
+to the fixed-budget approach since it gives *quantitative and interpretable*
+data. 
 
-* the fixed-target scenario (horizontal cut) *measures a time* needed to reach a target  function value and allows therefore conclusions of the type: Algorithm A is two/ten/hundred times faster than Algorithm B in solving this problem (i.e. reaching the given target function value). 
+ * The fixed-budget approach (vertical cut) does not give *quantitatively 
+   interpretable*  data: 
+   the observation that Algorithm A reaches a function value that is two or
+   ten or hundred times smaller than the one reached by Algorithm B has in
+   general no interpretable meaning, mainly because there is no *a priori*
+   way to determine *how much* more difficult it is to reach a function value
+   that is two or ten or hundred times smaller. 
+   This, indeed, largely depends on the specific function and on the specific
+   function value reached. 
 
-* The fixed-cost scenario (vertical cut) does not give *quantitatively interpretable*  data: there is no interpretable meaning to the fact that Algorithm A reaches a function  value that is two/ten/hundred times smaller than the one reached by Algorithm B, mainly because there is no *a priori* evidence *how much* more difficult it is to reach a function value that is two/ten/hundred times smaller. This, indeed, largely depends on the specific function and on the specific function value reached. 
- 
-Furthermore, for algorithms
-that are invariant under certain transformations of the function value (for
-example under order-preserving transformations as algorithms based on
-comparisons like DE, ES, PSO), fixed-target measures can be made
-invariant under these transformations by simply choosing different
-target values while fixed-cost measures require the transformation
-of all resulting data.
+ * The fixed-target approach (horizontal cut) 
+   *measures the time* to 
+   reach a target function value. The measurement allows conclusions of the
+   type: Algorithm A is two or ten or hundred times faster than Algorithm B
+   in solving this problem (i.e. reaching the given target function value). 
+    
+Furthermore, for algorithms that are invariant under certain transformations
+of the function value (for example under order-preserving transformations, as
+comparison-based algorithms like DE, ES, PSO), fixed-target measures become
+invariant under these transformations by transformation of the target values
+while fixed-budget measures require the transformation of all resulting data.
+
+Missing Values
+---------------
+
 
 
 .. todo::
@@ -213,8 +227,8 @@ Runtime over Problems
 =========================
 
 
-In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtime for different target values. Those target values can be a :math:`f`- or indicator value (see [BBO2016biobj]_). 
-In the performance assessment setting, a problem is the quadruple :math:`p=(n,f_\theta,\theta,f^{\rm target}_\theta)` where :math:`f^{\rm target}_\theta` is the target function value. This means that **we collect runtime of problems**.
+In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtimes for different target values. These target values can be a :math:`f`- or indicator value (see [BBO2016biobj]_). 
+In the performance assessment setting, a problem is the quadruple :math:`p=(n,f_\theta,\theta,f^{\rm target}_\theta)` where :math:`f^{\rm target}_\theta` is the target function value. This means that **we collect runtimes of problems**.
 
 Formally, the runtime of a problem is denoted as
 :math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. It is a random variable that counts the number of function evaluations needed to reach a function value lower or equal than :math:`f^{\rm target}_{\theta}`  for the first time. A run or trial that reached a target function value |ftarget| is called *successful*.
@@ -256,8 +270,8 @@ Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` 
 	\begin{equation*}\label{RTrestart}
 	\mathbf{RT}(n,f_\theta,\Delta f) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta f) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta f)
 	\end{equation*}
-	
-	
+
+
 where as above :math:`J` is a random variable modeling the number of trials needed before to observe a success, :math:`\mathrm{RT}^{\rm us}_j` are random variables modeling the number of function evaluations of unsuccessful trials and :math:`\mathrm{RT}^{\rm s}` the one for successful trials.
 
 As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF`, our performance display relies on the runtime of the restart algorithm, either considering the average runtime (Section :ref:`sec:ART`) or the distribution by displaying empirical cumulative distribution functions (Section :ref:`sec:ECDF`).
@@ -485,6 +499,9 @@ References
 	Journal of Global Optimization, 56(3):1247– 1293, 2013.   
 .. [Hooker:1995] J. N. Hooker Testing heuristics: We have it all wrong. In Journal of
     Heuristics, pages 33-42, 1995.
+.. [STE1946] S.S. Stevens (1946). 
+    On the theory of scales of measurement. *Science* 103(2684), pp. 677-680.
+
 
    
 
