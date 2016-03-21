@@ -7,7 +7,7 @@ import os.path
 import re
 from time import gmtime, strftime
 
-from .archive_exceptions import PreprocessingWarning
+from .archive_exceptions import PreprocessingWarning, PreprocessingException
 
 
 def get_file_name_list(path):
@@ -16,6 +16,8 @@ def get_file_name_list(path):
     """
     file_name_list = []
     for dir_path, dir_names, file_names in os.walk(path):
+        dir_names.sort()
+        file_names.sort()
         for file_name in file_names:
             file_name_list.append(os.path.join(dir_path, file_name))
     return file_name_list
@@ -180,3 +182,36 @@ def write_best_values(dic, file_name):
         for key, value in sorted(dic.items()):
             f.write('  \"{} {:.15f}\",\n'.format(key, value))
         f.close()
+
+
+def parse_range(input_string=""):
+    """Parses the input string containing integers and integer ranges, such as:
+       1, 2-4, 5, 10
+       Returns a list of integers:
+       [1, 2, 3, 4, 5, 10]
+       :param input_string: input string with integers and integer ranges (if empty, the result is an empty list)
+    """
+    if not input_string:
+        return None
+
+    selection = set()
+    # Tokens are comma separated values
+    tokens = [x.strip() for x in input_string.split(',')]
+    for i in tokens:
+        try:
+            # Typically tokens are plain old integers
+            selection.add(int(i))
+        except ValueError:
+            # If not, then it might be a range
+            try:
+                token = [int(k.strip()) for k in i.split('-')]
+                if len(token) > 1:
+                    token.sort()
+                    # Try to build a valid range
+                    first = token[0]
+                    last = token[len(token)-1]
+                    for x in range(first, last+1):
+                        selection.add(x)
+            except:
+                raise PreprocessingException('Range {} not in correct format'.format(input_string))
+    return list(selection)

@@ -56,8 +56,8 @@ static void transform_vars_x_hat_free(void *thing) {
 static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, const long seed) {
   transform_vars_x_hat_data_t *data;
   coco_problem_t *problem;
-  size_t i, zero = 1;
   char *result;
+  size_t i;
 
   data = (transform_vars_x_hat_data_t *) coco_allocate_memory(sizeof(*data));
   data->seed = seed;
@@ -76,15 +76,8 @@ static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, const
               problem->best_parameter[i] = 0.5 * 4.2096874633;
           }
       }
-  } else {
-      i = 0;
-      while (i < inner_problem->number_of_variables && zero) {
-          zero = (inner_problem->best_parameter[i] == 0);
-          i++;
-      }
-      if (!zero) {
-          coco_warning("f_transform_vars_x_hat(): 'best_parameter' not updated");
-      }
+  } else if (!coco_problem_is_best_parameter_zero(inner_problem)) {
+      coco_warning("transform_vars_x_hat(): 'best_parameter' not updated");
   }
   return problem;
 }
