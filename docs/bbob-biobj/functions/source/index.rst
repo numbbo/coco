@@ -1109,6 +1109,8 @@ Both functions are unimodal and highly asymmetric, where only one
 roughly :math:`(1/2)^D` yields low function values. The objective
 functions' optima are located at the tips of those two cones. 
 
+Contained in the *moderate - moderate* function class.
+
 
 .. .. rubric:: Information gained from this function:
 
