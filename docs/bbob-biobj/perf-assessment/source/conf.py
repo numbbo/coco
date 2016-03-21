@@ -34,6 +34,29 @@ extensions = [
     'sphinx.ext.pngmath',
 ]
 
+
+pngmath_use_preview = True  # "When this is enabled, the images put into the HTML document will get a vertical-align style that correctly aligns the baselines."
+pngmath_dvipng_args = [ # see http://www.nongnu.org/dvipng/dvipng_4.html#Command_002dline-options
+    '-gamma', '1.5',  # heavyness of color 0.5 is between black and background, 1.5 is blacker than black, --gamma works as well?
+    '-D', '109',  # size, 100=current font size
+#    '-D', '110',  # size, 100=current font size, 110 is default
+#    '-gif',  # doesn't work in browser and doesn't look less pixelated
+#    '--bdpi', '440',  # see man dvipng
+#    '-Q', '5',
+    '-bg', 'Transparent',
+#    '-T', '1.1in,1.3cm',   # image size, affects size, but nothing is rendered
+]
+
+latex_commands = r"""
+  \newcommand{\R}{\ensuremath{\mathbb{R}}}
+  \newcommand{\ve}[1]{{\boldsymbol{#1}}}
+  \newcommand{\x}{\ensuremath{\ve{x}}}
+  \newcommand{\finstance}{\ensuremath{f^j}}
+"""
+
+pngmath_latex_preamble = latex_commands
+
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -111,7 +134,13 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+#html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
+#html_theme = 'nature'  # underlays of sections titles
+#html_theme = 'alabaster' #  white, times font 
+#html_theme = 'sphinxdoc'  # puts too much empty spaces left and right
+html_theme = 'sphinx_rtd_theme'  # contents not structured (mobile style?)
+# html_theme = 'agogo'  # fixed width
+# html_theme = 'pyramid'  # relatively clean white/gray, sf font hard to read, too small section titles
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -215,7 +244,9 @@ latex_elements = {
 #'pointsize': '10pt',
 
 # Additional stuff for the LaTeX preamble.
-#'preamble': '',
+'preamble': r"""
+\usepackage{amsmath}
+""",
 
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
@@ -226,7 +257,9 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   (master_doc, 'bbob-biobj-perf-assessment.tex', u'Performance Assessment in the Case of Coco\' bbob-biobj Suite',
-   u'The BBOBies', 'manual'),
+   u'The BBOBies', 
+   'article', # 'manual'
+   ),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
