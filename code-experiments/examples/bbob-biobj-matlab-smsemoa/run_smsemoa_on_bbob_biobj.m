@@ -10,10 +10,10 @@ more off; % to get immediate output in Octave
 % Experiment Parameters %
 %%%%%%%%%%%%%%%%%%%%%%%%%
 BUDGET_MULTIPLIER = 2; % algorithm runs for BUDGET_MULTIPLIER*dimension funevals
-NUM_OF_INDEPENDENT_RESTARTS = 0; % number of independent algorithm restarts;
-                                 % if >0, make sure that the algorithm is not
-                                 % always doing the same thing in each run
-                                 % (typically trivial for randomized algorithms)
+NUM_OF_INDEPENDENT_RESTARTS = 1e9; % number of independent algorithm restarts;
+                                   % if >0, make sure that the algorithm is not
+                                   % always doing the same thing in each run
+                                   % (typically trivial for randomized algorithms)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Prepare Experiment    %
@@ -33,6 +33,12 @@ observer = cocoCall('cocoObserver', observer_name, observer_options);
 % for fewer output than 'info'.
 cocoCall('cocoSetLogLevel', 'info');
 
+% keep track of problem dimension and #funevals to print timing information:
+printeddim = 1;
+doneEvalsAfter = 0; % summed function evaluations for a single problem
+doneEvalsTotal = 0; % summed function evaluations per dimension
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Run Experiment        %
 %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -43,6 +49,20 @@ while true
         break;
     end
     dimension = cocoCall('cocoProblemGetDimension', problem);
+    
+    % printing timing information
+    if printeddim < dimension
+      if printeddim > 1
+        elapsedtime = toc;
+        fprintf("\n   COCO TIMING: dimension %d finished in %e seconds/evaluation\n", ...
+                printeddim, elapsedtime/double(doneEvalsTotal));
+        tic;
+      end
+      doneEvalsTotal = 0;
+      printeddim = dimension;
+      tic;
+    end  
+    
     
     % restart functionality: do at most NUM_OF_INDEPENDENT_RESTARTS+1
     % independent runs until budget is used:
@@ -78,6 +98,10 @@ while true
         end
     end
 end
+
+elapsedtime = toc;
+fprintf("\n   COCO TIMING: dimension %d finished in %e seconds/evaluation\n", ...
+        printeddim, elapsedtime/double(doneEvalsTotal));
 
 cocoCall('cocoObserverFree', observer);
 cocoCall('cocoSuiteFree', suite);
