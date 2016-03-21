@@ -12,7 +12,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import shutil
 # from pdb import set_trace
-from . import genericsettings, toolsstats, htmldesc, findfiles  # absolute_import => . refers to where ppfig resides in the package
+from . import genericsettings, toolsstats, htmldesc, toolsdivers  # absolute_import => . refers to where ppfig resides in the package
 
 
 bbox_inches_choices = {  # do we also need pad_inches = 0?
@@ -33,6 +33,13 @@ def saveFigure(filename, figFormat=(), verbose=True):
     ``('pdf', 'svg')``
 
     """
+    plt.text(0.35, 0.01, toolsdivers.getGitVersion(True), 
+             horizontalalignment = "left",
+             verticalalignment = "bottom", 
+             fontsize = 10,
+             color = '0.5',
+             transform=plt.gca().transAxes)
+
     if not figFormat:    
         figFormat=genericsettings.getFigFormats()    
         
