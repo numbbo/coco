@@ -6,7 +6,7 @@ if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
 set BUILDDIR=build
-set HTMLBUILDDIR=../../../coco-doc/
+set HTMLBUILDDIR=../../../../coco-doc/
 set PDF=coco-doc.pdf
 set ALLSPHINXOPTS=-d %BUILDDIR%/doctrees %SPHINXOPTS% source
 set I18NSPHINXOPTS=%SPHINXOPTS% source
@@ -21,7 +21,7 @@ if "%1" == "help" (
 	:help
 	echo.Please use `make ^<target^>` where ^<target^> is one of
 	echo.  html           to make standalone HTML files
-	echo.  html-topublish to make HTML files in the repository ../../../coco-doc/"
+	echo.  html-topublish to make HTML files in the repository bbob-biobj-experiments-doc"
 	echo.  latexpdf       to make LaTeX files and pdf in ../
 	echo.  dirhtml        to make HTML files named index.html in directories
 	echo.  singlehtml     to make a single large HTML file
