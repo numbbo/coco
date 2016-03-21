@@ -4,8 +4,6 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$
 COCO: Experimental Procedure
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-...
-%%%
 
 .. |
 .. |
@@ -108,15 +106,15 @@ Based on [HAN2009]_ and [HAN2010]_, we describe a comparatively simple experimen
 set-up for *black-box optimization benchmarking*. We recommend to use this procedure
 within the COCO_ platform. [#]_ 
 
-Our central measure of performance, to which the experimental procedure is adapted, is the number of problem or function evaluations to reach a certain solution quality (function value or :math:`f`-value), also denoted as *runtime*. 
+Our central measure of performance, to which the experimental procedure is adapted, is the number of problem or function evaluations to reach a certain solution quality (function value or :math:`f`-value or indicator value), also denoted as *runtime*. 
 
 Terminology
 -----------
 *function*
-  We talk about a *function* as a mapping
+  We talk about a *function* as a parametrized mapping
   :math:`\mathbb{R}^n\to\mathbb{R}^m` with scalable input space, that is,
   :math:`n` is not (yet) determined, and usually :math:`m\in\{1,2\}`.
-  Functions are commonly parametrized such that different *instances* of the
+  Functions are parametrized such that different *instances* of the
   "same" function are available, e.g. translated or shifted versions. 
   
 *problem*
@@ -125,16 +123,16 @@ Terminology
   can be described as the triple ``(dimension, function, instance)``. A problem
   can be evaluated and returns an :math:`f`-value or -vector. 
   In the context of performance
-  assessment, additionally one or several target :math:`f`- or :math:`\Delta f`-values
-  are attached to each problem. That is, a target value is added to the 
-  above triple to define a single problem. 
+  assessment, a target :math:`f`- or indicator-value
+  is attached to each problem. That is, a target value is added to the 
+  above triple to define a single problem in this case. 
   
 *runtime*
   We define *runtime*, or *run-length* [HOO1998]_
   as the *number of evaluations* 
   conducted on a given problem, also referred to as number of *function* evaluations. 
-  Our central performance measure is the runtime until a given target :math:`f`-value 
-  is hit.
+  Our central performance measure is the runtime until a given target value 
+  is hit [CocoPerf]_.
 
 *suite*
   A test- or benchmark-suite is a collection of problems, typically between
@@ -152,10 +150,13 @@ Terminology
 Conducting the Experiment
 =========================
 
-The optimization algorithm to be benchmarked is run on each problem 
-of the given test suite once. There is no prescribed minimal or maximally allowed 
-runtime. The longer the experiment, the more data are available to assess 
-the performance accurately. See also Section :ref:`sec:stopping`. 
+The optimization algorithm to be benchmarked is run on each problem of the
+given test suite once. On each problem, the very same algorithm with the same
+parameter setting, the same initialzation procedure, the same budget, the same
+termination and/or restart criteria etc. is used. 
+There is no prescribed minimal or maximally allowed budget. The longer the
+experiment, the more data are available to assess the performance accurately.
+See also Section :ref:`sec:budget`. 
 
 .. _sec:input:
 
@@ -178,7 +179,7 @@ An algorithm can use the following input information from each problem. For init
       one or more constraints. 
 
 *Search domain of interest*
-  defined from |coco_problem_get_largest_values_of_interest|_ and |coco_problem_get_smallest_values_of_interest|_. The optimum (or the pareto set) lies within the search domain of interested. If the optimizer operates on a bounded domain only, the domain of interest can be interpreted as lower and upper bounds.
+  defined from |coco_problem_get_largest_values_of_interest|_ and |coco_problem_get_smallest_values_of_interest|_. The optimum (or each extremal solution of the Pareto set) lies within the search domain of interest. If the optimizer operates on a bounded domain only, the domain of interest can be interpreted as lower and upper bounds [#]_.
 
 *Feasible (initial) solution* 
   provided by |coco_problem_get_initial_solution|_. 
@@ -209,16 +210,18 @@ the algorithm:
    function returns always zero. 
 
 The number of evaluations of the problem and/or constraints are the search
-costs, also referred to as runtime, and used for the performance 
+costs, also referred to as *runtime*, and used for the performance 
 assessment of the algorithm. [#]_
 
+.. [#] Note, however, that the Pareto set in the bi-objective case is not always guaranteed to lie in its entirety within the region of interest.
+
 .. [#] |coco_problem_get_evaluations(const coco_problem_t * problem)|_ is a
-  convenience functions that returns the number of evaluations done on ``problem``. 
+  convenience function that returns the number of evaluations done on ``problem``. 
   Because this information is available to the optimization algorithm anyway, 
   the convenience function might be used additionally. 
   
 
-.. _sec:stopping:
+
 .. _sec:budget:
 
 Budget, Termination Criteria, and Restarts
@@ -228,18 +231,19 @@ We consider the budget, termination criteria, and restarts to be part of the
 benchmarked algorithm. Algorithms with any budget of function evaluations are eligible. 
 The choice of termination is a relevant part of the algorithm. 
 On the one hand, allowing a larger number of function evaluations increases the chance to achieve better function values. On the other hand, a timely
-termination of a stagnating run can improve the performance. [#]_
+termination of a stagnating run can improve the performance, as these evaluations
+can be used more effectively. [#]_
 
 To exploit a large number of function evaluations effectively, we encourage to
 use independent restarts [#]_, in particular for algorithms which terminate
 naturally within a comparatively small budget. Independent restarts do not
-change the central performance measure, however they improve the reliability, comparability [#]_, precision, and "visibility" of the measured results. 
+change the central performance measure [#]_, however, they improve the reliability, comparability [#]_, precision, and "visibility" of the measured results. 
 
-Moreover, any multistart procedure (which relies on an interim termination of the algorithm) is
-encouraged. Multistarts may not be independent as they can feature a parameter sweep (e.g., increasing population size [HAR1999]_ [AUG2005]_) or can be based on the outcome of the previous starts. 
+Moreover, any multistart procedure (which relies on an interim termination of the algorithm) is encouraged. 
+Multistarts may not be independent as they can feature a parameter sweep (e.g., increasing population size [HAR1999]_ [AUG2005]_) or can be based on the outcome of the previous starts. 
 
-An algorithm can be conclusively terminated if
-|coco_problem_final_target_hit|_ returns 1. This saves CPU cycles without affecting the performance assessment, because there is no target left to hit for the first time. 
+An algorithm can be conclusively terminated if |coco_problem_final_target_hit|_ returns 1. 
+This saves CPU cycles without affecting the performance assessment, because there is no target left to hit. 
 
 .. [#] In the single objective case care should be 
   taken to apply termination conditions that allow to hit the final target on
@@ -248,10 +252,15 @@ An algorithm can be conclusively terminated if
 
 .. [#] The COCO_ platform provides example code to implement independent restarts. 
 
+.. [#] Therefore we call the experimental approach budget-free. This claim 
+  however makes the assumption that the runtime distribution is the same on all 
+  instances of a function in a given dimension. This assumption cannot be
+  proven in general and might be violated in some cases for some algorithms. 
+
 .. [#] Algorithms are only comparable up to the smallest budget given to 
   any of them. 
-  
 
+.. |j| replace:: :math:`j`
 
 .. For example, using a fast algorithm
    with a small success probability, say 5% (or 1%), chances are that not a
@@ -296,7 +305,7 @@ algorithms" on an entire test suite is encouraged.
 .. In order to combine
    different parameter settings within a single algorithm, one can use multiple runs with
    different parameters (for example restarts, see also Section
-   :ref:`sec:stopping`), or probing techniques to identify
+   :ref:`sec:budget`), or probing techniques to identify
    problem-wise the appropriate parameters online. The underlying assumption in
    this experimental setup is that also in practice we do not know in advance
    whether the algorithm will face :math:`f_1` or :math:`f_2`, a unimodal or a
@@ -324,13 +333,13 @@ Recommendations
 ===============
 
 The performance assessment is based on a set of evaluation counts
-associated with the :math:`f`-value of a solution. 
+associated with the :math:`f`-value or -vector of a solution. 
 By default, each evaluation count is associated with the respectively *evaluated*
 solution and hence its :math:`f`-value. 
 The solution associated *to the current (last) evaluation* can be changed by calling |coco_recommend_solution|_, thereby associating the :math:`f`-value of the
 *recommended* solution (instead of the *evaluated* solution) with the current evaluation count. 
 A recommendation is best viewed as the *currently best known approximation* of the
-optimum delivered by the optimization algorithm, or as the currently most 
+optimum [#]_ delivered by the optimization algorithm, or as the currently most 
 desirable return value of the algorithm. 
 
 Recommendations allow the algorithm to explore solutions without affecting the
@@ -341,6 +350,10 @@ necessary nor advantageous to recommend the same solution repeatedly.
 
 .. On non-noisy suites the last evaluation changes the assessment only if the :math:`f`-value is better than all :math:`f`-values from previous evaluations. 
 
+.. [#] In the multi-objective scenario not only the last solution, but *all*
+  solutions are taken into account for this approximation. 
+  In the noisy scenario, a small number of the most current solutions will be
+  taken into account in future assessements. 
 
 Time Complexity Experiment
 ==========================
@@ -348,10 +361,9 @@ Time Complexity Experiment
 In order to get a rough measurement of the time complexity of the algorithm,
 the wall-clock or CPU time should be measured when running the algorithm on
 the benchmark suite. The chosen setup should reflect a "realistic average
-scenario". [#]_ The **time divided by the number of function evaluations is
-presented separately for each dimension** for which the suite provides
-benchmark problems. The chosen setup, coding language, compiler and
-computational architecture for conducting these experiments are described.
+scenario". [#]_ The **time divided by the number of function evaluations shall be
+presented separately for each dimension**. The chosen setup, coding language, compiler and
+computational architecture for conducting these experiments are to be described.
 
 .. The :file:`exampletiming.*` code template is provided to run this experiment. For CPU-inexpensive algorithms the timing might mainly reflect the time spent in function :math:`fgeneric`.
 
@@ -364,24 +376,29 @@ computational architecture for conducting these experiments are described.
   experiment previously, that is, the suite indices 105, 465, 825, 1185, 1545,
   1905. 
   
+
 .. ############################# References #########################################
+.. raw:: html
+    
+    <H2>References</H2>
+	
 
+.. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
-.. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
+.. [HAN2010] N. Hansen, A. Auger, S. Finck, and R. Ros (2010), Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
 
-.. [HAN2010] Hansen, N., A. Auger, S. Finck R. and Ros (2010), Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
-
-.. [AUG2005] A Auger and N Hansen. A restart CMA evolution strategy with
+.. [AUG2005] A. Auger and N. Hansen. A restart CMA evolution strategy with
    increasing population size. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1769--1776. IEEE Press, 2005.
 .. .. [Auger:2005b] A. Auger and N. Hansen. Performance evaluation of an advanced
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1777-1784, 2005.
-.. .. [Auger:2009] Anne Auger and Raymond Ros. Benchmarking the pure
-   random search on the BBOB-2009 testbed. In Franz Rothlauf, editor, *GECCO
+.. .. [Auger:2009] A. Auger and R. Ros. Benchmarking the pure
+   random search on the BBOB-2009 testbed. In F. Rothlauf, editor, *GECCO
    (Companion)*, pages 2479-2484. ACM, 2009.
 .. .. [Efron:1993] B. Efron and R. Tibshirani. *An introduction to the
    bootstrap.* Chapman & Hall/CRC, 1993.
+.. [CocoPerf] The BBOBies: COCO: Performance Assessment http://numbbo.github.io/coco-doc/perf-assessment/
 .. [HAR1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
    algorithm. In *Proceedings of the Genetic and Evolutionary Computation
    Conference (GECCO)*, volume 1, pages 258-265. ACM, 1999.
