@@ -10,6 +10,7 @@ import os, sys, time
 import numpy as np
 import warnings
 from matplotlib import pyplot as plt
+from subprocess import CalledProcessError, STDOUT
 
 from . import genericsettings
 
@@ -211,3 +212,62 @@ def legend(*args, **kwargs):
    except:
       kwargs.pop('framealpha')
       plt.legend(*args, **kwargs)
+      
+try:
+    from subprocess import check_output
+except ImportError:
+    import subprocess
+    def check_output(*popenargs, **kwargs):
+        r"""Run command with arguments and return its output as a byte string.
+        Backported from Python 2.7 as it's implemented as pure python on stdlib.
+        >>> check_output(['/usr/bin/python', '--version'])
+        Python 2.6.2
+        """
+        process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
+        output, unused_err = process.communicate()
+        retcode = process.poll()
+        if retcode:
+            cmd = kwargs.get("args")
+            if cmd is None:
+                cmd = popenargs[0]
+            error = subprocess.CalledProcessError(retcode, cmd)
+            error.output = output
+            raise error
+        return output
+
+def git(args):
+    """Run a git command and return its output.
+
+    All errors are deemed fatal and the system will quit."""
+    full_command = ['git']
+    full_command.extend(args)
+    try:
+        output = check_output(full_command, env=os.environ,
+                              stderr=STDOUT, universal_newlines=True)
+        output = output.rstrip()
+    except CalledProcessError as e:
+        # print('Failed to execute "%s"' % str(full_command))
+        raise
+    return output
+
+git_version = None
+def getGitVersion(pep440=False):
+    """Return somewhat readible version number from git, like
+    '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'"""
+    
+    global git_version
+    if not git_version:
+        try:
+            res = git(['describe', '--tags'])
+        except:
+            res = os.path.split(os.getcwd())[-1]
+        if pep440:
+            while len(res) and res[0] not in '0123456789':
+                res = res[1:]
+            if '-' in res:
+               res = '.'.join(res.split('-')[:2])
+        
+        git_version = res
+
+    return git_version
+      
