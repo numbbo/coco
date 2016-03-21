@@ -1,7 +1,7 @@
 .. title:: COCO: The bbob-biobj Test Suite
 
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) Test Suite
+COCO: The Bi-objective Black Box Optimization Benchmarking (``bbob-biobj``) Test Suite
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
@@ -40,7 +40,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   functions of the well-known single-objective noiseless <code class="docutils literal"><span class="pre">bbob</span></code> test suite. It will be used as the main test suite of
   the upcoming <a href="http://numbbo.github.io/workshops/BBOB-2016/">BBOB-2016 workshop</a> at GECCO. Besides giving the actual
   function definitions and presenting their (known) properties, this documentation also aims at
-  giving the rationale behind our approach in terms of function groups, instances, and potential objective space
+  giving the rationale behind our approach in terms of function groups, instances, and objective space
   normalization.
   </p>
   
@@ -64,6 +64,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
    Example plots of the Pareto front approximation, found by NSGA-II on selected ``bbob-biobj`` functions. In blue the
    non-dominated points at the end of different independent runs, in red the points that are non-dominated over all runs.
 
+.. Tea: f_1 and f_2 should be replaced by f_\alpha and f_\beta in all plots. Also, instead of "f16 :" do "f16: "
 
 .. #################################################################################
 .. #################################################################################
@@ -74,13 +75,13 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 Introduction
 ============
 
-In the following, we consider bi-objective, unconstrained and bound-constraint
+In the following, we consider bi-objective, unconstrained
 **minimization** problems of the form
 
 .. math::
-  \min_{x \in \mathbb{R}^D} f(x)=(f_\alpha(x),f_\beta(x))
+  \min_{x \in \mathbb{R}^D} f(x)=(f_\alpha(x),f_\beta(x)),
 
-where :math:`n` is the number of variables of the problem (also called
+where :math:`D` is the number of variables of the problem (also called
 the problem dimension), :math:`f_\alpha: \mathbb{R}^D \rightarrow \mathbb{R}`
 and :math:`f_\beta: \mathbb{R}^D \rightarrow \mathbb{R}` are the two
 objective functions, and the :math:`\min` operator is related to the
@@ -97,14 +98,12 @@ objective space :math:`f(\mathbb{R}^D)` is called *Pareto front*.
 
 The objective of the minimization problem is to find, with as few evaluations
 of |f| as possible, a set of non-dominated solutions which is (i) as large
-as possible and (ii) has |f|-values as close to the pareto front as possible. [#]_ 
+as possible and (ii) has |f|-values as close to the Pareto front as possible. 
 
-.. [#] Distance in |f| space is defined here such that nadir and ideal point 
-  have in each coordinate distance one. Neither of these points is however
-  freely accessible to the optimization algorithm. 
-
-.. The *ideal point* is defined as the vector (in objective space) 
-.. containing the optimal function values of the (two) objective functions.
+.. Tea: I deleted the footnote because it introduced two concepts not explained yet (ideal and
+   nadir points) and additionally brought in the issue of visibility of problem properties to algorithms, 
+   which should be addressed elsewhere. Also, until we discuss the actual metric used (hypervolume), it makes
+   no sense to go too deep into details here anyway.
 
 .. |f| replace:: :math:`f`
 
@@ -112,16 +111,15 @@ Definitions and Terminology
 ---------------------------
 We remind in this section different definitions.
 
-*function, instance*
- A function within COCO is a parametrized function :math:`f_\theta:
- \mathbb{R}^D \to \mathbb{R}^m` with :math:`\theta \in \Theta` a set of
- parameters. A parameter determines a so-called instance. For example,
- :math:`\theta` encodes the location of the optimum and two different
- instances have shifted optima.
+*function instance, problem*
+ Each function within COCO :math:`f_\theta: \mathbb{R}^D \to \mathbb{R}^m` is parametrized 
+ with parameter values :math:`\theta \in \Theta`. A parameter value determines a so-called *function 
+ instance*. For example, :math:`\theta` encodes the location of the optimum of single-objective functions, 
+ which means that different instances have shifted optima. In the ``bbob-biobj`` 
+ test suite, :math:`m=2` and the function instances are determined by the instances of the underlying
+ single-objective functions. 
  
- The integer :math:`n` is the dimension of the search space and
- :math:`m=2` for the  ``bbob-biobj`` test suite. For each function instance, 
- also called a *problem*, furthermore :math:`(n, \theta)` are fixed.
+ A *problem* is a function instance of a specific dimension :math:`D`.
 
 *ideal point*
  The ideal point is defined as the vector in objective space that
@@ -133,32 +131,32 @@ We remind in this section different definitions.
     :nowrap:
 
 	\begin{equation*}
-	z_{\rm ideal}  =  (f_\alpha^{\rm opt},f_\beta^{\rm opt}) \enspace.
+	z_{\rm ideal}  =  (f_\alpha^{\rm opt},f_\beta^{\rm opt}).
     \end{equation*}
     
  
 *nadir point* 
  The *nadir point* (in objective space) consists in each objective of
- the worst value obtained by a Pareto-optimal solution. More precisely
- let :math:`\mathcal{PO}` be the set of Pareto optimal points then the nadir point satisfies
+ the worst value obtained by a Pareto-optimal solution. More precisely,
+ let :math:`\mathcal{PO}` be the set of Pareto optimal points. Then the nadir point satisfies
  
  .. math::
     :nowrap:
 
 	\begin{equation*}
 	z_{\rm nadir}  =   \left( \sup_{x \in \mathcal{PO}} f_\alpha(x),
-     \sup_{x \in \mathcal{PO}} f_\beta(x)  \right) \enspace.
+     \sup_{x \in \mathcal{PO}} f_\beta(x)  \right).
     \end{equation*} 
     
  In the case of two objectives with a unique global minimum each (that
- is a single point in the search space maps to the global minimum) 
+ is, a single point in the search space maps to the global minimum) 
     
  .. math::
     :nowrap:
 
 	\begin{equation*}
 	z_{\rm nadir}  =   \left( f_\alpha(x_{\rm opt,\beta}),
-      f_\beta(x_{\rm opt,\alpha})  \right)
+      f_\beta(x_{\rm opt,\alpha})  \right),
     \end{equation*} 
     
    
@@ -181,8 +179,8 @@ the 55 ``bbob-biobj`` functions are given in Section
 them together with their common properties.
 
 
-The Single-objective ``bbob`` Functions Used
---------------------------------------------
+The Single-objective ``bbob`` Functions
+---------------------------------------
 The ``bbob-biobj`` test suite is designed to be able to assess  performance of algorithms with respect to well-identified difficulties in optimization typically  occurring in real-world problems. A multi-objective problem being a combination of single-objective problems, one can obtain multi-objective problems with representative difficulties by simply combining single objective functions with representative difficulties observed in real-world problems. For this purpose we naturally use the single-objective ``bbob`` suite [HAN2009fun]_.
 
 Combining all 24 ``bbob`` functions in pairs thereby results in
@@ -304,7 +302,7 @@ separate versions in the ``bbob`` suite. Finally our choice of  10 ``bbob`` func
   
 Using the above described pairwise combinations, this results in
 having :math:`10+{10 \choose 2} = 55` bi-objective functions in
-the final `bbob-biobj` suite. Those functions are denoted :math:`f_1` to :math:`f_{55}` in the sequel.
+the final `bbob-biobj` suite. These functions are denoted :math:`f_1` to :math:`f_{55}` in the sequel.
 
 .. The next section gives the
 .. reasoning behind choosing exactly these 10 functions.
@@ -325,7 +323,7 @@ From combining the original ``bbob`` function classes, we obtain 15 function cla
  8. moderate - multi-modal (:math:`f_{24}`, :math:`f_{25}`, :math:`f_{31}`, :math:`f_{32}`)
  9. moderate - weakly-structured (:math:`f_{26}`, :math:`f_{27}`, :math:`f_{33}`, :math:`f_{34}`)
  10. ill-conditioned - ill-conditioned (:math:`f_{35}`, :math:`f_{36}`, :math:`f_{41}`)
- 11. ill-conditioned - multi-modal (:math:`f_{37}`, :math:`f_{28}`, :math:`f_{42}`, :math:`f_{43}`)
+ 11. ill-conditioned - multi-modal (:math:`f_{37}`, :math:`f_{38}`, :math:`f_{42}`, :math:`f_{43}`)
  12. ill-conditioned - weakly-structured (:math:`f_{39}`, :math:`f_{40}`, :math:`f_{44}`, :math:`f_{45}`)
  13. multi-modal - multi-modal (:math:`f_{46}`, :math:`f_{47}`, :math:`f_{50}`)
  14. multi-modal - weakly structured (:math:`f_{48}`, :math:`f_{49}`, :math:`f_{51}`, :math:`f_{52}`)
@@ -343,22 +341,22 @@ From combining the original ``bbob`` function classes, we obtain 15 function cla
 More details about the single functions can be found in Section :ref:`sec-test-functions`. We however first describe their common properties in the coming sections.
 
 
-Normalization, Ideal and Nadir Point
+Normalization of Objectives
 ------------------------------------
 None of the 55 ``bbob-biobj`` functions is explicitly normalized and the
-optimization algorithms therefore have to cope with different scalings
-in the two objective functions. Typically, different orders of magnitude
+optimization algorithms therefore have to cope with objective values in
+different ranges. Typically, different orders of magnitude
 between the objective values can be observed.
 
-However, to facilitate a comparison between functions in the performance
-assessment, we use a normalization based on the ideal and the nadir point 
-to compute the hypervolume indicator (see
+However, to facilitate comparison of algorithm performance over different functions, 
+we normalize the objectives based on the ideal and nadir points
+before calculating the hypervolume indicator (see
 `bbob-biobj-specific performance assessment documentation
 <http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/>`_ for details).
-Both, ideal and nadir point can be computed, because the global 
+Both points can be computed, because the global 
 optimum is known and is unique for the 10 ``bbob`` base functions. 
 In the black-box optimization benchmarking setup, however, the values of the
-ideal and nadir point are not accessible to the optimization algorithm
+ideal and nadir points are not accessible to the optimization algorithm
 [BBO2016ex]_.
 
 
@@ -401,12 +399,13 @@ Instances
 Our test functions are parametrized and instances are instantiations of the
 underlying parameters (see [COCO:2016]_). The instances for the bi-objective
 functions are using instances of each single objective function composing the
-bi-objective one. In addition, we assert two conditions. 
+bi-objective one. In addition, we assert two conditions:
 
-  #. The two single-objective optima (also called the extreme optimal points) are not closer than :math:`10^{-4}` in search space. 
+  1. The Euclidean distance between the two single-objective optima (also called the 
+  extreme optimal points) in the search space is at least :math:`10^{-4}`. 
 
-  #. The Euclidean distance between the ideal and the nadir point (in objective 
-     space, considering raw |f|-values) is at least :math:`10^{-1}`. 
+  2. The Euclidean distance between the ideal and the nadir point in the non-normalized 
+  objective space is at least :math:`10^{-1}`. 
      
 .. .. TODO:: fact-check this: is it really raw |f|-values? 
 .. Dimo: this has been already checked in a discussion with Tea and Tobias
@@ -428,9 +427,12 @@ bi-objective one. In addition, we assert two conditions.
 .. However, in addition, we assert that
 
 
-We associate to an instance, an instance-id which is an integer. The relation between the instance-id, :math:`K^{\rm biobj}_{\rm id}`, of a bi-objective function and the instance-ids of the single-objective functions (:math:`K_{\rm id}^{f_\alpha}` and :math:`K_{\rm id}^{f_\beta}`) composing the bi-objective problem is the following:
+We associate to an instance, an instance-id which is an integer. The relation between the 
+instance-id, :math:`K^{f}_{\rm id}`, of a bi-objective function :math:`f = (f_\alpha, f_\beta)`
+and the instance-ids, :math:`K_{\rm id}^{f_\alpha}` and :math:`K_{\rm id}^{f_\beta}`, of its 
+underlying single-objective functions :math:`f_\alpha` and :math:`f_\beta` is the following:
 
- * :math:`K_{\rm id}^{f_\alpha} = 2 K^{\rm biobj}_{\rm id} + 1` and
+ * :math:`K_{\rm id}^{f_\alpha} = 2 K^{f}_{\rm id} + 1` and
  * :math:`K_{\rm id}^{f_\beta} = K_{\rm id}^{f_\alpha} + 1`
 
 
@@ -465,7 +467,9 @@ contains 10 instances.
    benchmarking.
 .. The user does not have a choice over the number of instances. 
 
-
+.. Tea: At this point I'm missing some discussion on how in the bi-objective case instances 
+   can affect more than just the "location of the optimum". 
+   
 
 .. _sec-test-functions:
 
@@ -485,77 +489,106 @@ and their properties.
 
 Quick access to the functions:
 
-1--10: |f1| |f2| |f3| |f4| |f5| |f6| |f7| |f8| |f9| |f10| 
++-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+|       ||fb1|_ ||fb2|_ ||fb6|_ ||fb8|_ ||fb13|_||fb14|_||fb15|_||fb17|_||fb20|_||fb21|_|
++-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+||fb1|_ | |f1|  | |f2|  | |f3|  | |f4|  | |f5|  | |f6|  | |f7|  | |f8|  | |f9|  | |f10| |
++-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+||fb2|_ |       | |f11| | |f12| | |f13| | |f14| | |f15| | |f16| | |f17| | |f18| | |f19| |
++-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+||fb6|_ |       |       | |f20| | |f21| | |f22| | |f23| | |f24| | |f25| | |f26| | |f27| |
++-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+||fb8|_ |       |       |       | |f28| | |f29| | |f30| | |f31| | |f32| | |f33| | |f34| |
++-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+||fb13|_|       |       |       |       | |f35| | |f36| | |f37| | |f38| | |f39| | |f40| |
++-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+||fb14|_|       |       |       |       |       | |f41| | |f42| | |f43| | |f44| | |f45| |
++-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+||fb15|_|       |       |       |       |       |       | |f46| | |f47| | |f48| | |f49| |
++-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+||fb17|_|       |       |       |       |       |       |       | |f50| | |f51| | |f52| |
++-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+||fb20|_|       |       |       |       |       |       |       |       | |f53| | |f54| |
++-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
+||fb21|_|       |       |       |       |       |       |       |       |       | |f55| |
++-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
 
-11--20: |f11| |f12| |f13| |f14| |f15| |f16| |f17| |f18| |f19|
-|f20| 
+.. |fb1| replace:: ``bbob`` :math:`f_1`
+.. _fb1: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=5
+.. |fb2| replace:: ``bbob`` :math:`f_2`
+.. _fb2: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=10
+.. |fb6| replace:: ``bbob`` :math:`f_6`
+.. _fb6: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=30
+.. |fb8| replace:: ``bbob`` :math:`f_8`
+.. _fb8: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=40
+.. |fb13| replace:: ``bbob`` :math:`f_{13}`
+.. _fb13: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=65
+.. |fb14| replace:: ``bbob`` :math:`f_{14}`
+.. _fb14: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=70
+.. |fb15| replace:: ``bbob`` :math:`f_{15}`
+.. _fb15: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=75
+.. |fb17| replace:: ``bbob`` :math:`f_{17}`
+.. _fb17: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=85
+.. |fb20| replace:: ``bbob`` :math:`f_{20}`
+.. _fb20: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=100
+.. |fb21| replace:: ``bbob`` :math:`f_{21}`
+.. _fb21: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=105
 
-21--30: |f21| |f22| |f23| |f24| |f25| |f26| |f27| |f28| |f29| 
-|f30| 
-
-31--40: |f31| |f32| |f33| |f34| |f35| |f36| |f37| |f38| |f39| 
-|f40| 
-
-41--50: |f41| |f42| |f43| |f44| |f45| |f46| |f47| |f48| |f49| 
-|f50| 
-
-51--55: |f51| |f52| |f53| |f54|  |f55|
-
-.. |f1| replace:: :ref:`f1 <f1>`:math:`_{1.1}`
-.. |f2| replace:: :ref:`f2 <f2>`:math:`_{1.2}`
-.. |f3| replace:: :ref:`f3 <f3>`:math:`_{1.6}`
-.. |f4| replace:: :ref:`f4 <f4>`:math:`_{1.8}`
-.. |f5| replace:: :ref:`f5 <f5>`:math:`_{1.13}`
-.. |f6| replace:: :ref:`f6 <f6>`:math:`_{1.14}`
-.. |f7| replace:: :ref:`f7 <f7>`:math:`_{1.15}`
-.. |f8| replace:: :ref:`f8 <f8>`:math:`_{1.17}`
-.. |f9| replace:: :ref:`f9 <f9>`:math:`_{1.20}`
-.. |f10| replace:: :ref:`f10 <f10>`:math:`_{1.21}`
-.. |f11| replace:: :ref:`f11 <f11>`:math:`_{2.2}`
-.. |f12| replace:: :ref:`f12 <f12>`:math:`_{2.6}`
-.. |f13| replace:: :ref:`f13 <f13>`:math:`_{2.8}`
-.. |f14| replace:: :ref:`f14 <f14>`:math:`_{2.13}`
-.. |f15| replace:: :ref:`f15 <f15>`:math:`_{2.14}`
-.. |f16| replace:: :ref:`f16 <f16>`:math:`_{2.15}`
-.. |f17| replace:: :ref:`f17 <f17>`:math:`_{2.17}`
-.. |f18| replace:: :ref:`f18 <f18>`:math:`_{2.20}`
-.. |f19| replace:: :ref:`f19 <f19>`:math:`_{2.21}`
-.. |f20| replace:: :ref:`f20 <f20>`:math:`_{6.6}`
-.. |f21| replace:: :ref:`f21 <f21>`:math:`_{6.8}`
-.. |f22| replace:: :ref:`f22 <f22>`:math:`_{6.13}`
-.. |f23| replace:: :ref:`f23 <f23>`:math:`_{6.14}`
-.. |f24| replace:: :ref:`f24 <f24>`:math:`_{6.15}`
-.. |f25| replace:: :ref:`f25 <f25>`:math:`_{6.17}`
-.. |f26| replace:: :ref:`f26 <f26>`:math:`_{6.20}`
-.. |f27| replace:: :ref:`f27 <f27>`:math:`_{6.21}`
-.. |f28| replace:: :ref:`f28 <f28>`:math:`_{8.8}`
-.. |f29| replace:: :ref:`f29 <f29>`:math:`_{8.13}`
-.. |f30| replace:: :ref:`f30 <f30>`:math:`_{8.14}`
-.. |f31| replace:: :ref:`f31 <f31>`:math:`_{8.15}`
-.. |f32| replace:: :ref:`f32 <f32>`:math:`_{8.17}`
-.. |f33| replace:: :ref:`f33 <f33>`:math:`_{8.20}`
-.. |f34| replace:: :ref:`f34 <f34>`:math:`_{8.21}`
-.. |f35| replace:: :ref:`f35 <f35>`:math:`_{13.13}`
-.. |f36| replace:: :ref:`f36 <f36>`:math:`_{13.14}`
-.. |f37| replace:: :ref:`f37 <f37>`:math:`_{13.15}`
-.. |f38| replace:: :ref:`f38 <f38>`:math:`_{13.17}`
-.. |f39| replace:: :ref:`f39 <f39>`:math:`_{13.20}`
-.. |f40| replace:: :ref:`f40 <f40>`:math:`_{13.21}`
-.. |f41| replace:: :ref:`f41 <f41>`:math:`_{14.14}`
-.. |f42| replace:: :ref:`f42 <f42>`:math:`_{14.15}`
-.. |f43| replace:: :ref:`f43 <f43>`:math:`_{14.17}`
-.. |f44| replace:: :ref:`f44 <f44>`:math:`_{14.20}`
-.. |f45| replace:: :ref:`f45 <f45>`:math:`_{14.21}`
-.. |f46| replace:: :ref:`f46 <f46>`:math:`_{15.15}`
-.. |f47| replace:: :ref:`f47 <f47>`:math:`_{15.17}`
-.. |f48| replace:: :ref:`f48 <f48>`:math:`_{15.20}`
-.. |f49| replace:: :ref:`f49 <f49>`:math:`_{15.21}`
-.. |f50| replace:: :ref:`f50 <f50>`:math:`_{17.17}`
-.. |f51| replace:: :ref:`f51 <f51>`:math:`_{17.20}`
-.. |f52| replace:: :ref:`f52 <f52>`:math:`_{17.21}`
-.. |f53| replace:: :ref:`f53 <f53>`:math:`_{20.20}`
-.. |f54| replace:: :ref:`f54 <f54>` :math:`_{20.21}`
-.. |f55| replace:: :ref:`f55 <f55>` :math:`_{21.21}`
+.. |f1| replace:: :ref:`f1 <f1>`
+.. |f2| replace:: :ref:`f2 <f2>`
+.. |f3| replace:: :ref:`f3 <f3>`
+.. |f4| replace:: :ref:`f4 <f4>`
+.. |f5| replace:: :ref:`f5 <f5>`
+.. |f6| replace:: :ref:`f6 <f6>`
+.. |f7| replace:: :ref:`f7 <f7>`
+.. |f8| replace:: :ref:`f8 <f8>`
+.. |f9| replace:: :ref:`f9 <f9>`
+.. |f10| replace:: :ref:`f10 <f10>`
+.. |f11| replace:: :ref:`f11 <f11>`
+.. |f12| replace:: :ref:`f12 <f12>`
+.. |f13| replace:: :ref:`f13 <f13>`
+.. |f14| replace:: :ref:`f14 <f14>`
+.. |f15| replace:: :ref:`f15 <f15>`
+.. |f16| replace:: :ref:`f16 <f16>`
+.. |f17| replace:: :ref:`f17 <f17>`
+.. |f18| replace:: :ref:`f18 <f18>`
+.. |f19| replace:: :ref:`f19 <f19>`
+.. |f20| replace:: :ref:`f20 <f20>`
+.. |f21| replace:: :ref:`f21 <f21>`
+.. |f22| replace:: :ref:`f22 <f22>`
+.. |f23| replace:: :ref:`f23 <f23>`
+.. |f24| replace:: :ref:`f24 <f24>`
+.. |f25| replace:: :ref:`f25 <f25>`
+.. |f26| replace:: :ref:`f26 <f26>`
+.. |f27| replace:: :ref:`f27 <f27>`
+.. |f28| replace:: :ref:`f28 <f28>`
+.. |f29| replace:: :ref:`f29 <f29>`
+.. |f30| replace:: :ref:`f30 <f30>`
+.. |f31| replace:: :ref:`f31 <f31>`
+.. |f32| replace:: :ref:`f32 <f32>`
+.. |f33| replace:: :ref:`f33 <f33>`
+.. |f34| replace:: :ref:`f34 <f34>`
+.. |f35| replace:: :ref:`f35 <f35>`
+.. |f36| replace:: :ref:`f36 <f36>`
+.. |f37| replace:: :ref:`f37 <f37>`
+.. |f38| replace:: :ref:`f38 <f38>`
+.. |f39| replace:: :ref:`f39 <f39>`
+.. |f40| replace:: :ref:`f40 <f40>`
+.. |f41| replace:: :ref:`f41 <f41>`
+.. |f42| replace:: :ref:`f42 <f42>`
+.. |f43| replace:: :ref:`f43 <f43>`
+.. |f44| replace:: :ref:`f44 <f44>`
+.. |f45| replace:: :ref:`f45 <f45>`
+.. |f46| replace:: :ref:`f46 <f46>`
+.. |f47| replace:: :ref:`f47 <f47>`
+.. |f48| replace:: :ref:`f48 <f48>`
+.. |f49| replace:: :ref:`f49 <f49>`
+.. |f50| replace:: :ref:`f50 <f50>`
+.. |f51| replace:: :ref:`f51 <f51>`
+.. |f52| replace:: :ref:`f52 <f52>`
+.. |f53| replace:: :ref:`f53 <f53>`
+.. |f54| replace:: :ref:`f54 <f54>` 
+.. |f55| replace:: :ref:`f55 <f55>` 
 
 .. [1,2,6,8,13,14,15,17,20,21]
 
@@ -578,16 +611,18 @@ Some Function Properties
 ------------------------
 In the description of the 55 ``bbob-biobj`` functions below, several
 general properties of objective functions will be mentioned that
-shall be quickly defined here.
+are defined here in short. It depends on these properties whether the optimization problem
+is easy or hard to solve.
 
 A *separable* function does not show any dependencies between the
-variables and can therefore be solved by applying :math:`n` consecutive
+variables and can therefore be solved by applying :math:`D` consecutive
 one-dimensional optimizations along the coordinate axes while
 keeping the other variables fixed. Consequently, *non-separable*
 problems must be considered. They are much more difficult to solve. The
 typical well-established technique to generate non-separable
-functions from separable ones such as :math:`x \in \mathbb{R}^D \mapsto g(x)` is the application of a rotation matrix
-:math:`\mathbf R` to :math:`x`, that is :math:`x \in \mathbb{R}^D \mapsto g(\mathbf R x)`.
+functions from separable ones is the application of a rotation matrix
+:math:`\mathbf R` to :math:`x`, that is :math:`x \in \mathbb{R}^D \mapsto g(\mathbf R x)`, 
+where :math:`g` is a separable function. 
 
 A *unimodal* function has only one local minimum which is at the same
 time also its global one. 
@@ -596,17 +631,18 @@ in practical optimization problems.
 
 *Ill-conditioning* is another typical challenge in real-parameter
 optimization and, besides multimodality, probably the most common one.
-Conditioning of a function can be rigorously formalized in the
+In a general case, we can consider a function as ill-conditioned if for
+solution points from the same level-set "the minimal displacement [...] that 
+produces a given function value improvement differs by
+orders of magnitude" [HAN2011]_.
+Conditioning can be rigorously formalized in the
 case of convex quadratic functions,
 :math:`f(x) = \frac{1}{2} x^THx` where :math:`H` is a symmetric
 positive definite matrix, as the condition number of the Hessian matrix
 :math:`H`. Since contour lines associated to a convex quadratic function
 are ellipsoids, the condition number corresponds to the square root of
 the ratio between the largest axis of the ellipsoid and the shortest axis.
-In the more general case, we can consider a function as ill-conditioned if for
-solution points from the same level-set "the minimal displacement [...] that 
-produces a given function value improvement differs by
-orders of magnitude" [HAN2011]_.
+
 
 The proposed ``bbob-biobj`` testbed contains ill-conditioned functions
 with a typical conditioning of :math:`10^6`. We believe this is a realistic
@@ -614,21 +650,21 @@ requirement, while we have seen practical problems with conditioning
 as large as :math:`10^{10}`.
 
 
-Bounded or Unbounded Domain
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-All bi-objective functions, provided in the ``bbob-biobj`` suite are unbounded, i.e., defined
+Domain Bounds
+-------------
+All bi-objective functions provided in the ``bbob-biobj`` suite are unbounded, i.e., defined
 on the entire real-valued space :math:`\mathbb{R}^D`. 
 Nevertheless, they are designed such that the search domain of interest is :math:`[-5,5]^D`
 and bound-constraint methods are likely to be competitive. [#]_
 
-While we believe that this domain contains the Pareto set, due to the nature
+While we believe that this domain contains the Pareto set in most cases, due to the nature
 of the ``bbob-biobj`` function definitions, there is no guarantee that this
-is the case --- it is only guaranteed that the extremal solutions and their
+is always the case --- it is only guaranteed that the extremal solutions and their
 neighborhood ball of radius one lie within this region.
 
 .. [#] The functions |coco_problem_get_smallest_value_of_interest|_ and 
   |coco_problem_get_largest_value_of_interest|_ 
-  of the COCO_ platform allows the optimizer
+  of the COCO_ platform allow the optimizer
   to retrieve the *search domain of interest* from the |coco_problem_t|_, 
   for example to generate the initial search points. 
 
@@ -664,8 +700,8 @@ Contained in the *separable - separable* function class.
 
 :math:`f_2`: Sphere/Ellipsoid separable
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sphere function (|f`1` in the bbob suite|_)
-and separable ellipsoid function (|f`2` in the bbob suite|_).
+Combination of the sphere function (|f`1` in the bbob suite|_)
+and the separable ellipsoid function (|f`2` in the bbob suite|_).
 
 Both objectives are unimodal and separable. While the first objective is
 truly convex-quadratic with a condition number of 1, the second
@@ -685,8 +721,8 @@ Contained in the *separable - separable* function class.
 
 :math:`f_3`: Sphere/Attractive sector
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sphere function (|f`1` in the bbob suite|_)
-and attractive sector function (|f`6` in the bbob suite|_).
+Combination of the sphere function (|f`1` in the bbob suite|_)
+and the attractive sector function (|f`6` in the bbob suite|_).
 
 Both objective functions are unimodal, but only the first objective is
 separable and truly convex quadratic. The attractive sector
@@ -710,8 +746,8 @@ Contained in the *separable - moderate* function class.
 
 :math:`f_4`: Sphere/Rosenbrock original
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sphere function (|f`1` in the bbob suite|_)
-and original, i.e., unrotated Rosenbrock function (|f`8` in the
+Combination of the sphere function (|f`1` in the bbob suite|_)
+and the original, i.e., unrotated Rosenbrock function (|f`8` in the
 bbob suite|_).
 
 The first objective is separable and truly convex, the second
@@ -736,8 +772,8 @@ Contained in the *separable - moderate* function class.
 
 :math:`f_5`: Sphere/Sharp ridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sphere function (|f`1` in the bbob suite|_)
-and sharp ridge function (|f`13` in the bbob suite|_).
+Combination of the sphere function (|f`1` in the bbob suite|_)
+and the sharp ridge function (|f`13` in the bbob suite|_).
 
 Both objective functions are unimodal.
 In addition to the simple, separable, and differentiable first
@@ -766,8 +802,8 @@ Contained in the *separable - ill-conditioned* function class.
 
 :math:`f_6`: Sphere/Sum of different powers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sphere function (|f`1` in the bbob suite|_)
-and sum of different powers function (|f`14` in the bbob suite|_).
+Combination of the sphere function (|f`1` in the bbob suite|_)
+and the sum of different powers function (|f`14` in the bbob suite|_).
 
 Both objective functions are unimodal. The first objective is
 separable, the second non-separable.
@@ -789,8 +825,8 @@ Contained in the *separable - ill-conditioned* function class.
 
 :math:`f_7`: Sphere/Rastrigin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sphere function (|f`1` in the bbob suite|_)
-and Rastrigin function (|f`15` in the bbob suite|_).
+Combination of the sphere function (|f`1` in the bbob suite|_)
+and the Rastrigin function (|f`15` in the bbob suite|_).
 
 In addition to the simple sphere function, the prototypical highly
 multimodal Rastrigin function needs to be solved which has originally
@@ -815,8 +851,8 @@ Contained in the *separable - multi-modal* function class.
 
 :math:`f_8`: Sphere/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sphere function (|f`1` in the bbob suite|_)
-and Schaffer F7 function with condition number 10 (|f`17` in
+Combination of the sphere function (|f`1` in the bbob suite|_)
+and the Schaffer F7 function with condition number 10 (|f`17` in
 the bbob suite|_).
 
 In addition to the simple sphere function, an asymmetric, non-separable,
@@ -838,8 +874,8 @@ Contained in the *separable - multi-modal* function class.
 
 :math:`f_9`: Sphere/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sphere function (|f`1` in the bbob suite|_)
-and Schwefel function (|f`20` in the bbob suite|_).
+Combination of the sphere function (|f`1` in the bbob suite|_)
+and the Schwefel function (|f`20` in the bbob suite|_).
 
 While the first objective function is separable and unimodal,
 the second objective function is partially separable and highly
@@ -859,8 +895,8 @@ Contained in the *separable - weakly-structured* function class.
 
 :math:`f_{10}`: Sphere/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sphere function (|f`1` in the bbob suite|_)
-and Gallagher function with 101 peaks (|f`21` in the bbob
+Combination of the sphere function (|f`1` in the bbob suite|_)
+and the Gallagher function with 101 peaks (|f`21` in the bbob
 suite|_).
 
 While the first objective function is separable and unimodal,
@@ -901,8 +937,8 @@ Contained in the *separable - separable* function class.
 
 :math:`f_{12}`: Ellipsoid separable/Attractive sector
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of separable ellipsoid function (|f`2` in the bbob suite|_) 
-and attractive sector function (|f`6` in the bbob suite|_).
+Combination of the separable ellipsoid function (|f`2` in the bbob suite|_) 
+and the attractive sector function (|f`6` in the bbob suite|_).
 
 Both objective functions are unimodal but only the first
 one is separable. The first objective function, in addition,
@@ -924,8 +960,8 @@ Contained in the *separable - moderate* function class.
 
 :math:`f_{13}`: Ellipsoid separable/Rosenbrock original
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of separable ellipsoid function (|f`2` in the
-bbob suite|_) and original, i.e., unrotated Rosenbrock function
+Combination of the separable ellipsoid function (|f`2` in the
+bbob suite|_) and the original, i.e., unrotated Rosenbrock function
 (|f`8` in the bbob suite|_).
 
 Only the first objective is separable and unimodal. The second
@@ -950,8 +986,8 @@ Contained in the *separable - moderate* function class.
 
 :math:`f_{14}`: Ellipsoid separable/Sharp ridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of separable ellipsoid function (|f`2` in the
-bbob suite|_) and sharp ridge function (|f`13` in the bbob suite|_).
+Combination of the separable ellipsoid function (|f`2` in the
+bbob suite|_) and the sharp ridge function (|f`13` in the bbob suite|_).
 
 Both objective functions are unimodal but only the first one is
 separable.
@@ -977,8 +1013,8 @@ Contained in the *separable - ill-conditioned* function class.
 
 :math:`f_{15}`: Ellipsoid separable/Sum of different powers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of separable ellipsoid function (|f`2` in the
-bbob suite|_) and sum of different powers function
+Combination of the separable ellipsoid function (|f`2` in the
+bbob suite|_) and the sum of different powers function
 (|f`14` in the bbob suite|_).
 
 Both objective functions are unimodal but only the first one is
@@ -1003,8 +1039,8 @@ Contained in the *separable - ill-conditioned* function class.
 
 :math:`f_{16}`: Ellipsoid separable/Rastrigin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of separable ellipsoid function (|f`2` in the
-bbob suite|_) and Rastrigin function (|f`15` in the bbob suite|_).
+Combination of the separable ellipsoid function (|f`2` in the
+bbob suite|_) and the Rastrigin function (|f`15` in the bbob suite|_).
 
 The objective functions show rather opposite properties.
 The first one is separable, the second not. The first one
@@ -1031,8 +1067,8 @@ Contained in the *separable - multi-modal* function class.
 
 :math:`f_{17}`: Ellipsoid separable/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of separable ellipsoid function (|f`2` in the
-bbob suite|_) and Schaffer F7 function with condition number 10
+Combination of the separable ellipsoid function (|f`2` in the
+bbob suite|_) and the Schaffer F7 function with condition number 10
 (|f`17` in the bbob suite|_).
 
 Also here, both single objectives possess opposing properties.
@@ -1054,8 +1090,8 @@ Contained in the *separable - multi-modal* function class.
 
 :math:`f_{18}`: Ellipsoid separable/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of separable ellipsoid function (|f`2` in the
-bbob suite|_) and Schwefel function (|f`20` in the bbob suite|_).
+Combination of the separable ellipsoid function (|f`2` in the
+bbob suite|_) and the Schwefel function (|f`20` in the bbob suite|_).
 
 The first objective is unimodal, separable and highly ill-conditioned.
 The second objective is partially separable and highly multimodal---having
@@ -1076,8 +1112,8 @@ Contained in the *separable - weakly-structured* function class.
 
 :math:`f_{19}`: Ellipsoid separable/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of separable ellipsoid function (|f`2` in the
-bbob suite|_) and Gallagher function with 101 peaks (|f`21` in the bbob suite|_).
+Combination of the separable ellipsoid function (|f`2` in the
+bbob suite|_) and the Gallagher function with 101 peaks (|f`21` in the bbob suite|_).
 
 While the first objective function is separable, unimodal, and
 highly ill-conditioned (condition number of about :math:`10^6`),
@@ -1109,6 +1145,9 @@ Both functions are unimodal and highly asymmetric, where only one
 roughly :math:`(1/2)^D` yields low function values. The objective
 functions' optima are located at the tips of those two cones. 
 
+Contained in the *moderate - moderate* function class.
+
+
 
 .. .. rubric:: Information gained from this function:
 
@@ -1123,8 +1162,8 @@ functions' optima are located at the tips of those two cones.
    
 :math:`f_{21}`: Attractive sector/Rosenbrock original
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of attractive sector function (|f`6`
-in the bbob suite|_) and Rosenbrock function (|f`8` in the bbob suite|_).
+Combination of the attractive sector function (|f`6`
+in the bbob suite|_) and the Rosenbrock function (|f`8` in the bbob suite|_).
 
 The first function is unimodal but highly asymmetric, where only one
 *hypercone* (with angular base area) with a volume of
@@ -1147,8 +1186,8 @@ Contained in the *moderate - moderate* function class.
    
 :math:`f_{22}`: Attractive sector/Sharp ridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of attractive sector function (|f`6`
-in the bbob suite|_) and sharp ridge function (|f`13` in the bbob suite|_).
+Combination of the attractive sector function (|f`6`
+in the bbob suite|_) and the sharp ridge function (|f`13` in the bbob suite|_).
 
 Both objective functions are unimodal and non-separable. The
 first objective is highly asymmetric in the sense that only one
@@ -1170,8 +1209,8 @@ Contained in the *moderate - ill-conditioned* function class.
    
 :math:`f_{23}`: Attractive sector/Sum of different powers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of attractive sector function (|f`6`
-in the bbob suite|_) and sum of different powers function
+Combination of the attractive sector function (|f`6`
+in the bbob suite|_) and the sum of different powers function
 (|f`14` in the bbob suite|_).
 
 Both objective functions are unimodal and non-separable. The
@@ -1196,8 +1235,8 @@ Contained in the *moderate - ill-conditioned* function class.
    
 :math:`f_{24}`: Attractive sector/Rastrigin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of attractive sector function (|f`6`
-in the bbob suite|_) and Rastrigin function
+Combination of the attractive sector function (|f`6`
+in the bbob suite|_) and the Rastrigin function
 (|f`15` in the bbob suite|_).
 
 Both objectives are non-separable, and the second one
@@ -1219,8 +1258,8 @@ Contained in the *moderate - multi-modal* function class.
    
 :math:`f_{25}`: Attractive sector/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of attractive sector function (|f`6`
-in the bbob suite|_) and Schaffer F7 function with condition number 10
+Combination of the attractive sector function (|f`6`
+in the bbob suite|_) and the Schaffer F7 function with condition number 10
 (|f`17` in the bbob suite|_).
 
 Both objectives are non-separable and asymmetric.
@@ -1243,8 +1282,8 @@ Contained in the *moderate - multi-modal* function class.
    
 :math:`f_{26}`: Attractive sector/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of attractive sector function (|f`6`
-in the bbob suite|_) and Schwefel function (|f`20` in the bbob suite|_).
+Combination of the attractive sector function (|f`6`
+in the bbob suite|_) and the Schwefel function (|f`20` in the bbob suite|_).
 
 The first objective is non-separable, unimodal, and asymmetric.
 The second objective is partially separable and highly multimodal---having
@@ -1264,8 +1303,8 @@ Contained in the *moderate - weakly-structured* function class.
    
 :math:`f_{27}`: Attractive sector/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of attractive sector function (|f`6`
-in the bbob suite|_) and Gallagher function with 101 peaks (|f`21` in the bbob suite|_).
+Combination of the attractive sector function (|f`6`
+in the bbob suite|_) and the Gallagher function with 101 peaks (|f`21` in the bbob suite|_).
 
 Both objective functions are non-separable but only the first
 is unimodal. The first objective function is furthermore asymmetric.
@@ -1309,7 +1348,8 @@ Contained in the *moderate - moderate* function class.
    
 :math:`f_{29}`: Rosenbrock original/Sharp ridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of Rosenbrock functions (|f`8` in the bbob suite|_) and sharp ridge function (|f`13` in the bbob suite|_).
+Combination of the Rosenbrock function (|f`8` in the bbob suite|_) and the 
+sharp ridge function (|f`13` in the bbob suite|_).
 
 The first objective function is partially separable (tri-band structure)
 and has a local optimum with an attraction volume of about 25\%.
@@ -1330,7 +1370,7 @@ Contained in the *moderate - ill-conditioned* function class.
    
 :math:`f_{30}`: Rosenbrock original/Sum of different powers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of Rosenbrock functions (|f`8` in the bbob suite|_) and sum of different powers function
+Combination of the Rosenbrock function (|f`8` in the bbob suite|_) and the sum of different powers function
 (|f`14` in the bbob suite|_).
 
 The first objective function is partially separable (tri-band structure)
@@ -1353,7 +1393,7 @@ Contained in the *moderate - ill-conditioned* function class.
    
 :math:`f_{31}`: Rosenbrock original/Rastrigin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of Rosenbrock functions (|f`8` in the bbob suite|_) and Rastrigin function
+Combination of the Rosenbrock function (|f`8` in the bbob suite|_) and the Rastrigin function
 (|f`15` in the bbob suite|_).
 
 The first objective function is partially separable (tri-band structure)
@@ -1375,7 +1415,8 @@ Contained in the *moderate - multi-modal* function class.
    
 :math:`f_{32}`: Rosenbrock original/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of Rosenbrock functions (|f`8` in the bbob suite|_) and Schaffer F7 function with condition number 10
+Combination of the Rosenbrock function (|f`8` in the bbob suite|_) and the 
+Schaffer F7 function with condition number 10
 (|f`17` in the bbob suite|_).
 
 The first objective function is partially separable (tri-band structure)
@@ -1398,7 +1439,8 @@ Contained in the *moderate - multi-modal* function class.
    
 :math:`f_{33}`: Rosenbrock original/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of Rosenbrock functions (|f`8` in the bbob suite|_) and Schwefel function (|f`20` in the bbob suite|_).
+Combination of the Rosenbrock function (|f`8` in the bbob suite|_) and the 
+Schwefel function (|f`20` in the bbob suite|_).
 
 Both objective functions are partially separable.
 While the first objective function has a local optimum with an attraction
@@ -1423,7 +1465,8 @@ Contained in the *moderate - weakly-structured* function class.
    
 :math:`f_{34}`: Rosenbrock original/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of Rosenbrock functions (|f`8` in the bbob suite|_) and Gallagher function with 101 peaks (|f`21` in the bbob suite|_).
+Combination of the Rosenbrock function (|f`8` in the bbob suite|_) and 
+the Gallagher function with 101 peaks (|f`21` in the bbob suite|_).
 
 The first objective function is partially separable, the second one
 non-separable. While the first objective function has a local optimum
@@ -1466,7 +1509,8 @@ Contained in the *ill-conditioned - ill-conditioned* function class.
    
 :math:`f_{36}`: Sharp ridge/Sum of different powers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sharp ridge function (|f`13` in the bbob suite|_) and sum of different powers function
+Combination of the sharp ridge function (|f`13` in the bbob suite|_) and the 
+sum of different powers function
 (|f`14` in the bbob suite|_).
 
 Both functions are uni-modal and non-separable.
@@ -1490,7 +1534,7 @@ Contained in the *ill-conditioned - ill-conditioned* function class.
    
 :math:`f_{37}`: Sharp ridge/Rastrigin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sharp ridge function (|f`13` in the bbob suite|_) and Rastrigin function
+Combination of the sharp ridge function (|f`13` in the bbob suite|_) and the Rastrigin function
 (|f`15` in the bbob suite|_).
 
 Both functions are non-separable. While the first one
@@ -1512,7 +1556,8 @@ Contained in the *ill-conditioned - multi-modal* function class.
    
 :math:`f_{38}`: Sharp ridge/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sharp ridge function (|f`13` in the bbob suite|_) and Schaffer F7 function with condition number 10
+Combination of the sharp ridge function (|f`13` in the bbob suite|_) and the 
+Schaffer F7 function with condition number 10
 (|f`17` in the bbob suite|_).
 
 Both functions are non-separable. While the first one
@@ -1533,7 +1578,8 @@ Contained in the *ill-conditioned - multi-modal* function class.
    
 :math:`f_{39}`: Sharp ridge/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sharp ridge function (|f`13` in the bbob suite|_) and Schwefel function (|f`20` in the bbob suite|_).
+Combination of the sharp ridge function (|f`13` in the bbob suite|_) and the 
+Schwefel function (|f`20` in the bbob suite|_).
 
 While the first objective function is unimodal, non-separable, and
 non-differentiable at its ridge, the second objective function is highly
@@ -1555,7 +1601,8 @@ Contained in the *ill-conditioned - weakly-structured* function class.
    
 :math:`f_{40}`: Sharp ridge/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sharp ridge function (|f`13` in the bbob suite|_) and Gallagher function with 101 peaks (|f`21` in the bbob suite|_).
+Combination of the sharp ridge function (|f`13` in the bbob suite|_) and the 
+Gallagher function with 101 peaks (|f`21` in the bbob suite|_).
 
 Both objective functions are non-separable.
 While the first objective function is unimodal and non-differentiable at
@@ -1599,8 +1646,8 @@ Contained in the *ill-conditioned - ill-conditioned* function class.
    
 :math:`f_{42}`: Sum of different powers/Rastrigin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sum of different powers functions
-(|f`14` in the bbob suite|_) and Rastrigin function
+Combination of the sum of different powers functions
+(|f`14` in the bbob suite|_) and the Rastrigin function
 (|f`15` in the bbob suite|_).
 
 Both objective functions are non-separable. While the first one
@@ -1622,8 +1669,8 @@ Contained in the *ill-conditioned - multi-modal* function class.
    
 :math:`f_{43}`: Sum of different powers/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sum of different powers functions
-(|f`14` in the bbob suite|_) and Schaffer F7 function with
+Combination of the sum of different powers functions
+(|f`14` in the bbob suite|_) and the Schaffer F7 function with
 condition number 10 (|f`17` in the bbob suite|_).
 
 Both objective functions are non-separable. While the first one
@@ -1644,8 +1691,8 @@ Contained in the *ill-conditioned - multi-modal* function class.
    
 :math:`f_{44}`: Sum of different powers/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sum of different powers functions
-(|f`14` in the bbob suite|_) and Schwefel function (|f`20` in the bbob suite|_).
+Combination of the sum of different powers functions
+(|f`14` in the bbob suite|_) and the Schwefel function (|f`20` in the bbob suite|_).
 
 Both objectives are non-separable.
 While the first objective function is unimodal,
@@ -1669,8 +1716,8 @@ Contained in the *ill-conditioned - weakly-structured* function class.
    
 :math:`f_{45}`: Sum of different powers/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of sum of different powers functions
-(|f`14` in the bbob suite|_) and Gallagher function with
+Combination of the sum of different powers functions
+(|f`14` in the bbob suite|_) and the Gallagher function with
 101 peaks (|f`21` in the bbob suite|_).
 
 Both objective functions are non-separable.
@@ -1713,8 +1760,8 @@ Contained in the *multi-modal - multi-modal* function class.
    
 :math:`f_{47}`: Rastrigin/Schaffer F7, condition 10
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of Rastrigin function
-(|f`15` in the bbob suite|_) and Schaffer F7 function with
+Combination of the Rastrigin function
+(|f`15` in the bbob suite|_) and the Schaffer F7 function with
 condition number 10 (|f`17` in the bbob suite|_).
 
 Both objective functions are non-separable and highly multi-modal.
@@ -1732,8 +1779,8 @@ Contained in the *multi-modal - multi-modal* function class.
    
 :math:`f_{48}`: Rastrigin/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of Rastrigin function
-(|f`15` in the bbob suite|_) and Schwefel function (|f`20` in the bbob suite|_).
+Combination of the Rastrigin function
+(|f`15` in the bbob suite|_) and the Schwefel function (|f`20` in the bbob suite|_).
 
 Both objective functions are non-separable and highly multi-modal where
 the first has roughly :math:`10^D` local optima and the most prominent
@@ -1753,8 +1800,8 @@ Contained in the *multi-modal - weakly-structured* function class.
    
 :math:`f_{49}`: Rastrigin/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of Rastrigin function
-(|f`15` in the bbob suite|_) and Gallagher function with
+Combination of the Rastrigin function
+(|f`15` in the bbob suite|_) and the Gallagher function with
 101 peaks (|f`21` in the bbob suite|_).
 
 Both objective functions are non-separable and highly multi-modal where
@@ -1794,9 +1841,9 @@ Contained in the *multi-modal - multi-modal* function class.
    
 :math:`f_{51}`: Schaffer F7, condition 10/Schwefel x*sin(x)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of Schaffer F7 function with
+Combination of the Schaffer F7 function with
 condition number 10 (|f`17` in the bbob suite|_)
-and Schwefel function (|f`20` in the bbob suite|_).
+and the Schwefel function (|f`20` in the bbob suite|_).
 
 Both objective functions are non-separable and highly multi-modal.
 While frequency and amplitude of the modulation vary in an almost
@@ -1816,9 +1863,9 @@ Contained in the *multi-modal - weakly-structured* function class.
    
 :math:`f_{52}`: Schaffer F7, condition 10/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of Schaffer F7 function with
+Combination of the Schaffer F7 function with
 condition number 10 (|f`17` in the bbob suite|_)
-and Gallagher function with
+and the Gallagher function with
 101 peaks (|f`21` in the bbob suite|_).
 
 Both objective functions are non-separable and highly multi-modal.
@@ -1865,7 +1912,7 @@ Contained in the *weakly-structured - weakly-structured* function class.
    
 :math:`f_{54}`: Schwefel x*sin(x)/Gallagher 101 peaks
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Combination of Schwefel function (|f`20` in the bbob suite|_) and Gallagher function with
+Combination of the Schwefel function (|f`20` in the bbob suite|_) and the Gallagher function with
 101 peaks (|f`21` in the bbob suite|_).
 
 Both objective functions are non-separable and highly multi-modal.
