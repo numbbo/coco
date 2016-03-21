@@ -1,8 +1,8 @@
 .. title:: COCO: The bbob-biobj Test Suite
 
-$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 COCO: The Bi-objective Black Box Optimization Benchmarking (``bbob-biobj``) Test Suite
-$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
 .. ...
@@ -1146,8 +1146,6 @@ roughly :math:`(1/2)^D` yields low function values. The objective
 functions' optima are located at the tips of those two cones. 
 
 Contained in the *moderate - moderate* function class.
-
-
 
 .. .. rubric:: Information gained from this function:
 
