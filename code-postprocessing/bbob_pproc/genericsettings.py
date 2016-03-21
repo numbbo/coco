@@ -32,6 +32,8 @@ tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_table = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
+target_runlength = 10 # used in ppfigs.main
+
 xlimit_expensive = 1e3  # used in 
 tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7) # used as input for pptables.main in rungenericmany 
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
@@ -300,11 +302,13 @@ class GECCOBBOBTestbed(Testbed):
         self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
         self.pprldmany_target_values = targetValues(10**np.arange(2, -8.2, -0.2)) # possibly changed in config
         self.pprldmany_target_range_latex = '$10^{[-8..2]}$'
-                
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
         self.ppfvdistr_min_target = 1e-8
         self.functions_with_legend = (1, 24, 101, 130)
-
+        self.number_of_functions = 24
+        self.pptable_ftarget = 1e-8 # value for determining the success ratio
+        self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
+        
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
                              getBenchmarksShortInfos(False)), 
@@ -332,11 +336,15 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.ppfigs_ftarget = 1e-5
         self.ppfigdim_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config
         self.pprldistr_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
-        self.pprldmany_target_values = targetValues(10**np.arange(0, -5.1, -0.1)) # possibly changed in config
+        target_values = np.append(np.append(10**np.arange(0, -5.1, -0.2), [0]), -10**np.arange(-5, -3.9, 0.2))
+        self.pprldmany_target_values = targetValues(target_values) # possibly changed in config
         self.pprldmany_target_range_latex = '$10^{[-5..0]}$'
         self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5) # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)
+        self.number_of_functions = 55
+        self.pptable_ftarget = 1e-5 # value for determining the success ratio
+        self.pptable_targetsOfInterest = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
@@ -366,10 +374,10 @@ def loadCurrentTestbed(isBiobjective, targetValues):
     
     global current_testbed
 
-    if not current_testbed:
-        if isBiobjective:        
-            current_testbed = GECCOBiobjBBOBNoisefreeTestbed(targetValues)
-        else:
-            current_testbed = GECCOBBOBNoisefreeTestbed(targetValues)
+    #if not current_testbed:
+    if isBiobjective:        
+        current_testbed = GECCOBiobjBBOBNoisefreeTestbed(targetValues)
+    else:
+        current_testbed = GECCOBBOBNoisefreeTestbed(targetValues)
 
     return current_testbed
