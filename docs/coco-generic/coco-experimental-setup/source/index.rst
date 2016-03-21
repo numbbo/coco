@@ -227,6 +227,9 @@ assessment of the algorithm. [#]_
 Budget, Termination Criteria, and Restarts
 ------------------------------------------
 
+.. Niko: appart from termination and restarts, we should suggest using maximal 
+  budget linear with dimension and increasing with experiments
+
 We consider the budget, termination criteria, and restarts to be part of the 
 benchmarked algorithm. Algorithms with any budget of function evaluations are eligible. 
 The choice of termination is a relevant part of the algorithm. 

@@ -182,7 +182,7 @@ a function of |Irefi|, namely as |Irefi| :math:`+\,t`, where the target precisio
 
 .. math::
 
-  t \in \{ -10^{-4}, -10^{-4.2}, -10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.8}, 10^{-4.6}, \dots, 10^{-0.2}, 10^0 \}
+  t \in \{ -10^{-4}, -10^{-4.2}, -10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0 \}
 
 That is, if not stated otherwise, the runtimes of these 58 target values are
 presented (usually as empirical cumulative distribution function, ECDF). 
