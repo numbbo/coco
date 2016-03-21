@@ -4,10 +4,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from cocoex import Problem
-from cocoex.utilities import about_equal
-import numpy as np
+import os
 import sys
+import shutil
+import doctest
+import numpy as np
+import cocoex as ex
+from cocoex import Suite
+from cocoex.utilities import about_equal
+import example_experiment
+
+default_testcases = ["bbob2009_testcases.txt"]
 
 def read_test_vectors(fd):
     """
@@ -28,30 +35,32 @@ def process_test_cases(fd, suite_name, test_vectors):
     """
     number_of_testcases = 0
     number_of_failures = 0
-    previous_function_id = None
+    previous_problem_index = None
+    suite = Suite(suite_name, "instances:1-15", "")
+    print("Testing suite", suite_name)
     for test_case in fd:
         number_of_testcases += 1
 
-        ## A test case is a triple (function_id, test_vector_id,
-        ## expected_y) separated by a single space. 
-        function_id, test_vector_id, expected_y = test_case.split(" ")
+        ## A test case is a 4-tuple (deprecated_problem_index, problem_index, test_vector_id,
+        ## expected_y) separated by a tab. 
+        deprecated_problem_index, problem_index, test_vector_id, expected_y = test_case.split("\t")
         ## Do type conversion. Python gurus probably know an elegant
         ## one line solution...
-        function_id = int(function_id)
+        deprecated_problem_index = int(deprecated_problem_index)
         test_vector_id = int(test_vector_id)
         expected_y = float(expected_y)
 
         ## We cache the problem instances because creating an instance
         ## can be expensive depending on the transformation.
-        if function_id != previous_function_id:
-            problem = Problem(suite_name, function_id)
-            previous_function_id = function_id
+        if deprecated_problem_index != previous_problem_index:
+            problem = suite.get_problem(int(problem_index))
+            previous_problem_index = deprecated_problem_index
         test_vector = test_vectors[test_vector_id]
         y = problem(test_vector[:problem.number_of_variables])
         if not about_equal(y, expected_y):
             number_of_failures += 1
             if number_of_failures < 100:
-                print("%8i %8i FAILED expected=%.8e observed=%.8e" % (function_id, test_vector_id, expected_y, y))
+                print("%8i %8i FAILED expected=%.8e observed=%.8e" % (deprecated_problem_index, test_vector_id, expected_y, y))
             elif number_of_failures == 100:
                 print("... further failed tests suppressed ...")
     print("%i of %i tests passed (failure rate %.2f%%)" % (number_of_testcases - number_of_failures, number_of_testcases, (100.0 * number_of_failures) / number_of_testcases))
@@ -64,9 +73,55 @@ def process_testfile(testfile):
         test_vectors = read_test_vectors(fd)
         process_test_cases(fd, test_suite, test_vectors)
 
+def testmod(module):
+    """`doctest`s `testmod` method with `raise_on_error=True` setting"""
+    print("  doctest of %s" % str(module))
+    doctest.testmod(module,  # optionflags=doctest.ELLIPSIS,
+                    raise_on_error=True)
+
+def run_doctests():
+    """Run doctests on "all" modules.
+
+    To include this in a unittest enviroment,
+    see https://docs.python.org/2/library/doctest.html#unittest-api
+    """
+    interface = ex.interface if hasattr(ex, 'interface') else ex._interface
+    testmod(ex)
+    if not sys.version.startswith('3'):
+        print("  CAVEAT: doctest OF cocoex.interface IS, FOR SOME REASON, " +
+              "INEFFECTIVE IN PYTHON 2 ")
+    testmod(interface)
+    testmod(example_experiment)
+
+def _clean_up(folder, start_matches, protected):
+    """permanently remove entries in `folder` which begin with any of
+    `start_matches`, where `""` matches any string, and which are not in
+    `protected`.
+
+    CAVEAT: use with care, as with `"", ""` as second and third arguments 
+    this deletes all folder entries like `rm *` does. """
+    if not os.path.isdir(folder):
+        return
+    if not protected and "" in start_matches:
+        raise ValueError(
+            '_clean_up(folder, [..., "", ...], []) is not permitted, resembles "rm *"')
+    for d in os.listdir(folder):
+        if d not in protected:
+            for name in start_matches:
+                if d.startswith(name):
+                    shutil.rmtree(os.path.join(folder, d))
+                    break
+
+
 def main(args):
-    for arg in args:
-        process_testfile(arg)
+    list_before = os.listdir('exdata') if os.path.isdir('exdata') else []
+    print('Running doctests...'), sys.stdout.flush()
+    run_doctests()
+    print('doctests done.\nRunning example_experiment:'), sys.stdout.flush()
+    example_experiment.main()
+    for arg in args if args else default_testcases:
+        process_testfile(arg) if args or os.path.isfile(arg) else None
+    _clean_up('exdata', ['random_search_on_bbob', 'doctest', 'default'], list_before)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

@@ -1,13 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Creates ERTs and convergence figures for multiple algorithms."""
+"""Creates aRTs and convergence figures for multiple algorithms."""
 from __future__ import absolute_import
 import os
 import matplotlib.pyplot as plt
 import numpy
 from pdb import set_trace
-from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings, htmldesc
+from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings, htmldesc, ppfigparam
 from ..ppfig import saveFigure
 from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 
@@ -19,16 +19,15 @@ from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 #           {'color': 'm'},
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
 
-ftarget_default = 1e-8
 show_significance = 0.01  # for zero nothing is shown
-scaling_figure_caption_start_fixed = (r"""Expected running time (\ERT\ in number of $f$-evaluations 
+scaling_figure_caption_start_fixed = (r"""Average running time (\aRT\ in number of $f$-evaluations 
                 as $\log_{10}$ value), divided by dimension for target function value $BBOBPPFIGSFTARGET$ 
                 versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. """
                 )
-scaling_figure_caption_start_rlbased = (r"""Expected running time (\ERT\ in number of $f$-evaluations 
+scaling_figure_caption_start_rlbased = (r"""Average running time (\aRT\ in number of $f$-evaluations 
                 as $\log_{10}$ value) divided by dimension versus dimension. The target function value 
                 is chosen such that the REFERENCE_ALGORITHM artificial algorithm just failed to achieve 
-                an \ERT\ of $BBOBPPFIGSFTARGET\times\DIM$. """
+                an \aRT\ of $BBOBPPFIGSFTARGET\times\DIM$. """
                 )
 scaling_figure_caption_end = (
                 r"Different symbols " +
@@ -39,29 +38,6 @@ scaling_figure_caption_end = (
                  r"with $p<0.01$ and Bonferroni correction number of dimensions (six).  ") 
                          if show_significance else ''
                 )
-
-ecdfs_figure_caption_standard = (
-                r"Bootstrapped empirical cumulative distribution of the number " +
-                r"of objective function evaluations divided by dimension " +
-                r"(FEvals/DIM) for 50 targets in $10^{[-8..2]}$ for all "+
-                r"functions and subgroups in #1-D. The ``best 2009'' line "+
-                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
-                r"for each single target."
-                )
-
-ecdfs_figure_caption_rlbased = (
-                r"Bootstrapped empirical cumulative distribution of the number " +
-                r"of objective function evaluations divided by dimension " +
-                r"(FEvals/DIM) for all functions and subgroups in #1-D." +
-                r" The targets are chosen from $10^{[-8..2]}$ " +
-                r"such that the REFERENCE_ALGORITHM artificial algorithm just " +
-                r"not reached them within a given budget of $k$ $\times$ DIM, " +
-                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. " +
-                r"The ``best 2009'' line " +
-                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
-                r"for each selected target."
-                )
-
 
 styles = genericsettings.line_styles
 def fix_styles(number, styles=styles):
@@ -79,22 +55,6 @@ show_algorithms = []
 fontsize = 10.0
 legend = False
 
-#Get benchmark short infos.
-infofile = os.path.join(os.path.split(__file__)[0], '..', 'benchmarkshortinfos.txt')
-try:
-    funInfos = {}
-    f = open(infofile,'r')
-    for line in f:
-        if len(line) == 0 or line.startswith('%') or line.isspace() :
-            continue
-        funcId, funcInfo = line[0:-1].split(None,1)
-        funInfos[int(funcId)] = funcId + ' ' + funcInfo
-    f.close()
-except IOError, (errno, strerror):
-    print "I/O error(%s): %s" % (errno, strerror)
-    print 'Could not find file', infofile, \
-          'Titles in figures will not be displayed.'
-          
 def scaling_figure_caption(target):
     # need to be used in rungenericmany.py!?
     assert len(target) == 1
@@ -110,6 +70,33 @@ def scaling_figure_caption(target):
 
 def ecdfs_figure_caption(target):
     assert len(target) == 1
+
+    best2009text = (
+                r"The ``best 2009'' line " +
+                r"corresponds to the best \aRT\ observed during BBOB 2009 " +
+                r"for each selected target."
+                )
+    ecdfs_figure_caption_standard = (
+                r"Bootstrapped empirical cumulative distribution of the number " +
+                r"of objective function evaluations divided by dimension " +
+                r"(FEvals/DIM) for " +
+                str(len(genericsettings.current_testbed.pprldmany_target_range_latex)) +
+                r" targets in " + 
+                str(genericsettings.current_testbed.pprldmany_target_range_latex) +
+                r" for all functions and subgroups in #1-D. " + ( best2009text
+                if genericsettings.current_testbed.name != 'bbob-biobj' else "")
+                )
+    ecdfs_figure_caption_rlbased = (
+                r"Bootstrapped empirical cumulative distribution of the number " +
+                r"of objective function evaluations divided by dimension " +
+                r"(FEvals/DIM) for all functions and subgroups in #1-D." +
+                r" The targets are chosen from " +
+                genericsettings.current_testbed.pprldmany_target_range_latex +
+                r"such that the REFERENCE_ALGORITHM artificial algorithm just " +
+                r"not reached them within a given budget of $k$ $\times$ DIM, " +
+                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. " + best2009text
+                )    
+    
     if isinstance(target, pproc.RunlengthBasedTargetValues):
         s = ecdfs_figure_caption_rlbased.replace('REFERENCE_ALGORITHM', 
                                                          target.reference_algorithm)
@@ -304,7 +291,7 @@ def beautify(legend=False, rightlegend=False):
     axisHandle.set_yticklabels(tmp2)
 
     if legend:
-        plt.legend(loc=0, numpoints=1)
+        toolsdivers.legend(loc=0, numpoints=1)
 
 def generateData(dataSet, target):
     """Returns an array of results to be plotted.
@@ -329,8 +316,8 @@ def generateData(dataSet, target):
     res[3] = numpy.max(dataSet.maxevals)
     return res
 
-def main(dictAlg, htmlFilePrefix, sortedAlgs=None, target=ftarget_default, outputdir='ppdata', verbose=True):
-    """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
+def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, outputdir='ppdata', verbose=True):
+    """From a DataSetList, returns figures showing the scaling: aRT/dim vs dim.
     
     One function and one target per figure.
     
@@ -347,6 +334,8 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, target=ftarget_default, outpu
     if len(target) != 1:
         raise ValueError('only a single target can be managed in ppfigs, ' + str(len(target)) + ' targets were given')
     
+    funInfos = ppfigparam.read_fun_infos(isBiobjective)    
+
     dictFunc = pproc.dictAlgByFun(dictAlg)
     if sortedAlgs is None:
         sortedAlgs = sorted(dictAlg.keys())
@@ -423,25 +412,25 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, target=ftarget_default, outpu
             #             verticalalignment='bottom',
             #             horizontalalignment='center')
 
-        if not bestalg.bestalgentries2009:
-            bestalg.loadBBOB2009()
+        bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
 
-        bestalgdata = []
-        dimbestalg = list(df[0] for df in bestalg.bestalgentries2009 if df[1] == f)
-        dimbestalg.sort()
-        dimbestalg2 = []
-        for d in dimbestalg:
-            entry = bestalg.bestalgentries2009[(d, f)]
-            tmp = entry.detERT(target((f, d)))[0]
-            if numpy.isfinite(tmp):
-                bestalgdata.append(float(tmp)/d)
-                dimbestalg2.append(d)
-
-        tmp = plt.plot(dimbestalg2, bestalgdata, color=refcolor, linewidth=10,
-                       marker='d', markersize=25, markeredgecolor=refcolor, zorder=-1
-                       #label='best 2009', 
-                       )
-        handles.append(tmp)
+        if bestalgentries:        
+            bestalgdata = []
+            dimbestalg = list(df[0] for df in bestalgentries if df[1] == f)
+            dimbestalg.sort()
+            dimbestalg2 = []
+            for d in dimbestalg:
+                entry = bestalgentries[(d, f)]
+                tmp = entry.detERT(target((f, d)))[0]
+                if numpy.isfinite(tmp):
+                    bestalgdata.append(float(tmp)/d)
+                    dimbestalg2.append(d)
+    
+            tmp = plt.plot(dimbestalg2, bestalgdata, color=refcolor, linewidth=10,
+                           marker='d', markersize=25, markeredgecolor=refcolor, zorder=-1
+                           #label='best 2009', 
+                           )
+            handles.append(tmp)
         
         if show_significance: # plot significance-stars
             xstar, ystar = [], []
@@ -459,8 +448,10 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, target=ftarget_default, outpu
                             ystar.append(ert/dim)
 
             plt.plot(xstar, ystar, 'k*', markerfacecolor=None, markeredgewidth=2, markersize=0.5*styles[0]['markersize'])
-        if funInfos:
-            plt.gca().set_title(funInfos[f])
+        
+        fontSize = genericsettings.getFontSize(funInfos.values())
+        if f in funInfos.keys():
+            plt.gca().set_title(funInfos[f], fontsize=fontSize)
 
         isLegend = False
         if legend:
@@ -530,8 +521,8 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, target=ftarget_default, outpu
 
         handles.append(tmp)
 
-        if funInfos:
-            plt.gca().set_title(funInfos[f])
+        if f in funInfos.keys():
+            plt.gca().set_title(funInfos[f], fontsize=fontSize)
 
         beautify(rightlegend=legend)
 
@@ -539,7 +530,7 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, target=ftarget_default, outpu
             plotLegend(handles)
         else:
             if f in (1, 24, 101, 130):
-                plt.legend()
+                toolsdivers.legend()
 
         saveFigure(filename, figFormat=genericsettings.getFigFormats(), verbose=verbose)
 

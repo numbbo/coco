@@ -45,7 +45,7 @@ import matplotlib.pyplot as plt
 from bbob_pproc import genericsettings, toolsstats, bestalg
 from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun
 from bbob_pproc.pprldistr import plotECDF, beautifyECDF
-from bbob_pproc.ppfig import consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
+from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers, logxticks
 from bbob_pproc.pptex import writeLabels, numtotext
 from bbob_pproc.compall.pprldmany import plotLegend
 
@@ -56,8 +56,7 @@ best = ('AMALGAM', 'iAMALGAM', 'VNS', 'MA-LS-CHAIN', 'BIPOP-CMA-ES', 'IPOP-ACTCM
    'DIRECT', 'DASA', 'POEMS', 'Cauchy-EDA', 'RANDOMSEARCH')
 
 # input parameter settings
-perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size_rld  # number of bootstrap samples drawn for each fct+target in the performance profile
-dpi_global_var = 100  # 100 ==> 800x600 (~160KB), 120 ==> 960x720 (~200KB), 150 ==> 1200x900 (~300KB) looks ugly in latex
+perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 3
 
 styles = [{'marker': 'o', 'linestyle': '-', 'color': 'b'},
@@ -87,7 +86,7 @@ def beautify():
     a.set_xscale('log')
     #Tick label handling
 
-    plt.xlabel('log10 of (ERT / ERTref)')
+    plt.xlabel('log10 of (aRT / aRTref)')
     plt.ylabel('Proportion of functions')
     logxticks()
     beautifyECDF()
@@ -128,9 +127,9 @@ def plot(dsList, dsref, targets=defaulttargets, istoolsstats=False, **kwargs):
     """Generates a graph showing the performance profile of an algorithm.
 
     We display the empirical cumulative distribution function ECDF of
-    the bootstrapped distribution of the expected running time (ERT)
+    the bootstrapped distribution of the average running time (aRT)
     for an algorithm to reach the function value :py:data:`targets`
-    normalized by the ERT of the reference algorithm for these
+    normalized by the aRT of the reference algorithm for these
     targets.
 
     :param DataSetList dsList: data set for one algorithm
@@ -147,7 +146,7 @@ def plot(dsList, dsref, targets=defaulttargets, istoolsstats=False, **kwargs):
     for entry in dsList:
         for t in targets:
             # TODO: alternative: min(dsref[(entry.dim, entry.funcId)].detEvals((t,))[0]) 
-            #       is the min from the alg with the best ERT 
+            #       is the min from the alg with the best aRT 
             flg_ert = 1
             if flg_ert:
                 normalizer = dsref[(entry.dim, entry.funcId)].detERT((t,))[0]

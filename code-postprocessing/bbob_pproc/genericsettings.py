@@ -18,14 +18,12 @@ if 1 < 3 and test:
     np.seterr(all='raise')
 np.seterr(under='ignore')  # ignore underflow
 
-#global instancesOfInterest, tabDimsOfInterest, tabValsOfInterest, figValsOfInterest, rldDimsOfInterest, rldValsOfInterest
-#set_trace()
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000 # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
-generate_svg_files = False # generate the svg figures
+generate_svg_files = True # generate the svg figures
 scaling_figures_with_boxes = True 
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
@@ -37,18 +35,13 @@ target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
 xlimit_expensive = 1e3  # used in 
 tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7) # used as input for pptables.main in rungenericmany 
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
-rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)
 
-tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
+#tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
 
 rldDimsOfInterest = (5, 20)
-figValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # this is a bad name that should improve, which fig, what vals???
-# figValsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8) #in/outcomment if desired
-##Put backward to have the legend in the same order as the lines.
 
-simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max((0, in_a_hurry)))
-simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a_hurry)))
+simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max((0, in_a_hurry)))  # for tables and plots
 
 # single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default in pprldistr.plot method, on graph for each
 # single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each, seems not in use
@@ -58,7 +51,6 @@ simulated_runlength_bootstrap_sample_size_rld = 10 + 90 / (1 + 10 * max((0, in_a
 # summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-1 
 # summarized_target_function_values = [-1, 3] # easy easy 
 # summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure (means what?)
-# not (yet) in use: pprldmany_target_values = pproc.TargetValues(10**np.arange(-8, 2, 0.2))  # might not work because of cyclic import
 
 instancesOfInterest2009 = {1:3, 2:3, 3:3, 4:3, 5:3}  # 2009 instances
 instancesOfInterest2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1,
@@ -67,6 +59,11 @@ instancesOfInterest2012 = {1:1, 2:1, 3:1, 4:1, 5:1, 21:1, 22:1, 23:1, 24:1,
                        25:1, 26:1, 27:1, 28:1, 29:1, 30:1}  # 2012 instances
 instancesOfInterest2013 = {1:1, 2:1, 3:1, 4:1, 5:1, 31:1, 32:1, 33:1, 34:1,
                        35:1, 36:1, 37:1, 38:1, 39:1, 40:1}  # 2013 instances
+instancesOfInterest2015 = {1:1, 2:1, 3:1, 4:1, 5:1, 41:1, 42:1, 43:1, 44:1,
+                       45:1, 46:1, 47:1, 48:1, 49:1, 50:1}  # 2015 instances
+instancesOfInterest2016 = {1:1, 2:1, 3:1, 4:1, 5:1, 51:1, 52:1, 53:1, 54:1,
+                       55:1, 56:1, 57:1, 58:1, 59:1, 60:1}  # 2016 instances
+instancesOfInterestBiobj2016 = {1:1, 2:1, 3:1, 4:1, 5:1}  # bi-objective 2016 instances
 instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 41:1, 42:1, 43:1, 44:1,
                        45:1, 46:1, 47:1, 48:1, 49:1, 50:1}  # 2015 instances; only for consistency checking
 
@@ -206,6 +203,10 @@ rclegend = {"fontsize": 20}
 single_algorithm_file_name = 'templateBBOBarticle'
 two_algorithm_file_name = 'templateBBOBcmp'
 many_algorithm_file_name = 'templateBBOBmany'
+index_html_file_name = 'ppdata'
+ppconv_file_name = 'ppconv'
+pprldmany_file_name = 'pprldmany'
+pprldmany_group_file_name = 'pprldmany_gr'
 
 latex_commands_for_html = 'latex_commands_for_html'    
 
@@ -221,8 +222,8 @@ isConv = False
 verbose = False
 outputdir = 'ppdata'
 inputsettings = 'color'
-isExpensive = None 
-isRldOnSingleFcts = False
+isExpensive = False 
+isRldOnSingleFcts = True
 isRLDistr = True
 ##
 isLogLoss = True # only affects rungeneric1
@@ -234,14 +235,17 @@ isScaleUp = True # only affects rungeneric2, only set here and not altered by an
 # Used by getopt:
 shortoptlist = "hvpo:"    
 longoptlist = ["help", "output-dir=", "noisy", "noise-free",
-               "tab-only", "fig-only", "rld-only", "rld-single-fcts",
+               "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
                "verbose", "settings=", "conv", 
-               "expensive", "not-expensive", "runlength-based",
+               "expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
-               "sca-only", "svg"]
+               "sca-only", "no-svg"]
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
 # and "sca-only" only affects rungeneric2
 
+def getBenchmarksShortInfos(isBiobjective):
+    return 'biobj-benchmarkshortinfos.txt' if isBiobjective else 'benchmarkshortinfos.txt'
+    
 def getFigFormats():
     if in_a_hurry:
         fig_formats = ('pdf', 'svg') if generate_svg_files else ('pdf',)
@@ -251,6 +255,11 @@ def getFigFormats():
     
     return fig_formats
     
+def getFontSize(nameList):
+    maxFuncLength = max(len(i) for i in nameList)
+    fontSize = 24 - max(0, 2 * ((maxFuncLength - 35) / 5))
+    return fontSize
+
 class Testbed(object):
     """this might become the future way to have settings related to testbeds
     TODO: should go somewhere else than genericsettings.py 
@@ -278,14 +287,28 @@ class Testbed(object):
 class GECCOBBOBTestbed(Testbed):
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
     """
-    def __init__(self):
+    def __init__(self, targetValues):
         # TODO: should become a function, as low_budget is a display setting
         # not a testbed setting
         # only the short info, how to deal with both infos? 
-        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'  # 'benchmarkshortinfos.txt'
+        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
+        self.name = 'bbob'
         self.short_names = {}
+        self.hardesttargetlatex = '10^{-8}'
+        self.ppfigs_ftarget = 1e-8
+        self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # possibly changed in config
+        self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
+        self.pprldmany_target_values = targetValues(10**np.arange(2, -8.2, -0.2)) # possibly changed in config
+        self.pprldmany_target_range_latex = '$10^{[-8..2]}$'
+                
+        self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
+        self.ppfvdistr_min_target = 1e-8
+        self.functions_with_legend = (1, 24, 101, 130)
+
         try:
-            info_list = open(os.path.join(os.path.dirname(__file__), 'benchmarkshortinfos.txt'), 'r').read().split('\n')
+            info_list = open(os.path.join(os.path.dirname(__file__), 
+                             getBenchmarksShortInfos(False)), 
+                             'r').read().split('\n')
             info_dict = {}
             for info in info_list:
                 key_val = info.split(' ', 1)
@@ -294,10 +317,59 @@ class GECCOBBOBTestbed(Testbed):
             self.short_names = info_dict
         except:
             warnings.warn('benchmark infos not found')
-    
+
+class GECCOBiobjBBOBTestbed(Testbed):
+    """Testbed used in the GECCO biobjective BBOB workshop 2016.
+    """
+    def __init__(self, targetValues):
+        # TODO: should become a function, as low_budget is a display setting
+        # not a testbed setting
+        # only the short info, how to deal with both infos? 
+        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
+        self.name = 'bbob-biobj'
+        self.short_names = {}
+        self.hardesttargetlatex = '10^{-5}'
+        self.ppfigs_ftarget = 1e-5
+        self.ppfigdim_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config
+        self.pprldistr_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
+        self.pprldmany_target_values = targetValues(10**np.arange(0, -5.1, -0.1)) # possibly changed in config
+        self.pprldmany_target_range_latex = '$10^{[-5..0]}$'
+        self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5) # possibly changed in config
+        self.ppfvdistr_min_target = 1e-5
+        self.functions_with_legend = (1, 30, 31, 55)
+
+        try:
+            info_list = open(os.path.join(os.path.dirname(__file__), 
+                                          getBenchmarksShortInfos(True)), 
+                                          'r').read().split('\n')
+            info_dict = {}
+            for info in info_list:
+                key_val = info.split(' ', 1)
+                if len(key_val) > 1:
+                    info_dict[int(key_val[0])] = key_val[1]
+            self.short_names = info_dict
+        except:
+            warnings.warn('benchmark infos not found')
+
 class GECCOBBOBNoisefreeTestbed(GECCOBBOBTestbed):
     __doc__ = GECCOBBOBTestbed.__doc__
 
+class GECCOBiobjBBOBNoisefreeTestbed(GECCOBiobjBBOBTestbed):
+    __doc__ = GECCOBiobjBBOBTestbed.__doc__
+
 # TODO: this needs to be set somewhere, e.g. in rungeneric*
 # or even better by investigating in the data attributes
-current_testbed = GECCOBBOBNoisefreeTestbed() 
+
+current_testbed = None
+
+def loadCurrentTestbed(isBiobjective, targetValues):
+    
+    global current_testbed
+
+    if not current_testbed:
+        if isBiobjective:        
+            current_testbed = GECCOBiobjBBOBNoisefreeTestbed(targetValues)
+        else:
+            current_testbed = GECCOBBOBNoisefreeTestbed(targetValues)
+
+    return current_testbed

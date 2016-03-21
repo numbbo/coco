@@ -1,0 +1,48 @@
+## Makefile to build C example programs included with the COCO distribution
+##
+## NOTE: We have tried to make this Makefile as generic and portable
+## as possible. However, there are many (incompatible) versions of
+## make floating around. We regularly test using GNU make and BSD make
+## from FreeBSD. If you have trouble compiling the examples, please
+## try to use GNU make. 
+##
+## On Windows it is best to use either the included NMakefile by running
+##
+##   nmake -f NMakefile
+##
+## or installing Cygwin and running GNU make from within Cygwin.
+
+LDFLAGS += -lm
+CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow -Wno-sign-compare -Wconversion
+
+########################################################################
+## Toplevel targets
+all: test_coco test_instance_extraction test_biobj
+
+clean:
+	rm -f coco.o 
+	rm -f test_coco.o test_coco  
+	rm -f test_instance_extraction.o test_instance_extraction  
+	rm -f test_biobj.o test_biobj  
+
+########################################################################
+## Programs
+test_coco: test_coco.o coco.o
+	${CC} ${CCFLAGS} -o test_coco coco.o test_coco.o ${LDFLAGS}  
+	
+test_instance_extraction: test_instance_extraction.o coco.o
+	${CC} ${CCFLAGS} -o test_instance_extraction coco.o test_instance_extraction.o ${LDFLAGS}  
+	
+test_biobj: test_biobj.o coco.o
+	${CC} ${CCFLAGS} -o test_biobj coco.o test_biobj.o ${LDFLAGS}  
+
+########################################################################
+## Additional dependencies
+coco.o: coco.h coco.c
+	${CC} -c ${CCFLAGS} -o coco.o coco.c
+test_coco.o: coco.h coco.c test_coco.c
+	${CC} -c ${CCFLAGS} -o test_coco.o test_coco.c
+test_instance_extraction.o: coco.h coco.c test_instance_extraction.c
+	${CC} -c ${CCFLAGS} -o test_instance_extraction.o test_instance_extraction.c
+test_biobj.o: coco.h coco.c test_biobj.c
+	${CC} -c ${CCFLAGS} -o test_biobj.o test_biobj.c

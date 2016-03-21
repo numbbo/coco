@@ -35,6 +35,9 @@
 #include <stdlib.h>
 #include <errno.h>
 
+/* In order to easily (un)comment unused functions */
+#define AVL_TREE_COMMENT_UNUSED 1
+
 /* We need either depths, counts or both (the latter being the default) */
 #if !defined(AVL_DEPTH) && !defined(AVL_COUNT)
 #define AVL_DEPTH
@@ -103,41 +106,41 @@ static void avl_rebalance(avl_tree_t *, avl_node_t *);
 static avl_node_t *avl_node_insert_after(avl_tree_t *avltree, avl_node_t *node, avl_node_t *newnode);
 
 #ifdef AVL_COUNT
-#define NODE_COUNT(n)  ((n) ? (n)->count : 0)
-#define L_COUNT(n)     (NODE_COUNT((n)->left))
-#define R_COUNT(n)     (NODE_COUNT((n)->right))
-#define CALC_COUNT(n)  (L_COUNT(n) + R_COUNT(n) + 1)
+#define AVL_NODE_COUNT(n)  ((n) ? (n)->count : 0)
+#define AVL_L_COUNT(n)     (AVL_NODE_COUNT((n)->left))
+#define AVL_R_COUNT(n)     (AVL_NODE_COUNT((n)->right))
+#define AVL_CALC_COUNT(n)  (AVL_L_COUNT(n) + AVL_R_COUNT(n) + 1)
 #endif
 
 #ifdef AVL_DEPTH
-#define NODE_DEPTH(n)  ((n) ? (n)->depth : 0)
-#define L_DEPTH(n)     (NODE_DEPTH((n)->left))
-#define R_DEPTH(n)     (NODE_DEPTH((n)->right))
-#define CALC_DEPTH(n)  ((unsigned char)((L_DEPTH(n) > R_DEPTH(n) ? L_DEPTH(n) : R_DEPTH(n)) + 1))
+#define AVL_NODE_DEPTH(n)  ((n) ? (n)->depth : 0)
+#define AVL_L_DEPTH(n)     (AVL_NODE_DEPTH((n)->left))
+#define AVL_R_DEPTH(n)     (AVL_NODE_DEPTH((n)->right))
+#define AVL_CALC_DEPTH(n)  ((unsigned char)((AVL_L_DEPTH(n) > AVL_R_DEPTH(n) ? AVL_L_DEPTH(n) : AVL_R_DEPTH(n)) + 1))
 #endif
 
-const avl_node_t avl_node_0 = { 0 };
-const avl_tree_t avl_tree_0 = { 0 };
-const avl_allocator_t avl_allocator_0 = { 0 };
+const avl_node_t avl_node_0 = { 0, 0, 0, 0, 0, 0, 0, 0 };
+const avl_tree_t avl_tree_0 = { 0, 0, 0, 0, 0, 0, 0 };
+const avl_allocator_t avl_allocator_0 = { 0, 0 };
 
-#define avl_const_node(x) ((avl_node_t *)(x))
-#define avl_const_item(x) ((void *)(x))
+#define AVL_CONST_NODE(x) ((avl_node_t *)(x))
+#define AVL_CONST_ITEM(x) ((void *)(x))
 
 static int avl_check_balance(avl_node_t *avlnode) {
 #ifdef AVL_DEPTH
   int d;
-  d = R_DEPTH(avlnode) - L_DEPTH(avlnode);
+  d = AVL_R_DEPTH(avlnode) - AVL_L_DEPTH(avlnode);
   return d < -1 ? -1 : d > 1;
 #else
   /*  int d;
-   *  d = ffs(R_COUNT(avl_node)) - ffs(L_COUNT(avl_node));
+   *  d = ffs(AVL_R_COUNT(avl_node)) - ffs(AVL_L_COUNT(avl_node));
    *  d = d < -1 ? -1 : d > 1;
    */
 #ifdef AVL_COUNT
   int pl, r;
 
-  pl = ffs(L_COUNT(avlnode));
-  r = R_COUNT(avlnode);
+  pl = ffs(AVL_L_COUNT(avlnode));
+  r = AVL_R_COUNT(avlnode);
 
   if (r >> pl + 1)
   return 1;
@@ -150,15 +153,14 @@ static int avl_check_balance(avl_node_t *avlnode) {
 #endif
 }
 
-/* Commented to silence the compiler.
-
 #ifdef AVL_COUNT
 static unsigned long avl_count(const avl_tree_t *avltree) {
   if (!avltree)
     return 0;
-  return NODE_COUNT(avltree->top);
+  return AVL_NODE_COUNT(avltree->top);
 }
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_at(const avl_tree_t *avltree, unsigned long index) {
   avl_node_t *avlnode;
   unsigned long c;
@@ -169,7 +171,7 @@ static avl_node_t *avl_at(const avl_tree_t *avltree, unsigned long index) {
   avlnode = avltree->top;
 
   while (avlnode) {
-    c = L_COUNT(avlnode);
+    c = AVL_L_COUNT(avlnode);
 
     if (index < c) {
       avlnode = avlnode->left;
@@ -182,7 +184,9 @@ static avl_node_t *avl_at(const avl_tree_t *avltree, unsigned long index) {
   }
   return NULL;
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static unsigned long avl_index(const avl_node_t *avlnode) {
   avl_node_t *next;
   unsigned long c;
@@ -190,18 +194,20 @@ static unsigned long avl_index(const avl_node_t *avlnode) {
   if (!avlnode)
     return 0;
 
-  c = L_COUNT(avlnode);
+  c = AVL_L_COUNT(avlnode);
 
   while ((next = avlnode->parent)) {
     if (avlnode == next->right)
-      c += L_COUNT(next) + 1;
+      c += AVL_L_COUNT(next) + 1;
     avlnode = next;
   }
 
   return c;
 }
 #endif
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static const avl_node_t *avl_search_leftmost_equal(const avl_tree_t *tree, const avl_node_t *node,
     const void *item) {
   avl_compare_t cmp = tree->cmpitem;
@@ -227,13 +233,14 @@ static const avl_node_t *avl_search_leftmost_equal(const avl_tree_t *tree, const
     r = node;
   }
 
-  return NULL; *//* To silence the compiler */
-/*
-}
-*/
+  return NULL; /* To silence the compiler */
 
-static const avl_node_t *avl_search_rightmost_equal(const avl_tree_t *tree, const avl_node_t *node,
-    const void *item) {
+}
+#endif
+
+static const avl_node_t *avl_search_rightmost_equal(const avl_tree_t *tree,
+                                                    const avl_node_t *node,
+                                                    const void *item) {
   avl_compare_t cmp = tree->cmpitem;
   void *userdata = tree->userdata;
   const avl_node_t *r = node;
@@ -268,8 +275,7 @@ static const avl_node_t *avl_search_rightmost_equal(const avl_tree_t *tree, cons
  *    1  if the returned node is equal
  * Returns NULL if no equal or larger element could be found.
  * O(lg n) */
-
-/* Commented to silence the compiler.
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_search_leftish(const avl_tree_t *tree, const void *item, int *exact) {
   avl_node_t *node;
   avl_compare_t cmp;
@@ -307,10 +313,10 @@ static avl_node_t *avl_search_leftish(const avl_tree_t *tree, const void *item, 
     }
   }
 
-  return NULL; *//* To silence the compiler */
-/*
+  return NULL; /* To silence the compiler */
+
 }
-*/
+#endif
 
 /* Searches for an item, returning either some exact
  * match, or (if no exact match could be found) the last (rightmost)
@@ -360,8 +366,7 @@ static avl_node_t *avl_search_rightish(const avl_tree_t *tree, const void *item,
   return NULL; /* To silence the compiler */
 }
 
-/* Commented to silence the compiler.
-
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_item_search_left(const avl_tree_t *tree, const void *item, int *exact) {
   avl_node_t *node;
   int c;
@@ -374,11 +379,11 @@ static avl_node_t *avl_item_search_left(const avl_tree_t *tree, const void *item
 
   node = avl_search_leftish(tree, item, exact);
   if (*exact)
-    return avl_const_node(avl_search_leftmost_equal(tree, node, item));
+    return AVL_CONST_NODE(avl_search_leftmost_equal(tree, node, item));
 
-  return avl_const_node(node);
+  return AVL_CONST_NODE(node);
 }
-*/
+#endif
 
 /* Searches for an item, returning either the last (rightmost) exact
  * match, or (if no exact match could be found) the last (rightmost)
@@ -397,9 +402,9 @@ static avl_node_t *avl_item_search_right(const avl_tree_t *tree, const void *ite
 
   node = avl_search_rightish(tree, item, exact);
   if (*exact)
-    return avl_const_node(avl_search_rightmost_equal(tree, node, item));
+    return AVL_CONST_NODE(avl_search_rightmost_equal(tree, node, item));
 
-  return avl_const_node(node);
+  return AVL_CONST_NODE(node);
 }
 
 /* Searches for the item in the tree and returns a matching node if found
@@ -521,7 +526,7 @@ static void avl_node_clear(avl_node_t *newnode) {
  * O(1) */
 static avl_node_t *avl_node_init(avl_node_t *newnode, const void *item) {
   if (newnode)
-    newnode->item = avl_const_item(item);
+    newnode->item = AVL_CONST_ITEM(item);
   return newnode;
 }
 
@@ -632,20 +637,24 @@ static avl_node_t *avl_node_insert(avl_tree_t *avltree, avl_node_t *newnode) {
   return c ? NULL : avl_node_insert_after(avltree, node, newnode);
 }
 
-/* Commented to silence the compiler.
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_node_insert_left(avl_tree_t *avltree, avl_node_t *newnode) {
   return avl_node_insert_before(avltree, avl_item_search_left(avltree, newnode->item, NULL), newnode);
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_node_insert_right(avl_tree_t *avltree, avl_node_t *newnode) {
   return avl_node_insert_after(avltree, avl_item_search_right(avltree, newnode->item, NULL), newnode);
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_node_insert_somewhere(avl_tree_t *avltree, avl_node_t *newnode) {
   return avl_node_insert_after(avltree, avl_search_rightish(avltree, newnode->item, NULL), newnode);
 }
-*/
+#endif
 
 /* Insert an item into the tree and return the new node.
  * Returns NULL and sets errno if memory for the new node could not be
@@ -667,8 +676,7 @@ static avl_node_t *avl_item_insert(avl_tree_t *avltree, const void *item) {
   return NULL;
 }
 
-/* Commented to silence the compiler.
-
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_item_insert_somewhere(avl_tree_t *avltree, const void *item) {
   avl_node_t *newnode;
 
@@ -680,7 +688,9 @@ static avl_node_t *avl_item_insert_somewhere(avl_tree_t *avltree, const void *it
     return avl_node_insert_somewhere(avltree, newnode);
   return NULL;
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_item_insert_before(avl_tree_t *avltree, avl_node_t *node, const void *item) {
   avl_node_t *newnode;
 
@@ -692,7 +702,9 @@ static avl_node_t *avl_item_insert_before(avl_tree_t *avltree, avl_node_t *node,
     return avl_node_insert_before(avltree, node, newnode);
   return NULL;
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_item_insert_after(avl_tree_t *avltree, avl_node_t *node, const void *item) {
   avl_node_t *newnode;
 
@@ -704,7 +716,9 @@ static avl_node_t *avl_item_insert_after(avl_tree_t *avltree, avl_node_t *node, 
     return avl_node_insert_after(avltree, node, newnode);
   return NULL;
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_item_insert_left(avl_tree_t *avltree, const void *item) {
   avl_node_t *newnode;
 
@@ -716,7 +730,9 @@ static avl_node_t *avl_item_insert_left(avl_tree_t *avltree, const void *item) {
     return avl_node_insert_left(avltree, newnode);
   return NULL;
 }
+#endif
 
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_item_insert_right(avl_tree_t *avltree, const void *item) {
   avl_node_t *newnode;
 
@@ -728,7 +744,7 @@ static avl_node_t *avl_item_insert_right(avl_tree_t *avltree, const void *item) 
     return avl_node_insert_right(avltree, newnode);
   return NULL;
 }
-*/
+#endif
 
 /* Deletes a node from the tree.
  * Returns the value of the node (even if it's NULL).
@@ -816,8 +832,7 @@ static void *avl_item_delete(avl_tree_t *avltree, const void *item) {
   return avl_node_delete(avltree, avl_item_search(avltree, item));
 }
 
-/* Commented to silence the compiler.
-
+#if (!AVL_TREE_COMMENT_UNUSED)
 static avl_node_t *avl_node_fixup(avl_tree_t *avltree, avl_node_t *newnode) {
   avl_node_t *oldnode = NULL, *node;
 
@@ -853,7 +868,7 @@ static avl_node_t *avl_node_fixup(avl_tree_t *avltree, avl_node_t *newnode) {
 
   return oldnode;
 }
-*/
+#endif
 
 /**
  * avl_rebalance:
@@ -881,10 +896,10 @@ static void avl_rebalance(avl_tree_t *avltree, avl_node_t *avlnode) {
     case -1:
       child = avlnode->left;
 #           ifdef AVL_DEPTH
-      if (L_DEPTH(child) >= R_DEPTH(child)) {
+      if (AVL_L_DEPTH(child) >= AVL_R_DEPTH(child)) {
 #           else
 #           ifdef AVL_COUNT
-        if (L_COUNT(child) >= R_COUNT(child)) {
+        if (AVL_L_COUNT(child) >= AVL_R_COUNT(child)) {
 #           else
 #           error No balancing possible.
 #           endif
@@ -897,12 +912,12 @@ static void avl_rebalance(avl_tree_t *avltree, avl_node_t *avlnode) {
         *superparent = child;
         child->parent = parent;
 #               ifdef AVL_COUNT
-        avlnode->count = CALC_COUNT(avlnode);
-        child->count = CALC_COUNT(child);
+        avlnode->count = AVL_CALC_COUNT(avlnode);
+        child->count = AVL_CALC_COUNT(child);
 #               endif
 #               ifdef AVL_DEPTH
-        avlnode->depth = CALC_DEPTH(avlnode);
-        child->depth = CALC_DEPTH(child);
+        avlnode->depth = AVL_CALC_DEPTH(avlnode);
+        child->depth = AVL_CALC_DEPTH(child);
 #               endif
       } else {
         gchild = child->right;
@@ -921,24 +936,24 @@ static void avl_rebalance(avl_tree_t *avltree, avl_node_t *avlnode) {
         *superparent = gchild;
         gchild->parent = parent;
 #               ifdef AVL_COUNT
-        avlnode->count = CALC_COUNT(avlnode);
-        child->count = CALC_COUNT(child);
-        gchild->count = CALC_COUNT(gchild);
+        avlnode->count = AVL_CALC_COUNT(avlnode);
+        child->count = AVL_CALC_COUNT(child);
+        gchild->count = AVL_CALC_COUNT(gchild);
 #               endif
 #               ifdef AVL_DEPTH
-        avlnode->depth = CALC_DEPTH(avlnode);
-        child->depth = CALC_DEPTH(child);
-        gchild->depth = CALC_DEPTH(gchild);
+        avlnode->depth = AVL_CALC_DEPTH(avlnode);
+        child->depth = AVL_CALC_DEPTH(child);
+        gchild->depth = AVL_CALC_DEPTH(gchild);
 #               endif
       }
       break;
     case 1:
       child = avlnode->right;
 #           ifdef AVL_DEPTH
-      if (R_DEPTH(child) >= L_DEPTH(child)) {
+      if (AVL_R_DEPTH(child) >= AVL_L_DEPTH(child)) {
 #           else
 #           ifdef AVL_COUNT
-        if (R_COUNT(child) >= L_COUNT(child)) {
+        if (AVL_R_COUNT(child) >= AVL_L_COUNT(child)) {
 #           else
 #           error No balancing possible.
 #           endif
@@ -951,12 +966,12 @@ static void avl_rebalance(avl_tree_t *avltree, avl_node_t *avlnode) {
         *superparent = child;
         child->parent = parent;
 #               ifdef AVL_COUNT
-        avlnode->count = CALC_COUNT(avlnode);
-        child->count = CALC_COUNT(child);
+        avlnode->count = AVL_CALC_COUNT(avlnode);
+        child->count = AVL_CALC_COUNT(child);
 #               endif
 #               ifdef AVL_DEPTH
-        avlnode->depth = CALC_DEPTH(avlnode);
-        child->depth = CALC_DEPTH(child);
+        avlnode->depth = AVL_CALC_DEPTH(avlnode);
+        child->depth = AVL_CALC_DEPTH(child);
 #               endif
       } else {
         gchild = child->left;
@@ -975,23 +990,23 @@ static void avl_rebalance(avl_tree_t *avltree, avl_node_t *avlnode) {
         *superparent = gchild;
         gchild->parent = parent;
 #               ifdef AVL_COUNT
-        avlnode->count = CALC_COUNT(avlnode);
-        child->count = CALC_COUNT(child);
-        gchild->count = CALC_COUNT(gchild);
+        avlnode->count = AVL_CALC_COUNT(avlnode);
+        child->count = AVL_CALC_COUNT(child);
+        gchild->count = AVL_CALC_COUNT(gchild);
 #               endif
 #               ifdef AVL_DEPTH
-        avlnode->depth = CALC_DEPTH(avlnode);
-        child->depth = CALC_DEPTH(child);
-        gchild->depth = CALC_DEPTH(gchild);
+        avlnode->depth = AVL_CALC_DEPTH(avlnode);
+        child->depth = AVL_CALC_DEPTH(child);
+        gchild->depth = AVL_CALC_DEPTH(gchild);
 #               endif
       }
       break;
     default:
 #           ifdef AVL_COUNT
-      avlnode->count = CALC_COUNT(avlnode);
+      avlnode->count = AVL_CALC_COUNT(avlnode);
 #           endif
 #           ifdef AVL_DEPTH
-      avlnode->depth = CALC_DEPTH(avlnode);
+      avlnode->depth = AVL_CALC_DEPTH(avlnode);
 #           endif
     }
     avlnode = parent;

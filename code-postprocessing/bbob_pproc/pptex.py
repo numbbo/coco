@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """Routines for writing TeX for tables."""
-
+from __future__ import absolute_import
 import os
 import sys
 import string
 import numpy
 
-from bbob_pproc import toolsstats
+from . import toolsstats
 from pdb import set_trace
 
 #GLOBAL VARIABLES DEFINITION
@@ -252,7 +252,7 @@ def writeFEvalsMaxSymbols(fevals, maxsymbols, isscientific=False):
     2) float notation
 
     :returns: string representation of a number of function evaluations
-              or ERT.
+              or aRT.
 
     """
 
@@ -321,7 +321,7 @@ def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=1e5):
        exponent)
 
     :returns: string representation of a number of function evaluations
-              or ERT.
+              or aRT.
 
     """
     #CAVE: what if entry is smaller than 10**(-SIG)?

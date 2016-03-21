@@ -11,13 +11,14 @@ This module can be called from the shell, it will recursively look for
   Found ... file(s)!
 
 """
-
-import os
+from __future__ import absolute_import
+import os, sys
 import warnings
 #import zipfile
 import tarfile
+import ntpath
 
-from bbob_pproc import genericsettings
+from . import genericsettings
 
 # Initialization
 
@@ -64,14 +65,19 @@ def get_directory(directory, extractFiles):
                 #~ (root,elem) = os.path.split(elem)
                 #~ filelist = IndexFile(root,elem,archive)
     if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
-        dirList = directory[:directory.find('.t')].split(os.sep)
-        dirname = os.sep.join(dirList[:len(dirList) - 1]) + os.sep + genericsettings.extraction_folder_prefix + dirList[-1]
+        head, tail = ntpath.split(directory[:directory.find('.t')])
+        dirname = head + os.sep + genericsettings.extraction_folder_prefix + tail
         # extract only if extracted folder does not exist yet or if it was
         # extracted earlier than last change of archive:
         if (extractFiles):        
             if ((not os.path.exists(dirname))
                     or (os.path.getmtime(dirname) < os.path.getmtime(directory))): 
-                tarfile.TarFile.open(directory).extractall(dirname)
+                tarFile = tarfile.TarFile.open(directory)
+                longestFileLength = max(len(i) for i in tarFile.getnames())
+                if ('win32' in sys.platform) and + len(dirname) + longestFileLength > 259:
+                    raise IOError(2, 'Some of the files cannot be extracted from "%s". The path is too long.' % directory)
+                
+                tarFile.extractall(dirname)
                 # TarFile.open handles tar.gz/tgz
                 print '    archive extracted to folder', dirname, '...'
         directory = dirname

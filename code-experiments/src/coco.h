@@ -1,294 +1,505 @@
-/*
- * Public CoCO/NumBBO experiments interface
+/**
+ * @file coco.h
+ * @brief All public COCO functions, constants and variables are defined in this file.
  *
- * All public functions, constants and variables are defined in this
- * file. It is the authoritative reference, if any function deviates
- * from the documented behavior it is considered a bug.
+ * It is the authoritative reference, if any function deviates from the documented behavior it is considered
+ * a bug. See the function definitions for their detailed descriptions.
  */
+ 
 #ifndef __COCO_H__
 #define __COCO_H__
+
+#include <stddef.h>
+
+/* Definitions of some 32 and 64-bit types (used by the random number generator) */
+#ifdef _MSC_VER
+typedef __int32 int32_t;
+typedef unsigned __int32 uint32_t;
+typedef __int64 int64_t;
+typedef unsigned __int64 uint64_t;
+#else
+#include <stdint.h>
+#endif
+
+/* Include definition for NAN among other things */
+#include <math.h>
+#ifndef NAN
+/** @brief To be used only if undefined by the included headers */
+#define NAN 8.8888e88
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef _MSC_VER
-
-typedef __int32 int32_t;
-typedef unsigned __int32 uint32_t;
-typedef __int64 int64_t;
-typedef unsigned __int64 uint64_t;
-
-#else
-#include <stdint.h>
-#endif
-#include <math.h> /* For NAN among other things */
-
-#ifndef NAN
-#define NAN 8.8888e88
-#endif
-
-#ifdef _MSC_VER
-/* To silence the Visual Studio compiler (C4996 warnings in the python build). */
-#pragma warning(disable:4996)
-/* To be able to use the snprintf() function. */
-#define snprintf _snprintf
-#endif
-
 /**
- * Our very own pi constant. Simplifies the case, when the value of pi changes.
+ * @brief COCO's own pi constant. Simplifies the case, when the value of pi changes.
  */
+/**@{*/
 static const double coco_pi = 3.14159265358979323846;
 static const double coco_two_pi = 2.0 * 3.14159265358979323846;
+/**@}*/
 
-struct coco_problem;
-typedef struct coco_problem coco_problem_t;
-typedef void (*coco_optimizer_t)(coco_problem_t *problem);
+/***********************************************************************************************************/
+
+/** @brief Logging level type. */
+typedef enum {
+  COCO_ERROR,     /**< @brief only error messages are output */
+  COCO_WARNING,   /**< @brief error and warning messages are output */
+  COCO_INFO,      /**< @brief error, warning and info messages are output */
+  COCO_DEBUG      /**< @brief error, warning, info and debug messages are output */
+} coco_log_level_type_e;
+
+/***********************************************************************************************************/
+
+/** @brief Structure containing a COCO problem. */
+struct coco_problem_s;
 
 /**
- * Evaluate the COCO problem represented by ${self} with the
- * parameter settings ${x} and save the result in ${y}.
+ * @brief The COCO problem type.
  *
- * @note Both x and y must point to correctly sized allocated memory
- * regions.
- */
-void coco_evaluate_function(coco_problem_t *self, const double *x, double *y);
+ * See coco_problem_s for more information on its fields. */
+typedef struct coco_problem_s coco_problem_t;
+
+/** @brief Structure containing a COCO suite. */
+struct coco_suite_s;
 
 /**
- * Evaluate the constraints of the COCO problem represented by
- * ${self} with the parameter settings ${x} and save the result in
- * ${y}.
+ * @brief The COCO suite type.
  *
- * @note ${x} and ${y} are expected to be of the correct sizes.
- */
-void coco_evaluate_constraint(coco_problem_t *self, const double *x, double *y);
+ * See coco_suite_s for more information on its fields. */
+typedef struct coco_suite_s coco_suite_t;
+
+/** @brief Structure containing a COCO observer. */
+struct coco_observer_s;
 
 /**
- * Recommend ${number_of_solutions} parameter settings (stored in
- * ${x}) as the current best guess solutions to the problem ${self}.
+ * @brief The COCO observer type.
  *
- * @note ${number_of_solutions} is expected to be larger than 1 only
- * if coco_problem_get_number_of_objectives(self) is larger than 1. 
- */
-void coco_recommend_solutions(coco_problem_t *self, const double *x, size_t number_of_solutions);
+ * See coco_observer_s for more information on its fields. */
+typedef struct coco_observer_s coco_observer_t;
+
+/** @brief Structure containing a COCO archive. */
+struct coco_archive_s;
 
 /**
- * Free the COCO problem represented by ${self}.
- */
-void coco_problem_free(coco_problem_t *self);
-
-/**
- * Return the name of a COCO problem.
+ * @brief The COCO archive type.
  *
- * @note Do not modify the returned string! If you free the problem,
- * the returned pointer becomes invalid. When in doubt, strdup() the
- * returned value.
+ * See coco_archive_s for more information on its fields. */
+typedef struct coco_archive_s coco_archive_t;
+
+/** @brief Structure containing a COCO random state. */
+struct coco_random_state_s;
+
+/**
+ * @brief The COCO random state type.
  *
- * @see coco_strdup()
- */
-const char *coco_problem_get_name(const coco_problem_t *self);
+ * See coco_random_state_s for more information on its fields. */
+typedef struct coco_random_state_s coco_random_state_t;
+
+/***********************************************************************************************************/
 
 /**
- * Return the ID of the COCO problem ${self}. The ID is guaranteed to
- * contain only characters in the set [a-z0-9_-]. It should therefore
- * be safe to use the ID to construct filenames or other identifiers.
+ * @name Methods regarding COCO suite
+ */
+/**@{*/
+
+/**
+ * @brief Constructs a COCO suite.
+ */
+coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, const char *suite_options);
+
+/**
+ * @brief Frees the given suite.
+ */
+void coco_suite_free(coco_suite_t *suite);
+
+/**
+ * @brief Returns the next (observed) problem of the suite or NULL if there is no next problem left.
+ */
+coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer);
+
+/**
+ * @brief Returns the problem of the suite defined by problem_index.
+ */
+coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, const size_t problem_index);
+
+/**
+ * @brief Returns the number of problems in the given suite.
+ */
+size_t coco_suite_get_number_of_problems(const coco_suite_t *suite);
+
+/**
+ * @brief Returns the function number in the suite in position function_idx (counting from 0).
+ */
+size_t coco_suite_get_function_from_function_index(const coco_suite_t *suite, const size_t function_idx);
+
+/**
+ * @brief Returns the dimension number in the suite in position dimension_idx (counting from 0).
+ */
+size_t coco_suite_get_dimension_from_dimension_index(const coco_suite_t *suite, const size_t dimension_idx);
+
+/**
+ * @brief Returns the instance number in the suite in position instance_idx (counting from 0).
+ */
+size_t coco_suite_get_instance_from_instance_index(const coco_suite_t *suite, const size_t instance_idx);
+/**@}*/
+
+/**
+ * @name Encoding/decoding problem index
  *
- * Each problem ID should be unique within each benchmark suite. 
+ * General schema for encoding/decoding a problem index. Note that the index depends on the number of
+ * instances a suite is defined with (it should be called a suite-instance-depending index...).
+ * Also, while functions, instances and dimensions start from 1, function_idx, instance_idx and dimension_idx
+ * as well as suite_dep_index start from 0!
  *
- * @note Do not modify the returned string! If you free the problem,
- * the returned pointer becomes invalid. When in doubt, strdup() the
- * returned value.
+ * Showing an example with 2 dimensions (2, 3), 5 instances (6, 7, 8, 9, 10) and 2 functions (1, 2):
  *
- * @see coco_strdup
+   \verbatim
+   index | instance | function | dimension
+   ------+----------+----------+-----------
+       0 |        6 |        1 |         2
+       1 |        7 |        1 |         2
+       2 |        8 |        1 |         2
+       3 |        9 |        1 |         2
+       4 |       10 |        1 |         2
+       5 |        6 |        2 |         2
+       6 |        7 |        2 |         2
+       7 |        8 |        2 |         2
+       8 |        9 |        2 |         2
+       9 |       10 |        2 |         2
+      10 |        6 |        1 |         3
+      11 |        7 |        1 |         3
+      12 |        8 |        1 |         3
+      13 |        9 |        1 |         3
+      14 |       10 |        1 |         3
+      15 |        6 |        2 |         2
+      16 |        7 |        2 |         3
+      17 |        8 |        2 |         3
+      18 |        9 |        2 |         3
+      19 |       10 |        2 |         3
+
+   index | instance_idx | function_idx | dimension_idx
+   ------+--------------+--------------+---------------
+       0 |            0 |            0 |             0
+       1 |            1 |            0 |             0
+       2 |            2 |            0 |             0
+       3 |            3 |            0 |             0
+       4 |            4 |            0 |             0
+       5 |            0 |            1 |             0
+       6 |            1 |            1 |             0
+       7 |            2 |            1 |             0
+       8 |            3 |            1 |             0
+       9 |            4 |            1 |             0
+      10 |            0 |            0 |             1
+      11 |            1 |            0 |             1
+      12 |            2 |            0 |             1
+      13 |            3 |            0 |             1
+      14 |            4 |            0 |             1
+      15 |            0 |            1 |             1
+      16 |            1 |            1 |             1
+      17 |            2 |            1 |             1
+      18 |            3 |            1 |             1
+      19 |            4 |            1 |             1
+   \endverbatim
  */
-const char *coco_problem_get_id(const coco_problem_t *self);
+/**@{*/
+/**
+ * @brief Computes the index of the problem in the suite that corresponds to the given function, dimension
+ * and instance indices.
+ */
+size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
+                                       const size_t function_idx,
+                                       const size_t dimension_idx,
+                                       const size_t instance_idx);
 
 /**
- * Return the dimension of a COCO problem.
+ * @brief Computes the function, dimension and instance indexes of the problem with problem_index in the
+ * given suite.
  */
-size_t coco_problem_get_dimension(const coco_problem_t *self);
+void coco_suite_decode_problem_index(const coco_suite_t *suite,
+                                     const size_t problem_index,
+                                     size_t *function_idx,
+                                     size_t *dimension_idx,
+                                     size_t *instance_idx);
+/**@}*/
+
+/***********************************************************************************************************/
 
 /**
- * Return the number of objectives of a COCO problem.
+ * @name Methods regarding COCO observer
  */
-size_t coco_problem_get_number_of_objectives(const coco_problem_t *self);
+/**@{*/
+/**
+ * @brief Constructs a COCO observer.
+ */
+coco_observer_t *coco_observer(const char *observer_name, const char *options);
 
 /**
- * Return the number of constraints of a COCO problem.
+ * @brief Frees the given observer.
  */
-size_t coco_problem_get_number_of_constraints(const coco_problem_t *self);
+void coco_observer_free(coco_observer_t *observer);
 
 /**
- * Get the ${problem_index}-th problem of the ${problem_suit} test
- * suite.
+ * @brief Adds an observer to the given problem.
  */
-coco_problem_t *coco_suite_get_problem(const char *problem_suite, const long problem_index);
+coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer_t *observer);
 
 /**
- * Return the successor index of ${problem_index} in ${problem_suit},
- * or the first index if ${problem_index} < 0,
- * or -1 otherwise (no successor problem is available).
- *
- * int index = -1;
- * while (-1 < (index = coco_suite_get_next_problem_index(suite, index, ""))) {
- *   coco_problem_t *problem = coco_suite_get_problem(suite, index); 
- *   ...
- *   coco_problem_free(problem);
- * }
- * 
- * loops over all indices and problems consequently. 
+ * @brief Removes an observer from the given problem.
  */
-long coco_suite_get_next_problem_index(const char *problem_suite,
-                                       long problem_index,
-                                       const char *select_options);
+coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_observer_t *observer);
+
+/**@}*/
+
+/***********************************************************************************************************/
 
 /**
- * Number of evaluations done on problem ${self}. 
- * Tentative and yet versatile. 
+ * @name Methods regarding COCO problem
  */
-long coco_problem_get_evaluations(coco_problem_t *self);
-double coco_problem_get_best_observed_fvalue1(const coco_problem_t *self);
+/**@{*/
+/**
+ * @brief Evaluates the problem function in point x and save the result in y.
+ */
+void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y);
 
 /**
- * Return target value for first objective. Values below are not
- * relevant in the performance assessment. 
- *
- * This function breaks the black-box property: the returned 
- * value is not meant to be used by the optimization algorithm 
- * other than for final termination. 
-
-
+ * @brief Evaluates the problem constraints in point x and save the result in y.
  */
-double coco_problem_get_final_target_fvalue1(const coco_problem_t *self);
+void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y);
 
 /**
- * tentative getters for region of interest
+ * @brief Recommends a solution as the current best guesses to the problem.
  */
-const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *self);
-const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *self);
+void coco_recommend_solution(coco_problem_t *problem, const double *x);
 
 /**
- * Return an initial solution, i.e. a feasible variable setting, to the
- * problem.
- *
- * By default, the center of the problems region of interest
- * is the initial solution.
- *
- * @see coco_problem_get_smallest_values_of_interest() and
- *coco_problem_get_largest_values_of_interest()
+ * @brief Frees the given problem.
  */
-void coco_problem_get_initial_solution(const coco_problem_t *self, double *initial_solution);
+void coco_problem_free(coco_problem_t *problem);
 
 /**
- * Add the observer named ${observer_name} to ${problem}. An
- * observer is a wrapper around a coco_problem_t. This allows the
- * observer to see all interactions between the algorithm and the
- * optimization problem.
- *
- * ${options} is a string that can be used to pass options to an
- * observer. The format is observer dependent.
- *
- * @note There is a special observer names "no_observer" which simply
- * returns the original problem. This is largely to simplify the
- * interface design for interpreted languages. A short hand for this
- * observer is the empty string ("").
+ * @brief Returns the name of the problem.
  */
-coco_problem_t *coco_problem_add_observer(coco_problem_t *problem,
-                                          const char *observer_name,
-                                          const char *options);
-
-void coco_suite_benchmark(const char *problem_suite,
-                          const char *observer,
-                          const char *observer_options,
-                          coco_optimizer_t optimizer);
-
-/* shall replace the above?
-void new_coco_benchmark(const char *problem_suite,
-                        const char *problem_suite_options,
-                        const char *observer,
-                        const char *observer_options,
-                        coco_optimizer_t optimizer); */
-
-/**************************************************************************
- * Random number generator
- */
-
-struct coco_random_state;
-typedef struct coco_random_state coco_random_state_t;
+const char *coco_problem_get_name(const coco_problem_t *problem);
 
 /**
- * Create a new random number stream using ${seed} and return its state.
+ * @brief Returns the ID of the problem.
+ */
+const char *coco_problem_get_id(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the number of variables i.e. the dimension of the problem.
+ */
+size_t coco_problem_get_dimension(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the number of objectives of the problem.
+ */
+size_t coco_problem_get_number_of_objectives(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the number of constraints of the problem.
+ */
+size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the number of evaluations done on the problem.
+ */
+size_t coco_problem_get_evaluations(const coco_problem_t *problem);
+
+/**
+ * @brief Returns 1 if the final target was hit, 0 otherwise.
+ */
+int coco_problem_final_target_hit(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the best observed value for the first objective.
+ */
+double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the target value for the first objective.
+ */
+double depreciated_coco_problem_get_final_target_fvalue1(const coco_problem_t *problem);
+
+/**
+ * @brief Returns a vector of size 'dimension' with lower bounds of the region of interest in
+ * the decision space.
+ */
+const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *problem);
+
+/**
+ * @brief Returns a vector of size 'dimension' with upper bounds of the region of interest in
+ * the decision space.
+ */
+const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the problem_index of the problem in its current suite.
+ */
+size_t coco_problem_get_suite_dep_index(const coco_problem_t *problem);
+
+/**
+ * @brief Returns an initial solution, i.e. a feasible variable setting, to the problem.
+ */
+void coco_problem_get_initial_solution(const coco_problem_t *problem, double *initial_solution);
+/**@}*/
+
+/***********************************************************************************************************/
+
+/**
+ * @name Methods regarding random numbers
+ */
+/**@{*/
+
+/**
+ * @brief Creates and returns a new random number state using the given seed.
  */
 coco_random_state_t *coco_random_new(uint32_t seed);
 
 /**
- * Free all memory associated with the RNG state.
+ * @brief Frees all memory associated with the random state.
  */
 void coco_random_free(coco_random_state_t *state);
 
 /**
- * Return one uniform [0, 1) random value from the random number
- * generator associated with ${state}.
+ * @brief Returns one uniform [0, 1) random value from the random number generator associated with the given
+ * state.
  */
 double coco_random_uniform(coco_random_state_t *state);
 
 /**
- * Generate an approximately normal random number.
- *
- * Instead of using the (expensive) polar method, we may cheat and
- * abuse the central limit theorem. The sum of 12 uniform RVs has mean
- * 6, variance 1 and is approximately normal. Subtract 6 and you get
- * an approximately N(0, 1) random number.
+ * @brief Generates an approximately normal random number.
  */
 double coco_random_normal(coco_random_state_t *state);
+/**@}*/
+
+/***********************************************************************************************************/
 
 /**
- * Function to signal a fatal error conditions.
+ * @name Methods managing memory
+ */
+/**@{*/
+/**
+ * @brief Safe memory allocation that either succeeds or triggers a coco_error.
+ */
+void *coco_allocate_memory(const size_t size);
+
+/**
+ * @brief Safe memory allocation for a vector of doubles that either succeeds or triggers a coco_error.
+ */
+double *coco_allocate_vector(const size_t size);
+
+/**
+ * @brief Frees the allocated memory.
+ */
+void coco_free_memory(void *data);
+/**@}*/
+
+/***********************************************************************************************************/
+
+/**
+ * @name Methods regarding COCO messages
+ */
+/**@{*/
+/**
+ * @brief Signals a fatal error.
  */
 void coco_error(const char *message, ...);
 
 /**
- * Function to warn about error conditions.
+ * @brief Warns about error conditions.
  */
 void coco_warning(const char *message, ...);
 
-/* Memory management routines.
- *
- * Their implementation may never fail. They either return a valid
- * pointer or terminate the program.
+/**
+ * @brief Outputs some information.
  */
-void *coco_allocate_memory(const size_t size);
-double *coco_allocate_vector(const size_t size);
-void coco_free_memory(void *data);
+void coco_info(const char *message, ...);
 
 /**
- * Create a duplicate of a string and return a pointer to
- * it. The caller is responsible for releasing the allocated memory
- * using coco_free_memory().
+ * @brief Prints only the given message without any prefix and new line.
  *
- * @see coco_free_memory()
+ * A function similar to coco_info but producing no additional text than
+ * the given message.
+ *
+ * The output is only produced if coco_log_level >= COCO_INFO.
  */
-char *coco_strdup(const char *string);
+void coco_info_partial(const char *message, ...);
 
-/* TODO: Move this to an internal header ASAP */
+/**
+ * @brief Outputs detailed information usually used for debugging.
+ */
+void coco_debug(const char *message, ...);
+
+/**
+ * @brief Sets the COCO log level to the given value and returns the previous value of the log level.
+ */
+const char *coco_set_log_level(const char *level);
+/**@}*/
+
+/***********************************************************************************************************/
+
+/**
+ * @name Methods regarding COCO archives (used when pre-processing MO data)
+ */
+/**@{*/
+
+/**
+ * @brief Constructs a COCO archive.
+ */
+coco_archive_t *coco_archive(const char *suite_name,
+                             const size_t function,
+                             const size_t dimension,
+                             const size_t instance);
+/**
+ * @brief Adds a solution with objectives (f1, f2) to the archive if none of the existing solutions in the
+ * archive dominates it. In this case, returns 1, otherwise the archive is not updated and the method
+ * returns 0.
+ */
+int coco_archive_add_solution(coco_archive_t *archive, const double f1, const double f2, const char *text);
+
+/**
+ * @brief Returns the number of (non-dominated) solutions in the archive (computed first, if needed).
+ */
+size_t coco_archive_get_number_of_solutions(coco_archive_t *archive);
+
+/**
+ * @brief Returns the hypervolume of the archive (computed first, if needed).
+ */
+double coco_archive_get_hypervolume(coco_archive_t *archive);
+
+/**
+ * @brief Returns the text of the next (non-dominated) solution in the archive and "" when there are no
+ * solutions left. The first two solutions are always the extreme ones.
+ */
+const char *coco_archive_get_next_solution_text(coco_archive_t *archive);
+
+/**
+ * @brief Frees the archive.
+ */
+void coco_archive_free(coco_archive_t *archive);
+/**@}*/
+
+/***********************************************************************************************************/
+
+/**
+ * @name Other useful methods
+ */
+/**@{*/
+/**
+ * @brief Removes the given directory and all its contents.
+ */
 int coco_remove_directory(const char *path);
 
-/* TODO: These bbob2009... functions should probably not be in
- * this header.
- */
-/* but they are necessary for Builder fbsd9-amd64-test-gcc at
- * http://numbbo.p-value.net/buildbot/builders/fbsd9-amd64-test-gcc
- * (not for the others) */
 /**
- * Return the function ID of a BBOB 2009 problem or -1.
+ * @brief Formatted string duplication.
  */
-/* int bbob2009_get_function_id(const coco_problem_t *problem);
- */
-/**
- * Return the function ID of a BBOB 2009 problem or -1.
- */
-/* int bbob2009_get_instance_id(const coco_problem_t *problem);
- */
+char *coco_strdupf(const char *str, ...);
+/**@}*/
+
+/***********************************************************************************************************/
 
 #ifdef __cplusplus
 }

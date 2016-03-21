@@ -1,35 +1,44 @@
+/**
+ * @file coco_random.c
+ * @brief Definitions of functions regarding COCO random numbers.
+ *
+ * @note This file contains non-C89-standard types (such as uint32_t and uint64_t), which should
+ * eventually be fixed.
+ */
+
 #include <math.h>
 
 #include "coco.h"
 
 #define COCO_NORMAL_POLAR /* Use polar transformation method */
 
-#define SHORT_LAG 273
-#define LONG_LAG 607
+#define COCO_SHORT_LAG 273
+#define COCO_LONG_LAG 607
 
-struct coco_random_state {
-  double x[LONG_LAG];
+/**
+ * @brief A structure containing the state of the COCO random generator.
+ */
+struct coco_random_state_s {
+  double x[COCO_LONG_LAG];
   size_t index;
 };
 
 /**
- * coco_random_generate(state):
+ * @brief A lagged Fibonacci random number generator.
  *
- * This is a lagged Fibonacci generator that is nice because it is
- * reasonably small and directly generates double values. The chosen
- * lags (607 and 273) lead to a generator with a period in excess of
- * 2^607-1.
+ * This generator is nice because it is reasonably small and directly generates double values. The chosen
+ * lags (607 and 273) lead to a generator with a period in excess of 2^607-1.
  */
 static void coco_random_generate(coco_random_state_t *state) {
   size_t i;
-  for (i = 0; i < SHORT_LAG; ++i) {
-    double t = state->x[i] + state->x[i + (LONG_LAG - SHORT_LAG)];
+  for (i = 0; i < COCO_SHORT_LAG; ++i) {
+    double t = state->x[i] + state->x[i + (COCO_LONG_LAG - COCO_SHORT_LAG)];
     if (t >= 1.0)
       t -= 1.0;
     state->x[i] = t;
   }
-  for (i = SHORT_LAG; i < LONG_LAG; ++i) {
-    double t = state->x[i] + state->x[i - SHORT_LAG];
+  for (i = COCO_SHORT_LAG; i < COCO_LONG_LAG; ++i) {
+    double t = state->x[i] + state->x[i - COCO_SHORT_LAG];
     if (t >= 1.0)
       t -= 1.0;
     state->x[i] = t;
@@ -38,12 +47,12 @@ static void coco_random_generate(coco_random_state_t *state) {
 }
 
 coco_random_state_t *coco_random_new(uint32_t seed) {
-  coco_random_state_t *state = (coco_random_state_t *) coco_allocate_memory(sizeof(coco_random_state_t));
+  coco_random_state_t *state = (coco_random_state_t *) coco_allocate_memory(sizeof(*state));
   size_t i;
   /* Expand seed to fill initial state array. */
-  for (i = 0; i < LONG_LAG; ++i) {
+  for (i = 0; i < COCO_LONG_LAG; ++i) {
     /* Uses uint64_t to silence the compiler ("shift count negative or too big, undefined behavior" warning) */
-    state->x[i] = ((double) seed) / (double) (((uint64_t)1UL << 32) - 1);
+    state->x[i] = ((double) seed) / (double) (((uint64_t) 1UL << 32) - 1);
     /* Advance seed based on simple RNG from TAOCP */
     seed = (uint32_t) 1812433253UL * (seed ^ (seed >> 30)) + ((uint32_t) i + 1);
   }
@@ -56,15 +65,18 @@ void coco_random_free(coco_random_state_t *state) {
 }
 
 double coco_random_uniform(coco_random_state_t *state) {
-  /* If we have consumed all random numbers in our archive, it is
-   * time to run the actual generator for one iteration to refill
-   * the state with 'LONG_LAG' new values.
-   */
-  if (state->index >= LONG_LAG)
+  /* If we have consumed all random numbers in our archive, it is time to run the actual generator for one
+   * iteration to refill the state with 'LONG_LAG' new values. */
+  if (state->index >= COCO_LONG_LAG)
     coco_random_generate(state);
   return state->x[state->index++];
 }
 
+/**
+ * Instead of using the (expensive) polar method, we may cheat and abuse the central limit theorem. The sum
+ * of 12 uniform random values has mean 6, variance 1 and is approximately normal. Subtract 6 and you get
+ * an approximately N(0, 1) random number.
+ */
 double coco_random_normal(coco_random_state_t *state) {
   double normal;
 #ifdef COCO_NORMAL_POLAR
@@ -83,5 +95,5 @@ double coco_random_normal(coco_random_state_t *state) {
 }
 
 /* Be hygienic (for amalgamation) and undef lags. */
-#undef SHORT_LAG
-#undef LONG_LAG
+#undef COCO_SHORT_LAG
+#undef COCO_LONG_LAG

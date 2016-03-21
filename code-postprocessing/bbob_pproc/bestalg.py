@@ -29,14 +29,15 @@ from pdb import set_trace
 import warnings
 import numpy as np
 
-from bbob_pproc import genericsettings, readalign, pproc
-from bbob_pproc.toolsdivers import print_done
-from bbob_pproc import toolsstats
+from . import genericsettings, readalign, pproc
+from .toolsdivers import print_done
+from . import toolsstats
 
 bestalgentries2009 = {}
 bestalgentries2010 = {}
 bestalgentries2012 = {}
 bestalgentriesever = {}
+bestbiobjalgentries2016 = {}
 
 algs2009 = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
 "BIPOP-CMA-ES", "CMA-ESPLUSSEL", "DASA", "DE-PSO", "DIRECT", "EDA-PSO",
@@ -88,7 +89,7 @@ class BestAlgSet():
     numbers of function evaluations for evals or function values for
     funvals.
 
-    Known bug: algorithms where the ERT is NaN or Inf are not taken into
+    Known bug: algorithms where the aRT is NaN or Inf are not taken into
     account!?
     
     """
@@ -139,10 +140,10 @@ class BestAlgSet():
         sortedAlgs = dictAlg.keys()
         # algorithms will be sorted along sortedAlgs which is now a fixed list
 
-        # Align ERT
+        # Align aRT
         erts = list(np.transpose(np.vstack([dictAlg[i].target, dictAlg[i].ert]))
                     for i in sortedAlgs)
-        res = readalign.alignArrayData(readalign.HArrayMultiReader(erts))
+        res = readalign.alignArrayData(readalign.HArrayMultiReader(erts, False))
 
         resalgs = []
         reserts = []
@@ -158,7 +159,7 @@ class BestAlgSet():
                     continue # TODO: don't disregard these entries
                 if tmpert == currentbestert:
                     # TODO: what do we do in case of ties?
-                    # look at function values corresponding to the ERT?
+                    # look at function values corresponding to the aRT?
                     # Look at the function evaluations? the success ratio?
                     pass
                 elif tmpert < currentbestert:
@@ -286,11 +287,11 @@ class BestAlgSet():
         return dictinstance
 
     def detERT(self, targets):
-        """Determine the expected running time to reach target values.
+        """Determine the average running time to reach target values.
 
         :keyword list targets: target function values of interest
 
-        :returns: list of expected running times corresponding to the
+        :returns: list of average running times corresponding to the
                   targets.
 
         """
@@ -346,7 +347,7 @@ def loadBBOB2009(force=False):
     # global statement necessary to change the variable bestalg.bestalgentries2009
 
     if not force and bestalgentries2009:
-        return 
+        return
     
     print "Loading best algorithm data from BBOB-2009...",
     sys.stdout.flush()
@@ -358,7 +359,12 @@ def loadBBOB2009(force=False):
 
     picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle.gz')
     fid = gzip.open(picklefilename, 'r')
-    bestalgentries2009 = pickle.load(fid)
+    try:
+        bestalgentries2009 = pickle.load(fid)
+    except:
+        warnings.warn("no best algorithm loaded")
+        # raise  # outcomment to diagnose
+        bestalgentries2009 = None
     fid.close()
     print_done()
 
@@ -441,6 +447,50 @@ def loadBBOBever():
     fid.close()
     print " done."
 
+def loadBestBiobj2016():
+    """Assigns :py:data:`bestbiobjalgentries2016`.
+
+    This function is needed to set the global variable
+    :py:data:`bestbiobjalgentries2016`. It unpickles file 
+    :file:`bestbiobjalgentries2016.pickle.gz`
+
+    :py:data:`bestbiobjalgentries2016` is a dictionary accessed by providing
+    a tuple :py:data:`(dimension, function)`. This returns an instance
+    of :py:class:`BestAlgSet`.
+
+    """
+    global bestbiobjalgentries2016
+    # global statement necessary to change the variable bestalg.bestbiobjalgentries2016
+
+    if bestbiobjalgentries2016:
+        return
+
+    print "Loading best bi-objective algorithm data from BBOB-2016...",  
+    sys.stdout.flush()
+
+    bestalgfilepath = os.path.split(__file__)[0]
+    #picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle.gz')
+    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle')
+    #fid = gzip.open(picklefilename, 'r')
+    fid = open(picklefilename, 'r')
+    bestbiobjalgentries2016 = pickle.load(fid)
+    fid.close()
+    print_done()
+
+def loadBestAlgorithm(isBioobjective):
+    """Loads the best single or bi objective algorithm. """
+    
+    if isBioobjective:
+        # Currently we do not have a good best algorithm for the bi-objective case.
+        return None
+#        if not bestbiobjalgentries2016:
+#            loadBestBiobj2016()
+#        return bestbiobjalgentries2016
+    else:
+        if not bestalgentries2009:
+            loadBBOB2009()
+        return bestalgentries2009
+
 def usage():
     print __doc__  # same as: sys.modules[__name__].__doc__, was: main.__doc__
 
@@ -466,18 +516,22 @@ def customgenerate(args = algs2009):
     This method is called from the python command line from a directory
     containing all necessary data folders::
 
-     >>> from bbob_pproc import bestalg
-     >>> import os
-     >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
-     >>> os.chdir(path)
-     >>> os.chdir("../../../data-archive/data/gecco-bbob-1-24/2009/data")
-     >>> bestalg.customgenerate() #doctest:+ELLIPSIS
-     Searching in ALPS ...
-     Found 144 file(s).
-       using: ALPS
-     ...
-     done with writing pickle...
-     >>> os.chdir(path)
+    >>> from bbob_pproc import bestalg
+    >>> import os
+    >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+    >>> os.chdir(os.path.join(path, 'data'))
+    >>> infoFile = 'ALPS/bbobexp_f2.info'
+    >>> if not os.path.exists(infoFile):
+    ...     import urllib
+    ...     import tarfile
+    ...     dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/ALPS_hornby_noiseless.tgz'
+    ...     filename, headers = urllib.urlretrieve(dataurl)
+    ...     archivefile = tarfile.open(filename)
+    ...     archivefile.extractall()
+    >>> os.chdir(os.path.join(path, 'data'))
+    >>> bestalg.customgenerate(('ALPS', '')) # doctest: +ELLIPSIS
+    Searching in...
+    >>> os.chdir(path)
 
     """
 
@@ -503,31 +557,26 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
                                        target_ub=1e2):
     """Computes first the artificial best algorithm from given algorithm list
        algnamelist, constructed by extracting for each target/function pair
-       the algorithm with best ERT among the given ones. Returns then the list
+       the algorithm with best aRT among the given ones. Returns then the list
        of algorithms that are contributing to the definition of the best
        algorithm, separated by dimension, and sorted by importance (i.e. with
        respect to the number of target/function pairs where each algorithm is
        best). Only target/function pairs are taken into account where the target
        is in between target_lb and target_ub.
-    
        This method should be called from the python command line from a directory
        containing all necessary data folders::
 
-       >>> from bbob_pproc import bestalg
-       >>> import os
-       >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
-       >>> os.chdir(path)
-       >>> os.chdir("../../../data-archive/data/gecco-bbob-1-24/2009/data")
-       >>> bestalg.getAllContributingAlgorithmsToBest(('BIPOP-CMA-ES', 'RANDOMSEARCH')) #doctest:+ELLIPSIS
-       Generating best algorithm data from given algorithm list...
-       Searching in BIPOP-CMA-ES ...
-       ...
-       Found 144 file(s).
-       ...
-       >>> os.chdir(path)
-       
+        >>> from bbob_pproc import bestalg
+        >>> import os
+        >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+        >>> os.chdir(path)
+        >>> os.chdir(os.path.join(path, "data"))
+        >>> bestalg.getAllContributingAlgorithmsToBest(('IPOP-CMA-ES', 'RANDOMSEARCH')) # doctest:+ELLIPSIS
+        Generating best algorithm data...
+        >>> os.chdir(path)
+
     """
-    
+
     print "Generating best algorithm data from given algorithm list...\n",  
     customgenerate(algnamelist)
     
@@ -578,9 +627,9 @@ def extractBestAlgorithms(args = algs2009, f_factor=2,
     """Returns (and prints) per dimension a list of algorithms within
     algorithm list args that contains an algorithm if for any
         dimension/target/function pair this algorithm:
-        - is the best algorithm wrt ERT
-        - its own ERT lies within a factor f_factor of the best ERT
-        - there is no algorithm within a factor of f_factor of the best ERT
+        - is the best algorithm wrt aRT
+        - its own aRT lies within a factor f_factor of the best aRT
+        - there is no algorithm within a factor of f_factor of the best aRT
           and the current algorithm is the second best.
 
     """
@@ -614,7 +663,7 @@ def extractBestAlgorithms(args = algs2009, f_factor=2,
                     # add best for this target:
                     selectedAlgsPerProblemDF.append(best.algs[i])
                 
-                    # add second best or all algorithms that have an ERT
+                    # add second best or all algorithms that have an aRT
                     # within a factor of f_factor of the best:
                     secondbest_ERT = np.infty
                     secondbest_str = ''

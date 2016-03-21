@@ -17,22 +17,29 @@ Help:
 
 from __future__ import absolute_import
 
-import os, sys, warnings, getopt, numpy as np
+import os, sys
 from pdb import set_trace
+import matplotlib
 
-# Add the path to bbob_pproc
 if __name__ == "__main__":
-    # os.path.split is system independent
-    (filepath, filename) = os.path.split(sys.argv[0])
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-    import matplotlib
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
+    filepath = os.path.split(sys.argv[0])[0]
+    # Add the path to bbob_pproc/.. folder
+    sys.path.append(os.path.join(filepath, os.path.pardir))
+    try:
+        import bbob_pproc as cocopp
+    except ImportError:
+        import cocopp
+    res = cocopp.rungeneric1.main(sys.argv[1:])
+    sys.exit(res)
 
-from bbob_pproc import genericsettings, pptable, pprldistr, ppfigdim, pplogloss, findfiles
-from bbob_pproc.pproc import DataSetList
-from bbob_pproc.toolsdivers import print_done, prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
-from bbob_pproc import ppconverrorbars
-from bbob_pproc.compall import pprldmany
+import warnings, getopt, numpy as np
+
+from . import genericsettings, pptable, pprldistr, ppfigdim, pplogloss, findfiles
+from .pproc import DataSetList
+from .toolsdivers import print_done, prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
+from . import ppconverrorbars
+from .compall import pprldmany
 
 import matplotlib.pyplot as plt
 
@@ -96,24 +103,21 @@ def main(argv=None):
             "black-white". The default setting is "color".
         --tab-only, --fig-only, --rld-only, --los-only
             these options can be used to output respectively the TeX
-            tables, convergence and ERTs graphs figures, run length
-            distribution figures, ERT loss ratio figures only. A
+            tables, convergence and aRTs graphs figures, run length
+            distribution figures, aRT loss ratio figures only. A
             combination of any two of these options results in no
             output.
         --conv
             if this option is chosen, additionally convergence plots
             for each function and algorithm are generated.
-        --rld-single-fcts
-            generate also runlength distribution figures for each
+        --no-rld-single-fcts
+            do not generate runlength distribution figures for each
             single function.
         --expensive
             runlength-based f-target values and fixed display limits,
-            useful with comparatively small budgets. By default the
-            setting is based on the budget used in the data.
-        --not-expensive
-            expensive setting off. 
-        --svg
-            generate also the svg figures which are used in html files 
+            useful with comparatively small budgets.
+        --no-svg
+            do not generate the svg figures which are used in html files
         --runlength-based
             runlength-based f-target values, such that the
             "level of difficulty" is similar for all functions. 
@@ -221,16 +225,14 @@ def main(argv=None):
                 genericsettings.inputsettings = a
             elif o == "--conv":
                 genericsettings.isConv = True
-            elif o == "--rld-single-fcts":
-                genericsettings.isRldOnSingleFcts = True
+            elif o == "--no-rld-single-fcts":
+                genericsettings.isRldOnSingleFcts = False
             elif o == "--runlength-based":
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 genericsettings.isExpensive = True  # comprises runlength-based
-            elif o == "--not-expensive":
-                genericsettings.isExpensive = False
-            elif o == "--svg":
-                genericsettings.generate_svg_files = True
+            elif o == "--no-svg":
+                genericsettings.generate_svg_files = False
             elif o == "--sca-only":
                 warnings.warn("option --sca-only will have no effect with rungeneric1.py")
             else:
@@ -238,11 +240,11 @@ def main(argv=None):
 
         # from bbob_pproc import bbob2010 as inset # input settings
         if genericsettings.inputsettings == "color":
-            from bbob_pproc import genericsettings as inset  # input settings
+            from . import genericsettings as inset  # input settings
         elif genericsettings.inputsettings == "grayscale":
-            from bbob_pproc import grayscalesettings as inset  # input settings
+            from . import grayscalesettings as inset  # input settings
         elif genericsettings.inputsettings == "black-white":
-            from bbob_pproc import bwsettings as inset  # input settings
+            from . import bwsettings as inset  # input settings
         else:
             txt = ('Settings: %s is not an appropriate ' % genericsettings.inputsettings
                    + 'argument for input flag "--settings".')
@@ -285,7 +287,7 @@ def main(argv=None):
         dsList = DataSetList(filelist, genericsettings.verbose)
         
         if not dsList:
-            raise Usage("Nothing to do: post-processing stopped.")
+            raise Usage("Nothing to do: post-processing stopped. For more information check the messages above.")
 
         if genericsettings.isNoisy and not genericsettings.isNoiseFree:
             dsList = dsList.dictByNoise().get('nzall', DataSetList())
@@ -297,9 +299,9 @@ def main(argv=None):
         for ds in dsList:
             dict_max_fun_evals[ds.dim] = np.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
         
-        from bbob_pproc import config
-        config.target_values(genericsettings.isExpensive, dict_max_fun_evals)
-        config.config()
+        from . import config
+        config.target_values(genericsettings.isExpensive)
+        config.config(dsList.isBiobjective())
 
         if (genericsettings.verbose):
             for i in dsList:
@@ -331,20 +333,26 @@ def main(argv=None):
             dsList.pickle(verbose=genericsettings.verbose)
 
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, outputdir, genericsettings.verbose)
+            ppconverrorbars.main(dictAlg, 
+                                 dsList.isBiobjective(),
+                                 outputdir, 
+                                 genericsettings.verbose,
+                                 genericsettings.single_algorithm_file_name)
 
         if genericsettings.isFig:
             print "Scaling figures...",
             sys.stdout.flush()
-            # ERT/dim vs dim.
+            # aRT/dim vs dim.
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
             plt.rc("ytick", **inset.rcticklarger)
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
             plt.rc('pdf', fonttype = 42)
-            ppfigdim.main(dsList, ppfigdim.values_of_interest,
-                          outputdir, genericsettings.verbose)
+            ppfigdim.main(dsList, 
+                          genericsettings.current_testbed.ppfigdim_target_values,
+                          outputdir, 
+                          genericsettings.verbose)
             plt.rcdefaults()
             print_done()
 
@@ -380,13 +388,19 @@ def main(argv=None):
                 except KeyError:
                     continue
 
-                pprldistr.main(sliceDim, True,
-                               outputdir, 'all', genericsettings.verbose)
                 dictNoise = sliceDim.dictByNoise()
+
+                # If there is only one noise type then we don't need the all graphs.
+                if len(dictNoise) > 1:
+                    pprldistr.main(sliceDim, True,
+                                   outputdir, 'all', genericsettings.verbose)
+                
+                    
                 for noise, sliceNoise in dictNoise.iteritems():
                     pprldistr.main(sliceNoise, True,
                                    outputdir,
                                    '%s' % noise, genericsettings.verbose)
+
                 dictFG = sliceDim.dictByFuncGroup()
                 for fGroup, sliceFuncGroup in dictFG.items():
                     pprldistr.main(sliceFuncGroup, True,
@@ -398,13 +412,17 @@ def main(argv=None):
 
             if genericsettings.isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
-                pprldmany.all_single_functions(dictAlg, None,
+                pprldmany.all_single_functions(dictAlg, 
+                                               dsList.isBiobjective(),
+                                               True,
+                                               None,
                                                outputdir,
-                                               genericsettings.verbose)
+                                               genericsettings.verbose,
+                                               genericsettings.single_algorithm_file_name)
             print_done()
 
         if genericsettings.isLogLoss:
-            print "ERT loss ratio figures and tables...",
+            print "aRT loss ratio figures and tables...",
             sys.stdout.flush()
             for ng, sliceNoise in dsList.dictByNoise().iteritems():
                 if ng == 'noiselessall':
@@ -442,7 +460,6 @@ def main(argv=None):
             print_done()
 
         latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
-        html_file = os.path.join(outputdir, genericsettings.single_algorithm_file_name + '.html')
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglosstablecaption}[1]{', 
                          pplogloss.table_caption, '}'])
@@ -453,6 +470,7 @@ def main(argv=None):
                         ['\\providecommand{\\bbobpprldistrlegend}[1]{',
                          pprldistr.caption_single(np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()])),  # depends on the config setting, should depend on maxfevals
                          '}'])
+        html_file = os.path.join(outputdir, 'pprldistr.html')
         replace_in_file(html_file, r'TOBEREPLACED', 'D, '.join([str(i) for i in pprldistr.single_runlength_factors[:6]]) + 'D,&hellip;')
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{',
