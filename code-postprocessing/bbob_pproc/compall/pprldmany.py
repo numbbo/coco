@@ -575,7 +575,10 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         tmp = {dimension: tmp[dimension]}
     dimList = tmp.keys()
 
-
+    # The sort order will be defined inside this function.    
+    if plotType == PlotType.DIM:
+        order = []
+        
     # Collect data
     # Crafting effort correction: should we consider any?
     CrEperAlg = {}
@@ -610,9 +613,12 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     maxevalsbest2009 = []
     target_values = genericsettings.current_testbed.pprldmany_target_values
 
-    for dim, dictDim in pp.dictAlgByDim(dictAlg).iteritems():
+    dictDimList = pp.dictAlgByDim(dictAlg)
+    dims = sorted(dictDimList)
+    for i, dim in enumerate(dims):
         divisor = dim if divide_by_dimension else 1
 
+        dictDim = dictDimList[dim]
         dictFunc = pp.dictAlgByFun(dictDim)
         for f, dictAlgperFunc in dictFunc.iteritems():
             if function_IDs and f not in function_IDs:
@@ -646,6 +652,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                     keyValue = alg
                     if plotType == PlotType.DIM: 
                         keyValue = '%d-D' % (dim)
+                        if keyValue not in order:                        
+                            order.append(keyValue)
                     elif plotType == PlotType.FUNC:
                         keyValue = 'f%d' % (f)
                     dictData.setdefault(keyValue, []).extend(x)
@@ -706,6 +714,11 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         args['markerfacecolor'] = 'None'
         args['markeredgecolor'] = args['color']
         args['label'] = algname_to_label(alg)
+        if plotType == PlotType.DIM:
+            args['marker'] = genericsettings.dim_related_markers[i]
+            args['markeredgecolor'] = genericsettings.dim_related_colors[i]
+            args['color'] = genericsettings.dim_related_colors[i]
+            
         #args['markevery'] = perfprofsamplesize # option available in latest version of matplotlib
         #elif len(show_algorithms) > 0:
             #args['color'] = 'wheat'

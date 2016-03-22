@@ -383,7 +383,7 @@ static void timing_data_finalize(timing_data_t *timing_data) {
   	printf("\n");
   	for (i = 0; i < timing_data->number_of_dimensions; i++) {
     	if (timing_data->output[i]) {
-				printf(timing_data->output[i]);
+				printf("%s", timing_data->output[i]);
 				coco_free_memory(timing_data->output[i]);
     	}
     }
