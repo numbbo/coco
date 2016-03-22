@@ -31,6 +31,17 @@ core_files = ['code-experiments/src/coco_random.c',
               'code-experiments/src/coco_archive.c'
               ]
 
+matlab_files = ['cocoCall.m', 'cocoEvaluateFunction.m', 'cocoObserver.m',
+                'cocoObserverFree.m', 'cocoProblemAddObserver.m',
+                'cocoProblemFinalTargetHit.m', 'cocoProblemFree.m',
+                'cocoProblemGetDimension.m', 'cocoProblemGetEvaluations.m',
+                'cocoProblemGetId.m', 'cocoProblemGetInitialSolution.m',
+                'cocoProblemGetLargestValuesOfInterest.m',
+                'cocoProblemGetName.m', 'cocoProblemGetNumberOfObjectives.m',
+                'cocoProblemGetSmallestValuesOfInterest.m',
+                'cocoProblemIsValid.m', 'cocoProblemRemoveObserver.m',
+                'cocoSetLogLevel.m', 'cocoSuite.m', 'cocoSuiteFree.m',
+                'cocoSuiteGetNextProblem.m', 'cocoSuiteGetProblem.m']
 
 ################################################################################
 ## C
@@ -387,6 +398,8 @@ def build_matlab_sms():
     amalgamate(core_files + ['code-experiments/src/coco_runtime_matlab.c'],
                join(destination_folder, 'coco.c'), release)
     copy_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'))
+    for f in matlab_files:
+        copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))    
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
     copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
@@ -474,6 +487,8 @@ def build_octave_sms():
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
                join(destination_folder, 'coco.c'), release)
     copy_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'))
+    for f in matlab_files:
+        copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))            
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
     copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
