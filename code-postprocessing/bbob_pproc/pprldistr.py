@@ -133,7 +133,7 @@ def load_previous_RLBdata(filename = previous_RLBdata_filename):
     return None
 
 
-def caption_single(max_evals_div_dim):
+def caption_single():
     caption_part_one = r"""%
          Empirical cumulative distribution functions (ECDF), plotting the fraction of
          trials with an outcome not larger than the respective value on the $x$-axis.

@@ -40,7 +40,7 @@ except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from .. import genericsettings, htmldesc, ppfigparam
-from ..ppfig import saveFigure, save_single_functions_html, HtmlPage
+from ..ppfig import saveFigure
 from .. import toolsdivers
 from .. import pproc
 
@@ -352,15 +352,6 @@ def main(dsList0, dsList1, outputdir, verbose=True):
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
         saveFigure(filename, verbose=verbose)
-        if f == 1:
-            algName1 = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(entry1.algId))
-            algName0 = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(entry0.algId))
-            save_single_functions_html(
-                os.path.join(outputdir, genericsettings.two_algorithm_file_name),
-                "%s vs %s" % (algName1, algName0),
-                htmlPage = HtmlPage.TWO,
-                isBiobjective = dsList0.isBiobjective(),
-                functionGroups = dsList0.getFuncGroups())
         plt.close()
 
     #plt.rcdefaults()
