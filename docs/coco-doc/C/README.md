@@ -95,7 +95,10 @@ example does not trigger restarts by itself, your optimizer most probably should
 being stuck in a local optimum). When restarting the algorithm make sure that the optimizer is not 
 doing the exaclty same thing in every run. 
 
-Note that this benchmarking procedure remains the same whether we are dealing with single- 
+The ``example_experiment`` records the time needed for optimizing a problem and can therefore 
+serve also as a __timing experiment__ for your algorithm. 
+
+Note that the benchmarking procedure remains the same whether we are dealing with single- 
 or multi-objective problems and algorithms. To perform benchmarking on a different suite and with a 
 different observer, just replace ``"bbob-biobj"`` with the name of the desired suite and observer. 
 
