@@ -680,12 +680,16 @@ static void coco_problem_stacked_free(coco_problem_t *problem) {
  * 
  * This is particularly useful for generating multi-objective problems, e.g. a bi-objective problem from two
  * single-objective problems. The stacked problem must behave like a normal COCO problem accepting the same
- * input.
+ * input. The region of interest in the decision space is defined by parameters smallest_values_of_interest
+ * and largest_values_of_interest, which are two arrays of size equal to the dimensionality of both problems.
  *
  * @note Regions of interest in the decision space must either agree or at least one of them must be NULL.
  * @note Best parameter becomes somewhat meaningless, but the nadir value make sense now.
  */
-static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1, coco_problem_t *problem2) {
+static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1,
+																										 coco_problem_t *problem2,
+																										 const double *smallest_values_of_interest,
+																										 const double *largest_values_of_interest) {
 
   const size_t number_of_variables = coco_problem_get_dimension(problem1);
   const size_t number_of_objectives = coco_problem_get_number_of_objectives(problem1)
@@ -694,7 +698,6 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1, c
       + coco_problem_get_number_of_constraints(problem2);
   size_t i;
   char *s;
-  const double *smallest, *largest;
   coco_problem_stacked_data_t *data;
   coco_problem_t *problem; /* the new coco problem */
 
@@ -713,30 +716,16 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1, c
   if (number_of_constraints > 0)
     problem->evaluate_constraint = coco_problem_stacked_evaluate_constraint;
 
-  /* set/copy ROI boundaries */
-  smallest = problem1->smallest_values_of_interest;
-  if (smallest == NULL)
-    smallest = problem2->smallest_values_of_interest;
-
-  largest = problem1->largest_values_of_interest;
-  if (largest == NULL)
-    largest = problem2->largest_values_of_interest;
-
+	assert(smallest_values_of_interest);
+	assert(largest_values_of_interest);
   for (i = 0; i < number_of_variables; ++i) {
-    if (problem2->smallest_values_of_interest != NULL)
-      assert(smallest[i] == problem2->smallest_values_of_interest[i]);
-    if (problem2->largest_values_of_interest != NULL)
-      assert(largest[i] == problem2->largest_values_of_interest[i]);
-
-    if (smallest != NULL)
-      problem->smallest_values_of_interest[i] = smallest[i];
-    if (largest != NULL)
-      problem->largest_values_of_interest[i] = largest[i];
-
-    if (problem->best_parameter) /* logger_bbob doesn't work then anymore */
-      coco_free_memory(problem->best_parameter);
-    problem->best_parameter = NULL;
+    problem->smallest_values_of_interest[i] = smallest_values_of_interest[i];
+    problem->largest_values_of_interest[i] = largest_values_of_interest[i];
   }
+
+	if (problem->best_parameter) /* logger_bbob doesn't work then anymore */
+		coco_free_memory(problem->best_parameter);
+	problem->best_parameter = NULL;
 
   /* Compute the ideal and nadir values */
   assert(problem->best_value);
