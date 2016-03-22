@@ -38,8 +38,8 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
 			for (j = 0; j < coco_problem_get_number_of_objectives(problem); j++) {
 				y[j] = fabs(x[i]);
 			}
+	  	return;
 		}
-  	return;
   }
 
   /* Set objective vector to NAN if the decision vector contains any NAN values */
