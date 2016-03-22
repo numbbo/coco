@@ -223,8 +223,8 @@ static coco_problem_t *f_rastrigin_permblockdiag_bbob_problem_allocate(const siz
     problem = transform_vars_permutation(problem, P22, dimension);
     problem = transform_vars_blockrotation(problem, B2_copy, dimension, block_sizes2, nb_blocks2);
     problem = transform_vars_permutation(problem, P12, dimension);
- 
     problem = transform_vars_shift(problem, xopt, 0);
+
     problem = transform_obj_scale(problem, 1.0 / (double) dimension);
     problem = transform_obj_shift(problem, fopt);
     

@@ -265,12 +265,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
 
 
 
-
-
-
-
-
-
+/* Functions used in/related to the large scale suite are below. Eventually either merge with above after the standard version is updated with the new approach or put what's below in a separate file*/
 
 /**
  * @brief Data type for the versatile_data_t
@@ -354,7 +349,7 @@ static coco_problem_t *f_gallagher_sub_problem_allocate(const size_t number_of_v
 
 /**
  * @brief Implements the gallagher function without connections to any COCO structures.
- * Wassim: core to differentiate it from raw for now
+ * Wassim: core to not conflict with raw for now
  * Wassim: TODO: compute the w_i here and make that the subproblems become simple sphere problems and use the f_sphere_raw
  */
 static double f_gallagher_core(const double *x, size_t number_of_variables, f_gallagher_versatile_data_t *f_gallagher_versatile_data) {
@@ -455,7 +450,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     b = 9.8;
     c = 4.9;
   } else {
-    coco_error("f_gallagher_bbob_problem_allocate(): '%lu' is a non-supported number of peaks",
+    coco_error("f_gallagher_permblockdiag_bbob_problem_allocate(): '%lu' is a non-supported number of peaks",
                number_of_peaks);
   }
 
@@ -465,7 +460,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   nb_swaps = coco_get_nb_swaps(dimension, "bbob-largescale");
 
   B = coco_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
-  B_copy = (const double *const *)B;/*TODO: silences the warning, not sure if it prevents the modification of B at all levels*/
+  B_copy = (const double *const *)B;
   coco_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
 
   P1 = coco_allocate_vector_size_t(dimension);
