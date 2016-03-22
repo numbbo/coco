@@ -28,17 +28,17 @@
 %                              NAME_002 and so on. The default value is
 %                              "default".
 %                      "algorithm_name: NAME", where NAME is a short name of the
-%                              algorithm that will be used in plots (no spaces 
+%                              algorithm that will be used in plots (no spaces
 %                              are allowed). The default value is "ALG".
-%                      "algorithm_info: STRING" stores the description of the 
-%                              algorithm. If it contains spaces, it must be 
+%                      "algorithm_info: STRING" stores the description of the
+%                              algorithm. If it contains spaces, it must be
 %                              surrounded by double quotes. The default value is
 %                              "" (no description).
-%                      "number_target_triggers: VALUE" defines the number of 
+%                      "number_target_triggers: VALUE" defines the number of
 %                              targets between each 10**i and 10**(i+1) (equally
-%                              spaced in the logarithmic scale) that trigger 
+%                              spaced in the logarithmic scale) that trigger
 %                              logging. The default value is 100.
-%                      "target_precision: VALUE" defines the precision used for 
+%                      "target_precision: VALUE" defines the precision used for
 %                              targets (there are no targets for abs(values) <
 %                              target_precision). The default value is 1e-8.
 %                      "number_evaluation_triggers: VALUE" defines the number of
@@ -65,14 +65,6 @@
 %
 % Returns:
 %   The constructed observer object or NULL if observer_name equals NULL, "" or
-%   "no_observer". 
-%
-% Example usage:
-%
-%   >> suite = cocoCall('cocoSuite', 'bbob-biobj', 'year: 2016', 'dimensions: 2,3,5,10,20,40');
-%   >> observer = cocoCall('cocoObserver', 'bbob-biobj', 'result_folder: test');
-%   COCO INFO: Results will be output to folder exdata\test
-%   >> problem = cocoCall('cocoSuiteGetNextProblem', suite, observer);
-%   COCO INFO: 09.02.16 16:31:16, d=2, running: f01.>> cocoCall('cocoObserverFree', observer);
-%   >> cocoCall('cocoSuiteFree', suite);
-%
+%   "no_observer".
+function observer = cocoObserver(observer_name, observer_options)
+observer = cocoCall('cocoObserver', observer_name, observer_options);

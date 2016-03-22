@@ -530,16 +530,10 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
 
     dictFunc = dsList.dictByFunc()
-
     values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
-    ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
-                                dictFunc[dictFunc.keys()[0]][0].algId,
-                                htmlPage = ppfig.HtmlPage.ONE,
-                                values_of_interest = values_of_interest,
-                                isBiobjective = dsList.isBiobjective(),
-                                functionGroups = dsList.getFuncGroups())
 
-    key = 'bbobppfigdimlegendrlbased' if genericsettings.runlength_based_targets else 'bbobppfigdimlegendfixed'
+    key = (('bbobppfigdimlegendrlbased' if genericsettings.runlength_based_targets else 'bbobppfigdimlegendfixed')
+			if genericsettings.current_testbed.name != 'bbob-biobj' else 'bbobppfigdimlegendbiobjfixed')
     joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
     caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
 

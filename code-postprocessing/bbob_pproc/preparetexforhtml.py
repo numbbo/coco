@@ -9,6 +9,7 @@ This module creates a tex file with all the descriptions of the images and table
 
 import os
 import sys
+import numpy
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -17,7 +18,7 @@ if __name__ == "__main__":
     import matplotlib
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
-from bbob_pproc import genericsettings, pplogloss, ppfigdim, pptable, pprldistr
+from bbob_pproc import genericsettings, pplogloss, ppfigdim, pptable, pprldistr, config, pproc
 from bbob_pproc.compall import pptables, ppfigs
 from bbob_pproc.comp2 import ppscatter, pptable2
 
@@ -62,31 +63,59 @@ def main(verbose=True):
                   pplogloss.table_caption.replace('Figure~\\ref{fig:ERTlogloss}', 'the following figure'), '\n}\n'])
     f.writelines(['\\providecommand{\\bbobloglossfigurecaption}[1]{\n', 
                   pplogloss.figure_caption.replace('Figure~\\ref{tab:ERTloss}', 'the previous figure'), '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobpprldistrlegendrlbased}[1]{\n', 
-                  pprldistr.caption_single_rlbased.replace('TO_BE_REPLACED', 'TOBEREPLACED'), '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobpprldistrlegendfixed}[1]{\n', 
-                  pprldistr.caption_single_fixed.replace('TO_BE_REPLACED', 'TOBEREPLACED'), '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobppfigdimlegendrlbased}[1]{\n', 
-                  ppfigdim.scaling_figure_caption_rlbased.replace('values_of_interest', 'valuesofinterest'), '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobppfigdimlegendfixed}[1]{\n', 
-                  ppfigdim.scaling_figure_caption_fixed.replace('values_of_interest', 'valuesofinterest'), '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobpptablecaption}[1]{\n', 
-                  pptable.table_caption, '\n}\n'])
-
+    
     f.writelines(['\\providecommand{\\bbobppfigslegendrlbased}[1]{\n', 
                   ppfigs.scaling_figure_caption_start_rlbased.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
     f.writelines(['\\providecommand{\\bbobppfigslegendfixed}[1]{\n', 
                   ppfigs.scaling_figure_caption_start_fixed.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
     f.writelines(['\\providecommand{\\bbobppfigslegendend}[1]{\n', 
                   ppfigs.scaling_figure_caption_end, '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobECDFslegendrlbased}[1]{\n', 
-                  ppfigs.ecdfs_figure_caption_rlbased.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobECDFslegendstandard}[1]{\n', 
-                  ppfigs.ecdfs_figure_caption_standard.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
     f.writelines(['\\providecommand{\\bbobpptablesmanylegend}[1]{\n', 
                   pptables.tables_many_legend, '\n}\n'])
     f.writelines(['\\providecommand{\\bbobpptablesmanylegendexpensive}[1]{\n', 
                   pptables.tables_many_expensive_legend, '\n}\n'])
+
+    for scenario in ['rlbased', 'fixed', 'biobjfixed']:
+        # set up scenario, especially wrt genericsettings
+        if (scenario == 'rlbased'):
+            genericsettings.runlength_based_targets = True
+            config.config(isBiobjective=False)
+        elif (scenario == 'fixed'):
+            genericsettings.runlength_based_targets = False
+            config.config(isBiobjective=False)
+        elif (scenario == 'biobjfixed'):
+            genericsettings.runlength_based_targets = False
+            config.config(isBiobjective=True)
+        else:
+            warnings.warn("Scenario not supported yet in HTML")
+    
+        # update captions accordingly    
+        # 1. ppfigs
+        ppfigsftarget = (pproc.RunlengthBasedTargetValues([genericsettings.target_runlength],
+                reference_data = 'bestGECCO2009') if genericsettings.runlength_based_targets
+                else genericsettings.current_testbed.ppfigs_ftarget)
+        ppfigsftarget = pproc.TargetValues.cast([ppfigsftarget] if numpy.isscalar(ppfigsftarget) else ppfigsftarget)
+        f.writelines(['\\providecommand{\\bbobECDFslegend', scenario, '}[1]{\n', 
+                  (ppfigs.ecdfs_figure_caption(ppfigsftarget)).replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
+                
+        # 2. pprldistr
+        f.writelines(['\\providecommand{\\bbobpprldistrlegend', scenario , '}[1]{\n', 
+                  (pprldistr.caption_single()).replace('TO_BE_REPLACED', 'TOBEREPLACED'), '\n}\n'])
+        pprldistrtwo = (pprldistr.caption_two()).replace('\\algorithmA', 'algorithmA')
+        pprldistrtwo = pprldistrtwo.replace('\\algorithmB', 'algorithmB')    
+        f.writelines(['\\providecommand{\\bbobpprldistrlegendtwo', scenario, '}[1]{\n', pprldistrtwo, '\n}\n'])
+              
+        # 3. ppfigdim
+        f.writelines(['\\providecommand{\\bbobppfigdimlegend', scenario, '}[1]{\n', 
+                  (ppfigdim.scaling_figure_caption()).replace('values_of_interest', 'valuesofinterest'), '\n}\n'])
+
+        # 4. pptable
+        f.writelines(['\\providecommand{\\bbobpptablecaption', scenario, '}[1]{\n', 
+                  pptable.get_table_caption(), '\n}\n'])
+
+
+
+
 
     ppscatterLegend = ppscatter.caption_start_rlbased.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
     ppscatterLegend = ppscatterLegend.replace('\\algorithmA', 'algorithmA')
@@ -99,14 +128,6 @@ def main(verbose=True):
     f.writelines(['\\providecommand{\\bbobppscatterlegendfixed}[1]{\n', ppscatterLegend, '\n}\n'])
     f.writelines(['\\providecommand{\\bbobppscatterlegendend}[1]{\n', 
                   ppscatter.caption_finish, '\n}\n'])
-
-    pprldistrtwo = pprldistr.caption_two_rlbased.replace('\\algorithmA', 'algorithmA')
-    pprldistrtwo = pprldistrtwo.replace('\\algorithmB', 'algorithmB')    
-    f.writelines(['\\providecommand{\\bbobpprldistrlegendtworlbased}[1]{\n', pprldistrtwo, '\n}\n'])
-
-    pprldistrtwo = pprldistr.caption_two_fixed.replace('\\algorithmA', 'algorithmA')
-    pprldistrtwo = pprldistrtwo.replace('\\algorithmB', 'algorithmB')    
-    f.writelines(['\\providecommand{\\bbobpprldistrlegendtwofixed}[1]{\n', pprldistrtwo, '\n}\n'])
 
     pptable2Legend = pptable2.table_caption_expensive.replace('\\algorithmA', 'algorithmA')
     pptable2Legend = pptable2Legend.replace('\\algorithmB', 'algorithmB')    
@@ -121,14 +142,39 @@ def main(verbose=True):
 
     f.write(header)    
 
+    for scenario in ['rlbased', 'fixed', 'biobjfixed']:
+        # set up scenario, especially wrt genericsettings
+        if (scenario == 'rlbased'):
+            genericsettings.runlength_based_targets = True
+            current_testbed = None # make sure that config is doing something
+            config.config(isBiobjective=False)
+        elif (scenario == 'fixed'):
+            genericsettings.runlength_based_targets = False
+            current_testbed = None # make sure that config is doing something            
+            config.config(isBiobjective=False)
+        elif (scenario == 'biobjfixed'):
+            genericsettings.runlength_based_targets = False
+            current_testbed = None # make sure that config is doing something
+            config.config(isBiobjective=True)
+        else:
+            warnings.warn("Scenario not supported yet in HTML")
+
+        # update captions accordingly    
+        # 1. ppfigs
+        for dim in ['5', '20']:
+            f.write(prepare_item('bbobECDFslegend' + scenario + dim, 'bbobECDFslegend' + scenario, str(dim)))                        
+        # 2. pprldistr
+        f.write(prepare_item('bbobpprldistrlegend' + scenario))
+        f.write(prepare_item('bbobpprldistrlegendtwo' + scenario))              
+        # 3. ppfigdim
+        f.write(prepare_item('bbobppfigdimlegend' + scenario))
+        # 4. pptable
+        f.write(prepare_item('bbobpptablecaption'+ scenario))
+
+
     f.write(prepare_item('bbobloglosstablecaption'))
     f.write(prepare_item('bbobloglossfigurecaption'))
-    f.write(prepare_item('bbobpprldistrlegendrlbased'))
-    f.write(prepare_item('bbobpprldistrlegendfixed'))
-    f.write(prepare_item('bbobppfigdimlegendrlbased'))
-    f.write(prepare_item('bbobppfigdimlegendfixed'))
-    f.write(prepare_item('bbobpptablecaption'))
-
+    
     f.write(prepare_item('bbobppfigslegendrlbased'))
     f.write(prepare_item('bbobppfigslegendfixed'))
     f.write(prepare_item('bbobppfigslegendend', param = '$f_1$ and $f_{24}$'))
@@ -137,15 +183,10 @@ def main(verbose=True):
     f.write(prepare_item('bbobppscatterlegendfixed', param = '$f_1$ - $f_{24}$'))
     f.write(prepare_item('bbobppscatterlegendend'))
     
-    f.write(prepare_item('bbobpprldistrlegendtworlbased'))
-    f.write(prepare_item('bbobpprldistrlegendtwofixed'))
-    
     f.write(prepare_item('bbobpptablestwolegendexpensive', param = '48'))
     f.write(prepare_item('bbobpptablestwolegend', param = '48'))
 
     for dim in ['5', '20']:
-        for command_name in ['bbobECDFslegendrlbased', 'bbobECDFslegendstandard']:
-            f.write(prepare_item(command_name + dim, command_name, str(dim)))
         for command_name in ['bbobpptablesmanylegend', 'bbobpptablesmanylegendexpensive']:
             f.write(prepare_item(command_name + dim, command_name, 'dimension ' + dim))
 
