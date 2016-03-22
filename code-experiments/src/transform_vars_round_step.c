@@ -37,7 +37,7 @@ static void transform_vars_round_step_evaluate(coco_problem_t *problem, const do
   data = (transform_vars_round_step_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
   /* multiplication by d to counter-balance the normalization by d*/
-  ((f_step_ellipsoid_versatile_data_t *) problem->versatile_data)->zhat_1 = x[0] * (double) inner_problem->number_of_variables;
+  ((f_step_ellipsoid_versatile_data_t *) problem->versatile_data)->zhat_1 = fabs(x[0]) * (double) inner_problem->number_of_variables;
   for (i = 0; i < inner_problem->number_of_variables; ++i) {
     if (fabs(x[i]) > 0.5){
       data->rounded_x[i] = coco_double_round(x[i]);
