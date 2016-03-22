@@ -76,7 +76,7 @@ obtained (evaluated or recommended) before or at this time step.
   consequently, runtime is measured in number of function evaluations.
 
 Definitions and Terminology
----------------------------
+===========================
 We remind in this section different definitions.
 
 *function instance, problem*
@@ -123,7 +123,7 @@ multi-objective algorithms is the same than in the single-objective case: for
 each optimization algorithm, we record the runtimes to reach given target
 values for each problem in a given benchmark suite. A problem thereby
 consists of a (vector-valued) objective function, its search space dimension,
-and a concrete instantiation of it (see [coco-perf-assessment]_ ). 
+and a concrete instantiation of it (see [coco-perf-assessment]_ and above). 
 For defining the runtime on such a problem, we consider a quality indicator
 which is to be optimized (minimized). 
 In the single-objective case, the quality indicator is the objective
@@ -135,7 +135,7 @@ solutions evaluated within the first :math:`t` function evaluations. In principa
 quality indicators of the archive can be used as well.
 
 To be more concrete, the indicator :math:`\IHV` used here is to be mininized and
-a combination of the negative hypervolume indicator of the archive with the nadir
+is a combination of the negative hypervolume indicator of the archive with the nadir
 point as the hypervolume's reference point and the distance to the region of interest
 :math:`[z_{\text{ideal}}, z_{\text{nadir}}]` after a normalization of the
 objective space [#]_:
@@ -173,44 +173,41 @@ is the smallest (normalized) Euclidean distance between the archive and the regi
 .. [#] With linear transformations of both objective functions such that the ideal point :math:`z_{\text{ideal}}= (z_{\text{ideal}, \alpha}, z_{\text{ideal}, \beta})` is mapped to :math:`[0,0]` and the nadir point :math:`z_{\text{nadir}}= (z_{\text{nadir}, \alpha}, z_{\text{nadir}, \beta})` is mapped to :math:`[1,1]`.
 
 
-	
-
-.. todo::
-
-	* why hypervolume (can also be in principle with other indicators)?
-
-	* why archive?
-
-
-
-
 .. figure:: pics/IHDoutside.*
    :align: center
    :width: 60%
 
    Illustration of Coco's quality indicator (to be minimized) in the
-   bi-objective case if no solution of the archive (blue filled circles)
+   (normalized) bi-objective case if no solution of the archive (blue filled circles)
    dominates the nadir point (black filled circle), i.e., the shortest
    distance of an archive member to the region of interest (ROI), delimited
    by the nadir point. 
    Here, it is the forth point from the left that defines
    the smallest distance.
    
-.. the hypervolume of the reference set (aka the
-   best known Pareto front approximation, red triangles) plus 
 
 .. figure:: pics/IHDinside.*
    :align: center
    :width: 60%
 
-   Illustration of Coco's quality indicator (to be minized) in the
+   Illustration of Coco's quality indicator (to be minimized) in the
    bi-objective case if the nadir point (black filled circle) is dominated by
-   a solution in the archive (blue filled circles). The indicator is the 
+   at least one solution in the archive (blue filled circles). The indicator is the 
    (negative) hypervolume of the archive with the nadir point as reference point. 
-   The difference between the hypervolume of the reference set (aka Pareto
-   front approximation, red triangles) and the hypervolume of the archive is
-   given as the size of the two blue shaded areas minus the size of the green
-   area.
+   
+   
+Rationale Behind our Performance Measure and A First Summary
+------------------------------------------------------------
+
+
+*Why using an archive?*
+
+
+
+*Why hypervolume?* (can also be in principle with other indicators)?
+Due to the theoretical properties of the hypervolume [ZIT2003]_, the indicator improves iff a new non-dominated 
+solution is generated. 
+
 
 
 To summarize, here the specificities of the proposed ``bbob-biobj`` performance criterion:
@@ -246,7 +243,6 @@ This implies:
 
 
 
-
 Choice of Target Values
 =======================
 
@@ -264,7 +260,9 @@ a function of |Irefi|, namely as |Irefi| :math:`+\,t`, where the target precisio
 That is, if not stated otherwise, the runtimes of these 58 target values are
 presented (usually as empirical cumulative distribution function, ECDF). 
 It is not uncommon that the quality indicator value of the algorithm never surpasses some of
-these target values, which leads to missing runtime measurements. Note that the non-positive
+these target values, which leads to missing runtime measurements.
+
+Note that the non-positive
 target precisions have been included in particular to account for the fact that the
 reference hypervolume indicator value is computed only for a fairly adequate
 approximation of the Pareto set and thus can potentially be outperformed by an actual algorithm. 
@@ -276,7 +274,65 @@ positive if the global optima are known. [coco-perf-assessment]_
 .. |t| replace:: :math:`t`
 
 
-.. Choice of Reference Set and Target Difficulties
+
+.. [#] As we do not know the Pareto set on any but one function, the approximation 
+  could be less adequate than we are hoping for. 
+
+
+Choice of the Reference Hypervolume Indicator Values
+====================================================
+
+Opposed to the single-objective ``bbob`` test suite [HAN2009fun]_, the
+biobjective ``bbob-biobj`` test suite does not provide analytical forms of
+its optima. 
+Except for :math:`f_1`, the Pareto set and the Pareto front are unknown. 
+
+Instead of using the hypervolume of the true Pareto set as reference
+hypervolume indicator value, we can therefore only use the best
+approximation of the Pareto set we have and hope that it is adequate (see
+above). In order to do so, several existing multiobjective algorithms have
+been run ahead of the postprocessing and all non-dominated solutions over
+all runs have been recorded instance-wise. The hypervolume indicator values
+of these latest sets of non-dominated solutions, also called *non-dominated
+reference sets*, are then used as the reference hypervolume indicator value.
+
+
+
+.. todo::
+  finish from here
+
+
+
+The equivalent of a global optimum in the multi-objective case is the set of Pareto-optimal
+or efficient solutions, also known as Pareto set. If we assume the search space to be
+:math:`\mathbb{R}^n` and the minimization of two objective
+functions :math:`f_1: x\in \mathbb{R}^n \mapsto f_1(x)\in\mathbb{R}` and :math:`f_1: x\in \mathbb{R}^n \mapsto f_1(x)\in\mathbb{R}`,
+a solution :math:`x\in\mathbb{R}^n` is called Pareto-optimal if it is not dominated
+by any other solution :math:`y\in\mathbb{R}^n` or, in other words, if
+
+.. math::
+  
+  \not\exists y \text{ s.t. } (f_1(y)< f_1(x) \text{ and } f_2(y)\leq f_2(x)) \text{ or } (f_2(y)\leq f_2(x) \text{ and } f_2(y)< f_2(x)).
+
+  
+  
+
+
+
+This has two main implications:
+
+
+* The reference set is expected to evolve over time, in terms of becoming a better and better
+  approximation of the actual Pareto set/Pareto front if more and more algorithms are
+  compared.
+
+.. The performance assessment via the Coco platform addresses both issues, see
+   `Choice of Reference Set and Target Difficulties`_ and
+   `Data storage and Future Recalculations of Indicator Values`_ below for details.
+   Before we discuss these issues, however, let us have a look on the actual performance
+   criterion used for the ``bbob-biobj`` test suite, assuming that a reference set is given.
+
+   .. Choice of Reference Set and Target Difficulties
    ===============================================
   Choice of the targets based on best estimation of Pareto front (using all the 
   data we have) - chosen instance wise
@@ -295,72 +351,7 @@ positive if the global optima are known. [coco-perf-assessment]_
    estimation of the front is meant to change. Hence ECDF plots are meant
    to be reploted.
 
-.. [#] As we do not know the Pareto set on any but one function, the approximation 
-  could be less adequate than we are hoping for. 
-
-
-Choice of the Reference Hypervolume Indicator Value
----------------------------------------------------
-
-Opposed to the single-objective ``bbob`` test suite [HAN2009fun]_, the
-biobjective ``bbob-biobj`` test suite does not provide analytical forms of
-its optima. 
-Except for :math:`f_1`, the Pareto set and the Pareto front are unknown. 
-
-.. The performance assessment therefore has to be relative to the best 
-  known approximations and this document details how this is implemented.
-
-
-Dealing with Unknown Optima
----------------------------
-
-.. note:: Why don't we just introduce the used indicator, as all assessment is
-  based on it? It seems not necessary to introduce the 1001st time the 
-  definition of dominance. The assessment is based only on an indicator value. 
-  As we use hypervolume, the indicator improves iff a new non-dominated 
-  solution is generated. 
-
-The equivalent of a global optimum in the multi-objective case is the set of Pareto-optimal
-or efficient solutions, also known as Pareto set. If we assume the search space to be
-:math:`\mathbb{R}^n` and the minimization of two objective
-functions :math:`f_1: x\in \mathbb{R}^n \mapsto f_1(x)\in\mathbb{R}` and :math:`f_1: x\in \mathbb{R}^n \mapsto f_1(x)\in\mathbb{R}`,
-a solution :math:`x\in\mathbb{R}^n` is called Pareto-optimal if it is not dominated
-by any other solution :math:`y\in\mathbb{R}^n` or, in other words, if
-
-.. math::
-  
-  \not\exists y \text{ s.t. } (f_1(y)< f_1(x) \text{ and } f_2(y)\leq f_2(x)) \text{ or } (f_2(y)\leq f_2(x) \text{ and } f_2(y)< f_2(x)).
-
-The image of the Pareto set under the vector-valued objective function
-:math:`f(x)= (f_1(x), f_2(x))` is called Pareto front.
-
-When combining single-objective functions to multi-objective ones as in the case of the ``bbob-biobj``
-suite, one cannot expect that Pareto set and Pareto front can be described in analytical form---even
-if the single-objective optima are known. Comparing algorithm performance can therefore only be
-done relatively to the best known optimum. In the multi-objective
-case, where with the Pareto set a set of solutions is sought, we call this approximation
-**reference set**. In practice, such a reference set is typically generated by running a certain set
-of algorithms on the considered problem ahead of the performance assessment.
-
-This has two main implications:
-
-.. todo:: "*Performance can only be judged relatively to the reference set*" seem
-  just false. We can defined a target hypervolume and measure runtime entirely
-  independent of the reference set. 
-
-* Performance can only be judged relatively to the reference set. The better the algorithms
-  used to create the reference set have been, the more accurate the performance assessment.
-
-* The reference set is expected to evolve over time, in terms of becoming a better and better
-  approximation of the actual Pareto set/Pareto front if more and more algorithms are
-  compared.
-
-.. The performance assessment via the Coco platform addresses both issues, see
-   `Choice of Reference Set and Target Difficulties`_ and
-   `Data storage and Future Recalculations of Indicator Values`_ below for details.
-   Before we discuss these issues, however, let us have a look on the actual performance
-   criterion used for the ``bbob-biobj`` test suite, assuming that a reference set is given.
-
+   
 
 Data storage and Future Recalculations of Indicator Values
 ==========================================================
@@ -416,3 +407,5 @@ __ https://www.github.com
   `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, updated February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
+
+.. [ZIT2003] E. Zitzler, L. Thiele, M. Laumanns, C. M. Fonseca, and V. Grunert da Fonseca (2003). Performance Assessment of Multiobjective Optimizers: An Analysis and Review. *IEEE 
