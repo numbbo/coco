@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "coco.h"
 
@@ -66,6 +67,20 @@ void my_grid_search(evaluate_function_t evaluate,
                     const double *upper_bounds,
                     const size_t max_budget);
 
+/* Structure and functions needed for timing the experiment */
+typedef struct {
+	size_t number_of_dimensions;
+	size_t current_idx;
+	char **output;
+	size_t previous_dimension;
+	size_t cumulative_evaluations;
+	time_t start_time;
+	time_t overall_start_time;
+} timing_data_t;
+static timing_data_t *timing_data_initialize(coco_suite_t *suite);
+static void timing_data_time_problem(timing_data_t *timing_data, coco_problem_t *problem);
+static void timing_data_finalize(timing_data_t *timing_data);
+
 /**
  * The main method initializes the random number generator and calls the example experiment on the
  * bi-objective suite.
@@ -94,7 +109,8 @@ int main(void) {
 }
 
 /**
- * A simple example of benchmarking random search on a suite with instances from 2016.
+ * A simple example of benchmarking random search on a suite with instances from 2016 that can serve also as
+ * a timing experiment.
  *
  * @param suite_name Name of the suite (use "bbob" for the single-objective and "bbob-biobj" for the
  * bi-objective suite).
@@ -109,6 +125,7 @@ void example_experiment(const char *suite_name,
   size_t run;
   coco_suite_t *suite;
   coco_observer_t *observer;
+  timing_data_t *timing_data;
 
   /* Set some options for the observer. See documentation for other options. */
   char *observer_options =
@@ -120,6 +137,9 @@ void example_experiment(const char *suite_name,
   suite = coco_suite(suite_name, "year: 2016", "dimensions: 2,3,5,10,20,40");
   observer = coco_observer(observer_name, observer_options);
   coco_free_memory(observer_options);
+
+  /* Initialize timing */
+  timing_data = timing_data_initialize(suite);
 
   /* Iterate over all problems in the suite */
   while ((PROBLEM = coco_suite_get_next_problem(suite, observer)) != NULL) {
@@ -155,7 +175,12 @@ void example_experiment(const char *suite_name,
         coco_error("Something unexpected happened - function evaluations were decreased!");
     }
 
+    /* Keep track of time */
+    timing_data_time_problem(timing_data, PROBLEM);
   }
+
+  /* Output and finalize the timing data */
+  timing_data_finalize(timing_data);
 
   coco_observer_free(observer);
   coco_suite_free(suite);
@@ -282,5 +307,92 @@ void my_grid_search(evaluate_function_t evaluate,
   coco_free_memory(grid_step);
 }
 
+/**
+ * Allocates memory for the timing_data_t object and initializes it.
+ */
+static timing_data_t *timing_data_initialize(coco_suite_t *suite) {
 
+	timing_data_t *timing_data = (timing_data_t *) coco_allocate_memory(sizeof(*timing_data));
+	size_t function_idx, dimension_idx, instance_idx, i;
 
+	/* Find out the number of all dimensions */
+	coco_suite_decode_problem_index(suite, coco_suite_get_number_of_problems(suite) - 1, &function_idx,
+			&dimension_idx, &instance_idx);
+	timing_data->number_of_dimensions = dimension_idx + 1;
+	timing_data->current_idx = 0;
+	timing_data->output = (char **) coco_allocate_memory(timing_data->number_of_dimensions * sizeof(char *));
+	for (i = 0; i < timing_data->number_of_dimensions; i++) {
+		timing_data->output[i] = NULL;
+	}
+	timing_data->previous_dimension = 0;
+	timing_data->cumulative_evaluations = 0;
+	time(&timing_data->start_time);
+	time(&timing_data->overall_start_time);
+
+	return timing_data;
+}
+
+/**
+ * Keeps track of the total number of evaluations and elapsed time. Produces an output string when the
+ * current problem is of a different dimension than the previous one or when NULL.
+ */
+static void timing_data_time_problem(timing_data_t *timing_data, coco_problem_t *problem) {
+
+	double elapsed_seconds = 0;
+
+	if ((problem == NULL) || (timing_data->previous_dimension != coco_problem_get_dimension(problem))) {
+
+		/* Output existing timing information */
+		if (timing_data->cumulative_evaluations > 0) {
+			time_t now;
+			time(&now);
+			elapsed_seconds = difftime(now, timing_data->start_time) / (double) timing_data->cumulative_evaluations;
+			timing_data->output[timing_data->current_idx++] = coco_strdupf("D=%lu done in %.2e seconds/evaluation\n",
+					timing_data->previous_dimension, elapsed_seconds);
+		}
+
+		if (problem != NULL) {
+			/* Re-initialize the timing_data */
+			timing_data->previous_dimension = coco_problem_get_dimension(problem);
+			timing_data->cumulative_evaluations = coco_problem_get_evaluations(problem);
+			time(&timing_data->start_time);
+		}
+
+	} else {
+		timing_data->cumulative_evaluations += coco_problem_get_evaluations(problem);
+	}
+}
+
+/**
+ * Outputs and finalizes the given timing data.
+ */
+static void timing_data_finalize(timing_data_t *timing_data) {
+
+	/* Record the last problem */
+	timing_data_time_problem(timing_data, NULL);
+
+  if (timing_data) {
+  	size_t i;
+  	double elapsed_seconds;
+		time_t now;
+		int hours, minutes, seconds;
+
+		time(&now);
+		elapsed_seconds = difftime(now, timing_data->overall_start_time);
+
+  	printf("\n");
+  	for (i = 0; i < timing_data->number_of_dimensions; i++) {
+    	if (timing_data->output[i]) {
+				printf(timing_data->output[i]);
+				coco_free_memory(timing_data->output[i]);
+    	}
+    }
+  	hours = (int) elapsed_seconds / 3600;
+  	minutes = ((int) elapsed_seconds % 3600) / 60;
+  	seconds = (int)elapsed_seconds - (hours * 3600) - (minutes * 60);
+  	printf("Total elapsed time: %dh%02dm%02ds\n", hours, minutes, seconds);
+
+    coco_free_memory(timing_data->output);
+    coco_free_memory(timing_data);
+  }
+}
