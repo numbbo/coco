@@ -130,6 +130,9 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   const size_t num_existing_instances = sizeof(suite_biobj_instances) / sizeof(suite_biobj_instances[0]);
   int instance_found = 0;
 
+  double *smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
+  double *largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
+
   /* A "magic" formula to compute the BBOB function index from the bi-objective function index */
   function1_idx = num_bbob_functions
       - coco_double_to_size_t(
@@ -194,7 +197,7 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   problem1 = coco_get_bbob_problem(bbob_functions[function1_idx], dimension, instance1);
   problem2 = coco_get_bbob_problem(bbob_functions[function2_idx], dimension, instance2);
 
-  problem = coco_problem_stacked_allocate(problem1, problem2);
+  problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest, largest_values_of_interest);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
@@ -207,6 +210,9 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
 
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem1->problem_type, problem2->problem_type);
+
+  coco_free_memory(smallest_values_of_interest);
+  coco_free_memory(largest_values_of_interest);
 
   return problem;
 }
@@ -236,6 +242,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
   size_t d, f1, f2, i;
   size_t function1, function2, dimension;
   double norm;
+  double *smallest_values_of_interest, *largest_values_of_interest;
 
   suite_biobj_t *data;
   assert(suite->data);
@@ -269,7 +276,15 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
             coco_problem_stacked_free(problem);
             problem = NULL;
           }
-          problem = coco_problem_stacked_allocate(problem1, problem2);
+
+          /* Set smallest and largest values of interest to some value (not important which, it just needs to be a
+           * vector of doubles of the right dimension) */
+          smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
+          largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
+          problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
+          		largest_values_of_interest);
+          coco_free_memory(smallest_values_of_interest);
+          coco_free_memory(largest_values_of_interest);
 
           /* Check whether the ideal and nadir points are too close in the objective space */
           norm = mo_get_norm(problem->best_value, problem->nadir_value, 2);

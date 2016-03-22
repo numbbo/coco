@@ -406,6 +406,20 @@ double *coco_allocate_vector(const size_t number_of_elements) {
 }
 
 /**
+ * @brief Allocates memory for a vector and sets all its elements to value.
+ */
+static double *coco_allocate_vector_with_value(const size_t number_of_elements, double value) {
+  const size_t block_size = number_of_elements * sizeof(double);
+  double *vector = (double *) coco_allocate_memory(block_size);
+  size_t i;
+
+  for (i = 0; i < number_of_elements; i++)
+  	vector[i] = value;
+
+  return vector;
+}
+
+/**
  * @brief Safe memory allocation for a vector with size_t elements that either succeeds or triggers a
  * coco_error.
  */

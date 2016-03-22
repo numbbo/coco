@@ -31,12 +31,6 @@ from .toolsstats import significancetest
 
 from pdb import set_trace
 
-targets = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
-finaltarget = 1e-8 # value for determining the success ratio
-targetsOfInterest = (10., 1., 1e-1, 1e-3, 1e-5, 1e-7) # targets of the table
-targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
-targetf = 1e-8 # value for determining the success ratio
-samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
 # def tablespec(targets):
 # 
 #     i = 0
@@ -51,60 +45,41 @@ samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
 #                                  'format': '%d'}})
     
     
-old_legend = r""" 
- \newcommand{\tablecaption}[1]{Shown are, for functions #1 and for a
- given target difference to the optimal function value \Df: the number
- of successful trials (\textbf{$\#$}); the average running time to
- surpass $\fopt+\Df$ (\aRT, see Figure~\ref{fig:ERTgraphs}); the
- \textbf{10\%}-tile and \textbf{90\%}-tile of the bootstrap
- distribution of \aRT; the average number of function evaluations in
- successful trials or, if none was successful, as last entry the median
- number of function evaluations to reach the best function value
- ($\text{RT}_\text{succ}$).  If $\fopt+\Df$ was never reached, figures in
- \textit{italics} denote the best achieved \Df-value of the median
- trial and the 10\% and 90\%-tile trial.  Furthermore, N denotes the
- number of trials, and mFE denotes the maximum of number of function
- evaluations executed in one trial. See Figure~\ref{fig:ERTgraphs} for
- the names of functions. }
-"""
-
-table_caption_one = r"""%
-    Average running time (aRT in number of function 
-    evaluations) divided by the best aRT measured during BBOB-2009. The aRT 
-    and in braces, as dispersion measure, the half difference between 90 and 
-    10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
-    the best aRT
-    """
-table_caption_two1 = r"""%
-    in the first. The different target \Df-values are shown in the top row. 
-    \#succ is the number of trials that reached the (final) target $\fopt + 10^{-8}$.
-    """
-table_caption_two2 = r"""%
-    (preceded by the target \Df-value in \textit{italics}) in the first. 
-    \#succ is the number of trials that reached the target value of the last column.
-    """
-table_caption_rest = r"""%
-    The median number of conducted function evaluations is additionally given in 
-    \textit{italics}, if the target in the last column was never reached. 
-    \textbf{Bold} entries are statistically significantly better (according to
-    the rank-sum test) compared to the best algorithm in BBOB-2009, with
-    $p = 0.05$ or $p = 10^{-k}$ when the number $k > 1$ is following the
-    $\downarrow$ symbol, with Bonferroni correction by the number of
-    functions.
-    """
-table_caption = table_caption_one + table_caption_two1 + table_caption_rest
 
 
-def set_table_caption(setting):
-    """ Sets table caption, based on the setting which can be
-        either 'rlbased' or 'biobjective'.
+def get_table_caption():
+    """ Sets table caption, based on the genericsettings.current_testbed
+        and genericsettings.runlength_based_targets.
     """    
-    global table_caption    
     
+    table_caption_one = r"""%
+        Average running time (aRT in number of function 
+        evaluations) divided by the best aRT measured during BBOB-2009. The aRT 
+        and in braces, as dispersion measure, the half difference between 90 and 
+        10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
+        the best aRT
+        """
+    table_caption_two1 = (r"""%
+        in the first. The different target \Df-values are shown in the top row. 
+        \#succ is the number of trials that reached the (final) target $\fopt + """
+        + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+        """)
+    table_caption_two2 = r"""%
+        (preceded by the target \Df-value in \textit{italics}) in the first. 
+        \#succ is the number of trials that reached the target value of the last column.
+        """
+    table_caption_rest = r"""%
+        The median number of conducted function evaluations is additionally given in 
+        \textit{italics}, if the target in the last column was never reached. 
+        \textbf{Bold} entries are statistically significantly better (according to
+        the rank-sum test) compared to the best algorithm in BBOB-2009, with
+        $p = 0.05$ or $p = 10^{-k}$ when the number $k > 1$ is following the
+        $\downarrow$ symbol, with Bonferroni correction by the number of
+        functions.
+        """
 
-    if setting == 'rlbased':
-        table_caption = table_caption_one + table_caption_two2 + table_caption_rest
-    elif setting == 'biobjective':
+    if genericsettings.current_testbed.name == 'bbob-biobj':
+        # NOTE: no runlength-based targets supported yet
         table_caption = r"""%
                 Average running time (aRT in number of function 
                 evaluations) to reach given targets. For each function, the aRT 
@@ -116,94 +91,16 @@ def set_table_caption(setting):
                 The median number of conducted function evaluations is additionally given in 
                 \textit{italics}, if the target in the last column was never reached. 
                 """        
+    elif genericsettings.current_testbed.name == 'bbob':
+        if genericsettings.runlength_based_targets == True:
+            table_caption = table_caption_one + table_caption_two2 + table_caption_rest
+        else:
+            table_caption = table_caption_one + table_caption_two1 + table_caption_rest
     else:
-        warnings.warn('Not supported table caption setting. Using default.')
+        warnings.warn("Current settings do not support pptable caption.")
 
-def _treat(ds):
-
-    bestalgentries = bestalg.loadBestAlgorithm(ds.isBiobjective())
-    
-    if not bestalgentries:
-        return None, None
-
-    # Rec array: http://docs.scipy.org/doc/numpy/user/basics.rec.html
-    bestentry = bestalgentries[(ds.dim, ds.funcId)]
-    bestert = bestentry.detERT(targets)
-    bestevals, bestalgs = bestentry.detEvals(targets)
-    bestfinaldata = bestentry.detEvals([finaltarget])[0][0]
-    ert = ds.detERT(targets)
-    evals = ds.detEvals(targets)
-    finaldata = ds.detEvals([finaltarget])[0]
-
-    dtype = []
-    bestdtype = []
-    for i, t in enumerate(targets):
-        dtype.append((('aRT ratio (iq 10-90), df=%e' % t, 'df=%e' % t), '2f')) 
-        bestdtype.append((('best aRT df=%e' % t, 'df=%e' % t), 'f'))
-    dtype.append((('nb success final target=%e' % t, 'finaltarget=%e' % t), 'i8'))
-    dtype.append(('nbruns', 'i8'))
-    bestdtype.append((('nb success finaltarget=%e' % t, 'finaltarget=%e' % t), 'i8'))
-    bestdtype.append(('nbruns', 'i8'))
-    besttable = np.zeros(1, dtype=bestdtype)
-    wholetable = np.zeros(1, dtype=dtype)
-    table = wholetable[0]
-    
-    bestdata = list()
-    bestdata.extend(bestert)
-    bestdata.append(np.sum(np.isnan(bestfinaldata) == False))
-    bestdata.append(len(bestfinaldata))
-    besttable[0] = tuple(bestdata)
-
-    data = list()
-    for i, e in enumerate(evals): # loop over targets
-        unsucc = np.isnan(e)
-        bt = toolsstats.drawSP(e[unsucc == False], ds.maxevals[unsucc],
-                               (10, 90), samplesize)[0]
-        data.append((ert[i] / bestert[i], (bt[-1] - bt[0]) / 2. / bestert[i]))
-    data.append(np.sum(np.isnan(finaldata) == False))
-    data.append(ds.nbRuns())
-    table = tuple(data) # fill with tuple not list nor array!
-
-    # TODO: do the significance test thing here.
-    return besttable, wholetable
-
-def _table(data):
-    res = []
-    
-    return res
-
-def main2(dsList, dimsOfInterest, outputdir='.', info='', verbose=True):
-    """Generate a table of ratio aRT/aRTbest vs target precision.
-    
-    1 table per dimension will be generated.
-
-    Rank-sum tests table on "Final Data Points" for only one algorithm.
-    that is, for example, using 1/#fevals(ftarget) if ftarget was
-    reached and -f_final otherwise as input for the rank-sum test, where
-    obviously the larger the better.
-
-    """
-    # TODO: remove dimsOfInterest, was added just for compatibility's sake
-    if info:
-        info = '_' + info
-        # insert a separator between the default file name and the additional
-        # information string.
-    
-    for d, dsdim in dsList.dictByDim().iteritems():
-        res = []
-        for f, dsfun in sorted(dsdim.dictByFunc().iteritems()):
-            assert len(dsfun) == 1, ('Expect one-element DataSetList for a '
-                                     'given dimension and function')
-            ds = dsfun[0]
-            data = _treat(ds)
-            res = _table(data)
-        res = []
-        outputfile = os.path.join(outputdir, 'pptable_%02dD%s.tex' % (d, info))
-        f = open(outputfile, 'w')
-        f.write(res)
-        f.close()
-        if verbose:
-            print "Table written in %s" % outputfile
+    return table_caption
+        
 
 def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     """Generate a table of ratio aRT/aRTbest vs target precision.
@@ -220,7 +117,10 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     #in the following the reference algorithm is the one given in
     #bestalg.bestalgentries which is the virtual best of BBOB
     dictDim = dsList.dictByDim()
-    targetf=1e-8
+
+    targetf = genericsettings.current_testbed.pptable_ftarget
+    targetsOfInterest = genericsettings.current_testbed.pptable_targetsOfInterest
+
     if info:
         info = '_' + info
         # insert a separator between the default file name and the additional
@@ -343,7 +243,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     #set_trace()
                 if any(succ):
                     tmp2 = toolsstats.drawSP(tmp[succ], tmp[succ==False],
-                                            (10, 50, 90), samplesize)[0]
+                                (10, 50, 90), genericsettings.simulated_runlength_bootstrap_sample_size)[0]
                     dispersion.append((tmp2[-1] - tmp2[0]) / 2.)
                 else: 
                     dispersion.append(None)
