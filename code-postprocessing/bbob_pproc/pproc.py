@@ -735,11 +735,12 @@ class DataSet():
                 # We just skip the element.
                 continue
             else:
-                # We take only the first 5 instances for the bi-objective case (for now).
-                if self.isBiobjective() and len(self.instancenumbers) >= 5:
-                    continue
-                
                 if not ':' in elem:
+                    
+                    # We take only the first 5 instances for the bi-objective case (for now).
+                    if self.isBiobjective() and ast.literal_eval(elem) > 5:
+                        continue
+
                     # if elem does not have ':' it means the run was not
                     # finalized properly.
                     self.instancenumbers.append(ast.literal_eval(elem))
@@ -754,6 +755,10 @@ class DataSet():
                     self.readfinalFminusFtarget.append(numpy.inf)
                 else:
                     itrial, info = elem.split(':', 1)
+                    # We take only the first 5 instances for the bi-objective case (for now).
+                    if self.isBiobjective() and ast.literal_eval(itrial) > 5:
+                        continue
+
                     self.instancenumbers.append(ast.literal_eval(itrial))
                     self.isFinalized.append(True)
                     readmaxevals, readfinalf = info.split('|', 1)
@@ -771,15 +776,17 @@ class DataSet():
         if verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
-        (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
-        self.evals = adata
-        try:
-            for i in range(len(maxevals)):
-                self.maxevals[i] = max(maxevals[i], self.maxevals[i])
-                self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
-        except AttributeError:
-            self.maxevals = maxevals
-            self.finalfunvals = finalfunvals
+       
+        if data:
+            (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
+            self.evals = adata
+            try:
+                for i in range(len(maxevals)):
+                    self.maxevals[i] = max(maxevals[i], self.maxevals[i])
+                    self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
+            except AttributeError:
+                self.maxevals = maxevals
+                self.finalfunvals = finalfunvals
 
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.tdat')
                          for i in self.dataFiles)
@@ -795,42 +802,44 @@ class DataSet():
         if verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
-        (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
-        self.funvals = adata
-        try:
-            for i in range(len(maxevals)):
-                self.maxevals[i] = max(maxevals[i], self.maxevals[i])
-                self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
-        except AttributeError:
-            self.maxevals = maxevals
-            self.finalfunvals = finalfunvals
-        #TODO: take for maxevals the max for each trial, for finalfunvals the min...
-
-        #extensions = {'.dat':(HMultiReader, 'evals'), '.tdat':(VMultiReader, 'funvals')}
-        #for ext, info in extensions.iteritems(): # ext is defined as global
-            ## put into variable dataFiles the files where to look for data
-            ## basically append 
-            #dataFiles = list(i.rsplit('.', 1)[0] + ext for i in self.dataFiles)
-            #data = info[0](split(dataFiles))
-            ## split is a method from readalign, info[0] is a method of readalign
-            #if verbose:
-                #print ("Processing %s: %d/%d trials found." #% (dataFiles, len(data), len(self.itrials)))
-            #(adata, maxevals, finalfunvals) = alignData(data)
-            #setattr(self, info[1], adata)
-            #try:
-                #if all(maxevals > self.maxevals):
+        
+        if data:
+            (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
+            self.funvals = adata
+            try:
+                for i in range(len(maxevals)):
+                    self.maxevals[i] = max(maxevals[i], self.maxevals[i])
+                    self.finalfunvals[i] = min(finalfunvals[i], self.finalfunvals[i])
+            except AttributeError:
+                self.maxevals = maxevals
+                self.finalfunvals = finalfunvals
+            #TODO: take for maxevals the max for each trial, for finalfunvals the min...
+    
+            #extensions = {'.dat':(HMultiReader, 'evals'), '.tdat':(VMultiReader, 'funvals')}
+            #for ext, info in extensions.iteritems(): # ext is defined as global
+                ## put into variable dataFiles the files where to look for data
+                ## basically append 
+                #dataFiles = list(i.rsplit('.', 1)[0] + ext for i in self.dataFiles)
+                #data = info[0](split(dataFiles))
+                ## split is a method from readalign, info[0] is a method of readalign
+                #if verbose:
+                    #print ("Processing %s: %d/%d trials found." #% (dataFiles, len(data), len(self.itrials)))
+                #(adata, maxevals, finalfunvals) = alignData(data)
+                #setattr(self, info[1], adata)
+                #try:
+                    #if all(maxevals > self.maxevals):
+                        #self.maxevals = maxevals
+                        #self.finalfunvals = finalfunvals
+                #except AttributeError:
                     #self.maxevals = maxevals
                     #self.finalfunvals = finalfunvals
-            #except AttributeError:
-                #self.maxevals = maxevals
-                #self.finalfunvals = finalfunvals
-        #CHECKING PROCEDURE
-        tmp = []
-        for i in range(min((len(self.maxevals), len(self.readmaxevals)))):
-            tmp.append(self.maxevals[i] == self.readmaxevals[i])
-        if not all(tmp) or len(self.maxevals) != len(self.readmaxevals):
-            warnings.warn('There is a difference between the maxevals in the '
-                          '*.info file and in the data files.')
+            #CHECKING PROCEDURE
+            tmp = []
+            for i in range(min((len(self.maxevals), len(self.readmaxevals)))):
+                tmp.append(self.maxevals[i] == self.readmaxevals[i])
+            if not all(tmp) or len(self.maxevals) != len(self.readmaxevals):
+                warnings.warn('There is a difference between the maxevals in the '
+                              '*.info file and in the data files.')
 
         self._cut_data()
         # Compute aRT
@@ -1533,8 +1542,9 @@ class DataSetList(list):
                     data_file_names.append(data)
                     nbLine += 3
                     #TODO: check that something is not wrong with the 3 lines.
-                    self.append(DataSet(header, comment, data, indexFile,
-                                        verbose))
+                    ds = DataSet(header, comment, data, indexFile, verbose)                    
+                    if len(ds.instancenumbers) > 0:                    
+                        self.append(ds)
                 except StopIteration:
                     break
             # Close index file
