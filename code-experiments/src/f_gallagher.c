@@ -499,7 +499,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     (*problem_i)->best_value[0] = 0;/* to prevent raising the assert */
     /* P_Lambda the permutation */
     P_Lambda = coco_allocate_vector_size_t(dimension);/* random permutation of the values in C_i */
-    coco_compute_random_permutation(P_Lambda, rseed + 5000000 + peak_index, dimension);
+    coco_compute_random_permutation(P_Lambda, rseed + 5000000 + peak_index, dimension);/* TODO: Discuss: this permutation renders irrelevant the parameterization of P1 and P2 since it takes over as a random uniform permutation. Consider leaving only this one and maybe making it a truncated uniform one*/
 
     /* apply var transformations to sub problem*/
     *problem_i = transform_vars_scale(*problem_i, sqrt(sqrt(sqrt(alpha_i))));/* sqrt( alpha^1/4) */
