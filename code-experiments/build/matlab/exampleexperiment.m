@@ -44,6 +44,7 @@ cocoSetLogLevel('info');
 printeddim = 1;
 doneEvalsAfter = 0; % summed function evaluations for a single problem
 doneEvalsTotal = 0; % summed function evaluations per dimension
+printstring = '\n'; % store strings to be printed until experiment is finished
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Run Experiment        %
@@ -60,8 +61,9 @@ while true
     if printeddim < dimension
       if printeddim > 1
         elapsedtime = toc;
-        fprintf("\n   COCO TIMING: dimension %d finished in %e seconds/evaluation\n", ...
-                printeddim, elapsedtime/double(doneEvalsTotal));
+        printstring = strcat(printstring, ...
+            sprintf("   COCO TIMING: dimension %d finished in %e seconds/evaluation\n", ...
+            printeddim, elapsedtime/double(doneEvalsTotal)));
         tic;
       end
       doneEvalsTotal = 0;
@@ -108,8 +110,10 @@ while true
 end
 
 elapsedtime = toc;
-fprintf("\n   COCO TIMING: dimension %d finished in %e seconds/evaluation\n", ...
-        printeddim, elapsedtime/double(doneEvalsTotal));
+printstring = strcat(printstring, ...
+    sprintf("   COCO TIMING: dimension %d finished in %e seconds/evaluation\n", ...
+    printeddim, elapsedtime/double(doneEvalsTotal)));
+fprintf(printstring);
 
 cocoObserverFree(observer);
 cocoSuiteFree(suite);
