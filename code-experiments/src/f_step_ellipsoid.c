@@ -66,7 +66,7 @@ static double f_step_ellipsoid_raw(const double *x, const size_t number_of_varia
   x1 = data->x[0];
   
   for (i = 0; i < number_of_variables; ++i) {
-    if (fabs(data->x[i]) > 0.5)
+    if (fabs(data->x[i]) > 0.5) /* TODO: Documentation: no fabs() in documentation */
       data->x[i] = coco_double_round(data->x[i]);
     else
       data->x[i] = coco_double_round(alpha * data->x[i]) / alpha;
