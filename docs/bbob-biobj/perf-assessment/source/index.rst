@@ -71,30 +71,116 @@ obtained (evaluated or recommended) before or at this time step.
  			* we measure the hypervolume difference between the dynamic archive and this reference set.
 			* negative hyp-vol diff values are expected (means the algorithm improves over the current reference set)
 			* archive is improved over time, whenever we have a new point entering the archive we recompute and log the hyp-vol difference.
-
-			
 			
 .. [#] As usual, time is considered as number of function evaluations and, 
   consequently, runtime is measured in number of function evaluations.
 
+Definitions and Terminology
+---------------------------
+We remind in this section different definitions.
 
-Biobjective Performance Assessment in Coco: A Set-Indicator Value Replaces the Objective Function
+*function instance, problem*
+ In the case of the bi-objective performance assessment within COCO_, a problem is a 4-tuple of
+ 
+ * a *parameterized function* :math:`f_\theta: \mathbb{R}^D \to \mathbb{R}^2`,
+ * its concrete parameter values :math:`\theta\in\Theta` determining its so-called
+   *function instance* |i|,
+ * the *problem dimension* :math:`D`, and
+ * a *target value* :math:`f_{\rm target}` of an underlying quality indicator, see below.
+ 
+ We call a problem *solved* by an optization algorithm if the algorithm
+ reaches a quality indicator value at least as good as the associated target value.
+ The number of function evaluations needed to surpass the target value for the first time
+ is COCO_'s central performance measure. [coco-doc]_
+
+*Pareto set* and *Pareto front*
+ For a concrete function instance, i.e., a function :math:`f_\theta=(f_\alpha,f_\beta)` with
+ given parameter value :math:`\theta` and dimension :math:`D`, the Pareto set is the set
+ of all (Pareto-optimal) solutions for which no solutions in the search space
+ :math:`\R^D` exist that
+ have either an improved :math:`f_\alpha` or an improved :math:`f_\beta` value while the
+ other objective function is at least as good ("solutions *non-dominated* by any other
+ solution"). The image of the Pareto set in the *objective space* is called the Pareto front.
+ 
+*ideal point*
+ The ideal point (in objective space) is defined as the vector in objective space that
+ contains the optimal function value for each objective *independently*, i.e. for the above
+ concrete function instance, the ideal point is given by
+ :math:`z_{\rm ideal}  = (\inf_{x\in \mathbb{R}^D} f_\alpha(x), \inf_{x\in \mathbb{R}^D} f_\beta(x))`.
+ 
+*nadir point* 
+ The nadir point (in objective space) consists in each objective of
+ the worst value obtained by a Pareto-optimal solution. More precisely, if
+ :math:`\mathcal{PO}` denotes the Pareto set, the nadir point satisfies
+ :math:`z_{\rm nadir}  =  \left( \sup_{x \in \mathcal{PO}} f_\alpha(x),
+ \sup_{x \in \mathcal{PO}} f_\beta(x)  \right)`.
+  
+
+Biobjective Performance Assessment in COCO: A Set-Indicator Value Replaces the Objective Function
 =================================================================================================
-The general concepts of how the Coco platform suggests to benchmark
+The general concepts of how the COCO_ platform suggests to benchmark
 multi-objective algorithms is the same than in the single-objective case: for
 each optimization algorithm, we record the runtimes to reach given target
 values for each problem in a given benchmark suite. A problem thereby
 consists of a (vector-valued) objective function, its search space dimension,
-and a concrete instantiation of it (see [coco-functions-doc]_ ). 
+and a concrete instantiation of it (see [coco-perf-assessment]_ ). 
 For defining the runtime on such a problem, we consider a quality indicator
 which is to be optimized (minimized). 
 In the single-objective case, the quality indicator is the objective
 function value. 
 
-In the case of the ``bbob-biobj`` test suite, the quality indicator will be a
-negative hypervolume indicator of the archive of all non-dominated solutions
-evaluated so far. In principal, other
+In the case of the ``bbob-biobj`` test suite, the quality indicator will be mostly a
+negative hypervolume indicator of the *archive* :math:`A_t` of all non-dominated
+solutions evaluated within the first :math:`t` function evaluations. In principal, other
 quality indicators of the archive can be used as well.
+
+To be more concrete, the indicator :math:`\IHV` used here is to be mininized and
+a combination of the negative hypervolume indicator of the archive with the nadir
+point as the hypervolume's reference point and the distance to the region of interest
+:math:`[z_{\text{ideal}}, z_{\text{nadir}}]` after a normalization of the
+objective space [#]_:
+
+.. math::
+    :nowrap:
+	
+	\begin{equation*}
+	\IHV =  \left\{ \begin{array}{ll}     
+	- \text{HV}(A_t, [z_{\text{ideal}}, z_{\text{nadir}}]) & \text{if $A_t$ dominates } z_{\text{nadir}}\\
+ 	dist(A_t, [z_{\text{ideal}}, z_{\text{nadir}}]) & \text{otherwise} 	
+	\end{array} 	\right.\enspace .
+	\end{equation*}
+ 
+where
+
+.. math::
+    :nowrap:
+	
+    \begin{equation*}
+    \text{HV}(A_t, z_{\text{ideal}}, z_{\text{nadir}}) = \text{VOL}\left( \bigcup_{a \in A_t} \left[\frac{f_\alpha(a)-z_{\text{ideal}, \alpha}}{z_{\text{nadir}, \alpha}-z_{\text{ideal}, \alpha}}, 1\right]\times\left[\frac{f_\beta(a)-z_{\text{ideal}, \beta}}{z_{\text{nadir}, \beta}-z_{\text{ideal}, \beta}}, 1\right]\right)
+	\end{equation*}
+   
+is the (normalized) hypervolume of archive :math:`A_t` with respect to the nadir point :math:`(z_{\text{nadir}, \alpha}, z_{\text{nadir},\beta})` as reference point and where 
+
+.. math::
+    :nowrap:
+	
+    \begin{equation*}
+	dist(A_t, [z_{\text{ideal}}, z_{\text{nadir}}]) = \inf_{a\in A_t, z\in [z_{\text{ideal}}, z_{\text{nadir}}]} dist\left(\frac{f(a)-z_{\text{ideal}}}{z_{\text{nadir}}-z_{\text{ideal}}}, \frac{z-z_{\text{ideal}}}{z_{\text{nadir}}-z_{\text{ideal}}}\right)
+	\end{equation*}
+	
+is the smallest (normalized) Euclidean distance between the archive and the region of interest, see also the figures below for an illustration.
+
+.. [#] With linear transformations of both objective functions such that the ideal point :math:`z_{\text{ideal}}= (z_{\text{ideal}, \alpha}, z_{\text{ideal}, \beta})` is mapped to :math:`[0,0]` and the nadir point :math:`z_{\text{nadir}}= (z_{\text{nadir}, \alpha}, z_{\text{nadir}, \beta})` is mapped to :math:`[1,1]`.
+
+
+	
+
+.. todo::
+
+	* why hypervolume (can also be in principle with other indicators)?
+
+	* why archive?
+
 
 
 
@@ -127,7 +213,7 @@ quality indicators of the archive can be used as well.
    area.
 
 
-Specificities for the ``bbob-biobj`` performance criterion
+To summarize, here the specificities of the proposed ``bbob-biobj`` performance criterion:
 
 * algorithm performance = runtime until the quality of the archive of non-dominated 
   solutions found so far surpasses a target value
@@ -141,9 +227,7 @@ Specificities for the ``bbob-biobj`` performance criterion
 
 * if nadir point is not dominated by archive: quality = negative distance of archive to the ROI
 
-.. * what is of actual interest is the quality indicator difference to the reference set
-
-Implications on the performance criterion:
+This implies:
 
 * the quality indicator value of an archive that contains the nadir point as 
   non-dominated point is :math:`0`.
@@ -160,13 +244,6 @@ Implications on the performance criterion:
 .. * Because the reference set is always a finite approximation of the Pareto set, negative quality
   indicator differences can occur.
 
----
-
-* why hypervolume (can also be in principle with other indicators)
-
-* Evaluation based on the complete archive of nondominated solutions, independent of population size (Tobias)
-
-* explain - give formula for the computation of the hypervolume (if there are no points dominating the Nadir)
 
 
 
@@ -175,7 +252,7 @@ Choice of Target Values
 
 For each problem instance, |i|, of the benchmark suite, a *reference
 hypervolume indicator value*, |Irefi|, is computed (see below). 
-This reference value is determined to represent the value of a fairly adequate
+This reference value is determined to represent the hypervolume value of a fairly adequate
 approximation of the Pareto set. [#]_ All target indicator values are computed as 
 a function of |Irefi|, namely as |Irefi| :math:`+\,t`, where the target precision 
 |t| is chosen as
@@ -187,7 +264,12 @@ a function of |Irefi|, namely as |Irefi| :math:`+\,t`, where the target precisio
 That is, if not stated otherwise, the runtimes of these 58 target values are
 presented (usually as empirical cumulative distribution function, ECDF). 
 It is not uncommon that the quality indicator value of the algorithm never surpasses some of
-these target values, which leads to missing runtime measurements. 
+these target values, which leads to missing runtime measurements. Note that the non-positive
+target precisions have been included in particular to account for the fact that the
+reference hypervolume indicator value is computed only for a fairly adequate
+approximation of the Pareto set and thus can potentially be outperformed by an actual algorithm. 
+In comparison, in the single-objective case, target precision values are typically solely
+positive if the global optima are known. [coco-perf-assessment]_
 
 .. |Irefi| replace:: :math:`I_i^\mathrm{ref}`
 .. |i| replace:: :math:`i`
@@ -218,7 +300,7 @@ these target values, which leads to missing runtime measurements.
 
 
 Choice of the Reference Hypervolume Indicator Value
-===================================================
+---------------------------------------------------
 
 Opposed to the single-objective ``bbob`` test suite [HAN2009fun]_, the
 biobjective ``bbob-biobj`` test suite does not provide analytical forms of
@@ -320,7 +402,7 @@ of the French National Research Agency.
    
 .. [bbob-biobj-functions-doc] The BBOBies. **Function Documentation of the bbob-biobj Test Suite**. http://numbbo.github.io/coco-doc/bbob-biobj/functions/
 
-.. [coco-functions-doc] The BBOBies. **COCO: Performance Assessment**. http://numbbo.github.io/coco-doc/perf-assessment/
+.. [coco-perf-assessment] The BBOBies. **COCO: Performance Assessment**. http://numbbo.github.io/coco-doc/perf-assessment/
 
 .. [coco-doc] The BBOBies. **COCO: A platform for Comparing Continuous Optimizers in a Black-Box Setting**. http://numbbo.github.io/coco-doc/
 
