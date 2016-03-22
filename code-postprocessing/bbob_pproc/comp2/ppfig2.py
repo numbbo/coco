@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Creates ERT-ratio comparison figures (ECDF) and convergence figures for the comparison of 2 algorithms.
+"""Creates aRT-ratio comparison figures (ECDF) and convergence figures for the comparison of 2 algorithms.
 
 Scale up figures for two algorithms can be done with compall/ppfigs.py
 
@@ -22,7 +22,7 @@ except ImportError:
 
 import numpy as np 
 
-from .. import toolsstats, readalign, ppfigparam
+from .. import toolsstats, readalign, ppfigparam, genericsettings, toolsdivers
 from ..toolsstats import ranksumtest
 from ..ppfig import saveFigure, plotUnifLogXMarkers
 #try:
@@ -56,7 +56,6 @@ offset = 0.005
 incrstars = 1.5
 fthresh = 1e-8
 xmax = 1000
-functions_with_legend = (1, 24, 101, 130)
 
 dimension_index = dict([(dimensions[i], i) for i in xrange(len(dimensions))])
 
@@ -137,7 +136,7 @@ def beautify(xmin=None):
 
     # Annotate figure
     ax.set_xlabel('log10(Delta ftarget)')
-    ax.set_ylabel(r'log10(ERT1/ERT0) or ~#succ')  # TODO: replace hard-coded 15
+    ax.set_ylabel(r'log10(aRT1/aRT0) or ~#succ')  # TODO: replace hard-coded 15
     ax.grid(True)
 
     #Tick label handling
@@ -252,7 +251,7 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
                          transform=trans, clip_on=False)
 
 def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
-    """Returns ERT1/ERT0 comparison figure."""
+    """Returns aRT1/aRT0 comparison figure."""
 
     #plt.rc("axes", labelsize=20, titlesize=24)
     #plt.rc("xtick", labelsize=20)
@@ -422,8 +421,8 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
         if func in funInfos.keys():
             plt.title(funInfos[func])
 
-        if func in functions_with_legend:
-            plt.legend(loc='best')
+        if func in genericsettings.current_testbed.functions_with_legend:
+            toolsdivers.legend(loc='best')
 
         # save
         saveFigure(filename, verbose=verbose)
