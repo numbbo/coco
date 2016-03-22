@@ -454,7 +454,8 @@ def split(dataFiles, isBiobjective, dim=None):
             lines = f.readlines()
 
         content = []
-
+        instanceToSkip = False
+        
         # Save values in array content. Check for nan and inf.
         for line in lines:
             # skip if comment
@@ -462,10 +463,21 @@ def split(dataFiles, isBiobjective, dim=None):
                 if content:
                     dataSets.append(numpy.vstack(content))
                     content = []
-                    if isBiobjective and len(dataSets) >= 5:
-                        break
+                    instanceToSkip = False
+                    
+                if isBiobjective:
+                    parts = line.split(',')
+                    for part in parts:
+                        if 'instance' in part:
+                            instance = int(part.split('=')[1])
+                            if instance > 5:
+                                instanceToSkip = True;
+                
                 continue
 
+            if instanceToSkip:
+                continue
+            
             # else remove end-of-line sign
             # and split into single strings
             data = line.strip('\n').split()
