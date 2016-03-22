@@ -52,6 +52,7 @@ latex_commands = r"""
   \newcommand{\ve}[1]{{\boldsymbol{#1}}}
   \newcommand{\x}{\ensuremath{\ve{x}}}
   \newcommand{\finstance}{\ensuremath{f^j}}
+  \newcommand{\IHV}{I_\mathrm{HV}^\mathrm{COCO}}
 """
 
 pngmath_latex_preamble = latex_commands
