@@ -53,7 +53,7 @@ void coco_info(const char *message, ...) {
  * A function similar to coco_info that prints only the given message without any prefix and without
  * adding a new line.
  */
-static void coco_info_partial(const char *message, ...) {
+void coco_info_partial(const char *message, ...) {
   va_list args;
 
   if (coco_log_level >= COCO_INFO) {

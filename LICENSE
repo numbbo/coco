@@ -1,4 +1,5 @@
-Copyright (c) 2013 by the NumBBO/CoCO team. See AUTHORS for more details.
+Copyright (c) 2013-2016 by the NumBBO/CoCO team. See AUTHORS file and
+remarks below for more details.
 
 Some rights reserved. 
 
@@ -32,3 +33,18 @@ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE AND DOCUMENTATION, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGE.
+
+### Remarks/Additions ###
+
+Note that some parts of the provided software have been written
+by other contributors outside of the NumBBO/CoCO team as indicated
+in AUTHORS and therefore covered by different licenses than the above.
+We acknowledge in particular:
+* the AVL tree code by Michael H. Buselli and Wessel Dankers
+  in ``code-experiments/src/mo_avl_tree.c``, distributed under the terms
+  of the GNU Lesser General Public License
+* the hypervolume code of the SMS-EMOA from the Shark library in
+  ``code-experiments/examples/bbob-biobj-matlab-smsemoa/``, distributed
+  under the terms of the GNU General Public License and the non-dominated
+  sorting part as written by Y. Cao.
+

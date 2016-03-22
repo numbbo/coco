@@ -101,7 +101,7 @@ static coco_problem_t *transform_vars_permblockdiag(coco_problem_t *inner_proble
     data->first_non_zero_map[i] = next_bs_change - current_blocksize;/* next_bs_change serves also as a cumsum for blocksizes*/
   }
   
-  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_permblockdiag_free);
+  problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_permblockdiag_free, "transform_vars_permblockdiag");
   problem->evaluate_function = transform_vars_permblockdiag_evaluate;
   return problem;
 }
