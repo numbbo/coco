@@ -21,33 +21,35 @@ import getopt
 from pdb import set_trace
 import numpy
 import numpy as np
+import matplotlib
 
-ftarget = 1e-8  # used for ppfigs.main 
 ppfig2_ftarget = 1e-8  # a hack, used in ppfig2.main 
 target_runlength = 10 # used for ppfigs.main
 
 # genericsettings.summarized_target_function_values[0] might be another option
 
-# Add the path to bbob_pproc
 if __name__ == "__main__":
-    # append path without trailing '/bbob_pproc', using os.sep fails in mingw32
-    #sys.path.append(filepath.replace('\\', '/').rsplit('/', 1)[0])
-    (filepath, filename) = os.path.split(sys.argv[0])
-    #Test system independent method:
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-    import matplotlib
     # matplotlib.use('pdf')
-    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
+    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
+    filepath = os.path.split(sys.argv[0])[0]
+    # Add the path to bbob_pproc/.. folder
+    sys.path.append(os.path.join(filepath, os.path.pardir))
+    try:
+        import bbob_pproc as cocopp
+    except ImportError:
+        import cocopp
+    res = cocopp.rungeneric2.main(sys.argv[1:])
+    sys.exit(res)
 
-from bbob_pproc import pproc
-from bbob_pproc import genericsettings, config
-from bbob_pproc import pprldistr
-from bbob_pproc import htmldesc
-from bbob_pproc.pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
-from bbob_pproc.toolsdivers import prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
-from bbob_pproc.comp2 import ppfig2, pprldistr2, pptable2, ppscatter
-from bbob_pproc.compall import ppfigs, pprldmany
-from bbob_pproc import ppconverrorbars
+from . import pproc
+from . import genericsettings, config
+from . import pprldistr
+from . import htmldesc
+from .pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
+from .toolsdivers import prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
+from .comp2 import ppfig2, pprldistr2, pptable2, ppscatter
+from .compall import ppfigs, pprldmany
+from . import ppconverrorbars
 import matplotlib.pyplot as plt
 
 __all__ = ['main']
@@ -105,24 +107,21 @@ def main(argv=None):
             output figures. SETTING can be either "grayscale", "color"
             or "black-white". The default setting is "color".
         --fig-only, --rld-only, --tab-only, --sca-only
-            these options can be used to output respectively the ERT
+            these options can be used to output respectively the aRT
             graphs figures, run length distribution figures or the
             comparison tables scatter plot figures only. Any combination
             of these options results in no output.
         --conv 
             if this option is chosen, additionally convergence
             plots for each function and algorithm are generated.
-        --rld-single-fcts
-            generate also runlength distribution figures for each
+        --no-rld-single-fcts
+            do not generate runlength distribution figures for each
             single function.
         --expensive
             runlength-based f-target values and fixed display limits,
-            useful with comparatively small budgets. By default the
-            setting is based on the budget used in the data.
-        --not-expensive
-            expensive setting off. 
-        --svg
-            generate also the svg figures which are used in html files 
+            useful with comparatively small budgets. 
+        --no-svg
+            do not generate the svg figures which are used in html files
 
     Exceptions raised:
 
@@ -203,16 +202,14 @@ def main(argv=None):
                 genericsettings.inputsettings = a
             elif o == "--conv":
                 genericsettings.isConv = True
-            elif o == "--rld-single-fcts":
-                genericsettings.isRldOnSingleFcts = True
+            elif o == "--no-rld-single-fcts":
+                genericsettings.isRldOnSingleFcts = False
             elif o == "--runlength-based":
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 genericsettings.isExpensive = True  # comprises runlength-based
-            elif o == "--not-expensive":
-                genericsettings.isExpensive = False  
-            elif o == "--svg":
-                genericsettings.generate_svg_files = True
+            elif o == "--no-svg":
+                genericsettings.generate_svg_files = False
             elif o == "--los-only":
                 warnings.warn("option --los-only will have no effect with rungeneric2.py")
             elif o == "--crafting-effort=":
@@ -251,6 +248,9 @@ def main(argv=None):
                              + '\n use rungeneric.py (or rungenericmany.py) to compare more algorithms. ')
  
         if not dsList:
+            sys.exit()
+        
+        if (any(ds.isBiobjective() for ds in dsList) and any(not ds.isBiobjective() for ds in dsList)):
             sys.exit()
 
         for i in dictAlg:
@@ -294,17 +294,8 @@ def main(argv=None):
         for i in dsList1:
             i.algId = alg1name
 
-        # compute maxfuneval values
-        dict_max_fun_evals1 = {}
-        dict_max_fun_evals2 = {}
-        for ds in dsList0:
-            dict_max_fun_evals1[ds.dim] = np.max((dict_max_fun_evals1.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
-        for ds in dsList1:
-            dict_max_fun_evals2[ds.dim] = np.max((dict_max_fun_evals2.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
-        config.target_values(genericsettings.isExpensive, {1: min([max([val/dim for dim, val in dict_max_fun_evals1.iteritems()]), 
-                                                   max([val/dim for dim, val in dict_max_fun_evals2.iteritems()])]
-                                                  )})
-        config.config()
+        config.target_values(genericsettings.isExpensive)
+        config.config(dsList[0].isBiobjective())
         
         ######################### Post-processing #############################
         if genericsettings.isFig or genericsettings.isRLDistr or genericsettings.isTab or genericsettings.isScatter:
@@ -361,7 +352,7 @@ def main(argv=None):
             plt.rc('pdf', fonttype = 42)
             ppfig2.main(dsList0, dsList1, ppfig2_ftarget,
                         outputdir, genericsettings.verbose)
-            print "log ERT1/ERT0 vs target function values done."
+            print "log aRT1/aRT0 vs target function values done."
 
         plt.rc("axes", **inset.rcaxes)
         plt.rc("xtick", **inset.rctick)
@@ -379,13 +370,13 @@ def main(argv=None):
             dictDim0 = dsList0.dictByDim()
             dictDim1 = dsList1.dictByDim()
 
-            # ECDFs of ERT ratios
+            # ECDFs of aRT ratios
             for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
                 if dim in inset.rldDimsOfInterest:
                     # ECDF for all functions altogether
                     try:
                         pprldistr2.main(dictDim0[dim], dictDim1[dim], dim,
-                                        inset.rldValsOfInterest,
+                                        genericsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
                                         '%02dD_all' % dim,
                                         genericsettings.verbose)
@@ -400,7 +391,7 @@ def main(argv=None):
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr2.main(dictFG1[fGroup], dictFG0[fGroup], dim,
-                                        inset.rldValsOfInterest,
+                                        genericsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
                                         '%02dD_%s' % (dim, fGroup),
                                         genericsettings.verbose)
@@ -411,7 +402,7 @@ def main(argv=None):
 
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr2.main(dictFN1[fGroup], dictFN0[fGroup], dim,
-                                        inset.rldValsOfInterest,
+                                        genericsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
                                         '%02dD_%s' % (dim, fGroup),
                                         genericsettings.verbose)
@@ -433,7 +424,7 @@ def main(argv=None):
                 if dim in inset.rldDimsOfInterest:
                     try:
                         pprldistr.comp(dictDim1[dim], dictDim0[dim],
-                                       inset.rldValsOfInterest, # TODO: let rldVals... possibly be RL-based targets
+                                       genericsettings.current_testbed.rldValsOfInterest, # TODO: let rldVals... possibly be RL-based targets
                                        True,
                                        outputdir, 'all', genericsettings.verbose)
                     except KeyError:
@@ -447,7 +438,7 @@ def main(argv=None):
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr.comp(dictFG1[fGroup], dictFG0[fGroup],
-                                       inset.rldValsOfInterest, True,
+                                       genericsettings.current_testbed.rldValsOfInterest, True,
                                        outputdir,
                                        '%s' % fGroup, genericsettings.verbose)
 
@@ -456,22 +447,31 @@ def main(argv=None):
                     dictFN1 = dictDim1[dim].dictByNoise()
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr.comp(dictFN1[fGroup], dictFN0[fGroup],
-                                       inset.rldValsOfInterest, True,
+                                       genericsettings.current_testbed.rldValsOfInterest, True,
                                        outputdir,
                                        '%s' % fGroup, genericsettings.verbose)
 
             if genericsettings.isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
-                pprldmany.all_single_functions(dictAlg, sortedAlgs,
-                        outputdir, genericsettings.verbose)
+                pprldmany.all_single_functions(dictAlg, 
+                                               dsList[0].isBiobjective(),
+                                               False,
+                                               sortedAlgs,
+                                               outputdir, 
+                                               genericsettings.verbose,
+                                               genericsettings.two_algorithm_file_name)
             print "ECDF runlength graphs done."
 
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, outputdir, genericsettings.verbose)
+            ppconverrorbars.main(dictAlg, 
+                                 dsList[0].isBiobjective(),
+                                 outputdir, 
+                                 genericsettings.verbose,
+                                 genericsettings.two_algorithm_file_name)
 
         if genericsettings.isScatter:
             if genericsettings.runlength_based_targets:
-                ppscatter.targets = ppscatter.runlength_based_targets
+                ppscatter.targets = pproc.RunlengthBasedTargetValues(np.logspace(numpy.log10(0.5), numpy.log10(50), 8))
             ppscatter.main(dsList1, dsList0, outputdir,
                            verbose=genericsettings.verbose)
             prepend_to_file(os.path.join(outputdir,
@@ -572,10 +572,18 @@ def main(argv=None):
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
             plt.rc('pdf', fonttype = 42)
+            ftarget = genericsettings.current_testbed.ppfigs_ftarget
             if genericsettings.runlength_based_targets:
-                ftarget = RunlengthBasedTargetValues([target_runlength])  # TODO: make this more variable but also consistent
-            ppfigs.main(dictAlg, genericsettings.two_algorithm_file_name, sortedAlgs, ftarget,
-                        outputdir, genericsettings.verbose)
+                reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
+                ftarget = RunlengthBasedTargetValues([target_runlength],  # TODO: make this more variable but also consistent
+                                                     reference_data = reference_data)
+            ppfigs.main(dictAlg, 
+                        genericsettings.two_algorithm_file_name, 
+                        dsList[0].isBiobjective(),
+                        ftarget,
+                        sortedAlgs, 
+                        outputdir, 
+                        genericsettings.verbose)
             plt.rcdefaults()
             print "Scaling figures done."
 

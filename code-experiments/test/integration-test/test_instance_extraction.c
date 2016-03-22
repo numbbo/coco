@@ -1,5 +1,5 @@
 /*
- * Test function and instance ID extraction for BBOB2009 problem suite.
+ * Test instance extraction for the bbob and biobj problem suites.
  */
 
 #include <stdio.h>
@@ -8,18 +8,36 @@
 
 #include "coco.h"
 
-int main(void) {
-  long problem_idx = -1;
-  const char *suite = "suite_bbob2009";
-  coco_problem_t *problem = NULL;
+int test_instance_extraction(char *suite_name) {
 
-  while ((problem_idx = coco_suite_get_next_problem_index(suite, problem_idx, "")) >= 0) {
-    problem = coco_suite_get_problem(suite, problem_idx);
-    if (problem != NULL) {
-      printf("%4ld: %s\n", problem_idx, coco_problem_get_id(problem));
-      coco_problem_free(problem);
-    } else
-      printf("problem %4ld not found\n", problem_idx);
+  coco_suite_t *suite;
+  coco_problem_t *problem = NULL;
+  size_t index;
+  size_t max_index;
+
+  suite = coco_suite(suite_name, NULL, NULL);
+  max_index = coco_suite_get_number_of_problems(suite) - 1;
+
+  while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
+    index = coco_problem_get_suite_dep_index(problem);
+    printf("Problem %4ld: %s found!\n", index, coco_problem_get_id(problem));
   }
+  coco_suite_free(suite);
+
+  if (index < max_index) {
+    printf("Only %lu out of all %lu problems extracted from suite %s\n", index, max_index, suite_name);
+    return 1;
+  }
+  return 0;
+}
+
+int main(void) {
+
+  if (test_instance_extraction("bbob") != 0)
+    return 1;
+
+  if (test_instance_extraction("bbob-biobj") != 0)
+    return 1;
+
   return 0;
 }

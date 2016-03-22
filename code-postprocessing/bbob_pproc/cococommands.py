@@ -25,10 +25,10 @@ Examples:
 
 * Load a data set, assign to variable :py:data:`ds`::
 
-    >>> infoFile = 'data/BBOB2009rawdata/BIPOP-CMA-ES_hansen_noiseless/bbobexp_f2.info'
+    >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
     >>> if not os.path.exists(infoFile):
     ...   os.chdir(os.path.join(path, 'data'))
-    ...   dataurl = 'http://coco.lri.fr/BBOB2009/rawdata/BIPOP-CMA-ES_hansen_noiseless.tar.gz'
+    ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
     ...   filename, headers = urllib.urlretrieve(dataurl)
     ...   archivefile = tarfile.open(filename)
     ...   archivefile.extractall()
@@ -39,10 +39,10 @@ Examples:
 * Get some information on a :py:class:`DataSetList` instance::
 
     >>> print ds # doctest:+ELLIPSIS
-    [DataSet(cmaes V3.30.beta on f2 2-D), ..., DataSet(cmaes V3.30.beta on f2 40-D)]
+    [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
     >>> bb.info(ds)
     6 data set(s)
-    Algorithm(s): cmaes V3.30.beta
+    Algorithm(s): BIPOP-CMA-ES
     1 Function with ID 2
     Dimension(s): 2, 3, 5, 10, 20, 40
     Max evals: [762, 1537, 2428, 6346, 20678, 75010]
@@ -53,7 +53,7 @@ from __future__ import absolute_import
 
 #from bbob_pproc import ppsingle, ppfigdim, dataoutput
 # from bbob_pproc.pproc import DataSetList, DataSet
-from bbob_pproc import pproc
+from . import pproc
 
 #__all__ = ['load', 'info', 'pickle', 'systeminfo', 'DataSetList', 'DataSet']
 
@@ -89,14 +89,12 @@ def systeminfo():
     print 'Numpy %s' % numpy.__version__
     import matplotlib
     print 'Matplotlib %s' % matplotlib.__version__
-    import bbob_pproc
-    print 'bbob_pproc %s' % bbob_pproc.__version__
+    try:
+        from . import __version__ as version
+    except:
+        from bbob_pproc import __version__ as version
+    print 'bbob_pproc %s' % version
 
-
-#def examples():
-#    """Execute example script from examples.py"""
-#
-#    from bbob_pproc import examples
 
 #def plot(dsList):
 #    """Generate some plots given a DataSetList instance."""
@@ -139,8 +137,8 @@ def systeminfo():
 #    minirun
 #    minirun_2
 #    ppfig
-#    ppfigdim -> ERT vs dim 1 alg: 1 DataSetList ok
-#    pplogloss -> ERT loss vs ? 1 alg, 1 dim: 1 DataSetList ok
+#    ppfigdim -> aRT vs dim 1 alg: 1 DataSetList ok
+#    pplogloss -> aRT loss vs ? 1 alg, 1 dim: 1 DataSetList ok
 #    pprldistr -> Runevals (or?) vs %) 1 alg 1 dim: 1 DataSet... ?
 #    comp2 (package)
 #        ppfig2 ->
@@ -154,7 +152,7 @@ def systeminfo():
 #        pptables ->
 #    pproc
 #    pprocold
-#    pptable -> ERT, etc... vs target 1 alg
+#    pptable -> aRT, etc... vs target 1 alg
 #    pptex
 #    ranksumtest
 #    readalign

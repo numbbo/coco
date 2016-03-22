@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Creates ERT-ratio comparison figures (ECDF) and convergence figures for the comparison of 2 algorithms.
+"""Creates aRT-ratio comparison figures (ECDF) and convergence figures for the comparison of 2 algorithms.
 
 Scale up figures for two algorithms can be done with compall/ppfigs.py
 
@@ -22,9 +22,9 @@ except ImportError:
 
 import numpy as np 
 
-from bbob_pproc import toolsstats, readalign, pproc
-from bbob_pproc.toolsstats import ranksumtest
-from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers
+from .. import toolsstats, readalign, ppfigparam, genericsettings, toolsdivers
+from ..toolsstats import ranksumtest
+from ..ppfig import saveFigure, plotUnifLogXMarkers
 #try:
     #supersede this module own ranksumtest method
     #from scipy.stats import ranksumtest as ranksumtest
@@ -56,29 +56,8 @@ offset = 0.005
 incrstars = 1.5
 fthresh = 1e-8
 xmax = 1000
-functions_with_legend = (1, 24, 101, 130)
 
 dimension_index = dict([(dimensions[i], i) for i in xrange(len(dimensions))])
-
-#Get benchmark short infos.
-funInfos = {}
-isBenchmarkinfosFound = True
-infofile = os.path.join(os.path.split(__file__)[0], '..', 
-                        'benchmarkshortinfos.txt')
-
-try:
-    f = open(infofile,'r')
-    for line in f:
-        if len(line) == 0 or line.startswith('%') or line.isspace() :
-            continue
-        funcId, funcInfo = line[0:-1].split(None,1)
-        funInfos[int(funcId)] = funcId + ' ' + funcInfo
-    f.close()
-except IOError, (errno, strerror):
-    print "I/O error(%s): %s" % (errno, strerror)
-    isBenchmarkinfosFound = False
-    print 'Could not find file', infofile, \
-          'Titles in scaling figures will not be displayed.'
 
 def _generateData(entry0, entry1, fthresh=None, downsampling=None):
 
@@ -87,7 +66,8 @@ def _generateData(entry0, entry1, fthresh=None, downsampling=None):
         """
 
         res = readalign.alignArrayData(readalign.HArrayMultiReader([i0.evals,
-                                                                    i1.evals]))
+                                                                    i1.evals],
+                                                                    i0.isBiobjective()))
         idx = 1 + i0.nbRuns()
         data0 = res[:, np.r_[0, 1:idx]]
         data1 = res[:, np.r_[0, idx:idx+i1.nbRuns()]]
@@ -156,7 +136,7 @@ def beautify(xmin=None):
 
     # Annotate figure
     ax.set_xlabel('log10(Delta ftarget)')
-    ax.set_ylabel(r'log10(ERT1/ERT0) or ~#succ')  # TODO: replace hard-coded 15
+    ax.set_ylabel(r'log10(aRT1/aRT0) or ~#succ')  # TODO: replace hard-coded 15
     ax.grid(True)
 
     #Tick label handling
@@ -271,7 +251,7 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
                          transform=trans, clip_on=False)
 
 def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
-    """Returns ERT1/ERT0 comparison figure."""
+    """Returns aRT1/aRT0 comparison figure."""
 
     #plt.rc("axes", labelsize=20, titlesize=24)
     #plt.rc("xtick", labelsize=20)
@@ -281,17 +261,14 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
     
     # minfvalue = pproc.TargetValues.cast(minfvalue)
 
+    funInfos = ppfigparam.read_fun_infos(dsList0.isBiobjective())    
+
     dictFun0 = dsList0.dictByFunc()
     dictFun1 = dsList1.dictByFunc()
 
     for func in set.intersection(set(dictFun0), set(dictFun1)):
         dictDim0 = dictFun0[func].dictByDim()
         dictDim1 = dictFun1[func].dictByDim()
-
-        if isBenchmarkinfosFound:
-            title = funInfos[func]
-        else:
-            title = ''
 
         filename = os.path.join(outputdir,'ppfig2_f%03d' % (func))
 
@@ -441,11 +418,11 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             #         color=styles[i]['color'], markeredgecolor=styles[i]['color'],
             #         markerfacecolor=styles[i]['color'], markersize=4*linewidth)
 
-        if isBenchmarkinfosFound:
+        if func in funInfos.keys():
             plt.title(funInfos[func])
 
-        if func in functions_with_legend:
-            plt.legend(loc='best')
+        if func in genericsettings.current_testbed.functions_with_legend:
+            toolsdivers.legend(loc='best')
 
         # save
         saveFigure(filename, verbose=verbose)

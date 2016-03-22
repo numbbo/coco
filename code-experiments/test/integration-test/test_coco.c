@@ -50,10 +50,13 @@ int main(int argc, char **argv) {
   size_t number_of_testvectors = 0, i, j;
   int number_of_testcases = 0;
   testvector_t *testvectors = NULL;
-  int previous_function_id = -1, function_id, testvector_id, ret;
+  long previous_problem_index = -1;
+  size_t problem_index_old, problem_index;
+  int testvector_id, ret;
   coco_problem_t *problem = NULL;
   char suit_name[128];
   FILE *testfile = NULL;
+  coco_suite_t *suite;
 
   if (argc != 2) {
     usage(argv[0]);
@@ -95,9 +98,11 @@ int main(int argc, char **argv) {
     }
   }
 
+  suite = coco_suite("bbob", NULL, NULL);
+
   while (1) {
     double expected_value, *x, y;
-    ret = fscanf(testfile, "%30i %30i %30lf", &function_id, &testvector_id,
+    ret = fscanf(testfile, "%30lu\t%30lu\t%30i\t%30lf", &problem_index_old, &problem_index, &testvector_id,
                  &expected_value);
     if (ret != 3)
       break;
@@ -106,11 +111,14 @@ int main(int argc, char **argv) {
      * some functions is expensive because we have to generate
      * large rotation matrices.
      */
-    if (previous_function_id != function_id) {
+    if (previous_problem_index != (long) problem_index) {
       if (NULL != problem)
         coco_problem_free(problem);
-      problem = coco_suite_get_problem(suit_name, function_id);
-      previous_function_id = function_id;
+      if (problem_index > coco_suite_get_number_of_problems(suite) - 1) {
+        fprintf(stdout, "problem index = %lu, maximum index = %lu \n", problem_index, coco_suite_get_number_of_problems(suite) - 1);
+      }
+      problem = coco_suite_get_problem(suite, problem_index);
+      previous_problem_index = (long) problem_index;
     }
     x = testvectors[testvector_id].x;
 
@@ -118,13 +126,13 @@ int main(int argc, char **argv) {
     if (!about_equal(expected_value, y)) {
       ++number_of_failures;
       if (!header_shown) {
-        fprintf(stdout, "Function Testcase Status Message\n");
+        fprintf(stdout, "Problem Testcase Status Message\n");
         header_shown = 1;
       }
       if (shown_failures < 100) {
         fprintf(stdout,
-                "%8i %8i FAILED expected=%.8e observed=%.8e function_id=%s\n",
-                function_id, testvector_id, expected_value, y,
+                "%8lu %8i FAILED expected=%.8e observed=%.8e problem_id=%s\n",
+                problem_index, testvector_id, expected_value, y,
                 coco_problem_get_id(problem));
         fflush(stdout);
         ++shown_failures;
@@ -141,10 +149,12 @@ int main(int argc, char **argv) {
           number_of_testcases - number_of_failures, (int)number_of_testcases,
           (100.0 * number_of_failures) / number_of_testcases);
 
-  /* Free any remaining allocated memory so that we pass valgrind checks. */
+  /* Free any remaining allocated memory */
   if (NULL != problem)
     coco_problem_free(problem);
   free(testvectors);
+
+  coco_suite_free(suite);
 
   return number_of_failures == 0 ? 0 : 1;
 

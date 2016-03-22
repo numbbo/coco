@@ -2,7 +2,7 @@ Example CMA-ES run using "new" COCO framework
 ---------------------------------------------
 
 This directory contains an example run of the (slightly modified[1]) C CMA-ES
-implementation on the bbob2009 test suit using the new COCO framework. To run
+implementation on the bbob2009 test suite using the new COCO framework. To run
 an experiment, call
 
   % make all

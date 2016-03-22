@@ -9,8 +9,9 @@ from __future__ import absolute_import
 import os, sys, time
 import numpy as np
 import warnings
+from matplotlib import pyplot as plt
 
-from bbob_pproc import genericsettings
+from . import genericsettings
 
 def print_done(message='  done'):
     """prints a message with time stamp"""
@@ -202,3 +203,11 @@ def number_to_html(number_as_string):
             s = s.replace('e', ' x 10<sup>')
         s += '</sup>'
     return s
+
+def legend(*args, **kwargs):
+   kwargs.setdefault('framealpha', 0.2)
+   try:
+      plt.legend(*args, **kwargs)
+   except:
+      kwargs.pop('framealpha')
+      plt.legend(*args, **kwargs)
