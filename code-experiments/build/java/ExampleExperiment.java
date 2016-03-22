@@ -95,6 +95,9 @@ public class ExampleExperiment {
 			Observer observer = new Observer(observerName, observerOptions);
 			Benchmark benchmark = new Benchmark(suite, observer);
 
+			/* Initialize timing */
+			Timing timing = new Timing();
+			
 			/* Iterate over all problems in the suite */
 			while ((PROBLEM = benchmark.getNextProblem()) != null) {
 
@@ -128,10 +131,15 @@ public class ExampleExperiment {
 						System.out.println("ERROR: Something unexpected happened - function evaluations were decreased!");
 				}
 
+				/* Keep track of time */
+				timing.timeProblem(PROBLEM);
 			}
-			
+
+			/* Output the timing data */
+			timing.output();
+
 			benchmark.finalizeBenchmark();
-			
+
 		} catch (Exception e) {
 			System.err.println(e.toString());
 		}
