@@ -347,7 +347,7 @@ static void timing_data_time_problem(timing_data_t *timing_data, coco_problem_t 
 			time_t now;
 			time(&now);
 			elapsed_seconds = difftime(now, timing_data->start_time) / (double) timing_data->cumulative_evaluations;
-			timing_data->output[timing_data->current_idx++] = coco_strdupf("D=%lu done in %.2e seconds/evaluation\n",
+			timing_data->output[timing_data->current_idx++] = coco_strdupf("d=%lu done in %.2e seconds/evaluation\n",
 					timing_data->previous_dimension, elapsed_seconds);
 		}
 
