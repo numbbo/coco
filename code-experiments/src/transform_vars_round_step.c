@@ -73,7 +73,7 @@ static coco_problem_t *transform_vars_round_step(coco_problem_t *inner_problem, 
   problem->evaluate_function = transform_vars_round_step_evaluate;
   /* Compute best parameter */
   for (i = 0; i < problem->number_of_variables; i++) {
-    if (problem->best_parameter[i] > 0.5) {
+    if (fabs(problem->best_parameter[i]) > 0.5) {
       problem->best_parameter[i] = coco_double_round(problem->best_parameter[i]);
     } else {
       problem->best_parameter[i] = coco_double_round(data->alpha * problem->best_parameter[i]) / data->alpha;
