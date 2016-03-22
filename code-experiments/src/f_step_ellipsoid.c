@@ -265,14 +265,14 @@ static coco_problem_t *f_step_ellipsoid_permblockdiag_bbob_problem_allocate(cons
   swap_range2 = coco_get_swap_range(dimension, "bbob-largescale");
   nb_swaps1 = coco_get_nb_swaps(dimension, "bbob-largescale");
   nb_swaps2 = coco_get_nb_swaps(dimension, "bbob-largescale");
-  
+
   B1 = coco_allocate_blockmatrix(dimension, block_sizes1, nb_blocks1);
   B2 = coco_allocate_blockmatrix(dimension, block_sizes2, nb_blocks2);
   B1_copy = (const double *const *)B1;
   B2_copy = (const double *const *)B2;
   coco_compute_blockrotation(B1, rseed + 1000000, dimension, block_sizes1, nb_blocks1);
   coco_compute_blockrotation(B2, rseed, dimension, block_sizes2, nb_blocks2);
-  
+
   P11 = coco_allocate_vector_size_t(dimension);
   P12 = coco_allocate_vector_size_t(dimension);
   P21 = coco_allocate_vector_size_t(dimension);
@@ -281,9 +281,9 @@ static coco_problem_t *f_step_ellipsoid_permblockdiag_bbob_problem_allocate(cons
   coco_compute_truncated_uniform_swap_permutation(P12, rseed + 3000000, dimension, nb_swaps1, swap_range1);
   coco_compute_truncated_uniform_swap_permutation(P21, rseed + 4000000, dimension, nb_swaps2, swap_range2);
   coco_compute_truncated_uniform_swap_permutation(P22, rseed + 5000000, dimension, nb_swaps2, swap_range2);
-  
+
   problem = f_step_ellipsoid_allocate(dimension);
-  
+
   problem = transform_vars_permutation(problem, P22, dimension);
   problem = transform_vars_blockrotation(problem, B2_copy, dimension, block_sizes2, nb_blocks2);
   problem = transform_vars_permutation(problem, P21, dimension);
@@ -294,15 +294,15 @@ static coco_problem_t *f_step_ellipsoid_permblockdiag_bbob_problem_allocate(cons
   problem = transform_vars_blockrotation(problem, B1_copy, dimension, block_sizes1, nb_blocks1);
   problem = transform_vars_permutation(problem, P11, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
-  
+
   problem = transform_obj_scale(problem, 1.0 / (double) dimension);
   problem = transform_obj_penalize(problem, penalty_factor);
   problem = transform_obj_shift(problem, fopt);
-  
+
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "large_scale_block_rotated");
-  
+
   coco_free_block_matrix(B1, dimension);
   coco_free_block_matrix(B2, dimension);
   coco_free_memory(P11);
