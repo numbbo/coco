@@ -36,7 +36,7 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
 	for (i = 0; i < coco_problem_get_dimension(problem); i++) {
 		if (coco_is_inf(x[i])) {
 			for (j = 0; j < coco_problem_get_number_of_objectives(problem); j++) {
-				y[j] = x[i];
+				y[j] = fabs(x[i]);
 			}
 		}
   	return;
