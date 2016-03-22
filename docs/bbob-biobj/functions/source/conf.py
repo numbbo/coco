@@ -22,6 +22,15 @@ import shlex
 #sys.path.insert(0, os.path.abspath('.'))
 
 # -- General configuration ------------------------------------------------
+authors = "The BBOBies"
+# WHEN CHANGING THIS CHANGE ALSO the abstract in index.rst accordingly
+abstract = """The ``bbob-biobj`` test suite contains 55 bi-objective functions
+in continuous domain which are derived from combining functions of the
+well-known single-objective noiseless ``bbob`` test suite. Besides giving the
+actual function definitions and presenting their (known) properties, this
+documentation also aims at giving the rationale behind our approach in terms of
+function groups, instances, and potential objective space normalization.
+"""
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #needs_sphinx = '1.0'
@@ -39,6 +48,29 @@ extensions = [
     'sphinx.ext.pngmath'
 ]
 
+
+pngmath_use_preview = True  # "When this is enabled, the images put into the HTML document will get a vertical-align style that correctly aligns the baselines."
+pngmath_dvipng_args = [ # see http://www.nongnu.org/dvipng/dvipng_4.html#Command_002dline-options
+    '-gamma', '1.5',  # heavyness of color 0.5 is between black and background, 1.5 is blacker than black, --gamma works as well?
+    '-D', '109',  # size, 100=current font size
+#    '-D', '110',  # size, 100=current font size, 110 is default
+#    '-gif',  # doesn't work in browser and doesn't look less pixelated
+#    '--bdpi', '440',  # see man dvipng
+#    '-Q', '5',
+    '-bg', 'Transparent',
+#    '-T', '1.1in,1.3cm',   # image size, affects size, but nothing is rendered
+]
+
+latex_commands = r"""
+  \newcommand{\R}{\ensuremath{\mathbb{R}}}
+  \newcommand{\ve}[1]{{\boldsymbol{#1}}}
+  \newcommand{\x}{\ensuremath{\ve{x}}}
+  \newcommand{\finstance}{\ensuremath{f^j}}
+"""
+
+pngmath_latex_preamble = latex_commands
+
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -55,7 +87,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'bbob-biobj-functions-doc'
-copyright = u'2015, The BBOBies'
+copyright = u'2015-2016, The BBOBies'
 author = u'The BBOBies'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -117,18 +149,25 @@ todo_include_todos = True
 # a list of builtin themes.
 #html_theme = 'sphinx_rtd_theme'
 html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
+#html_theme = 'nature'  # underlays of sections titles
+#html_theme = 'alabaster' #  white, times font 
+#html_theme = 'sphinxdoc'  # puts too much empty spaces left and right
+# html_theme = 'sphinx_rtd_theme'  # contents not structured (mobile style?)
+# html_theme = 'agogo'  # fixed width
+# html_theme = 'pyramid'  # relatively clean white/gray, sf font hard to read, too small section titles
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+# html_theme_options = {'font_family': 'goudy old style'}
+# sticky_navigation
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = 'The bbob-biobj Function Description'
+html_title = 'COCO: The bbob-biobj Function Description'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -212,30 +251,60 @@ htmlhelp_basename = 'bbob-biobj-functions-doc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
-latex_elements = {
-# The paper size ('letterpaper' or 'a4paper').
+latex_elements = {# The paper size ('letterpaper' or 'a4paper').
 #'papersize': 'letterpaper',
 
 # The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+'pointsize': '12pt',
 
 # Additional stuff for the LaTeX preamble.
-#'preamble': '',
+'preamble': r"""
+  \usepackage{amssymb}
+  \pagestyle{plain}
+  \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
+  \newcommand{\ignore}[1]{}
+  \usepackage{amssymb}
+  \newcommand{\COCO}{\href{https://githum.com/numbbo/coco}{COCO}}
+  \newcommand{\ff}[1]{\ensuremath{f_{#1}}}  
+  \newcommand{\abstracttextinconfpy}{""" + abstract + r"""}
+    
 
+%%%%%% TOGGLE the renewcommand to update toc / show abstract first %%%%%%
+  \newcommand{\generatetoc}{\boolean{true}}  % (re-)generate toc
+  % \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
+
+  % abstract is latex-only in rst
+  \newcommand{\abstractinrst}{\begin{abstract}\abstracttextinconfpy\end{abstract}} 
+  % abstract via redefinition of \tableofcontents
+  \ifthenelse{\generatetoc}{% do nothing here, \tableofcontents does the work
+    }{% redefine \tableofcontents such that the abstract can go first:
+    \renewcommand{\abstractinrst}{}
+    \renewcommand{\tableofcontents}{
+      \begin{abstract}\abstracttextinconfpy\end{abstract}
+      \par\par
+      \section*{Contents}
+      % \begin{minipage}{\textwidth}
+      { \setlength{\baselineskip}{2.5ex} % \setlength{\parskip}{3ex}
+        \makeatletter % changes the catcode of @ to 11  % see http://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
+        \input{bbob-biobj-functions.toc}
+        \makeatother % changes the catcode of @ back to 12
+        }
+      % \end{minipage}
+    }
+  }
+""" + latex_commands,
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
-
-    'preamble': '''
-        \\usepackage{amssymb}
-     '''
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'bbob-biobj-functions.tex', u'Function Documentation of the bbob-biobj Test Suite',
-   u'The BBOBies', 'manual'),
+  (master_doc, 'bbob-biobj-functions.tex', u'COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) Test Suite',
+   u'The BBOBies', 
+   'article'  # 'manual'
+   ),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of

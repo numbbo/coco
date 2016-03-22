@@ -39,7 +39,7 @@ from . import genericsettings, ppfig, pptable, pprldistr, ppfigdim, pplogloss, f
 from .pproc import DataSetList
 from .toolsdivers import print_done, prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
 from . import ppconverrorbars
-from .compall import pprldmany
+from .compall import pprldmany, ppfigs
 
 import matplotlib.pyplot as plt
 
@@ -485,6 +485,14 @@ def main(argv=None):
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobpptablecaption}[1]{',
                          pptable.get_table_caption(),
+                         '}'])
+        prepend_to_file(latex_commands_file,
+                        ['\\providecommand{\\bbobecdfcaptionsinglefcts}{',
+                         ppfigs.get_ecdfs_single_fcts_caption(),
+                         '}'])
+        prepend_to_file(latex_commands_file,
+                        ['\\providecommand{\\bbobecdfcaptionallgroups}{',
+                         ppfigs.get_ecdfs_all_groups_caption(),
                          '}'])
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\algfolder}{' + algfolder + '/}'])

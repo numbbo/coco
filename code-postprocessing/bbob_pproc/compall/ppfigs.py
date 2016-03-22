@@ -80,7 +80,7 @@ def ecdfs_figure_caption(target):
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
                 r"(FEvals/DIM) for " +
-                str(len(genericsettings.current_testbed.pprldmany_target_range_latex)) +
+                str(len(genericsettings.current_testbed.pprldmany_target_values)) +
                 r" targets in " + 
                 str(genericsettings.current_testbed.pprldmany_target_range_latex) +
                 r" for all functions and subgroups in #1-D. " + ( best2009text
@@ -134,7 +134,31 @@ def ecdfs_figure_caption_html(target, dimension):
         s = htmldesc.getValue('##bbobECDFslegendfixed%d##' % dimension)
     return s
 
+def get_ecdfs_single_fcts_caption():
+    ''' For the moment, only the bi-objective case is covered! '''
+    s = (r"Bootstrapped empirical cumulative distribution of the number " +
+            r"of objective function evaluations divided by dimension " +
+            r"(FEvals/DIM) for " +
+            str(len(genericsettings.current_testbed.pprldmany_target_values)) +
+            r" targets in " + 
+            str(genericsettings.current_testbed.pprldmany_target_range_latex) +
+            r" for all functions $f_1$ to $f_{16}$ and all dimensions. "
+            )
+    return s
 
+def get_ecdfs_all_groups_caption():
+    ''' For the moment, only the bi-objective case is covered! '''
+    s = (r"Bootstrapped empirical cumulative distribution of the number " +
+            r"of objective function evaluations divided by dimension " +
+            r"(FEvals/DIM) for " +
+            str(len(genericsettings.current_testbed.pprldmany_target_values)) +
+            r" targets in " + 
+            str(genericsettings.current_testbed.pprldmany_target_range_latex) +
+            r" for all function groups and all dimensions. The aggregation" +
+            r" over all 55 functions is given in the last plot."
+            )
+    return s
+    
 def plotLegend(handles, maxval=None):
     """Display right-side legend.
     
