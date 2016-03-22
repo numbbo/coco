@@ -26,7 +26,7 @@ typedef unsigned __int64 uint64_t;
 #include <float.h>
 #ifndef NAN
 /** @brief Definition of NAN to be used only if undefined by the included headers */
-#define NAN 8e88
+#define NAN 8.8888e88
 #endif
 #ifndef isnan
 /** @brief Definition of isnan to be used only if undefined by the included headers */
