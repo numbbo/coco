@@ -898,6 +898,8 @@ static void coco_vector_set_to_nan(double *y, const size_t dim) {
  * @brief Returns 1 if x is INFINITY and 0 otherwise.
  */
 static int coco_is_inf(const double x) {
+	if (coco_is_nan(x))
+		return 0;
 	return (isinf(x) || (x <= -INFINITY) || (x >= INFINITY));
 }
 
