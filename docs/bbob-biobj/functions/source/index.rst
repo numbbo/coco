@@ -367,6 +367,8 @@ ideal and nadir points are not accessible to the optimization algorithm
 
 .. TODO: this should become a reference
 .. Dimo: don't know what you mean here, Niko
+.. http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment should be a 
+   reference like [BBO2016biperf]_
 
 .. deleted: a normalization can take place as both the ideal and the nadir point are
    known internally. 

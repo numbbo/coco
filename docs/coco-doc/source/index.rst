@@ -7,8 +7,9 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. the next two lines are necessary in LaTeX. They will be automatically 
   replaced to put away the \chapter level as ^^^ and let the "current" level
   become \section. 
-.. CHAPTERTITLE
-.. CHAPTERUNDERLINE
+
+CHAPTERTITLE
+^^^^^^^^^^^^
 
 .. |
 .. |
@@ -20,6 +21,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. raw:: latex
 
+  % \tableofcontents is automatic with sphinx and moved behind abstract by swap...py
   \begin{abstract}
 
 .. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY
@@ -237,13 +239,13 @@ benchmarking far over a hundred algorithms by many researchers.
    scan and compare to each other, possibly across different articles. 
     
 .. Anne: Maybe we could actually make the point that with the COCO
-.. Anne: framework the focus can be on the algorithm design rather that on the
-.. Anne: implementation of the benchmarking test. Sadly, I have the feeling that some other
-.. Anne: benchmarking / challenge sessions are still popular because the people have the
-.. Anne: feeling they do more work (hence it's better). More precisely while they do not focus on
-.. Anne: the difficult task of designing a good algorithm (only need a small fancy idea like 
-.. Anne: imitating the fly of a chicken), they still have the feeling they achieve a consequent work 
-.. Anne: because they focus on implementing those long tests and writing their data in the latex.
+         framework the focus can be on the algorithm design rather that on the
+         implementation of the benchmarking test. Sadly, I have the feeling that some other
+         benchmarking / challenge sessions are still popular because the people have the
+         feeling they do more work (hence it's better). More precisely while they do not focus on
+         the difficult task of designing a good algorithm (only need a small fancy idea like 
+         imitating the fly of a chicken), they still have the feeling they achieve a consequent work 
+         because they focus on implementing those long tests and writing their data in the latex.
 
 .. Niko: I see your point, but I am not sure I am ready to even mention that 
   unnecessary work is not an achievement in itself. Secondly, at the moment
@@ -251,8 +253,6 @@ benchmarking far over a hundred algorithms by many researchers.
   entire COCO suite during the design process is usually the right way to go. This is
   probably a point which should be made though, but a rather lengthy argument to make. 
 
-.. technical hint @Anne: a comment is continued
-    on the next line by simple indentation, like in this comment. 
   
 
 Why COCO_?
@@ -623,22 +623,13 @@ The authors also acknowledge support by the grant ANR-12-MONU-0009 (NumBBO)
 of the French National Research Agency.
 
 
-.. ############################# References #########################################
+.. ############################# References ###################################
 .. raw:: html
     
     <H2>References</H2>
 
-.. [TUS2016] T. Tusar, D. Brockhoff, N. Hansen, A. Auger (2016), 
-  `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) 
-  Test Suite`__.
-__ http://numbbo.github.io/coco-doc/bbob-biobj/functions/ 
-
-.. [HAN2016ex] N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016), 
-  `COCO: Experimental Procedure`__. 
-__ http://numbbo.github.io/coco-doc/experimental-setup/
-
 .. [BBO2016perf] The BBOBies: `Performance Assessment`__. 
-__ https://www.github.com
+__ http://numbbo.github.io/coco-doc/perf-assessment
 
 .. .. [BBO2016fun] The BBOBies: Biobjective Function Definitions. 
 
@@ -659,6 +650,10 @@ __ https://www.github.com
   `Real-Parameter Black-Box Optimization Benchmarking 2009: Noisy Functions Definitions`__. `Technical Report RR-6869`__, Inria, updated February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00369466
+
+.. [HAN2016ex] N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016), 
+  `COCO: Experimental Procedure`__. 
+__ http://numbbo.github.io/coco-doc/experimental-setup/
 
 .. [HUN2007] J. D. Hunter (2007). Matplotlib: A 2D graphics environment, 
   *Computing In Science \& Engineering*, 9(3): 90-95. 
@@ -697,6 +692,11 @@ __ https://www.github.com
    
 .. [STE1946] S.S. Stevens (1946). 
   On the theory of scales of measurement. *Science* 103(2684), pp. 677-680.
+
+.. [TUS2016] T. Tusar, D. Brockhoff, N. Hansen, A. Auger (2016), 
+  `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) 
+  Test Suite`__.
+__ http://numbbo.github.io/coco-doc/bbob-biobj/functions/ 
 
 .. [WHI1996] D. Whitley, S. Rana, J. Dzubera, K. E. Mathias (1996). 
   Evaluating evolutionary algorithms. *Artificial intelligence*, 85(1), 245-276.
