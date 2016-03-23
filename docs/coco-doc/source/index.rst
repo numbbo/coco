@@ -4,8 +4,11 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 COCO: A platform for Comparing Continuous Optimizers in a Black-Box Setting
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-.. ...
-.. %%%
+.. the next two lines are necessary in LaTeX. They will be automatically 
+  replaced to put away the \chapter level as ^^^ and let the "current" level
+  become \section. 
+.. CHAPTERTITLE
+.. CHAPTERUNDERLINE
 
 .. |
 .. |
@@ -15,36 +18,32 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. |
 .. |
 
-.. Here we put the abstract when using LaTeX, the \abstractinrst 
-   command is defined in the 'preamble' of latex_elements in source/conf.py,
-   the text is defined in `abstract` of conf.py. To flip abstract and table
-   of contents, or update the table of contents, toggle the \generatetoc
-   command in the 'preamble' accordingly. 
-
 .. raw:: latex
 
-    \abstractinrst
-    \newpage 
+  \begin{abstract}
 
 .. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY
 
-.. raw:: html
+COCO_ is a platform for Comparing Continuous Optimizers in a black-box
+setting. 
+It aims at automatizing the tedious and repetitive task of
+benchmarking numerical optimization algorithms to the greatest possible
+extent. 
+We present the rationals behind the development of the platform
+as a general proposition for a guideline towards better benchmarking. 
+We detail underlying fundamental concepts of 
+COCO_ such as its definition of
+a problem, the idea of instances, the relevance of target values, and runtime
+as central performance measure. 
+Finally, we  give a quick overview of the basic
+code structure and the available test suites.
+  
+.. raw:: latex
 
-  COCO is a platform for Comparing Continuous Optimizers in a black-box
-  setting. 
-  It aims at automatizing the tedious and repetitive task of
-  benchmarking numerical optimization algorithms to the greatest possible
-  extent. 
-  We present the rationals behind the development of the platform
-  as a general proposition for a guideline towards better benchmarking. 
-  We detail underlying fundamental concepts of 
-  COCO such as its definition of
-  a problem, the idea of instances, the relevance of target values and runtime
-  as central performance measure. 
-  Finally, we  give a quick overview of the basic
-  code structure and the available test suites.
+  \end{abstract}
+  \newpage
   
-  
+
 .. _2009: http://www.sigevo.org/gecco-2009/workshops.html#bbob
 .. _2010: http://www.sigevo.org/gecco-2010/workshops.html#bbob
 .. _2012: http://www.sigevo.org/gecco-2012/workshops.html#bbob
@@ -113,6 +112,8 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. |x| replace:: :math:`\x`
 .. |l| replace:: :math:`l`
 
+.. role:: red
+.. |todo| replace:: **todo**
 
 .. #################################################################################
 .. #################################################################################
@@ -276,7 +277,7 @@ the following defining features.
     #. scalable with the input dimension [WHI1996]_.
 
 #. There is no predefined budget (number of |f|-evaluations) for running an
-   experiment, the experimental procedure is *budget-free* [BBO2016ex]_.
+   experiment, the experimental procedure is *budget-free* [HAN2016ex]_.
 
 #. A single performance measure is used --- and thereafter aggregated and 
    displayed in 
@@ -306,7 +307,7 @@ the following defining features.
 
 .. [#] Runtimes measured in |f|-evaluations are widely
        comparable and designed to stay. The experimental procedure
-       [BBO2016exp] includes however a timing experiment which records the
+       [HAN2016ex]_ includes however a timing experiment which records the
        internal computational effort of the algorithm in CPU or wall clock time. 
 
 .. [#] As opposed to a ranking of algorithm based on their solution quality
@@ -420,14 +421,14 @@ Runtime and Target Values
 In order to measure the runtime of an algorithm on a problem, we
 establish a hitting time condition. 
 We prescribe a **target value**, |t|, which is an |f|- or
-indicator-value [BBO2016biobj]_. 
+indicator-value [TUS2016]_. 
 For a single run, when an algorithm reaches or surpasses the target value |t|
 on problem |p|, we say it has *solved the problem* |pt| --- it was successful. [#]_
 
 Now, the **runtime** is the evaluation count when the target value |t| was
 reached or surpassed for the first time. 
 That is, runtime is the number of |f|-evaluations needed to solve the problem
-|pt| (but see also Recommendations_ in [BBO2016ex]_). [#]_
+|pt| (but see also Recommendations_ in [HAN2016ex]_). [#]_
 *Measured runtimes are the only way of how we assess the performance of an 
 algorithm.* [#]_
 
@@ -491,9 +492,9 @@ Independent restarts tend to increase the success rate, but they generally do
 not *change* the performance *assessment*, because the successes materialize at
 greater runtimes. 
 Therefore, we call our approach *budget-free*. 
-Restarts however "*improve the reliability, comparability, precision, and "visibility" of the measured results*" [BBO2016ex]_.
+Restarts however "*improve the reliability, comparability, precision, and "visibility" of the measured results*" [HAN2016ex]_.
 
-*Simulated restarts* [HAN2010]_ [HAN2010b]_ [BBO2016perf]_ are used to determine a runtime for unsuccessful runs. Semantically, this is only valid if we interpret different 
+*Simulated restarts* [HAN2010ex]_ [HAN2010]_ [BBO2016perf]_ are used to determine a runtime for unsuccessful runs. Semantically, this is only valid if we interpret different 
 instances as random repetitions. 
 Resembling the bootstrapping method [EFR1993]_, when we face an unsolved problem, we draw uniformly at random a
 new |j| until we find an instance such that |pt| was solved. [#]_
@@ -602,15 +603,21 @@ Currently, the COCO_ framework provides three different test suites.
   currently only implemented in the `old code basis`_.
 
 ``bbob-biobj``
-  contains 55 bi-objective (:math:`m=2`) functions in 15 subgroups [BBO2016biobj]_. 
+  contains 55 bi-objective (:math:`m=2`) functions in 15 subgroups [TUS2016]_. 
   
 .. _`old code basis`: http://coco.gforge.inria.fr/doku.php?id=downloads
 
 
-Acknowledgments
-================
-The authors would like to thank Raymond Ros, Steffen Finck, Marc Schoenauer, 
-and Petr Posik for their many invaluable contributions to this work. 
+.. raw:: html
+    
+    <H2>Acknowledgments</H2>
+
+.. raw:: latex
+
+    \section*{Acknowledgments}
+
+The authors would like to thank Raymond Ros, Steffen Finck, Marc Schoenauer,  
+Petr Posik and Dejan Tusar for their many invaluable contributions to this work. 
 
 The authors also acknowledge support by the grant ANR-12-MONU-0009 (NumBBO) 
 of the French National Research Agency.
@@ -620,13 +627,14 @@ of the French National Research Agency.
 .. raw:: html
     
     <H2>References</H2>
-    
-.. author list yet to be defined
 
-.. [BBO2016biobj] The BBOBies: `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) Test Suite`__.
+.. [TUS2016] T. Tusar, D. Brockhoff, N. Hansen, A. Auger (2016), 
+  `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) 
+  Test Suite`__.
 __ http://numbbo.github.io/coco-doc/bbob-biobj/functions/ 
 
-.. [BBO2016ex] The BBOBies: `COCO: Experimental Procedure`__. 
+.. [HAN2016ex] N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016), 
+  `COCO: Experimental Procedure`__. 
 __ http://numbbo.github.io/coco-doc/experimental-setup/
 
 .. [BBO2016perf] The BBOBies: `Performance Assessment`__. 
@@ -636,10 +644,10 @@ __ https://www.github.com
 
 .. .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
-.. [HAN2010] N. Hansen, A. Auger, S. Finck, and R. Ros (2010), 
+.. [HAN2010ex] N. Hansen, A. Auger, S. Finck, and R. Ros (2010), 
   Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
 
-.. [HAN2010b] N. Hansen, A. Auger, R. Ros, S. Finck, and P. Posik (2010). 
+.. [HAN2010] N. Hansen, A. Auger, R. Ros, S. Finck, and P. Posik (2010). 
   Comparing Results of 31 Algorithms from the Black-Box Optimization Benchmarking BBOB-2009. Workshop Proceedings of the GECCO Genetic and Evolutionary Computation Conference 2010, ACM, pp. 1689-1696
 
 .. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 

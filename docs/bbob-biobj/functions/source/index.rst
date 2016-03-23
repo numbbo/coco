@@ -98,12 +98,17 @@ objective space :math:`f(\mathbb{R}^D)` is called *Pareto front*.
 
 The objective of the minimization problem is to find, with as few evaluations
 of |f| as possible, a set of non-dominated solutions which is (i) as large
-as possible and (ii) has |f|-values as close to the Pareto front as possible. 
+as possible and (ii) has |f|-values as close to the Pareto front as possible. [#]_ 
 
-.. Tea: I deleted the footnote because it introduced two concepts not explained yet (ideal and
-   nadir points) and additionally brought in the issue of visibility of problem properties to algorithms, 
-   which should be addressed elsewhere. Also, until we discuss the actual metric used (hypervolume), it makes
-   no sense to go too deep into details here anyway.
+.. [#] Distance in f space is defined here such that nadir and ideal point 
+   have in each coordinate distance one. Neither of these points is however 
+   freely accessible to the optimization algorithm. 
+
+.. Tea: I deleted the footnote because it introduced two concepts not explained 
+   yet (ideal and nadir points) and additionally brought in the issue of
+   visibility of problem properties to algorithms, which should be addressed
+   elsewhere. Also, until we discuss the actual metric used (hypervolume), it
+   makes no sense to go too deep into details here anyway.
 
 .. |f| replace:: :math:`f`
 
