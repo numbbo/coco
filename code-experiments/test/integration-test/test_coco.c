@@ -98,13 +98,13 @@ int main(int argc, char **argv) {
     }
   }
 
-  suite = coco_suite("bbob", NULL, NULL);
+  suite = coco_suite("bbob", "instances: 1-15", NULL);
 
   while (1) {
     double expected_value, *x, y;
     ret = fscanf(testfile, "%30lu\t%30lu\t%30i\t%30lf", &problem_index_old, &problem_index, &testvector_id,
                  &expected_value);
-    if (ret != 3)
+    if (ret != 4)
       break;
     ++number_of_testcases;
     /* We cache the problem object to save time. Instantiating
