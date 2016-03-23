@@ -25,7 +25,13 @@ static void transform_vars_x_hat_evaluate(coco_problem_t *problem, const double 
   size_t i;
   transform_vars_x_hat_data_t *data;
   coco_problem_t *inner_problem;
-  data = (transform_vars_x_hat_data_t *) coco_problem_transformed_get_data(problem);
+
+  if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
+  	coco_vector_set_to_nan(y, coco_problem_get_number_of_objectives(problem));
+  	return;
+  }
+
+ data = (transform_vars_x_hat_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
   do {
     bbob2009_unif(data->x, problem->number_of_variables, data->seed);

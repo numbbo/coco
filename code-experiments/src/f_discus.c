@@ -22,6 +22,9 @@ static double f_discus_raw(const double *x, const size_t number_of_variables) {
   size_t i;
   double result;
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   result = condition * x[0] * x[0];
   for (i = 1; i < number_of_variables; ++i) {
     result += x[i] * x[i];

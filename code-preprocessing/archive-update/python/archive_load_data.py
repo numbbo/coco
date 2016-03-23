@@ -31,6 +31,14 @@ def create_path(path):
         os.makedirs(path)
 
 
+def remove_empty_file(file_name):
+    """Removes the file with the given name if it is empty.
+    :param file_name: name of the file
+    """
+    if os.path.isfile(file_name) and os.path.getsize(file_name) == 0:
+        os.remove(file_name)
+
+
 def get_key_value(string, key):
     """Extracts the value corresponding to the first found key in the given string of comma-separated pairs of
        key = value.
@@ -45,6 +53,23 @@ def get_key_value(string, key):
             return elem1
     # If the key has not been found, return None:
     return None
+
+
+def parse_problem_instance_file_name(file_name):
+    """Retrieves information from the given problem instance file name and returns it in the following form:
+       suite_name, function, instance, dimension
+       :param file_name: problem instance file name in form [suite-name]_f[function]_i[instance]_d[dimension]_*.*
+    """
+    split = os.path.basename(file_name).split('_')
+    if (len(split) < 4) or (split[1][0] != 'f') or (split[2][0] != 'i') or (split[3][0] != 'd'):
+        raise PreprocessingWarning('File name \'{}\' not in expected format '
+                                   '\'[suite-name]_f[function]_i[instance]_d[dimension]_*.*\''.format(file_name))
+
+    suite_name = split[0]
+    function = int(split[1][1:])
+    instance = int(split[2][1:])
+    dimension = int(split[3][1:])
+    return suite_name, function, instance, dimension
 
 
 def parse_archive_file_name(file_name):

@@ -26,6 +26,9 @@ static double f_rastrigin_raw(const double *x, const size_t number_of_variables)
   double result;
   double sum1 = 0.0, sum2 = 0.0;
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   for (i = 0; i < number_of_variables; ++i) {
     sum1 += cos(coco_two_pi * x[i]);
     sum2 += x[i] * x[i];

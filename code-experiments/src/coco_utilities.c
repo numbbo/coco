@@ -406,6 +406,20 @@ double *coco_allocate_vector(const size_t number_of_elements) {
 }
 
 /**
+ * @brief Allocates memory for a vector and sets all its elements to value.
+ */
+static double *coco_allocate_vector_with_value(const size_t number_of_elements, double value) {
+  const size_t block_size = number_of_elements * sizeof(double);
+  double *vector = (double *) coco_allocate_memory(block_size);
+  size_t i;
+
+  for (i = 0; i < number_of_elements; i++)
+  	vector[i] = value;
+
+  return vector;
+}
+
+/**
  * @brief Safe memory allocation for a vector with size_t elements that either succeeds or triggers a
  * coco_error.
  */
@@ -841,6 +855,52 @@ static size_t coco_double_to_size_t(const double number) {
 static int coco_double_almost_equal(const double a, const double b, const double accuracy) {
   return ((fabs(a - b) < accuracy) == 0);
 }
+
+/**@}*/
+
+/***********************************************************************************************************/
+
+/**
+ * @name Methods handling NAN and INFINITY
+ */
+/**@{*/
+
+/**
+ * @brief Returns 1 if x is NAN and 0 otherwise.
+ */
+static int coco_is_nan(const double x) {
+  return (isnan(x) || (x != x) || !(x == x) || ((x >= NAN / (1 + 1e-9)) && (x <= NAN * (1 + 1e-9))));
+}
+
+/**
+ * @brief Returns 1 if the input vector of dimension dim contains any NAN values and 0 otherwise.
+ */
+static int coco_vector_contains_nan(const double *x, const size_t dim) {
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		if (coco_is_nan(x[i]))
+		  return 1;
+	}
+	return 0;
+}
+
+/**
+ * @brief Sets all dim values of y to NAN.
+ */
+static void coco_vector_set_to_nan(double *y, const size_t dim) {
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		y[i] = NAN;
+	}
+}
+
+/**
+ * @brief Returns 1 if x is INFINITY and 0 otherwise.
+ */
+static int coco_is_inf(const double x) {
+	return (isinf(x) || (x <= -INFINITY) || (x >= INFINITY));
+}
+
 /**@}*/
 
 /***********************************************************************************************************/
@@ -886,6 +946,7 @@ static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, 
 
   return count;
 }
+
 /**@}*/
 
 /***********************************************************************************************************/
