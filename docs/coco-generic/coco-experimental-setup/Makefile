@@ -8,6 +8,7 @@ PAPER         =
 BUILDDIR      = build
 HTMLBUILDDIR  = ../../../../coco-doc/experimental-setup
 PDF           = coco-experimental-setup.pdf
+TEX           = coco-experimental-setup.tex
 
 # User-friendly check for sphinx-build
 ifeq ($(shell which $(SPHINXBUILD) >/dev/null 2>&1; echo $$?), 1)
@@ -26,7 +27,7 @@ I18NSPHINXOPTS  = $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  html       to make standalone HTML files"
-	@echo "  html-topublish to make standalone HTML files in the repository bbob-biobj-experiments-doc"
+	@echo "  html-topublish to make standalone HTML files in the repository ../../../../coco-doc"
 	@echo "  dirhtml    to make HTML files named index.html in directories"
 	@echo "  singlehtml to make a single large HTML file"
 	@echo "  pickle     to make pickle files"
@@ -129,11 +130,16 @@ latex:
 	      "(use \`make latexpdf' here to do that automatically)."
 
 latexpdf:
+	python ../../replace.py ".. CHAPTERTITLE" "CHAPTERTITLE" source/index.rst
+	python ../../replace.py ".. ^^^^^^^^^^^^" "^^^^^^^^^^^^" source/index.rst
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
+	python ../../replace.py "CHAPTERTITLE" ".. CHAPTERTITLE" source/index.rst
+	python ../../replace.py "^^^^^^^^^^^^" ".. ^^^^^^^^^^^^" source/index.rst
 	@echo "Running LaTeX files through pdflatex..."
 	$(MAKE) -C $(BUILDDIR)/latex all-pdf
+	python ../../swap-abstract-and-toc.py $(BUILDDIR)/latex/$(TEX)
 	cp $(BUILDDIR)/latex/$(PDF) ../../$(PDF)
-	@echo "pdflatex finished; see ../../$(PDF)."
+	@echo "pdflatex finished; see ../../$(PDF)"
 		
 latexpdfja:
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex

@@ -130,16 +130,16 @@ latex:
 	      "(use \`make latexpdf' here to do that automatically)."
 
 latexpdf:
-	../replace.py ".. CHAPTERTITLE"      CHAPTERTITLE source/index.rst
-	../replace.py ".. CHAPTERUNDERLINE" "^^^^^^^^^^^^" source/index.rst
+	python ../replace.py ".. CHAPTERTITLE" "CHAPTERTITLE" source/index.rst
+	python ../replace.py ".. ^^^^^^^^^^^^" "^^^^^^^^^^^^" source/index.rst
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
-	../replace.py  CHAPTERTITLE  ".. CHAPTERTITLE" source/index.rst
-	../replace.py "^^^^^^^^^^^^" ".. CHAPTERUNDERLINE" source/index.rst
+	python ../replace.py "CHAPTERTITLE" ".. CHAPTERTITLE" source/index.rst
+	python ../replace.py "^^^^^^^^^^^^" ".. ^^^^^^^^^^^^" source/index.rst
 	@echo "Running LaTeX files through pdflatex..."
 	$(MAKE) -C $(BUILDDIR)/latex all-pdf
-	../swap-abstract-and-toc.py $(BUILDDIR)/latex/$(TEX)
+	python ../swap-abstract-and-toc.py $(BUILDDIR)/latex/$(TEX)
 	cp $(BUILDDIR)/latex/$(PDF) ../../$(PDF)
-	@echo "pdflatex finished; see ../../$(PDF)."
+	@echo "pdflatex finished; see ../../$(PDF)"
 		
 latexpdfja:
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
