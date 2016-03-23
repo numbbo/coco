@@ -24,7 +24,8 @@ import shlex
 # -- General configuration ------------------------------------------------
 authors = "The BBOBies"
 # WHEN CHANGING THIS CHANGE ALSO the abstract in index.rst accordingly
-abstract = """The ``bbob-biobj`` test suite contains 55 bi-objective functions
+abstract = """(this abstract might be outdated, see index.rst)
+The ``bbob-biobj`` test suite contains 55 bi-objective functions
 in continuous domain which are derived from combining functions of the
 well-known single-objective noiseless ``bbob`` test suite. Besides giving the
 actual function definitions and presenting their (known) properties, this
@@ -222,7 +223,7 @@ html_last_updated_fmt = '%b %d, %Y'
 #html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
-#html_show_copyright = True
+html_show_copyright = False
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -262,36 +263,9 @@ latex_elements = {# The paper size ('letterpaper' or 'a4paper').
   \usepackage{amssymb}
   \pagestyle{plain}
   \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
-  \newcommand{\ignore}[1]{}
-  \usepackage{amssymb}
+  \newcommand{\ignore}[1]{}  % never used
   \newcommand{\COCO}{\href{https://githum.com/numbbo/coco}{COCO}}
-  \newcommand{\ff}[1]{\ensuremath{f_{#1}}}  
-  \newcommand{\abstracttextinconfpy}{""" + abstract + r"""}
-    
-
-%%%%%% TOGGLE the renewcommand to update toc / show abstract first %%%%%%
-  \newcommand{\generatetoc}{\boolean{true}}  % (re-)generate toc
-  % \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
-
-  % abstract is latex-only in rst
-  \newcommand{\abstractinrst}{\begin{abstract}\abstracttextinconfpy\end{abstract}} 
-  % abstract via redefinition of \tableofcontents
-  \ifthenelse{\generatetoc}{% do nothing here, \tableofcontents does the work
-    }{% redefine \tableofcontents such that the abstract can go first:
-    \renewcommand{\abstractinrst}{}
-    \renewcommand{\tableofcontents}{
-      \begin{abstract}\abstracttextinconfpy\end{abstract}
-      \par\par
-      \section*{Contents}
-      % \begin{minipage}{\textwidth}
-      { \setlength{\baselineskip}{2.5ex} % \setlength{\parskip}{3ex}
-        \makeatletter % changes the catcode of @ to 11  % see http://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
-        \input{bbob-biobj-functions.toc}
-        \makeatother % changes the catcode of @ back to 12
-        }
-      % \end{minipage}
-    }
-  }
+  \newcommand{\ff}[1]{\ensuremath{f_{#1}}} 
 """ + latex_commands,
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
@@ -302,7 +276,18 @@ latex_elements = {# The paper size ('letterpaper' or 'a4paper').
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   (master_doc, 'bbob-biobj-functions.tex', u'COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) Test Suite',
-   u'The BBOBies', 
+  r"""
+      Tea Tusar$^1$, 
+      Dimo Brockhoff$^1$,
+      Nikolaus Hansen$^{2,3}$, 
+      Anne Auger$^{2,3}$ 
+  \\
+    $^1$Inria, research centre Lille, France
+  \\
+    $^2$Inria, research centre Saclay, France
+  \\
+    $^3$Universit\'e Paris-Saclay, LRI, France
+    """, 
    'article'  # 'manual'
    ),
 ]
@@ -327,6 +312,7 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_domain_indices = True
 
+# pngmath_latex_preamble = r"\newcommand{\R}{\mathbb{R}}"
 
 # -- Options for manual page output ---------------------------------------
 

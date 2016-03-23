@@ -113,7 +113,7 @@ Introduction
 
 Based on [HAN2009]_ and [HAN2010]_, we describe a comparatively simple experimental 
 set-up for *black-box optimization benchmarking*. We recommend to use this procedure
-within the COCO_ platform. [#]_ 
+within the COCO_ platform [HAN2016co]_. [#]_ 
 
 Our central measure of performance, to which the experimental procedure is
 adapted, is the number of (problem or function) evaluations to reach a
@@ -441,6 +441,11 @@ of the French National Research Agency.
 .. [HAN2010] N. Hansen, A. Auger, S. Finck, and R. Ros. 
    Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en, 2010.
 
+.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
+   `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
+   Setting`__.
+__ http://numbbo.github.io/coco-doc/
+ 
 .. [HAR1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
    algorithm. In *Proceedings of the Genetic and Evolutionary Computation
    Conference (GECCO)*, volume 1, pages 258-265. ACM, 1999.

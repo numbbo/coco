@@ -4,9 +4,12 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 COCO: The Bi-objective Black Box Optimization Benchmarking (``bbob-biobj``) Test Suite
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
+.. the next two lines are necessary in LaTeX. They will be automatically 
+  replaced to put away the \chapter level as ^^^ and let the "current" level
+  become \section. 
 
-.. ...
-.. %%%
+.. CHAPTERTITLE
+.. CHAPTERUNDERLINE
 
 .. |
 .. |
@@ -18,32 +21,50 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. |
 .. |
 
- 
-
-.. Here we put the abstract when using LaTeX, the \abstractinrst command is defined in 
-     the 'preamble' of latex_elements in source/conf.py, the text
-     is defined in `abstract` of conf.py. To flip abstract and 
-     table of contents, or update the table of contents, toggle 
-     the \generatetoc command in the 'preamble' accordingly. 
-
 .. raw:: latex
 
-    \abstractinrst
-    \newpage 
+  % \tableofcontents is automatic with sphinx and moved behind abstract by swap...py
+  \begin{abstract}
 
 .. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY
 
-.. raw:: html
+The ``bbob-biobj`` test suite contains 55 bi-objective 
+functions in continuous domain which are derived from combining functions of
+the well-known single-objective noiseless ``bbob`` test suite. Besides giving
+the actual function definitions and presenting their (known) properties, this
+documentation also aims at giving the rationale behind our approach in terms
+of function groups, instances, and potential objective space normalization.
 
-  <p>The <code class="docutils literal"><span class="pre">bbob-biobj</span></code> test suite contains 55 bi-objective
-  functions in continuous domain which are derived from combining
-  functions of the well-known single-objective noiseless <code class="docutils literal"><span class="pre">bbob</span></code> test suite. It will be used as the main test suite of
-  the upcoming <a href="http://numbbo.github.io/workshops/BBOB-2016/">BBOB-2016 workshop</a> at GECCO. Besides giving the actual
-  function definitions and presenting their (known) properties, this documentation also aims at
-  giving the rationale behind our approach in terms of function groups, instances, and objective space
-  normalization.
-  </p>
-  
+.. raw:: latex
+
+  \end{abstract}
+  \newpage
+
+
+..  <p>The <code class="docutils literal"><span
+  class="pre">bbob-biobj</span></code> test suite contains 55 bi-objective
+  functions in continuous domain which are derived from combining functions
+  of the well-known single-objective noiseless <code class="docutils
+  literal"><span class="pre">bbob</span></code> test suite. It will be used
+  as the main test suite of the upcoming <a
+  href="http://numbbo.github.io/workshops/BBOB-2016/">BBOB-2016 workshop</a>
+  at GECCO. Besides giving the actual function definitions and presenting
+  their (known) properties, this documentation also aims at giving the
+  rationale behind our approach in terms of function groups, instances, and
+  objective space normalization. </p>
+
+.. The ``bbob-biobj`` test suite contains 55 bi-objective 
+   functions in continuous domain which are derived from combining functions of
+   the well-known single-objective noiseless ``bbob`` test suite. It will be
+   used as the main test suite of the upcoming `BBOB-2016 workshop
+   <http://numbbo.github.io/workshops/BBOB-2016/>`_ at GECCO. Besides giving the
+   actual function definitions and presenting their (known) properties, this
+   documentation also aims at summarizing the state-of-the-art in
+   multi-objective black-box benchmarking, at giving the rational behind our
+   approach, and at providing a simple tutorial on how to use these functions
+   for actual benchmarking within the Coco framework.
+
+
 .. _COCO: https://github.com/numbbo/coco
 .. _COCOold: http://coco.gforge.inria.fr
 .. |coco_problem_t| replace:: 
@@ -362,7 +383,7 @@ Both points can be computed, because the global
 optimum is known and is unique for the 10 ``bbob`` base functions. 
 In the black-box optimization benchmarking setup, however, the values of the
 ideal and nadir points are not accessible to the optimization algorithm
-[BBO2016ex]_.
+[HAN2016ex]_.
 
 
 .. TODO: this should become a reference
@@ -494,7 +515,8 @@ and their properties.
    - plots (in objective space) of randomly sampled search points
    - potentially function value distributions along cuts through the search space 
 
-Quick access to the functions:
+Quick access to the functions, inner cell IDs refer to the ``bbob-biobj`` functions, 
+outer column and row annotations to the single-objective `bbob`` functions.
 
 +-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
 |       ||fb1|_ ||fb2|_ ||fb6|_ ||fb8|_ ||fb13|_||fb14|_||fb15|_||fb17|_||fb20|_||fb21|_|
@@ -520,25 +542,25 @@ Quick access to the functions:
 ||fb21|_|       |       |       |       |       |       |       |       |       | |f55| |
 +-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
 
-.. |fb1| replace:: ``bbob`` :math:`f_1`
+.. |fb1| replace:: :math:`f_1`
 .. _fb1: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=5
-.. |fb2| replace:: ``bbob`` :math:`f_2`
+.. |fb2| replace:: :math:`f_2`
 .. _fb2: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=10
-.. |fb6| replace:: ``bbob`` :math:`f_6`
+.. |fb6| replace:: :math:`f_6`
 .. _fb6: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=30
-.. |fb8| replace:: ``bbob`` :math:`f_8`
+.. |fb8| replace:: :math:`f_8`
 .. _fb8: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=40
-.. |fb13| replace:: ``bbob`` :math:`f_{13}`
+.. |fb13| replace:: :math:`f_{13}`
 .. _fb13: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=65
-.. |fb14| replace:: ``bbob`` :math:`f_{14}`
+.. |fb14| replace:: :math:`f_{14}`
 .. _fb14: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=70
-.. |fb15| replace:: ``bbob`` :math:`f_{15}`
+.. |fb15| replace:: :math:`f_{15}`
 .. _fb15: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=75
-.. |fb17| replace:: ``bbob`` :math:`f_{17}`
+.. |fb17| replace:: :math:`f_{17}`
 .. _fb17: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=85
-.. |fb20| replace:: ``bbob`` :math:`f_{20}`
+.. |fb20| replace:: :math:`f_{20}`
 .. _fb20: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=100
-.. |fb21| replace:: ``bbob`` :math:`f_{21}`
+.. |fb21| replace:: :math:`f_{21}`
 .. _fb21: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=105
 
 .. |f1| replace:: :ref:`f1 <f1>`
@@ -1968,21 +1990,23 @@ Contained in the *weakly-structured - weakly-structured* function class.
     <H2>References</H2>
    
 
-.. [BBO2016ex] The BBOBies (2016). `COCO: Experimental Procedure`__. 
-__ http://numbbo.github.io/coco-doc/experimental-setup/
-
-.. [BTH2015a] D. Brockhoff, T.-D. Tran, and N. Hansen:
+.. [BTH2015a] D. Brockhoff, T.-D. Tran, and N. Hansen (2015).
    Benchmarking Numerical Multiobjective Optimizers Revisited.
-   GECCO 2015: 639-646
+   GECCO 2015: 639-646. 
    
-.. [COCO:2016] The BBOBies (2016). `COCO: A platform for Comparing Continuous Optimizers in a Black-Box Setting`__.
-__ http://numbbo.github.io/coco-doc/
+.. [COCO:2016] The BBOBies (2016). `COCO: A platform for Comparing Continuous 
+   Optimizers in a Black-Box Setting`__.
+.. __: http://numbbo.github.io/coco-doc/
+
+.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
+   `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
+   Setting`__. 
+.. __: http://numbbo.github.io/coco-doc/
 
 .. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
-  `Real-parameter black-box optimization benchmarking 2009: Noiseless
-  functions definitions`__. `Technical Report RR-6829`__, Inria, updated
-  February 2010.
-
+   `Real-parameter black-box optimization benchmarking 2009: Noiseless
+   functions definitions`__. `Technical Report RR-6829`__, Inria, updated
+   February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
 
@@ -1991,5 +2015,8 @@ __ http://numbbo.github.io/coco-doc/
 	Non-Separable Problems. Applied Soft Computing. Vol. 11, pp. 5755-5769.
 	Elsevier.  
 
+.. [HAN2016ex] N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
+  `COCO: Experimental Procedure`__. 
+.. __: http://numbbo.github.io/coco-doc/experimental-setup/
 
   
