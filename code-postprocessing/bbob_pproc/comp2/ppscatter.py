@@ -51,8 +51,6 @@ fixed_targets = pproc.TargetValues(np.logspace(-8, 2, 46))
 targets = fixed_targets  # default
 
 # formattings
-colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
-markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 markersize = 14  # modified in config.py
 markersize_addon_beyond_maxevals = -6
 linewidth_default = 0  # lines look ugly and are not necessary (anymore), because smaller symbols are used beyond maxevals
@@ -149,6 +147,8 @@ def main(dsList0, dsList1, outputdir, verbose=True):
     
     TODO: """
 
+    markers = genericsettings.dim_related_markers
+    colors = genericsettings.dim_related_colors
     #plt.rc("axes", labelsize=24, titlesize=24)
     #plt.rc("xtick", labelsize=20)
     #plt.rc("ytick", labelsize=20)

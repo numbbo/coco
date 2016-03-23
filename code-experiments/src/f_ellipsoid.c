@@ -24,6 +24,9 @@ static double f_ellipsoid_raw(const double *x, const size_t number_of_variables)
   size_t i = 0;
   double result;
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   result = x[i] * x[i];
   for (i = 1; i < number_of_variables; ++i) {
     const double exponent = 1.0 * (double) (long) i / ((double) (long) number_of_variables - 1.0);
