@@ -60,18 +60,6 @@ obtained (evaluated or recommended) before or at this time step.
               significant challenge. This challenge is not necessarily 
               solved by knowing the best possible indicator value.
 
-.. todo::   * perf assessement is relative - we face a problem: we do not have the optimum.
-			* How do we deal with this problem? [ this should probably be a section]
-				* estimate the optimum
-				* but approximation, meant to change / be improved - therefore need to ensure compatibility
-				* compatibility + easy re-estimation of the performance when the reference set is improved	
-			* we do not have the optimum (except for f1)
- 			* we estimate it (how: running some algorithms) and it is meant to be changed with time (improved with time)
- 			* things are based on the archive of nondominated solutions
- 			* we measure the hypervolume difference between the dynamic archive and this reference set.
-			* negative hyp-vol diff values are expected (means the algorithm improves over the current reference set)
-			* archive is improved over time, whenever we have a new point entering the archive we recompute and log the hyp-vol difference.
-			
 .. [#] As usual, time is considered as number of function evaluations and, 
   consequently, runtime is measured in number of function evaluations.
 
@@ -93,14 +81,15 @@ We remind in this section different definitions.
  The number of function evaluations needed to surpass the target value for the first time
  is COCO_'s central performance measure. [coco-doc]_
 
-*Pareto set* and *Pareto front*
+*Pareto set*, *Pareto front*, and *Pareto dominance*
  For a concrete function instance, i.e., a function :math:`f_\theta=(f_\alpha,f_\beta)` with
  given parameter value :math:`\theta` and dimension :math:`D`, the Pareto set is the set
  of all (Pareto-optimal) solutions for which no solutions in the search space
- :math:`\R^D` exist that
- have either an improved :math:`f_\alpha` or an improved :math:`f_\beta` value while the
- other objective function is at least as good ("solutions *non-dominated* by any other
- solution"). The image of the Pareto set in the *objective space* is called the Pareto front.
+ :math:`\R^D` exist that have either an improved :math:`f_\alpha` or an improved
+ :math:`f_\beta` value while the other objective function is at least as good
+ (or in other words, a *Pareto-optimal* solution in the Pareto set has no other solution
+ that *dominates* it). The image of the Pareto set in the *objective space* is called
+ the Pareto front.
  
 *ideal point*
  The ideal point (in objective space) is defined as the vector in objective space that
@@ -114,8 +103,17 @@ We remind in this section different definitions.
  :math:`\mathcal{PO}` denotes the Pareto set, the nadir point satisfies
  :math:`z_{\rm nadir}  =  \left( \sup_{x \in \mathcal{PO}} f_\alpha(x),
  \sup_{x \in \mathcal{PO}} f_\beta(x)  \right)`.
-  
 
+*archive*
+ An external archive or simply an archive is a set of non-dominated solutions.
+ With an algorithm run, we can, at each point :math:`t` in time (in terms of
+ :math:`t` performed function evaluations) associate the set of all
+ mutually non-dominating solutions that have been evaluated so far. We will
+ typically denote the archive after :math:`t` function evaluations as :math:`A_t`
+ and use it to define the performance of the algorithm in terms of a (quality)
+ indicator function :math:`A_t \rightarrow \R`.
+
+ 
 Biobjective Performance Assessment in COCO: A Set-Indicator Value Replaces the Objective Function
 =================================================================================================
 The general concepts of how the COCO_ platform suggests to benchmark
@@ -199,48 +197,49 @@ is the smallest (normalized) Euclidean distance between the archive and the regi
 Rationale Behind our Performance Measure and A First Summary
 ------------------------------------------------------------
 
-
 *Why using an archive?*
+ We believe using an archive to keep all non-dominated solutions is relevant practice
+ in bi-objective real-world applications, in particular where function evaluations are
+ expensive. Using an external archive for the performance assessment has the additional
+ advantage that no populuation size needs to be prescribed and algorithms with different
+ or even changing population sizes can be easily compared with each other.
+
+
+*Why hypervolume?*
+ Although, in principle, other quality indicators can be used in replacement of the
+ hypervolume, the monotonicity of the hypervolume is a strong theoretical argument
+ for using it in the performance assessment: the hypervolume indicator value of the
+ archive improves iff a new non-dominated solution is generated. [ZIT2003]_
 
 
 
-*Why hypervolume?* (can also be in principle with other indicators)?
-Due to the theoretical properties of the hypervolume [ZIT2003]_, the indicator improves iff a new non-dominated 
-solution is generated. 
+In summary, the proposed ``bbob-biobj`` performance criterion has the following
+specificities:
 
+* Algorithm performance is measured via runtime until the quality of the archive of non-dominated 
+  solutions found so far surpasses a target value.
 
-
-To summarize, here the specificities of the proposed ``bbob-biobj`` performance criterion:
-
-* algorithm performance = runtime until the quality of the archive of non-dominated 
-  solutions found so far surpasses a target value
-
-* normalization of objective space before indicator calculation such that the
+* A normalization of the objective space is performed before the indicator calculation such that the
   region of interest (ROI) :math:`[z_{\text{ideal}}, z_{\text{nadir}}]`, defined by
   the ideal and nadir point is mapped to :math:`[0, 1]^2`
 
-* if nadir point is dominated by a point in the archive: quality = hypervolume of archive wrt nadir point
-  as hypervolume reference point
+* If the nadir point is dominated by a point in the archive, the quality of the algorithm is
+  the hypervolume of the archive with respect to the nadir point as hypervolume reference point.
 
-* if nadir point is not dominated by archive: quality = negative distance of archive to the ROI
+* If the nadir point is not dominated by the archive, an algorithm's quality equals the negative
+  distance of archive to the ROI.
 
-This implies:
+This implies that:
 
 * the quality indicator value of an archive that contains the nadir point as 
-  non-dominated point is :math:`0`.
+  non-dominated point is :math:`0`,
 
-* the quality indicator value is bounded from below by :math:`-1`. 
+* the quality indicator value is bounded from below by :math:`-1`, and that
 
-* Because the quality of the archive is used as performance criterion, no population size has to be
+* because the quality of the archive is used as performance criterion, no population size has to be
   prescribed to the algorithm. In particular, steady-state and generational algorithms can be 
   compared directly as well as algorithms with varying population size and algorithms which carry
-  along their external archive themselves.
-  
-.. * As the reference set approaches the Pareto set, the optimal quality indicator difference goes to 0`
-
-.. * Because the reference set is always a finite approximation of the Pareto set, negative quality
-  indicator differences can occur.
-
+  along their external archive themselves. 
 
 
 Choice of Target Values
@@ -292,64 +291,16 @@ hypervolume indicator value, we can therefore only use the best
 approximation of the Pareto set we have and hope that it is adequate (see
 above). In order to do so, several existing multiobjective algorithms have
 been run ahead of the postprocessing and all non-dominated solutions over
-all runs have been recorded instance-wise. The hypervolume indicator values
+all runs have been recorded instance-wise. [#]_ The hypervolume indicator values
 of these latest sets of non-dominated solutions, also called *non-dominated
 reference sets*, are then used as the reference hypervolume indicator value.
 
 
-
-.. todo::
-  finish from here
-
-
-
-The equivalent of a global optimum in the multi-objective case is the set of Pareto-optimal
-or efficient solutions, also known as Pareto set. If we assume the search space to be
-:math:`\mathbb{R}^n` and the minimization of two objective
-functions :math:`f_1: x\in \mathbb{R}^n \mapsto f_1(x)\in\mathbb{R}` and :math:`f_1: x\in \mathbb{R}^n \mapsto f_1(x)\in\mathbb{R}`,
-a solution :math:`x\in\mathbb{R}^n` is called Pareto-optimal if it is not dominated
-by any other solution :math:`y\in\mathbb{R}^n` or, in other words, if
-
-.. math::
-  
-  \not\exists y \text{ s.t. } (f_1(y)< f_1(x) \text{ and } f_2(y)\leq f_2(x)) \text{ or } (f_2(y)\leq f_2(x) \text{ and } f_2(y)< f_2(x)).
-
-  
-  
-
-
-
-This has two main implications:
-
-
-* The reference set is expected to evolve over time, in terms of becoming a better and better
-  approximation of the actual Pareto set/Pareto front if more and more algorithms are
-  compared.
-
-.. The performance assessment via the Coco platform addresses both issues, see
-   `Choice of Reference Set and Target Difficulties`_ and
-   `Data storage and Future Recalculations of Indicator Values`_ below for details.
-   Before we discuss these issues, however, let us have a look on the actual performance
-   criterion used for the ``bbob-biobj`` test suite, assuming that a reference set is given.
-
-   .. Choice of Reference Set and Target Difficulties
-   ===============================================
-  Choice of the targets based on best estimation of Pareto front (using all the 
-  data we have) - chosen instance wise
-
-  relative targets (in terms of the hypervolume difference to the hypervolume of the reference set)
-  are chosen the same for all functions, dimensions, and instances: recorded are 100 targets 
-  per order of magnitude,
-  equi-distantly chosen on the log-scale.
-
-
-.. Displayed are finally only 10 targets per order of magnitude, in total 51 of them between :math:`10^0` and :math:`10^{-5}`
-
-.. Note that due to the approximative nature of the reference set and its hypervolume, negative hypervolume values are possible. The Coco platform stores all
-
-.. Remind that performance assessment is "relative" because best
-   estimation of the front is meant to change. Hence ECDF plots are meant
-   to be reploted.
+.. [#] Amongst others, we run versions of NSGA-II [todo], SMS-EMOA [todo],
+  MOEA/D [todo], RM-MEDA [todo], and MO-CMA-ES [todo], together with simple
+  uniform RANDOMSEARCH and the single-objective CMA-ES on scalarized problems
+  (i.e. weighted sum) to create first approximations of the bi-objective
+  problems' Pareto sets.
 
    
 
@@ -357,23 +308,28 @@ Data storage and Future Recalculations of Indicator Values
 ==========================================================
 Having a good approximation of the Pareto set/Pareto front is crucial in accessing
 algorithm performance with the above suggested performance criterion. In order to allow
-the reference set to approximate the Pareto set/Pareto front better and better over time,
-the Coco platform records every non-dominated solution over the algorithm run.
-Algorithm data sets, submitted through the Coco platform's web page, can therefore
+the reference sets to approximate the Pareto set/Pareto front better and better over time,
+the COCO_ platform records every non-dominated solution over the algorithm run.
+Algorithm data sets, submitted through the COCO_ platform's web page, can therefore
 be used to improve the quality of the reference set by adding all solutions to the
 reference set which are non-dominated to it. 
 
 Recording every new non-dominated solution within every algorithm run also allows to
 recover the algorithm runs after the experiment and to recalculate the corresponding
-hypervolume difference values if the reference set changes in the future.
-
-
+hypervolume difference values if the reference set changes in the future. In order
+to be able to distinguish between data and graphical output that has been produced
+with a different collections of reference sets, COCO_ writes the absolute hypervolume
+reference values together with the performance data during the experiment and displays
+a version number in the plots generated.
 
 
 Instances and Generalization Experiment
 =======================================
-* we record for 10 instances but display result for only 5. This will allow us to generate data for an unbiased
-  generalization test on the unseen instances
+
+.. todo::
+
+  * we record for 10 instances but display result for only 5. This will allow us to generate data for an unbiased
+    generalization test on the unseen instances
 
   
   
@@ -408,4 +364,5 @@ __ https://www.github.com
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
 
-.. [ZIT2003] E. Zitzler, L. Thiele, M. Laumanns, C. M. Fonseca, and V. Grunert da Fonseca (2003). Performance Assessment of Multiobjective Optimizers: An Analysis and Review. *IEEE 
+.. [ZIT2003] E. Zitzler, L. Thiele, M. Laumanns, C. M. Fonseca, and V. Grunert da Fonseca (2003). Performance Assessment of Multiobjective Optimizers: An Analysis and Review.
+  *IEEE Transactions on Evolutionary Computation*, 7(2), pp. 117-132.
