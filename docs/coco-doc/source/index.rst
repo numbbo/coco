@@ -8,8 +8,8 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   replaced to put away the \chapter level as ^^^ and let the "current" level
   become \section. 
 
-CHAPTERTITLE
-^^^^^^^^^^^^
+.. CHAPTERTITLE
+.. ^^^^^^^^^^^^
 
 .. |
 .. |
@@ -652,8 +652,8 @@ __ http://numbbo.github.io/coco-doc/perf-assessment
 .. __: https://hal.inria.fr/inria-00369466
 
 .. [HAN2016ex] N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016), 
-  `COCO: Experimental Procedure`__. 
-__ http://numbbo.github.io/coco-doc/experimental-setup/
+   `COCO: Experimental Procedure`__. 
+.. __ http://numbbo.github.io/coco-doc/experimental-setup/
 
 .. [HUN2007] J. D. Hunter (2007). Matplotlib: A 2D graphics environment, 
   *Computing In Science \& Engineering*, 9(3): 90-95. 
