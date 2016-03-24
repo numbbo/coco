@@ -81,7 +81,7 @@ def ecdfs_figure_caption(target):
                 r"of objective function evaluations divided by dimension " +
                 r"(FEvals/DIM) for " +
                 str(len(genericsettings.current_testbed.pprldmany_target_values)) +
-                r" targets in " + 
+                r" targets with target precision in " + 
                 str(genericsettings.current_testbed.pprldmany_target_range_latex) +
                 r" for all functions and subgroups in #1-D. " + ( best2009text
                 if genericsettings.current_testbed.name != 'bbob-biobj' else "")
