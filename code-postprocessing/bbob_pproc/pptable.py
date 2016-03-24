@@ -51,7 +51,7 @@ def get_table_caption():
     """ Sets table caption, based on the genericsettings.current_testbed
         and genericsettings.runlength_based_targets.
     """    
-    
+        
     table_caption_one = r"""%
         Average running time (\aRT\ in number of function 
         evaluations) divided by the best \aRT\ measured during BBOB-2009. The \aRT\ 
@@ -90,7 +90,7 @@ def get_table_caption():
                 $\fopt + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
                 The median number of conducted function evaluations is additionally given in 
                 \textit{italics}, if the target in the last column was never reached. 
-                """        
+                """
     elif genericsettings.current_testbed.name == 'bbob':
         if genericsettings.runlength_based_targets == True:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
