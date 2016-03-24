@@ -10,16 +10,19 @@ from time import gmtime, strftime
 from .archive_exceptions import PreprocessingWarning, PreprocessingException
 
 
-def get_file_name_list(path):
+def get_file_name_list(path, ending=None):
     """Returns the list of files contained in any sub-folder in the given path.
        :param path: path to the directory
+       :param ending: if given, restrict to files with the given ending
     """
     file_name_list = []
     for dir_path, dir_names, file_names in os.walk(path):
         dir_names.sort()
         file_names.sort()
         for file_name in file_names:
-            file_name_list.append(os.path.join(dir_path, file_name))
+            if (ending and file_name.endswith(ending)) or not ending:
+                file_name_list.append(os.path.join(dir_path, file_name))
+
     return file_name_list
 
 
