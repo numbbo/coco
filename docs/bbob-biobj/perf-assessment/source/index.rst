@@ -132,6 +132,8 @@ negative hypervolume indicator of the *archive* :math:`A_t` of all non-dominated
 solutions evaluated within the first :math:`t` function evaluations. In principal, other
 quality indicators of the archive can be used as well.
 
+Definition of the quality indicator
+------------------------------------
 To be more concrete, the indicator :math:`\IHV` used here is to be mininized and
 is a combination of the negative hypervolume indicator of the archive with the nadir
 point as the hypervolume's reference point and the distance to the region of interest
