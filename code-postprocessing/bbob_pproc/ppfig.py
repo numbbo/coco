@@ -54,6 +54,12 @@ def saveFigure(filename, figFormat=(), verbose=True):
             )
             if verbose:
                 print 'Wrote figure in %s.' %(filename + '.' + format)
+            # Remove from pdfs page groups that create warnings when used in latex
+            if format == 'pdf':
+                page_group_string = '<< /Group << /CS /DeviceRGB /S /Transparency /Type /Group >>'
+                replace_string = '<< /Grou1 << /CS /DeviceRGB /S /Transparency /Type /Grou1 >>'
+                toolsdivers.replace_in_file(filename + '.' + format, page_group_string, replace_string)
+
         except IOError:
             warnings.warn('%s is not writeable.' % (filename + '.' + format))
 
