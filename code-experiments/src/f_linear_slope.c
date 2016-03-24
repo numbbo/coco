@@ -36,7 +36,12 @@ static double f_linear_slope_raw(const double *x,
     } else {
       si = -pow(base, exponent);
     }
-    result += 5.0 * fabs(si) - si * x[i];
+    /* boundary handling */
+    if (x[i] * best_parameter[i] < 25.0) {
+      result += 5.0 * fabs(si) - si * x[i];
+    } else {
+      result += 5.0 * fabs(si) - si * best_parameter[i];
+    }
   }
 
   return result;
