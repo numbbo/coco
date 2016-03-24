@@ -23,6 +23,7 @@ functions.
 from __future__ import absolute_import
 
 import os
+import warnings
 import numpy as np
 import matplotlib.pyplot as plt
 from . import genericsettings, bestalg, toolsstats, pproc
@@ -250,8 +251,6 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             assert data == ertdata
             for i, ert in enumerate(data):
                 alignment = 'c'
-                if i == len(data) - 1: # last element
-                    alignment = 'c|'
 
                 nbstars = 0
                 if bestalgentries:                
@@ -396,12 +395,13 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     #curline.append('(%s)' % tmp)
 
             tmp = entry.evals[entry.evals[:, 0] <= targetf, 1:]
+            lineFormat = '\\multicolumn{1}{|@{}r@{}}{%d}'
             try:
                 tmp = tmp[0]
-                curline.append('%d' % np.sum(np.isnan(tmp) == False))
+                curline.append(lineFormat % np.sum(np.isnan(tmp) == False))
                 curlineHtml.append('<td>%d' % np.sum(np.isnan(tmp) == False))
             except IndexError:
-                curline.append('%d' % 0)
+                curline.append(lineFormat % 0)
                 curlineHtml.append('<td>%d' % 0)
             curline.append('/%d' % entry.nbRuns())
             curlineHtml.append('/%d</td>\n' % entry.nbRuns())
