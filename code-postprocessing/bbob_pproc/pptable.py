@@ -251,6 +251,8 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             assert data == ertdata
             for i, ert in enumerate(data):
                 alignment = 'c'
+                if i == len(data) - 1: # last element
+                    alignment = 'c|'
 
                 nbstars = 0
                 if bestalgentries:                
@@ -370,7 +372,11 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                         tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
                     else:
                         tmp = writeFEvalsMaxPrec(dispersion[i], 1)
-                    tableentry += (r'${\scriptscriptstyle(%s)}$' % tmp)
+                    s = r'${\scriptscriptstyle(%s)}$' % tmp
+                    if tableentry.endswith('}'):
+                        tableentry = tableentry[:-1] + s + r'}'
+                    else:
+                        tableentry += s
                     tableentryHtml += (' (%s)' % tmp)
 
                 if superscript:
@@ -395,13 +401,12 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                     #curline.append('(%s)' % tmp)
 
             tmp = entry.evals[entry.evals[:, 0] <= targetf, 1:]
-            lineFormat = '\\multicolumn{1}{|@{}r@{}}{%d}'
             try:
                 tmp = tmp[0]
-                curline.append(lineFormat % np.sum(np.isnan(tmp) == False))
+                curline.append('%d' % np.sum(np.isnan(tmp) == False))
                 curlineHtml.append('<td>%d' % np.sum(np.isnan(tmp) == False))
             except IndexError:
-                curline.append(lineFormat % 0)
+                curline.append('%d' % 0)
                 curlineHtml.append('<td>%d' % 0)
             curline.append('/%d' % entry.nbRuns())
             curlineHtml.append('/%d</td>\n' % entry.nbRuns())
