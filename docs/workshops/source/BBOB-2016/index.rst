@@ -112,6 +112,6 @@ Organizers
 * Anne Auger, Inria Saclay - Ile-de-France
 * Dimo Brockhoff, Inria Lille - Nord Euruope
 * Nikolaus Hansen, Inria Saclay - Ile-de-France
-* Dejan Tusar, Inria Lille - Nord Euruope
+* Dejan Tusar, Inria Lille - Nord Europe
 * Tea Tusar, Inria Lille - Nord Euruope
 * Tobias Wagner, TU Dortmund University
