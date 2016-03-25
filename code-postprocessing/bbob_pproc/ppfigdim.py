@@ -82,7 +82,7 @@ def scaling_figure_caption():
         Scaling of runtime to reach $\fopt+10^{\#}$ with dimension;
         runtime is measured in number of $f$-evaluations and $\#$ is given in the legend;
         Lines: average runtime (\aRT);
-        Cross (+): median runtime to reach the most difficult
+        Cross (+): median runtime of successful runs to reach the most difficult
         target that was reached at least once (but not always);
         Cross ({\color{red}$\times$}): maximum number of
         $f$-evaluations in any trial. """ + (r"""Notched
