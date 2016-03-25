@@ -22,7 +22,7 @@ def extract_extremes(input_path, output_file):
     """
 
     # Check whether input path exits
-    input_files = get_file_name_list(input_path)
+    input_files = get_file_name_list(input_path, ".adat")
     if len(input_files) == 0:
         raise PreprocessingException('Folder {} does not exist or is empty'.format(input_path))
 
