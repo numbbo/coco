@@ -286,7 +286,15 @@ Table~\ref{tab:aRTs}.
 \includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f036}\\[-1.8ex]
 \end{tabular}
  \caption{\label{fig:ECDFsingleTwo}
- Empirical cumulative distribution function (ECDF) per dimension for all targets of each function as in Fig.~\ref{fig:ECDFsingleOne} but for $f_{17}$ till $f_{36}$.
+    Empirical cumulative distribution of simulated (bootstrapped) runtimes, 
+    measured in number of objective function evaluations, divided by dimension 
+    (FEvals/DIM) for the targets as given in Fig.~\ref{fig:ECDFsingleOne} 
+    for functions 
+    $f_{17}$ to $f_{36}$
+    and all dimensions.
+%
+% Empirical cumulative distribution function (ECDF) per dimension for all 
+% targets of each function as in Fig.~\ref{fig:ECDFsingleOne} but for $f_{17}$ till $f_{36}$.
  }
 \end{figure*}
 \begin{figure*}
@@ -315,7 +323,13 @@ Table~\ref{tab:aRTs}.
 \includegraphics[width=0.25\textwidth]{pprldmany-single-functions/pprldmany_f055}\\[-1.8ex]
 \end{tabular}
  \caption{\label{fig:ECDFsingleThree}
- Empirical cumulative distribution function (ECDF) per dimension for all targets of each function as in Fig.~\ref{fig:ECDFsingleOne} but for $f_{37}$ till $f_{55}$.
+    Empirical cumulative distribution of simulated (bootstrapped) runtimes, 
+    measured in number of objective function evaluations, divided by dimension 
+    (FEvals/DIM) for the targets as given in Fig.~\ref{fig:ECDFsingleOne} 
+    for functions 
+    $f_{37}$ to $f_{55}$
+    and all dimensions. 
+% Empirical cumulative distribution function (ECDF) per dimension for all targets of each function as in Fig.~\ref{fig:ECDFsingleOne} but for $f_{37}$ till $f_{55}$.
  }
 \end{figure*}
 
@@ -378,13 +392,6 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
    {\small 20-D}\\
    \input{\bbobdatapath\algfolder pptable_20D_noiselessall}}}%
 \caption[Table of aRTs]{\label{tab:aRTs}\bbobpptablecaption{} 
-%Tea: I would reformulate the caption as follows: 
-%Tea: Average running time (\aRT) to reach the given targets measured in number of 
-%Tea: $f$-evaluations. For each function, the \aRT and in braces, as dispersion measure, the half 
-%Tea: difference between 90\%- and 10\%-tile of bootstrapped run lengths are shown for the 
-%Tea: different target values ($\fopt + \Df$). \#succ is the number of trials that reached 
-%Tea: the final target ($\fopt +10^{-5}$). If the final target was never reached, the median 
-%Tea: number of conducted $f$-evaluations is additionally given in \textit{italics}. 
 }
 \end{sidewaystable*}
 
@@ -453,17 +460,6 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 \vspace{-3ex}
  \caption{\label{fig:aRTgraphs}
  \bbobppfigdimlegend{$f_1$ and $f_{30}$}
-%Tea: I would reformulate the caption as follows: 
-%Tea: Scaling of average running time (\aRT, measured with number of $f$-evaluations) 
-%Tea: with dimension: \aRT to reach the target (lines); median number of $f$-evaluations 
-%Tea: to reach the final target that was reached at least once but not always (+); maximum 
-%Tea: number of $f$-evaluations in any trial ({\color{red}$\times$}); interquartile 
-%Tea: range with median of simulated run-lengths to reach the target  (notched boxes).  
-%Tea: All values are divided by dimension and plotted in log-scale. Colors 
-%Tea: represent different targets $\fopt + \Df$, where $\Df = 10^{\{-1, -2, -3, -4, -5\}}$.  
-%Tea: Numbers above \aRT-symbols (if appearing) indicate the number of trials
-%Tea: reaching the respective target. Horizontal lines mean linear scaling, slanted
-%Tea: grid lines depict quadratic scaling.  
 }
 \end{figure*}
 
@@ -498,7 +494,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 \end{tabular}
 \vspace{-3ex}
  \caption{\label{fig:aRTgraphsTwo}
- \aRT{} vs.\ dimension as in Fig.~\ref{fig:aRTgraphs} but for $f_{31}$ till $f_{55}$.
+ Runtime versus dimension as described in Fig.~\ref{fig:aRTgraphs}, here for functions $f_{31}$ to $f_{55}$.
  }
 \end{figure*}
 

@@ -81,12 +81,12 @@ def get_table_caption():
     if genericsettings.current_testbed.name == 'bbob-biobj':
         # NOTE: no runlength-based targets supported yet
         table_caption = r"""%
-                Average running time (\aRT\ in number of function 
-                evaluations) to reach given targets. For each function, the \aRT\ 
-                and in braces, as dispersion measure, the half difference between 90 and 
-                10\%-tile of bootstrapped run lengths is shown for the different target
-                \Df-values as shown in the top row. 
-                \#succ is the number of trials that reached the (final) target 
+                Average runtime (\aRT) to reach given targets, measured
+                in number of function evaluations. For each function, the \aRT\ 
+                and, in braces as dispersion measure, the half difference between 10 and 
+                90\%-tile of (bootstrapped) runtimes is shown for the different
+                targets as shown in the top row. 
+                \#succ is the number of trials that reached the last target 
                 $\fopt + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
                 The median number of conducted function evaluations is additionally given in 
                 \textit{italics}, if the target in the last column was never reached. 
