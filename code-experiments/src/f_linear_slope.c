@@ -23,6 +23,9 @@ static double f_linear_slope_raw(const double *x,
   size_t i;
   double result = 0.0;
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   for (i = 0; i < number_of_variables; ++i) {
     double base, exponent, si;
 
@@ -33,7 +36,12 @@ static double f_linear_slope_raw(const double *x,
     } else {
       si = -pow(base, exponent);
     }
-    result += 5.0 * fabs(si) - si * x[i];
+    /* boundary handling */
+    if (x[i] * best_parameter[i] < 25.0) {
+      result += 5.0 * fabs(si) - si * x[i];
+    } else {
+      result += 5.0 * fabs(si) - si * best_parameter[i];
+    }
   }
 
   return result;

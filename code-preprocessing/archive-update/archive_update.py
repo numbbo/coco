@@ -14,10 +14,15 @@ if __name__ == '__main__':
     from cocoprep import merge_archives, update_best_hypervolume
     import timing
 
+    if len(sys.argv) > 1:
+        arguments = sys.argv[1]
+    else:
+        arguments = '1-10'
+
     # Merge the archives
     new_hypervolumes = merge_archives('/Volumes/STORAGE/Data/archives/archives-input',
                                       '/Volumes/STORAGE/Data/archives/archives-output',
-                                      sys.argv[1])
+                                      arguments)
 
     timing.log('Finished merging', timing.now())
 

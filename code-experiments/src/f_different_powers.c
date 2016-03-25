@@ -22,6 +22,9 @@ static double f_different_powers_raw(const double *x, const size_t number_of_var
   double sum = 0.0;
   double result;
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   for (i = 0; i < number_of_variables; ++i) {
     double exponent = 2.0 + (4.0 * (double) (long) i) / ((double) (long) number_of_variables - 1.0);
     sum += pow(fabs(x[i]), exponent);
