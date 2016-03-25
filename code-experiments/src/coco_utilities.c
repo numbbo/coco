@@ -121,7 +121,7 @@ static void coco_join_path(char *path, const size_t path_max_length, ...) {
 static int coco_directory_exists(const char *path) {
   int res;
 #if defined(HAVE_GFA)
-  DWORD dwAttrib = GetFileAttributes(path);
+  DWORD dwAttrib = GetFileAttributesA(path);
   res = (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 #elif defined(HAVE_STAT)
   struct stat buf;
@@ -144,7 +144,7 @@ static int coco_directory_exists(const char *path) {
 static int coco_file_exists(const char *path) {
   int res;
 #if defined(HAVE_GFA)
-  DWORD dwAttrib = GetFileAttributes(path);
+  DWORD dwAttrib = GetFileAttributesA(path);
   res = (dwAttrib != INVALID_FILE_ATTRIBUTES) && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
 #elif defined(HAVE_STAT)
   struct stat buf;
