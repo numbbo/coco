@@ -205,7 +205,7 @@ log_dim.
 (``1``) or not (``0``). The default value is 1.
 - ``produce_all_data: VALUE`` determines whether to produce all data required for the workshop. If 
 set to ``1``, it overwrites some other options and is equivalent to setting ``log_nondominated`` to 
-``all``, ``log_decision_variables`` to ``log_dim`` and ``compute_indicators`` to ``1``. If set to 
+``all``, ``log_decision_variables`` to ``low_dim`` and ``compute_indicators`` to ``1``. If set to 
 ``0``, it does not change the values of the other options. The default value is 0.
 
 You can also run the benchmark without any observer, which produces no output, by invoking either 
