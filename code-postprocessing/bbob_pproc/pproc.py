@@ -841,11 +841,11 @@ class DataSet():
                 warnings.warn('There is a difference between the maxevals in the '
                               '*.info file and in the data files.')
 
-        self._cut_data()
-        # Compute aRT
-        self.computeERTfromEvals()
-        assert all(self.evals[0][1:] == 1)        
-        
+            self._cut_data()
+            # Compute aRT
+            self.computeERTfromEvals()
+            assert all(self.evals[0][1:] == 1)        
+
     @property
     def evals_(self):
         """Shall become ``evals`` attribute in future.

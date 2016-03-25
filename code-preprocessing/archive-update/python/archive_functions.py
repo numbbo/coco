@@ -121,7 +121,7 @@ class ArchiveInfo:
         count = 0
 
         # Read the information on the archive
-        input_files = get_file_name_list(input_path)
+        input_files = get_file_name_list(input_path, ".adat")
         if len(input_files) == 0:
             raise PreprocessingException('Folder \'{}\' does not exist or is empty'.format(input_path))
 
@@ -237,7 +237,7 @@ def merge_archives(input_path, output_path, instance_string):
     print('Reading archive information...')
     try:
         instance_list = parse_range(instance_string)
-        print('Limited only to instances {}'.format(', '.join(map(str, instance_list))))
+        print('Instances {}'.format(', '.join(map(str, instance_list))))
     except PreprocessingException as exception:
         print(exception)
         instance_list = None

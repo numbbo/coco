@@ -23,6 +23,7 @@ functions.
 from __future__ import absolute_import
 
 import os
+import warnings
 import numpy as np
 import matplotlib.pyplot as plt
 from . import genericsettings, bestalg, toolsstats, pproc
@@ -371,7 +372,11 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
                         tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
                     else:
                         tmp = writeFEvalsMaxPrec(dispersion[i], 1)
-                    tableentry += (r'${\scriptscriptstyle(%s)}$' % tmp)
+                    s = r'${\scriptscriptstyle(%s)}$' % tmp
+                    if tableentry.endswith('}'):
+                        tableentry = tableentry[:-1] + s + r'}'
+                    else:
+                        tableentry += s
                     tableentryHtml += (' (%s)' % tmp)
 
                 if superscript:
