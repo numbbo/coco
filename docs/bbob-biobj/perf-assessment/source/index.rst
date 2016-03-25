@@ -32,7 +32,7 @@ Biobjective Performance Assessment with the COCO Platform
 This document details the specificities when assessing the performance of
 numerical black-box optimizers on multi-objective problems within the COCO_
 platform and in particular on the biobjective test suite ``bbob-biobj``,
-described in more detail in [bbob-biobj-functions-doc]_ .
+described in more detail in [TUS2016]_ .
 
 The performance assessment in the COCO_ platform is invariably based on the
 measurement of the *runtime* until a *quality indicator* reaches a predefined
@@ -42,23 +42,12 @@ a runtime is measured (or no runtime value is available if the indicator does
 not reach the target value). 
 In the single-objective, noise-free case, the assessed quality indicator is, at 
 each given time step, the function value of the best solution the algorithm has
-obtained (evaluated or recommended, see [BBO2016ex]_) before or at this time
+obtained (evaluated or recommended, see [HAN2016ex]_) before or at this time
 step. 
 
 In the bi- and multi-objective case, the assessed quality indicator at the
 given time step will be a hypervolume indicator computed from *all* solutions
 obtained (evaluated or recommended) before or at this time step. 
-
-
-.. todo:: REMARK: the performance assessment in itself is to the most part **not 
-              relative** to the optimum or, more concisely, to an optimal indicator
-              value. Conceptually, we should consider the target values as
-              (i) absolute values and (ii) as variable input parameters for the 
-              assessment. The choice of targets relative to the best possible
-              indicator value is a useful heuristic, but no necessity. Only the *uniform* 
-              choice of targets within the instances of a single problem poses a 
-              significant challenge. This challenge is not necessarily 
-              solved by knowing the best possible indicator value.
 
 .. [#] As usual, time is considered as number of function evaluations and, 
   consequently, runtime is measured in number of function evaluations.
@@ -298,6 +287,18 @@ of these latest sets of non-dominated solutions, also called *non-dominated
 reference sets*, are then used as the reference hypervolume indicator value.
 
 
+.. note:: The performance assessment as propoposed here is, in itself, to the most
+  part **not relative** to the optimum or, more concisely, to an optimal indicator
+  value. Conceptually, we should instead consider the target values as
+  (i) absolute values and (ii) as variable input parameters for the 
+  assessment. The choice of targets relative to the best possible
+  indicator value as described here is a useful heuristic, but no necessity.
+  Only the *uniform* choice of targets within the instances of a single problem
+  poses a significant challenge. This challenge is not necessarily 
+  solved by knowing the best possible indicator value.
+
+
+
 .. [#] Amongst others, we run versions of NSGA-II [todo], SMS-EMOA [todo],
   MOEA/D [todo], RM-MEDA [todo], and MO-CMA-ES [todo], together with simple
   uniform RANDOMSEARCH and the single-objective CMA-ES on scalarized problems
@@ -320,27 +321,28 @@ Recording every new non-dominated solution within every algorithm run also allow
 recover the algorithm runs after the experiment and to recalculate the corresponding
 hypervolume difference values if the reference set changes in the future. In order
 to be able to distinguish between data and graphical output that has been produced
-with a different collections of reference sets, COCO_ writes the absolute hypervolume
+with different collections of reference sets, COCO_ writes the absolute hypervolume
 reference values together with the performance data during the experiment and displays
 a version number in the plots generated.
 
 
 Instances and Generalization Experiment
 =======================================
+The standard procedure for an experiment on the `bbob-biobj` test suite prescribes
+to run the algorithm of choice on 10 different problem instances per combination
+of parameterized function and problem dimension. The postprocessing part
+of COCO_ makes sure that only 5 of them are displayed by default as a kind of 
+*training set*. Like that, users are less suspected of having tuned their algorithms
+to the remaining 5 instances (the *test set*) which can then be used to evaluate the
+generalization abilities of the benchmarked algorithms.
 
-.. todo::
 
-  * we record for 10 instances but display result for only 5. This will allow us to generate data for an unbiased
-    generalization test on the unseen instances
-
-  
-  
+    
 
 Acknowledgements
 ================
 This work was supported by the grant ANR-12-MONU-0009 (NumBBO) 
 of the French National Research Agency.
-  
    
 
 .. ############################# References ##################################
@@ -349,14 +351,9 @@ of the French National Research Agency.
     <H2>References</H2>
 
    
-.. [bbob-biobj-functions-doc] The BBOBies. **Function Documentation of the bbob-biobj Test Suite**. http://numbbo.github.io/coco-doc/bbob-biobj/functions/
-
 .. [coco-perf-assessment] The BBOBies. **COCO: Performance Assessment**. http://numbbo.github.io/coco-doc/perf-assessment/
 
 .. [coco-doc] The BBOBies. **COCO: A platform for Comparing Continuous Optimizers in a Black-Box Setting**. http://numbbo.github.io/coco-doc/
-
-.. [BBO2016ex] The BBOBies: `COCO: Experimental Procedure`__. 
-__ http://numbbo.github.io/coco-doc/experimental-setup/
 
 .. [BBO2016perf] The BBOBies: `Performance Assessment`__. 
 __ https://www.github.com
@@ -365,6 +362,15 @@ __ https://www.github.com
   `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, updated February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
+
+.. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016), 
+   `COCO: Experimental Procedure`__. 
+__ http://numbbo.github.io/coco-doc/experimental-setup/
+
+.. [TUS2016] T. Tušar, D. Brockhoff, N. Hansen, A. Auger (2016), 
+  `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) 
+  Test Suite`__.
+__ http://numbbo.github.io/coco-doc/bbob-biobj/functions/ 
 
 .. [ZIT2003] E. Zitzler, L. Thiele, M. Laumanns, C. M. Fonseca, and V. Grunert da Fonseca (2003). Performance Assessment of Multiobjective Optimizers: An Analysis and Review.
   *IEEE Transactions on Evolutionary Computation*, 7(2), pp. 117-132.

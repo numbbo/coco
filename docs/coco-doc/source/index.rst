@@ -631,8 +631,6 @@ of the French National Research Agency.
 .. [BBO2016perf] The BBOBies: `Performance Assessment`__. 
 __ http://numbbo.github.io/coco-doc/perf-assessment
 
-.. .. [BBO2016fun] The BBOBies: Biobjective Function Definitions. 
-
 .. .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
 .. [HAN2010ex] N. Hansen, A. Auger, S. Finck, and R. Ros (2010), 
@@ -653,7 +651,7 @@ __ http://numbbo.github.io/coco-doc/perf-assessment
 
 .. [HAN2016ex] N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016), 
    `COCO: Experimental Procedure`__. 
-.. __ http://numbbo.github.io/coco-doc/experimental-setup/
+__ http://numbbo.github.io/coco-doc/experimental-setup/
 
 .. [HUN2007] J. D. Hunter (2007). Matplotlib: A 2D graphics environment, 
   *Computing In Science \& Engineering*, 9(3): 90-95. 
