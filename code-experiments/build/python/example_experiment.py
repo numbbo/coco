@@ -72,6 +72,7 @@ class ShortInfo(object):
         self.d_current = 0  # dimension
         self.t0_dimension = time.time()
         self.evals_dimension = 0
+        self.evals_by_dimension = {}
         self.runs_function = 0
     def print(self, problem, end="", **kwargs):
         print(self(problem), end=end, **kwargs)
@@ -80,10 +81,11 @@ class ShortInfo(object):
         self.evals_dimension += evals
         self.runs_function += runs
     def dimension_done(self):
-        s = '\n    done in %.1e seconds/evaluation' % ((time.time() - self.t0_dimension) / self.evals_dimension)
+        self.evals_by_dimension[self.d_current] = (time.time() - self.t0_dimension) / self.evals_dimension
+        s = '\n    done in %.1e seconds/evaluation' % (self.evals_by_dimension[self.d_current])
         # print(self.evals_dimension)
-        self.t0_dimension = time.time()
         self.evals_dimension = 0
+        self.t0_dimension = time.time()
         return s
     def function_done(self):
         s = "(%d)" % self.runs_function + (2 - int(np.log10(self.runs_function))) * ' '
@@ -105,6 +107,13 @@ class ShortInfo(object):
             self.f_current = f
         # print_flush(res)
         return res
+    def print_timings(self):
+        print("  dimension seconds/evaluations")
+        print("  -----------------------------")
+        for dim in sorted(self.evals_by_dimension):
+            print("    %3d      %.1e " %
+                  (dim, self.evals_by_dimension[dim]))
+        print("  -----------------------------")
     @staticmethod
     def short_time_stap():
         l = time.asctime().split()
@@ -160,6 +169,7 @@ def batch_loop(solver, suite, observer, budget,
         problem.free()
         addressed_problems += [problem.id]
     print(short_info.function_done() + short_info.dimension_done())
+    short_info.print_timings()
     print("  %s done (%d of %d problems benchmarked%s)" %
            (suite_name, len(addressed_problems), len(suite),
              ((" in batch %d of %d" % (current_batch, number_of_batches))
@@ -196,7 +206,7 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
         if solver.__name__ in ("random_search", ):
             solver(fun, fun.lower_bounds, fun.upper_bounds,
                    remaining_evals)
-        elif solver.__name__ == 'fmin' and solver.__globals__['__name__'] == 'cma':
+        elif solver.__name__ == 'fmin' and solver.__globals__['__name__'] in ['cma', 'cma.evolution_strategy', 'cma.es']:
             if x0[0] == center[0]:
                 sigma0 = 0.02
                 restarts_ = 0
@@ -278,7 +288,7 @@ def main(budget=budget,
     t0 = time.clock()
     batch_loop(SOLVER, suite, observer, budget, max_runs,
                current_batch, number_of_batches)
-    print(", %s (%s)." % (time.asctime(), ascetime(time.clock() - t0)))
+    print(", %s (%s total elapsed time)." % (time.asctime(), ascetime(time.clock() - t0)))
 
 # ===============================================
 if __name__ == '__main__':

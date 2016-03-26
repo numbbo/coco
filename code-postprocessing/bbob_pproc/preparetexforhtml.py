@@ -10,6 +10,7 @@ This module creates a tex file with all the descriptions of the images and table
 import os
 import sys
 import numpy
+import warnings
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -42,6 +43,7 @@ header = """
 \\newcommand{\\Df}{\ensuremath{\Delta f}}
 \\newcommand{\\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
 \\newcommand{\\fopt}{\ensuremath{f_\mathrm{opt}}}
+\\newcommand{\\hvref}{\ensuremath{HV_\mathrm{ref}}}
 \\newcommand{\\ftarget}{\ensuremath{f_\mathrm{t}}}
 \\newcommand{\\CrE}{\ensuremath{\mathrm{CrE}}}
 \\newcommand{\\change}[1]{{\color{red} #1}}
@@ -70,20 +72,16 @@ def main(verbose=True):
                   ppfigs.scaling_figure_caption_start_fixed.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
     f.writelines(['\\providecommand{\\bbobppfigslegendend}[1]{\n', 
                   ppfigs.scaling_figure_caption_end, '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobpptablesmanylegend}[1]{\n', 
-                  pptables.tables_many_legend, '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobpptablesmanylegendexpensive}[1]{\n', 
-                  pptables.tables_many_expensive_legend, '\n}\n'])
 
-    for scenario in ['rlbased', 'fixed', 'biobjfixed']:
+    for scenario in genericsettings.all_scenarios:
         # set up scenario, especially wrt genericsettings
-        if (scenario == 'rlbased'):
+        if (scenario == genericsettings.scenario_rlbased):
             genericsettings.runlength_based_targets = True
             config.config(isBiobjective=False)
-        elif (scenario == 'fixed'):
+        elif (scenario == genericsettings.scenario_fixed):
             genericsettings.runlength_based_targets = False
             config.config(isBiobjective=False)
-        elif (scenario == 'biobjfixed'):
+        elif (scenario == genericsettings.scenario_biobjfixed):
             genericsettings.runlength_based_targets = False
             config.config(isBiobjective=True)
         else:
@@ -113,9 +111,17 @@ def main(verbose=True):
         f.writelines(['\\providecommand{\\bbobpptablecaption', scenario, '}[1]{\n', 
                   pptable.get_table_caption(), '\n}\n'])
 
+        # 5. pptable2
+        pptable2Legend = (pptable2.get_table_caption()).replace('\\algorithmA', 'algorithmA')
+        pptable2Legend = pptable2Legend.replace('\\algorithmB', 'algorithmB')    
+        pptable2Legend = pptable2Legend.replace('\\algorithmAshort', 'algorithmAshort')    
+        pptable2Legend = pptable2Legend.replace('\\algorithmBshort', 'algorithmBshort')    
+        f.writelines(['\\providecommand{\\bbobpptablestwolegend', scenario, '}[1]{\n', 
+                  pptable2Legend, '\n}\n'])
 
-
-
+        # 6. pptables
+        f.writelines(['\\providecommand{\\bbobpptablesmanylegend', scenario, '}[1]{\n',
+                      pptables.get_table_caption(), '\n}\n'])
 
     ppscatterLegend = ppscatter.caption_start_rlbased.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
     ppscatterLegend = ppscatterLegend.replace('\\algorithmA', 'algorithmA')
@@ -129,30 +135,19 @@ def main(verbose=True):
     f.writelines(['\\providecommand{\\bbobppscatterlegendend}[1]{\n', 
                   ppscatter.caption_finish, '\n}\n'])
 
-    pptable2Legend = pptable2.table_caption_expensive.replace('\\algorithmA', 'algorithmA')
-    pptable2Legend = pptable2Legend.replace('\\algorithmB', 'algorithmB')    
-    pptable2Legend = pptable2Legend.replace('\\algorithmAshort', 'algorithmAshort')    
-    pptable2Legend = pptable2Legend.replace('\\algorithmBshort', 'algorithmBshort')    
-    f.writelines(['\\providecommand{\\bbobpptablestwolegendexpensive}[1]{\n', pptable2Legend, '\n}\n'])
-    pptable2Legend = pptable2.table_caption.replace('\\algorithmA', 'algorithmA')
-    pptable2Legend = pptable2Legend.replace('\\algorithmB', 'algorithmB')    
-    pptable2Legend = pptable2Legend.replace('\\algorithmAshort', 'algorithmAshort')    
-    pptable2Legend = pptable2Legend.replace('\\algorithmBshort', 'algorithmBshort')    
-    f.writelines(['\\providecommand{\\bbobpptablestwolegend}[1]{\n', pptable2Legend, '\n}\n'])
+    f.write(header)
 
-    f.write(header)    
-
-    for scenario in ['rlbased', 'fixed', 'biobjfixed']:
+    for scenario in genericsettings.all_scenarios:
         # set up scenario, especially wrt genericsettings
-        if (scenario == 'rlbased'):
+        if (scenario == genericsettings.scenario_rlbased):
             genericsettings.runlength_based_targets = True
             current_testbed = None # make sure that config is doing something
             config.config(isBiobjective=False)
-        elif (scenario == 'fixed'):
+        elif (scenario == genericsettings.scenario_fixed):
             genericsettings.runlength_based_targets = False
             current_testbed = None # make sure that config is doing something            
             config.config(isBiobjective=False)
-        elif (scenario == 'biobjfixed'):
+        elif (scenario == genericsettings.scenario_biobjfixed):
             genericsettings.runlength_based_targets = False
             current_testbed = None # make sure that config is doing something
             config.config(isBiobjective=True)
@@ -170,7 +165,13 @@ def main(verbose=True):
         f.write(prepare_item('bbobppfigdimlegend' + scenario))
         # 4. pptable
         f.write(prepare_item('bbobpptablecaption'+ scenario))
+        # 5. pptable2
+        f.write(prepare_item('bbobpptablestwolegend' + scenario, param = '48'))
 
+        # 6. pptables
+        command_name = 'bbobpptablesmanylegend' + scenario
+        for dim in ['5', '20']:
+            f.write(prepare_item(command_name + dim, command_name, 'dimension ' + dim))
 
     f.write(prepare_item('bbobloglosstablecaption'))
     f.write(prepare_item('bbobloglossfigurecaption'))
@@ -183,13 +184,6 @@ def main(verbose=True):
     f.write(prepare_item('bbobppscatterlegendfixed', param = '$f_1$ - $f_{24}$'))
     f.write(prepare_item('bbobppscatterlegendend'))
     
-    f.write(prepare_item('bbobpptablestwolegendexpensive', param = '48'))
-    f.write(prepare_item('bbobpptablestwolegend', param = '48'))
-
-    for dim in ['5', '20']:
-        for command_name in ['bbobpptablesmanylegend', 'bbobpptablesmanylegendexpensive']:
-            f.write(prepare_item(command_name + dim, command_name, 'dimension ' + dim))
-
     f.write('\n\#\#\#\n\\end{document}\n')
 
 def prepare_item(name, command_name = '', param = ''):
