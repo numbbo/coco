@@ -22,6 +22,19 @@ from pdb import set_trace
 import numpy
 import numpy as np
 import matplotlib
+
+if __name__ == "__main__":
+    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
+    filepath = os.path.split(sys.argv[0])[0]
+    # Add the path to bbob_pproc/.. folder
+    sys.path.append(os.path.join(filepath, os.path.pardir))
+    try:
+        import bbob_pproc as cocopp
+    except ImportError:
+        import cocopp
+    res = cocopp.rungeneric2.main(sys.argv[1:])
+    sys.exit(res)
+
 from . import genericsettings, ppfig, toolsdivers
 
 ppfig2_ftarget = 1e-8  # a hack, used in ppfig2.main 
@@ -343,6 +356,17 @@ def main(argv=None):
             raise Usage('Data Mismatch: \n  ' + ' '.join(txt)
                         + '\nTry using --noise-free or --noisy flags.')
 
+        algName0 = toolsdivers.str_to_latex(
+            set(i[0] for i in dsList0.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
+        algName1 = toolsdivers.str_to_latex(
+            set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.two_algorithm_file_name),
+            "%s vs %s" % (algName1, algName0),
+            htmlPage=ppfig.HtmlPage.TWO,
+            isBiobjective=dsList0.isBiobjective(),
+            functionGroups=dsList0.getFuncGroups())
+
         if genericsettings.isFig:
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
@@ -536,32 +560,15 @@ def main(argv=None):
                                       outputdir,
                                       '%s' % (nGroup), genericsettings.verbose)
 
-            if isinstance(pptable2.targetsOfInterest, pproc.RunlengthBasedTargetValues):
-                prepend_to_file(os.path.join(outputdir,
-                            'bbob_pproc_commands.tex'), 
-                            ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
-                             pptable2.table_caption_expensive, 
-                             '}'
-                            ])
-            else:
-                prepend_to_file(os.path.join(outputdir,
-                            'bbob_pproc_commands.tex'), 
-                            ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
-                             pptable2.table_caption, 
-                             '}'
-                            ])
-                            
-            algName0 = toolsdivers.str_to_latex(set(i[0] for i in dsList0.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
-            algName1 = toolsdivers.str_to_latex(set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
-            ppfig.save_single_functions_html(
-                os.path.join(outputdir, genericsettings.two_algorithm_file_name),
-                "%s vs %s" % (algName1, algName0),
-                htmlPage = ppfig.HtmlPage.TWO,
-                isBiobjective = dsList0.isBiobjective(),
-                functionGroups = dsList0.getFuncGroups())
-
-            htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')            
-            key =  '##bbobpptablestwolegendexpensive##' if isinstance(pptable2.targetsOfInterest, pproc.RunlengthBasedTargetValues) else '##bbobpptablestwolegend##'
+            prepend_to_file(os.path.join(outputdir,
+                        'bbob_pproc_commands.tex'), 
+                        ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
+                         pptable2.get_table_caption(), 
+                         '}'
+                        ])
+                        
+            htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')
+            key =  '##bbobpptablestwolegend%s##' % (genericsettings.current_testbed.scenario)
             replace_in_file(htmlFileName, '##bbobpptablestwolegend##', htmldesc.getValue(key))
                         
             replace_in_file(htmlFileName, 'algorithmAshort', algName0[0:3])
