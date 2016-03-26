@@ -247,8 +247,7 @@ def save_single_functions_html(filename,
                         f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
                     f.write('</div>')
 
-            key = (('bbobpprldistrlegendtworlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendtwofixed')
-							if genericsettings.current_testbed.name != 'bbob-biobj' else 'bbobpprldistrlegendtwobiobj')
+            key = 'bbobpprldistrlegendtwo' + genericsettings.current_testbed.scenario
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
             currentHeader = 'Table showing the aRT in number of function evaluations'
@@ -320,8 +319,7 @@ def save_single_functions_html(filename,
                         f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
                     f.write('</div>')
 
-            key = (('bbobpprldistrlegendrlbased' if genericsettings.runlength_based_targets else 'bbobpprldistrlegendfixed')
-							if genericsettings.current_testbed.name != 'bbob-biobj' else 'bbobpprldistrlegendbiobjfixed')
+            key = 'bbobpprldistrlegend' + genericsettings.current_testbed.scenario
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
@@ -374,7 +372,7 @@ def write_pptables(f, dimension, captionStringFormat, maxFunctionIndex, bestAlgE
         f.write("\n<!--pptablesf%03d%02dDHtml-->\n" % (ifun, dimension))
     
     if genericsettings.isTab:
-        key = 'bbobpptablesmanylegendexpensive' if genericsettings.isExpensive else 'bbobpptablesmanylegend'
+        key = 'bbobpptablesmanylegend' + genericsettings.current_testbed.scenario
         f.write(captionStringFormat % htmldesc.getValue('##' + key + str(dimension) + '##'))
 
 def copy_js_files(outputdir):

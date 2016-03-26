@@ -51,10 +51,13 @@ from BBOB-2009 for df = 1e-8.
 
 """
 from __future__ import absolute_import
+
 import os
 import warnings
+
 import matplotlib.pyplot as plt
 import numpy as np
+
 from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam, htmldesc, toolsdivers
 
 xlim_max = None
@@ -88,8 +91,8 @@ def scaling_figure_caption():
         else "") + """ all values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """
         plotted as $\log_{10}$ values versus dimension. %
         """
-        
-    #""" .replace('REPLACE_THIS', r"interquartile range with median (notched boxes) of simulated runlengths to reach $\fopt+\Df$;" 
+
+    #""" .replace('REPLACE_THIS', r"interquartile range with median (notched boxes) of simulated runlengths to reach $\fopt+\Df$;"
     #                if genericsettings.scaling_figures_with_boxes else '')
     #    # r"(the exponent is given in the legend of #1). " + 
     #    "For each function and dimension, $\\aRT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
@@ -124,14 +127,21 @@ def scaling_figure_caption():
         # r"Shown is the \aRT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \aRT\ of the GECCO-BBOB-2009 best algorithm " + 
         # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
 
-    
-    values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
-    if genericsettings.runlength_based_targets:
-        return scaling_figure_caption_rlbased.replace('values_of_interest', 
-                                        ', '.join(values_of_interest.labels()))
+    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+        figure_caption = scaling_figure_caption_fixed.replace('\\fopt', '\\hvref')
+    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            figure_caption = scaling_figure_caption_rlbased
+        else:
+            figure_caption = scaling_figure_caption_fixed
     else:
-        return scaling_figure_caption_fixed.replace('values_of_interest', 
-                                        ', '.join(values_of_interest.loglabels()))
+        warnings.warn("Current settings do not support ppfigdim caption.")
+
+    values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
+    figure_caption = figure_caption.replace('values_of_interest',
+                                          ', '.join(values_of_interest.labels()))
+    return figure_caption
 
 def beautify(axesLabel=True):
     """Customize figure presentation.
@@ -532,8 +542,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     dictFunc = dsList.dictByFunc()
     values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
 
-    key = (('bbobppfigdimlegendrlbased' if genericsettings.runlength_based_targets else 'bbobppfigdimlegendfixed')
-			if genericsettings.current_testbed.name != 'bbob-biobj' else 'bbobppfigdimlegendbiobjfixed')
+    key = 'bbobppfigdimlegend' + genericsettings.current_testbed.scenario
     joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
     caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
 
