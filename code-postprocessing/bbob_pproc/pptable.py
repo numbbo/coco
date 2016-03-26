@@ -133,14 +133,14 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         header = [r'\#FEs/D']
         headerHtml = ['<thead>\n<tr>\n<th>#FEs/D</th>\n']
         for i in targetsOfInterest.labels():
-            header.append(r'\multicolumn{2}{@{}c@{}}{%s}' % i) 
+            header.append(r'\multicolumn{2}{c}{%s}' % i)
             headerHtml.append('<td>%s</td>\n' % i)
 
     else:
         header = [r'$\Delta f$']
         headerHtml = ['<thead>\n<tr>\n<th>&#916; f</th>\n']
         for i in targetsOfInterest.target_values:
-            header.append(r'\multicolumn{2}{@{}c@{}}{1e%+d}' % (int(np.log10(i))))
+            header.append(r'\multicolumn{2}{c}{1e%+d}' % (int(np.log10(i))))
             headerHtml.append('<td>1e%+d</td>\n' % (int(np.log10(i))))
                       
     header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}')
