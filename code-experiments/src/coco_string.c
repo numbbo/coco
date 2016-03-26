@@ -423,3 +423,50 @@ static size_t *coco_string_parse_ranges(const char *string,
   result[i_result] = 0;
   return result;
 }
+
+/**
+ * @brief Trims the given string (removes any leading and trailing spaces).
+ *
+ * If the string contains any leading spaces, the contents are shifted so that if it was dynamically
+ * allocated, it can be still freed on the returned pointer.
+ */
+static char *coco_string_trim(char *string) {
+	size_t len = 0;
+	char *frontp = string;
+	char *endp = NULL;
+
+	if (string == NULL) {
+		return NULL;
+	}
+	if (string[0] == '\0') {
+		return string;
+	}
+
+	len = strlen(string);
+	endp = string + len;
+
+	/* Move the front and back pointers to address the first non-whitespace characters from each end. */
+	while (isspace(*frontp)) {
+		++frontp;
+	}
+	if (endp != frontp) {
+		while (isspace(*(--endp)) && endp != frontp) {
+		}
+	}
+
+	if (string + len - 1 != endp)
+		*(endp + 1) = '\0';
+	else if (frontp != string && endp == frontp)
+		*string = '\0';
+
+	/* Shift the string. Note the reuse of endp to mean the front of the string buffer now. */
+	endp = string;
+	if (frontp != string) {
+		while (*frontp) {
+			*endp++ = *frontp++;
+		}
+		*endp = '\0';
+	}
+
+	return string;
+}
