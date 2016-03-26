@@ -303,7 +303,15 @@ def main(argv=None):
         plt.rc('pdf', fonttype = 42)
 
         ppfig.copy_js_files(outputdir)
-        
+
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.many_algorithm_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            htmlPage=ppfig.HtmlPage.MANY,
+            isBiobjective=dsList[0].isBiobjective(),
+            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups()
+        )
+
         # convergence plots
         if genericsettings.isConv:
             ppconverrorbars.main(dictAlg, 
@@ -407,14 +415,6 @@ def main(argv=None):
                         genericsettings.verbose)
             plt.rcdefaults()
             print "Scaling figures done."
-
-        ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.many_algorithm_file_name),
-            '', # algorithms names are clearly visible in the figure
-            htmlPage = ppfig.HtmlPage.MANY,
-            isBiobjective = dsList[0].isBiobjective(),
-            functionGroups = dictAlg[sortedAlgs[0]].getFuncGroups()
-        )
 
         plt.rcdefaults()
 

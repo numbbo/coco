@@ -97,7 +97,7 @@ def addImage(imageName, addLink):
     else:
         return '<IMG SRC="%s">' % imageName
 
-def addLink(currentDir, folder, fileName, label, indent = ''):
+def addLink(currentDir, folder, fileName, label, indent = '', ignoreFileExists = False):
 
     if folder:    
         path = os.path.join(os.path.realpath(currentDir), folder, fileName)
@@ -106,7 +106,7 @@ def addLink(currentDir, folder, fileName, label, indent = ''):
         path = os.path.join(os.path.realpath(currentDir), fileName)
         href = fileName
 
-    if os.path.isfile(path):
+    if ignoreFileExists or os.path.isfile(path):
         return '<H3>%s<a href="%s">%s</a></H3>\n' % (indent, href, label)
 
     return ''
@@ -145,7 +145,8 @@ def getHomeLink(htmlPage):
 
 def getConvLink(htmlPage, currentDir):
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        return addLink(currentDir, None, genericsettings.ppconv_file_name + '.html', 'Convergence plots')
+        return addLink(currentDir, None, genericsettings.ppconv_file_name + '.html',
+                       'Convergence plots', ignoreFileExists=genericsettings.isConv)
     
     return ''
     
@@ -153,14 +154,18 @@ def getRldLink(htmlPage, currentDir):
     
     links = ''        
     folder = 'pprldmany-single-functions'
-    
-    if genericsettings.isRldOnSingleFcts and htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
+
+    ignoreFileExists = genericsettings.isRldOnSingleFcts
+    if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         fileName = '%s.html' % genericsettings.pprldmany_file_name
-        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots')
+        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots',
+                         ignoreFileExists=ignoreFileExists)
         fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
-        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)')
+        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
+                         ignoreFileExists=ignoreFileExists)
         fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
-        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)')
+        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
+                         ignoreFileExists=ignoreFileExists)
     
     return links
 
