@@ -121,7 +121,7 @@ static void coco_join_path(char *path, const size_t path_max_length, ...) {
 static int coco_directory_exists(const char *path) {
   int res;
 #if defined(HAVE_GFA)
-  DWORD dwAttrib = GetFileAttributes(path);
+  DWORD dwAttrib = GetFileAttributesA(path);
   res = (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 #elif defined(HAVE_STAT)
   struct stat buf;
@@ -144,7 +144,7 @@ static int coco_directory_exists(const char *path) {
 static int coco_file_exists(const char *path) {
   int res;
 #if defined(HAVE_GFA)
-  DWORD dwAttrib = GetFileAttributes(path);
+  DWORD dwAttrib = GetFileAttributesA(path);
   res = (dwAttrib != INVALID_FILE_ATTRIBUTES) && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
 #elif defined(HAVE_STAT)
   struct stat buf;
@@ -577,7 +577,7 @@ static void coco_option_keys_add(coco_option_keys_t **basic_option_keys,
  */
 static coco_option_keys_t *coco_option_keys(const char *option_string) {
 
-  size_t i, j;
+  size_t i;
   char **keys;
   coco_option_keys_t *option_keys = NULL;
   char *string_to_parse, *key;
@@ -596,10 +596,8 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
     for (i = 0; *(keys + i); i++) {
       string_to_parse = coco_strdup(*(keys + i));
 
-      /* Remove any trailing spaces */
-      for (j = strlen(string_to_parse) - 1; (j > 0) && isspace((unsigned char) string_to_parse[j]); j--) {
-        string_to_parse[j] = '\0';
-      }
+      /* Remove any leading and trailing spaces */
+      string_to_parse = coco_string_trim(string_to_parse);
 
       /* Stop if this is the last substring (contains a value and no key) */
       if ((i > 0) && (*(keys + i + 1) == NULL)) {
@@ -609,7 +607,7 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
 
       /* Disregard everything before the last space */
       key = strrchr(string_to_parse, ' ');
-	  if ((key == NULL) || (i == 0)) {
+      if ((key == NULL) || (i == 0)) {
         /* No spaces left (or this is the first key), everything is the key */
         key = string_to_parse;
       } else {
