@@ -79,7 +79,7 @@ def get_table_caption():
         functions.
         """
 
-    if genericsettings.current_testbed.name == 'bbob-biobj':
+    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         table_caption = r"""%
                 Average running time (aRT in number of function 
@@ -88,12 +88,12 @@ def get_table_caption():
                 10\%-tile of bootstrapped run lengths is shown for the different target
                 \Df-values as shown in the top row. 
                 \#succ is the number of trials that reached the (final) target 
-                $\fopt + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+                $\hvref + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
                 The median number of conducted function evaluations is additionally given in 
                 \textit{italics}, if the target in the last column was never reached. 
                 """        
-    elif genericsettings.current_testbed.name == 'bbob':
-        if genericsettings.runlength_based_targets == True:
+    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:
             table_caption = table_caption_one + table_caption_two1 + table_caption_rest
