@@ -356,6 +356,17 @@ def main(argv=None):
             raise Usage('Data Mismatch: \n  ' + ' '.join(txt)
                         + '\nTry using --noise-free or --noisy flags.')
 
+        algName0 = toolsdivers.str_to_latex(
+            set(i[0] for i in dsList0.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
+        algName1 = toolsdivers.str_to_latex(
+            set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.two_algorithm_file_name),
+            "%s vs %s" % (algName1, algName0),
+            htmlPage=ppfig.HtmlPage.TWO,
+            isBiobjective=dsList0.isBiobjective(),
+            functionGroups=dsList0.getFuncGroups())
+
         if genericsettings.isFig:
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
@@ -556,16 +567,7 @@ def main(argv=None):
                          '}'
                         ])
                         
-            algName0 = toolsdivers.str_to_latex(set(i[0] for i in dsList0.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
-            algName1 = toolsdivers.str_to_latex(set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
-            ppfig.save_single_functions_html(
-                os.path.join(outputdir, genericsettings.two_algorithm_file_name),
-                "%s vs %s" % (algName1, algName0),
-                htmlPage = ppfig.HtmlPage.TWO,
-                isBiobjective = dsList0.isBiobjective(),
-                functionGroups = dsList0.getFuncGroups())
-
-            htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')            
+            htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')
             key =  '##bbobpptablestwolegend%s##' % (genericsettings.current_testbed.scenario)
             replace_in_file(htmlFileName, '##bbobpptablestwolegend##', htmldesc.getValue(key))
                         

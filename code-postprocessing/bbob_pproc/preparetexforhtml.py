@@ -135,18 +135,7 @@ def main(verbose=True):
     f.writelines(['\\providecommand{\\bbobppscatterlegendend}[1]{\n', 
                   ppscatter.caption_finish, '\n}\n'])
 
-#    pptable2Legend = pptable2.table_caption_expensive.replace('\\algorithmA', 'algorithmA')
-#    pptable2Legend = pptable2Legend.replace('\\algorithmB', 'algorithmB')    
-#    pptable2Legend = pptable2Legend.replace('\\algorithmAshort', 'algorithmAshort')    
-#    pptable2Legend = pptable2Legend.replace('\\algorithmBshort', 'algorithmBshort')    
-#    f.writelines(['\\providecommand{\\bbobpptablestwolegendexpensive}[1]{\n', pptable2Legend, '\n}\n'])
-#    pptable2Legend = pptable2.table_caption.replace('\\algorithmA', 'algorithmA')
-#    pptable2Legend = pptable2Legend.replace('\\algorithmB', 'algorithmB')    
-#    pptable2Legend = pptable2Legend.replace('\\algorithmAshort', 'algorithmAshort')    
-#    pptable2Legend = pptable2Legend.replace('\\algorithmBshort', 'algorithmBshort')    
-#    f.writelines(['\\providecommand{\\bbobpptablestwolegend}[1]{\n', pptable2Legend, '\n}\n'])
-
-    f.write(header)    
+    f.write(header)
 
     for scenario in genericsettings.all_scenarios:
         # set up scenario, especially wrt genericsettings
