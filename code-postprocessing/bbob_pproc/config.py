@@ -58,6 +58,8 @@ def config(isBiobjective=None):
         if genericsettings.current_testbed:
             
             testbed = genericsettings.current_testbed  
+            
+            testbed.scenario = genericsettings.scenario_rlbased
             # genericsettings (to be used in rungeneric2 while calling pprldistr.comp(...)):    
             testbed.rldValsOfInterest = pproc.RunlengthBasedTargetValues(
                                         genericsettings.target_runlengths_in_single_rldistr, 

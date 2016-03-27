@@ -22,35 +22,61 @@ http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
 
 """
 
-table_caption_one = r"""%
-    Average running time (\aRT\ in number of function 
-    evaluations) divided by the respective best \aRT\ measured during BBOB-2009 in
-    #1.
-    The \aRT\ and in braces, as dispersion measure, the half difference between 90 and 
-    10\%-tile of bootstrapped run lengths appear for each algorithm and 
+def get_table_caption():
+    """ Sets table caption, based on the genericsettings.current_testbed
+        and genericsettings.runlength_based_targets.
+        
+        TODO: \hvref and \fopt should be defined via the current_testbed, 
+        preferably with a single latex command. 
     """
-table_caption_two1 = r"""%
-    target, the corresponding best \aRT\
-    in the first row. The different target \Df-values are shown in the top row. 
-    \#succ is the number of trials that reached the (final) target $\fopt + 10^{-8}$.
-    """
-table_caption_two2 = r"""%
-    run-length based target, the corresponding best \aRT\
-    (preceded by the target \Df-value in \textit{italics}) in the first row. 
-    \#succ is the number of trials that reached the target value of the last column.
-    """
-table_caption_rest = r"""%
-    The median number of conducted function evaluations is additionally given in 
-    \textit{italics}, if the target in the last column was never reached. 
-    Entries, succeeded by a star, are statistically significantly better (according to
-    the rank-sum test) when compared to all other algorithms of the table, with
-    $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
-    than 1, with Bonferroni correction by the number of instances. A $\downarrow$
-    indicates the same tested against the best algorithm of BBOB-2009. Best results
-    are printed in bold.
-    """
-tables_many_legend = table_caption_one + table_caption_two1 + table_caption_rest
-tables_many_expensive_legend = table_caption_one + table_caption_two2 + table_caption_rest
+
+    table_caption_one = r"""%
+        Average running time (\aRT\ in number of function 
+        evaluations) divided by the respective best \aRT\ measured during BBOB-2009 in
+        #1.
+        The \aRT\ and in braces, as dispersion measure, the half difference between 
+        10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
+        """
+    table_caption_two1 = r"""%
+        target, the corresponding best \aRT\
+        in the first row. The different target \Df-values are shown in the top row.
+        \#succ is the number of trials that reached the (final) target
+        $\fopt + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+        """
+    table_caption_two2 = r"""%
+        run-length based target, the corresponding best \aRT\
+        (preceded by the target \Df-value in \textit{italics}) in the first row. 
+        \#succ is the number of trials that reached the target value of the last column.
+        """
+    table_caption_two_bi = r"""%
+        target, the corresponding best \aRT\
+        in the first row. The different target \Df-values are shown in the top row.
+        \#succ is the number of trials that reached the (final) target
+        $\hvref + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+        """
+    table_caption_rest = r"""%
+        The median number of conducted function evaluations is additionally given in 
+        \textit{italics}, if the target in the last column was never reached. 
+        Entries, succeeded by a star, are statistically significantly better (according to
+        the rank-sum test) when compared to all other algorithms of the table, with
+        $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
+        than 1, with Bonferroni correction by the number of instances. A $\downarrow$
+        indicates the same tested against the best algorithm of BBOB-2009. Best results
+        are printed in bold.
+        """
+
+    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+        table_caption = table_caption_one + table_caption_two_bi + table_caption_rest
+    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            table_caption = table_caption_one + table_caption_two2 + table_caption_rest
+        else:
+            table_caption = table_caption_one + table_caption_two1 + table_caption_rest
+    else:
+        warnings.warn("Current settings do not support pptables caption.")
+
+    return table_caption
 
 targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
 
