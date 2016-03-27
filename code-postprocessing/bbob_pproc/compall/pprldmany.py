@@ -500,15 +500,16 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
                      parentHtmlFileName=parentHtmlFileName,
                      plotType=PlotType.DIM)
 
-            dictDim = pp.dictAlgByDim(tmpdictAlg)
-            for d, entries in dictDim.iteritems():
-                main(entries,
-                     isBiobjective,
-                     order=sortedAlgs,
-                     outputdir=single_fct_output_dir,
-                     info='f%03d_%02dD' % (fg, d),
-                     verbose=verbose,
-                     parentHtmlFileName=parentHtmlFileName)
+            if not (isSingleAlgorithm and isBiobjective):
+                dictDim = pp.dictAlgByDim(tmpdictAlg)
+                for d, entries in dictDim.iteritems():
+                    main(entries,
+                         isBiobjective,
+                         order=sortedAlgs,
+                         outputdir=single_fct_output_dir,
+                         info='f%03d_%02dD' % (fg, d),
+                         verbose=verbose,
+                         parentHtmlFileName=parentHtmlFileName)
 
         if isSingleAlgorithm:
             functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
