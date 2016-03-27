@@ -9,7 +9,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   become \section. 
 
 .. CHAPTERTITLE
-.. ^^^^^^^^^^^^
+.. CHAPTERUNDERLINE
 
 .. |
 .. |
@@ -24,7 +24,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   % \tableofcontents is automatic with sphinx and moved behind abstract by swap...py
   \begin{abstract}
 
-.. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY
+.. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY (though it seems the latter is not used)
 
 COCO_ is a platform for Comparing Continuous Optimizers in a black-box
 setting. 
