@@ -628,12 +628,12 @@ of the French National Research Agency.
     
     <H2>References</H2>
 
-.. [BBO2016perf] The BBOBies: `Performance Assessment`__. 
+.. [BBO2016perf] The BBOBies (2016). `COCO: Performance Assessment`__. 
 __ http://numbbo.github.io/coco-doc/perf-assessment
 
-.. .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009), Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
+.. .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009). Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 
-.. [HAN2010ex] N. Hansen, A. Auger, S. Finck, and R. Ros (2010), 
+.. [HAN2010ex] N. Hansen, A. Auger, S. Finck, and R. Ros (2010). 
   Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
 
 .. [HAN2010] N. Hansen, A. Auger, R. Ros, S. Finck, and P. Posik (2010). 
@@ -649,12 +649,13 @@ __ http://numbbo.github.io/coco-doc/perf-assessment
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00369466
 
-.. [HAN2016ex] N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016), 
+.. [HAN2016ex] N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
    `COCO: Experimental Procedure`__. 
 __ http://numbbo.github.io/coco-doc/experimental-setup/
 
-.. [HUN2007] J. D. Hunter (2007). Matplotlib: A 2D graphics environment, 
+.. [HUN2007] J. D. Hunter (2007). `Matplotlib`__: A 2D graphics environment, 
   *Computing In Science \& Engineering*, 9(3): 90-95. 
+.. __: http://matplotlib.org/
 
 .. .. [AUG2005] A. Auger and N. Hansen. A restart CMA evolution strategy with
    increasing population size. In *Proceedings of the IEEE Congress on
@@ -691,7 +692,7 @@ __ http://numbbo.github.io/coco-doc/experimental-setup/
 .. [STE1946] S.S. Stevens (1946). 
   On the theory of scales of measurement. *Science* 103(2684), pp. 677-680.
 
-.. [TUS2016] T. Tusar, D. Brockhoff, N. Hansen, A. Auger (2016), 
+.. [TUS2016] T. Tusar, D. Brockhoff, N. Hansen, A. Auger (2016). 
   `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) 
   Test Suite`__.
 __ http://numbbo.github.io/coco-doc/bbob-biobj/functions/ 
