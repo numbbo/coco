@@ -122,7 +122,7 @@ such that $\aRT(\ftarget)\le\FEvals$ for the
     % Each \aRT\ is multiplied by $\exp(\CrE)$ correcting for the parameter crafting effort. 
 """
 
-table_caption = r"""% \bbobloglosstablecaption{}
+table_caption = r"""%
     \aRT\ loss ratio versus the budget in number of $f$-evaluations
     divided by dimension.
     For each given budget \FEvals, the target value \ftarget\ is computed

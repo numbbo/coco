@@ -265,6 +265,15 @@ def getFontSize(nameList):
     fontSize = 24 - max(0, 2 * ((maxFuncLength - 35) / 5))
     return fontSize
 
+
+scenario_rlbased = 'rlbased'
+scenario_fixed = 'fixed'
+scenario_biobjfixed = 'biobjfixed'
+all_scenarios = [scenario_rlbased, scenario_fixed, scenario_biobjfixed]
+
+testbed_name_single = 'bbob'
+testbed_name_bi = 'bbob-biobj'
+
 class Testbed(object):
     """this might become the future way to have settings related to testbeds
     TODO: should go somewhere else than genericsettings.py 
@@ -289,6 +298,9 @@ class Testbed(object):
                 except ValueError:
                     continue  # ignore annotations
 
+    def isBiobjective(self):
+        return self.name == testbed_name_bi
+
 class GECCOBBOBTestbed(Testbed):
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
     """
@@ -297,7 +309,7 @@ class GECCOBBOBTestbed(Testbed):
         # not a testbed setting
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
-        self.name = 'bbob'
+        self.name = testbed_name_single
         self.short_names = {}
         self.hardesttargetlatex = '10^{-8}' # used for ppfigs and pptable
         self.ppfigs_ftarget = 1e-8
@@ -311,6 +323,7 @@ class GECCOBBOBTestbed(Testbed):
         self.number_of_functions = 24
         self.pptable_ftarget = 1e-8 # value for determining the success ratio
         self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
+        self.scenario = scenario_fixed
         
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
@@ -333,7 +346,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         # not a testbed setting
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
-        self.name = 'bbob-biobj'
+        self.name = testbed_name_bi
         self.short_names = {}
         self.hardesttargetlatex = '10^{-5}' # used for ppfigs and pptable
         self.ppfigs_ftarget = 1e-5
@@ -348,6 +361,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.number_of_functions = 55
         self.pptable_ftarget = 1e-5 # value for determining the success ratio
         self.pptable_targetsOfInterest = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config
+        self.scenario = scenario_biobjfixed
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 

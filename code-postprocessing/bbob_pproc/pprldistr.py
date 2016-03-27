@@ -160,16 +160,27 @@ def caption_single():
          (from right to left cycling cyan-magenta-black\dots) and final $\Df$-value (red),
          where \Df\ and \textsf{Df} denote the difference to the optimal function value. """ + (
          r"""Light brown lines in the background show ECDFs for the most difficult target of all
-         algorithms benchmarked during BBOB-2009.""" if genericsettings.current_testbed.name != 'bbob-biobj'
+         algorithms benchmarked during BBOB-2009.""" if genericsettings.current_testbed.name != genericsettings.testbed_name_bi
          else r"""Shown are aggregations over functions where the single
          objectives are in the same BBOB function class, as indicated on the
          left side and the aggregation over all 55 functions in the last
          row.""")
+
     caption_single_fixed = caption_part_one + caption_left_fixed_targets + caption_wrap_up + caption_right
     caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_wrap_up + caption_right
 
-    caption = caption_single_rlbased if genericsettings.runlength_based_targets else caption_single_fixed
-    return caption.replace(r'TO_BE_REPLACED', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$')
+    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+        figure_caption = caption_single_fixed.replace('\\fopt', '\\hvref')
+    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            figure_caption = caption_single_rlbased
+        else:
+            figure_caption = caption_single_fixed
+    else:
+        warnings.warn("Current settings do not support pprldistr caption.")
+
+    return figure_caption.replace(r'TO_BE_REPLACED', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$')
 
 def caption_two():
     caption_two_part_one = r"""%
@@ -191,7 +202,7 @@ def caption_two():
     caption_two_fixed_targets_part3 = r""")%
         . """ + (r"""Light beige lines show the ECDF of FEvals for target value
         $\Df=10^{-8}$ of all algorithms benchmarked during
-        BBOB-2009. """ if genericsettings.current_testbed.name != 'bbob-biobj'
+        BBOB-2009. """ if genericsettings.current_testbed.name != genericsettings.testbed_name_bi
         else "") + r"""Right sub-columns: 
         ECDF of FEval ratios of \algorithmA\ divided by \algorithmB for target
         function values $10^k$ with $k$ given in the legend; all
@@ -214,22 +225,33 @@ def caption_two():
         in the limits being $>0$ or $<1$. The legends indicate the target budget of
         $k\times\DIM$ evaluations and, after the colon, the number of functions that
         were solved in at least one trial (\algorithmA\ first)."""
-    caption_two_fixed = (caption_two_part_one 
-                            + caption_two_fixed_targets_part1
-                            + symbAlgorithmA
-                            + caption_two_fixed_targets_part2
-                            + symbAlgorithmB
-                            + caption_two_fixed_targets_part3)
+
+    caption_two_fixed = (caption_two_part_one
+                         + caption_two_fixed_targets_part1
+                         + symbAlgorithmA
+                         + caption_two_fixed_targets_part2
+                         + symbAlgorithmB
+                         + caption_two_fixed_targets_part3)
+
     caption_two_rlbased = (caption_two_part_one
-                            + caption_two_rlbased_targets_part1
-                            + symbAlgorithmA
-                            + caption_two_rlbased_targets_part2
-                            + symbAlgorithmB
-                            + caption_two_rlbased_targets_part3)
+                           + caption_two_rlbased_targets_part1
+                           + symbAlgorithmA
+                           + caption_two_rlbased_targets_part2
+                           + symbAlgorithmB
+                           + caption_two_rlbased_targets_part3)
 
+    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+        figure_caption = caption_two_fixed.replace('\\fopt', '\\hvref')
+    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            figure_caption = caption_two_rlbased
+        else:
+            figure_caption = caption_two_fixed
+    else:
+        warnings.warn("Current settings do not support pprldistr caption.")
 
-    caption = caption_two_rlbased if genericsettings.runlength_based_targets else caption_two_fixed
-    return caption
+    return figure_caption
 
 def beautifyECDF():
     """Generic formatting of ECDF figures."""

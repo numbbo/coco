@@ -79,21 +79,21 @@ def get_table_caption():
         functions.
         """
 
-    if genericsettings.current_testbed.name == 'bbob-biobj':
+    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         table_caption = r"""%
                 Average runtime (\aRT) to reach given targets, measured
                 in number of function evaluations. For each function, the \aRT\ 
                 and, in braces as dispersion measure, the half difference between 10 and 
                 90\%-tile of (bootstrapped) runtimes is shown for the different
-                targets as shown in the top row. 
+                target \Df-values as shown in the top row. 
                 \#succ is the number of trials that reached the last target 
-                $\fopt + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+                $\hvref + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
                 The median number of conducted function evaluations is additionally given in 
                 \textit{italics}, if the target in the last column was never reached. 
                 """
-    elif genericsettings.current_testbed.name == 'bbob':
-        if genericsettings.runlength_based_targets == True:
+    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:
             table_caption = table_caption_one + table_caption_two1 + table_caption_rest
@@ -133,14 +133,14 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         header = [r'\#FEs/D']
         headerHtml = ['<thead>\n<tr>\n<th>#FEs/D</th>\n']
         for i in targetsOfInterest.labels():
-            header.append(r'\multicolumn{2}{@{}c@{}}{%s}' % i) 
+            header.append(r'\multicolumn{2}{c}{%s}' % i)
             headerHtml.append('<td>%s</td>\n' % i)
 
     else:
         header = [r'$\Delta f$']
         headerHtml = ['<thead>\n<tr>\n<th>&#916; f</th>\n']
         for i in targetsOfInterest.target_values:
-            header.append(r'\multicolumn{2}{@{}c@{}}{1e%+d}' % (int(np.log10(i))))
+            header.append(r'\multicolumn{2}{c}{1e%+d}' % (int(np.log10(i))))
             headerHtml.append('<td>1e%+d</td>\n' % (int(np.log10(i))))
                       
     header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}')
