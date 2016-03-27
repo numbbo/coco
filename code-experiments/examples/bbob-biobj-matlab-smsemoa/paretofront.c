@@ -1,7 +1,6 @@
 #include <math.h>
 #include "mex.h"
-#define TRUE 1
-#define FALSE 0
+
 
 /*
     paretomember returns the logical Pareto membership of a set of points.
@@ -58,33 +57,33 @@ void paretofront(bool * front, double * M, unsigned int row, unsigned int col)
     bool *checklist, coldominatedflag;
     
     checklist = (bool *)mxMalloc(row*sizeof(bool));
-    for(t = 0; t<row; t++) checklist[t] = TRUE;
+    for(t = 0; t<row; t++) checklist[t] = true;
     for(s = 0; s<row; s++) {
         t=s;
         if (!checklist[t]) continue;
-        checklist[t]=FALSE;
-        coldominatedflag=TRUE;
+        checklist[t]=false;
+        coldominatedflag=true;
         for(i=t+1;i<row;i++) {
             if (!checklist[i]) continue;
-            checklist[i]=FALSE;
+            checklist[i]=false;
             for (j=0,j1=i,j2=t;j<col;j++,j1+=row,j2+=row) {
                 if (M[j1] < M[j2]) {
-                    checklist[i]=TRUE;
+                    checklist[i]=true;
                     break;
                 }
             }
             if (!checklist[i]) continue;
-            coldominatedflag=FALSE;
+            coldominatedflag=false;
             for (j=0,j1=i,j2=t;j<col;j++,j1+=row,j2+=row) {
                 if (M[j1] > M[j2]) {
-                    coldominatedflag=TRUE;
+                    coldominatedflag=true;
                     break;
                 }
             }
             if (!coldominatedflag) {     /*swap active index continue checking*/
-                front[t]=FALSE;
-                checklist[i]=FALSE;
-                coldominatedflag=TRUE;
+                front[t]=false;
+                checklist[i]=false;
+                coldominatedflag=true;
                 t=i;
             }
         }
@@ -92,10 +91,10 @@ void paretofront(bool * front, double * M, unsigned int row, unsigned int col)
         if (t>s) {
             for (i=s+1; i<t; i++) {
                 if (!checklist[i]) continue;
-                checklist[i]=FALSE;
+                checklist[i]=false;
                 for (j=0,j1=i,j2=t;j<col;j++,j1+=row,j2+=row) {
                     if (M[j1] < M[j2]) {
-                        checklist[i]=TRUE;
+                        checklist[i]=true;
                         break;
                     }
                 }
