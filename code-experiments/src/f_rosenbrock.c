@@ -127,7 +127,7 @@ static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t f
   for (row = 0; row < dimension; ++row) {
     current_row = M + row * dimension;
     for (column = 0; column < dimension; ++column) {
-      current_row[column] = factor*rot1[row][column];
+      current_row[column] = factor * rot1[row][column];
     }
     b[row] = 0.5;
   }
