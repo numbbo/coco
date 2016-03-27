@@ -785,9 +785,14 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                             ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f'))
         if not (plotType == PlotType.DIM):    
             text += ', %d-D' % dimList[0]
-            
+    # add number of instances 
+    text += '\n'    
+    for alg in algorithms_with_data:
+        text += '%d, ' % len(dictAlgperFunc[alg][0].instancenumbers)
+    text = text.rstrip(', ')
+    text += ' instances'
     plt.text(0.01, 0.98, text, horizontalalignment="left",
-             verticalalignment="top", transform=plt.gca().transAxes)
+             verticalalignment="top", transform=plt.gca().transAxes, size='small')
     if len(dictFunc) == 1:
         plt.title(' '.join((str(dictFunc.keys()[0]),
                   genericsettings.current_testbed.short_names[dictFunc.keys()[0]])))
