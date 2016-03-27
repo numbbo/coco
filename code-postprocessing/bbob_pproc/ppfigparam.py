@@ -257,7 +257,7 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
         if is_normalized:
             plt.setp(plt.gca(), 'ylabel', plt.getp(a, 'ylabel') + ' / ' + param[1])
 
-        if func in (1, 24, 101, 130):
+        if func in genericsettings.current_testbed.functions_with_legend:
             toolsdivers.legend(loc="best")
         
         fontSize = genericsettings.getFontSize(funInfos.values())

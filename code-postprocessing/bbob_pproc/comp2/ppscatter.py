@@ -40,7 +40,7 @@ except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from .. import genericsettings, htmldesc, ppfigparam
-from ..ppfig import saveFigure, save_single_functions_html, HtmlPage
+from ..ppfig import saveFigure
 from .. import toolsdivers
 from .. import pproc
 
@@ -51,8 +51,6 @@ fixed_targets = pproc.TargetValues(np.logspace(-8, 2, 46))
 targets = fixed_targets  # default
 
 # formattings
-colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
-markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 markersize = 14  # modified in config.py
 markersize_addon_beyond_maxevals = -6
 linewidth_default = 0  # lines look ugly and are not necessary (anymore), because smaller symbols are used beyond maxevals
@@ -149,6 +147,8 @@ def main(dsList0, dsList1, outputdir, verbose=True):
     
     TODO: """
 
+    markers = genericsettings.dim_related_markers
+    colors = genericsettings.dim_related_colors
     #plt.rc("axes", labelsize=24, titlesize=24)
     #plt.rc("xtick", labelsize=20)
     #plt.rc("ytick", labelsize=20)
@@ -352,15 +352,6 @@ def main(dsList0, dsList1, outputdir, verbose=True):
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
         saveFigure(filename, verbose=verbose)
-        if f == 1:
-            algName1 = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(entry1.algId))
-            algName0 = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(entry0.algId))
-            save_single_functions_html(
-                os.path.join(outputdir, genericsettings.two_algorithm_file_name),
-                "%s vs %s" % (algName1, algName0),
-                htmlPage = HtmlPage.TWO,
-                isBiobjective = dsList0.isBiobjective(),
-                functionGroups = dsList0.getFuncGroups())
         plt.close()
 
     #plt.rcdefaults()

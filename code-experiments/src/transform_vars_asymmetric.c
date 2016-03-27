@@ -26,6 +26,11 @@ static void transform_vars_asymmetric_evaluate(coco_problem_t *problem, const do
   transform_vars_asymmetric_data_t *data;
   coco_problem_t *inner_problem;
 
+  if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
+  	coco_vector_set_to_nan(y, coco_problem_get_number_of_objectives(problem));
+  	return;
+  }
+
   data = (transform_vars_asymmetric_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
@@ -53,18 +58,14 @@ static void transform_vars_asymmetric_free(void *thing) {
 static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, const double beta) {
   transform_vars_asymmetric_data_t *data;
   coco_problem_t *problem;
-  size_t i = 0, zero = 1;
+
   data = (transform_vars_asymmetric_data_t *) coco_allocate_memory(sizeof(*data));
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->beta = beta;
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_asymmetric_free, "transform_vars_asymmetric");
   problem->evaluate_function = transform_vars_asymmetric_evaluate;
-  while (i < inner_problem->number_of_variables && zero) {
-      zero = (inner_problem->best_parameter[i] == 0);
-      i++;
-  }
-  if (!zero) {
-      coco_warning("f_transform_vars_asymmetric(): 'best_parameter' not updated");
+  if (!coco_problem_is_best_parameter_zero(inner_problem)) {
+      coco_warning("transform_vars_asymmetric(): 'best_parameter' not updated");
   }
   return problem;
 }

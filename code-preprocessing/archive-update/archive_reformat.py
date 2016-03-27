@@ -37,7 +37,7 @@ def reformat_archives(input_path, output_path):
     print('Reformatting archive files for the {} suite...'.format(suite_name))
 
     # Check whether input folder exits
-    input_files = get_file_name_list(input_path)
+    input_files = get_file_name_list(input_path, ".txt")
     if len(input_files) == 0:
         raise PreprocessingException('Folder {} does not exist or is empty'.format(input_path))
 

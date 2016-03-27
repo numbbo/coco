@@ -25,7 +25,13 @@ static void transform_vars_x_hat_evaluate(coco_problem_t *problem, const double 
   size_t i;
   transform_vars_x_hat_data_t *data;
   coco_problem_t *inner_problem;
-  data = (transform_vars_x_hat_data_t *) coco_problem_transformed_get_data(problem);
+
+  if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
+  	coco_vector_set_to_nan(y, coco_problem_get_number_of_objectives(problem));
+  	return;
+  }
+
+ data = (transform_vars_x_hat_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
   do {
     bbob2009_unif(data->x, problem->number_of_variables, data->seed);
@@ -56,8 +62,8 @@ static void transform_vars_x_hat_free(void *thing) {
 static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, const long seed) {
   transform_vars_x_hat_data_t *data;
   coco_problem_t *problem;
-  size_t i, zero = 1;
   char *result;
+  size_t i;
 
   data = (transform_vars_x_hat_data_t *) coco_allocate_memory(sizeof(*data));
   data->seed = seed;
@@ -76,15 +82,8 @@ static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, const
               problem->best_parameter[i] = 0.5 * 4.2096874633;
           }
       }
-  } else {
-      i = 0;
-      while (i < inner_problem->number_of_variables && zero) {
-          zero = (inner_problem->best_parameter[i] == 0);
-          i++;
-      }
-      if (!zero) {
-          coco_warning("f_transform_vars_x_hat(): 'best_parameter' not updated");
-      }
+  } else if (!coco_problem_is_best_parameter_zero(inner_problem)) {
+      coco_warning("transform_vars_x_hat(): 'best_parameter' not updated");
   }
   return problem;
 }

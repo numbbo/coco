@@ -58,6 +58,9 @@ static double f_gallagher_raw(const double *x, const size_t number_of_variables,
   double fac;
   double result;
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   fac = -0.5 / (double) number_of_variables;
 
   /* Boundary handling */
@@ -181,7 +184,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
     c = 4.9;
   } else {
     coco_error("f_gallagher_bbob_problem_allocate(): '%lu' is a non-supported number of peaks",
-        number_of_peaks);
+    		(unsigned long) number_of_peaks);
   }
   data->rseed = rseed;
   bbob2009_compute_rotation(data->rotation, rseed, dimension);

@@ -107,6 +107,9 @@ def ecdfs_figure_caption(target):
 def scaling_figure_caption_html(target):
     # need to be used in rungenericmany.py!?
     assert len(target) == 1
+    if genericsettings.current_testbed.name == 'bbob-biobj':
+        s = htmldesc.getValue('##bbobppfigslegendbiobjfixed##').replace('BBOBPPFIGSFTARGET', 
+                                                       toolsdivers.number_to_html(target.label(0)))        
     if isinstance(target, pproc.RunlengthBasedTargetValues):
         s = htmldesc.getValue('##bbobppfigslegendrlbased##').replace('BBOBPPFIGSFTARGET', 
                                                          toolsdivers.number_to_html(target.label(0)))
@@ -121,11 +124,14 @@ def scaling_figure_caption_html(target):
 
 def ecdfs_figure_caption_html(target, dimension):
     assert len(target) == 1
-    if isinstance(target, pproc.RunlengthBasedTargetValues):
+	
+    if genericsettings.current_testbed.name == 'bbob-biobj':
+        s = htmldesc.getValue('##bbobECDFslegendbiobjfixed%d##' % dimension)
+    elif isinstance(target, pproc.RunlengthBasedTargetValues):
         s = htmldesc.getValue('##bbobECDFslegendrlbased%d##' % dimension).replace('REFERENCEALGORITHM', 
                                                          target.reference_algorithm)
     else:
-        s = htmldesc.getValue('##bbobECDFslegendstandard%d##' % dimension)
+        s = htmldesc.getValue('##bbobECDFslegendfixed%d##' % dimension)
     return s
 
 
@@ -453,11 +459,12 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
         if f in funInfos.keys():
             plt.gca().set_title(funInfos[f], fontsize=fontSize)
 
+        functions_with_legend = genericsettings.current_testbed.functions_with_legend
         isLegend = False
         if legend:
             plotLegend(handles)
         elif 1 < 3:
-            if f in (1, 24, 101, 130) and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
+            if f in functions_with_legend and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
                 isLegend = True
 
         beautify(legend=isLegend, rightlegend=legend)
@@ -529,7 +536,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
         if legend:
             plotLegend(handles)
         else:
-            if f in (1, 24, 101, 130):
+            if f in functions_with_legend:
                 toolsdivers.legend()
 
         saveFigure(filename, figFormat=genericsettings.getFigFormats(), verbose=verbose)

@@ -36,6 +36,9 @@ static double f_weierstrass_raw(const double *x, const size_t number_of_variable
   size_t i, j;
   double result;
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   result = 0.0;
   for (i = 0; i < number_of_variables; ++i) {
     for (j = 0; j < F_WEIERSTRASS_SUMMANDS; ++j) {
