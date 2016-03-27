@@ -15,6 +15,7 @@ used by other modules, but does not modify settings of other modules.
 
 """
 
+import warnings
 import numpy as np
 import ppfigdim, pptable
 from . import genericsettings, pproc, pprldistr
@@ -41,8 +42,18 @@ def config(isBiobjective=None):
     if isBiobjective is not None:
         genericsettings.loadCurrentTestbed(isBiobjective, pproc.TargetValues)
 
-	genericsettings.simulated_runlength_bootstrap_sample_size = (10 + 990 / (1 + 10 * max(0, genericsettings.in_a_hurry)))
-			
+    genericsettings.simulated_runlength_bootstrap_sample_size = (10 + 990 / (1 + 10 * max(0, genericsettings.in_a_hurry)))
+
+    # TODO: implement runlength based targets once we have a reference
+    # bestAlg for the biobjective case
+    # TODO: once this is solved, make sure that expensive setting is not
+    # available if no bestAlg or other reference algorithm is available
+    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+        if (genericsettings.isExpensive == True or
+                genericsettings.runlength_based_targets):
+            warnings.warn('Expensive setting not yet supported with bbob-biobj testbed; using non-expensive setting instead.')
+            genericsettings.runlength_based_targets = False
+  
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets 
     if genericsettings.runlength_based_targets in (True, 1):
         print 'Using bestGECCO2009 based target values: now for each function the target ' + \
