@@ -9,7 +9,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$
   become \section. 
 
 .. CHAPTERTITLE
-.. ^^^^^^^^^^^^
+.. CHAPTERUNDERLINE
 
 .. |
 .. |
@@ -28,11 +28,13 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. WHEN CHANGING THIS, CHANGE ALSO the abstract in conf.py ACCORDINGLY (though it seems the latter is not used)
 
 We present an experimental setup and procedure for benchmarking numerical
-optimization algorithms in a black-box scenario, as used with the COCO_
-platform. We describe initialization of, and input to the algorithm and touch
-upon the relevance of termination and restarts. We introduce the concept of
-recommendations for benchmarking. Recommendations detach the solutions used
-in function calls from the any-time performance assessment of the algorithm.
+optimization algorithms in a black-box scenario. This procedure can be
+applied with the COCO_ benchmarking platform. 
+We describe initialization of and input to the algorithm and touch
+upon the relevance of termination and restarts. 
+We introduce the concept of recommendations for benchmarking with COCO_.
+Recommendations detach the solutions used in function calls from the any-time
+performance assessment of the algorithm.
 
 .. raw:: latex
 
@@ -116,7 +118,7 @@ set-up for *black-box optimization benchmarking*. We recommend to use this proce
 within the COCO_ platform [HAN2016co]_. [#]_ 
 
 Our central measure of performance, to which the experimental procedure is
-adapted, is the number of (problem or function) evaluations to reach a
+adapted, is the number of evaluations of the objective function to reach a
 certain solution quality (function value or :math:`f`-value or indicator
 value), also denoted as *runtime*. 
 
@@ -434,7 +436,9 @@ of the French National Research Agency.
    (Companion)*, pages 2479-2484. ACM, 2009.
 .. .. [Efron:1993] B. Efron and R. Tibshirani. *An introduction to the
    bootstrap.* Chapman & Hall/CRC, 1993.
-.. [CocoPerf] The BBOBies: COCO: Performance Assessment http://numbbo.github.io/coco-doc/perf-assessment/
+.. [CocoPerf] The BBOBies (2016). COCO: `Performance Assessment`__. 
+.. __: http://numbbo.github.io/coco-doc/perf-assessment/
+
 .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros. 
    Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en, 2009.
 

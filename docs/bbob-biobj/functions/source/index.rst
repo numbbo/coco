@@ -26,7 +26,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   % \tableofcontents is automatic with sphinx and moved behind abstract by swap...py
   \begin{abstract}
 
-.. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY
+.. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY (though it seems the latter is not used)
 
 The ``bbob-biobj`` test suite contains 55 bi-objective 
 functions in continuous domain which are derived from combining functions of
