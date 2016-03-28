@@ -121,7 +121,7 @@ The objective of the minimization problem is to find, with as few evaluations
 of |f| as possible, a set of non-dominated solutions which is (i) as large
 as possible and (ii) has |f|-values as close to the Pareto front as possible. [#]_ 
 
-.. [#] Distance in f space is defined here such that nadir and ideal point 
+.. [#] Distance in |f|-space is defined here such that nadir and ideal point 
    have in each coordinate distance one. Neither of these points is however 
    freely accessible to the optimization algorithm. 
 
@@ -130,6 +130,11 @@ as possible and (ii) has |f|-values as close to the Pareto front as possible. [#
    visibility of problem properties to algorithms, which should be addressed
    elsewhere. Also, until we discuss the actual metric used (hypervolume), it
    makes no sense to go too deep into details here anyway.
+.. Niko: here is my take on this: 1/3 of the readers know the concepts and will
+   get informed by this footnote (it answers precisely the question I would ask at this 
+   point reading the doc). 1/3 of the readers will understand that it is a 
+   good idea to learn about the concepts of nadir and ideal point, which
+   it is. 1/3 of the readers won't get anything and move on. 
 
 .. |f| replace:: :math:`f`
 
