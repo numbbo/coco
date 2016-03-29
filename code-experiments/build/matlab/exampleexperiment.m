@@ -40,6 +40,12 @@ observer = cocoObserver(observer_name, observer_options);
 % for fewer output than 'info'.
 cocoSetLogLevel('info');
 
+% keep track of problem dimension and #funevals to print timing information:
+printeddim = 1;
+doneEvalsAfter = 0; % summed function evaluations for a single problem
+doneEvalsTotal = 0; % summed function evaluations per dimension
+printstring = '\n'; % store strings to be printed until experiment is finished
+
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Run Experiment        %
 %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,6 +56,20 @@ while true
         break;
     end
     dimension = cocoProblemGetDimension(problem);
+    
+    % printing
+    if printeddim < dimension
+      if printeddim > 1
+        elapsedtime = toc;
+        printstring = strcat(printstring, ...
+            sprintf("   COCO TIMING: dimension %d finished in %e seconds/evaluation\n", ...
+            printeddim, elapsedtime/double(doneEvalsTotal)));
+        tic;
+      end
+      doneEvalsTotal = 0;
+      printeddim = dimension;
+      tic;
+    end  
     
     % restart functionality: do at most NUM_OF_INDEPENDENT_RESTARTS+1
     % independent runs until budget is used:
@@ -85,6 +105,15 @@ while true
             break;
         end
     end
+    
+    doneEvalsTotal = doneEvalsTotal + doneEvalsAfter;
 end
+
+elapsedtime = toc;
+printstring = strcat(printstring, ...
+    sprintf("   COCO TIMING: dimension %d finished in %e seconds/evaluation\n", ...
+    printeddim, elapsedtime/double(doneEvalsTotal)));
+fprintf(printstring);
+
 cocoObserverFree(observer);
 cocoSuiteFree(suite);
