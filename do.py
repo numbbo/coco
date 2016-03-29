@@ -31,6 +31,17 @@ core_files = ['code-experiments/src/coco_random.c',
               'code-experiments/src/coco_archive.c'
               ]
 
+matlab_files = ['cocoCall.m', 'cocoEvaluateFunction.m', 'cocoObserver.m',
+                'cocoObserverFree.m', 'cocoProblemAddObserver.m',
+                'cocoProblemFinalTargetHit.m', 'cocoProblemFree.m',
+                'cocoProblemGetDimension.m', 'cocoProblemGetEvaluations.m',
+                'cocoProblemGetId.m', 'cocoProblemGetInitialSolution.m',
+                'cocoProblemGetLargestValuesOfInterest.m',
+                'cocoProblemGetName.m', 'cocoProblemGetNumberOfObjectives.m',
+                'cocoProblemGetSmallestValuesOfInterest.m',
+                'cocoProblemIsValid.m', 'cocoProblemRemoveObserver.m',
+                'cocoSetLogLevel.m', 'cocoSuite.m', 'cocoSuiteFree.m',
+                'cocoSuiteGetNextProblem.m', 'cocoSuiteGetProblem.m']
 
 ################################################################################
 ## C
@@ -144,6 +155,8 @@ def build_c_integration_tests():
     copy_file('code-experiments/src/coco.h', 'code-experiments/test/integration-test/coco.h')
     copy_file('code-experiments/src/bbob2009_testcases.txt',
               'code-experiments/test/integration-test/bbob2009_testcases.txt')
+    copy_file('code-experiments/src/bbob2009_testcases2.txt',
+              'code-experiments/test/integration-test/bbob2009_testcases2.txt')
     make("code-experiments/test/integration-test", "clean")
     make("code-experiments/test/integration-test", "all")
 
@@ -152,6 +165,7 @@ def run_c_integration_tests():
     """ Runs integration tests in C """
     try:
         run('code-experiments/test/integration-test', ['./test_coco', 'bbob2009_testcases.txt'])
+        run('code-experiments/test/integration-test', ['./test_coco', 'bbob2009_testcases2.txt'])
         run('code-experiments/test/integration-test', ['./test_instance_extraction'])
         run('code-experiments/test/integration-test', ['./test_biobj'])
     except subprocess.CalledProcessError:
@@ -214,6 +228,7 @@ def _prep_python():
                release)
     copy_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h')
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
+    copy_file('code-experiments/src/bbob2009_testcases2.txt', 'code-experiments/build/python/bbob2009_testcases2.txt')
     copy_file('code-experiments/build/python/README.md', 'code-experiments/build/python/README.txt')
     expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
                 {'COCO_VERSION': git_version(pep440=True)})  # hg_version()})
@@ -288,6 +303,7 @@ def test_python():
         os.environ['USE_CYTHON'] = 'true'
         python('code-experiments/build/python', ['setup.py', 'install', '--home', python_temp_home])
         python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases.txt'])
+        python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases2.txt'])
         os.environ.pop('USE_CYTHON')
         os.environ.pop('PYTHONPATH')
     except subprocess.CalledProcessError:
@@ -387,6 +403,8 @@ def build_matlab_sms():
     amalgamate(core_files + ['code-experiments/src/coco_runtime_matlab.c'],
                join(destination_folder, 'coco.c'), release)
     copy_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'))
+    for f in matlab_files:
+        copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))    
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
     copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
@@ -474,6 +492,8 @@ def build_octave_sms():
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
                join(destination_folder, 'coco.c'), release)
     copy_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'))
+    for f in matlab_files:
+        copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))            
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
     copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
