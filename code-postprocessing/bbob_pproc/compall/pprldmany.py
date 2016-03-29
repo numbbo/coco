@@ -777,9 +777,9 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
         dictKey = dictFG.keys()[0]
         functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
-        text = '%s, %d-D\n%s' % (functionGroups[dictKey], 
-                                 dimList[0], 
-                                 genericsettings.current_testbed.name)
+        text = '%s\n%s, %d-D' % (genericsettings.current_testbed.name,
+                                 functionGroups[dictKey], 
+                                 dimList[0])
     else:
         text = '%s - %s' % (genericsettings.current_testbed.name,
                             ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f'))
