@@ -338,14 +338,17 @@ size_t coco_problem_get_evaluations(const coco_problem_t *problem) {
 }
 
 /**
- * @brief Returns 1 if the best parameter is (close to) zero and 0 otherwise.
+ * @brief Returns 1 if the best parameter is not (close to) zero and 0 otherwise.
  */
-static int coco_problem_is_best_parameter_zero(const coco_problem_t *problem) {
+static int coco_problem_best_parameter_not_zero(const coco_problem_t *problem) {
 	size_t i = 0;
-	int zero = 1;
+	int zero = 0;
 
-	while (i < problem->number_of_variables && zero) {
-	      zero = !coco_double_almost_equal(problem->best_parameter[i], 0, 1e-9);
+	if (coco_vector_contains_nan(problem->best_parameter, problem->number_of_variables))
+		return 1;
+
+	while (i < problem->number_of_variables && !zero) {
+	      zero = coco_double_almost_equal(problem->best_parameter[i], 0, 1e-9);
 	      i++;
 	  }
 
