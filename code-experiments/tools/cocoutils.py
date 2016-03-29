@@ -21,6 +21,9 @@ except ImportError:
         Backported from Python 2.7 as it's implemented as pure python on stdlib.
         >>> check_output(['/usr/bin/python', '--version'])
         Python 2.6.2
+
+        WARNING: This method is also defined in ../../code-postprocessing/bbob_pproc/toolsdivers.py.
+        If you change something you have to change it in both files.
         """
         process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
         output, unused_err = process.communicate()
@@ -51,7 +54,11 @@ def hg(args):
 def git(args):
     """Run a git command and return its output.
 
-    All errors are deemed fatal and the system will quit."""
+    All errors are deemed fatal and the system will quit.
+
+    WARNING: This method is also defined in ../../code-postprocessing/bbob_pproc/toolsdivers.py.
+    If you change something you have to change it in both files.
+    """
     full_command = ['git']
     full_command.extend(args)
     try:
@@ -70,7 +77,11 @@ def is_dirty():
 
 def git_version(pep440=False):
     """Return somewhat readible version number from git, like
-    '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'"""
+    '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'
+
+    WARNING: This method is also defined in ../../code-postprocessing/bbob_pproc/toolsdivers.py.
+    If you change something you have to change it in both files.
+    """
     try:
         res = git(['describe', '--tags'])
     except:

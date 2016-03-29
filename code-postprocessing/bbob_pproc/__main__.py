@@ -58,6 +58,7 @@ def copy_latex_templates():
     shutil.copy(join_path(templateFolder, 'templateBBOBarticle.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'templateBBOBcmp.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'templateBIOBJarticle.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), currentFolder)
 
 def run_latex_template(filename):
@@ -171,9 +172,8 @@ def main(args):
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
 
-    # Latex templates are not prepared yet for bi-objective case.    
-#    result = run_latex_template("templateBBOBarticle.tex")
-#    assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
+    result = run_latex_template("templateBIOBJarticle.tex")
+    assert not result, 'Test failed: error while generating pdf from templateBIOBJarticle.tex.'
 
     if run_all_tests:    
         t0 = time.time()
