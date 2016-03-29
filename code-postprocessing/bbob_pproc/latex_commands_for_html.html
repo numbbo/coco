@@ -75,12 +75,15 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobppfigdimlegendrlbased##
 
-        Average number of f-evaluations (<span class="roman">aRT</span>, lines) to reach f<sub><span class="roman">opt</span></sub>+&#8710;f;
-        median number of f-evaluations (+) to reach the most difficult
-        target that was reached not always but at least once; maximum number of
-        f-evaluations in any trial (<span style="color:#FF0000">&times;</span>); interquartile 
-        range with median (notched boxes) of simulated runlengths
-        to reach f<sub><span class="roman">opt</span></sub>+&#8710;f; all values are divided by dimension and 
+        Scaling of runtime to reach f<sub><span class="roman">opt</span></sub>+10<sup>#</sup> with dimension;
+        runtime is measured in number of f-evaluations and # is given in the legend;
+        Lines: average runtime (<span class="roman">aRT</span>);
+        Cross (+): median runtime of successful runs to reach the most difficult
+        target that was reached at least once (but not always);
+        Cross (<span style="color:#FF0000">&times;</span>): maximum number of
+        f-evaluations in any trial. Notched
+        boxes: interquartile range with median of simulated runs;
+                                All values are divided by dimension and 
         plotted as log<sub>10</sub> values versus dimension.                 Shown is the <span class="roman">aRT</span>&nbsp;for 
         targets just not reached by
             the artificial GECCO-BBOB-2009 best algorithm  
@@ -94,12 +97,11 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobpptablecaptionrlbased##
 
-        Average running time (aRT in number of function 
-        evaluations) divided by the best aRT measured during BBOB-2009. The aRT 
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009. The <span class="roman">aRT</span>&nbsp;
         and in braces, as dispersion measure, the half difference between 90 and 
         10%-tile of bootstrapped run lengths appear in the second row of each cell,  
-        the best aRT
-                (preceded by the target &#8710;f-value in <i>italics</i>) in the first. 
+        the best <span class="roman">aRT</span>&nbsp;                (preceded by the target &#8710;f-value in <i>italics</i>) in the first. 
         #succ is the number of trials that reached the target value of the last column.
                 The median number of conducted function evaluations is additionally given in 
         <i>italics</i>, if the target in the last column was never reached. 
@@ -112,13 +114,12 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobpptablestwolegendrlbased##
 
-        Average running time (aRT in number of function 
-        evaluations) divided by the respective best aRT measured during BBOB-2009 in
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
         dimensions 5 (left) and 20 (right).
-        The aRT and in braces, as dispersion measure, the half difference between 90 and 
-        10%-tile of bootstrapped run lengths appear for each algorithm and 
-                run-length based target, the corresponding best aRT
-        (preceded by the target &#8710;f-value in <i>italics</i>) in the first row. 
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 10
+        and 90%-tile of bootstrapped run lengths appear for each algorithm and 
+                run-length based target, the corresponding best <span class="roman">aRT</span>&nbsp;        (preceded by the target &#8710;f-value in <i>italics</i>) in the first row. 
         #succ is the number of trials that reached the target value of the last column.
                 The median number of conducted function evaluations is additionally given in 
         <i>italics</i>, if the target in the last column was never reached. 
@@ -131,16 +132,15 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendrlbased5##
 
-        Average running time (aRT in number of function
-        evaluations) divided by the respective best aRT measured during BBOB-2009 in
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
         dimension 5.
-        The aRT and in braces, as dispersion measure, the half difference between 90 and
-        10%-tile of bootstrapped run lengths appear for each algorithm and
-                run-length based target, the corresponding best aRT
-        (preceded by the target &#8710;f-value in <i>italics</i>) in the first row.
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
+        10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
+                run-length based target, the corresponding best <span class="roman">aRT</span>&nbsp;        (preceded by the target &#8710;f-value in <i>italics</i>) in the first row. 
         #succ is the number of trials that reached the target value of the last column.
-                The median number of conducted function evaluations is additionally given in
-        <i>italics</i>, if the target in the last column was never reached.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
@@ -151,16 +151,15 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendrlbased20##
 
-        Average running time (aRT in number of function
-        evaluations) divided by the respective best aRT measured during BBOB-2009 in
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
         dimension 20.
-        The aRT and in braces, as dispersion measure, the half difference between 90 and
-        10%-tile of bootstrapped run lengths appear for each algorithm and
-                run-length based target, the corresponding best aRT
-        (preceded by the target &#8710;f-value in <i>italics</i>) in the first row.
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
+        10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
+                run-length based target, the corresponding best <span class="roman">aRT</span>&nbsp;        (preceded by the target &#8710;f-value in <i>italics</i>) in the first row. 
         #succ is the number of trials that reached the target value of the last column.
-                The median number of conducted function evaluations is additionally given in
-        <i>italics</i>, if the target in the last column was never reached.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
@@ -171,12 +170,12 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobECDFslegendfixed5##
 
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 14 targets in 10<sup>[&#8722;8..2]</sup> for all functions and subgroups in 5-D. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 51 targets with target precision in 10<sup>[&#8722;8..2]</sup> for all functions and subgroups in 5-D. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
 
 <div class="p"><!----></div>
 ##bbobECDFslegendfixed20##
 
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 14 targets in 10<sup>[&#8722;8..2]</sup> for all functions and subgroups in 20-D. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 51 targets with target precision in 10<sup>[&#8722;8..2]</sup> for all functions and subgroups in 20-D. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
 
 <div class="p"><!----></div>
 ##bbobpprldistrlegendfixed##
@@ -219,15 +218,16 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobppfigdimlegendfixed##
 
-        Average number of f-evaluations (<span class="roman">aRT</span>, lines) to reach f<sub><span class="roman">opt</span></sub>+&#8710;f;
-        median number of f-evaluations (+) to reach the most difficult
-        target that was reached not always but at least once; maximum number of
-        f-evaluations in any trial (<span style="color:#FF0000">&times;</span>); interquartile 
-        range with median (notched boxes) of simulated runlengths
-        to reach f<sub><span class="roman">opt</span></sub>+&#8710;f; all values are divided by dimension and 
-        plotted as log<sub>10</sub> values versus dimension.                 Shown are &#8710;f
-= 10<sup>{10, 1, 0.1, 0.01, 1e&#8722;3, 1e&#8722;5, 1e&#8722;8}</sup>.  
-        Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number of trials
+        Scaling of runtime to reach f<sub><span class="roman">opt</span></sub>+10<sup>#</sup> with dimension;
+        runtime is measured in number of f-evaluations and # is given in the legend;
+        Lines: average runtime (<span class="roman">aRT</span>);
+        Cross (+): median runtime of successful runs to reach the most difficult
+        target that was reached at least once (but not always);
+        Cross (<span style="color:#FF0000">&times;</span>): maximum number of
+        f-evaluations in any trial. Notched
+        boxes: interquartile range with median of simulated runs;
+                                All values are divided by dimension and 
+        plotted as log<sub>10</sub> values versus dimension.                         Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number of trials
         reaching the respective target. The light thick line with
         diamonds indicates the respective best result from BBOB-2009 for
         &#8710;f
@@ -237,12 +237,11 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobpptablecaptionfixed##
 
-        Average running time (aRT in number of function 
-        evaluations) divided by the best aRT measured during BBOB-2009. The aRT 
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009. The <span class="roman">aRT</span>&nbsp;
         and in braces, as dispersion measure, the half difference between 90 and 
         10%-tile of bootstrapped run lengths appear in the second row of each cell,  
-        the best aRT
-                in the first. The different target &#8710;f-values are shown in the top row. 
+        the best <span class="roman">aRT</span>&nbsp;                in the first. The different target &#8710;f-values are shown in the top row. 
         #succ is the number of trials that reached the (final) target f<sub><span class="roman">opt</span></sub>+ 10<sup>&#8722;8</sup>.
                 The median number of conducted function evaluations is additionally given in 
         <i>italics</i>, if the target in the last column was never reached. 
@@ -255,13 +254,12 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobpptablestwolegendfixed##
 
-        Average running time (aRT in number of function 
-        evaluations) divided by the respective best aRT measured during BBOB-2009 in
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
         dimensions 5 (left) and 20 (right).
-        The aRT and in braces, as dispersion measure, the half difference between 90 and 
-        10%-tile of bootstrapped run lengths appear for each algorithm and 
-                target, the corresponding best aRT
-        in the first row. The different target &#8710;f-values are shown in the top row. 
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 10
+        and 90%-tile of bootstrapped run lengths appear for each algorithm and 
+                target, the corresponding best <span class="roman">aRT</span>&nbsp;        in the first row. The different target &#8710;f-values are shown in the top row. 
         #succ is the number of trials that reached the (final) target
         f<sub><span class="roman">opt</span></sub>+ 10<sup>&#8722;8</sup>.
                 The median number of conducted function evaluations is additionally given in 
@@ -275,17 +273,16 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendfixed5##
 
-        Average running time (aRT in number of function
-        evaluations) divided by the respective best aRT measured during BBOB-2009 in
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
         dimension 5.
-        The aRT and in braces, as dispersion measure, the half difference between 90 and
-        10%-tile of bootstrapped run lengths appear for each algorithm and
-                target, the corresponding best aRT
-        in the first row. The different target &#8710;f-values are shown in the top row.
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
+        10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
+                target, the corresponding best <span class="roman">aRT</span>&nbsp;        in the first row. The different target &#8710;f-values are shown in the top row.
         #succ is the number of trials that reached the (final) target
         f<sub><span class="roman">opt</span></sub>+ 10<sup>&#8722;8</sup>.
-                The median number of conducted function evaluations is additionally given in
-        <i>italics</i>, if the target in the last column was never reached.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
@@ -296,17 +293,16 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendfixed20##
 
-        Average running time (aRT in number of function
-        evaluations) divided by the respective best aRT measured during BBOB-2009 in
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
         dimension 20.
-        The aRT and in braces, as dispersion measure, the half difference between 90 and
-        10%-tile of bootstrapped run lengths appear for each algorithm and
-                target, the corresponding best aRT
-        in the first row. The different target &#8710;f-values are shown in the top row.
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
+        10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
+                target, the corresponding best <span class="roman">aRT</span>&nbsp;        in the first row. The different target &#8710;f-values are shown in the top row.
         #succ is the number of trials that reached the (final) target
         f<sub><span class="roman">opt</span></sub>+ 10<sup>&#8722;8</sup>.
-                The median number of conducted function evaluations is additionally given in
-        <i>italics</i>, if the target in the last column was never reached.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
@@ -317,12 +313,12 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobECDFslegendbiobjfixed5##
 
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 14 targets in 10<sup>[&#8722;5..0]</sup> for all functions and subgroups in 5-D. 
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 58 targets with target precision in {&#8722;10<sup>&#8722;4</sup>, &#8722;10<sup>&#8722;4.2</sup>,  &#8722;10<sup>&#8722;4.4</sup>, &#8722;10<sup>&#8722;4.6</sup>, &#8722;10<sup>&#8722;4.8</sup>, &#8722;10<sup>&#8722;5</sup>, 0, 10<sup>&#8722;5</sup>, 10<sup>&#8722;4.9</sup>, 10<sup>&#8722;4.8</sup>, ..., 10<sup>&#8722;0.1</sup>, 10<sup>0</sup>} for all functions and subgroups in 5-D. 
 
 <div class="p"><!----></div>
 ##bbobECDFslegendbiobjfixed20##
 
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 14 targets in 10<sup>[&#8722;5..0]</sup> for all functions and subgroups in 20-D. 
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 58 targets with target precision in {&#8722;10<sup>&#8722;4</sup>, &#8722;10<sup>&#8722;4.2</sup>,  &#8722;10<sup>&#8722;4.4</sup>, &#8722;10<sup>&#8722;4.6</sup>, &#8722;10<sup>&#8722;4.8</sup>, &#8722;10<sup>&#8722;5</sup>, 0, 10<sup>&#8722;5</sup>, 10<sup>&#8722;4.9</sup>, 10<sup>&#8722;4.8</sup>, ..., 10<sup>&#8722;0.1</sup>, 10<sup>0</sup>} for all functions and subgroups in 20-D. 
 
 <div class="p"><!----></div>
 ##bbobpprldistrlegendbiobjfixed##
@@ -364,27 +360,28 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobppfigdimlegendbiobjfixed##
 
-        Average number of f-evaluations (<span class="roman">aRT</span>, lines) to reach HV<sub><span class="roman">ref</span></sub>+&#8710;f;
-        median number of f-evaluations (+) to reach the most difficult
-        target that was reached not always but at least once; maximum number of
-        f-evaluations in any trial (<span style="color:#FF0000">&times;</span>); interquartile 
-        range with median (notched boxes) of simulated runlengths
-        to reach HV<sub><span class="roman">ref</span></sub>+&#8710;f; all values are divided by dimension and 
-        plotted as log<sub>10</sub> values versus dimension.                 Shown are &#8710;f
-= 10<sup>{0.1, 0.01, 1e&#8722;3, 1e&#8722;4, 1e&#8722;5}</sup>.  
-        Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number of trials
+        Scaling of runtime to reach HV<sub><span class="roman">ref</span></sub>+10<sup>#</sup> with dimension;
+        runtime is measured in number of f-evaluations and # is given in the legend;
+        Lines: average runtime (<span class="roman">aRT</span>);
+        Cross (+): median runtime of successful runs to reach the most difficult
+        target that was reached at least once (but not always);
+        Cross (<span style="color:#FF0000">&times;</span>): maximum number of
+        f-evaluations in any trial. Notched
+        boxes: interquartile range with median of simulated runs;
+                                All values are divided by dimension and 
+        plotted as log<sub>10</sub> values versus dimension.                         Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number of trials
         reaching the respective target. Horizontal lines mean linear scaling, slanted
         grid lines depict quadratic scaling.  
 
 <div class="p"><!----></div>
 ##bbobpptablecaptionbiobjfixed##
 
-                Average running time (aRT in number of function 
-                evaluations) to reach given targets. For each function, the aRT 
-                and in braces, as dispersion measure, the half difference between 90 and 
-                10%-tile of bootstrapped run lengths is shown for the different target
-                &#8710;f-values as shown in the top row. 
-                #succ is the number of trials that reached the (final) target 
+                Average runtime (<span class="roman">aRT</span>) to reach given targets, measured
+                in number of function evaluations. For each function, the <span class="roman">aRT</span>&nbsp;
+                and, in braces as dispersion measure, the half difference between 10 and 
+                90%-tile of (bootstrapped) runtimes is shown for the different
+                target &#8710;f-values as shown in the top row. 
+                #succ is the number of trials that reached the last target 
                 HV<sub><span class="roman">ref</span></sub>+ 10<sup>&#8722;5</sup>.
                 The median number of conducted function evaluations is additionally given in 
                 <i>italics</i>, if the target in the last column was never reached. 
@@ -392,11 +389,11 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobpptablestwolegendbiobjfixed##
 
-        Average running time (aRT in number of function 
-        evaluations) divided by the respective best aRT measured during BBOB-2009 in
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
         dimensions 5 (left) and 20 (right).
-        The aRT and in braces, as dispersion measure, the half difference between 90 and 
-        10%-tile of bootstrapped run lengths appear for each algorithm and 
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 10
+        and 90%-tile of bootstrapped run lengths appear for each algorithm and 
                 target, the corresponding best aRT
         in the first row. The different target &#8710;f-values are shown in the top row. 
         #succ is the number of trials that reached the (final) target
@@ -412,17 +409,16 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendbiobjfixed5##
 
-        Average running time (aRT in number of function
-        evaluations) divided by the respective best aRT measured during BBOB-2009 in
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
         dimension 5.
-        The aRT and in braces, as dispersion measure, the half difference between 90 and
-        10%-tile of bootstrapped run lengths appear for each algorithm and
-                target, the corresponding best aRT
-        in the first row. The different target &#8710;f-values are shown in the top row.
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
+        10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
+                target, the corresponding best <span class="roman">aRT</span>&nbsp;        in the first row. The different target &#8710;f-values are shown in the top row.
         #succ is the number of trials that reached the (final) target
         HV<sub><span class="roman">ref</span></sub>+ 10<sup>&#8722;5</sup>.
-                The median number of conducted function evaluations is additionally given in
-        <i>italics</i>, if the target in the last column was never reached.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
@@ -433,17 +429,16 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendbiobjfixed20##
 
-        Average running time (aRT in number of function
-        evaluations) divided by the respective best aRT measured during BBOB-2009 in
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
         dimension 20.
-        The aRT and in braces, as dispersion measure, the half difference between 90 and
-        10%-tile of bootstrapped run lengths appear for each algorithm and
-                target, the corresponding best aRT
-        in the first row. The different target &#8710;f-values are shown in the top row.
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
+        10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
+                target, the corresponding best <span class="roman">aRT</span>&nbsp;        in the first row. The different target &#8710;f-values are shown in the top row.
         #succ is the number of trials that reached the (final) target
         HV<sub><span class="roman">ref</span></sub>+ 10<sup>&#8722;5</sup>.
-                The median number of conducted function evaluations is additionally given in
-        <i>italics</i>, if the target in the last column was never reached.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
@@ -532,5 +527,5 @@ Markers on the upper or right edge indicate that the respective target
 T<sub><span class="small">E</span></sub>X
 by <a href="http://hutchinson.belmont.ma.us/tth/">
 T<sub><span class="small">T</span></sub>H</a>,
-version 4.08.<br />On 25 Mar 2016, 14:43.</small>
+version 4.08.<br />On 27 Mar 2016, 17:46.</small>
 </html>
