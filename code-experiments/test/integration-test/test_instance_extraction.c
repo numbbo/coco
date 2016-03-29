@@ -20,12 +20,13 @@ int test_instance_extraction(char *suite_name) {
 
   while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
     index = coco_problem_get_suite_dep_index(problem);
-    printf("Problem %4ld: %s found!\n", index, coco_problem_get_id(problem));
+    printf("Problem %4lu: %s found!\n", (unsigned long) index, coco_problem_get_id(problem));
   }
   coco_suite_free(suite);
 
   if (index < max_index) {
-    printf("Only %lu out of all %lu problems extracted from suite %s\n", index, max_index, suite_name);
+    printf("Only %lu out of all %lu problems extracted from suite %s\n", (unsigned long) index,
+    		(unsigned long) max_index, suite_name);
     return 1;
   }
   return 0;

@@ -166,7 +166,8 @@ static coco_problem_t *coco_get_bbob_problem(const size_t function,
     problem = f_lunacek_bi_rastrigin_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else {
-    coco_error("get_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD", function, instance, dimension);
+    coco_error("get_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD",
+    		(unsigned long) function, (unsigned long) instance, (unsigned long) dimension);
     return NULL; /* Never reached */
   }
 

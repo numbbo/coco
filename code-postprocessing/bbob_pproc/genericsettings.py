@@ -32,12 +32,17 @@ tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_table = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
+target_runlength = 10 # used in ppfigs.main
+
 xlimit_expensive = 1e3  # used in 
 tableconstant_target_function_values = (1e1, 1e0, 1e-1, 1e-3, 1e-5, 1e-7) # used as input for pptables.main in rungenericmany 
 # tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7) # for post-workshop landscape tables
 
 #tabValsOfInterest = (1.0, 1.0e-2, 1.0e-4, 1.0e-6, 1.0e-8)
 #tabValsOfInterest = (10, 1.0, 1e-1, 1e-3, 1e-5, 1.0e-8)
+
+dim_related_markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
+dim_related_colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 
 rldDimsOfInterest = (5, 20)
 
@@ -260,6 +265,15 @@ def getFontSize(nameList):
     fontSize = 24 - max(0, 2 * ((maxFuncLength - 35) / 5))
     return fontSize
 
+
+scenario_rlbased = 'rlbased'
+scenario_fixed = 'fixed'
+scenario_biobjfixed = 'biobjfixed'
+all_scenarios = [scenario_rlbased, scenario_fixed, scenario_biobjfixed]
+
+testbed_name_single = 'bbob'
+testbed_name_bi = 'bbob-biobj'
+
 class Testbed(object):
     """this might become the future way to have settings related to testbeds
     TODO: should go somewhere else than genericsettings.py 
@@ -284,6 +298,9 @@ class Testbed(object):
                 except ValueError:
                     continue  # ignore annotations
 
+    def isBiobjective(self):
+        return self.name == testbed_name_bi
+
 class GECCOBBOBTestbed(Testbed):
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
     """
@@ -292,19 +309,22 @@ class GECCOBBOBTestbed(Testbed):
         # not a testbed setting
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
-        self.name = 'bbob'
+        self.name = testbed_name_single
         self.short_names = {}
-        self.hardesttargetlatex = '10^{-8}'
+        self.hardesttargetlatex = '10^{-8}' # used for ppfigs and pptable
         self.ppfigs_ftarget = 1e-8
         self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)) # possibly changed in config
         self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
         self.pprldmany_target_values = targetValues(10**np.arange(2, -8.2, -0.2)) # possibly changed in config
         self.pprldmany_target_range_latex = '$10^{[-8..2]}$'
-                
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
         self.ppfvdistr_min_target = 1e-8
         self.functions_with_legend = (1, 24, 101, 130)
-
+        self.number_of_functions = 24
+        self.pptable_ftarget = 1e-8 # value for determining the success ratio
+        self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
+        self.scenario = scenario_fixed
+        
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
                              getBenchmarksShortInfos(False)), 
@@ -326,17 +346,22 @@ class GECCOBiobjBBOBTestbed(Testbed):
         # not a testbed setting
         # only the short info, how to deal with both infos? 
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
-        self.name = 'bbob-biobj'
+        self.name = testbed_name_bi
         self.short_names = {}
-        self.hardesttargetlatex = '10^{-5}'
+        self.hardesttargetlatex = '10^{-5}' # used for ppfigs and pptable
         self.ppfigs_ftarget = 1e-5
         self.ppfigdim_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config
         self.pprldistr_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-5)) # possibly changed in config
-        self.pprldmany_target_values = targetValues(10**np.arange(0, -5.1, -0.1)) # possibly changed in config
-        self.pprldmany_target_range_latex = '$10^{[-5..0]}$'
+        target_values = np.append(np.append(10**np.arange(0, -5.1, -0.1), [0]), -10**np.arange(-5, -3.9, 0.2))
+        self.pprldmany_target_values = targetValues(target_values) # possibly changed in config
+        self.pprldmany_target_range_latex = '$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$'
         self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5) # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)
+        self.number_of_functions = 55
+        self.pptable_ftarget = 1e-5 # value for determining the success ratio
+        self.pptable_targetsOfInterest = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config
+        self.scenario = scenario_biobjfixed
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
@@ -366,10 +391,10 @@ def loadCurrentTestbed(isBiobjective, targetValues):
     
     global current_testbed
 
-    if not current_testbed:
-        if isBiobjective:        
-            current_testbed = GECCOBiobjBBOBNoisefreeTestbed(targetValues)
-        else:
-            current_testbed = GECCOBBOBNoisefreeTestbed(targetValues)
+    #if not current_testbed:
+    if isBiobjective:        
+        current_testbed = GECCOBiobjBBOBNoisefreeTestbed(targetValues)
+    else:
+        current_testbed = GECCOBBOBNoisefreeTestbed(targetValues)
 
     return current_testbed

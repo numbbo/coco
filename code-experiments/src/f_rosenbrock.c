@@ -24,6 +24,9 @@ static double f_rosenbrock_raw(const double *x, const size_t number_of_variables
 
   assert(number_of_variables > 1);
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   for (i = 0; i < number_of_variables - 1; ++i) {
     tmp = (x[i] * x[i] - x[i + 1]);
     s1 += tmp * tmp;
@@ -124,9 +127,7 @@ static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t f
   for (row = 0; row < dimension; ++row) {
     current_row = M + row * dimension;
     for (column = 0; column < dimension; ++column) {
-      current_row[column] = rot1[row][column];
-      if (row == column)
-        current_row[column] *= factor;
+      current_row[column] = factor * rot1[row][column];
     }
     b[row] = 0.5;
   }

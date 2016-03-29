@@ -24,6 +24,9 @@ static double f_bueche_rastrigin_raw(const double *x, const size_t number_of_var
   size_t i;
   double result;
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   result = 0.0;
   for (i = 0; i < number_of_variables; ++i) {
     tmp += cos(2 * coco_pi * x[i]);
