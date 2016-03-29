@@ -15,6 +15,7 @@ used by other modules, but does not modify settings of other modules.
 
 """
 
+import warnings
 import numpy as np
 import ppfigdim, pptable
 from . import genericsettings, pproc, pprldistr
@@ -40,13 +41,20 @@ def config(isBiobjective=None):
 	
     if isBiobjective is not None:
         genericsettings.loadCurrentTestbed(isBiobjective, pproc.TargetValues)
-        
-        if isBiobjective:
-            # pptable:
-            pptable.set_table_caption('biobjective')
 
-	genericsettings.simulated_runlength_bootstrap_sample_size = (10 + 990 / (1 + 10 * max(0, genericsettings.in_a_hurry)))
-			
+    genericsettings.simulated_runlength_bootstrap_sample_size = (10 + 990 / (1 + 10 * max(0, genericsettings.in_a_hurry)))
+
+    # TODO: implement runlength based targets once we have a reference
+    # bestAlg for the biobjective case
+    # TODO: once this is solved, make sure that expensive setting is not
+    # available if no bestAlg or other reference algorithm is available
+    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+        if (genericsettings.isExpensive in (True, 1) or
+                genericsettings.runlength_based_targets in (True, 1)):
+            warnings.warn('Expensive setting not yet supported with bbob-biobj testbed; using non-expensive setting instead.')
+            genericsettings.isExpensive = False
+            genericsettings.runlength_based_targets = False
+  
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets 
     if genericsettings.runlength_based_targets in (True, 1):
         print 'Using bestGECCO2009 based target values: now for each function the target ' + \
@@ -62,6 +70,8 @@ def config(isBiobjective=None):
         if genericsettings.current_testbed:
             
             testbed = genericsettings.current_testbed  
+            
+            testbed.scenario = genericsettings.scenario_rlbased
             # genericsettings (to be used in rungeneric2 while calling pprldistr.comp(...)):    
             testbed.rldValsOfInterest = pproc.RunlengthBasedTargetValues(
                                         genericsettings.target_runlengths_in_single_rldistr, 
@@ -86,6 +96,11 @@ def config(isBiobjective=None):
                                                smallest_target=1e-8 * 10**0.000,
                                                force_different_targets_factor=1,
                                                unique_target_values=True)
+                                               
+            # pptable:
+            testbed.pptable_targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
+                                                reference_data = reference_data,
+                                                force_different_targets_factor=10**-0.2)
         # pprldistr:
         pprldistr.runlen_xlimits_max = genericsettings.maxevals_fix_display / 2 if genericsettings.maxevals_fix_display else None # can be None
         pprldistr.runlen_xlimits_min = 10**-0.3  # can be None
@@ -102,12 +117,6 @@ def config(isBiobjective=None):
                       {'color': 'k', 'marker': 'o', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},
                     ] 
             
-        # pptable:
-        #pptable.table_caption=pptable.table_caption_rlbased
-        pptable.set_table_caption('rlbased')
-        pptable.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
-                                                                     reference_data = reference_data,
-                                                                     force_different_targets_factor=10**-0.2)
         
         # pptable2:
         pptable2.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 

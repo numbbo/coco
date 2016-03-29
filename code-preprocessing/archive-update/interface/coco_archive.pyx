@@ -65,7 +65,7 @@ cdef class Archive:
             self.up_to_date = False            
         return updated
         
-    def get_next_solution_text(self):            
+    def get_next_solution_text(self):
         self._tmp_text = coco_archive_get_next_solution_text(self.archive)
         tmp_text = self._tmp_text.decode('ascii')
         if tmp_text == "":

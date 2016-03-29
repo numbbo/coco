@@ -51,10 +51,13 @@ from BBOB-2009 for df = 1e-8.
 
 """
 from __future__ import absolute_import
+
 import os
 import warnings
+
 import matplotlib.pyplot as plt
 import numpy as np
+
 from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam, htmldesc, toolsdivers
 
 xlim_max = None
@@ -79,17 +82,22 @@ dimensions = genericsettings.dimensions_to_display
 def scaling_figure_caption():
 
     caption_part_one = r"""%
-        Average number of $f$-evaluations (\aRT, lines) to reach $\fopt+\Df$;
-        median number of $f$-evaluations (+) to reach the most difficult
-        target that was reached not always but at least once; maximum number of
-        $f$-evaluations in any trial ({\color{red}$\times$}); """ + (r"""interquartile 
-        range with median (notched boxes) of simulated runlengths
-        to reach $\fopt+\Df$;""" if genericsettings.scaling_figures_with_boxes 
-        else "") + """ all values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """
+        Scaling of runtime to reach $\fopt+10^{\#}$ with dimension;
+        runtime is measured in number of $f$-evaluations and $\#$ is given in the legend;
+        Lines: average runtime (\aRT);
+        Cross (+): median runtime of successful runs to reach the most difficult
+        target that was reached at least once (but not always);
+        Cross ({\color{red}$\times$}): maximum number of
+        $f$-evaluations in any trial. """ + (r"""Notched
+        boxes: interquartile range with median of simulated runs;
+        % to reach $\fopt+10^{\#}$.
+        """ if genericsettings.scaling_figures_with_boxes else "") + """%
+        % Colors represent different target values. 
+        All values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """
         plotted as $\log_{10}$ values versus dimension. %
         """
-        
-    #""" .replace('REPLACE_THIS', r"interquartile range with median (notched boxes) of simulated runlengths to reach $\fopt+\Df$;" 
+
+    #""" .replace('REPLACE_THIS', r"interquartile range with median (notched boxes) of simulated runlengths to reach $\fopt+\Df$;"
     #                if genericsettings.scaling_figures_with_boxes else '')
     #    # r"(the exponent is given in the legend of #1). " + 
     #    "For each function and dimension, $\\aRT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
@@ -100,9 +108,10 @@ def scaling_figure_caption():
     #    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
     #    "function value.  " +
     scaling_figure_caption_fixed = caption_part_one + r"""%
-        Shown are $\Df = 10^{\{values_of_interest\}}$.  
+        % Shown are $\Df = 10^{\{values_of_interest\}}$.  
         Numbers above \aRT-symbols (if appearing) indicate the number of trials
-        reaching the respective target. """ + (r"""The light thick line with
+        reaching the respective target. """ + (  # TODO: add here "(out of XYZ trials)"
+        r"""The light thick line with
         diamonds indicates the respective best result from BBOB-2009 for
         $\Df=10^{-8}$. """ if genericsettings.current_testbed.name !=
         'bbob-biobj' else "") + """Horizontal lines mean linear scaling, slanted
@@ -124,14 +133,21 @@ def scaling_figure_caption():
         # r"Shown is the \aRT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \aRT\ of the GECCO-BBOB-2009 best algorithm " + 
         # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
 
-    
-    values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
-    if genericsettings.runlength_based_targets:
-        return scaling_figure_caption_rlbased.replace('values_of_interest', 
-                                        ', '.join(values_of_interest.labels()))
+    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+        figure_caption = scaling_figure_caption_fixed.replace('\\fopt', '\\hvref')
+    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            figure_caption = scaling_figure_caption_rlbased
+        else:
+            figure_caption = scaling_figure_caption_fixed
     else:
-        return scaling_figure_caption_fixed.replace('values_of_interest', 
-                                        ', '.join(values_of_interest.loglabels()))
+        warnings.warn("Current settings do not support ppfigdim caption.")
+
+    values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
+    figure_caption = figure_caption.replace('values_of_interest',
+                                          ', '.join(values_of_interest.labels()))
+    return figure_caption
 
 def beautify(axesLabel=True):
     """Customize figure presentation.
@@ -530,16 +546,9 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
 
     dictFunc = dsList.dictByFunc()
-
     values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
-    ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
-                                dictFunc[dictFunc.keys()[0]][0].algId,
-                                htmlPage = ppfig.HtmlPage.ONE,
-                                values_of_interest = values_of_interest,
-                                isBiobjective = dsList.isBiobjective(),
-                                functionGroups = dsList.getFuncGroups())
 
-    key = 'bbobppfigdimlegendrlbased' if genericsettings.runlength_based_targets else 'bbobppfigdimlegendfixed'
+    key = 'bbobppfigdimlegend' + genericsettings.current_testbed.scenario
     joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
     caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
 

@@ -80,8 +80,8 @@ def ecdfs_figure_caption(target):
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
                 r"(FEvals/DIM) for " +
-                str(len(genericsettings.current_testbed.pprldmany_target_range_latex)) +
-                r" targets in " + 
+                str(len(genericsettings.current_testbed.pprldmany_target_values)) +
+                r" targets with target precision in " + 
                 str(genericsettings.current_testbed.pprldmany_target_range_latex) +
                 r" for all functions and subgroups in #1-D. " + ( best2009text
                 if genericsettings.current_testbed.name != 'bbob-biobj' else "")
@@ -107,6 +107,9 @@ def ecdfs_figure_caption(target):
 def scaling_figure_caption_html(target):
     # need to be used in rungenericmany.py!?
     assert len(target) == 1
+    if genericsettings.current_testbed.name == 'bbob-biobj':
+        s = htmldesc.getValue('##bbobppfigslegendbiobjfixed##').replace('BBOBPPFIGSFTARGET', 
+                                                       toolsdivers.number_to_html(target.label(0)))        
     if isinstance(target, pproc.RunlengthBasedTargetValues):
         s = htmldesc.getValue('##bbobppfigslegendrlbased##').replace('BBOBPPFIGSFTARGET', 
                                                          toolsdivers.number_to_html(target.label(0)))
@@ -121,14 +124,42 @@ def scaling_figure_caption_html(target):
 
 def ecdfs_figure_caption_html(target, dimension):
     assert len(target) == 1
-    if isinstance(target, pproc.RunlengthBasedTargetValues):
+	
+    if genericsettings.current_testbed.name == 'bbob-biobj':
+        s = htmldesc.getValue('##bbobECDFslegendbiobjfixed%d##' % dimension)
+    elif isinstance(target, pproc.RunlengthBasedTargetValues):
         s = htmldesc.getValue('##bbobECDFslegendrlbased%d##' % dimension).replace('REFERENCEALGORITHM', 
                                                          target.reference_algorithm)
     else:
-        s = htmldesc.getValue('##bbobECDFslegendstandard%d##' % dimension)
+        s = htmldesc.getValue('##bbobECDFslegendfixed%d##' % dimension)
     return s
 
+def get_ecdfs_single_fcts_caption():
+    ''' For the moment, only the bi-objective case is covered! '''
+    s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
+         of objective function evaluations divided by dimension (FEvals/DIM) for the $""" +
+            str(len(genericsettings.current_testbed.pprldmany_target_values)) +
+            r"$ targets " + 
+            str(genericsettings.current_testbed.pprldmany_target_range_latex) +
+            r" for functions $f_1$ to $f_{16}$ and all dimensions. "
+            )
+    return s
 
+def get_ecdfs_all_groups_caption():
+    ''' For the moment, only the bi-objective case is covered! '''
+#    s = (r"Bootstrapped empirical cumulative distribution of the number " +
+#            r"of objective function evaluations divided by dimension " +
+#            r"(FEvals/DIM) for " +
+    s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes, measured in number
+         of objective function evaluations, divided by dimension (FEvals/DIM) for the $""" +
+            str(len(genericsettings.current_testbed.pprldmany_target_values)) +
+            r"$ targets " + 
+            str(genericsettings.current_testbed.pprldmany_target_range_latex) +
+            r" for all function groups and all dimensions. The aggregation" +
+            r" over all 55 functions is shown in the last plot."
+            )
+    return s
+    
 def plotLegend(handles, maxval=None):
     """Display right-side legend.
     
@@ -453,11 +484,12 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
         if f in funInfos.keys():
             plt.gca().set_title(funInfos[f], fontsize=fontSize)
 
+        functions_with_legend = genericsettings.current_testbed.functions_with_legend
         isLegend = False
         if legend:
             plotLegend(handles)
         elif 1 < 3:
-            if f in (1, 24, 101, 130) and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
+            if f in functions_with_legend and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
                 isLegend = True
 
         beautify(legend=isLegend, rightlegend=legend)
@@ -529,7 +561,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
         if legend:
             plotLegend(handles)
         else:
-            if f in (1, 24, 101, 130):
+            if f in functions_with_legend:
                 toolsdivers.legend()
 
         saveFigure(filename, figFormat=genericsettings.getFigFormats(), verbose=verbose)

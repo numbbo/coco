@@ -28,17 +28,35 @@
  */
 void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y) {
   /* implements a safer version of problem->evaluate(problem, x, y) */
-  assert(problem != NULL);
+	size_t i, j;
+	assert(problem != NULL);
   assert(problem->evaluate_function != NULL);
+
+  /* Set objective vector to INFINITY if the decision vector contains any INFINITY values */
+	for (i = 0; i < coco_problem_get_dimension(problem); i++) {
+		if (coco_is_inf(x[i])) {
+			for (j = 0; j < coco_problem_get_number_of_objectives(problem); j++) {
+				y[j] = fabs(x[i]);
+			}
+	  	return;
+		}
+  }
+
+  /* Set objective vector to NAN if the decision vector contains any NAN values */
+  if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
+  	coco_vector_set_to_nan(y, coco_problem_get_number_of_objectives(problem));
+  	return;
+  }
+
   problem->evaluate_function(problem, x, y);
   problem->evaluations++; /* each derived class has its own counter, only the most outer will be visible */
-#if 1
+
   /* A little bit of bookkeeping */
   if (y[0] < problem->best_observed_fvalue[0]) {
     problem->best_observed_fvalue[0] = y[0];
     problem->best_observed_evaluation[0] = problem->evaluations;
   }
-#endif
+
 }
 
 /**
@@ -320,6 +338,24 @@ size_t coco_problem_get_evaluations(const coco_problem_t *problem) {
 }
 
 /**
+ * @brief Returns 1 if the best parameter is not (close to) zero and 0 otherwise.
+ */
+static int coco_problem_best_parameter_not_zero(const coco_problem_t *problem) {
+	size_t i = 0;
+	int zero = 0;
+
+	if (coco_vector_contains_nan(problem->best_parameter, problem->number_of_variables))
+		return 1;
+
+	while (i < problem->number_of_variables && !zero) {
+	      zero = coco_double_almost_equal(problem->best_parameter[i], 0, 1e-9);
+	      i++;
+	  }
+
+	return zero;
+}
+
+/**
  * @note Can be used to prevent unnecessary burning of CPU time.
  */
 int coco_problem_final_target_hit(const coco_problem_t *problem) {
@@ -332,6 +368,7 @@ int coco_problem_final_target_hit(const coco_problem_t *problem) {
   return problem->best_observed_fvalue[0] <= problem->best_value[0] + problem->final_target_delta[0] ?
     1 : 0;
 }
+
 /**
  * @note Tentative...
  */
@@ -664,12 +701,16 @@ static void coco_problem_stacked_free(coco_problem_t *problem) {
  * 
  * This is particularly useful for generating multi-objective problems, e.g. a bi-objective problem from two
  * single-objective problems. The stacked problem must behave like a normal COCO problem accepting the same
- * input.
+ * input. The region of interest in the decision space is defined by parameters smallest_values_of_interest
+ * and largest_values_of_interest, which are two arrays of size equal to the dimensionality of both problems.
  *
  * @note Regions of interest in the decision space must either agree or at least one of them must be NULL.
  * @note Best parameter becomes somewhat meaningless, but the nadir value make sense now.
  */
-static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1, coco_problem_t *problem2) {
+static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1,
+																										 coco_problem_t *problem2,
+																										 const double *smallest_values_of_interest,
+																										 const double *largest_values_of_interest) {
 
   const size_t number_of_variables = coco_problem_get_dimension(problem1);
   const size_t number_of_objectives = coco_problem_get_number_of_objectives(problem1)
@@ -678,7 +719,6 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1, c
       + coco_problem_get_number_of_constraints(problem2);
   size_t i;
   char *s;
-  const double *smallest, *largest;
   coco_problem_stacked_data_t *data;
   coco_problem_t *problem; /* the new coco problem */
 
@@ -697,30 +737,16 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1, c
   if (number_of_constraints > 0)
     problem->evaluate_constraint = coco_problem_stacked_evaluate_constraint;
 
-  /* set/copy ROI boundaries */
-  smallest = problem1->smallest_values_of_interest;
-  if (smallest == NULL)
-    smallest = problem2->smallest_values_of_interest;
-
-  largest = problem1->largest_values_of_interest;
-  if (largest == NULL)
-    largest = problem2->largest_values_of_interest;
-
+	assert(smallest_values_of_interest);
+	assert(largest_values_of_interest);
   for (i = 0; i < number_of_variables; ++i) {
-    if (problem2->smallest_values_of_interest != NULL)
-      assert(smallest[i] == problem2->smallest_values_of_interest[i]);
-    if (problem2->largest_values_of_interest != NULL)
-      assert(largest[i] == problem2->largest_values_of_interest[i]);
-
-    if (smallest != NULL)
-      problem->smallest_values_of_interest[i] = smallest[i];
-    if (largest != NULL)
-      problem->largest_values_of_interest[i] = largest[i];
-
-    if (problem->best_parameter) /* logger_bbob doesn't work then anymore */
-      coco_free_memory(problem->best_parameter);
-    problem->best_parameter = NULL;
+    problem->smallest_values_of_interest[i] = smallest_values_of_interest[i];
+    problem->largest_values_of_interest[i] = largest_values_of_interest[i];
   }
+
+	if (problem->best_parameter) /* logger_bbob doesn't work then anymore */
+		coco_free_memory(problem->best_parameter);
+	problem->best_parameter = NULL;
 
   /* Compute the ideal and nadir values */
   assert(problem->best_value);

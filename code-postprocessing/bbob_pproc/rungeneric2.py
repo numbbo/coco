@@ -23,8 +23,21 @@ import numpy
 import numpy as np
 import matplotlib
 
+if __name__ == "__main__":
+    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
+    filepath = os.path.split(sys.argv[0])[0]
+    # Add the path to bbob_pproc/.. folder
+    sys.path.append(os.path.join(filepath, os.path.pardir))
+    try:
+        import bbob_pproc as cocopp
+    except ImportError:
+        import cocopp
+    res = cocopp.rungeneric2.main(sys.argv[1:])
+    sys.exit(res)
+
+from . import genericsettings, ppfig, toolsdivers
+
 ppfig2_ftarget = 1e-8  # a hack, used in ppfig2.main 
-target_runlength = 10 # used for ppfigs.main
 
 # genericsettings.summarized_target_function_values[0] might be another option
 
@@ -343,6 +356,17 @@ def main(argv=None):
             raise Usage('Data Mismatch: \n  ' + ' '.join(txt)
                         + '\nTry using --noise-free or --noisy flags.')
 
+        algName0 = toolsdivers.str_to_latex(
+            set(i[0] for i in dsList0.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
+        algName1 = toolsdivers.str_to_latex(
+            set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.two_algorithm_file_name),
+            "%s vs %s" % (algName1, algName0),
+            htmlPage=ppfig.HtmlPage.TWO,
+            isBiobjective=dsList0.isBiobjective(),
+            functionGroups=dsList0.getFuncGroups())
+
         if genericsettings.isFig:
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
@@ -536,29 +560,19 @@ def main(argv=None):
                                       outputdir,
                                       '%s' % (nGroup), genericsettings.verbose)
 
-            if isinstance(pptable2.targetsOfInterest, pproc.RunlengthBasedTargetValues):
-                prepend_to_file(os.path.join(outputdir,
-                            'bbob_pproc_commands.tex'), 
-                            ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
-                             pptable2.table_caption_expensive, 
-                             '}'
-                            ])
-            else:
-                prepend_to_file(os.path.join(outputdir,
-                            'bbob_pproc_commands.tex'), 
-                            ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
-                             pptable2.table_caption, 
-                             '}'
-                            ])
-                            
-            htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')            
-            key =  '##bbobpptablestwolegendexpensive##' if isinstance(pptable2.targetsOfInterest, pproc.RunlengthBasedTargetValues) else '##bbobpptablestwolegend##'
+            prepend_to_file(os.path.join(outputdir,
+                        'bbob_pproc_commands.tex'), 
+                        ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
+                         pptable2.get_table_caption(), 
+                         '}'
+                        ])
+                        
+            htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')
+            key =  '##bbobpptablestwolegend%s##' % (genericsettings.current_testbed.scenario)
             replace_in_file(htmlFileName, '##bbobpptablestwolegend##', htmldesc.getValue(key))
                         
-            alg0 = set(i[0] for i in dsList0.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, '')[0:3]
-            alg1 = set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, '')[0:3]
-            replace_in_file(htmlFileName, 'algorithmAshort', alg0)
-            replace_in_file(htmlFileName, 'algorithmBshort', alg1)
+            replace_in_file(htmlFileName, 'algorithmAshort', algName0[0:3])
+            replace_in_file(htmlFileName, 'algorithmBshort', algName1[0:3])
             
             for i, alg in enumerate(args):
                 replace_in_file(htmlFileName, 'algorithm' + abc[i], str_to_latex(strip_pathname1(alg)))
@@ -575,7 +589,7 @@ def main(argv=None):
             ftarget = genericsettings.current_testbed.ppfigs_ftarget
             if genericsettings.runlength_based_targets:
                 reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
-                ftarget = RunlengthBasedTargetValues([target_runlength],  # TODO: make this more variable but also consistent
+                ftarget = RunlengthBasedTargetValues([genericsettings.target_runlength],  # TODO: make this more variable but also consistent
                                                      reference_data = reference_data)
             ppfigs.main(dictAlg, 
                         genericsettings.two_algorithm_file_name, 

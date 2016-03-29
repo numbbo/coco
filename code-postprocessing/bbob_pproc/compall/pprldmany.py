@@ -475,6 +475,18 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
                  parentHtmlFileName=parentHtmlFileName,
                  plotType=PlotType.DIM)
 
+            dictFG = pp.dictAlgByFuncGroup(dictAlg)
+            for fg, entries in dictFG.iteritems():
+
+                main(entries,
+                     isBiobjective,
+                     order=sortedAlgs,
+                     outputdir=single_fct_output_dir,
+                     info='%s' % (fg),
+                     verbose=verbose,
+                     parentHtmlFileName=parentHtmlFileName,
+                     plotType=PlotType.DIM)
+        
         dictFG = pp.dictAlgByFun(dictAlg)
         for fg, tmpdictAlg in dictFG.iteritems():
 
@@ -488,15 +500,16 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
                      parentHtmlFileName=parentHtmlFileName,
                      plotType=PlotType.DIM)
 
-            dictDim = pp.dictAlgByDim(tmpdictAlg)
-            for d, entries in dictDim.iteritems():
-                main(entries,
-                     isBiobjective,
-                     order=sortedAlgs,
-                     outputdir=single_fct_output_dir,
-                     info='f%03d_%02dD' % (fg, d),
-                     verbose=verbose,
-                     parentHtmlFileName=parentHtmlFileName)
+            if not (isSingleAlgorithm and isBiobjective):
+                dictDim = pp.dictAlgByDim(tmpdictAlg)
+                for d, entries in dictDim.iteritems():
+                    main(entries,
+                         isBiobjective,
+                         order=sortedAlgs,
+                         outputdir=single_fct_output_dir,
+                         info='f%03d_%02dD' % (fg, d),
+                         verbose=verbose,
+                         parentHtmlFileName=parentHtmlFileName)
 
         if isSingleAlgorithm:
             functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
@@ -563,7 +576,10 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         tmp = {dimension: tmp[dimension]}
     dimList = tmp.keys()
 
-
+    # The sort order will be defined inside this function.    
+    if plotType == PlotType.DIM:
+        order = []
+        
     # Collect data
     # Crafting effort correction: should we consider any?
     CrEperAlg = {}
@@ -598,9 +614,12 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     maxevalsbest2009 = []
     target_values = genericsettings.current_testbed.pprldmany_target_values
 
-    for dim, dictDim in pp.dictAlgByDim(dictAlg).iteritems():
+    dictDimList = pp.dictAlgByDim(dictAlg)
+    dims = sorted(dictDimList)
+    for i, dim in enumerate(dims):
         divisor = dim if divide_by_dimension else 1
 
+        dictDim = dictDimList[dim]
         dictFunc = pp.dictAlgByFun(dictDim)
         for f, dictAlgperFunc in dictFunc.iteritems():
             if function_IDs and f not in function_IDs:
@@ -634,6 +653,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                     keyValue = alg
                     if plotType == PlotType.DIM: 
                         keyValue = '%d-D' % (dim)
+                        if keyValue not in order:                        
+                            order.append(keyValue)
                     elif plotType == PlotType.FUNC:
                         keyValue = 'f%d' % (f)
                     dictData.setdefault(keyValue, []).extend(x)
@@ -694,6 +715,11 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         args['markerfacecolor'] = 'None'
         args['markeredgecolor'] = args['color']
         args['label'] = algname_to_label(alg)
+        if plotType == PlotType.DIM:
+            args['marker'] = genericsettings.dim_related_markers[i]
+            args['markeredgecolor'] = genericsettings.dim_related_colors[i]
+            args['color'] = genericsettings.dim_related_colors[i]
+            
         #args['markevery'] = perfprofsamplesize # option available in latest version of matplotlib
         #elif len(show_algorithms) > 0:
             #args['color'] = 'wheat'
@@ -752,13 +778,22 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
         dictKey = dictFG.keys()[0]
         functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
-        text = functionGroups[dictKey]
+        text = '%s\n%s, %d-D' % (genericsettings.current_testbed.name,
+                                 functionGroups[dictKey], 
+                                 dimList[0])
     else:
-        text = ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f')
-    if not (plotType == PlotType.DIM):    
-        text += ',%d-D' % dimList[0]
+        text = '%s - %s' % (genericsettings.current_testbed.name,
+                            ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f'))
+        if not (plotType == PlotType.DIM):    
+            text += ', %d-D' % dimList[0]
+    # add number of instances 
+    text += '\n'    
+    for alg in algorithms_with_data:
+        text += '%d, ' % len(dictAlgperFunc[alg][0].instancenumbers)
+    text = text.rstrip(', ')
+    text += ' instances'
     plt.text(0.01, 0.98, text, horizontalalignment="left",
-             verticalalignment="top", transform=plt.gca().transAxes)
+             verticalalignment="top", transform=plt.gca().transAxes, size='small')
     if len(dictFunc) == 1:
         plt.title(' '.join((str(dictFunc.keys()[0]),
                   genericsettings.current_testbed.short_names[dictFunc.keys()[0]])))

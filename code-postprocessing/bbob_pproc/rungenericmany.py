@@ -23,8 +23,6 @@ import warnings
 import numpy
 import matplotlib
 
-target_runlength = 10 # used for ppfigs.main
-
 if __name__ == "__main__":
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
     # matplotlib.use('pdf')
@@ -304,16 +302,16 @@ def main(argv=None):
         plt.rc("legend", **inset.rclegend)
         plt.rc('pdf', fonttype = 42)
 
+        ppfig.copy_js_files(outputdir)
+
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.many_algorithm_file_name),
-            '', # algorithms names are clearly visible in the figure
-            htmlPage = ppfig.HtmlPage.MANY,
-            isBiobjective = dsList[0].isBiobjective(),
-            functionGroups = dictAlg[sortedAlgs[0]].getFuncGroups()
+            '',  # algorithms names are clearly visible in the figure
+            htmlPage=ppfig.HtmlPage.MANY,
+            isBiobjective=dsList[0].isBiobjective(),
+            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups()
         )
 
-        ppfig.copy_js_files(outputdir)
-        
         # convergence plots
         if genericsettings.isConv:
             ppconverrorbars.main(dictAlg, 
@@ -379,16 +377,9 @@ def main(argv=None):
             print "ECDFs of run lengths figures done."
 
         if genericsettings.isTab:
-            if genericsettings.isExpensive:
-                prepend_to_file(os.path.join(outputdir,
-                            'bbob_pproc_commands.tex'), 
-                            ['\providecommand{\\bbobpptablesmanylegend}[1]{' + 
-                             pptables.tables_many_expensive_legend + '}'])
-            else:
-                prepend_to_file(os.path.join(outputdir,
-                            'bbob_pproc_commands.tex'), 
-                            ['\providecommand{\\bbobpptablesmanylegend}[1]{' + 
-                             pptables.tables_many_legend + '}'])
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+                            ['\providecommand{\\bbobpptablesmanylegend}[1]{' +
+                             pptables.get_table_caption() + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictng in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictng)
@@ -413,7 +404,7 @@ def main(argv=None):
             ftarget = genericsettings.current_testbed.ppfigs_ftarget
             if genericsettings.runlength_based_targets:
                 reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
-                ftarget = pproc.RunlengthBasedTargetValues([target_runlength],  # TODO: make this more variable but also consistent
+                ftarget = pproc.RunlengthBasedTargetValues([genericsettings.target_runlength],  # TODO: make this more variable but also consistent
                                                            reference_data = reference_data)
             ppfigs.main(dictAlg, 
                         genericsettings.many_algorithm_file_name, 
