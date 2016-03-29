@@ -220,6 +220,9 @@ except ImportError:
     def check_output(*popenargs, **kwargs):
         r"""Run command with arguments and return its output as a byte string.
         Backported from Python 2.7 as it's implemented as pure python on stdlib.
+
+        WARNING: This method is also defined in ../../code-experiments/tools/cocoutils.py.
+        If you change something you have to change it in both files.
         """
         process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
         output, unused_err = process.communicate()
@@ -236,7 +239,11 @@ except ImportError:
 def git(args):
     """Run a git command and return its output.
 
-    All errors are deemed fatal and the system will quit."""
+    All errors are deemed fatal and the system will quit.
+
+    WARNING: This method is also defined in ../../code-experiments/tools/cocoutils.py.
+    If you change something you have to change it in both files.
+    """
     full_command = ['git']
     full_command.extend(args)
     try:
@@ -251,7 +258,11 @@ def git(args):
 git_version = None
 def getGitVersion(pep440=False):
     """Return somewhat readible version number from git, like
-    '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'"""
+    '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'
+
+    WARNING: This method is also defined in ../../code-experiments/tools/cocoutils.py.
+    If you change something you have to change it in both files.
+    """
     
     global git_version
     if not git_version:
