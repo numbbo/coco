@@ -82,13 +82,18 @@ dimensions = genericsettings.dimensions_to_display
 def scaling_figure_caption():
 
     caption_part_one = r"""%
-        Average number of $f$-evaluations (\aRT, lines) to reach $\fopt+\Df$;
-        median number of $f$-evaluations (+) to reach the most difficult
-        target that was reached not always but at least once; maximum number of
-        $f$-evaluations in any trial ({\color{red}$\times$}); """ + (r"""interquartile 
-        range with median (notched boxes) of simulated runlengths
-        to reach $\fopt+\Df$;""" if genericsettings.scaling_figures_with_boxes 
-        else "") + """ all values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """
+        Scaling of runtime to reach $\fopt+10^{\#}$ with dimension;
+        runtime is measured in number of $f$-evaluations and $\#$ is given in the legend;
+        Lines: average runtime (\aRT);
+        Cross (+): median runtime of successful runs to reach the most difficult
+        target that was reached at least once (but not always);
+        Cross ({\color{red}$\times$}): maximum number of
+        $f$-evaluations in any trial. """ + (r"""Notched
+        boxes: interquartile range with median of simulated runs;
+        % to reach $\fopt+10^{\#}$.
+        """ if genericsettings.scaling_figures_with_boxes else "") + """%
+        % Colors represent different target values. 
+        All values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """
         plotted as $\log_{10}$ values versus dimension. %
         """
 
@@ -103,9 +108,10 @@ def scaling_figure_caption():
     #    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
     #    "function value.  " +
     scaling_figure_caption_fixed = caption_part_one + r"""%
-        Shown are $\Df = 10^{\{values_of_interest\}}$.  
+        % Shown are $\Df = 10^{\{values_of_interest\}}$.  
         Numbers above \aRT-symbols (if appearing) indicate the number of trials
-        reaching the respective target. """ + (r"""The light thick line with
+        reaching the respective target. """ + (  # TODO: add here "(out of XYZ trials)"
+        r"""The light thick line with
         diamonds indicates the respective best result from BBOB-2009 for
         $\Df=10^{-8}$. """ if genericsettings.current_testbed.name !=
         'bbob-biobj' else "") + """Horizontal lines mean linear scaling, slanted
