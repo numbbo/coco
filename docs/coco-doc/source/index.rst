@@ -5,8 +5,8 @@ COCO: A platform for Comparing Continuous Optimizers in a Black-Box Setting
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. the next two lines are necessary in LaTeX. They will be automatically 
-  replaced to put away the \chapter level as ^^^ and let the "current" level
-  become \section. 
+  replaced to put away the \chapter level as ??? and let the "current" level
+  becomes \section. 
 
 .. CHAPTERTITLE
 .. CHAPTERUNDERLINE
@@ -627,6 +627,12 @@ of the French National Research Agency.
 .. raw:: html
     
     <H2>References</H2>
+
+.. this document: 
+.. .. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
+   `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
+   Setting`__.
+.. .. __: http://numbbo.github.io/coco-doc/
 
 .. [BBO2016perf] The BBOBies (2016). `COCO: Performance Assessment`__. 
 __ http://numbbo.github.io/coco-doc/perf-assessment

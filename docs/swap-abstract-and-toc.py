@@ -1,7 +1,11 @@
 #! /usr/bin/env python 
-"""Moves '\\tableofcontents' behind the abstract. 
+"""In effect, this script moves ``\\tableofcontents`` behind the abstract and
+calls ``pdflatex`` 4 times. 
 
-Folder and filename to work upon are defined as global variables. 
+The file to work upon is the first input argument. 
+
+Details: First, all ``\\tableofcontents`` are incommented, second, the command 
+is written directly behind ``\end{abstract}``. 
 
 """
 
@@ -30,7 +34,13 @@ def change2(line, old, new):
 condition = condition1
 change = change1
 
+def git_revision():
+    nb_commits = check_output('git rev-list --count --first-parent HEAD'.split())
+    last_commit_id = check_output('git describe --always'.split())
+    return '-'.join(['rev', nb_commits.strip(), last_commit_id.strip()])
+    
 def main(old, new, *files):
+    """replace str `old` with str `new` in each of `files`."""
     global condition
     global change
     if old.startswith("line.startswith."):
@@ -63,18 +73,19 @@ if __name__ == "__main__":
     if len(sys.argv) < 2: 
         print(__doc__)
     else:
-        done = False
         file = sys.argv[1]
         folder = os.path.dirname(file)
         filename = os.path.split(file)[-1]
-        with open(file, 'rt') as f:
-           if r'\end{abstract}\tableofcontents' in f.read():
-               print("abstract-tableofcontents swap was already done, aborting...")
-               done = True
-
-        if not done:
-            main(r'\tableofcontents', r'%\tableofcontents', file)
-            main(r'\end{abstract}', r'\end{abstract}\tableofcontents', file)
+        
+        try:
+            rev = "%git:" + git_revision()
+        except:
+            rev = ""
+        
+        main(r'\tableofcontents', r'%\tableofcontents ' + rev, file)
+        # main(r'%%\tableofcontents', r'%\tableofcontents', file)
+        main(r'\end{abstract}', r'\end{abstract}\tableofcontents ' + rev, file)
+        # main(r'\tableofcontents%\tableofcontents', r'\tableofcontents', file)
     
         oldwd = os.getcwd()
         try:

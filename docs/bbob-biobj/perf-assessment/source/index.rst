@@ -1,38 +1,44 @@
+.. title:: Biobjective Performance Assessment with the COCO Platform
+
 #########################################################
 Biobjective Performance Assessment with the COCO Platform
 #########################################################
 
-...
-^^^
+.. the next two lines are necessary in LaTeX. They will be automatically 
+  replaced to put away the \chapter level as ??? and let the "current" level
+  becomes \section. 
 
-.. Here we put the abstract when using LaTeX, the \abstractinrst 
-   command must be defined in the 'preamble' of latex_elements in source/conf.py,
-   the text should be defined in `abstract` of conf.py. To flip abstract and table
-   of contents, or update the table of contents, toggle the \generatetoc
-   command in the 'preamble' accordingly. 
-
-.. raw:: latex
-
-    % \abstractinrst
-    % \tableofcontents
-    \newpage 
+.. CHAPTERTITLE
+.. CHAPTERUNDERLINE
 
 .. Contents:
 
 .. .. toctree::
    :maxdepth: 2
 
-.. |coco_problem_t| replace:: 
-  ``coco_problem_t``
-.. _coco_problem_t: http://numbbo.github.io/coco-doc/C/coco_8h.html#a408ba01b98c78bf5be3df36562d99478
+.. raw:: latex
 
-.. _COCO: https://github.com/numbbo/coco
-.. |Iref| replace:: :math:`I_\mathrm{ref}`
+  % \tableofcontents is automatic with sphinx and moved behind abstract by swap...py
+  \begin{abstract}
+
+.. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY (though it seems the latter is not used)
 
 This document details the specificities when assessing the performance of
 numerical black-box optimizers on multi-objective problems within the COCO_
-platform and in particular on the biobjective test suite ``bbob-biobj``,
-described in more detail in [TUS2016]_ .
+platform and in particular on the biobjective test suite |bbob-biobj|_.
+
+.. raw:: latex
+
+  \end{abstract}
+  \newpage
+
+
+.. |bbob-biobj| replace:: ``bbob-biobj``
+.. _bbob-biobj: http://numbbo.github.io/coco-doc/bbob-biobj/functions
+.. |coco_problem_t| replace:: ``coco_problem_t``
+.. _coco_problem_t: http://numbbo.github.io/coco-doc/C/coco_8h.html#a408ba01b98c78bf5be3df36562d99478
+.. _COCO: https://github.com/numbbo/coco
+.. |Iref| replace:: :math:`I_\mathrm{ref}`
 
 The performance assessment in the COCO_ platform is invariably based on the
 measurement of the *runtime* until a *quality indicator* reaches a predefined
@@ -45,9 +51,11 @@ each given time step, the function value of the best solution the algorithm has
 obtained (evaluated or recommended, see [HAN2016ex]_) before or at this time
 step. 
 
-In the bi- and multi-objective case, the assessed quality indicator at the
-given time step will be a hypervolume indicator computed from *all* solutions
-obtained (evaluated or recommended) before or at this time step. 
+In the bi- and multi-objective case, e.g. on the biobjective test suite
+``bbob-biobj`` described in more detail in [TUS2016]_, the assessed quality
+indicator at the given time step is a hypervolume indicator computed from
+*all* solutions obtained (evaluated or recommended) before or at this time
+step. 
 
 .. [#] As usual, time is considered as number of function evaluations and, 
   consequently, runtime is measured in number of function evaluations.
@@ -351,12 +359,16 @@ of the French National Research Agency.
     <H2>References</H2>
 
    
-.. [coco-perf-assessment] The BBOBies. **COCO: Performance Assessment**. http://numbbo.github.io/coco-doc/perf-assessment/
+.. [coco-perf-assessment] The BBOBies (2016). `COCO: Performance Assessment`__.
+.. __: http://numbbo.github.io/coco-doc/perf-assessment
 
-.. [coco-doc] The BBOBies. **COCO: A platform for Comparing Continuous Optimizers in a Black-Box Setting**. http://numbbo.github.io/coco-doc/
+.. [BBO2016perf] The BBOBies (2016). `Performance Assessment`__. 
+.. __: https://www.github.com
 
-.. [BBO2016perf] The BBOBies: `Performance Assessment`__. 
-__ https://www.github.com
+.. [coco-doc] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
+   `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
+   Setting`__.
+.. __: http://numbbo.github.io/coco-doc/
 
 .. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
   `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, updated February 2010.
@@ -365,12 +377,12 @@ __ https://www.github.com
 
 .. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016), 
    `COCO: Experimental Procedure`__. 
-__ http://numbbo.github.io/coco-doc/experimental-setup/
+.. __: http://numbbo.github.io/coco-doc/experimental-setup/
 
 .. [TUS2016] T. Tušar, D. Brockhoff, N. Hansen, A. Auger (2016), 
   `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) 
   Test Suite`__.
-__ http://numbbo.github.io/coco-doc/bbob-biobj/functions/ 
+.. __: http://numbbo.github.io/coco-doc/bbob-biobj/functions/ 
 
 .. [ZIT2003] E. Zitzler, L. Thiele, M. Laumanns, C. M. Fonseca, and V. Grunert da Fonseca (2003). Performance Assessment of Multiobjective Optimizers: An Analysis and Review.
   *IEEE Transactions on Evolutionary Computation*, 7(2), pp. 117-132.

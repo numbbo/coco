@@ -1,11 +1,11 @@
-.. title:: COCO: The bbob-biobj Test Suite
+.. title:: COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) Test Suite
 
-$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-COCO: The Bi-objective Black Box Optimization Benchmarking (``bbob-biobj``) Test Suite
-$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+COCO_: The Bi-objective Black Box Optimization Benchmarking (``bbob-biobj``) Test Suite
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. the next two lines are necessary in LaTeX. They will be automatically 
-  replaced to put away the \chapter level as ^^^ and let the "current" level
+  replaced to put away the \chapter level as ??? and let the "current" level
   become \section. 
 
 .. CHAPTERTITLE
@@ -23,7 +23,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. raw:: latex
 
-  % \tableofcontents is automatic with sphinx and moved behind abstract by swap...py
+  % \tableofcontents TOC is automatic with sphinx and moved behind abstract by swap...py
   \begin{abstract}
 
 .. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY (though it seems the latter is not used)
@@ -41,7 +41,7 @@ of function groups, instances, and potential objective space normalization.
   \newpage
 
 
-..  <p>The <code class="docutils literal"><span
+.. old <p>The <code class="docutils literal"><span
   class="pre">bbob-biobj</span></code> test suite contains 55 bi-objective
   functions in continuous domain which are derived from combining functions
   of the well-known single-objective noiseless <code class="docutils
@@ -53,7 +53,7 @@ of function groups, instances, and potential objective space normalization.
   rationale behind our approach in terms of function groups, instances, and
   objective space normalization. </p>
 
-.. The ``bbob-biobj`` test suite contains 55 bi-objective 
+.. old The ``bbob-biobj`` test suite contains 55 bi-objective 
    functions in continuous domain which are derived from combining functions of
    the well-known single-objective noiseless ``bbob`` test suite. It will be
    used as the main test suite of the upcoming `BBOB-2016 workshop
@@ -1999,8 +1999,9 @@ Contained in the *weakly-structured - weakly-structured* function class.
    Benchmarking Numerical Multiobjective Optimizers Revisited.
    GECCO 2015: 639-646. 
    
-.. [COCO:2016] The BBOBies (2016). `COCO: A platform for Comparing Continuous 
-   Optimizers in a Black-Box Setting`__.
+.. [COCO:2016] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
+   `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
+   Setting`__.
 .. __: http://numbbo.github.io/coco-doc/
 
 .. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
