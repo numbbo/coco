@@ -48,7 +48,7 @@ def config(isBiobjective=None):
     # bestAlg for the biobjective case
     # TODO: once this is solved, make sure that expensive setting is not
     # available if no bestAlg or other reference algorithm is available
-    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+    if genericsettings.current_testbed and genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
         if (genericsettings.isExpensive in (True, 1) or
                 genericsettings.runlength_based_targets in (True, 1)):
             warnings.warn('Expensive setting not yet supported with bbob-biobj testbed; using non-expensive setting instead.')
