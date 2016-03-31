@@ -61,12 +61,7 @@ def main(verbose=True):
     
     f = open(latex_commands_for_html, 'w')
     
-    f.writelines(['\\providecommand{\\bbobloglosstablecaption}[1]{\n', 
-                  pplogloss.table_caption.replace('Figure~\\ref{fig:ERTlogloss}', 'the following figure'), '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobloglossfigurecaption}[1]{\n', 
-                  pplogloss.figure_caption.replace('Figure~\\ref{tab:ERTloss}', 'the previous figure'), '\n}\n'])
-    
-    f.writelines(['\\providecommand{\\bbobppfigslegendrlbased}[1]{\n', 
+    f.writelines(['\\providecommand{\\bbobppfigslegendrlbased}[1]{\n',
                   ppfigs.scaling_figure_caption_start_rlbased.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
     f.writelines(['\\providecommand{\\bbobppfigslegendfixed}[1]{\n', 
                   ppfigs.scaling_figure_caption_start_fixed.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
@@ -129,21 +124,26 @@ def main(verbose=True):
         ppscatterLegend = ppscatterLegend.replace('\\algorithmB', 'algorithmB')
         f.writelines(['\\providecommand{\\bbobppscatterlegend', scenario, '}[1]{\n', ppscatterLegend, '\n}\n'])
 
+        # 8. pplogloss
+        f.writelines(['\\providecommand{\\bbobloglosstablecaption', scenario, '}[1]{\n',
+                      pplogloss.table_caption().replace('Figure~\\ref{fig:ERTlogloss}',
+                                                        'the following figure'), '\n}\n'])
+        f.writelines(['\\providecommand{\\bbobloglossfigurecaption', scenario, '}[1]{\n',
+                      pplogloss.figure_caption().replace('Figure~\\ref{tab:ERTloss}',
+                                                       'the previous figure'), '\n}\n'])
+
     f.write(header)
 
     for scenario in genericsettings.all_scenarios:
         # set up scenario, especially wrt genericsettings
         if (scenario == genericsettings.scenario_rlbased):
             genericsettings.runlength_based_targets = True
-            current_testbed = None # make sure that config is doing something
             config.config(isBiobjective=False)
         elif (scenario == genericsettings.scenario_fixed):
             genericsettings.runlength_based_targets = False
-            current_testbed = None # make sure that config is doing something            
             config.config(isBiobjective=False)
         elif (scenario == genericsettings.scenario_biobjfixed):
             genericsettings.runlength_based_targets = False
-            current_testbed = None # make sure that config is doing something
             config.config(isBiobjective=True)
         else:
             warnings.warn("Scenario not supported yet in HTML")
@@ -171,8 +171,9 @@ def main(verbose=True):
         scatter_param = '$f_1$ - $f_{%d}$' % (genericsettings.current_testbed.number_of_functions)
         f.write(prepare_item('bbobppscatterlegend' + scenario, param = scatter_param))
 
-    f.write(prepare_item('bbobloglosstablecaption'))
-    f.write(prepare_item('bbobloglossfigurecaption'))
+        # 8. pplogloss
+        f.write(prepare_item('bbobloglosstablecaption' + scenario))
+        f.write(prepare_item('bbobloglossfigurecaption' + scenario))
     
     f.write(prepare_item('bbobppfigslegendrlbased'))
     f.write(prepare_item('bbobppfigslegendfixed'))
