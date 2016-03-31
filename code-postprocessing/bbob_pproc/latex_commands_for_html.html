@@ -168,6 +168,23 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
         are printed in bold.
 
 <div class="p"><!----></div>
+##bbobppscatterlegendrlbased##
+
+Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
+        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for 8 runlength-based target
+        function values for budgets between 0.5&times;<span class="roman">DIM</span> and 50&times;<span class="roman">DIM</span> evaluations.
+        Each runlength-based target f-value is chosen such that the <span class="roman">aRT</span>s of the
+         artificial algorithm for the given and a slightly easier
+        target bracket the reference budget. Markers on the upper or right edge indicate that the respective target
+        value was never reached. Markers represent dimension:
+        2:<span style="color:#00FFFF">+</span>,
+        3:\triangledown,
+        5:<span style="color:#0000FF">&#8727;</span>,
+        10:&#176;,
+        20:<span style="color:#FF0000"><span style="font-size:x-small"><sup>[<u>&#175;</u>]</sup></span></span>,
+        40:<span style="color:#FF00FF">\Diamond</span>. 
+
+<div class="p"><!----></div>
 ##bbobECDFslegendfixed5##
 
 Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 51 targets with target precision in 10<sup>[&#8722;8..2]</sup> for all functions and subgroups in 5-D. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
@@ -311,6 +328,20 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
         are printed in bold.
 
 <div class="p"><!----></div>
+##bbobppscatterlegendfixed##
+
+Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
+        of algorithmB&nbsp;(x-axis) versus algorithmA&nbsp;(y-axis) for 46 target values
+        &#8710;f &#8712; [100, 10<sup>&#8722;8</sup>] in each dimension on functions f<sub>1</sub> - f<sub>24</sub>. Markers on the upper or right edge indicate that the respective target
+        value was never reached. Markers represent dimension:
+        2:<span style="color:#00FFFF">+</span>,
+        3:\triangledown,
+        5:<span style="color:#0000FF">&#8727;</span>,
+        10:&#176;,
+        20:<span style="color:#FF0000"><span style="font-size:x-small"><sup>[<u>&#175;</u>]</sup></span></span>,
+        40:<span style="color:#FF00FF">\Diamond</span>. 
+
+<div class="p"><!----></div>
 ##bbobECDFslegendbiobjfixed5##
 
 Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 58 targets with target precision in {&#8722;10<sup>&#8722;4</sup>, &#8722;10<sup>&#8722;4.2</sup>,  &#8722;10<sup>&#8722;4.4</sup>, &#8722;10<sup>&#8722;4.6</sup>, &#8722;10<sup>&#8722;4.8</sup>, &#8722;10<sup>&#8722;5</sup>, 0, 10<sup>&#8722;5</sup>, 10<sup>&#8722;4.9</sup>, 10<sup>&#8722;4.8</sup>, ..., 10<sup>&#8722;0.1</sup>, 10<sup>0</sup>} for all functions and subgroups in 5-D. 
@@ -447,6 +478,20 @@ Bootstrapped empirical cumulative distribution of the number of objective functi
         are printed in bold.
 
 <div class="p"><!----></div>
+##bbobppscatterlegendbiobjfixed##
+
+Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
+        of algorithmB&nbsp;(x-axis) versus algorithmA&nbsp;(y-axis) for 46 target values
+        &#8710;f &#8712; [100, 10<sup>&#8722;8</sup>] in each dimension on functions f<sub>1</sub> - f<sub>55</sub>. Markers on the upper or right edge indicate that the respective target
+        value was never reached. Markers represent dimension:
+        2:<span style="color:#00FFFF">+</span>,
+        3:\triangledown,
+        5:<span style="color:#0000FF">&#8727;</span>,
+        10:&#176;,
+        20:<span style="color:#FF0000"><span style="font-size:x-small"><sup>[<u>&#175;</u>]</sup></span></span>,
+        40:<span style="color:#FF00FF">\Diamond</span>. 
+
+<div class="p"><!----></div>
 ##bbobloglosstablecaption##
 
     <span class="roman">aRT</span>&nbsp;loss ratio versus the budget in number of f-evaluations
@@ -492,40 +537,11 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
 Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of function evaluations from the longest trial divided by dimension. Black stars indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
 
 <div class="p"><!----></div>
-##bbobppscatterlegendrlbased##
-
-Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations) 
-    of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for NBTARGETS runlength-based target 
-    function values for budgets between NBLOW and NBUP evaluations. 
-    Each runlength-based target f-value is chosen such that the <span class="roman">aRT</span>s of the 
-    REFERENCEALGORITHM artificial algorithm for the given and a slightly easier 
-    target bracket the reference budget. 
-
-<div class="p"><!----></div>
-##bbobppscatterlegendfixed##
-
-Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations) 
-    of algorithmB&nbsp;(x-axis) versus algorithmA&nbsp;(y-axis) for NBTARGETS target values 
-    &#8710;f &#8712; [NBLOW, NBUP] in each dimension on functions f<sub>1</sub> - f<sub>24</sub>. 
-
-<div class="p"><!----></div>
-##bbobppscatterlegendend##
-
-Markers on the upper or right edge indicate that the respective target
-    value was never reached. Markers represent dimension: 
-    2:<span style="color:#00FFFF">+</span>, 
-    3:\triangledown, 
-    5:<span style="color:#0000FF">&#8727;</span>, 
-    10:&#176;,
-    20:<span style="color:#FF0000"><span style="font-size:x-small"><sup>[<u>&#175;</u>]</sup></span></span>, 
-    40:<span style="color:#FF00FF">\Diamond</span>. 
-
-<div class="p"><!----></div>
 ###
 
 <br /><br /><hr /><small>File translated from
 T<sub><span class="small">E</span></sub>X
 by <a href="http://hutchinson.belmont.ma.us/tth/">
 T<sub><span class="small">T</span></sub>H</a>,
-version 4.08.<br />On 27 Mar 2016, 17:46.</small>
+version 4.08.<br />On 31 Mar 2016, 11:56.</small>
 </html>

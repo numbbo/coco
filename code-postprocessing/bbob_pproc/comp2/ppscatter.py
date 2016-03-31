@@ -32,6 +32,7 @@ displayed.
 import os
 import numpy
 import numpy as np
+import warnings
 from pdb import set_trace
 from matplotlib import pyplot as plt
 try:
@@ -45,10 +46,6 @@ from .. import toolsdivers
 from .. import pproc
 
 dimensions = (2, 3, 5, 10, 20, 40)
-fixed_targets = pproc.TargetValues(np.logspace(-8, 2, 46))
-#runlength_based_targets = pproc.RunlengthBasedTargetValues(np.logspace(numpy.log10(0.5), numpy.log10(50), 8))
-# runlength_based_targets = pproc.RunlengthBasedTargetValues([0.5, 1, 3, 10, 50])
-targets = fixed_targets  # default
 
 # formattings
 markersize = 14  # modified in config.py
@@ -58,57 +55,56 @@ linewidth_rld_based = 2  # show lines because only 8 symbols are used
 max_evals_line_length = 9  # length away from the diagonal as a factor, line indicates maximal evaluations for each data
 offset = 0. #0.02 offset provides a way to move away the box boundaries to display the outer markers fully, clip_on=False is more effective 
 
-caption_start_fixed = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations) 
-    of \algorithmB\ ($x$-axis) versus \algorithmA\ ($y$-axis) for $NBTARGETS$ target values 
-    $\Df \in [NBLOW, NBUP]$ in each dimension on functions #1. """
-caption_start_rlbased = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations) 
-    of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $NBTARGETS$ runlength-based target 
-    function values for budgets between $NBLOW$ and $NBUP$ evaluations. 
-    Each runlength-based target $f$-value is chosen such that the \aRT{}s of the 
-    REFERENCE_ALGORITHM artificial algorithm for the given and a slightly easier 
-    target bracket the reference budget. """
-caption_finish = r"""Markers on the upper or right edge indicate that the respective target
-    value was never reached. Markers represent dimension: 
-    2:{\color{cyan}+}, 
-    3:{\color{green!45!black}$\triangledown$}, 
-    5:{\color{blue}$\star$}, 
-    10:$\circ$,
-    20:{\color{red}$\Box$}, 
-    40:{\color{magenta}$\Diamond$}. """
 
 def figure_caption():
-    if isinstance(targets, pproc.RunlengthBasedTargetValues):
-        s = caption_start_rlbased
-        s = s.replace('NBTARGETS', str(len(targets)))
-        s = s.replace('NBLOW', toolsdivers.number_to_latex(targets.label(0)) + 
-                      r'\times\DIM' if targets.times_dimension else '')
-        s = s.replace('NBUP', toolsdivers.number_to_latex(targets.label(-1)) + 
-                      r'\times\DIM' if targets.times_dimension else '')
-        s = s.replace('REFERENCE_ALGORITHM', targets.reference_algorithm)
-    else:
-        s = caption_start_fixed
-        s = s.replace('NBTARGETS', str(len(targets)))
-        s = s.replace('NBLOW', toolsdivers.number_to_latex(targets.label(0)))
-        s = s.replace('NBUP', toolsdivers.number_to_latex(targets.label(-1)))
-    s += caption_finish
-    return s
 
-def figure_caption_html():
-    if isinstance(targets, pproc.RunlengthBasedTargetValues):
-        s = htmldesc.getValue('##bbobppscatterlegendrlbased##')
-        s = s.replace('NBTARGETS', str(len(targets)))
-        s = s.replace('NBLOW', toolsdivers.number_to_html(targets.label(0)) + 
-                      r'\times\DIM' if targets.times_dimension else '')
-        s = s.replace('NBUP', toolsdivers.number_to_html(targets.label(-1)) + 
-                      r'\times\DIM' if targets.times_dimension else '')
-        s = s.replace('REFERENCEALGORITHM', targets.reference_algorithm)
+    caption_start_fixed = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations)
+        of \algorithmB\ ($x$-axis) versus \algorithmA\ ($y$-axis) for $NBTARGETS$ target values
+        $\Df \in [NBLOW, NBUP]$ in each dimension on functions #1. """
+
+    caption_start_rlbased = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations)
+        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $NBTARGETS$ runlength-based target
+        function values for budgets between $NBLOW$ and $NBUP$ evaluations.
+        Each runlength-based target $f$-value is chosen such that the \aRT{}s of the
+        REFERENCE_ALGORITHM artificial algorithm for the given and a slightly easier
+        target bracket the reference budget. """
+
+    caption_finish = r"""Markers on the upper or right edge indicate that the respective target
+        value was never reached. Markers represent dimension:
+        2:{\color{cyan}+},
+        3:{\color{green!45!black}$\triangledown$},
+        5:{\color{blue}$\star$},
+        10:$\circ$,
+        20:{\color{red}$\Box$},
+        40:{\color{magenta}$\Diamond$}. """
+
+
+    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+        figure_caption = caption_start_fixed + caption_finish
+    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            figure_caption = caption_start_rlbased + caption_finish
+        else:
+            figure_caption = caption_start_fixed + caption_finish
     else:
-        s = htmldesc.getValue('##bbobppscatterlegendfixed##')
-        s = s.replace('NBTARGETS', str(len(targets)))
-        s = s.replace('NBLOW', toolsdivers.number_to_html(targets.label(0)))
-        s = s.replace('NBUP', toolsdivers.number_to_html(targets.label(-1)))
-    s += htmldesc.getValue('##bbobppscatterlegendend##')
-    return s
+        warnings.warn("Current settings do not support ppfigdim caption.")
+
+    targets = genericsettings.current_testbed.ppscatter_target_values
+    figure_caption = figure_caption.replace('NBTARGETS', str(len(targets)))
+
+    if genericsettings.runlength_based_targets:
+        figure_caption = figure_caption.replace('NBLOW', toolsdivers.number_to_latex(targets.label(0)) +
+                                                         r'\times\DIM' if targets.times_dimension else '')
+        figure_caption = figure_caption.replace('NBUP', toolsdivers.number_to_latex(targets.label(-1)) +
+                                                        r'\times\DIM' if targets.times_dimension else '')
+        figure_caption = figure_caption.replace('REFERENCE_ALGORITHM', targets.reference_algorithm)
+    else:
+        figure_caption = figure_caption.replace('NBLOW', toolsdivers.number_to_latex(targets.label(0)))
+        figure_caption = figure_caption.replace('NBUP', toolsdivers.number_to_latex(targets.label(-1)))
+
+    return figure_caption
+
 
 def beautify():
     a = plt.gca()
@@ -159,6 +155,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
     dictFunc1 = dsList1.dictByFunc()
     funcs = set(dictFunc0.keys()) & set(dictFunc1.keys())
 
+    targets = genericsettings.current_testbed.ppscatter_target_values
     if isinstance(targets, pproc.RunlengthBasedTargetValues):
         linewidth = linewidth_rld_based
     else:

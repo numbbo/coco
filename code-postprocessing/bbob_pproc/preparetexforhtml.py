@@ -123,17 +123,11 @@ def main(verbose=True):
         f.writelines(['\\providecommand{\\bbobpptablesmanylegend', scenario, '}[1]{\n',
                       pptables.get_table_caption(), '\n}\n'])
 
-    ppscatterLegend = ppscatter.caption_start_rlbased.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
-    ppscatterLegend = ppscatterLegend.replace('\\algorithmA', 'algorithmA')
-    ppscatterLegend = ppscatterLegend.replace('\\algorithmB', 'algorithmB')    
-    f.writelines(['\\providecommand{\\bbobppscatterlegendrlbased}[1]{\n', ppscatterLegend, '\n}\n'])
-
-    ppscatterLegend = ppscatter.caption_start_fixed.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
-    ppscatterLegend = ppscatterLegend.replace('\\algorithmA', 'algorithmA')
-    ppscatterLegend = ppscatterLegend.replace('\\algorithmB', 'algorithmB')    
-    f.writelines(['\\providecommand{\\bbobppscatterlegendfixed}[1]{\n', ppscatterLegend, '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobppscatterlegendend}[1]{\n', 
-                  ppscatter.caption_finish, '\n}\n'])
+        # 7. ppscatter
+        ppscatterLegend = ppscatter.figure_caption().replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
+        ppscatterLegend = ppscatterLegend.replace('\\algorithmA', 'algorithmA')
+        ppscatterLegend = ppscatterLegend.replace('\\algorithmB', 'algorithmB')
+        f.writelines(['\\providecommand{\\bbobppscatterlegend', scenario, '}[1]{\n', ppscatterLegend, '\n}\n'])
 
     f.write(header)
 
@@ -173,17 +167,17 @@ def main(verbose=True):
         for dim in ['5', '20']:
             f.write(prepare_item(command_name + dim, command_name, 'dimension ' + dim))
 
+        # 7. ppscatter
+        scatter_param = '$f_1$ - $f_{%d}$' % (genericsettings.current_testbed.number_of_functions)
+        f.write(prepare_item('bbobppscatterlegend' + scenario, param = scatter_param))
+
     f.write(prepare_item('bbobloglosstablecaption'))
     f.write(prepare_item('bbobloglossfigurecaption'))
     
     f.write(prepare_item('bbobppfigslegendrlbased'))
     f.write(prepare_item('bbobppfigslegendfixed'))
     f.write(prepare_item('bbobppfigslegendend', param = '$f_1$ and $f_{24}$'))
-    
-    f.write(prepare_item('bbobppscatterlegendrlbased'))
-    f.write(prepare_item('bbobppscatterlegendfixed', param = '$f_1$ - $f_{24}$'))
-    f.write(prepare_item('bbobppscatterlegendend'))
-    
+
     f.write('\n\#\#\#\n\\end{document}\n')
 
 def prepare_item(name, command_name = '', param = ''):

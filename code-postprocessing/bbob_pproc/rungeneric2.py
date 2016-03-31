@@ -493,9 +493,9 @@ def main(argv=None):
                                  genericsettings.verbose,
                                  genericsettings.two_algorithm_file_name)
 
+        htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')
+
         if genericsettings.isScatter:
-            if genericsettings.runlength_based_targets:
-                ppscatter.targets = pproc.RunlengthBasedTargetValues(np.logspace(numpy.log10(0.5), numpy.log10(50), 8))
             ppscatter.main(dsList1, dsList0, outputdir,
                            verbose=genericsettings.verbose)
             prepend_to_file(os.path.join(outputdir,
@@ -505,7 +505,8 @@ def main(argv=None):
                              '}'
                             ])
             
-            replace_in_file(os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html'), '##bbobppscatterlegend##', ppscatter.figure_caption_html())
+            key =  '##bbobppscatterlegend%s##' % (genericsettings.current_testbed.scenario)
+            replace_in_file(htmlFileName, '##bbobppscatterlegend##', htmldesc.getValue(key))
                             
             print "Scatter plots done."
 
@@ -567,7 +568,6 @@ def main(argv=None):
                          '}'
                         ])
                         
-            htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')
             key =  '##bbobpptablestwolegend%s##' % (genericsettings.current_testbed.scenario)
             replace_in_file(htmlFileName, '##bbobpptablestwolegend##', htmldesc.getValue(key))
                         
