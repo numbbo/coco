@@ -96,7 +96,9 @@ def config(isBiobjective=None):
                                                smallest_target=1e-8 * 10**0.000,
                                                force_different_targets_factor=1,
                                                unique_target_values=True)
-                                               
+
+            testbed.ppscatter_target_values = pproc.RunlengthBasedTargetValues(np.logspace(np.log10(0.5), np.log10(50), 8))
+
             # pptable:
             testbed.pptable_targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
                                                 reference_data = reference_data,
