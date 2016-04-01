@@ -1,8 +1,8 @@
-.. title:: COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) Test Suite
+.. title:: COCO: The Bi-objective Black-Box Optimization Benchmarking (bbob-biobj) Test Suite
 
-$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-COCO_: The Bi-objective Black Box Optimization Benchmarking (``bbob-biobj``) Test Suite
-$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+COCO: The Bi-objective Black-Box Optimization Benchmarking (``bbob-biobj``) Test Suite
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. the next two lines are necessary in LaTeX. They will be automatically 
   replaced to put away the \chapter level as ??? and let the "current" level
@@ -76,14 +76,17 @@ of function groups, instances, and potential objective space normalization.
 
 .. .. Note::
   
-  For the time being, this documentation is under development and might not contain all final data.
+  For the time being, this documentation is under development and might not 
+  contain all final data.
 
 .. figure:: _figs/examples-bbob-biobj.png
    :scale: 60
    :align: center
 
-   Example plots of the Pareto front approximation, found by NSGA-II on selected ``bbob-biobj`` functions. In blue the
-   non-dominated points at the end of different independent runs, in red the points that are non-dominated over all runs.
+   Example plots of the Pareto front approximation, found by NSGA-II on
+   selected ``bbob-biobj`` functions. In blue the non-dominated points at the
+   end of different independent runs, in red the points that are
+   non-dominated over all runs.
 
 .. Tea: f_1 and f_2 should be replaced by f_\alpha and f_\beta in all plots. Also, instead of "f16 :" do "f16: "
 
@@ -1998,7 +2001,7 @@ Contained in the *weakly-structured - weakly-structured* function class.
    
 .. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
    `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
-   Setting`__, ArXiv e-print `1603.08785`__. 
+   Setting`__, *ArXiv e-prints*, `arXiv:1603.08785`__. 
 .. __: http://numbbo.github.io/coco-doc/
 .. __: http://arxiv.org/abs/1603.08785
 
@@ -2012,11 +2015,11 @@ Contained in the *weakly-structured - weakly-structured* function class.
 
 .. [HAN2011] N. Hansen, R. Ros, N. Mauny, M. Schoenauer, and A. Auger (2011). Impacts
 	of Invariance in Search: When CMA-ES and PSO Face Ill-Conditioned and
-	Non-Separable Problems. Applied Soft Computing. Vol. 11, pp. 5755-5769.
+	Non-Separable Problems. *Applied Soft Computing*. Vol. 11, pp. 5755-5769.
 	Elsevier.  
 
 .. [HAN2016ex] N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
-  `COCO: The Experimental Procedure`__, ArXiv e-print `1603.08776`__. 
+  `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__. 
 .. __: http://numbbo.github.io/coco-doc/experimental-setup/
 .. __: http://arxiv.org/abs/1603.08776
 
