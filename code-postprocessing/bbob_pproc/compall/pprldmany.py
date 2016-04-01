@@ -500,15 +500,16 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
                      parentHtmlFileName=parentHtmlFileName,
                      plotType=PlotType.DIM)
 
-            dictDim = pp.dictAlgByDim(tmpdictAlg)
-            for d, entries in dictDim.iteritems():
-                main(entries,
-                     isBiobjective,
-                     order=sortedAlgs,
-                     outputdir=single_fct_output_dir,
-                     info='f%03d_%02dD' % (fg, d),
-                     verbose=verbose,
-                     parentHtmlFileName=parentHtmlFileName)
+            if not (isSingleAlgorithm and isBiobjective):
+                dictDim = pp.dictAlgByDim(tmpdictAlg)
+                for d, entries in dictDim.iteritems():
+                    main(entries,
+                         isBiobjective,
+                         order=sortedAlgs,
+                         outputdir=single_fct_output_dir,
+                         info='f%03d_%02dD' % (fg, d),
+                         verbose=verbose,
+                         parentHtmlFileName=parentHtmlFileName)
 
         if isSingleAlgorithm:
             functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
@@ -777,17 +778,22 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
         dictKey = dictFG.keys()[0]
         functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
-        text = '%s, %d-D\n%s' % (functionGroups[dictKey], 
-                                 dimList[0], 
-                                 genericsettings.current_testbed.name)
+        text = '%s\n%s, %d-D' % (genericsettings.current_testbed.name,
+                                 functionGroups[dictKey], 
+                                 dimList[0])
     else:
         text = '%s - %s' % (genericsettings.current_testbed.name,
                             ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f'))
         if not (plotType == PlotType.DIM):    
             text += ', %d-D' % dimList[0]
-            
+    # add number of instances 
+    text += '\n'    
+    for alg in algorithms_with_data:
+        text += '%d, ' % len(dictAlgperFunc[alg][0].instancenumbers)
+    text = text.rstrip(', ')
+    text += ' instances'
     plt.text(0.01, 0.98, text, horizontalalignment="left",
-             verticalalignment="top", transform=plt.gca().transAxes)
+             verticalalignment="top", transform=plt.gca().transAxes, size='small')
     if len(dictFunc) == 1:
         plt.title(' '.join((str(dictFunc.keys()[0]),
                   genericsettings.current_testbed.short_names[dictFunc.keys()[0]])))
