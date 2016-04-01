@@ -86,6 +86,7 @@ if __name__ == "__main__":
         # main(r'%%\tableofcontents', r'%\tableofcontents', file)
         main(r'\end{abstract}', r'\end{abstract}\tableofcontents ' + rev, file)
         # main(r'\tableofcontents%\tableofcontents', r'\tableofcontents', file)
+        main(r'\author{', r'\date{\vspace{-1ex}}\author{', file)
     
         oldwd = os.getcwd()
         try:

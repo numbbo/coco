@@ -168,7 +168,7 @@ html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = 'COCO: The bbob-biobj Function Description'
+html_title = 'COCO: The Bi-objective Black-Box Optimization Benchmarking (bbob-biobj) Test Suite'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
