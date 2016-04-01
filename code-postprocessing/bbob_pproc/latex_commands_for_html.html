@@ -179,10 +179,10 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
 ##bbobppscatterlegendrlbased##
 
 Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
-        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for 8 runlength-based target
-        function values for budgets between 0.5&times;<span class="roman">DIM</span> and 50&times;<span class="roman">DIM</span> evaluations.
+        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for NBTARGETS runlength-based target
+        function values for budgets between NBLOW and NBUP evaluations.
         Each runlength-based target f-value is chosen such that the <span class="roman">aRT</span>s of the
-         artificial algorithm for the given and a slightly easier
+        REFERENCEALGORITHM artificial algorithm for the given and a slightly easier
         target bracket the reference budget. Markers on the upper or right edge indicate that the respective target
         value was never reached. Markers represent dimension:
         2:<span style="color:#00FFFF">+</span>,
@@ -371,8 +371,8 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
 ##bbobppscatterlegendfixed##
 
 Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
-        of algorithmB&nbsp;(x-axis) versus algorithmA&nbsp;(y-axis) for 46 target values
-        &#8710;f &#8712; [100, 10<sup>&#8722;8</sup>] in each dimension on functions f<sub>1</sub> - f<sub>24</sub>. Markers on the upper or right edge indicate that the respective target
+        of algorithmB&nbsp;(x-axis) versus algorithmA&nbsp;(y-axis) for NBTARGETS target values
+        &#8710;f &#8712; [NBLOW, NBUP] in each dimension on functions f<sub>1</sub> - f<sub>24</sub>. Markers on the upper or right edge indicate that the respective target
         value was never reached. Markers represent dimension:
         2:<span style="color:#00FFFF">+</span>,
         3:\triangledown,
@@ -553,8 +553,8 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
 ##bbobppscatterlegendbiobjfixed##
 
 Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
-        of algorithmB&nbsp;(x-axis) versus algorithmA&nbsp;(y-axis) for 46 target values
-        &#8710;f &#8712; [100, 10<sup>&#8722;8</sup>] in each dimension on functions f<sub>1</sub> - f<sub>55</sub>. Markers on the upper or right edge indicate that the respective target
+        of algorithmB&nbsp;(x-axis) versus algorithmA&nbsp;(y-axis) for NBTARGETS target values
+        &#8710;f &#8712; [NBLOW, NBUP] in each dimension on functions f<sub>1</sub> - f<sub>55</sub>. Markers on the upper or right edge indicate that the respective target
         value was never reached. Markers represent dimension:
         2:<span style="color:#00FFFF">+</span>,
         3:\triangledown,
@@ -595,5 +595,5 @@ Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of
 T<sub><span class="small">E</span></sub>X
 by <a href="http://hutchinson.belmont.ma.us/tth/">
 T<sub><span class="small">T</span></sub>H</a>,
-version 4.08.<br />On 01 Apr 2016, 09:56.</small>
+version 4.08.<br />On 01 Apr 2016, 14:26.</small>
 </html>

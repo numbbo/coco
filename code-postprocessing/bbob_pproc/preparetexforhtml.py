@@ -112,7 +112,7 @@ def main(verbose=True):
                       pptables.get_table_caption(), '\n}\n'])
 
         # 7. ppscatter
-        ppscatterLegend = ppscatter.figure_caption().replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
+        ppscatterLegend = ppscatter.prepare_figure_caption().replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
         ppscatterLegend = ppscatterLegend.replace('\\algorithmA', 'algorithmA')
         ppscatterLegend = ppscatterLegend.replace('\\algorithmB', 'algorithmB')
         f.writelines(['\\providecommand{\\bbobppscatterlegend', scenario, '}[1]{\n', ppscatterLegend, '\n}\n'])

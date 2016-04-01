@@ -505,8 +505,7 @@ def main(argv=None):
                              '}'
                             ])
             
-            key =  '##bbobppscatterlegend%s##' % (genericsettings.current_testbed.scenario)
-            replace_in_file(htmlFileName, '##bbobppscatterlegend##', htmldesc.getValue(key))
+            replace_in_file(htmlFileName, '##bbobppscatterlegend##', ppscatter.figure_caption(True))
                             
             print "Scatter plots done."
 

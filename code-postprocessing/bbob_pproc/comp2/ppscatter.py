@@ -56,7 +56,7 @@ max_evals_line_length = 9  # length away from the diagonal as a factor, line ind
 offset = 0. #0.02 offset provides a way to move away the box boundaries to display the outer markers fully, clip_on=False is more effective 
 
 
-def figure_caption():
+def prepare_figure_caption():
 
     caption_start_fixed = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations)
         of \algorithmB\ ($x$-axis) versus \algorithmA\ ($y$-axis) for $NBTARGETS$ target values
@@ -81,29 +81,41 @@ def figure_caption():
 
     if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
-        figure_caption = caption_start_fixed + caption_finish
+        caption = caption_start_fixed + caption_finish
     elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
-            figure_caption = caption_start_rlbased + caption_finish
+            caption = caption_start_rlbased + caption_finish
         else:
-            figure_caption = caption_start_fixed + caption_finish
+            caption = caption_start_fixed + caption_finish
     else:
         warnings.warn("Current settings do not support ppfigdim caption.")
 
+    return caption
+
+
+def figure_caption(for_html = False):
+
     targets = genericsettings.current_testbed.ppscatter_target_values
-    figure_caption = figure_caption.replace('NBTARGETS', str(len(targets)))
+    if for_html:
+        caption = htmldesc.getValue('##bbobppscatterlegend' +
+                                    genericsettings.current_testbed.scenario + '##')
+    else:
+        caption = prepare_figure_caption()
+
+    caption = caption.replace('NBTARGETS', str(len(targets)))
 
     if genericsettings.runlength_based_targets:
-        figure_caption = figure_caption.replace('NBLOW', toolsdivers.number_to_latex(targets.label(0)) +
-                                                         r'\times\DIM' if targets.times_dimension else '')
-        figure_caption = figure_caption.replace('NBUP', toolsdivers.number_to_latex(targets.label(-1)) +
-                                                        r'\times\DIM' if targets.times_dimension else '')
-        figure_caption = figure_caption.replace('REFERENCE_ALGORITHM', targets.reference_algorithm)
+        caption = caption.replace('NBLOW', toolsdivers.number_to_latex(targets.label(0)) +
+                                           r'\times\DIM' if targets.times_dimension else '')
+        caption = caption.replace('NBUP', toolsdivers.number_to_latex(targets.label(-1)) +
+                                           r'\times\DIM' if targets.times_dimension else '')
+        caption = caption.replace('REFERENCE_ALGORITHM', targets.reference_algorithm)
+        caption = caption.replace('REFERENCEALGORITHM', targets.reference_algorithm)
     else:
-        figure_caption = figure_caption.replace('NBLOW', toolsdivers.number_to_latex(targets.label(0)))
-        figure_caption = figure_caption.replace('NBUP', toolsdivers.number_to_latex(targets.label(-1)))
+        caption = caption.replace('NBLOW', toolsdivers.number_to_latex(targets.label(0)))
+        caption = caption.replace('NBUP', toolsdivers.number_to_latex(targets.label(-1)))
 
-    return figure_caption
+    return caption
 
 
 def beautify():
