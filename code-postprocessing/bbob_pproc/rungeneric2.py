@@ -586,16 +586,11 @@ def main(argv=None):
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
             plt.rc('pdf', fonttype = 42)
-            ftarget = genericsettings.current_testbed.ppfigs_ftarget
-            if genericsettings.runlength_based_targets:
-                reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
-                ftarget = RunlengthBasedTargetValues([genericsettings.target_runlength],  # TODO: make this more variable but also consistent
-                                                     reference_data = reference_data)
-            ppfigs.main(dictAlg, 
+
+            ppfigs.main(dictAlg,
                         genericsettings.two_algorithm_file_name, 
                         dsList[0].isBiobjective(),
-                        ftarget,
-                        sortedAlgs, 
+                        sortedAlgs,
                         outputdir, 
                         genericsettings.verbose)
             plt.rcdefaults()

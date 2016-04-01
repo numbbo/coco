@@ -61,13 +61,6 @@ def main(verbose=True):
     
     f = open(latex_commands_for_html, 'w')
     
-    f.writelines(['\\providecommand{\\bbobppfigslegendrlbased}[1]{\n',
-                  ppfigs.scaling_figure_caption_start_rlbased.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobppfigslegendfixed}[1]{\n', 
-                  ppfigs.scaling_figure_caption_start_fixed.replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
-    f.writelines(['\\providecommand{\\bbobppfigslegendend}[1]{\n', 
-                  ppfigs.scaling_figure_caption_end, '\n}\n'])
-
     for scenario in genericsettings.all_scenarios:
         # set up scenario, especially wrt genericsettings
         if (scenario == genericsettings.scenario_rlbased):
@@ -84,13 +77,13 @@ def main(verbose=True):
     
         # update captions accordingly    
         # 1. ppfigs
-        ppfigsftarget = (pproc.RunlengthBasedTargetValues([genericsettings.target_runlength],
-                reference_data = 'bestGECCO2009') if genericsettings.runlength_based_targets
-                else genericsettings.current_testbed.ppfigs_ftarget)
+        ppfigsftarget = genericsettings.current_testbed.ppfigs_ftarget
         ppfigsftarget = pproc.TargetValues.cast([ppfigsftarget] if numpy.isscalar(ppfigsftarget) else ppfigsftarget)
         f.writelines(['\\providecommand{\\bbobECDFslegend', scenario, '}[1]{\n', 
                   (ppfigs.ecdfs_figure_caption(ppfigsftarget)).replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
-                
+        f.writelines(['\\providecommand{\\bbobppfigslegend', scenario, '}[1]{\n',
+                      ppfigs.prepare_scaling_figure_caption().replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
+
         # 2. pprldistr
         f.writelines(['\\providecommand{\\bbobpprldistrlegend', scenario , '}[1]{\n', 
                   (pprldistr.caption_single()).replace('TO_BE_REPLACED', 'TOBEREPLACED'), '\n}\n'])
@@ -152,6 +145,9 @@ def main(verbose=True):
         # 1. ppfigs
         for dim in ['5', '20']:
             f.write(prepare_item('bbobECDFslegend' + scenario + dim, 'bbobECDFslegend' + scenario, str(dim)))                        
+        param = '$f_1$ and $f_{%d}$' % (genericsettings.current_testbed.number_of_functions)
+        f.write(prepare_item('bbobppfigslegend' + scenario, param = param))
+
         # 2. pprldistr
         f.write(prepare_item('bbobpprldistrlegend' + scenario))
         f.write(prepare_item('bbobpprldistrlegendtwo' + scenario))              
@@ -168,17 +164,13 @@ def main(verbose=True):
             f.write(prepare_item(command_name + dim, command_name, 'dimension ' + dim))
 
         # 7. ppscatter
-        scatter_param = '$f_1$ - $f_{%d}$' % (genericsettings.current_testbed.number_of_functions)
-        f.write(prepare_item('bbobppscatterlegend' + scenario, param = scatter_param))
+        param = '$f_1$ - $f_{%d}$' % (genericsettings.current_testbed.number_of_functions)
+        f.write(prepare_item('bbobppscatterlegend' + scenario, param = param))
 
         # 8. pplogloss
         f.write(prepare_item('bbobloglosstablecaption' + scenario))
         f.write(prepare_item('bbobloglossfigurecaption' + scenario))
     
-    f.write(prepare_item('bbobppfigslegendrlbased'))
-    f.write(prepare_item('bbobppfigslegendfixed'))
-    f.write(prepare_item('bbobppfigslegendend', param = '$f_1$ and $f_{24}$'))
-
     f.write('\n\#\#\#\n\\end{document}\n')
 
 def prepare_item(name, command_name = '', param = ''):

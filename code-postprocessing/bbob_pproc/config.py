@@ -103,6 +103,10 @@ def config(isBiobjective=None):
             testbed.pptable_targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
                                                 reference_data = reference_data,
                                                 force_different_targets_factor=10**-0.2)
+            # ppfigs
+            testbed.ppfigs_ftarget = pproc.RunlengthBasedTargetValues([genericsettings.target_runlength],
+                                                                      reference_data = reference_data)
+
         # pprldistr:
         pprldistr.runlen_xlimits_max = genericsettings.maxevals_fix_display / 2 if genericsettings.maxevals_fix_display else None # can be None
         pprldistr.runlen_xlimits_min = 10**-0.3  # can be None
