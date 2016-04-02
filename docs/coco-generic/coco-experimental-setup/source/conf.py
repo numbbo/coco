@@ -276,7 +276,7 @@ latex_documents = [
    'coco-experimental-setup.tex', 
   u'{COCO}: The Experimental Procedure',
   r"""Nikolaus Hansen$^{1,2}$, 
-      Tea Tusar$^3$, 
+      Tea Tu\v{s}ar$^3$, 
       Olaf Mersmann$^4$, 
       Anne Auger$^{1,2}$, 
       Dimo Brockhoff$^3$
