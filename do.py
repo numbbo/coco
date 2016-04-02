@@ -242,7 +242,7 @@ def build_python():
     # os.environ['USE_CYTHON'] = 'true'
     # python('code-experiments/build/python', ['setup.py', 'sdist'])
     # python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'])
-    python(join('code-experiments', 'build', 'python'), ['python', 'setup.py', 'install', '--user'])
+    run(join('code-experiments', 'build', 'python'), ['python', 'setup.py', 'install', '--user'])
     # os.environ.pop('USE_CYTHON')
 
 
@@ -252,8 +252,8 @@ def run_python(test=True):
     build_python()
     try:
         if test:
-            python(os.path.join('code-experiments', 'build', 'python'), ['python', 'coco_test.py'])
-        python(os.path.join('code-experiments', 'build', 'python'),
+            run(os.path.join('code-experiments', 'build', 'python'), ['python', 'coco_test.py'])
+        run(os.path.join('code-experiments', 'build', 'python'),
             ['python', 'example_experiment.py'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
