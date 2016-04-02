@@ -277,7 +277,7 @@ latex_elements = {# The paper size ('letterpaper' or 'a4paper').
 latex_documents = [
   (master_doc, 'bbob-biobj-functions.tex', u'COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) Test Suite',
   r"""
-      Tea Tusar$^1$, 
+      Tea Tu\v{s}ar$^1$, 
       Dimo Brockhoff$^1$,
       Nikolaus Hansen$^{2,3}$, 
       Anne Auger$^{2,3}$ 
