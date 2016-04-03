@@ -34,7 +34,11 @@ We describe initialization of and input to the algorithm and touch
 upon the relevance of termination and restarts. 
 We introduce the concept of recommendations for benchmarking with COCO_.
 Recommendations detach the solutions used in function calls from the any-time
-performance assessment of the algorithm.
+performance assessment of the algorithm. [#]_
+
+.. [#] *ArXiv e-prints*, arXiv:1603.08776__, 2016.
+.. __: http://arxiv.org/abs/1603.08776
+
 
 .. raw:: latex
 

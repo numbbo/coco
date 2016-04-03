@@ -25,7 +25,11 @@ Biobjective Performance Assessment with the COCO Platform
 
 This document details the specificities when assessing the performance of
 numerical black-box optimizers on multi-objective problems within the COCO_
-platform and in particular on the biobjective test suite |bbob-biobj|_.
+platform and in particular on the biobjective test suite |bbob-biobj|_. [#]_
+
+.. [#] *ArXiv e-prints*, arXiv:160x:xxxxx__, 2016.
+.. __: http://arxiv.org/abs/160x.xxxxx
+
 
 .. raw:: latex
 
