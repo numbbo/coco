@@ -38,7 +38,10 @@ COCO_ such as its definition of
 a problem, the idea of instances, the relevance of target values, and runtime
 as central performance measure. 
 Finally, we  give a quick overview of the basic
-code structure and the available test suites.
+code structure and the available test suites. [#]_
+
+.. [#] *ArXiv e-prints*, arXiv:1603.08785__, 2016.
+.. __: http://arxiv.org/abs/1603.08785
   
 .. raw:: latex
 

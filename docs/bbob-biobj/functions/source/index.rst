@@ -33,7 +33,10 @@ functions in continuous domain which are derived from combining functions of
 the well-known single-objective noiseless ``bbob`` test suite. Besides giving
 the actual function definitions and presenting their (known) properties, this
 documentation also aims at giving the rationale behind our approach in terms
-of function groups, instances, and potential objective space normalization.
+of function groups, instances, and potential objective space normalization. [#]_
+
+.. [#] *ArXiv e-prints*, arXiv:1604:xxxxx__, 2016.
+.. __: http://arxiv.org/abs/1604.xxxxx
 
 .. raw:: latex
 
@@ -1983,6 +1986,17 @@ Contained in the *weakly-structured - weakly-structured* function class.
 
 .. _`Coco framework`: https://github.com/numbbo/coco
 
+
+.. raw:: html
+    
+    <H2>Acknowledgments</H2>
+
+.. raw:: latex
+
+    \section*{Acknowledgments}
+
+This work was supported by the grant ANR-12-MONU-0009 (NumBBO) 
+of the French National Research Agency.
 
  
 .. ############################# References #########################################
