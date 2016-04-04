@@ -323,7 +323,8 @@ class GECCOBBOBTestbed(Testbed):
         self.functions_with_legend = (1, 24, 101, 130)
         self.number_of_functions = 24
         self.pptable_ftarget = 1e-8 # value for determining the success ratio in all tables
-        self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7)) # for all tables
+        self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7)) # for pptable and pptables
+        self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7)) # used for pptable2
         self.scenario = scenario_fixed
         
         try:
@@ -363,6 +364,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.number_of_functions = 55
         self.pptable_ftarget = 1e-5 # value for determining the success ratio in all tables
         self.pptable_targetsOfInterest = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config for all tables
+        self.pptable2_targetsOfInterest = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # used for pptable2        
         self.scenario = scenario_biobjfixed
 
         try:
