@@ -546,6 +546,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
 
     dictFunc = dsList.dictByFunc()
+    dictAlg = dsList.dictByAlg()
     values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
 
     key = 'bbobppfigdimlegend' + genericsettings.current_testbed.scenario
@@ -590,6 +591,11 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         beautify(axesLabel=False)
         plt.text(plt.xlim()[0], plt.ylim()[0],
                  _valuesOfInterest.short_info, fontsize=14)
+				 
+        # display number of instances in data:
+        instanceText = '%d instances' % len(((dictFunc[func][0]).instancenumbers))
+        plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, instanceText, fontsize=14)
+  
         if func in genericsettings.current_testbed.functions_with_legend:
             toolsdivers.legend(loc="best")
         if func in funInfos.keys():

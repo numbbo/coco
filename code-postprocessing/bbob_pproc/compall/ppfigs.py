@@ -527,7 +527,17 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
 
         beautify(legend=isLegend, rightlegend=legend)
 
-        plt.text(plt.xlim()[0], plt.ylim()[0], 'target ' + target.label_name() + ': ' + target.label(0))  # TODO: check
+        # bottom labels with #instances and type of targets:
+        infotext = ''
+        algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
+        for alg in algorithms_with_data:
+            infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
+        infotext = infotext.rstrip(', ')
+        infotext += ' instances'
+        plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, infotext, fontsize=14)  # TODO: check
+        plt.text(plt.xlim()[0], plt.ylim()[0], 
+                 'target ' + target.label_name() + ': ' + target.label(0),
+                 fontsize=14)  # TODO: check
 
         saveFigure(filename, verbose=verbose)
 
