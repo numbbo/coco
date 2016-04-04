@@ -283,8 +283,11 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
     for df in dictData:
         # Generate one table per df
         # first update targets for each dimension-function pair if needed:
-        targets = testbed.pptable_targetsOfInterest((df[1], df[0]))            
-        targetf = testbed.pptable_ftarget
+        targetsOfInterest = testbed.pptable_targetsOfInterest((df[1], df[0]))            
+        if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+            targetf = targetsOfInterest[-1]
+        else:
+            targetf = testbed.pptable_ftarget
         
         # best 2009
         if bestalgentries:        
@@ -392,11 +395,11 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             extraeol.append('')
 
         if function_targets_line is True or (function_targets_line and df[1] in function_targets_line):
-            if isinstance(testbed.pptable_targetsOfInterest, pproc.RunlengthBasedTargetValues):
+            if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 curline = [r'\#FEs/D']
                 curlineHtml = ['<thead>\n<tr>\n<th>#FEs/D<br>REPLACEH</th>\n']
                 counter = 1
-                for i in testbed.pptable_targetsOfInterest.labels():
+                for i in targetsOfInterest.labels():
                     curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % i) 
                     curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
                     counter += 1
@@ -422,11 +425,11 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         replaceValue = '\aRT{}<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
         if bestalgentries:
-            if isinstance(testbed.pptable_targetsOfInterest, pproc.RunlengthBasedTargetValues):
+            if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
                 counter = 1
                 for i in xrange(len(refalgert[:-1])):
-                    temp="%.1e" % testbed.pptable_targetsOfInterest((df[1], df[0]))[i]
+                    temp="%.1e" % targetsOfInterest((df[1], df[0]))[i]
                     if temp[-2]=="0":
                         temp=temp[:-2]+temp[-1]
                     curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
@@ -435,7 +438,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     curlineHtml = [item.replace('REPLACE%d' % counter, replaceValue) for item in curlineHtml]
                     counter += 1
                     
-                temp="%.1e" % testbed.pptable_targetsOfInterest((df[1], df[0]))[-1]
+                temp="%.1e" % targetsOfInterest((df[1], df[0]))[-1]
                 if temp[-2]=="0":
                     temp=temp[:-2]+temp[-1]
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
