@@ -317,6 +317,7 @@ class GECCOBBOBTestbed(Testbed):
         self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)) # possibly changed in config
         self.pprldmany_target_values = targetValues(10**np.arange(2, -8.2, -0.2)) # possibly changed in config
         self.pprldmany_target_range_latex = '$10^{[-8..2]}$'
+        self.ppscatter_target_values = targetValues(np.logspace(-8, 2, 46))
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
         self.ppfvdistr_min_target = 1e-8
         self.functions_with_legend = (1, 24, 101, 130)
@@ -355,6 +356,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         target_values = np.append(np.append(10**np.arange(0, -5.1, -0.1), [0]), -10**np.arange(-5, -3.9, 0.2))
         self.pprldmany_target_values = targetValues(target_values) # possibly changed in config
         self.pprldmany_target_range_latex = '$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$'
+        self.ppscatter_target_values = targetValues(np.logspace(-8, 2, 46))
         self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5) # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)
