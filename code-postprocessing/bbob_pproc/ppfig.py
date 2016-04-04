@@ -335,7 +335,8 @@ def save_single_functions_html(filename,
                 for dimension in dimensions:
                     f.write(addImage('pplogloss_%02dD_noiselessall.%s' % (dimension, extension), True))
                 f.write("\n<!--tables-->\n")
-                f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption##'))
+                scenario = genericsettings.current_testbed.scenario
+                f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption' + scenario + '##'))
             
                 for typeKey, typeValue in functionGroups.iteritems():
                     f.write('<p><b>%s in %s</b></p>' % (typeValue, '-D and '.join(str(x) for x in dimensions) + '-D'))
@@ -344,7 +345,7 @@ def save_single_functions_html(filename,
                         f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, typeKey, extension), True))
                     f.write('</div>')
                         
-                f.write(captionStringFormat % htmldesc.getValue('##bbobloglossfigurecaption##'))
+                f.write(captionStringFormat % htmldesc.getValue('##bbobloglossfigurecaption' + scenario + '##'))
         
         if caption:
             f.write(captionStringFormat % caption)
