@@ -48,26 +48,31 @@ def get_table_caption():
         (preceded by the target \Df-value in \textit{italics}) in the first row. 
         \#succ is the number of trials that reached the target value of the last column.
         """
-    table_caption_two_bi = r"""%
-        target, the corresponding best \aRT\
-        in the first row. The different target \Df-values are shown in the top row.
-        \#succ is the number of trials that reached the (final) target
+    table_caption_one_bi = r"""%
+        Average runtime (\aRT) to reach given targets, measured
+        in number of function evaluations, in #1. For each function, the \aRT\ 
+        and, in braces as dispersion measure, the half difference between 10 and 
+        90\%-tile of (bootstrapped) runtimes is shown for the different
+        target \Df-values as shown in the top row. 
+        \#succ is the number of trials that reached the last target
         $\hvref + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
         """
-    table_caption_rest = r"""%
+    table_caption_rest = (r"""%
         The median number of conducted function evaluations is additionally given in 
         \textit{italics}, if the target in the last column was never reached. 
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
-        than 1, with Bonferroni correction by the number of instances. A $\downarrow$
-        indicates the same tested against the best algorithm of BBOB-2009. Best results
-        are printed in bold.
-        """
+        than 1, with Bonferroni correction by the number of instances. """ +
+        (r"""A $\downarrow$ indicates the same tested against the best
+        algorithm of BBOB-2009."""
+        if not (genericsettings.current_testbed.name == genericsettings.testbed_name_bi)
+        else "") + r"""Best results are printed in bold.
+        """)
 
     if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
-        table_caption = table_caption_one + table_caption_two_bi + table_caption_rest
+        table_caption = table_caption_one_bi + table_caption_rest
     elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
@@ -77,8 +82,6 @@ def get_table_caption():
         warnings.warn("Current settings do not support pptables caption.")
 
     return table_caption
-
-targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
 
 with_table_heading = False  # in case the page is long enough
 
@@ -91,7 +94,6 @@ significance_vs_ref_symbol = r"\downarrow"
 significance_vs_ref_symbol_html = r"&darr;"
 maxfloatrepr = 10000.
 samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
-targetf = 1e-8
 precfloat = 2
 precscien = 2
 precdispersion = 1  # significant digits for dispersion
@@ -252,15 +254,17 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
     * significance test against best algorithm
     * table width...
 
-    Takes ``targetsOfInterest`` from this file as "input argument" to compute
-    the desired target values. ``targetsOfInterest`` might be configured via 
-    config.
+    Takes ``pptable_targetsOfInterest`` from genericsetting's Testbed instance
+    as "input argument" to compute the desired target values.
+    ``pptable_targetsOfInterest`` might be configured via config.
     
     """
 
     # TODO: method is long, terrible to read, split if possible
 
     bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+    
+    testbed = genericsettings.current_testbed
 
     # Sort data per dimension and function
     dictData = {}
@@ -279,8 +283,8 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
     for df in dictData:
         # Generate one table per df
         # first update targets for each dimension-function pair if needed:
-        targets = targetsOfInterest((df[1], df[0]))            
-        targetf = targets[-1]
+        targets = testbed.pptable_targetsOfInterest((df[1], df[0]))            
+        targetf = testbed.pptable_ftarget
         
         # best 2009
         if bestalgentries:        
@@ -388,11 +392,11 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             extraeol.append('')
 
         if function_targets_line is True or (function_targets_line and df[1] in function_targets_line):
-            if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+            if isinstance(testbed.pptable_targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 curline = [r'\#FEs/D']
                 curlineHtml = ['<thead>\n<tr>\n<th>#FEs/D<br>REPLACEH</th>\n']
                 counter = 1
-                for i in targetsOfInterest.labels():
+                for i in testbed.pptable_targetsOfInterest.labels():
                     curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % i) 
                     curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
                     counter += 1
@@ -418,11 +422,11 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         replaceValue = '\aRT{}<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
         if bestalgentries:
-            if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+            if isinstance(testbed.pptable_targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
                 counter = 1
                 for i in xrange(len(refalgert[:-1])):
-                    temp="%.1e" %targetsOfInterest((df[1], df[0]))[i]
+                    temp="%.1e" % testbed.pptable_targetsOfInterest((df[1], df[0]))[i]
                     if temp[-2]=="0":
                         temp=temp[:-2]+temp[-1]
                     curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
@@ -431,7 +435,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     curlineHtml = [item.replace('REPLACE%d' % counter, replaceValue) for item in curlineHtml]
                     counter += 1
                     
-                temp="%.1e" %targetsOfInterest((df[1], df[0]))[-1]
+                temp="%.1e" % testbed.pptable_targetsOfInterest((df[1], df[0]))[-1]
                 if temp[-2]=="0":
                     temp=temp[:-2]+temp[-1]
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
