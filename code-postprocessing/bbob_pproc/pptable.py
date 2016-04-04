@@ -121,7 +121,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
 
     targetsOfInterest = genericsettings.current_testbed.pptable_targetsOfInterest
 
-    if isinstance(testbed.pptable2_targetsOfInterest, pproc.RunlengthBasedTargetValues):
+    if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
         targetf = targetsOfInterest[-1]
     else:
         targetf = genericsettings.current_testbed.pptable_ftarget
