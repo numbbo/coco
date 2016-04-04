@@ -30,8 +30,13 @@ import shlex
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
     'sphinx.ext.todo',
-    'sphinx.ext.pngmath',
+    'sphinx.ext.coverage',
+    'sphinx.ext.viewcode',
+#    'sphinx.ext.mathjax',
+    'sphinx.ext.pngmath'
 ]
 
 
@@ -135,11 +140,11 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
+html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
 #html_theme = 'nature'  # underlays of sections titles
 #html_theme = 'alabaster' #  white, times font 
 #html_theme = 'sphinxdoc'  # puts too much empty spaces left and right
-html_theme = 'sphinx_rtd_theme'  # contents not structured (mobile style?)
+#html_theme = 'sphinx_rtd_theme'  # contents not structured (mobile style?)
 # html_theme = 'agogo'  # fixed width
 # html_theme = 'pyramid'  # relatively clean white/gray, sf font hard to read, too small section titles
 
@@ -179,7 +184,7 @@ html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-#html_last_updated_fmt = '%b %d, %Y'
+html_last_updated_fmt = '%b %d, %Y'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
@@ -208,7 +213,7 @@ html_static_path = ['_static']
 #html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
-#html_show_copyright = True
+html_show_copyright = False
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -242,13 +247,17 @@ latex_elements = {
 #'papersize': 'letterpaper',
 
 # The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+'pointsize': '12pt',
 
 # Additional stuff for the LaTeX preamble.
 'preamble': r"""
-\usepackage{amsmath}
-""",
-
+  \usepackage{amssymb}
+  \pagestyle{plain}
+  \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
+  \newcommand{\ignore}[1]{}  % never used
+  \newcommand{\COCO}{\href{https://githum.com/numbbo/coco}{COCO}}
+  \newcommand{\ff}[1]{\ensuremath{f_{#1}}} 
+""" + latex_commands,
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
 }
@@ -258,7 +267,18 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   (master_doc, 'bbob-biobj-perf-assessment.tex', u'Performance Assessment in the Case of Coco\' bbob-biobj Suite',
-   u'The BBOBies', 
+  r"""
+      Dimo Brockhoff$^1$,
+      Tea Tu\v{s}ar$^1$, 
+      Nikolaus Hansen$^{2,3}$, 
+      Anne Auger$^{2,3}$ 
+  \\
+    $^1$Inria, research centre Lille, France
+  \\
+    $^2$Inria, research centre Saclay, France
+  \\
+    $^3$Universit\'e Paris-Saclay, LRI, France
+    """, 
    'article', # 'manual'
    ),
 ]
@@ -283,6 +303,7 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_domain_indices = True
 
+pngmath_latex_preamble = r"\newcommand{\R}{\mathbb{R}}"
 
 # -- Options for manual page output ---------------------------------------
 

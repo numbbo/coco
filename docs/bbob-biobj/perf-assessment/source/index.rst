@@ -11,14 +11,14 @@ Biobjective Performance Assessment with the COCO Platform
 .. CHAPTERTITLE
 .. CHAPTERUNDERLINE
 
-.. Contents:
+.. .. Contents:
 
 .. .. toctree::
    :maxdepth: 2
 
 .. raw:: latex
 
-  % \tableofcontents is automatic with sphinx and moved behind abstract by swap...py
+  % \tableofcontents TOC is automatic with sphinx and moved behind abstract by swap...py
   \begin{abstract}
 
 .. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY (though it seems the latter is not used)
@@ -44,6 +44,10 @@ platform and in particular on the biobjective test suite |bbob-biobj|_. [#]_
 .. _COCO: https://github.com/numbbo/coco
 .. |Iref| replace:: :math:`I_\mathrm{ref}`
 
+
+Introduction
+=============
+
 The performance assessment in the COCO_ platform is invariably based on the
 measurement of the *runtime* until a *quality indicator* reaches a predefined
 *target value* [BBO2016perf]_. [#]_ 
@@ -55,8 +59,8 @@ each given time step, the function value of the best solution the algorithm has
 obtained (evaluated or recommended, see [HAN2016ex]_) before or at this time
 step. 
 
-In the bi- and multi-objective case, e.g. on the biobjective test suite
-``bbob-biobj`` described in more detail in [TUS2016]_, the assessed quality
+In the bi- and multi-objective case, e.g. on the biobjective ``bbob-biobj`` 
+test suite [TUS2016]_, the assessed quality
 indicator at the given time step is a hypervolume indicator computed from
 *all* solutions obtained (evaluated or recommended) before or at this time
 step. 
@@ -65,7 +69,8 @@ step.
   consequently, runtime is measured in number of function evaluations.
 
 Definitions and Terminology
-===========================
+---------------------------
+
 We remind in this section different definitions.
 
 *function instance, problem*
