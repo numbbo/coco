@@ -119,8 +119,13 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     #bestalg.bestalgentries which is the virtual best of BBOB
     dictDim = dsList.dictByDim()
 
-    targetf = genericsettings.current_testbed.pptable_ftarget
     targetsOfInterest = genericsettings.current_testbed.pptable_targetsOfInterest
+
+    if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+        targetf = targetsOfInterest[-1]
+    else:
+        targetf = genericsettings.current_testbed.pptable_ftarget
+    
 
     if info:
         info = '_' + info
