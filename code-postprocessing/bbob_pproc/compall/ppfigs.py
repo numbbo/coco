@@ -103,8 +103,7 @@ def scaling_figure_caption(for_html = False):
     return figure_caption
 
 
-def ecdfs_figure_caption(target):
-    assert len(target) == 1
+def prepare_ecdfs_figure_caption():
 
     best2009text = (
                 r"The ``best 2009'' line " +
@@ -114,43 +113,58 @@ def ecdfs_figure_caption(target):
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
-                r"(FEvals/DIM) for " +
-                str(len(genericsettings.current_testbed.pprldmany_target_values)) +
-                r" targets with target precision in " + 
-                str(genericsettings.current_testbed.pprldmany_target_range_latex) +
-                r" for all functions and subgroups in #1-D. " + ( best2009text
-                if genericsettings.current_testbed.name != 'bbob-biobj' else "")
+                r"(FEvals/DIM) for $BBOBPPFIGSFTARGET$ " +
+                r"targets with target precision in $BBOBPPFIGSTARGETRANGE$ " +
+                r"for all functions and subgroups in #1-D. "
                 )
     ecdfs_figure_caption_rlbased = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
                 r"(FEvals/DIM) for all functions and subgroups in #1-D." +
-                r" The targets are chosen from " +
-                genericsettings.current_testbed.pprldmany_target_range_latex +
+                r" The targets are chosen from $BBOBPPFIGSTARGETRANGE$ " +
                 r"such that the REFERENCE_ALGORITHM artificial algorithm just " +
                 r"not reached them within a given budget of $k$ $\times$ DIM, " +
-                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. " + best2009text
-                )    
-    
-    if isinstance(target, pproc.RunlengthBasedTargetValues):
-        s = ecdfs_figure_caption_rlbased.replace('REFERENCE_ALGORITHM', 
-                                                         target.reference_algorithm)
+                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. "
+                )
+
+    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+        figure_caption = ecdfs_figure_caption_standard
+    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            figure_caption = ecdfs_figure_caption_rlbased + best2009text
+        else:
+            figure_caption = ecdfs_figure_caption_standard + best2009text
     else:
-        s = ecdfs_figure_caption_standard
-    return s
+        warnings.warn("Current settings do not support ppfigdim caption.")
+
+    return figure_caption
 
 
-def ecdfs_figure_caption_html(target, dimension):
+def ecdfs_figure_caption(for_html = False, dimension = 0):
+
+    if for_html:
+        key = '##bbobECDFslegend%s%d##' % (genericsettings.current_testbed.scenario, dimension)
+        caption = htmldesc.getValue(key)
+    else:
+        caption = prepare_ecdfs_figure_caption()
+
+    target = genericsettings.current_testbed.ppfigs_ftarget
+    target = pproc.TargetValues.cast([target] if numpy.isscalar(target) else target)
     assert len(target) == 1
-	
-    if genericsettings.current_testbed.name == 'bbob-biobj':
-        s = htmldesc.getValue('##bbobECDFslegendbiobjfixed%d##' % dimension)
-    elif isinstance(target, pproc.RunlengthBasedTargetValues):
-        s = htmldesc.getValue('##bbobECDFslegendrlbased%d##' % dimension).replace('REFERENCEALGORITHM', 
-                                                         target.reference_algorithm)
+
+    caption = caption.replace('BBOBPPFIGSTARGETRANGE',
+                              str(genericsettings.current_testbed.pprldmany_target_range_latex))
+
+    if genericsettings.runlength_based_targets:
+        caption = caption.replace('REFERENCE_ALGORITHM', target.reference_algorithm)
+        caption = caption.replace('REFERENCEALGORITHM', target.reference_algorithm)
     else:
-        s = htmldesc.getValue('##bbobECDFslegendfixed%d##' % dimension)
-    return s
+        caption = caption.replace('BBOBPPFIGSFTARGET',
+                                  str(len(genericsettings.current_testbed.pprldmany_target_values)))
+
+    return caption
+
 
 def get_ecdfs_single_fcts_caption():
     ''' For the moment, only the bi-objective case is covered! '''
@@ -542,12 +556,12 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
                 )
         toolsdivers.prepend_to_file(latex_commands_filename, 
                 ['\\providecommand{\\bbobECDFslegend}[1]{',
-                ecdfs_figure_caption(target), '}']
+                ecdfs_figure_caption(), '}']
                 )
 
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
-        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend5##', ecdfs_figure_caption_html(target, 5))
-        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend20##', ecdfs_figure_caption_html(target, 20))
+        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend5##', ecdfs_figure_caption(True, 5))
+        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend20##', ecdfs_figure_caption(True, 20))
 
         if verbose:
             print 'Wrote commands and legend to %s' % filename
