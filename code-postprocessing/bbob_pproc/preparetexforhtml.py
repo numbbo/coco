@@ -77,10 +77,8 @@ def main(verbose=True):
     
         # update captions accordingly    
         # 1. ppfigs
-        ppfigsftarget = genericsettings.current_testbed.ppfigs_ftarget
-        ppfigsftarget = pproc.TargetValues.cast([ppfigsftarget] if numpy.isscalar(ppfigsftarget) else ppfigsftarget)
-        f.writelines(['\\providecommand{\\bbobECDFslegend', scenario, '}[1]{\n', 
-                  (ppfigs.ecdfs_figure_caption(ppfigsftarget)).replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
+        f.writelines(['\\providecommand{\\bbobECDFslegend', scenario, '}[1]{\n',
+                      (ppfigs.prepare_ecdfs_figure_caption()).replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
         f.writelines(['\\providecommand{\\bbobppfigslegend', scenario, '}[1]{\n',
                       ppfigs.prepare_scaling_figure_caption().replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'), '\n}\n'])
 
