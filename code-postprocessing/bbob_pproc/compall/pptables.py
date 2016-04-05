@@ -413,7 +413,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (writeFEvals2(t, precision=1, isscientific=True), counter))
                     counter += 1
 #                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
-#                            % writeFEvals2(targets[-1], precision=1, isscientific=True))
+#                            % writeFEvals2(targetsOfInterest[-1], precision=1, isscientific=True))
             curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
             curlineHtml.append('<td>#succ<br>REPLACEF</td>\n</tr>\n</thead>\n')
             table.append(curline)
