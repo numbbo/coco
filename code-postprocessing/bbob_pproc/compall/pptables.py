@@ -292,7 +292,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         # best 2009
         if bestalgentries:        
             refalgentry = bestalgentries[df]
-            refalgert = refalgentry.detERT(targets)
+            refalgert = refalgentry.detERT(targetsOfInterest)
             refalgevals = (refalgentry.detEvals((targetf, ))[0][0])
 
         # Process the data
@@ -326,7 +326,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
 
             algnames.append(sortedAlgs[n])
 
-            evals = entry.detEvals(targets)
+            evals = entry.detEvals(targetsOfInterest)
             #tmpdata = []
             tmpdisp = []
             tmpert = []
@@ -353,7 +353,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             #algmedfinalfunvals.append(numpy.median(entry.finalfunvals))
 
             if bestalgentries:            
-                algtestres.append(significancetest(refalgentry, entry, targets))
+                algtestres.append(significancetest(refalgentry, entry, targetsOfInterest))
 
             # determine success probability for Df = 1e-8
             e = entry.detEvals((targetf ,))[0]
@@ -378,20 +378,20 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
 
         # significance test of best given algorithm against all others
         best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
-        significance_versus_others = significance_all_best_vs_other(algentries, targets, best_alg_idx)[0]
+        significance_versus_others = significance_all_best_vs_other(algentries, targetsOfInterest, best_alg_idx)[0]
                 
         # Create the table
         table = []
         tableHtml = []
-        spec = r'@{}c@{}|*{%d}{@{\,}r@{}X@{\,}}|@{}r@{}@{}l@{}' % (len(targets)) # in case StrLeft not working: replaced c@{} with l@{ }
-        spec = r'@{}c@{}|*{%d}{@{}r@{}X@{}}|@{}r@{}@{}l@{}' % (len(targets)) # in case StrLeft not working: replaced c@{} with l@{ }
+        spec = r'@{}c@{}|*{%d}{@{\,}r@{}X@{\,}}|@{}r@{}@{}l@{}' % (len(targetsOfInterest)) # in case StrLeft not working: replaced c@{} with l@{ }
+        spec = r'@{}c@{}|*{%d}{@{}r@{}X@{}}|@{}r@{}@{}l@{}' % (len(targetsOfInterest)) # in case StrLeft not working: replaced c@{} with l@{ }
         extraeol = []
 
         # Generate header lines
         if with_table_heading:
             header = funInfos[df[1]] if df[1] in funInfos.keys() else 'f%d' % df[1]
             table.append([r'\multicolumn{%d}{@{\,}c@{\,}}{{\textbf{%s}}}'
-                          % (2 * len(targets) + 2, header)])
+                          % (2 * len(targetsOfInterest) + 2, header)])
             extraeol.append('')
 
         if function_targets_line is True or (function_targets_line and df[1] in function_targets_line):
@@ -407,7 +407,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                 curline = [r'$\Delta f_\mathrm{opt}$']
                 curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']
                 counter = 1
-                for t in targets:
+                for t in targetsOfInterest:
                     curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
                                 % writeFEvals2(t, precision=1, isscientific=True))
                     curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (writeFEvals2(t, precision=1, isscientific=True), counter))
@@ -468,8 +468,8 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             curlineHtml = [item.replace('REPLACEF', replaceValue) for item in curlineHtml]
             
         else: # if not bestalgentries
-            curline.append(r'\multicolumn{%d}{@{}c@{}|}{}' % (2 * (len(targets) + 1)))
-            for counter in range(1, len(targets) + 1):
+            curline.append(r'\multicolumn{%d}{@{}c@{}|}{}' % (2 * (len(targetsOfInterest) + 1)))
+            for counter in range(1, len(targetsOfInterest) + 1):
                 curlineHtml = [item.replace('REPLACE%d' % counter, '&nbsp;') for item in curlineHtml]
             curlineHtml = [item.replace('REPLACEF', '&nbsp;') for item in curlineHtml]
 
@@ -527,7 +527,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                         if not numpy.isinf(refalgert[j]):
                             tmpevals = algevals[i][j].copy()
                             tmpevals[numpy.isnan(tmpevals)] = algentries[i].maxevals[numpy.isnan(tmpevals)]
-                            bestevals = refalgentry.detEvals(targets)
+                            bestevals = refalgentry.detEvals(targetsOfInterest)
                             bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
                             bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
                             tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
