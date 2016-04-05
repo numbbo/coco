@@ -357,6 +357,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         target_values = np.append(np.append(10**np.arange(0, -5.1, -0.1), [0]), -10**np.arange(-5, -3.9, 0.2))
         self.pprldmany_target_values = targetValues(target_values) # possibly changed in config
         self.pprldmany_target_range_latex = '$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$'
+        # ppscatter_target_values are copied from the single objective case. Define the correct values!
         self.ppscatter_target_values = targetValues(np.logspace(-8, 2, 46)) # that does not look right here!
         self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5) # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
@@ -364,7 +365,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.number_of_functions = 55
         self.pptable_ftarget = 1e-5 # value for determining the success ratio in all tables
         self.pptable_targetsOfInterest = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config for all tables
-        self.pptable2_targetsOfInterest = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # used for pptable2        
+        self.pptable2_targetsOfInterest = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # used for pptable2
         self.scenario = scenario_biobjfixed
 
         try:

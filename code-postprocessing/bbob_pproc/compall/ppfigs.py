@@ -114,14 +114,14 @@ def prepare_ecdfs_figure_caption():
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
                 r"(FEvals/DIM) for $BBOBPPFIGSFTARGET$ " +
-                r"targets with target precision in $BBOBPPFIGSTARGETRANGE$ " +
+                r"targets with target precision in BBOBPPFIGSTARGETRANGE " +
                 r"for all functions and subgroups in #1-D. "
                 )
     ecdfs_figure_caption_rlbased = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
                 r"(FEvals/DIM) for all functions and subgroups in #1-D." +
-                r" The targets are chosen from $BBOBPPFIGSTARGETRANGE$ " +
+                r" The targets are chosen from BBOBPPFIGSTARGETRANGE " +
                 r"such that the REFERENCE_ALGORITHM artificial algorithm just " +
                 r"not reached them within a given budget of $k$ $\times$ DIM, " +
                 r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. "
