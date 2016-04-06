@@ -35,8 +35,8 @@ the actual function definitions and presenting their (known) properties, this
 documentation also aims at giving the rationale behind our approach in terms
 of function groups, instances, and potential objective space normalization. [#]_
 
-.. [#] *ArXiv e-prints*, arXiv:1604:xxxxx__, 2016.
-.. __: http://arxiv.org/abs/1604.xxxxx
+.. [#] *ArXiv e-prints*, `arXiv:1604.00359`__, 2016.
+.. __: http://arxiv.org/abs/1604.00359
 
 .. raw:: latex
 

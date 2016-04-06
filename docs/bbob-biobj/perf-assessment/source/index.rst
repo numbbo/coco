@@ -27,7 +27,7 @@ This document details the specificities when assessing the performance of
 numerical black-box optimizers on multi-objective problems within the COCO_
 platform and in particular on the biobjective test suite |bbob-biobj|_. [#]_
 
-.. [#] *ArXiv e-prints*, arXiv:160x:xxxxx__, 2016.
+.. [#] *ArXiv e-prints*, `arXiv:160x:xxxxx`__, 2016.
 .. __: http://arxiv.org/abs/160x.xxxxx
 
 
@@ -48,12 +48,12 @@ platform and in particular on the biobjective test suite |bbob-biobj|_. [#]_
 Introduction
 =============
 
-The performance assessment in the COCO_ platform is invariably based on the
+The performance assessment of (numerical) optimization algorithms in the COCO_ platform is invariably based on the
 measurement of the *runtime* until a *quality indicator* reaches a predefined
 *target value* [BBO2016perf]_. [#]_ 
-On each problem, several target values are defined and for each target value
-a runtime is measured (or no runtime value is available if the indicator does
-not reach the target value). 
+On each problem instance, several target values are defined and for each
+target value a runtime is measured (or no runtime value is available if the
+indicator does not reach the target value). 
 In the single-objective, noise-free case, the assessed quality indicator is, at 
 each given time step, the function value of the best solution the algorithm has
 obtained (evaluated or recommended, see [HAN2016ex]_) before or at this time
@@ -65,7 +65,7 @@ indicator at the given time step is a hypervolume indicator computed from
 *all* solutions obtained (evaluated or recommended) before or at this time
 step. 
 
-.. [#] As usual, time is considered as number of function evaluations and, 
+.. [#] Time is considered to be *number of function evaluations* and, 
   consequently, runtime is measured in number of function evaluations.
 
 Definitions and Terminology
@@ -85,7 +85,7 @@ We remind in this section different definitions.
  We call a problem *solved* by an optization algorithm if the algorithm
  reaches a quality indicator value at least as good as the associated target value.
  The number of function evaluations needed to surpass the target value for the first time
- is COCO_'s central performance measure. [coco-doc]_
+ is COCO_'s central performance measure. [HAN2016co]_
 
 *Pareto set*, *Pareto front*, and *Pareto dominance*
  For a concrete function instance, i.e., a function :math:`f_\theta=(f_\alpha,f_\beta)` with
@@ -122,27 +122,23 @@ We remind in this section different definitions.
  
 Biobjective Performance Assessment in COCO: A Set-Indicator Value Replaces the Objective Function
 =================================================================================================
-The general concepts of how the COCO_ platform suggests to benchmark
-multi-objective algorithms is the same than in the single-objective case: for
-each optimization algorithm, we record the runtimes to reach given target
-values for each problem in a given benchmark suite. A problem thereby
-consists of a (vector-valued) objective function, its search space dimension,
-and a concrete instantiation of it (see [coco-perf-assessment]_ and above). 
-For defining the runtime on such a problem, we consider a quality indicator
+
+For measuring the runtime on a given problem, we consider a quality indicator
 which is to be optimized (minimized). 
 In the single-objective case, the quality indicator is the objective
 function value. 
-
 In the case of the ``bbob-biobj`` test suite, the quality indicator will be mostly a
 negative hypervolume indicator of the *archive* :math:`A_t` of all non-dominated
 solutions evaluated within the first :math:`t` function evaluations. In principal, other
 quality indicators of the archive can be used as well.
 
+.. |IHV| replace:: :math:`\IHV`
+
 Definition of the quality indicator
 ------------------------------------
-To be more concrete, the indicator :math:`\IHV` used here is to be mininized and
-is a combination of the negative hypervolume indicator of the archive with the nadir
-point as the hypervolume's reference point and the distance to the region of interest
+The indicator :math:`\IHV` to be mininized is either the negative
+hypervolume indicator of the archive with the nadir
+point reference point or the distance to the region of interest
 :math:`[z_{\text{ideal}}, z_{\text{nadir}}]` after a normalization of the
 objective space [#]_:
 
@@ -202,8 +198,8 @@ is the smallest (normalized) Euclidean distance between the archive and the regi
    (negative) hypervolume of the archive with the nadir point as reference point. 
    
    
-Rationale Behind our Performance Measure and A First Summary
-------------------------------------------------------------
+Rationales Behind our Performance Measure and A First Summary
+-------------------------------------------------------------
 
 *Why using an archive?*
  We believe using an archive to keep all non-dominated solutions is relevant practice
@@ -253,58 +249,63 @@ This implies that:
 Choice of Target Values
 =======================
 
-For each problem instance, |i|, of the benchmark suite, a *reference
-hypervolume indicator value*, |Irefi|, is computed (see below). 
-This reference value is determined to represent the hypervolume value of a fairly adequate
-approximation of the Pareto set. [#]_ All target indicator values are computed as 
-a function of |Irefi|, namely as |Irefi| :math:`+\,t`, where the target precision 
-|t| is chosen as
+For each problem instance, |i|, of the benchmark suite, a set of target values
+is chosen, eventually used to measure runtime to reach each of these targets. 
+The targets are based on a *reference hypervolume indicator value*, |Irefi|,
+which is an approximation of the |IHV| indicator value *of the Pareto set*, 
+and a target precision.
+
+Target Precision Values
+-----------------------
+
+All target indicator values are computed as a function of |Irefi| in the form
+of |Irefi| :math:`+\,t`, identically for all problems and problem instances. 
+The target precisions |t| are chosen as
 
 .. math::
 
-  t \in \{ -10^{-4}, -10^{-4.2}, -10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0 \}
+  t \in \{ -10^{-4}, -10^{-4.2}, -10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0 \}\enspace.
 
-That is, if not stated otherwise, the runtimes of these 58 target values are
-presented (usually as empirical cumulative distribution function, ECDF). 
-It is not uncommon that the quality indicator value of the algorithm never surpasses some of
-these target values, which leads to missing runtime measurements.
+Negative target precisions are used because the reference indicator value is
+an approximation which can be surpassed by an optimization algorithm. [#]_
+The runtimes to reach these 58 target values are presented as
+empirical cumulative distribution function, ECDF. Runtimes to reach specific target precisions are presented as well. 
+It is not uncommon however that the quality indicator value of the algorithm never surpasses some of these target values, which leads to missing runtime measurements.
 
-Note that the non-positive
-target precisions have been included in particular to account for the fact that the
-reference hypervolume indicator value is computed only for a fairly adequate
-approximation of the Pareto set and thus can potentially be outperformed by an actual algorithm. 
-In comparison, in the single-objective case, target precision values are typically solely
-positive if the global optima are known. [coco-perf-assessment]_
+
+.. [#] In comparison, the reference value in the single-objective case has been 
+   the :math:`f`-value of the known global optimum and, consequently, the target 
+   precision values |t| have been strictly positive [coco-perf-assessment]_. 
 
 .. |Irefi| replace:: :math:`I_i^\mathrm{ref}`
 .. |i| replace:: :math:`i`
 .. |t| replace:: :math:`t`
 
 
+The Reference Hypervolume Indicator Value
+----------------------------------------------------
 
-.. [#] As we do not know the Pareto set on any but one function, the approximation 
-  could be less adequate than we are hoping for. 
-
-
-Choice of the Reference Hypervolume Indicator Values
-====================================================
-
-Opposed to the single-objective ``bbob`` test suite [HAN2009fun]_, the
+Unlike the single-objective ``bbob`` test suite [HAN2009fun]_, the
 biobjective ``bbob-biobj`` test suite does not provide analytical forms of
 its optima. 
 Except for :math:`f_1`, the Pareto set and the Pareto front are unknown. 
 
 Instead of using the hypervolume of the true Pareto set as reference
-hypervolume indicator value, we can therefore only use the best
-approximation of the Pareto set we have and hope that it is adequate (see
-above). In order to do so, several existing multiobjective algorithms have
-been run ahead of the postprocessing and all non-dominated solutions over
-all runs have been recorded instance-wise. [#]_ The hypervolume indicator values
-of these latest sets of non-dominated solutions, also called *non-dominated
-reference sets*, are then used as the reference hypervolume indicator value.
+hypervolume indicator value, we use an approximation of the Pareto set. 
+To obtain the approximation, several multi-objective optimization algorithms
+have been run and all non-dominated solutions over all runs have been
+recorded. [#]_ 
+The hypervolume indicator value of the obtained set of non-dominated
+solutions, also called *non-dominated reference set*, separately obtained 
+for each problem instance in the benchmark suite, is then used as the
+reference hypervolume indicator value.
 
 
-.. note:: The performance assessment as propoposed here is, in itself, to the most
+.. Niko: we should recognize that using the true Pareto set as reference might not
+   even desirable. Why? Because it uses an infinite number of solutions, which
+   is not what we can do or what we want to do in practice. 
+
+.. Niko: The performance assessment as propoposed here is, in itself, to the most
   part **not relative** to the optimum or, more concisely, to an optimal indicator
   value. Conceptually, we should instead consider the target values as
   (i) absolute values and (ii) as variable input parameters for the 
@@ -315,18 +316,33 @@ reference sets*, are then used as the reference hypervolume indicator value.
   solved by knowing the best possible indicator value.
 
 
-
 .. [#] Amongst others, we run versions of NSGA-II [todo], SMS-EMOA [todo],
   MOEA/D [todo], RM-MEDA [todo], and MO-CMA-ES [todo], together with simple
   uniform RANDOMSEARCH and the single-objective CMA-ES on scalarized problems
   (i.e. weighted sum) to create first approximations of the bi-objective
   problems' Pareto sets.
 
-   
+
+
+Instances and Generalization Experiment
+=======================================
+The standard procedure for an experiment on a benchmark suite, like the 
+`bbob-biobj` suite, prescribes to run the algorithm of choice once on each
+problem of the suite [HAN2016ex]_.
+For the `bbob-biobj` suite, the postprocessing part of COCO_ displays by
+default only 5 out of the 10 instances from each function-dimension pair.
+
+
+.. Like that, users are less suspected of having tuned their algorithms to the
+   remaining 5 instances (the *test set*) which can then be used to evaluate the
+   generalization abilities of the benchmarked algorithms.
+.. Niko: I like to be honest: our motivation to display on 5 instances is not
+   the question of generalization. 
+
 
 Data storage and Future Recalculations of Indicator Values
 ==========================================================
-Having a good approximation of the Pareto set/Pareto front is crucial in accessing
+Having a good approximation of the Pareto set/Pareto front is crucial in assessing
 algorithm performance with the above suggested performance criterion. In order to allow
 the reference sets to approximate the Pareto set/Pareto front better and better over time,
 the COCO_ platform records every non-dominated solution over the algorithm run.
@@ -343,18 +359,6 @@ reference values together with the performance data during the experiment and di
 a version number in the plots generated.
 
 
-Instances and Generalization Experiment
-=======================================
-The standard procedure for an experiment on the `bbob-biobj` test suite prescribes
-to run the algorithm of choice on 10 different problem instances per combination
-of parameterized function and problem dimension. The postprocessing part
-of COCO_ makes sure that only 5 of them are displayed by default as a kind of 
-*training set*. Like that, users are less suspected of having tuned their algorithms
-to the remaining 5 instances (the *test set*) which can then be used to evaluate the
-generalization abilities of the benchmarked algorithms.
-
-
-    
 
 Acknowledgements
 ================
@@ -374,24 +378,27 @@ of the French National Research Agency.
 .. [BBO2016perf] The BBOBies (2016). `Performance Assessment`__. 
 .. __: https://www.github.com
 
-.. [coco-doc] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
+.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
    `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
-   Setting`__.
+   Setting`__, *ArXiv e-prints*, `arXiv:1603.08785`__. 
 .. __: http://numbbo.github.io/coco-doc/
+.. __: http://arxiv.org/abs/1603.08785
 
 .. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
   `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, updated February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
 
-.. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016), 
-   `COCO: Experimental Procedure`__. 
+.. [HAN2016ex] N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
+  `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__. 
 .. __: http://numbbo.github.io/coco-doc/experimental-setup/
+.. __: http://arxiv.org/abs/1603.08776
 
-.. [TUS2016] T. Tušar, D. Brockhoff, N. Hansen, A. Auger (2016), 
+.. [TUS2016] T. Tušar, D. Brockhoff, N. Hansen, A. Auger (2016). 
   `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) 
-  Test Suite`__.
-.. __: http://numbbo.github.io/coco-doc/bbob-biobj/functions/ 
+  Test Suite`__, *ArXiv e-prints*, `arXiv:1604.00359`__.
+.. __: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
+.. __: http://arxiv.org/abs/1604.00359
 
 .. [ZIT2003] E. Zitzler, L. Thiele, M. Laumanns, C. M. Fonseca, and V. Grunert da Fonseca (2003). Performance Assessment of Multiobjective Optimizers: An Analysis and Review.
   *IEEE Transactions on Evolutionary Computation*, 7(2), pp. 117-132.
