@@ -21,8 +21,7 @@ from ..toolsstats import significancetest
 
 from pdb import set_trace
 
-targetsOfInterest = pproc.TargetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))
-targetf = 1e-8 # value for determining the success ratio
+
 samplesize = genericsettings.simulated_runlength_bootstrap_sample_size 
 
 def get_table_caption():
@@ -48,24 +47,32 @@ def get_table_caption():
         (preceded by the target \Df-value in \textit{italics}) in the first row. 
         \#succ is the number of trials that reached the target value of the last column.
         """
-    table_caption_two_bi = r"""%
-        target, the corresponding best aRT
-        in the first row. The different target \Df-values are shown in the top row. 
-        \#succ is the number of trials that reached the (final) target
+    table_caption_bi = r"""%
+        Average runtime (\aRT) to reach given targets, measured
+        in number of function evaluations in dimensions 5 (left) and 20 (right).
+        For each function, the \aRT\ 
+        and, in braces as dispersion measure, the half difference between 10 and 
+        90\%-tile of (bootstrapped) runtimes is shown for the different
+        target \Df-values as shown in the top row. 
+        \#succ is the number of trials that reached the last target    
         $\hvref + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
         """
-    table_caption_rest = r"""%
+    table_caption_rest = (r"""%
         The median number of conducted function evaluations is additionally given in 
-        \textit{italics}, if the target in the last column was never reached. 
+        \textit{italics}, if the last target was never reached. 
         1:\algorithmAshort\ is \algorithmA\ and 2:\algorithmBshort\ is \algorithmB.
         Bold entries are statistically significantly better compared to the other algorithm,
         with $p=0.05$ or $p=10^{-k}$ where $k\in\{2,3,4,\dots\}$ is the number
-        following the $\star$ symbol, with Bonferroni correction of #1.
-        A $\downarrow$ indicates the same tested against the best algorithm of BBOB-2009.
-        """
+        following the $\star$ symbol, with Bonferroni correction of #1.""" + 
+        (r"""A $\downarrow$ indicates the same tested against the best
+        algorithm of BBOB-2009."""
+        if not (genericsettings.current_testbed.name == genericsettings.testbed_name_bi)
+        else "")
+        )
+        
     if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
-        table_caption = table_caption_one + table_caption_two_bi + table_caption_rest
+        table_caption = table_caption_bi + table_caption_rest
     elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
@@ -81,6 +88,10 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     """One table per dimension, modified to fit in 1 page per table."""
 
     #TODO: method is long, split if possible
+
+    testbed = genericsettings.current_testbed
+    targetsOfInterest = testbed.pptable2_targetsOfInterest
+
 
     dictDim0 = dsList0.dictByDim()
     dictDim1 = dsList1.dictByDim()
@@ -130,7 +141,10 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         for f in sorted(funcs):
             tableHtml.append('<tr>\n')
             targets = targetsOfInterest((f, d))
-            targetf = targets[-1]
+            if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+                targetf = targets[-1]
+            else:
+                targetf = testbed.pptable_ftarget
             
             curline = [r'${\bf f_{%d}}$' % f]
             curlineHtml = ['<th><b>f<sub>%d</sub></b></th>\n' % f]
