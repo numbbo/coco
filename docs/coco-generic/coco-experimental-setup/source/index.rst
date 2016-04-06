@@ -451,8 +451,9 @@ of the French National Research Agency.
 
 .. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
    `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
-   Setting`__.
-__ http://numbbo.github.io/coco-doc/
+   Setting`__, *ArXiv e-prints*, `arXiv:1603.08785`__. 
+.. __: http://numbbo.github.io/coco-doc/
+.. __: http://arxiv.org/abs/1603.08785
  
 .. [HAR1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
    algorithm. In *Proceedings of the Genetic and Evolutionary Computation

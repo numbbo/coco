@@ -40,7 +40,7 @@ as central performance measure.
 Finally, we  give a quick overview of the basic
 code structure and the available test suites. [#]_
 
-.. [#] *ArXiv e-prints*, arXiv:1603.08785__, 2016.
+.. [#] *ArXiv e-prints*, `arXiv:1603.08785`__, 2016.
 .. __: http://arxiv.org/abs/1603.08785
   
 .. raw:: latex
@@ -701,10 +701,11 @@ __ http://numbbo.github.io/coco-doc/experimental-setup/
 .. [STE1946] S.S. Stevens (1946). 
   On the theory of scales of measurement. *Science* 103(2684), pp. 677-680.
 
-.. [TUS2016] T. Tusar, D. Brockhoff, N. Hansen, A. Auger (2016). 
+.. [TUS2016] T. Tušar, D. Brockhoff, N. Hansen, A. Auger (2016). 
   `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) 
-  Test Suite`__.
-__ http://numbbo.github.io/coco-doc/bbob-biobj/functions/ 
+  Test Suite`__, *ArXiv e-prints*, `arXiv:1604.00359`__.
+.. __: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
+.. __: http://arxiv.org/abs/1604.00359
 
 .. [WHI1996] D. Whitley, S. Rana, J. Dzubera, K. E. Mathias (1996). 
   Evaluating evolutionary algorithms. *Artificial intelligence*, 85(1), 245-276.
