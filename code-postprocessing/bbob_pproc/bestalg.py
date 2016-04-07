@@ -21,16 +21,14 @@ from __future__ import absolute_import
 
 import os
 import sys
-import glob
-import getopt
 import pickle
 import gzip
-from pdb import set_trace
 import warnings
 import numpy as np
 
-from . import genericsettings, readalign, pproc
+from . import readalign, pproc
 from .toolsdivers import print_done
+from .ppfig import Usage
 from . import toolsstats
 
 bestalgentries2009 = {}
@@ -61,12 +59,8 @@ algs2012 = ("ACOR", "BIPOPaCMA", "BIPOPsaACM", "aCMA", "CMAES", "aCMAa", "aCMAm"
 #  o a best algorithm and an algorithm portfolio are almost the same, 
 #    they should derive from a CombinedAlgorithmDataSet? 
 
-#CLASS DEFINITIONS
+# CLASS DEFINITIONS
 
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
 
 class BestAlgSet():
     """Unit element of best algorithm data set.
