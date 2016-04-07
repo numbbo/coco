@@ -10,6 +10,11 @@ from cocoprep.archive_functions import Archive, log_level
 
 
 def finalize_output(precision_list, all_solutions, currently_nondominated=True):
+    """Finalizes all output files contained in precision_list.
+
+       Outputs some final statistics and closes the files. If currently_nondominated is false, outputs all the solutions
+       in the thinned archives (including the extreme ones). 
+    """
     for precision_dict in precision_list:
         f_out = precision_dict.get('f_out')
         if f_out and not f_out.closed:
@@ -31,8 +36,10 @@ def archive_thinning(input_path, output_path, thinning_precisions, currently_non
     """Performs thinning of all the archives in the input path and stores the thinned archives in the output path.
 
        All input solutions are rounded according to the thinning precisions (in the normalized objective space) and
-       added to the archives (one archive per thinning precision). The solutions that are non-dominated with regard to
-       a thinned archive are output (the output path is different for every precision).
+       added to the archives (one archive per thinning precision). If currently_nondominated is True, all solutions that
+       are currently nondominated within the thinned archive are output. If currently_nondominated is False, only the
+       solutions that are contained in the final archive are output. In this case, the two extreme solutions are also
+       output.
     """
     # Check whether input path exits
     input_files = get_file_name_list(input_path, ".adat")
