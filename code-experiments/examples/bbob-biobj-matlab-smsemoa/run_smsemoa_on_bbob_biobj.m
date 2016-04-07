@@ -54,7 +54,7 @@ while true
     if printeddim < dimension
       if printeddim > 1
         elapsedtime = toc;
-        fprintf("\n   COCO TIMING: dimension %d finished in %e seconds/evaluation\n", ...
+        fprintf('\n   COCO TIMING: dimension %d finished in %e seconds/evaluation\n', ...
                 printeddim, elapsedtime/double(doneEvalsTotal));
         tic;
       end
@@ -100,7 +100,7 @@ while true
 end
 
 elapsedtime = toc;
-fprintf("\n   COCO TIMING: dimension %d finished in %e seconds/evaluation\n", ...
+fprintf('\n   COCO TIMING: dimension %d finished in %e seconds/evaluation\n', ...
         printeddim, elapsedtime/double(doneEvalsTotal));
 
 cocoCall('cocoObserverFree', observer);

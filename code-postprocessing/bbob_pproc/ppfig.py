@@ -261,8 +261,9 @@ def save_single_functions_html(filename,
                 
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             f.write("\n<!--pptable2Html-->\n")
-            f.write(captionStringFormat % '##bbobpptablestwolegend##')
-            
+            key = 'bbobpptablestwolegend' + genericsettings.current_testbed.scenario
+            f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
+
         elif htmlPage is HtmlPage.MANY:
             currentHeader = 'Scaling of aRT with dimension'
             f.write("\n<H2> %s </H2>\n" % currentHeader)
@@ -307,7 +308,7 @@ def save_single_functions_html(filename,
             currentHeader = 'aRT in number of function evaluations'
             f.write("<H2> %s </H2>\n" % currentHeader)
             f.write("\n<!--pptableHtml-->\n")
-            key = (('bbobpptablecaptionrlbased' if genericsettings.runlength_based_targets else 'bbobpptablecaptionfixed') if genericsettings.current_testbed.name != 'bbob-biobj' else 'bbobpptablecaptionbiobjfixed')            
+            key = 'bbobpptablecaption' + genericsettings.current_testbed.scenario
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
     
         elif htmlPage is HtmlPage.PPRLDISTR:
@@ -335,7 +336,8 @@ def save_single_functions_html(filename,
                 for dimension in dimensions:
                     f.write(addImage('pplogloss_%02dD_noiselessall.%s' % (dimension, extension), True))
                 f.write("\n<!--tables-->\n")
-                f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption##'))
+                scenario = genericsettings.current_testbed.scenario
+                f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption' + scenario + '##'))
             
                 for typeKey, typeValue in functionGroups.iteritems():
                     f.write('<p><b>%s in %s</b></p>' % (typeValue, '-D and '.join(str(x) for x in dimensions) + '-D'))
@@ -344,7 +346,7 @@ def save_single_functions_html(filename,
                         f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, typeKey, extension), True))
                     f.write('</div>')
                         
-                f.write(captionStringFormat % htmldesc.getValue('##bbobloglossfigurecaption##'))
+                f.write(captionStringFormat % htmldesc.getValue('##bbobloglossfigurecaption' + scenario + '##'))
         
         if caption:
             f.write(captionStringFormat % caption)
