@@ -20,6 +20,13 @@ bbox_inches_choices = {  # do we also need pad_inches = 0?
 }
 
 
+# CLASS DEFINITIONS
+class Usage(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+
+# FUNCTION DEFINITIONS
 def enum(*sequential, **named):
     enums = dict(zip(sequential, range(len(sequential))), **named)
     return type('Enum', (), enums)

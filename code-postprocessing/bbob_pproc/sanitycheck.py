@@ -29,9 +29,9 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from bbob_pproc import findfiles
-from bbob_pproc.pproc import DataSetList
 from bbob_pproc.pproc import parseinfo
 from bbob_pproc.readalign import split
+from bbob_pproc.ppfig import Usage
 
 # Used by getopt:
 shortoptlist = "hvpfo:"
@@ -53,14 +53,6 @@ correct_instances2010 = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
                          11:1, 12:1, 13:1, 14:1, 15:1}
 correct_instances2009 = {1:3, 2:3, 3:3, 4:3, 5:3}
 
-#CLASS DEFINITIONS
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-
-#FUNCTION DEFINITIONS
 
 def checkinfofile(filename, verbose=True):
     """Check the integrity of info files."""
