@@ -9,7 +9,25 @@ from cocoprep.archive_exceptions import PreprocessingException, PreprocessingWar
 from cocoprep.archive_functions import Archive, log_level
 
 
-def archive_thinning(input_path, output_path, thinning_precisions):
+def finalize_output(precision_list, all_solutions, currently_nondominated=True):
+    for precision_dict in precision_list:
+        f_out = precision_dict.get('f_out')
+        if f_out and not f_out.closed:
+            while not currently_nondominated:
+                text = precision_dict.get('archive').get_next_solution_text()
+                if text is None:
+                    break
+                precision_dict['thinned_solutions'] += 1
+                f_out.write(text)
+            print('{} all: {} thinned: {} ({:.2f}%)'.format(precision_dict.get('name')[1:],
+                                                            all_solutions,
+                                                            precision_dict.get('thinned_solutions'),
+                                                            100 * precision_dict.get(
+                                                               'thinned_solutions') / all_solutions))
+            f_out.close()
+
+
+def archive_thinning(input_path, output_path, thinning_precisions, currently_nondominated=True):
     """Performs thinning of all the archives in the input path and stores the thinned archives in the output path.
 
        All input solutions are rounded according to the thinning precisions (in the normalized objective space) and
@@ -56,17 +74,11 @@ def archive_thinning(input_path, output_path, thinning_precisions):
         with open(input_file, 'r') as f_in:
             for line in f_in:
                 if line[0] == '%' and 'instance' in line:
-                    for precision_dict in precision_list:
-                        f_out = precision_dict.get('f_out')
-                        if f_out and not f_out.closed:
-                            print('{} all: {} thinned: {} ({:.2f}%)'.format(precision_dict.get('name')[1:],
-                                                                            all_solutions,
-                                                                            precision_dict.get('thinned_solutions'),
-                                                                            100 * precision_dict.get(
-                                                                               'thinned_solutions') / all_solutions))
-                            f_out.close()
-
+                    finalize_output(precision_list, all_solutions, currently_nondominated)
                     instance = int(get_key_value(line[1:], 'instance').strip(' \t\n\r'))
+                    # Limit to instance = 1, TODO: Filter functions and instances through parameters!
+                    if instance > 1:
+                        break
 
                     # Create an archive for every precision
                     for precision_dict in precision_list:
@@ -102,8 +114,7 @@ def archive_thinning(input_path, output_path, thinning_precisions):
                             f_normalized = [(f_original[i] - ideal[i]) / normalization[i] for i in range(2)]
                             f_normalized = [round(f_normalized[i] / precision) for i in range(2)]
                             f_normalized = [f_normalized[i] * precision for i in range(2)]
-                            f_rounded = [ideal[i] + f_normalized[i] * normalization[i] for i in range(2)]
-                            updated = precision_dict.get('archive').add_solution(f_rounded[0], f_rounded[1], line)
+                            updated = precision_dict.get('archive').add_solution(f_normalized[0], f_normalized[1], line)
                             precision_dict.update({'updated': updated})
                     except IndexError:
                         print('Problem in file {}, line {}, skipping line'.format(input_file, line))
@@ -111,20 +122,13 @@ def archive_thinning(input_path, output_path, thinning_precisions):
                     finally:
                         all_solutions += 1
 
-                    for precision_dict in precision_list:
-                        if precision_dict.get('updated') == 1:
-                            precision_dict['thinned_solutions'] += 1
-                            precision_dict.get('f_out').write(line)
+                    if currently_nondominated:
+                        for precision_dict in precision_list:
+                            if precision_dict.get('updated') == 1 or line.split()[0] == '0':
+                                precision_dict['thinned_solutions'] += 1
+                                precision_dict.get('f_out').write(line)
 
-        for precision_dict in precision_list:
-            f_out = precision_dict.get('f_out')
-            if f_out and not f_out.closed:
-                print('{} all: {} thinned: {} ({:.2f}%)'.format(precision_dict.get('name')[1:],
-                                                                all_solutions,
-                                                                precision_dict.get('thinned_solutions'),
-                                                                100 * precision_dict.get(
-                                                                    'thinned_solutions') / all_solutions))
-                f_out.close()
+        finalize_output(precision_list, all_solutions, currently_nondominated)
 
     log_level(old_level)
 
@@ -142,5 +146,5 @@ if __name__ == '__main__':
     thinning_precisions = [5e-5, 1e-5]
 
     # Analyze the archives
-    archive_thinning(input_path, output_path, thinning_precisions)
+    archive_thinning(input_path, output_path, thinning_precisions, False)
 
