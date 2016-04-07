@@ -13,7 +13,7 @@ def finalize_output(precision_list, all_solutions, currently_nondominated=True):
     """Finalizes all output files contained in precision_list.
 
        Outputs some final statistics and closes the files. If currently_nondominated is false, outputs all the solutions
-       in the thinned archives (including the extreme ones). 
+       in the thinned archives (including the extreme ones).
     """
     for precision_dict in precision_list:
         f_out = precision_dict.get('f_out')
@@ -150,7 +150,7 @@ if __name__ == '__main__':
     # Set the default input and output paths
     input_path = '/Volumes/STORAGE/Data/archives/archives-output_2016_03_30_only_i01-i05'
     output_path = '/Volumes/STORAGE/Data/archives/thinning/output-archives_2016_03_30_only_i01-i05'
-    thinning_precisions = [5e-5, 1e-5]
+    thinning_precisions = [5e-5, 1e-5, 5e-6]
 
     # Analyze the archives
     archive_thinning(input_path, output_path, thinning_precisions, False)
