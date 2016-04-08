@@ -167,9 +167,12 @@ def getRldLink(htmlPage, currentDir):
         fileName = '%s.html' % genericsettings.pprldmany_file_name
         links += addLink(currentDir, folder, fileName, 'Runtime distribution plots',
                          ignoreFileExists=ignoreFileExists)
-        fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
-        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
-                         ignoreFileExists=ignoreFileExists)
+
+        if htmlPage in (HtmlPage.TWO, HtmlPage.MANY):
+            fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
+            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
+                             ignoreFileExists=ignoreFileExists)
+
         fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
         links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
                          ignoreFileExists=ignoreFileExists)
