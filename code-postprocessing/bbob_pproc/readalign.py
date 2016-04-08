@@ -441,7 +441,11 @@ def split(dataFiles, isBiobjective, dim=None):
                 elif data[id] in ('NaN', 'nan'):
                     data[id] = numpy.nan
                 else:
-                    data[id] = float(data[id])
+                    try:
+                        data[id] = float(data[id])
+                    except ValueError:
+                        warnings.warn('%s is not a valid number!' % data[id])
+                        data[id] = numpy.nan
 
             content.append(numpy.array(data))
             #Check that it always have the same length?
