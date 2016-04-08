@@ -178,58 +178,6 @@ class VMultiReader(MultiReader):
                 i.next()
         return numpy.insert(self.currentLine(), 0, currentValue)
         
-class VMultiReaderNew(MultiReader):
-    """List of data arrays to be aligned vertically.
-
-    Aligned vertically means, all number of function evaluations are the
-    closest from below or equal to the alignment number of function
-    evaluations.
-
-    """
-
-    idx = idxEvals # the alignment value is the number of function evaluations.
-
-    def __init__(self, data, isBiobjective):
-        super(VMultiReaderNew, self).__init__(data)
-        self.idxData = idxFBi if isBiobjective else idxFSingle # the data of concern are the function values.
-
-    def isFinished(self):
-        return all(i.isFinished for i in self)
-
-    def getAlignedValues(self, selectedValues):
-        
-        res = selectedValues()
-        # iterate until you find the same evaluation number in all functions
-        while res and min(res) < max(res) and len(res) == len(self):
-            index = res.index(min(res))
-            self[index].next()            
-            res = selectedValues()
-            if self[index].isFinished:
-                break
-        
-        if res and min(res) == max(res) and len(res) == len(self):
-            return min(res)
-        else:
-            return None
-        
-    def getInitialValue(self):
-        for i in self:
-            i.next()
-        
-        return self.getAlignedValues(self.currentValues)
-        
-    def newCurrentValue(self):
-
-        return self.getAlignedValues(self.nextValues)
-        
-    def align(self, currentValue):
-        for i in self:
-            while not i.isFinished:
-                if i.nextLine[self.idx] > currentValue:
-                    break
-                i.next()
-        return numpy.insert(self.currentLine(), 0, currentValue)
-
 
 class HMultiReader(MultiReader):
     """List of data arrays to be aligned horizontally.
