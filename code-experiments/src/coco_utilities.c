@@ -851,7 +851,7 @@ static size_t coco_double_to_size_t(const double number) {
  * @brief  Returns 1 if |a - b| < accuracy and 0 otherwise.
  */
 static int coco_double_almost_equal(const double a, const double b, const double accuracy) {
-  return ((fabs(a - b) < accuracy) == 0);
+  return (fabs(a - b) < accuracy);
 }
 
 /**@}*/
