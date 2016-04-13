@@ -59,6 +59,7 @@ from . import genericsettings, config
 from . import pprldistr
 from . import htmldesc
 from .pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
+from .ppfig import Usage
 from .toolsdivers import prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
 from .comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 from .compall import ppfigs, pprldmany
@@ -67,14 +68,6 @@ import matplotlib.pyplot as plt
 
 __all__ = ['main']
 
-#CLASS DEFINITIONS
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-
-#FUNCTION DEFINITIONS
 
 def usage():
     print main.__doc__
