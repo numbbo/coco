@@ -20,6 +20,13 @@ bbox_inches_choices = {  # do we also need pad_inches = 0?
 }
 
 
+# CLASS DEFINITIONS
+class Usage(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+
+# FUNCTION DEFINITIONS
 def enum(*sequential, **named):
     enums = dict(zip(sequential, range(len(sequential))), **named)
     return type('Enum', (), enums)
@@ -160,9 +167,12 @@ def getRldLink(htmlPage, currentDir):
         fileName = '%s.html' % genericsettings.pprldmany_file_name
         links += addLink(currentDir, folder, fileName, 'Runtime distribution plots',
                          ignoreFileExists=ignoreFileExists)
-        fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
-        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
-                         ignoreFileExists=ignoreFileExists)
+
+        if htmlPage in (HtmlPage.TWO, HtmlPage.MANY):
+            fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
+            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
+                             ignoreFileExists=ignoreFileExists)
+
         fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
         links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
                          ignoreFileExists=ignoreFileExists)
