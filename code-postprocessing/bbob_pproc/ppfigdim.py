@@ -381,7 +381,11 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
             maxevals_succ = np.ones(len(dimensions)) 
             # Collect data that have the same function and different dimension.
             for idim, dim in enumerate(dimensions):
-                assert len(dictFunc[func][dim]) == 1
+                if len(dictFunc[func][dim]) > 1:
+                    raise ppfig.Usage('\nFound more than one algorithm inside one data folder. '
+                                      'Specify a separate data folder for each algorithm.')
+                elif len(dictFunc[func][dim]) < 1:
+                    raise ppfig.Usage('\nNo data for function %s and dimension %d.' % (func, dim))
                 # (ert, success rate, number of success, total number of
                 #        function evaluations, median of successful runs)
                 tmp = generateData(dictFunc[func][dim][0], valuesOfInterest((func, dim))[i_target])

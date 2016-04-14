@@ -69,11 +69,10 @@ Getting Started <a name="Getting-Started"></a>
 ---------------
 0. Check out the [_Requirements_](#Requirements) above.
 
-1. **Download** the [COCO framework code](https://github.com/numbbo/coco) from
-[github](https://github.com), 
+1. **Download** the COCO framework code from github, 
 
-  - either by clicking [here](https://github.com/numbbo/coco/archive/master.zip) and unzip the 
-    `zip` file, 
+  - either by clicking the [Download ZIP button](https://github.com/numbbo/coco/archive/master.zip) 
+    and unzip the `zip` file, 
   - or (preferred) by typing `git clone https://github.com/numbbo/coco.git`. This way 
     allows to remain up-to-date easily (but needs `git` to be installed). After 
     cloning, `git pull` keeps the code up-to-date with the latest release. 
