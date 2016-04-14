@@ -30,9 +30,9 @@ import numpy, numpy as np
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 from . import genericsettings, findfiles, toolsstats, toolsdivers
-from .readalign import split, alignData, HMultiReader, VMultiReader, VMultiReaderNew, openfile
+from .readalign import split, alignData, HMultiReader, VMultiReader, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
-from .ppfig import consecutiveNumbers
+from .ppfig import consecutiveNumbers, Usage
 
 do_assertion = genericsettings.force_assertions # expensive assertions
 targets_displayed_for_info = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]  # only to display info in DataSetList.info
@@ -792,13 +792,9 @@ class DataSet():
                          for i in self.dataFiles)
                              
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
-            warnings.warn('Missing tdat files. Please rerun the experiments.')
-            dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
-                             for i in self.dataFiles)
-            data = VMultiReaderNew(split(dataFiles, self.isBiobjective()), self.isBiobjective())
-        else:
-            data = VMultiReader(split(dataFiles, self.isBiobjective()), self.isBiobjective())
+            raise Usage("Missing tdat files in '{0}'. Please rerun the experiments." % filepath)
 
+        data = VMultiReader(split(dataFiles, self.isBiobjective()), self.isBiobjective())
         if verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))

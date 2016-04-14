@@ -59,6 +59,7 @@ from . import genericsettings, config
 from . import pprldistr
 from . import htmldesc
 from .pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
+from .ppfig import Usage
 from .toolsdivers import prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
 from .comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 from .compall import ppfigs, pprldmany
@@ -67,14 +68,6 @@ import matplotlib.pyplot as plt
 
 __all__ = ['main']
 
-#CLASS DEFINITIONS
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-
-#FUNCTION DEFINITIONS
 
 def usage():
     print main.__doc__
@@ -493,9 +486,9 @@ def main(argv=None):
                                  genericsettings.verbose,
                                  genericsettings.two_algorithm_file_name)
 
+        htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')
+
         if genericsettings.isScatter:
-            if genericsettings.runlength_based_targets:
-                ppscatter.targets = pproc.RunlengthBasedTargetValues(np.logspace(numpy.log10(0.5), numpy.log10(50), 8))
             ppscatter.main(dsList1, dsList0, outputdir,
                            verbose=genericsettings.verbose)
             prepend_to_file(os.path.join(outputdir,
@@ -505,7 +498,7 @@ def main(argv=None):
                              '}'
                             ])
             
-            replace_in_file(os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html'), '##bbobppscatterlegend##', ppscatter.figure_caption_html())
+            replace_in_file(htmlFileName, '##bbobppscatterlegend##', ppscatter.figure_caption(True))
                             
             print "Scatter plots done."
 
@@ -567,7 +560,6 @@ def main(argv=None):
                          '}'
                         ])
                         
-            htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')
             key =  '##bbobpptablestwolegend%s##' % (genericsettings.current_testbed.scenario)
             replace_in_file(htmlFileName, '##bbobpptablestwolegend##', htmldesc.getValue(key))
                         
@@ -586,16 +578,11 @@ def main(argv=None):
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
             plt.rc('pdf', fonttype = 42)
-            ftarget = genericsettings.current_testbed.ppfigs_ftarget
-            if genericsettings.runlength_based_targets:
-                reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
-                ftarget = RunlengthBasedTargetValues([genericsettings.target_runlength],  # TODO: make this more variable but also consistent
-                                                     reference_data = reference_data)
-            ppfigs.main(dictAlg, 
+
+            ppfigs.main(dictAlg,
                         genericsettings.two_algorithm_file_name, 
                         dsList[0].isBiobjective(),
-                        ftarget,
-                        sortedAlgs, 
+                        sortedAlgs,
                         outputdir, 
                         genericsettings.verbose)
             plt.rcdefaults()
