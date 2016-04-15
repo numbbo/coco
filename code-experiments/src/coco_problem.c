@@ -342,17 +342,17 @@ size_t coco_problem_get_evaluations(const coco_problem_t *problem) {
  */
 static int coco_problem_best_parameter_not_zero(const coco_problem_t *problem) {
 	size_t i = 0;
-	int zero = 0;
+	int best_is_zero = 1;
 
 	if (coco_vector_contains_nan(problem->best_parameter, problem->number_of_variables))
 		return 1;
 
-	while (i < problem->number_of_variables && !zero) {
-	      zero = coco_double_almost_equal(problem->best_parameter[i], 0, 1e-9);
+	while (i < problem->number_of_variables && best_is_zero) {
+	      best_is_zero = coco_double_almost_equal(problem->best_parameter[i], 0, 1e-9);
 	      i++;
 	  }
 
-	return zero;
+	return !best_is_zero;
 }
 
 /**
