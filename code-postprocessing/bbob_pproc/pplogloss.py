@@ -122,28 +122,39 @@ such that $\aRT(\ftarget)\le\FEvals$ for the
     % Each \aRT\ is multiplied by $\exp(\CrE)$ correcting for the parameter crafting effort. 
 """
 
-table_caption = r"""%
-    \aRT\ loss ratio versus the budget in number of $f$-evaluations
-    divided by dimension.
-    For each given budget \FEvals, the target value \ftarget\ is computed
-    as the best target $f$-value reached within the
-    budget by the given algorithm.
-    Shown is then the \aRT\ to reach \ftarget\ for the given algorithm
-    or the budget, if the GECCO-BBOB-2009 best algorithm
-    reached a better target within the budget,
-    divided by the best \aRT\
-    seen in GECCO-BBOB-2009 to reach \ftarget.
-    Line: geometric mean. Box-Whisker error bar: 25-75\%-ile with median
-    (box), 10-90\%-ile (caps), and minimum and maximum \aRT\ loss ratio
-    (points). The vertical line gives the maximal number of function evaluations
-    in a single trial in this function subset. See also
-    Figure~\ref{fig:ERTlogloss} for results on each function subgroup.
-    """
-figure_caption = r"""%
-    \aRT\ loss ratios (see Figure~\ref{tab:ERTloss} for details).  
-    Each cross ({\color{blue}$+$}) represents a single function, the line
-    is the geometric mean.
-    """  # \bbobloglossfigurecaption{}
+
+def table_caption():
+    caption = r"""%
+        \aRT\ loss ratio versus the budget in number of $f$-evaluations
+        divided by dimension.
+        For each given budget \FEvals, the target value \ftarget\ is computed
+        as the best target $f$-value reached within the
+        budget by the given algorithm.
+        Shown is then the \aRT\ to reach \ftarget\ for the given algorithm
+        or the budget, if the GECCO-BBOB-2009 best algorithm
+        reached a better target within the budget,
+        divided by the best \aRT\
+        seen in GECCO-BBOB-2009 to reach \ftarget.
+        Line: geometric mean. Box-Whisker error bar: 25-75\%-ile with median
+        (box), 10-90\%-ile (caps), and minimum and maximum \aRT\ loss ratio
+        (points). The vertical line gives the maximal number of function evaluations
+        in a single trial in this function subset. See also
+        Figure~\ref{fig:ERTlogloss} for results on each function subgroup.
+        """
+
+    # Currently all scenarios have the same caption.
+    return caption
+
+
+def figure_caption():
+    caption = r"""%
+        \aRT\ loss ratios (see Figure~\ref{tab:ERTloss} for details).
+        Each cross ({\color{blue}$+$}) represents a single function, the line
+        is the geometric mean.
+        """
+
+    # Currently all scenarios have the same caption.
+    return caption
 
 evalf = None
 f_thresh = 1.e-8
