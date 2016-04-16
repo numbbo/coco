@@ -62,7 +62,7 @@ static void transform_vars_x_hat_free(void *thing) {
 static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, const long seed) {
   transform_vars_x_hat_data_t *data;
   coco_problem_t *problem;
-  char *result;
+  const char *result;
   size_t i;
 
   data = (transform_vars_x_hat_data_t *) coco_allocate_memory(sizeof(*data));
