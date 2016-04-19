@@ -67,7 +67,7 @@ def archive_thinning(input_path, output_path, thinning_precisions, currently_non
             precision_dict.update({'updated': 0})
 
         try:
-            (suite_name, function, dimension) = parse_archive_file_name(input_file)
+            (suite_name, function, instance, dimension) = parse_archive_file_name(input_file)
         except PreprocessingWarning as warning:
             print('Skipping file {}\n{}'.format(input_file, warning))
             continue
