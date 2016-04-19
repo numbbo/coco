@@ -39,6 +39,7 @@ if __name__ == "__main__":
 from . import genericsettings, ppfig
 from . import dataoutput, pproc, pptex
 from .pproc import DataSetList, processInputArgs
+from .ppfig import Usage
 from .toolsdivers import prepend_to_file, strip_pathname1, str_to_latex
 from .compall import pprldmany, pptables, ppfigs
 from . import ppconverrorbars
@@ -47,13 +48,6 @@ import matplotlib.pyplot as plt
 
 __all__ = ['main']
 
-#CLASS DEFINITIONS
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-#FUNCTION DEFINITIONS
 
 def usage():
     print main.__doc__
