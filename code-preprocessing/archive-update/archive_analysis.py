@@ -86,7 +86,7 @@ def archive_analysis(input_path, output_path, lower_bound, upper_bound):
     for input_file in input_files:
 
         try:
-            (suite_name, function, dimension) = parse_archive_file_name(input_file)
+            (suite_name, function, instance, dimension) = parse_archive_file_name(input_file)
         except PreprocessingWarning as warning:
             print('Skipping file {}\n{}'.format(input_file, warning))
             continue
