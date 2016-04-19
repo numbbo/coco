@@ -46,16 +46,9 @@ if __name__ == "__main__":
 
 from . import genericsettings, rungeneric1, rungeneric2, rungenericmany, ppfig
 from .toolsdivers import prepend_to_file, truncate_latex_command_file, print_done
+from .ppfig import Usage
 
 __all__ = ['main']
-
-#CLASS DEFINITIONS
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-#FUNCTION DEFINITIONS
 
 def _splitshortoptlist(shortoptlist):
     """Split short options list used by getopt.

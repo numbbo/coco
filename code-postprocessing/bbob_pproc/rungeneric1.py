@@ -37,6 +37,7 @@ import warnings, getopt, numpy as np
 
 from . import genericsettings, ppfig, pptable, pprldistr, ppfigdim, pplogloss, findfiles
 from .pproc import DataSetList
+from .ppfig import Usage
 from .toolsdivers import print_done, prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
 from . import ppconverrorbars
 from .compall import pprldmany, ppfigs
@@ -45,14 +46,6 @@ import matplotlib.pyplot as plt
 
 __all__ = ['main']
 
-# CLASS DEFINITIONS
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-
-# FUNCTION DEFINITIONS
 
 def usage():
     print main.__doc__
@@ -320,8 +313,6 @@ def main(argv=None):
             # (given dimension and function) there is a single instance of
             # DataSet associated. If there are more than one, the first one only
             # will be considered... which is probably not what one would expect.
-            # TODO: put some errors where this case would be a problem.
-            # raise Usage?
 
         if genericsettings.isFig or genericsettings.isTab or genericsettings.isRLDistr or genericsettings.isLogLoss:
             if not os.path.exists(outputdir):
