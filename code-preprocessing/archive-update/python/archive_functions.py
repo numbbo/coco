@@ -86,14 +86,16 @@ class ProblemInstanceInfo:
 
     # noinspection PyTypeChecker
     def write_archive_solutions(self, output_path, archive):
-        """Appends solutions to a file in the output_path named according to self's suite_name, function and dimension.
+        """Appends solutions to a file in the output_path named according to self's suite_name, function, instance and
+           dimension.
            :param archive: archive to be output
            :param output_path: output path (if it does not yet exist, it is created)
         """
         create_path(output_path)
-        f_name = os.path.join(output_path, '{}_f{:02d}_d{:02d}_nondominated.adat'.format(self.suite_name,
-                                                                                         self.function,
-                                                                                         self.dimension))
+        f_name = os.path.join(output_path, '{}_f{:02d}_i{:02d}_d{:02d}_nondominated.adat'.format(self.suite_name,
+                                                                                                 self.function,
+                                                                                                 self.instance,
+                                                                                                 self.dimension))
         with open(f_name, 'a') as f:
             f.write('% instance = {}\n%\n'.format(self.instance))
 
@@ -110,9 +112,9 @@ class ArchiveInfo:
     """Collects information on the problem instances contained in all archives.
     """
 
-    def __init__(self, input_path, instance_list):
+    def __init__(self, input_paths, instance_list):
         """Instantiates an ArchiveInfo object.
-           Extracts information from all archives found in the input_path that correspond to one of the instances in
+           Extracts information from all archives found in the input_paths that correspond to one of the instances in
            instance_list and returns the resulting ArchiveInfo. If instance_list is empty, all instances are collected.
         """
 
@@ -121,7 +123,7 @@ class ArchiveInfo:
         count = 0
 
         # Read the information on the archive
-        input_files = get_file_name_list(input_path, ".adat")
+        input_files = get_file_name_list(input_paths, ".adat")
         if len(input_files) == 0:
             raise PreprocessingException('Folder \'{}\' does not exist or is empty'.format(input_path))
 
