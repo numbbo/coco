@@ -33,6 +33,7 @@ def summary_analysis(input_path, output_file, lower_bound, upper_bound):
                 (suite_name, function, instance, dimension) = parse_problem_instance_file_name(input_file)
             except PreprocessingWarning as warning:
                 print('Skipping file {}\n{}'.format(input_file, warning))
+                continue
 
             print(input_file)
             column_start = 3
@@ -85,9 +86,10 @@ def archive_analysis(input_path, output_path, lower_bound, upper_bound):
     for input_file in input_files:
 
         try:
-            (suite_name, function, dimension) = parse_archive_file_name(input_file)
+            (suite_name, function, instance, dimension) = parse_archive_file_name(input_file)
         except PreprocessingWarning as warning:
             print('Skipping file {}\n{}'.format(input_file, warning))
+            continue
 
         if dimension > 5:
             continue
@@ -137,7 +139,10 @@ if __name__ == '__main__':
         upper = sys.argv[2]
 
     # Analyze the archives
-    archive_analysis('/Volumes/STORAGE/Data/archives/archives-output_2016_03_18_only_i01-i05',
+    archive_analysis('/Volumes/STORAGE/Data/archives/archives-output_2016_03_29_only_i01-i05',
+                     '/Volumes/STORAGE/Data/archives/archive_analysis', lower, upper)
+
+    archive_analysis('/Volumes/STORAGE/Data/archives/archives-output_2016_03_24_only_i06-i10',
                      '/Volumes/STORAGE/Data/archives/archive_analysis', lower, upper)
 
     timing.log('Finished reading data', timing.now())
