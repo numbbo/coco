@@ -136,8 +136,9 @@ class ArchiveInfo:
             except PreprocessingWarning as warning:
                 print(warning)
             else:
-                archive_info_list.append(archive_info_set)
-                count += 1
+                if archive_info_set:
+                    archive_info_list.append(archive_info_set)
+                    count += 1
 
         print('Successfully processed archive information from {} files.'.format(count))
 
