@@ -20,9 +20,9 @@ if __name__ == '__main__':
         arguments = '1-10'
 
     # Merge the archives
-    new_hypervolumes = merge_archives('/Volumes/STORAGE/Data/archives/archives-input',
-                                      '/Volumes/STORAGE/Data/archives/archives-output',
-                                      arguments)
+    input_folders = '/Volumes/STORAGE/Data/archives/archives-input'
+    output_folder = '/Volumes/STORAGE/Data/archives/archives-output'
+    new_hypervolumes = merge_archives(input_folders, output_folder, arguments)
 
     timing.log('Finished merging', timing.now())
 
