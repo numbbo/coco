@@ -1762,13 +1762,25 @@ class DataSetList(list):
             groups = OrderedDict(sorted((key, key.replace('_', ' ')) for key in dictByFuncGroup.keys()))
             return groups
         else:
-            groups = OrderedDict([
-                ('separ', 'Separable functions'), 
-                ('lcond', 'Misc. moderate functions'), 
-                ('hcond', 'Ill-conditioned functions'), 
-                ('multi', 'Multi-modal functions'), 
-                ('mult2', 'Weak structure functions')]) 
-            return groups
+            groups = []
+            if any(i.funcId in range(1, 6) for i in self):
+                groups.append(('separ', 'Separable functions'))
+            if any(i.funcId in range(6, 10) for i in self):
+                groups.append(('lcond', 'Misc. moderate functions'))
+            if any(i.funcId in range(10, 15) for i in self):
+                groups.append(('hcond', 'Ill-conditioned functions'))
+            if any(i.funcId in range(15, 20) for i in self):
+                groups.append(('multi', 'Multi-modal functions'))
+            if any(i.funcId in range(20, 25) for i in self):
+                groups.append(('mult2', 'Weak structure functions'))
+            if any(i.funcId in range(101, 107) for i in self):
+                groups.append(('nzmod', 'Moderate noise'))
+            if any(i.funcId in range(107, 122) for i in self):
+                groups.append(('nzsev', 'Severe noise'))
+            if any(i.funcId in range(122, 131) for i in self):
+                groups.append(('nzsmm', 'Severe noise multimod.'))
+
+            return OrderedDict(groups)
 
     def dictByParam(self, param):
         """Returns a dictionary of DataSetList by parameter values.
