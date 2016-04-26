@@ -53,13 +53,10 @@ header = """
 """
 
 
-def main():
+def main(latex_commands_for_html):
     """Reads all the descriptions and saves them into a tex file. 
 
     """
-
-    latex_commands_for_html = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                           genericsettings.latex_commands_for_html + '.tex')
 
     f = open(latex_commands_for_html, 'w')
 
@@ -158,6 +155,7 @@ def main():
         f.write(prepare_item('bbobloglossfigurecaption' + scenario))
 
     f.write('\n\#\#\#\n\\end{document}\n')
+    f.close()
 
 
 def prepare_providecommand(command, scenario, captiontext):
@@ -169,7 +167,3 @@ def prepare_item(name, command_name='', param=''):
         command_name = name
 
     return '\#\#%s\#\#\n\\%s{%s}\n' % (name, command_name, param)
-
-
-if __name__ == '__main__':
-    main()
