@@ -23,15 +23,15 @@ def main(args):
     if validation:
         validate_html()
     else:
-        prepare_html()
+        texFile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                               genericsettings.latex_commands_for_html + '.tex')
+        prepare_html(texFile)
 
 
-def prepare_html():
+def prepare_html(texFile):
 
-    preparetexforhtml.main()
 
-    texFile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           genericsettings.latex_commands_for_html + '.tex')
+    preparetexforhtml.main(texFile)
 
     FNULL = open(os.devnull, 'w')
     args = "pdflatex %s" % texFile
@@ -51,14 +51,17 @@ def prepare_html():
 def validate_html():
 
     original_file_name = genericsettings.latex_commands_for_html
-    genericsettings.latex_commands_for_html = original_file_name + '_compare'
+    comparing_file_name = original_file_name + '_compare'
 
-    prepare_html()
+    texFile = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                           comparing_file_name + '.tex')
+
+    prepare_html(texFile)
 
     original_html = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                  original_file_name + '.html')
     generated_html = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                  genericsettings.latex_commands_for_html + '.html')
+                                  comparing_file_name + '.html')
 
     footer_start = '<small>'
     original_lines = list(open(original_html, 'r'))
