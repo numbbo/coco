@@ -305,26 +305,52 @@ Missing Values
 
 A Third Approach: Runlength-based Targets
 -----------------------------------------
-In addition to the fixed-budget and fixed-target approaches, there is an intermediate approach, combining the ideas of *measuring runtime* (to get meaningful measurements) and *fixing budgets* (of our interest). The basic idea is the following.
+In addition to the fixed-budget and fixed-target approaches, there is an
+intermediate approach, combining the ideas of *measuring runtime* (to get
+meaningful measurements) and *fixing budgets* (of our interest). The basic idea
+is the following.
 
-We first fix a reference algorithm :math:`\mathcal{A}` which we run on a problem of interest (i.e. on a 3-tuple of parameterized function, dimension, and instance) and for which we record runtimes to reach given target values :math:`\mathcal{F}_{\rm target} = \{ f_{\rm target}^1, \ldots, f_{\rm target}^{|\mathcal{F}_{\rm target}|} \}` (with :math:`f_{\rm target}^i` > :math:`f_{\rm target}^j` for all :math:`i<j`) as in the fixed-target approach described above. The chosen reference algorithm will serve as a baseline upon which the runlength-based targets are computed in the second step.
+We first fix a reference algorithm :math:`\mathcal{A}` which we run on a
+problem of interest (i.e. on a 3-tuple of parameterized function, dimension,
+and instance) and for which we record runtimes to reach given target values
+:math:`\mathcal{F}_{\rm target} = \{ f_{\rm target}^1, \ldots, f_{\rm target}^{|\mathcal{F}_{\rm target}|} \}`
+(with :math:`f_{\rm target}^i` > :math:`f_{\rm target}^j` for all :math:`i<j`)
+as in the fixed-target approach described above. The chosen reference
+algorithm will serve as a baseline upon which the runlength-based targets are 
+computed in the second step.
 
-For this, we fix a set of reference budgets :math:`B = \{b_1,\ldots, b_{|B|}\}` (in number of function evaluations) that we are interested in for the given problem and that are increasing (:math:`b_i < b_j` for all :math:`i<j`). We then pick, for each given budget :math:`b_i` (:math:`1\leq i\leq |B|`), the largest target that the reference algorithm :math:`\mathcal{A}` did not reach within the given budget and that also has not yet been chosen for smaller budgets:
+For this, we fix a set of reference budgets :math:`B = \{b_1,\ldots, b_{|B|}\}`
+(in number of function evaluations) that we are interested in for the given
+problem and that are increasing (:math:`b_i < b_j` for all :math:`i<j`). We
+then pick, for each given budget :math:`b_i` (:math:`1\leq i\leq |B|`), the
+largest target that the reference algorithm :math:`\mathcal{A}` did not reach
+within the given budget and that also has not yet been chosen for smaller
+budgets:
 
 .. math::
   	:nowrap:
 
  	\begin{equation*}
- 	T_{\rm chosen}^i = \max_{1\leq j \leq | \mathcal{F}_{\rm target} |} f_{\rm target}^j \text{ such that } f_{\rm target}^{j} < f(\mathcal{A}, b_i) \text{ and } f_{\rm target}^j < f_{\rm chosen}^{k} \text{ for all } k<i
+		T_{\rm chosen}^i = \max_{1\leq j \leq | \mathcal{F}_{\rm target} |}
+				f_{\rm target}^j \text{ such that }
+				f_{\rm target}^{j} < f(\mathcal{A}, b_i) \text{ and }
+				f_{\rm target}^j < f_{\rm chosen}^{k} \text{ for all } k<i
   	\end{equation*}
 
-with :math:`f(\mathcal{A}, t)` being the best function (or indicator) value found by algorithm :math:`\mathcal{A}` within the first :math:`t` function evaluations of the performed run.
+with :math:`f(\mathcal{A}, t)` being the best function (or indicator) value
+found by algorithm :math:`\mathcal{A}` within the first :math:`t` function
+evaluations of the performed run.
 
 	
  .. Dimo: please check whether the notation is okay
 
 
-Note that this runlength-based targets approach is in particular used in COCO for the scenario of (single-objective) expensive optimization in which the artificial best algorithm of BBOB-2009 is used as reference algorithm and the five budgets of :math:`0.5n`, :math:`1.2n`, :math:`3n`, :math:`10n`, and :math:`50n` function evaluations are fixed (with :math:`n` being the problem dimension).
+Note that this runlength-based targets approach is in particular used in COCO
+for the scenario of (single-objective) expensive optimization in which the
+artificial best algorithm of BBOB-2009 is used as reference algorithm and the
+five budgets of :math:`0.5n`, :math:`1.2n`, :math:`3n`, :math:`10n`, and
+:math:`50n` function evaluations are fixed (with :math:`n` being the problem
+dimension).
 
 
 
@@ -332,15 +358,34 @@ Runtime over Problems
 =========================
 
 
-In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtimes for different target values. These target values can be a :math:`f`- or indicator value (see [BBO2016biobj]_).
-In the performance assessment setting, a problem is the quadruple :math:`p=(n,f_\theta,\theta,f^{\rm target}_\theta)` where :math:`f^{\rm target}_\theta` is the target function value. This means that **we collect runtimes of problems**.
+In order to display quantitative measurements, we have seen in the previous
+section that we should start from the collection of runtimes for different
+target values. These target values can be a :math:`f`- or indicator value
+(see [BBO2016biobj]_).
+In the performance assessment setting, a problem is the quadruple
+:math:`p=(n,f_\theta,\theta,f^{\rm target}_\theta)` where
+:math:`f^{\rm target}_\theta` is the target function value. This means that
+**we collect runtimes of problems**.
 
 Formally, the runtime of a problem is denoted as
-:math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. It is a random variable that counts the number of function evaluations needed to reach a function value lower or equal than :math:`f^{\rm target}_{\theta}`  for the first time. A run or trial that reached a target function value |ftarget| is called *successful*.
+:math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. It is a random
+variable that counts the number of function evaluations needed to reach a
+function value lower or equal than :math:`f^{\rm target}_{\theta}`  for the
+first time. A run or trial that reached a target function value |ftarget| is
+called *successful*.
 
-We also have to **deal with unsuccessful trials**, that is a run that did not reach a target. We then record the number of function evaluations till the algorithm is stopped. We denote the respective random variable :math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
+We also have to **deal with unsuccessful trials**, that is a run that did not
+reach a target. We then record the number of function evaluations till the
+algorithm is stopped. We denote the respective random variable
+:math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
 
-In order to come up with a meaningful way to compare algorithms having different probability of success (that is different probability to reach a target), we consider the conceptual **restart algorithm**: We assume that an algorithm, say called A, has a strictly positive probability |ps| to successfully solve a problem (that is to reach the associated target). The restart-A algorithm consists in restarting A till the problem is solved. The runtime of the restart-A algorithm equals
+In order to come up with a meaningful way to compare algorithms having
+different probability of success (that is different probability to reach a
+target), we consider the conceptual **restart algorithm**: We assume that an
+algorithm, say called A, has a strictly positive probability |ps| to
+successfully solve a problem (that is to reach the associated target). The
+restart-A algorithm consists in restarting A till the problem is solved. The
+runtime of the restart-A algorithm equals
 
 .. math::
 	:nowrap:
@@ -349,11 +394,17 @@ In order to come up with a meaningful way to compare algorithms having different
 	\mathbf{RT}(n,f_\theta,\theta,f^{\rm target}_\theta) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\theta,f^{\rm target}_\theta) + \mathrm{RT}^{\rm s}(n,f_\theta,\theta,f^{\rm target}_\theta)
 	\end{equation*}
 
-where :math:`J` is a random variable that models the number of unsuccessful runs till a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random variables corresponding to the runtime of unsuccessful trials and :math:`\mathrm{RT}^{\rm s}` is a random variable for the runtime of a successful trial.
+where :math:`J` is a random variable that models the number of unsuccessful
+runs till a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random
+variables corresponding to the runtime of unsuccessful trials and
+:math:`\mathrm{RT}^{\rm s}` is a random variable for the runtime of a
+successful trial.
 
-Remark that if the probability of success is one, the restart algorithm and the original   algorithm coincide.
+Remark that if the probability of success is one, the restart algorithm and
+the original   algorithm coincide.
 
-.. Note:: Considering the runtime of the restart algorithm allows to compare quantitatively the two different scenarios where
+.. Note:: Considering the runtime of the restart algorithm allows to compare
+   quantitatively the two different scenarios where
 
 	* an algorithm converges often but relatively slowly
 	* an algorithm converges less often, but whenever it converges, it is with a fast convergence rate.
