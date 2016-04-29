@@ -67,7 +67,7 @@ Measuring runtimes comes as a natural consequence of our prerequisite to
 present a *quantitative* performance assessment, as opposed to simple
 rankings of algorithm performances.
 
-We then either display an average runtime (aRT, see Section `Average Runtime`_)
+We then either display an average runtime (ART, see Section `Average Runtime`_)
 or the empirical distribution of runtimes (ECDF, see Section `Empirical Cumulative
 Distribution Functions`_).
 When displaying the distribution of runtimes, we consider the aggregation of
@@ -101,7 +101,7 @@ parameter setting should be chosen.
 .. .. [#] The COCO platform provides a CPU timing experiment to get a rough estimate of the time
    complexity of the algorithm [BBO2016ex]_.
 
-.. We can then display an average runtime (aRT, see Section `Average Runtime`_) and the
+.. We can then display an average runtime (ART, see Section `Average Runtime`_) and the
    empirical distribution of runtimes (ECDF, see Section `Empirical Cumulative Distribution Functions`_).
    When displaying the distribution of runtimes, we consider the aggregation of runtimes over
    subclasses of problems or over all problems. We do not aggregate over dimensions, because
@@ -128,7 +128,6 @@ Terminology and Definitions
 
 .. Tea: Connected to the comment above, these are some inconsistencies I've found (either
    over all documents or in this one):
-   - sometimes we use aRT, sometimes ART
    - some documents used "D" for dimension of the search space, while I've been recently
    noticing that "n" is used
    I would correct these if I knew what is the version we want.
@@ -142,6 +141,7 @@ We introduce a few terms and definitions that are used in the rest of the docume
    mixing things. So, if se do need to define the problem as a quadruple (makes sense to me),
    we should correct this in the other documents as well.
 
+   
 *problem, function*
  In the COCO_ framework, a problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` describes an instantiation of the parameters.
  More precisely, let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO problem corresponds to :math:`p=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the  problem :math:`p` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`p=(n,f_\theta,\theta)`.
@@ -163,7 +163,7 @@ We introduce a few terms and definitions that are used in the rest of the docume
 
 
  often does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a similar precision.
-
+ 
  .. Tea: I'm not sure I understand why we say "often does not depend" and "similar precision".
     Shouldn't this be "never depends" and "equal (or same) precision"? I would also prefer a different
     notation that would show the dependencies more clearly, for example, both :math:`f_{\rm opt}` and
@@ -176,11 +176,14 @@ We introduce a few terms and definitions that are used in the rest of the docume
     it's hard to operate with the concept of indicator values. An idea: have *quality indicator*
     and *target* as independent definitions here.
 
+ .. Dimo: yes, I am in favor of talking about the bi-objective case already here
+	
 *instance*
- Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different random rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
+ Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different (pseudo-)random rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
 
  .. Tea: I wouldn't use "random" in the sentence above, as choosing the instance exactly
     defines the rotation.
+ .. Dimo: I added "(pseudo-)" to make it more clear. Is it?
 
  We often **interpret different runs performed on different instances** of the same parametrized function in a given dimension as **independent repetitions** of the optimization algorithm on the same function. Put differently, the runs performed on :math:`K` different instances, :math:`f_{\theta_1}, \ldots,f_{\theta_K}`, of a parametrized problem :math:`f_\theta`, are assumed to be independent and identically distributed.
 
@@ -248,15 +251,12 @@ Starting from some convergence graphs, which plot the quality indicator (to be m
 
 .. _fig:HorizontalvsVertical:
 
-.. Tea: We should write in the figure what each axis represents. Also, shifting "Horizontal
-   View" to the left would make it easier to read (there would be less lines over the text).
-
 .. figure:: HorizontalvsVertical.*
    :align: center
    :width: 60%
 
-   Horizontal versus Vertical View
-
+   **Horizontal versus Vertical View**
+   
    Illustration of fixed-budget view (vertical cuts) and fixed-target view
    (horizontal cuts). Black lines depict the best quality indicator value
    plotted versus number of function evaluations.
@@ -290,7 +290,7 @@ data.
 
 Furthermore, for algorithms that are invariant under certain transformations
 of the function value (for example under order-preserving transformations, as
-comparison-based algorithms like DE, ES, PSO), fixed-target measures become
+comparison-based algorithms like DE, ES, PSO ), fixed-target measures become
 invariant under these transformations by transformation of the target values
 while fixed-budget measures require the transformation of all resulting data.
 
@@ -300,26 +300,92 @@ while fixed-budget measures require the transformation of all resulting data.
 Missing Values
 ---------------
 
+.. todo:: write
 
 
-.. todo::
+A Third Approach: Runlength-based Targets
+-----------------------------------------
+In addition to the fixed-budget and fixed-target approaches, there is an
+intermediate approach, combining the ideas of *measuring runtime* (to get
+meaningful measurements) and *fixing budgets* (of our interest). The basic idea
+is the following.
 
-  mention and explain the third scenario: runlength-based targets
+We first fix a reference algorithm :math:`\mathcal{A}` which we run on a
+problem of interest (i.e. on a 3-tuple of parameterized function, dimension,
+and instance) and for which we record runtimes to reach given target values
+:math:`\mathcal{F}_{\rm target} = \{ f_{\rm target}^1, \ldots, f_{\rm target}^{|\mathcal{F}_{\rm target}|} \}`
+(with :math:`f_{\rm target}^i` > :math:`f_{\rm target}^j` for all :math:`i<j`)
+as in the fixed-target approach described above. The chosen reference
+algorithm will serve as a baseline upon which the runlength-based targets are 
+computed in the second step.
+
+For this, we fix a set of reference budgets :math:`B = \{b_1,\ldots, b_{|B|}\}`
+(in number of function evaluations) that we are interested in for the given
+problem and that are increasing (:math:`b_i < b_j` for all :math:`i<j`). We
+then pick, for each given budget :math:`b_i` (:math:`1\leq i\leq |B|`), the
+largest target that the reference algorithm :math:`\mathcal{A}` did not reach
+within the given budget and that also has not yet been chosen for smaller
+budgets:
+
+.. math::
+  	:nowrap:
+
+ 	\begin{equation*}
+		T_{\rm chosen}^i = \max_{1\leq j \leq | \mathcal{F}_{\rm target} |}
+				f_{\rm target}^j \text{ such that }
+				f_{\rm target}^{j} < f(\mathcal{A}, b_i) \text{ and }
+				f_{\rm target}^j < f_{\rm chosen}^{k} \text{ for all } k<i
+  	\end{equation*}
+
+with :math:`f(\mathcal{A}, t)` being the best function (or indicator) value
+found by algorithm :math:`\mathcal{A}` within the first :math:`t` function
+evaluations of the performed run.
+
+	
+ .. Dimo: please check whether the notation is okay
+
+
+Note that this runlength-based targets approach is in particular used in COCO
+for the scenario of (single-objective) expensive optimization in which the
+artificial best algorithm of BBOB-2009 is used as reference algorithm and the
+five budgets of :math:`0.5n`, :math:`1.2n`, :math:`3n`, :math:`10n`, and
+:math:`50n` function evaluations are fixed (with :math:`n` being the problem
+dimension).
+
 
 
 Runtime over Problems
 =========================
 
 
-In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtimes for different target values. These target values can be a :math:`f`- or indicator value (see [BBO2016biobj]_).
-In the performance assessment setting, a problem is the quadruple :math:`p=(n,f_\theta,\theta,f^{\rm target}_\theta)` where :math:`f^{\rm target}_\theta` is the target function value. This means that **we collect runtimes of problems**.
+In order to display quantitative measurements, we have seen in the previous
+section that we should start from the collection of runtimes for different
+target values. These target values can be a :math:`f`- or indicator value
+(see [BBO2016biobj]_).
+In the performance assessment setting, a problem is the quadruple
+:math:`p=(n,f_\theta,\theta,f^{\rm target}_\theta)` where
+:math:`f^{\rm target}_\theta` is the target function value. This means that
+**we collect runtimes of problems**.
 
 Formally, the runtime of a problem is denoted as
-:math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. It is a random variable that counts the number of function evaluations needed to reach a function value lower or equal than :math:`f^{\rm target}_{\theta}`  for the first time. A run or trial that reached a target function value |ftarget| is called *successful*.
+:math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. It is a random
+variable that counts the number of function evaluations needed to reach a
+function value lower or equal than :math:`f^{\rm target}_{\theta}`  for the
+first time. A run or trial that reached a target function value |ftarget| is
+called *successful*.
 
-We also have to **deal with unsuccessful trials**, that is a run that did not reach a target. We then record the number of function evaluations till the algorithm is stopped. We denote the respective random variable :math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
+We also have to **deal with unsuccessful trials**, that is a run that did not
+reach a target. We then record the number of function evaluations till the
+algorithm is stopped. We denote the respective random variable
+:math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
 
-In order to come up with a meaningful way to compare algorithms having different probability of success (that is different probability to reach a target), we consider the conceptual **restart algorithm**: We assume that an algorithm, say called A, has a strictly positive probability |ps| to successfully solve a problem (that is to reach the associated target). The restart-A algorithm consists in restarting A till the problem is solved. The runtime of the restart-A algorithm equals
+In order to come up with a meaningful way to compare algorithms having
+different probability of success (that is different probability to reach a
+target), we consider the conceptual **restart algorithm**: We assume that an
+algorithm, say called A, has a strictly positive probability |ps| to
+successfully solve a problem (that is to reach the associated target). The
+restart-A algorithm consists in restarting A till the problem is solved. The
+runtime of the restart-A algorithm equals
 
 .. math::
 	:nowrap:
@@ -328,11 +394,17 @@ In order to come up with a meaningful way to compare algorithms having different
 	\mathbf{RT}(n,f_\theta,\theta,f^{\rm target}_\theta) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\theta,f^{\rm target}_\theta) + \mathrm{RT}^{\rm s}(n,f_\theta,\theta,f^{\rm target}_\theta)
 	\end{equation*}
 
-where :math:`J` is a random variable that models the number of unsuccessful runs till a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random variables corresponding to the runtime of unsuccessful trials and :math:`\mathrm{RT}^{\rm s}` is a random variable for the runtime of a successful trial.
+where :math:`J` is a random variable that models the number of unsuccessful
+runs till a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random
+variables corresponding to the runtime of unsuccessful trials and
+:math:`\mathrm{RT}^{\rm s}` is a random variable for the runtime of a
+successful trial.
 
-Remark that if the probability of success is one, the restart algorithm and the original   algorithm coincide.
+Remark that if the probability of success is one, the restart algorithm and
+the original   algorithm coincide.
 
-.. Note:: Considering the runtime of the restart algorithm allows to compare quantitatively the two different scenarios where
+.. Note:: Considering the runtime of the restart algorithm allows to compare
+   quantitatively the two different scenarios where
 
 	* an algorithm converges often but relatively slowly
 	* an algorithm converges less often, but whenever it converges, it is with a fast convergence rate.
@@ -547,7 +619,7 @@ We can also naturally aggregate over all functions and hence obtain one single E
 		* ART Loss graphs
 		* Best 2009: actually now I am puzzled on this Best 2009
 
-	  algorithm (I know what is the aRT of the best 2009, but I have
+	  algorithm (I know what is the ART of the best 2009, but I have
 	  doubts on how we display the ECDF of the best 2009
 
 
