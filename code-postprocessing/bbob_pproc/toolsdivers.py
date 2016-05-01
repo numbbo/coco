@@ -254,29 +254,4 @@ def git(args):
         # print('Failed to execute "%s"' % str(full_command))
         raise
     return output
-
-git_version = None
-def getGitVersion(pep440=False):
-    """Return somewhat readible version number from git, like
-    '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'
-
-    WARNING: This method is also defined in ../../code-experiments/tools/cocoutils.py.
-    If you change something you have to change it in both files.
-    """
-    
-    global git_version
-    if not git_version:
-        try:
-            res = git(['describe', '--tags'])
-        except:
-            res = os.path.split(os.getcwd())[-1]
-        if pep440:
-            while len(res) and res[0] not in '0123456789':
-                res = res[1:]
-            if '-' in res:
-               res = '.'.join(res.split('-')[:2])
-        
-        git_version = res
-
-    return git_version
       
