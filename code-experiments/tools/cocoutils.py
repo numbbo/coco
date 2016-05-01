@@ -79,8 +79,6 @@ def git_version(pep440=False):
     """Return somewhat readible version number from git, like
     '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'
 
-    WARNING: This method is also defined in ../../code-postprocessing/bbob_pproc/toolsdivers.py.
-    If you change something you have to change it in both files.
     """
     try:
         res = git(['describe', '--tags'])
