@@ -3,6 +3,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import setuptools  # Required for Windows
 from distutils.core import setup
 from distutils.extension import Extension
 
