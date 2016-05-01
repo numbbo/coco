@@ -702,7 +702,7 @@ def silent(args):
 
 
 def help():
-    print("""COCO framework bootstrap tool.
+    print("""COCO framework bootstrap tool. Version %s
 
 Usage: do.py <command> <arguments>
 
@@ -765,7 +765,7 @@ Available commands for developers:
 
 To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
-""")
+""" % git_version(pep440=True))
 
 
 def main(args):
