@@ -273,7 +273,11 @@ as in the fixed-target approach described above. The chosen reference
 algorithm will serve as a baseline upon which the runlength-based targets are 
 computed in the second step.
 
-For this, we fix a set of reference budgets :math:`B = \{b_1,\ldots, b_{|B|}\}`
+.. todo::
+	this assumes minimization but I guess we never talked about that before??
+
+
+Second, we fix a set of reference budgets :math:`B = \{b_1,\ldots, b_{|B|}\}`
 (in number of function evaluations) that we are interested in for the given
 problem and that are increasing (:math:`b_i < b_j` for all :math:`i<j`). We
 then pick, for each given budget :math:`b_i` (:math:`1\leq i\leq |B|`), the
