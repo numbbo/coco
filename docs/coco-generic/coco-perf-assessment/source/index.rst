@@ -95,6 +95,9 @@ Terminology and Definitions
    things are done the way they are), so maybe my proposal is less suited here than in the
    other documentations (I think we should still consider to do this at least for the other
    documentations).
+   
+.. It will be nice to have an online glossary at some point that will help keeping things
+   consistent.
 
 .. Tea: Connected to the comment above, these are some inconsistencies I've found (either
    over all documents or in this one):
@@ -104,10 +107,10 @@ Terminology and Definitions
 
 We introduce a few terms and definitions that are used in the rest of the document.
 
-.. todo:: in the context of assessment, a problem should probably be a quadruple
+.. .. todo:: in the context of assessment, a problem should probably be a quadruple
   including the target value.
 
- .. Tea: The meaning of "problem" should be the same in all documents, otherwise we start
+.. .. Tea: The meaning of "problem" should be the same in all documents, otherwise we start
    mixing things. So, if se do need to define the problem as a quadruple (makes sense to me),
    we should correct this in the other documents as well.
 
@@ -115,7 +118,8 @@ We introduce a few terms and definitions that are used in the rest of the docume
 *problem, function*
  In the COCO_ framework, a problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` describes an instantiation of the parameters.
  More precisely, let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO problem corresponds to :math:`p=(n,f_\theta,\theta)` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\theta` is a set of parameters to instantiate the parametrized function. Given a dimension :math:`n` and two different instances :math:`\theta_1` and :math:`\theta_2` of the same parametrized family :math:`f_{\theta}`, optimizing the associated problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
- 
+ .. Dimo: TODO: mention f being a "quality indicator" that maps the whole set of already evaluated points to a real value \footnote{single objective case, noiseless case : best evaluated so far, multi-objective: hypervolume of entire set of non-dominated points evaluated so far}
+ .. Dimo: TODO: mention that we use quality indicator although we minimize it
  .. Anne: I took out the theta-bar - did not look too fine to me - so I felt that I needed to add theta_1 and theta_2 as two different instances @Niko, @Tea please check and improve if possible (I am not particularly happy with the new version).
 
 
@@ -141,19 +145,11 @@ We introduce a few terms and definitions that are used in the rest of the docume
     sentences should probably be turned around a bit. Also, "parametrized problem :math:`f_{\theta}(\mathbf{x})`"
     should probably be "problem :math:`p = (n, f_{\theta}, \theta)`".
 
- .. Tea: Should we mention the bi-objective case here? We need to do it somewhere, otherwise
-    it's hard to operate with the concept of indicator values. An idea: have *quality indicator*
-    and *target* as independent definitions here.
-
- .. Dimo: yes, I am in favor of talking about the bi-objective case already here
-	
+ 	
 *instance*
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
 
- .. Tea: I wouldn't use "random" in the sentence above, as choosing the instance exactly
-    defines the rotation.
- .. Dimo: I added "(pseudo-)" to make it more clear. Is it?
-
+ 
  We often **interpret different runs performed on different instances** of the same parametrized function in a given dimension as **independent repetitions** of the optimization algorithm on the same function. Put differently, the runs performed on :math:`K` different instances, :math:`f_{\theta_1}, \ldots,f_{\theta_K}`, of a parametrized problem :math:`f_\theta`, are assumed to be independent and identically distributed.
 
  .. Anne: maybe we should insist more on this dual view of randomizing the problem class via problem isntance - choosing uniformly over set of parameters.
@@ -164,15 +160,9 @@ We introduce a few terms and definitions that are used in the rest of the docume
 *runtime*
   We define *runtime*, or *run-length* [HOO1998]_
   as the *number of evaluations*, also referred to as *function* evaluations,
-  conducted on a given problem until a target value is reached.
+  conducted on a given problem until a given quality indicator target value is reached.
   Runtime is our central performance measure.
 
-.. Niko: **a** indicator or **the** indicator, depending on whether we consider the target
-  as being part of the problem. Only then the notion to *solve a problem* would
-  make sense.
-
-.. Tea: I deleted the "quality indicator" because target value is more general and captures
-   both cases (single-objective and bi-objective). I guess we could leave it if we define it above.
 
 On Performance Measures
 =======================
@@ -265,6 +255,8 @@ while fixed-budget measures require the transformation of all resulting data.
 
 .. Tea: We should add references to DE, ES and PSO.
    This last paragraph should be reformulated a bit to make it more clear.
+   
+.. Dimo: TODO: cite Giens paper here
 
 Missing Values
 ---------------
@@ -317,6 +309,7 @@ evaluations of the performed run.
 	
  .. Dimo: please check whether the notation is okay
 
+ .. Dimo: TODO: make notation consistent wrt f_target
 
 Note that this runlength-based targets approach is in particular used in COCO
 for the scenario of (single-objective) expensive optimization in which the
@@ -406,20 +399,8 @@ where as above :math:`J` is a random variable modeling the number of trials need
 As we will see in Section :ref:`sec:aRT` and Section :ref:`sec:ECDF`, our performance display relies on the runtime of the restart algorithm, either considering the average runtime (Section :ref:`sec:aRT`) or the distribution by displaying empirical cumulative distribution functions (Section :ref:`sec:ECDF`).
 
 
-.. Niko: "function target" seems misleading, as the target depends also on the instance
-  (and also on the dimension). |target value| might be a possible nomenclature, we also
-  have already |ftarget| defined above.
+.. Dimo: TODO: change all ART to aRT
 
-.. |target value| replace:: target-:math:`f`-value
-.. an alterative could be .. |target value| replace:: target value
-
-.. Niko: I think we should discuss instances somewhere here, in particular as (a) there is
-  no generic "function document" and (b) the interpretation is related to the display
-  and/or assessment.
-
-.. Niko: when conducting an experiment we sweep over all available
-  ``(function, dimension, instance)`` triplets. A single trial than generates the
-  quadruples.
 
 
 Simulated Run-lengths of Restart Algorithms
@@ -480,9 +461,6 @@ conducted in all trials (before to reach a given precision).
 
 Remark that while not explicitly denoted, the average runtime depends on the target and more precisely on a precision. It also depends strongly on the termination criterion of the algorithm.
 
-.. Anne: Maybe it's not clear that we compute ERT by having RT of different
-.. Anne: instances associated to the same precision (though it is kind of said)
-
 
 
 .. _sec:ECDF:
@@ -505,6 +483,9 @@ We display distributions of runtimes through empirical cumulative distribution f
 It gives the *proportion of problems solved in less than a specified budget* which is read on the x-axis. For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure random search algorithm on the set of problems formed by the parametrized sphere function (first function of the single-objective ``bbob`` test suite) in dimension :math:`n=5` with 51 relative targets uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and :math:`K=10^3`. We can read in this plot for example that a little bit less than 20 percent of the problems were solved in less than :math:`5 \cdot 10^3 = 10^3 \cdot n` function evaluations.
 
 Note that we consider **runtimes of the restart algorithm**, that is, we use the idea of simulated run-lengths of the restart algorithm as described above to generate :math:`K` runtimes from typically 10 or 15 instances per function and dimension. Hence, only when no instance is solved, we consider that the runtime is infinite.
+
+
+.. Dimo/Anne: it will be nice to have a tutorial-like explanation of how an ECDF is constructed (like what we have on the introductory BBOB slides)
 
 
 
@@ -567,7 +548,7 @@ We can also naturally aggregate over all functions and hence obtain one single E
 	typically an input parameter to the algorithm that can be
 	exploited to run different types of algorithms on different dimensions.
 
-	The COCO platform does not provides ECDF aggregated over dimension.
+	The COCO platform does not provide ECDF aggregated over dimension.
 
 
 .. Best 2009 "Algorithm"
