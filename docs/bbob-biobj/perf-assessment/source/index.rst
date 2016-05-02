@@ -4,6 +4,8 @@
 Biobjective Performance Assessment with the COCO Platform
 #########################################################
 
+.. |DIM| replace:: :math:`n`
+
 .. the next two lines are necessary in LaTeX. They will be automatically 
   replaced to put away the \chapter level as ??? and let the "current" level
   becomes \section. 
@@ -75,10 +77,10 @@ We remind in this section different definitions.
 *function instance, problem*
  In the case of the bi-objective performance assessment within COCO_, a problem is a 4-tuple of
  
- * a *parameterized function* :math:`f_\theta: \mathbb{R}^D \to \mathbb{R}^2`,
+ * a *parameterized function* :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^2`,
  * its concrete parameter values :math:`\theta\in\Theta` determining its so-called
    *function instance* |i|,
- * the *problem dimension* :math:`D`, and
+ * the *problem dimension* |DIM|, and
  * a *target value* :math:`f_{\rm target}` of an underlying quality indicator, see below.
  
  We call a problem *solved* by an optization algorithm if the algorithm
@@ -88,9 +90,9 @@ We remind in this section different definitions.
 
 *Pareto set*, *Pareto front*, and *Pareto dominance*
  For a concrete function instance, i.e., a function :math:`f_\theta=(f_\alpha,f_\beta)` with
- given parameter value :math:`\theta` and dimension :math:`D`, the Pareto set is the set
+ given parameter value :math:`\theta` and dimension |DIM|, the Pareto set is the set
  of all (Pareto-optimal) solutions for which no solutions in the search space
- :math:`\R^D` exist that have either an improved :math:`f_\alpha` or an improved
+ :math:`\R^n` exist that have either an improved :math:`f_\alpha` or an improved
  :math:`f_\beta` value while the other objective function is at least as good
  (or in other words, a *Pareto-optimal* solution in the Pareto set has no other solution
  that *dominates* it). The image of the Pareto set in the *objective space* is called
@@ -100,7 +102,7 @@ We remind in this section different definitions.
  The ideal point (in objective space) is defined as the vector in objective space that
  contains the optimal function value for each objective *independently*, i.e. for the above
  concrete function instance, the ideal point is given by
- :math:`z_{\rm ideal}  = (\inf_{x\in \mathbb{R}^D} f_\alpha(x), \inf_{x\in \mathbb{R}^D} f_\beta(x))`.
+ :math:`z_{\rm ideal}  = (\inf_{x\in \mathbb{R}^n} f_\alpha(x), \inf_{x\in \mathbb{R}^n} f_\beta(x))`.
  
 *nadir point* 
  The nadir point (in objective space) consists in each objective of
