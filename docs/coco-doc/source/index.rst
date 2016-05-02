@@ -620,7 +620,7 @@ Currently, the COCO_ framework provides three different test suites.
     \section*{Acknowledgments}
 
 The authors would like to thank Raymond Ros, Steffen Finck, Marc Schoenauer,  
-Petr Posik and Dejan Tusar for their many invaluable contributions to this work. 
+Petr Posik and Dejan Tušar for their many invaluable contributions to this work. 
 
 The authors also acknowledge support by the grant ANR-12-MONU-0009 (NumBBO) 
 of the French National Research Agency.
@@ -632,7 +632,7 @@ of the French National Research Agency.
     <H2>References</H2>
 
 .. this document: 
-.. .. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
+.. .. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff (2016).
    `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
    Setting`__.
 .. .. __: http://numbbo.github.io/coco-doc/
@@ -658,7 +658,7 @@ __ http://numbbo.github.io/coco-doc/perf-assessment
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00369466
 
-.. [HAN2016ex] N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
+.. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
    `COCO: Experimental Procedure`__. 
 __ http://numbbo.github.io/coco-doc/experimental-setup/
 
