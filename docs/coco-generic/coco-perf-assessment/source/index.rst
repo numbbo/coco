@@ -20,7 +20,7 @@ COCO: Performance Assessment
 .. _COCO: https://github.com/numbbo/coco
 .. .. _COCO: http://coco.gforge.inria.fr
 .. |ERT| replace:: :math:`\mathrm{ERT}`
-.. |ART| replace:: :math:`\mathrm{ART}`
+.. |ART| replace:: :math:`\mathrm{aRT}`
 .. |dim| replace:: :math:`\mathrm{dim}`
 .. |function| replace:: :math:`\mathrm{function}`
 .. |instance| replace:: :math:`\mathrm{instance}`
@@ -60,7 +60,7 @@ Runtimes represent the cost of the algorithm. Apart from a short, exploratory ex
 
  .. [#] The COCO platform provides a CPU timing experiment to get a rough estimate of the time complexity of the algorithm [BBO2016ex]_.
 
-We can then display an average runtime (ART, see Section `Average Runtime`_) and the empirical distribution of runtimes (ECDF, see Section `Empirical Cumulative Distribution Functions`_). When displaying the distribution of runtimes, we consider the aggregation of runtimes over subclasses of problems or over all problems. We do not aggregate over dimensions, because the dimension of the problem can be used to decide which algorithm (or algorithm variant, or parameter setting) is preferred.
+We can then display an average runtime (aRT, see Section `Average Runtime`_) and the empirical distribution of runtimes (ECDF, see Section `Empirical Cumulative Distribution Functions`_). When displaying the distribution of runtimes, we consider the aggregation of runtimes over subclasses of problems or over all problems. We do not aggregate over dimensions, because the dimension of the problem can be used to decide which algorithm (or algorithm variant, or parameter setting) is preferred.
 
 
 Terminology and Definitions
@@ -98,14 +98,14 @@ We introduce a few terms and definitions that are used in the rest of the docume
    
 *problem, function*
  In the COCO_ framework, a problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` describes an instantiation of the parameters.
- More precisely, let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO problem corresponds to :math:`p=(n,f_\theta,\bar{\theta})` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\bar{\theta}` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the  problem :math:`p` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\bar{\theta}}(\mathbf{x})`. To simplify notation, in the sequel a COCO problem is denoted :math:`p=(n,f_\theta,\theta)`.
+ More precisely, let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO problem corresponds to :math:`p=(n,f_\theta,\theta)` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\theta` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the  problem :math:`p` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\theta}(\mathbf{x})`. 
+ 
+ .. Anne: I took out the theta-bar - does not look too fine to me @Niko, @Tea please check and improve if possible.
 
- .. Tea: I'm most probably missing something, but I don't understand why we need to introduce
-   \bar{\theta} in the first place and then simplify the notation by removing the bar?!
-   Shouldn't all this work well without the bar?
+
 
  In the performance assessment setting, we associate to a problem :math:`p`,
- one or several target values. For example, in the single-objective case, a
+ one or several target values such that a problem is then a quadruple ``(dimension,function,instance,target)``. For example, in the single-objective case, a
  target value is a function value :math:`f_{\rm target}` at which we extract the runtime of the algorithm. Given that the optimal function value, that is :math:`f_{\mathrm{opt}} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})`, depends on the specific instance :math:`\theta`, the target function values also depend on the instance :math:`\theta`. However the relative target or precision
 
  .. math::
@@ -388,7 +388,7 @@ Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` 
 
 where as above :math:`J` is a random variable modeling the number of trials needed before to observe a success, :math:`\mathrm{RT}^{\rm us}_j` are random variables modeling the number of function evaluations of unsuccessful trials and :math:`\mathrm{RT}^{\rm s}` the one for successful trials.
 
-As we will see in Section :ref:`sec:ART` and Section :ref:`sec:ECDF`, our performance display relies on the runtime of the restart algorithm, either considering the average runtime (Section :ref:`sec:ART`) or the distribution by displaying empirical cumulative distribution functions (Section :ref:`sec:ECDF`).
+As we will see in Section :ref:`sec:aRT` and Section :ref:`sec:ECDF`, our performance display relies on the runtime of the restart algorithm, either considering the average runtime (Section :ref:`sec:aRT`) or the distribution by displaying empirical cumulative distribution functions (Section :ref:`sec:ECDF`).
 
 
 .. Niko: "function target" seems misleading, as the target depends also on the instance
@@ -426,7 +426,7 @@ Note that the latter derandomized version to draw simulated run-lengths has the 
 
 
 
-.. _sec:ART:
+.. _sec:aRT:
 
 Average Runtime
 =====================
@@ -449,7 +449,7 @@ where |ps| is the probability of success of the algorithm (to reach the underlyi
     :nowrap:
 
 	\begin{eqnarray}
-	\mathrm{ART} & = & \mathrm{RT}_\mathrm{S} + \frac{1-p_{\mathrm{s}}}{p_{\mathrm{s}}} \,\mathrm{RT}_\mathrm{US} \\  & = & \frac{\sum_i \mathrm{RT}^{\rm us}_i + \sum_j \mathrm{RT}^{\rm us}_j }{\#\mathrm{succ}} \\
+	\mathrm{aRT} & = & \mathrm{RT}_\mathrm{S} + \frac{1-p_{\mathrm{s}}}{p_{\mathrm{s}}} \,\mathrm{RT}_\mathrm{US} \\  & = & \frac{\sum_i \mathrm{RT}^{\rm us}_i + \sum_j \mathrm{RT}^{\rm us}_j }{\#\mathrm{succ}} \\
 	& = & \frac{\#\mathrm{FEs}}{\#\mathrm{succ}}
     \end{eqnarray}
 
@@ -566,18 +566,18 @@ We can also naturally aggregate over all functions and hence obtain one single E
 
 .. todo::
 	* ECDF and uniform pick of a problem
-	* log ART can be read on the ECDF graphs [requires some assumptions]
+	* log aRT can be read on the ECDF graphs [requires some assumptions]
 	* The Different Plots Provided by the COCO Platform
-		* ART Scaling Graphs
-		  The ART scaling graphs present the average running time to
+		* aRT Scaling Graphs
+		  The aRT scaling graphs present the average running time to
 		  reach a certain 			precision (relative target)
 		  divided by the dimension versus the dimension. Hence an
 		  horizontal line means a linear scaling with respect to the
 		  dimension.
-		* ART Loss graphs
+		* aRT Loss graphs
 		* Best 2009: actually now I am puzzled on this Best 2009
 
-	  algorithm (I know what is the ART of the best 2009, but I have
+	  algorithm (I know what is the aRT of the best 2009, but I have
 	  doubts on how we display the ECDF of the best 2009
 
 
