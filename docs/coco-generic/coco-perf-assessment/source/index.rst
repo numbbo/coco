@@ -47,66 +47,20 @@ COCO: Performance Assessment
 Introduction
 =============
 
-This document presents the main ideas and concepts of the performance
-assessment within the COCO platform. We start from a collection of recorded
-data from the benchmarked algorithm.
-These data represent *runtimes*, measured in number of function evaluations,
-to reach certain target :math:`f` or target quality indicator value.
-Runtimes represent the cost of the algorithm.
-Apart from a short, exploratory experiment, we avoid measuring the cost in
-CPU or wall-clock time because these depend on parameters which are difficult
-or impractical to control, like the programming language, coding style, the
-computer where the experiments were run on... [#]_
-Shortcomings and unfortunate consequences of benchmarking based on CPU time
-was discussed in [Hooker:1995]_.
-
-.. From the collection of (function value, number of function evaluations)
-   pairs, we extract runtimes (or run-length) to reach target function values.
-
-Measuring runtimes comes as a natural consequence of our prerequisite to
-present a *quantitative* performance assessment, as opposed to simple
-rankings of algorithm performances.
-
-We then either display an average runtime (ART, see Section `Average Runtime`_)
-or the empirical distribution of runtimes (ECDF, see Section `Empirical Cumulative
-Distribution Functions`_).
-When displaying the distribution of runtimes, we consider the aggregation of
-runtimes over subclasses of problems or over all problems.
-We do not aggregate over dimensions, because the dimension of the problem can
-be used to decide which algorithm, or which algorithm variant, or which
-parameter setting should be chosen.
-
-.. [#] We however require to provide a CPU timing experiments to get a
-	rough measurement of the time complexity of the algorithm [BBO2016ex]_.
-
 .. budget-free
 
 .. Tea: I propose a large change in the introduction  - replacing the existing text with
    the one in these comments (the main difference is that the motivation for quantitative
    performance assessment is stated explicitly and moved to the beginning):
+.. Anne: OK I implemented your suggestion and modified/added minor things.
 
-.. This document presents the main ideas and concepts of the performance assessment within the
-   COCO platform. Opposed to simple rankings of algorithm performances, we aim to provide a
-   *quantitative* performance assessment, which allows for conclusions of type: Algorithm A
-   is ten times faster than algorithm B in solving the given problem. In order to do so, we
-   record algorithm *runtimes*, measured in number of function evaluations to reach predefined
-   target values, during the algorithm run.
+This document presents the main ideas and concepts of the performance assessment within the COCO platform. Opposed to simple rankings of algorithms, we aim to provide a *quantitative* and *meaningful* performance assessment, which allows for conclusions of type: Algorithm A is ten times faster than algorithm B in solving the given problem or in solving problems with a certain type of difficulties/problem features. In order to do so, we record algorithm *runtimes*, measured in number of function evaluations to reach predefined target values, during the algorithm run.
 
-.. Runtimes represent the cost of the algorithm. Apart from a short, exploratory experiment
-   [#]_, we avoid measuring the algorithm cost in CPU or wall-clock time because these depend
-   on parameters which are difficult or impractical to control, like the programming language,
-   coding style, the computer used to run the experiments, etc. See [Hooker:1995]_ for a
-   discussion on shortcomings and unfortunate consequences of benchmarking based on CPU time.
+Runtimes represent the cost of the algorithm. Apart from a short, exploratory experiment [#]_, we avoid measuring the algorithm cost in CPU or wall-clock time because these depend on parameters which are difficult or impractical to control, like the programming language, coding style, the computer used to run the experiments, etc. See [Hooker:1995]_ for a discussion on shortcomings and unfortunate consequences of benchmarking based on CPU time.
 
-.. .. [#] The COCO platform provides a CPU timing experiment to get a rough estimate of the time
-   complexity of the algorithm [BBO2016ex]_.
+ .. [#] The COCO platform provides a CPU timing experiment to get a rough estimate of the time complexity of the algorithm [BBO2016ex]_.
 
-.. We can then display an average runtime (ART, see Section `Average Runtime`_) and the
-   empirical distribution of runtimes (ECDF, see Section `Empirical Cumulative Distribution Functions`_).
-   When displaying the distribution of runtimes, we consider the aggregation of runtimes over
-   subclasses of problems or over all problems. We do not aggregate over dimensions, because
-   the dimension of the problem can be used to decide which algorithm (or algorithm variant, or
-   parameter setting) is preferred.
+We can then display an average runtime (ART, see Section `Average Runtime`_) and the empirical distribution of runtimes (ECDF, see Section `Empirical Cumulative Distribution Functions`_). When displaying the distribution of runtimes, we consider the aggregation of runtimes over subclasses of problems or over all problems. We do not aggregate over dimensions, because the dimension of the problem can be used to decide which algorithm (or algorithm variant, or parameter setting) is preferred.
 
 
 Terminology and Definitions
