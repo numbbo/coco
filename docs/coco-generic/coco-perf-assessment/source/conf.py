@@ -285,8 +285,6 @@ latex_documents = [
    $^2$Universit\'e Paris-Saclay, LRI, France
   \\
     $^3$Inria, research centre Lille, France
-  \\
-    $^4$TU Dortmund University, Chair of Computational Statistics, Germany
     """, 
    'article'),
 ]
@@ -311,7 +309,10 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_domain_indices = True
 
-# pngmath_latex_preamble = r"\newcommand{\R}{\mathbb{R}}"
+pngmath_latex_preamble = r"""
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\IHV}{I_\mathrm{HV}^\mathrm{COCO}}
+"""
 
 # -- Options for manual page output ---------------------------------------
 
