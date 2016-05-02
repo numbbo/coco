@@ -69,7 +69,7 @@ This document presents the main ideas and concepts of the performance assessment
 
 Runtimes represent the cost of the algorithm. Apart from a short, exploratory experiment [#]_, we avoid measuring the algorithm cost in CPU or wall-clock time because these depend on parameters which are difficult or impractical to control, like the programming language, coding style, the computer used to run the experiments, etc. See [Hooker:1995]_ for a discussion on shortcomings and unfortunate consequences of benchmarking based on CPU time.
 
- .. [#] The COCO platform provides a CPU timing experiment to get a rough estimate of the time complexity of the algorithm [BBO2016ex]_.
+ .. [#] The COCO platform provides a CPU timing experiment to get a rough estimate of the time complexity of the algorithm [HAN2016ex]_.
 
 We can then display an average runtime (aRT, see Section `Average Runtime`_) and the empirical distribution of runtimes (ECDF, see Section `Empirical Cumulative Distribution Functions`_). When displaying the distribution of runtimes, we consider the aggregation of runtimes over subclasses of problems or over all problems. We do not aggregate over dimensions, because the dimension of the problem can be used to decide which algorithm (or algorithm variant, or parameter setting) is preferred.
 
@@ -103,31 +103,28 @@ We introduce a few terms and definitions that are used in the rest of the docume
  
  More precisely, let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO problem corresponds to :math:`p=(n,f_\theta,\theta)` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\theta` is a set of parameters to instantiate the parametrized function. Given a dimension :math:`n` and two different instances :math:`\theta_1` and :math:`\theta_2` of the same parametrized family :math:`f_{\theta}`, optimizing the associated problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
  
- .. Dimo: TODO: mention f being a "quality indicator" that maps the whole set of already evaluated points to a real value \footnote{single objective case, noiseless case : best evaluated so far, multi-objective: hypervolume of entire set of non-dominated points evaluated so far}
- 
- .. Dimo: TODO: mention depending on the context, we will use the term `problem` for both quadruple and triple
- 
- .. Dimo: TODO: mention that we use quality indicator although we minimize it
+ Typically, the performance of an optimization algorithm at time :math:`t`, which aims at optimizing a problem :math:`p=(n,f_\theta,\theta)`, is defined via a quality indicator function mapping the set of all solutions evaluated so far together with their :math:`m`-dimensional evaluation vectors, outputted by :math:`f_\theta`, to a real value. In the single-objective noiseless case, this quality indicator function simply outputs the minimal observed (feasible) function value during the first :math:`t` function evaluations. In the multi-objective case, well-known multi-objective quality indicators such as the hypervolume indicator can be used to map the entire set of already evaluated solutions ("archive") to a real value.
  
  .. Anne: I took out the theta-bar - did not look too fine to me - so I felt that I needed to add theta_1 and theta_2 as two different instances @Niko, @Tea please check and improve if possible (I am not particularly happy with the new version).
-
-
-
- In the performance assessment setting, we associate to a problem :math:`p`,
- one or several target values such that a problem is then a quadruple ``(dimension,function,instance,target)``. For example, in the single-objective case, a
- target value is a function value :math:`f^{\rm target}` at which we extract the runtime of the algorithm. Given that the optimal function value, that is :math:`f^{\mathrm{opt}}_\theta =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})`, depends on the specific instance :math:`\theta`, the target function values also depend on the instance :math:`\theta`. However the relative target or precision
+ 
+ 
+ In the performance assessment setting, we associate to a problem :math:`p` and a given quality indicator,
+ one or several target values such that a problem is then a quintuple ``(dimension,function,instance,quality indicator,target)``. A target value is thereby a fixed function or quality indicator value :math:`f^{\rm target}` at which we extract the runtime of the algorithm, which we assume to be minimized as well [#]_, and which typically depends on the problem instance :math:`\theta`. Given that the optimal function or quality indicator value :math:`f^{\mathrm{opt}, \theta}` depends on the specific instance :math:`\theta`, the target function/quality indicator values also depend on the instance :math:`\theta`. However, the relative target or precision
 
  .. math::
  	:nowrap:
 
 	\begin{equation}
-	\Delta f = f^{\rm target}_\theta - f^{\rm opt}_\theta
+	\Delta f = f^{\rm target,\theta} - f^{\rm opt,\theta}
  	\end{equation}
 
- does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a same precision.
+ does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target,{\theta}_1}, \ldots,f^{\rm target,{\theta}_K}` associated to the same precision. Note that in the absence of knowledge about the optimal function/quality indicator value, :math:`f^{\rm opt,\theta}` is typically replaced by the best known approximation of :math:`f^{\rm opt,\theta}`.
  
+ Depending on the context, we will refer to both the original triple ``(dimension,function,instance)`` and the quintuple ``(dimension,function,instance,quality indicator,target)`` as *problem*. We say, for example, that "algorithm A is solving problem :math:`p=(n,f_\theta,\theta,I,I^{\rm target})` after :math:`t` function evaluations" if the quality indicator function value :math:`I`  during the optimization of :math:`(n,f_\theta,\theta)` reaches a value of :math:`I^{\rm target}` or lower for the first time after :math:`t` function evaluations.
 
-	
+ .. [#] Note that we assume without loss of generality minimization of the quality indicator here for historical reasons although the name quality indicator itself suggests maximization.
+ 
+ 
  	
 *instance*
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
@@ -314,7 +311,7 @@ Runtime over Problems
 In order to display quantitative measurements, we have seen in the previous
 section that we should start from the collection of runtimes for different
 target values. These target values can be a :math:`f`- or indicator value
-(see [BBO2016biobj]_).
+(see [TUS2016]_).
 In the performance assessment setting, a problem is the quadruple
 :math:`p=(n,f_\theta,\theta,f^{\rm target}_\theta)` where
 :math:`f^{\rm target}_\theta` is the target function value. This means that
@@ -575,14 +572,20 @@ of the French National Research Agency.
 References
 ==========
 
-.. todo::
-    * Biblio not up to date citations for at least BBO2016biobj / BBOB2016ex
-
 .. [Auger:2005b] A. Auger and N. Hansen. Performance evaluation of an advanced
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1777–1784, 2005.
-.. [BBO2016biobj] The BBOBies: Biobjective function benchmark suite.
-.. [BBOB2016ex] 
+.. [TUS2016] T. Tušar, D. Brockhoff, N. Hansen, A. Auger (2016). 
+  `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) 
+  Test Suite`__, *ArXiv e-prints*, `arXiv:1604.00359`__.
+.. __: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
+.. __: http://arxiv.org/abs/1604.00359
+
+.. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
+  `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__. 
+.. __: http://numbbo.github.io/coco-doc/experimental-setup/
+.. __: http://arxiv.org/abs/1603.08776
+
 .. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter
 	Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria
 	Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
