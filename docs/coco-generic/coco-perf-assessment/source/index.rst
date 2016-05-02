@@ -133,7 +133,7 @@ does not depend on the instance :math:`\theta` such that we can unambiguously co
  .. Dimo: yes, I am in favor of talking about the bi-objective case already here
 	
 *instance*
- Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different (pseudo-)random rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
+ Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
 
  .. Tea: I wouldn't use "random" in the sentence above, as choosing the instance exactly
     defines the rotation.
