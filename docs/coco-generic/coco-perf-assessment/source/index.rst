@@ -116,7 +116,7 @@ We introduce a few terms and definitions that are used in the rest of the docume
  	\end{equation}
 
 
- often does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a similar precision.
+does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a same precision.
  
  .. Tea: I'm not sure I understand why we say "often does not depend" and "similar precision".
     Shouldn't this be "never depends" and "equal (or same) precision"? I would also prefer a different
