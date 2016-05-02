@@ -25,11 +25,10 @@ Biobjective Performance Assessment with the COCO Platform
 
 This document details the specificities when assessing the performance of
 numerical black-box optimizers on multi-objective problems within the COCO_
-platform and in particular on the biobjective test suite |bbob-biobj|_. [#]_
+platform and in particular on the biobjective test suite |bbob-biobj|_. [TUS2016]_
 
-.. [#] *ArXiv e-prints*, `arXiv:160x:xxxxx`__, 2016.
-.. __: http://arxiv.org/abs/160x.xxxxx
 
+.. Dimo: TODO: change `D` into `n`
 
 .. raw:: latex
 
@@ -329,7 +328,7 @@ Instances and Generalization Experiment
 The standard procedure for an experiment on a benchmark suite, like the 
 `bbob-biobj` suite, prescribes to run the algorithm of choice once on each
 problem of the suite [HAN2016ex]_.
-For the `bbob-biobj` suite, the postprocessing part of COCO_ displays by
+For the ``bbob-biobj`` suite, the postprocessing part of COCO_ displays by
 default only 5 out of the 10 instances from each function-dimension pair.
 
 
