@@ -3,9 +3,12 @@
 ##############################
 COCO: Performance Assessment
 ##############################
-.. toctree::
+
+.. .. toctree::
    :maxdepth: 2
 
+..
+   sectnum::
 
 .. |ftarget| replace:: :math:`f_\mathrm{target}`
 .. |nruns| replace:: :math:`\texttt{Ntrial}`
@@ -27,22 +30,35 @@ COCO: Performance Assessment
 .. |R| replace:: :math:`\mathbb{R}`
 .. |ftheta| replace::  :math:`f_{\theta}`
 
-..
-   sectnum::
 
-.. Here we put the abstract when using LaTeX, the \abstractinrst command is defined in
-     the 'preamble' of latex_elements in source/conf.py, the text
-     is defined in `abstract` of conf.py. To flip abstract and
-     table of contents, or update the table of contents, toggle
-     the \generatetoc command in the 'preamble' accordingly.
+.. the next two lines are necessary in LaTeX. They will be automatically 
+  replaced to put away the \chapter level as ^^^ and let the "current" level
+  become \section. 
+
+.. CHAPTERTITLE
+.. CHAPTERUNDERLINE
+
 .. raw:: latex
 
-    \abstractinrst
-    \newpage
+  % \tableofcontents is automatic with sphinx and moved behind abstract by swap...py
+  \begin{abstract}
 
-.. raw:: html
+.. WHEN CHANGING THIS, CHANGE ALSO the abstract in conf.py ACCORDINGLY (though it seems the latter is not used)
 
-  TODO: here comes a short "abstract/summary/intro"
+We present an any-time performance assessment for benchmarking numerical
+optimization algorithms in a black-box scenario,
+applied within the COCO_ benchmarking platform. 
+We describe... [#]_
+
+.. [#] *ArXiv e-prints*, arXiv:1605.xxxxx__, 2016.
+.. __: http://arxiv.org/abs/1605.xxxxx
+
+
+.. raw:: latex
+
+  \end{abstract}
+  \newpage
+
 
 Introduction
 =============

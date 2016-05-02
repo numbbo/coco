@@ -25,7 +25,9 @@ import shlex
 
 # -- General configuration ------------------------------------------------
 authors = "The BBOBies"
-abstract = """We explain how performance assessement is done with the COCO platform.
+# WHEN CHANGING THIS CHANGE ALSO the abstract in index.rst accordingly
+abstract = """(this abstract might be outdated, see index.rst)
+  We explain how performance assessement is done with the COCO platform.
 """
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -41,7 +43,6 @@ extensions = [
 #    'sphinx.ext.mathjax',
 #    'matplotlib.sphinxext.mathmpl',  # low resolution
 ]
-
 
 pngmath_use_preview = True  # "When this is enabled, the images put into the HTML document will get a vertical-align style that correctly aligns the baselines."
 pngmath_dvipng_args = [ # see http://www.nongnu.org/dvipng/dvipng_4.html#Command_002dline-options
@@ -140,22 +141,21 @@ todo_include_todos = True
 
 # -- Options for HTML output ----------------------------------------------
 
-
-
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'nature'  # underlays of sections titles
 html_theme = 'alabaster' #  white, times font 
+# html_theme = 'sphinxdoc'  # puts empty spaces left and right
 html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
-#html_theme = 'sphinxdoc'  # puts too much empty spaces left and right
 # html_theme = 'sphinx_rtd_theme'  # contents not structured (mobile style?)
 # html_theme = 'agogo'  # fixed width
+# html_theme = 'nature'  # underlays of sections titles
 # html_theme = 'pyramid'  # relatively clean white/gray, sf font hard to read, too small section titles
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 # html_theme_options = {'font_family': 'goudy old style'}
+# sticky_navigation
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
@@ -190,7 +190,7 @@ html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-#html_last_updated_fmt = '%b %d, %Y'
+html_last_updated_fmt = '%b %d, %Y'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
@@ -260,30 +260,8 @@ latex_elements = {
   \usepackage{amssymb}
   \pagestyle{plain}
   \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
-  \newcommand{\ignore}[1]{}
-  \newcommand{\abstracttextinconfpy}{""" + abstract + r"""}
-
-%%%%%% TOGGLE the renewcommand to update toc / show abstract first %%%%%%
-  \newcommand{\generatetoc}{\boolean{true}}  % (re-)generate toc
-%  \renewcommand{\generatetoc}{\boolean{false}}  % show first abstract and then toc
-
-  % abstract is latex-only in rst
-  \newcommand{\abstractinrst}{\begin{abstract}\abstracttextinconfpy\end{abstract}} 
-  % abstract via redefinition of \tableofcontents
-  \ifthenelse{\generatetoc}{% do nothing here, \tableofcontents does the work
-    }{% redefine \tableofcontents such that the abstract can go first:
-    \renewcommand{\abstractinrst}{}
-    \renewcommand{\tableofcontents}{
-      \begin{abstract}\abstracttextinconfpy\end{abstract}
-      \par\par
-      \section*{Contents}
-      \begin{minipage}{\textwidth}\setlength{\baselineskip}{3ex}
-        \makeatletter % changes the catcode of @ to 11  % see http://tex.stackexchange.com/questions/8351/what-do-makeatletter-and-makeatother-do
-        \input{coco-perf-asessment.toc}
-        \makeatother % changes the catcode of @ back to 12
-      \end{minipage}
-    }
-  }
+  \newcommand{\ignore}[1]{}  % never used
+  \newcommand{\COCO}{\href{https://githum.com/numbbo/coco}{COCO}}
 """ + latex_commands,
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
@@ -293,8 +271,24 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'coco-perf-assessment.tex', u'{COCO}: Performance Assessment',
-   u'The BBOBies', 'article'),
+  (master_doc, 
+  'coco-perf-assessment.tex', 
+  u'{COCO}: Performance Assessment',
+  r"""Nikolaus Hansen$^{1,2}$, 
+      Anne Auger$^{1,2}$, 
+      Dimo Brockhoff$^3$,
+      Dejan Tu\v{s}ar$^3$, 
+      Tea Tu\v{s}ar$^3$
+  \\
+    $^1$Inria, research centre Saclay, France
+  \\
+   $^2$Universit\'e Paris-Saclay, LRI, France
+  \\
+    $^3$Inria, research centre Lille, France
+  \\
+    $^4$TU Dortmund University, Chair of Computational Statistics, Germany
+    """, 
+   'article'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
