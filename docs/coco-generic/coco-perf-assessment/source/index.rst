@@ -250,7 +250,9 @@ while fixed-budget measures require the transformation of all resulting data.
 Missing Values
 ---------------
 
-.. todo:: write
+We collect runtimes to reach targets. However not all runs successfully reach a target, see for instance Figure :ref:`fig:HorizontalvsVertical`. In this case the runtime  is undefined and we collect the maximal number of function evaluations of the corresponding run. This is a lower bound on the (non-observed) runtime to reach the target.
+
+.. Anne: @Niko check.
 
 
 A Third Approach: Runlength-based Targets
