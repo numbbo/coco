@@ -12,7 +12,7 @@ COCO: Performance Assessment
 
 .. |ftarget| replace:: :math:`f_\mathrm{target}`
 .. |nruns| replace:: :math:`\texttt{Ntrial}`
-.. |DIM| replace:: :math:`D`
+.. |DIM| replace:: :math:`n`
 .. _2009: http://www.sigevo.org/gecco-2009/workshops.html#bbob
 .. _2010: http://www.sigevo.org/gecco-2010/workshops.html#bbob
 .. _2012: http://www.sigevo.org/gecco-2012/workshops.html#bbob
@@ -23,7 +23,7 @@ COCO: Performance Assessment
 .. _COCO: https://github.com/numbbo/coco
 .. .. _COCO: http://coco.gforge.inria.fr
 .. |ERT| replace:: :math:`\mathrm{ERT}`
-.. |ART| replace:: :math:`\mathrm{aRT}`
+.. |aRT| replace:: :math:`\mathrm{aRT}`
 .. |dim| replace:: :math:`\mathrm{dim}`
 .. |function| replace:: :math:`\mathrm{function}`
 .. |instance| replace:: :math:`\mathrm{instance}`
@@ -65,11 +65,6 @@ Introduction
 
 .. budget-free
 
-.. Tea: I propose a large change in the introduction  - replacing the existing text with
-   the one in these comments (the main difference is that the motivation for quantitative
-   performance assessment is stated explicitly and moved to the beginning):
-.. Anne: OK I implemented your suggestion and modified/added minor things.
-
 This document presents the main ideas and concepts of the performance assessment within the COCO platform. Opposed to simple rankings of algorithms, we aim to provide a *quantitative* and *meaningful* performance assessment, which allows for conclusions of type: Algorithm A is ten times faster than algorithm B in solving the given problem or in solving problems with a certain type of difficulties/problem features. In order to do so, we record algorithm *runtimes*, measured in number of function evaluations to reach predefined target values, during the algorithm run.
 
 Runtimes represent the cost of the algorithm. Apart from a short, exploratory experiment [#]_, we avoid measuring the algorithm cost in CPU or wall-clock time because these depend on parameters which are difficult or impractical to control, like the programming language, coding style, the computer used to run the experiments, etc. See [Hooker:1995]_ for a discussion on shortcomings and unfortunate consequences of benchmarking based on CPU time.
@@ -99,27 +94,21 @@ Terminology and Definitions
 .. It will be nice to have an online glossary at some point that will help keeping things
    consistent.
 
-.. Tea: Connected to the comment above, these are some inconsistencies I've found (either
-   over all documents or in this one):
-   - some documents used "D" for dimension of the search space, while I've been recently
-   noticing that "n" is used
-   I would correct these if I knew what is the version we want.
-
+   
 We introduce a few terms and definitions that are used in the rest of the document.
-
-.. .. todo:: in the context of assessment, a problem should probably be a quadruple
-  including the target value.
-
-.. .. Tea: The meaning of "problem" should be the same in all documents, otherwise we start
-   mixing things. So, if se do need to define the problem as a quadruple (makes sense to me),
-   we should correct this in the other documents as well.
 
    
 *problem, function*
- In the COCO_ framework, a problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` describes an instantiation of the parameters.
+ In the COCO_ framework, a problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function (to be minimized) and the ``instance`` describes an instantiation of the parameters.
+ 
  More precisely, let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO problem corresponds to :math:`p=(n,f_\theta,\theta)` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\theta` is a set of parameters to instantiate the parametrized function. Given a dimension :math:`n` and two different instances :math:`\theta_1` and :math:`\theta_2` of the same parametrized family :math:`f_{\theta}`, optimizing the associated problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
+ 
  .. Dimo: TODO: mention f being a "quality indicator" that maps the whole set of already evaluated points to a real value \footnote{single objective case, noiseless case : best evaluated so far, multi-objective: hypervolume of entire set of non-dominated points evaluated so far}
+ 
+ .. Dimo: TODO: mention depending on the context, we will use the term `problem` for both quadruple and triple
+ 
  .. Dimo: TODO: mention that we use quality indicator although we minimize it
+ 
  .. Anne: I took out the theta-bar - did not look too fine to me - so I felt that I needed to add theta_1 and theta_2 as two different instances @Niko, @Tea please check and improve if possible (I am not particularly happy with the new version).
 
 
@@ -137,14 +126,8 @@ We introduce a few terms and definitions that are used in the rest of the docume
 
  does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a same precision.
  
- .. Tea: I'm not sure I understand why we say "often does not depend" and "similar precision".
-    Shouldn't this be "never depends" and "equal (or same) precision"? I would also prefer a different
-    notation that would show the dependencies more clearly, for example, both :math:`f_{\rm opt}` and
-    :math:`f_{\rm target}` are really dependent on :math:`\theta`. We should rather use
-    :math:`f_{\theta}^{\rm opt}` and :math:`f_{\theta}^{\rm target}`. I guess then the
-    sentences should probably be turned around a bit. Also, "parametrized problem :math:`f_{\theta}(\mathbf{x})`"
-    should probably be "problem :math:`p = (n, f_{\theta}, \theta)`".
 
+	
  	
 *instance*
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
@@ -407,9 +390,6 @@ where as above :math:`J` is a random variable modeling the number of trials need
 As we will see in Section :ref:`sec:aRT` and Section :ref:`sec:ECDF`, our performance display relies on the runtime of the restart algorithm, either considering the average runtime (Section :ref:`sec:aRT`) or the distribution by displaying empirical cumulative distribution functions (Section :ref:`sec:ECDF`).
 
 
-.. Dimo: TODO: change all ART to aRT
-
-
 
 Simulated Run-lengths of Restart Algorithms
 -------------------------------------------
@@ -435,7 +415,7 @@ Note that the latter derandomized version to draw simulated run-lengths has the 
 Average Runtime
 =====================
 
-The average runtime (|ART|) (introduced in [Price:1997]_ as
+The average runtime (|aRT|) (introduced in [Price:1997]_ as
 ENES and analyzed in [Auger:2005b]_ as success performance and previously called ERT in [HAN2009]_) is an estimate of the expected runtime of the restart algorithm given in Equation :eq:`RTrestart` that is used within the COCO framework. More precisely, the expected runtime of the restart algorithm (on a parametrized family of functions in order to reach a precision :math:`\epsilon`) writes
 
 .. math::
