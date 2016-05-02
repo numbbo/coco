@@ -114,25 +114,24 @@ We introduce a few terms and definitions that are used in the rest of the docume
    
 *problem, function*
  In the COCO_ framework, a problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function and the ``instance`` describes an instantiation of the parameters.
- More precisely, let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO problem corresponds to :math:`p=(n,f_\theta,\theta)` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\theta` is a set of parameters to instantiate the parametrized function. An algorithm optimizing the  problem :math:`p` will optimize :math:`\mathbf{x} \in \mathbb{R}^n \to f_{\theta}(\mathbf{x})`. 
+ More precisely, let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO problem corresponds to :math:`p=(n,f_\theta,\theta)` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\theta` is a set of parameters to instantiate the parametrized function. Given a dimension :math:`n` and two different instances :math:`\theta_1` and :math:`\theta_2` of the same parametrized family :math:`f_{\theta}`, optimizing the associated problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
  
- .. Anne: I took out the theta-bar - does not look too fine to me @Niko, @Tea please check and improve if possible.
+ .. Anne: I took out the theta-bar - did not look too fine to me - so I felt that I needed to add theta_1 and theta_2 as two different instances @Niko, @Tea please check and improve if possible (I am not particularly happy with the new version).
 
 
 
  In the performance assessment setting, we associate to a problem :math:`p`,
  one or several target values such that a problem is then a quadruple ``(dimension,function,instance,target)``. For example, in the single-objective case, a
- target value is a function value :math:`f_{\rm target}` at which we extract the runtime of the algorithm. Given that the optimal function value, that is :math:`f_{\mathrm{opt}} =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})`, depends on the specific instance :math:`\theta`, the target function values also depend on the instance :math:`\theta`. However the relative target or precision
+ target value is a function value :math:`f^{\rm target}` at which we extract the runtime of the algorithm. Given that the optimal function value, that is :math:`f^{\mathrm{opt}}_\theta =  \min_{\mathbf{x}} f_{\theta}(\mathbf{x})`, depends on the specific instance :math:`\theta`, the target function values also depend on the instance :math:`\theta`. However the relative target or precision
 
  .. math::
  	:nowrap:
 
 	\begin{equation}
-	\Delta f = f_{\rm target} - f_{\rm opt}
+	\Delta f = f^{\rm target}_\theta - f^{\rm opt}_\theta
  	\end{equation}
 
-
-does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a same precision.
+ does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target}_{{\theta}_1}, \ldots,f^{\rm target}_{{\theta}_K}` associated to a same precision.
  
  .. Tea: I'm not sure I understand why we say "often does not depend" and "similar precision".
     Shouldn't this be "never depends" and "equal (or same) precision"? I would also prefer a different
