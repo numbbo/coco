@@ -418,7 +418,7 @@ computational architecture for conducting these experiments are to be described.
     \section*{Acknowledgments}
 
 The authors would like to thank Raymond Ros, Steffen Finck, Marc Schoenauer,  
-Petr Posik and Dejan Tusar for their many invaluable contributions to this work. 
+Petr Posik and Dejan Tušar for their many invaluable contributions to this work. 
 
 The authors also acknowledge support by the grant ANR-12-MONU-0009 (NumBBO) 
 of the French National Research Agency.
@@ -449,7 +449,7 @@ of the French National Research Agency.
 .. [HAN2010] N. Hansen, A. Auger, S. Finck, and R. Ros. 
    Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en, 2010.
 
-.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
+.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff (2016).
    `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
    Setting`__, *ArXiv e-prints*, `arXiv:1603.08785`__. 
 .. __: http://numbbo.github.io/coco-doc/
