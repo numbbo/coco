@@ -235,19 +235,15 @@ data.
 
 Furthermore, for algorithms that are invariant under certain transformations
 of the function value (for example under order-preserving transformations, as
-comparison-based algorithms like DE, ES, PSO ), fixed-target measures become
+comparison-based algorithms like DE, ES, PSO [AUG2009Giens]_), fixed-target measures become
 invariant under these transformations by transformation of the target values
 while fixed-budget measures require the transformation of all resulting data.
 
-.. Tea: We should add references to DE, ES and PSO.
-   This last paragraph should be reformulated a bit to make it more clear.
-   
-.. Dimo: TODO: cite Giens paper here
 
 Missing Values
 ---------------
 
-We collect runtimes to reach targets. However not all runs successfully reach a target, see for instance Figure :ref:`fig:HorizontalvsVertical`. In this case the runtime  is undefined and we collect the maximal number of function evaluations of the corresponding run. This is a lower bound on the (non-observed) runtime to reach the target.
+We collect runtimes to reach targets. However not all runs successfully reach a target, see for instance Figure :ref:`fig:HorizontalvsVertical`. In this case, the runtime  is undefined and we collect the maximal number of function evaluations of the corresponding run. This is a lower bound on the (non-observed) runtime to reach the target.
 
 .. Anne: @Niko check.
 
@@ -575,20 +571,16 @@ References
 .. [Auger:2005b] A. Auger and N. Hansen. Performance evaluation of an advanced
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1777–1784, 2005.
-.. [TUS2016] T. Tušar, D. Brockhoff, N. Hansen, A. Auger (2016). 
-  `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) 
-  Test Suite`__, *ArXiv e-prints*, `arXiv:1604.00359`__.
-.. __: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
-.. __: http://arxiv.org/abs/1604.00359
-
+.. [AUG2009Giens] A. Auger, N. Hansen, J.M. Perez Zerpa, R. Ros and M. Schoenauer (2009). Empirical comparisons of several derivative free optimization algorithms. In Acte du 9ime colloque national en calcul des structures, Giens.
 .. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
   `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__. 
 .. __: http://numbbo.github.io/coco-doc/experimental-setup/
 .. __: http://arxiv.org/abs/1603.08776
-
-.. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter
+.. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009). Real-Parameter
 	Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria
 	Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
+.. [Hooker:1995] J. N. Hooker Testing heuristics: We have it all wrong. In Journal of
+    Heuristics, pages 33-42, 1995.
 .. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
    algorithms—pitfalls and remedies. In *Proceedings of the Fourteenth
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
@@ -601,10 +593,13 @@ References
 .. [Rios:2012] Luis Miguel Rios and Nikolaos V Sahinidis. Derivative-free optimization:
 	A review of algorithms and comparison of software implementations.
 	Journal of Global Optimization, 56(3):1247– 1293, 2013.
-.. [Hooker:1995] J. N. Hooker Testing heuristics: We have it all wrong. In Journal of
-    Heuristics, pages 33-42, 1995.
 .. [STE1946] S.S. Stevens (1946).
     On the theory of scales of measurement. *Science* 103(2684), pp. 677-680.
+.. [TUS2016] T. Tušar, D. Brockhoff, N. Hansen, A. Auger (2016). 
+  `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) 
+  Test Suite`__, *ArXiv e-prints*, `arXiv:1604.00359`__.
+.. __: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
+.. __: http://arxiv.org/abs/1604.00359
 
 
 
