@@ -150,7 +150,13 @@ We introduce a few terms and definitions that are used in the rest of the docume
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
 
  
- We often **interpret different runs performed on different instances** of the same parametrized function in a given dimension as **independent repetitions** of the optimization algorithm on the same function. Put differently, the runs performed on :math:`K` different instances, :math:`f_{\theta_1}, \ldots,f_{\theta_K}`, of a parametrized problem :math:`f_\theta`, are assumed to be independent and identically distributed.
+ ..  We often **interpret different runs performed on different instances**
+ .. of the same parametrized function in a given dimension as **independent
+ .. repetitions** of the optimization algorithm on the same function. Put
+ .. differently, the runs performed on :math:`K` different instances,
+ .. :math:`f_{\theta_1}, \ldots,f_{\theta_K}`, of a parametrized problem
+ .. :math:`f_\theta`, are assumed to be independent and identically
+ .. distributed.
 
  .. Anne: maybe we should insist more on this dual view of randomizing the problem class via problem isntance - choosing uniformly over set of parameters.
 
@@ -375,7 +381,9 @@ the original   algorithm coincide.
 	* an algorithm converges often but relatively slowly
 	* an algorithm converges less often, but whenever it converges, it is with a fast convergence rate.
 
-The performance assessment in COCO heavily relies on this conceptual restart algorithm. However, we collect only one single sample of (successful or unsuccessful) runtime per problem while more are needed to be able to display significant data. This is where the idea of instances comes into play: We interpret different runs performed on different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` as repetitions, that is, as if they were performed on the same function. [#]_
+Runs on Different Instances Interpreted as Independent Repetitions
+------------------------------------------------------------------
+The performance assessment in COCO heavily relies on the conceptual restart algorithm. However, we collect only one single sample of (successful or unsuccessful) runtime per problem while more are needed to be able to display significant data. This is where the idea of instances comes into play: We interpret different runs performed on different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` as repetitions, that is, as if they were performed on the same function. [#]_
 
 .. [#] This assumes that instances of the same parametrized function are similar
       to each others or that there is  not too much discrepancy in the difficulty
