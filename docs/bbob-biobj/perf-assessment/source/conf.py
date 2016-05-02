@@ -39,7 +39,6 @@ extensions = [
     'sphinx.ext.pngmath'
 ]
 
-
 pngmath_use_preview = True  # "When this is enabled, the images put into the HTML document will get a vertical-align style that correctly aligns the baselines."
 pngmath_dvipng_args = [ # see http://www.nongnu.org/dvipng/dvipng_4.html#Command_002dline-options
     '-gamma', '1.5',  # heavyness of color 0.5 is between black and background, 1.5 is blacker than black, --gamma works as well?
@@ -151,14 +150,17 @@ html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+# html_theme_options = {'font_family': 'goudy old style'}
+# sticky_navigation
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+# html_title = None
+html_title = "Biobjective Performance Assessment with the COCO Platform"
+
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -266,18 +268,24 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'bbob-biobj-perf-assessment.tex', u'Performance Assessment in the Case of Coco\' bbob-biobj Suite',
+  (master_doc, 
+  'bbob-biobj-perf-assessment.tex', 
+  u'Biobjective Performance Assessment with the COCO Platform',
   r"""
       Dimo Brockhoff$^1$,
       Tea Tu\v{s}ar$^1$, 
-      Nikolaus Hansen$^{2,3}$, 
-      Anne Auger$^{2,3}$ 
-  \\
+      Dejan Tu\v{s}ar$^1$, 
+      Tobias Wagner$^2$,
+      \\ Anne Auger$^{3,4}$, 
+      Nikolaus Hansen$^{3,4}$
+  \\[1.2ex]
     $^1$Inria, research centre Lille, France
   \\
-    $^2$Inria, research centre Saclay, France
+    $^2$Technical University Dortmund, Germany
   \\
-    $^3$Universit\'e Paris-Saclay, LRI, France
+    $^3$Inria, research centre Saclay, France
+  \\
+    $^4$Universit\'e Paris-Saclay, LRI, France
     """, 
    'article', # 'manual'
    ),

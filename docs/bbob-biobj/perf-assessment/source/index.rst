@@ -8,13 +8,13 @@ Biobjective Performance Assessment with the COCO Platform
   replaced to put away the \chapter level as ??? and let the "current" level
   becomes \section. 
 
-.. CHAPTERTITLE
-.. CHAPTERUNDERLINE
-
 .. .. Contents:
 
 .. .. toctree::
    :maxdepth: 2
+
+.. CHAPTERTITLE
+.. CHAPTERUNDERLINE
 
 .. raw:: latex
 
