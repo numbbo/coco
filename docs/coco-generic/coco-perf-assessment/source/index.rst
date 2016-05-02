@@ -222,7 +222,7 @@ Starting from some convergence graphs, which plot the quality indicator (to be m
    achieved in real world applications, for example, getting (noticeably) better
    than the currently available best solution or than a competitor.
 
-For the performance assessment of algorithms the fixed-target approach is superior
+For the performance assessment of algorithms, the fixed-target approach is superior
 to the fixed-budget approach since it gives *quantitative and interpretable*
 data.
 
@@ -587,11 +587,14 @@ of the French National Research Agency.
 References
 ==========
 
+.. todo::
+    * Biblio not up to date citations for at least BBO2016biobj / BBOB2016ex
 
 .. [Auger:2005b] A. Auger and N. Hansen. Performance evaluation of an advanced
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1777–1784, 2005.
 .. [BBO2016biobj] The BBOBies: Biobjective function benchmark suite.
+.. [BBOB2016ex] 
 .. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter
 	Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria
 	Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
