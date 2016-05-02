@@ -2013,7 +2013,7 @@ of the French National Research Agency.
    Benchmarking Numerical Multiobjective Optimizers Revisited.
    GECCO 2015: 639-646. 
    
-.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
+.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff (2016).
    `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
    Setting`__, *ArXiv e-prints*, `arXiv:1603.08785`__. 
 .. __: http://numbbo.github.io/coco-doc/
@@ -2032,7 +2032,7 @@ of the French National Research Agency.
 	Non-Separable Problems. *Applied Soft Computing*. Vol. 11, pp. 5755-5769.
 	Elsevier.  
 
-.. [HAN2016ex] N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
+.. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
   `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__. 
 .. __: http://numbbo.github.io/coco-doc/experimental-setup/
 .. __: http://arxiv.org/abs/1603.08776
