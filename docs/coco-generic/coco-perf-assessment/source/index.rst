@@ -510,7 +510,14 @@ Empirical Cumulative Distribution Functions
 
 .. Anne: to be discussed - I talk about infinite runtime to make the definition below .. .. Anne: fine. However it's probably not precise given that runtime above :math:`10^7` are .. Anne: infinite.
 
-We display distributions of runtimes through empirical cumulative distribution functions (ECDF). Formally, let us consider a set of problems :math:`\mathcal{P}` and a collection of runtimes to solve those problems :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq k \leq K}` where :math:`K` is the number of runtimes per problem. When the problem is not solved, the undefined runtime is considered as infinite in order to make the mathematical definition consistent. The ECDF that we display is then defined as
+We display distributions of runtimes through empirical cumulative
+distribution functions (ECDF). Formally, let us consider a set of
+problems :math:`\mathcal{P}` and a collection of runtimes to solve those
+problems :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq k \leq
+K}` where :math:`K` is the number of runtimes per problem. When the
+problem is not solved, the undefined runtime is considered as infinite
+in order to make the mathematical definition consistent. The ECDF that
+we display is then defined as
 
 
 .. math::
@@ -522,9 +529,22 @@ We display distributions of runtimes through empirical cumulative distribution f
 
 where we use :math:`\log(\infty)=\infty`.
 
-The ECDF gives the *proportion of problems solved in less than a specified budget* which is read on the x-axis. For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure random search algorithm on the set of problems formed by the parametrized sphere function (first function of the single-objective ``bbob`` test suite) in dimension :math:`n=5` with 51 relative targets uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and :math:`K=10^3`. We can read in this plot for example that a little bit less than 20 percent of the problems were solved in less than :math:`5 \cdot 10^3 = 10^3 \cdot n` function evaluations.
+The ECDF gives the *proportion of problems solved in less than a
+specified budget* which is read on the x-axis. For instance, we display
+in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure
+random search algorithm on the set of problems formed by the
+parametrized sphere function (first function of the single-objective
+``bbob`` test suite) in dimension :math:`n=5` with 51 relative targets
+uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and
+:math:`K=10^3`. We can read in this plot for example that a little bit
+less than 20 percent of the problems were solved in less than :math:`5
+\cdot 10^3 = 10^3 \cdot n` function evaluations.
 
-Note that we consider **runtimes of the restart algorithm**, that is, we use the idea of simulated run-lengths of the restart algorithm as described above to generate :math:`K` runtimes from typically 10 or 15 instances per function and dimension. Hence, only when no instance is solved, we consider that the runtime is infinite.
+Note that we consider **runtimes of the restart algorithm**, that is, we
+use the idea of simulated run-lengths of the restart algorithm as
+described above to generate :math:`K` runtimes from typically 10 or 15
+instances per function and dimension. Hence, only when no instance is
+solved, we consider that the runtime is infinite.
 
 
 .. Dimo/Anne: it will be nice to have a tutorial-like explanation of how an ECDF is constructed (like what we have on the introductory BBOB slides)
