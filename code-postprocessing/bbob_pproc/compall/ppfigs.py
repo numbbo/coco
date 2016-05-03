@@ -476,7 +476,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
             #             verticalalignment='bottom',
             #             horizontalalignment='center')
 
-        bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+        bestalgentries = bestalg.load_best_algorithm()
 
         if bestalgentries:        
             bestalgdata = []

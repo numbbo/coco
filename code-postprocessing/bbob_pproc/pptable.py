@@ -127,7 +127,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
         # insert a separator between the default file name and the additional
         # information string.
 
-    bestalgentries = bestalg.loadBestAlgorithm(dsList.isBiobjective())
+    bestalgentries = bestalg.load_best_algorithm()
     
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
         header = [r'\#FEs/D']
