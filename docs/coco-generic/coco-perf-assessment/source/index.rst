@@ -115,7 +115,7 @@ We introduce a few terms and definitions that are used in the rest of the docume
  	:nowrap:
 
 	\begin{equation}
-	\Delta f = f^{\rm target,\theta} - f^{\rm opt,\theta}
+	\Delta f = f^{\rm target,\theta} - f^{\rm opt,\theta} \,\, \mbox{or} \, \, \Delta I = I^{\rm target,\theta} - I^{\rm opt,\theta}
  	\end{equation}
 
  does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target,{\theta}_1}, \ldots,f^{\rm target,{\theta}_K}` associated to the same precision. Note that in the absence of knowledge about the optimal function/quality indicator value, :math:`f^{\rm opt,\theta}` is typically replaced by the best known approximation of :math:`f^{\rm opt,\theta}`.
