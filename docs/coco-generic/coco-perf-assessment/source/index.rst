@@ -134,7 +134,7 @@ We introduce a few terms and definitions that are used in the rest of the docume
  Typically, the performance of an optimization algorithm at time :math:`t`,
  which aims at optimizing a problem :math:`p=(n,f_\theta,\theta)`, is defined
  via a quality indicator function mapping the set of all solutions evaluated so
- far (or recommended) to a :math:`p`-dependent real value. In the
+ far (or recommended [HAN2016ex]_) to a :math:`p`-dependent real value. In the
  single-objective noiseless case, this quality indicator function simply outputs
  the minimal observed (feasible) function value during the first :math:`t`
  function evaluations. In the multi-objective case, well-known multi-objective
@@ -641,6 +641,10 @@ References
    algorithms—pitfalls and remedies. In *Proceedings of the Fourteenth
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
    pages 238–245, 1998.
+.. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
+   `COCO: Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__.
+__ http://numbbo.github.io/coco-doc/experimental-setup/
+__ http://arxiv.org/abs/1603.08776
 .. [More:2009] Jorge J. Moré and Stefan M. Wild. Benchmarking
 	Derivative-Free Optimization Algorithms, SIAM J. Optim., 20(1), 172–191, 2009.
 .. [Price:1997] K. Price. Differential evolution vs. the functions of
