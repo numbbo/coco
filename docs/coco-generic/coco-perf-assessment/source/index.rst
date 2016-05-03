@@ -131,7 +131,15 @@ We introduce a few terms and definitions that are used in the rest of the docume
  problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and
  :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
  
- Typically, the performance of an optimization algorithm at time :math:`t`, which aims at optimizing a problem :math:`p=(n,f_\theta,\theta)`, is defined via a quality indicator function mapping the set of all solutions evaluated so far together with their :math:`m`-dimensional evaluation vectors, outputted by :math:`f_\theta`, to a real value. In the single-objective noiseless case, this quality indicator function simply outputs the minimal observed (feasible) function value during the first :math:`t` function evaluations. In the multi-objective case, well-known multi-objective quality indicators such as the hypervolume indicator can be used to map the entire set of already evaluated solutions ("archive") to a real value.
+ Typically, the performance of an optimization algorithm at time :math:`t`,
+ which aims at optimizing a problem :math:`p=(n,f_\theta,\theta)`, is defined
+ via a quality indicator function mapping the set of all solutions evaluated (or
+ recommended) so far to a :math:`p`-dependent real value. In the
+ single-objective noiseless case, this quality indicator function simply outputs
+ the minimal observed (feasible) function value during the first :math:`t`
+ function evaluations. In the multi-objective case, well-known multi-objective
+ quality indicators such as the hypervolume indicator can be used to map the
+ entire set of already evaluated solutions ("archive") to a real value.
  
  .. Anne: I took out the theta-bar - did not look too fine to me - so I felt that I needed to add theta_1 and theta_2 as two different instances @Niko, @Tea please check and improve if possible (I am not particularly happy with the new version).
  
