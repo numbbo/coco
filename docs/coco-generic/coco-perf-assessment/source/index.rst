@@ -451,9 +451,9 @@ parametrized family of function in order to reach a relative target
 	:nowrap:
 	:label: RTrestart
 
-	\begin{equation}\label{RTrestart}
+	\begin{equation*}
 	\mathbf{RT}(n,f_\theta,\Delta I) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
-	\end{equation}
+	\end{equation*}
 
 
 where as above :math:`J` is a random variable modeling the number of
