@@ -109,7 +109,7 @@ We introduce a few terms and definitions that are used in the rest of the docume
  
  
  In the performance assessment setting, we associate to a problem :math:`p` and a given quality indicator,
- one or several target values such that a problem is then a quintuple ``(dimension,function,instance,quality indicator,target)``. A target value is thereby a fixed function or quality indicator value :math:`f^{\rm target}` at which we extract the runtime of the algorithm, which we assume to be minimized as well [#]_, and which typically depends on the problem instance :math:`\theta`. Given that the optimal function or quality indicator value :math:`f^{\mathrm{opt}, \theta}` depends on the specific instance :math:`\theta`, the target function/quality indicator values also depend on the instance :math:`\theta`. However, the relative target or precision
+ one or several target values such that a problem is then a quintuple ``(dimension,function,instance,quality indicator,target)``. A target value is thereby a fixed function or quality indicator value :math:`f^{\rm target}` or :math:`I^{\rm target}` at which we extract the runtime of the algorithm, which we assume to be minimized as well [#]_, and which typically depends on the problem instance :math:`\theta`. Given that the optimal function or quality indicator value :math:`f^{\mathrm{opt}, \theta}` depends on the specific instance :math:`\theta`, the target function/quality indicator values also depend on the instance :math:`\theta`. However, the relative target or precision
 
  .. math::
  	:nowrap:
