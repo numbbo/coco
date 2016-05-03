@@ -298,7 +298,7 @@ biobjective ``bbob-biobj`` test suite does not provide analytical forms of
 its optima. 
 Except for :math:`f_1`, the Pareto set and the Pareto front are unknown. 
 
-Instead of the unknown hypervolume of the true Pareto set, we use the hypervolume of an approximation of the Pareto as reference hypervolume indicator value |Irefi|. 
+Instead of the unknown hypervolume of the true Pareto set, we use the hypervolume of an approximation of the Pareto set as reference hypervolume indicator value |Irefi|. 
 To obtain the approximation, several multi-objective optimization algorithms
 have been run and all non-dominated solutions over all runs have been
 recorded. [#]_ 
