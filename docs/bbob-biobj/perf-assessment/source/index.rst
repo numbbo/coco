@@ -57,7 +57,7 @@ Introduction
 
 The performance assessment of (numerical) optimization algorithms in the COCO_ platform is invariably based on the
 measurement of the *runtime* [#]_ until a *quality indicator* reaches a predefined
-*target value* [BBO2016perf]_. 
+*target value* [HAN2016perf]_. 
 On each problem instance, several target values are defined and for each
 target value a runtime is measured (or no runtime value is available if the
 indicator does not reach the target value). 
@@ -127,8 +127,8 @@ We remind in this section different definitions.
  indicator function :math:`A_t \rightarrow \R`.
 
  
-Biobjective Performance Assessment in COCO: A Set-Indicator Value Replaces the Objective Function
-=================================================================================================
+Performance Assessment with a Quality Indicator
+================================================
 
 For measuring the runtime on a given problem, we consider a quality indicator
 which is to be optimized (minimized). 
@@ -243,11 +243,11 @@ specificities:
 This implies that:
 
 * the quality indicator value of an archive that contains the nadir point as 
-  non-dominated point is :math:`0`,
+  non-dominated point is :math:`0`.
 
-* the quality indicator value is bounded from below by :math:`-1`, and that
+* the quality indicator value is bounded from below by :math:`-1`, and
 
-* because the quality of the archive is used as performance criterion, no
+* because the quality of an archive is used as performance criterion, no
   population size has to be prescribed to the algorithm. In particular,
   steady-state and generational algorithms can be compared directly as well
   as algorithms with varying population size and algorithms which carry along
@@ -283,7 +283,7 @@ It is not uncommon however that the quality indicator value of the algorithm nev
 
 .. [#] In comparison, the reference value in the single-objective case has been 
    the :math:`f`-value of the known global optimum and, consequently, the target 
-   precision values |t| have been strictly positive [coco-perf-assessment]_. 
+   precision values |t| have been strictly positive [HAN2016perf]_. 
 
 .. |Irefi| replace:: :math:`I_i^\mathrm{ref}`
 .. |i| replace:: :math:`i`
@@ -379,11 +379,10 @@ of the French National Research Agency.
     <H2>References</H2>
 
    
-.. [coco-perf-assessment] The BBOBies (2016). `COCO: Performance Assessment`__.
+.. [HAN2016perf] N. Hansen, A. Auger, D. Brockhoff, D. Tušar, T. Tušar
+   (2016). `COCO: Performance Assessment`__, *ArXiv e-prints*, `arXiv:1605.xxxxx`__.
 .. __: http://numbbo.github.io/coco-doc/perf-assessment
-
-.. [BBO2016perf] The BBOBies (2016). `Performance Assessment`__. 
-.. __: https://www.github.com
+.. __: http://arxiv.org/abs/1605.xxxxx
 
 .. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff (2016).
    `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
