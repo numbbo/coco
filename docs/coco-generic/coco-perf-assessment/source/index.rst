@@ -542,15 +542,17 @@ We can also naturally aggregate over all functions and hence obtain one single E
    in dimension 5 (left) and in dimension 20 (right) when aggregating over all functions of the ``bbob`` suite.
 
 
-.. Note::
- 	The ECDF graphs are also known under the name data
- 	profile (see [More:2009]_). Note, however, that the original definition of data profiles does not consider a log scale for the runtime and that data profiles are standardly used without a log scale [Rios:2012]_.
+.. Note:: The ECDF graphs are also known under the name data profile
+    (see [More:2009]_). However we aggregate here over several targets for a same function while the data profile are standardly used displaying results for a single fixed target [Rios:2012]_.
 
-	We advocate **not to aggregate** over dimension as the dimension is
-	typically an input parameter to the algorithm that can be
-	exploited to run different types of algorithms on different dimensions.
+    Also, here we advocate **not to aggregate over dimension** as the
+    dimension is typically an input parameter to the algorithm that can
+    be exploited to run different types of algorithms on different
+    dimensions. Hence, the COCO platform does not provide ECDF aggregated over dimension.
 
-	The COCO platform does not provide ECDF aggregated over dimension.
+    Data profile are often used using different functions
+    with different dimensions.
+
 
 
 .. Best 2009 "Algorithm"
