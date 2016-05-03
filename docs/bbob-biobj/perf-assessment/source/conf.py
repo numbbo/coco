@@ -276,8 +276,8 @@ latex_documents = [
       Tea Tu\v{s}ar$^1$, 
       Dejan Tu\v{s}ar$^1$, 
       Tobias Wagner$^2$,
-      \\ Anne Auger$^{3,4}$, 
-      Nikolaus Hansen$^{3,4}$
+      \\ Nikolaus Hansen$^{3,4}$
+      Anne Auger$^{3,4}$, 
   \\[1.2ex]
     $^1$Inria, research centre Lille, France
   \\
