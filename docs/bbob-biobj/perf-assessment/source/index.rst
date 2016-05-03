@@ -27,7 +27,10 @@ Biobjective Performance Assessment with the COCO Platform
 
 This document details the specificities when assessing the performance of
 numerical black-box optimizers on multi-objective problems within the COCO_
-platform and in particular on the biobjective test suite |bbob-biobj|_. [TUS2016]_
+platform and in particular on the biobjective test suite |bbob-biobj|_. 
+The evaluation is based on a hypervolume of all non-dominated solutions in the 
+increasing archive of candidate solutions and measures the runtime until the
+hypervolume value succeeds a prescribed set of target values. 
 
 
 .. Dimo: TODO: change `D` into `n`
@@ -50,8 +53,8 @@ Introduction
 =============
 
 The performance assessment of (numerical) optimization algorithms in the COCO_ platform is invariably based on the
-measurement of the *runtime* until a *quality indicator* reaches a predefined
-*target value* [BBO2016perf]_. [#]_ 
+measurement of the *runtime* [#]_ until a *quality indicator* reaches a predefined
+*target value* [BBO2016perf]_. 
 On each problem instance, several target values are defined and for each
 target value a runtime is measured (or no runtime value is available if the
 indicator does not reach the target value). 
@@ -93,7 +96,7 @@ We remind in this section different definitions.
  given parameter value :math:`\theta` and dimension |DIM|, the Pareto set is the set
  of all (Pareto-optimal) solutions for which no solutions in the search space
  :math:`\R^n` exist that have either an improved :math:`f_\alpha` or an improved
- :math:`f_\beta` value while the other objective function is at least as good
+ :math:`f_\beta` value while the other value is at least as good
  (or in other words, a *Pareto-optimal* solution in the Pareto set has no other solution
  that *dominates* it). The image of the Pareto set in the *objective space* is called
  the Pareto front.
@@ -139,7 +142,7 @@ Definition of the quality indicator
 ------------------------------------
 The indicator :math:`\IHV` to be mininized is either the negative
 hypervolume indicator of the archive with the nadir
-point reference point or the distance to the region of interest
+point as reference point or the distance to the region of interest
 :math:`[z_{\text{ideal}}, z_{\text{nadir}}]` after a normalization of the
 objective space [#]_:
 
@@ -171,10 +174,9 @@ is the (normalized) hypervolume of archive :math:`A_t` with respect to the nadir
 	dist(A_t, [z_{\text{ideal}}, z_{\text{nadir}}]) = \inf_{a\in A_t, z\in [z_{\text{ideal}}, z_{\text{nadir}}]} dist\left(\frac{f(a)-z_{\text{ideal}}}{z_{\text{nadir}}-z_{\text{ideal}}}, \frac{z-z_{\text{ideal}}}{z_{\text{nadir}}-z_{\text{ideal}}}\right)
 	\end{equation*}
 	
-is the smallest (normalized) Euclidean distance between the archive and the region of interest, see also the figures below for an illustration.
+is the smallest (normalized) Euclidean distance between a solution in the archive and the region of interest, see also the figures below for an illustration.
 
 .. [#] With linear transformations of both objective functions such that the ideal point :math:`z_{\text{ideal}}= (z_{\text{ideal}, \alpha}, z_{\text{ideal}, \beta})` is mapped to :math:`[0,0]` and the nadir point :math:`z_{\text{nadir}}= (z_{\text{nadir}, \alpha}, z_{\text{nadir}, \beta})` is mapped to :math:`[1,1]`.
-
 
 .. figure:: pics/IHDoutside.*
    :align: center
@@ -203,11 +205,11 @@ Rationales Behind our Performance Measure and A First Summary
 -------------------------------------------------------------
 
 *Why using an archive?*
- We believe using an archive to keep all non-dominated solutions is relevant practice
- in bi-objective real-world applications, in particular where function evaluations are
+ We believe using an archive to keep all non-dominated solutions is relevant in practice
+ in bi-objective real-world applications, in particular when function evaluations are
  expensive. Using an external archive for the performance assessment has the additional
  advantage that no populuation size needs to be prescribed and algorithms with different
- or even changing population sizes can be easily compared with each other.
+ or even changing population sizes can be easily compared.
 
 
 *Why hypervolume?*
@@ -224,14 +226,15 @@ specificities:
 * Algorithm performance is measured via runtime until the quality of the archive of non-dominated 
   solutions found so far surpasses a target value.
 
-* A normalization of the objective space is performed before the indicator calculation such that the
-  region of interest (ROI) :math:`[z_{\text{ideal}}, z_{\text{nadir}}]`, defined by
-  the ideal and nadir point is mapped to :math:`[0, 1]^2`
+* To compute the quality indicator, the objective space is normalized.
+  The region of interest (ROI) :math:`[z_{\text{ideal}}, z_{\text{nadir}}]`, 
+  defined by the ideal and nadir point, is mapped to :math:`[0, 1]^2`.
 
-* If the nadir point is dominated by a point in the archive, the quality of the algorithm is
-  the hypervolume of the archive with respect to the nadir point as hypervolume reference point.
+* If the nadir point is dominated by a point in the archive, the quality of
+  the algorithm is the negative hypervolume of the archive with respect to
+  the nadir point as hypervolume reference point.
 
-* If the nadir point is not dominated by the archive, an algorithm's quality equals the negative
+* If the nadir point is not dominated by the archive, an algorithm's quality equals the
   distance of archive to the ROI.
 
 This implies that:
@@ -241,10 +244,11 @@ This implies that:
 
 * the quality indicator value is bounded from below by :math:`-1`, and that
 
-* because the quality of the archive is used as performance criterion, no population size has to be
-  prescribed to the algorithm. In particular, steady-state and generational algorithms can be 
-  compared directly as well as algorithms with varying population size and algorithms which carry
-  along their external archive themselves. 
+* because the quality of the archive is used as performance criterion, no
+  population size has to be prescribed to the algorithm. In particular,
+  steady-state and generational algorithms can be compared directly as well
+  as algorithms with varying population size and algorithms which carry along
+  their external archive themselves. 
 
 
 Choice of Target Values
