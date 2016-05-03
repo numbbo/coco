@@ -124,7 +124,11 @@ We introduce a few terms and definitions that are used in the rest of the docume
 
  .. [#] Note that we assume without loss of generality minimization of the quality indicator here for historical reasons although the name quality indicator itself suggests maximization.
  
- 
+.. Anne: Dimo, why did you drop the theta-dependency of I^target
+
+.. Anne: I think that we have an organization problem - this definition of
+  problem,  function becomes now too long and should most likely be in a
+  dedicated section where it could be expanded. 
  	
 *instance*
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
