@@ -276,16 +276,15 @@ latex_documents = [
       Tea Tu\v{s}ar$^1$, 
       Dejan Tu\v{s}ar$^1$, 
       Tobias Wagner$^2$,
-      \\ Nikolaus Hansen$^{3,4}$
-      Anne Auger$^{3,4}$, 
-  \\[1.2ex]
-    $^1$Inria, research centre Lille, France
-  \\
-    $^2$Technical University Dortmund, Germany
-  \\
-    $^3$Inria, research centre Saclay, France
-  \\
-    $^4$Universit\'e Paris-Saclay, LRI, France
+      \\ Nikolaus Hansen$^{3,4}$,
+      Anne Auger$^{3,4}$
+  \\[1.5ex]
+    $^1$Inria, research centre Lille, % France \\
+    $^2$Technical University Dortmund, %Germany 
+    \\
+    $^3$Inria, research centre Saclay, % France 
+    %\\
+    $^4$Universit\'e Paris-Saclay, LRI %, France
     """, 
    'article', # 'manual'
    ),
