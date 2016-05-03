@@ -10,7 +10,7 @@ COCO: Performance Assessment
 ..
    sectnum::
 
-.. |ftarget| replace:: :math:`f_\mathrm{target}`
+.. |ftarget| replace:: :math:`I^{{\rm target},\theta}`
 .. |nruns| replace:: :math:`\texttt{Ntrial}`
 .. |DIM| replace:: :math:`n`
 .. _2009: http://www.sigevo.org/gecco-2009/workshops.html#bbob
@@ -312,22 +312,22 @@ In order to display quantitative measurements, we have seen in the previous
 section that we should start from the collection of runtimes for different
 target values. These target values can be a :math:`f`- or indicator value
 (see [TUS2016]_).
-In the performance assessment setting, a problem is the quadruple
-:math:`p=(n,f_\theta,\theta,f^{\rm target}_\theta)` where
-:math:`f^{\rm target}_\theta` is the target function value. This means that
+In the performance assessment setting, a problem is the quintuple
+:math:`p=(n,f_\theta,\theta,I,I^{{\rm target},\theta})` where
+:math:`I^{{\rm target},\theta}` is the target function/indicator value. This means that
 **we collect runtimes of problems**.
 
-Formally, the runtime of a problem is denoted as
-:math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. It is a random
+Formally, the runtime of a problem :math:`p` is denoted as
+:math:`\mathrm{RT}(p)`. It is a random
 variable that counts the number of function evaluations needed to reach a
-function value lower or equal than :math:`f^{\rm target}_{\theta}`  for the
+quality indicator value lower or equal than :math:`I^{{\rm target},\theta}`  for the
 first time. A run or trial that reached a target function value |ftarget| is
 called *successful*.
 
 We also have to **deal with unsuccessful trials**, that is a run that did not
 reach a target. We then record the number of function evaluations till the
 algorithm is stopped. We denote the respective random variable
-:math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
+:math:`\mathrm{RT}^{\rm us}(np)`.
 
 In order to come up with a meaningful way to compare algorithms having
 different probability of success (that is different probability to reach a
@@ -335,13 +335,13 @@ target), we consider the conceptual **restart algorithm**: We assume that an
 algorithm, say called A, has a strictly positive probability |ps| to
 successfully solve a problem (that is to reach the associated target). The
 restart-A algorithm consists in restarting A till the problem is solved. The
-runtime of the restart-A algorithm equals
+runtime of the restart-A algorithm to solve problem :math:`p` equals
 
 .. math::
 	:nowrap:
 
 	\begin{equation*}
-	\mathbf{RT}(n,f_\theta,\theta,f^{\rm target}_\theta) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\theta,f^{\rm target}_\theta) + \mathrm{RT}^{\rm s}(n,f_\theta,\theta,f^{\rm target}_\theta)
+	\mathbf{RT}(p) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(p) + \mathrm{RT}^{\rm s}(p)
 	\end{equation*}
 
 where :math:`J` is a random variable that models the number of unsuccessful
