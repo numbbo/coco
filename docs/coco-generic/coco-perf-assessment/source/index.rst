@@ -304,8 +304,9 @@ meaningful measurements) and *fixing budgets* (of our interest). The basic idea
 is the following.
 
 We first fix a reference algorithm :math:`\mathcal{A}` which we run on a
-problem of interest (i.e. on a 3-tuple of parameterized function, dimension,
-and instance) and for which we record runtimes to reach given target values
+problem of interest (i.e. on a 4-tuple of parameterized function, dimension,
+instance, and quality indicator) and for which we record runtimes to reach
+given quality indicator target values
 :math:`\mathcal{I}^{\rm target} = \{ I^{\rm target}_1, \ldots, I^{\rm target}_{|\mathcal{I}^{\rm target}|} \}`
 (with :math:`I^{\rm target}_i` > :math:`I^{\rm target}_j` for all :math:`i<j`)
 as in the fixed-target approach described above. The chosen reference
@@ -316,7 +317,8 @@ Second, we fix a set of reference budgets :math:`B = \{b_1,\ldots, b_{|B|}\}`
 (in number of function evaluations) that we are interested in for the given
 problem and that are increasing (:math:`b_i < b_j` for all :math:`i<j`). We
 then pick, for each given budget :math:`b_i` (:math:`1\leq i\leq |B|`), the
-largest target that the reference algorithm :math:`\mathcal{A}` did not reach
+largest target :math:`T_{\rm chosen}^i` that the reference algorithm
+:math:`\mathcal{A}` did not reach
 within the given budget and that also has not yet been chosen for smaller
 budgets:
 
@@ -326,11 +328,11 @@ budgets:
  	\begin{equation*}
 		T_{\rm chosen}^i = \max_{1\leq j \leq | \mathcal{I}^{\rm target} |}
 				I^{\rm target}_j \text{ such that }
-				I^{\rm target}_{j} < f(\mathcal{A}, b_i) \text{ and }
-				I^{\rm target}_j < I^{\rm chosen}_{k} \text{ for all } k<i
+				I^{\rm target}_{j} < I(\mathcal{A}, b_i) \text{ and }
+				I^{\rm target}_j < T_{\rm chosen}^{k} \text{ for all } k<i
   	\end{equation*}
 
-with :math:`f(\mathcal{A}, t)` being the best function (or indicator) value
+with :math:`I(\mathcal{A}, t)` being the best function (or indicator) value
 found by algorithm :math:`\mathcal{A}` within the first :math:`t` function
 evaluations of the performed run.
 
