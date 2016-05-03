@@ -65,13 +65,31 @@ Introduction
 
 .. budget-free
 
-This document presents the main ideas and concepts of the performance assessment within the COCO platform. Opposed to simple rankings of algorithms, we aim to provide a *quantitative* and *meaningful* performance assessment, which allows for conclusions of type: Algorithm A is ten times faster than algorithm B in solving the given problem or in solving problems with a certain type of difficulties/problem features. In order to do so, we record algorithm *runtimes*, measured in number of function evaluations to reach predefined target values, during the algorithm run.
+This document presents the main ideas and concepts of the performance assessment
+within the COCO_ platform. Going beyond a simple ranking of algorithms, we aim
+to provide a *quantitative* and *meaningful* performance assessment, which
+allows for conclusions of type *algorithm A is ten times faster than algorithm
+B* in solving a given problem or in solving problems with certain
+characteristics. In order to do so, we record algorithm *runtimes*, measured in
+number of function evaluations to reach predefined target values, during the
+algorithm run.
 
-Runtimes represent the cost of the algorithm. Apart from a short, exploratory experiment [#]_, we avoid measuring the algorithm cost in CPU or wall-clock time because these depend on parameters which are difficult or impractical to control, like the programming language, coding style, the computer used to run the experiments, etc. See [Hooker:1995]_ for a discussion on shortcomings and unfortunate consequences of benchmarking based on CPU time.
+Runtimes represent the cost of the algorithm. Apart from a short, exploratory
+experiment [#]_, we avoid measuring the algorithm cost in CPU or wall-clock time
+because these depend on parameters which are difficult or impractical to
+control, like the programming language, coding style, the computer used to run
+the experiments, etc. See [Hooker:1995]_ for a discussion on shortcomings and
+unfortunate consequences of benchmarking based on CPU time.
 
- .. [#] The COCO platform provides a CPU timing experiment to get a rough estimate of the time complexity of the algorithm [HAN2016ex]_.
+We can then display the average runtime (aRT, see Section `Average Runtime`_)
+and empirical distributions of runtimes (ECDF, see Section `Empirical Cumulative
+Distribution Functions`_). When displaying runtime distributions, we consider
+the aggregation of runtimes over subclasses of problems or over all problems. We
+do not aggregate over dimensions, because the dimension of the problem can be
+used to decide which algorithm (or algorithm variant, or parameter setting) is
+preferred.
 
-We can then display an average runtime (aRT, see Section `Average Runtime`_) and the empirical distribution of runtimes (ECDF, see Section `Empirical Cumulative Distribution Functions`_). When displaying the distribution of runtimes, we consider the aggregation of runtimes over subclasses of problems or over all problems. We do not aggregate over dimensions, because the dimension of the problem can be used to decide which algorithm (or algorithm variant, or parameter setting) is preferred.
+ .. [#] The COCO_ platform provides a CPU timing experiment to get a rough estimate of the time complexity of the algorithm [HAN2016ex]_.
 
 
 Terminology and Definitions
@@ -99,9 +117,19 @@ We introduce a few terms and definitions that are used in the rest of the docume
 
    
 *problem, function, indicator*
- In the COCO_ framework, a problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function (to be minimized) and the ``instance`` describes an instantiation of the parameters.
+ In the COCO_ framework, a problem is defined as a triple  ``(dimension,
+ function, instance)``. In this terminology a ``function`` (to be minimized) is
+ parametrized and the ``instance`` describes an instantiation of the parameters.
  
- More precisely, let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO problem corresponds to :math:`p=(n,f_\theta,\theta)` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\theta` is a set of parameters to instantiate the parametrized function. Given a dimension :math:`n` and two different instances :math:`\theta_1` and :math:`\theta_2` of the same parametrized family :math:`f_{\theta}`, optimizing the associated problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
+ More precisely, let us consider a parametrized function  :math:`f_\theta:
+ \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO_
+ problem corresponds to :math:`p=(n,f_\theta,\theta)` where :math:`n \in
+ \mathbb{N}` is the dimension of the search space, and :math:`\theta` is a set
+ of parameters to instantiate the parametrized function. Given a dimension
+ :math:`n` and two different instances :math:`\theta_1` and :math:`\theta_2` of
+ the same parametrized family :math:`f_{\theta}`, optimizing the associated
+ problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and
+ :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
  
  Typically, the performance of an optimization algorithm at time :math:`t`, which aims at optimizing a problem :math:`p=(n,f_\theta,\theta)`, is defined via a quality indicator function mapping the set of all solutions evaluated so far together with their :math:`m`-dimensional evaluation vectors, outputted by :math:`f_\theta`, to a real value. In the single-objective noiseless case, this quality indicator function simply outputs the minimal observed (feasible) function value during the first :math:`t` function evaluations. In the multi-objective case, well-known multi-objective quality indicators such as the hypervolume indicator can be used to map the entire set of already evaluated solutions ("archive") to a real value.
  
