@@ -588,10 +588,11 @@ We can also naturally aggregate over all functions and hence obtain one single E
     Also, here we advocate **not to aggregate over dimension** as the
     dimension is typically an input parameter to the algorithm that can
     be exploited to run different types of algorithms on different
-    dimensions. Hence, the COCO platform does not provide ECDF aggregated over dimension.
+    dimensions. Hence, the COCO platform does not provide ECDF
+    aggregated over dimension.
 
-    Data profile are often used using different functions
-    with different dimensions.
+    Data profile are often used using different functions with different
+    dimensions.
 
 Best 2009 "Algorithm"
 ---------------------
