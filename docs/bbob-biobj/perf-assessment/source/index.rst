@@ -25,18 +25,12 @@ Biobjective Performance Assessment with the COCO Platform
 
 .. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY (though it seems the latter is not used)
 
-This document details the specificities when assessing the performance of
+This document details the rationales behind assessing the performance of
 numerical black-box optimizers on multi-objective problems within the COCO_
 platform and in particular on the biobjective test suite |bbob-biobj|_. 
-The evaluation is based on a hypervolume of all non-dominated solutions in the 
-increasing archive of candidate solutions and measures the runtime until the
-hypervolume value succeeds a prescribed set of target values. [#]_
-
-.. [#] *ArXiv e-prints*, arXiv:1605.xxxxx__, 2016.
-.. __: http://arxiv.org/abs/1605.xxxxx
-
-
-.. Dimo: TODO: change `D` into `n`
+The evaluation is based on a hypervolume of all non-dominated solutions in the
+archive of candidate solutions and measures the runtime until the
+hypervolume value succeeds prescribed target values. 
 
 .. raw:: latex
 
@@ -55,7 +49,8 @@ hypervolume value succeeds a prescribed set of target values. [#]_
 Introduction
 =============
 
-The performance assessment of (numerical) optimization algorithms in the COCO_ platform is invariably based on the
+The performance assessment of (numerical) optimization algorithms with the COCO_
+platform is invariably based on the
 measurement of the *runtime* [#]_ until a *quality indicator* reaches a predefined
 *target value* [HAN2016perf]_. 
 On each problem instance, several target values are defined and for each
@@ -78,21 +73,24 @@ step.
 Definitions and Terminology
 ---------------------------
 
-We remind in this section different definitions.
+In this section, we introduce the definitions of some basic terms and concepts.
 
 *function instance, problem*
  In the case of the bi-objective performance assessment within COCO_, a problem is a 4-tuple of
  
- * a *parameterized function* :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^2`,
- * its concrete parameter values :math:`\theta\in\Theta` determining its so-called
+ * a *parameterized function* :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^2`, mapping the decision variables of a solution to its objective vector
+ * its concrete parameter value :math:`\theta\in\Theta` determining the so-called
    *function instance* |i|,
- * the *problem dimension* |DIM|, and
- * a *target value* :math:`f_{\rm target}` of an underlying quality indicator, see below.
+ * the *problem dimension* |DIM|, 
+ * an underlying quality indicator :math:`I`, mapping a set of solutions to its quality, and
+ * a *target value* :math:`I_{\rm target}` of the underlying quality indicator, see below for details.
  
- We call a problem *solved* by an optization algorithm if the algorithm
+ We call a problem *solved* by an optimization algorithm if the algorithm
  reaches a quality indicator value at least as good as the associated target value.
  The number of function evaluations needed to surpass the target value for the first time
- is COCO_'s central performance measure. [HAN2016co]_
+ is COCO_'s central performance measure. [HAN2016co]_ In case a single
+ quality indicator is used for all problems in a benchmark suite, we can drop the
+ quality indicator and refer to a problem as a quadruple :math:`f_\theta,\theta,n,I_{\rm target}`
 
 *Pareto set*, *Pareto front*, and *Pareto dominance*
  For a concrete function instance, i.e., a function :math:`f_\theta=(f_\alpha,f_\beta)` with
@@ -256,8 +254,8 @@ This implies that:
   their external archive themselves. 
 
 
-Choice of Target Values
-=======================
+Definition of Target Values
+===========================
 
 For each problem instance, |i|, of the benchmark suite, a set of target values
 is chosen, eventually used to measure runtime to reach each of these targets. 
