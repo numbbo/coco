@@ -418,13 +418,32 @@ the original   algorithm coincide.
 
 Runs on Different Instances Interpreted as Independent Repetitions
 ------------------------------------------------------------------
-The performance assessment in COCO heavily relies on the conceptual restart algorithm. However, we collect only one single sample of (successful or unsuccessful) runtime per problem while more are needed to be able to display significant data. This is where the idea of instances comes into play: We interpret different runs performed on different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` as repetitions, that is, as if they were performed on the same function. [#]_
+The performance assessment in COCO heavily relies on the conceptual
+restart algorithm. However, we collect only one single sample of
+(successful or unsuccessful) runtime per problem while more are needed
+to be able to display significant data. This is where the idea of
+instances comes into play: We interpret different runs performed on
+different instances :math:`\theta_1,\ldots,\theta_K` of the same
+parametrized function :math:`f_\theta` as repetitions, that is, as if
+they were performed on the same function. [#]_
 
 .. [#] This assumes that instances of the same parametrized function are similar
       to each others or that there is  not too much discrepancy in the difficulty
       of the problem for different instances.
 
-Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same relative target :math:`\Delta I` (see above) are thus assumed independent and identically distributed. We denote the random variable modeling those runtimes :math:`\mathrm{RT}(n,f_\theta,\Delta I)`. We hence have a collection of runtimes (for a given parametrized function and a given relative target) whose size corresponds to the number of instances of a parametrized function where the algorithm was run (typically between 10 and 15). Given that the specific instance does not matter, we write in the end the runtime of a restart algorithm of a parametrized family of function in order to reach a relative target :math:`\Delta I` as
+Runtimes collected for the different instances
+:math:`\theta_1,\ldots,\theta_K` of the same parametrized function
+:math:`f_\theta` and with respective targets associated to the same
+relative target :math:`\Delta I` (see above) are thus assumed
+independent and identically distributed. We denote the random variable
+modeling those runtimes :math:`\mathrm{RT}(n,f_\theta,\Delta I)`. We
+hence have a collection of runtimes (for a given parametrized function
+and a given relative target) whose size corresponds to the number of
+instances of a parametrized function where the algorithm was run
+(typically between 10 and 15). Given that the specific instance does not
+matter, we write in the end the runtime of a restart algorithm of a
+parametrized family of function in order to reach a relative target
+:math:`\Delta I` as
 
 .. _eq:RTrestart:
 
@@ -437,26 +456,56 @@ Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` 
 	\end{equation*}
 
 
-where as above :math:`J` is a random variable modeling the number of trials needed before to observe a success, :math:`\mathrm{RT}^{\rm us}_j` are random variables modeling the number of function evaluations of unsuccessful trials and :math:`\mathrm{RT}^{\rm s}` the one for successful trials.
+where as above :math:`J` is a random variable modeling the number of
+trials needed before to observe a success, :math:`\mathrm{RT}^{\rm
+us}_j` are random variables modeling the number of function evaluations
+of unsuccessful trials and :math:`\mathrm{RT}^{\rm s}` the one for
+successful trials.
 
-As we will see in Section :ref:`sec:aRT` and Section :ref:`sec:ECDF`, our performance display relies on the runtime of the restart algorithm, either considering the average runtime (Section :ref:`sec:aRT`) or the distribution by displaying empirical cumulative distribution functions (Section :ref:`sec:ECDF`).
+As we will see in Section :ref:`sec:aRT` and Section :ref:`sec:ECDF`,
+our performance display relies on the runtime of the restart algorithm,
+either considering the average runtime (Section :ref:`sec:aRT`) or the
+distribution by displaying empirical cumulative distribution functions
+(Section :ref:`sec:ECDF`).
 
 
 
 Simulated Run-lengths of Restart Algorithms
 -------------------------------------------
 
-The runtime of the conceptual restart algorithm given in Equation :eq:`RTrestart` is the basis for displaying performance within COCO. We can simulate some (approximate) samples of the runtime of the restart algorithm by constructing so-called simulated run-lengths from the available empirical data.
+The runtime of the conceptual restart algorithm given in Equation
+:eq:`RTrestart` is the basis for displaying performance within COCO. We
+can simulate some (approximate) samples of the runtime of the restart
+algorithm by constructing so-called simulated run-lengths from the
+available empirical data.
 
-**Simulated Run-length:** Given a collection of runtimes for successful and unsuccessful trials to reach a given precision, we draw a simulated run-length of the restart algorithm by repeatedly drawing uniformly at random and with replacement among all given runtimes till we draw a runtime from a successful trial. The simulated run-length is then the sum of the drawn runtimes.
+**Simulated Run-length:** Given a collection of runtimes for successful
+and unsuccessful trials to reach a given precision, we draw a simulated
+run-length of the restart algorithm by repeatedly drawing uniformly at
+random and with replacement among all given runtimes till we draw a
+runtime from a successful trial. The simulated run-length is then the
+sum of the drawn runtimes.
 
 .. Note:: The construction of simulated run-lengths assumes that at least one runtime is associated to a successful trial.
 
-Simulated run-lengths are in particular only interesting in the case where at least one trial is not successful. In order to remove unnecessary stochastics in the case that many (or all) trials are successful, we advocate for a derandomized version of simulated run-lengths when we are interested in drawing a batch of :math:`N` simulated run-lengths:
+Simulated run-lengths are in particular only interesting in the case
+where at least one trial is not successful. In order to remove
+unnecessary stochastics in the case that many (or all) trials are
+successful, we advocate for a derandomized version of simulated
+run-lengths when we are interested in drawing a batch of :math:`N`
+simulated run-lengths:
 
-**Simulated Run-lengths (derandomized version):** Given a collection of runtimes for successful and unsuccessful trials to reach a given precision, we deterministically sweep through the trials and define the next simulated run-length as the run-length associated to the trial if it is successful and in the case of an unsuccessful trial as the sum of the associated run-length of the trial and the simulated run-length of the restarted algorithm as described above.
+**Simulated Run-lengths (derandomized version):** Given a collection of
+runtimes for successful and unsuccessful trials to reach a given
+precision, we deterministically sweep through the trials and define the
+next simulated run-length as the run-length associated to the trial if
+it is successful and in the case of an unsuccessful trial as the sum of
+the associated run-length of the trial and the simulated run-length of
+the restarted algorithm as described above.
 
-Note that the latter derandomized version to draw simulated run-lengths has the minor disadvantage that the number of samples :math:`N` is restricted to a multiple of the trials in the data set.
+Note that the latter derandomized version to draw simulated run-lengths
+has the minor disadvantage that the number of samples :math:`N` is
+restricted to a multiple of the trials in the data set.
 
 .. maybe we should indeed put a picture here
 
@@ -467,8 +516,13 @@ Note that the latter derandomized version to draw simulated run-lengths has the 
 Average Runtime
 =====================
 
-The average runtime (|aRT|) (introduced in [Price:1997]_ as
-ENES and analyzed in [Auger:2005b]_ as success performance and previously called ERT in [HAN2009]_) is an estimate of the expected runtime of the restart algorithm given in Equation :eq:`RTrestart` that is used within the COCO framework. More precisely, the expected runtime of the restart algorithm (on a parametrized family of functions in order to reach a precision :math:`\epsilon`) writes
+The average runtime (|aRT|) (introduced in [Price:1997]_ as ENES and
+analyzed in [Auger:2005b]_ as success performance and previously called
+ERT in [HAN2009]_) is an estimate of the expected runtime of the restart
+algorithm given in Equation :eq:`RTrestart` that is used within the COCO
+framework. More precisely, the expected runtime of the restart algorithm
+(on a parametrized family of functions in order to reach a precision
+:math:`\epsilon`) writes
 
 .. math::
     :nowrap:
@@ -651,13 +705,13 @@ runtimes of this algorithm. The algorithm is artificial because for
 different targets, we possibly have the runtime of different algorithms.
 [#]_
 
-.. [#] Remark that it is not guaranteed that the best 2009 curve is an
-upper left enveloppe of the ECDF of all algorithms from which it is
-constructed, that is the ECDF of one algorithm from BBOB-2009 could
-cross the best 2009 curve. This could typically happen if one algorithm
-for an easy target has many small running times but however one very
-large such that its aRT is not the best but the many small run time make
-the ECDF curve cross the best 2009 one.
+.. [#] Remark that it is not guaranteed that the best 2009 curve is an upper
+ left enveloppe of the ECDF of all algorithms from which it is
+ constructed, that is the ECDF of one algorithm from BBOB-2009 could
+ cross the best 2009 curve. This could typically happen if one algorithm
+ for an easy target has many small running times but however one very
+ large such that its aRT is not the best but the many small run time make
+ the ECDF curve cross the best 2009 one.
 
 
 
@@ -701,8 +755,6 @@ References
    algorithms—pitfalls and remedies. In *Proceedings of the Fourteenth
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
    pages 238–245, 1998.
-.. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
-   `COCO: Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__.
 __ http://numbbo.github.io/coco-doc/experimental-setup/
 __ http://arxiv.org/abs/1603.08776
 .. [More:2009] Jorge J. Moré and Stefan M. Wild. Benchmarking
