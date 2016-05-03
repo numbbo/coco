@@ -82,12 +82,12 @@ the experiments, etc. See [Hooker:1995]_ for a discussion on shortcomings and
 unfortunate consequences of benchmarking based on CPU time.
 
 We can then display the average runtime (aRT, see Section `Average Runtime`_)
-and empirical distribution of runtimes (ECDF, see Section `Empirical
-Cumulative Distribution Functions`_). When displaying the distribution of
-runtimes, we consider the aggregation of runtimes over subclasses of problems or
-over all problems. We do not aggregate over dimensions, because the dimension of
-the problem can be used to decide which algorithm (or algorithm variant, or
-parameter setting) is preferred.
+and empirical distributions of runtimes (ECDF, see Section `Empirical Cumulative
+Distribution Functions`_). When displaying runtime distributions, we consider
+the aggregation of runtimes over subclasses of problems or over all problems. We
+do not aggregate over dimensions, because the dimension of the problem can be
+used to decide which algorithm (or algorithm variant, or parameter setting) is
+preferred.
 
  .. [#] The COCO_ platform provides a CPU timing experiment to get a rough estimate of the time complexity of the algorithm [HAN2016ex]_.
 
