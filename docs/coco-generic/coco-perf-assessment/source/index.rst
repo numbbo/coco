@@ -694,6 +694,9 @@ algorithms can be displayed on the same graph as depicted in Figure
     Data profile are often used using different functions with different
     dimensions.
 
+.. Note:: The cross on the ECDF plots of represents the maximal budget used. ECDF is displayed after this maximal budget because simulated run-length can have a length which is larger than the maximal budget.
+
+
 Best 2009 "Algorithm"
 ---------------------
 The ECDF graphs are typically displaying an ECDF annotated as best 2009
