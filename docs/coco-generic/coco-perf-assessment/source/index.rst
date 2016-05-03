@@ -74,9 +74,20 @@ characteristics. In order to do so, we record algorithm *runtimes*, measured in
 number of function evaluations to reach predefined target values, during the
 algorithm run.
 
-Runtimes represent the cost of the algorithm. Apart from a short, exploratory experiment [#]_, we avoid measuring the algorithm cost in CPU or wall-clock time because these depend on parameters which are difficult or impractical to control, like the programming language, coding style, the computer used to run the experiments, etc. See [Hooker:1995]_ for a discussion on shortcomings and unfortunate consequences of benchmarking based on CPU time.
+Runtimes represent the cost of the algorithm. Apart from a short, exploratory
+experiment [#]_, we avoid measuring the algorithm cost in CPU or wall-clock time
+because these depend on parameters which are difficult or impractical to
+control, like the programming language, coding style, the computer used to run
+the experiments, etc. See [Hooker:1995]_ for a discussion on shortcomings and
+unfortunate consequences of benchmarking based on CPU time.
 
-We can then display an average runtime (aRT, see Section `Average Runtime`_) and the empirical distribution of runtimes (ECDF, see Section `Empirical Cumulative Distribution Functions`_). When displaying the distribution of runtimes, we consider the aggregation of runtimes over subclasses of problems or over all problems. We do not aggregate over dimensions, because the dimension of the problem can be used to decide which algorithm (or algorithm variant, or parameter setting) is preferred.
+We can then display the average runtime (aRT, see Section `Average Runtime`_)
+and empirical distribution of runtimes (ECDF, see Section `Empirical
+Cumulative Distribution Functions`_). When displaying the distribution of
+runtimes, we consider the aggregation of runtimes over subclasses of problems or
+over all problems. We do not aggregate over dimensions, because the dimension of
+the problem can be used to decide which algorithm (or algorithm variant, or
+parameter setting) is preferred.
 
  .. [#] The COCO_ platform provides a CPU timing experiment to get a rough estimate of the time complexity of the algorithm [HAN2016ex]_.
 
