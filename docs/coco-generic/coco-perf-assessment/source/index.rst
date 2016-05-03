@@ -553,6 +553,9 @@ We can also naturally aggregate over all functions and hence obtain one single E
     Data profile are often used using different functions
     with different dimensions.
 
+Best 2009 Algorithm
+--------------------
+The ECDF graphs are typically displaying an ECDF annotated as best 2009. This ECDF corresponds to an artificial algorithm: for each problem, we select the algorithm within the dataset obtained during the BBOB-2009 workshop that has the best |aRT|. We are then using the runtimes of this algorithm. The algorithm is artificial because for different targets, we possibly have the runtime of different algorithms.
 
 
 .. Best 2009 "Algorithm"
@@ -605,7 +608,7 @@ References
 .. __: http://numbbo.github.io/coco-doc/experimental-setup/
 .. __: http://arxiv.org/abs/1603.08776
 
-.. [HAN2009] Hansen, N., A. Auger, S. Finck R. and Ros (2009), Real-Parameter
+.. [HAN2009] Hansen, N., A. Auger, S. Finck and R. Ros (2009), Real-Parameter
 	Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria
 	Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 .. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
