@@ -549,9 +549,20 @@ Note that we consider **runtimes of the restart algorithm**, that is, we use the
 
 **Aggregation:**
 
-In the ECDF displayed in Figure :ref:`fig:ecdf` we have **aggregated** the runtime on several problems by displaying the runtime of the pure random search on the set of problems formed by 51 targets between :math:`10^2` and :math:`10^{-8}` on the parametrized sphere in dimension 5.
+In the ECDF displayed in Figure :ref:`fig:ecdf` we have **aggregated**
+the runtime on several problems by displaying the runtime of the pure
+random search on the set of problems formed by 51 targets between
+:math:`10^2` and :math:`10^{-8}` on the parametrized sphere in dimension
+5.
 
-Those problems concern the same parametrized family of functions, namely a set of shifted sphere functions with different offsets in their function values. We consider also aggregation **over several parametrized functions**. We usually divide the set of parametrized functions into subgroups sharing similar properties (for instance separability, unimodality, ...) and display ECDFs which aggregate the problems induced by those functions and by all targets. See Figure :ref:`fig:ecdfgroup`.
+Those problems concern the same parametrized family of functions, namely
+a set of shifted sphere functions with different offsets in their
+function values. We consider also aggregation **over several
+parametrized functions**. We usually divide the set of parametrized
+functions into subgroups sharing similar properties (for instance
+separability, unimodality, ...) and display ECDFs which aggregate the
+problems induced by those functions and by all targets. See Figure
+:ref:`fig:ecdfgroup`.
 
 
 .. _fig:ecdfgroup:
@@ -568,7 +579,10 @@ Those problems concern the same parametrized family of functions, namely a set o
    over all targets and functions f1, f2, f3, f4 and f5.
 
 
-We can also naturally aggregate over all functions and hence obtain one single ECDF per algorithm per dimension. The ECDF of different algorithms can be displayed on the same graph as depicted in Figure :ref:`fig:ecdfall`.
+We can also naturally aggregate over all functions and hence obtain one
+single ECDF per algorithm per dimension. The ECDF of different
+algorithms can be displayed on the same graph as depicted in Figure
+:ref:`fig:ecdfall`.
 
 .. _fig:ecdfall:
 
