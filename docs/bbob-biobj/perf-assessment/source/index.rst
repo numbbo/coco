@@ -30,7 +30,10 @@ numerical black-box optimizers on multi-objective problems within the COCO_
 platform and in particular on the biobjective test suite |bbob-biobj|_. 
 The evaluation is based on a hypervolume of all non-dominated solutions in the 
 increasing archive of candidate solutions and measures the runtime until the
-hypervolume value succeeds a prescribed set of target values. 
+hypervolume value succeeds a prescribed set of target values. [#]_
+
+.. [#] *ArXiv e-prints*, arXiv:1605.xxxxx__, 2016.
+.. __: http://arxiv.org/abs/1605.xxxxx
 
 
 .. Dimo: TODO: change `D` into `n`
@@ -295,8 +298,7 @@ biobjective ``bbob-biobj`` test suite does not provide analytical forms of
 its optima. 
 Except for :math:`f_1`, the Pareto set and the Pareto front are unknown. 
 
-Instead of using the hypervolume of the true Pareto set as reference
-hypervolume indicator value, we use an approximation of the Pareto set. 
+Instead of the unknown hypervolume of the true Pareto set, we use the hypervolume of an approximation of the Pareto as reference hypervolume indicator value |Irefi|. 
 To obtain the approximation, several multi-objective optimization algorithms
 have been run and all non-dominated solutions over all runs have been
 recorded. [#]_ 
@@ -345,7 +347,7 @@ default only 5 out of the 10 instances from each function-dimension pair.
    the question of generalization. 
 
 
-Data storage and Future Recalculations of Indicator Values
+Data Storage and Future Recalculations of Indicator Values
 ==========================================================
 Having a good approximation of the Pareto set/Pareto front is crucial in assessing
 algorithm performance with the above suggested performance criterion. In order to allow
