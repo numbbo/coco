@@ -789,7 +789,10 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     # add number of instances 
     text += '\n'    
     for alg in algorithms_with_data:
-        text += '%d, ' % len(dictAlgperFunc[alg][0].instancenumbers)
+        if dictAlgperFunc[alg]:
+            text += '%d, ' % len(dictAlgperFunc[alg][0].instancenumbers)
+        else:
+            text += '0, '
     text = text.rstrip(', ')
     text += ' instances'
     plt.text(0.01, 0.98, text, horizontalalignment="left",
