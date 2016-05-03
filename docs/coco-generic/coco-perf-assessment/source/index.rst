@@ -479,7 +479,16 @@ ENES and analyzed in [Auger:2005b]_ as success performance and previously called
     \end{eqnarray}
 
 
-where |ps| is the probability of success of the algorithm (to reach the underlying precision) and :math:`\mathrm{RT}^s` denotes the random variable modeling the runtime of successful runs and :math:`\mathrm{RT}^{\rm us}` the runtime of unsuccessful runs (see [Auger:2005b]_). Given a finite number of realizations of the runtime of an algorithm (run on a parametrized family of functions to reach a certain precision) that comprise at least one successful run, say :math:`\{\mathrm{RT}^{\rm us}_i, \mathrm{RT}^{\rm s}_j \}`, we can estimate the expected runtime of the restart algorithm given in the previous equation as the average runtime defined as
+where |ps| is the probability of success of the algorithm (to reach the
+underlying precision) and :math:`\mathrm{RT}^s` denotes the random
+variable modeling the runtime of successful runs and
+:math:`\mathrm{RT}^{\rm us}` the runtime of unsuccessful runs (see
+[Auger:2005b]_). Given a finite number of realizations of the runtime of
+an algorithm (run on a parametrized family of functions to reach a
+certain precision) that comprise at least one successful run, say
+:math:`\{\mathrm{RT}^{\rm us}_i, \mathrm{RT}^{\rm s}_j \}`, we can
+estimate the expected runtime of the restart algorithm given in the
+previous equation as the average runtime defined as
 
 .. math::
     :nowrap:
@@ -495,11 +504,14 @@ where |ps| is the probability of success of the algorithm (to reach the underlyi
 .. |ps| replace:: :math:`p_{\mathrm{s}}`
 
 
-where |Ts| and |Tus| denote the average runtime for successful and unsuccessful trials,  |nbsucc| denotes the number of successful trials and  :math:`\#\mathrm{FEs}` is
-the number of function evaluations
+where |Ts| and |Tus| denote the average runtime for successful and
+unsuccessful trials,  |nbsucc| denotes the number of successful trials
+and  :math:`\#\mathrm{FEs}` is the number of function evaluations
 conducted in all trials (before to reach a given precision).
 
-Remark that while not explicitly denoted, the average runtime depends on the target and more precisely on a precision. It also depends strongly on the termination criterion of the algorithm.
+Remark that while not explicitly denoted, the average runtime depends on
+the target and more precisely on a precision. It also depends strongly
+on the termination criterion of the algorithm.
 
 
 
