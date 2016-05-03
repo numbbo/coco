@@ -10,7 +10,7 @@ COCO: Performance Assessment
 ..
    sectnum::
 
-.. |ftarget| replace:: :math:`f_\mathrm{target}`
+.. |ftarget| replace:: :math:`I^{{\rm target},\theta}`
 .. |nruns| replace:: :math:`\texttt{Ntrial}`
 .. |DIM| replace:: :math:`n`
 .. _2009: http://www.sigevo.org/gecco-2009/workshops.html#bbob
@@ -124,7 +124,11 @@ We introduce a few terms and definitions that are used in the rest of the docume
 
  .. [#] Note that we assume without loss of generality minimization of the quality indicator here for historical reasons although the name quality indicator itself suggests maximization.
  
- 
+.. Anne: Dimo, why did you drop the theta-dependency of I^target
+
+.. Anne: I think that we have an organization problem - this definition of
+  problem,  function becomes now too long and should most likely be in a
+  dedicated section where it could be expanded. 
  	
 *instance*
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
@@ -308,22 +312,22 @@ In order to display quantitative measurements, we have seen in the previous
 section that we should start from the collection of runtimes for different
 target values. These target values can be a :math:`f`- or indicator value
 (see [TUS2016]_).
-In the performance assessment setting, a problem is the quadruple
-:math:`p=(n,f_\theta,\theta,f^{\rm target}_\theta)` where
-:math:`f^{\rm target}_\theta` is the target function value. This means that
+In the performance assessment setting, a problem is the quintuple
+:math:`p=(n,f_\theta,\theta,I,I^{{\rm target},\theta})` where
+:math:`I^{{\rm target},\theta}` is the target function/indicator value. This means that
 **we collect runtimes of problems**.
 
-Formally, the runtime of a problem is denoted as
-:math:`\mathrm{RT}(n,f_\theta,\theta,f^{\rm target}_\theta)`. It is a random
+Formally, the runtime of a problem :math:`p` is denoted as
+:math:`\mathrm{RT}(p)`. It is a random
 variable that counts the number of function evaluations needed to reach a
-function value lower or equal than :math:`f^{\rm target}_{\theta}`  for the
+quality indicator value lower or equal than :math:`I^{{\rm target},\theta}`  for the
 first time. A run or trial that reached a target function value |ftarget| is
 called *successful*.
 
 We also have to **deal with unsuccessful trials**, that is a run that did not
 reach a target. We then record the number of function evaluations till the
 algorithm is stopped. We denote the respective random variable
-:math:`\mathrm{RT}^{\rm us}(n,f_\theta,\theta,f^{\rm target}_\theta)`.
+:math:`\mathrm{RT}^{\rm us}(np)`.
 
 In order to come up with a meaningful way to compare algorithms having
 different probability of success (that is different probability to reach a
@@ -331,13 +335,13 @@ target), we consider the conceptual **restart algorithm**: We assume that an
 algorithm, say called A, has a strictly positive probability |ps| to
 successfully solve a problem (that is to reach the associated target). The
 restart-A algorithm consists in restarting A till the problem is solved. The
-runtime of the restart-A algorithm equals
+runtime of the restart-A algorithm to solve problem :math:`p` equals
 
 .. math::
 	:nowrap:
 
 	\begin{equation*}
-	\mathbf{RT}(n,f_\theta,\theta,f^{\rm target}_\theta) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\theta,f^{\rm target}_\theta) + \mathrm{RT}^{\rm s}(n,f_\theta,\theta,f^{\rm target}_\theta)
+	\mathbf{RT}(p) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(p) + \mathrm{RT}^{\rm s}(p)
 	\end{equation*}
 
 where :math:`J` is a random variable that models the number of unsuccessful
@@ -363,7 +367,7 @@ The performance assessment in COCO heavily relies on the conceptual restart algo
       to each others or that there is  not too much discrepancy in the difficulty
       of the problem for different instances.
 
-Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same relative target :math:`\Delta f` (see above) are thus assumed independent and identically distributed. We denote the random variable modeling those runtimes :math:`\mathrm{RT}(n,f_\theta,\Delta f)`. We hence have a collection of runtimes (for a given parametrized function and a given precision) whose size corresponds to the number of instances of a parametrized function where the algorithm was run (typically between 10 and 15). Given that the specific instance does not matter, we write in the end the runtime of a restart algorithm of a parametrized family of function in order to reach a relative target :math:`\Delta f` as
+Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same relative target :math:`\Delta I` (see above) are thus assumed independent and identically distributed. We denote the random variable modeling those runtimes :math:`\mathrm{RT}(n,f_\theta,\Delta I)`. We hence have a collection of runtimes (for a given parametrized function and a given relative target) whose size corresponds to the number of instances of a parametrized function where the algorithm was run (typically between 10 and 15). Given that the specific instance does not matter, we write in the end the runtime of a restart algorithm of a parametrized family of function in order to reach a relative target :math:`\Delta I` as
 
 .. _eq:RTrestart:
 
@@ -372,7 +376,7 @@ Runtimes collected for the different instances :math:`\theta_1,\ldots,\theta_K` 
 	:label: RTrestart
 
 	\begin{equation*}\label{RTrestart}
-	\mathbf{RT}(n,f_\theta,\Delta f) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta f) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta f)
+	\mathbf{RT}(n,f_\theta,\Delta I) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
 	\end{equation*}
 
 
@@ -385,7 +389,7 @@ As we will see in Section :ref:`sec:aRT` and Section :ref:`sec:ECDF`, our perfor
 Simulated Run-lengths of Restart Algorithms
 -------------------------------------------
 
-The runtime of the conceptual restart algorithm given in Equation :eq:`RTrestart` is the basis for displaying performance within COCO. We can simulate some (approximate) samples of the runtime of the restart algorithm by constructing so-called simulated run-lengths from the available empirical data:
+The runtime of the conceptual restart algorithm given in Equation :eq:`RTrestart` is the basis for displaying performance within COCO. We can simulate some (approximate) samples of the runtime of the restart algorithm by constructing so-called simulated run-lengths from the available empirical data.
 
 **Simulated Run-length:** Given a collection of runtimes for successful and unsuccessful trials to reach a given precision, we draw a simulated run-length of the restart algorithm by repeatedly drawing uniformly at random and with replacement among all given runtimes till we draw a runtime from a successful trial. The simulated run-length is then the sum of the drawn runtimes.
 
