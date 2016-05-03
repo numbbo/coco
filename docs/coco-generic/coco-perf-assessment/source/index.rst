@@ -595,9 +595,22 @@ We can also naturally aggregate over all functions and hence obtain one single E
 
 Best 2009 "Algorithm"
 ---------------------
-The ECDF graphs are typically displaying an ECDF annotated as best 2009 (thick maroon line with diamonds markers in Figure :ref:`fig:ecdfall` for instance). This ECDF corresponds to an artificial algorithm: for each problem, we select the algorithm within the dataset obtained during the BBOB-2009 workshop that has the best |aRT|. We are then using the runtimes of this algorithm. The algorithm is artificial because for different targets, we possibly have the runtime of different algorithms. [#]_
+The ECDF graphs are typically displaying an ECDF annotated as best 2009
+(thick maroon line with diamonds markers in Figure :ref:`fig:ecdfall`
+for instance). This ECDF corresponds to an artificial algorithm: for
+each problem, we select the algorithm within the dataset obtained during
+the BBOB-2009 workshop that has the best |aRT|. We are then using the
+runtimes of this algorithm. The algorithm is artificial because for
+different targets, we possibly have the runtime of different algorithms.
+[#]_
 
-.. [#] Remark that it is not guaranteed that the best 2009 curve is an upper left enveloppe of the ECDF of all algorithms from which it is constructed, that is the ECDF of one algorithm from BBOB-2009 could cross the best 2009 curve. This could typically happen if one algorithm for an easy target has many small running times but however one very large such that its aRT is not the best but the many small run time make the ECDF curve cross the best 2009 one.
+.. [#] Remark that it is not guaranteed that the best 2009 curve is an
+upper left enveloppe of the ECDF of all algorithms from which it is
+constructed, that is the ECDF of one algorithm from BBOB-2009 could
+cross the best 2009 curve. This could typically happen if one algorithm
+for an easy target has many small running times but however one very
+large such that its aRT is not the best but the many small run time make
+the ECDF curve cross the best 2009 one.
 
 
 
