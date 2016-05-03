@@ -601,17 +601,17 @@ The ECDF graphs are typically displaying an ECDF annotated as best 2009 (thick m
 
 
 
-.. todo::
-	* ECDF and uniform pick of a problem
-	* log aRT can be read on the ECDF graphs [requires some assumptions]
-	* The Different Plots Provided by the COCO Platform
-		* aRT Scaling Graphs
-		  The aRT scaling graphs present the average running time to
-		  reach a certain 			precision (relative target)
-		  divided by the dimension versus the dimension. Hence an
-		  horizontal line means a linear scaling with respect to the
-		  dimension.
-		* aRT Loss graphs
+..  todo
+..	* ECDF and uniform pick of a problem
+..	* log aRT can be read on the ECDF graphs [requires some assumptions]
+..	* The Different Plots Provided by the COCO Platform
+..		* aRT Scaling Graphs
+..		  The aRT scaling graphs present the average running time to
+..		  reach a certain 			precision (relative target)
+..		  divided by the dimension versus the dimension. Hence an
+..		  horizontal line means a linear scaling with respect to the
+..		  dimension.
+..		* aRT Loss graphs
 
 
 
