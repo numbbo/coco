@@ -98,7 +98,7 @@ Terminology and Definitions
 We introduce a few terms and definitions that are used in the rest of the document.
 
    
-*problem, function*
+*problem, function, indicator*
  In the COCO_ framework, a problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function (to be minimized) and the ``instance`` describes an instantiation of the parameters.
  
  More precisely, let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO problem corresponds to :math:`p=(n,f_\theta,\theta)` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\theta` is a set of parameters to instantiate the parametrized function. Given a dimension :math:`n` and two different instances :math:`\theta_1` and :math:`\theta_2` of the same parametrized family :math:`f_{\theta}`, optimizing the associated problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
@@ -109,16 +109,29 @@ We introduce a few terms and definitions that are used in the rest of the docume
  
  
  In the performance assessment setting, we associate to a problem :math:`p` and a given quality indicator,
- one or several target values such that a problem is then a quintuple ``(dimension,function,instance,quality indicator,target)``. A target value is thereby a fixed function or quality indicator value :math:`f^{\rm target}` or :math:`I^{\rm target}` at which we extract the runtime of the algorithm, which we assume to be minimized as well [#]_, and which typically depends on the problem instance :math:`\theta`. Given that the optimal function or quality indicator value :math:`f^{\mathrm{opt}, \theta}` depends on the specific instance :math:`\theta`, the target function/quality indicator values also depend on the instance :math:`\theta`. However, the relative target or precision
+ one or several target values such that a problem is then a quintuple ``(dimension,function,instance,quality indicator,target)``. A target value is thereby a fixed function or quality indicator value at which we extract the runtime of the algorithm, which we assume to be minimized as well [#]_, and which typically depends on the problem instance :math:`\theta`. 
+ 
+ We know for a problem a reference function or indicator value,
+ :math:`I^{\rm ref, \theta}`. In the single-objective case this can be
+ the optimal function value, i.e. :math:`f^{\mathrm{opt}, \theta} =
+ \min_\mathbf{x} f_\theta(\mathbf{x})`, in the multi-objective case this
+ is the indicator value of an estimate of the Pareto front. This
+ reference indicator value depends on the specific instance
+ :math:`\theta`, and thus the target indicator value also depends on the
+ instance. However, the relative target or precision
 
  .. math::
  	:nowrap:
 
 	\begin{equation}
-	\Delta f = f^{\rm target,\theta} - f^{\rm opt,\theta} \,\, \mbox{or} \, \, \Delta I = I^{\rm target,\theta} - I^{\rm opt,\theta}
+	 \Delta I = I^{\rm target,\theta} - I^{\rm ref,\theta}
  	\end{equation}
 
- does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`f^{\rm target,{\theta}_1}, \ldots,f^{\rm target,{\theta}_K}` associated to the same precision. Note that in the absence of knowledge about the optimal function/quality indicator value, :math:`f^{\rm opt,\theta}` is typically replaced by the best known approximation of :math:`f^{\rm opt,\theta}`.
+ does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`I^{\rm target,{\theta}_1}, \ldots,I^{\rm target,{\theta}_K}` associated to the same precision. 
+ 
+ .. Note that in the absence of knowledge about the optimal function/quality indicator 
+ .. value, :math:`f^{\rm opt,\theta}` is typically replaced by the best known  
+ .. approximation of :math:`f^{\rm opt,\theta}`.
  
  Depending on the context, we will refer to both the original triple ``(dimension,function,instance)`` and the quintuple ``(dimension,function,instance,quality indicator,target)`` as *problem*. We say, for example, that "algorithm A is solving problem :math:`p=(n,f_\theta,\theta,I,I^{\rm target})` after :math:`t` function evaluations" if the quality indicator function value :math:`I`  during the optimization of :math:`(n,f_\theta,\theta)` reaches a value of :math:`I^{\rm target}` or lower for the first time after :math:`t` function evaluations.
 
@@ -331,7 +344,7 @@ called *successful*.
 We also have to **deal with unsuccessful trials**, that is a run that did not
 reach a target. We then record the number of function evaluations till the
 algorithm is stopped. We denote the respective random variable
-:math:`\mathrm{RT}^{\rm us}(np)`.
+:math:`\mathrm{RT}^{\rm us}(p)`.
 
 In order to come up with a meaningful way to compare algorithms having
 different probability of success (that is different probability to reach a
