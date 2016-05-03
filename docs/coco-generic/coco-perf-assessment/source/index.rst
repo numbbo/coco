@@ -606,10 +606,6 @@ The ECDF graphs are typically displaying an ECDF annotated as best 2009. This EC
 		  horizontal line means a linear scaling with respect to the
 		  dimension.
 		* aRT Loss graphs
-		* Best 2009: actually now I am puzzled on this Best 2009
-
-	  algorithm (I know what is the aRT of the best 2009, but I have
-	  doubts on how we display the ECDF of the best 2009
 
 
 
