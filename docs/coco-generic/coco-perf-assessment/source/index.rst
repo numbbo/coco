@@ -117,9 +117,19 @@ We introduce a few terms and definitions that are used in the rest of the docume
 
    
 *problem, function, indicator*
- In the COCO_ framework, a problem is defined as a triple  ``(dimension,function,instance)``. In this terminology a ``function`` is actually a parametrized function (to be minimized) and the ``instance`` describes an instantiation of the parameters.
+ In the COCO_ framework, a problem is defined as a triple  ``(dimension,
+ function, instance)``. In this terminology a ``function`` (to be minimized) is
+ parametrized and the ``instance`` describes an instantiation of the parameters.
  
- More precisely, let us consider a parametrized function  :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO problem corresponds to :math:`p=(n,f_\theta,\theta)` where :math:`n \in \mathbb{N}` is the dimension of the search space, and :math:`\theta` is a set of parameters to instantiate the parametrized function. Given a dimension :math:`n` and two different instances :math:`\theta_1` and :math:`\theta_2` of the same parametrized family :math:`f_{\theta}`, optimizing the associated problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
+ More precisely, let us consider a parametrized function  :math:`f_\theta:
+ \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO_
+ problem corresponds to :math:`p=(n,f_\theta,\theta)` where :math:`n \in
+ \mathbb{N}` is the dimension of the search space, and :math:`\theta` is a set
+ of parameters to instantiate the parametrized function. Given a dimension
+ :math:`n` and two different instances :math:`\theta_1` and :math:`\theta_2` of
+ the same parametrized family :math:`f_{\theta}`, optimizing the associated
+ problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and
+ :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
  
  Typically, the performance of an optimization algorithm at time :math:`t`, which aims at optimizing a problem :math:`p=(n,f_\theta,\theta)`, is defined via a quality indicator function mapping the set of all solutions evaluated so far together with their :math:`m`-dimensional evaluation vectors, outputted by :math:`f_\theta`, to a real value. In the single-objective noiseless case, this quality indicator function simply outputs the minimal observed (feasible) function value during the first :math:`t` function evaluations. In the multi-objective case, well-known multi-objective quality indicators such as the hypervolume indicator can be used to map the entire set of already evaluated solutions ("archive") to a real value.
  
