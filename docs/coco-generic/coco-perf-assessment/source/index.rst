@@ -198,15 +198,14 @@ We introduce a few terms and definitions that are used in the rest of the docume
 On Performance Measures
 =======================
 
-Following [HAN2009]_, we advocate **performance measures** that are
+Evaluating performance of algorithms entails having measures that represent the performance of each algorithm. Our prerequisites for **performances measures** within COCO are the following: 
 
- * quantitative, ideally with a ratio scale (opposed to interval or ordinal
-   scale, [STE1946]_)  and with a wide variation (i.e., for example, with typical
-   values ranging not only between 0.98 and 1.0) [#]_
- * well-interpretable, in particular by having a meaning and semantics attached
-   to the numbers
+ * We want performance measures to be quantitative as opposed to simple ranking of algorithms. Ideally we want a ratio scale to be able to state "Algorithm A is x times better than Algorithm B" (opposed to interval or ordinal scale, [STE1946]_). This performance measure should have wide variation (i.e., for example, with typical values ranging not only between 0.98 and 1.0) [#]_
+ * We want to be able to interpret performance measure, in particular by having a meaning and semantics attached to the numbers
  * relevant and meaningful with respect to the "real world"
  * as simple as possible.
+
+.. Following [HAN2009]_, we advocate **performance measures** that are
 
 .. Tea: Can we give some more explanation here?
 
@@ -325,7 +324,7 @@ budgets:
   	:nowrap:
 
  	\begin{equation*}
-		T_{\rm chosen}^i = \max_{1\leq j \leq | \mathcal{F}_{\rm target} |}
+		T_{\rm chosen}^i = \max_{1\leq j \leq | \mathcal{I}^{\rm target} |}
 				I^{\rm target}_j \text{ such that }
 				I^{\rm target}_{j} < f(\mathcal{A}, b_i) \text{ and }
 				I^{\rm target}_j < I^{\rm chosen}_{k} \text{ for all } k<i
