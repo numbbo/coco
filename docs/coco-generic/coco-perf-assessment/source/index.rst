@@ -210,8 +210,8 @@ Evaluating performance of algorithms entails having measures that represent the 
 
  * We want performance measures to be quantitative as opposed to simple ranking of algorithms. Ideally we want a ratio scale to be able to state "Algorithm A is x times better than Algorithm B" (opposed to interval or ordinal scale, [STE1946]_). This performance measure should have wide variation (i.e., for example, with typical values ranging not only between 0.98 and 1.0) [#]_
  * We want to be able to interpret performance measure, in particular by having a meaning and semantics attached to the numbers
- * relevant and meaningful with respect to the "real world"
- * as simple as possible.
+ * We want relevant and meaningful measures with respect to the "real world"
+ * that are in addition as simple as possible.
 
 .. Following [HAN2009]_, we advocate **performance measures** that are
 
