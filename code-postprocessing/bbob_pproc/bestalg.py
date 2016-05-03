@@ -29,8 +29,9 @@ import numpy as np
 from . import readalign, pproc
 from .toolsdivers import print_done
 from .ppfig import Usage
-from . import toolsstats
+from . import toolsstats, genericsettings
 
+bestAlgorithmEntries = {}
 bestalgentries2009 = {}
 bestalgentries2010 = {}
 bestalgentries2012 = {}
@@ -321,7 +322,55 @@ class BestAlgSet():
             res2.append(tmp2)
         return res, res2
 
-#FUNCTION DEFINITIONS
+
+# FUNCTION DEFINITIONS
+def load_best_algorithm(force=False):
+    """Assigns :py:data:`bestAlgorithmEntries`.
+
+    This function is needed to set the global variable
+    :py:data:`bestAlgorithmEntries`. It unpickles the pickle file
+    with best algorithm data.
+
+    :py:data:`bestAlgorithmEntries` is a dictionary accessed by providing
+    a tuple :py:data:`(dimension, function)`. This returns an instance
+    of :py:class:`BestAlgSet`.
+    The data is that of specific algorithms (depending on the Testbed used).
+
+    """
+    global bestAlgorithmEntries
+    # global statement necessary to change the variable bestalg.bestAlgorithmEntries
+
+    if not force and bestAlgorithmEntries:
+        return bestAlgorithmEntries
+
+    bestAlgorithmFilename = genericsettings.current_testbed.best_algorithm_filename
+
+    # If the file name is not specified then we skip the load.
+    if not bestAlgorithmFilename:
+        bestAlgorithmEntries = None
+        return bestAlgorithmEntries
+
+    print "Loading best algorithm data from %s ..." % bestAlgorithmFilename,
+    sys.stdout.flush()
+
+    bestAlgFilePath = os.path.split(__file__)[0]
+    pickleFilename = os.path.join(bestAlgFilePath, bestAlgorithmFilename)
+    if pickleFilename.endswith('.gz'):
+        fid = gzip.open(pickleFilename, 'r')
+    else:
+        fid = open(pickleFilename, 'r')
+    try:
+        bestAlgorithmEntries = pickle.load(fid)
+    except:
+        warnings.warn("no best algorithm loaded")
+        # raise  # outcomment to diagnose
+        bestAlgorithmEntries = None
+
+    fid.close()
+    print_done()
+
+    return bestAlgorithmEntries
+
 
 def loadBBOB2009(force=False):
     """Assigns :py:data:`bestalgentries2009`.
@@ -471,22 +520,10 @@ def loadBestBiobj2016():
     fid.close()
     print_done()
 
-def loadBestAlgorithm(isBioobjective):
-    """Loads the best single or bi objective algorithm. """
-    
-    if isBioobjective:
-        # Currently we do not have a good best algorithm for the bi-objective case.
-        return None
-#        if not bestbiobjalgentries2016:
-#            loadBestBiobj2016()
-#        return bestbiobjalgentries2016
-    else:
-        if not bestalgentries2009:
-            loadBBOB2009()
-        return bestalgentries2009
 
 def usage():
     print __doc__  # same as: sys.modules[__name__].__doc__, was: main.__doc__
+
 
 def generate(dictalg):
     """Generates dictionary of best algorithm data set.
