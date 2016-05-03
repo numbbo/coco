@@ -204,8 +204,8 @@ is the smallest (normalized) Euclidean distance between a solution in the archiv
    (negative) hypervolume of the archive with the nadir point as reference point. 
    
    
-Rationales Behind our Performance Measure and A First Summary
--------------------------------------------------------------
+Rationales Behind the Performance Measure
+------------------------------------------
 
 *Why using an archive?*
  We believe using an archive to keep all non-dominated solutions is relevant in practice
@@ -219,9 +219,11 @@ Rationales Behind our Performance Measure and A First Summary
  Although, in principle, other quality indicators can be used in replacement of the
  hypervolume, the monotonicity of the hypervolume is a strong theoretical argument
  for using it in the performance assessment: the hypervolume indicator value of the
- archive improves iff a new non-dominated solution is generated. [ZIT2003]_
+ archive improves iff a new non-dominated solution is generated [ZIT2003]_.
 
 
+Specificities and Properties
+-----------------------------
 
 In summary, the proposed ``bbob-biobj`` performance criterion has the following
 specificities:
