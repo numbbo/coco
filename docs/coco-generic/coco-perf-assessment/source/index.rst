@@ -217,7 +217,14 @@ Evaluating performance of algorithms entails having measures that represent the 
 
 .. Tea: Can we give some more explanation here?
 
-For these reasons we measure **runtime** to reach a target value, that is the number of function evaluations needed to reach a quality indicator target value denoted as fixed-target scenario in the following.
+For these reasons we measure **runtime** to reach a target value, that
+is the number of function evaluations needed to reach a quality
+indicator target value denoted as fixed-target scenario in the
+following. Runtime is well-interpretable meaningful with respect to the
+real-world as it is proportional to the time needed to solve a problem
+but avoids the shortcomings of CPU measurements that are depends on
+parameters like programming langage, coding style, ... that are
+difficult to control. It also has a ratio scale.
 
 
 .. [#] The transformation :math:`x\mapsto\log(1-x)` can alleviate the problem
@@ -230,7 +237,11 @@ Fixed-Budget versus Fixed-Target Approach
 
 .. for collecting data and making measurements from experiments:
 
-Starting from some convergence graphs, which plot the quality indicator (to be minimized) against the number of function evaluations, we have two different approaches to measure performance.
+Our choice of performance measure is related to the so-called
+fixed-budget versus fixed-target scenarios. Starting from some
+convergence graphs, which plot the quality indicator (to be minimized)
+against the number of function evaluations, we have two different
+approaches to measure performance.
 
 **fixed-budget approach**
     We fix a budget of function evaluations,
