@@ -133,8 +133,8 @@ We introduce a few terms and definitions that are used in the rest of the docume
  
  Typically, the performance of an optimization algorithm at time :math:`t`,
  which aims at optimizing a problem :math:`p=(n,f_\theta,\theta)`, is defined
- via a quality indicator function mapping the set of all solutions evaluated (or
- recommended) so far to a :math:`p`-dependent real value. In the
+ via a quality indicator function mapping the set of all solutions evaluated so
+ far (or recommended) to a :math:`p`-dependent real value. In the
  single-objective noiseless case, this quality indicator function simply outputs
  the minimal observed (feasible) function value during the first :math:`t`
  function evaluations. In the multi-objective case, well-known multi-objective
