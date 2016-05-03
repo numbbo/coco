@@ -131,7 +131,15 @@ We introduce a few terms and definitions that are used in the rest of the docume
  problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and
  :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
  
- Typically, the performance of an optimization algorithm at time :math:`t`, which aims at optimizing a problem :math:`p=(n,f_\theta,\theta)`, is defined via a quality indicator function mapping the set of all solutions evaluated so far together with their :math:`m`-dimensional evaluation vectors, outputted by :math:`f_\theta`, to a real value. In the single-objective noiseless case, this quality indicator function simply outputs the minimal observed (feasible) function value during the first :math:`t` function evaluations. In the multi-objective case, well-known multi-objective quality indicators such as the hypervolume indicator can be used to map the entire set of already evaluated solutions ("archive") to a real value.
+ Typically, the performance of an optimization algorithm at time :math:`t`,
+ which aims at optimizing a problem :math:`p=(n,f_\theta,\theta)`, is defined
+ via a quality indicator function mapping the set of all solutions evaluated (or
+ recommended) so far to a :math:`p`-dependent real value. In the
+ single-objective noiseless case, this quality indicator function simply outputs
+ the minimal observed (feasible) function value during the first :math:`t`
+ function evaluations. In the multi-objective case, well-known multi-objective
+ quality indicators such as the hypervolume indicator can be used to map the
+ entire set of already evaluated solutions ("archive") to a real value.
  
  .. Anne: I took out the theta-bar - did not look too fine to me - so I felt that I needed to add theta_1 and theta_2 as two different instances @Niko, @Tea please check and improve if possible (I am not particularly happy with the new version).
  
@@ -573,17 +581,11 @@ We can also naturally aggregate over all functions and hence obtain one single E
     Data profile are often used using different functions
     with different dimensions.
 
-Best 2009 Algorithm
---------------------
-The ECDF graphs are typically displaying an ECDF annotated as best 2009. This ECDF corresponds to an artificial algorithm: for each problem, we select the algorithm within the dataset obtained during the BBOB-2009 workshop that has the best |aRT|. We are then using the runtimes of this algorithm. The algorithm is artificial because for different targets, we possibly have the runtime of different algorithms.
+Best 2009 "Algorithm"
+---------------------
+The ECDF graphs are typically displaying an ECDF annotated as best 2009 (thick maroon line with diamonds markers in Figure :ref:`ecdfall` for instance). This ECDF corresponds to an artificial algorithm: for each problem, we select the algorithm within the dataset obtained during the BBOB-2009 workshop that has the best |aRT|. We are then using the runtimes of this algorithm. The algorithm is artificial because for different targets, we possibly have the runtime of different algorithms. [#]_
 
-
-.. Best 2009 "Algorithm"
-.. ---------------------
-.. Anne: Might be moved somewhere else when we will have an other section
-.. Anne: for all the graphs used within COCO
-.. We often display the performance of the best 2009 "algorithm". For instance in Figure .. Figure :ref:`fig:ecdfall` the leftmostleft curve displays the performance of the best .. 2009 "algorithm".
-
+.. [#] Remark that it is not guaranteed that the best 2009 curve is an upper left enveloppe of the ECDF of all algorithms from which it is constructed, that is the ECDF of one algorithm from BBOB-2009 could cross the best 2009 curve. This could typically happen if one algorithm for an easy target has many small running times but however one very large such that its aRT is not the best but the many small run time make the ECDF curve cross the best 2009 one.
 
 
 
