@@ -133,8 +133,8 @@ We introduce a few terms and definitions that are used in the rest of the docume
  
  Typically, the performance of an optimization algorithm at time :math:`t`,
  which aims at optimizing a problem :math:`p=(n,f_\theta,\theta)`, is defined
- via a quality indicator function mapping the set of all solutions evaluated (or
- recommended) so far to a :math:`p`-dependent real value. In the
+ via a quality indicator function mapping the set of all solutions evaluated so
+ far (or recommended) to a :math:`p`-dependent real value. In the
  single-objective noiseless case, this quality indicator function simply outputs
  the minimal observed (feasible) function value during the first :math:`t`
  function evaluations. In the multi-objective case, well-known multi-objective
@@ -202,15 +202,14 @@ We introduce a few terms and definitions that are used in the rest of the docume
 On Performance Measures
 =======================
 
-Following [HAN2009]_, we advocate **performance measures** that are
+Evaluating performance of algorithms entails having measures that represent the performance of each algorithm. Our prerequisites for **performances measures** within COCO are the following: 
 
- * quantitative, ideally with a ratio scale (opposed to interval or ordinal
-   scale, [STE1946]_)  and with a wide variation (i.e., for example, with typical
-   values ranging not only between 0.98 and 1.0) [#]_
- * well-interpretable, in particular by having a meaning and semantics attached
-   to the numbers
+ * We want performance measures to be quantitative as opposed to simple ranking of algorithms. Ideally we want a ratio scale to be able to state "Algorithm A is x times better than Algorithm B" (opposed to interval or ordinal scale, [STE1946]_). This performance measure should have wide variation (i.e., for example, with typical values ranging not only between 0.98 and 1.0) [#]_
+ * We want to be able to interpret performance measure, in particular by having a meaning and semantics attached to the numbers
  * relevant and meaningful with respect to the "real world"
  * as simple as possible.
+
+.. Following [HAN2009]_, we advocate **performance measures** that are
 
 .. Tea: Can we give some more explanation here?
 
@@ -307,8 +306,8 @@ is the following.
 We first fix a reference algorithm :math:`\mathcal{A}` which we run on a
 problem of interest (i.e. on a 3-tuple of parameterized function, dimension,
 and instance) and for which we record runtimes to reach given target values
-:math:`\mathcal{F}_{\rm target} = \{ f_{\rm target}^1, \ldots, f_{\rm target}^{|\mathcal{F}_{\rm target}|} \}`
-(with :math:`f_{\rm target}^i` > :math:`f_{\rm target}^j` for all :math:`i<j`)
+:math:`\mathcal{I}^{\rm target} = \{ I^{\rm target}_1, \ldots, I^{\rm target}_{|\mathcal{I}^{\rm target}|} \}`
+(with :math:`I^{\rm target}_i` > :math:`I^{\rm target}_j` for all :math:`i<j`)
 as in the fixed-target approach described above. The chosen reference
 algorithm will serve as a baseline upon which the runlength-based targets are 
 computed in the second step.
@@ -325,10 +324,10 @@ budgets:
   	:nowrap:
 
  	\begin{equation*}
-		T_{\rm chosen}^i = \max_{1\leq j \leq | \mathcal{F}_{\rm target} |}
-				f_{\rm target}^j \text{ such that }
-				f_{\rm target}^{j} < f(\mathcal{A}, b_i) \text{ and }
-				f_{\rm target}^j < f_{\rm chosen}^{k} \text{ for all } k<i
+		T_{\rm chosen}^i = \max_{1\leq j \leq | \mathcal{I}^{\rm target} |}
+				I^{\rm target}_j \text{ such that }
+				I^{\rm target}_{j} < f(\mathcal{A}, b_i) \text{ and }
+				I^{\rm target}_j < I^{\rm chosen}_{k} \text{ for all } k<i
   	\end{equation*}
 
 with :math:`f(\mathcal{A}, t)` being the best function (or indicator) value
@@ -583,7 +582,7 @@ We can also naturally aggregate over all functions and hence obtain one single E
 
 Best 2009 "Algorithm"
 ---------------------
-The ECDF graphs are typically displaying an ECDF annotated as best 2009 (thick maroon line with diamonds markers in Figure :ref:`ecdfall` for instance). This ECDF corresponds to an artificial algorithm: for each problem, we select the algorithm within the dataset obtained during the BBOB-2009 workshop that has the best |aRT|. We are then using the runtimes of this algorithm. The algorithm is artificial because for different targets, we possibly have the runtime of different algorithms. [#]_
+The ECDF graphs are typically displaying an ECDF annotated as best 2009 (thick maroon line with diamonds markers in Figure :ref:`fig:ecdfall` for instance). This ECDF corresponds to an artificial algorithm: for each problem, we select the algorithm within the dataset obtained during the BBOB-2009 workshop that has the best |aRT|. We are then using the runtimes of this algorithm. The algorithm is artificial because for different targets, we possibly have the runtime of different algorithms. [#]_
 
 .. [#] Remark that it is not guaranteed that the best 2009 curve is an upper left enveloppe of the ECDF of all algorithms from which it is constructed, that is the ECDF of one algorithm from BBOB-2009 could cross the best 2009 curve. This could typically happen if one algorithm for an easy target has many small running times but however one very large such that its aRT is not the best but the many small run time make the ECDF curve cross the best 2009 one.
 
