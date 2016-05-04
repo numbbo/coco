@@ -261,28 +261,35 @@ This implies that:
 Definition of Target Values
 ===========================
 
-For each problem instance |i| of the benchmark suite, consisting of a parameterized function,
-its dimension and instance parameter :math:`\theta`, a set of quality indicator
-target values is chosen, eventually used to measure algorithm runtime to reach each of these targets. 
-The absolute target values are based on a target precision :math:`\Delta I and a *reference hypervolume indicator value*, |Irefi|,
-which is an approximation of the |IHV| indicator value *of the Pareto set*.
+For each problem instance |i| of the benchmark suite, consisting of a parameterized
+function, its dimension and instance parameter :math:`\theta`, a set of quality
+indicator target values is chosen, eventually used to measure algorithm runtime to
+reach each of these targets. 
+The absolute target values are based on a target precision :math:`\Delta I` and a
+*reference hypervolume indicator value*, |Irefi|, which is an approximation of the
+|IHV| indicator value of the Pareto set.
 
 Target Precision Values
 -----------------------
 
-All target indicator values are computed as a function of |Irefi| in the form
-of |Irefi| :math:`+\,\Delta t`, identically for all problems and problem instances. 
-The target precisions |\Delta t| are chosen as
+All target indicator values are computed in the form of |Irefi| :math:`+\,\Delta I`
+as a function of an absolute, function
+instance dependent reference value |Irefi| and (typically more than) one target precision
+value :math:`\Delta I`, the latter being identically chosen for all function instances. 
+In the case of the ``bbob-biobj`` test suite, the target precisions :math:`\Delta I` are chosen as
 
 .. math::
 
-  \Delta t \in \{ -10^{-4}, -10^{-4.2}, -10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0 \}\enspace.
+  \Delta I \in \{ -10^{-4}, -10^{-4.2}, -10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0 \}\enspace.
 
 Negative target precisions are used because the reference indicator value is
 an approximation which can be surpassed by an optimization algorithm. [#]_
 The runtimes to reach these 58 target values are presented as
-empirical cumulative distribution function, ECDF. Runtimes to reach specific target precisions are presented as well. 
-It is not uncommon however that the quality indicator value of the algorithm never surpasses some of these target values, which leads to missing runtime measurements.
+empirical cumulative distribution function, ECDF [HAN2016perf]_. Runtimes to
+reach specific target precisions are presented as well. 
+It is not uncommon however that the quality indicator value of the algorithm
+never surpasses some of these target values, which leads to missing runtime
+measurements.
 
 
 .. [#] In comparison, the reference value in the single-objective case has been 
@@ -298,7 +305,7 @@ The Reference Hypervolume Indicator Value
 ----------------------------------------------------
 
 Unlike the single-objective ``bbob`` test suite [HAN2009fun]_, the
-biobjective ``bbob-biobj`` test suite does not provide analytical forms of
+biobjective ``bbob-biobj`` test suite does not provide analytic expressions of
 its optima. 
 Except for :math:`f_1`, the Pareto set and the Pareto front are unknown. 
 
@@ -327,18 +334,20 @@ reference hypervolume indicator value.
   solved by knowing the best possible indicator value.
 
 
-.. [#] Amongst others, we run versions of NSGA-II [todo], SMS-EMOA [todo],
-  MOEA/D [todo], RM-MEDA [todo], and MO-CMA-ES [todo], together with simple
-  uniform RANDOMSEARCH and the single-objective CMA-ES on scalarized problems
+.. [#] Amongst others, we run versions of NSGA-II [DEB2002]_ via Matlab's
+  ``gamultiobj`` function [#]_, SMS-EMOA [BEU2007]_, MOEA/D [ZHA2007]_,
+  RM-MEDA [ZHA2008]_, and MO-CMA-ES [VOS2010]_, together with simple
+  uniform RANDOMSEARCH and the single-objective CMA-ES [HAN2001]_ on scalarized problems
   (i.e. weighted sum) to create first approximations of the bi-objective
   problems' Pareto sets.
 
 
+.. [#] mathworks.com/help/gads/gamultiobj.html
 
 Instances and Generalization Experiment
 =======================================
 The standard procedure for an experiment on a benchmark suite, like the 
-`bbob-biobj` suite, prescribes to run the algorithm of choice once on each
+``bbob-biobj`` suite, prescribes to run the algorithm of choice once on each
 problem of the suite [HAN2016ex]_.
 For the ``bbob-biobj`` suite, the postprocessing part of COCO_ displays by
 default only 5 out of the 10 instances from each function-dimension pair.
@@ -359,16 +368,19 @@ the reference sets to approximate the Pareto set/Pareto front better and better 
 the COCO_ platform records every non-dominated solution over the algorithm run.
 Algorithm data sets, submitted through the COCO_ platform's web page, can therefore
 be used to improve the quality of the reference set by adding all solutions to the
-reference set which are non-dominated to it. 
+reference set which are currently non-dominated to it. 
 
 Recording every new non-dominated solution within every algorithm run also allows to
 recover the algorithm runs after the experiment and to recalculate the corresponding
 hypervolume difference values if the reference set changes in the future. In order
-to be able to distinguish between data and graphical output that has been produced
-with different collections of reference sets, COCO_ writes the absolute hypervolume
-reference values together with the performance data during the experiment and displays
-a version number in the plots generated.
+to be able to distinguish between different collections of reference sets that might
+have been used during the actual benchmarking experiment and the production of the
+graphical output, COCO_ writes the absolute hypervolume reference values together
+with the performance data during the benchmarking experiment and displays
+a version number in the plots generated that allows to retrieve the used reference
+values from the github repository of COCO_ [#].
 
+.. [#] https://github.com/numbbo/coco
 
 
 Acknowledgements
@@ -382,7 +394,19 @@ of the French National Research Agency.
     
     <H2>References</H2>
 
-   
+
+.. [BEU2007] N. Beume, B. Naujoks, and M. Emmerich (2007). SMS-EMOA: Multiobjective
+  selection based on dominated hypervolume. *European Journal of Operational
+  Research*, 181(3), pp. 1653-1669.
+	
+.. [DEB2002] K. Deb, A. Pratap, S. Agarwal, and T. A. M. T. Meyarivan (2002). A
+  fast and elitist multiobjective genetic algorithm: NSGA-II. *IEEE Transactions
+  on Evolutionary Computation*, 6(2), pp. 182-197.
+
+.. [HAN2001] N. Hansen and A. Ostermeier (2001). Completely derandomized
+  self-adaptation in evolution strategies. *Evolutionary computation*, 9(2),
+  pp. 159-195.
+  
 .. [HAN2016perf] N. Hansen, A. Auger, D. Brockhoff, D. Tušar, T. Tušar
    (2016). `COCO: Performance Assessment`__, *ArXiv e-prints*, `arXiv:1605.xxxxx`__.
 .. __: http://numbbo.github.io/coco-doc/perf-assessment
@@ -410,5 +434,19 @@ of the French National Research Agency.
 .. __: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
 .. __: http://arxiv.org/abs/1604.00359
 
+.. [VOS2010] T. Voß, N. Hansen, and C. Igel (2010). Improved step size
+  adaptation for the MO-CMA-ES. In *Genetic and Evolutionary Computation
+  Conference (GECCO 2010)*, pp. 487-494. ACM.
+
+.. [ZHA2007] Q. Zhang, and H. Li (2007). MOEA/D: A multiobjective
+  evolutionary algorithm based on decomposition. *IEEE Transactions on
+  Evolutionary Computation*, 11(6), pp. 712-731.
+
+.. [ZHA2008] Q. Zhang, A. Zhou, and Y. Jin (2008). RM-MEDA: A regularity
+  model-based multiobjective estimation of distribution algorithm. *IEEE
+  Transactions on Evolutionary Computation*, 12(1), pp. 41-63.
+  
 .. [ZIT2003] E. Zitzler, L. Thiele, M. Laumanns, C. M. Fonseca, and V. Grunert da Fonseca (2003). Performance Assessment of Multiobjective Optimizers: An Analysis and Review.
   *IEEE Transactions on Evolutionary Computation*, 7(2), pp. 117-132.
+
+  
