@@ -155,7 +155,7 @@ We introduce a few terms and definitions that are used in the rest of the docume
  one or several target values such that a problem becomes a quintuple ``(dimension, function, instance, quality indicator, target)``. 
  A target value is thereby a fixed function or quality indicator value at which we measure the runtime of the algorithm. 
  We define the quality indicator to be minimized as well. 
- Appropriate quality indicator target values depend on the problem instance :math:`\theta`. 
+ Quality indicator target values depend in general on the problem instance :math:`\theta`. 
  
 *instance*
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
@@ -184,42 +184,40 @@ We introduce a few terms and definitions that are used in the rest of the docume
 On Performance Measures
 =======================
 
-Evaluating performance of algorithms entails having measures that represent the performance of each algorithm. Our prerequisites for **performances measures** within COCO are the following: 
-
- * We want performance measures to be quantitative as opposed to simple ranking of algorithms. Ideally we want a ratio scale to be able to state "Algorithm A is x times better than Algorithm B" (opposed to interval or ordinal scale, [STE1946]_). This performance measure should have wide variation (i.e., for example, with typical values ranging not only between 0.98 and 1.0) [#]_
- * We want to be able to interpret performance measure, in particular by having a meaning and semantics attached to the numbers
- * We want relevant and meaningful measures with respect to the "real world"
- * that are in addition as simple as possible.
+Evaluating performance of algorithms entails having measures that represent the performance of each algorithm. Our requirements for **performances measures** within COCO_ are the following. A performance measure should be
+ * quantitative, as opposed to a simple ranking of algorithms. 
+   Ideally, the measure should be defined on a ratio scale (as opposed to an interval or ordinal scale) [STE1946]_, which allows to state that "Algorithm A is :math:`x` times better than Algorithm B". 
+ * assuming a wide variation of values (i.e., for example, typical values should not only range between 0.98 and 1.0) [#]_,
+ * interpretable, in particular by having a meaning and semantics attached to the measured numbers,
+ * relevant and meaningful with respect to the "real world",
+ * as simple as possible.
 
 .. Following [HAN2009]_, we advocate **performance measures** that are
 
 .. Tea: Can we give some more explanation here?
 
-For these reasons we measure **runtime** to reach a target value, that
-is the number of function evaluations needed to reach a quality
-indicator target value denoted as fixed-target scenario in the
-following. Runtime is well-interpretable meaningful with respect to the
-real-world as it is proportional to the time needed to solve a problem
-but avoids the shortcomings of CPU measurements that are depends on
-parameters like programming langage, coding style, ... that are
-difficult to control. It also has a ratio scale.
+The **runtime** to reach a target value, that
+is, the number of function evaluations needed to reach a quality
+indicator target value satisfy these requirements. 
+Runtime is well-interpretable and meaningful with respect to the
+real-world as it is proportional to the time needed to solve a problem,
+but avoids the shortcomings of CPU measurements that depend on
+parameters like programming langage, coding style, machine, etc. that are
+difficult to control.
 
 
-.. [#] The transformation :math:`x\mapsto\log(1-x)` can alleviate the problem
-  in this case, given it actually zooms in mostly on relevant values.
+.. [#] The transformation :math:`x\mapsto\log(1-x)` could alleviate the problem
+  in this case, given it actually zooms in on relevant values.
 
 .. _sec:verthori:
+
 
 Fixed-Budget versus Fixed-Target Approach
 -----------------------------------------
 
-.. for collecting data and making measurements from experiments:
-
-Our choice of performance measure is related to the so-called
-fixed-budget versus fixed-target scenarios. Starting from some
-convergence graphs, which plot the quality indicator (to be minimized)
-against the number of function evaluations, we have two different
-approaches to measure performance.
+Starting from convergence graphs, which plot the evolution of the quality
+indicator (to be minimized) against the number of function evaluations, there
+are (only) two approaches to measure the performance.
 
 **fixed-budget approach**
     We fix a budget of function evaluations,
@@ -453,14 +451,16 @@ parametrized family of function in order to reach a relative target
 
 
 .. math::
-	:nowrap:
-	:label: RTrestart
+    :nowrap:
+    :label: RTrestart  
 
-	\begin{equation*}
-	\mathbf{RT}(n,f_\theta,\Delta I) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
-	\end{equation*}
+    \begin{equation*}
+    \mathbf{RT}(n,f_\theta,\Delta I) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
+    \end{equation*}
 
+.. |eq:RTrestart| replace:: :math:`\eqref{eq:RTrestart}`
 
+:eq:`RTrestart` 
 where as above :math:`J` is a random variable modeling the number of
 trials needed before to observe a success, :math:`\mathrm{RT}^{\rm
 us}_j` are random variables modeling the number of function evaluations
@@ -478,8 +478,8 @@ distribution by displaying empirical cumulative distribution functions
 Simulated Run-lengths of Restart Algorithms
 -------------------------------------------
 
-The runtime of the conceptual restart algorithm given in Equation
-:eq:`RTrestart` is the basis for displaying performance within COCO. We
+The runtime of the conceptual restart algorithm given in 
+|eq:RTrestart| is the basis for displaying performance within COCO. We
 can simulate some (approximate) samples of the runtime of the restart
 algorithm by constructing so-called simulated run-lengths from the
 available empirical data.
