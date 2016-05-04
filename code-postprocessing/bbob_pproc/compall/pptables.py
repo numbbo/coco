@@ -262,7 +262,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
 
     # TODO: method is long, terrible to read, split if possible
 
-    bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+    bestalgentries = bestalg.load_best_algorithm()
     
     testbed = genericsettings.current_testbed
 
