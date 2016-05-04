@@ -38,21 +38,23 @@ COCO: Performance Assessment
 .. CHAPTERTITLE
 .. CHAPTERUNDERLINE
 
+.. raw:: html
+
+   See: <I>ArXiv e-prints</I>,
+   <A HREF="http://arxiv.org/abs/1605.xxxxx">arXiv:1605.xxxxx</A>, 2016.
+
 .. raw:: latex
 
-  % \tableofcontents is automatic with sphinx and moved behind abstract by swap...py
+  % \tableofcontents is automatic with sphinx and moved behind the abstract 
+  % by swap...py
+  
   \begin{abstract}
 
-.. WHEN CHANGING THIS, CHANGE ALSO the abstract in conf.py ACCORDINGLY (though it seems the latter is not used)
-
 We present an any-time performance assessment for benchmarking numerical
-optimization algorithms in a black-box scenario,
-applied within the COCO_ benchmarking platform. 
-We describe... [#]_
-
-.. [#] *ArXiv e-prints*, arXiv:1605.xxxxx__, 2016.
-.. __: http://arxiv.org/abs/1605.xxxxx
-
+optimization algorithms in a black-box scenario, applied within the COCO_ benchmarking platform. 
+The performance assessment is based on *runtimes* measured in number of objective function evaluations to reach one or several target quality indicator values.
+We argue that runtime is the only available measure with a generic, meaningful, and quantitative interpretation.
+We discuss the choice of the targets and the aggregation of results by using averages, empirical distribution functions, and simulated restarts. 
 
 .. raw:: latex
 
@@ -117,27 +119,32 @@ We introduce a few terms and definitions that are used in the rest of the docume
 
    
 *problem, function, indicator*
- In the COCO_ framework, a problem is defined as a triple  ``(dimension,
- function, instance)``. In this terminology a ``function`` (to be minimized) is
- parametrized and the ``instance`` describes an instantiation of the parameters.
+ In the COCO_ framework, a problem instance is defined as a triple  ``(dimension,
+ function, instance)``. 
+ In this terminology a ``function``, to be minimized, is parametrized by its input ``dimension`` and its ``instance`` parameters.
  
- More precisely, let us consider a parametrized function  :math:`f_\theta:
+ More precisely, we consider a parametrized function  :math:`f_\theta:
  \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO_
  problem corresponds to :math:`p=(n,f_\theta,\theta)` where :math:`n \in
- \mathbb{N}` is the dimension of the search space, and :math:`\theta` is a set
- of parameters to instantiate the parametrized function. Given a dimension
- :math:`n` and two different instances :math:`\theta_1` and :math:`\theta_2` of
- the same parametrized family :math:`f_{\theta}`, optimizing the associated
- problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and
- :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
+ \mathbb{N}` is the dimension of the search space, and :math:`\theta` is the set
+ of parameters associated to the choice of the ``instance``. 
+ The separation of dimension and instance parameters is of entirely semantic nature. 
+
+ .. Given a dimension
+
+   :math:`n` and two different instances :math:`\theta_1` and :math:`\theta_2` of
+   the same parametrized family :math:`f_{\theta}`, optimizing the associated
+   problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and
+   :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
  
- Typically, the performance of an optimization algorithm at time :math:`t`,
- which aims at optimizing a problem :math:`p=(n,f_\theta,\theta)`, is defined
- via a quality indicator function mapping the set of all solutions evaluated so
- far (or recommended [HAN2016ex]_) to a :math:`p`-dependent real value. In the
- single-objective noiseless case, this quality indicator function simply outputs
- the minimal observed (feasible) function value during the first :math:`t`
- function evaluations. In the multi-objective case, well-known multi-objective
+ We define the performance of an optimization algorithm at time :math:`t`,
+ which aims at optimizing a problem :math:`p=(n,f_\theta,\theta)`,
+ via a quality indicator function, mapping the set of all solutions evaluated so
+ far (or recommended [HAN2016ex]_) to a :math:`p`-dependent real value. 
+ In the single-objective noiseless case, this quality indicator simply
+ outputs the minimal observed (feasible) function value during the first
+ :math:`t` function evaluations. 
+ In the multi-objective case, well-known multi-objective
  quality indicators such as the hypervolume indicator can be used to map the
  entire set of already evaluated solutions ("archive") to a real value.
  
@@ -445,7 +452,6 @@ matter, we write in the end the runtime of a restart algorithm of a
 parametrized family of function in order to reach a relative target
 :math:`\Delta I` as
 
-.. _eq:RTrestart:
 
 .. math::
 	:nowrap:
@@ -745,10 +751,12 @@ References
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1777–1784, 2005.
 .. [AUG2009Giens] A. Auger, N. Hansen, J.M. Perez Zerpa, R. Ros and M. Schoenauer (2009). Empirical comparisons of several derivative free optimization algorithms. In Acte du 9ime colloque national en calcul des structures, Giens.
+
 .. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
   `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__. 
-.. __: http://numbbo.github.io/coco-doc/experimental-setup/
-.. __: http://arxiv.org/abs/1603.08776
+__ http://numbbo.github.io/coco-doc/experimental-setup/
+__ http://arxiv.org/abs/1603.08776
+
 .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009). Real-Parameter
 	Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria
 	Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
@@ -758,8 +766,6 @@ References
    algorithms—pitfalls and remedies. In *Proceedings of the Fourteenth
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
    pages 238–245, 1998.
-__ http://numbbo.github.io/coco-doc/experimental-setup/
-__ http://arxiv.org/abs/1603.08776
 .. [More:2009] Jorge J. Moré and Stefan M. Wild. Benchmarking
 	Derivative-Free Optimization Algorithms, SIAM J. Optim., 20(1), 172–191, 2009.
 .. [Price:1997] K. Price. Differential evolution vs. the functions of
