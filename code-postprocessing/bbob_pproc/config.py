@@ -60,7 +60,7 @@ def config(isBiobjective=None):
         print 'Using bestGECCO2009 based target values: now for each function the target ' + \
               'values differ, but the "level of difficulty" is "the same". '
         
-        reference_data = 'bestBiobj2016' if isBiobjective else 'bestGECCO2009'                
+        reference_data = 'bestAlgorithm'
         # pprldmany: 
         if 1 < 3:  # not yet functional, captions need to be adjusted and the bug reported by Ilya sorted out
             # pprldmany.caption = ... captions are still hard coded in LaTeX
