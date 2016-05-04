@@ -292,14 +292,13 @@ Target Values
 
 .. |DI| replace:: :math:`\Delta I`
 
-We define for each problem a reference function or indicator value,
+We define for each problem a reference quality indicator value,
 :math:`I^{\rm ref, \theta}`. In the single-objective case this can be
 the optimal function value, i.e. :math:`f^{\mathrm{opt}, \theta} =
 \min_\mathbf{x} f_\theta(\mathbf{x})`, in the multi-objective case this
 is the indicator value of an approximation of the Pareto front. This
 reference indicator value depends on the specific instance
-:math:`\theta`, and thus the target indicator value also depends on the
-instance. Based on this reference value and a set of target precision values |DI| we define for each problem instance a set of target values
+:math:`\theta`, and thus does the target indicator value. Based on this reference value and a set of target precision values |DI| we define for each problem instance and each precision a target value
 
 .. math::
    :nowrap:
@@ -310,7 +309,7 @@ instance. Based on this reference value and a set of target precision values |DI
 
 such that for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`I^{\rm target,{\theta}_1}, \ldots,I^{\rm target,{\theta}_K}` are associated to the same precision. 
 
-Depending on the context, when we refer to a problem we include the used quality indicator and a given target value or target precision. 
+Depending on the context, when we refer to a problem this includes the used quality indicator and a given target precision or value. 
 We say, for example, that "algorithm A is solving problem :math:`p=(n,f_\theta,\theta,I,I^{\rm target})` after :math:`t` function evaluations" if the quality indicator function value :math:`I`  during the optimization of :math:`(n,f_\theta,\theta)` reaches a value of :math:`I^{\rm target}` or lower for the first time after :math:`t` function evaluations.
 
  
@@ -329,31 +328,30 @@ Runlength-based Target Values
   basic idea
   is the following.
 
-First, we assume to have given a reference data set with recorded runtimes to reach given quality indicator target values
+Runlength-based target values are a novel way to define the target values based on a reference data set. 
+
+We assume to have given a reference data set with recorded runtimes to reach given quality indicator target values
 :math:`\mathcal{I}^{\rm target} = \{ I^{\rm target}_1, \ldots, I^{\rm target}_{|\mathcal{I}^{\rm target}|} \}`
 where :math:`I^{\rm target}_i` > :math:`I^{\rm target}_j` for all :math:`i<j`,
 as in the fixed-target approach described above. The reference
 data serve as a baseline upon which the runlength-based targets are 
 computed. To simplify wordings we assume that a reference algorithm :math:`\mathcal{A}` as generated this data set. 
 
-Second, we chose a set of increasing reference budgets :math:`B = \{b_1,\ldots, b_{|B|}\}` where :math:`b_i < b_j` for all :math:`i<j`. For each budget :math:`b_i`, we pick the largest target :math:`T_{\rm chosen}^i` that the reference algorithm :math:`\mathcal{A}` did not reach
-within the given budget and that also has not yet been chosen for smaller
-budgets:
+Now we chose a set of increasing reference budgets :math:`B = \{b_1,\ldots, b_{|B|}\}` where :math:`b_i < b_j` for all :math:`i<j`. For each budget :math:`b_i`, we pick the largest (easiest) target that the reference algorithm :math:`\mathcal{A}` did not reach within the given budget and that has not yet been chosen for smaller budgets:
 
 .. math::
   	:nowrap:
 
  	\begin{equation*}
-		T_{\rm chosen}^i = \max_{1\leq j \leq | \mathcal{I}^{\rm target} |}
+		I^{\rm chosen}_i = \max_{1\leq j \leq | \mathcal{I}^{\rm target} |}
 				I^{\rm target}_j \text{ such that }
 				I^{\rm target}_{j} < I(\mathcal{A}, b_i) \text{ and }
-				I^{\rm target}_j < T_{\rm chosen}^{k} \text{ for all } k<i
+				I^{\rm target}_j < I^{\rm chosen}_{k} \text{ for all } k<i
   	\end{equation*}
 
-with :math:`I(\mathcal{A}, t)` being the best function (or indicator) value
-found by algorithm :math:`\mathcal{A}` within the first :math:`t` function
-evaluations of the performed run.
-
+where :math:`I(\mathcal{A}, t)` is the indicator value of the algorithm
+:math:`\mathcal{A}` after :math:`t` function evaluations.
+If such target does not exist, we take the smallest (final) target. 
 	
  .. Dimo: please check whether the notation is okay
 
@@ -361,12 +359,12 @@ evaluations of the performed run.
 
 Note that this runlength-based targets approach is in particular used in COCO
 for the expensive optimization scenario (single-objective). The
-artificial best algorithm of BBOB-2009 is used as reference algorithm and the
+artificial best algorithm of BBOB-2009 is used as reference algorithm with the
 five budgets of :math:`0.5n`, :math:`1.2n`, :math:`3n`, :math:`10n`, and
-:math:`50n` function evaluations are fixed (with :math:`n` being the problem
-dimension).
+:math:`50n` function evaluations, where :math:`n` is the problem
+dimension. :math:`I(\mathcal{A}, t)` is the average runtime (first hitting time) for the respective |DI| target precision. 
 
-Runlength-based targets have the advantage to make the target value setting less dependent of the expertise of a human designer. Only the reference budgets have to be chosen a priori. Runlength-based targets have the disadvantage to depend on the choice of a set of reference algorithms. 
+Runlength-based targets have the advantage to make the target value setting less dependent of the expertise of a human designer. Now, only the reference budgets have to be chosen a priori. Runlength-based targets have the disadvantage to depend on the choice of a reference data set. 
 
 
 Runtime over Problems
@@ -374,8 +372,7 @@ Runtime over Problems
 
 In order to display quantitative measurements, we have seen in the previous
 section that we should start from the collection of runtimes for different
-target values. These target values can be a :math:`f`- or indicator value
-(see [TUS2016]_).
+target values. 
 In the performance assessment setting, a problem is the quintuple
 :math:`p=(n,f_\theta,\theta,I,I^{{\rm target},\theta})` where
 :math:`I^{{\rm target},\theta}` is the target function/indicator value. This means that
@@ -779,13 +776,11 @@ __ http://arxiv.org/abs/1603.08776
 	Journal of Global Optimization, 56(3):1247– 1293, 2013.
 .. [STE1946] S.S. Stevens (1946).
     On the theory of scales of measurement. *Science* 103(2684), pp. 677-680.
-.. [TUS2016] T. Tušar, D. Brockhoff, N. Hansen, A. Auger (2016). 
+.. .. [TUS2016] T. Tušar, D. Brockhoff, N. Hansen, A. Auger (2016). 
   `COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) 
   Test Suite`__, *ArXiv e-prints*, `arXiv:1604.00359`__.
-.. __: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
-.. __: http://arxiv.org/abs/1604.00359
-
-
+.. .. __: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
+.. .. __: http://arxiv.org/abs/1604.00359
 
 
 .. old-bib [Auger:2005a] A Auger and N Hansen. A restart CMA evolution strategy with
