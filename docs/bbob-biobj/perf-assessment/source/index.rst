@@ -78,7 +78,7 @@ In this section, we introduce the definitions of some basic terms and concepts.
 *function instance, problem*
  In the case of the bi-objective performance assessment within COCO_, a problem is a 4-tuple of
  
- * a *parameterized function* :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^2`, mapping the decision variables of a solution to its objective vector
+ * a *parameterized function* :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^2`, mapping the decision variables of a solution :math:`x\in\mathbb{R}^n` to its objective vector :math:`f_\theta(x) = (f_\alpha(x),f_\beta(x))` with :math:`f_\alpha: \mathbb{R}^n \mapsto \mathbb{R}` and :math:`f_\beta: \mathbb{R}^n \mapsto \mathbb{R}` being parameterized (single-objective) functions themselves
  * its concrete parameter value :math:`\theta\in\Theta` determining the so-called
    *function instance* |i|,
  * the *problem dimension* |DIM|, 
@@ -90,17 +90,22 @@ In this section, we introduce the definitions of some basic terms and concepts.
  The number of function evaluations needed to surpass the target value for the first time
  is COCO_'s central performance measure. [HAN2016co]_ In case a single
  quality indicator is used for all problems in a benchmark suite, we can drop the
- quality indicator and refer to a problem as a quadruple :math:`f_\theta,\theta,n,I_{\rm target}`
+ quality indicator and refer to a problem as a quadruple :math:`f_\theta,\theta,n,I_{\rm target}`.
+ Note that typically more than one problem for a *function instance* of
+ :math:`(f_\theta,\theta,n)` is defined by choosing more than one target value.
 
 *Pareto set*, *Pareto front*, and *Pareto dominance*
- For a concrete function instance, i.e., a function :math:`f_\theta=(f_\alpha,f_\beta)` with
+ For a function instance, i.e., a function :math:`f_\theta=(f_\alpha,f_\beta)` with
  given parameter value :math:`\theta` and dimension |DIM|, the Pareto set is the set
  of all (Pareto-optimal) solutions for which no solutions in the search space
  :math:`\R^n` exist that have either an improved :math:`f_\alpha` or an improved
  :math:`f_\beta` value while the other value is at least as good
  (or in other words, a *Pareto-optimal* solution in the Pareto set has no other solution
  that *dominates* it). The image of the Pareto set in the *objective space* is called
- the Pareto front.
+ the Pareto front. We generalize the standard Pareto dominance relation to sets by saying
+ solution set :math:`A=\{a_1,\ldots,a_|A|\}` dominates solution set :math:`B=\{b_1,\ldots,b_|B|\}`
+ if and only if for all :math:`b_i\in B` there is at least one solution :math:`a_j`
+ that dominates it.
  
 *ideal point*
  The ideal point (in objective space) is defined as the vector in objective space that
@@ -110,19 +115,20 @@ In this section, we introduce the definitions of some basic terms and concepts.
  
 *nadir point* 
  The nadir point (in objective space) consists in each objective of
- the worst value obtained by a Pareto-optimal solution. More precisely, if
+ the worst value obtained by any Pareto-optimal solution. More precisely, if
  :math:`\mathcal{PO}` denotes the Pareto set, the nadir point satisfies
  :math:`z_{\rm nadir}  =  \left( \sup_{x \in \mathcal{PO}} f_\alpha(x),
  \sup_{x \in \mathcal{PO}} f_\beta(x)  \right)`.
 
 *archive*
- An external archive or simply an archive is a set of non-dominated solutions.
- With an algorithm run, we can, at each point :math:`t` in time (in terms of
+ An external archive or simply an archive is the set of non-dominated solutions,
+ obtained over an algorithm run. We can, at each point :math:`t` in time (in terms of
  :math:`t` performed function evaluations) associate the set of all
  mutually non-dominating solutions that have been evaluated so far. We will
  typically denote the archive after :math:`t` function evaluations as :math:`A_t`
  and use it to define the performance of the algorithm in terms of a (quality)
- indicator function :math:`A_t \rightarrow \R`.
+ indicator function :math:`A_t \rightarrow \R` that might depend on a problem'satisfies
+ underlying parameterized function and its dimension and instance.
 
  
 Performance Assessment with a Quality Indicator
@@ -132,10 +138,8 @@ For measuring the runtime on a given problem, we consider a quality indicator
 which is to be optimized (minimized). 
 In the single-objective case, the quality indicator is the objective
 function value. 
-In the case of the ``bbob-biobj`` test suite, the quality indicator will be mostly a
-negative hypervolume indicator of the *archive* :math:`A_t` of all non-dominated
-solutions evaluated within the first :math:`t` function evaluations. In principal, other
-quality indicators of the archive can be used as well.
+In the case of the ``bbob-biobj`` test suite, the quality indicator is based on the
+hypervolume indicator of the *archive* :math:`A_t`.
 
 .. |IHV| replace:: :math:`\IHV`
 
@@ -152,7 +156,7 @@ objective space [#]_:
 	
 	\begin{equation*}
 	\IHV =  \left\{ \begin{array}{ll}     
-	- \text{HV}(A_t, [z_{\text{ideal}}, z_{\text{nadir}}]) & \text{if $A_t$ dominates } z_{\text{nadir}}\\
+	- \text{HV}(A_t, [z_{\text{ideal}}, z_{\text{nadir}}]) & \text{if $A_t$ dominates } \{z_{\text{nadir}}\}\\
  	dist(A_t, [z_{\text{ideal}}, z_{\text{nadir}}]) & \text{otherwise} 	
 	\end{array} 	\right.\enspace .
 	\end{equation*}
@@ -188,7 +192,7 @@ is the smallest (normalized) Euclidean distance between a solution in the archiv
    dominates the nadir point (black filled circle), i.e., the shortest
    distance of an archive member to the region of interest (ROI), delimited
    by the nadir point. 
-   Here, it is the forth point from the left that defines
+   Here, it is the fourth point from the left (indicated by the red arrow) that defines
    the smallest distance.
    
 
@@ -199,7 +203,7 @@ is the smallest (normalized) Euclidean distance between a solution in the archiv
    Illustration of Coco's quality indicator (to be minimized) in the
    bi-objective case if the nadir point (black filled circle) is dominated by
    at least one solution in the archive (blue filled circles). The indicator is the 
-   (negative) hypervolume of the archive with the nadir point as reference point. 
+   negative hypervolume of the archive with the nadir point as reference point. 
    
    
 Rationales Behind the Performance Measure
@@ -217,7 +221,7 @@ Rationales Behind the Performance Measure
  Although, in principle, other quality indicators can be used in replacement of the
  hypervolume, the monotonicity of the hypervolume is a strong theoretical argument
  for using it in the performance assessment: the hypervolume indicator value of the
- archive improves iff a new non-dominated solution is generated [ZIT2003]_.
+ archive improves if and only if a new non-dominated solution is generated [ZIT2003]_.
 
 
 Specificities and Properties
@@ -233,12 +237,12 @@ specificities:
   The region of interest (ROI) :math:`[z_{\text{ideal}}, z_{\text{nadir}}]`, 
   defined by the ideal and nadir point, is mapped to :math:`[0, 1]^2`.
 
-* If the nadir point is dominated by a point in the archive, the quality of
-  the algorithm is the negative hypervolume of the archive with respect to
+* If the nadir point is dominated by at least one point in the archive, the quality of
+  the algorithm is the negative hypervolume of the archive using
   the nadir point as hypervolume reference point.
 
 * If the nadir point is not dominated by the archive, an algorithm's quality equals the
-  distance of archive to the ROI.
+  distance of the archive to the ROI.
 
 This implies that:
 
@@ -257,22 +261,22 @@ This implies that:
 Definition of Target Values
 ===========================
 
-For each problem instance, |i|, of the benchmark suite, a set of target values
-is chosen, eventually used to measure runtime to reach each of these targets. 
-The targets are based on a *reference hypervolume indicator value*, |Irefi|,
-which is an approximation of the |IHV| indicator value *of the Pareto set*, 
-and a target precision.
+For each problem instance |i| of the benchmark suite, consisting of a parameterized function,
+its dimension and instance parameter :math:`\theta`, a set of quality indicator
+target values is chosen, eventually used to measure algorithm runtime to reach each of these targets. 
+The absolute target values are based on a target precision :math:`\Delta I and a *reference hypervolume indicator value*, |Irefi|,
+which is an approximation of the |IHV| indicator value *of the Pareto set*.
 
 Target Precision Values
 -----------------------
 
 All target indicator values are computed as a function of |Irefi| in the form
-of |Irefi| :math:`+\,t`, identically for all problems and problem instances. 
-The target precisions |t| are chosen as
+of |Irefi| :math:`+\,\Delta t`, identically for all problems and problem instances. 
+The target precisions |\Delta t| are chosen as
 
 .. math::
 
-  t \in \{ -10^{-4}, -10^{-4.2}, -10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0 \}\enspace.
+  \Delta t \in \{ -10^{-4}, -10^{-4.2}, -10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0 \}\enspace.
 
 Negative target precisions are used because the reference indicator value is
 an approximation which can be surpassed by an optimization algorithm. [#]_
