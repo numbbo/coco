@@ -326,7 +326,8 @@ class GECCOBBOBTestbed(Testbed):
         self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7)) # for pptable and pptables
         self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7)) # used for pptable2
         self.scenario = scenario_fixed
-        
+        self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
+
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
                              getBenchmarksShortInfos(False)), 
@@ -339,6 +340,7 @@ class GECCOBBOBTestbed(Testbed):
             self.short_names = info_dict
         except:
             warnings.warn('benchmark infos not found')
+
 
 class GECCOBiobjBBOBTestbed(Testbed):
     """Testbed used in the GECCO biobjective BBOB workshop 2016.
@@ -367,6 +369,7 @@ class GECCOBiobjBBOBTestbed(Testbed):
         self.pptable_targetsOfInterest = targetValues((1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # possibly changed in config for all tables
         self.pptable2_targetsOfInterest = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5)) # used for pptable2
         self.scenario = scenario_biobjfixed
+        self.best_algorithm_filename = ''
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 
