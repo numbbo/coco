@@ -221,16 +221,15 @@ are (only) two approaches to measure the performance.
 
 **fixed-budget approach**
     We fix a budget of function evaluations,
-    and collect the function values reached. Fixing the search
+    and collect the reached indicator values. Fixing the search
     budget can be pictured as drawing a *vertical* line on the convergence
-    graphs (see Figure :ref:`fig:HorizontalvsVertical` where the line is
-    depicted in red).
+    graphs (red line in Figure :ref:`fig:HorizontalvsVertical`).
 
 **fixed-target approach**
-    We fix a target value and measure the number of function
+    We fix a target indicator value and measure the number of function
     evaluations, the *runtime*, to reach this target. Fixing a target can be
-    pictured as drawing a *horizontal* line in the convergence graphs (Figure
-    :ref:`fig:HorizontalvsVertical` where the line is depicted in blue).
+    pictured as drawing a *horizontal* line in the convergence graphs (blue line in Figure
+    :ref:`fig:HorizontalvsVertical`).
 
 
 .. _fig:HorizontalvsVertical:
@@ -258,57 +257,61 @@ data.
 
  * The fixed-budget approach (vertical cut) does not give *quantitatively
    interpretable*  data:
-   the observation that Algorithm A reaches a function value that is two (or
-   ten, or a hundred) times smaller than the one reached by Algorithm B has in
-   general no interpretable meaning, mainly because there is no *a priori*
-   way to determine *how much* more difficult it is to reach a function value
-   that is two (or ten, or a hundred) times smaller.
-   This, indeed, largely depends on the specific function and on the specific
+   the observation that Algorithm A reaches a function value that is, say, two
+   times smaller than the one reached by Algorithm B has in general no
+   interpretable meaning, mainly because there is no *a priori* way to determine
+   *how much* more difficult it is to reach a function value that is two times
+   smaller.
+   This, indeed, largely depends on the specific function and the specific
    function value reached.
 
  * The fixed-target approach (horizontal cut)
    *measures the time* to
    reach a target function value. The measurement allows conclusions of the
    type: Algorithm A is two (or ten, or a hundred) times faster than Algorithm B
-   in solving this problem (i.e. reaching the given target function value).
+   in solving this problem (i.e. reaching the given target function value). 
+   The choice if the target value determines the difficulty and possibly even
+   characteristic of the problem to be solved. 
 
 Furthermore, for algorithms that are invariant under certain transformations
 of the function value (for example under order-preserving transformations, as
-comparison-based algorithms like DE, ES, PSO [AUG2009Giens]_), fixed-target measures become
+comparison-based algorithms like DE, ES, PSO [AUG2009]_), fixed-target measures become
 invariant under these transformations by transformation of the target values
-while fixed-budget measures require the transformation of all resulting data.
+only, while fixed-budget measures require the transformation of all resulting data.
 
 
 Missing Values
 ---------------
 
-We collect runtimes to reach targets. However not all runs successfully reach a target, see for instance Figure :ref:`fig:HorizontalvsVertical`. In this case, the runtime  is undefined and we collect the maximal number of function evaluations of the corresponding run. This is a lower bound on the (non-observed) runtime to reach the target.
-
-.. Anne: @Niko check.
+We collect runtimes to reach given target values. However not all runs successfully reach each target, see for instance Figure :ref:`fig:HorizontalvsVertical`. In the case where a target is not reached, the runtime is undefined. 
+The overall number of function evaluations of the corresponding run provides an empirical observation for a lower bound on the (non-observed) runtime to reach the given target.
 
 
 Target Values
 --------------
 
+.. |DI| replace:: :math:`\Delta I`
+
 We define for each problem a reference function or indicator value,
 :math:`I^{\rm ref, \theta}`. In the single-objective case this can be
 the optimal function value, i.e. :math:`f^{\mathrm{opt}, \theta} =
 \min_\mathbf{x} f_\theta(\mathbf{x})`, in the multi-objective case this
-is the indicator value of an estimate of the Pareto front. This
+is the indicator value of an approximation of the Pareto front. This
 reference indicator value depends on the specific instance
 :math:`\theta`, and thus the target indicator value also depends on the
-instance. However, the relative target or precision
+instance. Based on this reference value and a set of target precision values |DI| we define for each problem instance a set of target values
 
 .. math::
    :nowrap:
 
    \begin{equation}
-    \Delta I = I^{\rm target,\theta} - I^{\rm ref,\theta}
+    I^{\rm target,\theta} = I^{\rm ref,\theta} + \Delta I \enspace,
    \end{equation}
 
-does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`I^{\rm target,{\theta}_1}, \ldots,I^{\rm target,{\theta}_K}` associated to the same precision. 
+such that for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`I^{\rm target,{\theta}_1}, \ldots,I^{\rm target,{\theta}_K}` are associated to the same precision. 
 
-Depending on the context, we will refer to both the original triple ``(dimension,function,instance)`` and the quintuple ``(dimension,function,instance,quality indicator,target)`` as *problem*. We say, for example, that "algorithm A is solving problem :math:`p=(n,f_\theta,\theta,I,I^{\rm target})` after :math:`t` function evaluations" if the quality indicator function value :math:`I`  during the optimization of :math:`(n,f_\theta,\theta)` reaches a value of :math:`I^{\rm target}` or lower for the first time after :math:`t` function evaluations.
+Depending on the context, when we refer to a problem we include the used quality indicator and a given target value or target precision. 
+We say, for example, that "algorithm A is solving problem :math:`p=(n,f_\theta,\theta,I,I^{\rm target})` after :math:`t` function evaluations" if the quality indicator function value :math:`I`  during the optimization of :math:`(n,f_\theta,\theta)` reaches a value of :math:`I^{\rm target}` or lower for the first time after :math:`t` function evaluations.
 
  
 .. Anne: Dimo, why did you drop the theta-dependency of I^target
@@ -749,7 +752,8 @@ References
 .. [Auger:2005b] A. Auger and N. Hansen. Performance evaluation of an advanced
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1777–1784, 2005.
-.. [AUG2009Giens] A. Auger, N. Hansen, J.M. Perez Zerpa, R. Ros and M. Schoenauer (2009). Empirical comparisons of several derivative free optimization algorithms. In Acte du 9ime colloque national en calcul des structures, Giens.
+.. [AUG2009] A. Auger, N. Hansen, J.M. Perez Zerpa, R. Ros and M. Schoenauer (2009). 
+   Empirical comparisons of several derivative free optimization algorithms. In Acte du 9ime colloque national en calcul des structures, Giens.
 
 .. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
   `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__. 
