@@ -142,8 +142,8 @@ We introduce a few terms and definitions that are used in the rest of the docume
  via a quality indicator function, mapping the set of all solutions evaluated so
  far (or recommended [HAN2016ex]_) to a :math:`p`-dependent real value. 
  In the single-objective noiseless case, this quality indicator simply
- outputs the minimal observed (feasible) function value during the first
- :math:`t` function evaluations. 
+ outputs the best observed (i.e. minimal and feasible) function value 
+ during the first :math:`t` function evaluations. 
  In the multi-objective case, well-known multi-objective
  quality indicators such as the hypervolume indicator can be used to map the
  entire set of already evaluated solutions ("archive") to a real value.
@@ -152,36 +152,11 @@ We introduce a few terms and definitions that are used in the rest of the docume
  
  
  In the performance assessment setting, we associate to a problem :math:`p` and a given quality indicator,
- one or several target values such that a problem is then a quintuple ``(dimension,function,instance,quality indicator,target)``. A target value is thereby a fixed function or quality indicator value at which we extract the runtime of the algorithm, which we assume to be minimized as well [#]_, and which typically depends on the problem instance :math:`\theta`. 
+ one or several target values such that a problem becomes a quintuple ``(dimension, function, instance, quality indicator, target)``. 
+ A target value is thereby a fixed function or quality indicator value at which we measure the runtime of the algorithm. 
+ We define the quality indicator to be minimized as well. 
+ Appropriate quality indicator target values depend on the problem instance :math:`\theta`. 
  
- We know for a problem a reference function or indicator value,
- :math:`I^{\rm ref, \theta}`. In the single-objective case this can be
- the optimal function value, i.e. :math:`f^{\mathrm{opt}, \theta} =
- \min_\mathbf{x} f_\theta(\mathbf{x})`, in the multi-objective case this
- is the indicator value of an estimate of the Pareto front. This
- reference indicator value depends on the specific instance
- :math:`\theta`, and thus the target indicator value also depends on the
- instance. However, the relative target or precision
-
- .. math::
- 	:nowrap:
-
-	\begin{equation}
-	 \Delta I = I^{\rm target,\theta} - I^{\rm ref,\theta}
- 	\end{equation}
-
- does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`I^{\rm target,{\theta}_1}, \ldots,I^{\rm target,{\theta}_K}` associated to the same precision. 
- 
- Depending on the context, we will refer to both the original triple ``(dimension,function,instance)`` and the quintuple ``(dimension,function,instance,quality indicator,target)`` as *problem*. We say, for example, that "algorithm A is solving problem :math:`p=(n,f_\theta,\theta,I,I^{\rm target})` after :math:`t` function evaluations" if the quality indicator function value :math:`I`  during the optimization of :math:`(n,f_\theta,\theta)` reaches a value of :math:`I^{\rm target}` or lower for the first time after :math:`t` function evaluations.
-
- .. [#] Note that we assume without loss of generality minimization of the quality indicator here for historical reasons although the name quality indicator itself suggests maximization.
- 
-.. Anne: Dimo, why did you drop the theta-dependency of I^target
-
-.. Anne: I think that we have an organization problem - this definition of
-  problem,  function becomes now too long and should most likely be in a
-  dedicated section where it could be expanded. 
- 	
 *instance*
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
 
@@ -314,29 +289,53 @@ We collect runtimes to reach targets. However not all runs successfully reach a 
 .. Anne: @Niko check.
 
 
-A Third Approach: Runlength-based Targets
------------------------------------------
-In addition to the fixed-budget and fixed-target approaches, there is an
-intermediate approach, combining the ideas of *measuring runtime* (to get
-meaningful measurements) and *fixing budgets* (of our interest). The basic idea
-is the following.
+Target Values
+--------------
 
-We first fix a reference algorithm :math:`\mathcal{A}` which we run on a
-problem of interest (i.e. on a 4-tuple of parameterized function, dimension,
-instance, and quality indicator) and for which we record runtimes to reach
-given quality indicator target values
+We define for each problem a reference function or indicator value,
+:math:`I^{\rm ref, \theta}`. In the single-objective case this can be
+the optimal function value, i.e. :math:`f^{\mathrm{opt}, \theta} =
+\min_\mathbf{x} f_\theta(\mathbf{x})`, in the multi-objective case this
+is the indicator value of an estimate of the Pareto front. This
+reference indicator value depends on the specific instance
+:math:`\theta`, and thus the target indicator value also depends on the
+instance. However, the relative target or precision
+
+.. math::
+   :nowrap:
+
+   \begin{equation}
+    \Delta I = I^{\rm target,\theta} - I^{\rm ref,\theta}
+   \end{equation}
+
+does not depend on the instance :math:`\theta` such that we can unambiguously consider for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`I^{\rm target,{\theta}_1}, \ldots,I^{\rm target,{\theta}_K}` associated to the same precision. 
+
+Depending on the context, we will refer to both the original triple ``(dimension,function,instance)`` and the quintuple ``(dimension,function,instance,quality indicator,target)`` as *problem*. We say, for example, that "algorithm A is solving problem :math:`p=(n,f_\theta,\theta,I,I^{\rm target})` after :math:`t` function evaluations" if the quality indicator function value :math:`I`  during the optimization of :math:`(n,f_\theta,\theta)` reaches a value of :math:`I^{\rm target}` or lower for the first time after :math:`t` function evaluations.
+
+ 
+.. Anne: Dimo, why did you drop the theta-dependency of I^target
+
+.. Anne: I think that we have an organization problem - this definition of
+  problem,  function becomes now too long and should most likely be in a
+  dedicated section where it could be expanded. 
+
+
+Runlength-based Target Values
+------------------------------
+.. In addition to the fixed-budget and fixed-target approaches, there is an
+  intermediate approach, combining the ideas of *measuring runtime* (to get
+  meaningful measurements) and *fixing budgets* (of our interest). The 
+  basic idea
+  is the following.
+
+First, we assume to have given a reference data set with recorded runtimes to reach given quality indicator target values
 :math:`\mathcal{I}^{\rm target} = \{ I^{\rm target}_1, \ldots, I^{\rm target}_{|\mathcal{I}^{\rm target}|} \}`
-(with :math:`I^{\rm target}_i` > :math:`I^{\rm target}_j` for all :math:`i<j`)
-as in the fixed-target approach described above. The chosen reference
-algorithm will serve as a baseline upon which the runlength-based targets are 
-computed in the second step.
+where :math:`I^{\rm target}_i` > :math:`I^{\rm target}_j` for all :math:`i<j`,
+as in the fixed-target approach described above. The reference
+data serve as a baseline upon which the runlength-based targets are 
+computed. To simplify wordings we assume that a reference algorithm :math:`\mathcal{A}` as generated this data set. 
 
-Second, we fix a set of reference budgets :math:`B = \{b_1,\ldots, b_{|B|}\}`
-(in number of function evaluations) that we are interested in for the given
-problem and that are increasing (:math:`b_i < b_j` for all :math:`i<j`). We
-then pick, for each given budget :math:`b_i` (:math:`1\leq i\leq |B|`), the
-largest target :math:`T_{\rm chosen}^i` that the reference algorithm
-:math:`\mathcal{A}` did not reach
+Second, we chose a set of increasing reference budgets :math:`B = \{b_1,\ldots, b_{|B|}\}` where :math:`b_i < b_j` for all :math:`i<j`. For each budget :math:`b_i`, we pick the largest target :math:`T_{\rm chosen}^i` that the reference algorithm :math:`\mathcal{A}` did not reach
 within the given budget and that also has not yet been chosen for smaller
 budgets:
 
@@ -360,17 +359,17 @@ evaluations of the performed run.
  .. Dimo: TODO: make notation consistent wrt f_target
 
 Note that this runlength-based targets approach is in particular used in COCO
-for the scenario of (single-objective) expensive optimization in which the
+for the expensive optimization scenario (single-objective). The
 artificial best algorithm of BBOB-2009 is used as reference algorithm and the
 five budgets of :math:`0.5n`, :math:`1.2n`, :math:`3n`, :math:`10n`, and
 :math:`50n` function evaluations are fixed (with :math:`n` being the problem
 dimension).
 
+Runlength-based targets have the advantage to make the target value setting less dependent of the expertise of a human designer. Only the reference budgets have to be chosen a priori. Runlength-based targets have the disadvantage to depend on the choice of a set of reference algorithms. 
 
 
 Runtime over Problems
 =========================
-
 
 In order to display quantitative measurements, we have seen in the previous
 section that we should start from the collection of runtimes for different
