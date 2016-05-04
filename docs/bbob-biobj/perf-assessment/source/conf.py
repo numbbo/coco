@@ -23,6 +23,17 @@ import shlex
 
 # -- General configuration ------------------------------------------------
 
+# WHEN CHANGING THIS CHANGE ALSO the abstract in index.rst accordingly
+abstract = """(this abstract might be outdated, see index.rst)
+  This document details the rationales behind assessing the performance of
+numerical black-box optimizers on multi-objective problems within the COCO_
+platform and in particular on the biobjective test suite {\ttfamily bbob-biobj}. 
+The evaluation is based on a hypervolume of all non-dominated solutions in the
+archive of candidate solutions and measures the runtime until the
+hypervolume value succeeds prescribed target values. 
+"""
+
+
 # If your documentation needs a minimal Sphinx version, state it here.
 #needs_sphinx = '1.0'
 
