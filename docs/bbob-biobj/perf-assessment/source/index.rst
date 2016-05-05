@@ -401,7 +401,7 @@ setting and for providing us with his extensive experimental data. We also thank
 Tobias Glasmachers, Oswin Krause, and Ilya Loshchilov for their bug reports, feature
 requests, code testing, and many valuable discussions. Special thanks go
 to Olaf Mersmann for the inital rewriting of the COCO platform without which
-the bi-objective extension of COCO would have not happened.
+the bi-objective extension of COCO would not have happened.
    
 
 .. ############################# References ##################################
