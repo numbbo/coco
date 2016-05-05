@@ -206,7 +206,7 @@ indicator target value satisfy these requirements.
 Runtime is well-interpretable and meaningful with respect to the
 real-world as it is proportional to the time needed to solve a problem,
 but avoids the shortcomings of CPU measurements that depend on
-parameters like programming langage, coding style, machine, etc. that are
+parameters like programming language, coding style, machine, etc. that are
 difficult to control.
 
 
@@ -339,9 +339,9 @@ We assume to have given a reference data set with recorded runtimes to reach giv
 where :math:`I^{\rm target}_i` > :math:`I^{\rm target}_j` for all :math:`i<j`,
 as in the fixed-target approach described above. The reference
 data serve as a baseline upon which the runlength-based targets are 
-computed. To simplify wordings we assume that a reference algorithm :math:`\mathcal{A}` as generated this data set. 
+computed. To simplify wordings we assume that a reference algorithm :math:`\mathcal{A}` has generated this data set. 
 
-Now we chose a set of increasing reference budgets :math:`B = \{b_1,\ldots, b_{|B|}\}` where :math:`b_i < b_j` for all :math:`i<j`. For each budget :math:`b_i`, we pick the largest (easiest) target that the reference algorithm :math:`\mathcal{A}` did not reach within the given budget and that has not yet been chosen for smaller budgets:
+Now we choose a set of increasing reference budgets :math:`B = \{b_1,\ldots, b_{|B|}\}` where :math:`b_i < b_j` for all :math:`i<j`. For each budget :math:`b_i`, we pick the largest (easiest) target that the reference algorithm :math:`\mathcal{A}` did not reach within the given budget and that has not yet been chosen for smaller budgets:
 
 .. math::
   	:nowrap:
@@ -368,7 +368,7 @@ The artificial best algorithm of BBOB-2009 is used as reference algorithm with t
 :math:`50n` function evaluations, where :math:`n` is the problem
 dimension. :math:`I(\mathcal{A}, t)` is the average runtime, |aRT| of :math:`\mathcal{A}` for the respective |DI| target precision. 
 
-Runlength-based targets have the advantage to make the target value setting less dependent of the expertise of a human designer, because only the reference budgets have to be chosen a priori. Reference budgets, as runtimes, are intuitively meaningful quantities, on which it is comparatively simple to decide upon. Runlength-based targets have the disadvantage to depend on the choice of a reference data set. 
+Runlength-based targets have the advantage to make the target value setting less dependent on the expertise of a human designer, because only the reference budgets have to be chosen a priori. Reference budgets, as runtimes, are intuitively meaningful quantities, on which it is comparatively simple to decide upon. Runlength-based targets have the disadvantage to depend on the choice of a reference data set. 
 
 
 Runtime Computations
@@ -382,7 +382,7 @@ In the performance assessment setting, a problem instance is the quintuple
 :math:`I^{{\rm target},\theta}` is the target indicator value. For each benchmarked algorithm a single runtime is measured on each problem. 
 
 Formally, the runtime on problem :math:`p` is denoted as :math:`\mathrm{RT}(p)`. 
-It is a random variable that counts the number of function evaluations needed to reach a quality indicator value of at least :math:`I^{{\rm target},\theta}`  for the first time. A run or trial that reached the target quality indicator value |ftarget| is called *successful*. [#]_
+It is a random variable that counts the number of function evaluations needed to reach a quality indicator value of at most :math:`I^{{\rm target},\theta}` for the first time. A run or trial that reached the target quality indicator value |ftarget| is called *successful*. [#]_
 
 We also have to deal with *unsuccessful trials*, that is a run that did not
 reach a target. The overall number of function evaluations in an unsuccessful trial is a random variable denoted by :math:`\mathrm{RT}^{\rm us}(p)` and the same for all failed targets of this trial. 
