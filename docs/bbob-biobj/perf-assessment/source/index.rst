@@ -182,7 +182,7 @@ nadir point :math:`(z_{\text{nadir}, \alpha}, z_{\text{nadir},\beta})` as refere
     :nowrap:
 	
     \begin{equation*}
-	dist(A_t, [z_{\text{ideal}}, z_{\text{nadir}}]) = \inf_{a\in A_t, z\in [z_{\text{ideal}}, z_{\text{nadir}}]} \left\|\frac{f(a)-z_{\text{ideal}}}{z_{\text{nadir}}-z_{\text{ideal}}} - \frac{z-z_{\text{ideal}}}{z_{\text{nadir}}-z_{\text{ideal}}}\right\|
+	dist(A_t, [z_{\text{ideal}}, z_{\text{nadir}}]) = \inf_{a\in A_t, z\in [z_{\text{ideal}}, z_{\text{nadir}}]} \left\|\frac{f(a)-z}{z_{\text{nadir}}-z_{\text{ideal}}}\right\|
 	\end{equation*}
 	
 is the smallest (normalized) Euclidean distance between a solution in the archive and the region of interest, see also the figures below for an illustration.

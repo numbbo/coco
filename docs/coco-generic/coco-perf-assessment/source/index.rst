@@ -28,6 +28,8 @@ COCO: Performance Assessment
 .. |function| replace:: :math:`\mathrm{function}`
 .. |instance| replace:: :math:`\mathrm{instance}`
 .. |R| replace:: :math:`\mathbb{R}`
+.. |i| replace:: :math:`i`
+.. |thetai| replace:: :math:`\theta_i`
 .. |ftheta| replace::  :math:`f_{\theta}`
 
 
@@ -125,10 +127,12 @@ We introduce a few terms and definitions that are used in the rest of the docume
  
  More precisely, we consider a parametrized function  :math:`f_\theta:
  \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO_
- problem corresponds to :math:`p=(n,f_\theta,\theta)` where :math:`n \in
- \mathbb{N}` is the dimension of the search space, and :math:`\theta` is the set
- of parameters associated to the choice of the ``instance``. 
- The separation of dimension and instance parameters is of entirely semantic nature. 
+ problem corresponds to :math:`p=(n,f_\theta,\theta_i)` 
+ where :math:`n \in \mathbb{N}` is the dimension of the search space, and
+ :math:`\theta_i` is the set of parameters associated to the
+ ``instance`` |i|. 
+ The separation of dimension and instance parameters is of entirely semantic
+ nature. 
 
  .. Given a dimension
 
@@ -137,16 +141,10 @@ We introduce a few terms and definitions that are used in the rest of the docume
    problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and
    :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
  
- We define the performance of an optimization algorithm at time :math:`t`,
- which aims at optimizing a problem :math:`p=(n,f_\theta,\theta)`,
- via a quality indicator function, mapping the set of all solutions evaluated so
- far (or recommended [HAN2016ex]_) to a :math:`p`-dependent real value. 
- In the single-objective noiseless case, this quality indicator simply
- outputs the best observed (i.e. minimal and feasible) function value 
- during the first :math:`t` function evaluations. 
- In the multi-objective case, well-known multi-objective
- quality indicators such as the hypervolume indicator can be used to map the
- entire set of already evaluated solutions ("archive") to a real value.
+ At each time step :math:`t` of an algorithm which optimizes a problem instance
+ :math:`p=(n,f_\theta,\theta_i)`, we define the  performance via a quality
+ indicator function, mapping the set of all solutions evaluated so far (or
+ recommended [HAN2016ex]_) to a :math:`p`-dependent real value. [#]_
  
  .. Anne: I took out the theta-bar - did not look too fine to me - so I felt that I needed to add theta_1 and theta_2 as two different instances @Niko, @Tea please check and improve if possible (I am not particularly happy with the new version).
  
@@ -180,6 +178,12 @@ We introduce a few terms and definitions that are used in the rest of the docume
   conducted on a given problem until a given quality indicator target value is reached.
   Runtime is our central performance measure.
 
+.. [#] In the single-objective noiseless case, this quality indicator simply
+   outputs the best observed (i.e. minimal and feasible) function value during
+   the first :math:`t` evaluations. In the multi-objective case, well-known
+   multi-objective quality indicators such as the hypervolume indicator can be
+   used to map the entire set of already evaluated solutions ("archive") to a
+   real value.
 
 On Performance Measures
 =======================
@@ -328,7 +332,7 @@ Runlength-based Target Values
   basic idea
   is the following.
 
-Runlength-based target values are a novel way to define the target values based on a reference data set. 
+Runlength-based target values are a novel way to define the target values based on a reference data set. Like with *performance profiles* [MOR2009]_, the results can be interpreted relative to a best algorithm. Unlike with performance profiles, the results *are* data profiles and can be interpreted as absolute runtimes, reflecting the true difficulty of the respective problem for the given algorithm. 
 
 We assume to have given a reference data set with recorded runtimes to reach given quality indicator target values
 :math:`\mathcal{I}^{\rm target} = \{ I^{\rm target}_1, \ldots, I^{\rm target}_{|\mathcal{I}^{\rm target}|} \}`
@@ -367,8 +371,8 @@ dimension. :math:`I(\mathcal{A}, t)` is the average runtime, |aRT| of :math:`\ma
 Runlength-based targets have the advantage to make the target value setting less dependent of the expertise of a human designer, because only the reference budgets have to be chosen a priori. Reference budgets, as runtimes, are intuitively meaningful quantities, on which it is comparatively simple to decide upon. Runlength-based targets have the disadvantage to depend on the choice of a reference data set. 
 
 
-Runtime on a Problem
-======================
+Runtime Computations
+=====================
 
 In order to display quantitative measurements, we have seen in the previous
 section that we should start from the collection of runtimes for different
@@ -668,7 +672,7 @@ algorithms can be displayed on the same graph as depicted in Figure
 
 
 .. Note:: The ECDF graphs are also known under the name data profile
-    (see [More:2009]_). However we aggregate here over several targets for a same function while the data profile are standardly used displaying results for a single fixed target [Rios:2012]_.
+    (see [MOR2009]_). However we aggregate here over several targets for a same function while the data profile are standardly used displaying results for a single fixed target [Rios:2012]_.
 
     Also, here we advocate **not to aggregate over dimension** as the
     dimension is typically an input parameter to the algorithm that can
@@ -749,7 +753,7 @@ __ http://arxiv.org/abs/1603.08776
    algorithms—pitfalls and remedies. In *Proceedings of the Fourteenth
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
    pages 238–245, 1998.
-.. [More:2009] Jorge J. Moré and Stefan M. Wild. Benchmarking
+.. [MOR2009] Jorge J. Moré and Stefan M. Wild. Benchmarking
 	Derivative-Free Optimization Algorithms, SIAM J. Optim., 20(1), 172–191, 2009.
 .. [Price:1997] K. Price. Differential evolution vs. the functions of
    the second ICEO. In Proceedings of the IEEE International Congress on
