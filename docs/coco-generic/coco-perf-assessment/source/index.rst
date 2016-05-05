@@ -352,66 +352,84 @@ Now we chose a set of increasing reference budgets :math:`B = \{b_1,\ldots, b_{|
 where :math:`I(\mathcal{A}, t)` is the indicator value of the algorithm
 :math:`\mathcal{A}` after :math:`t` function evaluations.
 If such target does not exist, we take the smallest (final) target. 
-	
+
+Like this, an algorithm that reaches :math:`I^{\rm chosen}_i` within at most :math:`b_i` evaluations is better than the reference algorithm on this problem. 
+
  .. Dimo: please check whether the notation is okay
 
  .. Dimo: TODO: make notation consistent wrt f_target
 
-Note that this runlength-based targets approach is in particular used in COCO
-for the expensive optimization scenario (single-objective). The
-artificial best algorithm of BBOB-2009 is used as reference algorithm with the
-five budgets of :math:`0.5n`, :math:`1.2n`, :math:`3n`, :math:`10n`, and
+Runlength-based targets are used in COCO_ for the single-objective expensive optimization scenario. 
+The artificial best algorithm of BBOB-2009 is used as reference algorithm with the five budgets of :math:`0.5n`, :math:`1.2n`, :math:`3n`, :math:`10n`, and
 :math:`50n` function evaluations, where :math:`n` is the problem
-dimension. :math:`I(\mathcal{A}, t)` is the average runtime (first hitting time) for the respective |DI| target precision. 
+dimension. :math:`I(\mathcal{A}, t)` is the average runtime, |aRT| of :math:`\mathcal{A}` for the respective |DI| target precision. 
 
-Runlength-based targets have the advantage to make the target value setting less dependent of the expertise of a human designer. Now, only the reference budgets have to be chosen a priori. Runlength-based targets have the disadvantage to depend on the choice of a reference data set. 
+Runlength-based targets have the advantage to make the target value setting less dependent of the expertise of a human designer, because only the reference budgets have to be chosen a priori. Reference budgets, as runtimes, are intuitively meaningful quantities, on which it is comparatively simple to decide upon. Runlength-based targets have the disadvantage to depend on the choice of a reference data set. 
 
 
-Runtime over Problems
-=========================
+Runtime on a Problem
+======================
 
 In order to display quantitative measurements, we have seen in the previous
 section that we should start from the collection of runtimes for different
 target values. 
-In the performance assessment setting, a problem is the quintuple
+In the performance assessment setting, a problem instance is the quintuple
 :math:`p=(n,f_\theta,\theta,I,I^{{\rm target},\theta})` where
-:math:`I^{{\rm target},\theta}` is the target function/indicator value. This means that
-**we collect runtimes of problems**.
+:math:`I^{{\rm target},\theta}` is the target indicator value. For each benchmarked algorithm a single runtime is measured on each problem. 
 
-Formally, the runtime of a problem :math:`p` is denoted as
-:math:`\mathrm{RT}(p)`. It is a random
-variable that counts the number of function evaluations needed to reach a
-quality indicator value lower or equal than :math:`I^{{\rm target},\theta}`  for the
-first time. A run or trial that reached a target function value |ftarget| is
-called *successful*.
+Formally, the runtime on problem :math:`p` is denoted as :math:`\mathrm{RT}(p)`. 
+It is a random variable that counts the number of function evaluations needed to reach a quality indicator value of at least :math:`I^{{\rm target},\theta}`  for the first time. A run or trial that reached the target quality indicator value |ftarget| is called *successful*. [#]_
 
-We also have to **deal with unsuccessful trials**, that is a run that did not
-reach a target. We then record the number of function evaluations till the
-algorithm is stopped. We denote the respective random variable
-:math:`\mathrm{RT}^{\rm us}(p)`.
+We also have to deal with *unsuccessful trials*, that is a run that did not
+reach a target. The overall number of function evaluations in an unsuccessful trial is a random variable denoted by :math:`\mathrm{RT}^{\rm us}(p)` and the same for all failed targets of this trial. 
 
 In order to come up with a meaningful way to compare algorithms having
-different probability of success (that is different probability to reach a
-target), we consider the conceptual **restart algorithm**: We assume that an
-algorithm, say called A, has a strictly positive probability |ps| to
-successfully solve a problem (that is to reach the associated target). The
-restart-A algorithm consists in restarting A till the problem is solved. The
-runtime of the restart-A algorithm to solve problem :math:`p` equals
+different probability of success, we consider the conceptual **restart algorithm**. Assuming
+an algorithm has a strictly positive probability |ps| to solve a problem :math:`p`, the repeatedly restarted algorithm solves the problem with probability one and runtime
 
 .. math::
-	:nowrap:
+    :nowrap:
 
-	\begin{equation*}
-	\mathbf{RT}(p) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(p) + \mathrm{RT}^{\rm s}(p)
-	\end{equation*}
+    \begin{equation*}
+    \mathbf{RT}(n,f_\theta,\Delta I) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
+    \end{equation*}
 
 where :math:`J` is a random variable that models the number of unsuccessful
-runs till a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random
+runs until a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random
 variables corresponding to the runtime of unsuccessful trials and
 :math:`\mathrm{RT}^{\rm s}` is a random variable for the runtime of a
 successful trial.
 
-Remark that if the probability of success is one, the restart algorithm and
+Generally, the above equation expresses the runtime from repeated runs on the same problem instance (while the instance :math:`\theta_i` is not given explicitly). For the performance evaluation in the COCO_ framework, we apply the equation to runs on different instances :math:`\theta_i`, however instances from the same function, with the same dimension and target precision. 
+
+.. [#] The notion of success is directly linked to a target value. However, a run can be successful with respect to some target values and unsuccessful with respect to others. On the other hand, success often refers to the final, most difficult, smallest target value, which implies success for all other targets. 
+
+Runs on Different Instances Are Interpreted as Independent Repetitions
+-----------------------------------------------------------------------
+The performance assessment in COCO_ heavily relies on the conceptual
+restart algorithm. However, we collect at most one single runtime per problem while more data points are needed to display significant data. 
+
+In order to measure the performance on a given function in a given dimension and
+for a given target precision, we interpret different runs performed on
+different instances :math:`\theta_1,\ldots,\theta_K` of the same function
+:math:`f_\theta` as repetitions, that is, as if they were performed on the same
+problem instance. [#]_
+
+Runtimes collected for the different instances
+:math:`\theta_1,\ldots,\theta_K` of the same parametrized function
+:math:`f_\theta` and with respective targets associated to the same
+target precision :math:`\Delta I` (see above) are thus assumed
+independent and identically distributed. 
+
+We hence have a collection of runtimes (for a given parametrized function
+and a given relative target) whose size corresponds to the number of
+instances of a parametrized function where the algorithm was run
+(typically between 10 and 15). 
+
+
+The runs in the equation 
+
+If the probability of success is one, the restart algorithm and
 the original   algorithm coincide.
 
 .. Note:: Considering the runtime of the restart algorithm allows to compare
@@ -420,52 +438,11 @@ the original   algorithm coincide.
 	* an algorithm converges often but relatively slowly
 	* an algorithm converges less often, but whenever it converges, it is with a fast convergence rate.
 
-Runs on Different Instances Interpreted as Independent Repetitions
-------------------------------------------------------------------
-The performance assessment in COCO heavily relies on the conceptual
-restart algorithm. However, we collect only one single sample of
-(successful or unsuccessful) runtime per problem while more are needed
-to be able to display significant data. This is where the idea of
-instances comes into play: We interpret different runs performed on
-different instances :math:`\theta_1,\ldots,\theta_K` of the same
-parametrized function :math:`f_\theta` as repetitions, that is, as if
-they were performed on the same function. [#]_
-
-.. [#] This assumes that instances of the same parametrized function are similar
-      to each others or that there is  not too much discrepancy in the difficulty
-      of the problem for different instances.
-
-Runtimes collected for the different instances
-:math:`\theta_1,\ldots,\theta_K` of the same parametrized function
-:math:`f_\theta` and with respective targets associated to the same
-relative target :math:`\Delta I` (see above) are thus assumed
-independent and identically distributed. We denote the random variable
-modeling those runtimes :math:`\mathrm{RT}(n,f_\theta,\Delta I)`. We
-hence have a collection of runtimes (for a given parametrized function
-and a given relative target) whose size corresponds to the number of
-instances of a parametrized function where the algorithm was run
-(typically between 10 and 15). Given that the specific instance does not
-matter, we write in the end the runtime of a restart algorithm of a
+we write in the end the runtime of a restart algorithm of a
 parametrized family of function in order to reach a relative target
 :math:`\Delta I` as
 
 
-.. math::
-    :nowrap:
-    :label: RTrestart  
-
-    \begin{equation*}
-    \mathbf{RT}(n,f_\theta,\Delta I) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
-    \end{equation*}
-
-.. |eq:RTrestart| replace:: :math:`\eqref{eq:RTrestart}`
-
-:eq:`RTrestart` 
-where as above :math:`J` is a random variable modeling the number of
-trials needed before to observe a success, :math:`\mathrm{RT}^{\rm
-us}_j` are random variables modeling the number of function evaluations
-of unsuccessful trials and :math:`\mathrm{RT}^{\rm s}` the one for
-successful trials.
 
 As we will see in Section :ref:`sec:aRT` and Section :ref:`sec:ECDF`,
 our performance display relies on the runtime of the restart algorithm,
@@ -473,14 +450,17 @@ either considering the average runtime (Section :ref:`sec:aRT`) or the
 distribution by displaying empirical cumulative distribution functions
 (Section :ref:`sec:ECDF`).
 
+.. [#] This assumes that instances of the same parametrized function are similar
+      to each others or that there is  not too much discrepancy in the difficulty
+      of the problem for different instances.
+
 
 
 Simulated Run-lengths of Restart Algorithms
 -------------------------------------------
 
-The runtime of the conceptual restart algorithm given in 
-|eq:RTrestart| is the basis for displaying performance within COCO. We
-can simulate some (approximate) samples of the runtime of the restart
+The runtime of the conceptual restart algorithm given above is the basis for displaying performance within COCO. 
+We can simulate some (approximate) samples of the runtime of the restart
 algorithm by constructing so-called simulated run-lengths from the
 available empirical data.
 
@@ -743,8 +723,11 @@ This work was supported by the grant ANR-12-MONU-0009 (NumBBO)
 of the French National Research Agency.
 
 
-References
-==========
+.. ############################# References ##################################
+.. raw:: html
+    
+    <H2>References</H2>
+
 
 .. [Auger:2005b] A. Auger and N. Hansen. Performance evaluation of an advanced
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
