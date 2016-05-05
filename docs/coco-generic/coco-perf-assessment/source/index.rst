@@ -723,8 +723,11 @@ This work was supported by the grant ANR-12-MONU-0009 (NumBBO)
 of the French National Research Agency.
 
 
-References
-==========
+.. ############################# References ##################################
+.. raw:: html
+    
+    <H2>References</H2>
+
 
 .. [Auger:2005b] A. Auger and N. Hansen. Performance evaluation of an advanced
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
