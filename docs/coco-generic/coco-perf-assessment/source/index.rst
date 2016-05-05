@@ -56,7 +56,7 @@ We present an any-time performance assessment for benchmarking numerical
 optimization algorithms in a black-box scenario, applied within the COCO_ benchmarking platform. 
 The performance assessment is based on *runtimes* measured in number of objective function evaluations to reach one or several target quality indicator values.
 We argue that runtime is the only available measure with a generic, meaningful, and quantitative interpretation.
-We discuss the choice of the targets and the aggregation of results by using averages, empirical distribution functions, and simulated restarts. 
+We discuss the choice of the target values, runlength-based targets, and the aggregation of results by using simulated restarts, averages, and empirical distribution functions. 
 
 .. raw:: latex
 
@@ -378,26 +378,27 @@ dimension. :math:`I(\mathcal{A}, t)` is the average runtime, |aRT| of :math:`\ma
 Runlength-based targets have the advantage to make the target value setting less dependent on the expertise of a human designer, because only the reference budgets have to be chosen a priori. Reference budgets, as runtimes, are intuitively meaningful quantities, on which it is comparatively simple to decide upon. Runlength-based targets have the disadvantage to depend on the choice of a reference data set. 
 
 
-Runtime Computations
-=====================
+Single Runtime Computation
+===========================
 
 .. In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtimes for different target values. 
 
 In the performance assessment context, a problem instance is the quintuple
 :math:`p=(n,f_\theta,\theta_i,I,I^{{\rm target},\theta_i})` containing dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value. 
-For each benchmarked algorithm a single runtime is measured on each problem. [#]_
+For each benchmarked algorithm a single runtime is measured on each problem.  From a single run of the algorithm on a given problem instance
+:math:`p=(n,f_\theta,\theta_i)`, we can measure a runtime for each available
+target value, or equivalently, each available target precision 
+|DI|. 
 
-.. [#] From a single run of the algorithm on a given problem instance triple :math:`p=(n,f_\theta,\theta_i)`, we can measure as many runtimes as different target values are defined. 
 
-Formally, the runtime on problem :math:`p` is denoted as :math:`\mathrm{RT}(p)`. 
-It is a random variable that counts the number of function evaluations needed to reach a quality indicator value of at most :math:`I^{{\rm target},\theta}` for the first time. A run or trial that reached the target quality indicator value |ftarget| is called *successful*. [#]_
+.. Formally, the runtime on problem :math:`p` is denoted as :math:`\mathrm{RT}(p)`. 
 
-We also have to deal with *unsuccessful trials*, that is a run that did not
-reach a target. The overall number of function evaluations in an unsuccessful trial is a random variable denoted by :math:`\mathrm{RT}^{\rm us}(p)` and the same for all failed targets of this trial. 
+Formally, the runtime :math:`\mathrm{RT}(p)` is a random variable that represents the number of function evaluations needed to reach the quality indicator target value for the first time. 
+A run or trial that reached the target value is called *successful*. [#]_
+For *unsuccessful trials*, the runtime is not defined, but the overall number of function evaluations in the given trial is a random variable denoted by :math:`\mathrm{RT}^{\rm us}(p)`. For a single run, the value of :math:`\mathrm{RT}^{\rm us}(p)` is the same for all failed targets. 
 
-In order to come up with a meaningful way to compare algorithms having
-different probability of success, we consider the conceptual **restart algorithm**. Assuming
-an algorithm has a strictly positive probability |ps| to solve a problem :math:`p`, the repeatedly restarted algorithm solves the problem with probability one and runtime
+To be able to compare algorithms with a wide range of different success probabilities, we consider the conceptual **restart algorithm**. Assuming
+an algorithm has a strictly positive probability |ps| to solve a problem :math:`p`, the repeatedly restarted algorithm solves the problem with probability one and with runtime
 
 .. math::
     :nowrap:
@@ -410,11 +411,12 @@ where :math:`J` is a random variable that models the number of unsuccessful
 runs until a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random
 variables corresponding to the runtime of unsuccessful trials and
 :math:`\mathrm{RT}^{\rm s}` is a random variable for the runtime of a
-successful trial.
+successful trial [AUG2005].
 
 Generally, the above equation expresses the runtime from repeated runs on the same problem instance (while the instance :math:`\theta_i` is not given explicitly). For the performance evaluation in the COCO_ framework, we apply the equation to runs on different instances :math:`\theta_i`, however instances from the same function, with the same dimension and target precision. 
 
-.. [#] The notion of success is directly linked to a target value. However, a run can be successful with respect to some target values and unsuccessful with respect to others. On the other hand, success often refers to the final, most difficult, smallest target value, which implies success for all other targets. 
+.. [#] The notion of success is directly linked to a target value. A run can be successful with respect to some target values (some problems) and unsuccessful with respect to others. Success also often refers to the final, most difficult, smallest target value, which implies success for all other targets. 
+
 
 Runs on Different Instances Are Interpreted as Independent Repetitions
 -----------------------------------------------------------------------
@@ -514,7 +516,7 @@ Average Runtime
 =====================
 
 The average runtime (|aRT|) (introduced in [Price:1997]_ as ENES and
-analyzed in [Auger:2005b]_ as success performance and previously called
+analyzed in [AUG2005]_ as success performance and previously called
 ERT in [HAN2009]_) is an estimate of the expected runtime of the restart
 algorithm given in Equation :eq:`RTrestart` that is used within the COCO
 framework. More precisely, the expected runtime of the restart algorithm
@@ -534,7 +536,7 @@ where |ps| is the probability of success of the algorithm (to reach the
 underlying precision) and :math:`\mathrm{RT}^s` denotes the random
 variable modeling the runtime of successful runs and
 :math:`\mathrm{RT}^{\rm us}` the runtime of unsuccessful runs (see
-[Auger:2005b]_). Given a finite number of realizations of the runtime of
+[AUG2005]_). Given a finite number of realizations of the runtime of
 an algorithm (run on a parametrized family of functions to reach a
 certain precision) that comprise at least one successful run, say
 :math:`\{\mathrm{RT}^{\rm us}_i, \mathrm{RT}^{\rm s}_j \}`, we can
@@ -741,7 +743,7 @@ of the French National Research Agency.
     <H2>References</H2>
 
 
-.. [Auger:2005b] A. Auger and N. Hansen. Performance evaluation of an advanced
+.. [AUG2005] A. Auger and N. Hansen. Performance evaluation of an advanced
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1777–1784, 2005.
 .. [AUG2009] A. Auger, N. Hansen, J.M. Perez Zerpa, R. Ros and M. Schoenauer (2009). 
