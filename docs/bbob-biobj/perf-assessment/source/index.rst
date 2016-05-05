@@ -394,6 +394,14 @@ Acknowledgements
 ================
 This work was supported by the grant ANR-12-MONU-0009 (NumBBO) 
 of the French National Research Agency.
+
+The authors would like to thank Thanh-Do Tran for his
+contributions and assistance with the preliminary code of the bi-objective 
+setting and for providing us with his extensive experimental data. We also thank
+Tobias Glasmachers, Oswin Krause, and Ilya Loshchilov for their bug reports, feature
+requests, code testing, and many valuable discussions. Special thanks go
+to Olaf Mersmann for the inital rewriting of the COCO platform without which
+the bi-objective extension of COCO would have not happened.
    
 
 .. ############################# References ##################################
