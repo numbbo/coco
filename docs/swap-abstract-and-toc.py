@@ -4,8 +4,9 @@ calls ``pdflatex`` 4 times.
 
 The file to work upon is the first input argument. 
 
-Details: First, all ``\\tableofcontents`` are incommented, second, the command 
-is written directly behind ``\end{abstract}``. 
+Details: First, all ``\\tableofcontents`` are incommented, second, a 
+``\\tableofcontents`` command is written directly behind ``\end{abstract}``, 
+third, a space before each ``\\footnote`` command is removed. 
 
 """
 
@@ -38,7 +39,18 @@ def git_revision():
     nb_commits = check_output('git rev-list --count --first-parent HEAD'.split())
     last_commit_id = check_output('git describe --always'.split())
     return '-'.join(['rev', nb_commits.strip(), last_commit_id.strip()])
-    
+
+def replace(old, new, file):
+    """replace all occurences of `old: str` with `new: str` in `file: str`"""
+    with open(file, 'r') as f:
+        s = f.read(int(1e9))  # no more than 1GB
+    s = s.replace(old, new)
+    # make backup
+    os.rename(file, os.path.join(os.path.dirname(file), 
+                       '__tmp__' + os.path.split(file)[-1] + '__tmp__'))
+    with open(file, 'w') as f:
+        f.write(s)
+
 def main(old, new, *files):
     """replace str `old` with str `new` in each of `files`."""
     global condition
@@ -87,6 +99,7 @@ if __name__ == "__main__":
         main(r'\end{abstract}', r'\end{abstract}\tableofcontents ' + rev, file)
         # main(r'\tableofcontents%\tableofcontents', r'\tableofcontents', file)
         main(r'\author{', r'\date{\vspace{-1ex}}\author{', file)
+        replace(r' \footnote', r'\footnote', file)
     
         oldwd = os.getcwd()
         try:
