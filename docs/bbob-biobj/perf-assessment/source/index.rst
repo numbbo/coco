@@ -390,8 +390,14 @@ values from the `Github repository of COCO`__.
 .. __: https://github.com/numbbo/coco
 
 
-Acknowledgements
-================
+.. raw:: html
+    
+    <H2>Acknowledgements</H2>
+
+.. raw:: latex
+
+    \section*{Acknowledgements}
+
 This work was supported by the grant ANR-12-MONU-0009 (NumBBO) 
 of the French National Research Agency.
 

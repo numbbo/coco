@@ -264,6 +264,7 @@ latex_elements = {
 
 # Additional stuff for the LaTeX preamble.
 'preamble': r"""
+  \pdfoutput=1
   \usepackage{amssymb}
   \pagestyle{plain}
   \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
