@@ -368,8 +368,10 @@ The performance assessment is based on a set of evaluation counts
 associated with the :math:`f`-value or -vector of a solution. 
 By default, each evaluation count is associated with the respectively *evaluated*
 solution and hence its :math:`f`-value. 
-The solution associated *to the current (last) evaluation* can be changed by calling |coco_recommend_solution|_, thereby associating the :math:`f`-value of the
-*recommended* solution (instead of the *evaluated* solution) with the current evaluation count. 
+In the single-objective case, the solution associated *to the current (last)
+evaluation* can be changed by calling |coco_recommend_solution|_, thereby
+associating the :math:`f`-value of the *recommended* solution (instead of the
+*evaluated* solution) with the current evaluation count. 
 A recommendation is best viewed as the *currently best known approximation* of the
 optimum [#]_ delivered by the optimization algorithm, or as the currently most 
 desirable return value of the algorithm. 
@@ -382,10 +384,12 @@ necessary nor advantageous to recommend the same solution repeatedly.
 
 .. On non-noisy suites the last evaluation changes the assessment only if the :math:`f`-value is better than all :math:`f`-values from previous evaluations. 
 
-.. [#] In the multi-objective scenario not only the last solution, but *all*
-  solutions are taken into account for this approximation. 
-  In the noisy scenario, a small number of the most current solutions will be
-  taken into account in future assessements. 
+.. [#] In the noisy scenario, a small number of the most current solutions 
+  will be taken into account in future versions. 
+  In the multi-objective scenario, the recommendation option is not available,
+  because an archive of non-dominated solutions presumes that all solutions are
+  evaluated. 
+
 
 Time Complexity Experiment
 ==========================
