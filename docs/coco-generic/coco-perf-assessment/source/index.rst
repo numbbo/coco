@@ -409,57 +409,48 @@ an algorithm has a strictly positive probability |ps| to solve a problem :math:`
 
     \begin{equation*}
     \mathbf{RT}(n,f_\theta,\Delta I) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
+    \enspace,
     \end{equation*}
 
 where :math:`J` is a random variable that models the number of unsuccessful
 runs until a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random
 variables corresponding to the runtime of unsuccessful trials and
 :math:`\mathrm{RT}^{\rm s}` is a random variable for the runtime of a
-successful trial [AUG2005].
+successful trial [AUG2005]_.
 
-Generally, the above equation expresses the runtime from repeated runs on the same problem instance (while the instance :math:`\theta_i` is not given explicitly). For the performance evaluation in the COCO_ framework, we apply the equation to runs on different instances :math:`\theta_i`, however instances from the same function, with the same dimension and target precision. 
+If the probability of success is one, :math:`J=0` with probability one and the restart algorithm and the original algorithm coincide.
+
+Generally, the above equation expresses the runtime from repeated independent runs on the same problem instance (while the instance :math:`\theta_i` is not given explicitly). For the performance evaluation in the COCO_ framework, we apply the equation to runs on different instances :math:`\theta_i`, however instances from the same function, with the same dimension and the same target precision. 
 
 .. [#] The notion of success is directly linked to a target value. A run can be successful with respect to some target values (some problems) and unsuccessful with respect to others. Success also often refers to the final, most difficult, smallest target value, which implies success for all other targets. 
 
 
 Runs on Different Instances Are Interpreted as Independent Repetitions
 -----------------------------------------------------------------------
-The performance assessment in COCO_ heavily relies on the conceptual
-restart algorithm. However, we collect at most one single runtime per problem while more data points are needed to display significant data. 
+.. The performance assessment in COCO_ heavily relies on the conceptual restart algorithm. 
+.. However, we collect at most one single runtime per problem while more data points are needed to display significant data. 
 
-In order to measure the performance on a given function in a given dimension and
-for a given target precision, we interpret different runs performed on
+In order to measure the performance on a given function and dimension and target precision, we interpret different runs performed on
 different instances :math:`\theta_1,\ldots,\theta_K` of the same function
-:math:`f_\theta` as repetitions, that is, as if they were performed on the same
-problem instance. [#]_
-
-Runtimes collected for the different instances
-:math:`\theta_1,\ldots,\theta_K` of the same parametrized function
-:math:`f_\theta` and with respective targets associated to the same
-target precision :math:`\Delta I` (see above) are thus assumed
-independent and identically distributed. 
-
-We hence have a collection of runtimes (for a given parametrized function
-and a given relative target) whose size corresponds to the number of
-instances of a parametrized function where the algorithm was run
-(typically between 10 and 15). 
+:math:`f_\theta` as repetitions of the same problem. 
+This assumes that instances of the same parametrized function are 
+similar to each other, more specifically, that they exhibit the same runtime
+distribution for a given |DI|. 
 
 
-The runs in the equation 
+.. Runtimes collected for the different instances :math:`\theta_1, \ldots, \theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same target precision :math:`\Delta I` (see above) are thus assumed independent and identically distributed. 
 
-If the probability of success is one, the restart algorithm and
-the original   algorithm coincide.
+We hence have for each parametrized problem a set of :math:`K` independent runs, typically between 10 and 15, which are used to compute artificial runtimes of the conceptual restart algorithm. 
 
-.. Note:: Considering the runtime of the restart algorithm allows to compare
+.. .. Note:: Considering the runtime of the restart algorithm allows to compare
    quantitatively the two different scenarios where
 
 	* an algorithm converges often but relatively slowly
 	* an algorithm converges less often, but whenever it converges, it is with a fast convergence rate.
 
-we write in the end the runtime of a restart algorithm of a
-parametrized family of function in order to reach a relative target
-:math:`\Delta I` as
-
+.. we write in the end the runtime of a restart algorithm of a
+   parametrized family of function in order to reach a relative target
+   :math:`\Delta I` as
 
 
 As we will see in Section :ref:`sec:aRT` and Section :ref:`sec:ECDF`,
@@ -467,11 +458,6 @@ our performance display relies on the runtime of the restart algorithm,
 either considering the average runtime (Section :ref:`sec:aRT`) or the
 distribution by displaying empirical cumulative distribution functions
 (Section :ref:`sec:ECDF`).
-
-.. [#] This assumes that instances of the same parametrized function are similar
-      to each others or that there is  not too much discrepancy in the difficulty
-      of the problem for different instances.
-
 
 
 Simulated Run-lengths of Restart Algorithms
