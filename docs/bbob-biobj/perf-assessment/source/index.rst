@@ -21,7 +21,7 @@ Biobjective Performance Assessment with the COCO Platform
 .. raw:: html
 
    See: <I>ArXiv e-prints</I>,
-   <A HREF="http://arxiv.org/abs/1605.xxxxx">arXiv:1605.xxxxx</A>, 2016.
+   <A HREF="http://arxiv.org/abs/160x.xxxxx">arXiv:160x.xxxxx</A>, 2016.
 
 
 .. raw:: latex
@@ -175,7 +175,8 @@ where
     \text{HV}(A_t, z_{\text{ideal}}, z_{\text{nadir}}) = \text{VOL}\left( \bigcup_{a \in A_t} \left[\frac{f_\alpha(a)-z_{\text{ideal}, \alpha}}{z_{\text{nadir}, \alpha}-z_{\text{ideal}, \alpha}}, 1\right]\times\left[\frac{f_\beta(a)-z_{\text{ideal}, \beta}}{z_{\text{nadir}, \beta}-z_{\text{ideal}, \beta}}, 1\right]\right)
 	\end{equation*}
    
-is the (normalized) hypervolume of archive :math:`A_t` with respect to the nadir point :math:`(z_{\text{nadir}, \alpha}, z_{\text{nadir},\beta})` as reference point and where 
+is the (normalized) hypervolume of archive :math:`A_t` with respect to the 
+nadir point :math:`(z_{\text{nadir}, \alpha}, z_{\text{nadir},\beta})` as reference point and where, with division understood to be element-wise (Hadamard division), 
 
 .. math::
     :nowrap:
@@ -288,26 +289,27 @@ Target Precision Values
 All target indicator values are computed in the form of |Irefi| :math:`+\,\Delta
 I` from the instance dependent reference value |Irefi| and a target precision
 value :math:`\Delta I`. 
-For the ``bbob-biobj`` test suite, the target precisions :math:`\Delta I` are 
-identically chosen for all problem instances as
+For the ``bbob-biobj`` test suite, 58 target precisions :math:`\Delta I` are 
+chosen, identical for all problem instances, as
 
 .. math::
 
-  \Delta I \in \{ -10^{-4}, -10^{-4.2}, -10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0 \}\enspace.
+  \Delta I \in \{ \underbrace{-10^{-4}, -10^{-4.2}, \dots, -10^{-4.8}, -10^{-5}}_{
+  \text{six negative target precision values}}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0 \}\enspace.
 
-Negative target precisions are used because the reference indicator value is
-an approximation which can be surpassed by an optimization algorithm. [#]_
-The runtimes to reach these 58 target values are presented as
-empirical cumulative distribution function, ECDF [HAN2016perf]_. Runtimes to
-reach specific target precisions are presented as well. 
+Negative target precisions are used because the reference indicator value, as
+defined in the next section, can be surpassed by an optimization algorithm. [#]_
+The runtimes to reach these target values are presented as empirical cumulative
+distribution function, ECDF [HAN2016perf]_. 
+Runtimes to reach specific target precisions are presented as well. 
 It is not uncommon however that the quality indicator value of the algorithm
 never surpasses some of these target values, which leads to missing runtime
 measurements.
 
 
-.. [#] In comparison, the reference value in the single-objective case has been 
+.. [#] In comparison, the reference value in the single-objective case is 
    the :math:`f`-value of the known global optimum and, consequently, the target 
-   precision values |t| have been strictly positive [HAN2016perf]_. 
+   precision values have been strictly positive [HAN2016perf]_. 
 
 .. |Irefi| replace:: :math:`I_i^\mathrm{ref}`
 .. |i| replace:: :math:`i`
@@ -322,7 +324,7 @@ biobjective ``bbob-biobj`` test suite does not provide analytic expressions of
 its optima. 
 Except for :math:`f_1`, the Pareto set and the Pareto front are unknown. 
 
-Instead of the unknown hypervolume of the true Pareto set, we use the hypervolume of an approximation of the Pareto set as reference hypervolume indicator value |Irefi|. 
+Instead of the unknown hypervolume of the true Pareto set, we use the hypervolume of an approximation of the Pareto set as reference hypervolume indicator value |Irefi|. [#]_
 To obtain the approximation, several multi-objective optimization algorithms
 have been run and all non-dominated solutions over all runs have been
 recorded. [#]_ 
@@ -331,10 +333,6 @@ solutions, also called *non-dominated reference set*, separately obtained
 for each problem instance in the benchmark suite, is then used as the
 reference hypervolume indicator value.
 
-
-.. Niko: we should recognize that using the true Pareto set as reference might not
-   even desirable. Why? Because it uses an infinite number of solutions, which
-   is not what we can do or what we want to do in practice. 
 
 .. Niko: The performance assessment as propoposed here is, in itself, to the most
   part **not relative** to the optimum or, more concisely, to an optimal indicator
@@ -347,30 +345,26 @@ reference hypervolume indicator value.
   solved by knowing the best possible indicator value.
 
 
+.. [#] Using the quality indicator value of the *true* Pareto set might not
+   be desirable, because the set contains an infinite number of solutions, 
+   which is neither a possible nor a desirable goal to aspire in practice. 
+
 .. [#] Amongst others, we run versions of NSGA-II [DEB2002]_ via Matlab's
-  ``gamultiobj`` function [#]_, SMS-EMOA [BEU2007]_, MOEA/D [ZHA2007]_,
+  ``gamultiobj`` function__, SMS-EMOA [BEU2007]_, MOEA/D [ZHA2007]_,
   RM-MEDA [ZHA2008]_, and MO-CMA-ES [VOS2010]_, together with simple
   uniform RANDOMSEARCH and the single-objective CMA-ES [HAN2001]_ on scalarized problems
   (i.e. weighted sum) to create first approximations of the bi-objective
   problems' Pareto sets.
-
-
-.. [#] mathworks.com/help/gads/gamultiobj.html
+  
+  .. __: http://www.mathworks.com/help/gads/gamultiobj.html
 
 Instances and Generalization Experiment
 =======================================
 The standard procedure for an experiment on a benchmark suite, like the 
 ``bbob-biobj`` suite, prescribes to run the algorithm of choice once on each
 problem of the suite [HAN2016ex]_.
-For the ``bbob-biobj`` suite, the postprocessing part of COCO_ displays by
+For the ``bbob-biobj`` suite, the postprocessing part of COCO_ displays currently by
 default only 5 out of the 10 instances from each function-dimension pair.
-
-
-.. Like that, users are less suspected of having tuned their algorithms to the
-   remaining 5 instances (the *test set*) which can then be used to evaluate the
-   generalization abilities of the benchmarked algorithms.
-.. Niko: I like to be honest: our motivation to display on 5 instances is not
-   the question of generalization. 
 
 
 Data Storage and Future Recalculations of Indicator Values
@@ -391,9 +385,9 @@ have been used during the actual benchmarking experiment and the production of t
 graphical output, COCO_ writes the absolute hypervolume reference values together
 with the performance data during the benchmarking experiment and displays
 a version number in the plots generated that allows to retrieve the used reference
-values from the github repository of COCO_ [#].
+values from the `Github repository of COCO`__.
 
-.. [#] https://github.com/numbbo/coco
+.. __: https://github.com/numbbo/coco
 
 
 Acknowledgements
@@ -421,9 +415,9 @@ of the French National Research Agency.
   pp. 159-195.
   
 .. [HAN2016perf] N. Hansen, A. Auger, D. Brockhoff, D. Tušar, T. Tušar
-   (2016). `COCO: Performance Assessment`__, *ArXiv e-prints*, `arXiv:1605.xxxxx`__.
+   (2016). `COCO: Performance Assessment`__, *ArXiv e-prints*, `arXiv:160x.xxxxx`__.
 .. __: http://numbbo.github.io/coco-doc/perf-assessment
-.. __: http://arxiv.org/abs/1605.xxxxx
+.. __: http://arxiv.org/abs/160x.xxxxx
 
 .. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff (2016).
    `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
