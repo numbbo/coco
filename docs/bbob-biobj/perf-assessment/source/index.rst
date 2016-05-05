@@ -56,12 +56,12 @@ Introduction
 =============
 
 The performance assessment of (numerical) optimization algorithms with the COCO_
-platform is invariably based on the
+platform [HAN2016co]_ is invariably based on the
 measurement of the *runtime* [#]_ until a *quality indicator* reaches a predefined
-*target value* [HAN2016perf]_. 
+*target value*. 
 On each problem instance, several target values are defined and for each
 target value a runtime is measured (or no runtime value is available if the
-indicator does not reach the target value). 
+indicator does not reach the target value) [HAN2016perf]_. 
 In the single-objective, noise-free case, the assessed quality indicator is, at 
 each given time step, the function value of the best solution the algorithm has
 obtained (evaluated or recommended, see [HAN2016ex]_) before or at this time
@@ -128,12 +128,12 @@ In this section, we introduce the definitions of some basic terms and concepts.
 
 *archive*
  An external archive or simply an archive is the set of non-dominated solutions,
- obtained over an algorithm run. We can, at each point :math:`t` in time (in terms of
- :math:`t` performed function evaluations) associate the set of all
- mutually non-dominating solutions that have been evaluated so far. We will
- typically denote the archive after :math:`t` function evaluations as :math:`A_t`
+ obtained over an algorithm run. At each point :math:`t` in time (that is after
+ :math:`t` function evaluations), we consider the set of all
+ mutually non-dominating solutions that have been evaluated so far. We 
+ denote the archive after :math:`t` function evaluations as :math:`A_t`
  and use it to define the performance of the algorithm in terms of a (quality)
- indicator function :math:`A_t \rightarrow \R` that might depend on a problem'satisfies
+ indicator function :math:`A_t \rightarrow \R` that might depend on a problem's
  underlying parameterized function and its dimension and instance.
 
  
@@ -142,14 +142,13 @@ Performance Assessment with a Quality Indicator
 
 For measuring the runtime on a given problem, we consider a quality indicator
 which is to be optimized (minimized). 
-In the single-objective case, the quality indicator is the objective
-function value. 
+In the noiseless single-objective case, the quality indicator is the best so-far observed objective function value (recommendations can replace previous observations). 
 In the case of the ``bbob-biobj`` test suite, the quality indicator is based on the
 hypervolume indicator of the *archive* :math:`A_t`.
 
 .. |IHV| replace:: :math:`\IHV`
 
-Definition of the quality indicator
+Definition of the Quality Indicator
 ------------------------------------
 The indicator :math:`\IHV` to be mininized is either the negative
 hypervolume indicator of the archive with the nadir
@@ -187,8 +186,6 @@ is the (normalized) hypervolume of archive :math:`A_t` with respect to the nadir
 	
 is the smallest (normalized) Euclidean distance between a solution in the archive and the region of interest, see also the figures below for an illustration.
 
-.. [#] With linear transformations of both objective functions such that the ideal point :math:`z_{\text{ideal}}= (z_{\text{ideal}, \alpha}, z_{\text{ideal}, \beta})` is mapped to :math:`[0,0]` and the nadir point :math:`z_{\text{nadir}}= (z_{\text{nadir}, \alpha}, z_{\text{nadir}, \beta})` is mapped to :math:`[1,1]`.
-
 .. figure:: pics/IHDoutside.*
    :align: center
    :width: 60%
@@ -212,6 +209,15 @@ is the smallest (normalized) Euclidean distance between a solution in the archiv
    negative hypervolume of the archive with the nadir point as reference point. 
    
    
+.. [#] We conduct an affine transformation of both objective function values
+   such that the ideal point :math:`z_{\text{ideal}}= (z_{\text{ideal}, \alpha},
+   z_{\text{ideal}, \beta})` is mapped to :math:`[0,0]` and the nadir point
+   :math:`z_{\text{nadir}}= (z_{\text{nadir}, \alpha}, z_{\text{nadir}, \beta})`
+   is mapped to :math:`[1,1]`.
+
+.. Niko: it would be nice to have the line of equal distance for the point with the smallest distance in the figure. 
+
+
 Rationales Behind the Performance Measure
 ------------------------------------------
 
@@ -243,11 +249,11 @@ specificities:
   The region of interest (ROI) :math:`[z_{\text{ideal}}, z_{\text{nadir}}]`, 
   defined by the ideal and nadir point, is mapped to :math:`[0, 1]^2`.
 
-* If the nadir point is dominated by at least one point in the archive, the quality of
-  the algorithm is the negative hypervolume of the archive using
+* If the nadir point is dominated by at least one point in the archive, the 
+  quality is computed as the negative hypervolume of the archive using
   the nadir point as hypervolume reference point.
 
-* If the nadir point is not dominated by the archive, an algorithm's quality equals the
+* If the nadir point is not dominated by the archive, the quality equals the
   distance of the archive to the ROI.
 
 This implies that:
@@ -255,7 +261,8 @@ This implies that:
 * the quality indicator value of an archive that contains the nadir point as 
   non-dominated point is :math:`0`.
 
-* the quality indicator value is bounded from below by :math:`-1`, and
+* the quality indicator value is bounded from below by :math:`-1`, which is
+  the quality of an archive that contains the ideal point, and
 
 * because the quality of an archive is used as performance criterion, no
   population size has to be prescribed to the algorithm. In particular,
@@ -267,22 +274,22 @@ This implies that:
 Definition of Target Values
 ===========================
 
-For each problem instance |i| of the benchmark suite, consisting of a parameterized
-function, its dimension and instance parameter :math:`\theta`, a set of quality
+For each problem instance of the benchmark suite, consisting of a parameterized
+function, its dimension and its instance parameter :math:`\theta_i`, a set of quality
 indicator target values is chosen, eventually used to measure algorithm runtime to
 reach each of these targets. 
-The absolute target values are based on a target precision :math:`\Delta I` and a
+The target values are based on a target precision :math:`\Delta I` and a
 *reference hypervolume indicator value*, |Irefi|, which is an approximation of the
 |IHV| indicator value of the Pareto set.
 
 Target Precision Values
 -----------------------
 
-All target indicator values are computed in the form of |Irefi| :math:`+\,\Delta I`
-as a function of an absolute, function
-instance dependent reference value |Irefi| and (typically more than) one target precision
-value :math:`\Delta I`, the latter being identically chosen for all function instances. 
-In the case of the ``bbob-biobj`` test suite, the target precisions :math:`\Delta I` are chosen as
+All target indicator values are computed in the form of |Irefi| :math:`+\,\Delta
+I` from the instance dependent reference value |Irefi| and a target precision
+value :math:`\Delta I`. 
+For the ``bbob-biobj`` test suite, the target precisions :math:`\Delta I` are 
+identically chosen for all problem instances as
 
 .. math::
 
