@@ -82,7 +82,7 @@ Definitions and Terminology
 In this section, we introduce the definitions of some basic terms and concepts.
 
 *function instance, problem*
- In the case of the bi-objective performance assessment within COCO_, a problem is a 4-tuple of
+ In the case of the bi-objective performance assessment within COCO_, a problem is a 5-tuple of
  
  * a *parameterized function* :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^2`, mapping the decision variables of a solution :math:`x\in\mathbb{R}^n` to its objective vector :math:`f_\theta(x) = (f_\alpha(x),f_\beta(x))` with :math:`f_\alpha: \mathbb{R}^n \mapsto \mathbb{R}` and :math:`f_\beta: \mathbb{R}^n \mapsto \mathbb{R}` being parameterized (single-objective) functions themselves
  * its concrete parameter value :math:`\theta\in\Theta` determining the so-called
@@ -109,7 +109,7 @@ In this section, we introduce the definitions of some basic terms and concepts.
  (or in other words, a *Pareto-optimal* solution in the Pareto set has no other solution
  that *dominates* it). The image of the Pareto set in the *objective space* is called
  the Pareto front. We generalize the standard Pareto dominance relation to sets by saying
- solution set :math:`A=\{a_1,\ldots,a_|A|\}` dominates solution set :math:`B=\{b_1,\ldots,b_|B|\}`
+ solution set :math:`A=\{a_1,\ldots,a_{|A|}\}` dominates solution set :math:`B=\{b_1,\ldots,b_{|B|}\}`
  if and only if for all :math:`b_i\in B` there is at least one solution :math:`a_j`
  that dominates it.
  
@@ -212,9 +212,9 @@ is the smallest (normalized) Euclidean distance between a solution in the archiv
    
 .. [#] We conduct an affine transformation of both objective function values
    such that the ideal point :math:`z_{\text{ideal}}= (z_{\text{ideal}, \alpha},
-   z_{\text{ideal}, \beta})` is mapped to :math:`[0,0]` and the nadir point
+   z_{\text{ideal}, \beta})` is mapped to :math:`(0,0)` and the nadir point
    :math:`z_{\text{nadir}}= (z_{\text{nadir}, \alpha}, z_{\text{nadir}, \beta})`
-   is mapped to :math:`[1,1]`.
+   is mapped to :math:`(1,1)`.
 
 .. Niko: it would be nice to have the line of equal distance for the point with the smallest distance in the figure. 
 
