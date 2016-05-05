@@ -54,7 +54,7 @@ COCO: Performance Assessment
 
 We present an any-time performance assessment for benchmarking numerical
 optimization algorithms in a black-box scenario, applied within the COCO_ benchmarking platform. 
-The performance assessment is based on *runtimes* measured in number of objective function evaluations to reach one or several target quality indicator values.
+The performance assessment is based on *runtimes* measured in number of objective function evaluations to reach one or several quality indicator target values.
 We argue that runtime is the only available measure with a generic, meaningful, and quantitative interpretation.
 We discuss the choice of the target values, runlength-based targets, and the aggregation of results by using simulated restarts, averages, and empirical distribution functions. 
 
@@ -74,24 +74,22 @@ within the COCO_ platform. Going beyond a simple ranking of algorithms, we aim
 to provide a *quantitative* and *meaningful* performance assessment, which
 allows for conclusions of type *algorithm A is ten times faster than algorithm
 B* in solving a given problem or in solving problems with certain
-characteristics. In order to do so, we record algorithm *runtimes*, measured in
+characteristics. 
+For this end, we record algorithm *runtimes*, measured in
 number of function evaluations to reach predefined target values, during the
 algorithm run.
 
 Runtimes represent the cost of the algorithm. Apart from a short, exploratory
-experiment [#]_, we avoid measuring the algorithm cost in CPU or wall-clock time
-because these depend on parameters which are difficult or impractical to
-control, like the programming language, coding style, the computer used to run
-the experiments, etc. See [Hooker:1995]_ for a discussion on shortcomings and
+experiment [#]_, we do not measure the algorithm cost in CPU or wall-clock time.
+See for example [Hooker:1995]_ for a discussion on shortcomings and
 unfortunate consequences of benchmarking based on CPU time.
 
-We can then display the average runtime (aRT, see Section `Average Runtime`_)
-and empirical distributions of runtimes (ECDF, see Section `Empirical Cumulative
-Distribution Functions`_). When displaying runtime distributions, we consider
+We display the average runtime (aRT, see Section `Average Runtime`_)
+and the empirical distribution function of runtimes (ECDF, see Section `Empirical Cumulative Distribution Functions`_). 
+When displaying runtime distributions, we consider
 the aggregation of runtimes over subclasses of problems or over all problems. We
 do not aggregate over dimensions, because the dimension of the problem can be
-used to decide which algorithm (or algorithm variant, or parameter setting) is
-preferred.
+used to decide a priori which algorithm (or algorithm variant, or parameter setting) is used.
 
  .. [#] The COCO_ platform provides a CPU timing experiment to get a rough estimate of the time complexity of the algorithm [HAN2016ex]_.
 
@@ -188,9 +186,9 @@ We introduce a few terms and definitions that are used in the rest of the docume
 On Performance Measures
 =======================
 
-Evaluating performance of algorithms entails having measures that represent the performance of each algorithm. Our requirements for **performances measures** within COCO_ are the following. A performance measure should be
+Evaluating performance of algorithms entails having measures that represent the performance of each algorithm. Our requirements for performances measures within COCO_ are the following. A performance measure should be
  * quantitative, as opposed to a simple ranking of algorithms. 
-   Ideally, the measure should be defined on a ratio scale (as opposed to an interval or ordinal scale) [STE1946]_, which allows to state that "Algorithm A is :math:`x` times better than Algorithm B". 
+   Ideally, the measure should be defined on a ratio scale (as opposed to an interval or ordinal scale) [STE1946]_, which allows to state that "Algorithm A is :math:`x` times better than Algorithm B". [#]_ 
  * assuming a wide variation of values (i.e., for example, typical values should not only range between 0.98 and 1.0) [#]_,
  * interpretable, in particular by having a meaning and semantics attached to the measured numbers,
  * relevant and meaningful with respect to the "real world",
@@ -200,15 +198,16 @@ Evaluating performance of algorithms entails having measures that represent the 
 
 .. Tea: Can we give some more explanation here?
 
-The **runtime** to reach a target value, that
-is, the number of function evaluations needed to reach a quality
-indicator target value satisfy these requirements. 
+The **runtime** to reach a target value, measured in number of function evaluations, satisfies all requirements. 
 Runtime is well-interpretable and meaningful with respect to the
-real-world as it is proportional to the time needed to solve a problem,
-but avoids the shortcomings of CPU measurements that depend on
-parameters like programming language, coding style, machine, etc. that are
-difficult to control.
+real-world as it represents time needed to solve a problem. Measuring
+number of function evaluations avoids the shortcomings of CPU measurements that depend on parameters like the programming language, coding style, machine used to run the experiment, etc. that are difficult or impractical to control.
 
+
+.. [#] A variable on a ratio scale has a meaningful zero, allows division, 
+   and can be taken to the logarithm. See for example `Level of measurement on Wikipedia`__.
+
+.. __: https://en.wikipedia.org/wiki/Level_of_measurement?oldid=478392481
 
 .. [#] The transformation :math:`x\mapsto\log(1-x)` could alleviate the problem
   in this case, given it actually zooms in on relevant values.
@@ -219,19 +218,17 @@ difficult to control.
 Fixed-Budget versus Fixed-Target Approach
 -----------------------------------------
 
-Starting from convergence graphs, which plot the evolution of the quality
-indicator (to be minimized) against the number of function evaluations, there
-are (only) two approaches to measure the performance.
+Starting from the most basic convergence graphs, which plot the evolution of a quality indicator (to be minimized) against the number of function evaluations, there are essentially only two approaches to measure the performance.
 
 **fixed-budget approach**
     We fix a budget of function evaluations,
-    and collect the reached indicator values. Fixing the search
+    and measure the reached quality indicator values. A fixed search
     budget can be pictured as drawing a *vertical* line on the convergence
     graphs (red line in Figure :ref:`fig:HorizontalvsVertical`).
 
 **fixed-target approach**
-    We fix a target indicator value and measure the number of function
-    evaluations, the *runtime*, to reach this target. Fixing a target can be
+    We fix a target quality value and measure the number of function
+    evaluations, the *runtime*, to reach this target. A fixed target can be
     pictured as drawing a *horizontal* line in the convergence graphs (blue line in Figure
     :ref:`fig:HorizontalvsVertical`).
 
@@ -286,9 +283,16 @@ only, while fixed-budget measures require the transformation of all resulting da
 
 Missing Values
 ---------------
+Investigating Figure :ref:`fig:HorizontalvsVertical` more carefully, we find that not all graphs intersect with either the vertical or the horizontal line. On the one hand, if the fixed budget is too large, the algorithm might solve the problem before the budget is exceeded. [#]_ The algorithm performs better than the measurement is able to reflect. 
 
-We collect runtimes to reach given target values. However not all runs successfully reach each target, see for instance Figure :ref:`fig:HorizontalvsVertical`. In the case where a target is not reached, the runtime is undefined. 
+On the other hand, if the fixed target is too difficult, the algorithm might never hit the target within the given experimental conditions. [#]_ The algorithm performs worse than the experiment is able to reflect. A possible remedy is to run the algorithm longer. 
+
+We collect runtimes to reach given target values. In the case where a target is not reached, the runtime is undefined. 
 The overall number of function evaluations of the corresponding run provides an empirical observation for a lower bound on the (non-observed) runtime to reach the given target.
+
+.. [#] Even in continuous domain, from a benchmarking, a practical, and a numerical viewpoint, the set of solutions that indisputably solve the problem have a volume larger than zero. 
+
+.. [#] However, under mildly randomized conditions, for example with a randomized initial solution, the restarted algorithm reaches any attainable target with probability one. However, the time needed can well be beyond any reasonable practical limitations. 
 
 
 Target Values
@@ -313,7 +317,7 @@ reference indicator value depends on the specific instance
 
 such that for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`I^{\rm target,{\theta}_1}, \ldots,I^{\rm target,{\theta}_K}` are associated to the same precision. 
 
-Depending on the context, when we refer to a problem this includes the used quality indicator and a given target precision or value. 
+Depending on the context, when we refer to a problem this includes the used quality indicator and a given target value (or precision). 
 We say, for example, that "algorithm A is solving problem :math:`p=(n,f_\theta,\theta,I,I^{\rm target})` after :math:`t` function evaluations" if the quality indicator function value :math:`I`  during the optimization of :math:`(n,f_\theta,\theta)` reaches a value of :math:`I^{\rm target}` or lower for the first time after :math:`t` function evaluations.
 
  
@@ -378,7 +382,7 @@ dimension. :math:`I(\mathcal{A}, t)` is the average runtime, |aRT| of :math:`\ma
 Runlength-based targets have the advantage to make the target value setting less dependent on the expertise of a human designer, because only the reference budgets have to be chosen a priori. Reference budgets, as runtimes, are intuitively meaningful quantities, on which it is comparatively simple to decide upon. Runlength-based targets have the disadvantage to depend on the choice of a reference data set. 
 
 
-Single Runtime Computation
+Single Runtime Computation    
 ===========================
 
 .. In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtimes for different target values. 
@@ -730,9 +734,14 @@ different targets, we possibly have the runtime of different algorithms.
 ..		* aRT Loss graphs
 
 
+.. raw:: html
+    
+    <H2>Acknowledgments</H2>
 
-Acknowledgements
-================
+.. raw:: latex
+
+    \section*{Acknowledgments}
+
 This work was supported by the grant ANR-12-MONU-0009 (NumBBO)
 of the French National Research Agency.
 
