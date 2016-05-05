@@ -29,8 +29,8 @@ if __name__ == '__main__':
             if name is not None:
                 raise ValueError('Cannot decide to take name %s or %s' % (name, file))
             name = file.split('.')[0]
-    c('cp *.tex *.sty *.png %s' % working_folder)
+    c('cp *.tex *.sty *.pdf %s' % working_folder)
     os.chdir(working_folder)
-    c('zip -r %s.zip *.tex *.sty *.png' % name)
+    c('zip -r %s.zip *.tex *.sty *.pdf' % name)
     os.chdir(entry_folder)
 
