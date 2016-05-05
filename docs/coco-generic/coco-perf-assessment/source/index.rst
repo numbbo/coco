@@ -149,11 +149,11 @@ We introduce a few terms and definitions that are used in the rest of the docume
  .. Anne: I took out the theta-bar - did not look too fine to me - so I felt that I needed to add theta_1 and theta_2 as two different instances @Niko, @Tea please check and improve if possible (I am not particularly happy with the new version).
  
  
- In the performance assessment setting, we associate to a problem :math:`p` and a given quality indicator,
+ In the performance assessment setting, we associate to a problem 
+ instance :math:`p` and a given quality indicator,
  one or several target values such that a problem becomes a quintuple ``(dimension, function, instance, quality indicator, target)``. 
- A target value is thereby a fixed function or quality indicator value at which we measure the runtime of the algorithm. 
- We define the quality indicator to be minimized as well. 
- Quality indicator target values depend in general on the problem instance :math:`\theta`. 
+ The first time the quality indicator drops below the target is considered the runtime to solve the problem. 
+ Quality indicator target values depend in general on the problem instance :math:`\theta_i`. 
  
 *instance*
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
@@ -332,7 +332,14 @@ Runlength-based Target Values
   basic idea
   is the following.
 
-Runlength-based target values are a novel way to define the target values based on a reference data set. Like with *performance profiles* [MOR2009]_, the results can be interpreted relative to a best algorithm. Unlike with performance profiles, the results *are* data profiles and can be interpreted as absolute runtimes, reflecting the true difficulty of the respective problem for the given algorithm. 
+Runlength-based target values are a novel way to define the target values based
+on a reference data set. Like for *performance profiles* [DOL2002]_, the
+resulting empirical distribution can be interpreted *relative* to a reference
+algorithm. 
+Unlike for performance profiles, the resulting empirical distribution *is* a
+data profile [MOR2009]_ and can be understood as absolute runtime distribution,
+reflecting the true (opposed to relative) difficulty of the respective problems
+for the given algorithm. 
 
 We assume to have given a reference data set with recorded runtimes to reach given quality indicator target values
 :math:`\mathcal{I}^{\rm target} = \{ I^{\rm target}_1, \ldots, I^{\rm target}_{|\mathcal{I}^{\rm target}|} \}`
@@ -374,12 +381,13 @@ Runlength-based targets have the advantage to make the target value setting less
 Runtime Computations
 =====================
 
-In order to display quantitative measurements, we have seen in the previous
-section that we should start from the collection of runtimes for different
-target values. 
-In the performance assessment setting, a problem instance is the quintuple
-:math:`p=(n,f_\theta,\theta,I,I^{{\rm target},\theta})` where
-:math:`I^{{\rm target},\theta}` is the target indicator value. For each benchmarked algorithm a single runtime is measured on each problem. 
+.. In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtimes for different target values. 
+
+In the performance assessment context, a problem instance is the quintuple
+:math:`p=(n,f_\theta,\theta_i,I,I^{{\rm target},\theta_i})` containing dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value. 
+For each benchmarked algorithm a single runtime is measured on each problem. [#]_
+
+.. [#] From a single run of the algorithm on a given problem instance triple :math:`p=(n,f_\theta,\theta_i)`, we can measure as many runtimes as different target values are defined. 
 
 Formally, the runtime on problem :math:`p` is denoted as :math:`\mathrm{RT}(p)`. 
 It is a random variable that counts the number of function evaluations needed to reach a quality indicator value of at most :math:`I^{{\rm target},\theta}` for the first time. A run or trial that reached the target quality indicator value |ftarget| is called *successful*. [#]_
@@ -738,6 +746,9 @@ of the French National Research Agency.
    Evolutionary Computation (CEC 2005)*, pages 1777–1784, 2005.
 .. [AUG2009] A. Auger, N. Hansen, J.M. Perez Zerpa, R. Ros and M. Schoenauer (2009). 
    Empirical comparisons of several derivative free optimization algorithms. In Acte du 9ime colloque national en calcul des structures, Giens.
+   
+.. [DOL2002] E.D. Dolan, J. J. Moré (2002). Benchmarking optimization software 
+   with performance profiles. *Mathematical Programming* 91.2, 201-213. 
 
 .. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
   `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__. 
@@ -754,7 +765,7 @@ __ http://arxiv.org/abs/1603.08776
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
    pages 238–245, 1998.
 .. [MOR2009] Jorge J. Moré and Stefan M. Wild. Benchmarking
-	Derivative-Free Optimization Algorithms, SIAM J. Optim., 20(1), 172–191, 2009.
+   Derivative-Free Optimization Algorithms, *SIAM J. Optim.*, 20(1), 172–191, 2009.
 .. [Price:1997] K. Price. Differential evolution vs. the functions of
    the second ICEO. In Proceedings of the IEEE International Congress on
    Evolutionary Computation, pages 153–157, 1997.
