@@ -18,6 +18,12 @@ Biobjective Performance Assessment with the COCO Platform
 .. CHAPTERTITLE
 .. CHAPTERUNDERLINE
 
+.. raw:: html
+
+   See: <I>ArXiv e-prints</I>,
+   <A HREF="http://arxiv.org/abs/1605.xxxxx">arXiv:1605.xxxxx</A>, 2016.
+
+
 .. raw:: latex
 
   % \tableofcontents TOC is automatic with sphinx and moved behind abstract by swap...py
