@@ -100,6 +100,7 @@ if __name__ == "__main__":
         # main(r'\tableofcontents%\tableofcontents', r'\tableofcontents', file)
         main(r'\author{', r'\date{\vspace{-1ex}}\author{', file)
         replace(r' \footnote', r'\footnote', file)
+        replace(r'*}%%%', r'}', file)
     
         oldwd = os.getcwd()
         try:

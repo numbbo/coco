@@ -70,6 +70,7 @@ latex_commands = r"""
 pngmath_latex_preamble = latex_commands
 
 
+# Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
@@ -258,6 +259,7 @@ latex_elements = {
 
 # Additional stuff for the LaTeX preamble.
 'preamble': r"""
+  \pdfoutput=1
   \usepackage{amssymb}
   \pagestyle{plain}
   \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
