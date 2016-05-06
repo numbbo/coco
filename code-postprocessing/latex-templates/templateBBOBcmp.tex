@@ -232,7 +232,10 @@ In order to evaluate the CPU timing of the algorithm, we have run the \change{MY
 Results from experiments according to \cite{hansen2012exp} on the benchmark
 functions given in \cite{wp200901_2010,hansen2012fun} are presented in
 Figures~\ref{fig:scaling}, \ref{fig:scatterplots} and \ref{fig:RLDs} and
-in Table~\ref{tab:ERTs}. The \textbf{expected running time (ERT)}, used in the figures and table, depends on a
+in Table~\ref{tab:ERTs}. The experiments were performed with COCO \cite{HAN2016co},
+version \change{1.0.1}, the plots were produced with version \change{1.0.4}.
+
+The \textbf{expected running time (ERT)}, used in the figures and table, depends on a
 given target function value, $\ftarget=\fopt+\Df$, and is computed over all relevant trials
 as the number of function evaluations executed during each trial while the best
 function value did not reach \ftarget, summed over all trials
