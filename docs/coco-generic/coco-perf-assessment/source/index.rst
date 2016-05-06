@@ -404,13 +404,13 @@ upon.
 Runlength-based targets have the disadvantage to depend on the choice of a reference data set. 
 
 
-Single Runtime Computation    
+Runtime Computation    
 ===========================
 
 .. In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtimes for different target values. 
 
-In the performance assessment context, a problem instance is the quintuple
-:math:`p=(n,f_\theta,\theta_i,I,I^{{\rm target},\theta_i})` containing dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value. 
+In the performance assessment context of COCO_, a problem instance is the 
+quintuple :math:`p=(n,f_\theta,\theta_i,I,I^{{\rm target},\theta_i})` containing dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value. 
 For each benchmarked algorithm a single runtime is measured on each problem.  From a single run of the algorithm on a given problem instance
 :math:`p=(n,f_\theta,\theta_i)`, we can measure a runtime for each available
 target value, or equivalently, each available target precision 
@@ -434,14 +434,16 @@ probability one and with runtime
     :nowrap:
     :label: RTrestart
 
-    \begin{equation}\label{index-RTrestart}
+    \begin{equation}
+    \label{index-RTrestart}  
+      % ":eq:`RTrestart`" becomes "\eqref{index-RTrestart}" in the LaTeX
     \mathbf{RT}(n,f_\theta,\Delta I) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
     \enspace,
     \end{equation}
 
 where :math:`J` is a random variable that models the number of unsuccessful
 runs until a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random
-variables corresponding to the runtime of unsuccessful trials and
+variables corresponding to the evaluations in unsuccessful trials and
 :math:`\mathrm{RT}^{\rm s}` represents the runtime of a
 successful trial [AUG2005]_. 
 If the probability of success is one, :math:`J` equals zero with probability one and the restart algorithm coincides with the original algorithm.
@@ -451,12 +453,12 @@ Generally, the above equation for |RTforDI| expresses the runtime from repeated 
 .. [#] The notion of success is directly linked to a target value. A run can be successful with respect to some target values (some problems) and unsuccessful with respect to others. Success also often refers to the final, most difficult, smallest target value, which implies success for all other targets. 
 
 
-Runs on Different Instances Are Interpreted as Independent Repetitions
+Runs on Different Instances
 -----------------------------------------------------------------------
 .. The performance assessment in COCO_ heavily relies on the conceptual restart algorithm. 
 .. However, we collect at most one single runtime per problem while more data points are needed to display significant data. 
 
-The different instantiations of the parametrized functions |ftheta| are a natural way to represent randomized repetitions. 
+Different instantiations of the parametrized functions |ftheta| are a natural way to represent randomized repetitions. 
 For example, different instances implement random translations of the search space and hence a translation of the optimum [HAN2009fun]_. 
 Randomized restarts on the other hand are conducted from different initial points. 
 For translation invariant algorithms both mechanisms are equivalent and can be mutually exchanged. 
@@ -498,13 +500,16 @@ we repeatedly pick, uniformly at random with replacement, one of the |K| trials 
 This procedure simulates a single sample of the virtually restarted algorithm from the given data. 
 As computed in |RTforDI| above, the measured runtime is the sum of the number of function evaluations from the unsuccessful trials added to the runtime of the last and successful trial. 
 
+Bootstrapping Run-lengths
+++++++++++++++++++++++++++
+
 In practice, we repeat the above procedure to sample :math:`N\approx100` simulated runtimes from the same underlying distribution, 
 which has striking similarities with the true distribution from a restarted algorithm [EFR1994]_. 
 To reduce the variance in this procedure, when desired, the first trial in each sample is picked deterministically instead of randomly as the :math:`1 + (N~\mathrm{mod}~K)`-th trial from the data. [#]_
 
 .. Niko: average runtime is not based on simulated restarts, but computed directly...considering the average runtime (Section :ref:`sec:aRT`) or the distribution by displaying empirical cumulative distribution functions (Section :ref:`sec:ECDF`).
 
-.. [#] The variance reducing effect is best exposed in the case where all runs are successful and :math:`N = K`, in which case each data is sampled exactly once.
+.. [#] The variance reducing effect is best exposed in the case where all runs are successful and :math:`N = K`, in which case each data is sampled exactly once. This example also suggests to apply a random permutation of the data before to simulate virtually restarted runs. 
 
 
 Limitations
@@ -523,11 +528,13 @@ Limitations
 Average Runtime
 ==================
 
-The average runtime (|aRT|) (introduced in [Price:1997]_ as ENES and
+The average runtime (|aRT|) (introduced in [PRI1997]_ as ENES and
 analyzed in [AUG2005]_ as success performance and previously called
 ERT in [HAN2009ex]_) is an estimate of the expected runtime of the restart
-algorithm given in Equation :eq:`RTrestart` that is used within the COCO
-framework. More precisely, the expected runtime of the restart algorithm
+algorithm given in Equation :eq:`RTrestart` that is used within the COCO_
+framework. The |aRT| from a set of trials is computed as the sum of all evaluations in unsuccessful trials plus the sum of the runtimes in successful trials, all divided by the number of successful trials. 
+
+More precisely, the expected runtime of the restart algorithm
 (on a parametrized family of functions in order to reach a precision
 :math:`\epsilon`) writes
 
@@ -543,7 +550,7 @@ framework. More precisely, the expected runtime of the restart algorithm
 where |ps| is the probability of success of the algorithm (to reach the
 underlying precision) and :math:`\mathrm{RT}^s` denotes the random
 variable modeling the runtime of successful runs and
-:math:`\mathrm{RT}^{\rm us}` the runtime of unsuccessful runs (see
+:math:`\mathrm{RT}^{\rm us}` the evaluations in unsuccessful runs (see
 [AUG2005]_). Given a finite number of realizations of the runtime of
 an algorithm (run on a parametrized family of functions to reach a
 certain precision) that comprise at least one successful run, say
@@ -790,7 +797,7 @@ __ http://arxiv.org/abs/1603.08776
    pages 238–245, 1998.
 .. [MOR2009] Jorge J. Moré and Stefan M. Wild. Benchmarking
    Derivative-Free Optimization Algorithms, *SIAM J. Optim.*, 20(1), 172–191, 2009.
-.. [Price:1997] K. Price. Differential evolution vs. the functions of
+.. [PRI1997] K. Price. Differential evolution vs. the functions of
    the second ICEO. In Proceedings of the IEEE International Congress on
    Evolutionary Computation, pages 153–157, 1997.
 .. [Rios:2012] Luis Miguel Rios and Nikolaos V Sahinidis. Derivative-free optimization:
