@@ -19,6 +19,10 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. |
 .. |
 
+.. raw:: html
+
+   <A HREF="http://arxiv.org/abs/1603.08785">arXiv:1603.08785</A>, 2016.
+
 .. raw:: latex
 
   % \tableofcontents is automatic with sphinx and moved behind abstract by swap...py
@@ -38,10 +42,7 @@ COCO_ such as its definition of
 a problem, the idea of instances, the relevance of target values, and runtime
 as central performance measure. 
 Finally, we  give a quick overview of the basic
-code structure and the available test suites. [#]_
-
-.. [#] *ArXiv e-prints*, `arXiv:1603.08785`__, 2016.
-.. __: http://arxiv.org/abs/1603.08785
+code structure and the available test suites.
   
 .. raw:: latex
 
@@ -499,7 +500,7 @@ Restarts however "*improve the reliability, comparability, precision, and "visib
 
 *Simulated restarts* [HAN2010ex]_ [HAN2010]_ [HAN2016perf]_ are used to determine a runtime for unsuccessful runs. Semantically, this is only valid if we interpret different 
 instances as random repetitions. 
-Resembling the bootstrapping method [EFR1993]_, when we face an unsolved problem, we draw uniformly at random a
+Resembling the bootstrapping method [EFR1994]_, when we face an unsolved problem, we draw uniformly at random a
 new |j| until we find an instance such that |pt| was solved. [#]_
 The evaluations done on the first unsolved problem and on all subsequently
 drawn unsolved problems are added to the runtime on the last problem and
@@ -682,8 +683,8 @@ __ http://arxiv.org/abs/1603.08776
    
 .. .. [BAR1995] R. S. Barr, B. L. Golden, J. P. Kelly, M. G. C. Resende, and W. R. Stewart Jr. Designing and Reporting on Computational Experiments with Heuristic Methods. Journal of Heuristics, 1:9–32, 1995. 
 
-.. [EFR1993] B. Efron and R. Tibshirani (1993). An introduction to the
-   bootstrap. Chapman & Hall/CRC.
+.. [EFR1994] B. Efron and R. Tibshirani (1994). *An introduction to the
+   bootstrap*. CRC Press.
 .. [HAR1999] G. R. Harik and F. G. Lobo (1999). A parameter-less genetic
    algorithm. In *Proceedings of the Genetic and Evolutionary Computation
    Conference (GECCO)*, volume 1, pages 258-265. ACM.
