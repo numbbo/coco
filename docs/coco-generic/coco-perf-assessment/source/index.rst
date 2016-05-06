@@ -81,7 +81,7 @@ algorithm run.
 
 Runtimes represent the cost of the algorithm. Apart from a short, exploratory
 experiment [#]_, we do not measure the algorithm cost in CPU or wall-clock time.
-See for example [Hooker:1995]_ for a discussion on shortcomings and
+See for example [HOO1995]_ for a discussion on shortcomings and
 unfortunate consequences of benchmarking based on CPU time.
 
 We display the average runtime (aRT, see Section `Average Runtime`_)
@@ -433,13 +433,12 @@ probability one and with runtime
 .. math::
     :nowrap:
     :label: RTrestart
-
-    \begin{equation}
-    \label{index-RTrestart}  
+    
+    \begin{equation*}%%%\label{index-RTrestart}  
       % ":eq:`RTrestart`" becomes "\eqref{index-RTrestart}" in the LaTeX
     \mathbf{RT}(n,f_\theta,\Delta I) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
     \enspace,
-    \end{equation}
+    \end{equation*}%%%
 
 where :math:`J` is a random variable that models the number of unsuccessful
 runs until a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random
@@ -528,35 +527,41 @@ Limitations
 Average Runtime
 ==================
 
-The average runtime (|aRT|) (introduced in [PRI1997]_ as ENES and
+The average runtime (|aRT|), introduced in [PRI1997]_ as ENES and
 analyzed in [AUG2005]_ as success performance and previously called
-ERT in [HAN2009ex]_) is an estimate of the expected runtime of the restart
+ERT in [HAN2009ex]_, is an estimate of the expected runtime of the restart
 algorithm given in Equation :eq:`RTrestart` that is used within the COCO_
-framework. The |aRT| from a set of trials is computed as the sum of all evaluations in unsuccessful trials plus the sum of the runtimes in successful trials, all divided by the number of successful trials. 
+framework. 
 
-More precisely, the expected runtime of the restart algorithm
-(on a parametrized family of functions in order to reach a precision
-:math:`\epsilon`) writes
+Computation
+-----------
+We compute the |aRT| from a set of trials as the sum of all evaluations in unsuccessful trials plus the sum of the runtimes in successful trials, both divided by the number of successful trials. 
+
+
+Motivation
+-----------
+
+The expected runtime of the restart algorithm writes [AUG2005]_
 
 .. math::
     :nowrap:
 
     \begin{eqnarray*}
+    \label{eq:two}
+    \refstepcounter{equation}
     \mathbb{E}(\mathbf{RT}) & =
-    & \mathbb{E}(\mathrm{RT}^{\rm s})  + \frac{1-p_s}{p_s} 	 \mathbb{E}(\mathrm{RT}^{\rm us})
+    & \mathbb{E}(\mathrm{RT}^{\rm s})  + \frac{1-p_s}{p_s}
+      \mathbb{E}(\mathrm{RT}^{\rm us})
+    \enspace,
     \end{eqnarray*}
 
+where |ps| is the probability of success of the algorithm and notations from above are used.
 
-where |ps| is the probability of success of the algorithm (to reach the
-underlying precision) and :math:`\mathrm{RT}^s` denotes the random
-variable modeling the runtime of successful runs and
-:math:`\mathrm{RT}^{\rm us}` the evaluations in unsuccessful runs (see
-[AUG2005]_). Given a finite number of realizations of the runtime of
-an algorithm (run on a parametrized family of functions to reach a
-certain precision) that comprise at least one successful run, say
-:math:`\{\mathrm{RT}^{\rm us}_i, \mathrm{RT}^{\rm s}_j \}`, we can
-estimate the expected runtime of the restart algorithm given in the
-previous equation as the average runtime defined as
+Given a finite number of realizations of the runtime of
+an algorithm that comprise at least one successful run, say
+:math:`\{\mathrm{RT}^{\rm us}_i, \mathrm{RT}^{\rm s}_j \}`, we
+estimate the expected runtime of the restart algorithm from 
+the average runtime
 
 .. math::
     :nowrap:
@@ -571,16 +576,11 @@ previous equation as the average runtime defined as
 .. |Tus| replace:: :math:`\mathrm{RT}_\mathrm{US}`
 .. |ps| replace:: :math:`p_{\mathrm{s}}`
 
-
-where |Ts| and |Tus| denote the average runtime for successful and
-unsuccessful trials,  |nbsucc| denotes the number of successful trials
+where |Ts| and |Tus| denote the average runtime for successful trials and
+the average number of evaluations in unsuccessful trials,  
+|nbsucc| denotes the number of successful trials
 and  :math:`\#\mathrm{FEs}` is the number of function evaluations
-conducted in all trials (before to reach a given precision).
-
-Remark that while not explicitly denoted, the average runtime depends on
-the target and more precisely on a precision. It also depends strongly
-on the termination criterion of the algorithm.
-
+conducted in all trials (before to reach a given target precision).
 
 
 .. _sec:ECDF:
@@ -590,33 +590,33 @@ Empirical Cumulative Distribution Functions
 
 .. Anne: to be discussed - I talk about infinite runtime to make the definition below .. .. Anne: fine. However it's probably not precise given that runtime above :math:`10^7` are .. Anne: infinite.
 
-We display distributions of runtimes through empirical cumulative
-distribution functions (ECDF). Formally, let us consider a set of
-problems :math:`\mathcal{P}` and a collection of runtimes to solve those
-problems :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq k \leq
-K}` where :math:`K` is the number of runtimes per problem. When the
+We display a set of runtimes through the empirical cumulative
+distribution function (ECDF). Formally, let us consider a set of
+problems :math:`\mathcal{P}` and a collection of runtimes :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq k \leq
+K}` where :math:`K` is the number of trials per problem. When the
 problem is not solved, the undefined runtime is considered as infinite
-in order to make the mathematical definition consistent. The ECDF that
-we display is then defined as
-
+in order to make the mathematical definition consistent. The ECDF is defined as
 
 .. math::
 	:nowrap:
 
 	\begin{equation*}
-	\mathrm{ECDF}(\alpha) = \frac{1}{|\mathcal{P}| K} \sum_{p \in \mathcal{P},k} \mathbf{1} \left\{ \log_{10}( \mathrm{RT}_{p,k} / n ) \leq \alpha \right\} \enspace.
+	\mathrm{ECDF}(t) = \frac{1}{|\mathcal{P}| K} \sum_{p \in \mathcal{P},k} \mathbf{1} \left\{ \mathrm{RT}_{p,k} / n  \leq t \right\} \enspace.
 	\end{equation*}
 
-where we use :math:`\log(\infty)=\infty`.
+and displayed in a semi-log (lin-log, semilogx) plot. 
 
 The ECDF gives the *proportion of problems solved in less than a
-specified budget* which is read on the x-axis. For instance, we display
-in Figure :ref:`fig:ecdf`, the ECDF of the running times of the pure
+specified budget* or runtime, which is read on the x-axis. 
+
+For instance, we display
+in Figure :ref:`fig:ecdf`, the ECDF of the runtimes of the pure
 random search algorithm on the set of problems formed by the
 parametrized sphere function (first function of the single-objective
-``bbob`` test suite) in dimension :math:`n=5` with 51 relative targets
+``bbob`` test suite) in dimension :math:`n=5` with 51 targets
 uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and
-:math:`K=10^3`. We can read in this plot for example that a little bit
+:math:`K=10^3`. 
+We can read in this plot for example that a little bit
 less than 20 percent of the problems were solved in less than :math:`5
 \cdot 10^3 = 10^3 \cdot n` function evaluations.
 
@@ -753,7 +753,7 @@ different targets, we possibly have the runtime of different algorithms.
 
 .. raw:: latex
 
-    \section*{Acknowledgments}
+    \paragraph{Acknowledgments}
 
 This work was supported by the grant ANR-12-MONU-0009 (NumBBO)
 of the French National Research Agency.
@@ -791,7 +791,7 @@ __ http://arxiv.org/abs/1603.08776
    February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
-.. [Hooker:1995] J. N. Hooker Testing heuristics: We have it all wrong. In Journal of
+.. [HOO1995] J. N. Hooker Testing heuristics: We have it all wrong. In Journal of
     Heuristics, pages 33-42, 1995.
 .. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
    algorithms—pitfalls and remedies. In *Proceedings of the Fourteenth
@@ -802,7 +802,7 @@ __ http://arxiv.org/abs/1603.08776
 .. [PRI1997] K. Price. Differential evolution vs. the functions of
    the second ICEO. In Proceedings of the IEEE International Congress on
    Evolutionary Computation, pages 153–157, 1997.
-.. [Rios:2012] Luis Miguel Rios and Nikolaos V Sahinidis. Derivative-free optimization:
+.. [RIO2012] Luis Miguel Rios and Nikolaos V Sahinidis. Derivative-free optimization:
 	A review of algorithms and comparison of software implementations.
 	Journal of Global Optimization, 56(3):1247– 1293, 2013.
 .. [STE1946] S.S. Stevens (1946).
