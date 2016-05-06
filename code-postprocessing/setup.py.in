@@ -25,7 +25,7 @@ setup(
                           'js/*', 'tth/*', 
                           '../latex-templates/*.tex',
                           '../latex-templates/*.cls',
-													'../latex-templates/*.sty',
+                          '../latex-templates/*.sty',
                           'data/IPOP-CMA-ES/*.pickle.gz',
                           'data/RANDOMSEARCH/*.pickle.gz'
                           ]},
