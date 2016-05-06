@@ -306,7 +306,10 @@ the optimal function value, i.e. :math:`f^{\mathrm{opt}, \theta} =
 \min_\mathbf{x} f_\theta(\mathbf{x})`, in the multi-objective case this
 is the indicator value of an approximation of the Pareto front. This
 reference indicator value depends on the specific instance
-:math:`\theta`, and thus does the target indicator value. Based on this reference value and a set of target precision values |DI| we define for each problem instance and each precision a target value
+:math:`\theta`, and thus does the target indicator value. Based on this
+:reference value and a set of target precision values |DI| (independent
+:of the instance) we define for each problem instance and each precision
+:a target value
 
 .. math::
    :nowrap:
