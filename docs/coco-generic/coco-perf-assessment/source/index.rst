@@ -187,14 +187,19 @@ On Performance Measures
 =======================
 
 Evaluating performance of algorithms entails having measures that represent the performance of each algorithm. Our requirements for performances measures within COCO_ are the following. A performance measure should be
- * quantitative, as opposed to a simple ranking of algorithms. 
-   Ideally, the measure should be defined on a ratio scale (as opposed to an interval or ordinal scale) [STE1946]_, which allows to state that "Algorithm A is :math:`x` times better than Algorithm B". [#]_ 
- * assuming a wide variation of values (i.e., for example, typical values should not only range between 0.98 and 1.0) [#]_,
- * interpretable, in particular by having a meaning and semantics attached to the measured numbers,
- * relevant and meaningful with respect to the "real world",
- * as simple as possible.
 
-.. Following [HAN2009]_, we advocate **performance measures** that are
+* quantitative, as opposed to a simple ranking of algorithms. 
+  Ideally, the measure should be defined on a ratio scale (as opposed to an
+  interval or ordinal scale) [STE1946]_, which allows to state that "Algorithm A
+  is :math:`x` times better than Algorithm B". [#]_ 
+* assuming a wide variation of values (i.e., for example, typical values should 
+  not only range between 0.98 and 1.0) [#]_,
+* interpretable, in particular by having a meaning and semantics attached to 
+  the measured numbers,
+* relevant and meaningful with respect to the "real world",
+* as simple as possible.
+
+.. Following [HAN2009ex]_, we advocate **performance measures** that are
 
 .. Tea: Can we give some more explanation here?
 
@@ -256,23 +261,23 @@ For the performance assessment of algorithms, the fixed-target approach is super
 to the fixed-budget approach since it gives *quantitative and interpretable*
 data.
 
- * The fixed-budget approach (vertical cut) does not give *quantitatively
-   interpretable*  data:
-   the observation that Algorithm A reaches a function value that is, say, two
-   times smaller than the one reached by Algorithm B has in general no
-   interpretable meaning, mainly because there is no *a priori* way to determine
-   *how much* more difficult it is to reach a function value that is two times
-   smaller.
-   This, indeed, largely depends on the specific function and the specific
-   function value reached.
+* The fixed-budget approach (vertical cut) does not give *quantitatively
+  interpretable*  data:
+  the observation that Algorithm A reaches a function value that is, say, two
+  times smaller than the one reached by Algorithm B has in general no
+  interpretable meaning, mainly because there is no *a priori* way to determine
+  *how much* more difficult it is to reach a function value that is two times
+  smaller.
+  This, indeed, largely depends on the specific function and the specific
+  function value reached.
 
- * The fixed-target approach (horizontal cut)
-   *measures the time* to
-   reach a target function value. The measurement allows conclusions of the
-   type: Algorithm A is two (or ten, or a hundred) times faster than Algorithm B
-   in solving this problem (i.e. reaching the given target function value). 
-   The choice if the target value determines the difficulty and possibly even
-   characteristic of the problem to be solved. 
+* The fixed-target approach (horizontal cut)
+  *measures the time* to
+  reach a target function value. The measurement allows conclusions of the
+  type: Algorithm A is two (or ten, or a hundred) times faster than Algorithm B
+  in solving this problem (i.e. reaching the given target function value). 
+  The choice if the target value determines the difficulty and possibly even
+  characteristic of the problem to be solved. 
 
 Furthermore, for algorithms that are invariant under certain transformations
 of the function value (for example under order-preserving transformations, as
@@ -320,11 +325,8 @@ each problem instance and each precision |DI| (independent of the instance
 :math:`\theta`) a target value
 
 .. math::
-   :nowrap:
 
-   \begin{equation}
     I^{\rm target,\theta} = I^{\rm ref,\theta} + \Delta I \enspace,
-   \end{equation}
 
 such that for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a
 parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets
@@ -392,7 +394,7 @@ Like this, an algorithm that reaches :math:`I^{\rm chosen}_i` within at most :ma
 Runlength-based targets are used in COCO_ for the single-objective expensive optimization scenario. 
 The artificial best algorithm of BBOB-2009 is used as reference algorithm with the five budgets of :math:`0.5n`, :math:`1.2n`, :math:`3n`, :math:`10n`, and
 :math:`50n` function evaluations, where :math:`n` is the problem
-dimension. :math:`I(\mathcal{A}, t)` is the average runtime, |aRT| of :math:`\mathcal{A}` for the respective |DI| target precision. 
+dimension. :math:`I(\mathcal{A}, t)` is the average runtime |aRT| of :math:`\mathcal{A}` for the respective |DI| target precision. 
 
 Runlength-based targets have the advantage to make the target value setting less
 dependent on the expertise of a human designer, because only the reference
@@ -421,8 +423,12 @@ Formally, the runtime :math:`\mathrm{RT}(p)` is a random variable that represent
 A run or trial that reached the target value is called *successful*. [#]_
 For *unsuccessful trials*, the runtime is not defined, but the overall number of function evaluations in the given trial is a random variable denoted by :math:`\mathrm{RT}^{\rm us}(p)`. For a single run, the value of :math:`\mathrm{RT}^{\rm us}(p)` is the same for all failed targets. 
 
-To be able to compare algorithms with a wide range of different success probabilities, we consider the conceptual **restart algorithm**. Assuming
-an algorithm has a strictly positive probability |ps| to solve a problem :math:`p`, the repeatedly restarted algorithm solves the problem with probability one and with runtime
+To be able to compare algorithms with a wide range of different success probabilities, we consider the conceptual **restart algorithm**. 
+Given an algorithm has a strictly positive probability |ps| to solve a 
+problem :math:`p`, independent restarts of the algorithm solve the problem with
+probability one and with runtime
+
+.. |RTforDI| replace:: :math:`\mathbf{RT}(n,f_\theta,\Delta I)`
 
 .. math::
     :nowrap:
@@ -435,12 +441,11 @@ an algorithm has a strictly positive probability |ps| to solve a problem :math:`
 where :math:`J` is a random variable that models the number of unsuccessful
 runs until a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random
 variables corresponding to the runtime of unsuccessful trials and
-:math:`\mathrm{RT}^{\rm s}` is a random variable for the runtime of a
-successful trial [AUG2005]_.
+:math:`\mathrm{RT}^{\rm s}` represents the runtime of a
+successful trial [AUG2005]_. 
+If the probability of success is one, :math:`J` equals zero with probability one and the restart algorithm coincides with the original algorithm.
 
-If the probability of success is one, :math:`J=0` with probability one and the restart algorithm and the original algorithm coincide.
-
-Generally, the above equation expresses the runtime from repeated independent runs on the same problem instance (while the instance :math:`\theta_i` is not given explicitly). For the performance evaluation in the COCO_ framework, we apply the equation to runs on different instances :math:`\theta_i`, however instances from the same function, with the same dimension and the same target precision. 
+Generally, the above equation for |RTforDI| expresses the runtime from repeated independent runs on the same problem instance (while the instance :math:`\theta_i` is not given explicitly). For the performance evaluation in the COCO_ framework, we apply the equation to runs on different instances :math:`\theta_i`, however instances from the same function, with the same dimension and the same target precision. 
 
 .. [#] The notion of success is directly linked to a target value. A run can be successful with respect to some target values (some problems) and unsuccessful with respect to others. Success also often refers to the final, most difficult, smallest target value, which implies success for all other targets. 
 
@@ -475,64 +480,38 @@ We hence have for each parametrized problem a set of :math:`K\approx15` independ
    parametrized family of function in order to reach a relative target
    :math:`\Delta I` as
 
+.. |K| replace:: :math:`K`
 
-Simulated Restarts and Simulated Run-lengths
---------------------------------------------
+Simulated Restarts and Run-lengths
+-----------------------------------
 
 .. Niko: I'd like to reserve the notion of runtime to successful (simulated) runs. 
 
 .. simulated runtime instances of the virtually restarted algorithm
 
-The runtime of the conceptual restart algorithm given above is the basis for displaying performance within COCO_. 
-We use all runs on the same function and dimension (for the :math:`K` different instances) to simulate virtual restarts. 
-We need to have at least one successful run, otherwise the runtime remains undefined, because the virtual procedure never stops. 
-Then we construct artificial runs from the available empirical data. 
+The runtime of the conceptual restart algorithm as given above is the basis for displaying performance within COCO_. 
+We use the |K| different runs on the same function and dimension to simulate virtual restarts. 
+We need to assume to have at least one successful run. 
+Otherwise the runtime remains undefined, because the virtual procedure would never stop. 
+Then we construct artificial runs from the available empirical data:
+we repeatedly pick, uniformly at random with replacement, one of the |K| trials until we find, for the given target precision, a successful trial. 
+This procedure simulates a sample of the virtually restarted algorithm from the given data. 
+The measured runtime is the sum of the number of function evaluations from the unsuccessful trials added to the runtime of the last and successful trial, as computed in |RTforDI|. 
 
-can simulate (approximate) samples of the runtime of the restart algorithm by 
+In practice, we repeat the above procedure to sample :math:`N\approx100` simulated runtimes from the same underlying distribution, which then has striking similarities with the true distribution from a restarted algorithm [EFR1994]_. 
+To reduce the variance in this procedure when desired, the first trial in each sample is picked deterministically instead of randomly as the :math:`1 + (N~\mathrm{mod}~K)`-th trial from the data. 
 
-
-We pick uniformly at random (with replacement) a trial until we find a successful trial (for a given precision). 
-This procedure simulates a restarted algorithm from the given data. The measured runtime is than the sum of the number of function evaluations from the unsuccessful trial and the runtime of the last successful trial. 
-
-we draw a simulated
-run-length of the restart algorithm by repeatedly drawing uniformly at
-random and with replacement among all given runtimes till we draw a
-runtime from a successful trial. The simulated run-length is then the
-sum of the drawn runtimes.
-
-
-Simulated run-lengths are in particular only interesting in the case
-where at least one trial is not successful. In order to remove
-unnecessary stochastics in the case that many (or all) trials are
-successful, we advocate for a derandomized version of simulated
-run-lengths when we are interested in drawing a batch of :math:`N`
-simulated run-lengths:
-
-**Simulated Run-lengths (derandomized version):** Given a collection of
-runtimes for successful and unsuccessful trials to reach a given
-precision, we deterministically sweep through the trials and define the
-next simulated run-length as the run-length associated to the trial if
-it is successful and in the case of an unsuccessful trial as the sum of
-the associated run-length of the trial and the simulated run-length of
-the restarted algorithm as described above.
-
-Note that the latter derandomized version to draw simulated run-lengths
-has the minor disadvantage that the number of samples :math:`N` is
-restricted to a multiple of the trials in the data set.
-
-Limitations
-++++++++++++
-
-* instances are not the same
-
-* maximal unnatural budget in the experimental conditions
-
-As we will see in Section :ref:`sec:aRT` and Section :ref:`sec:ECDF`,
-our performance display relies on the runtime of the restart algorithm,
-either considering the average runtime (Section :ref:`sec:aRT`) or the
+.. Niko: average runtime is not based on simulated restarts, but computed directly...considering the average runtime (Section :ref:`sec:aRT`) or the
 distribution by displaying empirical cumulative distribution functions
 (Section :ref:`sec:ECDF`).
 
+
+Features and Limitations
++++++++++++++++++++++++++
+
+* Simulated restarts crucially rely on the assumption that the runtime distribution on each instance is the same. 
+
+* maximal unnatural budget in the experimental conditions
 
 
 
@@ -543,11 +522,11 @@ distribution by displaying empirical cumulative distribution functions
 .. _sec:aRT:
 
 Average Runtime
-=====================
+==================
 
 The average runtime (|aRT|) (introduced in [Price:1997]_ as ENES and
 analyzed in [AUG2005]_ as success performance and previously called
-ERT in [HAN2009]_) is an estimate of the expected runtime of the restart
+ERT in [HAN2009ex]_) is an estimate of the expected runtime of the restart
 algorithm given in Equation :eq:`RTrestart` that is used within the COCO
 framework. More precisely, the expected runtime of the restart algorithm
 (on a parametrized family of functions in order to reach a precision
@@ -787,14 +766,23 @@ of the French National Research Agency.
 .. [DOL2002] E.D. Dolan, J. J. Moré (2002). Benchmarking optimization software 
    with performance profiles. *Mathematical Programming* 91.2, 201-213. 
 
+.. [EFR1994] B. Efron and R. Tibshirani (1994). *An introduction to the
+   bootstrap*. CRC Press.
+
 .. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
   `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__. 
 __ http://numbbo.github.io/coco-doc/experimental-setup/
 __ http://arxiv.org/abs/1603.08776
 
-.. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009). Real-Parameter
+.. [HAN2009ex] N. Hansen, A. Auger, S. Finck, and R. Ros (2009). Real-Parameter
 	Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria
 	Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
+.. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
+   `Real-parameter black-box optimization benchmarking 2009: Noiseless
+   functions definitions`__. `Technical Report RR-6829`__, Inria, updated
+   February 2010.
+.. __: http://coco.gforge.inria.fr/
+.. __: https://hal.inria.fr/inria-00362633
 .. [Hooker:1995] J. N. Hooker Testing heuristics: We have it all wrong. In Journal of
     Heuristics, pages 33-42, 1995.
 .. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
