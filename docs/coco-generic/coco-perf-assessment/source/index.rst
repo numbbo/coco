@@ -458,13 +458,12 @@ Runs on Different Instances Are Interpreted as Independent Repetitions
 The different instantiations of the parametrized functions |ftheta| are a natural way to represent randomized repetitions. 
 For example, different instances implement random translations of the search space and hence a translation of the optimum [HAN2009fun]_. 
 Randomized restarts on the other hand are conducted from different initial points. 
-For translation invariant algorithms the two mechanisms are equivalent. 
+For translation invariant algorithms both mechanisms are equivalent and can be mutually exchanged. 
 
-We interpret runs performed on a given function |ftheta| with a given dimension but on different instances :math:`\theta_1,\ldots,\theta_K` as repetitions of the same problem. 
-Thereby we assume that instances of the same parametrized function are 
-similar to each other, more specifically, that they exhibit the same runtime
+We interpret runs performed on different instances :math:`\theta_1, \ldots, \theta_K` as repetitions of the same problem. 
+Thereby we assume that instances of the same parametrized function |ftheta| are 
+similar to each other, and more specifically that they exhibit the same runtime
 distribution for each given |DI|. 
-
 
 .. Runtimes collected for the different instances :math:`\theta_1, \ldots, \theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same target precision :math:`\Delta I` (see above) are thus assumed independent and identically distributed. 
 
@@ -491,32 +490,29 @@ Simulated Restarts and Run-lengths
 
 The runtime of the conceptual restart algorithm as given above is the basis for displaying performance within COCO_. 
 We use the |K| different runs on the same function and dimension to simulate virtual restarts. 
-We need to assume to have at least one successful run. 
-Otherwise the runtime remains undefined, because the virtual procedure would never stop. 
-Then we construct artificial runs from the available empirical data:
-we repeatedly pick, uniformly at random with replacement, one of the |K| trials until we find, for the given target precision, a successful trial. 
-This procedure simulates a sample of the virtually restarted algorithm from the given data. 
-The measured runtime is the sum of the number of function evaluations from the unsuccessful trials added to the runtime of the last and successful trial, as computed in |RTforDI|. 
+We assume to have at least one successful run. 
+Otherwise, the runtime remains undefined, because the virtual procedure would never stop. 
+Then, we construct artificial runs from the available empirical data:
+we repeatedly pick, uniformly at random with replacement, one of the |K| trials until we encounter a, for the given target precision, successful trial. 
+This procedure simulates a single sample of the virtually restarted algorithm from the given data. 
+As computed in |RTforDI| above, the measured runtime is the sum of the number of function evaluations from the unsuccessful trials added to the runtime of the last and successful trial. 
 
-In practice, we repeat the above procedure to sample :math:`N\approx100` simulated runtimes from the same underlying distribution, which then has striking similarities with the true distribution from a restarted algorithm [EFR1994]_. 
-To reduce the variance in this procedure when desired, the first trial in each sample is picked deterministically instead of randomly as the :math:`1 + (N~\mathrm{mod}~K)`-th trial from the data. 
+In practice, we repeat the above procedure to sample :math:`N\approx100` simulated runtimes from the same underlying distribution, 
+which has striking similarities with the true distribution from a restarted algorithm [EFR1994]_. 
+To reduce the variance in this procedure, when desired, the first trial in each sample is picked deterministically instead of randomly as the :math:`1 + (N~\mathrm{mod}~K)`-th trial from the data. [#]_
 
-.. Niko: average runtime is not based on simulated restarts, but computed directly...considering the average runtime (Section :ref:`sec:aRT`) or the
-distribution by displaying empirical cumulative distribution functions
-(Section :ref:`sec:ECDF`).
+.. Niko: average runtime is not based on simulated restarts, but computed directly...considering the average runtime (Section :ref:`sec:aRT`) or the distribution by displaying empirical cumulative distribution functions (Section :ref:`sec:ECDF`).
 
-
-Features and Limitations
-+++++++++++++++++++++++++
-
-* Simulated restarts crucially rely on the assumption that the runtime distribution on each instance is the same. 
-
-* maximal unnatural budget in the experimental conditions
+.. [#] The variance reducing effect is best exposed in the case where all runs are successful and :math:`N = K`, in which case each data is sampled exactly once.
 
 
+Limitations
++++++++++++++
 
-.. maybe we should indeed put a picture here
+* Simulated restarts rely on the assumption that the runtime distribution on each instance is the same. If this is not the case, they still provide a reasonable performance measure, however less of a meaningful interpretation of the result. 
 
+* The maximal number of evaluations for which sampled runtimes are meaningful 
+  and representative depends on the experimental conditions. If all runs are successful, no restarts are simulated and all runtimes are meaningful. If all runs terminated due to standard termination conditions in the used algorithm, simulated restarts reflect the original algorithm well. However, if a maximal budget is imposed for the purpose of benchmarking, simulated restarts are not necessarily reflective of the real performance. They are likely to give a too pessimistic viewpoint beyond at or beyond the chosen budget. See [HAN2016ex]_ for a more in depth discussion on how to setup restarts in the experiments. 
 
 
 .. _sec:aRT:
