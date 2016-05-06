@@ -432,11 +432,12 @@ probability one and with runtime
 
 .. math::
     :nowrap:
+    :label: RTrestart
 
-    \begin{equation*}
+    \begin{equation}\label{index-RTrestart}
     \mathbf{RT}(n,f_\theta,\Delta I) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
     \enspace,
-    \end{equation*}
+    \end{equation}
 
 where :math:`J` is a random variable that models the number of unsuccessful
 runs until a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random
@@ -511,6 +512,8 @@ Limitations
 
 * Simulated restarts rely on the assumption that the runtime distribution on each instance is the same. If this is not the case, they still provide a reasonable performance measure, however less of a meaningful interpretation of the result. 
 
+* The runtime of simulated restarts depends heavily on termination conditions applied in the benchmarked algorithm. The reason are the 
+
 * The maximal number of evaluations for which sampled runtimes are meaningful 
   and representative depends on the experimental conditions. If all runs are successful, no restarts are simulated and all runtimes are meaningful. If all runs terminated due to standard termination conditions in the used algorithm, simulated restarts reflect the original algorithm well. However, if a maximal budget is imposed for the purpose of benchmarking, simulated restarts are not necessarily reflective of the real performance. They are likely to give a too pessimistic viewpoint beyond at or beyond the chosen budget. See [HAN2016ex]_ for a more in depth discussion on how to setup restarts in the experiments. 
 
@@ -531,10 +534,10 @@ framework. More precisely, the expected runtime of the restart algorithm
 .. math::
     :nowrap:
 
-	\begin{eqnarray}
-	\mathbb{E}(\mathbf{RT}) & =
-	& \mathbb{E}(\mathrm{RT}^{\rm s})  + \frac{1-p_s}{p_s} 	 \mathbb{E}(\mathrm{RT}^{\rm us})
-    \end{eqnarray}
+    \begin{eqnarray*}
+    \mathbb{E}(\mathbf{RT}) & =
+    & \mathbb{E}(\mathrm{RT}^{\rm s})  + \frac{1-p_s}{p_s} 	 \mathbb{E}(\mathrm{RT}^{\rm us})
+    \end{eqnarray*}
 
 
 where |ps| is the probability of success of the algorithm (to reach the
@@ -551,10 +554,10 @@ previous equation as the average runtime defined as
 .. math::
     :nowrap:
 
-	\begin{eqnarray}
+	\begin{eqnarray*}
 	\mathrm{aRT} & = & \mathrm{RT}_\mathrm{S} + \frac{1-p_{\mathrm{s}}}{p_{\mathrm{s}}} \,\mathrm{RT}_\mathrm{US} \\  & = & \frac{\sum_i \mathrm{RT}^{\rm us}_i + \sum_j \mathrm{RT}^{\rm us}_j }{\#\mathrm{succ}} \\
 	& = & \frac{\#\mathrm{FEs}}{\#\mathrm{succ}}
-    \end{eqnarray}
+    \end{eqnarray*}
 
 .. |nbsucc| replace:: :math:`\#\mathrm{succ}`
 .. |Ts| replace:: :math:`\mathrm{RT}_\mathrm{S}`

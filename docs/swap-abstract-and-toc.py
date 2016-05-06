@@ -1,12 +1,13 @@
 #! /usr/bin/env python 
-"""In effect, this script moves ``\\tableofcontents`` behind the abstract and
-calls ``pdflatex`` 4 times. 
+"""In effect, this script moves ``\\tableofcontents`` behind the abstract, 
+does a few other replacements, and calls ``pdflatex`` 4 times. 
 
 The file to work upon is the first input argument. 
 
 Details: First, all ``\\tableofcontents`` are incommented, second, a 
 ``\\tableofcontents`` command is written directly behind ``\end{abstract}``, 
 third, a space before each ``\\footnote`` command is removed. 
+TODO: try to find a way to refer to equations, which have a latex label. 
 
 """
 
