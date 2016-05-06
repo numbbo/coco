@@ -697,7 +697,9 @@ algorithms can be displayed on the same graph as depicted in Figure
 
 
 .. Note:: The ECDF graphs are also known under the name data profile
-    (see [MOR2009]_). However we aggregate here over several targets for a same function while the data profile are standardly used displaying results for a single fixed target [Rios:2012]_.
+    (see [MOR2009]_). However we aggregate here over several targets
+    for a same function while data profiles are standardly used
+    displaying results for a single fixed target [Rios:2012]_.
 
     Also, here we advocate **not to aggregate over dimension** as the
     dimension is typically an input parameter to the algorithm that can
@@ -705,16 +707,16 @@ algorithms can be displayed on the same graph as depicted in Figure
     dimensions. Hence, the COCO platform does not provide ECDF
     aggregated over dimension.
 
-    Data profile are often used using different functions with different
+    Data profiles are often used using different functions with different
     dimensions.
 
-.. Note:: The cross on the ECDF plots of represents the median of the maximal length of the unsuccessful runs to solve the problems aggregated within the ECDF. 
+.. Note:: The cross on the ECDF plots of Coco_ represents the median of the maximal length of the unsuccessful runs to solve the problems aggregated within the ECDF. 
 
 
 Best 2009 "Algorithm"
 ---------------------
 The ECDF graphs are typically displaying an ECDF annotated as best 2009
-(thick maroon line with diamonds markers in Figure :ref:`fig:ecdfall`
+(thick maroon line with diamond markers in Figure :ref:`fig:ecdfall`
 for instance). This ECDF corresponds to an artificial algorithm: for
 each problem, we select the algorithm within the dataset obtained during
 the BBOB-2009 workshop that has the best |aRT|. We are then using the
@@ -727,7 +729,7 @@ different targets, we possibly have the runtime of different algorithms.
  constructed, that is the ECDF of one algorithm from BBOB-2009 could
  cross the best 2009 curve. This could typically happen if one algorithm
  for an easy target has many small running times but however one very
- large such that its aRT is not the best but the many small run time make
+ large such that its aRT is not the best but the many small run times make
  the ECDF curve cross the best 2009 one.
 
 
