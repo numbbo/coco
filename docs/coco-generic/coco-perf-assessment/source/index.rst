@@ -283,12 +283,20 @@ only, while fixed-budget measures require the transformation of all resulting da
 
 Missing Values
 ---------------
-Investigating Figure :ref:`fig:HorizontalvsVertical` more carefully, we find that not all graphs intersect with either the vertical or the horizontal line. On the one hand, if the fixed budget is too large, the algorithm might solve the problem before the budget is exceeded. [#]_ The algorithm performs better than the measurement is able to reflect. 
+Investigating Figure :ref:`fig:HorizontalvsVertical` more carefully, we find that not all graphs intersect with either the vertical or the horizontal line. 
+On the one hand, if the fixed budget is too large, the algorithm might solve the problem before the budget is exceeded. [#]_ 
+The algorithm performs better than the measurement is able to reflect, which can lead to a serious misinterpretation of performance results. 
+The remedy is to define a final target value and measure the runtime if the final target is hit. 
 
-On the other hand, if the fixed target is too difficult, the algorithm might never hit the target within the given experimental conditions. [#]_ The algorithm performs worse than the experiment is able to reflect. A possible remedy is to run the algorithm longer. 
+On the other hand, if the fixed target is too difficult, the algorithm might never hit the target under the given experimental conditions. [#]_ 
+The algorithm performs worse than the experiment is able to reflect, while we get at least a lower bound on the runtime. 
+A possible remedy is to run the algorithm longer. 
+Another possible remedy is to set a maximum budget. 
+However, measurements at the maximum budget can only be interpreted as ranking results, defeating the original objective. Furthermore, introducing a maximum budget prevents to run an algorithm long enough to get an actual runtime measurement.
 
-We collect runtimes to reach given target values. In the case where a target is not reached, the runtime is undefined. 
-The overall number of function evaluations of the corresponding run provides an empirical observation for a lower bound on the (non-observed) runtime to reach the given target.
+In COCO_, we collect the runtimes to reach given target values. 
+When a target is never reached, the runtime is undefined, 
+but the overall number of function evaluations of the corresponding run provides an empirical observation for a lower bound on the runtime to reach the given target.
 
 .. [#] Even in continuous domain, from a benchmarking, a practical, and a numerical viewpoint, the set of solutions that indisputably solve the problem have a volume larger than zero. 
 
@@ -300,16 +308,16 @@ Target Values
 
 .. |DI| replace:: :math:`\Delta I`
 
-We define for each problem a reference quality indicator value,
-:math:`I^{\rm ref, \theta}`. In the single-objective case this can be
-the optimal function value, i.e. :math:`f^{\mathrm{opt}, \theta} =
-\min_\mathbf{x} f_\theta(\mathbf{x})`, in the multi-objective case this
-is the indicator value of an approximation of the Pareto front. This
-reference indicator value depends on the specific instance
-:math:`\theta`, and thus does the target indicator value. Based on this
-:reference value and a set of target precision values |DI| (independent
-:of the instance) we define for each problem instance and each precision
-:a target value
+We define for each problem a reference quality indicator value, :math:`I^{\rm ref, \theta}`. 
+In the single-objective case this can be the optimal function value, i.e.
+:math:`f^{\mathrm{opt}, \theta} = \min_\mathbf{x} f_\theta(\mathbf{x})`, 
+in the multi-objective case this is the indicator value of an approximation of
+the Pareto front. 
+This reference indicator value depends on the specific instance
+:math:`\theta`, and thus does the target indicator value. 
+Based on this reference value and a set of target precision values we define for
+each problem instance and each precision |DI| (independent of the instance
+:math:`\theta`) a target value
 
 .. math::
    :nowrap:
@@ -318,13 +326,17 @@ reference indicator value depends on the specific instance
     I^{\rm target,\theta} = I^{\rm ref,\theta} + \Delta I \enspace,
    \end{equation}
 
-such that for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`I^{\rm target,{\theta}_1}, \ldots,I^{\rm target,{\theta}_K}` are associated to the same precision. 
+such that for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a
+parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets
+:math:`I^{\rm target,{\theta}_1}, \ldots,I^{\rm target,{\theta}_K}` are
+associated to the same precision. 
 
 Depending on the context, when we refer to a problem this includes the used quality indicator and a given target value (or precision). 
-We say, for example, that "algorithm A is solving problem :math:`p=(n,f_\theta,\theta,I,I^{\rm target})` after :math:`t` function evaluations" if the quality indicator function value :math:`I`  during the optimization of :math:`(n,f_\theta,\theta)` reaches a value of :math:`I^{\rm target}` or lower for the first time after :math:`t` function evaluations.
-
- 
-.. Anne: Dimo, why did you drop the theta-dependency of I^target
+We say, for example, that "algorithm A is solving problem :math:`p=(n, f_\theta,
+\theta, I, I^{\rm target})` after :math:`t` function evaluations" if the quality
+indicator function value :math:`I` during the optimization of :math:`(n,
+f_\theta, \theta)` reaches a value of :math:`I^{\rm target}` or lower for the
+first time after :math:`t` function evaluations.
 
 .. Anne: I think that we have an organization problem - this definition of
   problem,  function becomes now too long and should most likely be in a
@@ -382,7 +394,12 @@ The artificial best algorithm of BBOB-2009 is used as reference algorithm with t
 :math:`50n` function evaluations, where :math:`n` is the problem
 dimension. :math:`I(\mathcal{A}, t)` is the average runtime, |aRT| of :math:`\mathcal{A}` for the respective |DI| target precision. 
 
-Runlength-based targets have the advantage to make the target value setting less dependent on the expertise of a human designer, because only the reference budgets have to be chosen a priori. Reference budgets, as runtimes, are intuitively meaningful quantities, on which it is comparatively simple to decide upon. Runlength-based targets have the disadvantage to depend on the choice of a reference data set. 
+Runlength-based targets have the advantage to make the target value setting less
+dependent on the expertise of a human designer, because only the reference
+*budgets* have to be chosen a priori. Reference budgets, as runtimes, are
+intuitively meaningful quantities, on which it is comparatively simple to decide
+upon. 
+Runlength-based targets have the disadvantage to depend on the choice of a reference data set. 
 
 
 Single Runtime Computation    
@@ -433,17 +450,20 @@ Runs on Different Instances Are Interpreted as Independent Repetitions
 .. The performance assessment in COCO_ heavily relies on the conceptual restart algorithm. 
 .. However, we collect at most one single runtime per problem while more data points are needed to display significant data. 
 
-In order to measure the performance on a given function and dimension and target precision, we interpret different runs performed on
-different instances :math:`\theta_1,\ldots,\theta_K` of the same function
-:math:`f_\theta` as repetitions of the same problem. 
-This assumes that instances of the same parametrized function are 
+The different instantiations of the parametrized functions |ftheta| are a natural way to represent randomized repetitions. 
+For example, different instances implement random translations of the search space and hence a translation of the optimum [HAN2009fun]_. 
+Randomized restarts on the other hand are conducted from different initial points. 
+For translation invariant algorithms the two mechanisms are equivalent. 
+
+We interpret runs performed on a given function |ftheta| with a given dimension but on different instances :math:`\theta_1,\ldots,\theta_K` as repetitions of the same problem. 
+Thereby we assume that instances of the same parametrized function are 
 similar to each other, more specifically, that they exhibit the same runtime
-distribution for a given |DI|. 
+distribution for each given |DI|. 
 
 
 .. Runtimes collected for the different instances :math:`\theta_1, \ldots, \theta_K` of the same parametrized function :math:`f_\theta` and with respective targets associated to the same target precision :math:`\Delta I` (see above) are thus assumed independent and identically distributed. 
 
-We hence have for each parametrized problem a set of :math:`K` independent runs, typically between 10 and 15, which are used to compute artificial runtimes of the conceptual restart algorithm. 
+We hence have for each parametrized problem a set of :math:`K\approx15` independent runs, which are used to compute artificial runtimes of the conceptual restart algorithm. 
 
 .. .. Note:: Considering the runtime of the restart algorithm allows to compare
    quantitatively the two different scenarios where
@@ -456,29 +476,30 @@ We hence have for each parametrized problem a set of :math:`K` independent runs,
    :math:`\Delta I` as
 
 
-As we will see in Section :ref:`sec:aRT` and Section :ref:`sec:ECDF`,
-our performance display relies on the runtime of the restart algorithm,
-either considering the average runtime (Section :ref:`sec:aRT`) or the
-distribution by displaying empirical cumulative distribution functions
-(Section :ref:`sec:ECDF`).
+Simulated Restarts and Simulated Run-lengths
+--------------------------------------------
+
+.. Niko: I'd like to reserve the notion of runtime to successful (simulated) runs. 
+
+.. simulated runtime instances of the virtually restarted algorithm
+
+The runtime of the conceptual restart algorithm given above is the basis for displaying performance within COCO_. 
+We use all runs on the same function and dimension (for the :math:`K` different instances) to simulate virtual restarts. 
+We need to have at least one successful run, otherwise the runtime remains undefined, because the virtual procedure never stops. 
+Then we construct artificial runs from the available empirical data. 
+
+can simulate (approximate) samples of the runtime of the restart algorithm by 
 
 
-Simulated Run-lengths of Restart Algorithms
--------------------------------------------
+We pick uniformly at random (with replacement) a trial until we find a successful trial (for a given precision). 
+This procedure simulates a restarted algorithm from the given data. The measured runtime is than the sum of the number of function evaluations from the unsuccessful trial and the runtime of the last successful trial. 
 
-The runtime of the conceptual restart algorithm given above is the basis for displaying performance within COCO. 
-We can simulate some (approximate) samples of the runtime of the restart
-algorithm by constructing so-called simulated run-lengths from the
-available empirical data.
-
-**Simulated Run-length:** Given a collection of runtimes for successful
-and unsuccessful trials to reach a given precision, we draw a simulated
+we draw a simulated
 run-length of the restart algorithm by repeatedly drawing uniformly at
 random and with replacement among all given runtimes till we draw a
 runtime from a successful trial. The simulated run-length is then the
 sum of the drawn runtimes.
 
-.. Note:: The construction of simulated run-lengths assumes that at least one runtime is associated to a successful trial.
 
 Simulated run-lengths are in particular only interesting in the case
 where at least one trial is not successful. In order to remove
@@ -498,6 +519,22 @@ the restarted algorithm as described above.
 Note that the latter derandomized version to draw simulated run-lengths
 has the minor disadvantage that the number of samples :math:`N` is
 restricted to a multiple of the trials in the data set.
+
+Limitations
+++++++++++++
+
+* instances are not the same
+
+* maximal unnatural budget in the experimental conditions
+
+As we will see in Section :ref:`sec:aRT` and Section :ref:`sec:ECDF`,
+our performance display relies on the runtime of the restart algorithm,
+either considering the average runtime (Section :ref:`sec:aRT`) or the
+distribution by displaying empirical cumulative distribution functions
+(Section :ref:`sec:ECDF`).
+
+
+
 
 .. maybe we should indeed put a picture here
 
