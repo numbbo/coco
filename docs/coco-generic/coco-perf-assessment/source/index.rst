@@ -29,6 +29,7 @@ COCO: Performance Assessment
 .. |instance| replace:: :math:`\mathrm{instance}`
 .. |R| replace:: :math:`\mathbb{R}`
 .. |i| replace:: :math:`i`
+.. |t| replace:: :math:`t`
 .. |thetai| replace:: :math:`\theta_i`
 .. |ftheta| replace::  :math:`f_{\theta}`
 
@@ -423,7 +424,9 @@ Formally, the runtime :math:`\mathrm{RT}(p)` is a random variable that represent
 A run or trial that reached the target value is called *successful*. [#]_
 For *unsuccessful trials*, the runtime is not defined, but the overall number of function evaluations in the given trial is a random variable denoted by :math:`\mathrm{RT}^{\rm us}(p)`. For a single run, the value of :math:`\mathrm{RT}^{\rm us}(p)` is the same for all failed targets. 
 
-To be able to compare algorithms with a wide range of different success probabilities, we consider the conceptual **restart algorithm**. 
+.. TODO:: (simulated) restarts rationales: allow to compare algorithms with a wide range of different success probabilities, reflect what we do in reality
+
+We consider the conceptual **restart algorithm**. 
 Given an algorithm has a strictly positive probability |ps| to solve a 
 problem :math:`p`, independent restarts of the algorithm solve the problem with
 probability one and with runtime
@@ -434,11 +437,11 @@ probability one and with runtime
     :nowrap:
     :label: RTrestart
     
-    \begin{equation*}%%%\label{index-RTrestart}  
+    \begin{equation*}%%remove*%%\label{index-RTrestart}  
       % ":eq:`RTrestart`" becomes "\eqref{index-RTrestart}" in the LaTeX
     \mathbf{RT}(n,f_\theta,\Delta I) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
     \enspace,
-    \end{equation*}%%%
+    \end{equation*}%%remove*%%
 
 where :math:`J` is a random variable that models the number of unsuccessful
 runs until a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random
@@ -516,10 +519,10 @@ Limitations
 
 * Simulated restarts rely on the assumption that the runtime distribution on each instance is the same. If this is not the case, they still provide a reasonable performance measure, however less of a meaningful interpretation of the result. 
 
-* The runtime of simulated restarts depends heavily on termination conditions applied in the benchmarked algorithm. The reason are the 
+* The runtime of simulated restarts may depend heavily on termination conditions applied in the benchmarked algorithm. The reason are the evaluations spent in unsuccessful trials, compare :eq:`RTrestart`.  
 
 * The maximal number of evaluations for which sampled runtimes are meaningful 
-  and representative depends on the experimental conditions. If all runs are successful, no restarts are simulated and all runtimes are meaningful. If all runs terminated due to standard termination conditions in the used algorithm, simulated restarts reflect the original algorithm well. However, if a maximal budget is imposed for the purpose of benchmarking, simulated restarts are not necessarily reflective of the real performance. They are likely to give a too pessimistic viewpoint beyond at or beyond the chosen budget. See [HAN2016ex]_ for a more in depth discussion on how to setup restarts in the experiments. 
+  and representative depends on the experimental conditions. If all runs are successful, no restarts are simulated and all runtimes are meaningful. If all runs terminated due to standard termination conditions in the used algorithm, simulated restarts also reflect the original algorithm. However, if a maximal budget is imposed for the purpose of benchmarking, simulated restarts do not necessarily reflect the real performance. They are likely to give a too pessimistic viewpoint beyond at or beyond the chosen budget. See [HAN2016ex]_ for a more in depth discussion on how to setup restarts in the experiments. 
 
 
 .. _sec:aRT:
@@ -528,9 +531,9 @@ Average Runtime
 ==================
 
 The average runtime (|aRT|), introduced in [PRI1997]_ as ENES and
-analyzed in [AUG2005]_ as success performance and previously called
-ERT in [HAN2009ex]_, is an estimate of the expected runtime of the restart
-algorithm given in Equation :eq:`RTrestart` that is used within the COCO_
+analyzed in [AUG2005]_ as success performance and referred to as 
+ERT in [HAN2009ex]_, estimates the expected runtime of the restart
+algorithm given in :eq:`RTrestart` within the COCO_
 framework. 
 
 Computation
@@ -547,8 +550,6 @@ The expected runtime of the restart algorithm writes [AUG2005]_
     :nowrap:
 
     \begin{eqnarray*}
-    \label{eq:two}
-    \refstepcounter{equation}
     \mathbb{E}(\mathbf{RT}) & =
     & \mathbb{E}(\mathrm{RT}^{\rm s})  + \frac{1-p_s}{p_s}
       \mathbb{E}(\mathrm{RT}^{\rm us})
@@ -582,6 +583,9 @@ the average number of evaluations in unsuccessful trials,
 and  :math:`\#\mathrm{FEs}` is the number of function evaluations
 conducted in all trials (before to reach a given target precision).
 
+Rationale and Limitations
+--------------------------
+The average runtime, |aRT|, is taken over different instances, for the same function, dimension, and target precision, as these instances are interpreted as repetitions. Taking the average is (only) meaningful if each instance obeys a similar distribution. If one instance is considerably harder than the others, the average is dominated by this instance. For averaging runtimes from different functions or target precisions, taking the logarithm is advisable. 
 
 .. _sec:ECDF:
 
@@ -590,35 +594,41 @@ Empirical Cumulative Distribution Functions
 
 .. Anne: to be discussed - I talk about infinite runtime to make the definition below .. .. Anne: fine. However it's probably not precise given that runtime above :math:`10^7` are .. Anne: infinite.
 
-We display a set of runtimes through the empirical cumulative
-distribution function (ECDF). Formally, let us consider a set of
+We display a set of runtimes with the empirical cumulative
+distribution function (ECDF), AKA empirical distribution function. 
+Formally, let us consider a set of
 problems :math:`\mathcal{P}` and a collection of runtimes :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq k \leq
 K}` where :math:`K` is the number of trials per problem. When the
 problem is not solved, the undefined runtime is considered as infinite
-in order to make the mathematical definition consistent. The ECDF is defined as
+in order to make the mathematical definition consistent. 
+The ECDF is defined as
 
 .. math::
 	:nowrap:
 
 	\begin{equation*}
-	\mathrm{ECDF}(t) = \frac{1}{|\mathcal{P}| K} \sum_{p \in \mathcal{P},k} \mathbf{1} \left\{ \mathrm{RT}_{p,k} / n  \leq t \right\} \enspace.
+	\mathrm{ECDF}(t) = \frac{1}{|\mathcal{P}| K} \sum_{p \in \mathcal{P},k} \mathbf{1} \left\{ \mathrm{RT}_{p,k} / n  \leq t \right\} \enspace,
 	\end{equation*}
 
-and displayed in a semi-log (lin-log, semilogx) plot. 
+counting, as a function of time |t|, the number of runtimes which do not 
+exceed :math:`n\times t`, divided by the number of all runs. 
+The ECDF is displayed in a semi-log (lin-log, semi-logx) plot. 
 
-The ECDF gives the *proportion of problems solved in less than a
-specified budget* or runtime, which is read on the x-axis. 
+The ECDF gives the *proportion of problems solved within a
+specified budget*, where the budget is given on the x-axis. 
 
-For instance, we display
-in Figure :ref:`fig:ecdf`, the ECDF of the runtimes of the pure
+For instance, we display in Figure :ref:`fig:ecdf`, 
+the ECDF of the runtimes of the pure
 random search algorithm on the set of problems formed by the
 parametrized sphere function (first function of the single-objective
 ``bbob`` test suite) in dimension :math:`n=5` with 51 targets
 uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and
 :math:`K=10^3`. 
-We can read in this plot for example that a little bit
-less than 20 percent of the problems were solved in less than :math:`5
-\cdot 10^3 = 10^3 \cdot n` function evaluations.
+
+We can see in this plot that almost 20 percent of the problems 
+were solved with :math:`10^3 \cdot n = 5 \cdot 10^3` function evaluations.
+
+.. TODO:: 
 
 Note that we consider **runtimes of the restart algorithm**, that is, we
 use the idea of simulated run-lengths of the restart algorithm as
@@ -699,7 +709,7 @@ algorithms can be displayed on the same graph as depicted in Figure
 .. Note:: The ECDF graphs are also known under the name data profile
     (see [MOR2009]_). However we aggregate here over several targets
     for a same function while data profiles are standardly used
-    displaying results for a single fixed target [Rios:2012]_.
+    displaying results for a single fixed target [RIO2012]_.
 
     Also, here we advocate **not to aggregate over dimension** as the
     dimension is typically an input parameter to the algorithm that can
@@ -710,7 +720,7 @@ algorithms can be displayed on the same graph as depicted in Figure
     Data profiles are often used using different functions with different
     dimensions.
 
-.. Note:: The cross on the ECDF plots of Coco_ represents the median of the maximal length of the unsuccessful runs to solve the problems aggregated within the ECDF. 
+.. Note:: The cross on the ECDF plots of COCO_ represents the median of the maximal length of the unsuccessful runs to solve the problems aggregated within the ECDF. 
 
 
 Best 2009 "Algorithm"
