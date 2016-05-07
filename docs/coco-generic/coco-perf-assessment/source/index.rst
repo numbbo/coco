@@ -532,10 +532,10 @@ Rationales and Limitations
 
 * Simulated restarts rely on the assumption that the runtime distribution on each instance is the same. If this is not the case, they still provide a reasonable performance measure, however less of a meaningful interpretation of the result. 
 
-* The runtime of simulated restarts may depend heavily on termination conditions applied in the benchmarked algorithm, due to the evaluations spent in unsuccessful trials, compare :eq:`RTrestart`.  
+* The runtime of simulated restarts may depend heavily on termination conditions applied in the benchmarked algorithm, due to the evaluations spent in unsuccessful trials, compare :eq:`RTrestart`. This can be interpreted as disadvantage, when termination is considered as a trivial detail in the implementation, or as an advantage, when termination is considered a relevant component in the practical application of numerical optimization algorithms. 
 
 * The maximal number of evaluations for which sampled runtimes are meaningful 
-  and representative depends on the experimental conditions. If all runs are successful, no restarts are simulated and all runtimes are meaningful. If all runs terminated due to standard termination conditions in the used algorithm, simulated restarts also reflect the original algorithm. However, if a maximal budget is imposed for the purpose of benchmarking, simulated restarts do not necessarily reflect the real performance. They are likely to give a too pessimistic viewpoint beyond at or beyond the chosen budget. See [HAN2016ex]_ for a more in depth discussion on how to setup restarts in the experiments. 
+  and representative depends on the experimental conditions. If all runs are successful, no restarts are simulated and all runtimes are meaningful. If all runs terminated due to standard termination conditions in the used algorithm, simulated restarts also reflect the original algorithm. However, if a maximal budget is imposed for the purpose of benchmarking, simulated restarts do not necessarily reflect the real performance. In this case and if the success probability drops below 1/2, the result is likely to give a too pessimistic viewpoint at or beyond the chosen maximal budget. See [HAN2016ex]_ for a more in depth discussion on how to setup restarts in the experiments. 
 
 .. [#] The range of success probabilities is bounded by the number of instances to roughly :math:`2/|K|.`
 
@@ -617,49 +617,35 @@ The ECDF displays the *proportion of problems solved within a
 specified budget*, where the budget is given on the x-axis. 
 
 Formally, let us consider a set of problems :math:`\mathcal{P}` 
-and |N| simulated runtimes on each problem, :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq j \leq N}`. 
-When the problem is not solved, the undefined runtime is considered as infinite
-in order to make the mathematical definition consistent. 
+and |N| simulated runtimes on each problem. 
+When the problem is not solved, the undefined runtime is considered as infinite. 
 The ECDF is defined as
 
 .. math::
 	:nowrap:
 
 	\begin{equation*}
-	\mathrm{ECDF}(t) = \frac{1}{|\mathcal{P}| K} \sum_{p \in \mathcal{P},k} \mathbf{1} \left\{ \mathrm{RT}_{p,k} / n  \leq t \right\} \enspace,
+	\mathrm{ECDF}(t) = \frac{1}{|\mathcal{P}|} \sum_{p \in \mathcal{P}} \frac{1}{N}\sum_{i=1}^N \mathbf{1} \left\{ \mathbf{RT}(p) / n  \leq t \right\} \enspace,
 	\end{equation*}
 
-counting the number of runtimes which do not exceed the time :math:`t\times n`, divided by the number of all runs. 
+counting the number of runtimes which do not exceed the time :math:`t\times n`, divided by the number of all simulated runs. 
 The ECDF is displayed in a semi-log (lin-log, semi-logx) plot. 
 
-For instance, we display in Figure :ref:`fig:ecdf`, 
-the ECDF of the runtimes of the pure
-random search algorithm on the set of problems formed by the
-parametrized sphere function (first function of the single-objective
-``bbob`` test suite) in dimension :math:`n=5` with 51 targets
-uniform on a log-scale between :math:`10^2` and :math:`10^{-8}` and
-:math:`K=10^3`. 
+For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the runtimes of
+the pure random search algorithm on the set of problems formed by all instances
+of the sphere function (first function of the single-objective ``bbob`` test
+suite) in dimension :math:`n=5` with 51 target precisions uniform on a log-scale
+between :math:`10^2` and :math:`10^{-8}` and :math:`N=10^3`. 
 
-We can see in this plot that almost 20 percent of the problems 
-were solved with :math:`10^3 \cdot n = 5 \cdot 10^3` function evaluations.
-
-.. TODO:: 
-
-Note that we consider **runtimes of the restart algorithm**, that is, we
-use the idea of simulated run-lengths of the restart algorithm as
-described above to generate :math:`K` runtimes from typically 10 or 15
-instances per function and dimension. Hence, only when no instance is
-solved, we consider that the runtime is infinite.
-
+:ref:`ECDF`
 
 .. Dimo/Anne: it will be nice to have a tutorial-like explanation of how an ECDF is constructed (like what we have on the introductory BBOB slides)
-
 
 
 .. _fig:ecdf:
 
 .. figure:: pics/plots-RS-2009-bbob/pprldmany_f001_05D.*
-   :width: 80%
+   :width: 70%
    :align: center
 
    ECDF
@@ -670,6 +656,9 @@ solved, we consider that the runtime is infinite.
    runtimes displayed correspond to the pure random search
    algorithm in dimension 5.
 
+We can see in this plot, for example, that almost 20 percent of the problems 
+were solved within :math:`10^3 \cdot n = 5 \cdot 10^3` function evaluations. 
+The small dot beyond :math:`x=10^7` depicts the overall fraction of successfully solved problems. Runtimes to the right of the cross at :math:`10^6` have at least one unsuccessful run. This can be concluded, because in pure random search each unsuccessful run exploits the maximum budget.
 
 
 **Aggregation:**
@@ -682,12 +671,14 @@ random search on the set of problems formed by 51 targets between
 
 Those problems concern the same parametrized family of functions, namely
 a set of shifted sphere functions with different offsets in their
-function values. We consider also aggregation **over several
-parametrized functions**. We usually divide the set of parametrized
+function values. 
+We consider also aggregation **over several
+parametrized functions**. 
+We usually divide the set of parametrized
 functions into subgroups sharing similar properties (for instance
 separability, unimodality, ...) and display ECDFs which aggregate the
-problems induced by those functions and by all targets. See Figure
-:ref:`fig:ecdfgroup`.
+problems induced by those functions and by all targets. 
+See Figure :ref:`fig:ecdfgroup`.
 
 
 .. _fig:ecdfgroup:
