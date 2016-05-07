@@ -505,13 +505,14 @@ As computed in |RTforDI| above, the measured runtime is the sum of the number of
 Bootstrapping Run-lengths
 ++++++++++++++++++++++++++
 
-In practice, we repeat the above procedure to sample :math:`N\approx100` simulated runtimes from the same underlying distribution, 
+In practice, we repeat the above procedure sampling :math:`N\approx100` simulated runtimes from the same underlying distribution, 
 which has striking similarities with the true distribution from a restarted algorithm [EFR1994]_. 
 To reduce the variance in this procedure, when desired, the first trial in each sample is picked deterministically instead of randomly as the :math:`1 + (N~\mathrm{mod}~K)`-th trial from the data. [#]_
 
 .. Niko: average runtime is not based on simulated restarts, but computed directly...considering the average runtime (Section :ref:`sec:aRT`) or the distribution by displaying empirical cumulative distribution functions (Section :ref:`sec:ECDF`).
 
-.. [#] The variance reducing effect is best exposed in the case where all runs are successful and :math:`N = K`, in which case each data is sampled exactly once. This example also suggests to apply a random permutation of the data before to simulate virtually restarted runs. 
+.. [#] The variance reducing effect is best exposed in the case where all runs are successful and :math:`N = K`, in which case each data is picked exactly once. 
+   This example also suggests to apply a random permutation of the data before to simulate virtually restarted runs. 
 
 
 Limitations
@@ -585,7 +586,10 @@ conducted in all trials (before to reach a given target precision).
 
 Rationale and Limitations
 --------------------------
-The average runtime, |aRT|, is taken over different instances, for the same function, dimension, and target precision, as these instances are interpreted as repetitions. Taking the average is (only) meaningful if each instance obeys a similar distribution. If one instance is considerably harder than the others, the average is dominated by this instance. For averaging runtimes from different functions or target precisions, taking the logarithm is advisable. 
+The average runtime, |aRT|, is taken over different instances, of the same function, dimension, and target precision, as these instances are interpreted as repetitions. 
+Taking the average is (only) meaningful if each instance obeys a similar distribution without heavy tails. 
+If one instance is considerably harder than the others, the average is dominated by this instance. 
+For averaging runtimes from different functions or target precisions, taking the logarithm is advisable. 
 
 .. _sec:ECDF:
 
@@ -596,10 +600,13 @@ Empirical Cumulative Distribution Functions
 
 We display a set of runtimes with the empirical cumulative
 distribution function (ECDF), AKA empirical distribution function. 
-Formally, let us consider a set of
-problems :math:`\mathcal{P}` and a collection of runtimes :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq k \leq
-K}` where :math:`K` is the number of trials per problem. When the
-problem is not solved, the undefined runtime is considered as infinite
+The ECDF displays the *proportion of problems solved within a
+specified budget*, where the budget is given on the x-axis. 
+
+Formally, let us consider a set of problems :math:`\mathcal{P}` and a collection
+of runtimes :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq k \leq K}`
+where :math:`K` is the number of trials per problem. 
+When the problem is not solved, the undefined runtime is considered as infinite
 in order to make the mathematical definition consistent. 
 The ECDF is defined as
 
@@ -610,12 +617,8 @@ The ECDF is defined as
 	\mathrm{ECDF}(t) = \frac{1}{|\mathcal{P}| K} \sum_{p \in \mathcal{P},k} \mathbf{1} \left\{ \mathrm{RT}_{p,k} / n  \leq t \right\} \enspace,
 	\end{equation*}
 
-counting, as a function of time |t|, the number of runtimes which do not 
-exceed :math:`n\times t`, divided by the number of all runs. 
+counting the number of runtimes which do not exceed the time :math:`t\times n`, divided by the number of all runs. 
 The ECDF is displayed in a semi-log (lin-log, semi-logx) plot. 
-
-The ECDF gives the *proportion of problems solved within a
-specified budget*, where the budget is given on the x-axis. 
 
 For instance, we display in Figure :ref:`fig:ecdf`, 
 the ECDF of the runtimes of the pure
