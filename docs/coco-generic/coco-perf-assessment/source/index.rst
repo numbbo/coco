@@ -30,6 +30,13 @@ COCO: Performance Assessment
 .. |R| replace:: :math:`\mathbb{R}`
 .. |i| replace:: :math:`i`
 .. |t| replace:: :math:`t`
+.. |p| replace:: :math:`p`
+.. |N| replace:: :math:`N`
+.. |J| replace:: :math:`J`
+.. |RTus| replace:: :math:`\mathrm{RT}^{\mathrm{us}}`
+.. |RTs| replace:: :math:`\mathrm{RT}^{\mathrm{s}}`
+.. |calP| replace:: :math:`\mathcal{P}`
+.. |calP.| replace:: :math:`\mathcal{P}.`
 .. |thetai| replace:: :math:`\theta_i`
 .. |ftheta| replace::  :math:`f_{\theta}`
 
@@ -412,19 +419,12 @@ Runtime Computation
 
 In the performance assessment context of COCO_, a problem instance is the 
 quintuple :math:`p=(n,f_\theta,\theta_i,I,I^{{\rm target},\theta_i})` containing dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value. 
-For each benchmarked algorithm a single runtime is measured on each problem.  From a single run of the algorithm on a given problem instance
-:math:`p=(n,f_\theta,\theta_i)`, we can measure a runtime for each available
-target value, or equivalently, each available target precision 
-|DI|. 
-
-
-.. Formally, the runtime on problem :math:`p` is denoted as :math:`\mathrm{RT}(p)`. 
+For each benchmarked algorithm, a single runtime is measured on each problem.  From a single run of the algorithm on a given problem instance
+:math:`p=(n,f_\theta,\theta_i)`, we obtain a runtime measurement for every target value which has been reach in this run, or equivalently, for the respective target precisions |DI|. [#]_
 
 Formally, the runtime :math:`\mathrm{RT}(p)` is a random variable that represents the number of function evaluations needed to reach the quality indicator target value for the first time. 
 A run or trial that reached the target value is called *successful*. [#]_
 For *unsuccessful trials*, the runtime is not defined, but the overall number of function evaluations in the given trial is a random variable denoted by :math:`\mathrm{RT}^{\rm us}(p)`. For a single run, the value of :math:`\mathrm{RT}^{\rm us}(p)` is the same for all failed targets. 
-
-.. TODO:: (simulated) restarts rationales: allow to compare algorithms with a wide range of different success probabilities, reflect what we do in reality
 
 We consider the conceptual **restart algorithm**. 
 Given an algorithm has a strictly positive probability |ps| to solve a 
@@ -437,7 +437,8 @@ probability one and with runtime
     :nowrap:
     :label: RTrestart
     
-    \begin{equation*}%%remove*%%\label{index-RTrestart}  
+    \begin{equation*}%%remove*%%
+    \label{index-RTrestart}  
       % ":eq:`RTrestart`" becomes "\eqref{index-RTrestart}" in the LaTeX
     \mathbf{RT}(n,f_\theta,\Delta I) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
     \enspace,
@@ -451,6 +452,8 @@ successful trial [AUG2005]_.
 If the probability of success is one, :math:`J` equals zero with probability one and the restart algorithm coincides with the original algorithm.
 
 Generally, the above equation for |RTforDI| expresses the runtime from repeated independent runs on the same problem instance (while the instance :math:`\theta_i` is not given explicitly). For the performance evaluation in the COCO_ framework, we apply the equation to runs on different instances :math:`\theta_i`, however instances from the same function, with the same dimension and the same target precision. 
+
+.. [#] From the definition of |p|, we can generate a set of problems |calP| by varying one or several of the parameters. We never vary dimension |n| and always vary over all instances |thetai| for generating |calP.| 
 
 .. [#] The notion of success is directly linked to a target value. A run can be successful with respect to some target values (some problems) and unsuccessful with respect to others. Success also often refers to the final, most difficult, smallest target value, which implies success for all other targets. 
 
@@ -500,7 +503,10 @@ Otherwise, the runtime remains undefined, because the virtual procedure would ne
 Then, we construct artificial runs from the available empirical data:
 we repeatedly pick, uniformly at random with replacement, one of the |K| trials until we encounter a, for the given target precision, successful trial. 
 This procedure simulates a single sample of the virtually restarted algorithm from the given data. 
-As computed in |RTforDI| above, the measured runtime is the sum of the number of function evaluations from the unsuccessful trials added to the runtime of the last and successful trial. 
+As computed in |RTforDI| above, the measured runtime is the sum of the number of function evaluations from the unsuccessful trials added to the runtime of the last and successful trial. [#]_
+
+.. [#] In other words, we apply :eq:`RTrestart` such that |RTs| is uniformly distributed over all measured runtimes from successful instances |thetai|, |RTus| is uniformly distributed over all evaluations seen in unsuccessful instances |thetai|, and |J| has a negative binomial distribution :math:`\mathrm{BN(1, p_\mathrm{s})}`, where |ps| is the number of unsuccessful instance divided by all instances.
+
 
 Bootstrapping Run-lengths
 ++++++++++++++++++++++++++
@@ -508,6 +514,10 @@ Bootstrapping Run-lengths
 In practice, we repeat the above procedure sampling :math:`N\approx100` simulated runtimes from the same underlying distribution, 
 which has striking similarities with the true distribution from a restarted algorithm [EFR1994]_. 
 To reduce the variance in this procedure, when desired, the first trial in each sample is picked deterministically instead of randomly as the :math:`1 + (N~\mathrm{mod}~K)`-th trial from the data. [#]_
+Picking the first trial data as specific instance |thetai| can also be
+interpreted as applying simulated restarts to this specific instance rather than
+to the entire set of problems :math:`\{p(n, f_\theta, \theta_i, \Delta I) \;|\;
+i=1,\dots,K\}`. 
 
 .. Niko: average runtime is not based on simulated restarts, but computed directly...considering the average runtime (Section :ref:`sec:aRT`) or the distribution by displaying empirical cumulative distribution functions (Section :ref:`sec:ECDF`).
 
@@ -515,16 +525,19 @@ To reduce the variance in this procedure, when desired, the first trial in each 
    This example also suggests to apply a random permutation of the data before to simulate virtually restarted runs. 
 
 
-Limitations
-+++++++++++++
+Rationales and Limitations
++++++++++++++++++++++++++++
+
+* Simulated restarts allow to compare algorithms with a wide range of different success probabilities [#]_ by a single performance measure. The approach reflects what we need to do when addressing a difficult optimization problem in "the real world". 
 
 * Simulated restarts rely on the assumption that the runtime distribution on each instance is the same. If this is not the case, they still provide a reasonable performance measure, however less of a meaningful interpretation of the result. 
 
-* The runtime of simulated restarts may depend heavily on termination conditions applied in the benchmarked algorithm. The reason are the evaluations spent in unsuccessful trials, compare :eq:`RTrestart`.  
+* The runtime of simulated restarts may depend heavily on termination conditions applied in the benchmarked algorithm, due to the evaluations spent in unsuccessful trials, compare :eq:`RTrestart`.  
 
 * The maximal number of evaluations for which sampled runtimes are meaningful 
   and representative depends on the experimental conditions. If all runs are successful, no restarts are simulated and all runtimes are meaningful. If all runs terminated due to standard termination conditions in the used algorithm, simulated restarts also reflect the original algorithm. However, if a maximal budget is imposed for the purpose of benchmarking, simulated restarts do not necessarily reflect the real performance. They are likely to give a too pessimistic viewpoint beyond at or beyond the chosen budget. See [HAN2016ex]_ for a more in depth discussion on how to setup restarts in the experiments. 
 
+.. [#] The range of success probabilities is bounded by the number of instances to roughly :math:`2/|K|.`
 
 .. _sec:aRT:
 
@@ -598,14 +611,13 @@ Empirical Cumulative Distribution Functions
 
 .. Anne: to be discussed - I talk about infinite runtime to make the definition below .. .. Anne: fine. However it's probably not precise given that runtime above :math:`10^7` are .. Anne: infinite.
 
-We display a set of runtimes with the empirical cumulative
+We display a set of simulated runtimes with the empirical cumulative
 distribution function (ECDF), AKA empirical distribution function. 
 The ECDF displays the *proportion of problems solved within a
 specified budget*, where the budget is given on the x-axis. 
 
-Formally, let us consider a set of problems :math:`\mathcal{P}` and a collection
-of runtimes :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq k \leq K}`
-where :math:`K` is the number of trials per problem. 
+Formally, let us consider a set of problems :math:`\mathcal{P}` 
+and |N| simulated runtimes on each problem, :math:`(\mathrm{RT}_{p,k})_{p \in \mathcal{P}, 1 \leq j \leq N}`. 
 When the problem is not solved, the undefined runtime is considered as infinite
 in order to make the mathematical definition consistent. 
 The ECDF is defined as
