@@ -79,9 +79,9 @@ Introduction
 .. budget-free
 
 This document presents the main ideas and concepts of the performance assessment
-within the COCO_ platform. Going beyond a simple ranking of algorithms, we aim
+when benchmarking numerical optimization algorithms in a black-box scenario within the COCO_ platform. Going beyond a simple ranking of algorithms, we aim
 to provide a *quantitative* and *meaningful* performance assessment, which
-allows for conclusions of type *algorithm A is ten times faster than algorithm
+allows for conclusions like *algorithm A is ten times faster than algorithm
 B* in solving a given problem or in solving problems with certain
 characteristics. 
 For this end, we record algorithm *runtimes*, measured in
@@ -93,8 +93,8 @@ experiment [#]_, we do not measure the algorithm cost in CPU or wall-clock time.
 See for example [HOO1995]_ for a discussion on shortcomings and
 unfortunate consequences of benchmarking based on CPU time.
 
-We display the average runtime (aRT, see Section `Average Runtime`_)
-and the empirical distribution function of runtimes (ECDF, see Section `Empirical Cumulative Distribution Functions`_). 
+We display the average runtime (aRT, see Section `Averaging Runtime`_)
+and the empirical distribution function of runtimes (ECDF, see Section `Empirical Distribution Functions`_). 
 When displaying runtime distributions, we consider
 the aggregation of runtimes over subclasses of problems or over all problems. We
 do not aggregate over dimensions, because the dimension of the problem can be
@@ -419,9 +419,10 @@ Runtime Computation
 .. In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtimes for different target values. 
 
 In the performance assessment context of COCO_, a problem instance is the 
-quintuple :math:`p=(n,f_\theta,\theta_i,I,I^{{\rm target},\theta_i})` containing dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value. 
+quintuple :math:`p=(n,f_\theta,\theta_i,I,I^{{\rm target},\theta_i})` containing dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value. [#]_
 For each benchmarked algorithm, a single runtime is measured on each problem.  From a single run of the algorithm on a given problem instance
-:math:`p=(n,f_\theta,\theta_i)`, we obtain a runtime measurement for every target value which has been reach in this run, or equivalently, for the respective target precisions |DI|. [#]_
+:math:`p=(n,f_\theta,\theta_i)`, we obtain a runtime measurement for every target value which has been reached in this run, or equivalently, for the respective target precisions |DI|, which reflects the anytime aspect of 
+the performance evaluation. 
 
 Formally, the runtime :math:`\mathrm{RT}(p)` is a random variable that represents the number of function evaluations needed to reach the quality indicator target value for the first time. 
 A run or trial that reached the target value is called *successful*. [#]_
@@ -542,7 +543,7 @@ Rationales and Limitations
 
 .. _sec:aRT:
 
-Average Runtime
+Averaging Runtime
 ==================
 
 The average runtime (|aRT|), introduced in [PRI1997]_ as ENES and
@@ -603,14 +604,13 @@ Rationale and Limitations
 The average runtime, |aRT|, is taken over different instances, of the same function, dimension, and target precision, as these instances are interpreted as repetitions. 
 Taking the average is (only) meaningful if each instance obeys a similar distribution without heavy tails. 
 If one instance is considerably harder than the others, the average is dominated by this instance. 
-For averaging runtimes from different functions or target precisions, taking the logarithm is advisable. 
+For this reason we do not average (raw) runtimes from different functions or different target precisions. This can be done however if the logarithm is taken first. 
+Plotting the |aRT| divided by dimension against dimension in a log-log plot is the recommended way to investigate the scaling behavior of an algorithm. 
 
 .. _sec:ECDF:
 
-Empirical Cumulative Distribution Functions
+Empirical Distribution Functions
 ===========================================
-
-.. Anne: to be discussed - I talk about infinite runtime to make the definition below .. .. Anne: fine. However it's probably not precise given that runtime above :math:`10^7` are .. Anne: infinite.
 
 We display a set of simulated runtimes with the empirical cumulative
 distribution function (ECDF), AKA empirical distribution function. 
@@ -754,6 +754,7 @@ The algorithm is artificial because we may use the runtime results from differen
 ..		  horizontal line means a linear scaling with respect to the
 ..		  dimension.
 ..		* aRT Loss graphs
+..      * scatter plots
 
 
 .. raw:: html
