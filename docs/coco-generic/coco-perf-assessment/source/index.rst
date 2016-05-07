@@ -31,6 +31,7 @@ COCO: Performance Assessment
 .. |i| replace:: :math:`i`
 .. |t| replace:: :math:`t`
 .. |p| replace:: :math:`p`
+.. |x| replace:: :math:`x`
 .. |N| replace:: :math:`N`
 .. |J| replace:: :math:`J`
 .. |RTus| replace:: :math:`\mathrm{RT}^{\mathrm{us}}`
@@ -613,24 +614,44 @@ Empirical Cumulative Distribution Functions
 
 We display a set of simulated runtimes with the empirical cumulative
 distribution function (ECDF), AKA empirical distribution function. 
-The ECDF displays, loosely speaking, the *proportion of problems solved within a
+Informally, the ECDF displays the *proportion of problems solved within a
 specified budget*, where the budget is given on the x-axis. 
-More formally, :math:`\mathrm{ECDF}(t/n)` is the fraction runtimes which do not exceed the value |t|, where missing runtime values are counted in the denominator of the fraction. 
+More formally, an ECDF gives for each |x|-value the fraction of runtimes which do not exceed |x|, where missing runtime values are counted in the denominator of the fraction.
 
-Formally, let us consider a set of problems :math:`\mathcal{P}` 
-and |N| simulated runtimes on each problem. 
-When the problem is not solved, the undefined runtime is considered as infinite. 
-The ECDF is defined as
+Rationale and Limitations
+-------------------------
+Empirical cumulative distribution functions are a universal way to display unlabeled data in a condensed way without loosing information. 
+They allow unconstrained aggregation, because each data point remains separately displayed, and they remain meaningful under transformation of the data (e.g. taking the logarithm). 
+Displaying the cumulative distribution function on a set of problems from a single function instance where only the target value varies recovers an upside-down convergence graph with a resolution defined by the targets [HAN2010]_.
+When runs from several instances are aggregated, the association to the single runs is lost, as is the association the a single function, the function label, when aggregating over several functions. 
+This becomes particularly problematic for data in different dimensions, because dimension can be used as decision parameter for algorithm selection. Therefore, we do not aggregate over dimension. 
 
-.. math::
-	:nowrap:
+Relation to Previous Work
+--------------------------
+Empirical distribution functions over runtimes of optimization algorithms are also known as *data profiles* [MOR2009]_. 
+They are widely used for aggregating results from different functions and different dimensions to reach single fixed target precision [RIO2012]_. 
+We aggregate also systematically over a large number of target precision values, while we discourage aggregation over dimension. 
 
-	\begin{equation*}
-	\mathrm{ECDF}(t) = \frac{1}{|\mathcal{P}|} \sum_{p \in \mathcal{P}} \frac{1}{N}\sum_{i=1}^N \mathbf{1} \left\{ \mathbf{RT}(p) / n  \leq t \right\} \enspace,
-	\end{equation*}
+.. 
+    Formal Definition
+    -------------------
+    Formally, let us consider a set of problems :math:`\mathcal{P}` 
+    and |N| simulated runtimes on each problem. 
+    When the problem is not solved, the undefined runtime is considered as infinite. 
+    The ECDF is defined as
 
-counting the number of runtimes which do not exceed the time :math:`t\times n`, divided by the number of all simulated runs. 
-The ECDF is displayed in a semi-log (lin-log, semi-logx) plot. 
+    .. math::
+        :nowrap:
+
+        \begin{equation*}
+        \mathrm{ECDF}(t) = \frac{1}{|\mathcal{P}|} \sum_{p \in \mathcal{P}} \frac{1}{N}\sum_{i=1}^N \mathbf{1} \left\{ \mathbf{RT}(p) / n  \leq t \right\} \enspace,
+        \end{equation*}
+
+    counting the number of runtimes which do not exceed the time :math:`t\times n`, divided by the number of all simulated runs. 
+    The ECDF is displayed in a semi-log (lin-log, semi-logx) plot. 
+
+Examples
+----------
 
 We display in Figure :ref:`fig:ecdf` the ECDF of the runtimes of
 the pure random search algorithm on the set of problems formed by 15 instances of the sphere function (first function of the single-objective ``bbob`` test
@@ -703,39 +724,24 @@ a single plot.
    in dimension 5 (left) and in dimension 20 (right) when aggregating over all functions of the ``bbob`` suite.
 
 
-.. Note:: The ECDF graphs are also known under the name data profile
-    (see [MOR2009]_). However we aggregate here over several targets
-    for a same function while data profiles are standardly used
-    displaying results for a single fixed target [RIO2012]_.
-
-    Also, here we advocate **not to aggregate over dimension** as the
-    dimension is typically an input parameter to the algorithm that can
-    be exploited to run different types of algorithms on different
-    dimensions. Hence, the COCO platform does not provide ECDF
-    aggregated over dimension.
-
-    Data profiles are often used using different functions with different
-    dimensions.
-
-
 Best 2009 "Algorithm"
 ---------------------
-The ECDF graphs are typically displaying an ECDF annotated as best 2009
+The ECDF plots are often displaying a graph annotated as best 2009
 (thick maroon line with diamond markers in Figure :ref:`fig:ecdfall`
-for instance). This ECDF corresponds to an artificial algorithm: for
+for instance). This graph corresponds to an artificial algorithm: for
 each problem, we select the algorithm within the dataset obtained during
 the BBOB-2009 workshop that has the best |aRT|. We are then using the
 runtimes of this algorithm. The algorithm is artificial because for
 different targets, we possibly have the runtime of different algorithms.
 [#]_
 
-.. [#] Remark that it is not guaranteed that the best 2009 curve is an upper
- left enveloppe of the ECDF of all algorithms from which it is
- constructed, that is the ECDF of one algorithm from BBOB-2009 could
- cross the best 2009 curve. This could typically happen if one algorithm
- for an easy target has many small running times but however one very
- large such that its aRT is not the best but the many small run times make
- the ECDF curve cross the best 2009 one.
+.. [#] The best 2009 curve is not guaranteed to be an upper
+       left envelope of the ECDF of all algorithms from which it is
+       constructed, that is the ECDF of one algorithm from BBOB-2009 could
+       cross the best 2009 curve. This could typically happen if one algorithm
+       for an easy target has many small running times but however one very
+       large such that its aRT is not the best but the many small run times make
+       the ECDF curve cross the best 2009 one.
 
 
 
@@ -782,20 +788,27 @@ of the French National Research Agency.
 .. [EFR1994] B. Efron and R. Tibshirani (1994). *An introduction to the
    bootstrap*. CRC Press.
 
-.. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
-  `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__. 
-__ http://numbbo.github.io/coco-doc/experimental-setup/
-__ http://arxiv.org/abs/1603.08776
-
 .. [HAN2009ex] N. Hansen, A. Auger, S. Finck, and R. Ros (2009). Real-Parameter
-	Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria
-	Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
+   Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria
+   Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
+
 .. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
    `Real-parameter black-box optimization benchmarking 2009: Noiseless
    functions definitions`__. `Technical Report RR-6829`__, Inria, updated
    February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
+
+.. [HAN2010] N. Hansen, A. Auger, R. Ros, S. Finck, and P. Posik (2010). 
+   Comparing Results of 31 Algorithms from the Black-Box Optimization 
+   Benchmarking BBOB-2009. Workshop Proceedings of the GECCO Genetic and 
+   Evolutionary Computation Conference 2010, ACM, pp. 1689-1696
+
+.. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
+  `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__. 
+__ http://numbbo.github.io/coco-doc/experimental-setup/
+__ http://arxiv.org/abs/1603.08776
+
 .. [HOO1995] J. N. Hooker Testing heuristics: We have it all wrong. In Journal of
     Heuristics, pages 33-42, 1995.
 .. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
