@@ -220,7 +220,7 @@ number of function evaluations avoids the shortcomings of CPU measurements that 
 
 .. [#] A variable on a ratio scale has a meaningful zero, allows division, 
    and can be taken to the logarithm. See for example `Level of measurement on Wikipedia`__.
-
+   
 .. __: https://en.wikipedia.org/wiki/Level_of_measurement?oldid=478392481
 
 .. [#] The transformation :math:`x\mapsto\log(1-x)` could alleviate the problem
@@ -724,26 +724,24 @@ a single plot.
    in dimension 5 (left) and in dimension 20 (right) when aggregating over all functions of the ``bbob`` suite.
 
 
-Best 2009 "Algorithm"
----------------------
-The ECDF plots are often displaying a graph annotated as best 2009
+Best 2009 Artificial Algorithm
+-------------------------------
+In COCO_, ECDF plots often display a graph annotated as best 2009
 (thick maroon line with diamond markers in Figure :ref:`fig:ecdfall`
 for instance). This graph corresponds to an artificial algorithm: for
-each problem, we select the algorithm within the dataset obtained during
-the BBOB-2009 workshop that has the best |aRT|. We are then using the
-runtimes of this algorithm. The algorithm is artificial because for
-different targets, we possibly have the runtime of different algorithms.
-[#]_
+each set of problems with the same function, dimension and target precision, we select the algorithm from the `BBOB-2009 workshop`__ that has the best |aRT|. 
+We then use the runtime measurements of this algorithm. 
+The algorithm is artificial because we may use the runtime results from different algorithms for different target values. [#]_
 
+.. __: http://coco.gforge.inria.fr/doku.php?id=bbob-2009
+ 
 .. [#] The best 2009 curve is not guaranteed to be an upper
        left envelope of the ECDF of all algorithms from which it is
-       constructed, that is the ECDF of one algorithm from BBOB-2009 could
-       cross the best 2009 curve. This could typically happen if one algorithm
-       for an easy target has many small running times but however one very
-       large such that its aRT is not the best but the many small run times make
-       the ECDF curve cross the best 2009 one.
-
-
+       constructed, that is, the ECDF of an algorithm from BBOB-2009 can
+       cross the best 2009 curve. This may typically happen if an algorithm
+       has for an easy target many very short and few very
+       long runtimes such that its aRT is not the best but the short runtimes
+       show up to the left of the best 2009 graph.
 
 ..  todo
 ..	* ECDF and uniform pick of a problem
@@ -789,15 +787,15 @@ of the French National Research Agency.
    bootstrap*. CRC Press.
 
 .. [HAN2009ex] N. Hansen, A. Auger, S. Finck, and R. Ros (2009). Real-Parameter
-   Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria
-   Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
+   Black-Box Optimization Benchmarking 2009: Experimental Setup, 
+   `Research Report RR-6828`__, Inria.
+.. __: http://hal.inria.fr/inria-00362649/en
 
 .. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
-   `Real-parameter black-box optimization benchmarking 2009: Noiseless
-   functions definitions`__. `Technical Report RR-6829`__, Inria, updated
+   Real-parameter black-box optimization benchmarking 2009: Noiseless
+   functions definitions. `Research Report RR-6829`__, Inria, updated
    February 2010.
-.. __: http://coco.gforge.inria.fr/
-.. __: https://hal.inria.fr/inria-00362633
+__ https://hal.inria.fr/inria-00362633
 
 .. [HAN2010] N. Hansen, A. Auger, R. Ros, S. Finck, and P. Posik (2010). 
    Comparing Results of 31 Algorithms from the Black-Box Optimization 
