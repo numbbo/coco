@@ -131,9 +131,9 @@ We introduce a few terms and definitions that are used in the rest of the docume
  function, instance)``. 
  In this terminology a ``function``, to be minimized, is parametrized by its input ``dimension`` and its ``instance`` parameters.
  
- More precisely, we consider a parametrized function  :math:`f_\theta:
- \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`, then a COCO_
- problem corresponds to :math:`p=(n,f_\theta,\theta_i)` 
+ More precisely, we consider several parametrized functions :math:`f_\theta:
+ \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`. A COCO_
+ problem derived from function |ftheta| corresponds to :math:`p = (n, f_\theta, \theta_i)` 
  where :math:`n \in \mathbb{N}` is the dimension of the search space, and
  :math:`\theta_i` is the set of parameters associated to the
  ``instance`` |i|. 
@@ -453,7 +453,7 @@ If the probability of success is one, :math:`J` equals zero with probability one
 
 Generally, the above equation for |RTforDI| expresses the runtime from repeated independent runs on the same problem instance (while the instance :math:`\theta_i` is not given explicitly). For the performance evaluation in the COCO_ framework, we apply the equation to runs on different instances :math:`\theta_i`, however instances from the same function, with the same dimension and the same target precision. 
 
-.. [#] From the definition of |p|, we can generate a set of problems |calP| by varying one or several of the parameters. We never vary dimension |n| and always vary over all instances |thetai| for generating |calP.| 
+.. [#] From the definition of |p|, we can generate a set of problems |calP| by varying one or several of the parameters. We never vary dimension |n| and always vary over all available instances |thetai| for generating |calP.| 
 
 .. [#] The notion of success is directly linked to a target value. A run can be successful with respect to some target values (some problems) and unsuccessful with respect to others. Success also often refers to the final, most difficult, smallest target value, which implies success for all other targets. 
 
@@ -613,8 +613,9 @@ Empirical Cumulative Distribution Functions
 
 We display a set of simulated runtimes with the empirical cumulative
 distribution function (ECDF), AKA empirical distribution function. 
-The ECDF displays the *proportion of problems solved within a
+The ECDF displays, loosely speaking, the *proportion of problems solved within a
 specified budget*, where the budget is given on the x-axis. 
+More formally, :math:`\mathrm{ECDF}(t/n)` is the fraction runtimes which do not exceed the value |t|, where missing runtime values are counted in the denominator of the fraction. 
 
 Formally, let us consider a set of problems :math:`\mathcal{P}` 
 and |N| simulated runtimes on each problem. 
@@ -631,13 +632,9 @@ The ECDF is defined as
 counting the number of runtimes which do not exceed the time :math:`t\times n`, divided by the number of all simulated runs. 
 The ECDF is displayed in a semi-log (lin-log, semi-logx) plot. 
 
-For instance, we display in Figure :ref:`fig:ecdf`, the ECDF of the runtimes of
-the pure random search algorithm on the set of problems formed by all instances
-of the sphere function (first function of the single-objective ``bbob`` test
-suite) in dimension :math:`n=5` with 51 target precisions uniform on a log-scale
-between :math:`10^2` and :math:`10^{-8}` and :math:`N=10^3`. 
-
-:ref:`ECDF`
+We display in Figure :ref:`fig:ecdf` the ECDF of the runtimes of
+the pure random search algorithm on the set of problems formed by 15 instances of the sphere function (first function of the single-objective ``bbob`` test
+suite) in dimension :math:`n=5` each with 51 target precisions between :math:`10^2` and :math:`10^{-8}` uniform on a log-scale and :math:`N=10^3`. 
 
 .. Dimo/Anne: it will be nice to have a tutorial-like explanation of how an ECDF is constructed (like what we have on the introductory BBOB slides)
 
@@ -650,36 +647,29 @@ between :math:`10^2` and :math:`10^{-8}` and :math:`N=10^3`.
 
    ECDF
 
-   Illustration of empirical (cumulative) distribution function (ECDF)
-   of runtimes on the sphere function using 51 relative targets
-   uniform on a log scale between :math:`10^2` and :math:`10^{-8}`. The
-   runtimes displayed correspond to the pure random search
-   algorithm in dimension 5.
+   Illustration of empirical (cumulative) distribution function (ECDF) of
+   runtimes on the sphere function using 51 relative targets uniform on a log
+   scale between :math:`10^2` and :math:`10^{-8}`. The runtimes displayed
+   correspond to the pure random search algorithm in dimension 5. The cross on
+   the ECDF plots of COCO_ represents the median of the maximal length of the
+   unsuccessful runs to solve the problems aggregated within the ECDF. 
+
 
 We can see in this plot, for example, that almost 20 percent of the problems 
 were solved within :math:`10^3 \cdot n = 5 \cdot 10^3` function evaluations. 
-The small dot beyond :math:`x=10^7` depicts the overall fraction of successfully solved problems. Runtimes to the right of the cross at :math:`10^6` have at least one unsuccessful run. This can be concluded, because in pure random search each unsuccessful run exploits the maximum budget.
+Runtimes to the right of the cross at :math:`10^6` have at least one unsuccessful run. 
+This can be concluded, because with pure random search each unsuccessful run exploits the maximum budget.
+The small dot beyond :math:`x=10^7` depicts the overall fraction of all successfully solved functions-target pairs, i.e., the fraction of :math:`(f_\theta, \Delta I)` pairs for which at least one trial (for one :math:`\theta_i`) was successful. 
 
+In the ECDF of Figure :ref:`fig:ecdf` we have **aggregated**
+runtimes from 15 instances of the sphere function (we always aggregate over all available function instances |thetai|) times 51 target precision values.
 
-**Aggregation:**
-
-In the ECDF displayed in Figure :ref:`fig:ecdf` we have **aggregated**
-the runtime on several problems by displaying the runtime of the pure
-random search on the set of problems formed by 51 targets between
-:math:`10^2` and :math:`10^{-8}` on the parametrized sphere in dimension
-5.
-
-Those problems concern the same parametrized family of functions, namely
-a set of shifted sphere functions with different offsets in their
-function values. 
-We consider also aggregation **over several
-parametrized functions**. 
-We usually divide the set of parametrized
+Next, we aggregate **over several functions**. 
+We usually divide the set of all (parametrized) benchmark
 functions into subgroups sharing similar properties (for instance
 separability, unimodality, ...) and display ECDFs which aggregate the
 problems induced by those functions and by all targets. 
 See Figure :ref:`fig:ecdfgroup`.
-
 
 .. _fig:ecdfgroup:
 
@@ -691,14 +681,15 @@ See Figure :ref:`fig:ecdfgroup`.
 
    **Left:** ECDF of the runtime of the pure random search algorithm for
    functions f1, f2, f3, f4 and f5 that constitute the group of
-   separable functions for the ``bbob`` testsuite. **Right:** ECDF aggregated
-   over all targets and functions f1, f2, f3, f4 and f5.
+   separable functions for the ``bbob`` testsuite over 51 target values.
+   **Right:** Aggregated ECDF of the same data, that is, all functions 
+   in one graph.
 
 
-We can also naturally aggregate over all functions and hence obtain one
-single ECDF per algorithm per dimension. The ECDF of different
-algorithms can be displayed on the same graph as depicted in Figure
-:ref:`fig:ecdfall`.
+We can also naturally aggregate over all functions of the benchmark and hence
+obtain one single ECDF per algorithm per dimension. 
+In Figure :ref:`fig:ecdfall`, the ECDF of different algorithms are displayed in
+a single plot. 
 
 .. _fig:ecdfall:
 
@@ -725,8 +716,6 @@ algorithms can be displayed on the same graph as depicted in Figure
 
     Data profiles are often used using different functions with different
     dimensions.
-
-.. Note:: The cross on the ECDF plots of COCO_ represents the median of the maximal length of the unsuccessful runs to solve the problems aggregated within the ECDF. 
 
 
 Best 2009 "Algorithm"
