@@ -46,8 +46,8 @@ COCO: Performance Assessment
   replaced to put away the \chapter level as ^^^ and let the "current" level
   become \section. 
 
-.. CHAPTERTITLE
-.. CHAPTERUNDERLINE
+CHAPTERTITLE
+?????????????????????????????????????????????????????????????????????????
 
 .. raw:: html
 
@@ -61,7 +61,7 @@ COCO: Performance Assessment
   
   \begin{abstract}
 
-We present an any-time performance assessment for benchmarking numerical
+We present an  any-time performance assessment for benchmarking numerical
 optimization algorithms in a black-box scenario, applied within the COCO_ benchmarking platform. 
 The performance assessment is based on *runtimes* measured in number of objective function evaluations to reach one or several quality indicator target values.
 We argue that runtime is the only available measure with a generic, meaningful, and quantitative interpretation.
@@ -81,11 +81,11 @@ Introduction
 This document presents the main ideas and concepts of the performance assessment
 when benchmarking numerical optimization algorithms in a black-box scenario within the COCO_ platform. Going beyond a simple ranking of algorithms, we aim
 to provide a *quantitative* and *meaningful* performance assessment, which
-allows for conclusions like *algorithm A is ten times faster than algorithm
+allows for conclusions like *algorithm A is seven times faster than algorithm
 B* in solving a given problem or in solving problems with certain
 characteristics. 
 For this end, we record algorithm *runtimes*, measured in
-number of function evaluations to reach predefined target values, during the
+number of function evaluations to reach predefined target values during the
 algorithm run.
 
 Runtimes represent the cost of the algorithm. Apart from a short, exploratory
@@ -93,14 +93,15 @@ experiment [#]_, we do not measure the algorithm cost in CPU or wall-clock time.
 See for example [HOO1995]_ for a discussion on shortcomings and
 unfortunate consequences of benchmarking based on CPU time.
 
-We display the average runtime (aRT, see Section `Averaging Runtime`_)
+We display average runtimes (aRT, see Section `Averaging Runtime`_)
 and the empirical distribution function of runtimes (ECDF, see Section `Empirical Distribution Functions`_). 
-When displaying runtime distributions, we consider
-the aggregation of runtimes over subclasses of problems or over all problems. We
-do not aggregate over dimensions, because the dimension of the problem can be
-used to decide a priori which algorithm (or algorithm variant, or parameter setting) is used.
+When displaying runtime distributions, we consider the aggregation over 
+target values and over subclasses of problems or all problems. 
 
- .. [#] The COCO_ platform provides a CPU timing experiment to get a rough estimate of the time complexity of the algorithm [HAN2016ex]_.
+
+.. We do not aggregate over dimension, because the dimension of the problem can be used to decide a priori which algorithm (or algorithm variant, or parameter setting) to use.
+
+.. [#] The COCO_ platform provides a CPU timing experiment to get a rough estimate of the time complexity of the algorithm [HAN2016ex]_.
 
 
 Terminology and Definitions
@@ -132,14 +133,14 @@ We introduce a few terms and definitions that are used in the rest of the docume
  function, instance)``. 
  In this terminology a ``function``, to be minimized, is parametrized by its input ``dimension`` and its ``instance`` parameters.
  
- More precisely, we consider several parametrized functions :math:`f_\theta:
- \mathbb{R}^n \to \mathbb{R}^m` for :math:`\theta \in \Theta`. A COCO_
- problem derived from function |ftheta| corresponds to :math:`p = (n, f_\theta, \theta_i)` 
- where :math:`n \in \mathbb{N}` is the dimension of the search space, and
- :math:`\theta_i` is the set of parameters associated to the
+ More precisely, we consider a set of parametrized benchmark functions
+ :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m, `\theta \in \Theta`.
+ A COCO_ problem derived from function |ftheta| corresponds to :math:`p = (n,
+ f_\theta, \theta_i)` where :math:`n \in \mathbb{N}` is the dimension of the
+ search space, and :math:`\theta_i` is the set of parameters associated to the
  ``instance`` |i|. 
  The separation of dimension and instance parameters is of entirely semantic
- nature. 
+ nature, however meaningful because we always aggregate over all |thetai|-values while we never aggregate over dimension. 
 
  .. Given a dimension
 
@@ -148,19 +149,13 @@ We introduce a few terms and definitions that are used in the rest of the docume
    problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and
    :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
  
- At each time step :math:`t` of an algorithm which optimizes a problem instance
- :math:`p=(n,f_\theta,\theta_i)`, we define the  performance via a quality
- indicator function, mapping the set of all solutions evaluated so far (or
- recommended [HAN2016ex]_) to a :math:`p`-dependent real value. [#]_
- 
- .. Anne: I took out the theta-bar - did not look too fine to me - so I felt that I needed to add theta_1 and theta_2 as two different instances @Niko, @Tea please check and improve if possible (I am not particularly happy with the new version).
- 
- 
  In the performance assessment setting, we associate to a problem 
- instance :math:`p` and a given quality indicator,
- one or several target values such that a problem becomes a quintuple ``(dimension, function, instance, quality indicator, target)``. 
+ instance :math:`p` a quality indicator and a target value, 
+ such that a problem becomes a quintuple ``(dimension, function, instance, quality indicator, target)``. 
+ Usually, the quality indicator remains the same for all problems, while we have sets of
+ problems which only differ in their target value. 
  The first time the quality indicator drops below the target is considered the runtime to solve the problem. 
- Quality indicator target values depend in general on the problem instance :math:`\theta_i`. 
+ The quality indicator target value depends in general on the problem instance :math:`\theta_i`. 
  
 *instance*
  Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
@@ -185,46 +180,44 @@ We introduce a few terms and definitions that are used in the rest of the docume
   conducted on a given problem until a given quality indicator target value is reached.
   Runtime is our central performance measure.
 
-.. [#] In the single-objective noiseless case, this quality indicator simply
-   outputs the best observed (i.e. minimal and feasible) function value during
-   the first :math:`t` evaluations. In the multi-objective case, well-known
-   multi-objective quality indicators such as the hypervolume indicator can be
-   used to map the entire set of already evaluated solutions ("archive") to a
-   real value.
 
 On Performance Measures
 =======================
 
-Evaluating performance of algorithms entails having measures that represent the performance of each algorithm. Our requirements for performances measures within COCO_ are the following. A performance measure should be
+Evaluating performance is necessarily based on performance 
+*measures*, the definition of which plays a crucial and central role for the evaluation. 
+Here, we introduce our requirements for performances measures in general and in the context of black-box optimization. 
+In general, a performance measure should be
 
-* quantitative, as opposed to a simple ranking of algorithms. 
+* quantitative, as opposed to a simple ranking of entrants (e.g., algorithms). 
   Ideally, the measure should be defined on a ratio scale (as opposed to an
-  interval or ordinal scale) [STE1946]_, which allows to state that "Algorithm A
-  is :math:`x` times better than Algorithm B". [#]_ 
+  interval or ordinal scale) [STE1946]_, which allows to state that "entrant A
+  is :math:`x` times better than entrant B". [#]_ 
 * assuming a wide variation of values (i.e., for example, typical values should 
   not only range between 0.98 and 1.0) [#]_,
 * interpretable, in particular by having a meaning and semantics attached to 
   the measured numbers,
 * relevant and meaningful with respect to the "real world",
-* as simple as possible.
+* as simple and comprehensible as possible.
 
 .. Following [HAN2009ex]_, we advocate **performance measures** that are
 
 .. Tea: Can we give some more explanation here?
 
-The **runtime** to reach a target value, measured in number of function evaluations, satisfies all requirements. 
+In the context of black-box optimization, the **runtime** to reach a target value, measured in number of function evaluations, satisfies all requirements. 
 Runtime is well-interpretable and meaningful with respect to the
 real-world as it represents time needed to solve a problem. Measuring
 number of function evaluations avoids the shortcomings of CPU measurements that depend on parameters like the programming language, coding style, machine used to run the experiment, etc. that are difficult or impractical to control.
 
 
-.. [#] A variable on a ratio scale has a meaningful zero, allows division, 
-   and can be taken to the logarithm. See for example `Level of measurement on Wikipedia`__.
-   
+.. [#] A variable which lives on a ratio scale has a meaningful zero, 
+   allows for division, and can be taken to the logarithm in a meaningful way. 
+   See for example `Level of measurement on Wikipedia`__.
+
 .. __: https://en.wikipedia.org/wiki/Level_of_measurement?oldid=478392481
 
 .. [#] The transformation :math:`x\mapsto\log(1-x)` could alleviate the problem
-  in this case, given it actually zooms in on relevant values.
+   in this case, given it actually zooms in on relevant values.
 
 .. _sec:verthori:
 
@@ -316,6 +309,28 @@ but the overall number of function evaluations of the corresponding run provides
 
 .. [#] However, under mildly randomized conditions, for example with a randomized initial solution, the restarted algorithm reaches any attainable target with probability one. However, the time needed can well be beyond any reasonable practical limitations. 
 
+Quality Indicators
+-------------------
+
+At each time step :math:`t` of an algorithm which optimizes a problem instance
+:math:`p=(n,f_\theta,\theta_i)`, we define the  performance via a quality
+indicator function. A quality indicator maps the set of all solutions evaluated 
+so far (or recommended [HAN2016ex]_) to a :math:`p`-dependent real value.
+
+In the single-objective noiseless case, this quality indicator outputs
+the best observed (i.e. minimal and feasible) function value during the first
+:math:`t` evaluations. 
+
+In the single-objective noisy case, we consider the 1%-tile of the 
+last :math:`\lceil\ln(t + 3)^2 / 2\rceil)` evaluated solutions. [#]_
+
+In the multi-objective case, the hypervolume indicator 
+is used to map the entire set of already evaluated solutions (the archive) 
+to a real value [BRO2016]_, while other well- or lesser-known multi-objective 
+quality indicators are possible.
+
+.. [#] This feature will only be available in the new implementation of the framework.
+
 
 Target Values
 --------------
@@ -348,10 +363,6 @@ We say, for example, that "algorithm A is solving problem :math:`p=(n, f_\theta,
 indicator function value :math:`I` during the optimization of :math:`(n,
 f_\theta, \theta)` reaches a value of :math:`I^{\rm target}` or lower for the
 first time after :math:`t` function evaluations.
-
-.. Anne: I think that we have an organization problem - this definition of
-  problem,  function becomes now too long and should most likely be in a
-  dedicated section where it could be expanded. 
 
 
 Runlength-based Target Values
@@ -420,7 +431,8 @@ Runtime Computation
 
 In the performance assessment context of COCO_, a problem instance is the 
 quintuple :math:`p=(n,f_\theta,\theta_i,I,I^{{\rm target},\theta_i})` containing dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value. [#]_
-For each benchmarked algorithm, a single runtime is measured on each problem.  From a single run of the algorithm on a given problem instance
+For each benchmarked algorithm, a single runtime is measured on each problem.  
+From a single run of the algorithm on a given problem instance
 :math:`p=(n,f_\theta,\theta_i)`, we obtain a runtime measurement for every target value which has been reached in this run, or equivalently, for the respective target precisions |DI|, which reflects the anytime aspect of 
 the performance evaluation. 
 
@@ -689,7 +701,7 @@ Next, we aggregate **over several functions**.
 We usually divide the set of all (parametrized) benchmark
 functions into subgroups sharing similar properties (for instance
 separability, unimodality, ...) and display ECDFs which aggregate the
-problems induced by those functions and by all targets. 
+problems induced by these functions and all targets. 
 See Figure :ref:`fig:ecdfgroup`.
 
 .. _fig:ecdfgroup:
@@ -763,7 +775,7 @@ The algorithm is artificial because we may use the runtime results from differen
 
 .. raw:: latex
 
-    \paragraph{Acknowledgments}
+    \section*{Acknowledgments}
 
 This work was supported by the grant ANR-12-MONU-0009 (NumBBO)
 of the French National Research Agency.
@@ -781,6 +793,11 @@ of the French National Research Agency.
 .. [AUG2009] A. Auger, N. Hansen, J.M. Perez Zerpa, R. Ros and M. Schoenauer (2009). 
    Empirical comparisons of several derivative free optimization algorithms. In Acte du 9ime colloque national en calcul des structures, Giens.
    
+.. [BRO2016] D. Brockhoff, T. Tušar, D. Tušar, T. Wagner, N. Hansen, 
+   A. Auger, (2016). `Biobjective Performance Assessment with the COCO Platform`__. *ArXiv e-prints*, `arXiv:1605:xxxxx`__
+__ http://numbbo.github.io/coco-doc/bi-objeperf-assessment
+__ http://arxiv.org/abs/1605.xxxxx
+
 .. [DOL2002] E.D. Dolan, J. J. Moré (2002). Benchmarking optimization software 
    with performance profiles. *Mathematical Programming* 91.2, 201-213. 
 

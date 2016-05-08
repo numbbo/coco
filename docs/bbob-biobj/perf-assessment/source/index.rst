@@ -15,7 +15,7 @@ Biobjective Performance Assessment with the COCO Platform
 .. .. toctree::
    :maxdepth: 2
 
-.. CHAPTERTITLE
+.. FAKECHAPTERTITLE
 .. CHAPTERUNDERLINE
 
 .. raw:: html
