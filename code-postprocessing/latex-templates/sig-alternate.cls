@@ -1,8 +1,13 @@
-% SIG-ALTERNATE.CLS - VERSION 2.5
+% SIG-ALTERNATE.CLS - VERSION 2.8
 % "COMPATIBLE" WITH THE "ACM_PROC_ARTICLE-SP.CLS" V3.2SP
 % Gerald Murray - May 23rd 2012
+% Boris Veytsman - April 23 2013
+% Boris Veytsman - May 12 2013
+% Boris Veytsman - June 09 2013
+% Boris Veytsman - August 12 2013
 %
 % ---- Start of 'updates'  ----
+% Added new permission/copyright statement - BV
 % Changed $10 fee to $15 -- May 2012  --  Gerry
 % Changed $5 fee to $10 --  April 2009 -- Gerry
 % April 22nd. 2009 - Fixed 'Natbib' incompatibility problem - Gerry
@@ -42,9 +47,9 @@
 %
 % ---- End of 'updates' ----
 %
-\def\fileversion{v2.5}          % for ACM's tracking purposes
-\def\filedate{May 23, 2012}    % Gerry Murray's tracking data
-\def\docdate {Wednesday 23rd. May 2012} % Gerry Murray (with deltas to doc}
+\def\fileversion{v2.9}          % for ACM's tracking purposes
+\def\filedate{August 12, 2013}    % Gerry Murray's tracking data
+\def\docdate {\filedate}
 \usepackage{epsfig}
 \usepackage{amssymb}
 \usepackage{amsmath}
@@ -113,12 +118,69 @@
 %%% You may turn this hackery off via the -e option:
 %%%     dvips -e 0 foo.dvi >foo.ps
 %%%
-\typeout{Document Class 'sig-alternate' <23rd. May '12>.  Modified by G.K.M. Tobin/Gerry Murray}
+\typeout{Document Class 'sig-alternate' <9th June '13>.  Modified by
+  G.K.M. Tobin/Gerry Murray/Boris Veytsman}
 \typeout{Based in part upon document Style `acmconf' <22 May 89>. Hacked 4/91 by}
 \typeout{shivers@cs.cmu.edu, 4/93 by theobald@cs.mcgill.ca}
 \typeout{Excerpts were taken from (Journal Style) 'esub2acm.cls'.}
 \typeout{****** Bugs/comments/suggestions/technicalities to Gerry Murray -- murray@hq.acm.org ******}
 \typeout{Questions on the style, SIGS policies, etc. to Adrienne Griscti griscti@acm.org}
+
+% New option code by BV
+
+\newcount\ACM@basesize
+\ACM@basesize=9\relax
+\DeclareOption{9pt}{\ACM@basesize=9\relax}
+\DeclareOption{10pt}{\ACM@basesize=10\relax}
+\DeclareOption{11pt}{\ClassError{sig-alternate}{The `11pt' option is
+    not allowed}{sig-alternate now exists in 9pt and 10pt versions only}}
+\DeclareOption{12pt}{\ClassError{sig-alternate}{The `12pt' option is
+    not allowed}{sig-alternate now exists in 9pt and 10pt versions only}}
+
+\ExecuteOptions{9pt}
+\ProcessOptions
+
+
+\let\@concepts\@empty
+% Support for CCSXML file
+\RequirePackage{comment}
+\excludecomment{CCSXML}
+
+% New concepts scheme
+%
+% The first argument is the significance, the
+% second is the concept(s)
+%
+\newcommand\ccsdesc[2][100]{%
+  \ccsdesc@parse#1~#2~}
+%
+% The parser of the expression Significance~General~Specific
+%
+\def\ccsdesc@parse#1~#2~#3~{%
+  \expandafter\ifx\csname CCS@#2\endcsname\relax
+    \expandafter\gdef\csname CCS@#2\endcsname{\textbullet\textbf{#2} $\to$ }%
+  \g@addto@macro{\@concepts}{\csname CCS@#2\endcsname}\fi
+  \expandafter\g@addto@macro\expandafter{\csname CCS@#2\endcsname}{%
+    \ifnum#1>499\textbf{#3; }\else
+    \ifnum#1>299\textit{#3; }\else
+    #3; \fi\fi}}
+
+\newcommand\printccsdesc{%
+  \ifx\@concepts\@empty\else
+  \if@twocolumn
+    \section*{CCS Concepts}
+    \@concepts
+    \else \small
+    \quotation{\@concepts}%
+    \fi
+    \fi}
+
+
+
+
+\def\doi#1{\def\@doi{#1}}
+\doi{http://dx.doi.org/10.1145/0000000.0000000}
+
 \oddsidemargin 4.5pc
 \evensidemargin 4.5pc
 \advance\oddsidemargin by -1in  % Correct for LaTeX gratuitousness
@@ -154,9 +216,16 @@
 \hfuzz 1pt              % Allow some variation in column width, otherwise it's
                         % too hard to typeset in narrow columns.
 
+\ifnum\ACM@basesize=9\relax
 \footnotesep 5.6pt      % Height of strut placed at the beginning of every
                         % footnote =3D height of normal \footnotesize strut,
                         % so no extra space between footnotes.
+\fi
+\ifnum\ACM@basesize=10\relax
+\footnotesep 6.22pt      % Height of strut placed at the beginning of every
+                        % footnote =3D height of normal \footnotesize strut,
+                        % so no extra space between footnotes.
+\fi
 
 \skip\footins 8.1pt plus 4pt minus 2pt  % Space between last line of text and
                                         % top of first footnote.
@@ -189,8 +258,16 @@
 \marginparpush 5pt       % Minimum vertical separation between two marginal
                          % notes.
 
-\parskip 0pt plus 1pt            % Extra vertical space between paragraphs.
-\parindent 9pt  % GM July 2000 / was 0pt - width of paragraph indentation.
+\parskip 0pt plus 1pt            % Extra vertical space between
+                                % paragraphs.
+\ifnum\ACM@basesize=9\relax
+\parindent 9pt  % GM July 2000 / was 0pt - width of paragraph
+                % indentation.
+\fi
+\ifnum\ACM@basesize=10\relax
+\parindent 10pt  % GM July 2000 / was 0pt - width of paragraph
+                % indentation.
+\fi
 \partopsep 2pt plus 1pt minus 1pt% Extra vertical space, in addition to
                                  % \parskip and \topsep, added when user
                                  % leaves blank line before environment.
@@ -203,22 +280,20 @@
 \@endparpenalty   -\@lowpenalty % After a list or paragraph environment.
 \@itempenalty     -\@lowpenalty % Between list items.
 
-%\@namedef{ds@10pt}{\@latexerr{The `10pt' option is not allowed in the `acmconf'
-\@namedef{ds@10pt}{\ClassError{The `10pt' option is not allowed in the `acmconf'	% January 2008
-  document style.}\@eha}
-%\@namedef{ds@11pt}{\@latexerr{The `11pt' option is not allowed in the `acmconf'
-\@namedef{ds@11pt}{\ClassError{The `11pt' option is not allowed in the `acmconf'	% January 2008
-  document style.}\@eha}
-%\@namedef{ds@12pt}{\@latexerr{The `12pt' option is not allowed in the `acmconf'
-\@namedef{ds@12pt}{\ClassError{The `12pt' option is not allowed in the `acmconf'	% January 2008
-  document style.}\@eha}
 
-\@options
+\RequirePackage{ifpdf}%
+\ifpdf
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+\fi
+
 
 \lineskip 2pt           % \lineskip is 1pt for all font sizes.
 \normallineskip 2pt
 \def\baselinestretch{1}
 
+
+\ifnum\ACM@basesize=9\relax
 \abovedisplayskip 9pt plus2pt minus4.5pt%
 \belowdisplayskip \abovedisplayskip
 \abovedisplayshortskip  \z@ plus3pt%
@@ -242,6 +317,34 @@
 \def\@listi{\leftmargin\leftmargini %% Added 22 Dec 87
 \topsep 3pt plus 1pt minus 1pt\parsep 2pt plus 1pt minus 1pt
 \itemsep \parsep}}
+\fi
+
+\ifnum\ACM@basesize=10\relax
+\abovedisplayskip 10pt plus2pt minus4.5pt%
+\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip  \z@ plus3pt%
+\belowdisplayshortskip  6pt plus3pt minus3pt%
+\let\@listi\@listI     % Setting of \@listi added 9 Jun 87
+
+\def\small{\@setsize\small{10pt}\ixpt\@ixpt
+\abovedisplayskip 8.5pt plus 3pt minus 4pt%
+\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip \z@ plus2pt%
+\belowdisplayshortskip 4pt plus2pt minus 2pt
+\def\@listi{\leftmargin\leftmargini %% Added 22 Dec 87
+\topsep 4.5pt plus 2pt minus 2pt\parsep 2pt plus 1pt minus 1pt
+\itemsep \parsep}}
+
+\def\footnotesize{\@setsize\footnotesize{10pt}\xpt\@xpt
+\abovedisplayskip 7.6pt plus 2pt minus 4pt%
+\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip \z@ plus 1pt%
+\belowdisplayshortskip 3.0pt plus 1pt minus 2pt
+\def\@listi{\leftmargin\leftmargini %% Added 22 Dec 87
+\topsep 3.2pt plus 1pt minus 1pt\parsep 2pt plus 1pt minus 1pt
+\itemsep \parsep}}
+\fi
+
 
 \newcount\aucount
 \newcount\originalaucount
@@ -311,6 +414,7 @@
 % *********************************************
 % Gerry Murray 11/30/2006
 % *********************************************
+\ifnum\ACM@basesize=9\relax
 \newfont{\secfnt}{ptmb8t at 12pt}
 \newfont{\secit}{ptmbi8t at 12pt}    %13 Jan 00 gkmt
 \newfont{\subsecfnt}{ptmri8t at 11pt}
@@ -329,6 +433,27 @@
 \newfont{\confname}{ptmri8t at 8pt}
 \newfont{\crnotice}{ptmr8t at 8pt}
 \newfont{\ninept}{ptmr8t at 9pt}
+\fi
+\ifnum\ACM@basesize=10\relax
+\newfont{\secfnt}{ptmb8t at 13pt}
+\newfont{\secit}{ptmbi8t at 13pt}    %13 Jan 00 gkmt
+\newfont{\subsecfnt}{ptmri8t at 12pt}
+\newfont{\subsecit}{ptmbi8t at 12pt}  % 
+\newfont{\ttlfnt}{phvb8t at 20pt}
+\newfont{\ttlit}{phvbo8t at 20pt}    % GM 2/4/2000
+\newfont{\subttlfnt}{phvr8t at 15pt}
+\newfont{\subttlit}{phvro8t at 15pt} % GM 2/4/2000
+\newfont{\subttlbf}{phvb8t at 15pt}  % 13 Jan 00 gkmt
+\newfont{\aufnt}{phvr8t at 12pt}
+\newfont{\auit}{phvro8t at 12pt}     % GM 2/4/2000
+\newfont{\affaddr}{phvr8t at 11pt}
+\newfont{\affaddrit}{phvro8t at 11pt} % GM 2/4/2000
+\newfont{\eaddfnt}{phvr8t at 12pt}
+\newfont{\ixpt}{ptmr8t at 10pt}
+\newfont{\confname}{ptmri8t at 9pt}
+\newfont{\crnotice}{ptmr8t at 9pt}
+\newfont{\ninept}{ptmr8t at 10pt}
+\fi
 % +++++++++++++++++++++++++++++++++++++++++++++
 % -- End of block B --
 
@@ -432,10 +557,22 @@
 
 \def\theequation{\arabic{equation}}
 
+
+\ifnum\ACM@basesize=9\relax
 \arraycolsep 4.5pt   % Half the space between columns in an array environment.
 \tabcolsep 5.4pt    % Half the space between columns in a tabular environment.
 \arrayrulewidth .5pt % Width of rules in array and tabular environment. % (was .4) updated Gerry March 20 2007
 \doublerulesep 1.8pt % Space between adjacent rules in array or tabular env.
+
+\fi
+
+\ifnum\ACM@basesize=10\relax
+\arraycolsep 5pt   % Half the space between columns in an array environment.
+\tabcolsep 6pt    % Half the space between columns in a tabular environment.
+\arrayrulewidth .5pt % Width of rules in array and tabular environment. % (was .4) updated Gerry March 20 2007
+\doublerulesep 1.8pt % Space between adjacent rules in array or tabular env.
+
+\fi
 
 \tabbingsep \labelsep   % Space used by the \' command.  (See LaTeX manual.)
 
@@ -610,7 +747,7 @@
 
 \if@ll
   \NeedsTeXFormat{LaTeX2e}
-  \ProvidesClass{sig-alternate} [2012/05/23 - V2.5 - based on acmproc.cls V1.3 <Nov. 30 '99>]
+  \ProvidesClass{sig-alternate} [2013/05/12 v2.7 based on acmproc.cls V1.3 <Nov. 30 '99>]
   \RequirePackage{latexsym}% QUERY: are these two really needed?
   \let\dooptions\ProcessOptions
 \else
@@ -662,6 +799,7 @@
 % You may need to change your LV1times.fd file so that sc is
 % mapped to cmcsc - -for smallcaps -- that is if you decide
 % to change {cmr} to {times} above. (Not recommended)
+\ifnum\ACM@basesize=9\relax
   \renewcommand{\@ptsize}{}
   \renewcommand{\normalsize}{%
     \@setfontsize\normalsize\@ixpt{10.5\p@}%\ninept%
@@ -669,8 +807,18 @@
     \belowdisplayskip \abovedisplayskip
     \abovedisplayshortskip 6\p@ \@minus 3\p@
     \belowdisplayshortskip 6\p@ \@minus 3\p@
-    \let\@listi\@listI
-  }
+    \let\@listi\@listI}
+\fi
+\ifnum\ACM@basesize=10\relax
+  \renewcommand{\@ptsize}{}
+  \renewcommand{\normalsize}{%
+    \@setfontsize\normalsize\@xpt{11.5\p@}%\ninept%
+    \abovedisplayskip 6.5\p@ \@plus2\p@ \@minus\p@
+    \belowdisplayskip \abovedisplayskip
+    \abovedisplayshortskip 6.5\p@ \@minus 3\p@
+    \belowdisplayshortskip 6.5\p@ \@minus 3\p@
+    \let\@listi\@listI}
+\fi
 \else
   \def\@normalsize{%changed next to 9 from 10
     \@setsize\normalsize{9\p@}\ixpt\@ixpt
@@ -682,6 +830,7 @@
   }%
 \fi
 \if@ll
+\ifnum\ACM@basesize=9\relax
   \newcommand\scriptsize{\@setfontsize\scriptsize\@viipt{8\p@}}
   \newcommand\tiny{\@setfontsize\tiny\@vpt{6\p@}}
   \newcommand\large{\@setfontsize\large\@xiipt{14\p@}}
@@ -689,6 +838,16 @@
   \newcommand\LARGE{\@setfontsize\LARGE\@xviipt{20\p@}}
   \newcommand\huge{\@setfontsize\huge\@xxpt{25\p@}}
   \newcommand\Huge{\@setfontsize\Huge\@xxvpt{30\p@}}
+\fi
+\ifnum\ACM@basesize=10\relax
+  \newcommand\scriptsize{\@setfontsize\scriptsize\@viiipt{9\p@}}
+  \newcommand\tiny{\@setfontsize\tiny\@vipt{7\p@}}
+  \newcommand\large{\@setfontsize\large\@xiiipt{15\p@}}
+  \newcommand\Large{\@setfontsize\Large\@xvpt{20\p@}}
+  \newcommand\LARGE{\@setfontsize\LARGE\@xixpt{22\p@}}
+  \newcommand\huge{\@setfontsize\huge\@xixpt{30\p@}}
+  \newcommand\Huge{\@setfontsize\Huge30pt{36\p@}}
+\fi
 \else
   \def\scriptsize{\@setsize\scriptsize{8\p@}\viipt\@viipt}
   \def\tiny{\@setsize\tiny{6\p@}\vpt\@vpt}
@@ -703,6 +862,7 @@
 % make aubox hsize/number of authors up to 3, less gutter
 % then showbox gutter showbox gutter showbox -- GKMT Aug 99
 \newbox\@acmtitlebox
+\ifnum\ACM@basesize=9\relax
 \def\@maketitle{\newpage
  \null
  \setbox\@acmtitlebox\vbox{%
@@ -723,7 +883,29 @@
  \advance\dimen0 by -12.75pc\relax % Increased space for title box -- KBT
  \unvbox\@acmtitlebox
  \ifdim\dimen0<0.0pt\relax\vskip-\dimen0\fi}
-
+\fi
+\ifnum\ACM@basesize=10\relax
+\def\@maketitle{\newpage
+ \null
+ \setbox\@acmtitlebox\vbox{%
+\baselineskip 22pt
+\vskip 2.2em                   % Vertical space above title.
+   \begin{center}
+    {\ttlfnt \@title\par}       % Title set in 18pt Helvetica (Arial) bold size.
+    \vskip 2em                % Vertical space after title.
+%This should be the subtitle.
+{\subttlfnt \the\subtitletext\par}\vskip 1.25em%\fi
+    {\baselineskip 18pt\aufnt   % each author set in \12 pt Arial, in a
+     \lineskip .5em             % tabular environment
+     \begin{tabular}[t]{c}\@author
+     \end{tabular}\par}
+    \vskip 2em               % Vertical space after author.
+   \end{center}}
+ \dimen0=\ht\@acmtitlebox
+ \advance\dimen0 by -12.75pc\relax % Increased space for title box -- KBT
+ \unvbox\@acmtitlebox
+ \ifdim\dimen0<0.0pt\relax\vskip-\dimen0\fi}
+\fi
 
 \newcount\titlenotecount
 \global\titlenotecount=0
@@ -798,11 +980,13 @@
 \quotation
 \fi}
 
-\def\terms{\if@twocolumn
-\section*{General Terms}
-\else \small
-\quotation
-\fi}
+\def\terms#1{%
+%\if@twocolumn
+%\section*{General Terms}
+%\else \small
+%\quotation
+%\fi
+}
 
 % -- Classification needs to be a bit smart due to optionals - Gerry/Georgia November 2nd. 1999
 \newcount\catcount
@@ -814,6 +998,7 @@
 \advance\catcount by 1\else{\unskip; }\fi
     \@ifnextchar [{\@category{#1}{#2}{#3}}{\@category{#1}{#2}{#3}[]}%
 }
+
 
 \def\@category#1#2#3[#4]{%
     \begingroup
@@ -830,6 +1015,11 @@
 }
 %
 
+
+
+
+
+
 %%% This section (written by KBT) handles the 1" box in the lower left
 %%% corner of the left column of the first page by creating a picture,
 %%% and inserting the predefined string at the bottom (with a negative
@@ -842,9 +1032,16 @@
 \@float{copyrightbox}[b]
 \begin{center}
 \setlength{\unitlength}{1pc}
+\ifnum\ACM@basesize=9
 \begin{picture}(20,6) %Space for copyright notice
 \put(0,-0.95){\crnotice{\@toappear}}
 \end{picture}
+\fi
+\ifnum\ACM@basesize=10
+\begin{picture}(20,7) %Space for copyright notice
+\put(0,-0.95){\crnotice{\@toappear}}
+\end{picture}
+\fi
 \end{center}
 \end@float}
 
@@ -1423,16 +1620,64 @@
 \newtoks\acmcopyr
 \newtoks\boilerplate
 \global\acmcopyr={X-XXXXX-XX-X/XX/XX}  % Default - 5/11/2001 *** Gerry
-\global\copyrtyr={20XX}                % Default - 3/3/2003 *** Gerry
+\global\copyrtyr={\the\year}                % Default - 3/3/2003 *** Gerry
+\def\acmPrice#1{\gdef\@acmPrice{#1}}
+\acmPrice{} %article price  % Changed to 15 - June 2012 - Gerry
+
+
 \def\CopyrightYear#1{\global\copyrtyr{#1}}
 \def\crdata#1{\global\acmcopyr{#1}}
 \def\permission#1{\global\boilerplate{#1}}
+
+% ISBN
 %
-\global\boilerplate={Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page.  To copy otherwise, to republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee.}
+\def\isbn#1{\global\acmcopyr={#1}}
+\isbn{978-1-4503-2138-9}
+
+\RequirePackage{url}
+\urlstyle{rm}
+\def\doi#1{\def\@doi{#1}}
+\doi{10.1145/1235}
+\def\printdoi#1{\url{#1}}
+
+
+
+% Copyright
+\RequirePackage{acmcopyright}
+\setcopyright{none}
+
+%
+\global\boilerplate={\@copyrightpermission}
+
+
+
 \newtoks\copyrightetc
-\global\copyrightetc{Copyright \the\copyrtyr\ ACM \the\acmcopyr\ ...\$15.00} % Gerry changed to 15 May 2012
-\toappear{\the\boilerplate\par
-{\confname{\the\conf}} \the\confinfo\par \the\copyrightetc.}
+\ifnum\ACM@basesize=9\relax
+\global\copyrightetc{%
+{\noindent\confname\ \the\conf\ \the\confinfo}\par\smallskip
+  \if@printcopyright
+    \copyright\ \the\copyrtyr\ \@copyrightowner
+  \fi
+  \if@acmowned ISBN \else\ifnum\acm@copyrightmode=2 ISBN \else \par\smallskip ACM ISBN \fi\fi
+ \the\acmcopyr\ifx\@acmPrice\@empty.\else\dots\@acmPrice\fi\par\smallskip
+{DOI: \small\expandafter\printdoi\expandafter{\@doi}}} 
+\toappear{\fontsize{7pt}{8pt}\fontfamily{ptm}\selectfont
+  \the\boilerplate\par\smallskip
+ \the\copyrightetc}
+\fi
+\ifnum\ACM@basesize=10\relax
+\global\copyrightetc{%
+{\noindent\confname\ \the\conf\ \the\confinfo}\par\smallskip
+  \if@printcopyright
+    \copyright\ \the\copyrtyr\ \@copyrightowner
+  \fi
+  \if@acmowned ISBN \else\ifnum\acm@copyrightmode=2 ISBN \else \par\smallskip ACM ISBN \fi\fi
+ \the\acmcopyr\ifx\@acmPrice\@empty.\else\dots\@acmPrice\fi\par\smallskip
+{DOI: \small\expandafter\printdoi\expandafter{\@doi}}} 
+\toappear{\fontsize{7.5pt}{8.5pt}\fontfamily{ptm}\selectfont
+  \the\boilerplate\par\smallskip
+ \the\copyrightetc}
+\fi
 %\DeclareFixedFont{\altcrnotice}{OT1}{tmr}{m}{n}{8}  % << patch needed for accenting e.g. Montreal - Gerry, May 2007
 %\DeclareFixedFont{\altconfname}{OT1}{tmr}{m}{it}{8}  % << patch needed for accenting in italicized confname - Gerry, May 2007
 %
@@ -1545,8 +1790,7 @@
 \DeclareOption{cm}{\renewcommand\@ae@switch[4]{#2}}
 \DeclareOption{cyr}{\renewcommand\@ae@switch[4]{#3}}
 \DeclareOption{pl}{\renewcommand\@ae@switch[4]{#4}}
-\ExecuteOptions{pl}
-\ProcessOptions
+
 
 %
 % Load necessary packages

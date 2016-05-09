@@ -60,6 +60,10 @@ def copy_latex_templates():
     shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'templateBIOBJarticle.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'comment.sty'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'acmcopyright.sty'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'bbob.bib'), currentFolder)
+    
 
 def run_latex_template(filename):
     filePath = os.path.abspath(join_path(os.path.dirname(__file__), filename))
@@ -105,6 +109,7 @@ def process_doctest_output(stream=None):
     state = 0
     for line in fileinput.input(stream):  # takes argv as file or stdin
         if 1 < 3:
+            
             s3 += line
             if state < -1 and line.startswith('***'):
                 print(s3)

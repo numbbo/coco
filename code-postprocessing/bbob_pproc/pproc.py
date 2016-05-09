@@ -190,7 +190,7 @@ class RunlengthBasedTargetValues(TargetValues):
         >>> os.chdir("..")
         >>> targets = bb.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension==True
         >>> targets(fun_dim=(1, 20)) # doctest:+ELLIPSIS
-        Loading best algorithm data from BBOB-2009...   done ...
+        Loading best algorithm data from ...
         array([  6.30957345e+01,   5.75439938e+01,   1.00000000e-08,
                  1.00000000e-08,   1.00000000e-08])
         >>> os.chdir(cwd)
@@ -215,7 +215,7 @@ class RunlengthBasedTargetValues(TargetValues):
         else:
             return RunlengthBasedTargetValues(run_lengths_or_class_instance, *args, **kwargs)
         
-    def __init__(self, run_lengths, reference_data='bestGECCO2009',
+    def __init__(self, run_lengths, reference_data='bestAlgorithm',
                  smallest_target=1e-8, times_dimension=True, 
                  force_different_targets_factor=10**0.04,
                  unique_target_values=False,
@@ -226,7 +226,7 @@ class RunlengthBasedTargetValues(TargetValues):
         
         :param run_lengths: sequence of values. 
         :param reference_data: 
-            can be a string like ``"bestGECCO2009"`` or a dictionary
+            can be a string like ``"bestAlgorithm"`` or a dictionary
             of best data sets (e.g. from ``bestalg.generate(...)``)
             or a list of algorithm folder/data names (not thoroughly
             tested).
@@ -256,8 +256,6 @@ class RunlengthBasedTargetValues(TargetValues):
         self.reference_data = reference_data
         if force_different_targets_factor < 1:
             force_different_targets_factor **= -1 
-        # TODO: known_names collects only bestalg stuff, while also algorithm data can be used (see def initialize below) 
-        self.known_names = ['bestGECCO2009', 'bestGECCOever', 'bestBiobj2016'] # TODO: best-ever is not a time-invariant thing and therefore ambiguous
         self._short_info = "budget-based targets"
         self.run_lengths = sorted(run_lengths)
         self.smallest_target = smallest_target
@@ -273,25 +271,14 @@ class RunlengthBasedTargetValues(TargetValues):
         """lazy initialization to prevent slow import"""
         if self.initialized:
             return self
-        if self.reference_data in self.known_names: # bestalg data are loaded
+        if self.reference_data == 'bestAlgorithm': # bestalg data are loaded
             self.reference_algorithm = self.reference_data
             self._short_info = 'reference budgets from ' + self.reference_data
-            if self.reference_data == 'bestGECCO2009':
-                from bbob_pproc import bestalg
-                bestalg.loadBBOB2009() # this is an absurd interface
-                self.reference_data = bestalg.bestalgentries2009
-                # TODO: remove targets smaller than 1e-8 
-            elif self.reference_data == 'bestGECCOever':
-                from bbob_pproc import bestalg
-                bestalg.loadBBOBever() # this is an absurd interface
-                self.reference_data = bestalg.bestalgentriesever
-            elif self.reference_data == 'bestBiobj2016':
-                from bbob_pproc import bestalg
-                bestalg.loadBestBiobj2016() # this is an absurd interface
-                self.reference_data = bestalg.bestbiobjalgentries2016
-            else:
-                ValueError('reference algorithm name')
-        elif type(self.reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work 
+
+            from . import bestalg
+            self.reference_data = bestalg.load_best_algorithm()
+            # TODO: remove targets smaller than 1e-8
+        elif type(self.reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work
             self._short_info = 'reference budgets from ' + self.reference_data
             dsl = DataSetList(os.path.join(sys.modules[globals()['__name__']].__file__.split('bbob_pproc')[0], 
                                            'bbob_pproc', 'data', self.reference_data))  
@@ -840,7 +827,7 @@ class DataSet():
             self._cut_data()
             # Compute aRT
             self.computeERTfromEvals()
-            assert all(self.evals[0][1:] == 1)        
+            assert all(self.evals[0][1:] == 1)
 
     @property
     def evals_(self):
@@ -1762,13 +1749,25 @@ class DataSetList(list):
             groups = OrderedDict(sorted((key, key.replace('_', ' ')) for key in dictByFuncGroup.keys()))
             return groups
         else:
-            groups = OrderedDict([
-                ('separ', 'Separable functions'), 
-                ('lcond', 'Misc. moderate functions'), 
-                ('hcond', 'Ill-conditioned functions'), 
-                ('multi', 'Multi-modal functions'), 
-                ('mult2', 'Weak structure functions')]) 
-            return groups
+            groups = []
+            if any(i.funcId in range(1, 6) for i in self):
+                groups.append(('separ', 'Separable functions'))
+            if any(i.funcId in range(6, 10) for i in self):
+                groups.append(('lcond', 'Misc. moderate functions'))
+            if any(i.funcId in range(10, 15) for i in self):
+                groups.append(('hcond', 'Ill-conditioned functions'))
+            if any(i.funcId in range(15, 20) for i in self):
+                groups.append(('multi', 'Multi-modal functions'))
+            if any(i.funcId in range(20, 25) for i in self):
+                groups.append(('mult2', 'Weak structure functions'))
+            if any(i.funcId in range(101, 107) for i in self):
+                groups.append(('nzmod', 'Moderate noise'))
+            if any(i.funcId in range(107, 122) for i in self):
+                groups.append(('nzsev', 'Severe noise'))
+            if any(i.funcId in range(122, 131) for i in self):
+                groups.append(('nzsmm', 'Severe noise multimod.'))
+
+            return OrderedDict(groups)
 
     def dictByParam(self, param):
         """Returns a dictionary of DataSetList by parameter values.
