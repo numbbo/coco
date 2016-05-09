@@ -105,13 +105,21 @@ if __name__ == "__main__":
         oldwd = os.getcwd()
         try:
             os.chdir(folder)
-            for i in range(4):
+            for i in range(3):
                 call(['pdflatex', filename]), 
                 # output = check_output(['pdflatex', file]), 
                                         #stderr=sys.stdout, 
                                         #env=os.environ, 
                                         #universal_newlines=True)
                 # print(output)
+                if not i and len(sys.argv) > 2:
+                    try:
+                        os.system('cp ' + filename[:-4] + '.pdf ' + 
+                            os.path.join(oldwd, sys.argv[2]))
+                    except:
+                        print('ERROR with cp ', file[:-4] + '.pdf', 
+                            os.path.join(oldwd, sys.argv[2]))
+                            
         except CalledProcessError as e:
             print("ERROR: return value=%i" % e.returncode)
             print(e.output)

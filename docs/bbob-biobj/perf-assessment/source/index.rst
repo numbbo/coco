@@ -21,7 +21,7 @@ Biobjective Performance Assessment with the COCO Platform
 .. raw:: html
 
    See: <I>ArXiv e-prints</I>,
-   <A HREF="http://arxiv.org/abs/160x.xxxxx">arXiv:160x.xxxxx</A>, 2016.
+   <A HREF="http://arxiv.org/abs/1605.01746">arXiv:1605.01746</A>, 2016.
 
 
 .. raw:: latex

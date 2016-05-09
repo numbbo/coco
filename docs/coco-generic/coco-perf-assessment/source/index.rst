@@ -28,11 +28,13 @@ COCO: Performance Assessment
 .. |function| replace:: :math:`\mathrm{function}`
 .. |instance| replace:: :math:`\mathrm{instance}`
 .. |R| replace:: :math:`\mathbb{R}`
+.. |I| replace:: :math:`\mathcal{I}`
 .. |i| replace:: :math:`i`
 .. |t| replace:: :math:`t`
 .. |p| replace:: :math:`p`
 .. |x| replace:: :math:`x`
 .. |N| replace:: :math:`N`
+.. |n| replace:: :math:`n`
 .. |J| replace:: :math:`J`
 .. |RTus| replace:: :math:`\mathrm{RT}^{\mathrm{us}}`
 .. |RTs| replace:: :math:`\mathrm{RT}^{\mathrm{s}}`
@@ -184,21 +186,22 @@ We introduce a few terms and definitions that are used in the rest of the docume
 On Performance Measures
 =======================
 
-Evaluating performance is necessarily based on performance 
-*measures*, the definition of which plays a crucial and central role for the evaluation. 
-Here, we introduce our requirements for performances measures in general and in the context of black-box optimization. 
-In general, a performance measure should be
+Evaluating performance is necessarily based on performance *measures*, the
+definition of which plays a crucial role for the evaluation. 
+Here, we introduce our requirements for performances measures in general and in
+the context of black-box optimization. 
+A performance measure in general should be
 
-* quantitative, as opposed to a simple ranking of entrants (e.g., algorithms). 
+* quantitative, as opposed to a simple *ranking* of entrants (e.g., algorithms). 
   Ideally, the measure should be defined on a ratio scale (as opposed to an
   interval or ordinal scale) [STE1946]_, which allows to state that "entrant A
   is :math:`x` times better than entrant B". [#]_ 
-* assuming a wide variation of values (i.e., for example, typical values should 
-  not only range between 0.98 and 1.0) [#]_,
+* assuming a wide variation of values, for example, typical values should 
+  not only be ranging between 0.98 and 1.0 [#]_,
 * interpretable, in particular by having a meaning and semantics attached to 
   the measured numbers,
 * relevant and meaningful with respect to the "real world",
-* as simple and comprehensible as possible.
+* as simple and as comprehensible as possible.
 
 .. Following [HAN2009ex]_, we advocate **performance measures** that are
 
@@ -206,8 +209,8 @@ In general, a performance measure should be
 
 In the context of black-box optimization, the **runtime** to reach a target value, measured in number of function evaluations, satisfies all requirements. 
 Runtime is well-interpretable and meaningful with respect to the
-real-world as it represents time needed to solve a problem. Measuring
-number of function evaluations avoids the shortcomings of CPU measurements that depend on parameters like the programming language, coding style, machine used to run the experiment, etc. that are difficult or impractical to control.
+real-world as it represents time needed to solve a problem. [#]_ Measuring
+number of function evaluations avoids the shortcomings of CPU measurements that depend on parameters like the programming language, coding style, machine used to run the experiment, etc., that are difficult or impractical to control.
 
 
 .. [#] A variable which lives on a ratio scale has a meaningful zero, 
@@ -219,13 +222,42 @@ number of function evaluations avoids the shortcomings of CPU measurements that 
 .. [#] The transformation :math:`x\mapsto\log(1-x)` could alleviate the problem
    in this case, given it actually zooms in on relevant values.
 
+.. [#] If algorithm internal computations dominate wall-clock time in a practical 
+   application, runtime benchmarking results in number of function evaluations 
+   can usually be easily adapted *a posteri* to reflect the practical scenario. 
+
+
 .. _sec:verthori:
+
+Quality Indicators
+-------------------
+
+At each time step |t| of an algorithm which optimizes a problem instance
+|thetai| of the function |ftheta| in dimension |n|, we define the performance via a quality indicator mapping. 
+A quality indicator |I| maps the set of all solutions evaluated 
+so far (or recommended [HAN2016ex]_) to a :math:`p`-dependent real value.
+That is, the runtime assessment is done on a (large) set of problem instances defined by quintuples 
+:math:`p=(n, f_\theta, \theta_i, I, I^\mathrm{target, \theta_i}_{f})`. 
+
+In the single-objective noiseless case, this quality indicator outputs
+the best so far observed (i.e. minimal and feasible) function value. 
+
+In the single-objective noisy case, the indicator returns the 1%-tile function value of the last :math:`\lceil\ln(t + 3)^2 / 2\rceil)` evaluated (or recommended) solutions. [#]_
+
+In the multi-objective case, the quality indicator is based on a negative
+hypervolume indicator of the set of evaluated solutions (the archive)
+[BRO2016]_, while other well- or lesser-known multi-objective quality indicators
+are a possible choice.
+
+.. [#] This feature will only be available in the new implementation of the COCO_ framework.
 
 
 Fixed-Budget versus Fixed-Target Approach
 -----------------------------------------
 
-Starting from the most basic convergence graphs, which plot the evolution of a quality indicator (to be minimized) against the number of function evaluations, there are essentially only two approaches to measure the performance.
+Starting from the most basic convergence graphs, which plot the evolution of a
+quality indicator (to be minimized) against the number of function evaluations,
+there are essentially two approaches to measure the performance.
 
 **fixed-budget approach**
     We fix a budget of function evaluations,
@@ -308,28 +340,6 @@ but the overall number of function evaluations of the corresponding run provides
 .. [#] Even in continuous domain, from a benchmarking, a practical, and a numerical viewpoint, the set of solutions that indisputably solve the problem have a volume larger than zero. 
 
 .. [#] However, under mildly randomized conditions, for example with a randomized initial solution, the restarted algorithm reaches any attainable target with probability one. However, the time needed can well be beyond any reasonable practical limitations. 
-
-Quality Indicators
--------------------
-
-At each time step :math:`t` of an algorithm which optimizes a problem instance
-:math:`p=(n,f_\theta,\theta_i)`, we define the  performance via a quality
-indicator function. A quality indicator maps the set of all solutions evaluated 
-so far (or recommended [HAN2016ex]_) to a :math:`p`-dependent real value.
-
-In the single-objective noiseless case, this quality indicator outputs
-the best observed (i.e. minimal and feasible) function value during the first
-:math:`t` evaluations. 
-
-In the single-objective noisy case, we consider the 1%-tile of the 
-last :math:`\lceil\ln(t + 3)^2 / 2\rceil)` evaluated solutions. [#]_
-
-In the multi-objective case, the hypervolume indicator 
-is used to map the entire set of already evaluated solutions (the archive) 
-to a real value [BRO2016]_, while other well- or lesser-known multi-objective 
-quality indicators are possible.
-
-.. [#] This feature will only be available in the new implementation of the framework.
 
 
 Target Values
