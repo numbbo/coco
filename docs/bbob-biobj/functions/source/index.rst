@@ -1,11 +1,11 @@
-.. title:: COCO: The bbob-biobj Test Suite
+.. title:: COCO: The Bi-objective Black-Box Optimization Benchmarking (bbob-biobj) Test Suite
 
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-COCO: The Bi-objective Black Box Optimization Benchmarking (``bbob-biobj``) Test Suite
+COCO: The Bi-objective Black-Box Optimization Benchmarking (``bbob-biobj``) Test Suite
 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. the next two lines are necessary in LaTeX. They will be automatically 
-  replaced to put away the \chapter level as ^^^ and let the "current" level
+  replaced to put away the \chapter level as ??? and let the "current" level
   become \section. 
 
 .. CHAPTERTITLE
@@ -23,7 +23,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. raw:: latex
 
-  % \tableofcontents is automatic with sphinx and moved behind abstract by swap...py
+  % \tableofcontents TOC is automatic with sphinx and moved behind abstract by swap...py
   \begin{abstract}
 
 .. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY (though it seems the latter is not used)
@@ -33,7 +33,10 @@ functions in continuous domain which are derived from combining functions of
 the well-known single-objective noiseless ``bbob`` test suite. Besides giving
 the actual function definitions and presenting their (known) properties, this
 documentation also aims at giving the rationale behind our approach in terms
-of function groups, instances, and potential objective space normalization.
+of function groups, instances, and potential objective space normalization. [#]_
+
+.. [#] *ArXiv e-prints*, `arXiv:1604.00359`__, 2016.
+.. __: http://arxiv.org/abs/1604.00359
 
 .. raw:: latex
 
@@ -41,7 +44,7 @@ of function groups, instances, and potential objective space normalization.
   \newpage
 
 
-..  <p>The <code class="docutils literal"><span
+.. old <p>The <code class="docutils literal"><span
   class="pre">bbob-biobj</span></code> test suite contains 55 bi-objective
   functions in continuous domain which are derived from combining functions
   of the well-known single-objective noiseless <code class="docutils
@@ -53,7 +56,7 @@ of function groups, instances, and potential objective space normalization.
   rationale behind our approach in terms of function groups, instances, and
   objective space normalization. </p>
 
-.. The ``bbob-biobj`` test suite contains 55 bi-objective 
+.. old The ``bbob-biobj`` test suite contains 55 bi-objective 
    functions in continuous domain which are derived from combining functions of
    the well-known single-objective noiseless ``bbob`` test suite. It will be
    used as the main test suite of the upcoming `BBOB-2016 workshop
@@ -74,16 +77,19 @@ of function groups, instances, and potential objective space normalization.
 .. summarizing the state-of-the-art in multi-objective black-box benchmarking, at 
 .. and at providing a simple tutorial on how to use these functions for actual benchmarking within the Coco framework.
 
-.. Note::
+.. .. Note::
   
-  For the time being, this documentation is under development and might not contain all final data.
+  For the time being, this documentation is under development and might not 
+  contain all final data.
 
 .. figure:: _figs/examples-bbob-biobj.png
    :scale: 60
    :align: center
 
-   Example plots of the Pareto front approximation, found by NSGA-II on selected ``bbob-biobj`` functions. In blue the
-   non-dominated points at the end of different independent runs, in red the points that are non-dominated over all runs.
+   Example plots of the Pareto front approximation, found by NSGA-II on
+   selected ``bbob-biobj`` functions. In blue the non-dominated points at the
+   end of different independent runs, in red the points that are
+   non-dominated over all runs.
 
 .. Tea: f_1 and f_2 should be replaced by f_\alpha and f_\beta in all plots. Also, instead of "f16 :" do "f16: "
 
@@ -125,16 +131,12 @@ as possible and (ii) has |f|-values as close to the Pareto front as possible. [#
    have in each coordinate distance one. Neither of these points is however 
    freely accessible to the optimization algorithm. 
 
-.. Tea: I deleted the footnote because it introduced two concepts not explained 
-   yet (ideal and nadir points) and additionally brought in the issue of
-   visibility of problem properties to algorithms, which should be addressed
-   elsewhere. Also, until we discuss the actual metric used (hypervolume), it
-   makes no sense to go too deep into details here anyway.
-.. Niko: here is my take on this: 1/3 of the readers know the concepts and will
+.. Niko: here is my take on the footnote: 1/3 of the readers know the concepts and will
    get informed by this footnote (it answers precisely the question I would ask at this 
    point reading the doc). 1/3 of the readers will understand that it is a 
    good idea to learn about the concepts of nadir and ideal point, which
-   it is. 1/3 of the readers won't get anything and move on. 
+   it is. It will increase their incentive to check out the next section more
+   carefully. 1/3 of the readers won't get anything and move on. 
 
 .. |f| replace:: :math:`f`
 
@@ -143,7 +145,7 @@ Definitions and Terminology
 We remind in this section different definitions.
 
 *function instance, problem*
- Each function within COCO :math:`f_\theta: \mathbb{R}^D \to \mathbb{R}^m` is parametrized 
+ Each function within COCO :math:`f^\theta: \mathbb{R}^D \to \mathbb{R}^m` is parametrized 
  with parameter values :math:`\theta \in \Theta`. A parameter value determines a so-called *function 
  instance*. For example, :math:`\theta` encodes the location of the optimum of single-objective functions, 
  which means that different instances have shifted optima. In the ``bbob-biobj`` 
@@ -343,7 +345,12 @@ the final `bbob-biobj` suite. These functions are denoted :math:`f_1` to :math:`
 Function Groups
 ---------------------------------------------------------------
 
-From combining the original ``bbob`` function classes, we obtain 15 function classes to structure the 55 bi-objective functions of the ``bbob-biobj`` test suite. Each function class contains three or four functions. We are listing below the function classes and in parenthesis  the functions that belong to the respective class:
+From combining the original ``bbob`` function classes, we obtain 15 function
+classes to structure the 55 bi-objective functions of the ``bbob-biobj`` test
+suite. Each function class contains three or four functions. We are listing
+below the function classes and in parenthesis  the functions that belong to
+the respective class:
+
  1. separable - separable (functions :math:`f_1`, :math:`f_2`, :math:`f_{11}`)
  2. separable - moderate (:math:`f_3`, :math:`f_4`, :math:`f_{12}`, :math:`f_{13}`)
  3. separable - ill-conditioned (:math:`f_5`, :math:`f_6`, :math:`f_{14}`, :math:`f_{15}`)
@@ -381,20 +388,13 @@ between the objective values can be observed.
 
 However, to facilitate comparison of algorithm performance over different functions, 
 we normalize the objectives based on the ideal and nadir points
-before calculating the hypervolume indicator (see
-`bbob-biobj-specific performance assessment documentation
-<http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/>`_ for details).
+before calculating the hypervolume indicator [BBO2016biperf]_.
 Both points can be computed, because the global 
 optimum is known and is unique for the 10 ``bbob`` base functions. 
 In the black-box optimization benchmarking setup, however, the values of the
 ideal and nadir points are not accessible to the optimization algorithm
 [HAN2016ex]_.
 
-
-.. TODO: this should become a reference
-.. Dimo: don't know what you mean here, Niko
-.. http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment should be a 
-   reference like [BBO2016biperf]_
 
 .. deleted: a normalization can take place as both the ideal and the nadir point are
    known internally. 
@@ -430,7 +430,7 @@ ideal and nadir points are not accessible to the optimization algorithm
 Instances
 ---------
 Our test functions are parametrized and instances are instantiations of the
-underlying parameters (see [COCO:2016]_). The instances for the bi-objective
+underlying parameters (see [HAN2016co]_). The instances for the bi-objective
 functions are using instances of each single objective function composing the
 bi-objective one. In addition, we assert two conditions:
 
@@ -440,8 +440,6 @@ bi-objective one. In addition, we assert two conditions:
   2. The Euclidean distance between the ideal and the nadir point in the non-normalized 
   objective space is at least :math:`10^{-1}`. 
      
-.. .. TODO:: fact-check this: is it really raw |f|-values? 
-.. Dimo: this has been already checked in a discussion with Tea and Tobias
 
 .. Instances are the way in the `Coco framework`_ to perform multiple
 .. algorithm runs on the same function. More concretely, the original
@@ -469,10 +467,6 @@ underlying single-objective functions :math:`f_\alpha` and :math:`f_\beta` is th
  * :math:`K_{\rm id}^{f_\beta} = K_{\rm id}^{f_\alpha} + 1`
 
 
-.. .. TODO:: should be :math:`2 K - 1` instead of :math:`2 K + 1`, no?
-.. Dimo: no, the above and the examples below are correct (checked in code-experiments/src/suite_biobj.c, line 190)
-
-
 If we find that above conditions are not satisfied for all dimensions and
 functions in the ``bbob-biobj`` suite, we increase the instance-id of the
 second objective successively until both properties are fulfilled. 
@@ -489,16 +483,20 @@ instance-id 1 contains the single-objective instance-ids 2 and 4 and
 the ``bbob-biobj`` instance-id 2 contains the two instance-ids 3 and 5.
 
 For each bi-objective function and given dimension, the ``bbob-biobj`` suite
-contains 10 instances. 
+contains 10 instances. [#]_
 
-.. Note that the number of instances from the ``bbob-biobj`` suite is
-   neither limited from above nor from below. However, running some tests
-   with less than 3 instances will render the potential statistics and
-   their interpretation problematic while even the smallest difference can
-   be made statistically significant with a high enough number of
-   instances. Thus, we recommend to use between 5 to 15 instances for the actual
+.. [#] In principle, as for the instance generation for the ``bbob`` suite, 
+   the number of possible instances for the ``bbob-biobj`` suite is unlimited
+   [HAN2016co]_. 
+   However, running some tests with too few instances will render the
+   potential statistics and their interpretation problematic while even the
+   tiniest observed difference can be made statistically significant with a
+   high enough number of instances. A good compromise to avoid either pitfall 
+   seems to lie between, say, 9 and 19 instances.
+   
+.. Thus, we recommend to use between 5 to 15 instances for the actual 
    benchmarking.
-.. The user does not have a choice over the number of instances. 
+.. The user doesn't actually have a choice. 
 
 .. Tea: At this point I'm missing some discussion on how in the bi-objective case instances 
    can affect more than just the "location of the optimum". 
@@ -512,7 +510,7 @@ The ``bbob-biobj`` Test Functions and Their Properties
 In the following, we detail all 55 ``bbob-biobj`` functions
 and their properties.
 
-.. todo::
+.. .. todo::
    Eventually, the following shall be provided for each function:
 
    - plots of the best known approximations of the Pareto set and the Pareto front
@@ -520,8 +518,9 @@ and their properties.
    - plots (in objective space) of randomly sampled search points
    - potentially function value distributions along cuts through the search space 
 
-Quick access to the functions, inner cell IDs refer to the ``bbob-biobj`` functions, 
-outer column and row annotations to the single-objective `bbob`` functions.
+The following table gives an overview and quick access to the functions,
+inner cell IDs refer to the ``bbob-biobj`` functions, outer column and row
+annotations refer to the single-objective ``bbob`` functions.
 
 +-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+-------+
 |       ||fb1|_ ||fb2|_ ||fb6|_ ||fb8|_ ||fb13|_||fb14|_||fb15|_||fb17|_||fb20|_||fb21|_|
@@ -1988,6 +1987,17 @@ Contained in the *weakly-structured - weakly-structured* function class.
 .. _`Coco framework`: https://github.com/numbbo/coco
 
 
+.. raw:: html
+    
+    <H2>Acknowledgments</H2>
+
+.. raw:: latex
+
+    \section*{Acknowledgments}
+
+This work was supported by the grant ANR-12-MONU-0009 (NumBBO) 
+of the French National Research Agency.
+
  
 .. ############################# References #########################################
 .. raw:: html
@@ -1995,18 +2005,20 @@ Contained in the *weakly-structured - weakly-structured* function class.
     <H2>References</H2>
    
 
+.. [BBO2016biperf] The BBOBies (2016). `Biobjective Performance Assessment 
+   with the COCO Platform`__. 
+.. __: http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment
+
 .. [BTH2015a] D. Brockhoff, T.-D. Tran, and N. Hansen (2015).
    Benchmarking Numerical Multiobjective Optimizers Revisited.
    GECCO 2015: 639-646. 
    
-.. [COCO:2016] The BBOBies (2016). `COCO: A platform for Comparing Continuous 
-   Optimizers in a Black-Box Setting`__.
-.. __: http://numbbo.github.io/coco-doc/
-
-.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
+.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff (2016).
    `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
-   Setting`__. 
+   Setting`__, *ArXiv e-prints*, `arXiv:1603.08785`__. 
 .. __: http://numbbo.github.io/coco-doc/
+.. __: http://arxiv.org/abs/1603.08785
+
 
 .. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
    `Real-parameter black-box optimization benchmarking 2009: Noiseless
@@ -2017,11 +2029,12 @@ Contained in the *weakly-structured - weakly-structured* function class.
 
 .. [HAN2011] N. Hansen, R. Ros, N. Mauny, M. Schoenauer, and A. Auger (2011). Impacts
 	of Invariance in Search: When CMA-ES and PSO Face Ill-Conditioned and
-	Non-Separable Problems. Applied Soft Computing. Vol. 11, pp. 5755-5769.
+	Non-Separable Problems. *Applied Soft Computing*. Vol. 11, pp. 5755-5769.
 	Elsevier.  
 
-.. [HAN2016ex] N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
-  `COCO: Experimental Procedure`__. 
+.. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
+  `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__. 
 .. __: http://numbbo.github.io/coco-doc/experimental-setup/
+.. __: http://arxiv.org/abs/1603.08776
 
   
