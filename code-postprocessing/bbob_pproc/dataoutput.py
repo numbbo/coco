@@ -39,14 +39,12 @@ if __name__ == "__main__":
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from .pproc import DataSetList
+from .ppfig import Usage
 
 from pdb import set_trace
 
 __all__ = ['main']
 
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
 
 def outputPickle(dsList, verbose=True):
     """Generates pickle files from a DataSetList."""

@@ -30,7 +30,7 @@ def extract_extremes(input_path, output_file):
     with open(output_file, 'a') as f_out:
         for input_file in input_files:
             try:
-                (suite_name, function, dimension) = parse_archive_file_name(input_file)
+                (suite_name, function, instance, dimension) = parse_archive_file_name(input_file)
             except PreprocessingWarning as warning:
                 print('Skipping file {}\n{}'.format(input_file, warning))
                 continue

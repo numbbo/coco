@@ -12,14 +12,21 @@ import numpy as np
 from matplotlib import pyplot as plt
 import shutil
 # from pdb import set_trace
-from . import genericsettings, toolsstats, htmldesc, toolsdivers  # absolute_import => . refers to where ppfig resides in the package
-
+from . import genericsettings, toolsstats, htmldesc  # absolute_import => . refers to where ppfig resides in the package
+import pkg_resources
 
 bbox_inches_choices = {  # do we also need pad_inches = 0?
     'svg': 'tight',
 }
 
 
+# CLASS DEFINITIONS
+class Usage(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+
+# FUNCTION DEFINITIONS
 def enum(*sequential, **named):
     enums = dict(zip(sequential, range(len(sequential))), **named)
     return type('Enum', (), enums)
@@ -33,7 +40,8 @@ def saveFigure(filename, figFormat=(), verbose=True):
     ``('pdf', 'svg')``
 
     """
-    plt.text(0.35, 0.01, toolsdivers.getGitVersion(True), 
+    coco_version = pkg_resources.require('bbob_pproc')[0].version
+    plt.text(0.35, 0.01, coco_version, 
              horizontalalignment = "left",
              verticalalignment = "bottom", 
              fontsize = 10,
@@ -150,23 +158,27 @@ def getConvLink(htmlPage, currentDir):
     
     return ''
     
-def getRldLink(htmlPage, currentDir):
+def getRldLink(htmlPage, currentDir, isBiobjective):
     
     links = ''        
     folder = 'pprldmany-single-functions'
 
     ignoreFileExists = genericsettings.isRldOnSingleFcts
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        fileName = '%s.html' % genericsettings.pprldmany_file_name
-        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots',
-                         ignoreFileExists=ignoreFileExists)
-        fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
-        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
-                         ignoreFileExists=ignoreFileExists)
+        if htmlPage == HtmlPage.ONE:
+            fileName = '%s.html' % genericsettings.pprldmany_file_name
+            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots',
+                             ignoreFileExists=ignoreFileExists)
+
+        if htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or not isBiobjective:
+            fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
+            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
+                             ignoreFileExists=ignoreFileExists)
+
         fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
         links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
                          ignoreFileExists=ignoreFileExists)
-    
+
     return links
 
 def getParentLink(htmlPage, parentFileName):
@@ -193,7 +205,7 @@ def save_single_functions_html(filename,
         header_title = algname + ' ' + name + add_to_names
         links = getHomeLink(htmlPage)
         links += getConvLink(htmlPage, currentDir)
-        links += getRldLink(htmlPage, currentDir)
+        links += getRldLink(htmlPage, currentDir, isBiobjective)
         links += getParentLink(htmlPage, parentFileName)
 
         f.write(html_header % (header_title.strip().replace(' ', ', '), algname, links))

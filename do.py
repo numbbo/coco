@@ -626,6 +626,10 @@ def test_postprocessing(allTests=False):
                                             'RS_on_bbob-biobj'])
 
 
+def verify_postprocessing():
+    install_postprocessing()
+    python('code-postprocessing/bbob_pproc', ['preparehtml.py', '-v'])
+
 ################################################################################
 ## Pre-processing
 def install_preprocessing():
@@ -702,7 +706,7 @@ def silent(args):
 
 
 def help():
-    print("""COCO framework bootstrap tool.
+    print("""COCO framework bootstrap tool. Version %s
 
 Usage: do.py <command> <arguments>
 
@@ -758,6 +762,7 @@ Available commands for developers:
   test-octave             - Build and run example experiment in Octave
   test-postprocessing     - Runs some of the post-processing tests.
   test-postprocessing-all - Runs all of the post-processing tests.
+  verify-postprocessing   - Checks if the generated html is up-to-date.
   leak-check              - Check for memory leaks in C
   
   install-preprocessing   - Install preprocessing (user-locally)
@@ -765,7 +770,7 @@ Available commands for developers:
 
 To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
-""")
+""" % git_version(pep440=True))
 
 
 def main(args):
@@ -805,6 +810,7 @@ def main(args):
     elif cmd == 'test-octave': test_octave()
     elif cmd == 'test-postprocessing': test_postprocessing()
     elif cmd == 'test-postprocessing-all': test_postprocessing(True)
+    elif cmd == 'verify-postprocessing': verify_postprocessing()
     elif cmd == 'leak-check': leak_check()
     elif cmd == 'install-preprocessing': install_preprocessing()
     elif cmd == 'run-preprocessing': run_preprocessing()

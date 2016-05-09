@@ -381,7 +381,11 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
             maxevals_succ = np.ones(len(dimensions)) 
             # Collect data that have the same function and different dimension.
             for idim, dim in enumerate(dimensions):
-                assert len(dictFunc[func][dim]) == 1
+                if len(dictFunc[func][dim]) > 1:
+                    raise ppfig.Usage('\nFound more than one algorithm inside one data folder. '
+                                      'Specify a separate data folder for each algorithm.')
+                elif len(dictFunc[func][dim]) < 1:
+                    raise ppfig.Usage('\nNo data for function %s and dimension %d.' % (func, dim))
                 # (ert, success rate, number of success, total number of
                 #        function evaluations, median of successful runs)
                 tmp = generateData(dictFunc[func][dim][0], valuesOfInterest((func, dim))[i_target])
@@ -491,7 +495,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
         # if later the ylim[0] becomes >> 1, this might be a problem
     return res
 
-def plot_previous_algorithms(func, isBiobjective, target=None):  # lambda x: [1e-8]):
+def plot_previous_algorithms(func, target=None):  # lambda x: [1e-8]):
     """Add graph of the BBOB-2009 virtual best algorithm using the
     last, most difficult target in ``target``."""
     
@@ -500,7 +504,7 @@ def plot_previous_algorithms(func, isBiobjective, target=None):  # lambda x: [1e
         
     target = pproc.TargetValues.cast(target)
 
-    bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+    bestalgentries = bestalg.load_best_algorithm()
     
     if not bestalgentries:
         return None
@@ -603,7 +607,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             # print(plt.rcParams['font.size'])
             funcName = funInfos[func]
             plt.gca().set_title(funcName, fontsize=fontSize)
-        plot_previous_algorithms(func, dsList.isBiobjective(), _valuesOfInterest)
+        plot_previous_algorithms(func, _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
         with warnings.catch_warnings(record=True) as ws:
             ppfig.saveFigure(filename, verbose=verbose)

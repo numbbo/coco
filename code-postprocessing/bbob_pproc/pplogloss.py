@@ -207,7 +207,7 @@ def generateData(dsList, evals, CrE_A):
     #if D == 3:
        #set_trace()
 
-    bestalgentries = bestalg.loadBestAlgorithm(dsList.isBiobjective())
+    bestalgentries = bestalg.load_best_algorithm()
 
     for fun, tmpdsList in dsList.dictByFunc().iteritems():
         assert len(tmpdsList) == 1
