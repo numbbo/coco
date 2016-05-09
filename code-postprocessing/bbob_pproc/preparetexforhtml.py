@@ -12,6 +12,7 @@ import sys
 import warnings
 
 from . import genericsettings, pplogloss, ppfigdim, pptable, pprldistr, config
+from . import testbedsettings
 from .compall import pptables, ppfigs
 from .comp2 import ppscatter, pptable2
 
@@ -66,13 +67,13 @@ def main(latex_commands_for_html):
         # set up scenario, especially wrt genericsettings
         if scenario == genericsettings.scenario_rlbased:
             genericsettings.runlength_based_targets = True
-            config.config(isBiobjective=False)
+            config.config(testbedsettings.default_testbed_single)
         elif scenario == genericsettings.scenario_fixed:
             genericsettings.runlength_based_targets = False
-            config.config(isBiobjective=False)
+            config.config(testbedsettings.default_testbed_single)
         elif scenario == genericsettings.scenario_biobjfixed:
             genericsettings.runlength_based_targets = False
-            config.config(isBiobjective=True)
+            config.config(testbedsettings.default_testbed_bi)
         else:
             warnings.warn("Scenario not supported yet in HTML")
 
@@ -128,7 +129,7 @@ def main(latex_commands_for_html):
         # 1. ppfigs
         for dim in ['5', '20']:
             f.write(prepare_item('bbobECDFslegend' + scenario + dim, 'bbobECDFslegend' + scenario, str(dim)))
-        param = '$f_1$ and $f_{%d}$' % genericsettings.current_testbed.number_of_functions
+        param = '$f_1$ and $f_{%d}$' % testbedsettings.current_testbed.number_of_functions
         f.write(prepare_item('bbobppfigslegend' + scenario, param=param))
 
         # 2. pprldistr
@@ -147,7 +148,7 @@ def main(latex_commands_for_html):
             f.write(prepare_item(command_name + dim, command_name, 'dimension ' + dim))
 
         # 7. ppscatter
-        param = '$f_1$ - $f_{%d}$' % genericsettings.current_testbed.number_of_functions
+        param = '$f_1$ - $f_{%d}$' % testbedsettings.current_testbed.number_of_functions
         f.write(prepare_item('bbobppscatterlegend' + scenario, param=param))
 
         # 8. pplogloss

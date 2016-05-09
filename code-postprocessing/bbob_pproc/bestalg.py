@@ -29,7 +29,7 @@ import numpy as np
 from . import readalign, pproc
 from .toolsdivers import print_done
 from .ppfig import Usage
-from . import toolsstats, genericsettings
+from . import toolsstats, testbedsettings
 
 bestAlgorithmEntries = {}
 bestalgentries2009 = {}
@@ -343,7 +343,7 @@ def load_best_algorithm(force=False):
     if not force and bestAlgorithmEntries:
         return bestAlgorithmEntries
 
-    bestAlgorithmFilename = genericsettings.current_testbed.best_algorithm_filename
+    bestAlgorithmFilename = testbedsettings.current_testbed.best_algorithm_filename
 
     # If the file name is not specified then we skip the load.
     if not bestAlgorithmFilename:
