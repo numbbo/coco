@@ -663,7 +663,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             displaybest2009 = not isBiobjective and plotType == PlotType.ALG  #disabled for bi-objective case
             if displaybest2009:
                 #set_trace()
-                bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+                bestalgentries = bestalg.load_best_algorithm()
                 bestalgentry = bestalgentries[(dim, f)]
                 bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
                 # print bestalgevals
@@ -789,7 +789,10 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     # add number of instances 
     text += '\n'    
     for alg in algorithms_with_data:
-        text += '%d, ' % len(dictAlgperFunc[alg][0].instancenumbers)
+        if dictAlgperFunc[alg]:
+            text += '%d, ' % len(dictAlgperFunc[alg][0].instancenumbers)
+        else:
+            text += '0, '
     text = text.rstrip(', ')
     text += ' instances'
     plt.text(0.01, 0.98, text, horizontalalignment="left",

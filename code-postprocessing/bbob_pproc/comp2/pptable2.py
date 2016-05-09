@@ -106,7 +106,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
     if info:
         info = '_' + info
 
-    bestalgentries = bestalg.loadBestAlgorithm(dsList0.isBiobjective())
+    bestalgentries = bestalg.load_best_algorithm()
     
     header = []
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):

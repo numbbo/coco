@@ -53,13 +53,10 @@ header = """
 """
 
 
-def main():
+def main(latex_commands_for_html):
     """Reads all the descriptions and saves them into a tex file. 
 
     """
-
-    latex_commands_for_html = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                           genericsettings.latex_commands_for_html + '.tex')
 
     f = open(latex_commands_for_html, 'w')
 
@@ -81,53 +78,52 @@ def main():
 
         # prepare LaTeX captions first
         # 1. ppfigs
-        f.writelines(prepare_providecommand('bbobECDFslegend', scenario, 
-                        ppfigs.prepare_ecdfs_figure_caption()).replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'))
-        f.writelines(prepare_providecommand('bbobppfigslegend', scenario, 
-                      ppfigs.prepare_scaling_figure_caption().replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM'))
+        f.writelines(prepare_providecommand('bbobECDFslegend', scenario,
+                                            ppfigs.prepare_ecdfs_figure_caption()
+                                            .replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')))
+        f.writelines(prepare_providecommand('bbobppfigslegend', scenario,
+                                            ppfigs.prepare_scaling_figure_caption()
+                                            .replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')))
 
         # 2. pprldistr
         f.writelines(prepare_providecommand('bbobpprldistrlegend', scenario,
-                      (pprldistr.caption_single()).replace('TO_BE_REPLACED', 'TOBEREPLACED'))
+                                            pprldistr.caption_single().replace('TO_BE_REPLACED', 'TOBEREPLACED')))
         pprldistrtwo = (pprldistr.caption_two()).replace('\\algorithmA', 'algorithmA')
         pprldistrtwo = pprldistrtwo.replace('\\algorithmB', 'algorithmB')
-        f.writelines(prepare_providecommand('bbobpprldistrlegendtwo', scenario, pprldistrtwo)
+        f.writelines(prepare_providecommand('bbobpprldistrlegendtwo', scenario, pprldistrtwo))
 
         # 3. ppfigdim
         f.writelines(prepare_providecommand('bbobppfigdimlegend', scenario,
-                      (ppfigdim.scaling_figure_caption()).replace('values_of_interest', 'valuesofinterest'))
+                                            ppfigdim.scaling_figure_caption()
+                                            .replace('values_of_interest', 'valuesofinterest')))
 
         # 4. pptable
-        f.writelines(prepare_providecommand('bbobpptablecaption', scenario,
-                      pptable.get_table_caption())
+        f.writelines(prepare_providecommand('bbobpptablecaption', scenario, pptable.get_table_caption()))
 
         # 5. pptable2
         pptable2Legend = (pptable2.get_table_caption()).replace('\\algorithmA', 'algorithmA')
         pptable2Legend = pptable2Legend.replace('\\algorithmB', 'algorithmB')
         pptable2Legend = pptable2Legend.replace('\\algorithmAshort', 'algorithmAshort')
         pptable2Legend = pptable2Legend.replace('\\algorithmBshort', 'algorithmBshort')
-        f.writelines(prepare_providecommand('bbobpptablestwolegend', scenario,
-                      pptable2Legend)
+        f.writelines(prepare_providecommand('bbobpptablestwolegend', scenario, pptable2Legend))
 
         # 6. pptables
-        f.writelines(prepare_providecommand('bbobpptablesmanylegend', scenario,
-                      pptables.get_table_caption())
+        f.writelines(prepare_providecommand('bbobpptablesmanylegend', scenario, pptables.get_table_caption()))
 
         # 7. ppscatter
         ppscatterLegend = ppscatter.prepare_figure_caption().replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
         ppscatterLegend = ppscatterLegend.replace('\\algorithmA', 'algorithmA')
         ppscatterLegend = ppscatterLegend.replace('\\algorithmB', 'algorithmB')
-        f.writelines(prepare_providecommand('bbobppscatterlegend', scenario, ppscatterLegend)
+        f.writelines(prepare_providecommand('bbobppscatterlegend', scenario, ppscatterLegend))
 
         # 8. pplogloss
-        f.writelines(prepare_providecommand('bbobloglosstablecaption', scenario, 
-                      pplogloss.table_caption().replace('Figure~\\ref{fig:ERTlogloss}',
-                                                        'the following figure'))
+        f.writelines(prepare_providecommand('bbobloglosstablecaption', scenario,
+                                            pplogloss.table_caption().replace('Figure~\\ref{fig:ERTlogloss}',
+                                                                              'the following figure')))
         f.writelines(prepare_providecommand('bbobloglossfigurecaption', scenario,
-                      pplogloss.figure_caption().replace('Figure~\\ref{tab:ERTloss}',
-                                                         'the previous figure'))
+                                            pplogloss.figure_caption().replace('Figure~\\ref{tab:ERTloss}',
+                                                                               'the previous figure')))
 
-    
         # prepare tags for later HTML preparation
         # 1. ppfigs
         for dim in ['5', '20']:
@@ -159,16 +155,15 @@ def main():
         f.write(prepare_item('bbobloglossfigurecaption' + scenario))
 
     f.write('\n\#\#\#\n\\end{document}\n')
+    f.close()
+
 
 def prepare_providecommand(command, scenario, captiontext):
     return ['\\providecommand{\\', command, scenario, '}[1]{\n', captiontext, '\n}\n']
+
 
 def prepare_item(name, command_name='', param=''):
     if not command_name:
         command_name = name
 
     return '\#\#%s\#\#\n\\%s{%s}\n' % (name, command_name, param)
-
-
-if __name__ == '__main__':
-    main()
