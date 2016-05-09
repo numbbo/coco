@@ -34,7 +34,11 @@ We describe initialization of and input to the algorithm and touch
 upon the relevance of termination and restarts. 
 We introduce the concept of recommendations for benchmarking with COCO_.
 Recommendations detach the solutions used in function calls from the any-time
-performance assessment of the algorithm.
+performance assessment of the algorithm. [#]_
+
+.. [#] *ArXiv e-prints*, arXiv:1603.08776__, 2016.
+.. __: http://arxiv.org/abs/1603.08776
+
 
 .. raw:: latex
 
@@ -364,8 +368,10 @@ The performance assessment is based on a set of evaluation counts
 associated with the :math:`f`-value or -vector of a solution. 
 By default, each evaluation count is associated with the respectively *evaluated*
 solution and hence its :math:`f`-value. 
-The solution associated *to the current (last) evaluation* can be changed by calling |coco_recommend_solution|_, thereby associating the :math:`f`-value of the
-*recommended* solution (instead of the *evaluated* solution) with the current evaluation count. 
+In the single-objective case, the solution associated *to the current (last)
+evaluation* can be changed by calling |coco_recommend_solution|_, thereby
+associating the :math:`f`-value of the *recommended* solution (instead of the
+*evaluated* solution) with the current evaluation count. 
 A recommendation is best viewed as the *currently best known approximation* of the
 optimum [#]_ delivered by the optimization algorithm, or as the currently most 
 desirable return value of the algorithm. 
@@ -378,10 +384,11 @@ necessary nor advantageous to recommend the same solution repeatedly.
 
 .. On non-noisy suites the last evaluation changes the assessment only if the :math:`f`-value is better than all :math:`f`-values from previous evaluations. 
 
-.. [#] In the multi-objective scenario not only the last solution, but *all*
-  solutions are taken into account for this approximation. 
-  In the noisy scenario, a small number of the most current solutions will be
-  taken into account in future assessements. 
+.. [#] In the noisy scenario, a small number of the most current solutions 
+  will be taken into account in future versions. 
+  In the multi-objective scenario, the recommendation option is not available,
+  because an archive of non-dominated solutions presumes that all solutions are
+  evaluated. 
 
 Time Complexity Experiment
 ==========================
@@ -414,7 +421,7 @@ computational architecture for conducting these experiments are to be described.
     \section*{Acknowledgments}
 
 The authors would like to thank Raymond Ros, Steffen Finck, Marc Schoenauer,  
-Petr Posik and Dejan Tusar for their many invaluable contributions to this work. 
+Petr Posik and Dejan Tušar for their many invaluable contributions to this work. 
 
 The authors also acknowledge support by the grant ANR-12-MONU-0009 (NumBBO) 
 of the French National Research Agency.
@@ -445,10 +452,11 @@ of the French National Research Agency.
 .. [HAN2010] N. Hansen, A. Auger, S. Finck, and R. Ros. 
    Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en, 2010.
 
-.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
+.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff (2016).
    `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
-   Setting`__.
-__ http://numbbo.github.io/coco-doc/
+   Setting`__, *ArXiv e-prints*, `arXiv:1603.08785`__. 
+.. __: http://numbbo.github.io/coco-doc/
+.. __: http://arxiv.org/abs/1603.08785
  
 .. [HAR1999] G.R. Harik and F.G. Lobo. A parameter-less genetic
    algorithm. In *Proceedings of the Genetic and Evolutionary Computation
