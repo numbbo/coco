@@ -70,6 +70,7 @@ latex_commands = r"""
 pngmath_latex_preamble = latex_commands
 
 
+# Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
@@ -258,6 +259,8 @@ latex_elements = {
 
 # Additional stuff for the LaTeX preamble.
 'preamble': r"""
+  \pdfoutput=1
+  \usepackage{cmap}
   \usepackage{amssymb}
   \pagestyle{plain}
   \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
@@ -276,7 +279,7 @@ latex_documents = [
    'coco-experimental-setup.tex', 
   u'{COCO}: The Experimental Procedure',
   r"""Nikolaus Hansen$^{1,2}$, 
-      Tea Tusar$^3$, 
+      Tea Tu\v{s}ar$^3$, 
       Olaf Mersmann$^4$, 
       Anne Auger$^{1,2}$, 
       Dimo Brockhoff$^3$
