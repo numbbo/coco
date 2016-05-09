@@ -804,9 +804,9 @@ of the French National Research Agency.
    Empirical comparisons of several derivative free optimization algorithms. In Acte du 9ime colloque national en calcul des structures, Giens.
    
 .. [BRO2016] D. Brockhoff, T. Tušar, D. Tušar, T. Wagner, N. Hansen, 
-   A. Auger, (2016). `Biobjective Performance Assessment with the COCO Platform`__. *ArXiv e-prints*, `arXiv:1605:xxxxx`__
+   A. Auger, (2016). `Biobjective Performance Assessment with the COCO Platform`__. *ArXiv e-prints*, `arXiv:1605.01746`__
 __ http://numbbo.github.io/coco-doc/bi-objeperf-assessment
-__ http://arxiv.org/abs/1605.xxxxx
+__ http://arxiv.org/abs/1605.01746
 
 .. [DOL2002] E.D. Dolan, J. J. Moré (2002). Benchmarking optimization software 
    with performance profiles. *Mathematical Programming* 91.2, 201-213. 
