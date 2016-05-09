@@ -28,7 +28,7 @@ COCO: Performance Assessment
 .. |function| replace:: :math:`\mathrm{function}`
 .. |instance| replace:: :math:`\mathrm{instance}`
 .. |R| replace:: :math:`\mathbb{R}`
-.. |I| replace:: :math:`\mathcal{I}`
+.. |I| replace:: :math:`I`
 .. |i| replace:: :math:`i`
 .. |t| replace:: :math:`t`
 .. |p| replace:: :math:`p`
@@ -209,9 +209,14 @@ A performance measure in general should be
 
 In the context of black-box optimization, the **runtime** to reach a target value, measured in number of function evaluations, satisfies all requirements. 
 Runtime is well-interpretable and meaningful with respect to the
-real-world as it represents time needed to solve a problem. [#]_ Measuring
-number of function evaluations avoids the shortcomings of CPU measurements that depend on parameters like the programming language, coding style, machine used to run the experiment, etc., that are difficult or impractical to control.
-
+real-world as it represents time needed to solve a problem. 
+Measuring number of function evaluations avoids the shortcomings of CPU
+measurements that depend on parameters like the programming language, coding
+style, machine used to run the experiment, etc., that are difficult or
+impractical to control.
+If however algorithm internal computations dominate wall-clock time in a practical 
+application, comparative runtime results *in number of function evaluations* 
+can usually be adapted *a posteri* to reflect the practical scenario. 
 
 .. [#] A variable which lives on a ratio scale has a meaningful zero, 
    allows for division, and can be taken to the logarithm in a meaningful way. 
@@ -222,32 +227,32 @@ number of function evaluations avoids the shortcomings of CPU measurements that 
 .. [#] The transformation :math:`x\mapsto\log(1-x)` could alleviate the problem
    in this case, given it actually zooms in on relevant values.
 
-.. [#] If algorithm internal computations dominate wall-clock time in a practical 
-   application, runtime benchmarking results in number of function evaluations 
-   can usually be easily adapted *a posteri* to reflect the practical scenario. 
-
 
 .. _sec:verthori:
 
 Quality Indicators
 -------------------
 
-At each time step |t| of an algorithm which optimizes a problem instance
-|thetai| of the function |ftheta| in dimension |n|, we define the performance via a quality indicator mapping. 
+At each evaluation count (time step) |t| of an algorithm which optimizes a problem instance |thetai| of the function |ftheta| in dimension |n|, we apply a quality indicator mapping. 
 A quality indicator |I| maps the set of all solutions evaluated 
 so far (or recommended [HAN2016ex]_) to a :math:`p`-dependent real value.
-That is, the runtime assessment is done on a (large) set of problem instances defined by quintuples 
-:math:`p=(n, f_\theta, \theta_i, I, I^\mathrm{target, \theta_i}_{f})`. 
+Then, a runtime measurement is obtained from each of a (large) set of problem
+instances, defined as quintuple :math:`p=(n, f_\theta, \theta_i, I,
+I^\mathrm{target, \theta_i}_{f})`. 
+Runtime on this problem instance is defined as the evaluation count 
+when the quality indicator hits the target for the first time, otherwise runtime remains undefined. 
 
-In the single-objective noiseless case, this quality indicator outputs
+In the single-objective noiseless case, the quality indicator outputs
 the best so far observed (i.e. minimal and feasible) function value. 
 
-In the single-objective noisy case, the indicator returns the 1%-tile function value of the last :math:`\lceil\ln(t + 3)^2 / 2\rceil)` evaluated (or recommended) solutions. [#]_
+In the single-objective noisy case, the quality indicator returns the 1%-tile of
+the function values of the last :math:`\lceil\ln(t + 3)^2 / 2\rceil)` evaluated
+(or recommended) solutions. [#]_
 
 In the multi-objective case, the quality indicator is based on a negative
 hypervolume indicator of the set of evaluated solutions (the archive)
 [BRO2016]_, while other well- or lesser-known multi-objective quality indicators
-are a possible choice.
+are another possible choice.
 
 .. [#] This feature will only be available in the new implementation of the COCO_ framework.
 
@@ -257,7 +262,7 @@ Fixed-Budget versus Fixed-Target Approach
 
 Starting from the most basic convergence graphs, which plot the evolution of a
 quality indicator (to be minimized) against the number of function evaluations,
-there are essentially two approaches to measure the performance.
+there are essentially (only) two ways to measure the performance.
 
 **fixed-budget approach**
     We fix a budget of function evaluations,
@@ -302,16 +307,16 @@ data.
   interpretable meaning, mainly because there is no *a priori* way to determine
   *how much* more difficult it is to reach a function value that is two times
   smaller.
-  This, indeed, largely depends on the specific function and the specific
+  This largely depends on the specific function and the specific
   function value reached.
 
 * The fixed-target approach (horizontal cut)
   *measures the time* to
   reach a target function value. The measurement allows conclusions of the
   type: Algorithm A is two (or ten, or a hundred) times faster than Algorithm B
-  in solving this problem (i.e. reaching the given target function value). 
-  The choice if the target value determines the difficulty and possibly even
-  characteristic of the problem to be solved. 
+  in solving this problem. 
+  The choice of the target value determines the difficulty and
+  often characteristic of the problem to be solved. 
 
 Furthermore, for algorithms that are invariant under certain transformations
 of the function value (for example under order-preserving transformations, as
