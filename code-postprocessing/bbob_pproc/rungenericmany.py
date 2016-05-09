@@ -276,7 +276,7 @@ def main(argv=None):
         # set target values
         from . import config
         config.target_values(genericsettings.isExpensive)
-        config.config(dsList[0].isBiobjective())
+        config.config(dsList[0].testbed_name())
 
 
         for i in dsList:
@@ -315,7 +315,7 @@ def main(argv=None):
                                  genericsettings.many_algorithm_file_name)
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if genericsettings.isRLDistr:
-            config.config(dsList[0].isBiobjective())
+            config.config(dsList[0].testbed_name())
             # ECDFs per noise groups
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictAlg in dictNoi.iteritems():
