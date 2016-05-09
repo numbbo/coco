@@ -1,7 +1,12 @@
 #! /usr/bin/env python 
-"""Moves '\\tableofcontents' behind the abstract. 
+"""In effect, this script moves ``\\tableofcontents`` behind the abstract, 
+removes the blank from `` \\footnote``, and calls ``pdflatex`` 4 times. 
 
-Folder and filename to work upon are defined as global variables. 
+The file to work upon is the first input argument. 
+
+Details: First, all ``\\tableofcontents`` are incommented, second, a 
+``\\tableofcontents`` command is written directly behind ``\\end{abstract}``, 
+third, a space before each ``\\footnote`` command is removed. 
 
 """
 
@@ -30,7 +35,24 @@ def change2(line, old, new):
 condition = condition1
 change = change1
 
+def git_revision():
+    nb_commits = check_output('git rev-list --count --first-parent HEAD'.split())
+    last_commit_id = check_output('git describe --always'.split())
+    return '-'.join(['rev', nb_commits.strip(), last_commit_id.strip()])
+
+def replace(old, new, file):
+    """replace all occurences of `old: str` with `new: str` in `file: str`"""
+    with open(file, 'r') as f:
+        s = f.read(int(1e9))  # no more than 1GB
+    s = s.replace(old, new)
+    # make backup
+    os.rename(file, os.path.join(os.path.dirname(file), 
+                       '__tmp__' + os.path.split(file)[-1] + '__tmp__'))
+    with open(file, 'w') as f:
+        f.write(s)
+
 def main(old, new, *files):
+    """replace str `old` with str `new` in each of `files`."""
     global condition
     global change
     if old.startswith("line.startswith."):
@@ -63,29 +85,41 @@ if __name__ == "__main__":
     if len(sys.argv) < 2: 
         print(__doc__)
     else:
-        done = False
         file = sys.argv[1]
         folder = os.path.dirname(file)
         filename = os.path.split(file)[-1]
-        with open(file, 'rt') as f:
-           if r'\end{abstract}\tableofcontents' in f.read():
-               print("abstract-tableofcontents swap was already done, aborting...")
-               done = True
-
-        if not done:
-            main(r'\tableofcontents', r'%\tableofcontents', file)
-            main(r'\end{abstract}', r'\end{abstract}\tableofcontents', file)
+        
+        try:
+            rev = "%git:" + git_revision()
+        except:
+            rev = ""
+        
+        main(r'\tableofcontents', r'%\tableofcontents ' + rev, file)
+        # main(r'%%\tableofcontents', r'%\tableofcontents', file)
+        main(r'\end{abstract}', r'\end{abstract}\tableofcontents ' + rev, file)
+        # main(r'\tableofcontents%\tableofcontents', r'\tableofcontents', file)
+        main(r'\author{', r'\date{\vspace{-1ex}}\author{', file)
+        replace(r' \footnote', r'\footnote', file)
+        replace(r'*}%%remove*%%', r'}', file)
     
         oldwd = os.getcwd()
         try:
             os.chdir(folder)
-            for i in range(4):
+            for i in range(3):
                 call(['pdflatex', filename]), 
                 # output = check_output(['pdflatex', file]), 
                                         #stderr=sys.stdout, 
                                         #env=os.environ, 
                                         #universal_newlines=True)
                 # print(output)
+                if not i and len(sys.argv) > 2:
+                    try:
+                        os.system('cp ' + filename[:-4] + '.pdf ' + 
+                            os.path.join(oldwd, sys.argv[2]))
+                    except:
+                        print('ERROR with cp ', file[:-4] + '.pdf', 
+                            os.path.join(oldwd, sys.argv[2]))
+                            
         except CalledProcessError as e:
             print("ERROR: return value=%i" % e.returncode)
             print(e.output)
