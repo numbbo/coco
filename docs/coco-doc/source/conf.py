@@ -290,7 +290,7 @@ latex_documents = [
   r"""Nikolaus Hansen$^{1,2}$, 
       Anne Auger$^{1,2}$, 
       Olaf Mersmann$^3$, 
-      Tea Tusar$^4$, 
+      Tea Tu\v{s}ar$^4$, 
       Dimo Brockhoff$^4$
   \\
     $^1$Inria, research centre Saclay, France

@@ -16,7 +16,7 @@ with focus on multi-objective problems with two objective functions which is goi
     | http://gecco-2016.sigevo.org/
 
 
-| Submission Deadline: extended to Wednesday, April 17, 2016 (from Saturday, April 3, 2016)
+| Submission Deadline: extended to Sunday, April 17, 2016 (from Saturday, April 3, 2016)
 |
 
 
@@ -74,9 +74,10 @@ Please refer to http://numbbo.github.io/coco-doc/experimental-setup/
 for more details on the general experimental set-up for black-box optimization benchmarking.
 
 The latest (hopefully) stable release of the Coco software can be downloaded as a whole
-`here <https://github.com/numbbo/coco/releases/>`_.
+`here <https://github.com/numbbo/coco/releases/>`_. Please use at least version v1.0 for
+running your benchmarking experiments.
 
-Documentations of the functions used in the bbob-biobj suite for BBOB 2016 are provided at
+Documentation of the functions used in the `bbob-biobj` suite for BBOB 2016 are provided at
 http://numbbo.github.io/coco-doc/bbob-biobj/functions/ .
 
 Note that the current release of the new Coco platform does not contain the original noisy BBOB testbed,
@@ -100,8 +101,8 @@ Important Dates
 * **01/20/2016** first version of the new Coco platform released as `0.5-beta <https://github.com/numbbo/coco/releases/>`_
 * **01/30/2016** (planned: 01/29/2016) release `0.7-beta <https://github.com/numbbo/coco/releases/>`_ of the Coco software with the main functionality to run experiments
 * (planned: 02/12/2016, replaced by 7 intermediate releases) first complete release `0.9 <https://github.com/numbbo/coco/releases/>`_ of the software
-* (planned: 03/18/2016) final release `1.0 <https://github.com/numbbo/coco/releases/>`_ for producing the papers
-* **04/17/2016** *paper and data submission deadline* (extended from 04/02/2016)
+* **03/29/2016** (planned: 03/18/2016) final release `1.0 <https://github.com/numbbo/coco/releases/>`_ for producing the papers
+* **04/17/2016** new *paper and data submission deadline* (extended from 04/02/2016)
 * **04/20/2016** decision notification
 * **05/04/2016** deadline camera-ready papers
 * **07/20/2016** or **07/21/2016** workshop
@@ -113,5 +114,5 @@ Organizers
 * Dimo Brockhoff, Inria Lille - Nord Euruope
 * Nikolaus Hansen, Inria Saclay - Ile-de-France
 * Dejan Tusar, Inria Lille - Nord Europe
-* Tea Tusar, Inria Lille - Nord Euruope
+* Tea Tusar, Inria Lille - Nord Europe
 * Tobias Wagner, TU Dortmund University

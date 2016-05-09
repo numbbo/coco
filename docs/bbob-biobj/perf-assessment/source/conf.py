@@ -23,6 +23,17 @@ import shlex
 
 # -- General configuration ------------------------------------------------
 
+# WHEN CHANGING THIS CHANGE ALSO the abstract in index.rst accordingly
+abstract = """(this abstract might be outdated, see index.rst)
+  This document details the rationales behind assessing the performance of
+numerical black-box optimizers on multi-objective problems within the COCO_
+platform and in particular on the biobjective test suite {\ttfamily bbob-biobj}. 
+The evaluation is based on a hypervolume of all non-dominated solutions in the
+archive of candidate solutions and measures the runtime until the
+hypervolume value succeeds prescribed target values. 
+"""
+
+
 # If your documentation needs a minimal Sphinx version, state it here.
 #needs_sphinx = '1.0'
 
@@ -30,10 +41,14 @@ import shlex
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.doctest',
     'sphinx.ext.todo',
-    'sphinx.ext.pngmath',
+    'sphinx.ext.coverage',
+    'sphinx.ext.viewcode',
+#    'sphinx.ext.mathjax',
+    'sphinx.ext.pngmath'
 ]
-
 
 pngmath_use_preview = True  # "When this is enabled, the images put into the HTML document will get a vertical-align style that correctly aligns the baselines."
 pngmath_dvipng_args = [ # see http://www.nongnu.org/dvipng/dvipng_4.html#Command_002dline-options
@@ -135,25 +150,28 @@ todo_include_todos = True
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
+html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
 #html_theme = 'nature'  # underlays of sections titles
 #html_theme = 'alabaster' #  white, times font 
 #html_theme = 'sphinxdoc'  # puts too much empty spaces left and right
-html_theme = 'sphinx_rtd_theme'  # contents not structured (mobile style?)
+#html_theme = 'sphinx_rtd_theme'  # contents not structured (mobile style?)
 # html_theme = 'agogo'  # fixed width
 # html_theme = 'pyramid'  # relatively clean white/gray, sf font hard to read, too small section titles
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+# html_theme_options = {'font_family': 'goudy old style'}
+# sticky_navigation
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+# html_title = None
+html_title = "Biobjective Performance Assessment with the COCO Platform"
+
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -179,7 +197,7 @@ html_static_path = ['_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
-#html_last_updated_fmt = '%b %d, %Y'
+html_last_updated_fmt = '%b %d, %Y'
 
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
@@ -208,7 +226,7 @@ html_static_path = ['_static']
 #html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
-#html_show_copyright = True
+html_show_copyright = False
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -242,13 +260,32 @@ latex_elements = {
 #'papersize': 'letterpaper',
 
 # The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+'pointsize': '12pt',
 
 # Additional stuff for the LaTeX preamble.
 'preamble': r"""
-\usepackage{amsmath}
-""",
-
+  \pdfoutput=1
+  \usepackage{amssymb}
+  \pagestyle{plain}
+  \newcommand{\chapter}[1]{}  % hack to be able to use article documentclass
+  \newcommand{\ignore}[1]{}  % never used
+  \newcommand{\COCO}{\href{https://githum.com/numbbo/coco}{COCO}}
+  \newcommand{\ff}[1]{\ensuremath{f_{#1}}} 
+    \renewcommand{\topfraction}{1} % max fraction of floats at top
+    \renewcommand{\bottomfraction}{1} % max fraction of floats at bottom
+    %   Parameters for TEXT pages (not float pages):
+    \setcounter{topnumber}{3}
+    \setcounter{bottomnumber}{3}
+    \setcounter{totalnumber}{3}     % 2 may work better
+    \setcounter{dbltopnumber}{4}    % for 2-column pages
+    \renewcommand{\dbltopfraction}{1}  % fit big float above 2-col. text
+    \renewcommand{\textfraction}{0.0}  % allow minimal text w. figs
+    %   Parameters for FLOAT pages (not text pages):
+    \renewcommand{\floatpagefraction}{0.9}  % require fuller float pages
+	% N.B.: floatpagefraction MUST be less than topfraction !!
+    \renewcommand{\dblfloatpagefraction}{0.8}  % require fuller float pages
+  
+""" + latex_commands,
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
 }
@@ -257,8 +294,24 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'bbob-biobj-perf-assessment.tex', u'Performance Assessment in the Case of Coco\' bbob-biobj Suite',
-   u'The BBOBies', 
+  (master_doc, 
+  'bbob-biobj-perf-assessment.tex', 
+  u'Biobjective Performance Assessment with the COCO Platform',
+  r"""
+      Dimo Brockhoff$^1$,
+      Tea Tu\v{s}ar$^1$, 
+      Dejan Tu\v{s}ar$^1$, 
+      Tobias Wagner$^2$,
+      \\ Nikolaus Hansen$^{3,4}$,
+      Anne Auger$^{3,4}$
+  \\[1.5ex]
+    $^1$Inria, research centre Lille, % France \\
+    $^2$Technical University Dortmund, %Germany 
+    \\
+    $^3$Inria, research centre Saclay, % France 
+    %\\
+    $^4$Universit\'e Paris-Saclay, LRI %, France
+    """, 
    'article', # 'manual'
    ),
 ]
@@ -283,6 +336,10 @@ latex_documents = [
 # If false, no module index is generated.
 #latex_domain_indices = True
 
+pngmath_latex_preamble = r"""
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\IHV}{I_\mathrm{HV}^\mathrm{COCO}}
+"""
 
 # -- Options for manual page output ---------------------------------------
 
