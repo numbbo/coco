@@ -138,7 +138,7 @@ latexpdf:
 	rm index-backup.txt
 	@echo "Running LaTeX files through pdflatex..."
 	$(MAKE) -C $(BUILDDIR)/latex all-pdf
-	python ../../swap-abstract-and-toc.py $(BUILDDIR)/latex/$(TEX)
+	python ../../swap-abstract-and-toc.py $(BUILDDIR)/latex/$(TEX) ../../$(PDF)
 	cp $(BUILDDIR)/latex/$(PDF) ../../$(PDF)
 	@echo "pdflatex finished; see ../../$(PDF)"
 		
