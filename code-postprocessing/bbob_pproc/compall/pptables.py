@@ -53,7 +53,7 @@ def get_table_caption():
         in number of function evaluations, in #1. For each function, the \aRT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
-        target \Df-values as shown in the top row. 
+        target \DI-values as shown in the top row. 
         \#succ is the number of trials that reached the last target
         $\hvref + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
         """

@@ -103,6 +103,7 @@ class GECCOBBOBTestbed(Testbed):
         self.short_names = get_short_names(get_benchmarks_short_infos(False))
         # expensive optimization settings:
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
+        self.pptable2_target_runlengths = self.pptable_target_runlengths  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptables_target_runlengths = self.pptable_target_runlengths  # used in config for expensive setting
 
 
@@ -140,4 +141,5 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.short_names = get_short_names(get_benchmarks_short_infos(True))
         # expensive optimization settings:
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
+        self.pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptables_target_runlengths = [2, 10, 50]  # used in config for expensive setting

@@ -42,9 +42,10 @@ header = """
 \\newcommand{\\nruns}{\ensuremath{\mathrm{Nruns}}}
 \\newcommand{\\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
 \\newcommand{\\Df}{\ensuremath{\Delta f}}
+\\newcommand{\\DI}{\ensuremath{\Delta I}}
 \\newcommand{\\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
 \\newcommand{\\fopt}{\ensuremath{f_\mathrm{opt}}}
-\\newcommand{\\hvref}{\ensuremath{HV_\mathrm{ref}}}
+\\newcommand{\\hvref}{I^{\mathrm{ref}}}
 \\newcommand{\\ftarget}{\ensuremath{f_\mathrm{t}}}
 \\newcommand{\\CrE}{\ensuremath{\mathrm{CrE}}}
 \\newcommand{\\change}[1]{{\color{red} #1}}
@@ -109,7 +110,7 @@ def main(latex_commands_for_html):
         f.writelines(prepare_providecommand('bbobpptablestwolegend', scenario, pptable2Legend))
 
         # 6. pptables
-        f.writelines(prepare_providecommand('bbobpptablesmanylegend', scenario, pptables.get_table_caption()))
+        f.writelines(prepare_providecommand_two('bbobpptablesmanylegend', scenario, pptables.get_table_caption()))
 
         # 7. ppscatter
         ppscatterLegend = ppscatter.prepare_figure_caption().replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
@@ -145,7 +146,8 @@ def main(latex_commands_for_html):
         # 6. pptables
         command_name = 'bbobpptablesmanylegend' + scenario
         for dim in ['5', '20']:
-            f.write(prepare_item(command_name + dim, command_name, 'dimension ' + dim))
+            bonferroni = str(2 * testbedsettings.current_testbed.number_of_functions)
+            f.write(prepare_item_two(command_name + dim, command_name, 'dimension ' + dim, bonferroni))
 
         # 7. ppscatter
         param = '$f_1$ - $f_{%d}$' % testbedsettings.current_testbed.number_of_functions
@@ -162,9 +164,17 @@ def main(latex_commands_for_html):
 def prepare_providecommand(command, scenario, captiontext):
     return ['\\providecommand{\\', command, scenario, '}[1]{\n', captiontext, '\n}\n']
 
+def prepare_providecommand_two(command, scenario, captiontext):
+    return ['\\providecommand{\\', command, scenario, '}[2]{\n', captiontext, '\n}\n']
 
 def prepare_item(name, command_name='', param=''):
     if not command_name:
         command_name = name
 
     return '\#\#%s\#\#\n\\%s{%s}\n' % (name, command_name, param)
+
+def prepare_item_two(name, command_name='', paramOne='', paramTwo=''):
+    if not command_name:
+        command_name = name
+
+    return '\#\#%s\#\#\n\\%s{%s}{%s}\n' % (name, command_name, paramOne, paramTwo)
