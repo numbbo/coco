@@ -40,7 +40,7 @@ try:
 except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
-from .. import genericsettings, htmldesc, ppfigparam
+from .. import genericsettings, htmldesc, ppfigparam, testbedsettings
 from ..ppfig import saveFigure
 from .. import toolsdivers
 from .. import pproc
@@ -79,10 +79,10 @@ def prepare_figure_caption():
         40:{\color{magenta}$\Diamond$}. """
 
 
-    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         caption = caption_start_fixed + caption_finish
-    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
             caption = caption_start_rlbased + caption_finish
         else:
@@ -95,10 +95,10 @@ def prepare_figure_caption():
 
 def figure_caption(for_html = False):
 
-    targets = genericsettings.current_testbed.ppscatter_target_values
+    targets = testbedsettings.current_testbed.ppscatter_target_values
     if for_html:
         caption = htmldesc.getValue('##bbobppscatterlegend' +
-                                    genericsettings.current_testbed.scenario + '##')
+                                    testbedsettings.current_testbed.scenario + '##')
     else:
         caption = prepare_figure_caption()
 
@@ -167,7 +167,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
     dictFunc1 = dsList1.dictByFunc()
     funcs = set(dictFunc0.keys()) & set(dictFunc1.keys())
 
-    targets = genericsettings.current_testbed.ppscatter_target_values
+    targets = testbedsettings.current_testbed.ppscatter_target_values
     if isinstance(targets, pproc.RunlengthBasedTargetValues):
         linewidth = linewidth_rld_based
     else:
