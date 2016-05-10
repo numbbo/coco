@@ -235,11 +235,11 @@ Quality Indicators
 
 At each evaluation count (time step) |t| of an algorithm which optimizes a problem instance |thetai| of the function |ftheta| in dimension |n|, we apply a quality indicator mapping. 
 A quality indicator |I| maps the set of all solutions evaluated 
-so far (or recommended [HAN2016ex]_) to a :math:`p`-dependent real value.
+so far (or recommended [HAN2016ex]_) to a problem-dependent real value.
 Then, a runtime measurement is obtained from each of a (large) set of problem
-instances, defined as quintuple :math:`p=(n, f_\theta, \theta_i, I,
+instances, defined as the quintuple :math:`p=(n, f_\theta, \theta_i, I,
 I^\mathrm{target, \theta_i}_{f})`. 
-Runtime on this problem instance is defined as the evaluation count 
+The runtime on this problem instance is defined as the evaluation count 
 when the quality indicator hits the target for the first time, otherwise runtime remains undefined. 
 
 In the single-objective noiseless case, the quality indicator outputs
@@ -283,12 +283,13 @@ there are essentially (only) two ways to measure the performance.
    :align: center
    :width: 60%
 
-   **Horizontal versus Vertical View**
+   **Fixed-Budget versus Fixed-Target**
    
    Illustration of fixed-budget view (vertical cuts) and fixed-target view
    (horizontal cuts). Black lines depict the best quality indicator value
    plotted versus number of function evaluations.
 
+.. .. TODO: the line annotations in the figure should not be vertical/horizontal but budget/target. 
 
 .. It is often argued that the fixed-cost approach is close to what is needed for
    real world applications where the total number of function evaluations is
@@ -316,68 +317,68 @@ data.
   type: Algorithm A is two (or ten, or a hundred) times faster than Algorithm B
   in solving this problem. 
   The choice of the target value determines the difficulty and
-  often characteristic of the problem to be solved. 
+  often the characteristic of the problem to be solved. 
 
 Furthermore, for algorithms that are invariant under certain transformations
 of the function value (for example under order-preserving transformations, as
-comparison-based algorithms like DE, ES, PSO [AUG2009]_), fixed-target measures become
-invariant under these transformations by transformation of the target values
-only, while fixed-budget measures require the transformation of all resulting data.
+comparison-based algorithms like DE, ES, PSO [AUG2009]_), fixed-target measures are
+invariant under these transformations if the target values are transformed accordingly. That is, only the horizontal line needs to be moved. Fixed-budget measures require the transformation of all resulting measurements individually.
 
 
 Missing Values
 ---------------
 Investigating Figure :ref:`fig:HorizontalvsVertical` more carefully, we find that not all graphs intersect with either the vertical or the horizontal line. 
-On the one hand, if the fixed budget is too large, the algorithm might solve the problem before the budget is exceeded. [#]_ 
-The algorithm performs better than the measurement is able to reflect, which can lead to a serious misinterpretation of performance results. 
-The remedy is to define a final target value and measure the runtime if the final target is hit. 
+On the one hand, if the fixed budget is too large, the algorithm might solve the function before the budget is exceeded. [#]_ 
+The algorithm performs better than the measurement is able to reflect, which can lead to a serious misinterpretations. 
+The remedy is to define a final target value and measure the runtime if the final target is hit. [#]_
 
-On the other hand, if the fixed target is too difficult, the algorithm might never hit the target under the given experimental conditions. [#]_ 
-The algorithm performs worse than the experiment is able to reflect, while we get at least a lower bound on the runtime. 
+On the other hand, if the fixed target is too difficult, the algorithm may never hit the target under the given experimental conditions. [#]_ 
+The algorithm performs worse than the experiment is able to reflect, while we still get a lower bound for this runtime instance. 
 A possible remedy is to run the algorithm longer. 
-Another possible remedy is to set a maximum budget. 
-However, measurements at the maximum budget can only be interpreted as ranking results, defeating the original objective. Furthermore, introducing a maximum budget prevents to run an algorithm long enough to get an actual runtime measurement.
+Another possible remedy is to use the final quality indicator value as measurement. 
+This measurement however can only be interpreted as ranking result, defeating the original objective. 
+A third (impartial) remedy is to use simulated restarts, see below.  
 
-In COCO_, we collect the runtimes to reach given target values. 
-When a target is never reached, the runtime is undefined, 
-but the overall number of function evaluations of the corresponding run provides an empirical observation for a lower bound on the runtime to reach the given target.
+When a target value is never reached, the runtime (to reach the target) is undefined. 
+However, in this case, we record and use the overall number of function evaluations in the corresponding run to compute simulated run-lengths, see below. 
 
-.. [#] Even in continuous domain, from a benchmarking, a practical, and a numerical viewpoint, the set of solutions that indisputably solve the problem have a volume larger than zero. 
+.. [#] Even in continuous domain, from the view point of benchmarking, 
+       or application in the real world, or numerical precision, the set of
+       solutions (or of solution sets) that indisputably solve the problem has a
+       volume larger than zero. 
+       
+.. [#] This is also advisable because declaring an algorithm better
+       when it reaches, say, :math:`\mathsf{const} + 10^{-30}` instead of
+       :math:`\mathsf{const} + 10^{-10}`, is more often than not unjustified.
+       The former result may only indicate the lack of practical
+       termination conditions. 
 
-.. [#] However, under mildly randomized conditions, for example with a randomized initial solution, the restarted algorithm reaches any attainable target with probability one. However, the time needed can well be beyond any reasonable practical limitations. 
+.. [#] However, under mildly randomized conditions, for example with a randomized initial solution, the restarted algorithm reaches any attainable target with probability one. The time needed can of course well be beyond any reasonable practical limitations. 
 
 
-Target Values
---------------
+Target Value Setting
+---------------------
 
 .. |DI| replace:: :math:`\Delta I`
 
-We define for each problem a reference quality indicator value, :math:`I^{\rm ref, \theta}`. 
-In the single-objective case this can be the optimal function value, i.e.
-:math:`f^{\mathrm{opt}, \theta} = \min_\mathbf{x} f_\theta(\mathbf{x})`, 
-in the multi-objective case this is the indicator value of an approximation of
-the Pareto front. 
-This reference indicator value depends on the specific instance
-:math:`\theta`, and thus does the target indicator value. 
-Based on this reference value and a set of target precision values we define for
-each problem instance and each precision |DI| (independent of the instance
-:math:`\theta`) a target value
+First, we define for each function instance a *reference* quality indicator value, :math:`I^{\rm ref, \theta}`. 
+In the single-objective case this is the optimal function value. 
+In the multi-objective case this is the hypervolume indicator of an approximation of the Pareto front [BRO2016]_. 
+This reference quality indicator value depends on the specific instance
+:math:`\theta`. 
+Based on this reference value and a set of target *precision* values, which are
+independent of the instance :math:`\theta`, we define for each problem instance
+and for each precision |DI| a target value
 
 .. math::
 
     I^{\rm target,\theta} = I^{\rm ref,\theta} + \Delta I \enspace,
 
-such that for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a
-parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets
-:math:`I^{\rm target,{\theta}_1}, \ldots,I^{\rm target,{\theta}_K}` are
-associated to the same precision. 
+such that, in particular, for each target precision we have an associated problem instance |thetai| for all :math:`i=1, \dots, K`. 
 
-Depending on the context, when we refer to a problem this includes the used quality indicator and a given target value (or precision). 
-We say, for example, that "algorithm A is solving problem :math:`p=(n, f_\theta,
-\theta, I, I^{\rm target})` after :math:`t` function evaluations" if the quality
-indicator function value :math:`I` during the optimization of :math:`(n,
-f_\theta, \theta)` reaches a value of :math:`I^{\rm target}` or lower for the
-first time after :math:`t` function evaluations.
+.. such that for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`I^{\rm target,{\theta}_1}, \ldots,I^{\rm target,{\theta}_K}` are associated to the same precision. 
+
+.. Depending on the context, when we refer to a problem this includes the used quality indicator and a given target value (or precision). We say, for example, that "algorithm A is solving problem :math:`p=(n, f_\theta, \theta, I, I^{\rm target})` after :math:`t` function evaluations" if the quality indicator function value :math:`I` during the optimization of :math:`(n, f_\theta, \theta)` reaches a value of :math:`I^{\rm target}` or lower for the first time after :math:`t` function evaluations.
 
 
 Runlength-based Target Values
@@ -391,45 +392,24 @@ Runlength-based Target Values
 Runlength-based target values are a novel way to define the target values based
 on a reference data set. Like for *performance profiles* [DOL2002]_, the
 resulting empirical distribution can be interpreted *relative* to a reference
-algorithm. 
+algorithm or a set of reference algorithms. 
 Unlike for performance profiles, the resulting empirical distribution *is* a
 data profile [MOR2009]_ and can be understood as absolute runtime distribution,
 reflecting the true (opposed to relative) difficulty of the respective problems
 for the given algorithm. 
 
-We assume to have given a reference data set with recorded runtimes to reach given quality indicator target values
-:math:`\mathcal{I}^{\rm target} = \{ I^{\rm target}_1, \ldots, I^{\rm target}_{|\mathcal{I}^{\rm target}|} \}`
-where :math:`I^{\rm target}_i` > :math:`I^{\rm target}_j` for all :math:`i<j`,
-as in the fixed-target approach described above. The reference
-data serve as a baseline upon which the runlength-based targets are 
-computed. To simplify wordings we assume that a reference algorithm :math:`\mathcal{A}` has generated this data set. 
+We assume to have given a reference data set with recorded runtimes to reach given quality indicator target values as in the fixed-target approach described above. 
+The reference data serve as a baseline upon which the runlength-based targets are 
+computed. To simplify wordings we assume that a reference *algorithm* has generated this data set. 
 
-Now we choose a set of increasing reference budgets :math:`B = \{b_1,\ldots, b_{|B|}\}` where :math:`b_i < b_j` for all :math:`i<j`. For each budget :math:`b_i`, we pick the largest (easiest) target that the reference algorithm :math:`\mathcal{A}` did not reach within the given budget and that has not yet been chosen for smaller budgets:
+Now we choose a set of increasing reference *budgets*. To each budget, starting with the smallest, we associate the easiest (largest) target for which the average runtime (over all respective |thetai| instances, |aRT|, see below) of the reference algorithm *exceeds* the budget and that had not been chosen for a smaller budget before. If such target does not exist, we take the final (smallest) target. 
 
-.. math::
-  	:nowrap:
-
- 	\begin{equation*}
-		I^{\rm chosen}_i = \max_{1\leq j \leq | \mathcal{I}^{\rm target} |}
-				I^{\rm target}_j \text{ such that }
-				I^{\rm target}_{j} < I(\mathcal{A}, b_i) \text{ and }
-				I^{\rm target}_j < I^{\rm chosen}_{k} \text{ for all } k<i
-  	\end{equation*}
-
-where :math:`I(\mathcal{A}, t)` is the indicator value of the algorithm
-:math:`\mathcal{A}` after :math:`t` function evaluations.
-If such target does not exist, we take the smallest (final) target. 
-
-Like this, an algorithm that reaches :math:`I^{\rm chosen}_i` within at most :math:`b_i` evaluations is better than the reference algorithm on this problem. 
-
- .. Dimo: please check whether the notation is okay
-
- .. Dimo: TODO: make notation consistent wrt f_target
-
+Like this, an algorithm that reaches a target within the associated budget is better than the reference algorithm on this problem.
+ 
 Runlength-based targets are used in COCO_ for the single-objective expensive optimization scenario. 
-The artificial best algorithm of BBOB-2009 is used as reference algorithm with the five budgets of :math:`0.5n`, :math:`1.2n`, :math:`3n`, :math:`10n`, and
+The artificial best algorithm of BBOB-2009 (see below) is used as reference algorithm with the five budgets of :math:`0.5n`, :math:`1.2n`, :math:`3n`, :math:`10n`, and
 :math:`50n` function evaluations, where :math:`n` is the problem
-dimension. :math:`I(\mathcal{A}, t)` is the average runtime |aRT| of :math:`\mathcal{A}` for the respective |DI| target precision. 
+dimension.
 
 Runlength-based targets have the advantage to make the target value setting less
 dependent on the expertise of a human designer, because only the reference
@@ -437,6 +417,8 @@ dependent on the expertise of a human designer, because only the reference
 intuitively meaningful quantities, on which it is comparatively simple to decide
 upon. 
 Runlength-based targets have the disadvantage to depend on the choice of a reference data set. 
+
+.. Niko: TODO: simulated runlength -> simulated runtime
 
 
 Runtime Computation    
@@ -494,7 +476,7 @@ Runs on Different Instances
 
 Different instantiations of the parametrized functions |ftheta| are a natural way to represent randomized repetitions. 
 For example, different instances implement random translations of the search space and hence a translation of the optimum [HAN2009fun]_. 
-Randomized restarts on the other hand are conducted from different initial points. 
+Randomized restarts on the other hand can be conducted from different initial points. 
 For translation invariant algorithms both mechanisms are equivalent and can be mutually exchanged. 
 
 We interpret runs performed on different instances :math:`\theta_1, \ldots, \theta_K` as repetitions of the same problem. 
@@ -518,7 +500,7 @@ We hence have for each parametrized problem a set of :math:`K\approx15` independ
 
 .. |K| replace:: :math:`K`
 
-Simulated Restarts and Run-lengths
+Simulated Restarts and Runtimes
 -----------------------------------
 
 .. Niko: I'd like to reserve the notion of runtime to successful (simulated) runs. 
@@ -526,21 +508,23 @@ Simulated Restarts and Run-lengths
 .. simulated runtime instances of the virtually restarted algorithm
 
 The runtime of the conceptual restart algorithm as given above is the basis for displaying performance within COCO_. 
-We use the |K| different runs on the same function and dimension to simulate virtual restarts. 
+We use the |K| different runs on the same function and dimension to simulate virtual restarts with a fixed target precision. 
 We assume to have at least one successful run. 
 Otherwise, the runtime remains undefined, because the virtual procedure would never stop. 
 Then, we construct artificial runs from the available empirical data:
 we repeatedly pick, uniformly at random with replacement, one of the |K| trials until we encounter a, for the given target precision, successful trial. 
 This procedure simulates a single sample of the virtually restarted algorithm from the given data. 
-As computed in |RTforDI| above, the measured runtime is the sum of the number of function evaluations from the unsuccessful trials added to the runtime of the last and successful trial. [#]_
+As computed in :eq:`RTrestart` as |RTforDI| above, the measured, simulated runtime is the sum of the number of function evaluations from the unsuccessful trials added to the runtime of the last and successful trial. [#]_
 
-.. [#] In other words, we apply :eq:`RTrestart` such that |RTs| is uniformly distributed over all measured runtimes from successful instances |thetai|, |RTus| is uniformly distributed over all evaluations seen in unsuccessful instances |thetai|, and |J| has a negative binomial distribution :math:`\mathrm{BN(1, p_\mathrm{s})}`, where |ps| is the number of unsuccessful instance divided by all instances.
+.. |q| replace:: :math:`q`
+
+.. [#] In other words, we apply :eq:`RTrestart` such that |RTs| is uniformly distributed over all measured runtimes from successful instances |thetai|, |RTus| is uniformly distributed over all evaluations seen in unsuccessful instances |thetai|, and |J| has a negative binomial distribution :math:`\mathrm{BN}(1, q)`, where |q| is the number of unsuccessful instance divided by all instances.
 
 
-Bootstrapping Run-lengths
+Bootstrapping Runtimes
 ++++++++++++++++++++++++++
 
-In practice, we repeat the above procedure sampling :math:`N\approx100` simulated runtimes from the same underlying distribution, 
+In practice, we repeat the above procedure between a hundred and thousand times, thereby sampling :math:`N` simulated runtimes from the same underlying distribution, 
 which has striking similarities with the true distribution from a restarted algorithm [EFR1994]_. 
 To reduce the variance in this procedure, when desired, the first trial in each sample is picked deterministically instead of randomly as the :math:`1 + (N~\mathrm{mod}~K)`-th trial from the data. [#]_
 Picking the first trial data as specific instance |thetai| can also be
@@ -557,11 +541,11 @@ i=1,\dots,K\}`.
 Rationales and Limitations
 +++++++++++++++++++++++++++
 
-* Simulated restarts allow to compare algorithms with a wide range of different success probabilities [#]_ by a single performance measure. The approach reflects what we need to do when addressing a difficult optimization problem in "the real world". 
+* Simulated restarts allow to compare algorithms with a wide range of different success probabilities [#]_ by a single performance measure. The approach reflects the approach when addressing a difficult optimization problem in practice. 
 
-* Simulated restarts rely on the assumption that the runtime distribution on each instance is the same. If this is not the case, they still provide a reasonable performance measure, however less of a meaningful interpretation of the result. 
+* Simulated restarts rely on the assumption that the runtime distribution on each instance is the same. If this is not the case, they still provide a reasonable performance measure, however less of a meaningful interpretation from the result. 
 
-* The runtime of simulated restarts may depend heavily on termination conditions applied in the benchmarked algorithm, due to the evaluations spent in unsuccessful trials, compare :eq:`RTrestart`. This can be interpreted as disadvantage, when termination is considered as a trivial detail in the implementation, or as an advantage, when termination is considered a relevant component in the practical application of numerical optimization algorithms. 
+* The runtime of simulated restarts may heavily depend on termination conditions applied in the benchmarked algorithm, due to the evaluations spent in unsuccessful trials, compare :eq:`RTrestart`. This can be interpreted as disadvantage, when termination is considered as a trivial detail in the implementation---or as an advantage, when termination is considered a relevant component in the practical application of numerical optimization algorithms. 
 
 * The maximal number of evaluations for which sampled runtimes are meaningful 
   and representative depends on the experimental conditions. If all runs are successful, no restarts are simulated and all runtimes are meaningful. If all runs terminated due to standard termination conditions in the used algorithm, simulated restarts also reflect the original algorithm. However, if a maximal budget is imposed for the purpose of benchmarking, simulated restarts do not necessarily reflect the real performance. In this case and if the success probability drops below 1/2, the result is likely to give a too pessimistic viewpoint at or beyond the chosen maximal budget. See [HAN2016ex]_ for a more in depth discussion on how to setup restarts in the experiments. 
@@ -604,7 +588,7 @@ where |ps| is the probability of success of the algorithm and notations from abo
 Given a finite number of realizations of the runtime of
 an algorithm that comprise at least one successful run, say
 :math:`\{\mathrm{RT}^{\rm us}_i, \mathrm{RT}^{\rm s}_j \}`, we
-estimate the expected runtime of the restart algorithm from 
+can estimate the expected runtime of the restart algorithm from 
 the average runtime
 
 .. math::
@@ -628,10 +612,10 @@ conducted in all trials (before to reach a given target precision).
 
 Rationale and Limitations
 --------------------------
-The average runtime, |aRT|, is taken over different instances, of the same function, dimension, and target precision, as these instances are interpreted as repetitions. 
+The average runtime, |aRT|, is taken over different instances of the same function, dimension, and target precision, as these instances are interpreted as repetitions. 
 Taking the average is (only) meaningful if each instance obeys a similar distribution without heavy tails. 
 If one instance is considerably harder than the others, the average is dominated by this instance. 
-For this reason we do not average (raw) runtimes from different functions or different target precisions. This can be done however if the logarithm is taken first. 
+For this reason we do not average (raw) runtimes from different functions or different target precisions, which could be done however if the logarithm is taken first. 
 Plotting the |aRT| divided by dimension against dimension in a log-log plot is the recommended way to investigate the scaling behavior of an algorithm. 
 
 .. _sec:ECDF:
@@ -647,17 +631,17 @@ More formally, an ECDF gives for each |x|-value the fraction of runtimes which d
 
 Rationale and Limitations
 -------------------------
-Empirical cumulative distribution functions are a universal way to display unlabeled data in a condensed way without loosing information. 
+Empirical cumulative distribution functions are a universal way to display unlabeled data in a condensed way without losing information. 
 They allow unconstrained aggregation, because each data point remains separately displayed, and they remain meaningful under transformation of the data (e.g. taking the logarithm). 
-Displaying the cumulative distribution function on a set of problems from a single function instance where only the target value varies recovers an upside-down convergence graph with a resolution defined by the targets [HAN2010]_.
-When runs from several instances are aggregated, the association to the single runs is lost, as is the association the a single function, the function label, when aggregating over several functions. 
+Displaying the cumulative distribution function on a set of problems from a single function instance, where only the target value varies, recovers an upside-down convergence graph with a resolution defined by the targets [HAN2010]_.
+When runs from several instances are aggregated, the association to the single runs is lost, as is the association the function when aggregating over several functions. 
 This becomes particularly problematic for data in different dimensions, because dimension can be used as decision parameter for algorithm selection. Therefore, we do not aggregate over dimension. 
 
 Relation to Previous Work
 --------------------------
 Empirical distribution functions over runtimes of optimization algorithms are also known as *data profiles* [MOR2009]_. 
 They are widely used for aggregating results from different functions and different dimensions to reach single fixed target precision [RIO2012]_. 
-We aggregate also systematically over a large number of target precision values, while we discourage aggregation over dimension. 
+We do not aggregation over dimension, but aggregate systematically over a wide range of target precision values. 
 
 .. 
     Formal Definition
