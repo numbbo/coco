@@ -391,32 +391,36 @@ Runlength-based Target Values
 
 Runlength-based target values are a novel way to define the target values based
 on a reference data set. Like for *performance profiles* [DOL2002]_, the
-resulting empirical distribution can be interpreted *relative* to a reference
-algorithm or a set of reference algorithms. 
+resulting empirical distribution can be interpreted *relative to a reference
+algorithm or a set of reference algorithms*. 
 Unlike for performance profiles, the resulting empirical distribution *is* a
-data profile [MOR2009]_ and can be understood as absolute runtime distribution,
-reflecting the true (opposed to relative) difficulty of the respective problems
-for the given algorithm. 
+data profile [MOR2009]_ reflecting the true (opposed to relative) difficulty of the respective problems for the respective algorithm. 
 
-We assume to have given a reference data set with recorded runtimes to reach given quality indicator target values as in the fixed-target approach described above. 
-The reference data serve as a baseline upon which the runlength-based targets are 
-computed. To simplify wordings we assume that a reference *algorithm* has generated this data set. 
+We assume to have given a reference data set with recorded runtimes to reach a
+prescribed, usually large set of quality indicator target values as in the
+fixed-target approach described above. [#]_
+The reference data serve as a baseline upon which the runlength-based targets are  computed. 
+To simplify wordings we assume w.l.o.g. that a single reference *algorithm* has generated this data set. 
 
-Now we choose a set of increasing reference *budgets*. To each budget, starting with the smallest, we associate the easiest (largest) target for which the average runtime (over all respective |thetai| instances, |aRT|, see below) of the reference algorithm *exceeds* the budget and that had not been chosen for a smaller budget before. If such target does not exist, we take the final (smallest) target. 
+Now we choose a set of increasing reference *budgets*. To each budget, starting with the smallest, we associate the easiest (largest) target for which (i) the average runtime (taken over all respective |thetai| instances, |aRT|, see below) of the reference algorithm *exceeds* the budget and (ii, optionally) that had not been chosen for a smaller budget before. If such target does not exist, we take the final (smallest) target. 
 
 Like this, an algorithm that reaches a target within the associated budget is better than the reference algorithm on this problem.
  
 Runlength-based targets are used in COCO_ for the single-objective expensive optimization scenario. 
-The artificial best algorithm of BBOB-2009 (see below) is used as reference algorithm with the five budgets of :math:`0.5n`, :math:`1.2n`, :math:`3n`, :math:`10n`, and
-:math:`50n` function evaluations, where :math:`n` is the problem
-dimension.
+The artificial best algorithm of BBOB-2009 (see below) is used as reference algorithm with either the five budgets of :math:`0.5n`, :math:`1.2n`, :math:`3n`, :math:`10n`, and :math:`50n` function evaluations, where :math:`n` is the problem
+dimension, or with 31 targets evenly space on the log scale between :math:`0.5n` and :math:`50n` and without the optional constraint from (ii) above. In the latter case, the empirical distribution function of the runtimes of the reference algorithm shown in a `semilogx` plot approximately resembles a diagonal straight line between the above two values. 
 
-Runlength-based targets have the advantage to make the target value setting less
+Runlength-based targets have the **advantage** to make the target value setting less
 dependent on the expertise of a human designer, because only the reference
 *budgets* have to be chosen a priori. Reference budgets, as runtimes, are
-intuitively meaningful quantities, on which it is comparatively simple to decide
+intuitively meaningful quantities, on which it is comparatively easy to decide
 upon. 
-Runlength-based targets have the disadvantage to depend on the choice of a reference data set. 
+Runlength-based targets have the **disadvantage** to depend on the choice of a reference data set, that is, they depend on the performance of a set of reference algorithms. 
+
+
+.. [#] By default, the ratio between two neighboring |DI| target precision values 
+   is :math:`10^{0.2}` and the largest |DI| value is (dynamically) chosen such 
+   that the first evaluation of the worst algorithm hits the target. 
 
 .. Niko: TODO: simulated runlength -> simulated runtime
 
@@ -426,21 +430,22 @@ Runtime Computation
 
 .. In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtimes for different target values. 
 
-In the performance assessment context of COCO_, a problem instance is the 
-quintuple :math:`p=(n,f_\theta,\theta_i,I,I^{{\rm target},\theta_i})` containing dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value. [#]_
-For each benchmarked algorithm, a single runtime is measured on each problem.  
-From a single run of the algorithm on a given problem instance
-:math:`p=(n,f_\theta,\theta_i)`, we obtain a runtime measurement for every target value which has been reached in this run, or equivalently, for the respective target precisions |DI|, which reflects the anytime aspect of 
-the performance evaluation. 
+In the performance assessment context of COCO_, a problem instance can be defined by the quintuple of search space dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value, :math:`p = (n, f_\theta, \theta_i, I, I^{{\rm target}, \theta_i})`. [#]_
+For each benchmarked algorithm, a single runtime is measured on each problem instance.  
+From a single run of the algorithm on a problem instance triple defined by
+:math:`p = (n, f_\theta, \theta_i)`, we obtain a runtime measurement for each
+deduced problem quintuple, and more specifically, for each target value which has
+been reached in this run, or equivalently, for each target precision. 
+This also reflects the anytime aspect of the performance evaluation in a single run. 
 
-Formally, the runtime :math:`\mathrm{RT}(p)` is a random variable that represents the number of function evaluations needed to reach the quality indicator target value for the first time. 
+Formally, the runtime :math:`\mathrm{RT}^{\rm s}(p)` is a random variable that represents the number of function evaluations needed to reach the quality indicator target value for the first time. 
 A run or trial that reached the target value is called *successful*. [#]_
 For *unsuccessful trials*, the runtime is not defined, but the overall number of function evaluations in the given trial is a random variable denoted by :math:`\mathrm{RT}^{\rm us}(p)`. For a single run, the value of :math:`\mathrm{RT}^{\rm us}(p)` is the same for all failed targets. 
 
 We consider the conceptual **restart algorithm**. 
 Given an algorithm has a strictly positive probability |ps| to solve a 
-problem :math:`p`, independent restarts of the algorithm solve the problem with
-probability one and with runtime
+problem, independent restarts of the algorithm solve the problem with
+probability one and exhibit the runtime
 
 .. |RTforDI| replace:: :math:`\mathbf{RT}(n,f_\theta,\Delta I)`
 
@@ -455,11 +460,10 @@ probability one and with runtime
     \enspace,
     \end{equation*}%%remove*%%
 
-where :math:`J` is a random variable that models the number of unsuccessful
-runs until a success is observed, :math:`\mathrm{RT}^{\rm us}_j` are random
-variables corresponding to the evaluations in unsuccessful trials and
-:math:`\mathrm{RT}^{\rm s}` represents the runtime of a
-successful trial [AUG2005]_. 
+where :math:`J \sim \mathrm{BN}(1, 1 - p_{\rm s})` is a random variable with negative binomial distribution that models the number of unsuccessful runs
+until a success is observed and :math:`\mathrm{RT}^{\rm us}_j` are independent
+random variables corresponding to the evaluations in unsuccessful trials
+[AUG2005]_. 
 If the probability of success is one, :math:`J` equals zero with probability one and the restart algorithm coincides with the original algorithm.
 
 Generally, the above equation for |RTforDI| expresses the runtime from repeated independent runs on the same problem instance (while the instance :math:`\theta_i` is not given explicitly). For the performance evaluation in the COCO_ framework, we apply the equation to runs on different instances :math:`\theta_i`, however instances from the same function, with the same dimension and the same target precision. 
@@ -479,7 +483,7 @@ For example, different instances implement random translations of the search spa
 Randomized restarts on the other hand can be conducted from different initial points. 
 For translation invariant algorithms both mechanisms are equivalent and can be mutually exchanged. 
 
-We interpret runs performed on different instances :math:`\theta_1, \ldots, \theta_K` as repetitions of the same problem. 
+We interpret thus runs performed on different instances :math:`\theta_1, \ldots, \theta_K` as repetitions of the same problem. 
 Thereby we assume that instances of the same parametrized function |ftheta| are 
 similar to each other, and more specifically that they exhibit the same runtime
 distribution for each given |DI|. 
@@ -507,14 +511,13 @@ Simulated Restarts and Runtimes
 
 .. simulated runtime instances of the virtually restarted algorithm
 
-The runtime of the conceptual restart algorithm as given above is the basis for displaying performance within COCO_. 
+The runtime of the conceptual restart algorithm as given in :eq:`RTrestart` is the basis for displaying performance within COCO_. 
 We use the |K| different runs on the same function and dimension to simulate virtual restarts with a fixed target precision. 
-We assume to have at least one successful run. 
-Otherwise, the runtime remains undefined, because the virtual procedure would never stop. 
-Then, we construct artificial runs from the available empirical data:
-we repeatedly pick, uniformly at random with replacement, one of the |K| trials until we encounter a, for the given target precision, successful trial. 
+We assume to have at least one successful run -- otherwise, the runtime remains undefined, because the virtual procedure would never stop. 
+Then, we construct artificial, simulated runs from the available empirical data:
+we repeatedly pick, uniformly at random with replacement, one of the |K| trials until we encounter a successful trial. 
 This procedure simulates a single sample of the virtually restarted algorithm from the given data. 
-As computed in :eq:`RTrestart` as |RTforDI| above, the measured, simulated runtime is the sum of the number of function evaluations from the unsuccessful trials added to the runtime of the last and successful trial. [#]_
+As computed in :eq:`RTrestart` as |RTforDI|, the measured, simulated runtime is the sum of the number of function evaluations from the unsuccessful trials added to the runtime of the last and successful trial. [#]_
 
 .. |q| replace:: :math:`q`
 
@@ -522,12 +525,12 @@ As computed in :eq:`RTrestart` as |RTforDI| above, the measured, simulated runti
 
 
 Bootstrapping Runtimes
-++++++++++++++++++++++++++
+++++++++++++++++++++++++
 
-In practice, we repeat the above procedure between a hundred and thousand times, thereby sampling :math:`N` simulated runtimes from the same underlying distribution, 
-which has striking similarities with the true distribution from a restarted algorithm [EFR1994]_. 
+In practice, we repeat the above procedure between a hundred or even thousand times, thereby sampling :math:`N` simulated runtimes from the same underlying distribution, 
+which then has striking similarities with the true distribution from a restarted algorithm [EFR1994]_. 
 To reduce the variance in this procedure, when desired, the first trial in each sample is picked deterministically instead of randomly as the :math:`1 + (N~\mathrm{mod}~K)`-th trial from the data. [#]_
-Picking the first trial data as specific instance |thetai| can also be
+Picking the first trial data as specific instance |thetai| could also be
 interpreted as applying simulated restarts to this specific instance rather than
 to the entire set of problems :math:`\{p(n, f_\theta, \theta_i, \Delta I) \;|\;
 i=1,\dots,K\}`. 
@@ -541,11 +544,13 @@ i=1,\dots,K\}`.
 Rationales and Limitations
 +++++++++++++++++++++++++++
 
-* Simulated restarts allow to compare algorithms with a wide range of different success probabilities [#]_ by a single performance measure. The approach reflects the approach when addressing a difficult optimization problem in practice. 
+Simulated restarts aggregate some of the available data and thereby extend their range of interpretation. 
 
-* Simulated restarts rely on the assumption that the runtime distribution on each instance is the same. If this is not the case, they still provide a reasonable performance measure, however less of a meaningful interpretation from the result. 
+* Simulated restarts allow in particular to compare algorithms with a wide range of different success probabilities by a single performance measure. [#]_ Conduction restarts also reflects a sensible approach when addressing a difficult optimization problem in practice. 
 
-* The runtime of simulated restarts may heavily depend on termination conditions applied in the benchmarked algorithm, due to the evaluations spent in unsuccessful trials, compare :eq:`RTrestart`. This can be interpreted as disadvantage, when termination is considered as a trivial detail in the implementation---or as an advantage, when termination is considered a relevant component in the practical application of numerical optimization algorithms. 
+* Simulated restarts rely on the assumption that the runtime distribution for each instance is the same. If this is not the case, they still provide a reasonable performance measure, however with less of a meaningful interpretation for the result. 
+
+* The runtime of simulated restarts may heavily depend on **termination conditions** applied in the benchmarked algorithm, due to the evaluations spent in unsuccessful trials, compare :eq:`RTrestart`. This can be interpreted as disadvantage, when termination is considered as a trivial detail in the implementation---or as an advantage, when termination is considered a relevant component in the practical application of numerical optimization algorithms. 
 
 * The maximal number of evaluations for which sampled runtimes are meaningful 
   and representative depends on the experimental conditions. If all runs are successful, no restarts are simulated and all runtimes are meaningful. If all runs terminated due to standard termination conditions in the used algorithm, simulated restarts also reflect the original algorithm. However, if a maximal budget is imposed for the purpose of benchmarking, simulated restarts do not necessarily reflect the real performance. In this case and if the success probability drops below 1/2, the result is likely to give a too pessimistic viewpoint at or beyond the chosen maximal budget. See [HAN2016ex]_ for a more in depth discussion on how to setup restarts in the experiments. 
@@ -560,8 +565,8 @@ Averaging Runtime
 The average runtime (|aRT|), introduced in [PRI1997]_ as ENES and
 analyzed in [AUG2005]_ as success performance and referred to as 
 ERT in [HAN2009ex]_, estimates the expected runtime of the restart
-algorithm given in :eq:`RTrestart` within the COCO_
-framework. 
+algorithm given in :eq:`RTrestart`. Generally, the set of trials is 
+generated by varying |thetai| only. 
 
 Computation
 -----------
@@ -585,37 +590,44 @@ The expected runtime of the restart algorithm writes [AUG2005]_
 
 where |ps| is the probability of success of the algorithm and notations from above are used.
 
-Given a finite number of realizations of the runtime of
+Given a finite number of realizations of trials of
 an algorithm that comprise at least one successful run, say
-:math:`\{\mathrm{RT}^{\rm us}_i, \mathrm{RT}^{\rm s}_j \}`, we
-can estimate the expected runtime of the restart algorithm from 
-the average runtime
+:math:`\{\mathrm{RT}^{\rm us}_i, \mathrm{RT}^{\rm s}_j \}`,  
+the average runtime reads
 
 .. math::
     :nowrap:
 
-	\begin{eqnarray*}
-	\mathrm{aRT} & = & \mathrm{RT}_\mathrm{S} + \frac{1-p_{\mathrm{s}}}{p_{\mathrm{s}}} \,\mathrm{RT}_\mathrm{US} \\  & = & \frac{\sum_i \mathrm{RT}^{\rm us}_i + \sum_j \mathrm{RT}^{\rm us}_j }{\#\mathrm{succ}} \\
-	& = & \frac{\#\mathrm{FEs}}{\#\mathrm{succ}}
+    \begin{eqnarray*}
+    \mathrm{aRT} 
+    & = & 
+    \frac{1}{n_\mathrm{s}} \sum_i \mathrm{RT}^{\rm s}_i + 
+    \frac{1-p_{\mathrm{s}}}{p_{\mathrm{s}}}\,
+    \frac{1}{n_\mathrm{us}} \sum_j \mathrm{RT}^{\rm us}_j
+    \\ 
+    & = & 
+    \frac{\sum_i \mathrm{RT}^{\rm s}_i + \sum_j \mathrm{RT}^{\rm us}_j }{n_\mathrm{s}} 
+    \\
+    & = & 
+    \frac{\#\mathrm{FEs}}{n_\mathrm{s}}
     \end{eqnarray*}
 
-.. |nbsucc| replace:: :math:`\#\mathrm{succ}`
+.. |nbsucc| replace:: :math:`n_\mathrm{s}`
 .. |Ts| replace:: :math:`\mathrm{RT}_\mathrm{S}`
 .. |Tus| replace:: :math:`\mathrm{RT}_\mathrm{US}`
 .. |ps| replace:: :math:`p_{\mathrm{s}}`
 
-where |Ts| and |Tus| denote the average runtime for successful trials and
-the average number of evaluations in unsuccessful trials,  
-|nbsucc| denotes the number of successful trials
-and  :math:`\#\mathrm{FEs}` is the number of function evaluations
-conducted in all trials (before to reach a given target precision).
+where |nbsucc| and :math:`n_\mathrm{us}` denote the number of successful and
+unsuccessful trials, |ps| is the fraction of successful trials, :math:`0/0` is
+understood as zero and :math:`\#\mathrm{FEs}` is the number of function
+evaluations conducted in all trials before to reach the given target precision.
 
 Rationale and Limitations
 --------------------------
 The average runtime, |aRT|, is taken over different instances of the same function, dimension, and target precision, as these instances are interpreted as repetitions. 
-Taking the average is (only) meaningful if each instance obeys a similar distribution without heavy tails. 
+Taking the average is meaningful only if each instance obeys a similar distribution without heavy tail. 
 If one instance is considerably harder than the others, the average is dominated by this instance. 
-For this reason we do not average (raw) runtimes from different functions or different target precisions, which could be done however if the logarithm is taken first. 
+For this reason we do not average runtimes from different functions or different target precisions, which however could be done if the logarithm is taken first. 
 Plotting the |aRT| divided by dimension against dimension in a log-log plot is the recommended way to investigate the scaling behavior of an algorithm. 
 
 .. _sec:ECDF:
@@ -629,19 +641,29 @@ Informally, the ECDF displays the *proportion of problems solved within a
 specified budget*, where the budget is given on the x-axis. 
 More formally, an ECDF gives for each |x|-value the fraction of runtimes which do not exceed |x|, where missing runtime values are counted in the denominator of the fraction.
 
-Rationale and Limitations
--------------------------
-Empirical cumulative distribution functions are a universal way to display unlabeled data in a condensed way without losing information. 
-They allow unconstrained aggregation, because each data point remains separately displayed, and they remain meaningful under transformation of the data (e.g. taking the logarithm). 
-Displaying the cumulative distribution function on a set of problems from a single function instance, where only the target value varies, recovers an upside-down convergence graph with a resolution defined by the targets [HAN2010]_.
-When runs from several instances are aggregated, the association to the single runs is lost, as is the association the function when aggregating over several functions. 
-This becomes particularly problematic for data in different dimensions, because dimension can be used as decision parameter for algorithm selection. Therefore, we do not aggregate over dimension. 
+Rationale, Interpretation and Limitations
+------------------------------------------
+Empirical cumulative distribution functions are a universal way to display *unlabeled* data in a condensed way without losing information. 
+They allow unconstrained aggregation, because each data point remains separately displayed, and they remain entirely meaningful under transformation of the data (e.g. taking the logarithm). 
+
+* Displaying the cumulative distribution function on a set of problems from a single function instance, where only the target value varies, recovers an upside-down convergence graph with the resolution steps defined by the targets [HAN2010]_.
+
+* When runs from several instances are aggregated, the association to the single run is lost, as is the association to the function when aggregating over several functions. This is particularly problematic for data in different dimensions, because dimension can be used as decision parameter for algorithm selection. Therefore, we do not aggregate over dimension. 
+
+* The empirical distribution function can be read with the x- or the y-axis as independent variable.
+
+ - x-axis: for any given budget (x-value), 
+   we read the fraction of problems solved within the budget as y-value, where
+   the right limit value is the fraction of solved problems with the maximal budget. 
+ - y-axis: for any given fraction of easiest problems (y-value), 
+   we see the longest runtime to solve any of them. 
+   When plotted in `semilogx`, a horizontal shift indicates a runtime difference by the respective factor, quantifiable, e.g., as "five times faster". The area below the y-value and to the left of the graph reflects the  runtime geometric average, the smaller the better. 
 
 Relation to Previous Work
 --------------------------
 Empirical distribution functions over runtimes of optimization algorithms are also known as *data profiles* [MOR2009]_. 
-They are widely used for aggregating results from different functions and different dimensions to reach single fixed target precision [RIO2012]_. 
-We do not aggregation over dimension, but aggregate systematically over a wide range of target precision values. 
+They are widely used for aggregating results from different functions and different dimensions to reach a single fixed target precision [RIO2012]_. 
+In the COCO_ framework, we do not aggregation over dimension but aggregate often over a wide range of target precision values. 
 
 .. 
     Formal Definition
@@ -664,9 +686,9 @@ We do not aggregation over dimension, but aggregate systematically over a wide r
 Examples
 ----------
 
-We display in Figure :ref:`fig:ecdf` the ECDF of the runtimes of
+We display in Figure :ref:`fig:ecdf` the ECDF of the (simulated) runtimes of
 the pure random search algorithm on the set of problems formed by 15 instances of the sphere function (first function of the single-objective ``bbob`` test
-suite) in dimension :math:`n=5` each with 51 target precisions between :math:`10^2` and :math:`10^{-8}` uniform on a log-scale and :math:`N=10^3`. 
+suite) in dimension :math:`n=5` each with 51 target precisions between :math:`10^2` and :math:`10^{-8}` uniform on a log-scale and 1000 bootstraps. 
 
 .. Dimo/Anne: it will be nice to have a tutorial-like explanation of how an ECDF is constructed (like what we have on the introductory BBOB slides)
 
@@ -691,10 +713,7 @@ We can see in this plot, for example, that almost 20 percent of the problems
 were solved within :math:`10^3 \cdot n = 5 \cdot 10^3` function evaluations. 
 Runtimes to the right of the cross at :math:`10^6` have at least one unsuccessful run. 
 This can be concluded, because with pure random search each unsuccessful run exploits the maximum budget.
-The small dot beyond :math:`x=10^7` depicts the overall fraction of all successfully solved functions-target pairs, i.e., the fraction of :math:`(f_\theta, \Delta I)` pairs for which at least one trial (for one :math:`\theta_i`) was successful. 
-
-In the ECDF of Figure :ref:`fig:ecdf` we have **aggregated**
-runtimes from 15 instances of the sphere function (we always aggregate over all available function instances |thetai|) times 51 target precision values.
+The small dot beyond :math:`x=10^7` depicts the overall fraction of all successfully solved functions-target pairs, i.e., the fraction of :math:`(f_\theta, \Delta I)` pairs for which at least one trial (one :math:`\theta_i` instantiation) was successful. 
 
 Next, we aggregate **over several functions**. 
 We usually divide the set of all (parametrized) benchmark
@@ -718,8 +737,8 @@ See Figure :ref:`fig:ecdfgroup`.
    in one graph.
 
 
-We can also naturally aggregate over all functions of the benchmark and hence
-obtain one single ECDF per algorithm per dimension. 
+Finally, we also naturally aggregate over all functions of the benchmark and
+hence obtain one single ECDF per algorithm per dimension. 
 In Figure :ref:`fig:ecdfall`, the ECDF of different algorithms are displayed in
 a single plot. 
 
@@ -734,15 +753,12 @@ a single plot.
    ECDF of several algorithms benchmarked during the BBOB 2009 workshop
    in dimension 5 (left) and in dimension 20 (right) when aggregating over all functions of the ``bbob`` suite.
 
+We note a thick maroon line with diamond markers annotated as "best 2009". 
+This graph corresponds to the **artificial best 2009 algorithm**: for
+each set of problems with the same function, dimension and target precision, we select the algorithm with the smallest |aRT| from the `BBOB-2009 workshop`__ and use for these problems the data from the selected algorithm. 
+The algorithm is artificial because we may use even for different target values the runtime results from different algorithms. [#]_
 
-Best 2009 Artificial Algorithm
--------------------------------
-In COCO_, ECDF plots often display a graph annotated as best 2009
-(thick maroon line with diamond markers in Figure :ref:`fig:ecdfall`
-for instance). This graph corresponds to an artificial algorithm: for
-each set of problems with the same function, dimension and target precision, we select the algorithm from the `BBOB-2009 workshop`__ that has the best |aRT|. 
-We then use the runtime measurements of this algorithm. 
-The algorithm is artificial because we may use the runtime results from different algorithms for different target values. [#]_
+We observe that the artificial best 2009 algorithm is about two to three time faster than the left envelope of all single algorithms and solves all problems in about :math:`10^7\, n` function evaluations.  
 
 .. __: http://coco.gforge.inria.fr/doku.php?id=bbob-2009
  
