@@ -254,7 +254,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
     * significance test against best algorithm
     * table width...
 
-    Takes ``pptable_targetsOfInterest`` from genericsetting's Testbed instance
+    Takes ``pptable_targetsOfInterest`` from testbedsetting's Testbed instance
     as "input argument" to compute the desired target values.
     ``pptable_targetsOfInterest`` might be configured via config.
     
