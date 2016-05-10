@@ -106,6 +106,11 @@ def config(testbed_name=None):
                                                 reference_data = reference_data,
                                                 force_different_targets_factor=10**-0.2)
                                                 
+            # pptable2:
+            testbed.pptable2_targetsOfInterest = pproc.RunlengthBasedTargetValues(testbed.pptable2_target_runlengths, 
+                                                reference_data = reference_data,
+                                                force_different_targets_factor=10**-0.2)
+          
             # pptables:
             testbed.pptables_targetsOfInterest = pproc.RunlengthBasedTargetValues(testbed.pptables_target_runlengths, 
                                                 reference_data = reference_data,
@@ -128,18 +133,7 @@ def config(testbed_name=None):
                       {'color': 'c', 'marker': 'v', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},
                       {'color': 'b', 'marker': '.', 'linewidth': 4},
                       {'color': 'k', 'marker': 'o', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},
-                    ] 
-            
-        
-        # pptable2:
-        pptable2.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
-                                                                      reference_data = reference_data,
-                                                                      force_different_targets_factor=10**-0.2)
-        
-        # pptables (for rungenericmany):
-        #pptables.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
-        #                                                              reference_data = reference_data,
-        #                                                              force_different_targets_factor=10**-0.2)
+                    ]
 
         ppscatter.markersize = 16
 
