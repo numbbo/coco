@@ -372,7 +372,7 @@ def main(argv=None):
 
         if genericsettings.isTab:
             prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
-                            ['\providecommand{\\bbobpptablesmanylegend}[1]{' +
+                            ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
                              pptables.get_table_caption() + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictng in dictNoi.iteritems():
