@@ -63,7 +63,7 @@ def get_table_caption():
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
-        than 1, with Bonferroni correction by the number of instances. """ +
+        than 1, with Bonferroni correction of #2. """ +
         (r"""A $\downarrow$ indicates the same tested against the best
         algorithm of BBOB-2009."""
         if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
@@ -283,7 +283,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
     for df in dictData:
         # Generate one table per df
         # first update targets for each dimension-function pair if needed:
-        targetsOfInterest = testbed.pptable_targetsOfInterest((df[1], df[0]))            
+        targetsOfInterest = testbed.pptablemany_targetsOfInterest((df[1], df[0]))
         if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
             targetf = targetsOfInterest[-1]
         else:
@@ -394,6 +394,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                           % (2 * len(targetsOfInterest) + 2, header)])
             extraeol.append('')
 
+        curlineHtml = []
         if function_targets_line is True or (function_targets_line and df[1] in function_targets_line):
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 curline = [r'\#FEs/D']
@@ -404,8 +405,12 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
                     counter += 1
             else:
-                curline = [r'$\Delta f_\mathrm{opt}$']
-                curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']
+                if (testbed.name == testbedsettings.testbed_name_bi):
+                    curline = [r'$\Df$']
+                    curlineHtml = ['<thead>\n<tr>\n<th>&#916; HV<sub>ref</sub><br>REPLACEH</th>\n']
+                else:
+                    curline = [r'$\Delta f_\mathrm{opt}$']
+                    curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']
                 counter = 1
                 for t in targetsOfInterest:
                     curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
@@ -414,16 +419,21 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     counter += 1
 #                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
 #                            % writeFEvals2(targetsOfInterest[-1], precision=1, isscientific=True))
-            curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
+            if (testbed.name == testbedsettings.testbed_name_bi):
+                curline.append(r'\multicolumn{2}{|@{}l@{}}{\begin{rotate}{30}\#succ\end{rotate}}')
+            else:
+                curline.append(r'\multicolumn{2}{|@{}l@{}}{\#succ}')
             curlineHtml.append('<td>#succ<br>REPLACEF</td>\n</tr>\n</thead>\n')
             table.append(curline)
-            
+        
         extraeol.append(r'\hline')
 #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
 
         curline = [r'\aRT{}$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
         replaceValue = '\aRT{}<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
+        
+        
         if bestalgentries:
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
@@ -468,7 +478,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             curlineHtml = [item.replace('REPLACEF', replaceValue) for item in curlineHtml]
             
         else: # if not bestalgentries
-            curline.append(r'\multicolumn{%d}{@{}c@{}|}{}' % (2 * (len(targetsOfInterest) + 1)))
+            curline.append(r'\multicolumn{%d}{@{}c@{}|}{} & ' % (2 * (len(targetsOfInterest))))
             for counter in range(1, len(targetsOfInterest) + 1):
                 curlineHtml = [item.replace('REPLACE%d' % counter, '&nbsp;') for item in curlineHtml]
             curlineHtml = [item.replace('REPLACEF', '&nbsp;') for item in curlineHtml]
@@ -486,7 +496,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         #if df == (5, 17):
             #set_trace()
 
-        header = r'\providecommand{\ntables}{7}'
+        header = r'\providecommand{\ntables}{%d}' % len(testbed.pptablemany_targetsOfInterest)
         for i, alg in enumerate(algnames):
             tableHtml.append('<tr>\n')
             #algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,

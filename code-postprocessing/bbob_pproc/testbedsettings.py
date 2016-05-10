@@ -97,9 +97,13 @@ class GECCOBBOBTestbed(Testbed):
         self.pptable_ftarget = 1e-8  # value for determining the success ratio in all tables
         self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))  # for pptable and pptables
         self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
+        self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
         self.scenario = scenario_fixed
         self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
         self.short_names = get_short_names(get_benchmarks_short_infos(False))
+        # expensive optimization settings:
+        self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
+        self.pptables_target_runlengths = self.pptable_target_runlengths  # used in config for expensive setting
 
 
 class GECCOBiObjBBOBTestbed(Testbed):
@@ -130,6 +134,10 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptable_targetsOfInterest = targetValues(
             (1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # possibly changed in config for all tables
         self.pptable2_targetsOfInterest = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # used for pptable2
+        self.pptablemany_targetsOfInterest = targetValues((1e-0, 1e-2, 1e-5))  # used for pptables
         self.scenario = scenario_biobjfixed
         self.best_algorithm_filename = ''
         self.short_names = get_short_names(get_benchmarks_short_infos(True))
+        # expensive optimization settings:
+        self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
+        self.pptables_target_runlengths = [2, 10, 50]  # used in config for expensive setting
