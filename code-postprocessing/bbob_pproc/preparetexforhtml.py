@@ -63,15 +63,15 @@ def main(latex_commands_for_html):
 
     f.write(header)
 
-    for scenario in genericsettings.all_scenarios:
+    for scenario in testbedsettings.all_scenarios:
         # set up scenario, especially wrt genericsettings
-        if scenario == genericsettings.scenario_rlbased:
+        if scenario == testbedsettings.scenario_rlbased:
             genericsettings.runlength_based_targets = True
             config.config(testbedsettings.default_testbed_single)
-        elif scenario == genericsettings.scenario_fixed:
+        elif scenario == testbedsettings.scenario_fixed:
             genericsettings.runlength_based_targets = False
             config.config(testbedsettings.default_testbed_single)
-        elif scenario == genericsettings.scenario_biobjfixed:
+        elif scenario == testbedsettings.scenario_biobjfixed:
             genericsettings.runlength_based_targets = False
             config.config(testbedsettings.default_testbed_bi)
         else:
