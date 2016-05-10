@@ -49,6 +49,7 @@ import pickle, gzip
 import matplotlib.pyplot as plt
 from pdb import set_trace
 from . import toolsstats, genericsettings, pproc, toolsdivers
+from . import testbedsettings
 from .ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 from .pptex import color_to_latex, marker_to_latex
 
@@ -142,7 +143,7 @@ def caption_single():
          Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension $D$,
          to fall below $\fopt+\Df$ with $\Df=10^{k}$, where $k$ is the first value in the legend.
          The thick red line represents the most difficult target value $\fopt+""" +
-         genericsettings.current_testbed.hardesttargetlatex + """$. """)
+         testbedsettings.current_testbed.hardesttargetlatex + """$. """)
     caption_left_rlbased_targets = r"""%
          Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$,
          to fall below $\fopt+\Df$ where \Df\ is the
@@ -160,7 +161,7 @@ def caption_single():
          (from right to left cycling cyan-magenta-black\dots) and final $\Df$-value (red),
          where \Df\ and \textsf{Df} denote the difference to the optimal function value. """ + (
          r"""Light brown lines in the background show ECDFs for the most difficult target of all
-         algorithms benchmarked during BBOB-2009.""" if genericsettings.current_testbed.name != genericsettings.testbed_name_bi
+         algorithms benchmarked during BBOB-2009.""" if testbedsettings.current_testbed.name != testbedsettings.testbed_name_bi
          else r"""Shown are aggregations over functions where the single
          objectives are in the same BBOB function class, as indicated on the
          left side and the aggregation over all 55 functions in the last
@@ -169,10 +170,10 @@ def caption_single():
     caption_single_fixed = caption_part_one + caption_left_fixed_targets + caption_wrap_up + caption_right
     caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_wrap_up + caption_right
 
-    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_single_fixed.replace('\\fopt', '\\hvref')
-    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_single_rlbased
         else:
@@ -202,7 +203,7 @@ def caption_two():
     caption_two_fixed_targets_part3 = r""")%
         . """ + (r"""Light beige lines show the ECDF of FEvals for target value
         $\Df=10^{-8}$ of all algorithms benchmarked during
-        BBOB-2009. """ if genericsettings.current_testbed.name != genericsettings.testbed_name_bi
+        BBOB-2009. """ if testbedsettings.current_testbed.name != testbedsettings.testbed_name_bi
         else "") + r"""Right sub-columns: 
         ECDF of FEval ratios of \algorithmA\ divided by \algorithmB for target
         function values $10^k$ with $k$ given in the legend; all
@@ -240,10 +241,10 @@ def caption_two():
                            + symbAlgorithmB
                            + caption_two_rlbased_targets_part3)
 
-    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_two_fixed.replace('\\fopt', '\\hvref')
-    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_two_rlbased
         else:
@@ -312,7 +313,7 @@ def beautifyRLD(xlimit_max = None):
     plt.xlim(xmin = runlen_xlimits_min)
     plt.text(plt.xlim()[0], 
              plt.ylim()[0], 
-             genericsettings.current_testbed.pprldistr_target_values.short_info, 
+             testbedsettings.current_testbed.pprldistr_target_values.short_info,
              fontsize = 14)
     beautifyECDF()
 
@@ -534,7 +535,7 @@ def plotFVDistr(dsList, budget, min_f = None, **plotArgs):
 
     """
     if not min_f:
-        min_f = genericsettings.current_testbed.ppfvdistr_min_target
+        min_f = testbedsettings.current_testbed.ppfvdistr_min_target
     
     x = []
     nn = 0
@@ -694,7 +695,7 @@ def plot(dsList, targets=None, **plotArgs):
     res = []
     
     if not targets:
-        targets = genericsettings.current_testbed.ppfigdim_target_values
+        targets = testbedsettings.current_testbed.ppfigdim_target_values
 
     plt.subplot(121)
     maxEvalsFactor = max(i.mMaxEvals() / i.dim for i in dsList)
@@ -821,7 +822,7 @@ def main(dsList, isStoringXMax = False, outputdir = '',
     # plt.rc("ytick", labelsize=20)
     # plt.rc("font", size=20)
     # plt.rc("legend", fontsize=20)
-    testbed = genericsettings.current_testbed
+    testbed = testbedsettings.current_testbed
     targets = testbed.pprldistr_target_values # convenience abbreviation
 
     for d, dictdim in dsList.dictByDim().iteritems():

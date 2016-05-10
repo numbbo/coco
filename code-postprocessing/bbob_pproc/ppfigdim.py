@@ -59,6 +59,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam, htmldesc, toolsdivers
+from . import testbedsettings
 
 xlim_max = None
 ynormalize_by_dimension = True  # not at all tested yet
@@ -113,7 +114,7 @@ def scaling_figure_caption():
         reaching the respective target. """ + (  # TODO: add here "(out of XYZ trials)"
         r"""The light thick line with
         diamonds indicates the respective best result from BBOB-2009 for
-        $\Df=10^{-8}$. """ if genericsettings.current_testbed.name !=
+        $\Df=10^{-8}$. """ if testbedsettings.current_testbed.name !=
         'bbob-biobj' else "") + """Horizontal lines mean linear scaling, slanted
         grid lines depict quadratic scaling.  
         """
@@ -133,10 +134,10 @@ def scaling_figure_caption():
         # r"Shown is the \aRT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \aRT\ of the GECCO-BBOB-2009 best algorithm " + 
         # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
 
-    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         figure_caption = scaling_figure_caption_fixed.replace('\\fopt', '\\hvref')
-    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
             figure_caption = scaling_figure_caption_rlbased
         else:
@@ -144,7 +145,7 @@ def scaling_figure_caption():
     else:
         warnings.warn("Current settings do not support ppfigdim caption.")
 
-    values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
+    values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
     figure_caption = figure_caption.replace('values_of_interest',
                                           ', '.join(values_of_interest.labels()))
     return figure_caption
@@ -171,7 +172,7 @@ def beautify(axesLabel=True):
     # axisHandle.xaxis.grid(True, linewidth=0, which='major')
     ymin, ymax = plt.ylim()
 
-    values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
+    values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
 
     # horizontal grid
     if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
@@ -357,7 +358,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
 
     """
     if not valuesOfInterest:
-        valuesOfInterest = genericsettings.current_testbed.ppfigdim_target_values
+        valuesOfInterest = testbedsettings.current_testbed.ppfigdim_target_values
 
     valuesOfInterest = pproc.TargetValues.cast(valuesOfInterest)
     styles = list(reversed(styles[:len(valuesOfInterest)]))
@@ -500,7 +501,7 @@ def plot_previous_algorithms(func, target=None):  # lambda x: [1e-8]):
     last, most difficult target in ``target``."""
     
     if not target:
-        target = genericsettings.current_testbed.ppfigdim_target_values
+        target = testbedsettings.current_testbed.ppfigdim_target_values
         
     target = pproc.TargetValues.cast(target)
 
@@ -551,9 +552,9 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     dictFunc = dsList.dictByFunc()
     dictAlg = dsList.dictByAlg()
-    values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
+    values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
 
-    key = 'bbobppfigdimlegend' + genericsettings.current_testbed.scenario
+    key = 'bbobppfigdimlegend' + testbedsettings.current_testbed.scenario
     joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
     caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
 
@@ -600,7 +601,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         instanceText = '%d instances' % len(((dictFunc[func][0]).instancenumbers))
         plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, instanceText, fontsize=14)
   
-        if func in genericsettings.current_testbed.functions_with_legend:
+        if func in testbedsettings.current_testbed.functions_with_legend:
             toolsdivers.legend(loc="best")
         if func in funInfos.keys():
             # print(plt.rcParams['axes.titlesize'])

@@ -56,6 +56,7 @@ if __name__ == "__main__":
 
 from . import pproc
 from . import genericsettings, config
+from . import testbedsettings
 from . import pprldistr
 from . import htmldesc
 from .pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
@@ -301,7 +302,7 @@ def main(argv=None):
             i.algId = alg1name
 
         config.target_values(genericsettings.isExpensive)
-        config.config(dsList[0].isBiobjective())
+        config.config(dsList[0].testbed_name())
         
         ######################### Post-processing #############################
         if genericsettings.isFig or genericsettings.isRLDistr or genericsettings.isTab or genericsettings.isScatter:
@@ -393,7 +394,7 @@ def main(argv=None):
                     # ECDF for all functions altogether
                     try:
                         pprldistr2.main(dictDim0[dim], dictDim1[dim], dim,
-                                        genericsettings.current_testbed.rldValsOfInterest,
+                                        testbedsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
                                         '%02dD_all' % dim,
                                         genericsettings.verbose)
@@ -408,7 +409,7 @@ def main(argv=None):
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr2.main(dictFG1[fGroup], dictFG0[fGroup], dim,
-                                        genericsettings.current_testbed.rldValsOfInterest,
+                                        testbedsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
                                         '%02dD_%s' % (dim, fGroup),
                                         genericsettings.verbose)
@@ -419,7 +420,7 @@ def main(argv=None):
 
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr2.main(dictFN1[fGroup], dictFN0[fGroup], dim,
-                                        genericsettings.current_testbed.rldValsOfInterest,
+                                        testbedsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
                                         '%02dD_%s' % (dim, fGroup),
                                         genericsettings.verbose)
@@ -441,7 +442,7 @@ def main(argv=None):
                 if dim in inset.rldDimsOfInterest:
                     try:
                         pprldistr.comp(dictDim1[dim], dictDim0[dim],
-                                       genericsettings.current_testbed.rldValsOfInterest, # TODO: let rldVals... possibly be RL-based targets
+                                       testbedsettings.current_testbed.rldValsOfInterest, # TODO: let rldVals... possibly be RL-based targets
                                        True,
                                        outputdir, 'all', genericsettings.verbose)
                     except KeyError:
@@ -455,7 +456,7 @@ def main(argv=None):
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr.comp(dictFG1[fGroup], dictFG0[fGroup],
-                                       genericsettings.current_testbed.rldValsOfInterest, True,
+                                       testbedsettings.current_testbed.rldValsOfInterest, True,
                                        outputdir,
                                        '%s' % fGroup, genericsettings.verbose)
 
@@ -464,7 +465,7 @@ def main(argv=None):
                     dictFN1 = dictDim1[dim].dictByNoise()
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr.comp(dictFN1[fGroup], dictFN0[fGroup],
-                                       genericsettings.current_testbed.rldValsOfInterest, True,
+                                       testbedsettings.current_testbed.rldValsOfInterest, True,
                                        outputdir,
                                        '%s' % fGroup, genericsettings.verbose)
 
@@ -560,7 +561,7 @@ def main(argv=None):
                          '}'
                         ])
                         
-            key =  '##bbobpptablestwolegend%s##' % (genericsettings.current_testbed.scenario)
+            key =  '##bbobpptablestwolegend%s##' % (testbedsettings.current_testbed.scenario)
             replace_in_file(htmlFileName, '##bbobpptablestwolegend##', htmldesc.getValue(key))
                         
             replace_in_file(htmlFileName, 'algorithmAshort', algName0[0:3])
