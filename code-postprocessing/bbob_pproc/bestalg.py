@@ -9,8 +9,8 @@
     to access best algorithm data set.
 
     The best algorithm data set can be accessed by the
-    :py:data:`bestalgentries2009` variable. This variable needs to be
-    initialized by executing functions :py:func:`loadBBOB2009()`
+    :py:data:`bestAlgorithmEntries` variable. This variable needs to be
+    initialized by executing functions :py:func:`load_best_algorithm()`
 
     This module can also be used generate the best algorithm data set
     with its generate method.
@@ -32,11 +32,6 @@ from .ppfig import Usage
 from . import toolsstats, testbedsettings
 
 bestAlgorithmEntries = {}
-bestalgentries2009 = {}
-bestalgentries2010 = {}
-bestalgentries2012 = {}
-bestalgentriesever = {}
-bestbiobjalgentries2016 = {}
 
 algs2009 = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
 "BIPOP-CMA-ES", "CMA-ESPLUSSEL", "DASA", "DE-PSO", "DIRECT", "EDA-PSO",
@@ -370,155 +365,6 @@ def load_best_algorithm(force=False):
     print_done()
 
     return bestAlgorithmEntries
-
-
-def loadBBOB2009(force=False):
-    """Assigns :py:data:`bestalgentries2009`.
-
-    This function is needed to set the global variable
-    :py:data:`bestalgentries2009`. It unpickles file 
-    :file:`bestalgentries2009.pickle.gz`
-
-    :py:data:`bestalgentries2009` is a dictionary accessed by providing
-    a tuple :py:data:`(dimension, function)`. This returns an instance
-    of :py:class:`BestAlgSet`.
-    The data is that of algorithms submitted to BBOB 2009, the list of
-    which can be found in variable :py:data:`algs2009`.
-
-    """
-    global bestalgentries2009
-    # global statement necessary to change the variable bestalg.bestalgentries2009
-
-    if not force and bestalgentries2009:
-        return
-    
-    print "Loading best algorithm data from BBOB-2009...",
-    sys.stdout.flush()
- 
-    bestalgfilepath = os.path.split(__file__)[0]
-    #    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle')
-    #    cocofy(picklefilename)
-    #    fid = open(picklefilename, 'r')
-
-    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle.gz')
-    fid = gzip.open(picklefilename, 'r')
-    try:
-        bestalgentries2009 = pickle.load(fid)
-    except:
-        warnings.warn("no best algorithm loaded")
-        # raise  # outcomment to diagnose
-        bestalgentries2009 = None
-    fid.close()
-    print_done()
-
-def loadBBOB2010():
-    """Assigns :py:data:`bestalgentries2010`.
-
-    This function is needed to set the global variable
-    :py:data:`bestalgentries2010`. It unpickles file 
-    :file:`bestalgentries2010.pickle.gz`
-
-    :py:data:`bestalgentries2010` is a dictionary accessed by providing
-    a tuple :py:data:`(dimension, function)`. This returns an instance
-    of :py:class:`BestAlgSet`.
-    The data is that of algorithms submitted to BBOB 20&0, the list of
-    which can be found in variable :py:data:`algs2010`.
-
-    """
-    global bestalgentries2010
-    # global statement necessary to change the variable bestalg.bestalgentries2010
-
-    print "Loading best algorithm data from BBOB-2010...",  
-    bestalgfilepath = os.path.split(__file__)[0]
-    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2010.pickle.gz')
-    #    cocofy(picklefilename)
-    fid = gzip.open(picklefilename, 'r')
-    bestalgentries2010 = pickle.load(fid)
-    fid.close()
-    print " done."
-
-def loadBBOB2012():
-    """Assigns :py:data:`bestalgentries2012`.
-
-    This function is needed to set the global variable
-    :py:data:`bestalgentries2012`. It unpickles file 
-    :file:`bestalgentries2012.pickle.gz`
-
-    :py:data:`bestalgentries2012` is a dictionary accessed by providing
-    a tuple :py:data:`(dimension, function)`. This returns an instance
-    of :py:class:`BestAlgSet`.
-    The data is that of algorithms submitted to BBOB 20&0, the list of
-    which can be found in variable :py:data:`algs2012`.
-
-    """
-    global bestalgentries2012
-    # global statement necessary to change the variable bestalg.bestalgentries2012
-
-    print "Loading best algorithm data from BBOB-2012...",  
-    bestalgfilepath = os.path.split(__file__)[0]
-    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2012.pickle.gz')
-    #    cocofy(picklefilename)
-    fid = gzip.open(picklefilename, 'r')
-    bestalgentries2012 = pickle.load(fid)
-    fid.close()
-    print " done."
-
-def loadBBOBever():
-    """Assigns :py:data:`bestalgentriesever`.
-
-    This function is needed to set the global variable
-    :py:data:`bestalgentriesever`. It unpickles file 
-    :file:`bestalgentriesever.pickle.gz`
-
-    :py:data:`bestalgentriesever` is a dictionary accessed by providing
-    a tuple :py:data:`(dimension, function)`. This returns an instance
-    of :py:class:`BestAlgSet`.
-    The data is that of algorithms submitted to BBOB 2009 and 2010, the
-    list of which is the union in variables :py:data:`algs2009`
-    and :py:data:`algs2010`.
-
-    """
-    global bestalgentriesever
-    # global statement necessary to change the variable bestalg.bestalgentriesever
-
-    print "Loading best algorithm data from BBOB...",  
-    bestalgfilepath = os.path.split(__file__)[0]
-    picklefilename = os.path.join(bestalgfilepath, 'bestalgentriesever.pickle.gz')
-    #    cocofy(picklefilename)
-    fid = gzip.open(picklefilename, 'r')
-    bestalgentriesever = pickle.load(fid)
-    fid.close()
-    print " done."
-
-def loadBestBiobj2016():
-    """Assigns :py:data:`bestbiobjalgentries2016`.
-
-    This function is needed to set the global variable
-    :py:data:`bestbiobjalgentries2016`. It unpickles file 
-    :file:`bestbiobjalgentries2016.pickle.gz`
-
-    :py:data:`bestbiobjalgentries2016` is a dictionary accessed by providing
-    a tuple :py:data:`(dimension, function)`. This returns an instance
-    of :py:class:`BestAlgSet`.
-
-    """
-    global bestbiobjalgentries2016
-    # global statement necessary to change the variable bestalg.bestbiobjalgentries2016
-
-    if bestbiobjalgentries2016:
-        return
-
-    print "Loading best bi-objective algorithm data from BBOB-2016...",  
-    sys.stdout.flush()
-
-    bestalgfilepath = os.path.split(__file__)[0]
-    #picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle.gz')
-    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle')
-    #fid = gzip.open(picklefilename, 'r')
-    fid = open(picklefilename, 'r')
-    bestbiobjalgentries2016 = pickle.load(fid)
-    fid.close()
-    print_done()
 
 
 def usage():

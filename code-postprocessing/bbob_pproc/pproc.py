@@ -246,7 +246,7 @@ class RunlengthBasedTargetValues(TargetValues):
             defines "how much more difficult".
 
         TODO: check use case where ``reference_data`` is a dictionary similar
-        to ``bestalg.bestalgentries2009`` with each key dim_fun a reference
+        to ``bestalg.bestAlgorithmEntries`` with each key dim_fun a reference
         DataSet, computed by bestalg module or portfolio module.
 
             dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
