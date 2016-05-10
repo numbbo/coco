@@ -2,7 +2,8 @@
 """In effect, this script moves ``\\tableofcontents`` behind the abstract, 
 removes the blank from `` \\footnote``, and calls ``pdflatex`` 4 times. 
 
-The file to work upon is the first input argument. 
+The file to work upon is the first input argument. The optional second
+argument is the pdf-file where the output should be copied to. 
 
 Details: First, all ``\\tableofcontents`` are incommented, second, a 
 ``\\tableofcontents`` command is written directly behind ``\\end{abstract}``, 
@@ -112,12 +113,12 @@ if __name__ == "__main__":
                                         #env=os.environ, 
                                         #universal_newlines=True)
                 # print(output)
-                if not i and len(sys.argv) > 2:
+                if len(sys.argv) > 2 and i in (0, 2):
                     try:
                         os.system('cp ' + filename[:-4] + '.pdf ' + 
                             os.path.join(oldwd, sys.argv[2]))
                     except:
-                        print('ERROR with cp ', file[:-4] + '.pdf', 
+                        print('ERROR with cp ', filename[:-4] + '.pdf ' + 
                             os.path.join(oldwd, sys.argv[2]))
                             
         except CalledProcessError as e:
