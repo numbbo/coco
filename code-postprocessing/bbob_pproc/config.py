@@ -102,7 +102,12 @@ def config(testbed_name=None):
             testbed.ppscatter_target_values = pproc.RunlengthBasedTargetValues(np.logspace(np.log10(0.5), np.log10(50), 8))
 
             # pptable:
-            testbed.pptable_targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
+            testbed.pptable_targetsOfInterest = pproc.RunlengthBasedTargetValues(testbed.pptable_target_runlengths, 
+                                                reference_data = reference_data,
+                                                force_different_targets_factor=10**-0.2)
+                                                
+            # pptables:
+            testbed.pptables_targetsOfInterest = pproc.RunlengthBasedTargetValues(testbed.pptables_target_runlengths, 
                                                 reference_data = reference_data,
                                                 force_different_targets_factor=10**-0.2)
             # ppfigs
@@ -132,9 +137,9 @@ def config(testbed_name=None):
                                                                       force_different_targets_factor=10**-0.2)
         
         # pptables (for rungenericmany):
-        pptables.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
-                                                                      reference_data = reference_data,
-                                                                      force_different_targets_factor=10**-0.2)
+        #pptables.targetsOfInterest = pproc.RunlengthBasedTargetValues(genericsettings.target_runlengths_in_table, 
+        #                                                              reference_data = reference_data,
+        #                                                              force_different_targets_factor=10**-0.2)
 
         ppscatter.markersize = 16
 

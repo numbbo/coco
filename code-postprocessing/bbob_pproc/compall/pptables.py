@@ -394,6 +394,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                           % (2 * len(targetsOfInterest) + 2, header)])
             extraeol.append('')
 
+        curlineHtml = []
         if function_targets_line is True or (function_targets_line and df[1] in function_targets_line):
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 curline = [r'\#FEs/D']
@@ -405,7 +406,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     counter += 1
             else:
                 if (testbed.name == testbedsettings.testbed_name_bi):
-                    curline = [r'$\Delta HV_\mathrm{ref}$']
+                    curline = [r'$\Df$']
                     curlineHtml = ['<thead>\n<tr>\n<th>&#916; HV<sub>ref</sub><br>REPLACEH</th>\n']
                 else:
                     curline = [r'$\Delta f_\mathrm{opt}$']
@@ -418,16 +419,21 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     counter += 1
 #                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
 #                            % writeFEvals2(targetsOfInterest[-1], precision=1, isscientific=True))
-            curline.append(r'\multicolumn{2}{|@{}l@{}}{\#succ}')
+            if (testbed.name == testbedsettings.testbed_name_bi):
+                curline.append(r'\multicolumn{2}{|@{}l@{}}{\begin{rotate}{30}\#succ\end{rotate}}')
+            else:
+                curline.append(r'\multicolumn{2}{|@{}l@{}}{\#succ}')
             curlineHtml.append('<td>#succ<br>REPLACEF</td>\n</tr>\n</thead>\n')
             table.append(curline)
-            
+        
         extraeol.append(r'\hline')
 #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
 
         curline = [r'\aRT{}$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
         replaceValue = '\aRT{}<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
+        
+        
         if bestalgentries:
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
