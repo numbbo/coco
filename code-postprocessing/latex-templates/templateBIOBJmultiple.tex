@@ -79,8 +79,6 @@
 \input{\bbobdatapath bbob_pproc_commands.tex}
 \graphicspath{{\bbobdatapath}}
 
-\IfFileExists{\bbobdatapath ppfig2_f001.pdf}{2 algorithms currently not supported}{}
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -119,6 +117,7 @@
 
 \begin{document}
 
+\IfFileExists{\bbobdatapath ppfig2_f001.pdf}{2 algorithms currently not supported}{}
 
 %
 % --- Author Metadata here ---
@@ -255,18 +254,18 @@ to be written
 \section{CPU Timing}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % note that the following text is just a proposal and can/should be changed to your needs:
-In order to evaluate the CPU timing of the algorithm, we have run the \change{MY-ALGORITHM-NAME} on the  \change{bbob test suite \cite{hansen2009fun}} with restarts for a maximum budget equal to \change{$400 (D + 2)$} function evaluations. The code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores. The time per function evaluation for dimensions 2, 3, 5, 10, 20\change{, 40} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
+In order to evaluate the CPU timing of the algorithm, we have run the \change{\algname} with restarts on the entire bbob-biobj test suite \cite{biobj2016func} for $2 D$ function evaluations. The \change{C/Java/Matlab/Octave/Python} code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores. The time per function evaluation for dimensions 2, 3, 5, 10, 20\change{, 40} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
 
 \change{repeat the above for any algorithm tested}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Results from experiments according to \cite{hansen2016exp} and \cite{hansen2016perfass} on the
-benchmark functions given in \cite{wp200901_2010,hansen2012fun} are
-presented in Figures~\ref{ECDFsingleOne}, \ref{ECDFsingleTwo}, \ref{fig:ECDFs05D} and
+Results from experiments according to \cite{hansen2016exp},
+\cite{hansen2016perfass} and \cite{biobj2016perfass} on the benchmark
+functions given in \cite{biobj2016func} are presented in
+Figures~\ref{ECDFsingleOne}, \ref{ECDFsingleTwo}, \ref{fig:ECDFs05D} and
 \ref{fig:ECDFs20D} and in Tables~\ref{tab:ERTs5} and~\ref{tab:ERTs20}.
 The experiments were performed with COCO \cite{hansen2016cocoplat}, version
 \change{1.0.1}, the plots were produced with version \change{1.1.1}.
