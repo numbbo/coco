@@ -130,7 +130,7 @@ Terminology and Definitions
 .. It will be nice to have an online glossary at some point that will help keeping things
    consistent.
    
-In the COCO_ framework in general, a problem, or problem instance triplet, |p3|, is defined by the search space dimension |n|, the objective function |f|, to be minimized, and its instance parameters |thetai| for instance |i|.
+In the COCO_ framework in general, a **problem**, or problem instance triplet, |p3|, is defined by the search space dimension |n|, the objective function |f|, to be minimized, and its instance parameters |thetai| for instance |i|.
 More concisely, we consider a set of parametrized benchmark functions
 :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m, \theta \in \Theta` and the corresponding problems :math:`p^3 = p(n, f_\theta, \theta_i)`. 
 Different instances vary by having different shifted optima, can use different rotations that are applied to the variables, have different optimal |f|-values, etc. [HAN2009fun]_.  
@@ -200,7 +200,7 @@ This hold also true for a speed up from parallelization.
 
 .. __: https://en.wikipedia.org/wiki/Level_of_measurement?oldid=478392481
 
-.. [#] The transformation :math:`x\mapsto\log(1-x)` could alleviate the problem
+.. [#] A transformation like :math:`x\mapsto\log(1-x)` could alleviate the problem
    in this case, given it actually zooms in on relevant values.
 
 
@@ -222,11 +222,11 @@ In the single-objective noiseless case, the quality indicator outputs
 the best so far observed (i.e. minimal and feasible) function value. 
 
 In the single-objective noisy case, the quality indicator returns the 1%-tile of
-the function values of the last :math:`\lceil\ln(t + 3)^2 / 2\rceil)` evaluated
+the function values of the last :math:`\lceil\ln(t + 3)^2 / 2\rceil` evaluated
 (or recommended) solutions. [#]_
 
 In the multi-objective case, the quality indicator is based on a negative
-hypervolume indicator of the set of evaluated solutions (the archive)
+hypervolume indicator of the set of evaluated solutions (more specifically, the the non-dominated archive)
 [BRO2016]_, while other well- or lesser-known multi-objective quality indicators
 are possible.
 
@@ -240,16 +240,16 @@ Starting from the most basic convergence graphs which plot the evolution of a
 quality indicator, to be minimized, against the number of function evaluations,
 there are essentially only two ways to measure the performance.
 
-**fixed-budget approach**
+fixed-budget approach:
     We fix a maximal budget of function evaluations,
     and measure the reached quality indicator value. A fixed search
-    budget can be pictured as drawing a *vertical* line on the convergence
-    graphs (blue line in Figure :ref:`fig:HorizontalvsVertical`).
+    budget can be pictured as drawing a *vertical* line in the figure 
+    (blue line in Figure :ref:`fig:HorizontalvsVertical`).
 
-**fixed-target approach**
+fixed-target approach:
     We fix a target quality value and measure the number of function
     evaluations, the *runtime*, to reach this target. A fixed target can be
-    pictured as drawing a *horizontal* line in the convergence graphs (red line in Figure
+    pictured as drawing a *horizontal* line in the figure (red line in Figure
     :ref:`fig:HorizontalvsVertical`).
 
 
@@ -275,7 +275,7 @@ there are essentially only two ways to measure the performance.
 
 For the performance assessment of algorithms, the fixed-target approach is superior
 to the fixed-budget approach since it gives *quantitative and interpretable*
-data.
+results.
 
 * The fixed-budget approach (vertical cut) does not give *quantitatively
   interpretable*  data:
@@ -303,10 +303,10 @@ invariant under these transformations if the target values are transformed accor
 
 Missing Values
 ---------------
-Investigating Figure :ref:`fig:HorizontalvsVertical` more carefully, we find that not all graphs intersect with either the vertical or the horizontal line. 
+Investigating the Figure :ref:`fig:HorizontalvsVertical` more carefully, we find that not all graphs intersect with either the vertical or the horizontal line. 
 On the one hand, if the fixed budget is too large, the algorithm might solve the function before the budget is exceeded. [#]_ 
 The algorithm performs better than the measurement is able to reflect, which can lead to a serious misinterpretations. 
-The remedy is to define a \emph{final} target value and measure the runtime if the final target is hit. [#]_
+The remedy is to define a *final* target value and measure the runtime if the final target is hit. [#]_
 
 On the other hand, if the fixed target is too difficult, the algorithm may never hit the target under the given experimental conditions. [#]_ 
 The algorithm performs worse than the experiment is able to reflect, while we still get a lower bound for this missing runtime instance. 
@@ -343,7 +343,7 @@ independent of the instance |thetai|, we define a target value
 
 .. math::
 
-    I^{\rm target,\theta_i} = I^{\rm ref,\theta_i} + \Delta I \enspace,
+    I^{\rm target,\theta_i} = I^{\rm ref,\theta_i} + \Delta I \enspace
 
 for each precision |DI|, giving rise to the product set of all problems :math:`p^3` and all |DI|-values. 
 
@@ -375,14 +375,14 @@ Like this, an algorithm that reaches a target within the associated budget is be
  
 Runlength-based targets are used in COCO_ for the single-objective expensive optimization scenario. 
 The artificial best algorithm of BBOB-2009 (see below) is used as reference algorithm with either the five budgets of :math:`0.5n`, :math:`1.2n`, :math:`3n`, :math:`10n`, and :math:`50n` function evaluations, where :math:`n` is the problem
-dimension, or with 31 targets evenly space on the log scale between :math:`0.5n` and :math:`50n` and without the optional constraint from (ii) above. In the latter case, the empirical distribution function of the runtimes of the reference algorithm shown in a `semilogx` plot approximately resembles a diagonal straight line between the above two values. 
+dimension, or with 31 targets evenly space on the log scale between :math:`0.5n` and :math:`50n` and without the optional constraint from (ii) above. In the latter case, the empirical distribution function of the runtimes of the reference algorithm shown in a `semilogx` plot approximately resembles a diagonal straight line between the above two reference budgets. 
 
 Runlength-based targets have the **advantage** to make the target value setting less
 dependent on the expertise of a human designer, because only the reference
 *budgets* have to be chosen a priori. Reference budgets, as runtimes, are
 intuitively meaningful quantities, on which it is comparatively easy to decide
 upon. 
-Runlength-based targets have the **disadvantage** to depend on the choice of a reference data set, that is, they depend on the performance of a set of reference algorithms. 
+Runlength-based targets have the **disadvantage** to depend on the choice of a reference data set, that is, they depend on a set of reference algorithms. 
 
 
 .. [#] By default, the ratio between two neighboring |DI| target precision values 
@@ -397,11 +397,10 @@ Runtime Computation
 
 .. In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtimes for different target values. 
 
-In the performance assessment context of COCO_, a problem instance can be defined by the quintuple of search space dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value, :math:`p^5 = p(n, f_\theta, \theta_i, I, I^{{\rm target}, \theta_i})`. [#]_
+In the performance assessment context of COCO_, a problem instance can be defined by the quintuple search space dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value, :math:`p^5 = p(n, f_\theta, \theta_i, I, I^{{\rm target}, \theta_i})`. [#]_
 For each benchmarked algorithm, a single runtime is measured on each problem instance.  
-From a single run of the algorithm on the problem instance triple defined by
-:math:`p^3 = p(n, f_\theta, \theta_i)`, we obtain a runtime measurement for each
-deduced problem quintuple |p5|, more specifically, one for each target value which has been reached in this run, or equivalently, for each target precision. 
+From a *single* run of the algorithm on the problem instance triple
+:math:`p^3 = p(n, f_\theta, \theta_i)`, we obtain a runtime measurement for *each* corresponding problem quintuple |p5|, more specifically, one for each target value which has been reached in this run, or equivalently, for each target precision. 
 This also reflects the anytime aspect of the performance evaluation in a single run. 
 
 Formally, the runtime :math:`\mathrm{RT}^{\rm s}(p)` is a random variable that represents the number of function evaluations needed to reach the quality indicator target value for the first time. 
@@ -540,9 +539,7 @@ ERT in [HAN2009ex]_, estimates the expected runtime of the restart
 algorithm given in :eq:`RTrestart`. Generally, the set of trials is 
 generated by varying |thetai| only. 
 
-Computation
------------
-We compute the |aRT| from a set of trials as the sum of all evaluations in unsuccessful trials plus the sum of the runtimes in successful trials, both divided by the number of successful trials. 
+We compute the |aRT| from a set of trials as the sum of all evaluations in unsuccessful trials plus the sum of the runtimes in all successful trials, both divided by the number of successful trials. 
 
 
 Motivation
@@ -598,7 +595,7 @@ Rationale and Limitations
 The average runtime, |aRT|, is taken over different instances of the same function, dimension, and target precision, as these instances are interpreted as repetitions. 
 Taking the average is meaningful only if each instance obeys a similar distribution without heavy tail. 
 If one instance is considerably harder than the others, the average is dominated by this instance. 
-For this reason we do not average runtimes from different functions or different target precisions, which however could be done if the logarithm is taken first. 
+For this reason we do not average runtimes from different functions or different target precisions, which however could be done if the logarithm is taken first (geometric average). 
 Plotting the |aRT| divided by dimension against dimension in a log-log plot is the recommended way to investigate the scaling behavior of an algorithm. 
 
 .. _sec:ECDF:
@@ -609,7 +606,7 @@ Empirical Distribution Functions
 We display a set of simulated runtimes with the empirical cumulative
 distribution function (ECDF), AKA empirical distribution function. 
 Informally, the ECDF displays the *proportion of problems solved within a
-specified budget*, where the budget is given on the x-axis. 
+specified budget*, where the budget is given on the |x|-axis. 
 More formally, an ECDF gives for each |x|-value the fraction of runtimes which do not exceed |x|, where missing runtime values are counted in the denominator of the fraction.
 
 Rationale, Interpretation and Limitations
@@ -623,12 +620,14 @@ They allow unconstrained aggregation, because each data point remains separately
 
 * The empirical distribution function can be read in two distinct ways.
 
-  - |x|-axis as independent variable: for any budget (|x|-value), 
+  |x|-axis as independent variable: 
+    for any budget (|x|-value), 
     we see the fraction of problems solved within the budget as |y|-value, where
     the limit value to the right is the fraction of solved problems with the maximal
     budget. 
-  - |y|-axis as independent variable: for any fraction of easiest problems
-    (|y|-value), we see the longest runtime to solve any of them on the
+  |y|-axis as independent variable: 
+    for any fraction of easiest problems
+    (|y|-value), we see the maximal runtime observed on these problems on the
     |x|-axis. When plotted in `semilogx`, a horizontal shift indicates a runtime
     difference by the respective factor, quantifiable, e.g., as "five times
     faster". The area below the |y|-value and to the left of the graph reflects
