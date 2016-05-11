@@ -266,11 +266,11 @@ Results from experiments according to \cite{hansen2016exp},
 \cite{hansen2016perfass} and \cite{biobj2016perfass} on the benchmark
 functions given in \cite{biobj2016func} are presented in
 Figures~\ref{ECDFsingleOne}, \ref{ECDFsingleTwo}, \ref{fig:ECDFs05D} and
-\ref{fig:ECDFs20D} and in Tables~\ref{tab:ERTs5} and~\ref{tab:ERTs20}.
+\ref{fig:ECDFs20D} and in Tables~\ref{tab:aRTs5} and~\ref{tab:aRTs20}.
 The experiments were performed with COCO \cite{hansen2016cocoplat}, version
 \change{1.0.1}, the plots were produced with version \change{1.1.1}.
 
-The \textbf{expected running time (ERT)}, used in the figures and tables,
+The \textbf{average runtime (aRT)}, used in the figures and tables,
 depends on a given quality indicator value, $\Itarget=\hvref+\DI$, and is
 computed over all relevant trials as the number of function
 evaluations executed during each trial while the best function value
@@ -448,7 +448,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Expected running time (ERT in number of function evaluations)
+% Average runtime (aRT in number of function evaluations)
 % for functions $f_1$--$f_{55}$ of the bbob-biobj suite for dimension 5.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -579,7 +579,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 
 \end{minipage}}
 
- \caption{\label{tab:ERTs5}
+ \caption{\label{tab:aRTs5}
  \bbobpptablesmanylegend{dimension $5$}{110} % Bonferroni correction: #dimensions * #functions
  }
 \end{table*}
@@ -589,7 +589,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Expected running time (ERT in number of function evaluations)
+% Average runtime (aRT in number of function evaluations)
 % for functions $f_1$--$f_{55}$ of the bbob-biobj suite for dimension 20.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -720,7 +720,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 
 \end{minipage}}
 
- \caption{\label{tab:ERTs20}
+ \caption{\label{tab:aRTs20}
  \bbobpptablesmanylegend{dimension $20$}{110} % Bonferroni correction: #dimensions * #functions
  }
 \end{table*}
