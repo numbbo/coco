@@ -63,7 +63,7 @@ CHAPTERTITLE
   
   \begin{abstract}
 
-We present an  any-time performance assessment for benchmarking numerical
+We present an any-time performance assessment for benchmarking numerical
 optimization algorithms in a black-box scenario, applied within the COCO_ benchmarking platform. 
 The performance assessment is based on *runtimes* measured in number of objective function evaluations to reach one or several quality indicator target values.
 We argue that runtime is the only available measure with a generic, meaningful, and quantitative interpretation.
@@ -80,25 +80,25 @@ Introduction
 
 .. budget-free
 
-This document presents the main ideas and concepts of the performance assessment
-when benchmarking numerical optimization algorithms in a black-box scenario within the COCO_ platform. Going beyond a simple ranking of algorithms, we aim
+We presents ideas and concepts for performance assessment when benchmarking numerical optimization algorithms in a black-box scenario. 
+Going beyond a simple ranking of algorithms, we aim
 to provide a *quantitative* and *meaningful* performance assessment, which
 allows for conclusions like *algorithm A is seven times faster than algorithm
 B* in solving a given problem or in solving problems with certain
 characteristics. 
-For this end, we record algorithm *runtimes*, measured in
-number of function evaluations to reach predefined target values during the
+For this end, we record algorithm *runtimes, measured in
+number of function evaluations* to reach predefined target values during the
 algorithm run.
 
-Runtimes represent the cost of the algorithm. Apart from a short, exploratory
+Runtimes represent the cost of optimization. Apart from a short, exploratory
 experiment [#]_, we do not measure the algorithm cost in CPU or wall-clock time.
 See for example [HOO1995]_ for a discussion on shortcomings and
 unfortunate consequences of benchmarking based on CPU time.
 
-We display average runtimes (aRT, see Section `Averaging Runtime`_)
+In the COCO_ platform [HAN2016co]_, we display average runtimes (aRT, see Section `Averaging Runtime`_)
 and the empirical distribution function of runtimes (ECDF, see Section `Empirical Distribution Functions`_). 
 When displaying runtime distributions, we consider the aggregation over 
-target values and over subclasses of problems or all problems. 
+target values and over subclasses of problems, or all problems. 
 
 
 .. We do not aggregate over dimension, because the dimension of the problem can be used to decide a priori which algorithm (or algorithm variant, or parameter setting) to use.
@@ -127,41 +127,31 @@ Terminology and Definitions
    consistent.
 
    
-We introduce a few terms and definitions that are used in the rest of the document.
-
    
-*problem, function, indicator*
- In the COCO_ framework, a problem instance is defined as a triple  ``(dimension,
- function, instance)``. 
- In this terminology a ``function``, to be minimized, is parametrized by its input ``dimension`` and its ``instance`` parameters.
+In the COCO_ framework, a problem or problem instance is defined as a triple  ``(dimension,
+function, instance)``. A function |f|, to be minimized, is
+parametrized by its input dimension |n| and its instance parameters |thetai|.
  
- More precisely, we consider a set of parametrized benchmark functions
- :math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m, `\theta \in \Theta`.
- A COCO_ problem derived from function |ftheta| corresponds to :math:`p = (n,
- f_\theta, \theta_i)` where :math:`n \in \mathbb{N}` is the dimension of the
- search space, and :math:`\theta_i` is the set of parameters associated to the
- ``instance`` |i|. 
- The separation of dimension and instance parameters is of entirely semantic
- nature, however meaningful because we always aggregate over all |thetai|-values while we never aggregate over dimension. 
+More precisely, we consider a set of parametrized benchmark functions
+:math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m, \theta \in \Theta`.
+A COCO_ problem is derived from function |ftheta| and corresponds to :math:`p = (n,
+f_\theta, \theta_i)` where :math:`\theta_i` is the set of parameters associated
+to the instance |i|. 
+Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables,... [HAN2009fun]_.  
+The instance notion is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
+The separation of dimension and instance parameters in the notation is
+of entirely semantic nature, however meaningful because we always aggregate over
+all |thetai|-values while we never aggregate over dimension. 
 
- .. Given a dimension
-
-   :math:`n` and two different instances :math:`\theta_1` and :math:`\theta_2` of
-   the same parametrized family :math:`f_{\theta}`, optimizing the associated
-   problems means optimizing :math:`f_{\theta_1}(\mathbf{x})` and
-   :math:`f_{\theta_2}(\mathbf{x})` for :math:`\mathbf{x} \in \mathbb{R}^n`.
+In the performance assessment setting, we associate to a problem instance
+:math:`p` a quality indicator and a target value, such that a problem becomes a
+quintuple ``(dimension, function, instance, quality indicator, target)``.
+Usually, the quality indicator remains the same for all problems, while we have
+sets of problems which only differ in their target value. The first time the
+quality indicator drops below the target is considered the runtime to solve the
+problem. The quality indicator target value depends in general on the problem
+instance :math:`\theta_i`. 
  
- In the performance assessment setting, we associate to a problem 
- instance :math:`p` a quality indicator and a target value, 
- such that a problem becomes a quintuple ``(dimension, function, instance, quality indicator, target)``. 
- Usually, the quality indicator remains the same for all problems, while we have sets of
- problems which only differ in their target value. 
- The first time the quality indicator drops below the target is considered the runtime to solve the problem. 
- The quality indicator target value depends in general on the problem instance :math:`\theta_i`. 
- 
-*instance*
- Our test functions are parametrized such that different *instances* of the same function are available. Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables, ...  The notion of instance is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
-
  
  ..  We often **interpret different runs performed on different instances**
  .. of the same parametrized function in a given dimension as **independent
@@ -175,12 +165,6 @@ We introduce a few terms and definitions that are used in the rest of the docume
 
  .. Tea: I'm not sure that our use of instances belongs under the definition of instances.
     I think this (important!) issue should be explained in more detail later, not here.
-
-*runtime*
-  We define *runtime*, or *run-length* [HOO1998]_
-  as the *number of evaluations*, also referred to as *function* evaluations,
-  conducted on a given problem until a given quality indicator target value is reached.
-  Runtime is our central performance measure.
 
 
 On Performance Measures
@@ -197,7 +181,7 @@ A performance measure in general should be
   interval or ordinal scale) [STE1946]_, which allows to state that "entrant A
   is :math:`x` times better than entrant B". [#]_ 
 * assuming a wide variation of values, for example, typical values should 
-  not only be ranging between 0.98 and 1.0 [#]_,
+  not only be ranging between 0.98 and 1.0, [#]_
 * interpretable, in particular by having a meaning and semantics attached to 
   the measured numbers,
 * relevant and meaningful with respect to the "real world",
@@ -237,7 +221,7 @@ At each evaluation count (time step) |t| of an algorithm which optimizes a probl
 A quality indicator |I| maps the set of all solutions evaluated 
 so far (or recommended [HAN2016ex]_) to a problem-dependent real value.
 Then, a runtime measurement is obtained from each of a (large) set of problem
-instances, defined as the quintuple :math:`p=(n, f_\theta, \theta_i, I,
+instances, each defined as the quintuple :math:`p=(n, f_\theta, \theta_i, I,
 I^\mathrm{target, \theta_i}_{f})`. 
 The runtime on this problem instance is defined as the evaluation count 
 when the quality indicator hits the target for the first time, otherwise runtime remains undefined. 
@@ -590,10 +574,10 @@ The expected runtime of the restart algorithm writes [AUG2005]_
 
 where |ps| is the probability of success of the algorithm and notations from above are used.
 
-Given a finite number of realizations of trials of
-an algorithm that comprise at least one successful run, say
-:math:`\{\mathrm{RT}^{\rm us}_i, \mathrm{RT}^{\rm s}_j \}`,  
-the average runtime reads
+.. |RTsi| replace:: :math:`\mathrm{RT}^{\rm s}_i`
+.. |RTusj| replace:: :math:`\mathrm{RT}^{\rm us}_j`
+
+Given a data set with :math:`n_\mathrm{s}\ge1` successful runs with runtimes |RTsi| and :math:`n_\mathrm{us}` unsuccessful runs with |RTusj| evaluations, the average runtime reads
 
 .. math::
     :nowrap:
@@ -617,8 +601,7 @@ the average runtime reads
 .. |Tus| replace:: :math:`\mathrm{RT}_\mathrm{US}`
 .. |ps| replace:: :math:`p_{\mathrm{s}}`
 
-where |nbsucc| and :math:`n_\mathrm{us}` denote the number of successful and
-unsuccessful trials, |ps| is the fraction of successful trials, :math:`0/0` is
+where |ps| is the fraction of successful trials, :math:`0/0` is
 understood as zero and :math:`\#\mathrm{FEs}` is the number of function
 evaluations conducted in all trials before to reach the given target precision.
 
@@ -646,23 +629,27 @@ Rationale, Interpretation and Limitations
 Empirical cumulative distribution functions are a universal way to display *unlabeled* data in a condensed way without losing information. 
 They allow unconstrained aggregation, because each data point remains separately displayed, and they remain entirely meaningful under transformation of the data (e.g. taking the logarithm). 
 
-* Displaying the cumulative distribution function on a set of problems from a single function instance, where only the target value varies, recovers an upside-down convergence graph with the resolution steps defined by the targets [HAN2010]_.
+* The cumulative distribution function from a set of problems where only the target value varies, recovers an upside-down convergence graph with the resolution steps defined by the targets [HAN2010]_.
 
-* When runs from several instances are aggregated, the association to the single run is lost, as is the association to the function when aggregating over several functions. This is particularly problematic for data in different dimensions, because dimension can be used as decision parameter for algorithm selection. Therefore, we do not aggregate over dimension. 
+* When runs from several instances are aggregated, the association to the single run is lost, as is the association to the function when aggregating over several functions. This is particularly problematic for data from different dimensions, because dimension can be used as decision parameter for algorithm selection. Therefore, we do not aggregate over dimension. 
 
-* The empirical distribution function can be read with the x- or the y-axis as independent variable.
+* The empirical distribution function can be read in two distinct ways.
 
- - x-axis: for any given budget (x-value), 
-   we read the fraction of problems solved within the budget as y-value, where
-   the right limit value is the fraction of solved problems with the maximal budget. 
- - y-axis: for any given fraction of easiest problems (y-value), 
-   we see the longest runtime to solve any of them. 
-   When plotted in `semilogx`, a horizontal shift indicates a runtime difference by the respective factor, quantifiable, e.g., as "five times faster". The area below the y-value and to the left of the graph reflects the  runtime geometric average, the smaller the better. 
+ - x-axis as independent variable: for any budget (x-value), 
+   we see the fraction of problems solved within the budget as y-value, where
+   the right limit value is the fraction of solved problems with the maximal
+   budget. 
+ - y-axis as independent variable: for any fraction of easiest problems
+   (y-value), we see the longest runtime to solve any of them on the x-axis.
+   When plotted in `semilogx`, a horizontal shift indicates a runtime difference
+   by the respective factor, quantifiable, e.g., as "five times faster". The
+   area below the y-value and to the left of the graph reflects the  runtime
+   geometric average, the smaller the better. 
 
 Relation to Previous Work
 --------------------------
 Empirical distribution functions over runtimes of optimization algorithms are also known as *data profiles* [MOR2009]_. 
-They are widely used for aggregating results from different functions and different dimensions to reach a single fixed target precision [RIO2012]_. 
+They are widely used for aggregating results from different functions and different dimensions to reach a single target precision [RIO2012]_. 
 In the COCO_ framework, we do not aggregation over dimension but aggregate often over a wide range of target precision values. 
 
 .. 
@@ -715,12 +702,12 @@ Runtimes to the right of the cross at :math:`10^6` have at least one unsuccessfu
 This can be concluded, because with pure random search each unsuccessful run exploits the maximum budget.
 The small dot beyond :math:`x=10^7` depicts the overall fraction of all successfully solved functions-target pairs, i.e., the fraction of :math:`(f_\theta, \Delta I)` pairs for which at least one trial (one :math:`\theta_i` instantiation) was successful. 
 
-Next, we aggregate **over several functions**. 
 We usually divide the set of all (parametrized) benchmark
 functions into subgroups sharing similar properties (for instance
 separability, unimodality, ...) and display ECDFs which aggregate the
 problems induced by these functions and all targets. 
-See Figure :ref:`fig:ecdfgroup`.
+Figure :ref:`fig:ecdfgroup` shows the result of random search on the first 
+five functions of the `bbob` testsuite, separate (left) and aggregated (right).
 
 .. _fig:ecdfgroup:
 
@@ -753,8 +740,7 @@ a single plot.
    ECDF of several algorithms benchmarked during the BBOB 2009 workshop
    in dimension 5 (left) and in dimension 20 (right) when aggregating over all functions of the ``bbob`` suite.
 
-We note a thick maroon line with diamond markers annotated as "best 2009". 
-This graph corresponds to the **artificial best 2009 algorithm**: for
+The thick maroon line with diamond markers annotated as "best 2009" corresponds to the **artificial best 2009 algorithm**: for
 each set of problems with the same function, dimension and target precision, we select the algorithm with the smallest |aRT| from the `BBOB-2009 workshop`__ and use for these problems the data from the selected algorithm. 
 The algorithm is artificial because we may use even for different target values the runtime results from different algorithms. [#]_
 
@@ -766,7 +752,7 @@ We observe that the artificial best 2009 algorithm is about two to three time fa
        left envelope of the ECDF of all algorithms from which it is
        constructed, that is, the ECDF of an algorithm from BBOB-2009 can
        cross the best 2009 curve. This may typically happen if an algorithm
-       has for an easy target many very short and few very
+       has for an easy target many short and few very
        long runtimes such that its aRT is not the best but the short runtimes
        show up to the left of the best 2009 graph.
 
@@ -824,16 +810,22 @@ __ http://arxiv.org/abs/1605.01746
    `Research Report RR-6828`__, Inria.
 .. __: http://hal.inria.fr/inria-00362649/en
 
-.. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
-   Real-parameter black-box optimization benchmarking 2009: Noiseless
-   functions definitions. `Research Report RR-6829`__, Inria, updated
-   February 2010.
-__ https://hal.inria.fr/inria-00362633
+.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff (2016).
+   `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
+   Setting`__. *ArXiv e-prints*, `arXiv:1603:08785`__.
+__ http://numbbo.github.io/coco-doc/
+__ http://arxiv.org/abs/1603.08785
 
 .. [HAN2010] N. Hansen, A. Auger, R. Ros, S. Finck, and P. Posik (2010). 
    Comparing Results of 31 Algorithms from the Black-Box Optimization 
    Benchmarking BBOB-2009. Workshop Proceedings of the GECCO Genetic and 
    Evolutionary Computation Conference 2010, ACM, pp. 1689-1696
+
+.. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
+   Real-parameter black-box optimization benchmarking 2009: Noiseless
+   functions definitions. `Research Report RR-6829`__, Inria, updated
+   February 2010.
+__ https://hal.inria.fr/inria-00362633
 
 .. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
   `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__. 
