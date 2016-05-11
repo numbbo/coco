@@ -27,6 +27,7 @@ import warnings
 import numpy as np
 import matplotlib.pyplot as plt
 from . import genericsettings, bestalg, toolsstats, pproc
+from . import testbedsettings
 from .pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec
 from .toolsstats import significancetest
 
@@ -49,7 +50,7 @@ from pdb import set_trace
 
 
 def get_table_caption():
-    """ Sets table caption, based on the genericsettings.current_testbed
+    """ Sets table caption, based on the testbedsettings.current_testbed
         and genericsettings.runlength_based_targets.
     """    
         
@@ -63,7 +64,7 @@ def get_table_caption():
     table_caption_two1 = (r"""%
         in the first. The different target \Df-values are shown in the top row. 
         \#succ is the number of trials that reached the (final) target $\fopt + """
-        + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+        + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
         """)
     table_caption_two2 = r"""%
         (preceded by the target \Df-value in \textit{italics}) in the first. 
@@ -79,7 +80,7 @@ def get_table_caption():
         functions.
         """
 
-    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         table_caption = r"""%
                 Average runtime (\aRT) to reach given targets, measured
@@ -88,11 +89,11 @@ def get_table_caption():
                 90\%-tile of (bootstrapped) runtimes is shown for the different
                 target \Df-values as shown in the top row. 
                 \#succ is the number of trials that reached the last target 
-                $\hvref + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+                $\hvref + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
                 The median number of conducted function evaluations is additionally given in 
                 \textit{italics}, if the target in the last column was never reached. 
                 """
-    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:
@@ -119,8 +120,8 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     #bestalg.bestalgentries which is the virtual best of BBOB
     dictDim = dsList.dictByDim()
 
-    targetf = genericsettings.current_testbed.pptable_ftarget
-    targetsOfInterest = genericsettings.current_testbed.pptable_targetsOfInterest
+    targetf = testbedsettings.current_testbed.pptable_ftarget
+    targetsOfInterest = testbedsettings.current_testbed.pptable_targetsOfInterest
 
     if info:
         info = '_' + info

@@ -17,7 +17,7 @@ import os
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
-from . import toolsstats, bestalg, genericsettings, toolsdivers
+from . import toolsstats, testbedsettings, genericsettings, toolsdivers
 from .ppfig import saveFigure
 
 __all__ = ['beautify', 'plot', 'main']
@@ -45,7 +45,7 @@ def read_fun_infos(isBiobjective):
     try:
         funInfos = {}
         
-        filename = genericsettings.getBenchmarksShortInfos(isBiobjective)
+        filename = testbedsettings.get_benchmarks_short_infos(isBiobjective)
         infofile = os.path.join(os.path.split(__file__)[0], filename)
         f = open(infofile, 'r')
         for line in f:
@@ -225,13 +225,13 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
 
         handles = plot(dictfunc, param[0], targets)
 
-        # # display best 2009
-        # if not bestalg.bestalgentries2009:
-        #     bestalg.loadBBOB2009()
+        # # display best algorithm
+        # if not bestalg.bestAlgorithmEntries:
+        #     bestalg.load_best_algorithm()
 
         # bestalgdata = []
         # for d in dimsBBOB:
-        #     entry = bestalg.bestalgentries2009[(d, func)]
+        #     entry = bestalg.bestAlgorithmEntries[(d, func)]
         #     tmp = entry.detERT([1e-8])[0]
         #     if not np.isinf(tmp):
         #         bestalgdata.append(tmp/d)
@@ -257,7 +257,7 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
         if is_normalized:
             plt.setp(plt.gca(), 'ylabel', plt.getp(a, 'ylabel') + ' / ' + param[1])
 
-        if func in genericsettings.current_testbed.functions_with_legend:
+        if func in testbedsettings.current_testbed.functions_with_legend:
             toolsdivers.legend(loc="best")
         
         fontSize = genericsettings.getFontSize(funInfos.values())
