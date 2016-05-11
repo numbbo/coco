@@ -175,9 +175,10 @@ def getRldLink(htmlPage, currentDir, isBiobjective):
             links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
                              ignoreFileExists=ignoreFileExists)
 
-        fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
-        links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
-                         ignoreFileExists=ignoreFileExists)
+        if htmlPage == HtmlPage.ONE:
+            fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
+            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
+                             ignoreFileExists=ignoreFileExists)
 
     return links
 
