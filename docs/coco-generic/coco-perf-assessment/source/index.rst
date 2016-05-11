@@ -30,9 +30,13 @@ COCO: Performance Assessment
 .. |R| replace:: :math:`\mathbb{R}`
 .. |I| replace:: :math:`I`
 .. |i| replace:: :math:`i`
+.. |f| replace:: :math:`f`
 .. |t| replace:: :math:`t`
 .. |p| replace:: :math:`p`
+.. |p3| replace:: :math:`p^3`  
+.. |p5| replace:: :math:`p^5`  
 .. |x| replace:: :math:`x`
+.. |y| replace:: :math:`y`
 .. |N| replace:: :math:`N`
 .. |n| replace:: :math:`n`
 .. |J| replace:: :math:`J`
@@ -80,7 +84,7 @@ Introduction
 
 .. budget-free
 
-We presents ideas and concepts for performance assessment when benchmarking numerical optimization algorithms in a black-box scenario. 
+We present ideas and concepts for performance assessment when benchmarking numerical optimization algorithms in a black-box scenario. 
 Going beyond a simple ranking of algorithms, we aim
 to provide a *quantitative* and *meaningful* performance assessment, which
 allows for conclusions like *algorithm A is seven times faster than algorithm
@@ -125,32 +129,19 @@ Terminology and Definitions
    
 .. It will be nice to have an online glossary at some point that will help keeping things
    consistent.
-
    
-   
-In the COCO_ framework, a problem or problem instance is defined as a triple  ``(dimension,
-function, instance)``. A function |f|, to be minimized, is
-parametrized by its input dimension |n| and its instance parameters |thetai|.
- 
-More precisely, we consider a set of parametrized benchmark functions
-:math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m, \theta \in \Theta`.
-A COCO_ problem is derived from function |ftheta| and corresponds to :math:`p = (n,
-f_\theta, \theta_i)` where :math:`\theta_i` is the set of parameters associated
-to the instance |i|. 
-Different instances can vary by having different shifted optima, can use different rotations that are applied to the variables,... [HAN2009fun]_.  
-The instance notion is introduced to generate repetition while avoiding possible exploitation of an artificial function property (like location of the optimum in zero).
-The separation of dimension and instance parameters in the notation is
-of entirely semantic nature, however meaningful because we always aggregate over
-all |thetai|-values while we never aggregate over dimension. 
+In the COCO_ framework in general, a problem, or problem instance triplet, |p3|, is defined by the search space dimension |n|, the objective function |f|, to be minimized, and its instance parameters |thetai| for instance |i|.
+More concisely, we consider a set of parametrized benchmark functions
+:math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m, \theta \in \Theta` and the corresponding problems :math:`p^3 = p(n, f_\theta, \theta_i)`. 
+Different instances vary by having different shifted optima, can use different rotations that are applied to the variables, have different optimal |f|-values, etc. [HAN2009fun]_.  
+The instance notion is introduced to generate repetition while avoiding possible exploitation of artificial function properties (like location of the optimum in zero).
+The separation of dimension and instance parameters in the notation serves as a hint to indicate that we never aggregate over dimension and always aggregate over all |thetai|-values. 
 
 In the performance assessment setting, we associate to a problem instance
-:math:`p` a quality indicator and a target value, such that a problem becomes a
-quintuple ``(dimension, function, instance, quality indicator, target)``.
+|p3| a quality indicator mapping and a target value, such that a problem becomes a
+quintuple |p5|.
 Usually, the quality indicator remains the same for all problems, while we have
-sets of problems which only differ in their target value. The first time the
-quality indicator drops below the target is considered the runtime to solve the
-problem. The quality indicator target value depends in general on the problem
-instance :math:`\theta_i`. 
+subsets of problems which only differ in their target value. 
  
  
  ..  We often **interpret different runs performed on different instances**
@@ -172,17 +163,16 @@ On Performance Measures
 
 Evaluating performance is necessarily based on performance *measures*, the
 definition of which plays a crucial role for the evaluation. 
-Here, we introduce our requirements for performances measures in general and in
-the context of black-box optimization. 
-A performance measure in general should be
+Here, we introduce a list of requirements a performance measure should satisfy in general, as well as in the context of black-box optimization specifically. 
+In general, a performance measure should be
 
 * quantitative, as opposed to a simple *ranking* of entrants (e.g., algorithms). 
   Ideally, the measure should be defined on a ratio scale (as opposed to an
   interval or ordinal scale) [STE1946]_, which allows to state that "entrant A
-  is :math:`x` times better than entrant B". [#]_ 
-* assuming a wide variation of values, for example, typical values should 
-  not only be ranging between 0.98 and 1.0, [#]_
-* interpretable, in particular by having a meaning and semantics attached to 
+  is :math:`x` *times better* than entrant B". [#]_ 
+* assuming a wide variation of values such that, for example, typical values do 
+  not only range between 0.98 and 1.0, [#]_
+* well interpretable, in particular by having meaning and semantics attached to 
   the measured numbers,
 * relevant and meaningful with respect to the "real world",
 * as simple and as comprehensible as possible.
@@ -198,9 +188,11 @@ Measuring number of function evaluations avoids the shortcomings of CPU
 measurements that depend on parameters like the programming language, coding
 style, machine used to run the experiment, etc., that are difficult or
 impractical to control.
-If however algorithm internal computations dominate wall-clock time in a practical 
-application, comparative runtime results *in number of function evaluations* 
-can usually be adapted *a posteri* to reflect the practical scenario. 
+If however algorithm internal computations dominate wall-clock time in a
+practical application, comparative runtime results *in number of function
+evaluations* can usually be adapted *a posteri* to reflect the practical
+scenario. 
+This hold also true for a speed up from parallelization.  
 
 .. [#] A variable which lives on a ratio scale has a meaningful zero, 
    allows for division, and can be taken to the logarithm in a meaningful way. 
@@ -220,11 +212,11 @@ Quality Indicators
 At each evaluation count (time step) |t| of an algorithm which optimizes a problem instance |thetai| of the function |ftheta| in dimension |n|, we apply a quality indicator mapping. 
 A quality indicator |I| maps the set of all solutions evaluated 
 so far (or recommended [HAN2016ex]_) to a problem-dependent real value.
-Then, a runtime measurement is obtained from each of a (large) set of problem
-instances, each defined as the quintuple :math:`p=(n, f_\theta, \theta_i, I,
-I^\mathrm{target, \theta_i}_{f})`. 
+Then, a runtime measurement can be obtained from each of a (large) set of
+problem instances :math:`p^5 = p(n, f_\theta, \theta_i, I, I^\mathrm{target,
+\theta_i}_{f})`. 
 The runtime on this problem instance is defined as the evaluation count 
-when the quality indicator hits the target for the first time, otherwise runtime remains undefined. 
+when the quality indicator value drops below the target for the first time, otherwise runtime remains undefined. 
 
 In the single-objective noiseless case, the quality indicator outputs
 the best so far observed (i.e. minimal and feasible) function value. 
@@ -236,7 +228,7 @@ the function values of the last :math:`\lceil\ln(t + 3)^2 / 2\rceil)` evaluated
 In the multi-objective case, the quality indicator is based on a negative
 hypervolume indicator of the set of evaluated solutions (the archive)
 [BRO2016]_, while other well- or lesser-known multi-objective quality indicators
-are another possible choice.
+are possible.
 
 .. [#] This feature will only be available in the new implementation of the COCO_ framework.
 
@@ -244,28 +236,28 @@ are another possible choice.
 Fixed-Budget versus Fixed-Target Approach
 -----------------------------------------
 
-Starting from the most basic convergence graphs, which plot the evolution of a
-quality indicator (to be minimized) against the number of function evaluations,
-there are essentially (only) two ways to measure the performance.
+Starting from the most basic convergence graphs which plot the evolution of a
+quality indicator, to be minimized, against the number of function evaluations,
+there are essentially only two ways to measure the performance.
 
 **fixed-budget approach**
-    We fix a budget of function evaluations,
-    and measure the reached quality indicator values. A fixed search
+    We fix a maximal budget of function evaluations,
+    and measure the reached quality indicator value. A fixed search
     budget can be pictured as drawing a *vertical* line on the convergence
-    graphs (red line in Figure :ref:`fig:HorizontalvsVertical`).
+    graphs (blue line in Figure :ref:`fig:HorizontalvsVertical`).
 
 **fixed-target approach**
     We fix a target quality value and measure the number of function
     evaluations, the *runtime*, to reach this target. A fixed target can be
-    pictured as drawing a *horizontal* line in the convergence graphs (blue line in Figure
+    pictured as drawing a *horizontal* line in the convergence graphs (red line in Figure
     :ref:`fig:HorizontalvsVertical`).
 
 
 .. _fig:HorizontalvsVertical:
 
-.. figure:: HorizontalvsVertical.*
+.. figure:: fixed-budget-vs-fixed-target.*
    :align: center
-   :width: 60%
+   :width: 70%
 
    **Fixed-Budget versus Fixed-Target**
    
@@ -287,17 +279,17 @@ data.
 
 * The fixed-budget approach (vertical cut) does not give *quantitatively
   interpretable*  data:
-  the observation that Algorithm A reaches a function value that is, say, two
+  the observation that Algorithm A reaches a quality indicator value that is, say, two
   times smaller than the one reached by Algorithm B has in general no
   interpretable meaning, mainly because there is no *a priori* way to determine
-  *how much* more difficult it is to reach a function value that is two times
+  *how much* more difficult it is to reach an indicator value that is two times
   smaller.
-  This largely depends on the specific function and the specific
-  function value reached.
+  This usually depends on the function, the definition of the 
+  quality indicator and even the specific indicator values compared.
 
 * The fixed-target approach (horizontal cut)
   *measures the time* to
-  reach a target function value. The measurement allows conclusions of the
+  reach a target quality value. The measurement allows conclusions of the
   type: Algorithm A is two (or ten, or a hundred) times faster than Algorithm B
   in solving this problem. 
   The choice of the target value determines the difficulty and
@@ -314,17 +306,14 @@ Missing Values
 Investigating Figure :ref:`fig:HorizontalvsVertical` more carefully, we find that not all graphs intersect with either the vertical or the horizontal line. 
 On the one hand, if the fixed budget is too large, the algorithm might solve the function before the budget is exceeded. [#]_ 
 The algorithm performs better than the measurement is able to reflect, which can lead to a serious misinterpretations. 
-The remedy is to define a final target value and measure the runtime if the final target is hit. [#]_
+The remedy is to define a \emph{final} target value and measure the runtime if the final target is hit. [#]_
 
 On the other hand, if the fixed target is too difficult, the algorithm may never hit the target under the given experimental conditions. [#]_ 
-The algorithm performs worse than the experiment is able to reflect, while we still get a lower bound for this runtime instance. 
+The algorithm performs worse than the experiment is able to reflect, while we still get a lower bound for this missing runtime instance. 
 A possible remedy is to run the algorithm longer. 
 Another possible remedy is to use the final quality indicator value as measurement. 
-This measurement however can only be interpreted as ranking result, defeating the original objective. 
-A third (impartial) remedy is to use simulated restarts, see below.  
-
-When a target value is never reached, the runtime (to reach the target) is undefined. 
-However, in this case, we record and use the overall number of function evaluations in the corresponding run to compute simulated run-lengths, see below. 
+This measurement however should only be interpreted as ranking result, defeating the original objective. 
+A third (impartial) remedy is to record the overall number of function evaluations of this run and use simulated restarts, see below.  
 
 .. [#] Even in continuous domain, from the view point of benchmarking, 
        or application in the real world, or numerical precision, the set of
@@ -345,24 +334,18 @@ Target Value Setting
 
 .. |DI| replace:: :math:`\Delta I`
 
-First, we define for each function instance a *reference* quality indicator value, :math:`I^{\rm ref, \theta}`. 
+First, we define for each problem instance :math:`p^3 = (n, f_\theta, \theta_i)` 
+a *reference* quality indicator value, :math:`I^{\rm ref, \theta_i}`. 
 In the single-objective case this is the optimal function value. 
 In the multi-objective case this is the hypervolume indicator of an approximation of the Pareto front [BRO2016]_. 
-This reference quality indicator value depends on the specific instance
-:math:`\theta`. 
 Based on this reference value and a set of target *precision* values, which are
-independent of the instance :math:`\theta`, we define for each problem instance
-and for each precision |DI| a target value
+independent of the instance |thetai|, we define a target value
 
 .. math::
 
-    I^{\rm target,\theta} = I^{\rm ref,\theta} + \Delta I \enspace,
+    I^{\rm target,\theta_i} = I^{\rm ref,\theta_i} + \Delta I \enspace,
 
-such that, in particular, for each target precision we have an associated problem instance |thetai| for all :math:`i=1, \dots, K`. 
-
-.. such that for different instances :math:`({\theta}_1, \ldots,{\theta}_K)` of a parametrized problem :math:`f_{\theta}(\mathbf{x})`, the set of targets :math:`I^{\rm target,{\theta}_1}, \ldots,I^{\rm target,{\theta}_K}` are associated to the same precision. 
-
-.. Depending on the context, when we refer to a problem this includes the used quality indicator and a given target value (or precision). We say, for example, that "algorithm A is solving problem :math:`p=(n, f_\theta, \theta, I, I^{\rm target})` after :math:`t` function evaluations" if the quality indicator function value :math:`I` during the optimization of :math:`(n, f_\theta, \theta)` reaches a value of :math:`I^{\rm target}` or lower for the first time after :math:`t` function evaluations.
+for each precision |DI|, giving rise to the product set of all problems :math:`p^3` and all |DI|-values. 
 
 
 Runlength-based Target Values
@@ -381,8 +364,8 @@ Unlike for performance profiles, the resulting empirical distribution *is* a
 data profile [MOR2009]_ reflecting the true (opposed to relative) difficulty of the respective problems for the respective algorithm. 
 
 We assume to have given a reference data set with recorded runtimes to reach a
-prescribed, usually large set of quality indicator target values as in the
-fixed-target approach described above. [#]_
+prescribed, usually large set of quality indicator target values [#]_ as in the
+fixed-target approach described above. 
 The reference data serve as a baseline upon which the runlength-based targets are  computed. 
 To simplify wordings we assume w.l.o.g. that a single reference *algorithm* has generated this data set. 
 
@@ -414,12 +397,11 @@ Runtime Computation
 
 .. In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtimes for different target values. 
 
-In the performance assessment context of COCO_, a problem instance can be defined by the quintuple of search space dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value, :math:`p = (n, f_\theta, \theta_i, I, I^{{\rm target}, \theta_i})`. [#]_
+In the performance assessment context of COCO_, a problem instance can be defined by the quintuple of search space dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value, :math:`p^5 = p(n, f_\theta, \theta_i, I, I^{{\rm target}, \theta_i})`. [#]_
 For each benchmarked algorithm, a single runtime is measured on each problem instance.  
-From a single run of the algorithm on a problem instance triple defined by
-:math:`p = (n, f_\theta, \theta_i)`, we obtain a runtime measurement for each
-deduced problem quintuple, and more specifically, for each target value which has
-been reached in this run, or equivalently, for each target precision. 
+From a single run of the algorithm on the problem instance triple defined by
+:math:`p^3 = p(n, f_\theta, \theta_i)`, we obtain a runtime measurement for each
+deduced problem quintuple |p5|, more specifically, one for each target value which has been reached in this run, or equivalently, for each target precision. 
 This also reflects the anytime aspect of the performance evaluation in a single run. 
 
 Formally, the runtime :math:`\mathrm{RT}^{\rm s}(p)` is a random variable that represents the number of function evaluations needed to reach the quality indicator target value for the first time. 
@@ -440,12 +422,12 @@ probability one and exhibit the runtime
     \begin{equation*}%%remove*%%
     \label{index-RTrestart}  
       % ":eq:`RTrestart`" becomes "\eqref{index-RTrestart}" in the LaTeX
-    \mathbf{RT}(n,f_\theta,\Delta I) = \sum_{j=1}^{J-1} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
+    \mathbf{RT}(n, f_\theta, \Delta I) = \sum_{j=1}^{J} \mathrm{RT}^{\rm us}_j(n,f_\theta,\Delta I) + \mathrm{RT}^{\rm s}(n,f_\theta,\Delta I)
     \enspace,
     \end{equation*}%%remove*%%
 
 where :math:`J \sim \mathrm{BN}(1, 1 - p_{\rm s})` is a random variable with negative binomial distribution that models the number of unsuccessful runs
-until a success is observed and :math:`\mathrm{RT}^{\rm us}_j` are independent
+until one success is observed and :math:`\mathrm{RT}^{\rm us}_j` are independent
 random variables corresponding to the evaluations in unsuccessful trials
 [AUG2005]_. 
 If the probability of success is one, :math:`J` equals zero with probability one and the restart algorithm coincides with the original algorithm.
@@ -497,11 +479,11 @@ Simulated Restarts and Runtimes
 
 The runtime of the conceptual restart algorithm as given in :eq:`RTrestart` is the basis for displaying performance within COCO_. 
 We use the |K| different runs on the same function and dimension to simulate virtual restarts with a fixed target precision. 
-We assume to have at least one successful run -- otherwise, the runtime remains undefined, because the virtual procedure would never stop. 
+We assume to have at least one successful run---otherwise, the runtime remains undefined, because the virtual procedure would never stop. 
 Then, we construct artificial, simulated runs from the available empirical data:
 we repeatedly pick, uniformly at random with replacement, one of the |K| trials until we encounter a successful trial. 
 This procedure simulates a single sample of the virtually restarted algorithm from the given data. 
-As computed in :eq:`RTrestart` as |RTforDI|, the measured, simulated runtime is the sum of the number of function evaluations from the unsuccessful trials added to the runtime of the last and successful trial. [#]_
+As given in :eq:`RTrestart` as |RTforDI|, the measured, simulated runtime is the sum of the number of function evaluations from the unsuccessful trials added to the runtime of the last and successful trial. [#]_
 
 .. |q| replace:: :math:`q`
 
@@ -516,7 +498,7 @@ which then has striking similarities with the true distribution from a restarted
 To reduce the variance in this procedure, when desired, the first trial in each sample is picked deterministically instead of randomly as the :math:`1 + (N~\mathrm{mod}~K)`-th trial from the data. [#]_
 Picking the first trial data as specific instance |thetai| could also be
 interpreted as applying simulated restarts to this specific instance rather than
-to the entire set of problems :math:`\{p(n, f_\theta, \theta_i, \Delta I) \;|\;
+to the entire set of problems :math:`\mathcal{P} = \{p(n, f_\theta, \theta_i, \Delta I) \;|\;
 i=1,\dots,K\}`. 
 
 .. Niko: average runtime is not based on simulated restarts, but computed directly...considering the average runtime (Section :ref:`sec:aRT`) or the distribution by displaying empirical cumulative distribution functions (Section :ref:`sec:ECDF`).
@@ -530,14 +512,20 @@ Rationales and Limitations
 
 Simulated restarts aggregate some of the available data and thereby extend their range of interpretation. 
 
-* Simulated restarts allow in particular to compare algorithms with a wide range of different success probabilities by a single performance measure. [#]_ Conduction restarts also reflects a sensible approach when addressing a difficult optimization problem in practice. 
+* Simulated restarts allow in particular to compare algorithms with a wide range of different success probabilities by a single performance measure. [#]_ Conducting restarts is also valuable approach when addressing a difficult optimization problem in practice. 
 
 * Simulated restarts rely on the assumption that the runtime distribution for each instance is the same. If this is not the case, they still provide a reasonable performance measure, however with less of a meaningful interpretation for the result. 
 
 * The runtime of simulated restarts may heavily depend on **termination conditions** applied in the benchmarked algorithm, due to the evaluations spent in unsuccessful trials, compare :eq:`RTrestart`. This can be interpreted as disadvantage, when termination is considered as a trivial detail in the implementation---or as an advantage, when termination is considered a relevant component in the practical application of numerical optimization algorithms. 
 
-* The maximal number of evaluations for which sampled runtimes are meaningful 
-  and representative depends on the experimental conditions. If all runs are successful, no restarts are simulated and all runtimes are meaningful. If all runs terminated due to standard termination conditions in the used algorithm, simulated restarts also reflect the original algorithm. However, if a maximal budget is imposed for the purpose of benchmarking, simulated restarts do not necessarily reflect the real performance. In this case and if the success probability drops below 1/2, the result is likely to give a too pessimistic viewpoint at or beyond the chosen maximal budget. See [HAN2016ex]_ for a more in depth discussion on how to setup restarts in the experiments. 
+* The maximal number of evaluations for which simulated runtimes are meaningful 
+  and representative depends on the experimental conditions. If all runs are successful, no restarts are simulated and all runtimes are meaningful. If all runs terminated due to standard termination conditions in the used algorithm, simulated restarts reflect the original algorithm. However, if a maximal budget is imposed for the purpose of benchmarking, simulated restarts do not necessarily reflect the real performance. In this case and if the success probability drops below 1/2, the result is likely to give a too pessimistic viewpoint at or beyond the chosen maximal budget. See [HAN2016ex]_ for a more in depth discussion on how to setup restarts in the experiments. 
+
+* If only few or no successes have been observed, we can see large effects without statistical significance. Namely, 4/15 successes are not statistically significant against 0/15 successes on a 5%-level. 
+
+.. scipy.stats.chi2_contingency([[0, 15], [5, 10]]) -> 0.05004
+   scipy.stats.fisher_exact([[0, 15], [5, 10]]) -> 0.0420
+   ranksumtest(range(15), list(arange(2.5, 12)) + 5 * [100]) -> 0.94
 
 .. [#] The range of success probabilities is bounded by the number of instances to roughly :math:`2/|K|.`
 
@@ -629,22 +617,23 @@ Rationale, Interpretation and Limitations
 Empirical cumulative distribution functions are a universal way to display *unlabeled* data in a condensed way without losing information. 
 They allow unconstrained aggregation, because each data point remains separately displayed, and they remain entirely meaningful under transformation of the data (e.g. taking the logarithm). 
 
-* The cumulative distribution function from a set of problems where only the target value varies, recovers an upside-down convergence graph with the resolution steps defined by the targets [HAN2010]_.
+* The empirical distribution function from a set of problems where only the target value varies, recovers an upside-down convergence graph with the resolution steps defined by the targets [HAN2010]_.
 
 * When runs from several instances are aggregated, the association to the single run is lost, as is the association to the function when aggregating over several functions. This is particularly problematic for data from different dimensions, because dimension can be used as decision parameter for algorithm selection. Therefore, we do not aggregate over dimension. 
 
 * The empirical distribution function can be read in two distinct ways.
 
- - x-axis as independent variable: for any budget (x-value), 
-   we see the fraction of problems solved within the budget as y-value, where
-   the right limit value is the fraction of solved problems with the maximal
-   budget. 
- - y-axis as independent variable: for any fraction of easiest problems
-   (y-value), we see the longest runtime to solve any of them on the x-axis.
-   When plotted in `semilogx`, a horizontal shift indicates a runtime difference
-   by the respective factor, quantifiable, e.g., as "five times faster". The
-   area below the y-value and to the left of the graph reflects the  runtime
-   geometric average, the smaller the better. 
+  - |x|-axis as independent variable: for any budget (|x|-value), 
+    we see the fraction of problems solved within the budget as |y|-value, where
+    the limit value to the right is the fraction of solved problems with the maximal
+    budget. 
+  - |y|-axis as independent variable: for any fraction of easiest problems
+    (|y|-value), we see the longest runtime to solve any of them on the
+    |x|-axis. When plotted in `semilogx`, a horizontal shift indicates a runtime
+    difference by the respective factor, quantifiable, e.g., as "five times
+    faster". The area below the |y|-value and to the left of the graph reflects
+    the geometric runtime average on this subset of problems, the smaller the
+    better. 
 
 Relation to Previous Work
 --------------------------
