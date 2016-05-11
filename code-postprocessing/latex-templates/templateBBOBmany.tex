@@ -265,11 +265,11 @@ In order to evaluate the CPU timing of the algorithm, we have run the \change{MY
 Results from experiments according to \cite{hansen2016exp} and \cite{hansen2016perfass} on the
 benchmark functions given in \cite{wp200901_2010,hansen2012fun} are
 presented in Figures~\ref{fig:scaling}, \ref{fig:ECDFs05D} and
-\ref{fig:ECDFs20D} and in Tables~\ref{tab:ERTs5} and~\ref{tab:ERTs20}.
+\ref{fig:ECDFs20D} and in Tables~\ref{tab:aRTs5} and~\ref{tab:aRTs20}.
 The experiments were performed with COCO \cite{hansen2016cocoplat}, version
 \change{1.0.1}, the plots were produced with version \change{1.0.4}.
 
-The \textbf{expected running time (ERT)}, used in the figures and tables,
+The \textbf{average runtime (aRT)}, used in the figures and tables,
 depends on a given target function value, $\ftarget=\fopt+\Df$, and is
 computed over all relevant trials as the number of function
 evaluations executed during each trial while the best function value
@@ -289,7 +289,7 @@ unsuccessful trial under consideration.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Scaling of ERT with dimension
+% Scaling of aRT with dimension
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
@@ -399,8 +399,8 @@ ill-conditioned fcts & multi-modal fcts \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Expected running time (ERT in number of function evaluations)
-% divided by the best ERT measured during BBOB-2009 (given in the respective
+% Average runtime (aRT in number of function evaluations)
+% divided by the best aRT measured during BBOB-2009 (given in the respective
 % first row) for functions $f_1$--$f_{24}$ for dimension 5.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -461,7 +461,7 @@ ill-conditioned fcts & multi-modal fcts \\
 \input{\bbobdatapath pptables_f024_05D}
 \end{minipage}}
 
- \caption{\label{tab:ERTs5}
+ \caption{\label{tab:aRTs5}
  \bbobpptablesmanylegend{dimension $5$}{110} % Bonferroni correction: #dimensions * #functions
  }
 \end{table*}
@@ -470,8 +470,8 @@ ill-conditioned fcts & multi-modal fcts \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Expected running time (ERT in number of function evaluations)
-% divided by the best ERT measured during BBOB-2009 (given in the respective
+% Average runtime (aRT in number of function evaluations)
+% divided by the best aRT measured during BBOB-2009 (given in the respective
 % first row) for functions $f_1$--$f_{24}$ for dimension 20.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -530,7 +530,7 @@ ill-conditioned fcts & multi-modal fcts \\
 
 \input{\bbobdatapath pptables_f024_20D}
 \end{minipage}}
- \caption{\label{tab:ERTs20}
+ \caption{\label{tab:aRTs20}
   \bbobpptablesmanylegend{dimension $20$}{110} % Bonferroni correction: #dimensions * #functions
 }
 \end{table*}
