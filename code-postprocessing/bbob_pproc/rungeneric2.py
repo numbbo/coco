@@ -432,6 +432,20 @@ def main(argv=None):
                              '}'
                             ])
             
+            # ECDFs per function groups, code copied from rungenericmany.py
+            # (needed for bbob-biobj multiple algo template)
+            dictFG = pproc.dictAlgByFuncGroup(dictAlg)
+            for fg, tmpdictAlg in dictFG.iteritems():
+                dictDim = pproc.dictAlgByDim(tmpdictAlg)
+                for d, entries in dictDim.iteritems():
+                    pprldmany.main(entries,
+                                   dsList0.isBiobjective(),
+                                   order=sortedAlgs,
+                                   outputdir=outputdir,
+                                   info=('%02dD_%s' % (d, fg)),
+                                   verbose=genericsettings.verbose)
+                        
+            
             
             print "ECDF runlength ratio graphs done."
 
