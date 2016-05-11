@@ -32,7 +32,7 @@
 
    # plot the profiles
    figure()
-   # bb.compall.ppperfprof.plotmultiple(dsets, dsref=bb.bestalg.bestalgentries2009)
+   # bb.compall.ppperfprof.plotmultiple(dsets, dsref=bb.bestalg.bestAlgorithmEntries)
    
 """
 from __future__ import absolute_import

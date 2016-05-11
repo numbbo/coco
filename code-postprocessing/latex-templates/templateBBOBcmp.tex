@@ -255,10 +255,10 @@ In order to evaluate the CPU timing of the algorithm, we have run the \change{MY
 Results from experiments according to \cite{hansen2016exp} and \cite{hansen2016perfass} on the benchmark
 functions given in \cite{wp200901_2010,hansen2012fun} are presented in
 Figures~\ref{fig:scaling}, \ref{fig:scatterplots} and \ref{fig:RLDs} and
-in Table~\ref{tab:ERTs}. The experiments were performed with COCO \cite{hansen2016cocoplat},
+in Table~\ref{tab:aRTs}. The experiments were performed with COCO \cite{hansen2016cocoplat},
 version \change{1.0.1}, the plots were produced with version \change{1.0.4}.
 
-The \textbf{expected running time (ERT)}, used in the figures and table, depends on a
+The \textbf{average runtime (aRT)}, used in the figures and table, depends on a
 given target function value, $\ftarget=\fopt+\Df$, and is computed over all relevant trials
 as the number of function evaluations executed during each trial while the best
 function value did not reach \ftarget, summed over all trials
@@ -275,7 +275,7 @@ of overall function evaluations for any unsuccessful trial under consideration.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Scaling of ERT with dimension
+% Scaling of aRT with dimension
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
@@ -439,8 +439,8 @@ of overall function evaluations for any unsuccessful trial under consideration.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-% Table showing the expected running time (ERT in number of function
-% evaluations) divided by the best ERT measured during BBOB-2009 (given in the
+% Table showing the average runtime (aRT in number of function
+% evaluations) divided by the best aRT measured during BBOB-2009 (given in the
 % first row of each cell) for functions $f_1$--$f_{24}$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -451,7 +451,7 @@ of overall function evaluations for any unsuccessful trial under consideration.
 \mbox{
 \input{\bbobdatapath pptable2_05D_noiselessall}\hfill%
 \input{\bbobdatapath pptable2_20D_noiselessall}}
-\caption{\label{tab:ERTs}
+\caption{\label{tab:aRTs}
 \bbobpptablestwolegend{48}
 }
 \end{table*}
