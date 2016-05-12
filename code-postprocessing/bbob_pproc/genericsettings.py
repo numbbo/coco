@@ -23,7 +23,7 @@ in_a_hurry = 1000 # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
-dimensions_to_display_ls = (20, 40, 80, 160, 320, 640, 1280) # Wassim: large scale suite
+dimensions_to_display_ls = (20, 40, 80, 160, 320, 640) # Wassim: large scale suite
 generate_svg_files = True # generate the svg figures
 scaling_figures_with_boxes = True 
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
@@ -313,6 +313,7 @@ class GECCOBBOBTestbed(Testbed):
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8) # possibly changed in config
         self.ppfvdistr_min_target = 1e-8
         self.functions_with_legend = (1, 24, 101, 130)
+        self.functions_with_legend = (1, 10, 14, 24, 101, 130)# Wassim: TODO: remove used only for GECCO paper
 
         try:
             info_list = open(os.path.join(os.path.dirname(__file__), 

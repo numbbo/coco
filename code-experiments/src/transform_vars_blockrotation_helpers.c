@@ -168,7 +168,8 @@ static size_t *coco_get_block_sizes(size_t *nb_blocks, size_t dimension, const c
   int i;
   
   if (strcmp(suite_name, "bbob-largescale") == 0) {
-    block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension / 4, 100));
+    /*block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension / 4, 100));*/ /*old value*/
+    block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension, 40));
     *nb_blocks = dimension / block_size + ((dimension % block_size) > 0);
     block_sizes = coco_allocate_vector_size_t(*nb_blocks);
     for (i = 0; i < *nb_blocks - 1; i++) {

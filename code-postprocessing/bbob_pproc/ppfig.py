@@ -48,7 +48,7 @@ def saveFigure(filename, figFormat=(), verbose=True):
             plt.gcf().set_size_inches([svg_downsize_factor * v for v in
                                        plt.gcf().get_size_inches()])
         try:
-            plt.savefig(filename + '.' + format,
+            plt.savefig(filename + '.' + format, transparent=True,#Wassim: TODO remove transparent=True
                         dpi = 60 if genericsettings.in_a_hurry else 300,
                         format=format,
                         bbox_inches=bbox_inches_choices.get(format, None)
