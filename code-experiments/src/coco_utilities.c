@@ -121,7 +121,7 @@ static void coco_join_path(char *path, const size_t path_max_length, ...) {
 static int coco_directory_exists(const char *path) {
   int res;
 #if defined(HAVE_GFA)
-  DWORD dwAttrib = GetFileAttributesA(path);
+  DWORD dwAttrib = GetFileAttributes(path);
   res = (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 #elif defined(HAVE_STAT)
   struct stat buf;
@@ -144,7 +144,7 @@ static int coco_directory_exists(const char *path) {
 static int coco_file_exists(const char *path) {
   int res;
 #if defined(HAVE_GFA)
-  DWORD dwAttrib = GetFileAttributesA(path);
+  DWORD dwAttrib = GetFileAttributes(path);
   res = (dwAttrib != INVALID_FILE_ATTRIBUTES) && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
 #elif defined(HAVE_STAT)
   struct stat buf;
@@ -641,7 +641,7 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
 static char *coco_option_keys_get_output_string(const coco_option_keys_t *option_keys,
                                                 const char *info_string) {
   size_t i;
-  char *string = NULL, *new_string;
+  char *string, *new_string;
 
   if ((option_keys != NULL) && (option_keys->count > 0)) {
 
@@ -851,7 +851,7 @@ static size_t coco_double_to_size_t(const double number) {
  * @brief  Returns 1 if |a - b| < accuracy and 0 otherwise.
  */
 static int coco_double_almost_equal(const double a, const double b, const double accuracy) {
-  return (fabs(a - b) < accuracy);
+  return ((fabs(a - b) < accuracy) == 0);
 }
 
 /**@}*/
@@ -940,13 +940,34 @@ static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, 
     count++;
   }
   if (count == max_count) {
-    coco_error("coco_count_numbers(): over %lu numbers in %s", (unsigned long) max_count, name);
+    coco_error("coco_count_numbers(): over %lu numbers in %s", max_count, name);
     return 0; /* Never reached*/
   }
 
   return count;
 }
 
+/**
+ * @brief Normalizes vector x, then scales it by a factor alpha.
+ *
+ */
+static void coco_normalize_vector(double *x, size_t dimension) {
+  
+  size_t i;
+  double norm = 0.0;
+  
+  assert(x);
+  
+  for (i = 0; i < dimension; ++i)
+    norm += x[i] * x[i];
+    
+  norm = sqrt(norm);
+  
+  if (norm != 0) {
+    for (i = 0; i < dimension; ++i)
+      x[i] /= norm;
+  }
+}
 /**@}*/
 
 /***********************************************************************************************************/

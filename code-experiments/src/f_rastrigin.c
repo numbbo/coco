@@ -25,9 +25,9 @@ static double f_rastrigin_raw(const double *x, const size_t number_of_variables)
   size_t i = 0;
   double result;
   double sum1 = 0.0, sum2 = 0.0;
-
+    
   if (coco_vector_contains_nan(x, number_of_variables))
-  	return NAN;
+    return NAN;
 
   for (i = 0; i < number_of_variables; ++i) {
     sum1 += cos(coco_two_pi * x[i]);
@@ -148,6 +148,37 @@ static coco_problem_t *f_rastrigin_rotated_bbob_problem_allocate(const size_t fu
   coco_free_memory(M);
   coco_free_memory(b);
   coco_free_memory(xopt);
+  return problem;
+}
+
+/**
+ * @brief Creates the Rastrigin problem for the constrained BBOB suite.
+ */
+static coco_problem_t *f_rastrigin_cons_bbob_problem_allocate(const size_t function,
+                                                         const size_t dimension,
+                                                         const size_t instance,
+                                                         const long rseed,
+                                                         const char *problem_id_template,
+                                                         const char *problem_name_template) {
+
+  double *xshift, fopt;
+  coco_problem_t *problem = NULL;
+  size_t i;
+
+  xshift = coco_allocate_vector(dimension);
+  fopt = bbob2009_compute_fopt(function, instance);
+  
+  for (i = 0; i < dimension; ++i)
+     xshift[i] = -1.0;
+
+  problem = f_rastrigin_allocate(dimension);
+  problem = transform_vars_shift(problem, xshift, 0);
+  problem = transform_obj_shift(problem, fopt);
+
+  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_type(problem, "1-separable");
+
   return problem;
 }
 

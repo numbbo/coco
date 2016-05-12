@@ -29,13 +29,6 @@ typedef void (*coco_data_free_function_t)(void *data);
 typedef void (*coco_problem_free_function_t)(coco_problem_t *problem);
 
 /**
- * @brief The initial solution function type.
- *
- * This is a template for functions that return an initial solution of the problem.
- */
-typedef void (*coco_initial_solution_function_t)(const coco_problem_t *problem, double *y);
-
-/**
  * @brief The evaluate function type.
  *
  * This is a template for functions that perform an evaluation of the problem (to evaluate the problem
@@ -121,9 +114,9 @@ typedef struct {
  */
 struct coco_problem_s {
 
-  coco_initial_solution_function_t initial_solution;  /**< @brief  The function for creating an initial solution. */
   coco_evaluate_function_t evaluate_function;         /**< @brief  The function for evaluating the problem. */
   coco_evaluate_function_t evaluate_constraint;       /**< @brief  The function for evaluating the constraints. */
+  coco_evaluate_function_t evaluate_gradient;         /**< @brief  The function for evaluating the constraints. */
   coco_recommend_function_t recommend_solution;       /**< @brief  The function for recommending a solution. */
   coco_problem_free_function_t problem_free_function; /**< @brief  The function for freeing this problem. */
 
@@ -135,6 +128,7 @@ struct coco_problem_s {
   double *smallest_values_of_interest; /**< @brief The lower bounds of the ROI in the decision space. */
   double *largest_values_of_interest;  /**< @brief The upper bounds of the ROI in the decision space. */
 
+  double *initial_solution;            /**< @brief Initial feasible solution. */
   double *best_value;                  /**< @brief Optimal (smallest) function value */
   double *nadir_value;                 /**< @brief The nadir point (defined when number_of_objectives > 1) */
   double *best_parameter;              /**< @brief Optimal decision vector (defined only when unique) */

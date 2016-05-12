@@ -19,6 +19,7 @@
 #include "suite_biobj.c"
 #include "suite_toy.c"
 #include "suite_largescale.c"
+#include "suite_cons_bbob.c"
 
 /** @brief The maximum number of different instances in a suite. */
 #define COCO_MAX_INSTANCES 1000
@@ -40,6 +41,8 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_biobj_initialize();
   } else if (strcmp(suite_name, "bbob-largescale") == 0) {
     suite = suite_largescale_initialize();
+  } else if (strcmp(suite_name, "bbob-constrained") == 0) {
+    suite = suite_cons_bbob_initialize();
   }
   else {
     coco_error("coco_suite_intialize(): unknown problem suite");
@@ -61,6 +64,8 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
     year_string = suite_bbob_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-biobj") == 0) {
     year_string = suite_biobj_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "bbob-constrained") == 0) {
+    year_string = suite_cons_bbob_get_instances_by_year(year);
   } else {
     coco_error("coco_suite_get_instances_by_year(): suite '%s' has no years defined", suite->suite_name);
     return NULL;
@@ -83,12 +88,6 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
 
   coco_problem_t *problem;
 
-  if ((suite->functions[function_idx] == 0) ||
-      (suite->dimensions[dimension_idx] == 0) ||
-	  (suite->instances[instance_idx] == 0)) {
-	  return NULL;
-  }
-
   if (strcmp(suite->suite_name, "toy") == 0) {
     problem = suite_toy_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob") == 0) {
@@ -97,6 +96,8 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     problem = suite_biobj_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-largescale") == 0) {
     problem = suite_largescale_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "bbob-constrained") == 0) {
+    problem = suite_cons_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else {
     coco_error("coco_suite_get_problem_from_indices(): unknown problem suite");
     return NULL;
@@ -493,13 +494,16 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
 }
 
 /**
- * Currently, four suites are supported:
+ * Currently, five suites are supported:
  * - "bbob" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
- * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective
+ * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/bbob-biobj-functions-doc">bi-objective
  * functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "bbob-largescale" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 large dimensions (40, 80, 160, 320, 640, 1280)
+ * - "bbob-constrained" contains 48 linearly-constrained problems, which are combinations of 8 single 
+ * objective functions with 6 different numbers of linear constraints (1, 2, 10, dimension/2, dimension-1, 
+ * dimension+1), in 6 dimensions (2, 3, 5, 10, 20, 40).
  * - "toy" contains 6 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 5 dimensions (2, 3, 5, 10, 20)
  *
@@ -508,7 +512,7 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * and the suite is not filtered by default).
  *
  * @param suite_name A string containing the name of the suite. Currently supported suite names are "bbob",
- * "bbob-biobj", "bbob-largescale" and "toy".
+ * "bbob-biobj", "bbob-largescale", "bbob-constrained" and "toy".
  * @param suite_instance A string used for defining the suite instances. Two ways are supported:
  * - "year: YEAR", where YEAR is the year of the BBOB workshop, includes the instances (to be) used in that
  * year's workshop;
@@ -706,21 +710,15 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
  * @returns The next problem of the suite or NULL if there is no next problem left.
  */
 coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer) {
-
+  
   size_t function_idx;
   size_t dimension_idx;
   size_t instance_idx;
   coco_problem_t *problem;
 
-  long previous_function_idx;
-  long previous_dimension_idx;
-  long previous_instance_idx;
-
-  assert(suite != NULL);
-
-  previous_function_idx = suite->current_function_idx;
-  previous_dimension_idx = suite->current_dimension_idx;
-  previous_instance_idx = suite->current_instance_idx;
+  long previous_function_idx = suite->current_function_idx;
+  long previous_dimension_idx = suite->current_dimension_idx;
+  long previous_instance_idx = suite->current_instance_idx;
 
   /* Iterate through the suite by instances, then functions and lastly dimensions in search for the next
    * problem. Note that these functions set the values of suite fields current_instance_idx,
@@ -758,13 +756,12 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
         coco_info_partial("done\n");
       else
         coco_info_partial("\n");
-      coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string,
-      		(unsigned long) suite->dimensions[dimension_idx], (unsigned long) suite->functions[function_idx]);
+      coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string, suite->dimensions[dimension_idx], suite->functions[function_idx]);
       coco_free_memory(time_string);
     }
     else if ((long) function_idx != previous_function_idx){
       /* A new function started */
-      coco_info_partial("f%02lu", (unsigned long) suite->functions[function_idx]);
+      coco_info_partial("f%02lu", suite->functions[function_idx]);
     }
     /* One dot for each instance */
     coco_info_partial(".", suite->instances[instance_idx]);

@@ -71,7 +71,7 @@ struct coco_problem_s;
 /**
  * @brief The COCO problem type.
  *
- * See coco_problem_s for more information on its fields. */
+ * See coco_problem for more information on its fields. */
 typedef struct coco_problem_s coco_problem_t;
 
 /** @brief Structure containing a COCO suite. */
@@ -80,7 +80,7 @@ struct coco_suite_s;
 /**
  * @brief The COCO suite type.
  *
- * See coco_suite_s for more information on its fields. */
+ * See coco_suite for more information on its fields. */
 typedef struct coco_suite_s coco_suite_t;
 
 /** @brief Structure containing a COCO observer. */
@@ -89,7 +89,7 @@ struct coco_observer_s;
 /**
  * @brief The COCO observer type.
  *
- * See coco_observer_s for more information on its fields. */
+ * See coco_observer for more information on its fields. */
 typedef struct coco_observer_s coco_observer_t;
 
 /** @brief Structure containing a COCO archive. */
@@ -107,7 +107,7 @@ struct coco_random_state_s;
 /**
  * @brief The COCO random state type.
  *
- * See coco_random_state_s for more information on its fields. */
+ * See coco_random_state for more information on its fields. */
 typedef struct coco_random_state_s coco_random_state_t;
 
 /***********************************************************************************************************/
@@ -233,8 +233,8 @@ size_t coco_suite_encode_problem_index(const coco_suite_t *suite,
 void coco_suite_decode_problem_index(const coco_suite_t *suite,
                                      const size_t problem_index,
                                      size_t *function_idx,
-                                     size_t *dimension_idx,
-                                     size_t *instance_idx);
+                                     size_t *instance_idx,
+                                     size_t *dimension_idx);
 /**@}*/
 
 /***********************************************************************************************************/
@@ -280,6 +280,17 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
  * @brief Evaluates the problem constraints in point x and save the result in y.
  */
 void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y);
+
+/**
+ * @brief Returns 1 if c(x) = 0, and 0 otherwise.
+ */
+int coco_is_feasible(coco_problem_t *problem, const double *x, double *cons_values);
+
+/**
+ * @brief Evaluates the gradient of the function at x and stores it
+ *        at y.
+ */
+void coco_evaluate_gradient(coco_problem_t *problem, const double *x, double *y);
 
 /**
  * @brief Recommends a solution as the current best guesses to the problem.
