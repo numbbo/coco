@@ -194,7 +194,7 @@ in Python, becomes as simple as
 
    $ ### (optional) run an example from the shell
    $ cp code-experiments/build/python/example_experiment.py .
-   $ python example_experiment.py     # run the "default" experiment
+   $ python example_experiment.py     # run the current "default" experiment
    $ python -m bbob_pproc exdata/...  # run the post-processing
 
 .. code:: python
@@ -219,7 +219,7 @@ in Python, becomes as simple as
 
     \caption[Minimal benchmarking code in Python]{
     Shell code for installation of \COCO\ (above), and Python code to benchmark 
-    \texttt{fmin} on the \texttt{bbob} suite.
+    \texttt{fmin} on the \texttt{bbob} suite (below).
     
 Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data.
 
@@ -255,7 +255,7 @@ benchmarking far over a hundred algorithms by many researchers.
    
 .. [#] In order to get even more insightful result on the comparatively 
    difficult ``bbob`` benchmark suite, additionally randomized restarts are advisable. 
-   Example code is given in |example_experiment.py| which runs
+   Example code is given in |example_experiment.py|_ which runs
    out-of-the-box as a benchmarking Python script.  
        
 .. left to the reader to
@@ -592,11 +592,11 @@ We have several ways to aggregate the resulting runtimes.
    hit).  They aggregate, however, time data to eventually supplement missing runtime
    values, see also [HAN2016perf]_. 
 
-.. [#] When reading a performance profile, an immediate question is often 
-   whether a large runtime difference is due to one algorithm solving
+.. [#] When reading a performance profile, an invariable immediate question is
+   often whether a large runtime difference is mainly due to one algorithm solving
    the problem very quickly. This question cannot be answered from the profile.
-   The advantage (i) over data profiles is lost when using run-length based
-   target values [HAN2016perf]_. 
+   The advantage (i) over data profiles disappears when using run-length based
+   target values [HAN2016perf]_.
 
 .. |ERT| replace:: ERT
 .. |ECDF| replace:: ECDF
@@ -607,7 +607,7 @@ General Code Structure
 
 The code basis of the COCO_ code consists of two parts. 
 
-The *Experiments* part
+The *experiments* part
   defines test suites, allows to conduct experiments, and provides the output
   data. The `code base is written in C`__, and wrapped in different languages
   (currently Java, Python, Matlab/Octave). An amalgamation technique is used
