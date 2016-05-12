@@ -100,7 +100,7 @@ static coco_problem_t *f_different_powers_bbob_problem_allocate(const size_t fun
 }
 
 /**
- * @brief Creates the BBOB generalized permuted block-rotated different powers problem.
+ * @brief Creates the BBOB generalized permuted block-rotated sum of different powers problem.
  */
 static coco_problem_t *f_different_powers_permblockdiag_bbob_problem_allocate(const size_t function,
                                                                        const size_t dimension,
@@ -121,6 +121,8 @@ static coco_problem_t *f_different_powers_permblockdiag_bbob_problem_allocate(co
   size_t nb_blocks;
   size_t swap_range;
   size_t nb_swaps;
+  double scaling_factor;
+  scaling_factor = bbob2009_fmin(1, ((double) 40) / dimension);/*TODO, update on all functions or use a function*/
 
   block_sizes = coco_get_block_sizes(&nb_blocks, dimension, "bbob-largescale");
   swap_range = coco_get_swap_range(dimension, "bbob-largescale");
@@ -143,7 +145,7 @@ static coco_problem_t *f_different_powers_permblockdiag_bbob_problem_allocate(co
   problem = transform_vars_permutation(problem, P1, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
 
-  problem = transform_obj_scale(problem, 1.0 / (double) dimension);
+  problem = transform_obj_scale(problem, scaling_factor);
   problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
