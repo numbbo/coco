@@ -154,7 +154,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   size_t swap_range;
   size_t nb_swaps;
   double scaling_factor;
-  scaling_factor = bbob2009_fmin(1, ((double) 40) / dimension);/*TODO, update on all functions or use a function*/
+  scaling_factor = bbob2009_fmin(1, 40. / ((double) dimension)); /*TODO, update on all functions or use a function*/
   
   block_sizes = coco_get_block_sizes(&nb_blocks, dimension, "bbob-largescale");
   swap_range = coco_get_swap_range(dimension, "bbob-largescale");

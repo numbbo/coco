@@ -76,7 +76,7 @@ static coco_problem_t *f_sphere_bbob_problem_allocate(const size_t function,
   /*if large scale test-bed, normalize by dim*/
   if (coco_strfind(problem_name_template, "BBOB large-scale suite") >= 0){
 
-    scaling_factor = bbob2009_fmin(1, ((double) 40) / dimension);/*TODO, update on all functions or use a function*/
+    scaling_factor = bbob2009_fmin(1, 40. / ((double) dimension)); /*TODO, update on all functions or use a function*/
     problem = transform_obj_scale(problem, scaling_factor);
   }
   problem = transform_obj_shift(problem, fopt);
