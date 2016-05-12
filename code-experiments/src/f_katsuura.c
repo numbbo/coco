@@ -35,11 +35,15 @@ static double f_katsuura_raw(const double *x, const size_t number_of_variables) 
       tmp += fabs(tmp2 * x[i] - coco_double_round(tmp2 * x[i])) / tmp2;
     }
     tmp = 1.0 + ((double) (long) i + 1) * tmp;
-    result *= tmp;
+    /*result *= tmp;*//* Wassim TODO: delete once consistency check passed*/
+    result *= pow(tmp, 10. / pow((double) number_of_variables, 1.2));
   }
+  /*result = 10. / ((double) number_of_variables) / ((double) number_of_variables)
+      * (-1. + pow(result, 10. / pow((double) number_of_variables, 1.2)));*/
   result = 10. / ((double) number_of_variables) / ((double) number_of_variables)
-      * (-1. + pow(result, 10. / pow((double) number_of_variables, 1.2)));
+  * (-1. + result);
 
+  printf("%f  ", result);
   return result;
 }
 
@@ -152,7 +156,7 @@ static coco_problem_t *f_katsuura_permblockdiag_bbob_problem_allocate(const size
   size_t swap_range2;
   size_t nb_swaps1;
   size_t nb_swaps2;
-  
+
   block_sizes1 = coco_get_block_sizes(&nb_blocks1, dimension, "bbob-largescale");
   block_sizes2 = coco_get_block_sizes(&nb_blocks2, dimension, "bbob-largescale");
   swap_range1 = coco_get_swap_range(dimension, "bbob-largescale");
@@ -182,11 +186,11 @@ static coco_problem_t *f_katsuura_permblockdiag_bbob_problem_allocate(const size
   problem = transform_vars_blockrotation(problem, B2_copy, dimension, block_sizes1, nb_blocks1);
   problem = transform_vars_permutation(problem, P21, dimension);
   problem = transform_vars_conditioning(problem, 100.0);
-  problem = transform_vars_permutation(problem, P12, dimension);/*Consider replacing P11 and 22 by a single permutation P3*/
+  problem = transform_vars_permutation(problem, P12, dimension);
   problem = transform_vars_blockrotation(problem, B1_copy, dimension, block_sizes2, nb_blocks2);
   problem = transform_vars_permutation(problem, P11, dimension);
-  
   problem = transform_vars_shift(problem, xopt, 0);
+
   /*problem = transform_obj_scale(problem, 1.0 / (double) dimension);*//* Wassim: does not seem to be needed*/
   problem = transform_obj_penalize(problem, penalty_factor);
   problem = transform_obj_shift(problem, fopt); /*TODO: documentation, there is no fopt in the definition of this function*/
