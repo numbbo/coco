@@ -6,7 +6,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. the next two lines are necessary in LaTeX. They will be automatically 
   replaced to put away the \chapter level as ??? and let the "current" level
-  becomes \section. 
+  become \section. 
 
 .. CHAPTERTITLE
 .. CHAPTERUNDERLINE
@@ -21,6 +21,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. raw:: html
 
+  See: <I>ArXiv e-prints</I>,
    <A HREF="http://arxiv.org/abs/1603.08785">arXiv:1603.08785</A>, 2016.
 
 .. raw:: latex
@@ -28,7 +29,6 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
   % \tableofcontents is automatic with sphinx and moved behind abstract by swap...py
   \begin{abstract}
 
-.. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY (though it seems the latter is not used)
 
 COCO_ is a platform for Comparing Continuous Optimizers in a black-box
 setting. 
@@ -640,9 +640,9 @@ of the French National Research Agency.
 .. .. __ http://arxiv.org/abs/1603.08785
 
 .. [HAN2016perf] N. Hansen, A. Auger, D. Brockhoff, D. Tušar, T. Tušar (2016). 
-  `COCO: Performance Assessment`__. *ArXiv e-prints*, `arXiv:160x:xxxxx`__
+  `COCO: Performance Assessment`__. *ArXiv e-prints*, `arXiv:1605.03560`__
 __ http://numbbo.github.io/coco-doc/perf-assessment
-__ http://arxiv.org/abs/160x.xxxxx
+__ http://arxiv.org/abs/1605.03560
 
 .. .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009). Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
 

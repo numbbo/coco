@@ -49,7 +49,7 @@ COCO: Performance Assessment
 
 
 .. the next two lines are necessary in LaTeX. They will be automatically 
-  replaced to put away the \chapter level as ^^^ and let the "current" level
+  replaced to put away the \chapter level as ??? and let the "current" level
   become \section. 
 
 .. CHAPTERTITLE
@@ -434,6 +434,7 @@ If the probability of success is one, :math:`J` equals zero with probability one
 Generally, the above equation for |RTforDI| expresses the runtime from repeated independent runs on the same problem instance (while the instance :math:`\theta_i` is not given explicitly). For the performance evaluation in the COCO_ framework, we apply the equation to runs on different instances :math:`\theta_i`, however instances from the same function, with the same dimension and the same target precision. 
 
 .. [#] From the definition of |p|, we can generate a set of problems |calP| by varying one or several of the parameters. We never vary dimension |n| and always vary over all available instances |thetai| for generating |calP.| 
+
 
 .. [#] The notion of success is directly linked to a target value. A run can be successful with respect to some target values (some problems) and unsuccessful with respect to others. Success also often refers to the final, most difficult, smallest target value, which implies success for all other targets. 
 
