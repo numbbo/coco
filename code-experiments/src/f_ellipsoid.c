@@ -104,7 +104,7 @@ static coco_problem_t *f_ellipsoid_rotated_bbob_problem_allocate(const size_t fu
                                                                  const char *problem_name_template) {
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
-
+  
   double *M = coco_allocate_vector(dimension * dimension);
   double *b = coco_allocate_vector(dimension);
   double **rot1;
@@ -153,19 +153,23 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   size_t nb_blocks;
   size_t swap_range;
   size_t nb_swaps;
-
+  double scaling_factor;
+  scaling_factor = bbob2009_fmin(1, ((double) 40) / dimension);/*TODO, update on all functions or use a function*/
+  
   block_sizes = coco_get_block_sizes(&nb_blocks, dimension, "bbob-largescale");
   swap_range = coco_get_swap_range(dimension, "bbob-largescale");
   nb_swaps = coco_get_nb_swaps(dimension, "bbob-largescale");
+  /*printf("probDim:%d, scalingFactor: %f, blockSize: %d, swapRange: %d\n", dimension, scaling_factor, block_sizes[0], swap_range);*/
+
   
   xopt = coco_allocate_vector(dimension);
   bbob2009_compute_xopt(xopt, rseed, dimension);
   fopt = bbob2009_compute_fopt(function, instance);
   
   B = coco_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
+  coco_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
   B_copy = (const double *const *)B;/*TODO: silences the warning, not sure if it prevents the modification of B at all levels. Check everywhere*/
   
-  coco_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
   coco_compute_truncated_uniform_swap_permutation(P1, rseed + 2000000, dimension, nb_swaps, swap_range);
   coco_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);
 
@@ -177,7 +181,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
   problem = transform_vars_shift(problem, xopt, 0);
 
   
-  problem = transform_obj_scale(problem, 1.0 / (double) dimension);
+  problem = transform_obj_scale(problem, scaling_factor);
   problem = transform_obj_shift(problem, fopt);
   
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
