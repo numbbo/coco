@@ -4,12 +4,15 @@
  *
  * Set the global parameter BUDGET_MULTIPLIER to suit your needs.
  */
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 
 #include "coco.h"
+
+#define max(a,b) ((a) > (b) ? (a) : (b))
 
 /**
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.
@@ -40,11 +43,19 @@ typedef void (*evaluate_function_t)(const double *x, double *y);
 static coco_problem_t *PROBLEM;
 
 /**
- * The function that calls the evaluation of the first vector on the problem to be optimized and stores the
- * evaluation result in the second vector.
+ * Calls coco_evaluate_function() to evaluate the objective function
+ * of the problem at the point x and stores the result in the vector y
  */
 static void evaluate_function(const double *x, double *y) {
   coco_evaluate_function(PROBLEM, x, y);
+}
+
+/**
+ * Calls coco_evaluate_constraint() to evaluate the constraints
+ * of the problem at the point x and stores the result in the vector y
+ */
+static void evaluate_constraint(const double *x, double *y) {
+  coco_evaluate_constraint(PROBLEM, x, y);
 }
 
 /* Declarations of all functions implemented in this file (so that their order is not important): */
@@ -59,6 +70,16 @@ void my_random_search(evaluate_function_t evaluate,
                       const double *upper_bounds,
                       const size_t max_budget,
                       coco_random_state_t *random_generator);
+                      
+void my_random_search_cons(evaluate_function_t evaluate_func,
+                           evaluate_function_t evaluate_cons,
+                           const size_t dimension,
+                           const size_t number_of_objectives,
+                           const size_t number_of_constraints,
+                           const double *lower_bounds,
+                           const double *upper_bounds,
+                           const size_t max_budget,
+                           coco_random_state_t *random_generator);
 
 void my_grid_search(evaluate_function_t evaluate,
                     const size_t dimension,
@@ -95,7 +116,10 @@ int main(void) {
   printf("Running the example experiment... (might take time, be patient)\n");
   fflush(stdout);
 
-  example_experiment("bbob-biobj", "bbob-biobj", random_generator);
+  example_experiment("bbob-constrained", "bbob", random_generator);
+
+  /* Uncomment the line below to run the same example experiment on the bbob suite
+  example_experiment("bbob-biobj", "bbob-biobj", random_generator); */
 
   /* Uncomment the line below to run the same example experiment on the bbob suite
   example_experiment("bbob", "bbob", random_generator); */
@@ -112,9 +136,11 @@ int main(void) {
  * A simple example of benchmarking random search on a suite with instances from 2016 that can serve also as
  * a timing experiment.
  *
- * @param suite_name Name of the suite (use "bbob" for the single-objective and "bbob-biobj" for the
+ * @param suite_name Name of the suite (use "bbob" for the single-objective,
+ * "bbob-constrained" for the constrained problems suite and "bbob-biobj" for the
  * bi-objective suite).
- * @param observer_name Name of the observer (use "bbob" for the single-objective and "bbob-biobj" for the
+ * @param observer_name Name of the observer (use "bbob" for the single-objective,
+ * "bbob-constrained" for the constrained problems observer and "bbob-biobj" for the
  * bi-objective observer).
  * @param random_generator The random number generator.
  */
@@ -143,8 +169,15 @@ void example_experiment(const char *suite_name,
 
   /* Iterate over all problems in the suite */
   while ((PROBLEM = coco_suite_get_next_problem(suite, observer)) != NULL) {
-
+    
     size_t dimension = coco_problem_get_dimension(PROBLEM);
+    
+    printf("\n\n************** PROBLEM CREATED **************\n\n");
+    printf("Nb. objectives: %lu\n", coco_problem_get_number_of_objectives(PROBLEM));
+    printf("Nb. constraints: %lu\n", coco_problem_get_number_of_constraints(PROBLEM));
+    printf("Dimension: %lu\n", coco_problem_get_dimension(PROBLEM));
+    printf("Suite-depending function: %d\n", coco_problem_get_suite_dep_function(PROBLEM));
+    printf("Suite-depending instance: %d\n", coco_problem_get_suite_dep_instance(PROBLEM));
 
     /* Run the algorithm at least once */
     for (run = 1; run <= 1 + INDEPENDENT_RESTARTS; run++) {
@@ -153,17 +186,30 @@ void example_experiment(const char *suite_name,
       long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - (long) evaluations_done;
 
       /* Break the loop if the target was hit or there are no more remaining evaluations */
-      if (coco_problem_final_target_hit(PROBLEM) || (evaluations_remaining <= 0))
+      if ((coco_problem_final_target_hit(PROBLEM) && 
+           coco_problem_get_number_of_constraints(PROBLEM) == 0)
+           || (evaluations_remaining <= 0))
         break;
 
       /* Call the optimization algorithm for the remaining number of evaluations */
-      my_random_search(evaluate_function,
+      /* my_random_search(evaluate_function,
                        dimension,
                        coco_problem_get_number_of_objectives(PROBLEM),
                        coco_problem_get_smallest_values_of_interest(PROBLEM),
                        coco_problem_get_largest_values_of_interest(PROBLEM),
                        (size_t) evaluations_remaining,
                        random_generator);
+      */
+                       
+      my_random_search_cons(evaluate_function,
+                            evaluate_constraint,
+                            dimension,
+                            coco_problem_get_number_of_objectives(PROBLEM),
+                            coco_problem_get_number_of_constraints(PROBLEM),
+                            coco_problem_get_smallest_values_of_interest(PROBLEM),
+                            coco_problem_get_largest_values_of_interest(PROBLEM),
+                            (size_t) evaluations_remaining,
+                            random_generator);
 
       /* Break the loop if the algorithm performed no evaluations or an unexpected thing happened */
       if (coco_problem_get_evaluations(PROBLEM) == evaluations_done) {
@@ -174,11 +220,15 @@ void example_experiment(const char *suite_name,
       else if (coco_problem_get_evaluations(PROBLEM) < evaluations_done)
         coco_error("Something unexpected happened - function evaluations were decreased!");
     }
+    
+    printf("\n************** PROBLEM TESTED **************\n");
 
     /* Keep track of time */
     timing_data_time_problem(timing_data, PROBLEM);
   }
 
+  printf("\n***** End of suite *****\n");
+  
   /* Output and finalize the timing data */
   timing_data_finalize(timing_data);
 
@@ -228,6 +278,94 @@ void my_random_search(evaluate_function_t evaluate,
 
   coco_free_memory(x);
   coco_free_memory(y);
+}
+
+/**
+ * A random search algorithm for constrained problems.
+ *
+ * @param evaluate_function The function used to evaluate the objective function.
+ * @param evaluate_constraint The function used to evaluate the constraints.
+ * @param dimension The number of variables.
+ * @param number_of_objectives The number of objectives.
+ * @param number_of_constraints The number of constraints.
+ * @param lower_bounds The lower bounds of the region of interested (a vector containing dimension values).
+ * @param upper_bounds The upper bounds of the region of interested (a vector containing dimension values).
+ * @param max_budget The maximal number of evaluations.
+ * @param random_generator Pointer to a random number generator able to produce uniformly and normally
+ * distributed random numbers.
+ */
+void my_random_search_cons(evaluate_function_t evaluate_func,
+                           evaluate_function_t evaluate_cons,
+                           const size_t dimension,
+                           const size_t number_of_objectives,
+                           const size_t number_of_constraints,
+                           const double *lower_bounds,
+                           const double *upper_bounds,
+                           const size_t max_budget,
+                           coco_random_state_t *random_generator) {
+
+  double *x = coco_allocate_vector(dimension);
+  double *best_feasible_solution = coco_allocate_vector(dimension);
+  double *all_zeros = coco_allocate_vector(dimension);
+  double *functions_values = coco_allocate_vector(number_of_objectives);
+  double *constraints_values = coco_allocate_vector(number_of_constraints);
+  double range, cons_violation, best_fval, fval_last_feasible;
+  
+  size_t i, j;
+  
+  best_fval = 10e+12;
+  fval_last_feasible = 10e+12;
+
+  for (i = 0; i < max_budget; ++i) {
+
+    /* Construct x as a random point between the lower and upper bounds */
+    for (j = 0; j < dimension; ++j) {
+      range = upper_bounds[j] - lower_bounds[j];
+      x[j] = lower_bounds[j] + coco_random_uniform(random_generator) * range;
+    }
+
+    /* Call COCO's evaluate function where all the logging is performed */
+    evaluate_func(x, functions_values);
+    evaluate_cons(x, constraints_values);
+    cons_violation = 0.0;
+    for (j = 0; j < number_of_constraints; ++j)
+       cons_violation += fabs(max(0.0, constraints_values[j]));
+    
+    if (functions_values[0] < best_fval && cons_violation == 0) {
+       best_fval = functions_values[0];
+       for (j = 0; j < dimension; ++j) {
+		    best_feasible_solution[j] = x[j];
+		 }
+	 }
+	 
+    if (cons_violation == 0)
+       fval_last_feasible = functions_values[0];
+
+  }
+
+  for (i = 0; i < dimension; ++i){
+     all_zeros[i] = 0.0;
+  }
+  /*
+  evaluate_func(all_zeros, myfevalzeros);
+  evaluate_cons(all_zeros, constraints_values);
+  cons_viol_aux = 0.0;
+  for (j = 0; j < number_of_constraints; ++j)
+       cons_viol_aux += fabs(max(0.0, constraints_values[j]));
+  printf("\n==> function value of all-zeros = %f", myfevalzeros[0]);
+  printf("\n==> constraint violation of all-zeros = %f", cons_viol_aux);
+  */
+  
+  printf("\n==> last point function value = %f", functions_values[0]);
+  printf("\n==> last point constraint violation = %f\n", cons_violation);
+  printf("\n==> best function value among feasible points = %f", best_fval);
+  printf("\n==> function value of the last feasible point = %f\n", fval_last_feasible);
+
+  coco_free_memory(x);
+  coco_free_memory(best_feasible_solution);
+  coco_free_memory(all_zeros);
+  coco_free_memory(functions_values);
+  coco_free_memory(constraints_values);
 }
 
 /**
