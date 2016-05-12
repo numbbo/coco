@@ -435,7 +435,6 @@ Generally, the above equation for |RTforDI| expresses the runtime from repeated 
 
 .. [#] From the definition of |p|, we can generate a set of problems |calP| by varying one or several of the parameters. We never vary dimension |n| and always vary over all available instances |thetai| for generating |calP.| 
 
-
 .. [#] The notion of success is directly linked to a target value. A run can be successful with respect to some target values (some problems) and unsuccessful with respect to others. Success also often refers to the final, most difficult, smallest target value, which implies success for all other targets. 
 
 

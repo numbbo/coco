@@ -60,6 +60,9 @@ code structure and the available test suites.
 .. _COCO: https://github.com/numbbo/coco
 .. _COCOold: http://coco.gforge.inria.fr
 
+.. |example_experiment.py| replace:: ``example_experiment.py``
+.. _example_experiment.py: https://github.com/numbbo/coco/blob/master/code-experiments/build/python/example_experiment.py
+
 .. |coco_problem_get_dimension| replace:: ``coco_problem_get_dimension``
 .. _coco_problem_get_dimension: http://numbbo.github.io/coco-doc/C/coco_8h.html#a0dabf3e4f5630d08077530a1341f13ab
 
@@ -165,55 +168,67 @@ has been implemented within the COCO_ framework. [#]_
 
 The COCO_ framework provides the practical means for an automatized
 benchmarking procedure. Installing COCO_ (in a shell) and benchmarking an
-optimization algorithm, say, implemented in the function ``fmin`` in Python,
-becomes as simple as
+optimization algorithm, say, the function ``fmin`` from ``scipy.optimize`` 
+in Python, becomes as simple as
 
 .. raw:: latex
 
-    in Figure 1. \begin{figure} %\begin{minipage}{\textwidth}
+    in Figure 1.\hspace{-1ex}
+
+[#]_
+
+.. raw:: latex
+
+    \begin{figure} %\begin{minipage}{\textwidth}
+
 
 .. code:: bash
 
-     $ git clone https://github.com/numbbo/coco.git  # get coco
-     $ cd coco
-     $ python do.py run-python  # install Python experimental module cocoex
-     $ python do.py install-postprocessing  # install post-processing :-)
-..     $ cp code-experiments/build/python/example_experiment.py ./my_experiment_runner.py
+   $ ### get and install the code
+   $ git clone https://github.com/numbbo/coco.git  # get coco
+   $ cd coco
+   $ python do.py run-python  # install Python experimental module cocoex
+   $ python do.py install-postprocessing  # install post-processing :-)
 
-..    $ python my_experiment_runner.py  # run the "default" experiment
-    $ python -m bbob_pproc exdata/...
+.. code:: bash
+
+   $ ### (optional) run an example from the shell
+   $ cp code-experiments/build/python/example_experiment.py .
+   $ python example_experiment.py     # run the "default" experiment
+   $ python -m bbob_pproc exdata/...  # run the post-processing
 
 .. code:: python
 
-  #!/usr/bin/env python
-  import cocoex  
-  import cocopp  # or: import bbob_pproc as cocopp
-  from myoptimizer import fmin
+   #!/usr/bin/env python
+   """Python script to benchmark fmin of scipy.optimize"""
+   import cocoex  
+   try: import cocopp  # new (future) name
+   except ImportError: import bbob_pproc as cocopp  # old name
+   from scipy.optimize import fmin
+ 
+   suite = cocoex.Suite("bbob", "year: 2016", "")
+   observer = cocoex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
     
-  suite = cocoex.Suite("bbob", "year: 2016", "")
-  observer = cocoex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
-    
-  for p in suite:  # loop over all problems
-      observer.observe(p)  # prepare logging of necessary data
-      fmin(p, p.initial_solution)
-        
-  cocopp.main('exdata/myoptimizer-on-bbob')  # invoke data post-processing
+   for p in suite:  # loop over all problems
+       observer.observe(p)  # prepare logging of necessary data
+       fmin(p, p.initial_solution)  # disp=False would silence fmin output
+     
+   cocopp.main('exdata/myoptimizer-on-bbob')  # invoke data post-processing
 
 .. raw:: latex 
 
     \caption[Minimal benchmarking code in Python]{
     Shell code for installation of \COCO\ (above), and Python code to benchmark 
-    \texttt{fmin} on the \texttt{bbob} suite and display the results.
+    \texttt{fmin} on the \texttt{bbob} suite.
     
-
-Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data. 
+Now the file ``ppdata/ppdata.html`` can be used to browse the resulting data.
 
 .. raw:: latex 
 
     }
     \end{figure}
 
-The COCO_ framework provides currently
+The COCO_ framework provides 
 
  - an interface to several languages in which the benchmarked optimizer
    can be written, currently C/C++, Java, Matlab/Octave, Python
@@ -224,7 +239,7 @@ The COCO_ framework provides currently
 
 The underlying philosophy of COCO_ is to provide everything which otherwise
 most experimenters needed to setup and implement themselves, if they wanted to
-benchmark an algorithm properly. So far, the framework has been used successfully for
+benchmark an algorithm *properly*. So far, the framework has been used successfully for
 benchmarking far over a hundred algorithms by many researchers.  
 
 .. [#] One major flaw is that we often get no
@@ -238,6 +253,10 @@ benchmarking far over a hundred algorithms by many researchers.
    
 .. [#] See https://www.github.com/numbbo/coco or https://numbbo.github.io for implementation details. 
    
+.. [#] In order to get even more insightful result on the comparatively 
+   difficult ``bbob`` benchmark suite, additionally randomized restarts are advisable. 
+   Example code is given in |example_experiment.py| which runs
+   out-of-the-box as a benchmarking Python script.  
        
 .. left to the reader to
    scan and compare to each other, possibly across different articles. 
@@ -262,24 +281,25 @@ benchmarking far over a hundred algorithms by many researchers.
 Why COCO_?
 ----------
 
-Appart from diminishing the burden (time) and the pitfalls (and bugs
-or omissions) of the repetitive coding task by many experimenters, our aim is to
+Appart from diminishing the burden (time) and the pitfalls, bugs
+or omissions of the repetitive coding task for many experimenters, our aim is to
 provide a *conceptual guideline for better benchmarking*. Our guideline has 
 the following defining features.  
 
 .. format hint: four spaces are needed to make the continuation
      https://gist.github.com/dupuy/1855764
 
-#. Benchmark functions are 
-    #. used as black boxes for the algorithm, however they 
-       are explicitly known to the scientific community. 
-    #. designed to be comprehensible, to allow a meaningful 
-       interpretation of performance results.
-    #. difficult to "defeat", that is, they do not 
-       have artificial regularities that can be (intentionally or unintentionally) 
-       exploited by an algorithm. [#]_
-    #. scalable with the input dimension [WHI1996]_.
+#. Benchmark functions are
 
+   #. used as black boxes for the algorithm, however they 
+      are explicitly known to the scientific community. 
+   #. designed to be comprehensible, to allow a meaningful 
+      interpretation of performance results.
+   #. difficult to "defeat", that is, they do not 
+      have artificial regularities that can easily be (intentionally or unintentionally) 
+      exploited by an algorithm. [#]_
+   #. scalable with the input dimension [WHI1996]_.
+  
 #. There is no predefined budget (number of |f|-evaluations) for running an
    experiment, the experimental procedure is *budget-free* [HAN2016ex]_.
 
@@ -297,11 +317,13 @@ the following defining features.
      
    A *missing* runtime value is considered as possible outcome (see below).
     
-#. The display is as comprehensible, intuitive and informative as possible, 
+#. The display is as comprehensible, intuitive and informative as possible. 
    We believe that details matter. 
    Aggregation over dimension is avoided, because dimension is an a priori
    known parameter that can and should be used for algorithm design or selection
    decisions. 
+   This is possible without significant drawbacks, because all functions are 
+   scalable in the dimension. 
 
 .. [#] For example, the optimum is not in all-zeros, optima are not placed 
     on a regular grid, most functions are not separable [WHI1996]_. The
@@ -328,8 +350,9 @@ Terminology
 We specify a few terms which are used later. 
 
 *function*
-  We talk about a *function* as a parametrized mapping
-  :math:`\mathbb{R}^n\to\mathbb{R}^m` with scalable input space, and usually :math:`m\in\{1,2\}`.
+  We talk about an objective *function* as a parametrized mapping
+  :math:`\mathbb{R}^n\to\mathbb{R}^m` with scalable input space, :math:`n>\ge2`,
+  and usually :math:`m\in\{1,2\}`.
   Functions are parametrized such that different *instances* of the
   "same" function are available, e.g. translated or shifted versions. 
   
@@ -404,9 +427,10 @@ function feature. Consequently, in a typical COCO_ benchmark suite, instances
 with randomized search space translations are presented to the optimizer. [#]_
 
 
-.. [#] We can think of |j| as a continuous parameter vector, as it 
-   parametrizes, among others things, translations and rotations. In practice, 
-   |j| is a discrete identifier for single instantiations of these parameters. 
+.. [#] We can think of |j| as an index to a continuous parameter vector setting, 
+   as it parametrizes, among others things, translations and rotations. In
+   practice, |j| is the discrete identifier for single instantiations of 
+   these parameters. 
 
 
 .. [#] Changing or sweeping through a relevant feature of the problem class,
@@ -425,7 +449,7 @@ Runtime and Target Values
 In order to measure the runtime of an algorithm on a problem, we
 establish a hitting time condition. 
 We prescribe a **target value**, |t|, which is an |f|- or
-indicator-value [TUS2016]_. 
+indicator-value [HAN2016perf]_ [TUS2016]_. 
 For a single run, when an algorithm reaches or surpasses the target value |t|
 on problem |p|, we say it has *solved the problem* |pt| --- it was successful. [#]_
 
@@ -532,7 +556,7 @@ To make them amenable to the experimenter, we need to summarize these data.
 
 
 Our idea behind an aggregation is to make a statistical summary over a set or
-subset of *problems of interest* over which we assume a uniform distribution [HAN2016perf]_. 
+subset of *problems of interest* over which we assume a uniform distribution. 
 From a practical perspective this means to have no simple way to distinguish
 between these problems and to select an optimization algorithm accordingly---in
 which case an aggregation would have no significance---and that we are likely
@@ -542,14 +566,14 @@ should be used for algorithm selection.
 
 We have several ways to aggregate the resulting runtimes. 
 
- - Empirical cumulative distribution functions (|ECDFs|). In the domain of 
+ - Empirical distribution functions (|ECDFs|). In the domain of 
    optimization, |ECDFs| are also known as *data profiles* [MOR2009]_. We
    prefer the simple |ECDF| over the more innovative performance profiles
    [MOR2002]_ for two reasons.
    |ECDFs| (i) do not depend on other presented algorithms, that is, they are
    entirely comparable across different publications, and (ii) let us distinguish in a
    natural way easy problems from difficult problems for the considered
-   algorithm. We usually display |ECDFs| on the log scale, which makes the area
+   algorithm. [#]_ We usually display |ECDFs| on the log scale, which makes the area
    above the curve and the *difference area* between two curves a meaningful
    conception [HAN2016perf]_. 
    
@@ -567,6 +591,12 @@ We have several ways to aggregate the resulting runtimes.
    literally aggregate runtimes (which are literally defined only when |t| was
    hit).  They aggregate, however, time data to eventually supplement missing runtime
    values, see also [HAN2016perf]_. 
+
+.. [#] When reading a performance profile, an immediate question is often 
+   whether a large runtime difference is due to one algorithm solving
+   the problem very quickly. This question cannot be answered from the profile.
+   The advantage (i) over data profiles is lost when using run-length based
+   target values [HAN2016perf]_. 
 
 .. |ERT| replace:: ERT
 .. |ECDF| replace:: ECDF
@@ -644,21 +674,22 @@ of the French National Research Agency.
 __ http://numbbo.github.io/coco-doc/perf-assessment
 __ http://arxiv.org/abs/1605.03560
 
-.. .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009). Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en
+.. .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros (2009). Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828__. __ http://hal.inria.fr/inria-00362649/en
 
 .. [HAN2010ex] N. Hansen, A. Auger, S. Finck, and R. Ros (2010). 
-  Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en
+  Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, `Research Report RR-7215`__, Inria.
+__ http://hal.inria.fr/inria-00362649/en
 
 .. [HAN2010] N. Hansen, A. Auger, R. Ros, S. Finck, and P. Posik (2010). 
   Comparing Results of 31 Algorithms from the Black-Box Optimization Benchmarking BBOB-2009. Workshop Proceedings of the GECCO Genetic and Evolutionary Computation Conference 2010, ACM, pp. 1689-1696
 
 .. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
-  `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Technical Report RR-6829`__, Inria, updated February 2010.
+  `Real-parameter black-box optimization benchmarking 2009: Noiseless functions definitions`__. `Research Report RR-6829`__, Inria, updated February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
 
 .. [HAN2009noi] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
-  `Real-Parameter Black-Box Optimization Benchmarking 2009: Noisy Functions Definitions`__. `Technical Report RR-6869`__, Inria, updated February 2010.
+  `Real-Parameter Black-Box Optimization Benchmarking 2009: Noisy Functions Definitions`__. `Research Report RR-6869`__, Inria, updated February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00369466
 
