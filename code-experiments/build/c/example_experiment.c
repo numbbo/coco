@@ -118,8 +118,8 @@ int main(void) {
 
   example_experiment("bbob-constrained", "bbob", random_generator);
 
-  /* Uncomment the line below to run the same example experiment on the bbob suite
-  example_experiment("bbob-biobj", "bbob-biobj", random_generator); */
+  /* Uncomment the line below to run the same example experiment on the bbob suite */
+  /*example_experiment("bbob-biobj", "bbob-biobj", random_generator); */
 
   /* Uncomment the line below to run the same example experiment on the bbob suite
   example_experiment("bbob", "bbob", random_generator); */
@@ -192,7 +192,7 @@ void example_experiment(const char *suite_name,
         break;
 
       /* Call the optimization algorithm for the remaining number of evaluations */
-      /* my_random_search(evaluate_function,
+      /*my_random_search(evaluate_function,
                        dimension,
                        coco_problem_get_number_of_objectives(PROBLEM),
                        coco_problem_get_smallest_values_of_interest(PROBLEM),
@@ -200,7 +200,7 @@ void example_experiment(const char *suite_name,
                        (size_t) evaluations_remaining,
                        random_generator);
       */
-                       
+      
       my_random_search_cons(evaluate_function,
                             evaluate_constraint,
                             dimension,
@@ -210,7 +210,7 @@ void example_experiment(const char *suite_name,
                             coco_problem_get_largest_values_of_interest(PROBLEM),
                             (size_t) evaluations_remaining,
                             random_generator);
-
+      
       /* Break the loop if the algorithm performed no evaluations or an unexpected thing happened */
       if (coco_problem_get_evaluations(PROBLEM) == evaluations_done) {
         printf("WARNING: Budget has not been exhausted (%lu/%lu evaluations done)!\n",
