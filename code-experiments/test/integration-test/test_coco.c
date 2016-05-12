@@ -20,7 +20,7 @@ static int about_equal(const double a, const double b) {
     const double absolute_error = fabs(a - b);
     const double larger = fabs(a) > fabs(b) ? a : b;
     const double relative_error = fabs((a - b) / larger);
-  
+
     if (absolute_error < 2 * DBL_MIN)
       return 1;
     return relative_error < 4e-6;
@@ -93,18 +93,18 @@ int main(int argc, char **argv) {
       ret = fscanf(testfile, "%30lf", &testvectors[i].x[j]);
       if (ret != 1) {
         fprintf(stderr, "ERROR: Failed to parse testvector %lu element %lu.\n",
-                i + 1, j + 1);
+                (unsigned long) i + 1, (unsigned long) j + 1);
       }
     }
   }
 
-  suite = coco_suite("bbob", NULL, NULL);
+  suite = coco_suite("bbob", "instances: 1-15", NULL);
 
   while (1) {
     double expected_value, *x, y;
     ret = fscanf(testfile, "%30lu\t%30lu\t%30i\t%30lf", &problem_index_old, &problem_index, &testvector_id,
                  &expected_value);
-    if (ret != 3)
+    if (ret != 4)
       break;
     ++number_of_testcases;
     /* We cache the problem object to save time. Instantiating
@@ -115,7 +115,8 @@ int main(int argc, char **argv) {
       if (NULL != problem)
         coco_problem_free(problem);
       if (problem_index > coco_suite_get_number_of_problems(suite) - 1) {
-        fprintf(stdout, "problem index = %lu, maximum index = %lu \n", problem_index, coco_suite_get_number_of_problems(suite) - 1);
+        fprintf(stdout, "problem index = %lu, maximum index = %lu \n", (unsigned long) problem_index,
+                (unsigned long) coco_suite_get_number_of_problems(suite) - 1);
       }
       problem = coco_suite_get_problem(suite, problem_index);
       previous_problem_index = (long) problem_index;
@@ -148,7 +149,7 @@ int main(int argc, char **argv) {
   fprintf(stderr, "%i of %i tests passed (failure rate %.2f%%)\n",
           number_of_testcases - number_of_failures, (int)number_of_testcases,
           (100.0 * number_of_failures) / number_of_testcases);
-
+  
   /* Free any remaining allocated memory */
   if (NULL != problem)
     coco_problem_free(problem);

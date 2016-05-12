@@ -332,9 +332,9 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   assert(y[0] + 1e-13 >= logger->optimal_fvalue);
 
   /* Add a line in the .dat file for each logging target reached. */
-    if (coco_observer_targets_trigger(logger->targets, y[0] - logger->optimal_fvalue)) {
+  if (coco_observer_targets_trigger(logger->targets, y[0] - logger->optimal_fvalue)) {
 
-    logger_bbob_write_data(logger->fdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
+      logger_bbob_write_data(logger->fdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
         logger->optimal_fvalue, x, problem->number_of_variables, logger->observer->precision_f, logger->observer->precision_x);
   }
 

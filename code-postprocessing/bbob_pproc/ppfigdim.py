@@ -592,13 +592,14 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         plt.text(plt.xlim()[0], plt.ylim()[0],
                  _valuesOfInterest.short_info, fontsize=14)
         if func in genericsettings.current_testbed.functions_with_legend:
-            plt.legend(loc="best")
+            leg = plt.legend(loc="best")
+            leg.get_frame().set_alpha(0.2) # Wassim: To make the legend transparent framealpha=0.2 doesn't seem to work
         if func in funInfos.keys():
             # print(plt.rcParams['axes.titlesize'])
             # print(plt.rcParams['font.size'])
             funcName = funInfos[func]
             plt.gca().set_title(funcName, fontsize=fontSize)
-        plot_previous_algorithms(func, dsList.isBiobjective(), _valuesOfInterest)
+            plot_previous_algorithms(func, dsList.isBiobjective() or True, _valuesOfInterest) # Wassim: TODO the or True is to be removed
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
         with warnings.catch_warnings(record=True) as ws:
             ppfig.saveFigure(filename, verbose=verbose)
