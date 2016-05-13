@@ -23,8 +23,9 @@
  */
 static size_t obj_function_type(const size_t function) {
   
-  double number_of_function_types = 6.0;
-  return (size_t)ceil((double)function / number_of_function_types);
+  
+  double problems_per_obj_function_type = 6.0;
+  return (size_t)ceil((double)function / problems_per_obj_function_type);
   
 }
 
@@ -35,12 +36,12 @@ static size_t obj_function_type(const size_t function) {
 static size_t nb_of_linear_constraints(const size_t function,
                                        const size_t dimension) {
   
-  int number_of_function_types = 6.0;
+  int problems_per_obj_function_type = 6.0;
   int p;
   
-  /* Map "function" value into {1, ..., number_of_function_types} */
-  p = (int)floor(((int)function - 1) / number_of_function_types);
-  p = (((int)function - p * number_of_function_types - 1) % number_of_function_types) + 1;
+  /* Map "function" value into {1, ..., problems_per_obj_function_type} */
+  p = (int)floor(((int)function - 1) / problems_per_obj_function_type);
+  p = (((int)function - p * problems_per_obj_function_type - 1) % problems_per_obj_function_type) + 1;
   
   if (p == 1) return 1;
   else if (p == 2) return 2;
