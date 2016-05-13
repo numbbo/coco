@@ -36,7 +36,7 @@ optimization algorithms in a black-box scenario. This procedure can be
 applied with the COCO_ benchmarking platform. 
 We describe initialization of and input to the algorithm and touch
 upon the relevance of termination and restarts. We reconsider parameter tuning 
-the concept of recommendations for benchmarking with COCO_.
+and the concept of recommendations for benchmarking with COCO_.
 
 
 .. raw:: latex
