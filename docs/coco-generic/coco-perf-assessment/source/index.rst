@@ -769,6 +769,9 @@ We observe that the artificial best 2009 algorithm is about two to three time fa
 This work was supported by the grant ANR-12-MONU-0009 (NumBBO)
 of the French National Research Agency.
 
+The authors would like to thank Raymond Ros, Steffen Finck, Marc Schoenauer and  
+Petr Posik for their many invaluable contributions to this work. 
+
 
 .. ############################# References ##################################
 .. raw:: html

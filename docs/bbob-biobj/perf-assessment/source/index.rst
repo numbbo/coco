@@ -398,8 +398,6 @@ values from the `Github repository of COCO`__.
 
     \section*{Acknowledgements}
 
-This work was supported by the grant ANR-12-MONU-0009 (NumBBO) 
-of the French National Research Agency.
 
 The authors would like to thank Thanh-Do Tran for his
 contributions and assistance with the preliminary code of the bi-objective 
@@ -409,6 +407,9 @@ requests, code testing, and many valuable discussions. Special thanks go
 to Olaf Mersmann for the inital rewriting of the COCO platform without which
 the bi-objective extension of COCO would not have happened.
    
+This work was supported by the grant ANR-12-MONU-0009 (NumBBO) 
+of the French National Research Agency.
+
 
 .. ############################# References ##################################
 .. raw:: html
