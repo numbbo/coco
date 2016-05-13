@@ -56,6 +56,8 @@ performance assessment of the algorithm. [#]_
 .. _COCO: https://github.com/numbbo/coco
 .. _COCOold: http://coco.gforge.inria.fr
 
+.. |f| replace:: :math:`f`
+
 .. |coco_problem_get_dimension| replace:: ``coco_problem_get_dimension``
 .. _coco_problem_get_dimension: http://numbbo.github.io/coco-doc/C/coco_8h.html#a0dabf3e4f5630d08077530a1341f13ab
 
@@ -122,14 +124,14 @@ set-up for *black-box optimization benchmarking*. We recommend to use this proce
 within the COCO_ platform [HAN2016co]_. [#]_ 
 
 Our central measure of performance, to which the experimental procedure is
-adapted, is the number of evaluations of the objective function to reach a
+adapted, is the number of calls to the objective function to reach a
 certain solution quality (function value or :math:`f`-value or indicator
 value), also denoted as *runtime*. 
 
 Terminology
 -----------
 *function*
-  We talk about a *function* as a parametrized mapping
+  We talk about an objective *function* |f| as a parametrized mapping
   :math:`\mathbb{R}^n\to\mathbb{R}^m` with scalable input space, that is,
   :math:`n` is not (yet) determined, and usually :math:`m\in\{1,2\}`.
   Functions are parametrized such that different *instances* of the
@@ -150,7 +152,7 @@ Terminology
   as the *number of evaluations* 
   conducted on a given problem, also referred to as number of *function* evaluations. 
   Our central performance measure is the runtime until a given target value 
-  is hit [CocoPerf]_.
+  is hit [HAN2016perf]_.
 
 *suite*
   A test- or benchmark-suite is a collection of problems, typically between
@@ -181,7 +183,8 @@ See also Section :ref:`sec:budget`.
 Initialization and Input to the Algorithm
 -----------------------------------------
 
-An algorithm can use the following input information from each problem. For initialization: 
+An algorithm can use the following input information from each problem. 
+At any time: 
 
 *Input and output dimensions*
   as a defining interface to the problem, specifically:
@@ -197,7 +200,7 @@ An algorithm can use the following input information from each problem. For init
       one or more constraints. 
 
 *Search domain of interest*
-  defined from |coco_problem_get_largest_values_of_interest|_ and |coco_problem_get_smallest_values_of_interest|_. The optimum (or each extremal solution of the Pareto set) lies within the search domain of interest. If the optimizer operates on a bounded domain only, the domain of interest can be interpreted as lower and upper bounds [#]_.
+  defined from |coco_problem_get_largest_values_of_interest|_ and |coco_problem_get_smallest_values_of_interest|_. The optimum (or each extremal solution of the Pareto set) lies within the search domain of interest. If the optimizer operates on a bounded domain only, the domain of interest can be interpreted as lower and upper bounds.
 
 *Feasible (initial) solution* 
   provided by |coco_problem_get_initial_solution|_. 
@@ -231,7 +234,7 @@ The number of evaluations of the problem and/or constraints are the search
 costs, also referred to as *runtime*, and used for the performance 
 assessment of the algorithm. [#]_
 
-.. [#] Note, however, that the Pareto set in the bi-objective case is not always guaranteed to lie in its entirety within the region of interest.
+.. .. [#] Note, however, that the Pareto set in the bi-objective case is not always guaranteed to lie in its entirety within the region of interest.
 
 .. [#] |coco_problem_get_evaluations(const coco_problem_t * problem)|_ is a
   convenience function that returns the number of evaluations done on ``problem``. 
@@ -244,6 +247,8 @@ assessment of the algorithm. [#]_
 
 Budget, Termination Criteria, and Restarts
 ------------------------------------------
+
+.. todo:: abstract: tuning, restarts, input
 
 We consider the budget, termination criteria, and restarts to be part of the 
 benchmarked algorithm. Algorithms with any budget of function evaluations are eligible. 
@@ -321,8 +326,15 @@ Parameter Setting and Tuning of Algorithms
    described thoroughly. 
 
 Any tuning of algorithm parameters to the test suite should be described and
-the approximate overall number of tested parameter settings or algorithm
-variants and the approximate overall invested budget should be given. 
+*the approximate overall number of tested parameter settings or algorithm
+variants and the approximate overall invested budget should be given*. 
+
+The only recommended tuning procedure is the verification that *termination
+conditions* of the algorithm are suited to the given testbed and, in case,
+tuning of termination parameters. [#]_
+Too early or too late termination can be identified and adjusted comparatively 
+easy. 
+This is also a useful prerequisite for restarts, see also above. 
 
 On all functions the very same parameter setting must be used (which might
 well depend on the dimensionality, see Section :ref:`sec:input`). That means,
@@ -332,10 +344,15 @@ separability, multi-modality, ...) cannot be considered as input parameter to
 the algorithm. 
 
 On the other hand, benchmarking different parameter settings as "different
-algorithms" on an entire test suite is encouraged. 
+algorithms" on the entire test suite is encouraged. 
+
+.. [#] In our experience, numerical optimization software frequently terminates 
+   too early by default, while evolutionary computation software often 
+   terminates too late by default. 
 
 .. In order to combine
-   different parameter settings within a single algorithm, one can use multiple runs with
+   different parameter settings within a single algorithm, one can use 
+   multiple runs with
    different parameters (for example restarts, see also Section
    :ref:`sec:budget`), or probing techniques to identify
    problem-wise the appropriate parameters online. The underlying assumption in
@@ -349,12 +366,7 @@ algorithms" on an entire test suite is encouraged.
    *second* testbed has been defined. The two testbeds can be approached *a
    priori* with different parameter settings or different algorithms.
 
-
-.. # [Auger:2005a] A Auger and N Hansen. A restart CMA evolution strategy with
-   increasing population size. In *Proceedings of the IEEE Congress on
-   Evolutionary Computation (CEC 2005)*, pages 1769–1776. IEEE Press, 2005.
-
-.. # [Auger:2005a] A Auger and N Hansen. A restart CMA evolution strategy with
+.. .. # [Auger:2005a] A Auger and N Hansen. A restart CMA evolution strategy with
    increasing population size. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1769–1776. IEEE Press, 2005.
 
@@ -385,7 +397,7 @@ necessary nor advantageous to recommend the same solution repeatedly.
 .. On non-noisy suites the last evaluation changes the assessment only if the :math:`f`-value is better than all :math:`f`-values from previous evaluations. 
 
 .. [#] In the noisy scenario, a small number of the most current solutions 
-  will be taken into account in future versions. 
+  will be taken into account [HAN2016perf]_. 
   In the multi-objective scenario, the recommendation option is not available,
   because an archive of non-dominated solutions presumes that all solutions are
   evaluated. 
@@ -393,12 +405,12 @@ necessary nor advantageous to recommend the same solution repeatedly.
 Time Complexity Experiment
 ==========================
 
-In order to get a rough measurement of the time complexity of the algorithm,
-the wall-clock or CPU time should be measured when running the algorithm on
-the benchmark suite. The chosen setup should reflect a "realistic average
-scenario". [#]_ The **time divided by the number of function evaluations shall be
-presented separately for each dimension**. The chosen setup, coding language, compiler and
-computational architecture for conducting these experiments are to be described.
+In order to get a rough measurement of the time complexity of the algorithm, the
+wall-clock or CPU time should be measured when running the algorithm on the
+benchmark suite. The chosen setup should reflect a "realistic average scenario".
+[#]_ The *time divided by the number of function evaluations shall be presented
+separately for each dimension*. The chosen setup, coding language, compiler and
+computational architecture for conducting these experiments should be given.
 
 .. The :file:`exampletiming.*` code template is provided to run this experiment. For CPU-inexpensive algorithms the timing might mainly reflect the time spent in function :math:`fgeneric`.
 
@@ -423,7 +435,7 @@ computational architecture for conducting these experiments are to be described.
 The authors would like to thank Raymond Ros, Steffen Finck, Marc Schoenauer,  
 Petr Posik and Dejan Tušar for their many invaluable contributions to this work. 
 
-The authors also acknowledge support by the grant ANR-12-MONU-0009 (NumBBO) 
+This work was support by the grant ANR-12-MONU-0009 (NumBBO) 
 of the French National Research Agency.
 
 
@@ -443,8 +455,11 @@ of the French National Research Agency.
    (Companion)*, pages 2479-2484. ACM, 2009.
 .. .. [Efron:1993] B. Efron and R. Tibshirani. *An introduction to the
    bootstrap.* Chapman & Hall/CRC, 1993.
-.. [CocoPerf] The BBOBies (2016). COCO: `Performance Assessment`__. 
-.. __: http://numbbo.github.io/coco-doc/perf-assessment/
+
+.. [HAN2016perf] N. Hansen, A. Auger, D. Brockhoff, D. Tušar, T. Tušar. 
+  `COCO: Performance Assessment`__. *ArXiv e-prints*, `arXiv:1605.03560`__, 2016.
+__ http://numbbo.github.io/coco-doc/perf-assessment
+__ http://arxiv.org/abs/1605.03560
 
 .. [HAN2009] N. Hansen, A. Auger, S. Finck, and R. Ros. 
    Real-Parameter Black-Box Optimization Benchmarking 2009: Experimental Setup, *Inria Research Report* RR-6828 http://hal.inria.fr/inria-00362649/en, 2009.
@@ -452,9 +467,9 @@ of the French National Research Agency.
 .. [HAN2010] N. Hansen, A. Auger, S. Finck, and R. Ros. 
    Real-Parameter Black-Box Optimization Benchmarking 2010: Experimental Setup, *Inria Research Report* RR-7215 http://hal.inria.fr/inria-00362649/en, 2010.
 
-.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff (2016).
+.. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff.
    `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
-   Setting`__, *ArXiv e-prints*, `arXiv:1603.08785`__. 
+   Setting`__, *ArXiv e-prints*, `arXiv:1603.08785`__, 2016. 
 .. __: http://numbbo.github.io/coco-doc/
 .. __: http://arxiv.org/abs/1603.08785
  
