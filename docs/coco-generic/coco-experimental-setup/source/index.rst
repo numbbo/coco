@@ -19,25 +19,24 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. |
 .. |
 
+.. raw:: html
+
+   See: <I>ArXiv e-prints</I>,
+   <A HREF="http://arxiv.org/abs/1603.08776">arXiv:1603.08776</A>, 2016.
+
+
 .. raw:: latex
 
   % \tableofcontents is automatic with sphinx and moved behind abstract by swap...py
   \begin{abstract}
 
 
-.. WHEN CHANGING THIS, CHANGE ALSO the abstract in conf.py ACCORDINGLY (though it seems the latter is not used)
-
 We present an experimental setup and procedure for benchmarking numerical
 optimization algorithms in a black-box scenario. This procedure can be
 applied with the COCO_ benchmarking platform. 
 We describe initialization of and input to the algorithm and touch
-upon the relevance of termination and restarts. 
-We introduce the concept of recommendations for benchmarking with COCO_.
-Recommendations detach the solutions used in function calls from the any-time
-performance assessment of the algorithm. [#]_
-
-.. [#] *ArXiv e-prints*, arXiv:1603.08776__, 2016.
-.. __: http://arxiv.org/abs/1603.08776
+upon the relevance of termination and restarts. We reconsider parameter tuning 
+the concept of recommendations for benchmarking with COCO_.
 
 
 .. raw:: latex
@@ -247,8 +246,6 @@ assessment of the algorithm. [#]_
 
 Budget, Termination Criteria, and Restarts
 ------------------------------------------
-
-.. todo:: abstract: tuning, restarts, input
 
 We consider the budget, termination criteria, and restarts to be part of the 
 benchmarked algorithm. Algorithms with any budget of function evaluations are eligible. 
