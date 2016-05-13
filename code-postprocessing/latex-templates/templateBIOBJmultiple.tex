@@ -241,7 +241,7 @@ to be written
 \terms{Algorithms}
 
 % Complete with anything that is needed
-\keywords{Benchmarking, Black-box optimization}
+\keywords{Benchmarking, Black-box optimization, Bi-objective optimization}
 
 % \section{Introduction}
 %
@@ -265,15 +265,16 @@ In order to evaluate the CPU timing of the algorithm, we have run the \change{\a
 Results from experiments according to \cite{hansen2016exp},
 \cite{hansen2016perfass} and \cite{biobj2016perfass} on the benchmark
 functions given in \cite{biobj2016func} are presented in
-Figures~\ref{ECDFsingleOne}, \ref{ECDFsingleTwo}, \ref{fig:ECDFs05D} and
-\ref{fig:ECDFs20D} and in Tables~\ref{tab:aRTs5} and~\ref{tab:aRTs20}.
+Figures~\ref{fig:ECDFsingleOne}, \ref{fig:ECDFsingleTwo}, \ref{fig:ECDFsGroupsFive} and
+\ref{fig:ECDFsGroupsTwenty} and in Tables~\ref{tab:aRTs5} and~\ref{tab:aRTs20}.
 The experiments were performed with COCO \cite{hansen2016cocoplat}, version
 \change{1.0.1}, the plots were produced with version \change{1.1.1}.
 
-The \textbf{average runtime (aRT)}, used in the figures and tables,
+The \textbf{average runtime (aRT)}, used in the %figures and
+tables,
 depends on a given quality indicator value, $\Itarget=\hvref+\DI$, and is
 computed over all relevant trials as the number of function
-evaluations executed during each trial while the best function value
+evaluations executed during each trial while the best indicator value
 did not reach \Itarget, summed over all trials and divided by the
 number of trials that actually reached \Itarget\
 \cite{hansen2016exp,price1997dev}.  \textbf{Statistical significance}
@@ -378,7 +379,7 @@ unsuccessful trial under consideration.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{figure*}
-\begin{tabular}{c@{\hspace*{-0.02\textwidth}}c@{\hspace*{-0.02\textwidth}}c@{\hspace*{-0.02\textwidth}}c}
+\begin{tabular}{@{\hspace*{-0.009\textwidth}}c@{\hspace*{-0.014\textwidth}}c@{\hspace*{-0.016\textwidth}}c@{\hspace*{-0.02\textwidth}}c}
 separable-separable & separable-moderate & separable-ill-cond. & separable-multimodal\\
 \includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany_05D_1-separable_1-separable} &
 \includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany_05D_1-separable_2-moderate} &
@@ -401,7 +402,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 \includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany_05D_noiselessall}
 \vspace*{-0.5ex}
 \end{tabular}
- \caption{\label{fig:ECDFsGroups}
+ \caption{\label{fig:ECDFsGroupsFive}
  \bbobECDFslegend{5}
  }
 \end{figure*}
@@ -414,7 +415,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{figure*}
-\begin{tabular}{c@{\hspace*{-0.02\textwidth}}c@{\hspace*{-0.02\textwidth}}c@{\hspace*{-0.02\textwidth}}c}
+\begin{tabular}{@{\hspace*{-0.009\textwidth}}c@{\hspace*{-0.014\textwidth}}c@{\hspace*{-0.016\textwidth}}c@{\hspace*{-0.02\textwidth}}c}
 separable-separable & separable-moderate & separable-ill-cond. & separable-multimodal\\
 \includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany_20D_1-separable_1-separable} &
 \includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany_20D_1-separable_2-moderate} &
@@ -437,7 +438,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 \includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldmany_20D_noiselessall}
 \vspace*{-0.5ex}
 \end{tabular}
- \caption{\label{fig:ECDFsGroups}
+ \caption{\label{fig:ECDFsGroupsTwenty}
  \bbobECDFslegend{20}
  }
 \end{figure*}
