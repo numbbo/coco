@@ -31,12 +31,13 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$
   \begin{abstract}
 
 
-We present an experimental setup and procedure for benchmarking numerical
-optimization algorithms in a black-box scenario. This procedure can be
-applied with the COCO_ benchmarking platform. 
-We describe initialization of and input to the algorithm and touch
-upon the relevance of termination and restarts. We reconsider parameter tuning 
-and the concept of recommendations for benchmarking with COCO_.
+We present a budget-free experimental setup and procedure for benchmarking numerical
+optimization algorithms in a black-box scenario. 
+This procedure can be applied with the COCO_ benchmarking platform. 
+We describe initialization of and input to the algorithm and touch upon the
+relevance of termination and restarts. 
+We finally reconsider parameter tuning and the concept of recommendations for
+benchmarking with COCO_.
 
 
 .. raw:: latex
@@ -248,7 +249,8 @@ Budget, Termination Criteria, and Restarts
 ------------------------------------------
 
 We consider the budget, termination criteria, and restarts to be part of the 
-benchmarked algorithm. Algorithms with any budget of function evaluations are eligible. 
+benchmarked algorithm. Algorithms with any budget of function evaluations are 
+eligible, our benchmarking setup is budget-free. 
 The choice of termination is a relevant part of the algorithm. 
 On the one hand, allowing a larger number of function evaluations increases the chance to achieve better function values. On the other hand, a timely
 termination of a stagnating run can improve the performance, as these evaluations
@@ -260,7 +262,7 @@ naturally within a comparatively small budget. Independent restarts do not
 change the central performance measure [#]_, however, they improve the reliability, comparability [#]_, precision, and "visibility" of the measured results. 
 
 Moreover, any multistart procedure (which relies on an interim termination of the algorithm) is encouraged. 
-Multistarts may not be independent as they can feature a parameter sweep (e.g., increasing population size [HAR1999]_ [AUG2005]_) or can be based on the outcome of the previous starts. 
+Multistarts may not be independent as they can feature a parameter sweep (e.g., increasing population size [HAR1999]_ [AUG2005]_), can be based on the outcome of the previous starts, or feature a systematic change of the initial conditions for the algorithm. 
 
 After a multistart procedure has been established, a recommended procedure is
 to use a budget proportional to the dimension, :math:`k\times n`, and run 
@@ -279,10 +281,7 @@ affecting the performance assessment, because there is no target left to hit.
 
 .. [#] The COCO_ platform provides example code to implement independent restarts. 
 
-.. [#] Therefore we call the experimental approach budget-free. This claim 
-  however makes the assumption that the runtime distribution is the same on all 
-  instances of a function in a given dimension. This assumption cannot be
-  proven in general and might be violated in some cases for some algorithms. 
+.. [#] Therefore we call the experimental approach budget-free. 
 
 .. [#] Algorithms are only comparable up to the smallest budget given to 
   any of them. 
@@ -404,8 +403,9 @@ Time Complexity Experiment
 
 In order to get a rough measurement of the time complexity of the algorithm, the
 wall-clock or CPU time should be measured when running the algorithm on the
-benchmark suite. The chosen setup should reflect a "realistic average scenario".
-[#]_ The *time divided by the number of function evaluations shall be presented
+benchmark suite. The chosen setup should reflect a "realistic average 
+scenario". [#]_ 
+The *time divided by the number of function evaluations shall be presented
 separately for each dimension*. The chosen setup, coding language, compiler and
 computational architecture for conducting these experiments should be given.
 
