@@ -660,28 +660,32 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                     dictData.setdefault(keyValue, []).extend(x)
                     dictMaxEvals.setdefault(keyValue, []).extend(runlengthunsucc)
     
-            displaybest2009 = not isBiobjective and plotType == PlotType.ALG  #disabled for bi-objective case
+            displaybest2009 = plotType == PlotType.ALG
             if displaybest2009:
                 #set_trace()
                 bestalgentries = bestalg.load_best_algorithm()
-                bestalgentry = bestalgentries[(dim, f)]
-                bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
-                # print bestalgevals
-                for j in range(len(bestalgevals[0])):
-                    if bestalgevals[1][j]:
-                        evals = bestalgevals[0][j]
-                        #set_trace()
-                        assert dim == bestalgentry.dim
-                        runlengthsucc = evals[np.isnan(evals) == False] / divisor
-                        runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][np.isnan(evals)] / divisor
-                        x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
-                                             percentiles=[50],
-                                             samplesize=perfprofsamplesize)[1]
-                    else:
-                        x = perfprofsamplesize * [np.inf]
-                        runlengthunsucc = []
-                    xbest2009.extend(x)
-                    maxevalsbest2009.extend(runlengthunsucc)
+
+                if not bestalgentries:
+                    displaybest2009 = False
+                else:
+                    bestalgentry = bestalgentries[(dim, f)]
+                    bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
+                    # print bestalgevals
+                    for j in range(len(bestalgevals[0])):
+                        if bestalgevals[1][j]:
+                            evals = bestalgevals[0][j]
+                            #set_trace()
+                            assert dim == bestalgentry.dim
+                            runlengthsucc = evals[np.isnan(evals) == False] / divisor
+                            runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][np.isnan(evals)] / divisor
+                            x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
+                                                 percentiles=[50],
+                                                 samplesize=perfprofsamplesize)[1]
+                        else:
+                            x = perfprofsamplesize * [np.inf]
+                            runlengthunsucc = []
+                        xbest2009.extend(x)
+                        maxevalsbest2009.extend(runlengthunsucc)
                     
     if order is None:
         order = dictData.keys()
