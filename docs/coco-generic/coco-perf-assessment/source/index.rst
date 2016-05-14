@@ -263,7 +263,7 @@ fixed-target approach:
    
    Illustration of fixed-budget view (vertical cuts) and fixed-target view
    (horizontal cuts). Black lines depict the best quality indicator value
-   plotted versus number of function evaluations. Stars depict the data 
+   plotted versus number of function evaluations. Stars depict the 
    measurements used for the performance assessment. 
 
 .. .. TODO: the line annotations in the figure should not be vertical/horizontal but budget/target. 
