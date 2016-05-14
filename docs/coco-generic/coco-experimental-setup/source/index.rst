@@ -21,7 +21,7 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. raw:: html
 
-   See: <I>ArXiv e-prints</I>,
+   See also: <I>ArXiv e-prints</I>,
    <A HREF="http://arxiv.org/abs/1603.08776">arXiv:1603.08776</A>, 2016.
 
 
