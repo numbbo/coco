@@ -57,7 +57,7 @@ COCO: Performance Assessment
 
 .. raw:: html
 
-   See: <I>ArXiv e-prints</I>,
+   See also: <I>ArXiv e-prints</I>,
    <A HREF="http://arxiv.org/abs/1605.03560">arXiv:1605.03560</A>, 2016.
 
 .. raw:: latex

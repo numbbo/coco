@@ -15,28 +15,30 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. |
 .. .. sectnum::
   :depth: 3
+  
+
   :numbered:
 .. .. contents:: Table of Contents
   :depth: 2
 .. |
 .. |
 
+.. raw:: html
+
+   See also: <I>ArXiv e-prints</I>,
+   <A HREF="http://arxiv.org/abs/1604.00359">arXiv:1604.00359</A>, 2016.
+
 .. raw:: latex
 
   % \tableofcontents TOC is automatic with sphinx and moved behind abstract by swap...py
   \begin{abstract}
-
-.. WHEN CHANGING THIS CHANGE ALSO the abstract in conf.py ACCORDINGLY (though it seems the latter is not used)
 
 The ``bbob-biobj`` test suite contains 55 bi-objective 
 functions in continuous domain which are derived from combining functions of
 the well-known single-objective noiseless ``bbob`` test suite. Besides giving
 the actual function definitions and presenting their (known) properties, this
 documentation also aims at giving the rationale behind our approach in terms
-of function groups, instances, and potential objective space normalization. [#]_
-
-.. [#] *ArXiv e-prints*, `arXiv:1604.00359`__, 2016.
-.. __: http://arxiv.org/abs/1604.00359
+of function groups, instances, and potential objective space normalization.
 
 .. raw:: latex
 
@@ -236,7 +238,7 @@ is present results in :math:`24 + {24 \choose 2} = 24 + (24\times23)/2 = (24\tim
   and the second as ``bbob`` function *j* with *i* :math:`\leq` *j*,
   resulting in :math:`24+ {24 \choose 2} = 300` functions.
 
-Some first tests, e.g. in [BTH2015a]_, showed that having 300 functions is
+Some first tests, e.g. in [BRO2015a]_, showed that having 300 functions is
 impracticable in terms of the overall running time of the benchmarking
 experiment.  We then decided to exploit the organization of the ``bbob``
 functions into classes to choose a subset of functions. More precisely, the 24
@@ -388,7 +390,7 @@ between the objective values can be observed.
 
 However, to facilitate comparison of algorithm performance over different functions, 
 we normalize the objectives based on the ideal and nadir points
-before calculating the hypervolume indicator [BBO2016biperf]_.
+before calculating the hypervolume indicator [BRO2016biperf]_.
 Both points can be computed, because the global 
 optimum is known and is unique for the 10 ``bbob`` base functions. 
 In the black-box optimization benchmarking setup, however, the values of the
@@ -478,7 +480,7 @@ instead of instance-id 20.
 
 Exceptions to the above rule are, for historical reasons, the
 ``bbob-biobj`` instance-ids 1 and 2 in order to match the instance-ids
-1 to 5 with the ones proposed in [BTH2015a]_. The ``bbob-biobj``
+1 to 5 with the ones proposed in [BRO2015a]_. The ``bbob-biobj``
 instance-id 1 contains the single-objective instance-ids 2 and 4 and
 the ``bbob-biobj`` instance-id 2 contains the two instance-ids 3 and 5.
 
@@ -2005,11 +2007,12 @@ of the French National Research Agency.
     <H2>References</H2>
    
 
-.. [BBO2016biperf] The BBOBies (2016). `Biobjective Performance Assessment 
-   with the COCO Platform`__. 
+.. [BRO2016biperf] D. Brockhoff, T. Tušar, D. Tušar, T. Wagner, N. Hansen, A. Auger, (2016). 
+  `Biobjective Performance Assessment with the COCO Platform`__. *ArXiv e-prints*, `arXiv:1605.01746`__
 .. __: http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment
+.. __: http://arxiv.org/abs/1605.01746
 
-.. [BTH2015a] D. Brockhoff, T.-D. Tran, and N. Hansen (2015).
+.. [BRO2015a] D. Brockhoff, T.-D. Tran, and N. Hansen (2015).
    Benchmarking Numerical Multiobjective Optimizers Revisited.
    GECCO 2015: 639-646. 
    
@@ -2022,7 +2025,7 @@ of the French National Research Agency.
 
 .. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
    `Real-parameter black-box optimization benchmarking 2009: Noiseless
-   functions definitions`__. `Technical Report RR-6829`__, Inria, updated
+   functions definitions`__. `Research Report RR-6829`__, Inria, updated
    February 2010.
 .. __: http://coco.gforge.inria.fr/
 .. __: https://hal.inria.fr/inria-00362633
