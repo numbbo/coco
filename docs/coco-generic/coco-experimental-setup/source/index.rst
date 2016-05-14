@@ -1,8 +1,8 @@
-.. title:: COCO: Experimental Procedure
+.. title:: COCO: The Experimental Procedure
 
-$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-COCO: Experimental Procedure
-$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+COCO: The Experimental Procedure
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. the next two lines are necessary in LaTeX. They will be automatically 
   replaced to put away the \chapter level as ^^^ and let the "current" level
@@ -36,8 +36,8 @@ optimization algorithms in a black-box scenario.
 This procedure can be applied with the COCO_ benchmarking platform. 
 We describe initialization of and input to the algorithm and touch upon the
 relevance of termination and restarts. 
-We finally reconsider parameter tuning and the concept of recommendations for
-benchmarking with COCO_.
+
+.. We finally reconsider parameter tuning and the concept of recommendations for benchmarking with COCO_.
 
 
 .. raw:: latex
@@ -120,13 +120,13 @@ Introduction
 ============
 
 Based on [HAN2009]_ and [HAN2010]_, we describe a comparatively simple experimental 
-set-up for *black-box optimization benchmarking*. We recommend to use this procedure
+setup for *black-box optimization benchmarking*. We recommend to use this procedure
 within the COCO_ platform [HAN2016co]_. [#]_ 
 
-Our central measure of performance, to which the experimental procedure is
+Our **central measure of performance**, to which the experimental procedure is
 adapted, is the number of calls to the objective function to reach a
 certain solution quality (function value or :math:`f`-value or indicator
-value), also denoted as *runtime*. 
+value), also denoted as runtime. 
 
 Terminology
 -----------
@@ -174,8 +174,10 @@ The optimization algorithm to be benchmarked is run on each problem of the
 given test suite once. On each problem, the very same algorithm with the same
 parameter setting, the same initialzation procedure, the same budget, the same
 termination and/or restart criteria etc. is used. 
-There is no prescribed minimal or maximally allowed budget. The longer the
-experiment, the more data are available to assess the performance accurately.
+There is no prescribed minimal or maximal allowed budget, the benchmarking 
+setup is *budget-free*. 
+The longer the experiment, the more data are available to assess the performance
+accurately.
 See also Section :ref:`sec:budget`. 
 
 .. _sec:input:
@@ -218,7 +220,7 @@ allowed as input to the algorithm, see also Section
 During an optimization run, the following (new) information is available to
 the algorithm: 
 
-#. The result, i.e. the :math:`f`-value(s), from evaluating the problem 
+#. The result, i.e., the :math:`f`-value(s) from evaluating the problem 
    at a given search point 
    via |coco_evaluate_function|_. 
 
@@ -248,21 +250,24 @@ assessment of the algorithm. [#]_
 Budget, Termination Criteria, and Restarts
 ------------------------------------------
 
-We consider the budget, termination criteria, and restarts to be part of the 
-benchmarked algorithm. Algorithms with any budget of function evaluations are 
-eligible, our benchmarking setup is budget-free. 
+Algorithms and/or setups with any budget of function evaluations are 
+eligible, the benchmarking setup is *budget-free*. 
+We consider termination criteria to be part of the benchmarked algorithm. 
 The choice of termination is a relevant part of the algorithm. 
-On the one hand, allowing a larger number of function evaluations increases the chance to achieve better function values. On the other hand, a timely
-termination of a stagnating run can improve the performance, as these evaluations
-can be used more effectively. [#]_
+On the one hand, allowing a larger number of function evaluations increases the chance to find solutions with better quality. On the other hand, a timely
+termination of stagnating runs can improve the performance, as these evaluations
+can be used more effectively.
 
-To exploit a large number of function evaluations effectively, we encourage to
-use independent restarts [#]_, in particular for algorithms which terminate
-naturally within a comparatively small budget. Independent restarts do not
-change the central performance measure [#]_, however, they improve the reliability, comparability [#]_, precision, and "visibility" of the measured results. 
+To exploit a large(r) number of function evaluations effectively, we encourage to
+use **independent restarts** [#]_, in particular for algorithms which terminate
+naturally within a comparatively small budget. 
+Independent restarts are a natural way to approach difficult optimization
+problems and do not change the central performance measure used in COCO_ (hence it is budget-free), 
+however, 
+independent restarts improve the reliability, comparability [#]_, precision, and "visibility" of the measured results. 
 
-Moreover, any multistart procedure (which relies on an interim termination of the algorithm) is encouraged. 
-Multistarts may not be independent as they can feature a parameter sweep (e.g., increasing population size [HAR1999]_ [AUG2005]_), can be based on the outcome of the previous starts, or feature a systematic change of the initial conditions for the algorithm. 
+Moreover, any **multistart procedure** (which relies on an interim termination of the algorithm) is encouraged. 
+Multistarts may not be independent as they can feature a parameter sweep (e.g., increasing population size [HAR1999]_ [AUG2005]_), can be based on the outcome of the previous starts, and/or feature a systematic change of the initial conditions for the algorithm. 
 
 After a multistart procedure has been established, a recommended procedure is
 to use a budget proportional to the dimension, :math:`k\times n`, and run 
@@ -274,14 +279,7 @@ An algorithm can be conclusively terminated if
 |coco_problem_final_target_hit|_ returns 1. [#]_ This saves CPU cycles without
 affecting the performance assessment, because there is no target left to hit. 
 
-.. [#] In the single objective case care should be 
-  taken to apply termination conditions that allow to hit the final target on
-  the most basic functions, like the sphere function :math:`f_1`, that is on the
-  problems 0, 360, 720, 1080, 1440, and 1800 of the ``bbob`` suite.  
-
-.. [#] The COCO_ platform provides example code to implement independent restarts. 
-
-.. [#] Therefore we call the experimental approach budget-free. 
+.. [#] The COCO_ platform provides example code implementing independent restarts. 
 
 .. [#] Algorithms are only comparable up to the smallest budget given to 
   any of them. 
@@ -325,12 +323,12 @@ Any tuning of algorithm parameters to the test suite should be described and
 *the approximate overall number of tested parameter settings or algorithm
 variants and the approximate overall invested budget should be given*. 
 
-The only recommended tuning procedure is the verification that *termination
-conditions* of the algorithm are suited to the given testbed and, in case,
+The only recommended tuning procedure is the verification that **termination
+conditions** of the algorithm are suited to the given testbed and, in case,
 tuning of termination parameters. [#]_
 Too early or too late termination can be identified and adjusted comparatively 
 easy. 
-This is also a useful prerequisite for restarts, see also above. 
+This is also a useful prerequisite for allowing restarts to become more effective. 
 
 On all functions the very same parameter setting must be used (which might
 well depend on the dimensionality, see Section :ref:`sec:input`). That means,
@@ -342,7 +340,12 @@ the algorithm.
 On the other hand, benchmarking different parameter settings as "different
 algorithms" on the entire test suite is encouraged. 
 
-.. [#] In our experience, numerical optimization software frequently terminates 
+.. [#] For example in the single objective case, care should be 
+   taken to apply termination conditions that allow to hit the final target on
+   the most basic functions, like the sphere function :math:`f_1`, that is on the
+   problems 0, 360, 720, 1080, 1440, and 1800 of the ``bbob`` suite.  
+
+   In our experience, numerical optimization software frequently terminates 
    too early by default, while evolutionary computation software often 
    terminates too late by default. 
 
@@ -367,36 +370,36 @@ algorithms" on the entire test suite is encouraged.
    Evolutionary Computation (CEC 2005)*, pages 1769–1776. IEEE Press, 2005.
 
 
-.. _sec:recommendations:
+.. .. _sec:recommendations:
 
-Recommendations
-===============
+    Recommendations
+    ===============
 
-The performance assessment is based on a set of evaluation counts
-associated with the :math:`f`-value or -vector of a solution. 
-By default, each evaluation count is associated with the respectively *evaluated*
-solution and hence its :math:`f`-value. 
-In the single-objective case, the solution associated *to the current (last)
-evaluation* can be changed by calling |coco_recommend_solution|_, thereby
-associating the :math:`f`-value of the *recommended* solution (instead of the
-*evaluated* solution) with the current evaluation count. 
-A recommendation is best viewed as the *currently best known approximation* of the
-optimum [#]_ delivered by the optimization algorithm, or as the currently most 
-desirable return value of the algorithm. 
+    The performance assessment is based on a set of evaluation counts
+    associated with the :math:`f`-value or -vector of a solution. 
+    By default, each evaluation count is associated with the respectively *evaluated*
+    solution and hence its :math:`f`-value. 
+    In the single-objective case, the solution associated *to the current (last)
+    evaluation* can be changed by calling |coco_recommend_solution|_, thereby
+    associating the :math:`f`-value of the *recommended* solution (instead of the
+    *evaluated* solution) with the current evaluation count. 
+    A recommendation is best viewed as the *currently best known approximation* of the
+    optimum [#]_ delivered by the optimization algorithm, or as the currently most 
+    desirable return value of the algorithm. 
 
-Recommendations allow the algorithm to explore solutions without affecting the
-performance assessment. For example, a surrogate-based algorithm can explore
-(i.e. evaluate) an arbitrarily bad solution, update the surrogate model and
-then recommend the (new) model optimizer. On non-noisy suites it is neither
-necessary nor advantageous to recommend the same solution repeatedly.
+    Recommendations allow the algorithm to explore solutions without affecting the
+    performance assessment. For example, a surrogate-based algorithm can explore
+    (i.e. evaluate) an arbitrarily bad solution, update the surrogate model and
+    then recommend the (new) model optimizer. On non-noisy suites it is neither
+    necessary nor advantageous to recommend the same solution repeatedly.
 
-.. On non-noisy suites the last evaluation changes the assessment only if the :math:`f`-value is better than all :math:`f`-values from previous evaluations. 
+    .. On non-noisy suites the last evaluation changes the assessment only if the :math:`f`-value is better than all :math:`f`-values from previous evaluations. 
 
-.. [#] In the noisy scenario, a small number of the most current solutions 
-  will be taken into account [HAN2016perf]_. 
-  In the multi-objective scenario, the recommendation option is not available,
-  because an archive of non-dominated solutions presumes that all solutions are
-  evaluated. 
+    .. [#] In the noisy scenario, a small number of the most current solutions 
+      will be taken into account [HAN2016perf]_. 
+      In the multi-objective scenario, the recommendation option is not available,
+      because an archive of non-dominated solutions presumes that all solutions are
+      evaluated. 
 
 Time Complexity Experiment
 ==========================

@@ -263,7 +263,8 @@ fixed-target approach:
    
    Illustration of fixed-budget view (vertical cuts) and fixed-target view
    (horizontal cuts). Black lines depict the best quality indicator value
-   plotted versus number of function evaluations.
+   plotted versus number of function evaluations. Stars depict the data 
+   measurements used for the performance assessment. 
 
 .. .. TODO: the line annotations in the figure should not be vertical/horizontal but budget/target. 
 
@@ -334,6 +335,11 @@ Target Value Setting
 
 .. |DI| replace:: :math:`\Delta I`
 
+We have two different ways to defined the target values. Both define comparable targets for different function *instances*. The first method is simpler but relies on properties in the function definition. The second method defines comparable targets over the entire benchmark, but relies on a reference data set. 
+
+Fixed-Spaced Target Values
+++++++++++++++++++++++++++++++++
+
 First, we define for each problem instance :math:`p^3 = (n, f_\theta, \theta_i)` 
 a *reference* quality indicator value, :math:`I^{\rm ref, \theta_i}`. 
 In the single-objective case this is the optimal function value. 
@@ -345,11 +351,11 @@ independent of the instance |thetai|, we define a target value
 
     I^{\rm target,\theta_i} = I^{\rm ref,\theta_i} + \Delta I \enspace
 
-for each precision |DI|, giving rise to the product set of all problems :math:`p^3` and all |DI|-values. 
+for each precision |DI|, giving rise to the product set of all problems :math:`p^3` and all |DI|-values. The |DI|-values are usually chosen to be equally log-spaced, see also below. 
 
 
 Runlength-based Target Values
-------------------------------
+++++++++++++++++++++++++++++++++
 .. In addition to the fixed-budget and fixed-target approaches, there is an
   intermediate approach, combining the ideas of *measuring runtime* (to get
   meaningful measurements) and *fixing budgets* (of our interest). The 
