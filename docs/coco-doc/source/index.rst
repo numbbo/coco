@@ -694,7 +694,7 @@ __ http://hal.inria.fr/inria-00362649/en
 .. __: https://hal.inria.fr/inria-00369466
 
 .. [HAN2016ex] N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016). 
-   `COCO: Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__.
+   `COCO: The Experimental Procedure`__, *ArXiv e-prints*, `arXiv:1603.08776`__.
 __ http://numbbo.github.io/coco-doc/experimental-setup/
 __ http://arxiv.org/abs/1603.08776
 
