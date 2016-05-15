@@ -278,23 +278,25 @@ For the performance assessment of algorithms, the fixed-target approach is super
 to the fixed-budget approach since it gives *quantitative and interpretable*
 results.
 
-* The fixed-budget approach (vertical cut) does not give *quantitatively
-  interpretable*  data:
-  the observation that Algorithm A reaches a quality indicator value that is, say, two
+* In the fixed-budget approach (vertical cut) the observation that 
+  Algorithm A reaches a quality indicator value that is, say, two
   times smaller than the one reached by Algorithm B has in general no
   interpretable meaning, mainly because there is no *a priori* way to determine
   *how much* more difficult it is to reach an indicator value that is two times
   smaller.
   This usually depends on the function, the definition of the 
   quality indicator and even the specific indicator values compared.
+  The assessed measure, quality indicator, exhibits in general only an 
+  ordinal (rank) scale. 
 
 * The fixed-target approach (horizontal cut)
-  *measures the time* to
+  *measures the runtime* to
   reach a target quality value. The measurement allows conclusions of the
   type: Algorithm A is two (or ten, or a hundred) times faster than Algorithm B
   in solving this problem. 
-  The choice of the target value determines the difficulty and
-  often the characteristic of the problem to be solved. 
+  The assessed measure, runtime, exhibits a ratio scale. 
+  The choice of the target value is however instrumental as it determines the 
+  difficulty and often the characteristic of the problem to be solved. 
 
 Furthermore, for algorithms that are invariant under certain transformations
 of the function value (for example under order-preserving transformations, as
