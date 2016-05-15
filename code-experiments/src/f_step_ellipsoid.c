@@ -47,7 +47,10 @@ static double f_step_ellipsoid_raw(const double *x, const size_t number_of_varia
   double result;
   
   assert(number_of_variables > 1);
-  
+
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   for (i = 0; i < number_of_variables; ++i) {
     double tmp;
     tmp = fabs(x[i]) - 5.0;

@@ -40,6 +40,9 @@ static double f_weierstrass_raw(const double *x, const size_t number_of_variable
   size_t i, j;
   double result;
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   result = 0.0;
   for (i = 0; i < number_of_variables; ++i) {
     for (j = 0; j < F_WEIERSTRASS_SUMMANDS; ++j) {
@@ -69,7 +72,7 @@ static coco_problem_t *f_weierstrass_allocate(const size_t number_of_variables) 
   size_t i;
   double *non_unique_best_value;
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Weierstrass function",
-      f_weierstrass_evaluate, NULL, number_of_variables, -5.0, 5.0, NAN);
+      f_weierstrass_evaluate, NULL, number_of_variables, -5.0, 5.0, 0);
   coco_problem_set_id(problem, "%s_d%02lu", "weierstrass", number_of_variables);
 
   data = (f_weierstrass_data_t *) coco_allocate_memory(sizeof(*data));

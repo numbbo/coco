@@ -17,6 +17,7 @@ import os, sys
 import warnings
 import numpy
 from pdb import set_trace
+from . import toolsdivers
 
 # Add the path to bbob_pproc
 if __name__ == "__main__":
@@ -60,7 +61,7 @@ def rearrange(blist, flist):
 
 
 def beautify():
-    plt.legend(loc=3)
+    toolsdivers.legend(loc=3)
     plt.grid(True)
     limits = plt.ylim()
     plt.ylim(max((limits[0], final_target)), limits[1])

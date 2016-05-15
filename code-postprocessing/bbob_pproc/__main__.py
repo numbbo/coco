@@ -58,7 +58,12 @@ def copy_latex_templates():
     shutil.copy(join_path(templateFolder, 'templateBBOBarticle.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'templateBBOBcmp.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'templateBIOBJarticle.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'comment.sty'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'acmcopyright.sty'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'bbob.bib'), currentFolder)
+    
 
 def run_latex_template(filename):
     filePath = os.path.abspath(join_path(os.path.dirname(__file__), filename))
@@ -104,6 +109,7 @@ def process_doctest_output(stream=None):
     state = 0
     for line in fileinput.input(stream):  # takes argv as file or stdin
         if 1 < 3:
+            
             s3 += line
             if state < -1 and line.startswith('***'):
                 print(s3)
@@ -150,17 +156,15 @@ def main(args):
     
     data_path = ' ' + prepare_data(run_all_tests)
         
-    command = ' bbob_pproc ' # + join_path(os.path.dirname(os.path.realpath(__file__)), 'rungeneric.py ')
+    command = ' bbob_pproc --no-svg --settings=grayscale '
     
     copy_latex_templates()
     print('LaTeX templates copied.')
     
     print('*** testing module bbob_pproc ***')
     t0 = time.time()
-    print(python + command + '--conv' + ' --no-svg --settings=grayscale' +
-                join_path(data_path, 'BFGS_ros_noiseless.tgz'))
-    result = os.system(python + command + '--conv' + ' --no-svg --settings=grayscale' +
-                join_path(data_path, 'BFGS_ros_noiseless.tgz'))
+    print(python + command + '--conv' + join_path(data_path, 'BFGS_ros_noiseless.tgz'))
+    result = os.system(python + command + '--conv' + join_path(data_path, 'BFGS_ros_noiseless.tgz'))
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
 
@@ -168,14 +172,13 @@ def main(args):
     assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
 
     t0 = time.time()
-    print(python + command + '--no-svg --settings=grayscale' + join_path(data_path, 'RS.tgz'))
-    result = os.system(python + command + '--no-svg --settings=grayscale' + join_path(data_path, 'RS.tgz'))
+    print(python + command + join_path(data_path, 'RS.tgz'))
+    result = os.system(python + command + join_path(data_path, 'RS.tgz'))
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
 
-    # Latex templates are not prepared yet for bi-objective case.    
-#    result = run_latex_template("templateBBOBarticle.tex")
-#    assert not result, 'Test failed: error while generating pdf from templateBBOBarticle.tex.'
+    result = run_latex_template("templateBIOBJarticle.tex")
+    assert not result, 'Test failed: error while generating pdf from templateBIOBJarticle.tex.'
 
     if run_all_tests:    
         t0 = time.time()

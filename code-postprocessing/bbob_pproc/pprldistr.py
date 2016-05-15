@@ -36,7 +36,7 @@ function evaluations.
    bb.pprldistr.plot(ds)
    bb.pprldistr.beautify() # resize the window to view whole figure
 
-CAVEAT: the naming conventions in this module mix up ERT (an estimate
+CAVEAT: the naming conventions in this module mix up ART (an estimate
 of the expected running length) and run lengths.
 
 """
@@ -48,7 +48,8 @@ import numpy as np
 import pickle, gzip
 import matplotlib.pyplot as plt
 from pdb import set_trace
-from . import toolsstats, genericsettings, pproc
+from . import toolsstats, genericsettings, pproc, toolsdivers
+from . import testbedsettings
 from .ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 from .pptex import color_to_latex, marker_to_latex
 
@@ -133,7 +134,7 @@ def load_previous_RLBdata(filename = previous_RLBdata_filename):
     return None
 
 
-def caption_single(max_evals_div_dim):
+def caption_single():
     caption_part_one = r"""%
          Empirical cumulative distribution functions (ECDF), plotting the fraction of
          trials with an outcome not larger than the respective value on the $x$-axis.
@@ -142,12 +143,12 @@ def caption_single(max_evals_div_dim):
          Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension $D$,
          to fall below $\fopt+\Df$ with $\Df=10^{k}$, where $k$ is the first value in the legend.
          The thick red line represents the most difficult target value $\fopt+""" +
-         genericsettings.current_testbed.hardesttargetlatex + """$. """)
+         testbedsettings.current_testbed.hardesttargetlatex + """$. """)
     caption_left_rlbased_targets = r"""%
          Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$,
          to fall below $\fopt+\Df$ where \Df\ is the
          target just not reached by the GECCO-BBOB-2009 best algorithm within a budget of
-         % largest $\Df$-value $\ge10^{-8}$ for which the best \ERT\ seen in the GECCO-BBOB-2009 was yet above
+         % largest $\Df$-value $\ge10^{-8}$ for which the best \ART\ seen in the GECCO-BBOB-2009 was yet above
          $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
     caption_wrap_up = r"""%
          Legends indicate for each target the number of functions that were solved in at
@@ -160,16 +161,27 @@ def caption_single(max_evals_div_dim):
          (from right to left cycling cyan-magenta-black\dots) and final $\Df$-value (red),
          where \Df\ and \textsf{Df} denote the difference to the optimal function value. """ + (
          r"""Light brown lines in the background show ECDFs for the most difficult target of all
-         algorithms benchmarked during BBOB-2009.""" if genericsettings.current_testbed.name != 'bbob-biobj'
+         algorithms benchmarked during BBOB-2009.""" if testbedsettings.current_testbed.name != testbedsettings.testbed_name_bi
          else r"""Shown are aggregations over functions where the single
          objectives are in the same BBOB function class, as indicated on the
          left side and the aggregation over all 55 functions in the last
          row.""")
+
     caption_single_fixed = caption_part_one + caption_left_fixed_targets + caption_wrap_up + caption_right
     caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_wrap_up + caption_right
 
-    caption = caption_single_rlbased if genericsettings.runlength_based_targets else caption_single_fixed
-    return caption.replace(r'TO_BE_REPLACED', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$')
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+        figure_caption = caption_single_fixed.replace('\\fopt', '\\hvref')
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            figure_caption = caption_single_rlbased
+        else:
+            figure_caption = caption_single_fixed
+    else:
+        warnings.warn("Current settings do not support pprldistr caption.")
+
+    return figure_caption.replace(r'TO_BE_REPLACED', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$')
 
 def caption_two():
     caption_two_part_one = r"""%
@@ -191,7 +203,7 @@ def caption_two():
     caption_two_fixed_targets_part3 = r""")%
         . """ + (r"""Light beige lines show the ECDF of FEvals for target value
         $\Df=10^{-8}$ of all algorithms benchmarked during
-        BBOB-2009. """ if genericsettings.current_testbed.name != 'bbob-biobj'
+        BBOB-2009. """ if testbedsettings.current_testbed.name != testbedsettings.testbed_name_bi
         else "") + r"""Right sub-columns: 
         ECDF of FEval ratios of \algorithmA\ divided by \algorithmB for target
         function values $10^k$ with $k$ given in the legend; all
@@ -214,22 +226,33 @@ def caption_two():
         in the limits being $>0$ or $<1$. The legends indicate the target budget of
         $k\times\DIM$ evaluations and, after the colon, the number of functions that
         were solved in at least one trial (\algorithmA\ first)."""
-    caption_two_fixed = (caption_two_part_one 
-                            + caption_two_fixed_targets_part1
-                            + symbAlgorithmA
-                            + caption_two_fixed_targets_part2
-                            + symbAlgorithmB
-                            + caption_two_fixed_targets_part3)
+
+    caption_two_fixed = (caption_two_part_one
+                         + caption_two_fixed_targets_part1
+                         + symbAlgorithmA
+                         + caption_two_fixed_targets_part2
+                         + symbAlgorithmB
+                         + caption_two_fixed_targets_part3)
+
     caption_two_rlbased = (caption_two_part_one
-                            + caption_two_rlbased_targets_part1
-                            + symbAlgorithmA
-                            + caption_two_rlbased_targets_part2
-                            + symbAlgorithmB
-                            + caption_two_rlbased_targets_part3)
+                           + caption_two_rlbased_targets_part1
+                           + symbAlgorithmA
+                           + caption_two_rlbased_targets_part2
+                           + symbAlgorithmB
+                           + caption_two_rlbased_targets_part3)
 
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+        figure_caption = caption_two_fixed.replace('\\fopt', '\\hvref')
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            figure_caption = caption_two_rlbased
+        else:
+            figure_caption = caption_two_fixed
+    else:
+        warnings.warn("Current settings do not support pprldistr caption.")
 
-    caption = caption_two_rlbased if genericsettings.runlength_based_targets else caption_two_fixed
-    return caption
+    return figure_caption
 
 def beautifyECDF():
     """Generic formatting of ECDF figures."""
@@ -290,7 +313,7 @@ def beautifyRLD(xlimit_max = None):
     plt.xlim(xmin = runlen_xlimits_min)
     plt.text(plt.xlim()[0], 
              plt.ylim()[0], 
-             genericsettings.current_testbed.pprldistr_target_values.short_info, 
+             testbedsettings.current_testbed.pprldistr_target_values.short_info,
              fontsize = 14)
     beautifyECDF()
 
@@ -352,7 +375,7 @@ def plotECDF(x, n = None, **plotArgs):
 
 def _plotERTDistr(dsList, target, **plotArgs):
     """This method is obsolete, should be removed? The replacement for simulated runlengths is in pprldmany?
-    Creates simulated run time distributions (it is not an ERT distribution) from a DataSetList.
+    Creates simulated run time distributions (it is not an ART distribution) from a DataSetList.
 
     :keyword DataSet dsList: Input data sets
     :keyword dict target: target precision
@@ -512,7 +535,7 @@ def plotFVDistr(dsList, budget, min_f = None, **plotArgs):
 
     """
     if not min_f:
-        min_f = genericsettings.current_testbed.ppfvdistr_min_target
+        min_f = testbedsettings.current_testbed.ppfvdistr_min_target
     
     x = []
     nn = 0
@@ -527,7 +550,7 @@ def plotFVDistr(dsList, budget, min_f = None, **plotArgs):
         # replace negative values to prevent problem with log of vals
         vals[vals <= 0] = min(np.append(vals[vals > 0], [min_f])) # works also when vals[vals > 0] is empty
         if genericsettings.runlength_based_targets:
-            NotImplementedError('related function vals with respective budget (e.g. ERT(val)) see pplogloss.generateData()')
+            NotImplementedError('related function vals with respective budget (e.g. ART(val)) see pplogloss.generateData()')
         x.extend(vals)
         nn += ds.nbRuns()
     
@@ -621,7 +644,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax = False,
         plt.axvline(max(i.mMaxEvals() / i.dim for i in dictdim1[d]),
                     marker = 'o', markersize = 15., color = 'k', markerfacecolor = 'None',
                     markeredgewidth = plt.getp(tmp[-1], 'linewidth'))
-        plt.legend(loc = 'best')
+        toolsdivers.legend(loc = 'best')
         plt.text(0.5, 0.98, text, horizontalalignment = "center",
                  verticalalignment = "top", transform = plt.gca().transAxes) # bbox=dict(ec='k', fill=False),
         beautifyRLD(evalfmax)
@@ -672,7 +695,7 @@ def plot(dsList, targets=None, **plotArgs):
     res = []
     
     if not targets:
-        targets = genericsettings.current_testbed.ppfigdim_target_values
+        targets = testbedsettings.current_testbed.ppfigdim_target_values
 
     plt.subplot(121)
     maxEvalsFactor = max(i.mMaxEvals() / i.dim for i in dsList)
@@ -799,7 +822,7 @@ def main(dsList, isStoringXMax = False, outputdir = '',
     # plt.rc("ytick", labelsize=20)
     # plt.rc("font", size=20)
     # plt.rc("legend", fontsize=20)
-    testbed = genericsettings.current_testbed
+    testbed = testbedsettings.current_testbed
     targets = testbed.pprldistr_target_values # convenience abbreviation
 
     for d, dictdim in dsList.dictByDim().iteritems():
@@ -839,7 +862,7 @@ def main(dsList, isStoringXMax = False, outputdir = '',
      #       pass
 
         plt.axvline(x = maxEvalsFactor, color = 'k') # vertical line at maxevals
-        plt.legend(loc = 'best')
+        toolsdivers.legend(loc = 'best')
         plt.text(0.5, 0.98, text, horizontalalignment = "center",
                  verticalalignment = "top",
                  transform = plt.gca().transAxes

@@ -83,7 +83,7 @@ static void logger_bbob_write_data(FILE *target_file,
                                    size_t number_of_variables,
                                    const int precision_f,
                                    const int precision_x) {
-
+  
   fprintf(target_file, "%lu %.*e %.*e %.*e %.*e", number_of_evaluations, precision_f, fvalue - best_value,
           precision_f, best_fvalue - best_value, precision_f, fvalue, precision_f, best_fvalue);
   if (number_of_variables < 22) {
@@ -151,8 +151,8 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
   if (observer_bbob->info_file_first_instance == 0) {
     observer_bbob->info_file_first_instance = logger->instance_id;
   }
-  sprintf(function_id_char, "%lu", logger->function_id);
-  sprintf(bbob_infoFile_firstInstance_char, "%ld", observer_bbob->info_file_first_instance);
+  sprintf(function_id_char, "%lu", (unsigned long) logger->function_id);
+  sprintf(bbob_infoFile_firstInstance_char, "%lu", (unsigned long) observer_bbob->info_file_first_instance);
   target_file = &(logger->index_file);
   tmp_file = NULL; /* to check whether the file already exists. Don't want to use target_file */
   strncpy(file_name, indexFile_prefix, COCO_PATH_MAX - strlen(file_name) - 1);
@@ -193,7 +193,7 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
             newLine = 0;
             file_path[strlen(file_path) - strlen(bbob_infoFile_firstInstance_char) - 7] = 0; /* truncate the instance part */
             observer_bbob->info_file_first_instance = logger->instance_id;
-            sprintf(bbob_infoFile_firstInstance_char, "%ld", observer_bbob->info_file_first_instance);
+            sprintf(bbob_infoFile_firstInstance_char, "%lu", (unsigned long) observer_bbob->info_file_first_instance);
             strncat(file_path, "_i", COCO_PATH_MAX - strlen(file_name) - 1);
             strncat(file_path, bbob_infoFile_firstInstance_char, COCO_PATH_MAX - strlen(file_name) - 1);
             strncat(file_path, ".info", COCO_PATH_MAX - strlen(file_name) - 1);
@@ -223,7 +223,7 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
         fclose(tmp_file);
       }
       fprintf(*target_file, "funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s'\n",
-          (int) strtol(function_id, NULL, 10), logger->number_of_variables, logger->observer->target_precision,
+          (int) strtol(function_id, NULL, 10), (unsigned long) logger->number_of_variables, logger->observer->target_precision,
           logger->observer->algorithm_name);
       fprintf(*target_file, "%%\n");
       strncat(used_dataFile_path, "_i", COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
@@ -262,7 +262,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   assert(inner_problem != NULL);
   assert(inner_problem->problem_id != NULL);
 
-  sprintf(tmpc_funId, "%lu", coco_problem_get_suite_dep_function(inner_problem));
+  sprintf(tmpc_funId, "%lu", (unsigned long) coco_problem_get_suite_dep_function(inner_problem));
   sprintf(tmpc_dim, "%lu", (unsigned long) inner_problem->number_of_variables);
 
   /* prepare paths and names */
@@ -282,7 +282,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   /* index/info file */
   logger_bbob_openIndexFile(logger, logger->observer->result_folder, indexFile_prefix, tmpc_funId,
       dataFile_path);
-  fprintf(logger->index_file, ", %ld", coco_problem_get_suite_dep_instance(inner_problem));
+  fprintf(logger->index_file, ", %lu", (unsigned long) coco_problem_get_suite_dep_instance(inner_problem));
   /* data files */
   /* TODO: definitely improvable but works for now */
   strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
@@ -315,7 +315,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     logger_bbob_initialize(logger, inner_problem);
   }
   if ((coco_log_level >= COCO_DEBUG) && logger->number_of_evaluations == 0) {
-    coco_debug("%4ld: ", inner_problem->suite_dep_index);
+    coco_debug("%4lu: ", (unsigned long) inner_problem->suite_dep_index);
     coco_debug("on problem %s ... ", coco_problem_get_id(inner_problem));
   }
   coco_evaluate_function(inner_problem, x, y);
@@ -356,7 +356,7 @@ static void logger_bbob_finalize(const logger_bbob_data_t *logger){
 
   if ((coco_log_level >= COCO_DEBUG) && logger && logger->number_of_evaluations > 0) {
     coco_debug("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue,
-               logger->number_of_evaluations);
+              (unsigned long) logger->number_of_evaluations);
   }
   /* log the final information of the run in the info file*/
   fprintf(logger->index_file, ":%ld|%.1e", logger->number_of_evaluations,
@@ -385,6 +385,9 @@ static void logger_bbob_free(void *stuff) {
 
   logger_bbob_finalize(logger);
   if (logger->index_file != NULL) {
+
+    fprintf(logger->index_file, ":%lu|%.1e", (unsigned long) logger->number_of_evaluations,
+        logger->best_fvalue - logger->optimal_fvalue);
     fclose(logger->index_file);
     logger->index_file = NULL;
   }

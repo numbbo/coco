@@ -23,8 +23,21 @@ import numpy
 import numpy as np
 import matplotlib
 
+if __name__ == "__main__":
+    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
+    filepath = os.path.split(sys.argv[0])[0]
+    # Add the path to bbob_pproc/.. folder
+    sys.path.append(os.path.join(filepath, os.path.pardir))
+    try:
+        import bbob_pproc as cocopp
+    except ImportError:
+        import cocopp
+    res = cocopp.rungeneric2.main(sys.argv[1:])
+    sys.exit(res)
+
+from . import genericsettings, ppfig, toolsdivers
+
 ppfig2_ftarget = 1e-8  # a hack, used in ppfig2.main 
-target_runlength = 10 # used for ppfigs.main
 
 # genericsettings.summarized_target_function_values[0] might be another option
 
@@ -43,9 +56,11 @@ if __name__ == "__main__":
 
 from . import pproc
 from . import genericsettings, config
+from . import testbedsettings
 from . import pprldistr
 from . import htmldesc
 from .pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
+from .ppfig import Usage
 from .toolsdivers import prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
 from .comp2 import ppfig2, pprldistr2, pptable2, ppscatter
 from .compall import ppfigs, pprldmany
@@ -54,14 +69,6 @@ import matplotlib.pyplot as plt
 
 __all__ = ['main']
 
-#CLASS DEFINITIONS
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-
-#FUNCTION DEFINITIONS
 
 def usage():
     print main.__doc__
@@ -107,7 +114,7 @@ def main(argv=None):
             output figures. SETTING can be either "grayscale", "color"
             or "black-white". The default setting is "color".
         --fig-only, --rld-only, --tab-only, --sca-only
-            these options can be used to output respectively the ERT
+            these options can be used to output respectively the aRT
             graphs figures, run length distribution figures or the
             comparison tables scatter plot figures only. Any combination
             of these options results in no output.
@@ -297,7 +304,7 @@ def main(argv=None):
             i.algId = alg1name
 
         config.target_values(genericsettings.isExpensive)
-        config.config(dsList[0].isBiobjective())
+        config.config(dsList[0].testbed_name())
         
         ######################### Post-processing #############################
         if genericsettings.isFig or genericsettings.isRLDistr or genericsettings.isTab or genericsettings.isScatter:
@@ -345,6 +352,17 @@ def main(argv=None):
             raise Usage('Data Mismatch: \n  ' + ' '.join(txt)
                         + '\nTry using --noise-free or --noisy flags.')
 
+        algName0 = toolsdivers.str_to_latex(
+            set(i[0] for i in dsList0.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
+        algName1 = toolsdivers.str_to_latex(
+            set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.two_algorithm_file_name),
+            "%s vs %s" % (algName1, algName0),
+            htmlPage=ppfig.HtmlPage.TWO,
+            isBiobjective=dsList0.isBiobjective(),
+            functionGroups=dsList0.getFuncGroups())
+
         if genericsettings.isFig:
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
@@ -354,7 +372,7 @@ def main(argv=None):
             plt.rc('pdf', fonttype = 42)
             ppfig2.main(dsList0, dsList1, ppfig2_ftarget,
                         outputdir, genericsettings.verbose)
-            print "log ERT1/ERT0 vs target function values done."
+            print "log aRT1/aRT0 vs target function values done."
 
         plt.rc("axes", **inset.rcaxes)
         plt.rc("xtick", **inset.rctick)
@@ -372,13 +390,13 @@ def main(argv=None):
             dictDim0 = dsList0.dictByDim()
             dictDim1 = dsList1.dictByDim()
 
-            # ECDFs of ERT ratios
+            # ECDFs of aRT ratios
             for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
                 if dim in inset.rldDimsOfInterest:
                     # ECDF for all functions altogether
                     try:
                         pprldistr2.main(dictDim0[dim], dictDim1[dim], dim,
-                                        genericsettings.current_testbed.rldValsOfInterest,
+                                        testbedsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
                                         '%02dD_all' % dim,
                                         genericsettings.verbose)
@@ -393,7 +411,7 @@ def main(argv=None):
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr2.main(dictFG1[fGroup], dictFG0[fGroup], dim,
-                                        genericsettings.current_testbed.rldValsOfInterest,
+                                        testbedsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
                                         '%02dD_%s' % (dim, fGroup),
                                         genericsettings.verbose)
@@ -404,7 +422,7 @@ def main(argv=None):
 
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr2.main(dictFN1[fGroup], dictFN0[fGroup], dim,
-                                        genericsettings.current_testbed.rldValsOfInterest,
+                                        testbedsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
                                         '%02dD_%s' % (dim, fGroup),
                                         genericsettings.verbose)
@@ -416,6 +434,20 @@ def main(argv=None):
                              '}'
                             ])
             
+            # ECDFs per function groups, code copied from rungenericmany.py
+            # (needed for bbob-biobj multiple algo template)
+            dictFG = pproc.dictAlgByFuncGroup(dictAlg)
+            for fg, tmpdictAlg in dictFG.iteritems():
+                dictDim = pproc.dictAlgByDim(tmpdictAlg)
+                for d, entries in dictDim.iteritems():
+                    pprldmany.main(entries,
+                                   dsList0.isBiobjective(),
+                                   order=sortedAlgs,
+                                   outputdir=outputdir,
+                                   info=('%02dD_%s' % (d, fg)),
+                                   verbose=genericsettings.verbose)
+                        
+            
             
             print "ECDF runlength ratio graphs done."
 
@@ -426,7 +458,7 @@ def main(argv=None):
                 if dim in inset.rldDimsOfInterest:
                     try:
                         pprldistr.comp(dictDim1[dim], dictDim0[dim],
-                                       genericsettings.current_testbed.rldValsOfInterest, # TODO: let rldVals... possibly be RL-based targets
+                                       testbedsettings.current_testbed.rldValsOfInterest, # TODO: let rldVals... possibly be RL-based targets
                                        True,
                                        outputdir, 'all', genericsettings.verbose)
                     except KeyError:
@@ -440,7 +472,7 @@ def main(argv=None):
 
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr.comp(dictFG1[fGroup], dictFG0[fGroup],
-                                       genericsettings.current_testbed.rldValsOfInterest, True,
+                                       testbedsettings.current_testbed.rldValsOfInterest, True,
                                        outputdir,
                                        '%s' % fGroup, genericsettings.verbose)
 
@@ -449,7 +481,7 @@ def main(argv=None):
                     dictFN1 = dictDim1[dim].dictByNoise()
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr.comp(dictFN1[fGroup], dictFN0[fGroup],
-                                       genericsettings.current_testbed.rldValsOfInterest, True,
+                                       testbedsettings.current_testbed.rldValsOfInterest, True,
                                        outputdir,
                                        '%s' % fGroup, genericsettings.verbose)
 
@@ -471,9 +503,9 @@ def main(argv=None):
                                  genericsettings.verbose,
                                  genericsettings.two_algorithm_file_name)
 
+        htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')
+
         if genericsettings.isScatter:
-            if genericsettings.runlength_based_targets:
-                ppscatter.targets = pproc.RunlengthBasedTargetValues(np.logspace(numpy.log10(0.5), numpy.log10(50), 8))
             ppscatter.main(dsList1, dsList0, outputdir,
                            verbose=genericsettings.verbose)
             prepend_to_file(os.path.join(outputdir,
@@ -483,7 +515,7 @@ def main(argv=None):
                              '}'
                             ])
             
-            replace_in_file(os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html'), '##bbobppscatterlegend##', ppscatter.figure_caption_html())
+            replace_in_file(htmlFileName, '##bbobppscatterlegend##', ppscatter.figure_caption(True))
                             
             print "Scatter plots done."
 
@@ -539,29 +571,18 @@ def main(argv=None):
                                       outputdir,
                                       '%s' % (nGroup), genericsettings.verbose)
 
-            if isinstance(pptable2.targetsOfInterest, pproc.RunlengthBasedTargetValues):
-                prepend_to_file(os.path.join(outputdir,
-                            'bbob_pproc_commands.tex'), 
-                            ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
-                             pptable2.table_caption_expensive, 
-                             '}'
-                            ])
-            else:
-                prepend_to_file(os.path.join(outputdir,
-                            'bbob_pproc_commands.tex'), 
-                            ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
-                             pptable2.table_caption, 
-                             '}'
-                            ])
-                            
-            htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')            
-            key =  '##bbobpptablestwolegendexpensive##' if isinstance(pptable2.targetsOfInterest, pproc.RunlengthBasedTargetValues) else '##bbobpptablestwolegend##'
+            prepend_to_file(os.path.join(outputdir,
+                        'bbob_pproc_commands.tex'), 
+                        ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
+                         pptable2.get_table_caption(), 
+                         '}'
+                        ])
+                        
+            key =  '##bbobpptablestwolegend%s##' % (testbedsettings.current_testbed.scenario)
             replace_in_file(htmlFileName, '##bbobpptablestwolegend##', htmldesc.getValue(key))
                         
-            alg0 = set(i[0] for i in dsList0.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, '')[0:3]
-            alg1 = set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, '')[0:3]
-            replace_in_file(htmlFileName, 'algorithmAshort', alg0)
-            replace_in_file(htmlFileName, 'algorithmBshort', alg1)
+            replace_in_file(htmlFileName, 'algorithmAshort', algName0[0:3])
+            replace_in_file(htmlFileName, 'algorithmBshort', algName1[0:3])
             
             for i, alg in enumerate(args):
                 replace_in_file(htmlFileName, 'algorithm' + abc[i], str_to_latex(strip_pathname1(alg)))
@@ -575,16 +596,11 @@ def main(argv=None):
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
             plt.rc('pdf', fonttype = 42)
-            ftarget = genericsettings.current_testbed.ppfigs_ftarget
-            if genericsettings.runlength_based_targets:
-                reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
-                ftarget = RunlengthBasedTargetValues([target_runlength],  # TODO: make this more variable but also consistent
-                                                     reference_data = reference_data)
-            ppfigs.main(dictAlg, 
+
+            ppfigs.main(dictAlg,
                         genericsettings.two_algorithm_file_name, 
                         dsList[0].isBiobjective(),
-                        ftarget,
-                        sortedAlgs, 
+                        sortedAlgs,
                         outputdir, 
                         genericsettings.verbose)
             plt.rcdefaults()

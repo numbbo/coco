@@ -8,7 +8,7 @@ import os, sys
 from pdb import set_trace
 import warnings
 import numpy
-from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam
+from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings
 from ..pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from ..toolsstats import significancetest, significance_all_best_vs_other
 from ..pproc import DataSetList
@@ -22,37 +22,66 @@ http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
 
 """
 
-table_caption_one = r"""%
-    Expected running time (ERT in number of function 
-    evaluations) divided by the respective best ERT measured during BBOB-2009 in
-    #1.
-    The ERT and in braces, as dispersion measure, the half difference between 90 and 
-    10\%-tile of bootstrapped run lengths appear for each algorithm and 
+def get_table_caption():
+    """ Sets table caption, based on the testbedsettings.current_testbed
+        and genericsettings.runlength_based_targets.
+        
+        TODO: \hvref and \fopt should be defined via the current_testbed, 
+        preferably with a single latex command. 
     """
-table_caption_two1 = r"""%
-    target, the corresponding best ERT
-    in the first row. The different target \Df-values are shown in the top row. 
-    \#succ is the number of trials that reached the (final) target $\fopt + 10^{-8}$.
-    """
-table_caption_two2 = r"""%
-    run-length based target, the corresponding best ERT
-    (preceded by the target \Df-value in \textit{italics}) in the first row. 
-    \#succ is the number of trials that reached the target value of the last column.
-    """
-table_caption_rest = r"""%
-    The median number of conducted function evaluations is additionally given in 
-    \textit{italics}, if the target in the last column was never reached. 
-    Entries, succeeded by a star, are statistically significantly better (according to
-    the rank-sum test) when compared to all other algorithms of the table, with
-    $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
-    than 1, with Bonferroni correction by the number of instances. A $\downarrow$
-    indicates the same tested against the best algorithm of BBOB-2009. Best results
-    are printed in bold.
-    """
-tables_many_legend = table_caption_one + table_caption_two1 + table_caption_rest
-tables_many_expensive_legend = table_caption_one + table_caption_two2 + table_caption_rest
 
-targetsOfInterest = pproc.TargetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))
+    table_caption_one = r"""%
+        Average running time (\aRT\ in number of function 
+        evaluations) divided by the respective best \aRT\ measured during BBOB-2009 in
+        #1.
+        The \aRT\ and in braces, as dispersion measure, the half difference between 
+        10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
+        """
+    table_caption_two1 = r"""%
+        target, the corresponding best \aRT\
+        in the first row. The different target \Df-values are shown in the top row.
+        \#succ is the number of trials that reached the (final) target
+        $\fopt + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
+        """
+    table_caption_two2 = r"""%
+        run-length based target, the corresponding best \aRT\
+        (preceded by the target \Df-value in \textit{italics}) in the first row. 
+        \#succ is the number of trials that reached the target value of the last column.
+        """
+    table_caption_one_bi = r"""%
+        Average runtime (\aRT) to reach given targets, measured
+        in number of function evaluations, in #1. For each function, the \aRT\ 
+        and, in braces as dispersion measure, the half difference between 10 and 
+        90\%-tile of (bootstrapped) runtimes is shown for the different
+        target \DI-values as shown in the top row. 
+        \#succ is the number of trials that reached the last target
+        $\hvref + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
+        """
+    table_caption_rest = (r"""%
+        The median number of conducted function evaluations is additionally given in 
+        \textit{italics}, if the target in the last column was never reached. 
+        Entries, succeeded by a star, are statistically significantly better (according to
+        the rank-sum test) when compared to all other algorithms of the table, with
+        $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
+        than 1, with Bonferroni correction of #2. """ +
+        (r"""A $\downarrow$ indicates the same tested against the best
+        algorithm of BBOB-2009."""
+        if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
+        else "") + r"""Best results are printed in bold.
+        """)
+
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+        table_caption = table_caption_one_bi + table_caption_rest
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            table_caption = table_caption_one + table_caption_two2 + table_caption_rest
+        else:
+            table_caption = table_caption_one + table_caption_two1 + table_caption_rest
+    else:
+        warnings.warn("Current settings do not support pptables caption.")
+
+    return table_caption
 
 with_table_heading = False  # in case the page is long enough
 
@@ -65,7 +94,6 @@ significance_vs_ref_symbol = r"\downarrow"
 significance_vs_ref_symbol_html = r"&darr;"
 maxfloatrepr = 10000.
 samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
-targetf = 1e-8
 precfloat = 2
 precscien = 2
 precdispersion = 1  # significant digits for dispersion
@@ -226,15 +254,17 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
     * significance test against best algorithm
     * table width...
 
-    Takes ``targetsOfInterest`` from this file as "input argument" to compute
-    the desired target values. ``targetsOfInterest`` might be configured via 
-    config.
+    Takes ``pptable_targetsOfInterest`` from testbedsetting's Testbed instance
+    as "input argument" to compute the desired target values.
+    ``pptable_targetsOfInterest`` might be configured via config.
     
     """
 
     # TODO: method is long, terrible to read, split if possible
 
-    bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+    bestalgentries = bestalg.load_best_algorithm()
+    
+    testbed = testbedsettings.current_testbed
 
     # Sort data per dimension and function
     dictData = {}
@@ -253,13 +283,16 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
     for df in dictData:
         # Generate one table per df
         # first update targets for each dimension-function pair if needed:
-        targets = targetsOfInterest((df[1], df[0]))            
-        targetf = targets[-1]
+        targetsOfInterest = testbed.pptablemany_targetsOfInterest((df[1], df[0]))
+        if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+            targetf = targetsOfInterest[-1]
+        else:
+            targetf = testbed.pptable_ftarget
         
         # best 2009
         if bestalgentries:        
             refalgentry = bestalgentries[df]
-            refalgert = refalgentry.detERT(targets)
+            refalgert = refalgentry.detERT(targetsOfInterest)
             refalgevals = (refalgentry.detEvals((targetf, ))[0][0])
 
         # Process the data
@@ -293,7 +326,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
 
             algnames.append(sortedAlgs[n])
 
-            evals = entry.detEvals(targets)
+            evals = entry.detEvals(targetsOfInterest)
             #tmpdata = []
             tmpdisp = []
             tmpert = []
@@ -320,7 +353,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             #algmedfinalfunvals.append(numpy.median(entry.finalfunvals))
 
             if bestalgentries:            
-                algtestres.append(significancetest(refalgentry, entry, targets))
+                algtestres.append(significancetest(refalgentry, entry, targetsOfInterest))
 
             # determine success probability for Df = 1e-8
             e = entry.detEvals((targetf ,))[0]
@@ -345,22 +378,23 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
 
         # significance test of best given algorithm against all others
         best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
-        significance_versus_others = significance_all_best_vs_other(algentries, targets, best_alg_idx)[0]
+        significance_versus_others = significance_all_best_vs_other(algentries, targetsOfInterest, best_alg_idx)[0]
                 
         # Create the table
         table = []
         tableHtml = []
-        spec = r'@{}c@{}|*{%d}{@{\,}r@{}X@{\,}}|@{}r@{}@{}l@{}' % (len(targets)) # in case StrLeft not working: replaced c@{} with l@{ }
-        spec = r'@{}c@{}|*{%d}{@{}r@{}X@{}}|@{}r@{}@{}l@{}' % (len(targets)) # in case StrLeft not working: replaced c@{} with l@{ }
+        spec = r'@{}c@{}|*{%d}{@{\,}r@{}X@{\,}}|@{}r@{}@{}l@{}' % (len(targetsOfInterest)) # in case StrLeft not working: replaced c@{} with l@{ }
+        spec = r'@{}c@{}|*{%d}{@{}r@{}X@{}}|@{}r@{}@{}l@{}' % (len(targetsOfInterest)) # in case StrLeft not working: replaced c@{} with l@{ }
         extraeol = []
 
         # Generate header lines
         if with_table_heading:
             header = funInfos[df[1]] if df[1] in funInfos.keys() else 'f%d' % df[1]
             table.append([r'\multicolumn{%d}{@{\,}c@{\,}}{{\textbf{%s}}}'
-                          % (2 * len(targets) + 2, header)])
+                          % (2 * len(targetsOfInterest) + 2, header)])
             extraeol.append('')
 
+        curlineHtml = []
         if function_targets_line is True or (function_targets_line and df[1] in function_targets_line):
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 curline = [r'\#FEs/D']
@@ -371,32 +405,41 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
                     counter += 1
             else:
-                curline = [r'$\Delta f_\mathrm{opt}$']
-                curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']
+                if (testbed.name == testbedsettings.testbed_name_bi):
+                    curline = [r'$\Df$']
+                    curlineHtml = ['<thead>\n<tr>\n<th>&#916; HV<sub>ref</sub><br>REPLACEH</th>\n']
+                else:
+                    curline = [r'$\Delta f_\mathrm{opt}$']
+                    curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']
                 counter = 1
-                for t in targets:
+                for t in targetsOfInterest:
                     curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
                                 % writeFEvals2(t, precision=1, isscientific=True))
                     curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (writeFEvals2(t, precision=1, isscientific=True), counter))
                     counter += 1
 #                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
-#                            % writeFEvals2(targets[-1], precision=1, isscientific=True))
-            curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
+#                            % writeFEvals2(targetsOfInterest[-1], precision=1, isscientific=True))
+            if (testbed.name == testbedsettings.testbed_name_bi):
+                curline.append(r'\multicolumn{2}{|@{}l@{}}{\begin{rotate}{30}\#succ\end{rotate}}')
+            else:
+                curline.append(r'\multicolumn{2}{|@{}l@{}}{\#succ}')
             curlineHtml.append('<td>#succ<br>REPLACEF</td>\n</tr>\n</thead>\n')
             table.append(curline)
-            
+        
         extraeol.append(r'\hline')
 #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
 
-        curline = [r'ERT$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
-        replaceValue = 'ERT<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
+        curline = [r'\aRT{}$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
+        replaceValue = '\aRT{}<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
+        
+        
         if bestalgentries:
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
                 counter = 1
                 for i in xrange(len(refalgert[:-1])):
-                    temp="%.1e" %targetsOfInterest((df[1], df[0]))[i]
+                    temp="%.1e" % targetsOfInterest((df[1], df[0]))[i]
                     if temp[-2]=="0":
                         temp=temp[:-2]+temp[-1]
                     curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
@@ -405,7 +448,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     curlineHtml = [item.replace('REPLACE%d' % counter, replaceValue) for item in curlineHtml]
                     counter += 1
                     
-                temp="%.1e" %targetsOfInterest((df[1], df[0]))[-1]
+                temp="%.1e" % targetsOfInterest((df[1], df[0]))[-1]
                 if temp[-2]=="0":
                     temp=temp[:-2]+temp[-1]
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
@@ -435,8 +478,8 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             curlineHtml = [item.replace('REPLACEF', replaceValue) for item in curlineHtml]
             
         else: # if not bestalgentries
-            curline.append(r'\multicolumn{%d}{@{}c@{}|}{}' % (2 * (len(targets) + 1)))
-            for counter in range(1, len(targets) + 1):
+            curline.append(r'\multicolumn{%d}{@{}c@{}|}{} & ' % (2 * (len(targetsOfInterest))))
+            for counter in range(1, len(targetsOfInterest) + 1):
                 curlineHtml = [item.replace('REPLACE%d' % counter, '&nbsp;') for item in curlineHtml]
             curlineHtml = [item.replace('REPLACEF', '&nbsp;') for item in curlineHtml]
 
@@ -453,7 +496,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         #if df == (5, 17):
             #set_trace()
 
-        header = r'\providecommand{\ntables}{7}'
+        header = r'\providecommand{\ntables}{%d}' % len(testbed.pptablemany_targetsOfInterest)
         for i, alg in enumerate(algnames):
             tableHtml.append('<tr>\n')
             #algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
@@ -494,13 +537,13 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                         if not numpy.isinf(refalgert[j]):
                             tmpevals = algevals[i][j].copy()
                             tmpevals[numpy.isnan(tmpevals)] = algentries[i].maxevals[numpy.isnan(tmpevals)]
-                            bestevals = refalgentry.detEvals(targets)
+                            bestevals = refalgentry.detEvals(targetsOfInterest)
                             bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
                             bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
                             tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
                             bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
     
-                        #The conditions are now that ERT < ERT_best and
+                        #The conditions are now that aRT < aRT_best and
                         # all(sorted(FEvals_best) > sorted(FEvals_current)).
                         if numpy.isinf(refalgert[j]) or all(tmpevals < bestevals):
                             nbstars = -numpy.ceil(numpy.log10(nbtests * p))

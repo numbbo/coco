@@ -121,7 +121,7 @@ static void coco_join_path(char *path, const size_t path_max_length, ...) {
 static int coco_directory_exists(const char *path) {
   int res;
 #if defined(HAVE_GFA)
-  DWORD dwAttrib = GetFileAttributes(path);
+  DWORD dwAttrib = GetFileAttributesA(path);
   res = (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 #elif defined(HAVE_STAT)
   struct stat buf;
@@ -144,7 +144,7 @@ static int coco_directory_exists(const char *path) {
 static int coco_file_exists(const char *path) {
   int res;
 #if defined(HAVE_GFA)
-  DWORD dwAttrib = GetFileAttributes(path);
+  DWORD dwAttrib = GetFileAttributesA(path);
   res = (dwAttrib != INVALID_FILE_ATTRIBUTES) && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY);
 #elif defined(HAVE_STAT)
   struct stat buf;
@@ -406,6 +406,20 @@ double *coco_allocate_vector(const size_t number_of_elements) {
 }
 
 /**
+ * @brief Allocates memory for a vector and sets all its elements to value.
+ */
+static double *coco_allocate_vector_with_value(const size_t number_of_elements, double value) {
+  const size_t block_size = number_of_elements * sizeof(double);
+  double *vector = (double *) coco_allocate_memory(block_size);
+  size_t i;
+
+  for (i = 0; i < number_of_elements; i++)
+  	vector[i] = value;
+
+  return vector;
+}
+
+/**
  * @brief Safe memory allocation for a vector with size_t elements that either succeeds or triggers a
  * coco_error.
  */
@@ -563,14 +577,14 @@ static void coco_option_keys_add(coco_option_keys_t **basic_option_keys,
  */
 static coco_option_keys_t *coco_option_keys(const char *option_string) {
 
-  size_t i, j;
+  size_t i;
   char **keys;
   coco_option_keys_t *option_keys = NULL;
   char *string_to_parse, *key;
 
-  /* Check for empty string and string without colons */
-  if ((option_string == NULL) || (strlen(option_string) == 0)|| (strchr(option_string, ':') == NULL)) {
-    return NULL;
+  /* Check for empty string */
+  if ((option_string == NULL) || (strlen(option_string) == 0)) {
+	    return NULL;
   }
 
   /* Split the options w.r.t ':' */
@@ -582,15 +596,19 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
     for (i = 0; *(keys + i); i++) {
       string_to_parse = coco_strdup(*(keys + i));
 
-      /* Remove any trailing spaces */
-      for (j = strlen(string_to_parse) - 1; (j > 0) && isspace((unsigned char) string_to_parse[j]); j--) {
-        string_to_parse[j] = '\0';
+      /* Remove any leading and trailing spaces */
+      string_to_parse = coco_string_trim(string_to_parse);
+
+      /* Stop if this is the last substring (contains a value and no key) */
+      if ((i > 0) && (*(keys + i + 1) == NULL)) {
+        coco_free_memory(string_to_parse);
+        break;
       }
 
       /* Disregard everything before the last space */
       key = strrchr(string_to_parse, ' ');
-      if (key == NULL) {
-        /* No spaces left, everything is the key */
+      if ((key == NULL) || (i == 0)) {
+        /* No spaces left (or this is the first key), everything is the key */
         key = string_to_parse;
       } else {
         /* Move to the start of the key (one char after the space) */
@@ -601,12 +619,6 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
       coco_free_memory(*(keys + i));
       *(keys + i) = coco_strdup(key);
       coco_free_memory(string_to_parse);
-
-      /* Stop if this is the last substring that contains a key */
-      if (*(keys + i + 1) == NULL) {
-        coco_free_memory(*(keys + i + 1));
-        break;
-      }
     }
 
     option_keys = coco_option_keys_allocate(i, (const char**) keys);
@@ -629,8 +641,8 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
 static char *coco_option_keys_get_output_string(const coco_option_keys_t *option_keys,
                                                 const char *info_string) {
   size_t i;
-  char *string, *new_string;
-  string = NULL;
+  char *string = NULL, *new_string;
+
   if ((option_keys != NULL) && (option_keys->count > 0)) {
 
     string = coco_strdup(info_string);
@@ -835,15 +847,60 @@ static size_t coco_double_to_size_t(const double number) {
   return (size_t) coco_double_round(number);
 }
 
-/* Commented to silence the compiler (unused function warning) */
-#if 0
 /**
  * @brief  Returns 1 if |a - b| < accuracy and 0 otherwise.
  */
 static int coco_double_almost_equal(const double a, const double b, const double accuracy) {
-  return ((fabs(a - b) < accuracy) == 0);
+  return (fabs(a - b) < accuracy);
 }
-#endif
+
+/**@}*/
+
+/***********************************************************************************************************/
+
+/**
+ * @name Methods handling NAN and INFINITY
+ */
+/**@{*/
+
+/**
+ * @brief Returns 1 if x is NAN and 0 otherwise.
+ */
+static int coco_is_nan(const double x) {
+  return (isnan(x) || (x != x) || !(x == x) || ((x >= NAN / (1 + 1e-9)) && (x <= NAN * (1 + 1e-9))));
+}
+
+/**
+ * @brief Returns 1 if the input vector of dimension dim contains any NAN values and 0 otherwise.
+ */
+static int coco_vector_contains_nan(const double *x, const size_t dim) {
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		if (coco_is_nan(x[i]))
+		  return 1;
+	}
+	return 0;
+}
+
+/**
+ * @brief Sets all dim values of y to NAN.
+ */
+static void coco_vector_set_to_nan(double *y, const size_t dim) {
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		y[i] = NAN;
+	}
+}
+
+/**
+ * @brief Returns 1 if x is INFINITY and 0 otherwise.
+ */
+static int coco_is_inf(const double x) {
+	if (coco_is_nan(x))
+		return 0;
+	return (isinf(x) || (x <= -INFINITY) || (x >= INFINITY));
+}
+
 /**@}*/
 
 /***********************************************************************************************************/
@@ -883,12 +940,13 @@ static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, 
     count++;
   }
   if (count == max_count) {
-    coco_error("coco_count_numbers(): over %lu numbers in %s", max_count, name);
+    coco_error("coco_count_numbers(): over %lu numbers in %s", (unsigned long) max_count, name);
     return 0; /* Never reached*/
   }
 
   return count;
 }
+
 /**@}*/
 
 /***********************************************************************************************************/

@@ -1,13 +1,15 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Creates ERTs and convergence figures for multiple algorithms."""
+"""Creates aRTs and convergence figures for multiple algorithms."""
 from __future__ import absolute_import
 import os
 import matplotlib.pyplot as plt
 import numpy
+import warnings
 from pdb import set_trace
 from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings, htmldesc, ppfigparam
+from .. import testbedsettings
 from ..ppfig import saveFigure
 from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 
@@ -20,24 +22,6 @@ from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 #           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
 
 show_significance = 0.01  # for zero nothing is shown
-scaling_figure_caption_start_fixed = (r"""Expected running time (\ERT\ in number of $f$-evaluations 
-                as $\log_{10}$ value), divided by dimension for target function value $BBOBPPFIGSFTARGET$ 
-                versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. """
-                )
-scaling_figure_caption_start_rlbased = (r"""Expected running time (\ERT\ in number of $f$-evaluations 
-                as $\log_{10}$ value) divided by dimension versus dimension. The target function value 
-                is chosen such that the REFERENCE_ALGORITHM artificial algorithm just failed to achieve 
-                an \ERT\ of $BBOBPPFIGSFTARGET\times\DIM$. """
-                )
-scaling_figure_caption_end = (
-                r"Different symbols " +
-                r"correspond to different algorithms given in the legend of #1. " +
-                r"Light symbols give the maximum number of function evaluations from the longest trial " + 
-                r"divided by dimension. " +
-                (r"Black stars indicate a statistically better result compared to all other algorithms " +
-                 r"with $p<0.01$ and Bonferroni correction number of dimensions (six).  ") 
-                         if show_significance else ''
-                )
 
 styles = genericsettings.line_styles
 def fix_styles(number, styles=styles):
@@ -55,81 +39,160 @@ show_algorithms = []
 fontsize = 10.0
 legend = False
 
-def scaling_figure_caption(target):
-    # need to be used in rungenericmany.py!?
-    assert len(target) == 1
-    if isinstance(target, pproc.RunlengthBasedTargetValues):
-        s = scaling_figure_caption_start_rlbased.replace('BBOBPPFIGSFTARGET', 
-                                                         toolsdivers.number_to_latex(target.label(0)))
-        s = s.replace('REFERENCE_ALGORITHM', target.reference_algorithm)
-    else:
-        s = scaling_figure_caption_start_fixed.replace('BBOBPPFIGSFTARGET', 
-                                                       toolsdivers.number_to_latex(target.label(0)))
-    s += scaling_figure_caption_end
-    return s
 
-def ecdfs_figure_caption(target):
+def prepare_scaling_figure_caption():
+
+    scaling_figure_caption_start_fixed = (r"""Average running time (\aRT\ in number of $f$-evaluations
+                    as $\log_{10}$ value), divided by dimension for target function value $BBOBPPFIGSFTARGET$
+                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. """
+                                          )
+
+    scaling_figure_caption_start_rlbased = (r"""Average running time (\aRT\ in number of $f$-evaluations
+                        as $\log_{10}$ value) divided by dimension versus dimension. The target function value
+                        is chosen such that the REFERENCE_ALGORITHM artificial algorithm just failed to achieve
+                        an \aRT\ of $BBOBPPFIGSFTARGET\times\DIM$. """
+                                            )
+
+    scaling_figure_caption_end = (
+        r"Different symbols " +
+        r"correspond to different algorithms given in the legend of #1. " +
+        r"Light symbols give the maximum number of function evaluations from the longest trial " +
+        r"divided by dimension. " +
+        (r"Black stars indicate a statistically better result compared to all other algorithms " +
+         r"with $p<0.01$ and Bonferroni correction number of dimensions (six).  ")
+        if show_significance else ''
+    )
+
+    scaling_figure_caption_fixed = scaling_figure_caption_start_fixed + scaling_figure_caption_end
+    scaling_figure_caption_rlbased = scaling_figure_caption_start_rlbased + scaling_figure_caption_end
+
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+        figure_caption = scaling_figure_caption_fixed
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            figure_caption = scaling_figure_caption_rlbased
+        else:
+            figure_caption = scaling_figure_caption_fixed
+    else:
+        warnings.warn("Current settings do not support ppfigdim caption.")
+
+    return figure_caption
+
+
+def scaling_figure_caption(for_html = False):
+
+    if for_html:
+        figure_caption = htmldesc.getValue('##bbobppfigslegend' +
+                                           testbedsettings.current_testbed.scenario + '##')
+    else:
+        figure_caption = prepare_scaling_figure_caption()
+
+    target = testbedsettings.current_testbed.ppfigs_ftarget
+    target = pproc.TargetValues.cast([target] if numpy.isscalar(target) else target)
     assert len(target) == 1
+
+    if genericsettings.runlength_based_targets:
+        figure_caption = figure_caption.replace('REFERENCE_ALGORITHM',
+                                                target.reference_algorithm)
+        figure_caption = figure_caption.replace('REFERENCEALGORITHM',
+                                                target.reference_algorithm)
+
+    figure_caption = figure_caption.replace('BBOBPPFIGSFTARGET',
+                                            toolsdivers.number_to_latex(target.label(0)))
+
+    return figure_caption
+
+
+def prepare_ecdfs_figure_caption():
 
     best2009text = (
                 r"The ``best 2009'' line " +
-                r"corresponds to the best \ERT\ observed during BBOB 2009 " +
+                r"corresponds to the best \aRT\ observed during BBOB 2009 " +
                 r"for each selected target."
                 )
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
-                r"(FEvals/DIM) for " +
-                len(genericsettings.current_testbed.pprldmany_target_range_latex) +
-                r" targets in " + 
-                genericsettings.current_testbed.pprldmany_target_range_latex +
-                r" for all functions and subgroups in #1-D. " + ( best2009text
-                if genericsettings.current_testbed.name != 'bbob-biobj' 
-                else "")
+                r"(FEvals/DIM) for $BBOBPPFIGSFTARGET$ " +
+                r"targets with target precision in BBOBPPFIGSTARGETRANGE " +
+                r"for all functions and subgroups in #1-D. "
                 )
     ecdfs_figure_caption_rlbased = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
                 r"(FEvals/DIM) for all functions and subgroups in #1-D." +
-                r" The targets are chosen from " +
-                genericsettings.current_testbed.pprldmany_target_range_latex +
+                r" The targets are chosen from BBOBPPFIGSTARGETRANGE " +
                 r"such that the REFERENCE_ALGORITHM artificial algorithm just " +
                 r"not reached them within a given budget of $k$ $\times$ DIM, " +
-                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. " + best2009text
-                )    
-    
-    if isinstance(target, pproc.RunlengthBasedTargetValues):
-        s = ecdfs_figure_caption_rlbased.replace('REFERENCE_ALGORITHM', 
-                                                         target.reference_algorithm)
-    else:
-        s = ecdfs_figure_caption_standard
-    return s
+                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. "
+                )
 
-def scaling_figure_caption_html(target):
-    # need to be used in rungenericmany.py!?
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+        figure_caption = ecdfs_figure_caption_standard
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            figure_caption = ecdfs_figure_caption_rlbased + best2009text
+        else:
+            figure_caption = ecdfs_figure_caption_standard + best2009text
+    else:
+        warnings.warn("Current settings do not support ppfigdim caption.")
+
+    return figure_caption
+
+
+def ecdfs_figure_caption(for_html = False, dimension = 0):
+
+    if for_html:
+        key = '##bbobECDFslegend%s%d##' % (testbedsettings.current_testbed.scenario, dimension)
+        caption = htmldesc.getValue(key)
+    else:
+        caption = prepare_ecdfs_figure_caption()
+
+    target = testbedsettings.current_testbed.ppfigs_ftarget
+    target = pproc.TargetValues.cast([target] if numpy.isscalar(target) else target)
     assert len(target) == 1
-    if isinstance(target, pproc.RunlengthBasedTargetValues):
-        s = htmldesc.getValue('##bbobppfigslegendrlbased##').replace('BBOBPPFIGSFTARGET', 
-                                                         toolsdivers.number_to_html(target.label(0)))
-        s = s.replace('REFERENCEALGORITHM', target.reference_algorithm)
+
+    caption = caption.replace('BBOBPPFIGSTARGETRANGE',
+                              str(testbedsettings.current_testbed.pprldmany_target_range_latex))
+
+    if genericsettings.runlength_based_targets:
+        caption = caption.replace('REFERENCE_ALGORITHM', target.reference_algorithm)
+        caption = caption.replace('REFERENCEALGORITHM', target.reference_algorithm)
     else:
-        s = htmldesc.getValue('##bbobppfigslegendfixed##').replace('BBOBPPFIGSFTARGET', 
-                                                       toolsdivers.number_to_html(target.label(0)))
-    if show_significance:                                                       
-        s += htmldesc.getValue('##bbobppfigslegendend##')
+        caption = caption.replace('BBOBPPFIGSFTARGET',
+                                  str(len(testbedsettings.current_testbed.pprldmany_target_values)))
+
+    return caption
+
+
+def get_ecdfs_single_fcts_caption():
+    ''' For the moment, only the bi-objective case is covered! '''
+    s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
+         of objective function evaluations divided by dimension (FEvals/DIM) for the $""" +
+            str(len(testbedsettings.current_testbed.pprldmany_target_values)) +
+            r"$ targets " + 
+            str(testbedsettings.current_testbed.pprldmany_target_range_latex) +
+            r" for functions $f_1$ to $f_{16}$ and all dimensions. "
+            )
+    return s
+
+def get_ecdfs_all_groups_caption():
+    ''' For the moment, only the bi-objective case is covered! '''
+#    s = (r"Bootstrapped empirical cumulative distribution of the number " +
+#            r"of objective function evaluations divided by dimension " +
+#            r"(FEvals/DIM) for " +
+    s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes, measured in number
+         of objective function evaluations, divided by dimension (FEvals/DIM) for the $""" +
+            str(len(testbedsettings.current_testbed.pprldmany_target_values)) +
+            r"$ targets " + 
+            str(testbedsettings.current_testbed.pprldmany_target_range_latex) +
+            r" for all function groups and all dimensions. The aggregation" +
+            r" over all 55 functions is shown in the last plot."
+            )
+    return s
     
-    return s
-
-def ecdfs_figure_caption_html(target, dimension):
-    assert len(target) == 1
-    if isinstance(target, pproc.RunlengthBasedTargetValues):
-        s = htmldesc.getValue('##bbobECDFslegendrlbased%d##' % dimension).replace('REFERENCEALGORITHM', 
-                                                         target.reference_algorithm)
-    else:
-        s = htmldesc.getValue('##bbobECDFslegendstandard%d##' % dimension)
-    return s
-
-
 def plotLegend(handles, maxval=None):
     """Display right-side legend.
     
@@ -292,7 +355,7 @@ def beautify(legend=False, rightlegend=False):
     axisHandle.set_yticklabels(tmp2)
 
     if legend:
-        plt.legend(loc=0, numpoints=1)
+        toolsdivers.legend(loc=0, numpoints=1)
 
 def generateData(dataSet, target):
     """Returns an array of results to be plotted.
@@ -317,8 +380,8 @@ def generateData(dataSet, target):
     res[3] = numpy.max(dataSet.maxevals)
     return res
 
-def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, outputdir='ppdata', verbose=True):
-    """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
+def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppdata', verbose=True):
+    """From a DataSetList, returns figures showing the scaling: aRT/dim vs dim.
     
     One function and one target per figure.
     
@@ -329,6 +392,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
     
     """
     # target becomes a TargetValues "list" with one element
+    target = testbedsettings.current_testbed.ppfigs_ftarget
     target = pproc.TargetValues.cast([target] if numpy.isscalar(target) else target)
     latex_commands_filename = os.path.join(outputdir, 'bbob_pproc_commands.tex')
     assert isinstance(target, pproc.TargetValues) 
@@ -413,7 +477,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
             #             verticalalignment='bottom',
             #             horizontalalignment='center')
 
-        bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+        bestalgentries = bestalg.load_best_algorithm()
 
         if bestalgentries:        
             bestalgdata = []
@@ -454,16 +518,27 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
         if f in funInfos.keys():
             plt.gca().set_title(funInfos[f], fontsize=fontSize)
 
+        functions_with_legend = testbedsettings.current_testbed.functions_with_legend
         isLegend = False
         if legend:
             plotLegend(handles)
         elif 1 < 3:
-            if f in (1, 24, 101, 130) and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
+            if f in functions_with_legend and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
                 isLegend = True
 
         beautify(legend=isLegend, rightlegend=legend)
 
-        plt.text(plt.xlim()[0], plt.ylim()[0], 'target ' + target.label_name() + ': ' + target.label(0))  # TODO: check
+        # bottom labels with #instances and type of targets:
+        infotext = ''
+        algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
+        for alg in algorithms_with_data:
+            infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
+        infotext = infotext.rstrip(', ')
+        infotext += ' instances'
+        plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, infotext, fontsize=14)  # TODO: check
+        plt.text(plt.xlim()[0], plt.ylim()[0], 
+                 'target ' + target.label_name() + ': ' + target.label(0),
+                 fontsize=14)  # TODO: check
 
         saveFigure(filename, verbose=verbose)
 
@@ -487,17 +562,17 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
                 [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
                  #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
                 '\\providecommand{\\bbobppfigslegend}[1]{',
-                scaling_figure_caption(target), 
+                scaling_figure_caption(),
                 'Legend: '] + alg_definitions + ['}']
                 )
         toolsdivers.prepend_to_file(latex_commands_filename, 
                 ['\\providecommand{\\bbobECDFslegend}[1]{',
-                ecdfs_figure_caption(target), '}']
+                ecdfs_figure_caption(), '}']
                 )
 
-        toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption_html(target) + 'Legend: ' + alg_definitions_html)
-        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend5##', ecdfs_figure_caption_html(target, 5))
-        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend20##', ecdfs_figure_caption_html(target, 20))
+        toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
+        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend5##', ecdfs_figure_caption(True, 5))
+        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend20##', ecdfs_figure_caption(True, 20))
 
         if verbose:
             print 'Wrote commands and legend to %s' % filename
@@ -530,8 +605,8 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, target, sortedAlgs=None, output
         if legend:
             plotLegend(handles)
         else:
-            if f in (1, 24, 101, 130):
-                plt.legend()
+            if f in functions_with_legend:
+                toolsdivers.legend()
 
         saveFigure(filename, figFormat=genericsettings.getFigFormats(), verbose=verbose)
 

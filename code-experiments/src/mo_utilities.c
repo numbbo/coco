@@ -11,6 +11,8 @@
  * @brief Checks the dominance relation in the unconstrained minimization case between objectives1 and
  * objectives2.
  *
+ * If two values are closer together than 1e-13, they are treated as equal.
+ *
  * @return
  *  1 if objectives1 dominates objectives2 <br>
  *  0 if objectives1 and objectives2 are non-dominated <br>
@@ -18,14 +20,15 @@
  * -2 if objectives1 is identical to objectives2
  */
 static int mo_get_dominance(const double *objectives1, const double *objectives2, const size_t num_obj) {
-  /* TODO: Should we care about comparison precision? */
   size_t i;
 
   int flag1 = 0;
   int flag2 = 0;
 
   for (i = 0; i < num_obj; i++) {
-    if (objectives1[i] < objectives2[i]) {
+  	if (coco_double_almost_equal(objectives1[i], objectives2[i], 1e-13)) {
+  		continue;
+  	} else if (objectives1[i] < objectives2[i]) {
       flag1 = 1;
     } else if (objectives1[i] > objectives2[i]) {
       flag2 = 1;
@@ -61,7 +64,7 @@ static double mo_get_norm(const double *first, const double *second, const size_
 /**
  * @brief Computes and returns the minimal normalized distance from the point y to the ROI.
  *
- * @note Assumes the point is dominated by the ideal point and the dimension equals 2.
+ * @note Assumes the point is dominated by the ideal point and dimension equals 2.
  */
 static double mo_get_distance_to_ROI(const double *y,
                                      const double *ideal,
@@ -88,4 +91,20 @@ static double mo_get_distance_to_ROI(const double *y,
 
   return distance / ((nadir[1] - ideal[1]) * (nadir[0] - ideal[0]));
 
+}
+
+/**
+ * @brief Computes and returns whether the solution y is within the ROI.
+ *
+ * @note Assumes the solution is dominated by the ideal point and dimension equals 2.
+ */
+static int mo_solution_is_within_ROI(const double *y,
+                                     const double *ideal,
+                                     const double *nadir,
+                                     const size_t dimension) {
+
+  assert(dimension == 2);
+  assert(mo_get_dominance(ideal, y, 2) == 1);
+
+  return (mo_get_dominance(nadir, y, 2) < 0);
 }

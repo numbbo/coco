@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generates figure of the bootstrap distribution of ERT.
+"""Generates figure of the bootstrap distribution of aRT.
     
 The main method in this module generates figures of Empirical
 Cumulative Distribution Functions of the bootstrap distribution of
-the Expected Running Time (ERT) divided by the dimension for many
+the Average Running Time (aRT) divided by the dimension for many
 algorithms.
 
 The outputs show the ECDFs of the running times of the simulated runs
@@ -31,7 +31,7 @@ function evaluations of unsuccessful runs divided by dimension.
     archivefile = tarfile.open(filename)
     archivefile.extractall()
     
-    # Empirical cumulative distribution function of bootstrapped ERT figure
+    # Empirical cumulative distribution function of bootstrapped aRT figure
     ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
     figure()
     bb.compall.pprldmany.plot(ds) # must rather call main instead of plot?
@@ -46,7 +46,7 @@ import warnings
 from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
-from .. import toolsstats, bestalg, genericsettings
+from .. import toolsstats, bestalg, genericsettings, testbedsettings
 from .. import pproc as pp # import dictAlgByDim, dictAlgByFun 
 from .. import toolsdivers  # strip_pathname, str_to_latex
 from .. import pprldistr # plotECDF, beautifyECDF
@@ -405,7 +405,7 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
 
     """
     if targets is None:
-        targets = genericsettings.current_testbed.pprldmany_target_values
+        targets = testbedsettings.current_testbed.pprldmany_target_values
     try:
         if np.min(targets) >= 1:
             ValueError('smallest target f-value is not smaller than one, use ``pproc.TargetValues(targets)`` to prevent this error')
@@ -465,6 +465,28 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
         if not os.path.exists(single_fct_output_dir):
             os.makedirs(single_fct_output_dir)
             
+        if isSingleAlgorithm:
+            main(dictAlg,
+                 isBiobjective,
+                 order=sortedAlgs,
+                 outputdir=single_fct_output_dir,
+                 info='',
+                 verbose=verbose,
+                 parentHtmlFileName=parentHtmlFileName,
+                 plotType=PlotType.DIM)
+
+            dictFG = pp.dictAlgByFuncGroup(dictAlg)
+            for fg, entries in dictFG.iteritems():
+
+                main(entries,
+                     isBiobjective,
+                     order=sortedAlgs,
+                     outputdir=single_fct_output_dir,
+                     info='%s' % (fg),
+                     verbose=verbose,
+                     parentHtmlFileName=parentHtmlFileName,
+                     plotType=PlotType.DIM)
+        
         dictFG = pp.dictAlgByFun(dictAlg)
         for fg, tmpdictAlg in dictFG.iteritems():
 
@@ -478,15 +500,16 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
                      parentHtmlFileName=parentHtmlFileName,
                      plotType=PlotType.DIM)
 
-            dictDim = pp.dictAlgByDim(tmpdictAlg)
-            for d, entries in dictDim.iteritems():
-                main(entries,
-                     isBiobjective,
-                     order=sortedAlgs,
-                     outputdir=single_fct_output_dir,
-                     info='f%03d_%02dD' % (fg, d),
-                     verbose=verbose,
-                     parentHtmlFileName=parentHtmlFileName)
+            if not (isSingleAlgorithm and isBiobjective):
+                dictDim = pp.dictAlgByDim(tmpdictAlg)
+                for d, entries in dictDim.iteritems():
+                    main(entries,
+                         isBiobjective,
+                         order=sortedAlgs,
+                         outputdir=single_fct_output_dir,
+                         info='f%03d_%02dD' % (fg, d),
+                         verbose=verbose,
+                         parentHtmlFileName=parentHtmlFileName)
 
         if isSingleAlgorithm:
             functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
@@ -523,7 +546,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
     generates the cumulative distribution function of the bootstrap
-    distribution of ERT for algorithms on multiple functions for
+    distribution of aRT for algorithms on multiple functions for
     multiple targets altogether.
 
     :param dict dictAlg: dictionary of :py:class:`DataSetList` instances
@@ -553,7 +576,10 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         tmp = {dimension: tmp[dimension]}
     dimList = tmp.keys()
 
-
+    # The sort order will be defined inside this function.    
+    if plotType == PlotType.DIM:
+        order = []
+        
     # Collect data
     # Crafting effort correction: should we consider any?
     CrEperAlg = {}
@@ -582,15 +608,18 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     dictData = {} # list of (ert per function) per algorithm
     dictMaxEvals = {} # list of (maxevals per function) per algorithm
-    bestERT = [] # best ert per function
+
     # funcsolved = [set()] * len(targets) # number of functions solved per target
     xbest2009 = []
     maxevalsbest2009 = []
-    target_values = genericsettings.current_testbed.pprldmany_target_values
+    target_values = testbedsettings.current_testbed.pprldmany_target_values
 
-    for dim, dictDim in pp.dictAlgByDim(dictAlg).iteritems():
+    dictDimList = pp.dictAlgByDim(dictAlg)
+    dims = sorted(dictDimList)
+    for i, dim in enumerate(dims):
         divisor = dim if divide_by_dimension else 1
 
+        dictDim = dictDimList[dim]
         dictFunc = pp.dictAlgByFun(dictDim)
         for f, dictAlgperFunc in dictFunc.iteritems():
             if function_IDs and f not in function_IDs:
@@ -598,7 +627,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     
             # print target_values((f, dim))
             for j, t in enumerate(target_values((f, dim))):
-            # for j, t in enumerate(genericsettings.current_testbed.ecdf_target_values(1e2, f)):
+            # for j, t in enumerate(testbedsettings.current_testbed.ecdf_target_values(1e2, f)):
                 # funcsolved[j].add(f)
     
                 for alg in algorithms_with_data:
@@ -624,6 +653,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                     keyValue = alg
                     if plotType == PlotType.DIM: 
                         keyValue = '%d-D' % (dim)
+                        if keyValue not in order:                        
+                            order.append(keyValue)
                     elif plotType == PlotType.FUNC:
                         keyValue = 'f%d' % (f)
                     dictData.setdefault(keyValue, []).extend(x)
@@ -635,7 +666,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 displaybest2009 = False
             if displaybest2009:
                 #set_trace()
-                #bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)# Wassim: now done above
+                bestalgentries = bestalg.load_best_algorithm()
                 bestalgentry = bestalgentries[(dim, f)]
                 bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
                 # print bestalgevals
@@ -687,6 +718,11 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         args['markerfacecolor'] = 'None'
         args['markeredgecolor'] = args['color']
         args['label'] = algname_to_label(alg)
+        if plotType == PlotType.DIM:
+            args['marker'] = genericsettings.dim_related_markers[i]
+            args['markeredgecolor'] = genericsettings.dim_related_colors[i]
+            args['color'] = genericsettings.dim_related_colors[i]
+            
         #args['markevery'] = perfprofsamplesize # option available in latest version of matplotlib
         #elif len(show_algorithms) > 0:
             #args['color'] = 'wheat'
@@ -698,7 +734,10 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     labels, handles = plotLegend(lines, x_limit)
     if True:  # isLateXLeg:
-        fileName = os.path.join(outputdir,'%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
+        if info:        
+            fileName = os.path.join(outputdir,'%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
+        else:
+            fileName = os.path.join(outputdir,'%s.tex' % (genericsettings.pprldmany_file_name))
         with open(fileName, 'w') as f:
             f.write(r'\providecommand{\nperfprof}{7}')
             algtocommand = {}  # latex commands
@@ -731,7 +770,10 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             if verbose:
                 print 'Wrote right-hand legend in %s' % fileName
 
-    figureName = os.path.join(outputdir,'%s_%s' % (genericsettings.pprldmany_file_name, info))
+    if info:    
+        figureName = os.path.join(outputdir,'%s_%s' % (genericsettings.pprldmany_file_name, info))
+    else:
+        figureName = os.path.join(outputdir,'%s' % (genericsettings.pprldmany_file_name))
     #beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
     beautify()
 
@@ -739,16 +781,28 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
         dictKey = dictFG.keys()[0]
         functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
-        text = functionGroups[dictKey]
+        text = '%s\n%s, %d-D' % (testbedsettings.current_testbed.name,
+                                 functionGroups[dictKey], 
+                                 dimList[0])
     else:
-        text = ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f')
-    if not (plotType == PlotType.DIM):    
-        text += ',%d-D' % dimList[0]
+        text = '%s - %s' % (testbedsettings.current_testbed.name,
+                            ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f'))
+        if not (plotType == PlotType.DIM):    
+            text += ', %d-D' % dimList[0]
+    # add number of instances 
+    text += '\n'    
+    for alg in algorithms_with_data:
+        if dictAlgperFunc[alg]:
+            text += '%d, ' % len(dictAlgperFunc[alg][0].instancenumbers)
+        else:
+            text += '0, '
+    text = text.rstrip(', ')
+    text += ' instances'
     plt.text(0.01, 0.98, text, horizontalalignment="left",
-             verticalalignment="top", transform=plt.gca().transAxes)
+             verticalalignment="top", transform=plt.gca().transAxes, size='small')
     if len(dictFunc) == 1:
         plt.title(' '.join((str(dictFunc.keys()[0]),
-                  genericsettings.current_testbed.short_names[dictFunc.keys()[0]])))
+                  testbedsettings.current_testbed.short_names[dictFunc.keys()[0]])))
     a = plt.gca()
 
     plt.xlim(xmin=1e-0, xmax=x_limit**annotation_space_end_relative)
@@ -766,6 +820,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             if plotType == PlotType.ALG:
                 add_to_names += '_%02dD' % (dim)
 
+            header = 'Runtime distributions (ECDF), single functions over all targets' if plotType == PlotType.DIM \
+                    else 'Runtime distributions (ECDF), single functions over all targets, single dimension'            
             ppfig.save_single_functions_html(
                 os.path.join(outputdir, fileName),
                 '', # algorithms names are clearly visible in the figure
@@ -773,7 +829,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 htmlPage = ppfig.HtmlPage.NON_SPECIFIED,
                 isBiobjective = isBiobjective,
                 parentFileName = '../%s' % parentHtmlFileName if parentHtmlFileName else None,
-                header = 'Scaling of ERT with dimension')
+                header = header)
                 
     if close_figure:
         plt.close()
