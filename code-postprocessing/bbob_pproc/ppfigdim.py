@@ -3,10 +3,10 @@
 
 """Generate performance scaling figures.
 
-The figures show the scaling of the performance in terms of ERT w.r.t.
+The figures show the scaling of the performance in terms of aRT w.r.t.
 dimensionality on a log-log scale. On the y-axis, data is represented as
 a number of function evaluations divided by dimension, this is in order
-to compare at a glance with a linear scaling for which ERT is
+to compare at a glance with a linear scaling for which aRT is
 proportional to the dimension and would therefore be represented by a
 horizontal line in the figure.
 
@@ -51,11 +51,15 @@ from BBOB-2009 for df = 1e-8.
 
 """
 from __future__ import absolute_import
+
 import os
 import warnings
+
 import matplotlib.pyplot as plt
 import numpy as np
-from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam, htmldesc
+
+from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam, htmldesc, toolsdivers
+from . import testbedsettings
 
 xlim_max = None
 ynormalize_by_dimension = True  # not at all tested yet
@@ -84,20 +88,25 @@ dimensions = genericsettings.dimensions_to_display if not genericsettings.isLarg
 def scaling_figure_caption():
 
     caption_part_one = r"""%
-        Expected number of $f$-evaluations (\ERT, lines) to reach $\fopt+\Df$;
-        median number of $f$-evaluations (+) to reach the most difficult
-        target that was reached not always but at least once; maximum number of
-        $f$-evaluations in any trial ({\color{red}$\times$}); """ + (r"""interquartile 
-        range with median (notched boxes) of simulated runlengths
-        to reach $\fopt+\Df$;""" if genericsettings.scaling_figures_with_boxes 
-        else "") + """ all values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """
+        Scaling of runtime to reach $\fopt+10^{\#}$ with dimension;
+        runtime is measured in number of $f$-evaluations and $\#$ is given in the legend;
+        Lines: average runtime (\aRT);
+        Cross (+): median runtime of successful runs to reach the most difficult
+        target that was reached at least once (but not always);
+        Cross ({\color{red}$\times$}): maximum number of
+        $f$-evaluations in any trial. """ + (r"""Notched
+        boxes: interquartile range with median of simulated runs;
+        % to reach $\fopt+10^{\#}$.
+        """ if genericsettings.scaling_figures_with_boxes else "") + """%
+        % Colors represent different target values. 
+        All values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """
         plotted as $\log_{10}$ values versus dimension. %
         """
-        
-    #""" .replace('REPLACE_THIS', r"interquartile range with median (notched boxes) of simulated runlengths to reach $\fopt+\Df$;" 
+
+    #""" .replace('REPLACE_THIS', r"interquartile range with median (notched boxes) of simulated runlengths to reach $\fopt+\Df$;"
     #                if genericsettings.scaling_figures_with_boxes else '')
     #    # r"(the exponent is given in the legend of #1). " + 
-    #    "For each function and dimension, $\\ERT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
+    #    "For each function and dimension, $\\aRT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
     #    "divided by the number of successful trials, where a trial is " +
     #    "successful if $\\fopt+\\Df$ was surpassed. The " +
     #    "$\\nbFEs(\\Df)$ are the total number (the sum) of $f$-evaluations while " +
@@ -105,38 +114,46 @@ def scaling_figure_caption():
     #    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
     #    "function value.  " +
     scaling_figure_caption_fixed = caption_part_one + r"""%
-        Shown are $\Df = 10^{\{values_of_interest\}}$.  
-        Numbers above \ERT-symbols (if appearing) indicate the number of trials
-        reaching the respective target. """ + (r"""The light thick line with
+        % Shown are $\Df = 10^{\{values_of_interest\}}$.  
+        Numbers above \aRT-symbols (if appearing) indicate the number of trials
+        reaching the respective target. """ + (  # TODO: add here "(out of XYZ trials)"
+        r"""The light thick line with
         diamonds indicates the respective best result from BBOB-2009 for
-        $\Df=10^{-8}$. """ if genericsettings.current_testbed.name !=
+        $\Df=10^{-8}$. """ if testbedsettings.current_testbed.name !=
         'bbob-biobj' else "") + """Horizontal lines mean linear scaling, slanted
         grid lines depict quadratic scaling.  
         """
     scaling_figure_caption_rlbased = caption_part_one + r"""%
-        Shown is the \ERT\ for 
+        Shown is the \aRT\ for 
         targets just not reached by
-    %    the largest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of 
+    %    the largest $\Df$-values $\ge10^{-8}$ for which the \aRT\ of 
         the artificial GECCO-BBOB-2009 best algorithm  
         within the given budget $k\times\DIM$, where $k$ is shown in the legend.
     %    was above $\{values_of_interest\}\times\DIM$ evaluations. 
-        Numbers above \ERT-symbols indicate the number of trials reaching the respective target.  
+        Numbers above \aRT-symbols indicate the number of trials reaching the respective target.  
         The light thick line with diamonds indicates the respective best result from BBOB-2009 for 
         the most difficult target. 
         Slanted grid lines indicate a scaling with ${\cal O}(\DIM)$ compared to ${\cal O}(1)$  
         when using the respective 2009 best algorithm. 
         """
-        # r"Shown is the \ERT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \ERT\ of the GECCO-BBOB-2009 best algorithm " + 
+        # r"Shown is the \aRT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \aRT\ of the GECCO-BBOB-2009 best algorithm " + 
         # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
 
-    
-    values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
-    if genericsettings.runlength_based_targets:
-        return scaling_figure_caption_rlbased.replace('values_of_interest', 
-                                        ', '.join(values_of_interest.labels()))
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+        figure_caption = scaling_figure_caption_fixed.replace('\\fopt', '\\hvref')
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            figure_caption = scaling_figure_caption_rlbased
+        else:
+            figure_caption = scaling_figure_caption_fixed
     else:
-        return scaling_figure_caption_fixed.replace('values_of_interest', 
-                                        ', '.join(values_of_interest.loglabels()))
+        warnings.warn("Current settings do not support ppfigdim caption.")
+
+    values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
+    figure_caption = figure_caption.replace('values_of_interest',
+                                          ', '.join(values_of_interest.labels()))
+    return figure_caption
 
 def beautify(axesLabel=True):
     """Customize figure presentation.
@@ -160,7 +177,7 @@ def beautify(axesLabel=True):
     # axisHandle.xaxis.grid(True, linewidth=0, which='major')
     ymin, ymax = plt.ylim()
 
-    values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
+    values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
 
     # horizontal grid
     if isinstance(values_of_interest, pproc.RunlengthBasedTargetValues):
@@ -334,7 +351,7 @@ def plot_a_bar(x, y,
 
     
 def plot(dsList, valuesOfInterest=None, styles=styles):
-    """From a DataSetList, plot a figure of ERT/dim vs dim.
+    """From a DataSetList, plot a figure of aRT/dim vs dim.
     
     There will be one set of graphs per function represented in the
     input data sets. Most usually the data sets of different functions
@@ -351,7 +368,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
 
     """
     if not valuesOfInterest:
-        valuesOfInterest = genericsettings.current_testbed.ppfigdim_target_values
+        valuesOfInterest = testbedsettings.current_testbed.ppfigdim_target_values
 
     valuesOfInterest = pproc.TargetValues.cast(valuesOfInterest)
     styles = list(reversed(styles[:len(valuesOfInterest)]))
@@ -375,7 +392,11 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
             maxevals_succ = np.ones(len(dimensions)) 
             # Collect data that have the same function and different dimension.
             for idim, dim in enumerate(dimensions):
-                assert len(dictFunc[func][dim]) == 1
+                if len(dictFunc[func][dim]) > 1:
+                    raise ppfig.Usage('\nFound more than one algorithm inside one data folder. '
+                                      'Specify a separate data folder for each algorithm.')
+                elif len(dictFunc[func][dim]) < 1:
+                    raise ppfig.Usage('\nNo data for function %s and dimension %d.' % (func, dim))
                 # (ert, success rate, number of success, total number of
                 #        function evaluations, median of successful runs)
                 tmp = generateData(dictFunc[func][dim][0], valuesOfInterest((func, dim))[i_target])
@@ -392,7 +413,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
 
             if len(succ) > 0:
                 tmp = np.vstack(succ)
-                # ERT
+                # aRT
                 if genericsettings.scaling_figures_with_boxes:
                     for dim in dimensions: 
                         # to find finite simulated runlengths we need to have at least one successful run
@@ -485,16 +506,16 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
         # if later the ylim[0] becomes >> 1, this might be a problem
     return res
 
-def plot_previous_algorithms(func, isBiobjective, target=None):  # lambda x: [1e-8]):
+def plot_previous_algorithms(func, target=None):  # lambda x: [1e-8]):
     """Add graph of the BBOB-2009 virtual best algorithm using the
     last, most difficult target in ``target``."""
     
     if not target:
-        target = genericsettings.current_testbed.ppfigdim_target_values
+        target = testbedsettings.current_testbed.ppfigdim_target_values
         
     target = pproc.TargetValues.cast(target)
 
-    bestalgentries = bestalg.loadBestAlgorithm(isBiobjective)
+    bestalgentries = bestalg.load_best_algorithm()
     
     if not bestalgentries:
         return None
@@ -517,7 +538,7 @@ def plot_previous_algorithms(func, isBiobjective, target=None):  # lambda x: [1e
     return res
 
 def main(dsList, _valuesOfInterest, outputdir, verbose=True):
-    """From a DataSetList, returns a convergence and ERT/dim figure vs dim.
+    """From a DataSetList, returns a convergence and aRT/dim figure vs dim.
     
     Uses data of BBOB 2009 (:py:mod:`bbob_pproc.bestalg`).
     
@@ -540,16 +561,10 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
 
     dictFunc = dsList.dictByFunc()
+    dictAlg = dsList.dictByAlg()
+    values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
 
-    values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
-    ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
-                                dictFunc[dictFunc.keys()[0]][0].algId,
-                                htmlPage = ppfig.HtmlPage.ONE,
-                                values_of_interest = values_of_interest,
-                                isBiobjective = dsList.isBiobjective(),
-                                functionGroups = dsList.getFuncGroups())
-
-    key = 'bbobppfigdimlegendrlbased' if genericsettings.runlength_based_targets else 'bbobppfigdimlegendfixed'
+    key = 'bbobppfigdimlegend' + testbedsettings.current_testbed.scenario
     joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
     caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
 
@@ -558,7 +573,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         htmlPage = ppfig.HtmlPage.NON_SPECIFIED,
         isBiobjective = dsList.isBiobjective(),
         parentFileName=genericsettings.single_algorithm_file_name,
-        header = 'Expected number of <i>f</i>-evaluations to reach target',
+        header = 'Average number of <i>f</i>-evaluations to reach target',
         caption = caption)
 
     ppfig.save_single_functions_html(
@@ -591,15 +606,19 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         beautify(axesLabel=False)
         plt.text(plt.xlim()[0], plt.ylim()[0],
                  _valuesOfInterest.short_info, fontsize=14)
-        if func in genericsettings.current_testbed.functions_with_legend:
-            leg = plt.legend(loc="best")
-            leg.get_frame().set_alpha(0.2) # Wassim: To make the legend transparent framealpha=0.2 doesn't seem to work
+
+        # display number of instances in data:
+        instanceText = '%d instances' % len(((dictFunc[func][0]).instancenumbers))
+        plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, instanceText, fontsize=14)
+  
+        if func in testbedsettings.current_testbed.functions_with_legend:
+            toolsdivers.legend(loc="best")
         if func in funInfos.keys():
             # print(plt.rcParams['axes.titlesize'])
             # print(plt.rcParams['font.size'])
             funcName = funInfos[func]
             plt.gca().set_title(funcName, fontsize=fontSize)
-            plot_previous_algorithms(func, dsList.isBiobjective() or True, _valuesOfInterest) # Wassim: TODO the or True is to be removed
+        plot_previous_algorithms(func, _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
         with warnings.catch_warnings(record=True) as ws:
             ppfig.saveFigure(filename, verbose=verbose)

@@ -15,6 +15,9 @@ Contributions to link further languages (including a better
 example in `C++`) are more than welcome.
 
 For more information, 
+- read our [benchmarking guidelines introduction](http://numbbo.github.io/coco-doc/)
+- read the [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
+- see the [`bbob-biobj` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation and the [specificities of the performance assessment for the bi-objective testbed](http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment).
 - consult the [BBOB workshops series](http://numbbo.github.io/workshops),
 - consider to [register here](http://numbbo.github.io/register) for news, 
 - see the [previous COCO home page here](http://coco.gforge.inria.fr/) and 
@@ -66,11 +69,10 @@ Getting Started <a name="Getting-Started"></a>
 ---------------
 0. Check out the [_Requirements_](#Requirements) above.
 
-1. **Download** the [COCO framework code](https://github.com/numbbo/coco) from
-[github](https://github.com), 
+1. **Download** the COCO framework code from github, 
 
-  - either by clicking [here](https://github.com/numbbo/coco/archive/master.zip) and unzip the 
-    `zip` file, 
+  - either by clicking the [Download ZIP button](https://github.com/numbbo/coco/archive/master.zip) 
+    and unzip the `zip` file, 
   - or (preferred) by typing `git clone https://github.com/numbbo/coco.git`. This way 
     allows to remain up-to-date easily (but needs `git` to be installed). After 
     cloning, `git pull` keeps the code up-to-date with the latest release. 
@@ -178,7 +180,7 @@ our issue tracker at https://github.com/numbbo/coco/issues.
    - the `exampleexperiment.???` files in the build folder are the entry points to
      understand the usage of the code (as end-user). They are supposed to
      actually be executable (in case, after compilation, which should be taken
-     care of by do.py and/or make) and run typically random search on (some of)
+     care of by `do.py` and/or `make`) and run typically random search on (some of)
      the provided benchmark suites.
 
 * documentation and examples might not be too meaningful for the time being,
@@ -187,12 +189,13 @@ our issue tracker at https://github.com/numbbo/coco/issues.
   (though the implementation in C naturally looks somewhat different). In the
   future, documentation will be contained mainly in the docs/ subfolder with the
   source code extracted automatically into pdfs in this folder and to web pages
-  under the numbbo.github.io/ domain.
+  under the numbbo.github.io/ domain, see also
+  [here](https://github.com/numbbo/coco#links-and-documentation-).
 
 * the code-experiments/src folder is where most of the important/interesting
   things happen. Many files provide comparatively decent documentation at the
   moment which are translated via doxygen into a more readable web page at
-  numbbo.github.io/coco-doc/C/. Generally:
+  http://numbbo.github.io/coco-doc/C/. Generally:
   - [coco.h](./code-experiments/src/coco.h) is the public interface, in particular
     as used in the example_experiment.c file
   - coco_internal.h provides the type definition of coco_problem_t
@@ -208,11 +211,11 @@ our issue tracker at https://github.com/numbbo/coco/issues.
     benchmark functions, transformations, benchmark suites, etc.
   - currently, three benchmark suites and corresponding logging facilities are
     implemented:
-    * bbob: standard single-objective BBOB benchmark suite with 24 noiseless,
+    * `bbob`: standard single-objective BBOB benchmark suite with 24 noiseless,
       scalable test functions
-    * bbob-biobj: a bi-objective benchmark suite, combining 10 selected
+    * `bbob-biobj`: a bi-objective benchmark suite, combining 10 selected
       functions from the bbob suite, resulting in 55 noiseless functions
-    * toy: a simple, probably easier-to-understand example for reading and testing
+    * `toy`: a simple, probably easier-to-understand example for reading and testing
 
 * code-experiments/tools are a few meta-tools, mainly the amalgamate.py to merge all
   the C code into one file
@@ -221,13 +224,16 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 
 * code-postprocessing/bbob_pproc contains the postprocessing code, written in
   python, with which algorithm data sets can be read in and the performance of
-  the algorithms can be displayed in terms of data profiles, ERT vs. dimension
+  the algorithms can be displayed in terms of data profiles, aRT vs. dimension
   plots, or simple tables.
 
 * code-postprocessing/latex-templates contains LaTeX templates for displaying
-  algorithm performances in publisher-conform PDFs for the GECCO and CEC
-  conferences (for the single-objective bbob suite only, templates for the
-  bi-objective bbob-biobj suite will be provided in a later release).
+  algorithm performances in publisher-conform PDFs for the GECCO
+  conference.
+
+* code-preprocessing/archive-update/ contains internal code for combining
+  the archives of algorithms to create/update the hypervolume
+  reference values for the `bbob-biobj` test suite
 
 * docs should contain an updated version of the documentation, see above.
 
@@ -289,7 +295,7 @@ Traceback (most recent call last):
     raise child_exception
 OSError: [Errno 2] No such file or directory
 ```
-It might be because your system does not know the `matlab` command. To fix this,
+it might be because your system does not know the `matlab` command. To fix this,
 you should edit the file `/etc/paths` and add the path to the `matlab` bin file 
 (Linux/Mac) or add the path to the folder where the `matlab.exe` lies to your 
 Windows path. For instance, the `etc/paths` should look like something like this
@@ -303,7 +309,7 @@ Windows path. For instance, the `etc/paths` should look like something like this
 ```
 
 #### SMS-EMOA example does not compile under Mac 
-With the more complex SMS-EMOA example. The problem is related to the compilation
+With the more complex SMS-EMOA example, the problem is related to the compilation
 of the external C++ hypervolume calculation in `hv.cpp`. 
 
 A fix for this issue consists in adding to the files `hv.cpp` and `paretofront.c`
@@ -394,6 +400,13 @@ effect. In this case it has been successful to remove all previously installed v
 see [here](https://github.com/numbbo/coco/issues/586) for a few more details. 
 
 
+#### Too long paths for postprocessing
+It can happen that the postprocessing fails due to too long paths to the algorithm data.
+Unfortunately, the error you get in this case does not indicate directly to the problem
+but only tells that a certain file could not be read. Please try to shorten the
+folder names in such a case.
+
+
 Details
 -------
 - The C code features an object oriented implementation, where the
@@ -423,10 +436,13 @@ Details
 Links and Documentation <a name="Links"></a>
 -----------------------
 * The [_BBOB workshop series_](http://numbbo.github.io/workshops), which uses the
-  NumBBO/Coco framework extensively, can be tracked at 
+  NumBBO/Coco framework extensively, can be tracked
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
   by registering at http://coco.gforge.inria.fr/register
+* Read about the basic principles behind the Coco platform at http://numbbo.github.io/coco-doc/.
+* Please refer to http://numbbo.github.io/coco-doc/experimental-setup/ for more details on the
+  experimental set-up for black-box optimization benchmarking.
 * More detailed documentation of the existing benchmark suites can be found here:
   - for the **`BBOB`** problem suite at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf

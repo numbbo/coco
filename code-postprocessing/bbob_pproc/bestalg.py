@@ -9,8 +9,8 @@
     to access best algorithm data set.
 
     The best algorithm data set can be accessed by the
-    :py:data:`bestalgentries2009` variable. This variable needs to be
-    initialized by executing functions :py:func:`loadBBOB2009()`
+    :py:data:`bestAlgorithmEntries` variable. This variable needs to be
+    initialized by executing functions :py:func:`load_best_algorithm()`
 
     This module can also be used generate the best algorithm data set
     with its generate method.
@@ -21,23 +21,17 @@ from __future__ import absolute_import
 
 import os
 import sys
-import glob
-import getopt
 import pickle
 import gzip
-from pdb import set_trace
 import warnings
 import numpy as np
 
-from . import genericsettings, readalign, pproc
+from . import readalign, pproc
 from .toolsdivers import print_done
-from . import toolsstats
+from .ppfig import Usage
+from . import toolsstats, testbedsettings
 
-bestalgentries2009 = {}
-bestalgentries2010 = {}
-bestalgentries2012 = {}
-bestalgentriesever = {}
-bestbiobjalgentries2016 = {}
+bestAlgorithmEntries = {}
 
 algs2009 = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
 "BIPOP-CMA-ES", "CMA-ESPLUSSEL", "DASA", "DE-PSO", "DIRECT", "EDA-PSO",
@@ -61,12 +55,8 @@ algs2012 = ("ACOR", "BIPOPaCMA", "BIPOPsaACM", "aCMA", "CMAES", "aCMAa", "aCMAm"
 #  o a best algorithm and an algorithm portfolio are almost the same, 
 #    they should derive from a CombinedAlgorithmDataSet? 
 
-#CLASS DEFINITIONS
+# CLASS DEFINITIONS
 
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
 
 class BestAlgSet():
     """Unit element of best algorithm data set.
@@ -89,7 +79,7 @@ class BestAlgSet():
     numbers of function evaluations for evals or function values for
     funvals.
 
-    Known bug: algorithms where the ERT is NaN or Inf are not taken into
+    Known bug: algorithms where the aRT is NaN or Inf are not taken into
     account!?
     
     """
@@ -140,7 +130,7 @@ class BestAlgSet():
         sortedAlgs = dictAlg.keys()
         # algorithms will be sorted along sortedAlgs which is now a fixed list
 
-        # Align ERT
+        # Align aRT
         erts = list(np.transpose(np.vstack([dictAlg[i].target, dictAlg[i].ert]))
                     for i in sortedAlgs)
         res = readalign.alignArrayData(readalign.HArrayMultiReader(erts, False))
@@ -159,7 +149,7 @@ class BestAlgSet():
                     continue # TODO: don't disregard these entries
                 if tmpert == currentbestert:
                     # TODO: what do we do in case of ties?
-                    # look at function values corresponding to the ERT?
+                    # look at function values corresponding to the aRT?
                     # Look at the function evaluations? the success ratio?
                     pass
                 elif tmpert < currentbestert:
@@ -287,11 +277,11 @@ class BestAlgSet():
         return dictinstance
 
     def detERT(self, targets):
-        """Determine the expected running time to reach target values.
+        """Determine the average running time to reach target values.
 
         :keyword list targets: target function values of interest
 
-        :returns: list of expected running times corresponding to the
+        :returns: list of average running times corresponding to the
                   targets.
 
         """
@@ -327,172 +317,59 @@ class BestAlgSet():
             res2.append(tmp2)
         return res, res2
 
-#FUNCTION DEFINITIONS
 
-def loadBBOB2009(force=False):
-    """Assigns :py:data:`bestalgentries2009`.
+# FUNCTION DEFINITIONS
+def load_best_algorithm(force=False):
+    """Assigns :py:data:`bestAlgorithmEntries`.
 
     This function is needed to set the global variable
-    :py:data:`bestalgentries2009`. It unpickles file 
-    :file:`bestalgentries2009.pickle.gz`
+    :py:data:`bestAlgorithmEntries`. It unpickles the pickle file
+    with best algorithm data.
 
-    :py:data:`bestalgentries2009` is a dictionary accessed by providing
+    :py:data:`bestAlgorithmEntries` is a dictionary accessed by providing
     a tuple :py:data:`(dimension, function)`. This returns an instance
     of :py:class:`BestAlgSet`.
-    The data is that of algorithms submitted to BBOB 2009, the list of
-    which can be found in variable :py:data:`algs2009`.
+    The data is that of specific algorithms (depending on the Testbed used).
 
     """
-    global bestalgentries2009
-    # global statement necessary to change the variable bestalg.bestalgentries2009
+    global bestAlgorithmEntries
+    # global statement necessary to change the variable bestalg.bestAlgorithmEntries
 
-    if not force and bestalgentries2009:
-        return
-    
-    print "Loading best algorithm data from BBOB-2009...",
+    if not force and bestAlgorithmEntries:
+        return bestAlgorithmEntries
+
+    bestAlgorithmFilename = testbedsettings.current_testbed.best_algorithm_filename
+
+    # If the file name is not specified then we skip the load.
+    if not bestAlgorithmFilename:
+        bestAlgorithmEntries = None
+        return bestAlgorithmEntries
+
+    print "Loading best algorithm data from %s ..." % bestAlgorithmFilename,
     sys.stdout.flush()
- 
-    bestalgfilepath = os.path.split(__file__)[0]
-    #    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle')
-    #    cocofy(picklefilename)
-    #    fid = open(picklefilename, 'r')
 
-    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2009.pickle.gz')
-    fid = gzip.open(picklefilename, 'r')
+    bestAlgFilePath = os.path.split(__file__)[0]
+    pickleFilename = os.path.join(bestAlgFilePath, bestAlgorithmFilename)
+    if pickleFilename.endswith('.gz'):
+        fid = gzip.open(pickleFilename, 'r')
+    else:
+        fid = open(pickleFilename, 'r')
     try:
-        bestalgentries2009 = pickle.load(fid)
+        bestAlgorithmEntries = pickle.load(fid)
     except:
         warnings.warn("no best algorithm loaded")
         # raise  # outcomment to diagnose
-        bestalgentries2009 = None
+        bestAlgorithmEntries = None
+
     fid.close()
     print_done()
 
-def loadBBOB2010():
-    """Assigns :py:data:`bestalgentries2010`.
+    return bestAlgorithmEntries
 
-    This function is needed to set the global variable
-    :py:data:`bestalgentries2010`. It unpickles file 
-    :file:`bestalgentries2010.pickle.gz`
-
-    :py:data:`bestalgentries2010` is a dictionary accessed by providing
-    a tuple :py:data:`(dimension, function)`. This returns an instance
-    of :py:class:`BestAlgSet`.
-    The data is that of algorithms submitted to BBOB 20&0, the list of
-    which can be found in variable :py:data:`algs2010`.
-
-    """
-    global bestalgentries2010
-    # global statement necessary to change the variable bestalg.bestalgentries2010
-
-    print "Loading best algorithm data from BBOB-2010...",  
-    bestalgfilepath = os.path.split(__file__)[0]
-    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2010.pickle.gz')
-    #    cocofy(picklefilename)
-    fid = gzip.open(picklefilename, 'r')
-    bestalgentries2010 = pickle.load(fid)
-    fid.close()
-    print " done."
-
-def loadBBOB2012():
-    """Assigns :py:data:`bestalgentries2012`.
-
-    This function is needed to set the global variable
-    :py:data:`bestalgentries2012`. It unpickles file 
-    :file:`bestalgentries2012.pickle.gz`
-
-    :py:data:`bestalgentries2012` is a dictionary accessed by providing
-    a tuple :py:data:`(dimension, function)`. This returns an instance
-    of :py:class:`BestAlgSet`.
-    The data is that of algorithms submitted to BBOB 20&0, the list of
-    which can be found in variable :py:data:`algs2012`.
-
-    """
-    global bestalgentries2012
-    # global statement necessary to change the variable bestalg.bestalgentries2012
-
-    print "Loading best algorithm data from BBOB-2012...",  
-    bestalgfilepath = os.path.split(__file__)[0]
-    picklefilename = os.path.join(bestalgfilepath, 'bestalgentries2012.pickle.gz')
-    #    cocofy(picklefilename)
-    fid = gzip.open(picklefilename, 'r')
-    bestalgentries2012 = pickle.load(fid)
-    fid.close()
-    print " done."
-
-def loadBBOBever():
-    """Assigns :py:data:`bestalgentriesever`.
-
-    This function is needed to set the global variable
-    :py:data:`bestalgentriesever`. It unpickles file 
-    :file:`bestalgentriesever.pickle.gz`
-
-    :py:data:`bestalgentriesever` is a dictionary accessed by providing
-    a tuple :py:data:`(dimension, function)`. This returns an instance
-    of :py:class:`BestAlgSet`.
-    The data is that of algorithms submitted to BBOB 2009 and 2010, the
-    list of which is the union in variables :py:data:`algs2009`
-    and :py:data:`algs2010`.
-
-    """
-    global bestalgentriesever
-    # global statement necessary to change the variable bestalg.bestalgentriesever
-
-    print "Loading best algorithm data from BBOB...",  
-    bestalgfilepath = os.path.split(__file__)[0]
-    picklefilename = os.path.join(bestalgfilepath, 'bestalgentriesever.pickle.gz')
-    #    cocofy(picklefilename)
-    fid = gzip.open(picklefilename, 'r')
-    bestalgentriesever = pickle.load(fid)
-    fid.close()
-    print " done."
-
-def loadBestBiobj2016():
-    """Assigns :py:data:`bestbiobjalgentries2016`.
-
-    This function is needed to set the global variable
-    :py:data:`bestbiobjalgentries2016`. It unpickles file 
-    :file:`bestbiobjalgentries2016.pickle.gz`
-
-    :py:data:`bestbiobjalgentries2016` is a dictionary accessed by providing
-    a tuple :py:data:`(dimension, function)`. This returns an instance
-    of :py:class:`BestAlgSet`.
-
-    """
-    global bestbiobjalgentries2016
-    # global statement necessary to change the variable bestalg.bestbiobjalgentries2016
-
-    if bestbiobjalgentries2016:
-        return
-
-    print "Loading best bi-objective algorithm data from BBOB-2016...",  
-    sys.stdout.flush()
-
-    bestalgfilepath = os.path.split(__file__)[0]
-    #picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle.gz')
-    picklefilename = os.path.join(bestalgfilepath, 'bestbiobjalgentries2016.pickle')
-    #fid = gzip.open(picklefilename, 'r')
-    fid = open(picklefilename, 'r')
-    bestbiobjalgentries2016 = pickle.load(fid)
-    fid.close()
-    print_done()
-
-def loadBestAlgorithm(isBioobjective):
-    """Loads the best single or bi objective algorithm. """
-    
-    if isBioobjective:
-        # Currently we do not have a good best algorithm for the bi-objective case.
-        return None
-#        if not bestbiobjalgentries2016:
-#            loadBestBiobj2016()
-#        return bestbiobjalgentries2016
-    else:
-        if not bestalgentries2009:
-            loadBBOB2009()
-        return bestalgentries2009
 
 def usage():
     print __doc__  # same as: sys.modules[__name__].__doc__, was: main.__doc__
+
 
 def generate(dictalg):
     """Generates dictionary of best algorithm data set.
@@ -557,7 +434,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
                                        target_ub=1e2):
     """Computes first the artificial best algorithm from given algorithm list
        algnamelist, constructed by extracting for each target/function pair
-       the algorithm with best ERT among the given ones. Returns then the list
+       the algorithm with best aRT among the given ones. Returns then the list
        of algorithms that are contributing to the definition of the best
        algorithm, separated by dimension, and sorted by importance (i.e. with
        respect to the number of target/function pairs where each algorithm is
@@ -627,9 +504,9 @@ def extractBestAlgorithms(args = algs2009, f_factor=2,
     """Returns (and prints) per dimension a list of algorithms within
     algorithm list args that contains an algorithm if for any
         dimension/target/function pair this algorithm:
-        - is the best algorithm wrt ERT
-        - its own ERT lies within a factor f_factor of the best ERT
-        - there is no algorithm within a factor of f_factor of the best ERT
+        - is the best algorithm wrt aRT
+        - its own aRT lies within a factor f_factor of the best aRT
+        - there is no algorithm within a factor of f_factor of the best aRT
           and the current algorithm is the second best.
 
     """
@@ -663,7 +540,7 @@ def extractBestAlgorithms(args = algs2009, f_factor=2,
                     # add best for this target:
                     selectedAlgsPerProblemDF.append(best.algs[i])
                 
-                    # add second best or all algorithms that have an ERT
+                    # add second best or all algorithms that have an aRT
                     # within a factor of f_factor of the best:
                     secondbest_ERT = np.infty
                     secondbest_str = ''

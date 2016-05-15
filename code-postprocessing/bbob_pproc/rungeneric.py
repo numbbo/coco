@@ -46,16 +46,9 @@ if __name__ == "__main__":
 
 from . import genericsettings, rungeneric1, rungeneric2, rungenericmany, ppfig
 from .toolsdivers import prepend_to_file, truncate_latex_command_file, print_done
+from .ppfig import Usage
 
 __all__ = ['main']
-
-#CLASS DEFINITIONS
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-#FUNCTION DEFINITIONS
 
 def _splitshortoptlist(shortoptlist):
     """Split short options list used by getopt.
@@ -273,10 +266,6 @@ def main(argv=None):
         for i in range(len(args)):  # prepend common path inputdir to all names
             args[i] = os.path.join(inputdir, args[i])
 
-        ppfig.save_index_html_file(
-            os.path.join(outputdir, genericsettings.index_html_file_name), 
-            args)
-
         for i, alg in enumerate(args):
             # remove '../' from algorithm output folder
             if len(args) == 1 or '--omit-single' not in dict(opts):
@@ -290,6 +279,8 @@ def main(argv=None):
 
         open(os.path.join(outputdir,
                           'bbob_pproc_commands.tex'), 'a').close() 
+
+        ppfig.save_index_html_file(os.path.join(outputdir, genericsettings.index_html_file_name))
 
         print_done()
 

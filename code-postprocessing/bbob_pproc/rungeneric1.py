@@ -35,24 +35,17 @@ if __name__ == "__main__":
 
 import warnings, getopt, numpy as np
 
-from . import genericsettings, pptable, pprldistr, ppfigdim, pplogloss, findfiles
+from . import genericsettings, testbedsettings, ppfig, pptable, pprldistr, ppfigdim, pplogloss, findfiles
 from .pproc import DataSetList
+from .ppfig import Usage
 from .toolsdivers import print_done, prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
 from . import ppconverrorbars
-from .compall import pprldmany
+from .compall import pprldmany, ppfigs
 
 import matplotlib.pyplot as plt
 
 __all__ = ['main']
 
-# CLASS DEFINITIONS
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-
-# FUNCTION DEFINITIONS
 
 def usage():
     print main.__doc__
@@ -103,8 +96,8 @@ def main(argv=None):
             "black-white". The default setting is "color".
         --tab-only, --fig-only, --rld-only, --los-only
             these options can be used to output respectively the TeX
-            tables, convergence and ERTs graphs figures, run length
-            distribution figures, ERT loss ratio figures only. A
+            tables, convergence and aRTs graphs figures, run length
+            distribution figures, aRT loss ratio figures only. A
             combination of any two of these options results in no
             output.
         --conv
@@ -259,7 +252,7 @@ def main(argv=None):
             # import testbedsettings as testbedsettings # input settings
             try:
                 fp, pathname, description = imp.find_module("testbedsettings")
-                testbedsettings = imp.load_module("testbedsettings", fp, pathname, description)
+                testbedsettings1 = imp.load_module("testbedsettings", fp, pathname, description)
             finally:
                 fp.close()
 
@@ -303,7 +296,7 @@ def main(argv=None):
         
         from . import config
         config.target_values(genericsettings.isExpensive)
-        config.config(dsList.isBiobjective())
+        config.config(dsList[0].testbed_name())
 
         if (genericsettings.verbose):
             for i in dsList:
@@ -322,8 +315,6 @@ def main(argv=None):
             # (given dimension and function) there is a single instance of
             # DataSet associated. If there are more than one, the first one only
             # will be considered... which is probably not what one would expect.
-            # TODO: put some errors where this case would be a problem.
-            # raise Usage?
 
         if genericsettings.isFig or genericsettings.isTab or genericsettings.isRLDistr or genericsettings.isLogLoss:
             if not os.path.exists(outputdir):
@@ -341,20 +332,18 @@ def main(argv=None):
                                  genericsettings.verbose,
                                  genericsettings.single_algorithm_file_name)
 
+        values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
         if genericsettings.isFig:
             print "Scaling figures...",
             sys.stdout.flush()
-            # ERT/dim vs dim.
+            # aRT/dim vs dim.
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
             plt.rc("ytick", **inset.rcticklarger)
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
             plt.rc('pdf', fonttype = 42)
-            ppfigdim.main(dsList, 
-                          genericsettings.current_testbed.ppfigdim_target_values,
-                          outputdir, 
-                          genericsettings.verbose)
+            ppfigdim.main(dsList, values_of_interest, outputdir, genericsettings.verbose)
             plt.rcdefaults()
             print_done()
 
@@ -424,7 +413,7 @@ def main(argv=None):
             print_done()
 
         if genericsettings.isLogLoss:
-            print "ERT loss ratio figures and tables...",
+            print "aRT loss ratio figures and tables...",
             sys.stdout.flush()
             for ng, sliceNoise in dsList.dictByNoise().iteritems():
                 if ng == 'noiselessall':
@@ -465,16 +454,24 @@ def main(argv=None):
 
             print_done()
 
+        dictFunc = dsList.dictByFunc()
+        ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
+                                    dictFunc[dictFunc.keys()[0]][0].algId,
+                                    htmlPage = ppfig.HtmlPage.ONE,
+                                    values_of_interest = values_of_interest,
+                                    isBiobjective = dsList.isBiobjective(),
+                                    functionGroups = dsList.getFuncGroups())
+
         latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
         prepend_to_file(latex_commands_file,
-                        ['\\providecommand{\\bbobloglosstablecaption}[1]{', 
-                         pplogloss.table_caption, '}'])
+                        ['\\providecommand{\\bbobloglosstablecaption}[1]{',
+                         pplogloss.table_caption(), '}'])
         prepend_to_file(latex_commands_file,
-                        ['\\providecommand{\\bbobloglossfigurecaption}[1]{', 
-                         pplogloss.figure_caption, '}'])
+                        ['\\providecommand{\\bbobloglossfigurecaption}[1]{',
+                         pplogloss.figure_caption(), '}'])
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobpprldistrlegend}[1]{',
-                         pprldistr.caption_single(np.max([ val / dim for dim, val in dict_max_fun_evals.iteritems()])),  # depends on the config setting, should depend on maxfevals
+                         pprldistr.caption_single(),  # depends on the config setting, should depend on maxfevals
                          '}'])
         html_file = os.path.join(outputdir, 'pprldistr.html')
         replace_in_file(html_file, r'TOBEREPLACED', 'D, '.join([str(i) for i in pprldistr.single_runlength_factors[:6]]) + 'D,&hellip;')
@@ -484,7 +481,15 @@ def main(argv=None):
                          '}'])
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobpptablecaption}[1]{',
-                         pptable.table_caption,
+                         pptable.get_table_caption(),
+                         '}'])
+        prepend_to_file(latex_commands_file,
+                        ['\\providecommand{\\bbobecdfcaptionsinglefcts}{',
+                         ppfigs.get_ecdfs_single_fcts_caption(),
+                         '}'])
+        prepend_to_file(latex_commands_file,
+                        ['\\providecommand{\\bbobecdfcaptionallgroups}{',
+                         ppfigs.get_ecdfs_all_groups_caption(),
                          '}'])
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\algfolder}{' + algfolder + '/}'])

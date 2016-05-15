@@ -23,6 +23,12 @@ static void transform_vars_scale_evaluate(coco_problem_t *problem, const double 
   size_t i;
   transform_vars_scale_data_t *data;
   coco_problem_t *inner_problem;
+
+  if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
+  	coco_vector_set_to_nan(y, coco_problem_get_number_of_objectives(problem));
+  	return;
+  }
+
   data = (transform_vars_scale_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
   do {
@@ -50,12 +56,18 @@ static void transform_vars_scale_free(void *thing) {
 static coco_problem_t *transform_vars_scale(coco_problem_t *inner_problem, const double factor) {
   transform_vars_scale_data_t *data;
   coco_problem_t *problem;
-
+  size_t i;
   data = (transform_vars_scale_data_t *) coco_allocate_memory(sizeof(*data));
   data->factor = factor;
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
 
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_scale_free, "transform_vars_scale");
   problem->evaluate_function = transform_vars_scale_evaluate;
+  /* Compute best parameter */
+  if (data->factor != 0.) {
+      for (i = 0; i < problem->number_of_variables; i++) {
+          problem->best_parameter[i] /= data->factor;
+      }
+  } /* else error? */
   return problem;
 }

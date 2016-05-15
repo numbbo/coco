@@ -23,8 +23,6 @@ import warnings
 import numpy
 import matplotlib
 
-target_runlength = 10 # used for ppfigs.main
-
 if __name__ == "__main__":
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
     # matplotlib.use('pdf')
@@ -38,9 +36,10 @@ if __name__ == "__main__":
     res = cocopp.rungenericmany.main(sys.argv[1:])
     sys.exit(res)
 
-from . import genericsettings, ppfig
-from . import dataoutput, pproc, pptex
+from . import genericsettings, ppfig, testbedsettings
+from . import pproc, pptex
 from .pproc import DataSetList, processInputArgs
+from .ppfig import Usage
 from .toolsdivers import prepend_to_file, strip_pathname1, str_to_latex
 from .compall import pprldmany, pptables, ppfigs
 from . import ppconverrorbars
@@ -49,13 +48,6 @@ import matplotlib.pyplot as plt
 
 __all__ = ['main']
 
-#CLASS DEFINITIONS
-
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
-
-#FUNCTION DEFINITIONS
 
 def usage():
     print main.__doc__
@@ -104,7 +96,7 @@ def main(argv=None):
         --tab-only, --rld-only, --fig-only
             these options can be used to output respectively the
             comparison TeX tables, the run lengths distributions or the
-            figures of ERT/dim vs dim only. A combination of any two or
+            figures of aRT/dim vs dim only. A combination of any two or
             more of these options results in no output.
         --conv
             if this option is chosen, additionally convergence
@@ -284,7 +276,7 @@ def main(argv=None):
         # set target values
         from . import config
         config.target_values(genericsettings.isExpensive)
-        config.config(dsList[0].isBiobjective())
+        config.config(dsList[0].testbed_name())
 
         _dimensions_to_display = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls # Wassim: modify genericsettings.dimensions_to_display directly?
         for i in dsList:
@@ -305,16 +297,16 @@ def main(argv=None):
         plt.rc("legend", **inset.rclegend)
         plt.rc('pdf', fonttype = 42)
 
+        ppfig.copy_js_files(outputdir)
+
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.many_algorithm_file_name),
-            '', # algorithms names are clearly visible in the figure
-            htmlPage = ppfig.HtmlPage.MANY,
-            isBiobjective = dsList[0].isBiobjective(),
-            functionGroups = dictAlg[sortedAlgs[0]].getFuncGroups()
+            '',  # algorithms names are clearly visible in the figure
+            htmlPage=ppfig.HtmlPage.MANY,
+            isBiobjective=dsList[0].isBiobjective(),
+            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups()
         )
 
-        ppfig.copy_js_files(outputdir)
-        
         # convergence plots
         if genericsettings.isConv:
             ppconverrorbars.main(dictAlg, 
@@ -324,7 +316,7 @@ def main(argv=None):
                                  genericsettings.many_algorithm_file_name)
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if genericsettings.isRLDistr:
-            config.config(dsList[0].isBiobjective())
+            config.config(dsList[0].testbed_name())
             # ECDFs per noise groups
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictAlg in dictNoi.iteritems():
@@ -380,16 +372,9 @@ def main(argv=None):
             print "ECDFs of run lengths figures done."
 
         if genericsettings.isTab:
-            if genericsettings.isExpensive:
-                prepend_to_file(os.path.join(outputdir,
-                            'bbob_pproc_commands.tex'), 
-                            ['\providecommand{\\bbobpptablesmanylegend}[1]{' + 
-                             pptables.tables_many_expensive_legend + '}'])
-            else:
-                prepend_to_file(os.path.join(outputdir,
-                            'bbob_pproc_commands.tex'), 
-                            ['\providecommand{\\bbobpptablesmanylegend}[1]{' + 
-                             pptables.tables_many_legend + '}'])
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+                            ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
+                             pptables.get_table_caption() + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictng in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictng)
@@ -399,7 +384,8 @@ def main(argv=None):
                         sortedAlgs,
                         dsList[0].isBiobjective(),
                         outputdir, 
-                        genericsettings.verbose)
+                        genericsettings.verbose,
+                        ([1,20,38] if (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi) else True))
                         
             print "Comparison tables done."
 
@@ -411,16 +397,10 @@ def main(argv=None):
             plt.rc("legend", fontsize=20)
             plt.rc('pdf', fonttype = 42)
 
-            ftarget = genericsettings.current_testbed.ppfigs_ftarget
-            if genericsettings.runlength_based_targets:
-                reference_data = 'bestBiobj2016' if dsList[0].isBiobjective() else 'bestGECCO2009'                
-                ftarget = pproc.RunlengthBasedTargetValues([target_runlength],  # TODO: make this more variable but also consistent
-                                                           reference_data = reference_data)
-            ppfigs.main(dictAlg, 
+            ppfigs.main(dictAlg,
                         genericsettings.many_algorithm_file_name, 
                         dsList[0].isBiobjective(),
-                        ftarget,
-                        sortedAlgs, 
+                        sortedAlgs,
                         outputdir, 
                         genericsettings.verbose)
             plt.rcdefaults()

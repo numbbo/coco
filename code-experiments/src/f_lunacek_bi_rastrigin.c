@@ -43,6 +43,9 @@ static double f_lunacek_bi_rastrigin_raw(const double *x,
 
   assert(number_of_variables > 1);
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   for (i = 0; i < number_of_variables; ++i) {
     double tmp;
     tmp = fabs(x[i]) - 5.0;
@@ -357,7 +360,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
   /* set fopt on the non transformed version. Since sub-problems */
   f_lunacek_bi_rastrigin_evaluate_core(problem, problem->best_parameter, problem->best_value);
 
-  /* set xopt */
+  /* set xopt */ /* Wassim: to silence warning about best_parameter*/
   sign_vector = coco_allocate_vector(dimension);
   for ( i = 0; i < dimension; i++) {
     if ( coco_random_normal(rng) < 0.0) {/* Wassim: noraml is used here but unif for Schweffel!!! */
@@ -365,7 +368,6 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
     } else {
       sign_vector[i] = 1.0;
     }
-    problem->best_parameter[i] = 0.5 * mu0 * sign_vector[i]; /* TODO: Documentation no 0.5 in documentation! */
   }
 
   /* apply transformations to sub-problems */
@@ -386,6 +388,11 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
   problem = transform_vars_blockrotation(problem, B2_copy, dimension, block_sizes2, nb_blocks2);
   problem = transform_vars_permutation(problem, P21, dimension);
   problem = transform_vars_conditioning(problem, condition);
+
+  for ( i = 0; i < dimension; i++) { /* Wassim: to silence warning about best_parameter*/
+    problem->best_parameter[i] = 0.5 * mu0 * sign_vector[i]; /* TODO: Documentation no 0.5 in documentation! */
+  }
+
   problem = transform_vars_permutation(problem, P12, dimension);
   problem = transform_vars_blockrotation(problem, B1_copy, dimension, block_sizes1, nb_blocks1);
   problem = transform_vars_permutation(problem, P11, dimension);

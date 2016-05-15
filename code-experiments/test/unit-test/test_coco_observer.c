@@ -72,6 +72,8 @@ static void test_coco_observer_targets_trigger(void **state) {
   targets = coco_observer_targets(10, 1e-8);
   update = coco_observer_targets_trigger(targets, 1e-9);
   assert(update);
+  update = coco_observer_targets_trigger(targets, 0);
+  assert(update);
   update = coco_observer_targets_trigger(targets, -1.2e-8);
   assert(update);
   update = coco_observer_targets_trigger(targets, -1.2e-7);
@@ -111,7 +113,8 @@ static void test_coco_observer_evaluations_trigger(void **state) {
       }
     }
     if (update != found) {
-      coco_warning("test_coco_observer_evaluations_trigger(): Assert fails for evaluation number = %lu", i);
+      coco_warning("test_coco_observer_evaluations_trigger(): Assert fails for evaluation number = %lu",
+      		(unsigned long) i);
     }
     assert(update == found);
   }

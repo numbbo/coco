@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generate ERT vs param. figures.
+"""Generate aRT vs param. figures.
 
-The figures will show the performance in terms of ERT on a log scale
+The figures will show the performance in terms of aRT on a log scale
 w.r.t. parameter. On the y-axis, data is represented as
 a number of function evaluations. Crosses (+) give the median number of
 function evaluations for the smallest reached target function value
@@ -17,7 +17,7 @@ import os
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
-from . import toolsstats, bestalg, genericsettings
+from . import toolsstats, testbedsettings, genericsettings, toolsdivers
 from .ppfig import saveFigure
 
 __all__ = ['beautify', 'plot', 'main']
@@ -45,7 +45,7 @@ def read_fun_infos(isBiobjective):
     try:
         funInfos = {}
         
-        filename = genericsettings.getBenchmarksShortInfos(isBiobjective)
+        filename = testbedsettings.get_benchmarks_short_infos(isBiobjective)
         infofile = os.path.join(os.path.split(__file__)[0], filename)
         f = open(infofile, 'r')
         for line in f:
@@ -104,7 +104,7 @@ def beautify():
     plt.ylabel('Run Lengths')
 
 def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
-    """Generate plot of ERT vs param."""
+    """Generate plot of aRT vs param."""
 
     dictparam = dsList.dictByParam(param)
     params = sorted(dictparam) # sorted because we draw lines
@@ -118,7 +118,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
         rawdata[p] = dictparam[p][0].detEvals(targets)
         # expect dictparam[p] to have only one element
 
-    # plot lines for ERT
+    # plot lines for aRT
     xpltdata = params
     for i, t in enumerate(targets):
         ypltdata = []
@@ -127,7 +127,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
             unsucc = np.isnan(data)
             assert len(dictparam[p]) == 1
             data[unsucc] = dictparam[p][0].maxevals
-            # compute ERT
+            # compute aRT
             ert, srate, succ = toolsstats.sp(data, issuccessful=(unsucc == False))
             ypltdata.append(ert)
         res.extend(plt.plot(xpltdata, ypltdata, markersize=20,
@@ -170,7 +170,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
             unsucc = np.isnan(data)
             assert len(dictparam[p]) == 1
             data[unsucc] = dictparam[p][0].maxevals
-            # compute ERT
+            # compute aRT
             ert, srate, succ = toolsstats.sp(data, issuccessful=(unsucc == False))
             if srate == 1.:
                 break
@@ -184,7 +184,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
 def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
          param=('dim', 'Dimension'), is_normalized=True, outputdir='.',
          verbose=True):
-    """Generates figure of ERT vs. param.
+    """Generates figure of aRT vs. param.
 
     This script will generate as many figures as there are functions.
     For a given function and a given parameter value there should be
@@ -225,13 +225,13 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
 
         handles = plot(dictfunc, param[0], targets)
 
-        # # display best 2009
-        # if not bestalg.bestalgentries2009:
-        #     bestalg.loadBBOB2009()
+        # # display best algorithm
+        # if not bestalg.bestAlgorithmEntries:
+        #     bestalg.load_best_algorithm()
 
         # bestalgdata = []
         # for d in dimsBBOB:
-        #     entry = bestalg.bestalgentries2009[(d, func)]
+        #     entry = bestalg.bestAlgorithmEntries[(d, func)]
         #     tmp = entry.detERT([1e-8])[0]
         #     if not np.isinf(tmp):
         #         bestalgdata.append(tmp/d)
@@ -257,8 +257,8 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
         if is_normalized:
             plt.setp(plt.gca(), 'ylabel', plt.getp(a, 'ylabel') + ' / ' + param[1])
 
-        if func in (1, 24, 101, 130):
-            plt.legend(loc="best")
+        if func in testbedsettings.current_testbed.functions_with_legend:
+            toolsdivers.legend(loc="best")
         
         fontSize = genericsettings.getFontSize(funInfos.values())
         if func in funInfos.keys():
