@@ -168,7 +168,7 @@ In general, a performance measure should be
 
 * quantitative, as opposed to a simple *ranking* of entrants (e.g., algorithms). 
   Ideally, the measure should be defined on a ratio scale (as opposed to an
-  interval or ordinal scale) [STE1946]_, which allows to state that "entrant A
+  interval or ordinal=ranking scale) [STE1946]_, which allows to state that "entrant A
   is :math:`x` *times better* than entrant B". [#]_ 
 * assuming a wide variation of values such that, for example, typical values do 
   not only range between 0.98 and 1.0, [#]_
@@ -200,8 +200,8 @@ This hold also true for a speed up from parallelization.
 
 .. __: https://en.wikipedia.org/wiki/Level_of_measurement?oldid=478392481
 
-.. [#] A transformation like :math:`x\mapsto\log(1-x)` could alleviate the problem
-   in this case, given it actually zooms in on relevant values.
+.. [#] A transformation like :math:`x\mapsto\log(1-x)` could alleviate 
+   the problem in this case, given it actually zooms in on *relevant* values.
 
 
 .. _sec:verthori:
@@ -240,13 +240,13 @@ Starting from the most basic convergence graphs which plot the evolution of a
 quality indicator, to be minimized, against the number of function evaluations,
 there are essentially only two ways to measure the performance.
 
-fixed-budget approach:
+fixed budget:
     We fix a maximal budget of function evaluations,
     and measure the reached quality indicator value. A fixed search
     budget can be pictured as drawing a *vertical* line in the figure 
     (blue line in Figure :ref:`fig:HorizontalvsVertical`).
 
-fixed-target approach:
+fixed target:
     We fix a target quality value and measure the number of function
     evaluations, the *runtime*, to reach this target. A fixed target can be
     pictured as drawing a *horizontal* line in the figure (red line in Figure
@@ -306,15 +306,15 @@ Missing Values
 ---------------
 Investigating the Figure :ref:`fig:HorizontalvsVertical` more carefully, we find that not all graphs intersect with either the vertical or the horizontal line. 
 On the one hand, if the fixed budget is too large, the algorithm might solve the function before the budget is exceeded. [#]_ 
-The algorithm performs better than the measurement is able to reflect, which can lead to a serious misinterpretations. 
-The remedy is to define a *final* target value and measure the runtime if the final target is hit. [#]_
+The algorithm performs better than the measurement is able to reflect, which can lead to serious misinterpretations. 
+The remedy is to define a *final* target value and measure instead the runtime if the final target is hit. [#]_
 
 On the other hand, if the fixed target is too difficult, the algorithm may never hit the target under the given experimental conditions. [#]_ 
 The algorithm performs worse than the experiment is able to reflect, while we still get a lower bound for this missing runtime instance. 
 A possible remedy is to run the algorithm longer. 
 Another possible remedy is to use the final quality indicator value as measurement. 
 This measurement however should only be interpreted as ranking result, defeating the original objective. 
-A third (impartial) remedy is to record the overall number of function evaluations of this run and use simulated restarts, see below.  
+A third (impartial) remedy is to record the overall number of function evaluations of this run and apply simulated restarts, see below.  
 
 .. [#] Even in continuous domain, from the view point of benchmarking, 
        or application in the real world, or numerical precision, the set of
@@ -335,7 +335,7 @@ Target Value Setting
 
 .. |DI| replace:: :math:`\Delta I`
 
-We have two different ways to defined the target values. Both define comparable targets for different function *instances*. The first method is simpler but relies on properties in the function definition. The second method defines comparable targets over the entire benchmark, but relies on a reference data set. 
+We use two different ways to defined target values. The first method is simpler but relies more heavily on properties in the function definition. The second method defines comparable targets over the *entire* benchmark suite, but relies on a reference data set. 
 
 Fixed-Spaced Target Values
 ++++++++++++++++++++++++++++++++
@@ -351,7 +351,7 @@ independent of the instance |thetai|, we define a target value
 
     I^{\rm target,\theta_i} = I^{\rm ref,\theta_i} + \Delta I \enspace
 
-for each precision |DI|, giving rise to the product set of all problems :math:`p^3` and all |DI|-values. The |DI|-values are usually chosen to be equally log-spaced, see also below. 
+for each precision |DI|, giving rise to the product set of all problems :math:`p^3` and all precision values |DI|. The |DI|-values are usually chosen to be equally log-spaced, see also below. 
 
 
 Runlength-based Target Values
@@ -403,10 +403,17 @@ Runtime Computation
 
 .. In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtimes for different target values. 
 
-In the performance assessment context of COCO_, a problem instance can be defined by the quintuple search space dimension, function, instantiation parameters, quality indicator mapping, and quality indicator target value, :math:`p^5 = p(n, f_\theta, \theta_i, I, I^{{\rm target}, \theta_i})`. [#]_
-For each benchmarked algorithm, a single runtime is measured on each problem instance.  
-From a *single* run of the algorithm on the problem instance triple
-:math:`p^3 = p(n, f_\theta, \theta_i)`, we obtain a runtime measurement for *each* corresponding problem quintuple |p5|, more specifically, one for each target value which has been reached in this run, or equivalently, for each target precision. 
+In the performance assessment context of COCO_, a problem instance can be
+defined by the quintuple :math:`p^5 = p(n, f_\theta, \theta_i, I, I^{{\rm
+target}, \theta_i})`, consisting of search space dimension, function,
+instantiation parameters, quality indicator mapping, and quality indicator
+target value. 
+From the definition of |p|, we can generate a set of problems |calP| by varying one or several of the elements. We never vary dimension |n| and always vary over some or all available instances |thetai| for generating |calP.| 
+For each benchmarked algorithm, a single runtime is measured on each problem instance quintuple.
+
+From a *single run* of the algorithm on the problem instance triple
+:math:`p^3 = p(n, f_\theta, \theta_i)`, we obtain a runtime measurement for *each* corresponding problem quintuple |p5| which agrees in its first three elements with |p3|.
+More specifically, we measure one runtime for each target value which has been reached in this run, or equivalently, for each target precision. 
 This also reflects the anytime aspect of the performance evaluation in a single run. 
 
 Formally, the runtime :math:`\mathrm{RT}^{\rm s}(p)` is a random variable that represents the number of function evaluations needed to reach the quality indicator target value for the first time. 
@@ -438,8 +445,6 @@ random variables corresponding to the evaluations in unsuccessful trials
 If the probability of success is one, :math:`J` equals zero with probability one and the restart algorithm coincides with the original algorithm.
 
 Generally, the above equation for |RTforDI| expresses the runtime from repeated independent runs on the same problem instance (while the instance :math:`\theta_i` is not given explicitly). For the performance evaluation in the COCO_ framework, we apply the equation to runs on different instances :math:`\theta_i`, however instances from the same function, with the same dimension and the same target precision. 
-
-.. [#] From the definition of |p|, we can generate a set of problems |calP| by varying one or several of the parameters. We never vary dimension |n| and always vary over all available instances |thetai| for generating |calP.| 
 
 .. [#] The notion of success is directly linked to a target value. A run can be successful with respect to some target values (some problems) and unsuccessful with respect to others. Success also often refers to the final, most difficult, smallest target value, which implies success for all other targets. 
 
@@ -499,7 +504,7 @@ Bootstrapping Runtimes
 ++++++++++++++++++++++++
 
 In practice, we repeat the above procedure between a hundred or even thousand times, thereby sampling :math:`N` simulated runtimes from the same underlying distribution, 
-which then has striking similarities with the true distribution from a restarted algorithm [EFR1994]_. 
+resembling the bootstrap algorithm [EFR1994]_. 
 To reduce the variance in this procedure, when desired, the first trial in each sample is picked deterministically instead of randomly as the :math:`1 + (N~\mathrm{mod}~K)`-th trial from the data. [#]_
 Picking the first trial data as specific instance |thetai| could also be
 interpreted as applying simulated restarts to this specific instance rather than
@@ -510,7 +515,7 @@ i=1,\dots,K\}`.
 
 .. [#] The variance reducing effect is best exposed in the case where all runs are successful and :math:`N = K`, in which case each data is picked exactly once. 
    This example also suggests to apply a random permutation of the data before to simulate virtually restarted runs. 
-
+   This technique is not suited when we want to estimate the deviation of the given data set from the original underlying distribution [EFR1994]_.
 
 Rationales and Limitations
 +++++++++++++++++++++++++++
