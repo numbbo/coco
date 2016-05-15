@@ -497,13 +497,13 @@ As given in :eq:`RTrestart` as |RTforDI|, the measured, simulated runtime is the
 
 .. |q| replace:: :math:`q`
 
-.. [#] In other words, we apply :eq:`RTrestart` such that |RTs| is uniformly distributed over all measured runtimes from successful instances |thetai|, |RTus| is uniformly distributed over all evaluations seen in unsuccessful instances |thetai|, and |J| has a negative binomial distribution :math:`\mathrm{BN}(1, q)`, where |q| is the number of unsuccessful instance divided by all instances.
+.. [#] In other words, we apply :eq:`RTrestart` such that |RTs| is uniformly distributed over all measured runtimes from successful instances |thetai|, |RTus| is uniformly distributed over all evaluations seen in unsuccessful instances |thetai|, and |J| has a negative binomial distribution :math:`\mathrm{BN}(1, q)`, where |q| is the number of unsuccessful instance divided by the number of all instances.
 
 
 Bootstrapping Runtimes
 ++++++++++++++++++++++++
 
-In practice, we repeat the above procedure between a hundred or even thousand times, thereby sampling :math:`N` simulated runtimes from the same underlying distribution, 
+In practice, we repeat the above procedure a few hundred or thousand times, thereby sampling :math:`N` simulated runtimes from the same underlying distribution, 
 resembling the bootstrap algorithm [EFR1994]_. 
 To reduce the variance in this procedure, when desired, the first trial in each sample is picked deterministically instead of randomly as the :math:`1 + (N~\mathrm{mod}~K)`-th trial from the data. [#]_
 Picking the first trial data as specific instance |thetai| could also be
@@ -632,10 +632,12 @@ They allow unconstrained aggregation, because each data point remains separately
 * The empirical distribution function can be read in two distinct ways.
 
   |x|-axis as independent variable: 
-    for any budget (|x|-value), 
-    we see the fraction of problems solved within the budget as |y|-value, where
-    the limit value to the right is the fraction of solved problems with the maximal
-    budget. 
+    for any budget (|x|-value), we see the fraction of problems solved within
+    the budget as |y|-value, where the limit value to the right is the fraction
+    of solved problems with the maximal budget. 
+    The resulting value satisfies above listed requirements on a 
+    measurement except that it does not assume a wide range of values, because
+    it is bounded from above.  
   |y|-axis as independent variable: 
     for any fraction of easiest problems
     (|y|-value), we see the maximal runtime observed on these problems on the
