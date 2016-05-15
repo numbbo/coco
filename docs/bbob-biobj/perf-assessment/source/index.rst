@@ -64,8 +64,7 @@ target value a runtime is measured (or no runtime value is available if the
 indicator does not reach the target value) [HAN2016perf]_. 
 In the single-objective, noise-free case, the assessed quality indicator is, at 
 each given time step, the function value of the best solution the algorithm has
-obtained (evaluated or recommended, see [HAN2016ex]_) before or at this time
-step. 
+obtained before or at this time step. 
 
 In the bi- and multi-objective case, e.g. on the biobjective ``bbob-biobj`` 
 test suite [TUS2016]_, the assessed quality
@@ -142,7 +141,7 @@ Performance Assessment with a Quality Indicator
 
 For measuring the runtime on a given problem, we consider a quality indicator
 which is to be optimized (minimized). 
-In the noiseless single-objective case, the quality indicator is the best so-far observed objective function value (recommendations can replace previous observations). 
+In the noiseless single-objective case, the quality indicator is the best so-far observed objective function value (where recommendations might be taken into account). 
 In the case of the ``bbob-biobj`` test suite, the quality indicator is based on the
 hypervolume indicator of the *archive* :math:`A_t`.
 
