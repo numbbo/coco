@@ -532,8 +532,8 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
 
     """
 
-    # Currently we do not have a good best algorithm for the bi-objective case.
-    if dsList.isBiobjective():
+    # If there is no best algorithm.
+    if not bestalg.load_best_algorithm():
         return
 
     #Set variables
@@ -801,8 +801,8 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
     #plt.rc("font", size=20)
     #plt.rc("legend", fontsize=20)
 
-    # Currently we do not have a good best algorithm for the bi-objective case.
-    if dsList.isBiobjective():
+    # If there is no best algorithm.
+    if not bestalg.load_best_algorithm():
         return
     
     if isStoringXRange:

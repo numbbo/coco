@@ -386,9 +386,9 @@ static void logger_bbob_free(void *stuff) {
   logger_bbob_finalize(logger);
   if (logger->index_file != NULL) {
 
-    fprintf(logger->index_file, ":%lu|%.1e", (unsigned long) logger->number_of_evaluations,
+    /*fprintf(logger->index_file, ":%lu|%.1e", (unsigned long) logger->number_of_evaluations,
         logger->best_fvalue - logger->optimal_fvalue);
-    fclose(logger->index_file);
+    fclose(logger->index_file);*/ /*Wassim: now done in logger_bbob_finalize*/
     logger->index_file = NULL;
   }
   if (logger->fdata_file != NULL) {
