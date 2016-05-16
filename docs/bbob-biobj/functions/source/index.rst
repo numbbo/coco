@@ -206,7 +206,7 @@ Overview of the Proposed ``bbob-biobj`` Test Suite
 The ``bbob-biobj`` test suite provides 55 bi-objective functions in six
 dimensions (2, 3, 5, 10, 20, and 40) with a large number of possible instances. 
 The 55 functions are derived from combining a subset of the 24 well-known
-single-objective functions of the ``bbob`` test suite [HAN2009fun]_ which
+single-objective functions of the ``bbob`` test suite [HAN2009]_ which
 has been used since 2009 in the `BBOB workshop series
 <http://numbbo.github.io/workshops/>`_ . While concrete details on each of
 the 55 ``bbob-biobj`` functions are given in Section
@@ -216,7 +216,7 @@ them together with their common properties.
 
 The Single-objective ``bbob`` Functions
 ---------------------------------------
-The ``bbob-biobj`` test suite is designed to be able to assess  performance of algorithms with respect to well-identified difficulties in optimization typically  occurring in real-world problems. A multi-objective problem being a combination of single-objective problems, one can obtain multi-objective problems with representative difficulties by simply combining single objective functions with representative difficulties observed in real-world problems. For this purpose we naturally use the single-objective ``bbob`` suite [HAN2009fun]_.
+The ``bbob-biobj`` test suite is designed to be able to assess  performance of algorithms with respect to well-identified difficulties in optimization typically  occurring in real-world problems. A multi-objective problem being a combination of single-objective problems, one can obtain multi-objective problems with representative difficulties by simply combining single objective functions with representative difficulties observed in real-world problems. For this purpose we naturally use the single-objective ``bbob`` suite [HAN2009]_.
 
 Combining all 24 ``bbob`` functions in pairs thereby results in
 :math:`24^2=576` bi-objective functions overall. We however assume that
@@ -238,7 +238,7 @@ is present results in :math:`24 + {24 \choose 2} = 24 + (24\times23)/2 = (24\tim
   and the second as ``bbob`` function *j* with *i* :math:`\leq` *j*,
   resulting in :math:`24+ {24 \choose 2} = 300` functions.
 
-Some first tests, e.g. in [BRO2015a]_, showed that having 300 functions is
+Some first tests, e.g. in [BRO2015]_, showed that having 300 functions is
 impracticable in terms of the overall running time of the benchmarking
 experiment.  We then decided to exploit the organization of the ``bbob``
 functions into classes to choose a subset of functions. More precisely, the 24
@@ -480,7 +480,7 @@ instead of instance-id 20.
 
 Exceptions to the above rule are, for historical reasons, the
 ``bbob-biobj`` instance-ids 1 and 2 in order to match the instance-ids
-1 to 5 with the ones proposed in [BRO2015a]_. The ``bbob-biobj``
+1 to 5 with the ones proposed in [BRO2015]_. The ``bbob-biobj``
 instance-id 1 contains the single-objective instance-ids 2 and 4 and
 the ``bbob-biobj`` instance-id 2 contains the two instance-ids 3 and 5.
 
@@ -2008,11 +2008,11 @@ of the French National Research Agency.
    
 
 .. [BRO2016biperf] D. Brockhoff, T. Tušar, D. Tušar, T. Wagner, N. Hansen, A. Auger, (2016). 
-  `Biobjective Performance Assessment with the COCO Platform`__. *ArXiv e-prints*, `arXiv:1605.01746`__
+  `Biobjective Performance Assessment with the COCO Platform`__. *ArXiv e-prints*, `arXiv:1605.01746`__.
 .. __: http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment
 .. __: http://arxiv.org/abs/1605.01746
 
-.. [BRO2015a] D. Brockhoff, T.-D. Tran, and N. Hansen (2015).
+.. [BRO2015] D. Brockhoff, T.-D. Tran, and N. Hansen (2015).
    Benchmarking Numerical Multiobjective Optimizers Revisited.
    GECCO 2015: 639-646. 
    
@@ -2023,7 +2023,7 @@ of the French National Research Agency.
 .. __: http://arxiv.org/abs/1603.08785
 
 
-.. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
+.. [HAN2009] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
    `Real-parameter black-box optimization benchmarking 2009: Noiseless
    functions definitions`__. `Research Report RR-6829`__, Inria, updated
    February 2010.

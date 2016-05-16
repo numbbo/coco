@@ -130,16 +130,17 @@ Terminology and Definitions
 .. It will be nice to have an online glossary at some point that will help keeping things
    consistent.
    
-In the COCO_ framework in general, a **problem**, or problem instance triplet, |p3|, is defined by the search space dimension |n|, the objective function |f|, to be minimized, and its instance parameters |thetai| for instance |i|.
+In the COCO_ framework in general, a **problem**, or problem instance triplet, |p3|, is defined by the search space dimension |n|, the objective function |f|, to be minimized, and its instance parameters |thetai| for the instance |i|.
 More concisely, we consider a set of parametrized benchmark functions
-:math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m, \theta \in \Theta` and the corresponding problems :math:`p^3 = p(n, f_\theta, \theta_i)`. 
+:math:`f_\theta: \mathbb{R}^n \to \mathbb{R}^m, \theta \in \Theta` and the
+corresponding problems :math:`p^3 = p(n, f_\theta, \theta_i)`. 
 Different instances vary by having different shifted optima, can use different rotations that are applied to the variables, have different optimal |f|-values, etc. [HAN2009fun]_.  
 The instance notion is introduced to generate repetition while avoiding possible exploitation of artificial function properties (like location of the optimum in zero).
 The separation of dimension and instance parameters in the notation serves as a hint to indicate that we never aggregate over dimension and always aggregate over all |thetai|-values. 
 
 In the performance assessment setting, we associate to a problem instance
-|p3| a quality indicator mapping and a target value, such that a problem becomes a
-quintuple |p5|.
+|p3| a quality indicator mapping and a target value, 
+such that a problem becomes a quintuple |p5|.
 Usually, the quality indicator remains the same for all problems, while we have
 subsets of problems which only differ in their target value. 
  
@@ -225,10 +226,9 @@ In the single-objective noisy case, the quality indicator returns the 1%-tile of
 the function values of the last :math:`\lceil\ln(t + 3)^2 / 2\rceil` evaluated
 (or recommended) solutions. [#]_
 
-In the multi-objective case, the quality indicator is based on a negative
-hypervolume indicator of the set of evaluated solutions (more specifically, the the non-dominated archive)
-[BRO2016]_, while other well- or lesser-known multi-objective quality indicators
-are possible.
+In the multi-objective case, the current quality indicator is based on a negative
+hypervolume indicator of the set of evaluated solutions (more specifically, the
+non-dominated archive) [BRO2016]_.
 
 .. [#] This feature will only be available in the new implementation of the COCO_ framework.
 
@@ -344,8 +344,9 @@ Fixed-Spaced Target Values
 
 First, we define for each problem instance :math:`p^3 = (n, f_\theta, \theta_i)` 
 a *reference* quality indicator value, :math:`I^{\rm ref, \theta_i}`. 
-In the single-objective case this is the optimal function value. 
-In the multi-objective case this is the hypervolume indicator of an approximation of the Pareto front [BRO2016]_. 
+In the single-objective case this is currently the optimal function value. 
+In the multi-objective case this is currently the hypervolume indicator of an
+approximation of the Pareto front [BRO2016]_. 
 Based on this reference value and a set of target *precision* values, which are
 independent of the instance |thetai|, we define a target value
 
@@ -403,6 +404,8 @@ Runlength-based targets have the **disadvantage** to depend on the choice of a r
 Runtime Computation    
 ===========================
 
+.. Niko: TODO: change |p5| to p4 and say that I is assumed? 
+
 .. In order to display quantitative measurements, we have seen in the previous section that we should start from the collection of runtimes for different target values. 
 
 In the performance assessment context of COCO_, a problem instance can be
@@ -410,11 +413,11 @@ defined by the quintuple :math:`p^5 = p(n, f_\theta, \theta_i, I, I^{{\rm
 target}, \theta_i})`, consisting of search space dimension, function,
 instantiation parameters, quality indicator mapping, and quality indicator
 target value. 
-From the definition of |p|, we can generate a set of problems |calP| by varying one or several of the elements. We never vary dimension |n| and always vary over some or all available instances |thetai| for generating |calP.| 
-For each benchmarked algorithm, a single runtime is measured on each problem instance quintuple.
+From the definition of |p|, we can generate a set of problems |calP| by varying one or several of the variables. We never vary dimension |n| and always vary instances |thetai| for generating |calP.| 
+For each benchmarked algorithm, a single runtime is measured on each problem instance |p5|.
 
 From a *single run* of the algorithm on the problem instance triple
-:math:`p^3 = p(n, f_\theta, \theta_i)`, we obtain a runtime measurement for *each* corresponding problem quintuple |p5| which agrees in its first three elements with |p3|.
+:math:`p^3 = p(n, f_\theta, \theta_i)`, we obtain a runtime measurement for *each* corresponding problem quintuple |p5| which agrees in its first three variables with |p3|.
 More specifically, we measure one runtime for each target value which has been reached in this run, or equivalently, for each target precision. 
 This also reflects the anytime aspect of the performance evaluation in a single run. 
 
@@ -448,7 +451,7 @@ If the probability of success is one, :math:`J` equals zero with probability one
 
 Generally, the above equation for |RTforDI| expresses the runtime from repeated independent runs on the same problem instance (while the instance :math:`\theta_i` is not given explicitly). For the performance evaluation in the COCO_ framework, we apply the equation to runs on different instances :math:`\theta_i`, however instances from the same function, with the same dimension and the same target precision. 
 
-.. [#] The notion of success is directly linked to a target value. A run can be successful with respect to some target values (some problems) and unsuccessful with respect to others. Success also often refers to the final, most difficult, smallest target value, which implies success for all other targets. 
+.. [#] The notion of success is directly linked to a target value. A run can be successful with respect to some target values (some problems) and unsuccessful with respect to others. Success sometimes refers to the final, most difficult (smallest) target value, which implies success for all other targets in this run. 
 
 
 Runs on Different Instances
@@ -801,7 +804,8 @@ Petr Posik for their many invaluable contributions to this work.
    Empirical comparisons of several derivative free optimization algorithms. In Acte du 9ime colloque national en calcul des structures, Giens.
    
 .. [BRO2016] D. Brockhoff, T. Tušar, D. Tušar, T. Wagner, N. Hansen, 
-   A. Auger (2016). `Biobjective Performance Assessment with the COCO Platform`__. *ArXiv e-prints*, `arXiv:1605.01746`__.
+   A. Auger (2016). `Biobjective Performance Assessment with the COCO 
+   Platform`__. *ArXiv e-prints*, `arXiv:1605.01746`__.
 __ http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment
 __ http://arxiv.org/abs/1605.01746
 
