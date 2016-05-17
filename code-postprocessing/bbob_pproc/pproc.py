@@ -667,6 +667,8 @@ class DataSet():
         if not testbed:
             if self.isBiobjective():
                 testbed = testbedsettings.default_testbed_bi
+            elif genericsettings.isNoisy:
+                testbed = testbedsettings.default_testbed_single_noisy
             else:
                 testbed = testbedsettings.default_testbed_single
 
