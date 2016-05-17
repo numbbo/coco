@@ -31,7 +31,7 @@ scaling_figures_with_boxes = True
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
-tabDimsOfInterest = [40]  # Wassim: large scale TODO: use it by generating new large-scale reference data
+#tabDimsOfInterest = [40, 160]  # Wassim: large scale TODO: use it by generating new large-scale reference data
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
 target_runlength = 10  # used in ppfigs.main
@@ -49,7 +49,7 @@ dim_related_colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm'
 
 rldDimsOfInterest = (5, 20)
 
-rldDimsOfInterest = [40, 80] # Wassim: for large scale TODO: use it by generating new large-scale reference data
+#rldDimsOfInterest = [40, 80] # Wassim: for large scale TODO: use it by generating new large-scale reference data
 
 htmlDimsOfInterest = [5, 20] # Wassim: Empirical cumulative distribution functions (ECDF) and ERT loss ratios shown dimensions in html file
 htmlDimsOfInterest_ls = [40, 80] # Wassim: for large scale
