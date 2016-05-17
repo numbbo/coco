@@ -372,7 +372,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         for i, erts in enumerate(algerts):
             tmp = []
             for j, ert in enumerate(erts):  # algi targetj
-                tmp.append(i in tmptop[j] or (nalgs > 7 and algerts[i][j] <= 3. * refalgert[j]))
+                tmp.append(i in tmptop[j] or (bestalgentries and nalgs > 7 and algerts[i][j] <= 3. * refalgert[j]))
             isBoldArray.append(tmp)
             algfinaldata.append((algmedfinalfunvals[i], algmedmaxevals[i]))
 
