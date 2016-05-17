@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
 import warnings, getopt, numpy as np
 
-from . import genericsettings, ppfig, pptable, pprldistr, ppfigdim, pplogloss, findfiles
+from . import genericsettings, testbedsettings, ppfig, pptable, pprldistr, ppfigdim, pplogloss, findfiles
 from .pproc import DataSetList
 from .ppfig import Usage
 from .toolsdivers import print_done, prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
@@ -250,7 +250,7 @@ def main(argv=None):
             # import testbedsettings as testbedsettings # input settings
             try:
                 fp, pathname, description = imp.find_module("testbedsettings")
-                testbedsettings = imp.load_module("testbedsettings", fp, pathname, description)
+                testbedsettings1 = imp.load_module("testbedsettings", fp, pathname, description)
             finally:
                 fp.close()
 
@@ -294,7 +294,7 @@ def main(argv=None):
         
         from . import config
         config.target_values(genericsettings.isExpensive)
-        config.config(dsList.isBiobjective())
+        config.config(dsList[0].testbed_name())
 
         if (genericsettings.verbose):
             for i in dsList:
@@ -330,7 +330,7 @@ def main(argv=None):
                                  genericsettings.verbose,
                                  genericsettings.single_algorithm_file_name)
 
-        values_of_interest = genericsettings.current_testbed.ppfigdim_target_values
+        values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
         if genericsettings.isFig:
             print "Scaling figures...",
             sys.stdout.flush()
