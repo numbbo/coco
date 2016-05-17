@@ -379,17 +379,25 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   logger->written_last_eval = 0;
   logger->last_fvalue = y[0];
 
-  if (logger->number_of_evaluations == 1 || y[0] < logger->best_fvalue) {
-    if (!is_feasible) {
+  if (logger->number_of_evaluations == 1) {
+	 if (!is_feasible) {
+		/* Evaluate the objective function at the initial solution and 
+		 * store its value into the vector "y"
+		 */
       coco_evaluate_function(inner_problem, inner_problem->initial_solution, y);
       for (i = 0; i < problem->number_of_variables; i++)
         logger->best_solution[i] = inner_problem->initial_solution[i];
     }
     else {
-      for (i = 0; i < problem->number_of_variables; i++)
-        logger->best_solution[i] = x[i];
-    }
+		for (i = 0; i < problem->number_of_variables; i++)
+        logger->best_solution[i] = x[i];  
+	 }
+	 logger->best_fvalue = y[0];
+  }
+  else if (y[0] < logger->best_fvalue && is_feasible) {
     logger->best_fvalue = y[0];
+    for (i = 0; i < problem->number_of_variables; i++)
+      logger->best_solution[i] = x[i];
   }
 
   /* Add a line in the .dat file for each logging target reached. */
