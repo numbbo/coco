@@ -40,8 +40,7 @@ static size_t nb_of_linear_constraints(const size_t function,
   int p;
   
   /* Map "function" value into {1, ..., problems_per_obj_function_type} */
-  p = (int)floor(((int)function - 1) / problems_per_obj_function_type);
-  p = (((int)function - p * problems_per_obj_function_type - 1) % problems_per_obj_function_type) + 1;
+  p = (((int)function - 1) % problems_per_obj_function_type) + 1;
   
   if (p == 1) return 1;
   else if (p == 2) return 2;
