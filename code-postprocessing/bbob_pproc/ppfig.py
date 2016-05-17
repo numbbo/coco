@@ -171,12 +171,13 @@ def getRldLink(htmlPage, currentDir, isBiobjective):
                              ignoreFileExists=ignoreFileExists)
 
         if htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or not isBiobjective:
-            fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
+            fileName = '%s_%02dD.html' % (genericsettings.pprldmany_file_name, 2)
+            # Wassim: the smallest dimension should not be hard coded but at least reliant on the suite-name
             links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
                              ignoreFileExists=ignoreFileExists)
 
         if htmlPage == HtmlPage.ONE:
-            fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
+            fileName = '%s_%02dD.html' % (genericsettings.pprldmany_group_file_name, 2)
             links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
                              ignoreFileExists=ignoreFileExists)
 
@@ -255,8 +256,6 @@ def save_single_functions_html(filename,
             f.write(captionStringFormat % '##bbobppscatterlegend##')
 
             names = ['pprldistr', 'pplogabs']
-            # dimensions = [5, 20] # Wassim: now done earlier depending on genericsettings.isLargeScale
-            # dimensions = [40, 80] # Wassim: for large scale
 
             headerECDF = 'Empirical cumulative distribution functions (ECDFs) per function group'
             f.write("\n<H2> %s </H2>\n" % headerECDF)
