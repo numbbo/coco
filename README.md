@@ -53,6 +53,7 @@ _Additional_ requirements for running an algorithm in a specific language.
   containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
   These are necessary to build the C extensions for the Python `cocoex` module for Windows. 
   The package contains 32-bit and 64-bit compilers and the Windows SDK headers.
+* **Pyhon on Linux**: `python-dev` must be installed to compile/install the `cocoex` module.
 * **Octave**: Octave 4.0.0 or later. On operating systems other than Windows, earlier versions might work.
 
 ### Guaranties (None)
@@ -387,6 +388,17 @@ cython/interface.c -o build/temp.linux-i686-2.6/cython/interface.o
 cython/interface.c:4:20: error: Python.h: file not found
 cython/interface.c:6:6: error: #error Python headers needed to compile C extensions, please install development version of Python.
 error: command 'gcc' failed with exit status 1
+```
+or
+```
+$ python do.py run-python  # or build-python
+[...]
+cython/interface.c -o build/temp.linux-x86_64-2.7/cython/interface.o
+cython/interface.c:4:20: fatal error: Python.h: No such file or directory
+#include "Python.h"
+^
+compilation terminated.
+error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
 ```
 Under Linux
 ```
