@@ -24,8 +24,8 @@
 static size_t obj_function_type(const size_t function) {
   
   
-  double problems_per_obj_function_type = 6.0;
-  return (size_t)ceil((double)function / problems_per_obj_function_type);
+  size_t problems_per_obj_function_type = 6;
+  return (function+1)/problems_per_obj_function_type;
   
 }
 
@@ -36,7 +36,7 @@ static size_t obj_function_type(const size_t function) {
 static size_t nb_of_linear_constraints(const size_t function,
                                        const size_t dimension) {
   
-  int problems_per_obj_function_type = 6.0;
+  int problems_per_obj_function_type = 6;
   int p;
   
   /* Map "function" value into {1, ..., problems_per_obj_function_type} */
@@ -101,7 +101,8 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
    */
   for (i = 0; i < dimension; ++i)
      problem->best_parameter[i] = 0.0;  
-  coco_evaluate_function(problem, problem->best_parameter, problem->best_value);    
+  coco_evaluate_function(problem, problem->best_parameter, problem->best_value);  
+  problem->evaluations = 0;  
   
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
@@ -182,6 +183,7 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   for (i = 0; i < dimension; ++i)
      problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
+  problem->evaluations = 0;  
   
   problem = transform_vars_oscillate(problem);
   
@@ -264,6 +266,7 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
   for (i = 0; i < dimension; ++i)
      problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
+  problem->evaluations = 0;  
   
   problem = transform_vars_oscillate(problem);
   
@@ -346,6 +349,7 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
   for (i = 0; i < dimension; ++i)
      problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
+  problem->evaluations = 0;  
   
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
@@ -426,6 +430,7 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
   for (i = 0; i < dimension; ++i)
      problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
+  problem->evaluations = 0;  
      
   problem = transform_vars_oscillate(problem);
   
@@ -508,6 +513,7 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   for (i = 0; i < dimension; ++i)
      problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
+  problem->evaluations = 0;  
      
   problem = transform_vars_asymmetric(problem, 0.5);
   
@@ -590,6 +596,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   for (i = 0; i < dimension; ++i)
      problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
+  problem->evaluations = 0;  
      
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
@@ -665,7 +672,8 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   for (i = 0; i < dimension; ++i)
      problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
-
+  problem->evaluations = 0;  
+  
   problem = transform_vars_oscillate(problem);
   
   /* Apply a translation to the whole problem so that the constrained 
