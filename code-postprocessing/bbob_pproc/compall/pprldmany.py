@@ -665,7 +665,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 #set_trace()
                 bestalgentries = bestalg.load_best_algorithm()
 
-                if not bestalgentries:
+                if not bestalgentries or not bestalgentries.has_key((dim,f)):
+                    # Wassim: if (dimension,function) is not present in bestalgentries, just ignore it
                     displaybest2009 = False
                 else:
                     bestalgentry = bestalgentries[(dim, f)]
