@@ -46,7 +46,7 @@ import warnings
 from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
-from .. import toolsstats, bestalg, genericsettings
+from .. import toolsstats, bestalg, genericsettings, testbedsettings
 from .. import pproc as pp # import dictAlgByDim, dictAlgByFun 
 from .. import toolsdivers  # strip_pathname, str_to_latex
 from .. import pprldistr # plotECDF, beautifyECDF
@@ -405,7 +405,7 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
 
     """
     if targets is None:
-        targets = genericsettings.current_testbed.pprldmany_target_values
+        targets = testbedsettings.current_testbed.pprldmany_target_values
     try:
         if np.min(targets) >= 1:
             ValueError('smallest target f-value is not smaller than one, use ``pproc.TargetValues(targets)`` to prevent this error')
@@ -612,7 +612,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     # funcsolved = [set()] * len(targets) # number of functions solved per target
     xbest2009 = []
     maxevalsbest2009 = []
-    target_values = genericsettings.current_testbed.pprldmany_target_values
+    target_values = testbedsettings.current_testbed.pprldmany_target_values
 
     dictDimList = pp.dictAlgByDim(dictAlg)
     dims = sorted(dictDimList)
@@ -627,7 +627,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     
             # print target_values((f, dim))
             for j, t in enumerate(target_values((f, dim))):
-            # for j, t in enumerate(genericsettings.current_testbed.ecdf_target_values(1e2, f)):
+            # for j, t in enumerate(testbedsettings.current_testbed.ecdf_target_values(1e2, f)):
                 # funcsolved[j].add(f)
     
                 for alg in algorithms_with_data:
@@ -660,28 +660,32 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                     dictData.setdefault(keyValue, []).extend(x)
                     dictMaxEvals.setdefault(keyValue, []).extend(runlengthunsucc)
     
-            displaybest2009 = not isBiobjective and plotType == PlotType.ALG  #disabled for bi-objective case
+            displaybest2009 = plotType == PlotType.ALG
             if displaybest2009:
                 #set_trace()
                 bestalgentries = bestalg.load_best_algorithm()
-                bestalgentry = bestalgentries[(dim, f)]
-                bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
-                # print bestalgevals
-                for j in range(len(bestalgevals[0])):
-                    if bestalgevals[1][j]:
-                        evals = bestalgevals[0][j]
-                        #set_trace()
-                        assert dim == bestalgentry.dim
-                        runlengthsucc = evals[np.isnan(evals) == False] / divisor
-                        runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][np.isnan(evals)] / divisor
-                        x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
-                                             percentiles=[50],
-                                             samplesize=perfprofsamplesize)[1]
-                    else:
-                        x = perfprofsamplesize * [np.inf]
-                        runlengthunsucc = []
-                    xbest2009.extend(x)
-                    maxevalsbest2009.extend(runlengthunsucc)
+
+                if not bestalgentries:
+                    displaybest2009 = False
+                else:
+                    bestalgentry = bestalgentries[(dim, f)]
+                    bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
+                    # print bestalgevals
+                    for j in range(len(bestalgevals[0])):
+                        if bestalgevals[1][j]:
+                            evals = bestalgevals[0][j]
+                            #set_trace()
+                            assert dim == bestalgentry.dim
+                            runlengthsucc = evals[np.isnan(evals) == False] / divisor
+                            runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][np.isnan(evals)] / divisor
+                            x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
+                                                 percentiles=[50],
+                                                 samplesize=perfprofsamplesize)[1]
+                        else:
+                            x = perfprofsamplesize * [np.inf]
+                            runlengthunsucc = []
+                        xbest2009.extend(x)
+                        maxevalsbest2009.extend(runlengthunsucc)
                     
     if order is None:
         order = dictData.keys()
@@ -778,11 +782,11 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
         dictKey = dictFG.keys()[0]
         functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
-        text = '%s\n%s, %d-D' % (genericsettings.current_testbed.name,
+        text = '%s\n%s, %d-D' % (testbedsettings.current_testbed.name,
                                  functionGroups[dictKey], 
                                  dimList[0])
     else:
-        text = '%s - %s' % (genericsettings.current_testbed.name,
+        text = '%s - %s' % (testbedsettings.current_testbed.name,
                             ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f'))
         if not (plotType == PlotType.DIM):    
             text += ', %d-D' % dimList[0]
@@ -799,7 +803,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
              verticalalignment="top", transform=plt.gca().transAxes, size='small')
     if len(dictFunc) == 1:
         plt.title(' '.join((str(dictFunc.keys()[0]),
-                  genericsettings.current_testbed.short_names[dictFunc.keys()[0]])))
+                  testbedsettings.current_testbed.short_names[dictFunc.keys()[0]])))
     a = plt.gca()
 
     plt.xlim(xmin=1e-0, xmax=x_limit**annotation_space_end_relative)

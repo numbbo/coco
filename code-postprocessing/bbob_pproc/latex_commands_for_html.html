@@ -152,7 +152,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction by the number of instances. A &#8595; indicates the same tested against the best
+        than 1, with Bonferroni correction of 48. A &#8595; indicates the same tested against the best
         algorithm of BBOB-2009.Best results are printed in bold.
 
 <div class="p"><!----></div>
@@ -170,7 +170,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction by the number of instances. A &#8595; indicates the same tested against the best
+        than 1, with Bonferroni correction of 48. A &#8595; indicates the same tested against the best
         algorithm of BBOB-2009.Best results are printed in bold.
 
 <div class="p"><!----></div>
@@ -341,7 +341,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction by the number of instances. A &#8595; indicates the same tested against the best
+        than 1, with Bonferroni correction of 48. A &#8595; indicates the same tested against the best
         algorithm of BBOB-2009.Best results are printed in bold.
 
 <div class="p"><!----></div>
@@ -360,7 +360,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction by the number of instances. A &#8595; indicates the same tested against the best
+        than 1, with Bonferroni correction of 48. A &#8595; indicates the same tested against the best
         algorithm of BBOB-2009.Best results are printed in bold.
 
 <div class="p"><!----></div>
@@ -425,9 +425,9 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
          Empirical cumulative distribution functions (ECDF), plotting the fraction of
          trials with an outcome not larger than the respective value on the x-axis.
                   Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension D,
-         to fall below HV<sub><span class="roman">ref</span></sub>+&#8710;f with &#8710;f
+         to fall below I<sup><span class="roman">ref</span></sup>+&#8710;f with &#8710;f
 =10<sup>k</sup>, where k is the first value in the legend.
-         The thick red line represents the most difficult target value HV<sub><span class="roman">ref</span></sub>+10<sup>&#8722;5</sup>.          Legends indicate for each target the number of functions that were solved in at
+         The thick red line represents the most difficult target value I<sup><span class="roman">ref</span></sup>+10<sup>&#8722;5</sup>.          Legends indicate for each target the number of functions that were solved in at
          least one trial within the displayed budget.          Right subplots: ECDF of the
          best achieved &#8710;f
          for running times of 0.5D, 1.2D, 3D, 10D, 100D, 1000D,...
@@ -445,7 +445,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         of run lengths and speed-up ratios in 5-D (left) and 20-D (right).
         Left sub-columns: ECDF of
         the number of function evaluations divided by dimension D
-        (FEvals/D)         to reach a target value HV<sub><span class="roman">ref</span></sub>+&#8710;f with &#8710;f
+        (FEvals/D)         to reach a target value I<sup><span class="roman">ref</span></sup>+&#8710;f with &#8710;f
 =10<sup>k</sup>, where
         k is given by the first value in the legend, for
         algorithmA&nbsp;(<span style="color:#000000">&#176;</span>) and algorithmB&nbsp;(<span style="color:#000000">&#9830;</span>)        . Right sub-columns: 
@@ -459,7 +459,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
 <div class="p"><!----></div>
 ##bbobppfigdimlegendbiobjfixed##
 
-        Scaling of runtime to reach HV<sub><span class="roman">ref</span></sub>+10<sup>#</sup> with dimension;
+        Scaling of runtime to reach I<sup><span class="roman">ref</span></sup>+10<sup>#</sup> with dimension;
         runtime is measured in number of f-evaluations and # is given in the legend;
         Lines: average runtime (<span class="roman">aRT</span>);
         Cross (+): median runtime of successful runs to reach the most difficult
@@ -481,7 +481,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
                 90%-tile of (bootstrapped) runtimes is shown for the different
                 target &#8710;f-values as shown in the top row. 
                 #succ is the number of trials that reached the last target 
-                HV<sub><span class="roman">ref</span></sub>+ 10<sup>&#8722;5</sup>.
+                I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;5</sup>.
                 The median number of conducted function evaluations is additionally given in 
                 <i>italics</i>, if the target in the last column was never reached. 
 
@@ -495,7 +495,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         90%-tile of (bootstrapped) runtimes is shown for the different
         target &#8710;f-values as shown in the top row. 
         #succ is the number of trials that reached the last target    
-        HV<sub><span class="roman">ref</span></sub>+ 10<sup>&#8722;5</sup>.
+        I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;5</sup>.
                 The median number of conducted function evaluations is additionally given in 
         <i>italics</i>, if the last target was never reached. 
         1:algorithmAshort&nbsp;is algorithmA&nbsp;and 2:algorithmBshort&nbsp;is algorithmB.
@@ -510,15 +510,15 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         in number of function evaluations, in dimension 5. For each function, the <span class="roman">aRT</span>&nbsp;
         and, in braces as dispersion measure, the half difference between 10 and 
         90%-tile of (bootstrapped) runtimes is shown for the different
-        target &#8710;f-values as shown in the top row. 
+        target &#8710;I-values as shown in the top row. 
         #succ is the number of trials that reached the last target
-        HV<sub><span class="roman">ref</span></sub>+ 10<sup>&#8722;5</sup>.
+        I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;5</sup>.
                 The median number of conducted function evaluations is additionally given in 
         <i>italics</i>, if the target in the last column was never reached. 
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction by the number of instances. Best results are printed in bold.
+        than 1, with Bonferroni correction of 110. Best results are printed in bold.
 
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendbiobjfixed20##
@@ -527,15 +527,15 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         in number of function evaluations, in dimension 20. For each function, the <span class="roman">aRT</span>&nbsp;
         and, in braces as dispersion measure, the half difference between 10 and 
         90%-tile of (bootstrapped) runtimes is shown for the different
-        target &#8710;f-values as shown in the top row. 
+        target &#8710;I-values as shown in the top row. 
         #succ is the number of trials that reached the last target
-        HV<sub><span class="roman">ref</span></sub>+ 10<sup>&#8722;5</sup>.
+        I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;5</sup>.
                 The median number of conducted function evaluations is additionally given in 
         <i>italics</i>, if the target in the last column was never reached. 
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction by the number of instances. Best results are printed in bold.
+        than 1, with Bonferroni correction of 110. Best results are printed in bold.
 
 <div class="p"><!----></div>
 ##bbobppscatterlegendbiobjfixed##
@@ -583,5 +583,5 @@ Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of
 T<sub><span class="small">E</span></sub>X
 by <a href="http://hutchinson.belmont.ma.us/tth/">
 T<sub><span class="small">T</span></sub>H</a>,
-version 4.08.<br />On 04 Apr 2016, 23:04.</small>
+version 4.08.<br />On 11 May 2016, 00:57.</small>
 </html>

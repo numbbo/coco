@@ -8,7 +8,7 @@ import os, sys
 from pdb import set_trace
 import warnings
 import numpy
-from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam
+from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings
 from ..pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from ..toolsstats import significancetest, significance_all_best_vs_other
 from ..pproc import DataSetList
@@ -23,7 +23,7 @@ http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
 """
 
 def get_table_caption():
-    """ Sets table caption, based on the genericsettings.current_testbed
+    """ Sets table caption, based on the testbedsettings.current_testbed
         and genericsettings.runlength_based_targets.
         
         TODO: \hvref and \fopt should be defined via the current_testbed, 
@@ -41,7 +41,7 @@ def get_table_caption():
         target, the corresponding best \aRT\
         in the first row. The different target \Df-values are shown in the top row.
         \#succ is the number of trials that reached the (final) target
-        $\fopt + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+        $\fopt + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
         """
     table_caption_two2 = r"""%
         run-length based target, the corresponding best \aRT\
@@ -53,9 +53,9 @@ def get_table_caption():
         in number of function evaluations, in #1. For each function, the \aRT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
-        target \Df-values as shown in the top row. 
+        target \DI-values as shown in the top row. 
         \#succ is the number of trials that reached the last target
-        $\hvref + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+        $\hvref + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
         """
     table_caption_rest = (r"""%
         The median number of conducted function evaluations is additionally given in 
@@ -63,17 +63,17 @@ def get_table_caption():
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
-        than 1, with Bonferroni correction by the number of instances. """ +
+        than 1, with Bonferroni correction of #2. """ +
         (r"""A $\downarrow$ indicates the same tested against the best
         algorithm of BBOB-2009."""
-        if not (genericsettings.current_testbed.name == genericsettings.testbed_name_bi)
+        if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
         else "") + r"""Best results are printed in bold.
         """)
 
-    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         table_caption = table_caption_one_bi + table_caption_rest
-    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:
@@ -254,7 +254,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
     * significance test against best algorithm
     * table width...
 
-    Takes ``pptable_targetsOfInterest`` from genericsetting's Testbed instance
+    Takes ``pptable_targetsOfInterest`` from testbedsetting's Testbed instance
     as "input argument" to compute the desired target values.
     ``pptable_targetsOfInterest`` might be configured via config.
     
@@ -264,7 +264,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
 
     bestalgentries = bestalg.load_best_algorithm()
     
-    testbed = genericsettings.current_testbed
+    testbed = testbedsettings.current_testbed
 
     # Sort data per dimension and function
     dictData = {}
@@ -283,7 +283,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
     for df in dictData:
         # Generate one table per df
         # first update targets for each dimension-function pair if needed:
-        targetsOfInterest = testbed.pptable_targetsOfInterest((df[1], df[0]))            
+        targetsOfInterest = testbed.pptablemany_targetsOfInterest((df[1], df[0]))
         if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
             targetf = targetsOfInterest[-1]
         else:
@@ -372,7 +372,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         for i, erts in enumerate(algerts):
             tmp = []
             for j, ert in enumerate(erts):  # algi targetj
-                tmp.append(i in tmptop[j] or (nalgs > 7 and algerts[i][j] <= 3. * refalgert[j]))
+                tmp.append(i in tmptop[j] or (bestalgentries and nalgs > 7 and algerts[i][j] <= 3. * refalgert[j]))
             isBoldArray.append(tmp)
             algfinaldata.append((algmedfinalfunvals[i], algmedmaxevals[i]))
 
@@ -394,6 +394,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                           % (2 * len(targetsOfInterest) + 2, header)])
             extraeol.append('')
 
+        curlineHtml = []
         if function_targets_line is True or (function_targets_line and df[1] in function_targets_line):
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 curline = [r'\#FEs/D']
@@ -404,8 +405,12 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
                     counter += 1
             else:
-                curline = [r'$\Delta f_\mathrm{opt}$']
-                curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']
+                if (testbed.name == testbedsettings.testbed_name_bi):
+                    curline = [r'$\Df$']
+                    curlineHtml = ['<thead>\n<tr>\n<th>&#916; HV<sub>ref</sub><br>REPLACEH</th>\n']
+                else:
+                    curline = [r'$\Delta f_\mathrm{opt}$']
+                    curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']
                 counter = 1
                 for t in targetsOfInterest:
                     curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
@@ -414,16 +419,21 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     counter += 1
 #                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
 #                            % writeFEvals2(targetsOfInterest[-1], precision=1, isscientific=True))
-            curline.append(r'\multicolumn{2}{@{}l@{}}{\#succ}')
+            if (testbed.name == testbedsettings.testbed_name_bi):
+                curline.append(r'\multicolumn{2}{|@{}l@{}}{\begin{rotate}{30}\#succ\end{rotate}}')
+            else:
+                curline.append(r'\multicolumn{2}{|@{}l@{}}{\#succ}')
             curlineHtml.append('<td>#succ<br>REPLACEF</td>\n</tr>\n</thead>\n')
             table.append(curline)
-            
+        
         extraeol.append(r'\hline')
 #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
 
         curline = [r'\aRT{}$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
         replaceValue = '\aRT{}<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
+        
+        
         if bestalgentries:
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
@@ -468,7 +478,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             curlineHtml = [item.replace('REPLACEF', replaceValue) for item in curlineHtml]
             
         else: # if not bestalgentries
-            curline.append(r'\multicolumn{%d}{@{}c@{}|}{}' % (2 * (len(targetsOfInterest) + 1)))
+            curline.append(r'\multicolumn{%d}{@{}c@{}|}{} & ' % (2 * (len(targetsOfInterest))))
             for counter in range(1, len(targetsOfInterest) + 1):
                 curlineHtml = [item.replace('REPLACE%d' % counter, '&nbsp;') for item in curlineHtml]
             curlineHtml = [item.replace('REPLACEF', '&nbsp;') for item in curlineHtml]
@@ -486,7 +496,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         #if df == (5, 17):
             #set_trace()
 
-        header = r'\providecommand{\ntables}{7}'
+        header = r'\providecommand{\ntables}{%d}' % len(testbed.pptablemany_targetsOfInterest)
         for i, alg in enumerate(algnames):
             tableHtml.append('<tr>\n')
             #algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,

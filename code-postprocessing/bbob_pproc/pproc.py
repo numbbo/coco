@@ -30,6 +30,7 @@ import numpy, numpy as np
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 from . import genericsettings, findfiles, toolsstats, toolsdivers
+from . import testbedsettings
 from .readalign import split, alignData, HMultiReader, VMultiReader, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from .ppfig import consecutiveNumbers, Usage
@@ -245,7 +246,7 @@ class RunlengthBasedTargetValues(TargetValues):
             defines "how much more difficult".
 
         TODO: check use case where ``reference_data`` is a dictionary similar
-        to ``bestalg.bestalgentries2009`` with each key dim_fun a reference
+        to ``bestalg.bestAlgorithmEntries`` with each key dim_fun a reference
         DataSet, computed by bestalg module or portfolio module.
 
             dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
@@ -594,6 +595,7 @@ class DataSet():
         readmaxevals
         splitByTrials
         target
+        testbed_name
         >>> all(ds.evals[:, 0] == ds.target)  # first column of ds.evals is the "target" f-value
         True
         >>> ds.evals[0::10, (0,5,6)]  # show row 0,10,20,... and of the result columns 0,5,6, index 0 is ftarget
@@ -651,10 +653,26 @@ class DataSet():
                    'indicator': ('indicator', str),
                    'folder': ('folder', str),
                    'algId': ('algId', str),
-                   'algorithm': ('algId', str)}
+                   'algorithm': ('algId', str),
+                   'suite': ('suite', str)}
 
     def isBiobjective(self):
         return hasattr(self, 'indicator')
+
+    def testbed_name(self):
+        testbed = None
+        if hasattr(self, 'suite'):
+            testbed = getattr(self, 'suite')
+
+        if not testbed:
+            if self.isBiobjective():
+                testbed = testbedsettings.default_testbed_bi
+            elif genericsettings.isNoisy:
+                testbed = testbedsettings.default_testbed_single_noisy
+            else:
+                testbed = testbedsettings.default_testbed_single
+
+        return testbed
     
     def __init__(self, header, comment, data, indexfile, verbose=True):
         """Instantiate a DataSet.
@@ -855,7 +873,11 @@ class DataSet():
         does not exist.
         
         """
-        if isinstance(genericsettings.loadCurrentTestbed(self.isBiobjective(), TargetValues), genericsettings.GECCOBBOBTestbed):
+
+        if not testbedsettings.current_testbed:
+            testbedsettings.load_current_testbed(self.testbed_name(), TargetValues)
+
+        if isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
             while i > 1 and not self.isBiobjective() and self.evals[i-1][0] <= self.precision:

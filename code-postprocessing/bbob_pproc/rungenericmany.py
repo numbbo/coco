@@ -36,8 +36,8 @@ if __name__ == "__main__":
     res = cocopp.rungenericmany.main(sys.argv[1:])
     sys.exit(res)
 
-from . import genericsettings, ppfig
-from . import dataoutput, pproc, pptex
+from . import genericsettings, ppfig, testbedsettings
+from . import pproc, pptex
 from .pproc import DataSetList, processInputArgs
 from .ppfig import Usage
 from .toolsdivers import prepend_to_file, strip_pathname1, str_to_latex
@@ -276,7 +276,7 @@ def main(argv=None):
         # set target values
         from . import config
         config.target_values(genericsettings.isExpensive)
-        config.config(dsList[0].isBiobjective())
+        config.config(dsList[0].testbed_name())
 
 
         for i in dsList:
@@ -315,7 +315,7 @@ def main(argv=None):
                                  genericsettings.many_algorithm_file_name)
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if genericsettings.isRLDistr:
-            config.config(dsList[0].isBiobjective())
+            config.config(dsList[0].testbed_name())
             # ECDFs per noise groups
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictAlg in dictNoi.iteritems():
@@ -372,7 +372,7 @@ def main(argv=None):
 
         if genericsettings.isTab:
             prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
-                            ['\providecommand{\\bbobpptablesmanylegend}[1]{' +
+                            ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
                              pptables.get_table_caption() + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictng in dictNoi.iteritems():
@@ -383,7 +383,8 @@ def main(argv=None):
                         sortedAlgs,
                         dsList[0].isBiobjective(),
                         outputdir, 
-                        genericsettings.verbose)
+                        genericsettings.verbose,
+                        ([1,20,38] if (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi) else True))
                         
             print "Comparison tables done."
 
