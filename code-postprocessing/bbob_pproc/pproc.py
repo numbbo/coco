@@ -1724,26 +1724,38 @@ class DataSetList(list):
 
         """
         sorted = {} 
-        for i in self:
-            if i.funcId in range(1, 6):
-                sorted.setdefault('separ', DataSetList()).append(i)
-            elif i.funcId in range(6, 10):
-                sorted.setdefault('lcond', DataSetList()).append(i)
-            elif i.funcId in range(10, 15):
-                sorted.setdefault('hcond', DataSetList()).append(i)
-            elif i.funcId in range(15, 20):
-                sorted.setdefault('multi', DataSetList()).append(i)
-            elif i.funcId in range(20, 25):
-                sorted.setdefault('mult2', DataSetList()).append(i)
-            elif i.funcId in range(101, 107):
-                sorted.setdefault('nzmod', DataSetList()).append(i)
-            elif i.funcId in range(107, 122):
-                sorted.setdefault('nzsev', DataSetList()).append(i)
-            elif i.funcId in range(122, 131):
-                sorted.setdefault('nzsmm', DataSetList()).append(i)
-            else:
-                warnings.warn('Unknown function id.')
-
+        
+        if testbedsettings.current_testbed.name == 'bbob-constrained':
+            for i in self:
+                if i.funcId in range(1, 19):
+                    sorted.setdefault('separ', DataSetList()).append(i)
+                elif i.funcId in range(19, 43):
+                    sorted.setdefault('hcond', DataSetList()).append(i)
+                elif i.funcId in range(43, 49):
+                    sorted.setdefault('multi', DataSetList()).append(i)
+                else:
+                    warnings.warn('Unknown function id.')
+        else:
+            for i in self:
+                if i.funcId in range(1, 6):
+                    sorted.setdefault('separ', DataSetList()).append(i)
+                elif i.funcId in range(6, 10):
+                    sorted.setdefault('lcond', DataSetList()).append(i)
+                elif i.funcId in range(10, 15):
+                    sorted.setdefault('hcond', DataSetList()).append(i)
+                elif i.funcId in range(15, 20):
+                    sorted.setdefault('multi', DataSetList()).append(i)
+                elif i.funcId in range(20, 25):
+                    sorted.setdefault('mult2', DataSetList()).append(i)
+                elif i.funcId in range(101, 107):
+                    sorted.setdefault('nzmod', DataSetList()).append(i)
+                elif i.funcId in range(107, 122):
+                    sorted.setdefault('nzsev', DataSetList()).append(i)
+                elif i.funcId in range(122, 131):
+                    sorted.setdefault('nzsmm', DataSetList()).append(i)
+                else:
+                    warnings.warn('Unknown function id.')
+                    
         return sorted
 
     def dictByFuncGroup(self):
