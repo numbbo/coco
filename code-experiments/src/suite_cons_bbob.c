@@ -34,7 +34,7 @@ static coco_suite_t *suite_cons_bbob_initialize(void) {
 static const char *suite_cons_bbob_get_instances_by_year(const int year) {
 
   if (year == 2016) {
-    return "1-14";
+    return "1-15";
   }
   else {
     coco_error("suite_cons_bbob_get_instances_by_year(): year %d not defined for suite_cons_bbob", year);
@@ -54,7 +54,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const size_t function,
   const char *problem_id_template = "cons_bbob_f%03lu_i%02lu_d%02lu";
   const char *problem_name_template = "cons_BBOB suite problem f%lu instance %lu in %luD";
   
-  if (obj_function_type(function) == 1) {
+  if (obj_function_type(function) == 7) {
 	  
     problem = f_sphere_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
@@ -84,7 +84,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const size_t function,
     problem = f_bent_cigar_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
 	  
-  } else if (obj_function_type(function) == 7) {
+  } else if (obj_function_type(function) == 1) {
 	  
     problem = f_different_powers_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
@@ -129,8 +129,6 @@ static coco_problem_t *suite_cons_bbob_get_problem(coco_suite_t *suite,
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
   problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
-  
-  printf("\nproblem->suite_dep_index = %lu", problem->suite_dep_index);
   
   /* Use the standard stacked problem_id as problem_name and 
    * construct a new suite-specific problem_id 
