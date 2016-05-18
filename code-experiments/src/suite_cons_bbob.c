@@ -54,42 +54,42 @@ static coco_problem_t *coco_get_cons_bbob_problem(const size_t function,
   const char *problem_id_template = "cons_bbob_f%03lu_i%02lu_d%02lu";
   const char *problem_name_template = "cons_BBOB suite problem f%lu instance %lu in %luD";
   
-  if (obj_function_type(function) == 1) {
+  if (obj_function_type(function) >= 1 && obj_function_type(function) <= 8) {
 	  
     problem = f_sphere_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
 	 
-  } else if (obj_function_type(function) == 2) {
+  } else if (obj_function_type(function) == 20) {
 	  
     problem = f_ellipsoid_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
 	  
-  } else if (obj_function_type(function) == 3) {
+  } else if (obj_function_type(function) == 30) {
 	  
     problem = f_linear_slope_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
 	  
-  } else if (obj_function_type(function) == 4) {
+  } else if (obj_function_type(function) == 40) {
 	  
     problem = f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
 	  
-  } else if (obj_function_type(function) == 5) {
+  } else if (obj_function_type(function) == 50) {
 	  
     problem = f_discus_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
 	  
-  } else if (obj_function_type(function) == 6) {
+  } else if (obj_function_type(function) == 60) {
 	  
     problem = f_bent_cigar_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
 	  
-  } else if (obj_function_type(function) == 7) {
+  } else if (obj_function_type(function) == 70) {
 	  
     problem = f_different_powers_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
 	  
-  } else if (obj_function_type(function) == 8) {
+  } else if (obj_function_type(function) == 80) {
 	  
     problem = f_rastrigin_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
