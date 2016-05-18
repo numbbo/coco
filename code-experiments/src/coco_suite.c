@@ -812,8 +812,12 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
     /* One dot for each instance */
     printf("\ncoco_suite_get_next_problem - teste 3.7");
     printf("\ncoco_suite_get_next_problem - teste 3.7");
-
+    printf("\nsuite->instances[instance_idx] = %lu", (unsigned long) suite->instances[instance_idx]);
+    
     coco_info_partial(".", suite->instances[instance_idx]);
+    
+    printf("\ncoco_suite_get_next_problem - teste 3.8");
+    printf("\ncoco_suite_get_next_problem - teste 3.8");
   }
   
   printf("\ncoco_suite_get_next_problem - teste 4");
