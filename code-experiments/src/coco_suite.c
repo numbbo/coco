@@ -108,10 +108,6 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     coco_error("coco_suite_get_problem_from_indices(): unknown problem suite");
     return NULL;
   }
-  
-  printf("\ncoco_suite_get_problem_from_indices");
-  printf("\ncoco_suite_get_problem_from_indices");
-  
 
   return problem;
 }
@@ -735,10 +731,6 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   previous_function_idx = suite->current_function_idx;
   previous_dimension_idx = suite->current_dimension_idx;
   previous_instance_idx = suite->current_instance_idx;
-  
-  printf("\ncoco_suite_get_next_problem - teste 1");
-  printf("\ncoco_suite_get_next_problem - teste 1");
-  
 
   /* Iterate through the suite by instances, then functions and lastly dimensions in search for the next
    * problem. Note that these functions set the values of suite fields current_instance_idx,
@@ -749,9 +741,6 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
     coco_info_partial("done\n");
     return NULL;
   }
-  printf("\ncoco_suite_get_next_problem - teste 2");
-  printf("\ncoco_suite_get_next_problem - teste 2");
-  
  
   if (suite->current_problem) {
     coco_problem_free(suite->current_problem);
@@ -769,59 +758,27 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   if (observer != NULL)
     problem = coco_problem_add_observer(problem, observer);
   suite->current_problem = problem;
-  
-  printf("\ncoco_suite_get_next_problem - teste 3");
-  printf("\ncoco_suite_get_next_problem - teste 3");
-  
 
   /* Output information regarding the current place in the iteration */
   if (coco_log_level >= COCO_INFO) {
-    printf("\ncoco_suite_get_next_problem - teste 3.1");
-    printf("\ncoco_suite_get_next_problem - teste 3.1");
-
     if (((long) dimension_idx != previous_dimension_idx) || (previous_instance_idx < 0)) {
-      printf("\ncoco_suite_get_next_problem - teste 3.2");
-      printf("\ncoco_suite_get_next_problem - teste 3.2");
-
       /* A new dimension started */
       char *time_string = coco_current_time_get_string();
-      printf("\ncoco_suite_get_next_problem - teste 3.3");
-      printf("\ncoco_suite_get_next_problem - teste 3.3");
-
       if (dimension_idx > 0)
         coco_info_partial("done\n");
       else
         coco_info_partial("\n");
-      printf("\ncoco_suite_get_next_problem - teste 3.4");
-      printf("\ncoco_suite_get_next_problem - teste 3.4");
-
       coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string,
       		(unsigned long) suite->dimensions[dimension_idx], (unsigned long) suite->functions[function_idx]);
-      printf("\ncoco_suite_get_next_problem - teste 3.5");
-      printf("\ncoco_suite_get_next_problem - teste 3.5");
-
       coco_free_memory(time_string);
     }
     else if ((long) function_idx != previous_function_idx){
       /* A new function started */
-      printf("\ncoco_suite_get_next_problem - teste 3.6");
-      printf("\ncoco_suite_get_next_problem - teste 3.6");
-
       coco_info_partial("f%02lu", (unsigned long) suite->functions[function_idx]);
     }
     /* One dot for each instance */
-    printf("\ncoco_suite_get_next_problem - teste 3.7");
-    printf("\ncoco_suite_get_next_problem - teste 3.7");
-    printf("\nsuite->instances[instance_idx] = %lu", (unsigned long) suite->instances[instance_idx]);
-    
     coco_info_partial(".", suite->instances[instance_idx]);
-    
-    printf("\ncoco_suite_get_next_problem - teste 3.8");
-    printf("\ncoco_suite_get_next_problem - teste 3.8");
   }
-  
-  printf("\ncoco_suite_get_next_problem - teste 4");
-  printf("\ncoco_suite_get_next_problem - teste 4");
 
   return problem;
 }

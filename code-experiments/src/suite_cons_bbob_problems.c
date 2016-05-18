@@ -567,9 +567,6 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   double *all_zeros = NULL;
   double *feasible_direction = NULL;
   
-  printf("\nteste 1");
-  printf("\nteste 1");
-  
   all_zeros = coco_allocate_vector(dimension);
   feasible_direction = coco_allocate_vector(dimension);
  
@@ -578,45 +575,27 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   
   number_of_linear_constraints = nb_of_linear_constraints(function, dimension);
 	 
-  printf("\nteste 2");
-  printf("\nteste 2");
   problem = f_different_powers_bbob_problem_allocate(function, dimension, 
      instance, rseed, problem_id_template, problem_name_template);
       
-  printf("\nteste 3");
-  printf("\nteste 3");
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
-  printf("\nteste 4");
-  printf("\nteste 4");
   coco_normalize_vector(feasible_direction, dimension);
-  printf("\nteste 5");
-  printf("\nteste 5");
   
   problem_c = linear_constraints_cons_bbob_problem_allocate(function, 
      dimension, instance, number_of_linear_constraints, norm_factor,
      problem_id_template, problem_name_template, feasible_direction);
       
-  printf("\nteste 6");
-  printf("\nteste 6");
   problem_type_temp = coco_strdup(problem->problem_type);
-  printf("\nteste 7");
-  printf("\nteste 7");
   problem = coco_problem_stacked_allocate(problem, problem_c,
      problem_c->smallest_values_of_interest, 
      problem_c->largest_values_of_interest);
-  printf("\nteste 8");
-  printf("\nteste 8");
   
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value
    */
   for (i = 0; i < dimension; ++i)
      problem->best_parameter[i] = 0.0;
-  printf("\nteste 9");
-  printf("\nteste 9");
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
-  printf("\nteste 10");
-  printf("\nteste 10");
   problem->evaluations = 0;  
      
   /* Apply a translation to the whole problem so that the constrained 
@@ -625,11 +604,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   xshift = coco_allocate_vector(dimension);
   rseed = (long) (function + 10000 * instance);
   bbob2009_compute_xopt(xshift, rseed, dimension);
-  printf("\nteste 11");
-  printf("\nteste 11");
   problem = transform_vars_shift(problem, xshift, 0);
-  printf("\nteste 12");
-  printf("\nteste 12");
   
   /* Use the standard stacked problem_id as problem_name and 
    * construct a new suite-specific problem_id 
@@ -646,8 +621,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   coco_free_memory(problem_type_temp);
   coco_free_memory(all_zeros);
   coco_free_memory(feasible_direction);
-  printf("\nteste 13");
-  printf("\nteste 13");
+  
   return problem;
  
 }
