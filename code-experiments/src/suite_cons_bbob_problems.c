@@ -50,7 +50,7 @@ static size_t nb_of_linear_constraints(const size_t function,
   else if (p == 5) return dimension - 1;
   else return dimension + 1;
   */
-  return 40;
+  return 20;
 }
 
 /**
