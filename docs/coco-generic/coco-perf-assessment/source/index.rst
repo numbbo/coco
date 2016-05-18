@@ -800,9 +800,12 @@ Petr Posik for their many invaluable contributions to this work.
 .. [AUG2005] A. Auger and N. Hansen (2005). Performance evaluation of an advanced
    local search evolutionary algorithm. In *Proceedings of the IEEE Congress on
    Evolutionary Computation (CEC 2005)*, pages 1777–1784.
-.. [AUG2009] A. Auger, N. Hansen, J.M. Perez Zerpa, R. Ros and M. Schoenauer (2009). 
-   Empirical comparisons of several derivative free optimization algorithms. In Acte du 9ime colloque national en calcul des structures, Giens.
    
+.. [AUG2009] A. Auger, N. Hansen, J.M. Perez Zerpa, R. Ros and M. Schoenauer (2009). 
+   Experimental comparisons of derivative free optimization algorithms (invited talk). 
+   In J. Vahrenhold (Ed.), *Experimental algorithms: 8th international symposium, SEA 2009*, 
+   Dortmund, LNCS 5526, pages 3-15, Springer. 
+
 .. [BRO2016] D. Brockhoff, T. Tušar, D. Tušar, T. Wagner, N. Hansen, 
    A. Auger (2016). `Biobjective Performance Assessment with the COCO 
    Platform`__. *ArXiv e-prints*, `arXiv:1605.01746`__.
@@ -828,8 +831,8 @@ __ http://arxiv.org/abs/1603.08785
 
 .. [HAN2010] N. Hansen, A. Auger, R. Ros, S. Finck, and P. Posik (2010). 
    Comparing Results of 31 Algorithms from the Black-Box Optimization 
-   Benchmarking BBOB-2009. Workshop Proceedings of the GECCO Genetic and 
-   Evolutionary Computation Conference 2010, ACM, pp. 1689-1696
+   Benchmarking BBOB-2009. In *Workshop Proceedings of the GECCO Genetic and 
+   Evolutionary Computation Conference 2010*, ACM, pp. 1689-1696
 
 .. [HAN2009fun] N. Hansen, S. Finck, R. Ros, and A. Auger (2009). 
    Real-parameter black-box optimization benchmarking 2009: Noiseless
@@ -842,8 +845,9 @@ __ https://hal.inria.fr/inria-00362633
 __ http://numbbo.github.io/coco-doc/experimental-setup/
 __ http://arxiv.org/abs/1603.08776
 
-.. [HOO1995] J.N. Hooker (1995). Testing heuristics: We have it all wrong. In Journal of
-    Heuristics, pages 33-42.
+.. [HOO1995] J.N. Hooker (1995). Testing heuristics: We have it all wrong. 
+   *Journal of Heuristics*, 1(1), pages 33-42.
+   
 .. [HOO1998] H.H. Hoos and T. Stützle. Evaluating Las Vegas
    algorithms—pitfalls and remedies. In *Proceedings of the Fourteenth
    Conference on Uncertainty in Artificial Intelligence (UAI-98)*,
@@ -853,12 +857,12 @@ __ http://arxiv.org/abs/1603.08776
    Derivative-Free Optimization Algorithms, *SIAM J. Optim.*, 20(1), 172–191.
 
 .. [PRI1997] K. Price (1997). Differential evolution vs. the functions of
-   the second ICEO. In Proceedings of the IEEE International Congress on
-   Evolutionary Computation, pages 153–157.
+   the second ICEO. In *Proceedings of the IEEE International Congress on
+   Evolutionary Computation*, pages 153–157.
 
 .. [RIO2012] L.M. Rios and N.V. Sahinidis (2013). Derivative-free optimization:
     A review of algorithms and comparison of software implementations.
-    Journal of Global Optimization, 56(3):1247– 1293.
+    *Journal of Global Optimization*, 56(3):1247– 1293.
 
 .. [STE1946] S.S. Stevens (1946).
     On the theory of scales of measurement. *Science* 103(2684), pp. 677-680.
