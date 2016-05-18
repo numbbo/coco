@@ -87,6 +87,12 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
                                                            const size_t instance_idx) {
 
   coco_problem_t *problem;
+  
+  if ((suite->functions[function_idx] == 0) ||
+      (suite->dimensions[dimension_idx] == 0) ||
+	  (suite->instances[instance_idx] == 0)) {
+	  return NULL;
+  }
 
   if (strcmp(suite->suite_name, "toy") == 0) {
     problem = suite_toy_get_problem(suite, function_idx, dimension_idx, instance_idx);
@@ -497,7 +503,7 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * Currently, five suites are supported:
  * - "bbob" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
- * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/bbob-biobj-functions-doc">bi-objective
+ * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective
  * functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "bbob-largescale" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 large dimensions (40, 80, 160, 320, 640, 1280)
@@ -716,9 +722,15 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   size_t instance_idx;
   coco_problem_t *problem;
 
-  long previous_function_idx = suite->current_function_idx;
-  long previous_dimension_idx = suite->current_dimension_idx;
-  long previous_instance_idx = suite->current_instance_idx;
+  long previous_function_idx;
+  long previous_dimension_idx;
+  long previous_instance_idx;
+
+  assert(suite != NULL);
+
+  previous_function_idx = suite->current_function_idx;
+  previous_dimension_idx = suite->current_dimension_idx;
+  previous_instance_idx = suite->current_instance_idx;
 
   /* Iterate through the suite by instances, then functions and lastly dimensions in search for the next
    * problem. Note that these functions set the values of suite fields current_instance_idx,
@@ -756,12 +768,13 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
         coco_info_partial("done\n");
       else
         coco_info_partial("\n");
-      coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string, suite->dimensions[dimension_idx], suite->functions[function_idx]);
+      coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string,
+      		(unsigned long) suite->dimensions[dimension_idx], (unsigned long) suite->functions[function_idx]);
       coco_free_memory(time_string);
     }
     else if ((long) function_idx != previous_function_idx){
       /* A new function started */
-      coco_info_partial("f%02lu", suite->functions[function_idx]);
+      coco_info_partial("f%02lu", (unsigned long) suite->functions[function_idx]);
     }
     /* One dot for each instance */
     coco_info_partial(".", suite->instances[instance_idx]);
