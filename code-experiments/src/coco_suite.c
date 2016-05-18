@@ -777,7 +777,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
       coco_info_partial("f%02lu", (unsigned long) suite->functions[function_idx]);
     }
     /* One dot for each instance */
-    coco_info_partial(".", suite->instances[instance_idx]);
+    /*coco_info_partial(".", suite->instances[instance_idx]);*/
   }
 
   return problem;
