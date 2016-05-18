@@ -42,14 +42,15 @@ static size_t nb_of_linear_constraints(const size_t function,
   /* Map "function" value into {1, ..., problems_per_obj_function_type} */
   p = (((int)function - 1) % problems_per_obj_function_type) + 1;
   
+  /*
   if (p == 1) return 1;
   else if (p == 2) return 2;
   else if (p == 3) return 10;
   else if (p == 4) return (size_t)floor(dimension/2);
   else if (p == 5) return dimension - 1;
   else return dimension + 1;
-  
-  return 1;
+  */
+  return 2;
 }
 
 /**

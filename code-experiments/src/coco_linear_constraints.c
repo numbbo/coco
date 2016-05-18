@@ -311,8 +311,8 @@ static coco_problem_t *linear_constraints_cons_bbob_problem_allocate(const size_
       * construct a new suite-specific problem_id 
       */
      coco_problem_set_name(problem_c, problem_c->problem_id);
-     coco_problem_set_id(problem_c, "suite_cons_bbob_f%03d_i%02ld_d%02d", 
-        function, instance, dimension);
+     coco_problem_set_id(problem_c, "bbob-constrained_f%02lu_i%02lu_d%02lu", 
+        (unsigned long)function, (unsigned long)instance, (unsigned long)dimension);
 
      /* Construct problem type */
      coco_problem_set_type(problem_c, "%s_%s", problem_type_temp, 
