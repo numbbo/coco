@@ -108,6 +108,10 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     coco_error("coco_suite_get_problem_from_indices(): unknown problem suite");
     return NULL;
   }
+  
+  printf("\ncoco_suite_get_problem_from_indices");
+  printf("\ncoco_suite_get_problem_from_indices");
+  
 
   return problem;
 }
@@ -731,6 +735,10 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   previous_function_idx = suite->current_function_idx;
   previous_dimension_idx = suite->current_dimension_idx;
   previous_instance_idx = suite->current_instance_idx;
+  
+  printf("\ncoco_suite_get_next_problem - teste 1");
+  printf("\ncoco_suite_get_next_problem - teste 1");
+  
 
   /* Iterate through the suite by instances, then functions and lastly dimensions in search for the next
    * problem. Note that these functions set the values of suite fields current_instance_idx,
@@ -741,7 +749,10 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
     coco_info_partial("done\n");
     return NULL;
   }
-
+  printf("\ncoco_suite_get_next_problem - teste 2");
+  printf("\ncoco_suite_get_next_problem - teste 2");
+  
+ 
   if (suite->current_problem) {
     coco_problem_free(suite->current_problem);
   }
@@ -758,6 +769,10 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
   if (observer != NULL)
     problem = coco_problem_add_observer(problem, observer);
   suite->current_problem = problem;
+  
+  printf("\ncoco_suite_get_next_problem - teste 3");
+  printf("\ncoco_suite_get_next_problem - teste 3");
+  
 
   /* Output information regarding the current place in the iteration */
   if (coco_log_level >= COCO_INFO) {
@@ -779,6 +794,9 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
     /* One dot for each instance */
     coco_info_partial(".", suite->instances[instance_idx]);
   }
+  
+  printf("\ncoco_suite_get_next_problem - teste 4");
+  printf("\ncoco_suite_get_next_problem - teste 4");
 
   return problem;
 }

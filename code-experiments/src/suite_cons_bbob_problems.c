@@ -646,7 +646,8 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   coco_free_memory(problem_type_temp);
   coco_free_memory(all_zeros);
   coco_free_memory(feasible_direction);
-  
+  printf("\nteste 13");
+  printf("\nteste 13");
   return problem;
  
 }

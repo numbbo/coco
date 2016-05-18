@@ -126,9 +126,14 @@ static coco_problem_t *suite_cons_bbob_get_problem(coco_suite_t *suite,
 
   problem = coco_get_cons_bbob_problem(function, dimension, instance);
 
+  printf("\nsuite_cons_bbob_get_problem");
+  printf("\nsuite_cons_bbob_get_problem");
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
   problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
 
+  printf("\nsuite_cons_bbob_get_problem - problem encoded");
+  printf("\nsuite_cons_bbob_get_problem - problem encoded");
+  
   return problem;
 }
