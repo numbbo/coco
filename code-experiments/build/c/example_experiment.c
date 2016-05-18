@@ -168,7 +168,7 @@ void example_experiment(const char *suite_name,
   timing_data = timing_data_initialize(suite);
 
   /* Iterate over all problems in the suite */
-  while ((PROBLEM = coco_suite_get_next_problem(suite, NULL)) != NULL) {
+  while ((PROBLEM = coco_suite_get_next_problem(suite, observer)) != NULL) {
     
     size_t dimension = coco_problem_get_dimension(PROBLEM);
 
