@@ -759,8 +759,6 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
     problem = coco_problem_add_observer(problem, observer);
   suite->current_problem = problem;
 
-  printf("\nteste 1");
-  printf("\nteste 1");
   /* Output information regarding the current place in the iteration */
   if (coco_log_level >= COCO_INFO) {
     if (((long) dimension_idx != previous_dimension_idx) || (previous_instance_idx < 0)) {
@@ -779,15 +777,8 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
       coco_info_partial("f%02lu", (unsigned long) suite->functions[function_idx]);
     }
     /* One dot for each instance */
-    printf("\nteste 2");
-    printf("\nteste 2");
-  
-    /*coco_info_partial(".", suite->instances[instance_idx]);*/
+    coco_info_partial(".", suite->instances[instance_idx]);
   }
-  
-  printf("\nteste 3");
-  printf("\nteste 3");
-  
 
   return problem;
 }
