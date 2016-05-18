@@ -10,15 +10,17 @@ Related: the file ``*sub?.zip`` is a submission "tag".
 
 """
 import os
+
+this_dir = 'hal-arxiv'
+build_origin = '../build/latex'  # this script lies in folder arxiv
+
 c = os.system
 wd = os.getcwd
 
-build_origin = '../build/latex'  # this script lies in hal-arxiv
-
 if __name__ == '__main__':
     entry_folder = wd()
-    if not entry_folder.endswith('hal-arxiv'):
-        os.chdir('hal-arxiv')
+    if not entry_folder.endswith(this_dir):
+        os.chdir(this_dir)
     working_folder = wd()
     # we could make a try finally block here
     os.chdir(build_origin)
@@ -29,8 +31,8 @@ if __name__ == '__main__':
             if name is not None:
                 raise ValueError('Cannot decide to take name %s or %s' % (name, file))
             name = file.split('.')[0]
-    c('cp *.tex *.sty *.png %s' % working_folder)
+    c('cp *.tex *.sty *.pdf %s' % working_folder)
     os.chdir(working_folder)
-    c('zip -r %s.zip *.tex *.sty *.png' % name)
+    c('zip -r %s.zip *.tex *.sty *.pdf' % name)
     os.chdir(entry_folder)
 
