@@ -836,7 +836,7 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1,
   if (number_of_constraints > 0) {
      
     /* The best_value must be set up afterwards in suite_cons_bbob_problems.c */
-	 problem->best_value[0] = -10000000000000.0;
+	 problem->best_value[0] = -FLT_MAX;
     
     /* Define problem->initial_solution as problem2->initial_solution
      */
