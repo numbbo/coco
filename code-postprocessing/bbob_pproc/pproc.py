@@ -1780,6 +1780,16 @@ class DataSetList(list):
             dictByFuncGroup = self.dictByFuncGroupBiobjective()
             groups = OrderedDict(sorted((key, key.replace('_', ' ')) for key in dictByFuncGroup.keys()))
             return groups
+        elif testbedsettings.current_testbed.name == 'bbob-constrained':
+            groups = []
+            if any(i.funcId in range(1, 19) for i in self):
+                groups.append(('separ', 'Separable functions'))
+            if any(i.funcId in range(19, 43) for i in self):
+                groups.append(('hcond', 'Ill-conditioned functions'))
+            if any(i.funcId in range(43, 49) for i in self):
+                groups.append(('multi', 'Multi-modal functions'))
+
+            return OrderedDict(groups)
         else:
             groups = []
             if any(i.funcId in range(1, 6) for i in self):

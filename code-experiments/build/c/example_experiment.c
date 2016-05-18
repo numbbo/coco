@@ -18,7 +18,7 @@
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.
  * Increase the budget multiplier value gradually to see how it affects the runtime.
  */
-static const size_t BUDGET_MULTIPLIER = 2;
+static const size_t BUDGET_MULTIPLIER = 20;
 
 /**
  * The maximal number of independent restarts allowed for an algorithm that restarts itself.
@@ -331,14 +331,14 @@ void my_random_search_cons(evaluate_function_t evaluate_func,
     for (j = 0; j < number_of_constraints; ++j)
        cons_violation += fabs(max(0.0, constraints_values[j]));
     
-    if (functions_values[0] < best_fval && cons_violation == 0) {
+    if (functions_values[0] < best_fval && cons_violation == 0.0) {
        best_fval = functions_values[0];
        for (j = 0; j < dimension; ++j) {
 		    best_feasible_solution[j] = x[j];
 		 }
 	 }
 	 
-    if (cons_violation == 0)
+    if (cons_violation == 0.0)
        fval_last_feasible = functions_values[0];
 
   }

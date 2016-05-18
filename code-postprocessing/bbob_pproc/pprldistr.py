@@ -173,7 +173,8 @@ def caption_single():
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_single_fixed.replace('\\fopt', '\\hvref')
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single or \
+         testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_single_rlbased
         else:
@@ -244,7 +245,8 @@ def caption_two():
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_two_fixed.replace('\\fopt', '\\hvref')
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single or \
+         testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_two_rlbased
         else:

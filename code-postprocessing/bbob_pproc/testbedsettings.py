@@ -30,7 +30,7 @@ def load_current_testbed(testbed_name, target_values):
 
 
 def get_benchmarks_short_infos(is_biobjective):
-    return 'biobj-benchmarkshortinfos.txt' if is_biobjective else 'benchmarkshortinfos.txt'
+    return 'biobj-benchmarkshortinfos.txt' if is_biobjective else 'consbenchmarkshortinfos.txt'
 
 
 def get_short_names(file_name):
