@@ -111,13 +111,6 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
   rseed = (long) (function + 10000 * instance);
   bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
-  
-  /* Use the standard stacked problem_id as problem_name and 
-   * construct a new suite-specific problem_id 
-   */
-  coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "suite_cons_bbob_f%03d_i%02ld_d%02d", 
-  function, instance, dimension);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -194,13 +187,6 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   rseed = (long) (function + 10000 * instance);
   bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
-  
-  /* Use the standard stacked problem_id as problem_name and 
-   * construct a new suite-specific problem_id 
-   */
-  coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "suite_cons_bbob_f%03d_i%02ld_d%02d", 
-  function, instance, dimension);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -277,13 +263,6 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
   rseed = (long) (function + 10000 * instance);
   bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
-  
-  /* Use the standard stacked problem_id as problem_name and 
-   * construct a new suite-specific problem_id 
-   */
-  coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "suite_cons_bbob_f%03d_i%02ld_d%02d", 
-  function, instance, dimension);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -358,13 +337,6 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
   rseed = (long) (function + 10000 * instance);
   bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
-  
-  /* Use the standard stacked problem_id as problem_name and 
-   * construct a new suite-specific problem_id 
-   */
-  coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "suite_cons_bbob_f%03d_i%02ld_d%02d", 
-  function, instance, dimension);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -441,13 +413,6 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
   rseed = (long) (function + 10000 * instance);
   bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
-  
-  /* Use the standard stacked problem_id as problem_name and 
-   * construct a new suite-specific problem_id 
-   */
-  coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "suite_cons_bbob_f%03d_i%02ld_d%02d", 
-  function, instance, dimension);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -524,13 +489,6 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   rseed = (long) (function + 10000 * instance);
   bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
-  
-  /* Use the standard stacked problem_id as problem_name and 
-   * construct a new suite-specific problem_id 
-   */
-  coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "suite_cons_bbob_f%03d_i%02ld_d%02d", 
-  function, instance, dimension);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -605,13 +563,6 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   rseed = (long) (function + 10000 * instance);
   bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
-  
-  /* Use the standard stacked problem_id as problem_name and 
-   * construct a new suite-specific problem_id 
-   */
-  coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "suite_cons_bbob_f%03d_i%02ld_d%02d", 
-  function, instance, dimension);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -683,13 +634,6 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   rseed = (long) (function + 10000 * instance);
   bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
-  
-  /* Use the standard stacked problem_id as problem_name and 
-   * construct a new suite-specific problem_id 
-   */
-  coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "suite_cons_bbob_f%03d_i%02ld_d%02d", 
-  function, instance, dimension);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
