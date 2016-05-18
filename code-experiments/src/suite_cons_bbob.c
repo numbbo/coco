@@ -130,6 +130,8 @@ static coco_problem_t *suite_cons_bbob_get_problem(coco_suite_t *suite,
   problem->suite_dep_instance = instance;
   problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
   
+  printf("\nproblem->suite_dep_index = %lu", problem->suite_dep_index);
+  
   /* Use the standard stacked problem_id as problem_name and 
    * construct a new suite-specific problem_id 
    */
