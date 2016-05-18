@@ -12,6 +12,7 @@ testbed_name_largescale = 'bbob-largescale'
 testbed_name_bi = 'bbob-biobj'
 
 default_testbed_single = 'GECCOBBOBTestbed'
+default_testbed_largescale = 'LargeScaleTestbed'
 default_testbed_bi = 'GECCOBiObjBBOBTestbed'
 
 current_testbed = None
@@ -72,6 +73,8 @@ class Testbed(object):
                 except ValueError:
                     continue  # ignore annotations
 
+class SingleObjectiveTestbed(Testbed):
+    pass
 
 class GECCOBBOBTestbed(Testbed):
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
@@ -146,7 +149,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptables_target_runlengths = [2, 10, 50]  # used in config for expensive setting
 
 
-class LargeScaleTestbed(Testbed):
+class LargeScaleTestbed(SingleObjectiveTestbed):
   """First large scale Testbed
     """
   

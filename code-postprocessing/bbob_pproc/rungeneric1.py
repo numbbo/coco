@@ -296,7 +296,9 @@ def main(argv=None):
         
         from . import config
         config.target_values(genericsettings.isExpensive)
-        config.config(dsList[0].testbed_name())
+        #config.config(dsList[0].testbed_name()) #Wassim: why configure only on the lowest dim!!!!!!!
+        config.config(dsList.dictByDim()[max(dsList.dictByDim().keys())][0].testbed_name())
+        # Wassim: now checkes the highest dimension testbed instead of the first for eventual large-scale scenarii
 
         if (genericsettings.verbose):
             for i in dsList:

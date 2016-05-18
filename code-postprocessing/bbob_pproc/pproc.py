@@ -667,6 +667,8 @@ class DataSet():
         if not testbed:
             if self.isBiobjective():
                 testbed = testbedsettings.default_testbed_bi
+            elif self.dim > 40: #Wassim: TODO: the suite should be transmitted in the data files, not this way
+                testbed = testbedsettings.default_testbed_largescale
             else:
                 testbed = testbedsettings.default_testbed_single
 
@@ -872,13 +874,17 @@ class DataSet():
         
         """
 
-        if not testbedsettings.current_testbed:
+        # Wassim: this should be done on the dataSetList level, and here only if it's not yet set
+        if not testbedsettings.current_testbed or \
+              isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed):
             testbedsettings.load_current_testbed(self.testbed_name(), TargetValues)
 
-        if isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed):
+        if isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed) or \
+           isinstance(testbedsettings.current_testbed, testbedsettings.SingleObjectiveTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
             while i > 1 and not self.isBiobjective() and self.evals[i-1][0] <= self.precision:
+                #Wassim: can GECCOBBOBTestbed be biObjective?!
                 i -= 1
             i += 1
             if i < Ndata:
@@ -1507,7 +1513,7 @@ class DataSetList(list):
                 warnings.warn(s)
                 print s
             self.sort()
-
+        self.current_testbed = testbedsettings.current_testbed #Wassim: to be sure
         data_consistent = True
         for ds in self:
             data_consistent = data_consistent and ds.consistency_check()
@@ -1528,7 +1534,7 @@ class DataSetList(list):
             header = ''
             while True:
                 try:
-                    if 'indicator' not in header:
+                    if 'indicator' not in header: #Wassim: not very generic!
                         header = f.next()
                         while not header.strip(): # remove blank lines
                             header = f.next()
@@ -1545,7 +1551,16 @@ class DataSetList(list):
                     data_file_names.append(data)
                     nbLine += 3
                     #TODO: check that something is not wrong with the 3 lines.
-                    ds = DataSet(header, comment, data, indexFile, verbose)                    
+                    ds = DataSet(header, comment, data, indexFile, verbose)
+                    #print
+                    #print "dsList"
+                    #print testbedsettings.current_testbed
+                    #print "dsList"
+                    # Wassim: testbedsettings.current_testbed is now set here
+                    #if not testbedsettings.current_testbed or \
+                    #        isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed):
+                    #   testbedsettings.load_current_testbed(ds.testbed_name(), TargetValues)
+                    #
                     if len(ds.instancenumbers) > 0:                    
                         self.append(ds)
                 except StopIteration:

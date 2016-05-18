@@ -171,9 +171,12 @@ def caption_single():
     caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_wrap_up + caption_right
 
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+        # Wassim: why if/else, isn't the purpose of current_testbed to avoir this!!!
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_single_fixed.replace('\\fopt', '\\hvref')
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single \
+            or isinstance(testbedsettings.current_testbed, testbedsettings.SingleObjectiveTestbed):
+        # Wassim: added a comparison to the SingleObjectiveTestbed
         if genericsettings.runlength_based_targets:
             figure_caption = caption_single_rlbased
         else:
