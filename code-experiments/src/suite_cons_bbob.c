@@ -34,7 +34,7 @@ static coco_suite_t *suite_cons_bbob_initialize(void) {
 static const char *suite_cons_bbob_get_instances_by_year(const int year) {
 
   if (year == 2016) {
-    return "1-15";
+    return "1-10";
   }
   else {
     coco_error("suite_cons_bbob_get_instances_by_year(): year %d not defined for suite_cons_bbob", year);
@@ -84,12 +84,12 @@ static coco_problem_t *coco_get_cons_bbob_problem(const size_t function,
     problem = f_bent_cigar_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
 	  
-  } else if (obj_function_type(function) == 8) {
+  } else if (obj_function_type(function) == 7) {
 	  
     problem = f_different_powers_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
 	  
-  } else if (obj_function_type(function) == 7) {
+  } else if (obj_function_type(function) == 8) {
 	  
     problem = f_rastrigin_c_linear_cons_bbob_problem_allocate(function, 
        dimension, instance, problem_id_template, problem_name_template);
