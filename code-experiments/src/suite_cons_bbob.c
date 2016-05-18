@@ -34,7 +34,7 @@ static coco_suite_t *suite_cons_bbob_initialize(void) {
 static const char *suite_cons_bbob_get_instances_by_year(const int year) {
 
   if (year == 2016) {
-    return "1-12";
+    return "1-14";
   }
   else {
     coco_error("suite_cons_bbob_get_instances_by_year(): year %d not defined for suite_cons_bbob", year);
