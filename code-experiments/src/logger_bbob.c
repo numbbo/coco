@@ -380,18 +380,18 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   logger->last_fvalue = y[0];
 
   if (logger->number_of_evaluations == 1) {
-	 if (!is_feasible) {
-		/* Evaluate the objective function at the initial solution and 
-		 * store its value into the vector "y"
-		 */
+    if (!is_feasible) {
+      /* Evaluate the objective function at the initial solution and 
+       * store its value into the vector "y"
+       */
       coco_evaluate_function(inner_problem, inner_problem->initial_solution, y);
       for (i = 0; i < problem->number_of_variables; i++)
         logger->best_solution[i] = inner_problem->initial_solution[i];
     }
     else {
-		for (i = 0; i < problem->number_of_variables; i++)
+      for (i = 0; i < problem->number_of_variables; i++)
         logger->best_solution[i] = x[i];  
-	 }
+    }
 	 logger->best_fvalue = y[0];
   }
   else if (y[0] < logger->best_fvalue && is_feasible) {
@@ -402,21 +402,19 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
 
   /* Add a line in the .dat file for each logging target reached. */
   if (is_feasible) {
-	  if (coco_observer_targets_trigger(logger->targets, y[0] - logger->optimal_fvalue)) {
-
-       logger_bbob_write_data(logger->fdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
-        logger->optimal_fvalue, x, problem->number_of_variables);
-     }
+    if (coco_observer_targets_trigger(logger->targets, y[0] - logger->optimal_fvalue)) {
+      logger_bbob_write_data(logger->fdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
+          logger->optimal_fvalue, x, problem->number_of_variables);
+    }
   }
   else if (logger->number_of_evaluations == 1){
-      logger_bbob_write_data(logger->fdata_file, logger->number_of_evaluations, logger->best_fvalue, logger->best_fvalue,
+    logger_bbob_write_data(logger->fdata_file, logger->number_of_evaluations, logger->best_fvalue, logger->best_fvalue,
         logger->optimal_fvalue, logger->best_solution, problem->number_of_variables);
   }
 
   /* Add a line in the .tdat file each time an fevals trigger is reached.*/
   if (coco_observer_evaluations_trigger(logger->evaluations, logger->number_of_evaluations)) {
     if (is_feasible) {
-      logger->written_last_eval = 1;
       logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
         logger->optimal_fvalue, x, problem->number_of_variables);
     }
@@ -424,6 +422,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
       logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, logger->best_fvalue, 
         logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, problem->number_of_variables);
     }
+    logger->written_last_eval = 1;
   }
 
   /* Flush output so that impatient users can see progress. */
@@ -464,12 +463,16 @@ static void logger_bbob_free(void *stuff) {
      * instance. Maybe start with forcing it to generate a new
      * "instance" of problem for each restart in the beginning
      */
-    if (!logger->constrained_problem) {
-      if (!logger->written_last_eval) {
-        logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, logger->last_fvalue,
+    if (!logger->written_last_eval) {
+		if (!logger->constrained_problem) {
+		  logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, logger->last_fvalue,
             logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, logger->number_of_variables);
-      }
-    }
+		}
+		else {
+        logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, logger->best_fvalue,
+            logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, logger->number_of_variables);
+      } 
+	 }
     fclose(logger->tdata_file);
     logger->tdata_file = NULL;
   }
