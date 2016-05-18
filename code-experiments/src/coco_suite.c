@@ -776,22 +776,43 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
 
   /* Output information regarding the current place in the iteration */
   if (coco_log_level >= COCO_INFO) {
+    printf("\ncoco_suite_get_next_problem - teste 3.1");
+    printf("\ncoco_suite_get_next_problem - teste 3.1");
+
     if (((long) dimension_idx != previous_dimension_idx) || (previous_instance_idx < 0)) {
+      printf("\ncoco_suite_get_next_problem - teste 3.2");
+      printf("\ncoco_suite_get_next_problem - teste 3.2");
+
       /* A new dimension started */
       char *time_string = coco_current_time_get_string();
+      printf("\ncoco_suite_get_next_problem - teste 3.3");
+      printf("\ncoco_suite_get_next_problem - teste 3.3");
+
       if (dimension_idx > 0)
         coco_info_partial("done\n");
       else
         coco_info_partial("\n");
+      printf("\ncoco_suite_get_next_problem - teste 3.4");
+      printf("\ncoco_suite_get_next_problem - teste 3.4");
+
       coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string,
       		(unsigned long) suite->dimensions[dimension_idx], (unsigned long) suite->functions[function_idx]);
+      printf("\ncoco_suite_get_next_problem - teste 3.5");
+      printf("\ncoco_suite_get_next_problem - teste 3.5");
+
       coco_free_memory(time_string);
     }
     else if ((long) function_idx != previous_function_idx){
       /* A new function started */
+      printf("\ncoco_suite_get_next_problem - teste 3.6");
+      printf("\ncoco_suite_get_next_problem - teste 3.6");
+
       coco_info_partial("f%02lu", (unsigned long) suite->functions[function_idx]);
     }
     /* One dot for each instance */
+    printf("\ncoco_suite_get_next_problem - teste 3.7");
+    printf("\ncoco_suite_get_next_problem - teste 3.7");
+
     coco_info_partial(".", suite->instances[instance_idx]);
   }
   
