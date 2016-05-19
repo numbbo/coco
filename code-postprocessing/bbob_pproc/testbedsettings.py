@@ -11,7 +11,7 @@ testbed_name_single = 'bbob'
 testbed_name_bi = 'bbob-biobj'
 testbed_name_cons = 'bbob-constrained'
 
-default_testbed_single = 'CONSBBOBTestbed'
+default_testbed_single = 'GECCOBBOBTestbed'
 default_testbed_single_noisy = 'GECCOBBOBNoisyTestbed'
 default_testbed_bi = 'GECCOBiObjBBOBTestbed'
 

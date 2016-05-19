@@ -44,7 +44,7 @@ if __name__ == "__main__":
         res = cocopp.rungeneric.main(sys.argv[1:])
         sys.exit(res)
 
-from . import genericsettings, rungeneric1, rungeneric2, rungenericmany, ppfig
+from . import genericsettings, testbedsettings, rungeneric1, rungeneric2, rungenericmany, ppfig
 from .toolsdivers import prepend_to_file, truncate_latex_command_file, print_done
 from .ppfig import Usage
 
@@ -227,6 +227,8 @@ def main(argv=None):
                 inputdir = a
             elif o in ("--no-svg"):
                 genericsettings.generate_svg_files = False
+            elif o in ("--constrained"):
+                testbedsettings.default_testbed_single = 'CONSBBOBTestbed'
             else:
                 isAssigned = False
                 if o in longoptlist or o in shortoptlist:

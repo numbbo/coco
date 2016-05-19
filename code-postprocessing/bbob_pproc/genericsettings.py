@@ -243,7 +243,7 @@ longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "verbose", "settings=", "conv",
                "expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
-               "sca-only", "no-svg"]
+               "sca-only", "no-svg", "constrained"]
 
 
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
