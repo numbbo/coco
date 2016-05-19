@@ -330,6 +330,11 @@ class RunlengthBasedTargetValues(TargetValues):
         dim_fun = tuple(reversed(fun_dim))
         if fun_dim[0] > 100 and self.run_lengths[-1] * fun_dim[1]**self.times_dimension < 1e3:
             ValueError("short running times don't work on noisy functions")
+
+        if not self.reference_data:
+            raise ValueError, 'When running with the runlegth based target values ' \
+                              'the reference data (i.e. best algorithm) must exist.'
+
         ds = self.reference_data[dim_fun]
         if 11 < 3:   
             try:
