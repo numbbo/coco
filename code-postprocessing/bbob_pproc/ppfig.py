@@ -315,11 +315,11 @@ def save_single_functions_html(filename,
             
             f.write(captionStringFormat % '##bbobppfigslegend##')
 
-            write_ECDF(f, 5, extension, captionStringFormat, functionGroups) # Wasssim: why constant values?!!!
-            write_ECDF(f, 20, extension, captionStringFormat, functionGroups)
+            write_ECDF(f, testbedsettings.current_testbed.htmlDimsOfInterest[0], extension, captionStringFormat, functionGroups) # Wasssim: why constant values?!!!
+            write_ECDF(f, testbedsettings.current_testbed.htmlDimsOfInterest[1], extension, captionStringFormat, functionGroups)
                 
-            write_pptables(f, 5, captionStringFormat, first_function_number, last_function_number, bestAlgExists)
-            write_pptables(f, 20, captionStringFormat, first_function_number, last_function_number, bestAlgExists)
+            write_pptables(f, testbedsettings.current_testbed.htmlDimsOfInterest[0], captionStringFormat, first_function_number, last_function_number, bestAlgExists)
+            write_pptables(f, testbedsettings.current_testbed.htmlDimsOfInterest[1], captionStringFormat, first_function_number, last_function_number, bestAlgExists)
 
         elif htmlPage is HtmlPage.NON_SPECIFIED:
             currentHeader = header
