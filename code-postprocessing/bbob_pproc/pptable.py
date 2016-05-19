@@ -171,7 +171,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             entry = dictFunc[f][0] # take the first element
             ertdata = entry.detERT(targetsOfInterest((f, d)))
     
-            if bestalgentries:            
+            if bestalgentries:
                 bestalgentry = bestalgentries[(d, f)]
                 bestalgdata = bestalgentry.detERT(targetsOfInterest((f,d)))
                 bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest((f,d)))
