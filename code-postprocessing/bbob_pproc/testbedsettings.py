@@ -100,7 +100,6 @@ class SingleObjectiveTestbed(Testbed):
     self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
     self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
     self.scenario = scenario_fixed
-    self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
     self.short_names = get_short_names(get_benchmarks_short_infos(False))
     # expensive optimization settings:
     self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
@@ -121,6 +120,7 @@ class GECCOBBOBTestbed(SingleObjectiveTestbed): #Wassim: now inherits from Singl
         self.tabDimsOfInterest = [5, 20]
         self.rldDimsOfInterest = [5, 20]
         self.htmlDimsOfInterest = [5, 20]
+        self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
@@ -132,10 +132,15 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
 
         # Until we clean the code which uses this name we need to use it also here.
         self.first_dimension = 2
+        self.dimensions_to_display = [2, 3, 5, 10, 20, 40]
+        self.tabDimsOfInterest = [5, 20]
+        self.rldDimsOfInterest = [5, 20]
+        self.htmlDimsOfInterest = [5, 20]
         self.name = testbed_name_single
         self.functions_with_legend = (101, 130)
         self.first_function_number = 101
         self.last_function_number = 130
+        self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
 
 class LargeScaleTestbed(SingleObjectiveTestbed):
   """First large scale Testbed
@@ -149,6 +154,7 @@ class LargeScaleTestbed(SingleObjectiveTestbed):
     self.tabDimsOfInterest = [80, 320]
     self.rldDimsOfInterest = [80, 320]
     self.htmlDimsOfInterest = [80, 320]
+    self.best_algorithm_filename = '' #Wassim: TODO: upadate pptable.py caption to no longer mention bestAlg (for now)
 
 
 class GECCOBiObjBBOBTestbed(Testbed):

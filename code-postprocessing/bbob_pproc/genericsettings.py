@@ -23,14 +23,16 @@ force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000  # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
-dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
-dimensions_to_display_ls = (20, 40, 80, 160, 320, 640) # Wassim: large scale suite
+#dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
+# Wassim: dimensions_to_display is now part of current_testbed
+#dimensions_to_display_ls = (20, 40, 80, 160, 320, 640) # Wassim: large scale suite
 generate_svg_files = True  # generate the svg figures
 scaling_figures_with_boxes = True
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
 # Variables used in the routines defining desired output for BBOB.
-tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
+#tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
+# Wassim: tabDimsOfInterest is now part of current_testbed
 #tabDimsOfInterest = [40, 160]  # Wassim: large scale TODO: use it by generating new large-scale reference data
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
