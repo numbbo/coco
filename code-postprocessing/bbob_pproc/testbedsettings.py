@@ -92,6 +92,8 @@ class SingleObjectiveTestbed(Testbed):
     self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)  # possibly changed in config
     self.ppfvdistr_min_target = 1e-8
     self.functions_with_legend = (1, 24, 101, 130)
+    self.first_function_number = 1
+    self.last_function_number = 24
     self.number_of_functions = 24
     self.pptable_ftarget = 1e-8  # value for determining the success ratio in all tables
     self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))  # for pptable and pptables
@@ -112,6 +114,7 @@ class GECCOBBOBTestbed(SingleObjectiveTestbed): #Wassim: now inherits from Singl
 
     def __init__(self, targetValues):
         super(GECCOBBOBTestbed, self).__init__(targetValues)
+        self.first_dimension = 2
         self.dimensions_to_display = [2, 3, 5, 10, 20, 40]
         self.tabDimsOfInterest = [5, 20]
         self.rldDimsOfInterest = [5, 20]
@@ -126,10 +129,24 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
         super(GECCOBBOBNoisyTestbed, self).__init__(target_values)
 
         # Until we clean the code which uses this name we need to use it also here.
+        self.first_dimension = 2
         self.name = testbed_name_single
         self.functions_with_legend = (101, 130)
         self.first_function_number = 101
         self.last_function_number = 130
+
+class LargeScaleTestbed(SingleObjectiveTestbed):
+  """First large scale Testbed
+    """
+  
+  def __init__(self, targetValues):
+    super(LargeScaleTestbed, self).__init__(targetValues)
+    self.first_dimension = 2
+    # Wassim: added the following
+    self.dimensions_to_display = [20, 40, 80, 160, 320, 640]
+    self.tabDimsOfInterest = [80, 320]
+    self.rldDimsOfInterest = [80, 320]
+    self.htmlDimsOfInterest = [80, 320]
 
 
 class GECCOBiObjBBOBTestbed(Testbed):
@@ -171,18 +188,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptables_target_runlengths = [2, 10, 50]  # used in config for expensive setting
 
 
-class LargeScaleTestbed(SingleObjectiveTestbed):
-  """First large scale Testbed
-    """
-  
-  def __init__(self, targetValues):
-    super(LargeScaleTestbed, self).__init__(targetValues)
 
-    # Wassim: added the following
-    self.dimensions_to_display = [20, 40, 80, 160, 320, 640]
-    self.tabDimsOfInterest = [80, 320]
-    self.rldDimsOfInterest = [80, 320]
-    self.htmlDimsOfInterest = [80, 320]
 
 
 
