@@ -12,6 +12,7 @@ testbed_name_bi = 'bbob-biobj'
 testbed_name_cons = 'bbob-constrained'
 
 default_testbed_single = 'CONSBBOBTestbed'
+default_testbed_single_noisy = 'GECCOBBOBNoisyTestbed'
 default_testbed_bi = 'GECCOBiObjBBOBTestbed'
 
 current_testbed = None
@@ -94,7 +95,8 @@ class GECCOBBOBTestbed(Testbed):
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)  # possibly changed in config
         self.ppfvdistr_min_target = 1e-8
         self.functions_with_legend = (1, 24, 101, 130)
-        self.number_of_functions = 24
+        self.first_function_number = 1
+        self.last_function_number = 24
         self.pptable_ftarget = 1e-8  # value for determining the success ratio in all tables
         self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))  # for pptable and pptables
         self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
@@ -128,7 +130,8 @@ class CONSBBOBTestbed(Testbed):
         self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)  # possibly changed in config
         self.ppfvdistr_min_target = 1e-8
         self.functions_with_legend = (1, 24, 101, 130)
-        self.number_of_functions = 48
+        self.first_function_number = 1
+        self.last_function_number = 48
         self.pptable_ftarget = 1e-8  # value for determining the success ratio in all tables
         self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))  # for pptable and pptables
         self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
@@ -140,6 +143,20 @@ class CONSBBOBTestbed(Testbed):
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptable2_target_runlengths = self.pptable_target_runlengths  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptables_target_runlengths = self.pptable_target_runlengths  # used in config for expensive setting
+
+
+class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
+    """The noisy testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
+    """
+
+    def __init__(self, target_values):
+        super(GECCOBBOBNoisyTestbed, self).__init__(target_values)
+
+        # Until we clean the code which uses this name we need to use it also here.
+        self.name = testbed_name_single
+        self.functions_with_legend = (101, 130)
+        self.first_function_number = 101
+        self.last_function_number = 130
 
 
 class GECCOBiObjBBOBTestbed(Testbed):
@@ -165,7 +182,8 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5)  # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)
-        self.number_of_functions = 55
+        self.first_function_number = 1
+        self.last_function_number = 55
         self.pptable_ftarget = 1e-5  # value for determining the success ratio in all tables
         self.pptable_targetsOfInterest = targetValues(
             (1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # possibly changed in config for all tables

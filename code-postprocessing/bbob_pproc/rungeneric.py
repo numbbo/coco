@@ -279,7 +279,8 @@ def main(argv=None):
                           'bbob_pproc_commands.tex'), 'a').close() 
 
         ppfig.save_index_html_file(os.path.join(outputdir, genericsettings.index_html_file_name))
-
+        # ppdata file is now deprecated.
+        ppfig.save_index_html_file(os.path.join(outputdir, 'ppdata'))
         print_done()
 
     #TODO prevent loading the data every time...

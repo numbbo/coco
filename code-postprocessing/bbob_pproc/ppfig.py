@@ -79,6 +79,7 @@ html_header = """<HTML>
 %s
 """
 
+
 def next_dimension_str(s):
     try:
         dim = int(s.strip().strip('_').rstrip('D'))
@@ -99,13 +100,15 @@ def next_dimension(dim):
         return 2
     return 2 * dim
 
+
 def addImage(imageName, addLink):
     if (addLink):
         return '<a href="file:%s"><IMG SRC="%s"></a>' % (2 * (imageName,))
     else:
         return '<IMG SRC="%s">' % imageName
 
-def addLink(currentDir, folder, fileName, label, indent = '', ignoreFileExists = False):
+
+def add_link(currentDir, folder, fileName, label, indent ='', ignoreFileExists = False):
 
     if folder:    
         path = os.path.join(os.path.realpath(currentDir), folder, fileName)
@@ -119,10 +122,18 @@ def addLink(currentDir, folder, fileName, label, indent = '', ignoreFileExists =
 
     return ''
 
+
 def save_index_html_file(filename):
 
     with open(filename + '.html', 'w') as f:
-        f.write(html_header % ('Post processing results', 'Post processing results', ''))
+        text = ''
+        index_file = genericsettings.index_html_file_name
+        if index_file not in filename:
+            text = 'This page is deprecated. The new main page is ' \
+                   '<a href="%s.html"">%s.html</a>. The links will be correctly updated ' \
+                   'once the post-processing for the algorithms is rerun.' % (index_file, index_file)
+
+        f.write(html_header % ('Post processing results', 'Post processing results', text))
             
         f.write('<H2>Single algorithm data</H2>\n')
 
@@ -131,16 +142,17 @@ def save_index_html_file(filename):
         singleAlgFile = 'templateBBOBarticle.html'
         for root, _dirs, files in os.walk(currentDir):
             for elem in _dirs:
-                f.write(addLink(currentDir, elem, singleAlgFile, elem, indent))
+                f.write(add_link(currentDir, elem, singleAlgFile, elem, indent))
         
         comparisonLinks = ''    
-        comparisonLinks += addLink(currentDir, None, 'templateBBOBcmp.html', 'Two algorithm comparison', indent)
-        comparisonLinks += addLink(currentDir, None, 'templateBBOBmany.html', 'Many algorithm comparison', indent)
+        comparisonLinks += add_link(currentDir, None, 'templateBBOBcmp.html', 'Two algorithm comparison', indent)
+        comparisonLinks += add_link(currentDir, None, 'templateBBOBmany.html', 'Many algorithm comparison', indent)
         if comparisonLinks:
             f.write('<H2>Comparison data</H2>\n')
             f.write(comparisonLinks)
 
         f.write("\n</BODY>\n</HTML>")
+
 
 def getHomeLink(htmlPage):
     homeLink = '<H3><a href="%s%s.html">Home</a></H3>'    
@@ -153,7 +165,7 @@ def getHomeLink(htmlPage):
 
 def getConvLink(htmlPage, currentDir):
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        return addLink(currentDir, None, genericsettings.ppconv_file_name + '.html',
+        return add_link(currentDir, None, genericsettings.ppconv_file_name + '.html',
                        'Convergence plots', ignoreFileExists=genericsettings.isConv)
     
     return ''
@@ -167,18 +179,18 @@ def getRldLink(htmlPage, currentDir, isBiobjective):
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         if htmlPage == HtmlPage.ONE:
             fileName = '%s.html' % genericsettings.pprldmany_file_name
-            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots',
-                             ignoreFileExists=ignoreFileExists)
+            links += add_link(currentDir, folder, fileName, 'Runtime distribution plots',
+                              ignoreFileExists=ignoreFileExists)
 
         if htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or not isBiobjective:
             fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
-            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
-                             ignoreFileExists=ignoreFileExists)
+            links += add_link(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
+                              ignoreFileExists=ignoreFileExists)
 
         if htmlPage == HtmlPage.ONE:
             fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
-            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
-                             ignoreFileExists=ignoreFileExists)
+            links += add_link(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
+                              ignoreFileExists=ignoreFileExists)
 
     return links
 
@@ -213,11 +225,13 @@ def save_single_functions_html(filename,
             
         if functionGroups is None:
             functionGroups = OrderedDict([])
-        
-        if not htmlPage == HtmlPage.PPRLDMANY_BY_GROUP:
-            functionGroups.update({'noiselessall':'All functions'})
 
-        maxFunctionIndex = testbedsettings.current_testbed.number_of_functions
+        function_group = "nzall" if genericsettings.isNoisy else "noiselessall"
+        if not htmlPage == HtmlPage.PPRLDMANY_BY_GROUP:
+            functionGroups.update({function_group:'All functions'})
+
+        first_function_number = testbedsettings.current_testbed.first_function_number
+        last_function_number = testbedsettings.current_testbed.last_function_number
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
         addLinkForNextDim = add_to_names.endswith('D')
         bestAlgExists = not isBiobjective
@@ -231,12 +245,12 @@ def save_single_functions_html(filename,
 
             headerECDF = ' Runtime distributions (ECDF) over all targets'
             f.write("<H2> %s </H2>\n" % headerECDF)
-            f.write(addImage('pprldmany.%s' % (extension), True))            
+            f.write(addImage('pprldmany-single-functions/pprldmany.%s' % (extension), True))
 
         elif htmlPage is HtmlPage.TWO:
             currentHeader = 'Scaling of aRT with dimension'
             f.write("\n<H2> %s </H2>\n" % currentHeader)
-            for ifun in range(1, maxFunctionIndex + 1):
+            for ifun in range(first_function_number, last_function_number + 1):
                 f.write(addImage('ppfigs_f%03d%s.%s' % (ifun, add_to_names, extension), True))
             f.write(captionStringFormat % '##bbobppfigslegend##')
         
@@ -245,7 +259,7 @@ def save_single_functions_html(filename,
             if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
                 f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
-            for ifun in range(1, maxFunctionIndex + 1):
+            for ifun in range(first_function_number, last_function_number + 1):
                 f.write(addImage('ppscatter_f%03d%s.%s' % (ifun, add_to_names, extension), not addLinkForNextDim))
             if addLinkForNextDim:
                 f.write('"\n</A>\n')
@@ -283,7 +297,7 @@ def save_single_functions_html(filename,
             if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
                 f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
-            for ifun in range(1, maxFunctionIndex + 1):
+            for ifun in range(first_function_number, last_function_number + 1):
                 f.write(addImage('ppfigs_f%03d%s.%s' % (ifun, add_to_names, extension), not addLinkForNextDim))
             if addLinkForNextDim:
                 f.write('"\n</A>\n')
@@ -293,8 +307,8 @@ def save_single_functions_html(filename,
             write_ECDF(f, 5, extension, captionStringFormat, functionGroups)
             write_ECDF(f, 20, extension, captionStringFormat, functionGroups)
                 
-            write_pptables(f, 5, captionStringFormat, maxFunctionIndex, bestAlgExists)
-            write_pptables(f, 20, captionStringFormat, maxFunctionIndex, bestAlgExists)
+            write_pptables(f, 5, captionStringFormat, first_function_number, last_function_number, bestAlgExists)
+            write_pptables(f, 20, captionStringFormat, first_function_number, last_function_number, bestAlgExists)
 
         elif htmlPage is HtmlPage.NON_SPECIFIED:
             currentHeader = header
@@ -302,7 +316,7 @@ def save_single_functions_html(filename,
             if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
                 f.write('<A HREF="%s">\n' % (name + name_for_click  + '.html'))
-            for ifun in range(1, maxFunctionIndex + 1):
+            for ifun in range(first_function_number, last_function_number + 1):
                 f.write(addImage('%s_f%03d%s.%s' % (name, ifun, add_to_names, extension), not addLinkForNextDim))
             if addLinkForNextDim:
                 f.write('"\n</A>\n')
@@ -347,7 +361,7 @@ def save_single_functions_html(filename,
                 currentHeader = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % currentHeader)
                 for dimension in dimensions:
-                    f.write(addImage('pplogloss_%02dD_noiselessall.%s' % (dimension, extension), True))
+                    f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, function_group, extension), True))
                 f.write("\n<!--tables-->\n")
                 scenario = testbedsettings.current_testbed.scenario
                 f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption' + scenario + '##'))
@@ -380,7 +394,8 @@ def write_ECDF(f, dimension, extension, captionStringFormat, functionGroups):
     
     f.write(captionStringFormat % ('\n##bbobECDFslegend%d##' % dimension))
 
-def write_pptables(f, dimension, captionStringFormat, maxFunctionIndex, bestAlgExists):
+
+def write_pptables(f, dimension, captionStringFormat, first_function_number, last_function_number, bestAlgExists):
     """Writes line for pptables images."""
 
     additionalText = 'divided by the best aRT measured during BBOB-2009' if bestAlgExists else ''
@@ -388,12 +403,13 @@ def write_pptables(f, dimension, captionStringFormat, maxFunctionIndex, bestAlgE
                 'for dimension %d' % (additionalText, dimension)
     
     f.write("\n<H2> %s </H2>\n" % currentHeader)
-    for ifun in range(1, maxFunctionIndex + 1):
+    for ifun in range(first_function_number, last_function_number + 1):
         f.write("\n<!--pptablesf%03d%02dDHtml-->\n" % (ifun, dimension))
     
     if genericsettings.isTab:
         key = 'bbobpptablesmanylegend' + testbedsettings.current_testbed.scenario
         f.write(captionStringFormat % htmldesc.getValue('##' + key + str(dimension) + '##'))
+
 
 def copy_js_files(outputdir):
     """Copies js files to output directory."""
@@ -402,6 +418,7 @@ def copy_js_files(outputdir):
     for file in os.listdir(js_folder):
         if file.endswith(".js"):
             shutil.copy(os.path.join(js_folder, file), outputdir)  
+
 
 
 def discretize_limits(limits, smaller_steps_limit=3.1):
