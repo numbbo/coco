@@ -126,7 +126,14 @@ def addLink(currentDir, folder, fileName, label, indent = '', ignoreFileExists =
 def save_index_html_file(filename):
 
     with open(filename + '.html', 'w') as f:
-        f.write(html_header % ('Post processing results', 'Post processing results', ''))
+        text = ''
+        index_file = genericsettings.index_html_file_name
+        if index_file not in filename:
+            text = 'This page is deprecated. The new main page is ' \
+                   '<a href="%s.html"">%s.html</a>. The links will be correctly updated ' \
+                   'once the post-processing for the algorithms is rerun.' % (index_file, index_file)
+
+        f.write(html_header % ('Post processing results', 'Post processing results', text))
             
         f.write('<H2>Single algorithm data</H2>\n')
 
@@ -144,17 +151,6 @@ def save_index_html_file(filename):
             f.write('<H2>Comparison data</H2>\n')
             f.write(comparisonLinks)
 
-        f.write("\n</BODY>\n</HTML>")
-
-
-def save_deprecated_html_file(filename):
-
-    with open(filename + '.html', 'w') as f:
-        index_file = genericsettings.index_html_file_name
-        text = 'This page is deprecated. The new main page is ' \
-               '<a href="%s.html"">%s.html</a>. The links will be correctly updated ' \
-               'once the post-processing for the algorithms is rerun.' % (index_file, index_file)
-        f.write(html_header % ('', '', text))
         f.write("\n</BODY>\n</HTML>")
 
 
