@@ -108,7 +108,7 @@ def addImage(imageName, addLink):
         return '<IMG SRC="%s">' % imageName
 
 
-def addLink(currentDir, folder, fileName, label, indent = '', ignoreFileExists = False):
+def add_link(currentDir, folder, fileName, label, indent ='', ignoreFileExists = False):
 
     if folder:    
         path = os.path.join(os.path.realpath(currentDir), folder, fileName)
@@ -142,11 +142,11 @@ def save_index_html_file(filename):
         singleAlgFile = 'templateBBOBarticle.html'
         for root, _dirs, files in os.walk(currentDir):
             for elem in _dirs:
-                f.write(addLink(currentDir, elem, singleAlgFile, elem, indent))
+                f.write(add_link(currentDir, elem, singleAlgFile, elem, indent))
         
         comparisonLinks = ''    
-        comparisonLinks += addLink(currentDir, None, 'templateBBOBcmp.html', 'Two algorithm comparison', indent)
-        comparisonLinks += addLink(currentDir, None, 'templateBBOBmany.html', 'Many algorithm comparison', indent)
+        comparisonLinks += add_link(currentDir, None, 'templateBBOBcmp.html', 'Two algorithm comparison', indent)
+        comparisonLinks += add_link(currentDir, None, 'templateBBOBmany.html', 'Many algorithm comparison', indent)
         if comparisonLinks:
             f.write('<H2>Comparison data</H2>\n')
             f.write(comparisonLinks)
@@ -165,7 +165,7 @@ def getHomeLink(htmlPage):
 
 def getConvLink(htmlPage, currentDir):
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        return addLink(currentDir, None, genericsettings.ppconv_file_name + '.html',
+        return add_link(currentDir, None, genericsettings.ppconv_file_name + '.html',
                        'Convergence plots', ignoreFileExists=genericsettings.isConv)
     
     return ''
@@ -179,18 +179,18 @@ def getRldLink(htmlPage, currentDir, isBiobjective):
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         if htmlPage == HtmlPage.ONE:
             fileName = '%s.html' % genericsettings.pprldmany_file_name
-            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots',
-                             ignoreFileExists=ignoreFileExists)
+            links += add_link(currentDir, folder, fileName, 'Runtime distribution plots',
+                              ignoreFileExists=ignoreFileExists)
 
         if htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or not isBiobjective:
             fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
-            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
-                             ignoreFileExists=ignoreFileExists)
+            links += add_link(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
+                              ignoreFileExists=ignoreFileExists)
 
         if htmlPage == HtmlPage.ONE:
             fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
-            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
-                             ignoreFileExists=ignoreFileExists)
+            links += add_link(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
+                              ignoreFileExists=ignoreFileExists)
 
     return links
 
@@ -245,7 +245,7 @@ def save_single_functions_html(filename,
 
             headerECDF = ' Runtime distributions (ECDF) over all targets'
             f.write("<H2> %s </H2>\n" % headerECDF)
-            f.write(addImage('pprldmany.%s' % (extension), True))            
+            f.write(addImage('pprldmany-single-functions/pprldmany.%s' % (extension), True))
 
         elif htmlPage is HtmlPage.TWO:
             currentHeader = 'Scaling of aRT with dimension'
