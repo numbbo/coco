@@ -253,7 +253,8 @@ def save_single_functions_html(filename,
 
             headerECDF = ' Runtime distributions (ECDF) over all targets'
             f.write("<H2> %s </H2>\n" % headerECDF)
-            f.write(addImage('pprldmany.%s' % (extension), True))            
+            f.write(addImage('pprldmany-single-functions/pprldmany.%s' % (extension), True))
+            # Wassim: added the folder name pprldmany-single-functions
 
         elif htmlPage is HtmlPage.TWO:
             currentHeader = 'Scaling of aRT with dimension'
