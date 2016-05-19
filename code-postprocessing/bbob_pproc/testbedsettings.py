@@ -109,6 +109,11 @@ class SingleObjectiveTestbed(Testbed):
     self.first_dimension = -1 # TODO: raise warning when not set by child class
 
 
+class StandardDimensionsTestbed(Testbed): #Wassim: TODO: use it for the non large scale suites that have the same dims
+  def __init__(self, targetValues):
+    pass
+
+
 class GECCOBBOBTestbed(SingleObjectiveTestbed): #Wassim: now inherits from SingleObjectiveTestbed
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
     """
