@@ -367,8 +367,9 @@ def save_single_functions_html(filename,
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
-            dimensions = [5, 20]
-            if not isBiobjective:            
+            # dimensions = [5, 20] # Wassim: should not be constant
+            dimensions = testbedsettings.current_testbed.htmlDimsOfInterest
+            if testbedsettings.current_testbed.best_algorithm_filename: #isBiobjective:  # Wassim: TODO: should depend on what bestalgorithmdata loads, not isBiobjctive, now checks whether a file is provided
                 currentHeader = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % currentHeader)
                 for dimension in dimensions:
