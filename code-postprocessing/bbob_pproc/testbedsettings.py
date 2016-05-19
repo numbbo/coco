@@ -13,6 +13,7 @@ testbed_name_bi = 'bbob-biobj'
 
 default_testbed_single = 'GECCOBBOBTestbed'
 default_testbed_largescale = 'LargeScaleTestbed'
+default_testbed_single_noisy = 'GECCOBBOBNoisyTestbed'
 default_testbed_bi = 'GECCOBiObjBBOBTestbed'
 
 current_testbed = None
@@ -117,6 +118,20 @@ class GECCOBBOBTestbed(SingleObjectiveTestbed): #Wassim: now inherits from Singl
         self.htmlDimsOfInterest = [5, 20]
 
 
+class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
+    """The noisy testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
+    """
+
+    def __init__(self, target_values):
+        super(GECCOBBOBNoisyTestbed, self).__init__(target_values)
+
+        # Until we clean the code which uses this name we need to use it also here.
+        self.name = testbed_name_single
+        self.functions_with_legend = (101, 130)
+        self.first_function_number = 101
+        self.last_function_number = 130
+
+
 class GECCOBiObjBBOBTestbed(Testbed):
     """Testbed used in the GECCO biobjective BBOB workshop 2016.
     """
@@ -140,7 +155,8 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5)  # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)
-        self.number_of_functions = 55
+        self.first_function_number = 1
+        self.last_function_number = 55
         self.pptable_ftarget = 1e-5  # value for determining the success ratio in all tables
         self.pptable_targetsOfInterest = targetValues(
             (1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # possibly changed in config for all tables
