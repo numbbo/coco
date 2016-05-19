@@ -263,7 +263,6 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
     # TODO: method is long, terrible to read, split if possible
 
     bestalgentries = bestalg.load_best_algorithm()
-    
     testbed = testbedsettings.current_testbed
 
     # Sort data per dimension and function

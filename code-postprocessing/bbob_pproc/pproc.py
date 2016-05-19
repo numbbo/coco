@@ -663,7 +663,10 @@ class DataSet():
         testbed = None
         if hasattr(self, 'suite'):
             testbed = getattr(self, 'suite')
-
+        if  isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed):
+            # Wassim: prevents from sitching back to GECCOBBOBTestbed once we are in large-scale
+            # Wassim: TODO: not perfect, should be done in a better way, by simply keeping a single instace of current_testbed
+            testbed = testbedsettings.default_testbed_largescale
         if not testbed:
             if self.isBiobjective():
                 testbed = testbedsettings.default_testbed_bi
