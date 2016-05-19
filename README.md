@@ -55,6 +55,7 @@ _Additional_ requirements for running an algorithm in a specific language.
   The package contains 32-bit and 64-bit compilers and the Windows SDK headers.
 * **Pyhon on Linux**: `python-dev` must be installed to compile/install the `cocoex` module.
 * **Octave**: Octave 4.0.0 or later. On operating systems other than Windows, earlier versions might work.
+  Under Linux the package `liboctave-dev` might be necessary. 
 
 ### Guaranties (None)
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
@@ -343,7 +344,26 @@ processes if there is any) before to run the `do.py` command again.
 
 
 ### Octave
-none for the moment
+
+#### `octave-dev` under Linux
+When running 
+```
+  python do.py run-octave
+```
+or 
+```
+  python do.py build-octave
+```
+and seeing something like
+```
+   [...]
+   compiling cocoCall.c...error: mkoctfile: please install the Debian package "liboctave-dev" to get the mkoctfile command
+```
+then, unsurprisingly, installing `liboctave-dev` like
+```
+  sudo apt-get install liboctave-dev
+```
+should do the job. 
 
 
 ### Python

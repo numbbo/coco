@@ -64,14 +64,17 @@ def main(latex_commands_for_html):
 
     f.write(header)
 
+    single_objective_testbed = testbedsettings.default_testbed_single_noisy if genericsettings.isNoisy \
+        else testbedsettings.default_testbed_single
+
     for scenario in testbedsettings.all_scenarios:
         # set up scenario, especially wrt genericsettings
         if scenario == testbedsettings.scenario_rlbased:
             genericsettings.runlength_based_targets = True
-            config.config(testbedsettings.default_testbed_single)
+            config.config(single_objective_testbed)
         elif scenario == testbedsettings.scenario_fixed:
             genericsettings.runlength_based_targets = False
-            config.config(testbedsettings.default_testbed_single)
+            config.config(single_objective_testbed)
         elif scenario == testbedsettings.scenario_biobjfixed:
             genericsettings.runlength_based_targets = False
             config.config(testbedsettings.default_testbed_bi)
@@ -127,10 +130,11 @@ def main(latex_commands_for_html):
                                                                                'the previous figure')))
 
         # prepare tags for later HTML preparation
+        testbed = testbedsettings.current_testbed
         # 1. ppfigs
         for dim in ['5', '20']:
             f.write(prepare_item('bbobECDFslegend' + scenario + dim, 'bbobECDFslegend' + scenario, str(dim)))
-        param = '$f_1$ and $f_{%d}$' % testbedsettings.current_testbed.number_of_functions
+        param = '$f_{%d}$ and $f_{%d}$' % (testbed.first_function_number, testbed.last_function_number)
         f.write(prepare_item('bbobppfigslegend' + scenario, param=param))
 
         # 2. pprldistr
@@ -146,11 +150,11 @@ def main(latex_commands_for_html):
         # 6. pptables
         command_name = 'bbobpptablesmanylegend' + scenario
         for dim in ['5', '20']:
-            bonferroni = str(2 * testbedsettings.current_testbed.number_of_functions)
+            bonferroni = str(2 * (testbed.last_function_number - testbed.first_function_number + 1))
             f.write(prepare_item_two(command_name + dim, command_name, 'dimension ' + dim, bonferroni))
 
         # 7. ppscatter
-        param = '$f_1$ - $f_{%d}$' % testbedsettings.current_testbed.number_of_functions
+        param = '$f_{%d}$ - $f_{%d}$' % (testbed.first_function_number, testbed.last_function_number)
         f.write(prepare_item('bbobppscatterlegend' + scenario, param=param))
 
         # 8. pplogloss

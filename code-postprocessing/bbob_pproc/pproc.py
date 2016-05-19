@@ -669,6 +669,8 @@ class DataSet():
                 testbed = testbedsettings.default_testbed_bi
             elif self.dim > 40: #Wassim: TODO: the suite should be transmitted in the data files, not this way
                 testbed = testbedsettings.default_testbed_largescale
+            elif genericsettings.isNoisy:
+                testbed = testbedsettings.default_testbed_single_noisy
             else:
                 testbed = testbedsettings.default_testbed_single
 
