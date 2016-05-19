@@ -27,7 +27,6 @@ def load_current_testbed(testbed_name, target_values):
         current_testbed = constructor(target_values)
     else:
         raise ValueError('Testbed class %s does not exist. Add it to testbedsettings.py to process this data.' % testbed_name)
-
     return current_testbed
 
 

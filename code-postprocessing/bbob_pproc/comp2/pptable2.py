@@ -107,7 +107,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         info = '_' + info
 
     bestalgentries = bestalg.load_best_algorithm()
-    
+
     header = []
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
         header = [r'\#FEs/D']
