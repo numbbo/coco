@@ -266,7 +266,8 @@ def main(argv=None):
             if genericsettings.isNoiseFree and not genericsettings.isNoisy:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
 
-        _dimensions_to_display = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls # Wassim: modify genericsettings.dimensions_to_display directly?
+        #_dimensions_to_display = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls # Wassim: modify genericsettings.dimensions_to_display directly?
+        _dimensions_to_display = testbedsettings.current_testbed.dimensions_to_display
         for i in dsList:
             #if i.dim not in genericsettings.dimensions_to_display:
             if i.dim not in _dimensions_to_display:
