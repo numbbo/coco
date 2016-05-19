@@ -34,7 +34,7 @@ static coco_suite_t *suite_cons_bbob_initialize(void) {
 static const char *suite_cons_bbob_get_instances_by_year(const int year) {
 
   if (year == 2016) {
-    return "1-10";
+    return "1-15";
   }
   else {
     coco_error("suite_cons_bbob_get_instances_by_year(): year %d not defined for suite_cons_bbob", year);
@@ -49,56 +49,90 @@ static coco_problem_t *coco_get_cons_bbob_problem(const size_t function,
                                                   const size_t dimension,
                                                   const size_t instance) {
   
+  size_t number_of_linear_constraints; 
   coco_problem_t *problem = NULL;
   
-  const char *problem_id_template = "cons_bbob_f%03lu_i%02lu_d%02lu";
-  const char *problem_name_template = "cons_BBOB suite problem f%lu instance %lu in %luD";
+  double *feasible_direction = coco_allocate_vector(dimension);  
+  const double *xshift = coco_allocate_vector(dimension);  
   
-  if (obj_function_type(function) >= 1 && obj_function_type(function) <= 8) {
+  const char *problem_id_template = "bbob-constrained_f%03lu_i%02lu_d%02lu";
+  const char *problem_name_template = "BBOB-constrained suite problem f%lu instance %lu in %luD";
+  
+  /* Seed value used for shifting the whole constrained problem */
+  long rseed = (long) (function + 10000 * instance);
+  bbob2009_compute_xopt(xshift, rseed, dimension);
+  
+  /* Choose a different seed value for building the objective function */
+  rseed = (long) (function + 20000 * instance);
+  
+  number_of_linear_constraints = nb_of_linear_constraints(function, dimension);
+  
+  if (obj_function_type(function) == 1) {
 	  
     problem = f_sphere_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, problem_id_template, problem_name_template);
+       dimension, instance, number_of_linear_constraints, rseed,
+       feasible_direction, xshift, problem_id_template, 
+       problem_name_template);
 	 
-  } else if (obj_function_type(function) == 20) {
+  } else if (obj_function_type(function) == 2) {
 	  
     problem = f_ellipsoid_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, problem_id_template, problem_name_template);
+       dimension, instance, number_of_linear_constraints, rseed,
+       feasible_direction, xshift, problem_id_template, 
+       problem_name_template);
 	  
-  } else if (obj_function_type(function) == 30) {
+  } else if (obj_function_type(function) == 3) {
 	  
     problem = f_linear_slope_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, problem_id_template, problem_name_template);
+       dimension, instance, number_of_linear_constraints, rseed,
+       feasible_direction, xshift, problem_id_template, 
+       problem_name_template);
 	  
-  } else if (obj_function_type(function) == 40) {
+  } else if (obj_function_type(function) == 4) {
 	  
     problem = f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, problem_id_template, problem_name_template);
+       dimension, instance, number_of_linear_constraints, rseed,
+       feasible_direction, xshift, problem_id_template, 
+       problem_name_template);
 	  
-  } else if (obj_function_type(function) == 50) {
+  } else if (obj_function_type(function) == 5) {
 	  
     problem = f_discus_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, problem_id_template, problem_name_template);
+       dimension, instance, number_of_linear_constraints, rseed,
+       feasible_direction, xshift, problem_id_template, 
+       problem_name_template);
 	  
-  } else if (obj_function_type(function) == 60) {
+  } else if (obj_function_type(function) == 6) {
 	  
     problem = f_bent_cigar_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, problem_id_template, problem_name_template);
+       dimension, instance, number_of_linear_constraints, rseed,
+       feasible_direction, xshift, problem_id_template, 
+       problem_name_template);
 	  
-  } else if (obj_function_type(function) == 70) {
+  } else if (obj_function_type(function) == 7) {
 	  
     problem = f_different_powers_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, problem_id_template, problem_name_template);
+       dimension, instance, number_of_linear_constraints, rseed,
+       feasible_direction, xshift, problem_id_template, 
+       problem_name_template);
 	  
-  } else if (obj_function_type(function) == 80) {
+  } else if (obj_function_type(function) == 8) {
 	  
     problem = f_rastrigin_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, problem_id_template, problem_name_template);
+       dimension, instance, number_of_linear_constraints, rseed,
+       feasible_direction, xshift, problem_id_template, 
+       problem_name_template);
 	  
   } else {
     coco_error("get_cons_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD", 
         function, instance, dimension);
+    coco_free_memory(xshift);
+    coco_free_memory(feasible_direction);
     return NULL; /* Never reached */
   }
+  
+  coco_free_memory(xshift);
+  coco_free_memory(feasible_direction);
   
   return problem;
 }

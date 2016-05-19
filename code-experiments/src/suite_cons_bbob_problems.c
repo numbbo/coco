@@ -23,7 +23,6 @@
  */
 static size_t obj_function_type(const size_t function) {
   
-  
   size_t problems_per_obj_function_type = 6;
   return (size_t)ceil((double)function/problems_per_obj_function_type);
   
@@ -58,28 +57,26 @@ static size_t nb_of_linear_constraints(const size_t function,
 static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
+                                                      const size_t number_of_linear_constraints,
+                                                      const long rseed,
+                                                      double *feasible_direction,
+                                                      const double *xshift,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
                                                          		
-  size_t i, number_of_linear_constraints;
+  size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  long rseed = (long) (function + 10000 * instance);
   double norm_factor = 10.0;
   
-  double *xshift = NULL;
   char *problem_type_temp = NULL;
-  double *all_zeros = NULL;
-  double *feasible_direction = NULL;                  
+  double *all_zeros = NULL;                
   
-  all_zeros = coco_allocate_vector(dimension);
-  feasible_direction = coco_allocate_vector(dimension);               
+  all_zeros = coco_allocate_vector(dimension);             
   
   for (i = 0; i < dimension; ++i)
-     all_zeros[i] = 0.0;            
-  
-  number_of_linear_constraints = nb_of_linear_constraints(function, dimension);
+     all_zeros[i] = 0.0;    
   
   problem = f_sphere_bbob_problem_allocate(function, dimension, 
      instance, rseed, problem_id_template, problem_name_template);
@@ -107,19 +104,14 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  xshift = coco_allocate_vector(dimension);
-  rseed = (long) (function + 10000 * instance);
-  bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
   problem_c->problem_type);
  
-  coco_free_memory(xshift);
   coco_free_memory(problem_type_temp);
   coco_free_memory(all_zeros);
-  coco_free_memory(feasible_direction);
 	
   return problem;
  
@@ -132,28 +124,26 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
 static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
+                                                      const size_t number_of_linear_constraints,
+                                                      const long rseed,
+                                                      double *feasible_direction,
+                                                      const double *xshift,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
-  size_t i, number_of_linear_constraints;
+  size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  long rseed = (long) (function + 10000 * instance);
   double norm_factor = 10.0;
   
-  double *xshift = NULL;
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
-  double *feasible_direction = NULL;
   
   all_zeros = coco_allocate_vector(dimension);
-  feasible_direction = coco_allocate_vector(dimension);
  
   for (i = 0; i < dimension; ++i)
      all_zeros[i] = 0.0;
-  
-  number_of_linear_constraints = nb_of_linear_constraints(function, dimension);
      
   problem = f_ellipsoid_cons_bbob_problem_allocate(function, dimension, 
      instance, rseed, problem_id_template, problem_name_template);
@@ -183,19 +173,14 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  xshift = coco_allocate_vector(dimension);
-  rseed = (long) (function + 10000 * instance);
-  bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
   problem_c->problem_type);
  
-  coco_free_memory(xshift);
   coco_free_memory(problem_type_temp);
   coco_free_memory(all_zeros);
-  coco_free_memory(feasible_direction);
   
   return problem;
  
@@ -208,28 +193,26 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
 static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
+                                                      const size_t number_of_linear_constraints,
+                                                      const long rseed,
+                                                      double *feasible_direction,
+                                                      const double *xshift,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
-  size_t i, number_of_linear_constraints;
+  size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  long rseed = (long) (function + 10000 * instance);
   double norm_factor = 10.0;
   
-  double *xshift = NULL;
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
-  double *feasible_direction = NULL;
   
   all_zeros = coco_allocate_vector(dimension);
-  feasible_direction = coco_allocate_vector(dimension);
  
   for (i = 0; i < dimension; ++i)
      all_zeros[i] = 0.0;
-  
-  number_of_linear_constraints = nb_of_linear_constraints(function, dimension);
 	 
   problem = f_ellipsoid_rotated_cons_bbob_problem_allocate(function, dimension, 
      instance, rseed, problem_id_template, problem_name_template);
@@ -259,19 +242,14 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  xshift = coco_allocate_vector(dimension);
-  rseed = (long) (function + 10000 * instance);
-  bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
   problem_c->problem_type);
  
-  coco_free_memory(xshift);
   coco_free_memory(problem_type_temp);
   coco_free_memory(all_zeros);
-  coco_free_memory(feasible_direction);
   
   return problem;
  
@@ -284,28 +262,26 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
 static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
+                                                      const size_t number_of_linear_constraints,
+                                                      const long rseed,
+                                                      double *feasible_direction,
+                                                      const double *xshift,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
-  size_t i, number_of_linear_constraints;
+  size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  long rseed = (long) (function + 10000 * instance);
   double norm_factor = 10.0;
   
-  double *xshift = NULL;
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
-  double *feasible_direction = NULL;
   
   all_zeros = coco_allocate_vector(dimension);
-  feasible_direction = coco_allocate_vector(dimension);
  
   for (i = 0; i < dimension; ++i)
      all_zeros[i] = 0.0;
-  
-  number_of_linear_constraints = nb_of_linear_constraints(function, dimension);
 	 
   problem = f_linear_slope_bbob_problem_allocate(function, dimension, 
      instance, rseed, problem_id_template, problem_name_template);
@@ -333,19 +309,14 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  xshift = coco_allocate_vector(dimension);
-  rseed = (long) (function + 10000 * instance);
-  bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
   problem_c->problem_type);
  
-  coco_free_memory(xshift);
   coco_free_memory(problem_type_temp);
   coco_free_memory(all_zeros);
-  coco_free_memory(feasible_direction);
   
   return problem;
  
@@ -358,28 +329,26 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
 static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
+                                                      const size_t number_of_linear_constraints,
+                                                      const long rseed,
+                                                      double *feasible_direction,
+                                                      const double *xshift,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
-  size_t i, number_of_linear_constraints;
+  size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  long rseed = (long) (function + 10000 * instance);
   double norm_factor = 10.0;
   
-  double *xshift = NULL;
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
-  double *feasible_direction = NULL;
   
   all_zeros = coco_allocate_vector(dimension);
-  feasible_direction = coco_allocate_vector(dimension);
  
   for (i = 0; i < dimension; ++i)
      all_zeros[i] = 0.0;
-  
-  number_of_linear_constraints = nb_of_linear_constraints(function, dimension);
 
   problem = f_discus_cons_bbob_problem_allocate(function, dimension, 
      instance, rseed, problem_id_template, problem_name_template);
@@ -409,19 +378,14 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  xshift = coco_allocate_vector(dimension);
-  rseed = (long) (function + 10000 * instance);
-  bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
   problem_c->problem_type);
  
-  coco_free_memory(xshift);
   coco_free_memory(problem_type_temp);
   coco_free_memory(all_zeros);
-  coco_free_memory(feasible_direction);
   
   return problem;
  
@@ -434,28 +398,26 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
 static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
+                                                      const size_t number_of_linear_constraints,
+                                                      const long rseed,
+                                                      double *feasible_direction,
+                                                      const double *xshift,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
-  size_t i, number_of_linear_constraints;
+  size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  long rseed = (long) (function + 10000 * instance);
   double norm_factor = 10.0;
   
-  double *xshift = NULL;
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
-  double *feasible_direction = NULL;
   
   all_zeros = coco_allocate_vector(dimension);
-  feasible_direction = coco_allocate_vector(dimension);
  
   for (i = 0; i < dimension; ++i)
      all_zeros[i] = 0.0;
-  
-  number_of_linear_constraints = nb_of_linear_constraints(function, dimension);
 	 
   problem = f_bent_cigar_cons_bbob_problem_allocate(function, dimension, 
      instance, rseed, problem_id_template, problem_name_template);
@@ -485,19 +447,14 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  xshift = coco_allocate_vector(dimension);
-  rseed = (long) (function + 10000 * instance);
-  bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
   problem_c->problem_type);
  
-  coco_free_memory(xshift);
   coco_free_memory(problem_type_temp);
   coco_free_memory(all_zeros);
-  coco_free_memory(feasible_direction);
   
   return problem;
  
@@ -510,28 +467,26 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
 static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
+                                                      const size_t number_of_linear_constraints,
+                                                      const long rseed,
+                                                      double *feasible_direction,
+                                                      const double *xshift,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
-  size_t i, number_of_linear_constraints;
+  size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  long rseed = (long) (function + 10000 * instance);
   double norm_factor = 10.0;
   
-  double *xshift = NULL;
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
-  double *feasible_direction = NULL;
   
   all_zeros = coco_allocate_vector(dimension);
-  feasible_direction = coco_allocate_vector(dimension);
  
   for (i = 0; i < dimension; ++i)
      all_zeros[i] = 0.0;
-  
-  number_of_linear_constraints = nb_of_linear_constraints(function, dimension);
 	 
   problem = f_different_powers_bbob_problem_allocate(function, dimension, 
      instance, rseed, problem_id_template, problem_name_template);
@@ -559,19 +514,14 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  xshift = coco_allocate_vector(dimension);
-  rseed = (long) (function + 10000 * instance);
-  bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
   problem_c->problem_type);
  
-  coco_free_memory(xshift);
   coco_free_memory(problem_type_temp);
   coco_free_memory(all_zeros);
-  coco_free_memory(feasible_direction);
   
   return problem;
  
@@ -584,23 +534,20 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
 static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
+                                                      const size_t number_of_linear_constraints,
+                                                      const long rseed,
+                                                      double *feasible_direction,
+                                                      const double *xshift,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
-  size_t i, number_of_linear_constraints;
+  size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  long rseed = (long) (function + 10000 * instance);
   double norm_factor = 10.0;
   
-  double *xshift = NULL;
   char *problem_type_temp = NULL;
-  double *feasible_direction = NULL;
-  
-  feasible_direction = coco_allocate_vector(dimension);
-  
-  number_of_linear_constraints = nb_of_linear_constraints(function, dimension);
 	 
   problem = f_rastrigin_cons_bbob_problem_allocate(function, dimension, 
      instance, rseed, problem_id_template, problem_name_template);
@@ -630,18 +577,13 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  xshift = coco_allocate_vector(dimension);
-  rseed = (long) (function + 10000 * instance);
-  bbob2009_compute_xopt(xshift, rseed, dimension);
   problem = transform_vars_shift(problem, xshift, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
   problem_c->problem_type);
  
-  coco_free_memory(xshift);
   coco_free_memory(problem_type_temp);
-  coco_free_memory(feasible_direction);
   
   return problem;
  

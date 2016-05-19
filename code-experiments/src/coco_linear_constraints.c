@@ -190,12 +190,43 @@ static coco_problem_t *linear_constraint_transform(coco_problem_t *inner_problem
 /**
  * @brief Returns an approximately N(mu, sigma) random number.
  */
-double randn(double mu, double sigma) {
+/*double randn(double mu, double sigma) {
 
   static coco_random_state_t *RNG;
   RNG = coco_random_new(0xdeadbeef);
   return (mu + sigma * coco_random_normal(RNG));
 
+}
+*/
+double randn(double mu, double sigma) {
+	
+  double U1, U2, W, mult;
+  static double X1, X2;
+  static int call = 1;
+ 
+  /* Return the second generated variable from previous call that
+   * has not been used yet 
+   */
+  if (call % 2 == 0) {
+     ++call;
+     return (mu + sigma * (double) X2);
+  }
+ 
+  /* The polar method itself */
+  do {
+     U1 = -1 + ((double)rand () / RAND_MAX) * 2;
+     U2 = -1 + ((double)rand () / RAND_MAX) * 2;
+     W = pow(U1, 2) + pow(U2, 2);
+  }
+  while (W >= 1 || W == 0);
+ 
+  mult = sqrt((-2 * log(W)) / W);
+  X1 = U1 * mult;
+  X2 = U2 * mult;
+ 
+  ++call;
+ 
+  return (mu + sigma * (double)X1);
 }
 
 /**
@@ -238,8 +269,8 @@ static coco_problem_t *single_linear_constraint_cons_bbob_problem_allocate(const
 	                               + 50000 * constraint_number);
      srand(rseed_cons);
      
-     /* Generates a pseudorandom number that is normally distributed
-      * with mean mu and variance sigma ( = norm_factor)
+     /* Generate a pseudorandom number that is normally distributed
+      * with mean mu and variance sigma (= norm_factor)
       */
      for (i = 0; i < dimension; ++i)
          gradient_linear_constraint[i] = randn(0.0, norm_factor);
@@ -247,7 +278,7 @@ static coco_problem_t *single_linear_constraint_cons_bbob_problem_allocate(const
      coco_free_memory(gradient_linear_constraint);
   }
   
-  /* Guarantees that the vector feasible_point is feasible w.r.t. to
+  /* Guarantee that the vector feasible_point is feasible w.r.t. to
    * this constraint and set it as initial_solution
    */
   if(feasible_direction)
@@ -278,7 +309,6 @@ static coco_problem_t *linear_constraints_cons_bbob_problem_allocate(const size_
   
   coco_problem_t *problem_c = NULL;
   coco_problem_t *problem_c2 = NULL;
-  char *problem_type_temp = NULL;
   double *gradient_c1 = NULL;
   
   gradient_c1 = coco_allocate_vector(dimension);
@@ -303,7 +333,6 @@ static coco_problem_t *linear_constraints_cons_bbob_problem_allocate(const size_
         dimension, instance, i, norm_factor, problem_id_template, 
         problem_name_template, NULL, feasible_direction);
 		
-     problem_type_temp = coco_strdup(problem_c->problem_type);
      problem_c = coco_problem_stacked_allocate(problem_c, problem_c2,
         problem_c2->smallest_values_of_interest, problem_c2->largest_values_of_interest);
 	 
@@ -315,9 +344,8 @@ static coco_problem_t *linear_constraints_cons_bbob_problem_allocate(const size_
         (unsigned long)function, (unsigned long)instance, (unsigned long)dimension);
 
      /* Construct problem type */
-     coco_problem_set_type(problem_c, "%s_%s", problem_type_temp, 
+     coco_problem_set_type(problem_c, "%s_%s", problem_c2->problem_type, 
         problem_c2->problem_type);
-     coco_free_memory(problem_type_temp);
   }
   
   coco_free_memory(gradient_c1);
