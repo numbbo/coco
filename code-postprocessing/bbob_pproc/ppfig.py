@@ -189,12 +189,13 @@ def getRldLink(htmlPage, currentDir, isBiobjective):
         if htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or not isBiobjective:
             fileName = '%s_%02dD.html' % (genericsettings.pprldmany_file_name, testbedsettings.current_testbed.first_dimension)
             # Wassim: now uses testbedsettings.current_testbed.first_dimension instead of hard-coded 2
+            # Wassim: TODO: make so that non-present plots are still clickable so one can get the next dim 
             links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
                              ignoreFileExists=ignoreFileExists)
 
         if htmlPage == HtmlPage.ONE:
             fileName = '%s_%02dD.html' % (genericsettings.pprldmany_group_file_name, testbedsettings.current_testbed.first_dimension)
-            # Wassim: now uses testbedsettings.current_testbed.first_dimension instead of hard-coded 2            
+            # Wassim: now uses testbedsettings.current_testbed.first_dimension instead of hard-coded 2
             links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
                              ignoreFileExists=ignoreFileExists)
 
