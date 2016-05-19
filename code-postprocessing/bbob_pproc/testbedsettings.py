@@ -106,6 +106,8 @@ class SingleObjectiveTestbed(Testbed):
     self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
     self.pptable2_target_runlengths = self.pptable_target_runlengths  # [0.5, 2, 10, 50]  # used in config for expensive setting
     self.pptables_target_runlengths = self.pptable_target_runlengths  # used in config for expensive setting
+    # Wassim:
+    self.first_dimension = -1 # TODO: raise warning when not set by child class
 
 
 class GECCOBBOBTestbed(SingleObjectiveTestbed): #Wassim: now inherits from SingleObjectiveTestbed
