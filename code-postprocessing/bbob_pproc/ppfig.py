@@ -241,7 +241,8 @@ def save_single_functions_html(filename,
         addLinkForNextDim = add_to_names.endswith('D')
         bestAlgExists = not isBiobjective
 
-        dimensions = genericsettings.htmlDimsOfInterest_ls if genericsettings.isLargeScale else genericsettings.htmlDimsOfInterest
+        dimensions = testbedsettings.current_testbed.dimensions_to_display
+        #genericsettings.htmlDimsOfInterest_ls if genericsettings.isLargeScale else genericsettings.htmlDimsOfInterest
 
         if htmlPage is HtmlPage.ONE:
             f.write('<H3><a href="ppfigdim.html">Average runtime versus dimension for selected targets</a></H3>\n')

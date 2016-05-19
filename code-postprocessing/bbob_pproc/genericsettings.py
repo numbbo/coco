@@ -49,12 +49,13 @@ xlimit_expensive = 1e3  # used in
 dim_related_markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 dim_related_colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 
-rldDimsOfInterest = (5, 20)
+#rldDimsOfInterest = (5, 20)
+# Wassim: rldDimsOfInterest is now part of current_testbed
 
 #rldDimsOfInterest = [40, 80] # Wassim: for large scale TODO: use it by generating new large-scale reference data
 
 htmlDimsOfInterest = [5, 20] # Wassim: Empirical cumulative distribution functions (ECDF) and ERT loss ratios shown dimensions in html file
-htmlDimsOfInterest_ls = [40, 80] # Wassim: for large scale
+#htmlDimsOfInterest_ls = [40, 80] # Wassim: for large scale
 
 simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max((0, in_a_hurry)))  # for tables and plots
 
