@@ -520,8 +520,8 @@ void coco_problem_get_initial_solution(const coco_problem_t *problem, double *in
     assert(problem->smallest_values_of_interest != NULL);
     assert(problem->largest_values_of_interest != NULL);
     for (i = 0; i < problem->number_of_variables; ++i)
-      initial_solution[i] = 0.5
-          * (problem->smallest_values_of_interest[i] + problem->largest_values_of_interest[i]);
+      initial_solution[i] = problem->smallest_values_of_interest[i] + 0.5
+          * (problem->largest_values_of_interest[i] - problem->smallest_values_of_interest[i]);
   }
 }
 
