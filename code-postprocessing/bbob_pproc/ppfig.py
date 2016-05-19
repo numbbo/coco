@@ -90,14 +90,14 @@ def next_dimension_str(s):
         raise
 
 
-def next_dimension(dim):
+def next_dimension(dim): # Wassim: too static! made it more flexible
     """next dimension when clicking single function html pages"""
     if dim == 2:
         return 3
     if dim == 3:
         return 5
-    if dim == 40:
-        return 2
+    if dim == testbedsettings.current_testbed.dimensions_to_display[-1]: # Wassim: updated to make it more flexible
+        return testbedsettings.current_testbed.dimensions_to_display[0]
     return 2 * dim
 
 
