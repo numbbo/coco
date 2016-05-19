@@ -80,7 +80,7 @@ refcolor = 'wheat'
 # should correspond with the colors in pprldistr.
 
 # Wassim: TODO seems to be set before rungeneric so useless here!!!!
-dimensions = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls
+#dimensions = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls
 
 
 #functions_with_legend = (1, 24, 101, 130)
@@ -209,7 +209,8 @@ def beautify(axesLabel=True):
     # axisHandle.invert_xaxis()
     
     # Wassim:
-    dimensions = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls
+    #dimensions = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls
+    dimensions = testbedsettings.current_testbed.dimensions_to_display
     dimticklist = dimensions
     dimannlist = dimensions 
     # TODO: All these should depend on one given input (xlim, ylim)
@@ -522,6 +523,8 @@ def plot_previous_algorithms(func, target=None):  # lambda x: [1e-8]):
         return None
 
     bestalgdata = []
+    #for d in dimensions: #Wassim: now uses testbedsettings.current_testbed.dimensions_to_display
+    dimensions = testbedsettings.current_testbed.dimensions_to_display
     for d in dimensions:
         try:
             entry = bestalgentries[(d, func)]
