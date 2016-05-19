@@ -79,6 +79,7 @@ html_header = """<HTML>
 %s
 """
 
+
 def next_dimension_str(s):
     try:
         dim = int(s.strip().strip('_').rstrip('D'))
@@ -99,11 +100,13 @@ def next_dimension(dim):
         return 2
     return 2 * dim
 
+
 def addImage(imageName, addLink):
     if (addLink):
         return '<a href="file:%s"><IMG SRC="%s"></a>' % (2 * (imageName,))
     else:
         return '<IMG SRC="%s">' % imageName
+
 
 def addLink(currentDir, folder, fileName, label, indent = '', ignoreFileExists = False):
 
@@ -118,6 +121,7 @@ def addLink(currentDir, folder, fileName, label, indent = '', ignoreFileExists =
         return '<H3>%s<a href="%s">%s</a></H3>\n' % (indent, href, label)
 
     return ''
+
 
 def save_index_html_file(filename):
 
@@ -141,6 +145,18 @@ def save_index_html_file(filename):
             f.write(comparisonLinks)
 
         f.write("\n</BODY>\n</HTML>")
+
+
+def save_deprecated_html_file(filename):
+
+    with open(filename + '.html', 'w') as f:
+        index_file = genericsettings.index_html_file_name
+        text = 'This page is deprecated. The new main page is ' \
+               '<a href="%s.html"">%s.html</a>. The links will be correctly updated ' \
+               'once the post-processing for the algorithms is rerun.' % (index_file, index_file)
+        f.write(html_header % ('', '', text))
+        f.write("\n</BODY>\n</HTML>")
+
 
 def getHomeLink(htmlPage):
     homeLink = '<H3><a href="%s%s.html">Home</a></H3>'    
