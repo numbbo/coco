@@ -351,8 +351,8 @@ def save_single_functions_html(filename,
     
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
-            dimensions = [5, 20] # Wassim: why constant values??!!!
-            
+            #dimensions = [5, 20] # Wassim: why constant values??!!! now uses htmlDimsOfInterest from current_testbed
+            dimensions = testbedsettings.current_testbed.htmlDimsOfInterest
             headerECDF = ' Empirical cumulative distribution functions (ECDF)'
             f.write("<H2> %s </H2>\n" % headerECDF)
             for dimension in dimensions:
