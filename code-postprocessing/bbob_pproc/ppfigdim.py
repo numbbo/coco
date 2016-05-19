@@ -210,8 +210,7 @@ def beautify(axesLabel=True):
     
     # Wassim:
     dimensions = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls
-    
-    dimticklist = dimensions 
+    dimticklist = dimensions
     dimannlist = dimensions 
     # TODO: All these should depend on one given input (xlim, ylim)
 
