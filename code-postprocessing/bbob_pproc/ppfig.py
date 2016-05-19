@@ -242,7 +242,7 @@ def save_single_functions_html(filename,
         last_function_number = testbedsettings.current_testbed.last_function_number
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
         addLinkForNextDim = add_to_names.endswith('D')
-        bestAlgExists = not isBiobjective
+        bestAlgExists = bool(testbedsettings.current_testbed.best_algorithm_filename) #not isBiobjective # Wassim: or not isLargescale
 
         dimensions = testbedsettings.current_testbed.htmlDimsOfInterest
         #genericsettings.htmlDimsOfInterest_ls if genericsettings.isLargeScale else genericsettings.htmlDimsOfInterest
@@ -369,7 +369,7 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.PPLOGLOSS:
             # dimensions = [5, 20] # Wassim: should not be constant
             dimensions = testbedsettings.current_testbed.htmlDimsOfInterest
-            if testbedsettings.current_testbed.best_algorithm_filename: #isBiobjective:  # Wassim: TODO: should depend on what bestalgorithmdata loads, not isBiobjctive, now checks whether a file is provided
+            if bestAlgExists: #isBiobjective:  # Wassim: TODO: should depend on what bestalgorithmdata loads, not isBiobjctive, now checks whether a file is provided
                 currentHeader = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % currentHeader)
                 for dimension in dimensions:
