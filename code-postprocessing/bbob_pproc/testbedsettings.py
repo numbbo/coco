@@ -5,7 +5,8 @@ import warnings
 scenario_rlbased = 'rlbased'
 scenario_fixed = 'fixed'
 scenario_biobjfixed = 'biobjfixed'
-all_scenarios = [scenario_rlbased, scenario_fixed, scenario_biobjfixed]
+scenario_largescalefixed = 'largescalefixed'
+all_scenarios = [scenario_rlbased, scenario_fixed, scenario_biobjfixed, scenario_largescalefixed]
 
 testbed_name_single = 'bbob'
 testbed_name_largescale = 'bbob-largescale'
@@ -98,7 +99,6 @@ class SingleObjectiveTestbed(Testbed):
     self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))  # for pptable and pptables
     self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
     self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
-    self.scenario = scenario_fixed
     self.short_names = get_short_names(get_benchmarks_short_infos(False))
     # expensive optimization settings:
     self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
@@ -120,6 +120,7 @@ class GECCOBBOBTestbed(SingleObjectiveTestbed): #Wassim: now inherits from Singl
     def __init__(self, targetValues):
         super(GECCOBBOBTestbed, self).__init__(targetValues)
         self.first_dimension = 2
+        self.scenario = scenario_fixed
         self.dimensions_to_display = [2, 3, 5, 10, 20, 40]
         self.tabDimsOfInterest = [5, 20]
         self.rldDimsOfInterest = [5, 20]
@@ -136,6 +137,7 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
 
         # Until we clean the code which uses this name we need to use it also here.
         self.first_dimension = 2
+        self.scenario = scenario_fixed
         self.dimensions_to_display = [2, 3, 5, 10, 20, 40]
         self.tabDimsOfInterest = [5, 20]
         self.rldDimsOfInterest = [5, 20]
@@ -153,6 +155,7 @@ class LargeScaleTestbed(SingleObjectiveTestbed):
   def __init__(self, targetValues):
     super(LargeScaleTestbed, self).__init__(targetValues)
     self.first_dimension = 20
+    self.scenario = scenario_largescalefixed
     # Wassim: added the following
     self.dimensions_to_display = [20, 40, 80, 160, 320, 640]
     self.tabDimsOfInterest = [80, 320]

@@ -180,6 +180,7 @@ def getRldLink(htmlPage, currentDir, isBiobjective):
     folder = 'pprldmany-single-functions'
 
     ignoreFileExists = genericsettings.isRldOnSingleFcts
+    # Wassim: why is this set to True? We shouldn't generate pages for nonn-existing plots or at least the pages should just be clickable to get the next one
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         if htmlPage == HtmlPage.ONE:
             fileName = '%s.html' % genericsettings.pprldmany_file_name
@@ -189,7 +190,7 @@ def getRldLink(htmlPage, currentDir, isBiobjective):
         if htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or not isBiobjective:
             fileName = '%s_%02dD.html' % (genericsettings.pprldmany_file_name, testbedsettings.current_testbed.first_dimension)
             # Wassim: now uses testbedsettings.current_testbed.first_dimension instead of hard-coded 2
-            # Wassim: TODO: make so that non-present plots are still clickable so one can get the next dim 
+            # Wassim: TODO: make so that non-present plots are still clickable so one can get the next dim
             links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
                              ignoreFileExists=ignoreFileExists)
 
@@ -314,7 +315,7 @@ def save_single_functions_html(filename,
             
             f.write(captionStringFormat % '##bbobppfigslegend##')
 
-            write_ECDF(f, 5, extension, captionStringFormat, functionGroups)
+            write_ECDF(f, 5, extension, captionStringFormat, functionGroups) # Wasssim: why constant values?!!!
             write_ECDF(f, 20, extension, captionStringFormat, functionGroups)
                 
             write_pptables(f, 5, captionStringFormat, first_function_number, last_function_number, bestAlgExists)
@@ -350,7 +351,7 @@ def save_single_functions_html(filename,
     
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
-            dimensions = [5, 20]
+            dimensions = [5, 20] # Wassim: why constant values??!!!
             
             headerECDF = ' Empirical cumulative distribution functions (ECDF)'
             f.write("<H2> %s </H2>\n" % headerECDF)

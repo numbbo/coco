@@ -616,6 +616,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     dictDimList = pp.dictAlgByDim(dictAlg)
     dims = sorted(dictDimList)
+
     for i, dim in enumerate(dims):
         divisor = dim if divide_by_dimension else 1
 
