@@ -188,14 +188,42 @@ static coco_problem_t *linear_constraint_transform(coco_problem_t *inner_problem
 }
 
 /**
- * @brief Returns an approximately N(mu, sigma) random number.
+ * @brief Implements the Marsaglia polar method.
+ * 
+ * It first generates a pair of independent standard normal random 
+ * variables X1 and X2. For having normal random variables with 
+ * mean 'mu' and variance 'sigma', it does a simple transform of 
+ * the type mu + sigma * X1 and mu + sigma * X2.
  */
 double randn(double mu, double sigma) {
-
-  static coco_random_state_t *RNG;
-  RNG = coco_random_new(0xdeadbeef);
-  return (mu + sigma * coco_random_normal(RNG));
-
+	
+  double U1, U2, W, mult;
+  static double X1, X2;
+  static int call = 1;
+ 
+  /* Return the second generated variable from previous call that
+   * has not been used yet 
+   */
+  if (call % 2 == 0) {
+     ++call;
+     return (mu + sigma * (double) X2);
+  }
+ 
+  /* The polar method itself */
+  do {
+     U1 = -1 + ((double)rand () / RAND_MAX) * 2;
+     U2 = -1 + ((double)rand () / RAND_MAX) * 2;
+     W = pow(U1, 2) + pow(U2, 2);
+  }
+  while (W >= 1 || W == 0);
+ 
+  mult = sqrt((-2 * log(W)) / W);
+  X1 = U1 * mult;
+  X2 = U2 * mult;
+ 
+  ++call;
+ 
+  return (mu + sigma * (double)X1);
 }
 
 /**
