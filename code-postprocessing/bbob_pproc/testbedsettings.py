@@ -74,41 +74,47 @@ class Testbed(object):
                     continue  # ignore annotations
 
 class SingleObjectiveTestbed(Testbed):
-    pass
+  def __init__(self, targetValues):
+    # TODO: should become a function, as low_budget is a display setting
+    # not a testbed setting
+    # only the short info, how to deal with both infos?
+    self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
+    self.name = testbed_name_single
+    self.short_names = {}
+    self.hardesttargetlatex = '10^{-8}'  # used for ppfigs, pptable, pptable2, and pptables
+    self.ppfigs_ftarget = 1e-8
+    self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  # possibly changed in config
+    self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
+    self.pprldmany_target_values = targetValues(10 ** np.arange(2, -8.2, -0.2))  # possibly changed in config
+    self.pprldmany_target_range_latex = '$10^{[-8..2]}$'
+    self.ppscatter_target_values = targetValues(np.logspace(-8, 2, 46))
+    self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)  # possibly changed in config
+    self.ppfvdistr_min_target = 1e-8
+    self.functions_with_legend = (1, 24, 101, 130)
+    self.number_of_functions = 24
+    self.pptable_ftarget = 1e-8  # value for determining the success ratio in all tables
+    self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))  # for pptable and pptables
+    self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
+    self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
+    self.scenario = scenario_fixed
+    self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
+    self.short_names = get_short_names(get_benchmarks_short_infos(False))
+    # expensive optimization settings:
+    self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
+    self.pptable2_target_runlengths = self.pptable_target_runlengths  # [0.5, 2, 10, 50]  # used in config for expensive setting
+    self.pptables_target_runlengths = self.pptable_target_runlengths  # used in config for expensive setting
 
-class GECCOBBOBTestbed(Testbed):
+
+class GECCOBBOBTestbed(SingleObjectiveTestbed): #Wassim: now inherits from SingleObjectiveTestbed
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
     """
 
     def __init__(self, targetValues):
-        # TODO: should become a function, as low_budget is a display setting
-        # not a testbed setting
-        # only the short info, how to deal with both infos?
-        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
-        self.name = testbed_name_single
-        self.short_names = {}
-        self.hardesttargetlatex = '10^{-8}'  # used for ppfigs, pptable, pptable2, and pptables
-        self.ppfigs_ftarget = 1e-8
-        self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  # possibly changed in config
-        self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
-        self.pprldmany_target_values = targetValues(10 ** np.arange(2, -8.2, -0.2))  # possibly changed in config
-        self.pprldmany_target_range_latex = '$10^{[-8..2]}$'
-        self.ppscatter_target_values = targetValues(np.logspace(-8, 2, 46))
-        self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)  # possibly changed in config
-        self.ppfvdistr_min_target = 1e-8
-        self.functions_with_legend = (1, 24, 101, 130)
-        self.number_of_functions = 24
-        self.pptable_ftarget = 1e-8  # value for determining the success ratio in all tables
-        self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))  # for pptable and pptables
-        self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
-        self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
-        self.scenario = scenario_fixed
-        self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
-        self.short_names = get_short_names(get_benchmarks_short_infos(False))
-        # expensive optimization settings:
-        self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
-        self.pptable2_target_runlengths = self.pptable_target_runlengths  # [0.5, 2, 10, 50]  # used in config for expensive setting
-        self.pptables_target_runlengths = self.pptable_target_runlengths  # used in config for expensive setting
+        super(GECCOBBOBTestbed, self).__init__(targetValues)
+        self.dimensions_to_display = [2, 3, 5, 10, 20, 40]
+        self.tabDimsOfInterest = [5, 20]
+        self.rldDimsOfInterest = [5, 20]
+        self.htmlDimsOfInterest = [5, 20]
 
 
 class GECCOBiObjBBOBTestbed(Testbed):
@@ -154,34 +160,7 @@ class LargeScaleTestbed(SingleObjectiveTestbed):
     """
   
   def __init__(self, targetValues):
-    # TODO: should become a function, as low_budget is a display setting
-    # not a testbed setting
-    # only the short info, how to deal with both infos?
-    self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
-    self.name = testbed_name_largescale
-    self.short_names = {}
-    self.hardesttargetlatex = '10^{-8}'  # used for ppfigs, pptable, pptable2, and pptables
-    self.ppfigs_ftarget = 1e-8
-    self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  # possibly changed in config
-    self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
-    self.pprldmany_target_values = targetValues(10 ** np.arange(2, -8.2, -0.2))  # possibly changed in config
-    self.pprldmany_target_range_latex = '$10^{[-8..2]}$'
-    self.ppscatter_target_values = targetValues(np.logspace(-8, 2, 46))
-    self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)  # possibly changed in config
-    self.ppfvdistr_min_target = 1e-8
-    self.functions_with_legend = (1, 24, 101, 130)
-    self.number_of_functions = 24
-    self.pptable_ftarget = 1e-8  # value for determining the success ratio in all tables
-    self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))  # for pptable and pptables
-    self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
-    self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
-    self.scenario = scenario_fixed
-    self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
-    self.short_names = get_short_names(get_benchmarks_short_infos(False))
-    # expensive optimization settings:
-    self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
-    self.pptable2_target_runlengths = self.pptable_target_runlengths  # [0.5, 2, 10, 50]  # used in config for expensive setting
-    self.pptables_target_runlengths = self.pptable_target_runlengths  # used in config for expensive setting
+    super(LargeScaleTestbed, self).__init__(targetValues)
 
     # Wassim: added the following
     self.dimensions_to_display = [20, 40, 80, 160, 320, 640]
