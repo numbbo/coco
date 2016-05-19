@@ -51,10 +51,10 @@ dim_related_colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm'
 
 #rldDimsOfInterest = (5, 20)
 # Wassim: rldDimsOfInterest is now part of current_testbed
-
 #rldDimsOfInterest = [40, 80] # Wassim: for large scale TODO: use it by generating new large-scale reference data
 
-htmlDimsOfInterest = [5, 20] # Wassim: Empirical cumulative distribution functions (ECDF) and ERT loss ratios shown dimensions in html file
+#htmlDimsOfInterest = [5, 20] # Wassim: Empirical cumulative distribution functions (ECDF) and ERT loss ratios shown dimensions in html file
+# Wassim: htmlDimsOfInterest is now part of current_testbed
 #htmlDimsOfInterest_ls = [40, 80] # Wassim: for large scale
 
 simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max((0, in_a_hurry)))  # for tables and plots

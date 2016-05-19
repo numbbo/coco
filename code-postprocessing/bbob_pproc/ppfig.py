@@ -241,7 +241,7 @@ def save_single_functions_html(filename,
         addLinkForNextDim = add_to_names.endswith('D')
         bestAlgExists = not isBiobjective
 
-        dimensions = testbedsettings.current_testbed.dimensions_to_display
+        dimensions = testbedsettings.current_testbed.htmlDimsOfInterest
         #genericsettings.htmlDimsOfInterest_ls if genericsettings.isLargeScale else genericsettings.htmlDimsOfInterest
 
         if htmlPage is HtmlPage.ONE:
