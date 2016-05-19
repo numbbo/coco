@@ -152,7 +152,7 @@ class LargeScaleTestbed(SingleObjectiveTestbed):
   
   def __init__(self, targetValues):
     super(LargeScaleTestbed, self).__init__(targetValues)
-    self.first_dimension = 2
+    self.first_dimension = 20
     # Wassim: added the following
     self.dimensions_to_display = [20, 40, 80, 160, 320, 640]
     self.tabDimsOfInterest = [80, 320]
