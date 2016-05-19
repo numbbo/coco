@@ -108,7 +108,7 @@ def addImage(imageName, addLink):
         return '<IMG SRC="%s">' % imageName
 
 
-def addLink(currentDir, folder, fileName, label, indent = '', ignoreFileExists = False):
+def add_link(currentDir, folder, fileName, label, indent ='', ignoreFileExists = False):
 
     if folder:    
         path = os.path.join(os.path.realpath(currentDir), folder, fileName)
@@ -126,7 +126,14 @@ def addLink(currentDir, folder, fileName, label, indent = '', ignoreFileExists =
 def save_index_html_file(filename):
 
     with open(filename + '.html', 'w') as f:
-        f.write(html_header % ('Post processing results', 'Post processing results', ''))
+        text = ''
+        index_file = genericsettings.index_html_file_name
+        if index_file not in filename:
+            text = 'This page is deprecated. The new main page is ' \
+                   '<a href="%s.html"">%s.html</a>. The links will be correctly updated ' \
+                   'once the post-processing for the algorithms is rerun.' % (index_file, index_file)
+
+        f.write(html_header % ('Post processing results', 'Post processing results', text))
             
         f.write('<H2>Single algorithm data</H2>\n')
 
@@ -135,26 +142,15 @@ def save_index_html_file(filename):
         singleAlgFile = 'templateBBOBarticle.html'
         for root, _dirs, files in os.walk(currentDir):
             for elem in _dirs:
-                f.write(addLink(currentDir, elem, singleAlgFile, elem, indent))
+                f.write(add_link(currentDir, elem, singleAlgFile, elem, indent))
         
         comparisonLinks = ''    
-        comparisonLinks += addLink(currentDir, None, 'templateBBOBcmp.html', 'Two algorithm comparison', indent)
-        comparisonLinks += addLink(currentDir, None, 'templateBBOBmany.html', 'Many algorithm comparison', indent)
+        comparisonLinks += add_link(currentDir, None, 'templateBBOBcmp.html', 'Two algorithm comparison', indent)
+        comparisonLinks += add_link(currentDir, None, 'templateBBOBmany.html', 'Many algorithm comparison', indent)
         if comparisonLinks:
             f.write('<H2>Comparison data</H2>\n')
             f.write(comparisonLinks)
 
-        f.write("\n</BODY>\n</HTML>")
-
-
-def save_deprecated_html_file(filename):
-
-    with open(filename + '.html', 'w') as f:
-        index_file = genericsettings.index_html_file_name
-        text = 'This page is deprecated. The new main page is ' \
-               '<a href="%s.html"">%s.html</a>. The links will be correctly updated ' \
-               'once the post-processing for the algorithms is rerun.' % (index_file, index_file)
-        f.write(html_header % ('', '', text))
         f.write("\n</BODY>\n</HTML>")
 
 
@@ -169,7 +165,7 @@ def getHomeLink(htmlPage):
 
 def getConvLink(htmlPage, currentDir):
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        return addLink(currentDir, None, genericsettings.ppconv_file_name + '.html',
+        return add_link(currentDir, None, genericsettings.ppconv_file_name + '.html',
                        'Convergence plots', ignoreFileExists=genericsettings.isConv)
     
     return ''
@@ -184,20 +180,20 @@ def getRldLink(htmlPage, currentDir, isBiobjective):
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         if htmlPage == HtmlPage.ONE:
             fileName = '%s.html' % genericsettings.pprldmany_file_name
-            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots',
-                             ignoreFileExists=ignoreFileExists)
+            links += add_link(currentDir, folder, fileName, 'Runtime distribution plots',
+                              ignoreFileExists=ignoreFileExists)
 
         if htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or not isBiobjective:
             fileName = '%s_%02dD.html' % (genericsettings.pprldmany_file_name, testbedsettings.current_testbed.first_dimension)
             # Wassim: now uses testbedsettings.current_testbed.first_dimension instead of hard-coded 2
             # Wassim: TODO: make so that non-present plots are still clickable so one can get the next dim
-            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
+            links += add_link(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
                              ignoreFileExists=ignoreFileExists)
 
         if htmlPage == HtmlPage.ONE:
             fileName = '%s_%02dD.html' % (genericsettings.pprldmany_group_file_name, testbedsettings.current_testbed.first_dimension)
             # Wassim: now uses testbedsettings.current_testbed.first_dimension instead of hard-coded 2
-            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
+            links += add_link(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
                              ignoreFileExists=ignoreFileExists)
 
     return links
