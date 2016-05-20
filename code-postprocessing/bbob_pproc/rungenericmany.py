@@ -14,13 +14,8 @@ from __future__ import absolute_import
 
 import os
 import sys
-import glob
 import getopt
-import pickle
-import tarfile
-from pdb import set_trace
 import warnings
-import numpy
 import matplotlib
 
 if __name__ == "__main__":

@@ -17,11 +17,11 @@ used by other modules, but does not modify settings of other modules.
 
 import warnings
 import numpy as np
-import ppfigdim, pptable
+import ppfigdim
 from . import genericsettings, pproc, pprldistr
 from . import testbedsettings as tbs
-from .comp2 import ppfig2, ppscatter, pptable2
-from .compall import ppfigs, pprldmany, pptables
+from .comp2 import ppfig2, ppscatter
+from .compall import ppfigs, pprldmany
 
 def target_values(is_expensive, dict_max_fun_evals={}, runlength_limit=1e3):
     """manage target values setting in "expensive" optimization scenario.

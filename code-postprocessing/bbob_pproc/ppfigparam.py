@@ -14,7 +14,6 @@ function value (1e-8) was not reached.
 """
 from __future__ import absolute_import
 import os
-import sys
 import matplotlib.pyplot as plt
 import numpy as np
 from . import toolsstats, testbedsettings, genericsettings, toolsdivers

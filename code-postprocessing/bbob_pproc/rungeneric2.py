@@ -15,12 +15,9 @@ from __future__ import absolute_import
 
 import os
 import sys
-import glob
 import warnings
 import getopt
-from pdb import set_trace
 import numpy
-import numpy as np
 import matplotlib
 
 if __name__ == "__main__":
@@ -36,8 +33,6 @@ if __name__ == "__main__":
     sys.exit(res)
 
 from . import genericsettings, ppfig, toolsdivers
-
-ppfig2_ftarget = 1e-8  # a hack, used in ppfig2.main 
 
 # genericsettings.summarized_target_function_values[0] might be another option
 
@@ -55,11 +50,11 @@ if __name__ == "__main__":
     sys.exit(res)
 
 from . import pproc
-from . import genericsettings, config
+from . import config
 from . import testbedsettings
 from . import pprldistr
 from . import htmldesc
-from .pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
+from .pproc import DataSetList, processInputArgs
 from .ppfig import Usage
 from .toolsdivers import prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
 from .comp2 import ppfig2, pprldistr2, pptable2, ppscatter
@@ -163,7 +158,6 @@ def main(argv=None):
         # The zero-th input argument which is the name of the calling script is
         # disregarded.
 
-    global ftarget
     try:
 
         try:
@@ -368,7 +362,7 @@ def main(argv=None):
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
             plt.rc('pdf', fonttype = 42)
-            ppfig2.main(dsList0, dsList1, ppfig2_ftarget,
+            ppfig2.main(dsList0, dsList1, testbedsettings.current_testbed.ppfig2_ftarget,
                         outputdir, genericsettings.verbose)
             print "log aRT1/aRT0 vs target function values done."
 

@@ -983,13 +983,14 @@ class DataSet():
 
         The number of returned evals is ``self.nbRuns() * sample_size_per_instance``.
 
+        TODO: the return value is inconsistent between the code and the comment!
+
         TODO: attaching a count to each point would help to reduce the data size (and
         probably the plotting spead) significantly.
 
         """
         raise NotImplementedError()
         data_rows = self.detEvals(targets)
-        all_evals, all_counts = [], []
         for d in data_rows:
             evals, counts = toolsstats.runtimes_with_restarts(d, sample_size_per_instance)
             # this should become a runtimes class with a counts and an evals attribute
