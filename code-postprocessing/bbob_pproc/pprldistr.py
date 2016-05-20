@@ -478,7 +478,7 @@ def plotRLDistr(dsList, target, label='', max_fun_evals=np.inf,
     for ds in dsList: # ds is a DataSet
         funcs.add(ds.funcId)
         tmp = ds.detEvals((target((ds.funcId, ds.dim)),))[0] / ds.dim
-        tmp = tmp[not np.isnan(tmp)] # keep only success
+        tmp = tmp[np.isnan(tmp) == False] # keep only success
         if len(tmp) > 0 and sum(tmp <= max_fun_evals):
             fsolved.add(ds.funcId)
         x.extend(tmp)
@@ -729,7 +729,7 @@ def plot_previous_algorithms(dim, funcs):
                 tmp2 = tmp[f][dim][0][1:]
                 # [0], because the maximum #evals is also recorded
                 # [1:] because the target function value is recorded
-                x.append(tmp2[not np.isnan(tmp2)])
+                x.append(tmp2[np.isnan(tmp2) == False])
                 nn += len(tmp2)
 
             if x:
