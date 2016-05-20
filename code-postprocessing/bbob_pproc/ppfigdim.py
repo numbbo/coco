@@ -370,8 +370,6 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
         dictFunc[func] = dictFunc[func].dictByDim()
         dimensions = sorted(dictFunc[func])
 
-        # legend = []
-        line = []
         mediandata = {}
         displaynumber = {}
         for i_target in range(len(valuesOfInterest)):
@@ -379,7 +377,6 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
             unsucc = []
             # data = []
             maxevals = np.ones(len(dimensions))
-            maxevals_succ = np.ones(len(dimensions)) 
             # Collect data that have the same function and different dimension.
             for idim, dim in enumerate(dimensions):
                 if len(dictFunc[func][dim]) > 1:
@@ -551,7 +548,6 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
 
     dictFunc = dsList.dictByFunc()
-    dictAlg = dsList.dictByAlg()
     values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
 
     key = 'bbobppfigdimlegend' + testbedsettings.current_testbed.scenario
