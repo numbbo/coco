@@ -40,26 +40,13 @@ refcolor = 'wheat'
 
 dimsBBOB = (2, 3, 5, 10, 20, 40)
 
-#Get benchmark short infos.
-def read_fun_infos(isBiobjective):
-    try:
-        funInfos = {}
-        
-        filename = testbedsettings.get_benchmarks_short_infos(isBiobjective)
-        infofile = os.path.join(os.path.split(__file__)[0], filename)
-        f = open(infofile, 'r')
-        for line in f:
-            if len(line) == 0 or line.startswith('%') or line.isspace() :
-                continue
-            funcId, funcInfo = line[0:-1].split(None, 1)
-            funInfos[int(funcId)] = funcId + ' ' + funcInfo
-        f.close()
-        return funInfos
-    except IOError, (errno, strerror):
-        print "I/O error(%s): %s" % (errno, strerror)
-        print 'Could not find file', infofile, \
-              'Titles in figures will not be displayed.'
-
+# Get benchmark short infos, prepended with the function id.
+def read_fun_infos():
+    funInfos = {}
+    for id in testbedsettings.current_testbed.short_names:
+        funInfos[int(id)] = str(id) + ' ' + testbedsettings.current_testbed.short_names[id]
+    return funInfos
+    
 def beautify():
     """Customize figure presentation."""
 
@@ -211,7 +198,7 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
     
     """
 
-    funInfos = read_fun_infos(dsList.isBiobjective())
+    funInfos = read_fun_infos()
 
     # TODO check input parameter param
     for func, dictfunc in dsList.dictByFunc().iteritems():
