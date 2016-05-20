@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Process data to be included in a latex template. 
+"""Process data to be included in a latex template.
 
 Synopsis:
     ``python path_to_folder/bbob_pproc/rungeneric.py [OPTIONS] FOLDERS``
@@ -15,13 +15,8 @@ from __future__ import absolute_import
 
 import os
 import sys
-import glob
 import getopt
-import pickle
-import tarfile
-from pdb import set_trace
 import warnings
-import numpy
 import matplotlib
 matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
@@ -29,7 +24,10 @@ matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 if __name__ == "__main__":
     if 11 < 3:
         print(matplotlib.rcsetup.all_backends)
-        # [u'GTK', u'GTKAgg', u'GTKCairo', u'MacOSX', u'Qt4Agg', u'Qt5Agg', u'TkAgg', u'WX', u'WXAgg', u'CocoaAgg', u'GTK3Cairo', u'GTK3Agg', u'WebAgg', u'nbAgg', u'agg', u'cairo', u'emf', u'gdk', u'pdf', u'pgf', u'ps', u'svg', u'template']
+        # [u'GTK', u'GTKAgg', u'GTKCairo', u'MacOSX', u'Qt4Agg', u'Qt5Agg',
+        #  u'TkAgg', u'WX', u'WXAgg', u'CocoaAgg', u'GTK3Cairo', u'GTK3Agg',
+        #  u'WebAgg', u'nbAgg', u'agg', u'cairo', u'emf', u'gdk', u'pdf',
+        #  u'pgf', u'ps', u'svg', u'template']
         matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
         matplotlib.rc('pdf', fonttype = 42)
         # add ".." to the Python search path, import the module to which
@@ -45,7 +43,7 @@ if __name__ == "__main__":
         sys.exit(res)
 
 from . import genericsettings, testbedsettings, rungeneric1, rungeneric2, rungenericmany, ppfig
-from .toolsdivers import prepend_to_file, truncate_latex_command_file, print_done
+from .toolsdivers import truncate_latex_command_file, print_done
 from .ppfig import Usage
 
 __all__ = ['main']
@@ -101,9 +99,9 @@ def main(argv=None):
 
     * :file:`*article.tex` and :file:`*1*.tex`
       for results with a **single** algorithm
-    * :file:`*cmp.tex` and :file:`*2*.tex` 
+    * :file:`*cmp.tex` and :file:`*2*.tex`
       for showing the comparison of **2** algorithms
-    * :file:`*many.tex` and :file:`*3*.tex` 
+    * :file:`*many.tex` and :file:`*3*.tex`
       for showing the comparison of **more than 2** algorithms.
     The templates with `noisy` mentioned in the filename have to be used
       for the noisy testbed, the others for the noise-less one.
@@ -139,22 +137,22 @@ def main(argv=None):
         --omit-single
 
             omit calling :py:func:`bbob_pproc.rungeneric1.main`, if
-            more than one data path argument is provided. 
+            more than one data path argument is provided.
 
         --no-rld-single-fcts
 
             do not generate runlength distribution figures for each
-            single function. These figures are not (yet) used 
-            in the LaTeX templates. 
+            single function. These figures are not (yet) used
+            in the LaTeX templates.
 
         --input-path=INPUTPATH
 
             all folder/file arguments are prepended with the given value
-            which must be a valid path. 
+            which must be a valid path.
 
         --in-a-hurry
 
-            takes values between 0 (default) and 1000, fast processing that 
+            takes values between 0 (default) and 1000, fast processing that
             does not write eps files and uses a small number of bootstrap samples
 
         --no-svg
@@ -194,12 +192,13 @@ def main(argv=None):
         argv = argv.split()
     try:
         try:
-            opts, args = getopt.getopt(argv, genericsettings.shortoptlist, genericsettings.longoptlist +
+            opts, args = getopt.getopt(argv, genericsettings.shortoptlist,
+                                       genericsettings.longoptlist +
                                        ['omit-single', 'in-a-hurry=', 'input-path='])
         except getopt.error, msg:
             raise Usage(msg)
 
-        if not (args):
+        if not args:
             usage()
             sys.exit()
 
@@ -207,10 +206,10 @@ def main(argv=None):
 
         #Process options
         shortoptlist = list("-" + i.rstrip(":")
-                             for i in _splitshortoptlist(genericsettings.shortoptlist))
+                            for i in _splitshortoptlist(genericsettings.shortoptlist))
         shortoptlist.remove("-o")
-        longoptlist = list( "--" + i.rstrip("=") for i in genericsettings.longoptlist)
-        
+        longoptlist = list("--" + i.rstrip("=") for i in genericsettings.longoptlist)
+
         genopts = []
         outputdir = genericsettings.outputdir
         for o, a in opts:
@@ -245,11 +244,11 @@ def main(argv=None):
                     isAssigned = True
                 if not isAssigned:
                     assert False, "unhandled option"
-                    
+
 
         if (not genericsettings.verbose):
             warnings.filterwarnings('module', '.*', UserWarning, '.*')
-            #warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear 
+            #warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
 
         print ("Post-processing: will generate output " +
                "data in folder %s" % outputdir)
@@ -270,7 +269,7 @@ def main(argv=None):
             # remove '../' from algorithm output folder
             if len(args) == 1 or '--omit-single' not in dict(opts):
                 rungeneric1.main(genopts
-                                + ["-o", outputdir, alg])
+                                 + ["-o", outputdir, alg])
 
         if len(args) == 2:
             rungeneric2.main(genopts + ["-o", outputdir] + args)

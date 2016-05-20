@@ -87,6 +87,7 @@ class GECCOBBOBTestbed(Testbed):
         self.short_names = {}
         self.hardesttargetlatex = '10^{-8}'  # used for ppfigs, pptable, pptable2, and pptables
         self.ppfigs_ftarget = 1e-8
+        self.ppfig2_ftarget = 1e-8
         self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  # possibly changed in config
         self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
         self.pprldmany_target_values = targetValues(10 ** np.arange(2, -8.2, -0.2))  # possibly changed in config
@@ -174,6 +175,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.short_names = {}
         self.hardesttargetlatex = '10^{-5}'  # used for ppfigs, pptable, pptable2, and pptables
         self.ppfigs_ftarget = 1e-5
+        self.ppfig2_ftarget = 1e-5                
         self.ppfigdim_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # possibly changed in config
         self.pprldistr_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-5))  # possibly changed in config
         target_values = np.append(np.append(10 ** np.arange(0, -5.1, -0.1), [0]), -10 ** np.arange(-5, -3.9, 0.2))
