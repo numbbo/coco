@@ -14,12 +14,9 @@ from __future__ import absolute_import
 
 import os, warnings
 import numpy
-import matplotlib.pyplot as plt
 from .. import genericsettings, testbedsettings, bestalg, toolsstats, pproc
-from ..pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec, writeLabels
+from ..pptex import tableLaTeX, writeFEvals2, writeFEvalsMaxPrec, writeLabels
 from ..toolsstats import significancetest
-
-from pdb import set_trace
 
 
 samplesize = genericsettings.simulated_runlength_bootstrap_sample_size 
