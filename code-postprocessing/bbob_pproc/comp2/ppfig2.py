@@ -261,7 +261,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
     
     # minfvalue = pproc.TargetValues.cast(minfvalue)
 
-    funInfos = ppfigparam.read_fun_infos(dsList0.isBiobjective())    
+    funInfos = ppfigparam.read_fun_infos()    
 
     dictFun0 = dsList0.dictByFunc()
     dictFun1 = dsList1.dictByFunc()

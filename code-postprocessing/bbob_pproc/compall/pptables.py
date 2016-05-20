@@ -279,7 +279,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
 
     nbtests = len(dictData)
 
-    funInfos = ppfigparam.read_fun_infos(isBiobjective)    
+    funInfos = ppfigparam.read_fun_infos()    
 
     for df in dictData:
         # Generate one table per df

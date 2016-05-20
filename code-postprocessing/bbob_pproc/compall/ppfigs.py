@@ -401,7 +401,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
     if len(target) != 1:
         raise ValueError('only a single target can be managed in ppfigs, ' + str(len(target)) + ' targets were given')
     
-    funInfos = ppfigparam.read_fun_infos(isBiobjective)    
+    funInfos = ppfigparam.read_fun_infos()    
 
     dictFunc = pproc.dictAlgByFun(dictAlg)
     if sortedAlgs is None:

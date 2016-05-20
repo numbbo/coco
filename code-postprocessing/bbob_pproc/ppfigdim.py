@@ -590,7 +590,8 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
 
     ppfig.copy_js_files(outputdir)
     
-    funInfos = ppfigparam.read_fun_infos(dsList.isBiobjective())
+    funInfos = ppfigparam.read_fun_infos()    
+    
     fontSize = genericsettings.getFontSize(funInfos.values())
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config

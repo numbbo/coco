@@ -30,22 +30,21 @@ def load_current_testbed(testbed_name, target_values):
     return current_testbed
 
 
-def get_benchmarks_short_infos(is_biobjective):
-    return 'biobj-benchmarkshortinfos.txt' if is_biobjective else 'consbenchmarkshortinfos.txt'
-
-
 def get_short_names(file_name):
     try:
         info_list = open(os.path.join(os.path.dirname(__file__), file_name), 'r').read().split('\n')
         info_dict = {}
-        for info in info_list:
-            key_val = info.split(' ', 1)
+        for line in info_list:
+            if len(line) == 0 or line.startswith('%') or line.isspace() :
+                continue
+            key_val = line.split(' ', 1)
             if len(key_val) > 1:
                 info_dict[int(key_val[0])] = key_val[1]
 
         return info_dict
     except:
         warnings.warn('benchmark infos not found')
+        print(os.path.join(os.path.dirname(__file__), file_name))
 
 
 class Testbed(object):
@@ -83,6 +82,7 @@ class GECCOBBOBTestbed(Testbed):
         # not a testbed setting
         # only the short info, how to deal with both infos?
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
+        self.shortinfo_filename = 'benchmarkshortinfos.txt'
         self.name = testbed_name_single
         self.short_names = {}
         self.hardesttargetlatex = '10^{-8}'  # used for ppfigs, pptable, pptable2, and pptables
@@ -103,7 +103,7 @@ class GECCOBBOBTestbed(Testbed):
         self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
         self.scenario = scenario_fixed
         self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
-        self.short_names = get_short_names(get_benchmarks_short_infos(False))
+        self.short_names = get_short_names(self.shortinfo_filename)
         # expensive optimization settings:
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptable2_target_runlengths = self.pptable_target_runlengths  # [0.5, 2, 10, 50]  # used in config for expensive setting
@@ -118,6 +118,7 @@ class CONSBBOBTestbed(Testbed):
         # not a testbed setting
         # only the short info, how to deal with both infos?
         self.info_filename = 'CONSBBOBbenchmarkinfos.txt'
+        self.shortinfo_filename = 'consbenchmarkshortinfos.txt'
         self.name = testbed_name_cons
         self.short_names = {}
         self.hardesttargetlatex = '10^{-8}'  # used for ppfigs, pptable, pptable2, and pptables
@@ -138,7 +139,7 @@ class CONSBBOBTestbed(Testbed):
         self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
         self.scenario = scenario_fixed
         self.best_algorithm_filename = ''
-        self.short_names = get_short_names(get_benchmarks_short_infos(False))
+        self.short_names = get_short_names(self.shortinfo_filename)
         # expensive optimization settings:
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptable2_target_runlengths = self.pptable_target_runlengths  # [0.5, 2, 10, 50]  # used in config for expensive setting
@@ -168,6 +169,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         # not a testbed setting
         # only the short info, how to deal with both infos?
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
+        self.shortinfo_filename = 'biobj-benchmarkshortinfos.txt'
         self.name = testbed_name_bi
         self.short_names = {}
         self.hardesttargetlatex = '10^{-5}'  # used for ppfigs, pptable, pptable2, and pptables
@@ -191,7 +193,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptablemany_targetsOfInterest = targetValues((1e-0, 1e-2, 1e-5))  # used for pptables
         self.scenario = scenario_biobjfixed
         self.best_algorithm_filename = ''
-        self.short_names = get_short_names(get_benchmarks_short_infos(True))
+        self.short_names = get_short_names(self.shortinfo_filename)
         # expensive optimization settings:
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
