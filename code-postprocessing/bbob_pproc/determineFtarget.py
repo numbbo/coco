@@ -11,7 +11,7 @@ import getopt
 
 ''' TODO:
 '''
-# add path to bbob_pproc  
+# add path to bbob_pproc
 #filepath = '/home/fst/coco/BBOB/code/python/bbob_pproc/'
 #sys.path.append(os.path.join(filepath, os.path.pardir))
 if __name__ == "__main__":
@@ -31,15 +31,15 @@ except:
 
 ## old stuff ##
 class FunTarget:
-    """ Determines the best and median function value from the data of all 
-        algorithms for aRT between 2*Dim*10**(i-1) and 2*Dim*10**i for i = 0,1,2,... 
+    """ Determines the best and median function value from the data of all
+        algorithms for aRT between 2*Dim*10**(i-1) and 2*Dim*10**i for i = 0,1,2,...
         The search stops if the minimal target function values of 1e-8 is reached
         or no more data for aRT>2*Dim*10**i exist.
 
         Class Attributes:
-        minFtarget - minimal function value over all algorithms for given 
+        minFtarget - minimal function value over all algorithms for given
                      dimension, function, and aRT (array)
-        medianFtarget - median function value over all algorithms for given 
+        medianFtarget - median function value over all algorithms for given
                        dimension, function, and aRT (array)
         ert - corresponds to aRT/DIM for minFtarget (array)
     """
@@ -81,18 +81,18 @@ class FunTarget:
                 # min target is reached, but not for median
                 self.minFtarget.append(numpy.nan)
                 self.medianFtarget.append(numpy.median(targetValues))
-            elif min(self.minFtarget) <= 1e-8 and min(self.medianFtarget) <= 1e-8:  
+            elif min(self.minFtarget) <= 1e-8 and min(self.medianFtarget) <= 1e-8:
                 # min and median minimal target is reached
                 self.minFtarget.append(numpy.nan)
                 self.medianFtarget.append(numpy.nan)
-                break   
+                break
             else:
                 self.minFtarget.append(numpy.min(targetValues))
                 self.medianFtarget.append(numpy.median(targetValues))
 
             # check termination conditions
             if maxErtAll < 2*dim*10**i:
-                break 
+                break
 
             # increase counter
             i += 1
@@ -115,7 +115,7 @@ class TargetList(dict):
             dictFunc = dentries.dictByFunc()
             for f, fentries in dictFunc.iteritems():
                 pass
-                
+
                 # We need the function, dimension, the function value, the
                 # best algorithm, best aRT (for this target function value)
                 #FunTarget.__init__(self, fentries, d)
@@ -134,9 +134,9 @@ class TargetList(dict):
 ### Function definitons ###
 
 def usage():
-    print main.__doc__
+    print(main.__doc__)
 
-def writeTable(data,dim,suffix=None, whichvalue = 'min'):
+def writeTable(data, dim, suffix=None, whichvalue='min'):
     """ Write data in tex-files for creating tables.
 
         Inputvalues:
@@ -145,18 +145,18 @@ def writeTable(data,dim,suffix=None, whichvalue = 'min'):
               at least one table per dimension.
         suffix - If not all data can fit within one side
                  2 files (*_part1.tex and *_part2.tex) will
-                 be created. 
+                 be created.
         whichvalue - determines wheter the min ('min') values
-                     or the median ('median') values are displayed. 
+                     or the median ('median') values are displayed.
     """
 
     # parameter
-    fontSize = 'tiny'   
-    
+    fontSize = 'tiny'
+
     # define header and format of columns
-    header = ['$evals/D$'] 
+    header = ['$evals/D$']
     format = ['%1e']
-    for id in range(0,len(data)):
+    for id in range(0, len(data)):
         header.append('$f_{' + str(data[id]['funcId']) + '}$')
         format.append('%1.1e')
 
@@ -166,13 +166,13 @@ def writeTable(data,dim,suffix=None, whichvalue = 'min'):
 
     # open file
     if suffix is None:
-        filename = whichvalue + 'ftarget_dim' + str(dim) 
+        filename = whichvalue + 'ftarget_dim' + str(dim)
     else:
         filename = whichvalue + 'ftarget_dim' + str(dim) + '_part' + str(suffix)
     try:
-        f = open(filename + '.tex','w')
+        f = open(filename + '.tex', 'w')
     except ValueError:
-        print 'Error opening '+ filename +'.tex'
+        print('Error opening ' + filename + '.tex')
 
     # Write tabular environment
     f.write('\\begin{' + fontSize + '} \n')
@@ -188,13 +188,13 @@ def writeTable(data,dim,suffix=None, whichvalue = 'min'):
     while True:
         tableData = [10**i]
         # create data for each function
-        for fun in range(0,len(data)):
+        for fun in range(0, len(data)):
             try:
-                tableData.append(data[fun][whichvalue][i]) 
+                tableData.append(data[fun][whichvalue][i])
             except:
                 # if no entry exist write nan
                 tableData.append(numpy.nan)
-    
+
             # create termination condition
             if i == 0 and len(data[fun]['ert']) > maxLength:
                 maxLength = len(data[fun]['ert'])
@@ -202,7 +202,7 @@ def writeTable(data,dim,suffix=None, whichvalue = 'min'):
         #print tableData
 
         # write row in latex format
-        writeArray(f,tableData,format,'scriptstyle')
+        writeArray(f, tableData, format, 'scriptstyle')
 
         # check termination condition
         if maxLength > i+1:
@@ -214,7 +214,7 @@ def writeTable(data,dim,suffix=None, whichvalue = 'min'):
     f.write('\end{tabular} \n')
     if suffix is None or suffix == 2:
         f.write('\caption{target function value ('+ whichvalue +
-                ') for increasing problem difficulty in '+ str(dim) +'-D} \n')  
+                ') for increasing problem difficulty in '+ str(dim) +'-D} \n')
     f.write('\end{' + fontSize + '} \n')
 
     # close file
@@ -266,22 +266,22 @@ def writeArray(file, vector, format, fontSize, sep=' & ', linesep='\\\\ \n',
         elif format[i].endswith('e'):
 
             # set minimum to 1e-8
-            if x>0 and x<1e-8:
+            if x > 0 and x < 1e-8:
                 x = 0.00000001
 
             # Split number and sign+exponent
             try:
                 tmp = str(format[i]%x).split('e')
             except TypeError:
-                print format[i]
-                print x
-                print type(x)
-                print type(format[i])
+                print(format[i])
+                print(x)
+                print(type(x))
+                print(type(format[i]))
 
             # Generate Latex entry
             # It is assumed that all entries range between 10e-9 and 10e9
             if i == 0:  # ert/dim values
-                if x <= 100 :
+                if x <= 100:
                     tmp2 = str(int(round(x)))  # tmp[0][0]
                 else:
                     tmp2 = (tmp[0][0] + '\\!\\mathrm{\\hspace{0.10em}e}' +
@@ -311,8 +311,8 @@ def postprocessing(data):
         the minimum reached value with 'nan'. The minimum
         value appears then only once in the table."""
 
-    last_entry = data[-1]  
-    for i in range(2,len(data)+1):
+    last_entry = data[-1]
+    for i in range(2, len(data)+1):
         if data[-i] == last_entry:
             data[-i+1] = numpy.nan
         else:
@@ -333,7 +333,7 @@ def main(argv=None):
        -h,--help           - displays help
        -d,--dimensions DIM - dimension(s) of interest
        -f,--functions FUN  - function(s) of interest
-       --noisefree         - noisefree function set 
+       --noisefree         - noisefree function set
        --noisy             - noisy function set
        -v,--verbose        - verbose output
        Either the flag -f FUN or -nf or -n should be set!
@@ -341,14 +341,16 @@ def main(argv=None):
 
     if argv is None:
         argv = sys.argv[1:]
-        
-    try: 
-        opts, args = getopt.getopt(argv, "hvd:f:",["help", "dimensions=","functions=","noisy","noisefree","verbose"])
+
+    try:
+        opts, args = getopt.getopt(argv, "hvd:f:", ["help", "dimensions=",
+                                                    "functions=", "noisy",
+                                                    "noisefree", "verbose"])
 
     except getopt.error, msg:
         raise ValueError(msg)
 
-    if not (args):
+    if not args:
         usage()
         sys.exit()
 
@@ -359,7 +361,7 @@ def main(argv=None):
 
     # Process options
     for o, a in opts:
-        if o in ("-h","--help"):
+        if o in ("-h", "--help"):
             usage()
             sys.exit()
         elif o in ("-d", "--dimensions"):
@@ -373,20 +375,20 @@ def main(argv=None):
             except TypeError:
                 funcs.append(int(a))
         elif o in ("--noisy"):
-            funcs = range(101,131)
+            funcs = range(101, 131)
         elif o in ("--noisefree"):
-            funcs = range(1,25)
-        elif o in ("-v","--verbose"):
+            funcs = range(1, 25)
+        elif o in ("-v", "--verbose"):
             verboseflag = True
         else:
             assert False, "unhandled option"
 
     if len(dims) == 0:
-        raise ValueError,('No dimension(s) specified!')
+        raise ValueError, ('No dimension(s) specified!')
     if len(funcs) == 0:
-        raise ValueError,('No function(s) specified!')
+        raise ValueError, ('No function(s) specified!')
 
-    # partition data since not all functions can be displayed in 
+    # partition data since not all functions can be displayed in
     # one table
     partition = [1]
     half = len(funcs)
@@ -395,7 +397,7 @@ def main(argv=None):
         half = int(round(len(funcs)/2))
 
     # create dataset
-    datasetfull = pproc.DataSetList(directory,verbose = verboseflag)
+    datasetfull = pproc.DataSetList(directory, verbose=verboseflag)
 
     # loop over dimension and functions
     for dim in dims:
@@ -403,35 +405,35 @@ def main(argv=None):
         # use partition
         for p in partition:
 
-            # create list which contains min and median values across all 
+            # create list which contains min and median values across all
             # algorithms for all functions
             ftarget = list()
-        
+
             for fun in funcs[0+int((p-1)*half):int(p*half)]:
-                
+
                 # create list which only contains entries with dimension = dim
-                # for function = fun   
-                dataset = list()                     
-                for elem in datasetfull:        
+                # for function = fun
+                dataset = list()
+                for elem in datasetfull:
                     if elem.dim == dim and elem.funcId == fun:
                         dataset.append(elem)
                         datasetfull.remove(elem)
-                
-                if len(dataset) == 0:
-                    raise ValueError, ('No entry found for dim = %g' %dim 
-                                         + ' and function = f%g!' %fun)
 
-                # get min and median values 
-                tmp = FunTarget(dataset,dim)
-                # some post-processing of the data               
+                if len(dataset) == 0:
+                    raise ValueError, ('No entry found for dim = %g' % dim
+                                       + ' and function = f%g!' % fun)
+
+                # get min and median values
+                tmp = FunTarget(dataset, dim)
+                # some post-processing of the data
                 tmp.minFtarget = postprocessing(tmp.minFtarget)
                 tmp.medianFtarget = postprocessing(tmp.medianFtarget)
-                ftarget.append({'dim':dim,'funcId':fun,'min':tmp.minFtarget,'median':tmp.medianFtarget,'ert':tmp.ert})
+                ftarget.append({'dim':dim, 'funcId':fun, 'min':tmp.minFtarget,
+                                'median':tmp.medianFtarget, 'ert':tmp.ert})
 
             # write data into table
-            writeTable(ftarget,dim,p,whichvalue = 'min')
-            writeTable(ftarget,dim,p,whichvalue = 'median')
+            writeTable(ftarget, dim, p, whichvalue='min')
+            writeTable(ftarget, dim, p, whichvalue='median')
 
 if __name__ == "__main__":
     sys.exit(main())
-    

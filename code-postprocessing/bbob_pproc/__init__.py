@@ -22,8 +22,6 @@ interpreter, assuming this package has been imported as ``bb``, type:
 
 from __future__ import absolute_import
 
-import sys
-
 import matplotlib  # just to make sure the following is actually done first
 matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
@@ -35,9 +33,9 @@ from .__main__ import main as _main  # depreciated
 
 import pkg_resources
 
-__all__  = ['comp2', 'compall', 'main', 'ppfigdim', 'pplogloss', 'pprldistr',
-            'pproc', 'ppsingle', 'pptable', 'rungeneric', 'rungeneric1',
-            'rungeneric2', 'rungenericmany', 'algportfolio', 'pptex',
-            'toolsstats']
+__all__ = ['comp2', 'compall', 'main', 'ppfigdim', 'pplogloss', 'pprldistr',
+           'pproc', 'ppsingle', 'pptable', 'rungeneric', 'rungeneric1',
+           'rungeneric2', 'rungenericmany', 'algportfolio', 'pptex',
+           'toolsstats']
 
 __version__ = pkg_resources.require('bbob_pproc')[0].version
