@@ -32,15 +32,15 @@ import sys
 import warnings
 import getopt
 
-if __name__ == "__main__":
-    (filepath, filename) = os.path.split(sys.argv[0])
-    #Test system independent method:
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-
 from .pproc import DataSetList
 from .ppfig import Usage
 
 from pdb import set_trace
+
+if __name__ == "__main__":
+    (filepath, filename) = os.path.split(sys.argv[0])
+    #Test system independent method:
+    sys.path.append(os.path.join(filepath, os.path.pardir))
 
 __all__ = ['main']
 
@@ -108,9 +108,9 @@ def main(argv=None):
             opts, args = getopt.getopt(argv, "h",
                                        ["help"])
         except getopt.error, msg:
-             raise Usage(msg)
+            raise Usage(msg)
 
-        if not (args):
+        if not args:
             usage()
             sys.exit()
 
@@ -124,7 +124,7 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        if (not verbose):
+        if not verbose:
             warnings.simplefilter('ignore')
 
         dsList = DataSetList(args)
