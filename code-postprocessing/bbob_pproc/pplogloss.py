@@ -12,9 +12,6 @@ reference (best) aRT value (or the inverse)
 from __future__ import absolute_import
 
 import os
-import warnings
-import cPickle as pickle
-import gzip
 from pdb import set_trace
 import numpy as np
 from matplotlib import pyplot as plt
@@ -25,7 +22,7 @@ except ImportError:
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from matplotlib import mlab as mlab
 
-from . import toolsstats, bestalg, genericsettings
+from . import toolsstats, bestalg
 from .pptex import writeFEvals2
 from .ppfig import saveFigure, consecutiveNumbers
 
