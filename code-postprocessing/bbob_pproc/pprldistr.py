@@ -44,9 +44,9 @@ from __future__ import absolute_import
 
 import os
 import warnings # I don't know what I am doing here
-import numpy as np
 import pickle, gzip
 import matplotlib.pyplot as plt
+import numpy as np
 from pdb import set_trace
 from . import toolsstats, genericsettings, pproc, toolsdivers
 from . import testbedsettings
@@ -81,8 +81,7 @@ rldStyles = ({'color': 'k', 'ls': '-'},
              {'color': 'c'},
              {'color': 'm'},
              {'color': 'r', 'linewidth': 3.})
-rldUnsuccStyles = (
-                   {'color': 'c', 'ls': '-'},
+rldUnsuccStyles = ({'color': 'c', 'ls': '-'},
                    {'color': 'm', 'ls': '-'},
                    {'color': 'k', 'ls': '-'},
                    {'color': 'c'},
@@ -94,7 +93,7 @@ rldUnsuccStyles = (
                    {'color': 'c', 'ls': '-'},
                    {'color': 'm'},
                    {'color': 'k'},
-                   ) # should not be too short
+                  ) # should not be too short
 
 styles = genericsettings.line_styles
 
@@ -105,7 +104,7 @@ previous_data_filename = os.path.join(os.path.split(__file__)[0], previous_data_
 previous_RLBdata_filename = os.path.join(os.path.split(__file__)[0], previous_RLBdata_filename)
 previous_data_dict = None
 previous_RLBdata_dict = None
-def load_previous_data(filename = previous_data_filename, force = False):
+def load_previous_data(filename=previous_data_filename, force=False):
     if previous_data_dict and not force:
         return previous_data_dict
     try:
@@ -120,7 +119,7 @@ def load_previous_data(filename = previous_data_filename, force = False):
         f.close()
     return None
 
-def load_previous_RLBdata(filename = previous_RLBdata_filename):
+def load_previous_RLBdata(filename=previous_RLBdata_filename):
     if previous_RLBdata_dict:
         return previous_RLBdata_dict
     try:
@@ -190,16 +189,16 @@ def caption_two():
         Left sub-columns: ECDF of
         the number of function evaluations divided by dimension $D$
         (FEvals/D) """
-    
+
     symbAlgorithmA = r'{%s%s}' % (color_to_latex('k'),
-        marker_to_latex(styles[0]['marker']))
+                                  marker_to_latex(styles[0]['marker']))
     symbAlgorithmB = r'{%s%s}' % (color_to_latex('k'),
-        marker_to_latex(styles[1]['marker']))    
+                                  marker_to_latex(styles[1]['marker']))    
     caption_two_fixed_targets_part1 = r"""%
         to reach a target value $\fopt+\Df$ with $\Df=10^{k}$, where
         $k$ is given by the first value in the legend, for
         \algorithmA\ ("""
-    caption_two_fixed_targets_part2 =  r""") and \algorithmB\ ("""
+    caption_two_fixed_targets_part2 = r""") and \algorithmB\ ("""
     caption_two_fixed_targets_part3 = r""")%
         . """ + (r"""Light beige lines show the ECDF of FEvals for target value
         $\Df=10^{-8}$ of all algorithms benchmarked during
@@ -296,7 +295,7 @@ def beautifyECDF():
         except (AttributeError, IndexError):
             pass
 
-def beautifyRLD(xlimit_max = None):
+def beautifyRLD(xlimit_max=None):
     """Format and save the figure of the run length distribution.
 
     After calling this function, changing the boundaries of the figure
@@ -309,15 +308,15 @@ def beautifyRLD(xlimit_max = None):
     a.set_ylabel('proportion of trials')
     logxticks()
     if xlimit_max:
-        plt.xlim(xmax = xlimit_max ** 1.0) # was 1.05
-    plt.xlim(xmin = runlen_xlimits_min)
-    plt.text(plt.xlim()[0], 
-             plt.ylim()[0], 
+        plt.xlim(xmax=xlimit_max ** 1.0) # was 1.05
+    plt.xlim(xmin=runlen_xlimits_min)
+    plt.text(plt.xlim()[0],
+             plt.ylim()[0],
              testbedsettings.current_testbed.pprldistr_target_values.short_info,
-             fontsize = 14)
+             fontsize=14)
     beautifyECDF()
 
-def beautifyFVD(isStoringXMax = False, ylabel = True):
+def beautifyFVD(isStoringXMax=False, ylabel=True):
     """Formats the figure of the run length distribution.
 
     This function is to be used with :py:func:`plotFVDistr`
@@ -349,7 +348,7 @@ def beautifyFVD(isStoringXMax = False, ylabel = True):
     if not ylabel:
         a.set_yticklabels(())
 
-def plotECDF(x, n = None, **plotArgs):
+def plotECDF(x, n=None, **plotArgs):
     """Plot an empirical cumulative distribution function.
 
     :param seq x: data
@@ -369,13 +368,15 @@ def plotECDF(x, n = None, **plotArgs):
         x = sorted(x) # do not sort in place
         x = np.hstack((x, x[-1]))
         y = np.hstack((np.arange(0., nx) / n, float(nx) / n))
-        res = plotUnifLogXMarkers(x, y, nbperdecade = nbperdecade,
-                                 drawstyle = 'steps', **plotArgs)
+        res = plotUnifLogXMarkers(x, y, nbperdecade=nbperdecade,
+                                  drawstyle='steps', **plotArgs)
     return res
 
 def _plotERTDistr(dsList, target, **plotArgs):
-    """This method is obsolete, should be removed? The replacement for simulated runlengths is in pprldmany?
-    Creates simulated run time distributions (it is not an ART distribution) from a DataSetList.
+    """This method is obsolete, should be removed? The replacement for
+    simulated runlengths is in pprldmany?
+    Creates simulated run time distributions (it is not an ART distribution)
+    from a DataSetList.
 
     :keyword DataSet dsList: Input data sets
     :keyword dict target: target precision
@@ -436,7 +437,7 @@ def _plotRLDistr_old(dsList, target, **plotArgs):
         except TypeError:
             target = target
         tmp = i.detEvals((target,))[0] / i.dim
-        tmp = tmp[np.isnan(tmp) == False] # keep only success
+        tmp = tmp[not np.isnan(tmp)] # keep only success
         if len(tmp) > 0:
             fsolved.add(i.funcId)
         x.extend(tmp)
@@ -467,7 +468,7 @@ def erld_data(dsList, target, max_fun_evals = np.inf):
     for ds in dsList: # ds is a DataSet
         funcs.add(ds.funcId)
         evals = ds.detEvals((target((ds.funcId, ds.dim)),))[0] / ds.dim
-        evals = evals[np.isnan(evals) == False] # keep only success
+        evals = evals[not np.isnan(evals)] # keep only success
         if len(evals) > 0 and sum(evals <= max_fun_evals):
             fsolved.add(ds.funcId)
         runlength_data.extend(evals)
@@ -512,7 +513,7 @@ def plotRLDistr(dsList, target, label = '', max_fun_evals = np.inf,
     for ds in dsList: # ds is a DataSet
         funcs.add(ds.funcId)
         tmp = ds.detEvals((target((ds.funcId, ds.dim)),))[0] / ds.dim
-        tmp = tmp[np.isnan(tmp) == False] # keep only success
+        tmp = tmp[not np.isnan(tmp)] # keep only success
         if len(tmp) > 0 and sum(tmp <= max_fun_evals):
             fsolved.add(ds.funcId)
         x.extend(tmp)
@@ -751,7 +752,7 @@ def plot_previous_algorithms(dim, funcs):
                 tmp2 = tmp[f][dim][0][1:]
                 # [0], because the maximum #evals is also recorded
                 # [1:] because the target function value is recorded
-                x.append(tmp2[np.isnan(tmp2) == False])
+                x.append(tmp2[not np.isnan(tmp2)])
                 nn += len(tmp2)
 
             if x:
