@@ -948,7 +948,7 @@ static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, 
 }
 
 /**
- * @brief Normalizes vector x, then scales it by a factor alpha.
+ * @brief Normalizes vector x.
  *
  */
 static void coco_normalize_vector(double *x, size_t dimension) {

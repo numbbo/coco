@@ -169,7 +169,7 @@ static coco_problem_t *f_rastrigin_cons_bbob_problem_allocate(const size_t funct
   fopt = bbob2009_compute_fopt(function, instance);
   
   for (i = 0; i < dimension; ++i)
-     xshift[i] = -1.0;
+    xshift[i] = -1.0;
 
   problem = f_rastrigin_allocate(dimension);
   problem = transform_vars_shift(problem, xshift, 0);

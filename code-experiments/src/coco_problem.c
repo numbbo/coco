@@ -94,9 +94,9 @@ int coco_is_feasible(coco_problem_t *problem, const double *x, double *cons_valu
   
   for(i = 0; i < problem->number_of_constraints; ++i) {
     if (cons_values[i] > 0) {
-       is_feasible = 0;
-       break;
-	 }
+      is_feasible = 0;
+      break;
+    }
   }
     
   return is_feasible;
@@ -166,7 +166,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   if (number_of_objectives > 1)
     problem->best_value = coco_allocate_vector(number_of_objectives);
   else
-	 problem->best_value = coco_allocate_vector(1);
+    problem->best_value = coco_allocate_vector(1);
   if (number_of_objectives > 1)
     problem->nadir_value = coco_allocate_vector(number_of_objectives);
   else
@@ -393,22 +393,22 @@ size_t coco_problem_get_evaluations(const coco_problem_t *problem) {
  * @brief Returns 1 if the best parameter is not (close to) zero and 0 otherwise.
  */
 static int coco_problem_best_parameter_not_zero(const coco_problem_t *problem) {
-   size_t i = 0;
-   int best_is_zero = 1;
+  size_t i = 0;
+  int best_is_zero = 1;
 
-   if (coco_vector_contains_nan(problem->best_parameter, problem->number_of_variables))
-     return 1;
+  if (coco_vector_contains_nan(problem->best_parameter, problem->number_of_variables))
+    return 1;
 
-	while (i < problem->number_of_variables && best_is_zero) {
-     best_is_zero = coco_double_almost_equal(problem->best_parameter[i], 0, 1e-9);
-     i++;
-   }
+  while (i < problem->number_of_variables && best_is_zero) {
+    best_is_zero = coco_double_almost_equal(problem->best_parameter[i], 0, 1e-9);
+    i++;
+  }
 
-   return !best_is_zero;
+  return !best_is_zero;
 }
 
 /**
- * @note Can be used to prevent unnessary burning of CPU time. 
+ * @note Can be used to prevent unnecessary burning of CPU time.
  */
 int coco_problem_final_target_hit(const coco_problem_t *problem) {
   assert(problem != NULL);
@@ -720,7 +720,7 @@ static void coco_problem_stacked_evaluate_function(coco_problem_t *problem, cons
   int is_feasible;
     
   assert(coco_problem_get_number_of_objectives(problem)
-          == number_of_objectives_problem1 + number_of_objectives_problem2);
+      == number_of_objectives_problem1 + number_of_objectives_problem2);
   
   if (number_of_objectives_problem1 > 0)
      coco_evaluate_function(data->problem1, x, &y[0]);
@@ -748,7 +748,7 @@ static void coco_problem_stacked_evaluate_constraint(coco_problem_t *problem, co
   const size_t number_of_constraints_problem1 = coco_problem_get_number_of_constraints(data->problem1);
   const size_t number_of_constraints_problem2 = coco_problem_get_number_of_constraints(data->problem2);
   assert(coco_problem_get_number_of_constraints(problem)
-          == number_of_constraints_problem1 + number_of_constraints_problem2);
+      == number_of_constraints_problem1 + number_of_constraints_problem2);
 
   if (number_of_constraints_problem1 > 0)
     coco_evaluate_constraint(data->problem1, x, y);
@@ -836,10 +836,9 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1,
   if (number_of_constraints > 0) {
      
     /* The best_value must be set up afterwards in suite_cons_bbob_problems.c */
-	 problem->best_value[0] = -FLT_MAX;
+    problem->best_value[0] = -FLT_MAX;
     
-    /* Define problem->initial_solution as problem2->initial_solution
-     */
+    /* Define problem->initial_solution as problem2->initial_solution */
     if (coco_problem_get_number_of_constraints(problem2) > 0 && problem2->initial_solution)
       problem->initial_solution = coco_duplicate_vector(problem2->initial_solution, number_of_variables);
       

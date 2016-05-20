@@ -18,7 +18,7 @@
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.
  * Increase the budget multiplier value gradually to see how it affects the runtime.
  */
-static const size_t BUDGET_MULTIPLIER = 20;
+static const size_t BUDGET_MULTIPLIER = 2;
 
 /**
  * The maximal number of independent restarts allowed for an algorithm that restarts itself.
@@ -63,23 +63,15 @@ void example_experiment(const char *suite_name,
                         const char *observer_name,
                         coco_random_state_t *random_generator);
 
-void my_random_search(evaluate_function_t evaluate,
+void my_random_search(evaluate_function_t evaluate_func,
+                      evaluate_function_t evaluate_cons,
                       const size_t dimension,
                       const size_t number_of_objectives,
+                      const size_t number_of_constraints,
                       const double *lower_bounds,
                       const double *upper_bounds,
                       const size_t max_budget,
                       coco_random_state_t *random_generator);
-                      
-void my_random_search_cons(evaluate_function_t evaluate_func,
-                           evaluate_function_t evaluate_cons,
-                           const size_t dimension,
-                           const size_t number_of_objectives,
-                           const size_t number_of_constraints,
-                           const double *lower_bounds,
-                           const double *upper_bounds,
-                           const size_t max_budget,
-                           coco_random_state_t *random_generator);
 
 void my_grid_search(evaluate_function_t evaluate,
                     const size_t dimension,
@@ -185,24 +177,15 @@ void example_experiment(const char *suite_name,
         break;
 
       /* Call the optimization algorithm for the remaining number of evaluations */
-      /*my_random_search(evaluate_function,
+      my_random_search(evaluate_function,
+                       evaluate_constraint,
                        dimension,
                        coco_problem_get_number_of_objectives(PROBLEM),
+                       coco_problem_get_number_of_constraints(PROBLEM),
                        coco_problem_get_smallest_values_of_interest(PROBLEM),
                        coco_problem_get_largest_values_of_interest(PROBLEM),
                        (size_t) evaluations_remaining,
                        random_generator);
-      */
-      
-      my_random_search_cons(evaluate_function,
-                            evaluate_constraint,
-                            dimension,
-                            coco_problem_get_number_of_objectives(PROBLEM),
-                            coco_problem_get_number_of_constraints(PROBLEM),
-                            coco_problem_get_smallest_values_of_interest(PROBLEM),
-                            coco_problem_get_largest_values_of_interest(PROBLEM),
-                            (size_t) evaluations_remaining,
-                            random_generator);
       
       /* Break the loop if the algorithm performed no evaluations or an unexpected thing happened */
       if (coco_problem_get_evaluations(PROBLEM) == evaluations_done) {
@@ -231,49 +214,6 @@ void example_experiment(const char *suite_name,
 /**
  * A random search algorithm that can be used for single- as well as multi-objective optimization.
  *
- * @param evaluate The evaluation function used to evaluate the solutions.
- * @param dimension The number of variables.
- * @param number_of_objectives The number of objectives.
- * @param lower_bounds The lower bounds of the region of interested (a vector containing dimension values).
- * @param upper_bounds The upper bounds of the region of interested (a vector containing dimension values).
- * @param max_budget The maximal number of evaluations.
- * @param random_generator Pointer to a random number generator able to produce uniformly and normally
- * distributed random numbers.
- */
-void my_random_search(evaluate_function_t evaluate,
-                      const size_t dimension,
-                      const size_t number_of_objectives,
-                      const double *lower_bounds,
-                      const double *upper_bounds,
-                      const size_t max_budget,
-                      coco_random_state_t *random_generator) {
-
-  double *x = coco_allocate_vector(dimension);
-  double *y = coco_allocate_vector(number_of_objectives);
-  double range;
-  size_t i, j;
-
-  for (i = 0; i < max_budget; ++i) {
-
-    /* Construct x as a random point between the lower and upper bounds */
-    for (j = 0; j < dimension; ++j) {
-      range = upper_bounds[j] - lower_bounds[j];
-      x[j] = lower_bounds[j] + coco_random_uniform(random_generator) * range;
-    }
-
-    /* Call the evaluate function to evaluate x on the current problem (this is where all the COCO logging
-     * is performed) */
-    evaluate(x, y);
-
-  }
-
-  coco_free_memory(x);
-  coco_free_memory(y);
-}
-
-/**
- * A random search algorithm for constrained problems.
- *
  * @param evaluate_function The function used to evaluate the objective function.
  * @param evaluate_constraint The function used to evaluate the constraints.
  * @param dimension The number of variables.
@@ -285,21 +225,24 @@ void my_random_search(evaluate_function_t evaluate,
  * @param random_generator Pointer to a random number generator able to produce uniformly and normally
  * distributed random numbers.
  */
-void my_random_search_cons(evaluate_function_t evaluate_func,
-                           evaluate_function_t evaluate_cons,
-                           const size_t dimension,
-                           const size_t number_of_objectives,
-                           const size_t number_of_constraints,
-                           const double *lower_bounds,
-                           const double *upper_bounds,
-                           const size_t max_budget,
-                           coco_random_state_t *random_generator) {
+void my_random_search(evaluate_function_t evaluate_func,
+                      evaluate_function_t evaluate_cons,
+                      const size_t dimension,
+                      const size_t number_of_objectives,
+                      const size_t number_of_constraints,
+                      const double *lower_bounds,
+                      const double *upper_bounds,
+                      const size_t max_budget,
+                      coco_random_state_t *random_generator) {
 
   double *x = coco_allocate_vector(dimension);
   double *functions_values = coco_allocate_vector(number_of_objectives);
-  double *constraints_values = coco_allocate_vector(number_of_constraints);
+  double *constraints_values = NULL;
   double range;
   size_t i, j;
+  
+  if (number_of_constraints > 0 )
+    constraints_values = coco_allocate_vector(number_of_constraints);
 
   for (i = 0; i < max_budget; ++i) {
 
@@ -311,13 +254,15 @@ void my_random_search_cons(evaluate_function_t evaluate_func,
 
     /* Call COCO's evaluate function where all the logging is performed */
     evaluate_func(x, functions_values);
-    evaluate_cons(x, constraints_values);
+    if (number_of_constraints > 0 )
+      evaluate_cons(x, constraints_values);
 
   }
 
   coco_free_memory(x);
   coco_free_memory(functions_values);
-  coco_free_memory(constraints_values);
+  if (number_of_constraints > 0 )
+    coco_free_memory(constraints_values);
 }
 
 /**

@@ -222,13 +222,6 @@ static coco_problem_t *f_ellipsoid_cons_bbob_problem_allocate(const size_t funct
   problem = transform_vars_shift(problem, xopt, 0);
   problem = transform_obj_shift(problem, fopt);
   
-  if (dimension == 2 && instance == 2) {
-	  for (i=0; i<dimension; ++i)
-		  printf("\nxopt[%lu] = %f", i, xopt[i]);
-
-	  printf("\nfopt = %f", fopt);
-  }
-  
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "1-separable");

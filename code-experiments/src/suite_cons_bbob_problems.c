@@ -8,8 +8,8 @@
 #include <math.h>
 
 #include "coco.h"
-#include "coco_linear_constraints.c"
 #include "coco_utilities.c"
+#include "c_linear.c"
 #include "f_different_powers.c"
 #include "f_discus.c"
 #include "f_ellipsoid.c"
@@ -84,7 +84,7 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);	 
   coco_normalize_vector(feasible_direction, dimension);
 	 
-  problem_c = linear_constraints_cons_bbob_problem_allocate(function, 
+  problem_c = c_linear_cons_bbob_problem_allocate(function, 
      dimension, instance, number_of_linear_constraints, norm_factor,
      problem_id_template, problem_name_template, feasible_direction);
 	    
@@ -151,7 +151,7 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_normalize_vector(feasible_direction, dimension);
   
-  problem_c = linear_constraints_cons_bbob_problem_allocate(function, 
+  problem_c = c_linear_cons_bbob_problem_allocate(function, 
      dimension, instance, number_of_linear_constraints, norm_factor,
      problem_id_template, problem_name_template, feasible_direction);
       
@@ -220,7 +220,7 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_normalize_vector(feasible_direction, dimension);
   
-  problem_c = linear_constraints_cons_bbob_problem_allocate(function, 
+  problem_c = c_linear_cons_bbob_problem_allocate(function, 
      dimension, instance, number_of_linear_constraints, norm_factor,
      problem_id_template, problem_name_template, feasible_direction);
       
@@ -289,7 +289,7 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_normalize_vector(feasible_direction, dimension);
   
-  problem_c = linear_constraints_cons_bbob_problem_allocate(function, 
+  problem_c = c_linear_cons_bbob_problem_allocate(function, 
      dimension, instance, number_of_linear_constraints, norm_factor,
      problem_id_template, problem_name_template, feasible_direction);
       
@@ -356,7 +356,7 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_normalize_vector(feasible_direction, dimension);
 
-  problem_c = linear_constraints_cons_bbob_problem_allocate(function, 
+  problem_c = c_linear_cons_bbob_problem_allocate(function, 
      dimension, instance, number_of_linear_constraints, norm_factor,
      problem_id_template, problem_name_template, feasible_direction);
       
@@ -425,7 +425,7 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_normalize_vector(feasible_direction, dimension);
 
-  problem_c = linear_constraints_cons_bbob_problem_allocate(function, 
+  problem_c = c_linear_cons_bbob_problem_allocate(function, 
      dimension, instance, number_of_linear_constraints, norm_factor,
      problem_id_template, problem_name_template, feasible_direction);
       
@@ -494,7 +494,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_normalize_vector(feasible_direction, dimension);
   
-  problem_c = linear_constraints_cons_bbob_problem_allocate(function, 
+  problem_c = c_linear_cons_bbob_problem_allocate(function, 
      dimension, instance, number_of_linear_constraints, norm_factor,
      problem_id_template, problem_name_template, feasible_direction);
       
@@ -555,7 +555,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   for (i = 0; i < dimension; ++i)
      feasible_direction[i] = 1.0;
      
-  problem_c = linear_constraints_cons_bbob_problem_allocate(function, 
+  problem_c = c_linear_cons_bbob_problem_allocate(function, 
      dimension, instance, number_of_linear_constraints, norm_factor,
      problem_id_template, problem_name_template, feasible_direction);
       
