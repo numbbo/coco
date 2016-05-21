@@ -15,7 +15,7 @@
 
 #include "transform_vars_permutation.c"
 #include "transform_vars_blockrotation.c"
-#include "transform_obj_scale.c"
+#include "transform_obj_norm_by_dim.c"
 
 /**
  * @brief Implements the different powers function without connections to any COCO structures.
@@ -124,8 +124,6 @@ static coco_problem_t *f_different_powers_permblockdiag_bbob_problem_allocate(co
   size_t nb_blocks;
   size_t swap_range;
   size_t nb_swaps;
-  double scaling_factor;
-  scaling_factor = bbob2009_fmin(1, 40. / ((double) dimension));/*TODO, update on all functions or use a function*/
 
   block_sizes = coco_get_block_sizes(&nb_blocks, dimension, "bbob-largescale");
   swap_range = coco_get_swap_range(dimension, "bbob-largescale");
@@ -148,7 +146,7 @@ static coco_problem_t *f_different_powers_permblockdiag_bbob_problem_allocate(co
   problem = transform_vars_permutation(problem, P1, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
 
-  problem = transform_obj_scale(problem, scaling_factor);
+  problem = transform_obj_norm_by_dim(problem);
   problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
