@@ -10,8 +10,6 @@ For setting variables dynamically see config.py, where some
 of the variables here and some 
 
 """
-import os
-import warnings
 import numpy as np
 
 test = False  # debug/test flag, set to False for committing the final version

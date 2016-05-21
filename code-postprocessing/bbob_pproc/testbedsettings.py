@@ -31,22 +31,21 @@ def load_current_testbed(testbed_name, target_values):
     return current_testbed
 
 
-def get_benchmarks_short_infos(is_biobjective):
-    return 'biobj-benchmarkshortinfos.txt' if is_biobjective else 'benchmarkshortinfos.txt'
-
-
 def get_short_names(file_name):
     try:
         info_list = open(os.path.join(os.path.dirname(__file__), file_name), 'r').read().split('\n')
         info_dict = {}
-        for info in info_list:
-            key_val = info.split(' ', 1)
+        for line in info_list:
+            if len(line) == 0 or line.startswith('%') or line.isspace() :
+                continue
+            key_val = line.split(' ', 1)
             if len(key_val) > 1:
                 info_dict[int(key_val[0])] = key_val[1]
 
         return info_dict
     except:
         warnings.warn('benchmark infos not found')
+        print(os.path.join(os.path.dirname(__file__), file_name))
 
 
 class Testbed(object):
@@ -80,10 +79,12 @@ class SingleObjectiveTestbed(Testbed):
     # not a testbed setting
     # only the short info, how to deal with both infos?
     self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
+    self.shortinfo_filename = 'benchmarkshortinfos.txt'
     self.name = testbed_name_single
     self.short_names = {}
     self.hardesttargetlatex = '10^{-8}'  # used for ppfigs, pptable, pptable2, and pptables
     self.ppfigs_ftarget = 1e-8
+    self.ppfig2_ftarget = 1e-8
     self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  # possibly changed in config
     self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
     self.pprldmany_target_values = targetValues(10 ** np.arange(2, -8.2, -0.2))  # possibly changed in config
@@ -99,7 +100,7 @@ class SingleObjectiveTestbed(Testbed):
     self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))  # for pptable and pptables
     self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
     self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
-    self.short_names = get_short_names(get_benchmarks_short_infos(False))
+    self.short_names = get_short_names(self.shortinfo_filename)
     # expensive optimization settings:
     self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
     self.pptable2_target_runlengths = self.pptable_target_runlengths  # [0.5, 2, 10, 50]  # used in config for expensive setting
@@ -173,10 +174,12 @@ class GECCOBiObjBBOBTestbed(Testbed):
         # not a testbed setting
         # only the short info, how to deal with both infos?
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
+        self.shortinfo_filename = 'biobj-benchmarkshortinfos.txt'
         self.name = testbed_name_bi
         self.short_names = {}
         self.hardesttargetlatex = '10^{-5}'  # used for ppfigs, pptable, pptable2, and pptables
         self.ppfigs_ftarget = 1e-5
+        self.ppfig2_ftarget = 1e-5                
         self.ppfigdim_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # possibly changed in config
         self.pprldistr_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-5))  # possibly changed in config
         target_values = np.append(np.append(10 ** np.arange(0, -5.1, -0.1), [0]), -10 ** np.arange(-5, -3.9, 0.2))
@@ -196,7 +199,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptablemany_targetsOfInterest = targetValues((1e-0, 1e-2, 1e-5))  # used for pptables
         self.scenario = scenario_biobjfixed
         self.best_algorithm_filename = ''
-        self.short_names = get_short_names(get_benchmarks_short_infos(True))
+        self.short_names = get_short_names(self.shortinfo_filename)
         # expensive optimization settings:
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting

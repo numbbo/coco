@@ -9,12 +9,9 @@ from pdb import set_trace
 import warnings
 import numpy
 from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings
-from ..pptex import writeFEvals, writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
+from ..pptex import writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from ..toolsstats import significancetest, significance_all_best_vs_other
-from ..pproc import DataSetList
-from ..toolsdivers import prepend_to_file, str_to_latex, strip_pathname1
-from ..pplogloss import detf
-#import bbob_pproc.pproc as pproc
+from ..toolsdivers import str_to_latex, strip_pathname1
 
 """
 See Section Comparison Tables in
@@ -277,7 +274,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
 
     nbtests = len(dictData)
 
-    funInfos = ppfigparam.read_fun_infos(isBiobjective)    
+    funInfos = ppfigparam.read_fun_infos()    
 
     for df in dictData:
         # Generate one table per df

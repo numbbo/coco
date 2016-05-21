@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" Best algorithm dataset module 
+""" Best algorithm dataset module
 
     This module implements :py:class:`BestAlgSet` class which is used as
     data structure for the data set of the virtual best algorithm.
@@ -33,27 +33,31 @@ from . import toolsstats, testbedsettings
 
 bestAlgorithmEntries = {}
 
-algs2009 = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA",
-"BIPOP-CMA-ES", "CMA-ESPLUSSEL", "DASA", "DE-PSO", "DIRECT", "EDA-PSO",
-"FULLNEWUOA", "G3PCX", "GA", "GLOBAL", "iAMALGAM", "IPOP-SEP-CMA-ES",
-"LSfminbnd", "LSstep", "MA-LS-CHAIN", "MCS", "NELDER", "NELDERDOERR", "NEWUOA",
-"ONEFIFTH", "POEMS", "PSO", "PSO_Bounds", "RANDOMSEARCH", "Rosenbrock",
-"SNOBFIT", "VNS")
+algs2009 = ("ALPS", "AMALGAM", "BAYEDA", "BFGS", "Cauchy-EDA", "BIPOP-CMA-ES",
+            "CMA-ESPLUSSEL", "DASA", "DE-PSO", "DIRECT", "EDA-PSO",
+            "FULLNEWUOA", "G3PCX", "GA", "GLOBAL", "iAMALGAM",
+            "IPOP-SEP-CMA-ES", "LSfminbnd", "LSstep", "MA-LS-CHAIN", "MCS",
+            "NELDER", "NELDERDOERR", "NEWUOA", "ONEFIFTH", "POEMS", "PSO",
+            "PSO_Bounds", "RANDOMSEARCH", "Rosenbrock", "SNOBFIT", "VNS")
 
 # Warning: NEWUOA is there twice: NEWUOA noiseless is a 2009 entry, NEWUOA
 # noisy is a 2010 entry
 algs2010 = ("1komma2", "1komma2mir", "1komma2mirser", "1komma2ser", "1komma4",
-"1komma4mir", "1komma4mirser", "1komma4ser", "1plus1", "1plus2mirser", "ABC",
-"AVGNEWUOA", "CMAEGS", "DE-F-AUC", "DEuniform", "IPOP-ACTCMA-ES",
-"BIPOP-CMA-ES", "MOS", "NBC-CMA", "NEWUOA", "PM-AdapSS-DE", "RCGA", "SPSA",
-"oPOEMS", "pPOEMS")
+            "1komma4mir", "1komma4mirser", "1komma4ser", "1plus1",
+            "1plus2mirser", "ABC", "AVGNEWUOA", "CMAEGS", "DE-F-AUC",
+            "DEuniform", "IPOP-ACTCMA-ES", "BIPOP-CMA-ES", "MOS", "NBC-CMA",
+            "NEWUOA", "PM-AdapSS-DE", "RCGA", "SPSA", "oPOEMS", "pPOEMS")
 
-algs2012 = ("ACOR", "BIPOPaCMA", "BIPOPsaACM", "aCMA", "CMAES", "aCMAa", "aCMAm", "aCMAma", "aCMAmah", "aCMAmh", "DBRCGA", "DE", "DEAE", "DEb", "DEctpb", "IPOPsaACM", "JADE", "JADEb", "JADEctpb", "NBIPOPaCMA", "NIPOPaCMA", "DE-AUTO", "DE-BFGS", "DE-ROLL", "DE-SIMPLEX", "MVDE", "PSO-BFGS", "xNES", "xNESas", "SNES")
+algs2012 = ("ACOR", "BIPOPaCMA", "BIPOPsaACM", "aCMA", "CMAES", "aCMAa",
+            "aCMAm", "aCMAma", "aCMAmah", "aCMAmh", "DBRCGA", "DE", "DEAE",
+            "DEb", "DEctpb", "IPOPsaACM", "JADE", "JADEb", "JADEctpb",
+            "NBIPOPaCMA", "NIPOPaCMA", "DE-AUTO", "DE-BFGS", "DE-ROLL",
+            "DE-SIMPLEX", "MVDE", "PSO-BFGS", "xNES", "xNESas", "SNES")
 
-# TODO: this should be reimplemented: 
+# TODO: this should be reimplemented:
 #  o a best algorithm should derive from the DataSet class
-#  o a best algorithm and an algorithm portfolio are almost the same, 
-#    they should derive from a CombinedAlgorithmDataSet? 
+#  o a best algorithm and an algorithm portfolio are almost the same,
+#    they should derive from a CombinedAlgorithmDataSet?
 
 # CLASS DEFINITIONS
 
@@ -81,16 +85,16 @@ class BestAlgSet():
 
     Known bug: algorithms where the aRT is NaN or Inf are not taken into
     account!?
-    
+
     """
 
     def __init__(self, dictAlg):
         """Instantiate one best algorithm data set.
-        
+
         :keyword dictAlg: dictionary of datasets, keys are algorithm
                           names, values are 1-element
                           :py:class:`DataSetList`.
-        
+
         """
 
         # values of dict dictAlg are DataSetList which should have only one
@@ -215,7 +219,7 @@ class BestAlgSet():
                 self.algId == other.algId and
                 self.comment == other.comment)
 
-    def __ne__(self,other):
+    def __ne__(self, other):
         return not self.__eq__(other)
 
     def __repr__(self):
@@ -239,13 +243,13 @@ class BestAlgSet():
                     try:
                         os.mkdir(outputdir)
                     except OSError:
-                        print ('Could not create output directory % for pickle files'
-                               % outputdir)
+                        print('Could not create output directory % for pickle files'
+                              % outputdir)
                         raise
 
             self.pickleFile = os.path.join(outputdir,
                                            'bestalg_f%03d_%02d.pickle'
-                                            %(self.funcId, self.dim))
+                                           % (self.funcId, self.dim))
 
         if getattr(self, 'modsFromPickleVersion', True):
             try:
@@ -253,14 +257,14 @@ class BestAlgSet():
                 pickle.dump(self, f)
                 f.close()
                 if verbose:
-                    print 'Saved pickle in %s.' %(self.pickleFile)
+                    print('Saved pickle in %s.' % self.pickleFile)
             except IOError, (errno, strerror):
-                print "I/O error(%s): %s" % (errno, strerror)
+                print("I/O error(%s): %s" % (errno, strerror))
             except pickle.PicklingError:
-                print "Could not pickle %s" %(self)
+                print("Could not pickle %s" % self)
         #else: #What?
             #if verbose:
-                #print ('Skipped update of pickle file %s: no new data.'
+                #print('Skipped update of pickle file %s: no new data.'
                        #% self.pickleFile)
 
     def createDictInstance(self):
@@ -287,7 +291,7 @@ class BestAlgSet():
         """
         res = []
         for f in targets:
-            idx = (self.target<=f)
+            idx = (self.target <= f)
             try:
                 res.append(self.ert[idx][0])
             except IndexError:
@@ -345,7 +349,7 @@ def load_best_algorithm(force=False):
         bestAlgorithmEntries = None
         return bestAlgorithmEntries
 
-    print "Loading best algorithm data from %s ..." % bestAlgorithmFilename,
+    print("Loading best algorithm data from %s ..." % bestAlgorithmFilename)
     sys.stdout.flush()
 
     bestAlgFilePath = os.path.split(__file__)[0]
@@ -368,7 +372,7 @@ def load_best_algorithm(force=False):
 
 
 def usage():
-    print __doc__  # same as: sys.modules[__name__].__doc__, was: main.__doc__
+    print(__doc__)  # same as: sys.modules[__name__].__doc__, was: main.__doc__
 
 
 def generate(dictalg):
@@ -383,7 +387,7 @@ def generate(dictalg):
             res[(d, f)] = tmp
     return res
 
-def customgenerate(args = algs2009):
+def customgenerate(args=algs2009):
     """Generates best algorithm data set.
 
     It will create a folder bestAlg in the current working directory
@@ -420,7 +424,7 @@ def customgenerate(args = algs2009):
     if not os.path.exists(outputdir):
         os.mkdir(outputdir)
         if verbose:
-            print 'Folder %s was created.' % (outputdir)
+            print('Folder %s was created.' % outputdir)
 
     res = generate(dictAlg)
     picklefilename = os.path.join(outputdir, 'bestalg.pickle')
@@ -428,9 +432,9 @@ def customgenerate(args = algs2009):
     pickle.dump(res, fid)
     fid.close()
 
-    print 'done with writing pickle...'
+    print('done with writing pickle...')
 
-def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8, 
+def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
                                        target_ub=1e2):
     """Computes first the artificial best algorithm from given algorithm list
        algnamelist, constructed by extracting for each target/function pair
@@ -454,52 +458,51 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
 
     """
 
-    print "Generating best algorithm data from given algorithm list...\n",  
+    print("Generating best algorithm data from given algorithm list...")
     customgenerate(algnamelist)
-    
+
     bestalgfilepath = 'bestCustomAlg'
     picklefilename = os.path.join(bestalgfilepath, 'bestalg.pickle')
     fid = open(picklefilename, 'r')
     bestalgentries = pickle.load(fid)
     fid.close()
-    print 'loading of best algorithm data done.'
-    
+    print('loading of best algorithm data done.')
+
     countsperalgorithm = {}
     for (d, f) in bestalgentries:
-        print 'dimension:', d, ', function:', f
-        print f
+        print('dimension: %d, function: %d' % (d, f))
+        print(f)
         setofalgs = set(bestalgentries[d,f].algs)
         # pre-processing data to only look at targets >= target_lb:
         correctedbestalgentries = []
         for i in range(0,len(bestalgentries[d,f].target)):
             if ((bestalgentries[d,f].target[i] >= target_lb) and
                 (bestalgentries[d,f].target[i] <= target_ub)):
-                
+
                 correctedbestalgentries.append(bestalgentries[d,f].algs[i])
-        print len(correctedbestalgentries)
+        print(len(correctedbestalgentries))
         # now count how often algorithm a is best for the extracted targets
         for a in setofalgs:
             # use setdefault to initialize with zero if a entry not existant:
-            countsperalgorithm.setdefault((d, a), 0) 
+            countsperalgorithm.setdefault((d, a), 0)
             countsperalgorithm[(d,a)] += correctedbestalgentries.count(a)
-            
+
     selectedalgsperdimension = {}
-    for (d,a) in sorted(countsperalgorithm):
+    for (d, a) in sorted(countsperalgorithm):
         if not selectedalgsperdimension.has_key(d):
             selectedalgsperdimension[d] = []
-        selectedalgsperdimension[d].append((countsperalgorithm[(d,a)], a))
-    
-    for d in sorted(selectedalgsperdimension):
-        print d, 'D:'
-        for (count, alg) in sorted(selectedalgsperdimension[d], reverse=True):
-            print count, alg
-        print '\n'
-    
-    
-    print " done."
+        selectedalgsperdimension[d].append((countsperalgorithm[(d, a)], a))
 
-    
-def extractBestAlgorithms(args = algs2009, f_factor=2,
+    for d in sorted(selectedalgsperdimension):
+        print('%dD:' % d)
+        for (count, alg) in sorted(selectedalgsperdimension[d], reverse=True):
+            print(count, alg)
+        print( '\n')
+
+    print(" done.")
+
+
+def extractBestAlgorithms(args=algs2009, f_factor=2,
                           target_lb=1e-8, target_ub=1e22):
     """Returns (and prints) per dimension a list of algorithms within
     algorithm list args that contains an algorithm if for any
@@ -519,36 +522,36 @@ def extractBestAlgorithms(args = algs2009, f_factor=2,
     # there should be a simpler way to express this to become the
     # interface of this function
 
-    print 'Loading algorithm data from given algorithm list...\n'  
+    print('Loading algorithm data from given algorithm list...\n')
 
     verbose = True
     dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
 
-    print 'This may take a while (depending on the number of algorithms)'
+    print('This may take a while (depending on the number of algorithms)')
 
     selectedAlgsPerProblem = {}
     for f, i in pproc.dictAlgByFun(dictAlg).iteritems():
         for d, j in pproc.dictAlgByDim(i).iteritems():
             selectedAlgsPerProblemDF = []
             best = BestAlgSet(j)
-            
+
             for i in range(0, len(best.target)):
                 t = best.target[i]
                 # if ((t <= target_ub) and (t >= target_lb)):
                 if toolsstats.in_approximately(t,
-                                    targets((f, d), discretize=True)):
+                                               targets((f, d), discretize=True)):
                     # add best for this target:
                     selectedAlgsPerProblemDF.append(best.algs[i])
-                
+
                     # add second best or all algorithms that have an aRT
                     # within a factor of f_factor of the best:
                     secondbest_ERT = np.infty
                     secondbest_str = ''
-                    secondbest_included = False        
+                    secondbest_included = False
                     for astring in j:
                         currdictalg = dictAlg[astring].dictByDim()
                         if currdictalg.has_key(d):
-                            curralgdata = currdictalg[d][f-1]                        
+                            curralgdata = currdictalg[d][f-1]
                             currERT = curralgdata.detERT([t])[0]
                             if (astring != best.algs[i]):
                                 if (currERT < secondbest_ERT):
@@ -559,38 +562,37 @@ def extractBestAlgorithms(args = algs2009, f_factor=2,
                                     secondbest_included = True
                     if not (secondbest_included) and (secondbest_str != ''):
                         selectedAlgsPerProblemDF.append(secondbest_str)
-            
+
             if len(selectedAlgsPerProblemDF) > 0:
                 selectedAlgsPerProblem[(d, f)] = selectedAlgsPerProblemDF
-        
-        print 'pre-processing of function', f, 'done.'                    
-                                  
-    print 'loading of best algorithm(s) data done.'
-    
+
+        print('pre-processing of function %d done.' % f)
+
+    print('loading of best algorithm(s) data done.')
+
     countsperalgorithm = {}
     for (d, f) in selectedAlgsPerProblem:
-        print 'dimension:', d, ', function:', f
+        print('dimension: %d, function: %d' % (d, f))
         setofalgs = set(selectedAlgsPerProblem[d,f])
-        
+
         # now count how often algorithm a is best for the extracted targets
         for a in setofalgs:
             # use setdefault to initialize with zero if a entry not existant:
-            countsperalgorithm.setdefault((d, a), 0) 
+            countsperalgorithm.setdefault((d, a), 0)
             countsperalgorithm[(d,a)] += selectedAlgsPerProblem[d,f].count(a)
-            
+
     selectedalgsperdimension = {}
-    for (d,a) in sorted(countsperalgorithm):
+    for (d, a) in sorted(countsperalgorithm):
         if not selectedalgsperdimension.has_key(d):
             selectedalgsperdimension[d] = []
         selectedalgsperdimension[d].append((countsperalgorithm[(d,a)], a))
-    
+
     for d in sorted(selectedalgsperdimension):
-        print d, 'D:'
+        print('%dD:' % d)
         for (count, alg) in sorted(selectedalgsperdimension[d], reverse=True):
-            print count, alg
-        print '\n'
-    
-    
-    print " done."
-    
+            print(count, alg)
+        print('\n')
+
+    print(" done.")
+
     return selectedalgsperdimension
