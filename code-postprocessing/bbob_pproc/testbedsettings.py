@@ -202,6 +202,11 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptables_target_runlengths = [2, 10, 50]  # used in config for expensive setting
 
+        self.dimensions_to_display = [2, 3, 5, 10, 20, 40]
+        self.tabDimsOfInterest = [5, 20]
+        self.rldDimsOfInterest = [5, 20]
+        self.htmlDimsOfInterest = [5, 20]
+
 
 
 
