@@ -10,9 +10,9 @@
 #include "coco_problem.c"
 #include "suite_bbob_legacy_code.c"
 #include "transform_obj_shift.c"
-#include "transform_obj_scale.c"
 #include "f_sphere.c"
 #include "transform_vars_x_hat_generic.c"
+#include "transform_obj_norm_by_dim.c"
 
 /**
  * @brief Data type for the Lunacek bi-Rastrigin problem.
@@ -231,7 +231,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin_sub_problem_allocate(const size_t 
                                                                  f_lunacek_bi_rastrigin_sub_evaluate_core, NULL, number_of_variables, -5.0, 5.0, 0.0);
   problem_i->versatile_data = NULL;
   coco_problem_set_id(problem_i, "%s_d%04lu", "lunacek_bi_rastrigin_sub", number_of_variables);
-  /*f_lunacek_bi_rastrigin_sub_evaluate_core(problem_i, problem_i->best_parameter, problem_i->best_value);*/
+  f_lunacek_bi_rastrigin_sub_evaluate_core(problem_i, problem_i->best_parameter, problem_i->best_value);
   return problem_i;
 }
 
@@ -357,12 +357,11 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
   ((f_lunacek_bi_rastrigin_versatile_data_t *) problem->versatile_data)->sub_problem_mu0 = f_lunacek_bi_rastrigin_sub_problem_allocate(dimension);
   ((f_lunacek_bi_rastrigin_versatile_data_t *) problem->versatile_data)->sub_problem_mu1 = f_lunacek_bi_rastrigin_sub_problem_allocate(dimension);
 
-  /* set fopt on the non transformed version. Since sub-problems */
+  /* set fopt on the non transformed version.*/
   f_lunacek_bi_rastrigin_evaluate_core(problem, problem->best_parameter, problem->best_value);
 
-  /* set xopt */ /* Wassim: to silence warning about best_parameter*/
   sign_vector = coco_allocate_vector(dimension);
-  for ( i = 0; i < dimension; i++) {
+  for ( i = 0; i < dimension; i++) { /* set sign(x_opt)*/
     if ( coco_random_normal(rng) < 0.0) {/* Wassim: noraml is used here but unif for Schweffel!!! */
       sign_vector[i] = -1.0;
     } else {
@@ -381,7 +380,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
   *sub_problem_tmp = transform_vars_x_hat_generic(*sub_problem_tmp, sign_vector);
 
   *sub_problem_tmp = transform_obj_shift(*sub_problem_tmp, d * (double) dimension);
-  *sub_problem_tmp = transform_obj_scale(*sub_problem_tmp, s);
+  *sub_problem_tmp = transform_obj_norm_by_dim(*sub_problem_tmp);
 
   /* transformations on main problem */
   problem = transform_vars_permutation(problem, P22, dimension);
@@ -392,16 +391,19 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
   for ( i = 0; i < dimension; i++) { /* Wassim: to silence warning about best_parameter*/
     problem->best_parameter[i] = 0.5 * mu0 * sign_vector[i]; /* TODO: Documentation no 0.5 in documentation! */
   }
-
+  
   problem = transform_vars_permutation(problem, P12, dimension);
   problem = transform_vars_blockrotation(problem, B1_copy, dimension, block_sizes1, nb_blocks1);
   problem = transform_vars_permutation(problem, P11, dimension);
   problem = transform_vars_shift(problem, mu0_vector, 0);
   problem = transform_vars_x_hat_generic(problem, sign_vector);
 
-  problem = transform_obj_scale(problem, 1.0 / (double) dimension);
+  problem = transform_obj_norm_by_dim(problem);
   problem = transform_obj_penalize(problem, penalty_factor);
   problem = transform_obj_shift(problem, fopt);
+
+  /*f_lunacek_bi_rastrigin_evaluate_core(problem, problem->best_parameter, problem->best_value);
+  printf("\n %f , x_opt[0]= %f\n", problem->best_value[0], problem->best_parameter[0]);*//* Wassim: for testing purposes, might end up being the one kept though*/
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);

@@ -11,7 +11,6 @@
 #include "coco_problem.c"
 #include "suite_bbob_legacy_code.c"
 #include "transform_vars_conditioning.c"
-#include "transform_obj_scale.c"
 #include "transform_obj_shift.c"
 #include "transform_vars_scale.c"
 #include "transform_vars_affine.c"

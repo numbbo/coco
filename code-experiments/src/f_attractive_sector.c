@@ -17,8 +17,8 @@
 
 #include "transform_vars_permutation.c"
 #include "transform_vars_blockrotation.c"
-#include "transform_obj_scale.c"
 #include "transform_vars_conditioning.c"
+#include "transform_obj_norm_by_dim.c"
 
 /**
  * @brief Data type for the attractive sector problem.
@@ -193,7 +193,7 @@ static coco_problem_t *f_attractive_sector_permblockdiag_bbob_problem_allocate(c
   coco_compute_truncated_uniform_swap_permutation(P22, rseed + 5000000, dimension, nb_swaps2, swap_range2);
 
   problem = f_attractive_sector_allocate(dimension, xopt);
-  problem = transform_obj_scale(problem, 1. / (double) dimension);
+  problem = transform_obj_norm_by_dim(problem);
   problem = transform_obj_oscillate(problem);
   problem = transform_obj_power(problem, 0.9);
   problem = transform_obj_shift(problem, fopt);

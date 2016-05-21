@@ -17,6 +17,7 @@
 #include "transform_vars_shift.c"
 #include "transform_vars_z_hat.c"
 #include "transform_vars_x_hat.c"
+#include "transform_obj_norm_by_dim.c"
 
 /**
  * @brief Implements the Schwefel function for large scale.
@@ -107,7 +108,7 @@ static coco_problem_t *f_schwefel_generalized_bbob_problem_allocate(const size_t
   problem = transform_vars_z_hat(problem, xopt);
   problem = transform_vars_scale(problem, 2);
   problem = transform_vars_x_hat(problem, rseed);
-  problem = transform_obj_scale(problem, 1.0 / (double) dimension);
+  problem = transform_obj_norm_by_dim(problem);
   problem = transform_obj_shift(problem, Schwefel_constant); /* We could add the Schwefel_constant before normalizing */
   problem = transform_obj_shift(problem, fopt);
 
