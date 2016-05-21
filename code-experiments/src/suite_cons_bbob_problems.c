@@ -76,28 +76,28 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
   all_zeros = coco_allocate_vector(dimension);             
   
   for (i = 0; i < dimension; ++i)
-     all_zeros[i] = 0.0;    
+    all_zeros[i] = 0.0;    
   
   problem = f_sphere_bbob_problem_allocate(function, dimension, 
-     instance, rseed, problem_id_template, problem_name_template);
+      instance, rseed, problem_id_template, problem_name_template);
 	 
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);	 
   coco_normalize_vector(feasible_direction, dimension);
 	 
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-     dimension, instance, number_of_linear_constraints, norm_factor,
-     problem_id_template, problem_name_template, feasible_direction);
+      dimension, instance, number_of_linear_constraints, norm_factor,
+      problem_id_template, problem_name_template, feasible_direction);
 	    
   problem_type_temp = coco_strdup(problem->problem_type);
   problem = coco_problem_stacked_allocate(problem, problem_c,
-     problem_c->smallest_values_of_interest, 
-     problem_c->largest_values_of_interest);
+      problem_c->smallest_values_of_interest, 
+      problem_c->largest_values_of_interest);
 	    
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value
    */
   for (i = 0; i < dimension; ++i)
-     problem->best_parameter[i] = 0.0;  
+    problem->best_parameter[i] = 0.0;  
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);  
   problem->evaluations = 0;  
   
@@ -143,28 +143,28 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   all_zeros = coco_allocate_vector(dimension);
  
   for (i = 0; i < dimension; ++i)
-     all_zeros[i] = 0.0;
+    all_zeros[i] = 0.0;
      
   problem = f_ellipsoid_cons_bbob_problem_allocate(function, dimension, 
-     instance, rseed, problem_id_template, problem_name_template);
+      instance, rseed, problem_id_template, problem_name_template);
 
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_normalize_vector(feasible_direction, dimension);
   
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-     dimension, instance, number_of_linear_constraints, norm_factor,
-     problem_id_template, problem_name_template, feasible_direction);
+      dimension, instance, number_of_linear_constraints, norm_factor,
+      problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
   problem = coco_problem_stacked_allocate(problem, problem_c,
-     problem_c->smallest_values_of_interest, 
-     problem_c->largest_values_of_interest);
+      problem_c->smallest_values_of_interest, 
+      problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value
    */
   for (i = 0; i < dimension; ++i)
-     problem->best_parameter[i] = 0.0;
+    problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
   problem->evaluations = 0;  
   
@@ -212,28 +212,28 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
   all_zeros = coco_allocate_vector(dimension);
  
   for (i = 0; i < dimension; ++i)
-     all_zeros[i] = 0.0;
+    all_zeros[i] = 0.0;
 	 
   problem = f_ellipsoid_rotated_cons_bbob_problem_allocate(function, dimension, 
-     instance, rseed, problem_id_template, problem_name_template);
+      instance, rseed, problem_id_template, problem_name_template);
       
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_normalize_vector(feasible_direction, dimension);
   
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-     dimension, instance, number_of_linear_constraints, norm_factor,
-     problem_id_template, problem_name_template, feasible_direction);
+      dimension, instance, number_of_linear_constraints, norm_factor,
+      problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
   problem = coco_problem_stacked_allocate(problem, problem_c,
-     problem_c->smallest_values_of_interest, 
-     problem_c->largest_values_of_interest);
+      problem_c->smallest_values_of_interest, 
+      problem_c->largest_values_of_interest);
      
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value
    */
   for (i = 0; i < dimension; ++i)
-     problem->best_parameter[i] = 0.0;
+    problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
   problem->evaluations = 0;  
   
@@ -281,28 +281,28 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
   all_zeros = coco_allocate_vector(dimension);
  
   for (i = 0; i < dimension; ++i)
-     all_zeros[i] = 0.0;
+    all_zeros[i] = 0.0;
 	 
   problem = f_linear_slope_bbob_problem_allocate(function, dimension, 
-     instance, rseed, problem_id_template, problem_name_template);
+      instance, rseed, problem_id_template, problem_name_template);
       
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_normalize_vector(feasible_direction, dimension);
   
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-     dimension, instance, number_of_linear_constraints, norm_factor,
-     problem_id_template, problem_name_template, feasible_direction);
+      dimension, instance, number_of_linear_constraints, norm_factor,
+      problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
   problem = coco_problem_stacked_allocate(problem, problem_c,
-     problem_c->smallest_values_of_interest, 
-     problem_c->largest_values_of_interest);
+      problem_c->smallest_values_of_interest, 
+      problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value
    */
   for (i = 0; i < dimension; ++i)
-     problem->best_parameter[i] = 0.0;
+    problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
   problem->evaluations = 0;  
   
@@ -348,28 +348,28 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
   all_zeros = coco_allocate_vector(dimension);
  
   for (i = 0; i < dimension; ++i)
-     all_zeros[i] = 0.0;
+    all_zeros[i] = 0.0;
 
   problem = f_discus_cons_bbob_problem_allocate(function, dimension, 
-     instance, rseed, problem_id_template, problem_name_template);
+      instance, rseed, problem_id_template, problem_name_template);
       
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_normalize_vector(feasible_direction, dimension);
 
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-     dimension, instance, number_of_linear_constraints, norm_factor,
-     problem_id_template, problem_name_template, feasible_direction);
+      dimension, instance, number_of_linear_constraints, norm_factor,
+      problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
   problem = coco_problem_stacked_allocate(problem, problem_c,
-     problem_c->smallest_values_of_interest, 
-     problem_c->largest_values_of_interest);
+      problem_c->smallest_values_of_interest, 
+      problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value
    */
   for (i = 0; i < dimension; ++i)
-     problem->best_parameter[i] = 0.0;
+    problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
   problem->evaluations = 0;  
      
@@ -417,28 +417,28 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   all_zeros = coco_allocate_vector(dimension);
  
   for (i = 0; i < dimension; ++i)
-     all_zeros[i] = 0.0;
+    all_zeros[i] = 0.0;
 	 
   problem = f_bent_cigar_cons_bbob_problem_allocate(function, dimension, 
-     instance, rseed, problem_id_template, problem_name_template);
+      instance, rseed, problem_id_template, problem_name_template);
       
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_normalize_vector(feasible_direction, dimension);
 
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-     dimension, instance, number_of_linear_constraints, norm_factor,
-     problem_id_template, problem_name_template, feasible_direction);
+      dimension, instance, number_of_linear_constraints, norm_factor,
+      problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
   problem = coco_problem_stacked_allocate(problem, problem_c,
-     problem_c->smallest_values_of_interest, 
-     problem_c->largest_values_of_interest);
+      problem_c->smallest_values_of_interest, 
+      problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value
    */
   for (i = 0; i < dimension; ++i)
-     problem->best_parameter[i] = 0.0;
+    problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
   problem->evaluations = 0;  
      
@@ -486,28 +486,28 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   all_zeros = coco_allocate_vector(dimension);
  
   for (i = 0; i < dimension; ++i)
-     all_zeros[i] = 0.0;
+    all_zeros[i] = 0.0;
 	 
   problem = f_different_powers_bbob_problem_allocate(function, dimension, 
-     instance, rseed, problem_id_template, problem_name_template);
+      instance, rseed, problem_id_template, problem_name_template);
       
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_normalize_vector(feasible_direction, dimension);
   
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-     dimension, instance, number_of_linear_constraints, norm_factor,
-     problem_id_template, problem_name_template, feasible_direction);
+      dimension, instance, number_of_linear_constraints, norm_factor,
+      problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
   problem = coco_problem_stacked_allocate(problem, problem_c,
-     problem_c->smallest_values_of_interest, 
-     problem_c->largest_values_of_interest);
+      problem_c->smallest_values_of_interest, 
+      problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value
    */
   for (i = 0; i < dimension; ++i)
-     problem->best_parameter[i] = 0.0;
+    problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
   problem->evaluations = 0;  
      
@@ -550,25 +550,25 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   char *problem_type_temp = NULL;
 	 
   problem = f_rastrigin_cons_bbob_problem_allocate(function, dimension, 
-     instance, rseed, problem_id_template, problem_name_template);
+      instance, rseed, problem_id_template, problem_name_template);
   
   for (i = 0; i < dimension; ++i)
-     feasible_direction[i] = 1.0;
+    feasible_direction[i] = 1.0;
      
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-     dimension, instance, number_of_linear_constraints, norm_factor,
-     problem_id_template, problem_name_template, feasible_direction);
+      dimension, instance, number_of_linear_constraints, norm_factor,
+      problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
   problem = coco_problem_stacked_allocate(problem, problem_c,
-     problem_c->smallest_values_of_interest, 
-     problem_c->largest_values_of_interest);
+      problem_c->smallest_values_of_interest, 
+      problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value
    */
   for (i = 0; i < dimension; ++i)
-     problem->best_parameter[i] = 0.0;
+    problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
   problem->evaluations = 0;  
   

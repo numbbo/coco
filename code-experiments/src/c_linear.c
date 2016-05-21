@@ -1,5 +1,5 @@
 /**
- * @file  coco_linear_constraints.c
+ * @file  c_linear.c
  * @brief Implementation of problems with linear constraints for the
  *        suite of constrained problems.
  */
@@ -74,7 +74,7 @@ static void c_sum_variables_evaluate(coco_problem_t *self,
   
   y[0] = 0.0;
   for (i = 0; i < self->number_of_variables; ++i)
-     y[0] += x[i];
+    y[0] += x[i];
 }	
 
 /**
@@ -82,8 +82,8 @@ static void c_sum_variables_evaluate(coco_problem_t *self,
  *        the result in 'y'.
  */
 static void c_linear_single_evaluate(coco_problem_t *self, 
-                                              const double *x, 
-                                              double *y) {
+                                     const double *x, 
+                                     double *y) {
 	
   size_t i;
   
@@ -96,7 +96,7 @@ static void c_linear_single_evaluate(coco_problem_t *self,
   assert(self->number_of_constraints == 1);
 			
   for (i = 0; i < self->number_of_variables; ++i)
-      data->x[i] = (data->gradient[i])*x[i];
+    data->x[i] = (data->gradient[i])*x[i];
   
   coco_evaluate_constraint(inner_problem, data->x, y);
   
@@ -129,8 +129,8 @@ static coco_problem_t *guarantee_feasible_point(coco_problem_t *problem,
    * is not feasible w.r.t. the constraint in "problem".
    */
   if (constraint_value > 0)
-     for (i = 0; i < problem->number_of_variables; ++i)
-        data->gradient[i] *= -1.0;
+    for (i = 0; i < problem->number_of_variables; ++i)
+      data->gradient[i] *= -1.0;
           
   problem->initial_solution = coco_duplicate_vector(feasible_direction, problem->number_of_variables);
  
@@ -181,7 +181,7 @@ static coco_problem_t *c_linear_transform(coco_problem_t *inner_problem,
   data->gradient = coco_duplicate_vector(gradient, inner_problem->number_of_variables);
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   self = coco_problem_transformed_allocate(inner_problem, data, 
-     c_linear_gradient_free, "gradient_linear_constraint");
+      c_linear_gradient_free, "gradient_linear_constraint");
   self->evaluate_constraint = c_linear_single_evaluate;
 
   return self;
@@ -205,15 +205,15 @@ double randn(double mu, double sigma) {
    * has not been used yet 
    */
   if (call % 2 == 0) {
-     ++call;
-     return (mu + sigma * (double) X2);
+    ++call;
+    return (mu + sigma * (double) X2);
   }
  
   /* The polar method itself */
   do {
-     U1 = -1 + ((double)rand () / RAND_MAX) * 2;
-     U2 = -1 + ((double)rand () / RAND_MAX) * 2;
-     W = pow(U1, 2) + pow(U2, 2);
+    U1 = -1 + ((double)rand () / RAND_MAX) * 2;
+    U2 = -1 + ((double)rand () / RAND_MAX) * 2;
+    W = pow(U1, 2) + pow(U2, 2);
   }
   while (W >= 1 || W == 0);
  
@@ -253,33 +253,33 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
    * linear constraint only
    */
   if(gradient) {
-	  
-     for (i = 0; i < dimension; ++i) 
-         gradient[i] *= norm_factor;
-     problem = c_linear_transform(problem, gradient);
-     
+
+    for (i = 0; i < dimension; ++i) 
+      gradient[i] *= norm_factor;
+    problem = c_linear_transform(problem, gradient);
+
   }
   else{ /* randomly generate the gradient of the linear constraint */
 	  
-     gradient_linear_constraint = coco_allocate_vector(dimension);
-     rseed_cons = (long)(function + 10000 * instance 
-	                               + 50000 * constraint_number);
-     srand(rseed_cons);
+    gradient_linear_constraint = coco_allocate_vector(dimension);
+    rseed_cons = (long)(function + 10000 * instance 
+                                 + 50000 * constraint_number);
+    srand(rseed_cons);
      
-     /* Generate a pseudorandom number that is normally distributed
-      * with mean mu and variance sigma (= norm_factor)
-      */
-     for (i = 0; i < dimension; ++i)
-         gradient_linear_constraint[i] = randn(0.0, norm_factor);
-     problem = c_linear_transform(problem, gradient_linear_constraint);
-     coco_free_memory(gradient_linear_constraint);
+    /* Generate a pseudorandom number that is normally distributed
+     * with mean mu and variance sigma (= norm_factor)
+     */
+    for (i = 0; i < dimension; ++i)
+      gradient_linear_constraint[i] = randn(0.0, norm_factor);
+    problem = c_linear_transform(problem, gradient_linear_constraint);
+    coco_free_memory(gradient_linear_constraint);
   }
   
   /* Guarantee that the vector feasible_point is feasible w.r.t. to
    * this constraint and set it as initial_solution
    */
   if(feasible_direction)
-     problem = guarantee_feasible_point(problem, feasible_direction);
+    problem = guarantee_feasible_point(problem, feasible_direction);
   
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
@@ -311,37 +311,37 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   gradient_c1 = coco_allocate_vector(dimension);
   																	
   for (i = 0; i < dimension; ++i)
-     gradient_c1[i] = -feasible_direction[i];
+    gradient_c1[i] = -feasible_direction[i];
   
   /* Build the first linear constraint using 'gradient_c1' as
    * its gradient
    */  
   problem_c = c_linear_single_cons_bbob_problem_allocate(function, 
-     dimension, instance, 1, norm_factor, problem_id_template, 
-     problem_name_template, gradient_c1, feasible_direction);
+      dimension, instance, 1, norm_factor, problem_id_template, 
+      problem_name_template, gradient_c1, feasible_direction);
 	 
   /* Instantiate the other linear constraints (if any) and stack them 
    * all into problem_c
    */     
   for (i = 2; i <= number_of_linear_constraints; ++i) {
 	 
-     /* Instantiate a new problem containing one linear constraint only */
-     problem_c2 = c_linear_single_cons_bbob_problem_allocate(function, 
+    /* Instantiate a new problem containing one linear constraint only */
+    problem_c2 = c_linear_single_cons_bbob_problem_allocate(function, 
         dimension, instance, i, norm_factor, problem_id_template, 
         problem_name_template, NULL, feasible_direction);
 		
-     problem_c = coco_problem_stacked_allocate(problem_c, problem_c2,
+    problem_c = coco_problem_stacked_allocate(problem_c, problem_c2,
         problem_c2->smallest_values_of_interest, problem_c2->largest_values_of_interest);
 	 
-     /* Use the standard stacked problem_id as problem_name and 
-      * construct a new suite-specific problem_id 
-      */
-     coco_problem_set_name(problem_c, problem_c->problem_id);
-     coco_problem_set_id(problem_c, "bbob-constrained_f%02lu_i%02lu_d%02lu", 
+    /* Use the standard stacked problem_id as problem_name and 
+     * construct a new suite-specific problem_id 
+     */
+    coco_problem_set_name(problem_c, problem_c->problem_id);
+    coco_problem_set_id(problem_c, "bbob-constrained_f%02lu_i%02lu_d%02lu", 
         (unsigned long)function, (unsigned long)instance, (unsigned long)dimension);
 
-     /* Construct problem type */
-     coco_problem_set_type(problem_c, "%s_%s", problem_c2->problem_type, 
+    /* Construct problem type */
+    coco_problem_set_type(problem_c, "%s_%s", problem_c2->problem_type, 
         problem_c2->problem_type);
   }
   
