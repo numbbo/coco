@@ -70,58 +70,58 @@ static coco_problem_t *coco_get_cons_bbob_problem(const size_t function,
   if (obj_function_type(function) == 1) {
 	  
     problem = f_sphere_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, number_of_linear_constraints, rseed,
-       feasible_direction, xshift, problem_id_template, 
-       problem_name_template);
+        dimension, instance, number_of_linear_constraints, rseed,
+        feasible_direction, xshift, problem_id_template, 
+        problem_name_template);
 	 
   } else if (obj_function_type(function) == 2) {
 	  
     problem = f_ellipsoid_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, number_of_linear_constraints, rseed,
-       feasible_direction, xshift, problem_id_template, 
-       problem_name_template);
+        dimension, instance, number_of_linear_constraints, rseed,
+        feasible_direction, xshift, problem_id_template, 
+        problem_name_template);
 	  
   } else if (obj_function_type(function) == 3) {
 	  
     problem = f_linear_slope_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, number_of_linear_constraints, rseed,
-       feasible_direction, xshift, problem_id_template, 
-       problem_name_template);
+        dimension, instance, number_of_linear_constraints, rseed,
+        feasible_direction, xshift, problem_id_template, 
+        problem_name_template);
 	  
   } else if (obj_function_type(function) == 4) {
 	  
     problem = f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, number_of_linear_constraints, rseed,
-       feasible_direction, xshift, problem_id_template, 
-       problem_name_template);
+        dimension, instance, number_of_linear_constraints, rseed,
+        feasible_direction, xshift, problem_id_template, 
+        problem_name_template);
 	  
   } else if (obj_function_type(function) == 5) {
 	  
     problem = f_discus_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, number_of_linear_constraints, rseed,
-       feasible_direction, xshift, problem_id_template, 
-       problem_name_template);
+        dimension, instance, number_of_linear_constraints, rseed,
+        feasible_direction, xshift, problem_id_template, 
+        problem_name_template);
 	  
   } else if (obj_function_type(function) == 6) {
 	  
     problem = f_bent_cigar_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, number_of_linear_constraints, rseed,
-       feasible_direction, xshift, problem_id_template, 
-       problem_name_template);
+        dimension, instance, number_of_linear_constraints, rseed,
+        feasible_direction, xshift, problem_id_template, 
+        problem_name_template);
 	  
   } else if (obj_function_type(function) == 7) {
 	  
     problem = f_different_powers_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, number_of_linear_constraints, rseed,
-       feasible_direction, xshift, problem_id_template, 
-       problem_name_template);
+        dimension, instance, number_of_linear_constraints, rseed,
+        feasible_direction, xshift, problem_id_template, 
+        problem_name_template);
 	  
   } else if (obj_function_type(function) == 8) {
 	  
     problem = f_rastrigin_c_linear_cons_bbob_problem_allocate(function, 
-       dimension, instance, number_of_linear_constraints, rseed,
-       feasible_direction, xshift, problem_id_template, 
-       problem_name_template);
+        dimension, instance, number_of_linear_constraints, rseed,
+        feasible_direction, xshift, problem_id_template, 
+        problem_name_template);
 	  
   } else {
     coco_error("get_cons_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD", 
