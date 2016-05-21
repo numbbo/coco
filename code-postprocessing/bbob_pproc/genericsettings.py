@@ -240,7 +240,7 @@ inputsettings = 'color'
 isExpensive = False
 isRldOnSingleFcts = True
 isRLDistr = True
-isLargeScale = False # Wassim: added large scale tag
+#isLargeScale = False # Wassim: should no longer be used, use testbedsetting objects instead
 ##
 isLogLoss = True  # only affects rungeneric1
 isPickled = False  # only affects rungeneric1
