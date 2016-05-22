@@ -15,7 +15,7 @@
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.
  * Increase the budget multiplier value gradually to see how it affects the runtime.
  */
-static const size_t BUDGET_MULTIPLIER = 1e4;
+static const size_t BUDGET_MULTIPLIER = 1e0;
 
 /**
  * The maximal number of independent restarts allowed for an algorithm that restarts itself.
@@ -134,7 +134,7 @@ void example_experiment(const char *suite_name,
                "algorithm_info: \"A simple random search algorithm\"", suite_name);
   
   /* Initialize the suite and observer */
-  suite = coco_suite(suite_name, "year: 2016", "instance_indices: 1-3 dimensions: 20,40 function_indices: 1,2");
+  suite = coco_suite(suite_name, "year: 2016", "instance_indices: 1-10 function_indices: 1-5 dimensions: 2,3,5,10,20,40");
   observer = coco_observer(observer_name, observer_options);
   coco_free_memory(observer_options);
 
