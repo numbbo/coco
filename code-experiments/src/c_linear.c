@@ -11,8 +11,6 @@
 #include <assert.h>
 
 #include "coco.h"
-#include "coco_problem.c"
-#include "coco_random.c"
 
 static void c_sum_variables_evaluate(coco_problem_t *self, 
                                      const double *x, 
