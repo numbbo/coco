@@ -207,12 +207,13 @@ The ``bbob-biobj`` test suite provides 55 bi-objective functions in six
 dimensions (2, 3, 5, 10, 20, and 40) with a large number of possible instances. 
 The 55 functions are derived from combining a subset of the 24 well-known
 single-objective functions of the ``bbob`` test suite [HAN2009]_ which
-has been used since 2009 in the `BBOB workshop series
-<http://numbbo.github.io/workshops/>`_ . While concrete details on each of
+has been used since 2009 in the `BBOB workshop series`__. 
+While concrete details on each of
 the 55 ``bbob-biobj`` functions are given in Section
 :ref:`sec-test-functions`, we will detail here the main rationale behind
 them together with their common properties.
 
+__ http://numbbo.github.io/workshops
 
 The Single-objective ``bbob`` Functions
 ---------------------------------------
@@ -687,15 +688,18 @@ as large as :math:`10^{10}`.
 
 Domain Bounds
 -------------
-All bi-objective functions provided in the ``bbob-biobj`` suite are unbounded, i.e., defined
-on the entire real-valued space :math:`\mathbb{R}^D`. 
-Nevertheless, they are designed such that the search domain of interest is :math:`[-5,5]^D`
-and bound-constraint methods are likely to be competitive. [#]_
+All bi-objective functions provided in the ``bbob-biobj`` suite are unbounded,
+i.e., defined on the entire real-valued space :math:`\mathbb{R}^D`. 
+The search domain of interest is defined as :math:`[-100,100]^D`, outside of 
+which non-dominated solutions are quite unlikely to be found. [#]_ The majority of non-dominated solutions are likely to lie even within :math:`[-5,5]^D`. 
 
-While we believe that this domain contains the Pareto set in most cases, due to the nature
-of the ``bbob-biobj`` function definitions, there is no guarantee that this
-is always the case --- it is only guaranteed that the extremal solutions and their
-neighborhood ball of radius one lie within this region.
+.. Nevertheless, they are designed such that and bound-constraint methods are likely to be competitive. 
+
+While we believe that the domain of interest contains the Pareto set, 
+due to the nature of the ``bbob-biobj`` function definitions, there is no
+guarantee that this is always the case. 
+However, the extremal solutions and their neighborhood ball of radius one
+are guaranteed to lie within :math:`[-5,5]^D`.
 
 .. [#] The functions |coco_problem_get_smallest_value_of_interest|_ and 
   |coco_problem_get_largest_value_of_interest|_ 
@@ -2013,8 +2017,9 @@ of the French National Research Agency.
 .. __: http://arxiv.org/abs/1605.01746
 
 .. [BRO2015] D. Brockhoff, T.-D. Tran, and N. Hansen (2015).
-   Benchmarking Numerical Multiobjective Optimizers Revisited.
-   GECCO 2015: 639-646. 
+   Benchmarking Numerical Multiobjective Optimizers Revisited. In
+   Proceedings of the 2015 GECCO Genetic and Evolutionary Computation Conference, 
+   pp. 639-646, ACM. 
    
 .. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff (2016).
    `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
