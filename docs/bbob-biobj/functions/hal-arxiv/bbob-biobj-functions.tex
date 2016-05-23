@@ -25,7 +25,20 @@
   \newcommand{\ignore}[1]{}  % never used
   \newcommand{\COCO}{\href{https://githum.com/numbbo/coco}{COCO}}
   \newcommand{\ff}[1]{\ensuremath{f_{#1}}} 
-  \date{\vspace{-2ex}}
+    \renewcommand{\topfraction}{1} % max fraction of floats at top
+    \renewcommand{\bottomfraction}{1} % max fraction of floats at bottom
+    %   Parameters for TEXT pages (not float pages):
+    \setcounter{topnumber}{3}
+    \setcounter{bottomnumber}{3}
+    \setcounter{totalnumber}{3}     % 2 may work better
+    \setcounter{dbltopnumber}{4}    % for 2-column pages
+    \renewcommand{\dbltopfraction}{1}  % fit big float above 2-col. text
+    \renewcommand{\textfraction}{0.0}  % allow minimal text w. figs
+    %   Parameters for FLOAT pages (not text pages):
+    \renewcommand{\floatpagefraction}{0.9}  % require fuller float pages
+    % N.B.: floatpagefraction MUST be less than topfraction !!
+    \renewcommand{\dblfloatpagefraction}{0.8}  % require fuller float pages
+  
 
   \newcommand{\R}{\ensuremath{\mathbb{R}}}
   \newcommand{\ve}[1]{{\boldsymbol{#1}}}
@@ -34,10 +47,10 @@
 
 
 \title{COCO: The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) Test Suite}
-\date{April 01, 2016}
+\date{May 23, 2016}
 \release{0.9}
 \date{\vspace{-1ex}}\author{
-      Tea Tusar$^1$, 
+      Tea Tu\v{s}ar$^1$, 
       Dimo Brockhoff$^1$,
       Nikolaus Hansen$^{2,3}$, 
       Anne Auger$^{2,3}$ 
@@ -154,13 +167,13 @@
 \begin{document}
 
 \maketitle
-%\tableofcontents %git:rev-610-43955b8
+%\tableofcontents %git:rev-740-0b88dba
 \phantomsection\label{index::doc}
 
 
 
 \chapter{CHAPTERTITLE}
-\label{index:coco-the-bi-objective-black-box-optimization-benchmarking-bbob-biobj-test-suite}\label{index:chaptertitle}% %\tableofcontents %git:rev-610-43955b8 TOC is automatic with sphinx and moved behind abstract by swap...py
+\label{index:coco-the-bi-objective-black-box-optimization-benchmarking-bbob-biobj-test-suite}\label{index:chaptertitle}% %\tableofcontents %git:rev-740-0b88dba TOC is automatic with sphinx and moved behind abstract by swap...py
 \begin{abstract}
 The \code{bbob-biobj} test suite contains 55 bi-objective
 functions in continuous domain which are derived from combining functions of
@@ -168,7 +181,7 @@ the well-known single-objective noiseless \code{bbob} test suite. Besides giving
 the actual function definitions and presenting their (known) properties, this
 documentation also aims at giving the rationale behind our approach in terms
 of function groups, instances, and potential objective space normalization.
-\end{abstract}\tableofcontents %git:rev-610-43955b8
+\end{abstract}\tableofcontents %git:rev-740-0b88dba
 \newpage\begin{figure}[htbp]
 \centering
 \capstart
@@ -204,7 +217,7 @@ objective space \(f(\mathbb{R}^D)\) is called \emph{Pareto front}.
 
 The objective of the minimization problem is to find, with as few evaluations
 of \(f\) as possible, a set of non-dominated solutions which is (i) as large
-as possible and (ii) has \(f\)-values as close to the Pareto front as possible. \footnote[1]{
+as possible and (ii) has \(f\)-values as close to the Pareto front as possible.\footnote[1]{
 Distance in \(f\)-space is defined here such that nadir and ideal point
 have in each coordinate distance one. Neither of these points is however
 freely accessible to the optimization algorithm.
@@ -258,16 +271,17 @@ where \(x_{\rm opt,\alpha}= \arg \min f_\alpha(x)\) and
 The \code{bbob-biobj} test suite provides 55 bi-objective functions in six
 dimensions (2, 3, 5, 10, 20, and 40) with a large number of possible instances.
 The 55 functions are derived from combining a subset of the 24 well-known
-single-objective functions of the \code{bbob} test suite \phantomsection\label{index:id3}{\hyperref[index:han2009fun]{\emph{{[}HAN2009fun{]}}}} which
-has been used since 2009 in the \href{http://numbbo.github.io/workshops/}{BBOB workshop series} . While concrete details on each of
+single-objective functions of the \code{bbob} test suite \phantomsection\label{index:id3}{\hyperref[index:han2009]{\emph{{[}HAN2009{]}}}} which
+has been used since 2009 in the \href{http://numbbo.github.io/workshops}{BBOB workshop series}.
+While concrete details on each of
 the 55 \code{bbob-biobj} functions are given in Section
 {\hyperref[index:sec\string-test\string-functions]{\emph{The bbob-biobj Test Functions and Their Properties}}}, we will detail here the main rationale behind
 them together with their common properties.
 
 
 \subsection{The Single-objective \texttt{bbob} Functions}
-\label{index:the-single-objective-bbob-functions}
-The \code{bbob-biobj} test suite is designed to be able to assess  performance of algorithms with respect to well-identified difficulties in optimization typically  occurring in real-world problems. A multi-objective problem being a combination of single-objective problems, one can obtain multi-objective problems with representative difficulties by simply combining single objective functions with representative difficulties observed in real-world problems. For this purpose we naturally use the single-objective \code{bbob} suite \phantomsection\label{index:id4}{\hyperref[index:han2009fun]{\emph{{[}HAN2009fun{]}}}}.
+\label{index:id4}\label{index:the-single-objective-bbob-functions}
+The \code{bbob-biobj} test suite is designed to be able to assess  performance of algorithms with respect to well-identified difficulties in optimization typically  occurring in real-world problems. A multi-objective problem being a combination of single-objective problems, one can obtain multi-objective problems with representative difficulties by simply combining single objective functions with representative difficulties observed in real-world problems. For this purpose we naturally use the single-objective \code{bbob} suite \phantomsection\label{index:id5}{\hyperref[index:han2009]{\emph{{[}HAN2009{]}}}}.
 
 Combining all 24 \code{bbob} functions in pairs thereby results in
 \(24^2=576\) bi-objective functions overall. We however assume that
@@ -276,7 +290,7 @@ the objective functions such that combining the 24  \code{bbob} functions and
 taking out the function \((g_2,g_1)\) if the function \((g_1,g_2)\)
 is present results in \(24 + {24 \choose 2} = 24 + (24\times23)/2 = (24\times25)/2 = 300\) functions.
 
-Some first tests, e.g. in \phantomsection\label{index:id5}{\hyperref[index:bth2015a]{\emph{{[}BTH2015a{]}}}}, showed that having 300 functions is
+Some first tests, e.g. in \phantomsection\label{index:id6}{\hyperref[index:bro2015]{\emph{{[}BRO2015{]}}}}, showed that having 300 functions is
 impracticable in terms of the overall running time of the benchmarking
 experiment.  We then decided to exploit the organization of the \code{bbob}
 functions into classes to choose a subset of functions. More precisely, the 24
@@ -435,18 +449,18 @@ between the objective values can be observed.
 
 However, to facilitate comparison of algorithm performance over different functions,
 we normalize the objectives based on the ideal and nadir points
-before calculating the hypervolume indicator \phantomsection\label{index:id6}{\hyperref[index:bbo2016biperf]{\emph{{[}BBO2016biperf{]}}}}.
+before calculating the hypervolume indicator \phantomsection\label{index:id7}{\hyperref[index:bro2016biperf]{\emph{{[}BRO2016biperf{]}}}}.
 Both points can be computed, because the global
 optimum is known and is unique for the 10 \code{bbob} base functions.
 In the black-box optimization benchmarking setup, however, the values of the
 ideal and nadir points are not accessible to the optimization algorithm
-\phantomsection\label{index:id7}{\hyperref[index:han2016ex]{\emph{{[}HAN2016ex{]}}}}.
+\phantomsection\label{index:id8}{\hyperref[index:han2016ex]{\emph{{[}HAN2016ex{]}}}}.
 
 
 \subsection{Instances}
 \label{index:instances}
 Our test functions are parametrized and instances are instantiations of the
-underlying parameters (see \phantomsection\label{index:id8}{\hyperref[index:han2016co]{\emph{{[}HAN2016co{]}}}}). The instances for the bi-objective
+underlying parameters (see \phantomsection\label{index:id9}{\hyperref[index:han2016co]{\emph{{[}HAN2016co{]}}}}). The instances for the bi-objective
 functions are using instances of each single objective function composing the
 bi-objective one. In addition, we assert two conditions:
 \begin{quote}
@@ -482,15 +496,15 @@ instead of instance-id 20.
 
 Exceptions to the above rule are, for historical reasons, the
 \code{bbob-biobj} instance-ids 1 and 2 in order to match the instance-ids
-1 to 5 with the ones proposed in \phantomsection\label{index:id9}{\hyperref[index:bth2015a]{\emph{{[}BTH2015a{]}}}}. The \code{bbob-biobj}
+1 to 5 with the ones proposed in \phantomsection\label{index:id10}{\hyperref[index:bro2015]{\emph{{[}BRO2015{]}}}}. The \code{bbob-biobj}
 instance-id 1 contains the single-objective instance-ids 2 and 4 and
 the \code{bbob-biobj} instance-id 2 contains the two instance-ids 3 and 5.
 
 For each bi-objective function and given dimension, the \code{bbob-biobj} suite
-contains 10 instances. \footnote[2]{
+contains 10 instances.\footnote[2]{
 In principle, as for the instance generation for the \code{bbob} suite,
 the number of possible instances for the \code{bbob-biobj} suite is unlimited
-\phantomsection\label{index:id12}{\hyperref[index:han2016co]{\emph{{[}HAN2016co{]}}}}.
+\phantomsection\label{index:id13}{\hyperref[index:han2016co]{\emph{{[}HAN2016co{]}}}}.
 However, running some tests with too few instances will render the
 potential statistics and their interpretation problematic while even the
 tiniest observed difference can be made statistically significant with a
@@ -702,7 +716,7 @@ optimization and, besides multimodality, probably the most common one.
 In a general case, we can consider a function as ill-conditioned if for
 solution points from the same level-set ``the minimal displacement {[}...{]} that
 produces a given function value improvement differs by
-orders of magnitude'' \phantomsection\label{index:id13}{\hyperref[index:han2011]{\emph{{[}HAN2011{]}}}}.
+orders of magnitude'' \phantomsection\label{index:id14}{\hyperref[index:han2011]{\emph{{[}HAN2011{]}}}}.
 Conditioning can be rigorously formalized in the
 case of convex quadratic functions,
 \(f(x) = \frac{1}{2} x^THx\) where \(H\) is a symmetric
@@ -719,21 +733,22 @@ as large as \(10^{10}\).
 
 \subsection{Domain Bounds}
 \label{index:domain-bounds}
-All bi-objective functions provided in the \code{bbob-biobj} suite are unbounded, i.e., defined
-on the entire real-valued space \(\mathbb{R}^D\).
-Nevertheless, they are designed such that the search domain of interest is \([-5,5]^D\)
-and bound-constraint methods are likely to be competitive. \footnote[3]{
+All bi-objective functions provided in the \code{bbob-biobj} suite are unbounded,
+i.e., defined on the entire real-valued space \(\mathbb{R}^D\).
+The search domain of interest is defined as \([-100,100]^D\), outside of
+which non-dominated solutions are quite unlikely to be found.\footnote[3]{
 The functions \href{http://numbbo.github.io/coco-doc/C/coco\_8h.html\#a4ea6c067adfa866b0179329fe9b7c458}{\code{coco\_problem\_get\_smallest\_value\_of\_interest}} and
 \href{http://numbbo.github.io/coco-doc/C/coco\_8h.html\#a29c89e039494ae8b4f8e520cba1eb154}{\code{coco\_problem\_get\_largest\_value\_of\_interest}}
 of the \href{https://github.com/numbbo/coco}{COCO} platform allow the optimizer
 to retrieve the \emph{search domain of interest} from the \href{http://numbbo.github.io/coco-doc/C/coco\_8h.html\#a408ba01b98c78bf5be3df36562d99478}{\code{coco\_problem\_t}},
 for example to generate the initial search points.
-}
+} The majority of non-dominated solutions are likely to lie even within \([-5,5]^D\).
 
-While we believe that this domain contains the Pareto set in most cases, due to the nature
-of the \code{bbob-biobj} function definitions, there is no guarantee that this
-is always the case --- it is only guaranteed that the extremal solutions and their
-neighborhood ball of radius one lie within this region.
+While we believe that the domain of interest contains the Pareto set,
+due to the nature of the \code{bbob-biobj} function definitions, there is no
+guarantee that this is always the case.
+However, the extremal solutions and their neighborhood ball of radius one
+are guaranteed to lie within \([-5,5]^D\).
 
 
 \subsection{The 55 \texttt{bbob-biobj} Functions}
@@ -1504,26 +1519,30 @@ are unrelated and randomly chosen and thus, no global structure
 is present.
 
 Contained in the \emph{weakly-structured - weakly-structured} function class.
+\section*{Acknowledgments}
+This work was supported by the grant ANR-12-MONU-0009 (NumBBO)
+of the French National Research Agency.
 
-\begin{thebibliography}{BBO2016biperf}
-\bibitem[BBO2016biperf]{BBO2016biperf}{\phantomsection\label{index:bbo2016biperf} 
-The BBOBies (2016). \href{http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment}{Biobjective Performance Assessment
-with the COCO Platform}.
+\begin{thebibliography}{BRO2016biperf}
+\bibitem[BRO2016biperf]{BRO2016biperf}{\phantomsection\label{index:bro2016biperf} 
+D. Brockhoff, T. Tušar, D. Tušar, T. Wagner, N. Hansen, A. Auger, (2016).
+\href{http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment}{Biobjective Performance Assessment with the COCO Platform}. \emph{ArXiv e-prints}, \href{http://arxiv.org/abs/1605.01746}{arXiv:1605.01746}.
 }
-\bibitem[BTH2015a]{BTH2015a}{\phantomsection\label{index:bth2015a} 
+\bibitem[BRO2015]{BRO2015}{\phantomsection\label{index:bro2015} 
 D. Brockhoff, T.-D. Tran, and N. Hansen (2015).
-Benchmarking Numerical Multiobjective Optimizers Revisited.
-GECCO 2015: 639-646.
+Benchmarking Numerical Multiobjective Optimizers Revisited. In
+Proceedings of the 2015 GECCO Genetic and Evolutionary Computation Conference,
+pp. 639-646, ACM.
 }
 \bibitem[HAN2016co]{HAN2016co}{\phantomsection\label{index:han2016co} 
-N. Hansen, A. Auger, O. Mersmann, T. Tusar, D. Brockhoff (2016).
+N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff (2016).
 \href{http://numbbo.github.io/coco-doc/}{COCO: A Platform for Comparing Continuous Optimizers in a Black-Box
 Setting}, \emph{ArXiv e-prints}, \href{http://arxiv.org/abs/1603.08785}{arXiv:1603.08785}.
 }
-\bibitem[HAN2009fun]{HAN2009fun}{\phantomsection\label{index:han2009fun} 
+\bibitem[HAN2009]{HAN2009}{\phantomsection\label{index:han2009} 
 N. Hansen, S. Finck, R. Ros, and A. Auger (2009).
 \href{http://coco.gforge.inria.fr/}{Real-parameter black-box optimization benchmarking 2009: Noiseless
-functions definitions}. \href{https://hal.inria.fr/inria-00362633}{Technical Report RR-6829}, Inria, updated
+functions definitions}. \href{https://hal.inria.fr/inria-00362633}{Research Report RR-6829}, Inria, updated
 February 2010.
 }
 \bibitem[HAN2011]{HAN2011}{\phantomsection\label{index:han2011} 
@@ -1533,7 +1552,7 @@ Non-Separable Problems. \emph{Applied Soft Computing}. Vol. 11, pp. 5755-5769.
 Elsevier.
 }
 \bibitem[HAN2016ex]{HAN2016ex}{\phantomsection\label{index:han2016ex} 
-N. Hansen, T. Tusar, A. Auger, D. Brockhoff, O. Mersmann (2016).
+N. Hansen, T. Tušar, A. Auger, D. Brockhoff, O. Mersmann (2016).
 \href{http://numbbo.github.io/coco-doc/experimental-setup/}{COCO: The Experimental Procedure}, \emph{ArXiv e-prints}, \href{http://arxiv.org/abs/1603.08776}{arXiv:1603.08776}.
 }
 \end{thebibliography}
