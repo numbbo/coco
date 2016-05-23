@@ -15,7 +15,7 @@
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.
  * Increase the budget multiplier value gradually to see how it affects the runtime.
  */
-static const size_t BUDGET_MULTIPLIER = 1e0;
+static const size_t BUDGET_MULTIPLIER = 2;
 
 /**
  * The maximal number of independent restarts allowed for an algorithm that restarts itself.
@@ -86,25 +86,25 @@ static void timing_data_finalize(timing_data_t *timing_data);
  * bi-objective suite.
  */
 int main(void) {
-  
+
   coco_random_state_t *random_generator = coco_random_new(RANDOM_SEED);
-  
+
   /* Change the log level to "warning" to get less output */
   coco_set_log_level("info");
-  
+
   printf("Running the example experiment... (might take time, be patient)\n");
   fflush(stdout);
-  
-  /*example_experiment("bbob-biobj", "bbob-biobj", random_generator);
 
-   Uncomment the line below to run the same example experiment on the bbob suite*/
-   example_experiment("bbob", "bbob", random_generator);
-  
+  example_experiment("bbob-biobj", "bbob-biobj", random_generator);
+
+  /* Uncomment the line below to run the same example experiment on the bbob suite
+  example_experiment("bbob", "bbob", random_generator); */
+
   printf("Done!\n");
   fflush(stdout);
-  
+
   coco_random_free(random_generator);
-  
+
   return 0;
 }
 
@@ -121,7 +121,7 @@ int main(void) {
 void example_experiment(const char *suite_name,
                         const char *observer_name,
                         coco_random_state_t *random_generator) {
-  
+
   size_t run;
   coco_suite_t *suite;
   coco_observer_t *observer;
@@ -129,12 +129,12 @@ void example_experiment(const char *suite_name,
 
   /* Set some options for the observer. See documentation for other options. */
   char *observer_options =
-  coco_strdupf("result_folder: RS_on_%s "
-               "algorithm_name: RS "
-               "algorithm_info: \"A simple random search algorithm\"", suite_name);
-  
+      coco_strdupf("result_folder: RS_on_%s "
+                   "algorithm_name: RS "
+                   "algorithm_info: \"A simple random search algorithm\"", suite_name);
+
   /* Initialize the suite and observer */
-  suite = coco_suite(suite_name, "year: 2016", "instance_indices: 1-10 function_indices: 1-5 dimensions: 2,3,5,10,20,40");
+  suite = coco_suite(suite_name, "year: 2016", "dimensions: 2,3,5,10,20,40");
   observer = coco_observer(observer_name, observer_options);
   coco_free_memory(observer_options);
 
@@ -143,19 +143,19 @@ void example_experiment(const char *suite_name,
 
   /* Iterate over all problems in the suite */
   while ((PROBLEM = coco_suite_get_next_problem(suite, observer)) != NULL) {
-    
+
     size_t dimension = coco_problem_get_dimension(PROBLEM);
-    
+
     /* Run the algorithm at least once */
     for (run = 1; run <= 1 + INDEPENDENT_RESTARTS; run++) {
-      
+
       size_t evaluations_done = coco_problem_get_evaluations(PROBLEM);
       long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - (long) evaluations_done;
-      
+
       /* Break the loop if the target was hit or there are no more remaining evaluations */
       if (coco_problem_final_target_hit(PROBLEM) || (evaluations_remaining <= 0))
         break;
-      
+
       /* Call the optimization algorithm for the remaining number of evaluations */
       my_random_search(evaluate_function,
                        dimension,
@@ -164,7 +164,7 @@ void example_experiment(const char *suite_name,
                        coco_problem_get_largest_values_of_interest(PROBLEM),
                        (size_t) evaluations_remaining,
                        random_generator);
-      
+
       /* Break the loop if the algorithm performed no evaluations or an unexpected thing happened */
       if (coco_problem_get_evaluations(PROBLEM) == evaluations_done) {
         printf("WARNING: Budget has not been exhausted (%lu/%lu evaluations done)!\n",
@@ -184,7 +184,7 @@ void example_experiment(const char *suite_name,
 
   coco_observer_free(observer);
   coco_suite_free(suite);
-  
+
 }
 
 /**
@@ -206,26 +206,26 @@ void my_random_search(evaluate_function_t evaluate,
                       const double *upper_bounds,
                       const size_t max_budget,
                       coco_random_state_t *random_generator) {
-  
+
   double *x = coco_allocate_vector(dimension);
   double *y = coco_allocate_vector(number_of_objectives);
   double range;
   size_t i, j;
-  
+
   for (i = 0; i < max_budget; ++i) {
-    
+
     /* Construct x as a random point between the lower and upper bounds */
     for (j = 0; j < dimension; ++j) {
       range = upper_bounds[j] - lower_bounds[j];
       x[j] = lower_bounds[j] + coco_random_uniform(random_generator) * range;
     }
-    
+
     /* Call the evaluate function to evaluate x on the current problem (this is where all the COCO logging
      * is performed) */
     evaluate(x, y);
-    
+
   }
-  
+
   coco_free_memory(x);
   coco_free_memory(y);
 }
@@ -249,7 +249,7 @@ void my_grid_search(evaluate_function_t evaluate,
                     const double *lower_bounds,
                     const double *upper_bounds,
                     const size_t max_budget) {
-  
+
   double *x = coco_allocate_vector(dimension);
   double *y = coco_allocate_vector(number_of_objectives);
   long *nodes = (long *) coco_allocate_memory(sizeof(long) * dimension);
@@ -257,33 +257,33 @@ void my_grid_search(evaluate_function_t evaluate,
   size_t i, j;
   size_t evaluations = 0;
   long max_nodes = (long) floor(pow((double) max_budget, 1.0 / (double) dimension)) - 1;
-  
+
   /* Take care of the borderline case */
   if (max_nodes < 1) max_nodes = 1;
-  
+
   /* Initialization */
   for (j = 0; j < dimension; j++) {
     nodes[j] = 0;
     grid_step[j] = (upper_bounds[j] - lower_bounds[j]) / (double) max_nodes;
   }
-  
+
   while (evaluations < max_budget) {
-    
+
     /* Construct x and evaluate it */
     for (j = 0; j < dimension; j++) {
       x[j] = lower_bounds[j] + grid_step[j] * (double) nodes[j];
     }
-    
+
     /* Call the evaluate function to evaluate x on the current problem (this is where all the COCO logging
      * is performed) */
     evaluate(x, y);
     evaluations++;
-    
+
     /* Inside the grid, move to the next node */
     if (nodes[0] < max_nodes) {
       nodes[0]++;
     }
-    
+
     /* At an outside node of the grid, move to the next level */
     else if (max_nodes > 0) {
       for (j = 1; j < dimension; j++) {
@@ -294,13 +294,13 @@ void my_grid_search(evaluate_function_t evaluate,
           break;
         }
       }
-      
+
       /* At the end of the grid, exit */
       if ((j == dimension) && (nodes[j - 1] == max_nodes))
         break;
     }
   }
-  
+
   coco_free_memory(x);
   coco_free_memory(y);
   coco_free_memory(nodes);
