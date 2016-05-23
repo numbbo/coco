@@ -12,7 +12,7 @@ Related: the file ``*sub?.zip`` is a submission "tag".
 import os
 
 this_dir = 'hal-arxiv'
-build_origin = '../build/latex'  # this script lies in folder arxiv
+build_origin = '../build/latex'  # this script lies in folder this_dir
 
 c = os.system
 wd = os.getcwd

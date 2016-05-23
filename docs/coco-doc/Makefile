@@ -138,7 +138,7 @@ latexpdf:
 	@echo "Running LaTeX files through pdflatex..."
 	$(MAKE) -C $(BUILDDIR)/latex all-pdf
 	python ../swap-abstract-and-toc.py $(BUILDDIR)/latex/$(TEX)
-	cp $(BUILDDIR)/latex/$(PDF) ../../$(PDF)
+	mv $(BUILDDIR)/latex/$(PDF) ../../$(PDF)
 	@echo "pdflatex finished; see ../../$(PDF)"
 		
 latexpdfja:
