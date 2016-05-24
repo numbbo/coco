@@ -75,7 +75,8 @@ def run_latex_template(filename):
     # filePath = os.path.splitext(filePath)[0]
     # args = ['bibtex', filePath]
     # DEVNULL = open(os.devnull, 'wb')
-    # result = subprocess.call(args, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
+    # output_file = open("bibtex.log", "w")
+    # result = subprocess.call(args, stdin=DEVNULL, stdout=output_file, stderr=DEVNULL)
     # assert not result, 'Test failed: error while running bibtex on %s.' % os.path.splitext(filename)[0]
 
 
@@ -90,7 +91,7 @@ def prepare_data(run_all_tests):
 
     dataPath = os.path.abspath(join_path(os.path.dirname(__file__), 'data'))
 
-    # Retrieving the algorithms    
+    # Retrieving the algorithms
     # retrieve_algorithm(dataPath, '2010', 'IPOP-ACTCMA-ES_ros_noiseless.tar.gz')
     # [outcommented and replaced by BIPOP until 2010 data is in new format] 
     retrieve_algorithm(dataPath, '2009', 'BFGS_ros_noiseless.tgz')    
