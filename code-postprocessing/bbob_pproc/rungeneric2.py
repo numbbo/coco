@@ -12,6 +12,7 @@ Help:
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 
 import os
 import sys
@@ -33,7 +34,7 @@ if __name__ == "__main__":
     sys.exit(res)
 
 from . import genericsettings, ppfig, toolsdivers
-from toolsdivers import print_done
+from .toolsdivers import print_done
 
 # genericsettings.summarized_target_function_values[0] might be another option
 
@@ -621,8 +622,8 @@ def main(argv=None):
         plt.rcdefaults()
 
     except Usage, err:
-        print(>>sys.stderr, err.msg)
-        print(>>sys.stderr, "For help use -h or --help")
+        print(err.msg, file=sys.stderr)
+        print("For help use -h or --help", file=sys.stderr)
         return 2
 
 if __name__ == "__main__":
