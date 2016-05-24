@@ -49,11 +49,7 @@ functions.
 
 from __future__ import absolute_import
 
-import os
 import sys
-import glob
-import getopt
-import pickle
 from pdb import set_trace
 import warnings
 import numpy as np
@@ -78,10 +74,10 @@ class DataSet(pp.DataSet):
 
     def __init__(self, dslist):
         """Instantiate one algorithm portfolio data set.
-        
+
         :param dict dslist: list of :py:class:`pproc.DataSetList`
                             instances.
-        
+
         """
 
         def _conv_evals(evals, algnb, maxevals):

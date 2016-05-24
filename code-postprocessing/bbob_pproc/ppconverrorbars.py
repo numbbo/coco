@@ -14,7 +14,6 @@
 from __future__ import absolute_import
 
 import os, sys
-import warnings
 import numpy
 from pdb import set_trace
 from . import toolsdivers
@@ -30,10 +29,9 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from . import genericsettings, pproc
-from .pproc import DataSetList
 from .ppfig import saveFigure, save_single_functions_html
 from .toolsstats import prctile
-    
+
 import matplotlib.pyplot as plt
 
 final_target = 1e-8  # comes from the original experimental setup
@@ -45,16 +43,16 @@ warned = False  # print just one warning and set to True
 def rearrange(blist, flist):
     """Alligns the number of evaluations taken from the blist with the
        corresponding flist"""
-    final_b=[]
-    final_f=[]
-    for i in range(0,len(blist)): #runs over dimensions
+    final_b = []
+    final_f = []
+    for i in range(0, len(blist)): #runs over dimensions
         erg_b = numpy.empty((0), float)
-        erg_f = [numpy.empty ((0), float), numpy.empty ((0), float), numpy.empty ((0), float)]
-        for j in range(0,len(blist[i])): #runs over function evaluations
-            erg_b=numpy.append(erg_b,blist[i][j])
-            erg_f[0]=numpy.append(erg_f[0],numpy.median(flist[i][j]))
-            erg_f[1]=numpy.append(erg_f[1],prctile(flist[i][j], [0.25]))
-            erg_f[2]=numpy.append(erg_f[2],prctile(flist[i][j], [0.75]))
+        erg_f = [numpy.empty((0), float), numpy.empty((0), float), numpy.empty((0), float)]
+        for j in range(0, len(blist[i])): #runs over function evaluations
+            erg_b = numpy.append(erg_b, blist[i][j])
+            erg_f[0] = numpy.append(erg_f[0], numpy.median(flist[i][j]))
+            erg_f[1] = numpy.append(erg_f[1], prctile(flist[i][j], [0.25]))
+            erg_f[2] = numpy.append(erg_f[2], prctile(flist[i][j], [0.75]))
         final_b.append(erg_b)
         final_f.append(erg_f)
     return final_b, final_f
@@ -66,7 +64,7 @@ def beautify():
     limits = plt.ylim()
     plt.ylim(max((limits[0], final_target)), limits[1])
 
-def main(dictAlg, isBiobjective, outputdir='.', verbose=True, parentHtmlFileName = None):
+def main(dictAlg, isBiobjective, outputdir='.', verbose=True, parentHtmlFileName=None):
     """Main routine for generating convergence plots
 
     """
@@ -83,7 +81,9 @@ def main(dictAlg, isBiobjective, outputdir='.', verbose=True, parentHtmlFileName
                 else:
                     try:
                         figurename = "ppconv_plot_" + dictFun[l][i].algId + "_f" + str(l)
-                    except AttributeError:  # this is a (rather desperate) bug-fix attempt that works for the unit test
+                    except AttributeError:  # this is a (rather desperate)
+                                            # bug-fix attempt that works for
+                                            # the unit test
                         figurename = "ppconv_plot_" + dictFun[l][i][0].algId + "_f" + str(l)
             plt.xlabel('number of function evaluations / dimension')
             plt.ylabel('Median of fitness')
@@ -94,21 +94,23 @@ def main(dictAlg, isBiobjective, outputdir='.', verbose=True, parentHtmlFileName
             for j in dictFun[l][i]: # please, what is j??? a dataset
                 dimList_b = []
                 dimList_f = []
-                dimList_b.append(j.funvals[:,0])
-                dimList_f.append(j.funvals[:,1:])
-                bs, fs= rearrange(dimList_b, dimList_f)
-                labeltext=str(j.dim)+"D"
+                dimList_b.append(j.funvals[:, 0])
+                dimList_f.append(j.funvals[:, 1:])
+                bs, fs = rearrange(dimList_b, dimList_f)
+                labeltext = str(j.dim) + "D"
                 try:
                     if 11 < 3:
-                        plt.errorbar(bs[0] / j.dim, fs[0][0], yerr = [fs[0][1], fs[0][2]], label = labeltext)
+                        plt.errorbar(bs[0] / j.dim, fs[0][0],
+                                     yerr=[fs[0][1], fs[0][2]],
+                                     label=labeltext)
                     else:
-                        plt.errorbar(bs[0] / j.dim, fs[0][0], label = labeltext)
+                        plt.errorbar(bs[0] / j.dim, fs[0][0], label=labeltext)
                 except FloatingPointError:  # that's a bit of a hack
                     if 1 < 3 or not warned:
                         print('Warning: floating point error when plotting errorbars, ignored')
                     warned = True
             beautify()
-            saveFigure(os.path.join(outputdir, figurename.replace(' ','')),
+            saveFigure(os.path.join(outputdir, figurename.replace(' ', '')),
                        genericsettings.getFigFormats(), verbose=verbose)
             plt.close()
     try:
@@ -117,9 +119,9 @@ def main(dictAlg, isBiobjective, outputdir='.', verbose=True, parentHtmlFileName
         algname = str(dictFun[l].keys()[0])
     save_single_functions_html(os.path.join(outputdir, 'ppconv'),
                                algname,
-                               isBiobjective = isBiobjective,
-                               parentFileName = parentHtmlFileName)  # first try
+                               isBiobjective=isBiobjective,
+                               parentFileName=parentHtmlFileName)  # first try
     print("Convergence plots done.")
-        
+
 if __name__ == "__main__":
     sys.exit(main())
