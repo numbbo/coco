@@ -49,6 +49,22 @@ __all__ = ['main']
 def usage():
     print(main.__doc__)
 
+def grouped_ecdf_graphs(algdict, isBiobjective,
+                        order=None, outputdir='.', info='default'):
+    """ Generates ecdf graphs, aggregated over groups as
+        indicated via algdict
+    """
+    for gr, tmpdictAlg in algdict.iteritems():
+        dictDim = pproc.dictAlgByDim(tmpdictAlg)
+        for d, entries in dictDim.iteritems():
+            pprldmany.main(entries, # pass expensive flag here?
+                           isBiobjective,
+                           order=order,
+                           outputdir=outputdir,
+                           info=('%02dD_%s' % (d, gr)),
+                           verbose=genericsettings.verbose)
+
+
 def main(argv=None):
     r"""Main routine for post-processing the data of multiple algorithms.
 
@@ -321,30 +337,20 @@ def main(argv=None):
 
             # ECDFs per noise groups
             print("ECDF graphs per noise group...")
-            dictNoi = pproc.dictAlgByNoi(dictAlg)
-            for ng, tmpdictAlg in dictNoi.iteritems():
-                dictDim = pproc.dictAlgByDim(tmpdictAlg)
-                for d, entries in dictDim.iteritems():
-                    pprldmany.main(entries, # pass expensive flag here?
-                                   dsList[0].isBiobjective(),
-                                   order=sortedAlgs,
-                                   outputdir=outputdir,
-                                   info=('%02dD_%s' % (d, ng)),
-                                   verbose=genericsettings.verbose)
+            grouped_ecdf_graphs(pproc.dictAlgByNoi(dictAlg),
+                                dsList[0].isBiobjective(),
+                                order=sortedAlgs,
+                                outputdir=outputdir
+                               )
             print_done()
 
             # ECDFs per function groups
             print("ECDF graphs per function group...")
-            dictFG = pproc.dictAlgByFuncGroup(dictAlg)
-            for fg, tmpdictAlg in dictFG.iteritems():
-                dictDim = pproc.dictAlgByDim(tmpdictAlg)
-                for d, entries in dictDim.iteritems():
-                    pprldmany.main(entries,
-                                   dsList[0].isBiobjective(),
-                                   order=sortedAlgs,
-                                   outputdir=outputdir,
-                                   info=('%02dD_%s' % (d, fg)),
-                                   verbose=genericsettings.verbose)
+            grouped_ecdf_graphs(pproc.dictAlgByFuncGroup(dictAlg),
+                                dsList[0].isBiobjective(),
+                                order=sortedAlgs,
+                                outputdir=outputdir
+                               )
             print_done()
 
             # copy-paste from above, here for each function instead of function groups:

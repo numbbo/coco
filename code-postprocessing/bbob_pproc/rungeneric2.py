@@ -33,7 +33,7 @@ if __name__ == "__main__":
     res = cocopp.rungeneric2.main(sys.argv[1:])
     sys.exit(res)
 
-from . import genericsettings, ppfig, toolsdivers
+from . import genericsettings, ppfig, toolsdivers, rungenericmany
 from .toolsdivers import print_done
 
 # genericsettings.summarized_target_function_values[0] might be another option
@@ -436,19 +436,24 @@ def main(argv=None):
                             ])
             print_done()
 
+            # ECDFs per noise groups, code copied from rungenericmany.py
+            # (needed for bbob-biobj multiple algo template)
+            print("ECDF graphs per noise group...")
+            rungenericmany.grouped_ecdf_graphs(
+                    pproc.dictAlgByNoi(dictAlg),
+                    dsList[0].isBiobjective(),
+                    order=sortedAlgs,
+                    outputdir=outputdir)
+            print_done()
+
             # ECDFs per function groups, code copied from rungenericmany.py
             # (needed for bbob-biobj multiple algo template)
             print("ECDF runlength graphs per function group...")
-            dictFG = pproc.dictAlgByFuncGroup(dictAlg)
-            for fg, tmpdictAlg in dictFG.iteritems():
-                dictDim = pproc.dictAlgByDim(tmpdictAlg)
-                for d, entries in dictDim.iteritems():
-                    pprldmany.main(entries,
-                                   dsList0.isBiobjective(),
-                                   order=sortedAlgs,
-                                   outputdir=outputdir,
-                                   info=('%02dD_%s' % (d, fg)),
-                                   verbose=genericsettings.verbose)
+            rungenericmany.grouped_ecdf_graphs(
+                    pproc.dictAlgByFuncGroup(dictAlg),
+                    dsList[0].isBiobjective(),
+                    order=sortedAlgs,
+                    outputdir=outputdir)
             print_done()
 
 
