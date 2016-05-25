@@ -12,6 +12,7 @@ Help:
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 
 import os
 import sys
@@ -32,7 +33,9 @@ if __name__ == "__main__":
     res = cocopp.rungeneric2.main(sys.argv[1:])
     sys.exit(res)
 
-from . import genericsettings, ppfig, toolsdivers
+from . import genericsettings, ppfig, toolsdivers, rungenericmany
+from .toolsdivers import print_done
+from .compall import pptables
 
 # genericsettings.summarized_target_function_values[0] might be another option
 
@@ -66,7 +69,7 @@ __all__ = ['main']
 
 
 def usage():
-    print main.__doc__
+    print(main.__doc__)
 
 def main(argv=None):
     r"""Routine for post-processing COCO data from two algorithms.
@@ -238,9 +241,9 @@ def main(argv=None):
             warnings.simplefilter('module')
             warnings.simplefilter('ignore')
 
-        print ("Post-processing will generate comparison " +
+        print("Post-processing will generate comparison " +
                "data in folder %s" % outputdir)
-        print "  this might take several minutes."
+        print("  this might take several minutes.")
 
         dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=genericsettings.verbose)
 
@@ -307,7 +310,7 @@ def main(argv=None):
             if not os.path.exists(outputdir):
                 os.mkdir(outputdir)
                 if genericsettings.verbose:
-                    print 'Folder %s was created.' % (outputdir)
+                    print('Folder %s was created.' % (outputdir))
 
             # prepend the algorithm name command to the tex-command file
             abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -360,6 +363,7 @@ def main(argv=None):
             functionGroups=dsList0.getFuncGroups())
 
         if genericsettings.isFig:
+            print("log aRT1/aRT0 vs target function values...")
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
             plt.rc("ytick", **inset.rcticklarger)
@@ -368,7 +372,7 @@ def main(argv=None):
             plt.rc('pdf', fonttype=42)
             ppfig2.main(dsList0, dsList1, testbedsettings.current_testbed.ppfig2_ftarget,
                         outputdir, genericsettings.verbose)
-            print "log aRT1/aRT0 vs target function values done."
+            print_done()
 
         plt.rc("axes", **inset.rcaxes)
         plt.rc("xtick", **inset.rctick)
@@ -378,6 +382,7 @@ def main(argv=None):
         plt.rc('pdf', fonttype=42)
 
         if genericsettings.isRLDistr:
+            print("ECDF runlength ratio graphs...")
             if len(dictFN0) > 1 or len(dictFN1) > 1:
                 warnings.warn('Data for functions from both the noisy and ' +
                               'non-noisy testbeds have been found. Their ' +
@@ -430,24 +435,30 @@ def main(argv=None):
                                                        # on maxfevals
                              '}'
                             ])
+            print_done()
+
+            # ECDFs per noise groups, code copied from rungenericmany.py
+            # (needed for bbob-biobj multiple algo template)
+            print("ECDF graphs per noise group...")
+            rungenericmany.grouped_ecdf_graphs(
+                    pproc.dictAlgByNoi(dictAlg),
+                    dsList[0].isBiobjective(),
+                    order=sortedAlgs,
+                    outputdir=outputdir)
+            print_done()
 
             # ECDFs per function groups, code copied from rungenericmany.py
             # (needed for bbob-biobj multiple algo template)
-            dictFG = pproc.dictAlgByFuncGroup(dictAlg)
-            for fg, tmpdictAlg in dictFG.iteritems():
-                dictDim = pproc.dictAlgByDim(tmpdictAlg)
-                for d, entries in dictDim.iteritems():
-                    pprldmany.main(entries,
-                                   dsList0.isBiobjective(),
-                                   order=sortedAlgs,
-                                   outputdir=outputdir,
-                                   info=('%02dD_%s' % (d, fg)),
-                                   verbose=genericsettings.verbose)
+            print("ECDF runlength graphs per function group...")
+            rungenericmany.grouped_ecdf_graphs(
+                    pproc.dictAlgByFuncGroup(dictAlg),
+                    dsList[0].isBiobjective(),
+                    order=sortedAlgs,
+                    outputdir=outputdir)
+            print_done()
 
 
-
-            print "ECDF runlength ratio graphs done."
-
+            print("ECDF runlength graphs...")
             for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
                 pprldistr.fmax = None #Resetting the max final value
                 pprldistr.evalfmax = None #Resetting the max #fevalsfactor
@@ -481,9 +492,11 @@ def main(argv=None):
                                        testbedsettings.current_testbed.rldValsOfInterest, True,
                                        outputdir,
                                        '%s' % fGroup, genericsettings.verbose)
+            print_done()
 
             # copy-paste from above, here for each function instead of function groups
             if genericsettings.isRldOnSingleFcts:
+                print("ECDF graphs per function...")
                 # ECDFs for each function
                 pprldmany.all_single_functions(dictAlg,
                                                dsList[0].isBiobjective(),
@@ -492,18 +505,21 @@ def main(argv=None):
                                                outputdir,
                                                genericsettings.verbose,
                                                genericsettings.two_algorithm_file_name)
-            print "ECDF runlength graphs done."
+                print_done()
 
         if genericsettings.isConv:
+            print("Convergence plots...")
             ppconverrorbars.main(dictAlg,
                                  dsList[0].isBiobjective(),
                                  outputdir,
                                  genericsettings.verbose,
                                  genericsettings.two_algorithm_file_name)
+            print_done()
 
         htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')
 
         if genericsettings.isScatter:
+            print("Scatter plots...")
             ppscatter.main(dsList1, dsList0, outputdir,
                            verbose=genericsettings.verbose)
             prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
@@ -514,9 +530,10 @@ def main(argv=None):
 
             replace_in_file(htmlFileName, '##bbobppscatterlegend##', ppscatter.figure_caption(True))
 
-            print "Scatter plots done."
+            print_done()
 
         if genericsettings.isTab:
+            print("Generating old tables (pptable2.py)...")
             dictNG0 = dsList0.dictByNoise()
             dictNG1 = dsList1.dictByNoise()
 
@@ -583,9 +600,31 @@ def main(argv=None):
                 replace_in_file(htmlFileName, 'algorithm'
                                 + abc[i], str_to_latex(strip_pathname1(alg)))
 
-            print "Tables done."
+            print_done()
+
+            # The following is copied from rungenericmany.py to comply
+            # with the bi-objective many-algorithm LaTeX template
+            print("Generating new tables (pptables.py)...") 
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+                            ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
+                             pptables.get_table_caption() + '}'])
+            dictNoi = pproc.dictAlgByNoi(dictAlg)
+            for ng, tmpdictng in dictNoi.iteritems():
+                dictDim = pproc.dictAlgByDim(tmpdictng)
+                for d, tmpdictdim in dictDim.iteritems():
+                    pptables.main(
+                        tmpdictdim,
+                        sortedAlgs,
+                        dsList[0].isBiobjective(),
+                        outputdir,
+                        genericsettings.verbose,
+                        ([1, 20, 38] if (testbedsettings.current_testbed.name ==
+                                         testbedsettings.testbed_name_bi) else True))
+            print_done()
+            
 
         if genericsettings.isScaleUp:
+            print("Scaling figures...")
             plt.rc("axes", labelsize=20, titlesize=24)
             plt.rc("xtick", labelsize=20)
             plt.rc("ytick", labelsize=20)
@@ -600,18 +639,18 @@ def main(argv=None):
                         outputdir,
                         genericsettings.verbose)
             plt.rcdefaults()
-            print "Scaling figures done."
+            print_done()
 
         if (genericsettings.isFig or genericsettings.isRLDistr
                 or genericsettings.isTab or genericsettings.isScatter
                 or genericsettings.isScaleUp):
-            print "Output data written to folder %s" % outputdir
+            print("Output data written to folder %s" % outputdir)
 
         plt.rcdefaults()
 
     except Usage, err:
-        print >>sys.stderr, err.msg
-        print >>sys.stderr, "For help use -h or --help"
+        print(err.msg, file=sys.stderr)
+        print("For help use -h or --help", file=sys.stderr)
         return 2
 
 if __name__ == "__main__":
