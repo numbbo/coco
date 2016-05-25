@@ -35,6 +35,7 @@ if __name__ == "__main__":
 
 from . import genericsettings, ppfig, toolsdivers, rungenericmany
 from .toolsdivers import print_done
+from .compall import pptables
 
 # genericsettings.summarized_target_function_values[0] might be another option
 
@@ -532,7 +533,7 @@ def main(argv=None):
             print_done()
 
         if genericsettings.isTab:
-            print("Generating tables...")
+            print("Generating old tables (pptable2.py)...")
             dictNG0 = dsList0.dictByNoise()
             dictNG1 = dsList1.dictByNoise()
 
@@ -600,6 +601,27 @@ def main(argv=None):
                                 + abc[i], str_to_latex(strip_pathname1(alg)))
 
             print_done()
+
+            # The following is copied from rungenericmany.py to comply
+            # with the bi-objective many-algorithm LaTeX template
+            print("Generating new tables (pptables.py)...") 
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+                            ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
+                             pptables.get_table_caption() + '}'])
+            dictNoi = pproc.dictAlgByNoi(dictAlg)
+            for ng, tmpdictng in dictNoi.iteritems():
+                dictDim = pproc.dictAlgByDim(tmpdictng)
+                for d, tmpdictdim in dictDim.iteritems():
+                    pptables.main(
+                        tmpdictdim,
+                        sortedAlgs,
+                        dsList[0].isBiobjective(),
+                        outputdir,
+                        genericsettings.verbose,
+                        ([1, 20, 38] if (testbedsettings.current_testbed.name ==
+                                         testbedsettings.testbed_name_bi) else True))
+            print_done()
+            
 
         if genericsettings.isScaleUp:
             print("Scaling figures...")
