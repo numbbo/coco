@@ -16,6 +16,7 @@ Help:
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 
 import os, sys
 from pdb import set_trace
@@ -48,7 +49,7 @@ __all__ = ['main']
 
 
 def usage():
-    print main.__doc__
+    print(main.__doc__)
 
 def main(argv=None):
     r"""Post-processing COCO data of a single algorithm.
@@ -168,12 +169,12 @@ def main(argv=None):
                 raise Usage(msg)
 
         if not (args) and not '--help' in argv and not 'h' in argv:
-            print 'not enough input arguments given'
-            print 'cave: the following options also need an argument:'
-            print [o for o in genericsettings.longoptlist if o[-1] == '=']
-            print 'options given:'
-            print opts
-            print 'try --help for help'
+            print('not enough input arguments given')
+            print('cave: the following options also need an argument:')
+            print([o for o in genericsettings.longoptlist if o[-1] == '='])
+            print('options given:')
+            print(opts)
+            print('try --help for help')
             sys.exit()
 
         # Process options
@@ -262,9 +263,9 @@ def main(argv=None):
         algfolder = findfiles.get_output_directory_subfolder(args[0])
         outputdir = os.path.join(outputdir, algfolder)
         
-        print ("Post-processing (1): will generate output " + 
+        print("Post-processing (1): will generate output " + 
                "data in folder %s" % outputdir)
-        print "  this might take several minutes."
+        print("  this might take several minutes.")
 
         filelist = list()
         for i in args:
@@ -275,7 +276,7 @@ def main(argv=None):
                 filelist.append(i)
             else:
                 txt = 'Input file or folder %s could not be found.' % i
-                print txt
+                print(txt)
                 raise Usage(txt)
         dsList = DataSetList(filelist, genericsettings.verbose)
         
@@ -318,22 +319,23 @@ def main(argv=None):
             if not os.path.exists(outputdir):
                 os.makedirs(outputdir)
                 if genericsettings.verbose:
-                    print 'Folder %s was created.' % (outputdir)
+                    print('Folder %s was created.' % (outputdir))
 
         if genericsettings.isPickled:
             dsList.pickle(verbose=genericsettings.verbose)
 
         if genericsettings.isConv:
+            print("Generating convergence plots...")
             ppconverrorbars.main(dictAlg, 
                                  dsList.isBiobjective(),
                                  outputdir, 
                                  genericsettings.verbose,
                                  genericsettings.single_algorithm_file_name)
+            print_done()
 
         values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
         if genericsettings.isFig:
-            print "Scaling figures...",
-            sys.stdout.flush()
+            print("Scaling figures...")
             # aRT/dim vs dim.
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
@@ -353,8 +355,7 @@ def main(argv=None):
         plt.rc('pdf', fonttype = 42)
 
         if genericsettings.isTab:
-            print "TeX tables...",
-            sys.stdout.flush()
+            print("generating LaTeX tables...")
             dictNoise = dsList.dictByNoise()
             for noise, sliceNoise in dictNoise.iteritems():
                 pptable.main(sliceNoise, inset.tabDimsOfInterest,
@@ -362,8 +363,7 @@ def main(argv=None):
             print_done()
 
         if genericsettings.isRLDistr:
-            print "ECDF graphs...",
-            sys.stdout.flush()
+            print("ECDF graphs...")
             dictNoise = dsList.dictByNoise()
             if len(dictNoise) > 1:
                 warnings.warn('Data for functions from both the noisy and '
@@ -398,9 +398,11 @@ def main(argv=None):
 
                 pprldistr.fmax = None  # Resetting the max final value
                 pprldistr.evalfmax = None  # Resetting the max #fevalsfactor
+            print_done()
 
             if genericsettings.isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
                 # ECDFs for each function
+                print("ECDF graphs per function...")
                 pprldmany.all_single_functions(dictAlg, 
                                                dsList.isBiobjective(),
                                                True,
@@ -408,11 +410,10 @@ def main(argv=None):
                                                outputdir,
                                                genericsettings.verbose,
                                                genericsettings.single_algorithm_file_name)
-            print_done()
-
+                print_done()
+            
         if genericsettings.isLogLoss:
-            print "aRT loss ratio figures and tables...",
-            sys.stdout.flush()
+            print("aRT loss ratio figures and tables...")
             for ng, sliceNoise in dsList.dictByNoise().iteritems():
                 if ng == 'noiselessall':
                     testbed = 'noiseless'
@@ -425,7 +426,7 @@ def main(argv=None):
                     try:
                         CrE = float(raw_input(txt))
                     except (SyntaxError, NameError, ValueError):
-                        print "Float value required."
+                        print("Float value required.")
                 dictDim = sliceNoise.dictByDim()
                 for d in inset.rldDimsOfInterest:
                     try:
@@ -445,7 +446,6 @@ def main(argv=None):
                                        outputdir, info,
                                        verbose=genericsettings.verbose)
                     pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
-
             print_done()
 
         dictFunc = dsList.dictByFunc()
@@ -491,19 +491,14 @@ def main(argv=None):
                         ['\\providecommand{\\algname}{' + 
                          (str_to_latex(strip_pathname1(args[0])) if len(args) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
         if genericsettings.isFig or genericsettings.isTab or genericsettings.isRLDistr or genericsettings.isLogLoss:
-            print "Output data written to folder %s" % outputdir
+            print("Output data written to folder %s" % outputdir)
 
         plt.rcdefaults()
-
-#    except Usage, err:
-#        print >> sys.stderr, err.msg
-#        print >> sys.stderr, "for help use -h or --help"
-#        return 2
 
 
 if __name__ == "__main__":
     res = main()
     if genericsettings.test: 
-        print res
+        print(res)
     sys.exit(res)
 
