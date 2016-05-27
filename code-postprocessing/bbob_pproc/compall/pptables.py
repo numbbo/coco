@@ -30,7 +30,7 @@ def get_table_caption():
     if isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
         table_caption_one = r"""%
             Average running time (\aRT\ in number of function
-            evaluations) divided by the respective best \aRT\ measured during BBOB-2009 in
+            evaluations) divided by the respective best \aRT\ measured during BBOB-2016 in
             #1.
             The \aRT\ and in braces, as dispersion measure, the half difference between
             10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and
@@ -38,7 +38,7 @@ def get_table_caption():
     else:
         table_caption_one = r"""%
             Average running time (\aRT\ in number of function
-            evaluations) divided by the respective best \aRT\ measured during BBOB-2016 in
+            evaluations) divided by the respective best \aRT\ measured during BBOB-2009 in
             #1.
             The \aRT\ and in braces, as dispersion measure, the half difference between
             10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and
@@ -63,7 +63,7 @@ def get_table_caption():
         \#succ is the number of trials that reached the last target
         $\hvref + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
         """
-    if max(testbedsettings.current_testbed.dimensions_to_display) <= 40: # Manh : option large scale
+    if isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
         table_caption_rest = (r"""%
             The median number of conducted function evaluations is additionally given in
             \textit{italics}, if the target in the last column was never reached.
@@ -72,7 +72,7 @@ def get_table_caption():
             $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
             than 1, with Bonferroni correction of #2. """ +
             (r"""A $\downarrow$ indicates the same tested against the best
-            algorithm of BBOB-2009."""
+            algorithm of BBOB-2016."""
             if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
             else "") + r"""Best results are printed in bold.
             """)
@@ -84,11 +84,11 @@ def get_table_caption():
             the rank-sum test) when compared to all other algorithms of the table, with
             $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
             than 1, with Bonferroni correction of #2. """ +
-                              (r"""A $\downarrow$ indicates the same tested against the best
-            algorithm of BBOB-2016."""
+            (r"""A $\downarrow$ indicates the same tested against the best
+            algorithm of BBOB-2009."""
             if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
             else "") + r"""Best results are printed in bold.
-            """)
+                """)
 
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
