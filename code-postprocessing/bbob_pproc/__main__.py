@@ -76,7 +76,8 @@ def run_latex_template(filename):
     # filePath = os.path.splitext(filePath)[0]
     # args = ['bibtex', filePath]
     # DEVNULL = open(os.devnull, 'wb')
-    # result = subprocess.call(args, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
+    # output_file = open("bibtex.log", "w")
+    # result = subprocess.call(args, stdin=DEVNULL, stdout=output_file, stderr=DEVNULL)
     # assert not result, 'Test failed: error while running bibtex on %s.' % os.path.splitext(filename)[0]
 
 

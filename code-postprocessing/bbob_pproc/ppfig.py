@@ -367,7 +367,6 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
-            #dimensions = [5, 20] # Wassim: why constant values??!!! now uses htmlDimsOfInterest from current_testbed
             dimensions = testbedsettings.current_testbed.htmlDimsOfInterest
             headerECDF = ' Empirical cumulative distribution functions (ECDF)'
             f.write("<H2> %s </H2>\n" % headerECDF)
@@ -384,9 +383,8 @@ def save_single_functions_html(filename,
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
-            # dimensions = [5, 20] # Wassim: should not be constant
             dimensions = testbedsettings.current_testbed.htmlDimsOfInterest
-            if bestAlgExists: #isBiobjective:  # Wassim: TODO: should depend on what bestalgorithmdata loads, not isBiobjctive, now checks whether a file is provided
+            if bestAlgExists:
                 currentHeader = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % currentHeader)
                 for dimension in dimensions:
@@ -395,8 +393,11 @@ def save_single_functions_html(filename,
                 scenario = testbedsettings.current_testbed.scenario
                 f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption' + scenario + '##'))
 
+                dimensionList = '-D, '.join(str(x) for x in dimensions) + '-D'
+                index = dimensionList.rfind(",")
+                dimensionList = dimensionList[:index] + ' and' + dimensionList[index + 1:]
                 for typeKey, typeValue in functionGroups.iteritems():
-                    f.write('<p><b>%s in %s</b></p>' % (typeValue, '-D and '.join(str(x) for x in dimensions) + '-D'))
+                    f.write('<p><b>%s in %s</b></p>' % (typeValue, dimensionList))
                     f.write('<div>')
                     for dimension in dimensions:
                         f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, typeKey, extension), True))
