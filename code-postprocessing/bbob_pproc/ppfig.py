@@ -274,7 +274,6 @@ def save_single_functions_html(filename,
             for ifun in range(first_function_number, last_function_number + 1):
                 f.write(addImage('ppfigs_f%03d%s.%s' % (ifun, add_to_names, extension), True))
             f.write(captionStringFormat % '##bbobppfigslegend##')
-
             currentHeader = 'Scatter plots per function'
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:

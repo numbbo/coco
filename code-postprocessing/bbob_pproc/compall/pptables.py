@@ -374,7 +374,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
 
         # significance test of best given algorithm against all others
         best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
-        significance_versus_others = significance_all_best_vs_other(algentries, targetsOfInterest, best_alg_idx)[0]
+        significance_versus_others = significance_all_best_vs_other(algentries, targetsOfInterest, best_alg_idx)[0] # Wassim: seems to crash when data is incomplete 
                 
         # Create the table
         table = []
