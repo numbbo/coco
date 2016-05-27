@@ -27,13 +27,22 @@ def get_table_caption():
         preferably with a single latex command. 
     """
 
-    table_caption_one = r"""%
-        Average running time (\aRT\ in number of function 
-        evaluations) divided by the respective best \aRT\ measured during BBOB-2009 in
-        #1.
-        The \aRT\ and in braces, as dispersion measure, the half difference between 
-        10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
-        """
+    if isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
+        table_caption_one = r"""%
+            Average running time (\aRT\ in number of function
+            evaluations) divided by the respective best \aRT\ measured during BBOB-2016 in
+            #1.
+            The \aRT\ and in braces, as dispersion measure, the half difference between
+            10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and
+            """
+    else:
+        table_caption_one = r"""%
+            Average running time (\aRT\ in number of function
+            evaluations) divided by the respective best \aRT\ measured during BBOB-2009 in
+            #1.
+            The \aRT\ and in braces, as dispersion measure, the half difference between
+            10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and
+            """
     table_caption_two1 = r"""%
         target, the corresponding best \aRT\
         in the first row. The different target \Df-values are shown in the top row.
@@ -54,18 +63,32 @@ def get_table_caption():
         \#succ is the number of trials that reached the last target
         $\hvref + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
         """
-    table_caption_rest = (r"""%
-        The median number of conducted function evaluations is additionally given in 
-        \textit{italics}, if the target in the last column was never reached. 
-        Entries, succeeded by a star, are statistically significantly better (according to
-        the rank-sum test) when compared to all other algorithms of the table, with
-        $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
-        than 1, with Bonferroni correction of #2. """ +
-        (r"""A $\downarrow$ indicates the same tested against the best
-        algorithm of BBOB-2009."""
-        if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
-        else "") + r"""Best results are printed in bold.
-        """)
+    if isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
+        table_caption_rest = (r"""%
+            The median number of conducted function evaluations is additionally given in
+            \textit{italics}, if the target in the last column was never reached.
+            Entries, succeeded by a star, are statistically significantly better (according to
+            the rank-sum test) when compared to all other algorithms of the table, with
+            $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
+            than 1, with Bonferroni correction of #2. """ +
+            (r"""A $\downarrow$ indicates the same tested against the best
+            algorithm of BBOB-2016."""
+            if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
+            else "") + r"""Best results are printed in bold.
+            """)
+    else:
+        table_caption_rest = (r"""%
+            The median number of conducted function evaluations is additionally given in
+            \textit{italics}, if the target in the last column was never reached.
+            Entries, succeeded by a star, are statistically significantly better (according to
+            the rank-sum test) when compared to all other algorithms of the table, with
+            $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
+            than 1, with Bonferroni correction of #2. """ +
+            (r"""A $\downarrow$ indicates the same tested against the best
+            algorithm of BBOB-2009."""
+            if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
+            else "") + r"""Best results are printed in bold.
+                """)
 
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
@@ -650,7 +673,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             res = ("").join(str(item) for item in tableHtml)
             res = '\n<table class=\"sortable\" style=\"width:800px \">\n%s</table>\n<p/>\n' % res
     
-            if df[0] in (5, 20):
+            if df[0] in testbedsettings.current_testbed.tabDimsOfInterest: # Manh
                 filename = os.path.join(outputdir, genericsettings.many_algorithm_file_name + '.html')
                 lines = []
                 with open(filename) as infile:

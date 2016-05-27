@@ -106,11 +106,18 @@ def scaling_figure_caption(for_html = False):
 
 def prepare_ecdfs_figure_caption():
 
-    best2009text = (
-                r"The ``best 2009'' line " +
-                r"corresponds to the best \aRT\ observed during BBOB 2009 " +
-                r"for each selected target."
-                )
+    if not isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
+        best2009text = (
+                        r"The ``best 2009'' line " +
+                        r"corresponds to the best \aRT\ observed during BBOB 2009 " +
+                        r"for each selected target."
+                        )
+    else:
+        best2009text = (
+                        r"The ``best 2016'' line " +
+                        r"corresponds to the best \aRT\ observed during BBOB 2016 " +
+                        r"for each selected target."
+                        )
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
@@ -255,11 +262,18 @@ def plotLegend(handles, maxval=None):
         for k in sorted(ys[j].keys()):
             #enforce best 2009 comes first in case of equality
             tmp = []
-            for h in ys[j][k]:
-                if plt.getp(h, 'label') == 'best 2009':
-                    tmp.insert(0, h)
-                else:
-                    tmp.append(h)
+            if not isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
+                for h in ys[j][k]:
+                    if plt.getp(h, 'label') == 'best 2009':
+                        tmp.insert(0, h)
+                    else:
+                        tmp.append(h)
+            else:
+                for h in ys[j][k]:
+                    if plt.getp(h, 'label') == 'best 2016':
+                        tmp.insert(0, h)
+                    else:
+                        tmp.append(h)
             #tmp.reverse()
             ys[j][k] = tmp
 
@@ -568,22 +582,38 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
             
             alg_definitions.append((', ' if i > 0 else '') + '%s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
             alg_definitions_html += (', ' if i > 0 else '') + '%s: %s' % (symb_html, toolsdivers.str_to_latex(toolsdivers.strip_pathname1(sortedAlgs[i])))
-        toolsdivers.prepend_to_file(latex_commands_filename, 
-                [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
-                 #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
-                '\\providecommand{\\bbobppfigslegend}[1]{',
-                scaling_figure_caption(),
-                'Legend: '] + alg_definitions + ['}']
-                )
-        toolsdivers.prepend_to_file(latex_commands_filename, 
-                ['\\providecommand{\\bbobECDFslegend}[1]{',
-                ecdfs_figure_caption(), '}']
-                )
-
+        if not isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
+            toolsdivers.prepend_to_file(latex_commands_filename,
+                    [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
+                     #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
+                    '\\providecommand{\\bbobppfigslegend}[1]{',
+                    scaling_figure_caption(),
+                    'Legend: '] + alg_definitions + ['}']
+                    )
+            toolsdivers.prepend_to_file(latex_commands_filename, 
+                    ['\\providecommand{\\bbobECDFslegend}[1]{',
+                    ecdfs_figure_caption(), '}']
+                    )
+        else:
+            toolsdivers.prepend_to_file(latex_commands_filename,
+                    [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}'
+                     #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
+                     '\\providecommand{\\bbobppfigslegendlargescalefixed}[1]{',
+                     scaling_figure_caption(),
+                     'Legend: '] + alg_definitions + ['}']
+                    )
+            toolsdivers.prepend_to_file(latex_commands_filename,
+                    ['\\providecommand{\\bbobECDFslegendlargescalefixed}[1]{',
+                    ecdfs_figure_caption(), '}']
+                    )
+        
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
-        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend5##', ecdfs_figure_caption(True, 5))
-        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend20##', ecdfs_figure_caption(True, 20))
-
+        if isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
+            toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend80##', ecdfs_figure_caption(True, 80))
+            toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend320##', ecdfs_figure_caption(True, 320))
+        else:
+            toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend5##', ecdfs_figure_caption(True, 5))
+            toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend20##', ecdfs_figure_caption(True, 20))
         if verbose:
             print 'Wrote commands and legend to %s' % filename
 
