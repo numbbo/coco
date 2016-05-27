@@ -335,18 +335,29 @@ def beautify(legend=False, rightlegend=False):
 
     # ticks on axes
     #axisHandle.invert_xaxis()
-    dimticklist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
-    dimannlist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
+    #dimticklist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point?
+    dimticklist = testbedsettings.current_testbed.dimensions_to_display # Wassim: dimensions_to_display
+    # dimannlist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point?
+    dimannlist = testbedsettings.current_testbed.dimensions_to_display # Wassim: dimensions_to_display
     # TODO: All these should depend on (xlim, ylim)
 
     axisHandle.set_xticks(dimticklist)
     axisHandle.set_xticklabels([str(n) for n in dimannlist])
 
-    # axes limites
+    # axes limites # Wassim: what do these numbers mean exactly?!
+
+    # Wassim: to dynamically set xlim
+    import numpy
+    dim_min_margin = testbedsettings.current_testbed.dimensions_to_display[0] * 0.9
+    dim_max_margin = testbedsettings.current_testbed.dimensions_to_display[-1] * 1.125
+
     if rightlegend:
-        plt.xlim(1.8, 101) # 101 is 10 ** (numpy.log10(45/1.8)*1.25) * 1.8
+        #plt.xlim(1.8, 101) # 101 is 10 ** (numpy.log10(45/1.8)*1.25) * 1.8
+        #plt.xlim(19.8, 4500) # Wassim: for large-scale, the following is tentative
+        plt.xlim(  dim_min_margin,  10 ** (numpy.log10(dim_max_margin / dim_min_margin)*1.25) * dim_min_margin)
     else:
-        plt.xlim(1.8, 45)                # Should depend on xmin and xmax
+        #plt.xlim(1.8, 45)                # Should depend on xmin and xmax
+        plt.xlim(dim_min_margin, dim_max_margin) # Wassim: for large-scale
 
     tmp = axisHandle.get_yticks()
     tmp2 = []
@@ -439,7 +450,6 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
                         dimnbsucc.append(dim)
                         ynbsucc.append(float(data[0])/dim)
                         nbsucc.append('%d' % data[2])
-
             # Draw lines
             if 1 < 3:  # new version
                 # omit the line if a point in between is missing

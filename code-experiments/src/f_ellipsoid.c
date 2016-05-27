@@ -176,7 +176,7 @@ static coco_problem_t *f_ellipsoid_permblockdiag_bbob_problem_allocate(const siz
 
   problem = f_ellipsoid_allocate(dimension);
   problem = transform_vars_oscillate(problem);
-  problem = transform_vars_permutation(problem, P2, dimension);/* LIFO */
+  problem = transform_vars_permutation(problem, P2, dimension);
   problem = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
   problem = transform_vars_permutation(problem, P1, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
