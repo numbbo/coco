@@ -12,15 +12,13 @@ Help:
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 
 import os
 import sys
-import glob
 import warnings
 import getopt
-from pdb import set_trace
 import numpy
-import numpy as np
 import matplotlib
 
 if __name__ == "__main__":
@@ -35,9 +33,9 @@ if __name__ == "__main__":
     res = cocopp.rungeneric2.main(sys.argv[1:])
     sys.exit(res)
 
-from . import genericsettings, ppfig, toolsdivers
-
-ppfig2_ftarget = 1e-8  # a hack, used in ppfig2.main 
+from . import genericsettings, ppfig, toolsdivers, rungenericmany
+from .toolsdivers import print_done
+from .compall import pptables
 
 # genericsettings.summarized_target_function_values[0] might be another option
 
@@ -55,11 +53,11 @@ if __name__ == "__main__":
     sys.exit(res)
 
 from . import pproc
-from . import genericsettings, config
+from . import config
 from . import testbedsettings
 from . import pprldistr
 from . import htmldesc
-from .pproc import DataSetList, processInputArgs, TargetValues, RunlengthBasedTargetValues
+from .pproc import DataSetList, processInputArgs
 from .ppfig import Usage
 from .toolsdivers import prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
 from .comp2 import ppfig2, pprldistr2, pptable2, ppscatter
@@ -71,7 +69,7 @@ __all__ = ['main']
 
 
 def usage():
-    print main.__doc__
+    print(main.__doc__)
 
 def main(argv=None):
     r"""Routine for post-processing COCO data from two algorithms.
@@ -79,7 +77,7 @@ def main(argv=None):
     Provided with some data, this routine outputs figure and TeX files
     in a folder needed for the compilation of the provided LaTeX templates
     for comparing two algorithms (``*cmp.tex`` or ``*2*.tex``).
-    
+
     The used template file needs to be edited so that the command
     ``\bbobdatapath`` points to the output folder created by this routine.
 
@@ -118,7 +116,7 @@ def main(argv=None):
             graphs figures, run length distribution figures or the
             comparison tables scatter plot figures only. Any combination
             of these options results in no output.
-        --conv 
+        --conv
             if this option is chosen, additionally convergence
             plots for each function and algorithm are generated.
         --no-rld-single-fcts
@@ -126,7 +124,7 @@ def main(argv=None):
             single function.
         --expensive
             runlength-based f-target values and fixed display limits,
-            useful with comparatively small budgets. 
+            useful with comparatively small budgets.
         --no-svg
             do not generate the svg figures which are used in html files
 
@@ -163,15 +161,15 @@ def main(argv=None):
         # The zero-th input argument which is the name of the calling script is
         # disregarded.
 
-    global ftarget
     try:
 
         try:
-            opts, args = getopt.getopt(argv, genericsettings.shortoptlist, genericsettings.longoptlist)
+            opts, args = getopt.getopt(argv, genericsettings.shortoptlist,
+                                       genericsettings.longoptlist)
         except getopt.error, msg:
-             raise Usage(msg)
+            raise Usage(msg)
 
-        if not (args):
+        if not args:
             usage()
             sys.exit()
 
@@ -239,25 +237,27 @@ def main(argv=None):
                    + 'argument for input flag "--settings".')
             raise Usage(txt)
 
-        if (not genericsettings.verbose):
+        if not genericsettings.verbose:
             warnings.simplefilter('module')
-            warnings.simplefilter('ignore')            
+            warnings.simplefilter('ignore')
 
-        print ("Post-processing will generate comparison " +
+        print("Post-processing will generate comparison " +
                "data in folder %s" % outputdir)
-        print "  this might take several minutes."
+        print("  this might take several minutes.")
 
         dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=genericsettings.verbose)
 
         if 1 < 3 and len(sortedAlgs) != 2:
-            raise ValueError('rungeneric2.py needs exactly two algorithms to compare, found: ' 
-                             + str(sortedAlgs)
-                             + '\n use rungeneric.py (or rungenericmany.py) to compare more algorithms. ')
- 
+            raise ValueError('rungeneric2.py needs exactly two algorithms to '
+                             + 'compare, found: ' + str(sortedAlgs)
+                             + '\n use rungeneric.py (or rungenericmany.py) to '
+                             + 'compare more algorithms. ')
+
         if not dsList:
             sys.exit()
-        
-        if (any(ds.isBiobjective() for ds in dsList) and any(not ds.isBiobjective() for ds in dsList)):
+
+        if (any(ds.isBiobjective() for ds in dsList)
+                and any(not ds.isBiobjective() for ds in dsList)):
             sys.exit()
 
         for i in dictAlg:
@@ -271,7 +271,7 @@ def main(argv=None):
                 continue
 
             if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) <
-                inset.instancesOfInterest):
+                    inset.instancesOfInterest):
                 warnings.warn('The data of %s do not list ' %(i) +
                               'the correct instances ' +
                               'of function F%d.' %(i.funcId))
@@ -303,24 +303,25 @@ def main(argv=None):
 
         config.target_values(genericsettings.isExpensive)
         config.config(dsList[0].testbed_name())
-        
+
         ######################### Post-processing #############################
-        if genericsettings.isFig or genericsettings.isRLDistr or genericsettings.isTab or genericsettings.isScatter:
+        if (genericsettings.isFig or genericsettings.isRLDistr
+                or genericsettings.isTab or genericsettings.isScatter):
             if not os.path.exists(outputdir):
                 os.mkdir(outputdir)
                 if genericsettings.verbose:
-                    print 'Folder %s was created.' % (outputdir)
-            
+                    print('Folder %s was created.' % (outputdir))
+
             # prepend the algorithm name command to the tex-command file
             abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
             lines = []
             for i, alg in enumerate(args):
-                lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' + 
-                        str_to_latex(strip_pathname1(alg)) + '}')
-            prepend_to_file(os.path.join(outputdir,
-                         'bbob_pproc_commands.tex'), lines, 1000, 
-                         'bbob_proc_commands.tex truncated, consider removing the file before the text run'
-                         )
+                lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' +
+                             str_to_latex(strip_pathname1(alg)) + '}')
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+                            lines, 1000, 'bbob_proc_commands.tex truncated, '
+                            + 'consider removing the file before the text run'
+                           )
 
         # Check whether both input arguments list noisy and noise-free data
         dictFN0 = dsList0.dictByNoise()
@@ -346,7 +347,7 @@ def main(argv=None):
             txt = []
             for i, j in tmpdict.iteritems():
                 txt.append('Only input folder %s lists %s data.'
-                            % (i, ' and '.join(j)))
+                           % (i, ' and '.join(j)))
             raise Usage('Data Mismatch: \n  ' + ' '.join(txt)
                         + '\nTry using --noise-free or --noisy flags.')
 
@@ -362,24 +363,26 @@ def main(argv=None):
             functionGroups=dsList0.getFuncGroups())
 
         if genericsettings.isFig:
+            print("log aRT1/aRT0 vs target function values...")
             plt.rc("axes", **inset.rcaxeslarger)
             plt.rc("xtick", **inset.rcticklarger)
             plt.rc("ytick", **inset.rcticklarger)
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
-            plt.rc('pdf', fonttype = 42)
-            ppfig2.main(dsList0, dsList1, ppfig2_ftarget,
+            plt.rc('pdf', fonttype=42)
+            ppfig2.main(dsList0, dsList1, testbedsettings.current_testbed.ppfig2_ftarget,
                         outputdir, genericsettings.verbose)
-            print "log aRT1/aRT0 vs target function values done."
+            print_done()
 
         plt.rc("axes", **inset.rcaxes)
         plt.rc("xtick", **inset.rctick)
         plt.rc("ytick", **inset.rctick)
         plt.rc("font", **inset.rcfont)
         plt.rc("legend", **inset.rclegend)
-        plt.rc('pdf', fonttype = 42)
+        plt.rc('pdf', fonttype=42)
 
         if genericsettings.isRLDistr:
+            print("ECDF runlength ratio graphs...")
             if len(dictFN0) > 1 or len(dictFN1) > 1:
                 warnings.warn('Data for functions from both the noisy and ' +
                               'non-noisy testbeds have been found. Their ' +
@@ -424,31 +427,38 @@ def main(argv=None):
                                         outputdir,
                                         '%02dD_%s' % (dim, fGroup),
                                         genericsettings.verbose)
-                                                
-            prepend_to_file(os.path.join(outputdir,
-                            'bbob_pproc_commands.tex'),
+
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
                             ['\\providecommand{\\bbobpprldistrlegendtwo}[1]{',
-                             pprldistr.caption_two(),  # depends on the config setting, should depend on maxfevals
+                             pprldistr.caption_two(),  # depends on the config
+                                                       # setting, should depend
+                                                       # on maxfevals
                              '}'
                             ])
-            
+            print_done()
+
+            # ECDFs per noise groups, code copied from rungenericmany.py
+            # (needed for bbob-biobj multiple algo template)
+            print("ECDF graphs per noise group...")
+            rungenericmany.grouped_ecdf_graphs(
+                    pproc.dictAlgByNoi(dictAlg),
+                    dsList[0].isBiobjective(),
+                    order=sortedAlgs,
+                    outputdir=outputdir)
+            print_done()
+
             # ECDFs per function groups, code copied from rungenericmany.py
             # (needed for bbob-biobj multiple algo template)
-            dictFG = pproc.dictAlgByFuncGroup(dictAlg)
-            for fg, tmpdictAlg in dictFG.iteritems():
-                dictDim = pproc.dictAlgByDim(tmpdictAlg)
-                for d, entries in dictDim.iteritems():
-                    pprldmany.main(entries,
-                                   dsList0.isBiobjective(),
-                                   order=sortedAlgs,
-                                   outputdir=outputdir,
-                                   info=('%02dD_%s' % (d, fg)),
-                                   verbose=genericsettings.verbose)
-                        
-            
-            
-            print "ECDF runlength ratio graphs done."
+            print("ECDF runlength graphs per function group...")
+            rungenericmany.grouped_ecdf_graphs(
+                    pproc.dictAlgByFuncGroup(dictAlg),
+                    dsList[0].isBiobjective(),
+                    order=sortedAlgs,
+                    outputdir=outputdir)
+            print_done()
 
+
+            print("ECDF runlength graphs...")
             for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
                 pprldistr.fmax = None #Resetting the max final value
                 pprldistr.evalfmax = None #Resetting the max #fevalsfactor
@@ -482,42 +492,48 @@ def main(argv=None):
                                        testbedsettings.current_testbed.rldValsOfInterest, True,
                                        outputdir,
                                        '%s' % fGroup, genericsettings.verbose)
+            print_done()
 
-            if genericsettings.isRldOnSingleFcts: # copy-paste from above, here for each function instead of function groups
+            # copy-paste from above, here for each function instead of function groups
+            if genericsettings.isRldOnSingleFcts:
+                print("ECDF graphs per function...")
                 # ECDFs for each function
-                pprldmany.all_single_functions(dictAlg, 
+                pprldmany.all_single_functions(dictAlg,
                                                dsList[0].isBiobjective(),
                                                False,
                                                sortedAlgs,
-                                               outputdir, 
+                                               outputdir,
                                                genericsettings.verbose,
                                                genericsettings.two_algorithm_file_name)
-            print "ECDF runlength graphs done."
+                print_done()
 
         if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg, 
+            print("Convergence plots...")
+            ppconverrorbars.main(dictAlg,
                                  dsList[0].isBiobjective(),
-                                 outputdir, 
+                                 outputdir,
                                  genericsettings.verbose,
                                  genericsettings.two_algorithm_file_name)
+            print_done()
 
         htmlFileName = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')
 
         if genericsettings.isScatter:
+            print("Scatter plots...")
             ppscatter.main(dsList1, dsList0, outputdir,
                            verbose=genericsettings.verbose)
-            prepend_to_file(os.path.join(outputdir,
-                            'bbob_pproc_commands.tex'), 
-                            ['\\providecommand{\\bbobppscatterlegend}[1]{', 
-                             ppscatter.figure_caption(), 
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+                            ['\\providecommand{\\bbobppscatterlegend}[1]{',
+                             ppscatter.figure_caption(),
                              '}'
                             ])
-            
+
             replace_in_file(htmlFileName, '##bbobppscatterlegend##', ppscatter.figure_caption(True))
-                            
-            print "Scatter plots done."
+
+            print_done()
 
         if genericsettings.isTab:
+            print("Generating old tables (pptable2.py)...")
             dictNG0 = dsList0.dictByNoise()
             dictNG1 = dsList1.dictByNoise()
 
@@ -553,7 +569,7 @@ def main(argv=None):
                                       outputdir,
                                       '%s%d' % (nGroup, i), genericsettings.verbose)
                 else:
-                    if 11 < 3:  # future handling: 
+                    if 11 < 3:  # future handling:
                         dictFunc0 = dsList0.dictByFunc()
                         dictFunc1 = dsList1.dictByFunc()
                         funcs = list(set(dictFunc0.keys()) & set(dictFunc1.keys()))
@@ -568,50 +584,74 @@ def main(argv=None):
                                       outputdir,
                                       '%s' % (nGroup), genericsettings.verbose)
 
-            prepend_to_file(os.path.join(outputdir,
-                        'bbob_pproc_commands.tex'), 
-                        ['\\providecommand{\\bbobpptablestwolegend}[1]{', 
-                         pptable2.get_table_caption(), 
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 
+                        ['\\providecommand{\\bbobpptablestwolegend}[1]{',
+                         pptable2.get_table_caption(),
                          '}'
                         ])
-                        
-            key =  '##bbobpptablestwolegend%s##' % (testbedsettings.current_testbed.scenario)
+
+            key = '##bbobpptablestwolegend%s##' % (testbedsettings.current_testbed.scenario)
             replace_in_file(htmlFileName, '##bbobpptablestwolegend##', htmldesc.getValue(key))
-                        
+
             replace_in_file(htmlFileName, 'algorithmAshort', algName0[0:3])
             replace_in_file(htmlFileName, 'algorithmBshort', algName1[0:3])
-            
-            for i, alg in enumerate(args):
-                replace_in_file(htmlFileName, 'algorithm' + abc[i], str_to_latex(strip_pathname1(alg)))
 
-            print "Tables done."
+            for i, alg in enumerate(args):
+                replace_in_file(htmlFileName, 'algorithm'
+                                + abc[i], str_to_latex(strip_pathname1(alg)))
+
+            print_done()
+
+            # The following is copied from rungenericmany.py to comply
+            # with the bi-objective many-algorithm LaTeX template
+            print("Generating new tables (pptables.py)...") 
+            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+                            ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
+                             pptables.get_table_caption() + '}'])
+            dictNoi = pproc.dictAlgByNoi(dictAlg)
+            for ng, tmpdictng in dictNoi.iteritems():
+                dictDim = pproc.dictAlgByDim(tmpdictng)
+                for d, tmpdictdim in dictDim.iteritems():
+                    pptables.main(
+                        tmpdictdim,
+                        sortedAlgs,
+                        dsList[0].isBiobjective(),
+                        outputdir,
+                        genericsettings.verbose,
+                        ([1, 20, 38] if (testbedsettings.current_testbed.name ==
+                                         testbedsettings.testbed_name_bi) else True))
+            print_done()
+            
 
         if genericsettings.isScaleUp:
+            print("Scaling figures...")
             plt.rc("axes", labelsize=20, titlesize=24)
             plt.rc("xtick", labelsize=20)
             plt.rc("ytick", labelsize=20)
             plt.rc("font", size=20)
             plt.rc("legend", fontsize=20)
-            plt.rc('pdf', fonttype = 42)
+            plt.rc('pdf', fonttype=42)
 
             ppfigs.main(dictAlg,
-                        genericsettings.two_algorithm_file_name, 
+                        genericsettings.two_algorithm_file_name,
                         dsList[0].isBiobjective(),
                         sortedAlgs,
-                        outputdir, 
+                        outputdir,
                         genericsettings.verbose)
             plt.rcdefaults()
-            print "Scaling figures done."
+            print_done()
 
-        if genericsettings.isFig or genericsettings.isRLDistr or genericsettings.isTab or genericsettings.isScatter or genericsettings.isScaleUp:
-            print "Output data written to folder %s" % outputdir
+        if (genericsettings.isFig or genericsettings.isRLDistr
+                or genericsettings.isTab or genericsettings.isScatter
+                or genericsettings.isScaleUp):
+            print("Output data written to folder %s" % outputdir)
 
         plt.rcdefaults()
 
     except Usage, err:
-        print >>sys.stderr, err.msg
-        print >>sys.stderr, "For help use -h or --help"
+        print(err.msg, file=sys.stderr)
+        print("For help use -h or --help", file=sys.stderr)
         return 2
-    
+
 if __name__ == "__main__":
     sys.exit(main())

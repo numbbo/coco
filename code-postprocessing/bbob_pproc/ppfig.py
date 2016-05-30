@@ -12,8 +12,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 import shutil
 # from pdb import set_trace
-from . import genericsettings, testbedsettings, toolsstats, htmldesc  # absolute_import => . refers to where ppfig resides in the package
 import pkg_resources
+
+# absolute_import => . refers to where ppfig resides in the package:
+from . import genericsettings, testbedsettings, toolsstats, htmldesc
+
 
 bbox_inches_choices = {  # do we also need pad_inches = 0?
     'svg': 'tight',
@@ -30,8 +33,9 @@ class Usage(Exception):
 def enum(*sequential, **named):
     enums = dict(zip(sequential, range(len(sequential))), **named)
     return type('Enum', (), enums)
-    
-HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP', 'PPTABLE', 'PPRLDISTR', 'PPLOGLOSS')
+
+HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP',
+                'PPTABLE', 'PPRLDISTR', 'PPLOGLOSS')
 
 def saveFigure(filename, figFormat=(), verbose=True):
     """Save figure into an image file.
@@ -41,27 +45,27 @@ def saveFigure(filename, figFormat=(), verbose=True):
 
     """
     coco_version = pkg_resources.require('bbob_pproc')[0].version
-    plt.text(0.35, 0.01, coco_version, 
-             horizontalalignment = "left",
-             verticalalignment = "bottom", 
-             fontsize = 10,
-             color = '0.5',
+    plt.text(0.35, 0.01, coco_version,
+             horizontalalignment="left",
+             verticalalignment="bottom",
+             fontsize=10,
+             color='0.5',
              transform=plt.gca().transAxes)
 
-    if not figFormat:    
-        figFormat=genericsettings.getFigFormats()    
-        
+    if not figFormat:
+        figFormat = genericsettings.getFigFormats()
+
     if isinstance(figFormat, basestring):
         figFormat = (figFormat, )
     for format in figFormat:
         try:
             plt.savefig(filename + '.' + format,
-                        dpi = 60 if genericsettings.in_a_hurry else 300,
+                        dpi=60 if genericsettings.in_a_hurry else 300,
                         format=format,
                         bbox_inches=bbox_inches_choices.get(format, None)
-            )
+                       )
             if verbose:
-                print 'Wrote figure in %s.' %(filename + '.' + format)
+                print('Wrote figure in %s.' % (filename + '.' + format))
         except IOError:
             warnings.warn('%s is not writeable.' % (filename + '.' + format))
 
@@ -78,6 +82,7 @@ html_header = """<HTML>
 </H1>
 %s
 """
+
 
 def next_dimension_str(s):
     try:
@@ -99,15 +104,17 @@ def next_dimension(dim):
         return 2
     return 2 * dim
 
+
 def addImage(imageName, addLink):
-    if (addLink):
+    if addLink:
         return '<a href="file:%s"><IMG SRC="%s"></a>' % (2 * (imageName,))
     else:
         return '<IMG SRC="%s">' % imageName
 
-def addLink(currentDir, folder, fileName, label, indent = '', ignoreFileExists = False):
 
-    if folder:    
+def add_link(currentDir, folder, fileName, label, indent='', ignoreFileExists=False):
+
+    if folder:
         path = os.path.join(os.path.realpath(currentDir), folder, fileName)
         href = '%s/%s' % (folder, fileName)
     else:
@@ -119,11 +126,20 @@ def addLink(currentDir, folder, fileName, label, indent = '', ignoreFileExists =
 
     return ''
 
+
 def save_index_html_file(filename):
 
     with open(filename + '.html', 'w') as f:
-        f.write(html_header % ('Post processing results', 'Post processing results', ''))
-            
+        text = ''
+        index_file = genericsettings.index_html_file_name
+        if index_file not in filename:
+            text = 'This page is deprecated. The new main page is ' \
+                   '<a href="%s.html"">%s.html</a>. The links will be ' \
+                   'correctly updated once the post-processing for the '\
+                   'algorithms is rerun.' % (index_file, index_file)
+
+        f.write(html_header % ('Post processing results', 'Post processing results', text))
+
         f.write('<H2>Single algorithm data</H2>\n')
 
         currentDir = os.path.dirname(os.path.realpath(filename))
@@ -131,75 +147,81 @@ def save_index_html_file(filename):
         singleAlgFile = 'templateBBOBarticle.html'
         for root, _dirs, files in os.walk(currentDir):
             for elem in _dirs:
-                f.write(addLink(currentDir, elem, singleAlgFile, elem, indent))
-        
-        comparisonLinks = ''    
-        comparisonLinks += addLink(currentDir, None, 'templateBBOBcmp.html', 'Two algorithm comparison', indent)
-        comparisonLinks += addLink(currentDir, None, 'templateBBOBmany.html', 'Many algorithm comparison', indent)
+                f.write(add_link(currentDir, elem, singleAlgFile, elem, indent))
+
+        comparisonLinks = ''
+        comparisonLinks += add_link(currentDir, None, 'templateBBOBcmp.html',
+                                    'Two algorithm comparison', indent)
+        comparisonLinks += add_link(currentDir, None, 'templateBBOBmany.html',
+                                    'Many algorithm comparison', indent)
         if comparisonLinks:
             f.write('<H2>Comparison data</H2>\n')
             f.write(comparisonLinks)
 
         f.write("\n</BODY>\n</HTML>")
 
+
 def getHomeLink(htmlPage):
-    homeLink = '<H3><a href="%s%s.html">Home</a></H3>'    
+    homeLink = '<H3><a href="%s%s.html">Home</a></H3>'
     if htmlPage is HtmlPage.ONE:
         return homeLink % ('../', genericsettings.index_html_file_name)
     elif htmlPage is HtmlPage.TWO or htmlPage is HtmlPage.MANY:
         return homeLink % ('', genericsettings.index_html_file_name)
-    
+
     return ''
 
 def getConvLink(htmlPage, currentDir):
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        return addLink(currentDir, None, genericsettings.ppconv_file_name + '.html',
-                       'Convergence plots', ignoreFileExists=genericsettings.isConv)
-    
+        return add_link(currentDir, None, genericsettings.ppconv_file_name + '.html',
+                        'Convergence plots', ignoreFileExists=genericsettings.isConv)
+
     return ''
-    
+
 def getRldLink(htmlPage, currentDir, isBiobjective):
-    
-    links = ''        
+
+    links = ''
     folder = 'pprldmany-single-functions'
 
     ignoreFileExists = genericsettings.isRldOnSingleFcts
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         if htmlPage == HtmlPage.ONE:
             fileName = '%s.html' % genericsettings.pprldmany_file_name
-            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots',
-                             ignoreFileExists=ignoreFileExists)
+            links += add_link(currentDir, folder, fileName,
+                              'Runtime distribution plots',
+                              ignoreFileExists=ignoreFileExists)
 
         if htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or not isBiobjective:
             fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
-            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots (per dimension)',
-                             ignoreFileExists=ignoreFileExists)
+            links += add_link(currentDir, folder, fileName,
+                              'Runtime distribution plots (per dimension)',
+                              ignoreFileExists=ignoreFileExists)
 
         if htmlPage == HtmlPage.ONE:
             fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
-            links += addLink(currentDir, folder, fileName, 'Runtime distribution plots by group (per dimension)',
-                             ignoreFileExists=ignoreFileExists)
+            links += add_link(currentDir, folder, fileName,
+                              'Runtime distribution plots by group (per dimension)',
+                              ignoreFileExists=ignoreFileExists)
 
     return links
 
 def getParentLink(htmlPage, parentFileName):
     if parentFileName and htmlPage not in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         return '<H3><a href="%s.html">Overview page</a></H3>' % parentFileName
-    
+
     return ''
 
-def save_single_functions_html(filename, 
-                               algname='', 
+def save_single_functions_html(filename,
+                               algname='',
                                extension='svg',
-                               add_to_names = '', 
-                               htmlPage = HtmlPage.NON_SPECIFIED,
-                               values_of_interest = [],
-                               isBiobjective = False, 
-                               functionGroups = None,
-                               parentFileName = None, # used only with HtmlPage.NON_SPECIFIED
-                               header = None, # used only with HtmlPage.NON_SPECIFIED
-                               caption = None): # used only with HtmlPage.NON_SPECIFIED
-    
+                               add_to_names='',
+                               htmlPage=HtmlPage.NON_SPECIFIED,
+                               values_of_interest=[],
+                               isBiobjective=False,
+                               functionGroups=None,
+                               parentFileName=None, # used only with HtmlPage.NON_SPECIFIED
+                               header=None, # used only with HtmlPage.NON_SPECIFIED
+                               caption=None): # used only with HtmlPage.NON_SPECIFIED
+
     name = filename.split(os.sep)[-1]
     currentDir = os.path.dirname(os.path.realpath(filename))
     with open(filename + add_to_names + '.html', 'w') as f:
@@ -210,59 +232,71 @@ def save_single_functions_html(filename,
         links += getParentLink(htmlPage, parentFileName)
 
         f.write(html_header % (header_title.strip().replace(' ', ', '), algname, links))
-            
+
         if functionGroups is None:
             functionGroups = OrderedDict([])
-        
-        if not htmlPage == HtmlPage.PPRLDMANY_BY_GROUP:
-            functionGroups.update({'noiselessall':'All functions'})
 
-        maxFunctionIndex = testbedsettings.current_testbed.number_of_functions
+        function_group = "nzall" if genericsettings.isNoisy else "noiselessall"
+        if not htmlPage == HtmlPage.PPRLDMANY_BY_GROUP:
+            functionGroups.update({function_group:'All functions'})
+
+        first_function_number = testbedsettings.current_testbed.first_function_number
+        last_function_number = testbedsettings.current_testbed.last_function_number
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
         addLinkForNextDim = add_to_names.endswith('D')
         bestAlgExists = not isBiobjective
-        
+
         if htmlPage is HtmlPage.ONE:
-            f.write('<H3><a href="ppfigdim.html">Average runtime versus dimension for selected targets</a></H3>\n')
-            f.write('<H3><a href="pptable.html">Average runtime for selected targets</a></H3>\n')
-            f.write('<H3><a href="pprldistr.html">Runtime for selected targets and f-distributions</a></H3>\n')
-            if not isBiobjective:            
-                f.write('<H3><a href="pplogloss.html">Runtime loss ratios</a></H3>\n')
+            f.write('<H3><a href="ppfigdim.html">Average runtime versus ' \
+                    'dimension for selected targets</a></H3>\n')
+            f.write('<H3><a href="pptable.html">Average runtime for selected ' \
+                    'targets</a></H3>\n')
+            f.write('<H3><a href="pprldistr.html">Runtime for selected ' \
+                    'targets and f-distributions</a></H3>\n')
+            if not isBiobjective:
+                f.write('<H3><a href="pplogloss.html">Runtime loss ratios' \
+                        '</a></H3>\n')
 
             headerECDF = ' Runtime distributions (ECDF) over all targets'
             f.write("<H2> %s </H2>\n" % headerECDF)
-            f.write(addImage('pprldmany.%s' % (extension), True))            
+            f.write(addImage('pprldmany-single-functions/pprldmany.%s' % (extension), True))
 
         elif htmlPage is HtmlPage.TWO:
             currentHeader = 'Scaling of aRT with dimension'
             f.write("\n<H2> %s </H2>\n" % currentHeader)
-            for ifun in range(1, maxFunctionIndex + 1):
+            for ifun in range(first_function_number, last_function_number + 1):
                 f.write(addImage('ppfigs_f%03d%s.%s' % (ifun, add_to_names, extension), True))
             f.write(captionStringFormat % '##bbobppfigslegend##')
-        
+
             currentHeader = 'Scatter plots per function'
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
-                f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
-            for ifun in range(1, maxFunctionIndex + 1):
-                f.write(addImage('ppscatter_f%03d%s.%s' % (ifun, add_to_names, extension), not addLinkForNextDim))
+                f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] +
+                                             name_for_click  + '.html'))
+            for ifun in range(first_function_number, last_function_number + 1):
+                f.write(addImage('ppscatter_f%03d%s.%s'
+                                 % (ifun, add_to_names, extension),
+                                 not addLinkForNextDim))
             if addLinkForNextDim:
                 f.write('"\n</A>\n')
-    
+
             f.write(captionStringFormat % '##bbobppscatterlegend##')
 
             names = ['pprldistr', 'pplogabs']
-            dimensions = [5, 20]
+            dimensions = genericsettings.rldDimsOfInterest
 
-            headerECDF = 'Empirical cumulative distribution functions (ECDFs) per function group'
+            headerECDF = 'Empirical cumulative distribution functions ' \
+                         '(ECDFs) per function group'
             f.write("\n<H2> %s </H2>\n" % headerECDF)
             for dimension in dimensions:
                 for typeKey, typeValue in functionGroups.iteritems():
                     f.write('<p><b>%s in %d-D</b></p>' % (typeValue, dimension))
                     f.write('<div>')
                     for name in names:
-                        f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
+                        f.write(addImage('%s_%02dD_%s.%s'
+                                         % (name, dimension, typeKey, extension),
+                                         True))
                     f.write('</div>')
 
             key = 'bbobpprldistrlegendtwo' + testbedsettings.current_testbed.scenario
@@ -271,7 +305,7 @@ def save_single_functions_html(filename,
             currentHeader = 'Table showing the aRT in number of function evaluations'
             if bestAlgExists:
                 currentHeader += ' divided by the best aRT measured during BBOB-2009'
-                
+
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             f.write("\n<!--pptable2Html-->\n")
             key = 'bbobpptablestwolegend' + testbedsettings.current_testbed.scenario
@@ -282,19 +316,23 @@ def save_single_functions_html(filename,
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
-                f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] + name_for_click  + '.html'))
-            for ifun in range(1, maxFunctionIndex + 1):
-                f.write(addImage('ppfigs_f%03d%s.%s' % (ifun, add_to_names, extension), not addLinkForNextDim))
+                f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] +
+                                             name_for_click  + '.html'))
+            for ifun in range(first_function_number, last_function_number + 1):
+                f.write(addImage('ppfigs_f%03d%s.%s'
+                                 % (ifun, add_to_names, extension), not addLinkForNextDim))
             if addLinkForNextDim:
                 f.write('"\n</A>\n')
-            
+
             f.write(captionStringFormat % '##bbobppfigslegend##')
 
             write_ECDF(f, 5, extension, captionStringFormat, functionGroups)
             write_ECDF(f, 20, extension, captionStringFormat, functionGroups)
-                
-            write_pptables(f, 5, captionStringFormat, maxFunctionIndex, bestAlgExists)
-            write_pptables(f, 20, captionStringFormat, maxFunctionIndex, bestAlgExists)
+
+            write_pptables(f, 5, captionStringFormat, first_function_number,
+                           last_function_number, bestAlgExists)
+            write_pptables(f, 20, captionStringFormat, first_function_number,
+                           last_function_number, bestAlgExists)
 
         elif htmlPage is HtmlPage.NON_SPECIFIED:
             currentHeader = header
@@ -302,7 +340,7 @@ def save_single_functions_html(filename,
             if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
                 f.write('<A HREF="%s">\n' % (name + name_for_click  + '.html'))
-            for ifun in range(1, maxFunctionIndex + 1):
+            for ifun in range(first_function_number, last_function_number + 1):
                 f.write(addImage('%s_f%03d%s.%s' % (name, ifun, add_to_names, extension), not addLinkForNextDim))
             if addLinkForNextDim:
                 f.write('"\n</A>\n')
@@ -312,7 +350,7 @@ def save_single_functions_html(filename,
             if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
                 f.write('<A HREF="%s">\n' % (name + name_for_click  + '.html'))
-            
+
             for fg in functionGroups:
                 f.write(addImage('%s_%s%s.%s' % (name, fg, add_to_names, extension), not addLinkForNextDim))
             if addLinkForNextDim:
@@ -323,11 +361,11 @@ def save_single_functions_html(filename,
             f.write("\n<!--pptableHtml-->\n")
             key = 'bbobpptablecaption' + testbedsettings.current_testbed.scenario
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
-    
+
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
-            dimensions = [5, 20]
-            
+            dimensions = genericsettings.rldDimsOfInterest
+
             headerECDF = ' Empirical cumulative distribution functions (ECDF)'
             f.write("<H2> %s </H2>\n" % headerECDF)
             for dimension in dimensions:
@@ -335,86 +373,92 @@ def save_single_functions_html(filename,
                     f.write('<p><b>%s in %d-D</b></p>' % (typeValue, dimension))
                     f.write('<div>')
                     for name in names:
-                        f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
+                        f.write(addImage('%s_%02dD_%s.%s' % (name, dimension,
+                                                             typeKey, extension), True))
                     f.write('</div>')
 
             key = 'bbobpprldistrlegend' + testbedsettings.current_testbed.scenario
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
-            dimensions = [5, 20]
-            if not isBiobjective:            
+            dimensions = genericsettings.rldDimsOfInterest
+            if not isBiobjective:
                 currentHeader = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % currentHeader)
                 for dimension in dimensions:
-                    f.write(addImage('pplogloss_%02dD_noiselessall.%s' % (dimension, extension), True))
+                    f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, function_group, extension), True))
                 f.write("\n<!--tables-->\n")
                 scenario = testbedsettings.current_testbed.scenario
                 f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption' + scenario + '##'))
-            
+
+                dimensionList = '-D, '.join(str(x) for x in dimensions) + '-D'
+                index = dimensionList.rfind(",")
+                dimensionList = dimensionList[:index] + ' and' + dimensionList[index + 1:]
                 for typeKey, typeValue in functionGroups.iteritems():
-                    f.write('<p><b>%s in %s</b></p>' % (typeValue, '-D and '.join(str(x) for x in dimensions) + '-D'))
+                    f.write('<p><b>%s in %s</b></p>' % (typeValue, dimensionList))
                     f.write('<div>')
                     for dimension in dimensions:
                         f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, typeKey, extension), True))
                     f.write('</div>')
-                        
+
                 f.write(captionStringFormat % htmldesc.getValue('##bbobloglossfigurecaption' + scenario + '##'))
-        
+
         if caption:
             f.write(captionStringFormat % caption)
 
         f.write("\n</BODY>\n</HTML>")
-    
+
 def write_ECDF(f, dimension, extension, captionStringFormat, functionGroups):
     """Writes line for ECDF images."""
 
     names = ['pprldmany']
-    
+
     headerECDF = 'Empirical Cumulative Distribution Functions (ECDFs) per function group for dimension %d' % dimension
     f.write("\n<H2> %s </H2>\n" % headerECDF)
     for typeKey, typeValue in functionGroups.iteritems():
         f.write('<p><b>%s</b></p>' % typeValue)
         for name in names:
             f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
-    
+
     f.write(captionStringFormat % ('\n##bbobECDFslegend%d##' % dimension))
 
-def write_pptables(f, dimension, captionStringFormat, maxFunctionIndex, bestAlgExists):
+
+def write_pptables(f, dimension, captionStringFormat, first_function_number, last_function_number, bestAlgExists):
     """Writes line for pptables images."""
 
     additionalText = 'divided by the best aRT measured during BBOB-2009' if bestAlgExists else ''
     currentHeader = 'Table showing the aRT in number of function evaluations %s ' \
                 'for dimension %d' % (additionalText, dimension)
-    
+
     f.write("\n<H2> %s </H2>\n" % currentHeader)
-    for ifun in range(1, maxFunctionIndex + 1):
+    for ifun in range(first_function_number, last_function_number + 1):
         f.write("\n<!--pptablesf%03d%02dDHtml-->\n" % (ifun, dimension))
-    
+
     if genericsettings.isTab:
         key = 'bbobpptablesmanylegend' + testbedsettings.current_testbed.scenario
         f.write(captionStringFormat % htmldesc.getValue('##' + key + str(dimension) + '##'))
 
+
 def copy_js_files(outputdir):
     """Copies js files to output directory."""
-    
+
     js_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'js')
     for file in os.listdir(js_folder):
         if file.endswith(".js"):
-            shutil.copy(os.path.join(js_folder, file), outputdir)  
+            shutil.copy(os.path.join(js_folder, file), outputdir)
 
 
 def discretize_limits(limits, smaller_steps_limit=3.1):
     """return new limits with discrete values in k * 10**i with k in [1, 3].
 
-    `limits` has len 2 and the new lower limit is always ``10**-0.2``. 
+    `limits` has len 2 and the new lower limit is always ``10**-0.2``.
 
-    if `limits[1] / limits[0] < 10**smaller_steps_limits`, k == 3 is an 
+    if `limits[1] / limits[0] < 10**smaller_steps_limits`, k == 3 is an
     additional choice.
     """
     ymin, ymax = limits
-    ymin=np.max((ymin, 10**-0.2))
-    ymax=int(ymax + 1)
+    ymin = np.max((ymin, 10**-0.2))
+    ymax = int(ymax + 1)
 
     ymax_new = 10**np.ceil(np.log10(ymax)) * (1 + 1e-6)
     if 3. * ymax_new / 10 > ymax and np.log10(ymax / ymin) < smaller_steps_limit:
@@ -447,11 +491,11 @@ def marker_positions(xdata, ydata, nbperdecade, maxnb,
     ydatarange = tfy(max([max(ydata), ax_limits[2], ax_limits[3]]) + 0.5) - \
                  tfy(min([min(ydata), ax_limits[2], ax_limits[3]]) + 0.5)  # tfy(ydata[-1]) - tfy(ydata[0])
     nbmarkers = np.min([maxnb, nbperdecade +
-                               np.ceil(nbperdecade * (1e-99 + np.abs(np.log10(max(xdata)) - np.log10(min(xdata)))))])
+                        np.ceil(nbperdecade * (1e-99 + np.abs(np.log10(max(xdata)) - np.log10(min(xdata)))))])
     probs = np.abs(np.diff(np.log10(xdata))) / xdatarange + \
             np.abs(np.diff(tfy(ydata))) / ydatarange
     xpos = []
-    ypos= []
+    ypos = []
     if sum(probs) > 0:
         xoff = np.random.rand() / nbmarkers
         probs /= sum(probs)
@@ -503,7 +547,7 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
     plt.setp(res[0], marker='', label='')
     return res
 
-def consecutiveNumbers(data, prefix = ''):
+def consecutiveNumbers(data, prefix=''):
     """Groups a sequence of integers into ranges of consecutive numbers.
     If the prefix is set then the it's placed before each number.
 
@@ -523,7 +567,7 @@ def consecutiveNumbers(data, prefix = ''):
     tmp = groupByRange(data)
     for i in tmp:
         tmpstring = list(prefix + str(j) for j in i)
-        if len(i) <= 2 : # This means length of ranges are at least 3
+        if len(i) <= 2:  # This means length of ranges are at least 3
             res.append(', '.join(tmpstring))
         else:
             res.append('-'.join((tmpstring[0], tmpstring[-1])))
@@ -540,7 +584,7 @@ def groupByRange(data):
     Ref: http://docs.python.org/release/3.0.1/library/itertools.html
     """
     res = []
-    for _k, g in groupby(enumerate(data), lambda (i,x):i-x):
+    for _k, g in groupby(enumerate(data), lambda (i, x): i-x):
         res.append(list(i for i in map(itemgetter(1), g)))
 
     return res
@@ -549,7 +593,7 @@ def logxticks(limits=[-np.inf, np.inf]):
     """Modify log-scale figure xticks from 10^i to i for values with the
     ``limits`` and (re-)sets the current xlim() thereby turning autoscale
     off (if it was on).
-    
+
     This is to have xticks that are more visible.
     Modifying the x-limits of the figure after calling this method will
     not update the ticks.
