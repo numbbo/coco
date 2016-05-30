@@ -148,6 +148,7 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
         self.first_function_number = 101
         self.last_function_number = 130
         self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
+        self.best_algorithm_year = 2009
 
 class LargeScaleTestbed(SingleObjectiveTestbed):
   """First large scale Testbed
@@ -162,7 +163,8 @@ class LargeScaleTestbed(SingleObjectiveTestbed):
     self.tabDimsOfInterest = [80, 320]
     self.rldDimsOfInterest = [80, 320]
     self.htmlDimsOfInterest = [80, 320]
-    self.best_algorithm_filename = '' #Wassim: TODO: upadate pptable.py caption to no longer mention bestAlg (for now)
+    self.best_algorithm_filename = ''  #'' #Wassim: TODO: upadate pptable.py caption to no longer mention bestAlg (for now)
+    self.best_algorithm_year = 2016
 
 
 class GECCOBiObjBBOBTestbed(Testbed):

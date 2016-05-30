@@ -106,18 +106,12 @@ def scaling_figure_caption(for_html = False):
 
 def prepare_ecdfs_figure_caption():
 
-    if not isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
-        best2009text = (
-                        r"The ``best 2009'' line " +
-                        r"corresponds to the best \aRT\ observed during BBOB 2009 " +
-                        r"for each selected target."
-                        )
-    else:
-        best2009text = (
-                        r"The ``best 2016'' line " +
-                        r"corresponds to the best \aRT\ observed during BBOB 2016 " +
-                        r"for each selected target."
-                        )
+    bestyeartext = (
+                    r"The ``best %d'' line " % testbedsettings.current_testbed.best_algorithm_year +
+                    r"corresponds to the best \aRT\ observed during BBOB %d " % testbedsettings.current_testbed.best_algorithm_year +
+                    r"for each selected target."
+                    )
+
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
@@ -135,16 +129,26 @@ def prepare_ecdfs_figure_caption():
                 r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. "
                 )
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
-        # NOTE: no runlength-based targets supported yet
-        figure_caption = ecdfs_figure_caption_standard
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+
+    if testbedsettings.current_testbed.best_algorithm_filename:
         if genericsettings.runlength_based_targets:
-            figure_caption = ecdfs_figure_caption_rlbased + best2009text
+            figure_caption = ecdfs_figure_caption_rlbased + bestyeartext
         else:
-            figure_caption = ecdfs_figure_caption_standard + best2009text
+            figure_caption = ecdfs_figure_caption_standard + bestyeartext
     else:
-        warnings.warn("Current settings do not support ppfigdim caption.")
+        figure_caption = ecdfs_figure_caption_standard
+
+      # Wassim: relaced what's below to have more generic code
+#    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+        # NOTE: no runlength-based targets supported yet
+#        figure_caption = ecdfs_figure_caption_standard
+#    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+#        if genericsettings.runlength_based_targets:
+#            figure_caption = ecdfs_figure_caption_rlbased + bestyeartext
+#        else:
+#            figure_caption = ecdfs_figure_caption_standard + bestyeartext
+#   else:
+#       warnings.warn("Current settings do not support ppfigdim caption.")
 
     return figure_caption
 
@@ -608,12 +612,10 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
                     )
         
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
-        if isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
-            toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend80##', ecdfs_figure_caption(True, 80))
-            toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend320##', ecdfs_figure_caption(True, 320))
-        else:
-            toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend5##', ecdfs_figure_caption(True, 5))
-            toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend20##', ecdfs_figure_caption(True, 20))
+        # Wassim: generalized what's below
+        for i in xrange(len(testbedsettings.current_testbed.rldDimsOfInterest)):
+          toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend%d##' % testbedsettings.current_testbed.rldDimsOfInterest[i], ecdfs_figure_caption(True, testbedsettings.current_testbed.rldDimsOfInterest[i]))
+
         if verbose:
             print 'Wrote commands and legend to %s' % filename
 
