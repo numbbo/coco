@@ -36,7 +36,7 @@ from . import genericsettings, ppfig, testbedsettings
 from . import pproc, pptex
 from .pproc import DataSetList, processInputArgs
 from .ppfig import Usage
-from .toolsdivers import prepend_to_file, strip_pathname1, str_to_latex
+from .toolsdivers import prepend_to_file, strip_pathname1, str_to_latex, replace_in_file
 from .compall import pprldmany, pptables, ppfigs
 from . import ppconverrorbars
 
@@ -321,6 +321,24 @@ def main(argv=None):
             functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups()
         )
 
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.ppfigs_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            htmlPage=ppfig.HtmlPage.PPFIGS,
+            isBiobjective=dsList[0].isBiobjective(),
+            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
+            parentFileName=genericsettings.many_algorithm_file_name
+        )
+
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.pptables_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            htmlPage=ppfig.HtmlPage.PPTABLES,
+            isBiobjective=dsList[0].isBiobjective(),
+            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
+            parentFileName=genericsettings.many_algorithm_file_name
+        )
+
         # convergence plots
         print("Generating convergence plots...")
         if genericsettings.isConv:
@@ -351,6 +369,11 @@ def main(argv=None):
                                 order=sortedAlgs,
                                 outputdir=outputdir
                                )
+
+            htmlFile = os.path.join(outputdir, genericsettings.many_algorithm_file_name + '.html')
+            replace_in_file(htmlFile, '##bbobECDFslegend5##', ppfigs.ecdfs_figure_caption(True, 5))
+            replace_in_file(htmlFile, '##bbobECDFslegend20##', ppfigs.ecdfs_figure_caption(True, 20))
+
             print_done()
 
             # copy-paste from above, here for each function instead of function groups:
@@ -413,7 +436,7 @@ def main(argv=None):
             plt.rc('pdf', fonttype=42)
 
             ppfigs.main(dictAlg,
-                        genericsettings.many_algorithm_file_name,
+                        genericsettings.ppfigs_file_name,
                         dsList[0].isBiobjective(),
                         sortedAlgs,
                         outputdir,
