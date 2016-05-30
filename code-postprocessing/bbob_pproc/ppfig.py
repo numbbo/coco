@@ -35,7 +35,7 @@ def enum(*sequential, **named):
 
 
 HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP',
-                'PPTABLE', 'PPTABLE2', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS')
+                'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS')
 
 
 def saveFigure(filename, figFormat=(), verbose=True):
@@ -278,27 +278,15 @@ def save_single_functions_html(filename,
                 % genericsettings.pptable2_file_name)
 
         elif htmlPage is HtmlPage.MANY:
-            currentHeader = 'Scaling of aRT with dimension'
-            f.write("\n<H2> %s </H2>\n" % currentHeader)
-            if addLinkForNextDim:
-                name_for_click = next_dimension_str(add_to_names)
-                f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] +
-                                             name_for_click + '.html'))
-            for ifun in range(first_function_number, last_function_number + 1):
-                f.write(addImage('ppfigs_f%03d%s.%s'
-                                 % (ifun, add_to_names, extension), not addLinkForNextDim))
-            if addLinkForNextDim:
-                f.write('"\n</A>\n')
 
-            f.write(captionStringFormat % '##bbobppfigslegend##')
+            f.write(
+                '<H3><a href="%s.html">Average runtime with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
+            f.write(
+                '<H3><a href="%s.html">Average runtime for selected targets</a></H3>\n'
+                % genericsettings.pptables_file_name)
 
             write_ECDF(f, 5, extension, captionStringFormat, functionGroups)
             write_ECDF(f, 20, extension, captionStringFormat, functionGroups)
-
-            write_pptables(f, 5, captionStringFormat, first_function_number,
-                           last_function_number, bestAlgExists)
-            write_pptables(f, 20, captionStringFormat, first_function_number,
-                           last_function_number, bestAlgExists)
 
         elif htmlPage is HtmlPage.PPSCATTER:
             currentHeader = 'Scatter plots per function'
@@ -360,6 +348,12 @@ def save_single_functions_html(filename,
             f.write("\n<!--pptable2Html-->\n")
             key = 'bbobpptablestwolegend' + testbedsettings.current_testbed.scenario
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
+
+        elif htmlPage is HtmlPage.PPTABLES:
+            write_pptables(f, 5, captionStringFormat, first_function_number,
+                           last_function_number, bestAlgExists)
+            write_pptables(f, 20, captionStringFormat, first_function_number,
+                           last_function_number, bestAlgExists)
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
