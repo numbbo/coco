@@ -413,7 +413,7 @@ def main(argv=None):
             plt.rc('pdf', fonttype=42)
 
             ppfigs.main(dictAlg,
-                        genericsettings.many_algorithm_file_name,
+                        genericsettings.ppfigs_file_name,
                         dsList[0].isBiobjective(),
                         sortedAlgs,
                         outputdir,
