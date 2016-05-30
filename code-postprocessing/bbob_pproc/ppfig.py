@@ -238,7 +238,9 @@ def save_single_functions_html(filename,
 
         function_group = "nzall" if genericsettings.isNoisy else "noiselessall"
         if not htmlPage == HtmlPage.PPRLDMANY_BY_GROUP:
-            functionGroups.update({function_group:'All functions'})
+            tempFunctionGroups = OrderedDict([(function_group, 'All functions')])
+            tempFunctionGroups.update(functionGroups)
+            functionGroups = tempFunctionGroups
 
         first_function_number = testbedsettings.current_testbed.first_function_number
         last_function_number = testbedsettings.current_testbed.last_function_number
