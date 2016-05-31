@@ -127,6 +127,7 @@ class GECCOBBOBTestbed(SingleObjectiveTestbed): #Wassim: now inherits from Singl
         self.rldDimsOfInterest = [5, 20]
         self.htmlDimsOfInterest = [5, 20]
         self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
+        self.best_algorithm_year = 2016
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
@@ -201,6 +202,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptablemany_targetsOfInterest = targetValues((1e-0, 1e-2, 1e-5))  # used for pptables
         self.scenario = scenario_biobjfixed
         self.best_algorithm_filename = ''
+        self.best_algorithm_year = 2016
         self.short_names = get_short_names(self.shortinfo_filename)
         # expensive optimization settings:
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
@@ -211,7 +213,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.tabDimsOfInterest = [5, 20]
         self.rldDimsOfInterest = [5, 20]
         self.htmlDimsOfInterest = [5, 20]
-
+        self.first_dimension = 2
 
 
 
