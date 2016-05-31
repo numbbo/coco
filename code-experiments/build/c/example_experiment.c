@@ -95,10 +95,10 @@ int main(void) {
   printf("Running the example experiment... (might take time, be patient)\n");
   fflush(stdout);
 
-  /*example_experiment("bbob-biobj", "bbob-biobj", random_generator);*/
+  example_experiment("bbob-biobj", "bbob-biobj", random_generator);
 
-  /* Uncomment the line below to run the same example experiment on the bbob suite*/
-  example_experiment("bbob", "bbob", random_generator);
+  /* Uncomment the line below to run the same example experiment on the bbob suite
+  example_experiment("bbob", "bbob", random_generator); */
 
   printf("Done!\n");
   fflush(stdout);
