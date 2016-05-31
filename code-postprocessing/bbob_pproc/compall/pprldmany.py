@@ -616,6 +616,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     dictDimList = pp.dictAlgByDim(dictAlg)
     dims = sorted(dictDimList)
+
     for i, dim in enumerate(dims):
         divisor = dim if divide_by_dimension else 1
 
@@ -665,7 +666,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 #set_trace()
                 bestalgentries = bestalg.load_best_algorithm()
 
-                if not bestalgentries:
+                if not bestalgentries or not bestalgentries.has_key((dim,f)):
+                    # Wassim: if (dimension,function) is not present in bestalgentries, just ignore it
                     displaybest2009 = False
                 else:
                     bestalgentry = bestalgentries[(dim, f)]
@@ -686,7 +688,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                             runlengthunsucc = []
                         xbest2009.extend(x)
                         maxevalsbest2009.extend(runlengthunsucc)
-                    
+
     if order is None:
         order = dictData.keys()
 

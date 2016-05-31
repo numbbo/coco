@@ -94,14 +94,14 @@ def next_dimension_str(s):
         raise
 
 
-def next_dimension(dim):
+def next_dimension(dim): # Wassim: too static! made it more flexible
     """next dimension when clicking single function html pages"""
     if dim == 2:
         return 3
     if dim == 3:
         return 5
-    if dim == 40:
-        return 2
+    if dim == testbedsettings.current_testbed.dimensions_to_display[-1]: # Wassim: updated to make it more flexible
+        return testbedsettings.current_testbed.dimensions_to_display[0]
     return 2 * dim
 
 
@@ -183,6 +183,7 @@ def getRldLink(htmlPage, currentDir, isBiobjective):
     folder = 'pprldmany-single-functions'
 
     ignoreFileExists = genericsettings.isRldOnSingleFcts
+    # Wassim: why is this set to True? We shouldn't generate pages for nonn-existing plots or at least the pages should just be clickable to get the next one
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         if htmlPage == HtmlPage.ONE:
             fileName = '%s.html' % genericsettings.pprldmany_file_name
@@ -191,13 +192,15 @@ def getRldLink(htmlPage, currentDir, isBiobjective):
                               ignoreFileExists=ignoreFileExists)
 
         if htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or not isBiobjective:
-            fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
+            fileName = '%s_%02dD.html' % (genericsettings.pprldmany_file_name, testbedsettings.current_testbed.first_dimension)
+            # Wassim: now uses testbedsettings.current_testbed.first_dimension instead of hard-coded 2
+            # Wassim: TODO: make so that non-present plots are still clickable so one can get the next dim
             links += add_link(currentDir, folder, fileName,
                               'Runtime distribution plots (per dimension)',
                               ignoreFileExists=ignoreFileExists)
-
         if htmlPage == HtmlPage.ONE:
-            fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
+            fileName = '%s_%02dD.html' % (genericsettings.pprldmany_group_file_name, testbedsettings.current_testbed.first_dimension)
+            # Wassim: now uses testbedsettings.current_testbed.first_dimension instead of hard-coded 2
             links += add_link(currentDir, folder, fileName,
                               'Runtime distribution plots by group (per dimension)',
                               ignoreFileExists=ignoreFileExists)
@@ -244,7 +247,10 @@ def save_single_functions_html(filename,
         last_function_number = testbedsettings.current_testbed.last_function_number
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
         addLinkForNextDim = add_to_names.endswith('D')
-        bestAlgExists = not isBiobjective
+        bestAlgExists = bool(testbedsettings.current_testbed.best_algorithm_filename) #not isBiobjective # Wassim: or not isLargescale
+
+        dimensions = testbedsettings.current_testbed.htmlDimsOfInterest
+        #genericsettings.htmlDimsOfInterest_ls if genericsettings.isLargeScale else genericsettings.htmlDimsOfInterest
 
         if htmlPage is HtmlPage.ONE:
             f.write('<H3><a href="ppfigdim.html">Average runtime versus ' \
@@ -260,6 +266,7 @@ def save_single_functions_html(filename,
             headerECDF = ' Runtime distributions (ECDF) over all targets'
             f.write("<H2> %s </H2>\n" % headerECDF)
             f.write(addImage('pprldmany-single-functions/pprldmany.%s' % (extension), True))
+            # Wassim: added the folder name pprldmany-single-functions
 
         elif htmlPage is HtmlPage.TWO:
             currentHeader = 'Scaling of aRT with dimension'
@@ -267,7 +274,6 @@ def save_single_functions_html(filename,
             for ifun in range(first_function_number, last_function_number + 1):
                 f.write(addImage('ppfigs_f%03d%s.%s' % (ifun, add_to_names, extension), True))
             f.write(captionStringFormat % '##bbobppfigslegend##')
-
             currentHeader = 'Scatter plots per function'
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
@@ -284,7 +290,6 @@ def save_single_functions_html(filename,
             f.write(captionStringFormat % '##bbobppscatterlegend##')
 
             names = ['pprldistr', 'pplogabs']
-            dimensions = [5, 20]
 
             headerECDF = 'Empirical cumulative distribution functions ' \
                          '(ECDFs) per function group'
@@ -326,13 +331,11 @@ def save_single_functions_html(filename,
 
             f.write(captionStringFormat % '##bbobppfigslegend##')
 
-            write_ECDF(f, 5, extension, captionStringFormat, functionGroups)
-            write_ECDF(f, 20, extension, captionStringFormat, functionGroups)
-
-            write_pptables(f, 5, captionStringFormat, first_function_number,
-                           last_function_number, bestAlgExists)
-            write_pptables(f, 20, captionStringFormat, first_function_number,
-                           last_function_number, bestAlgExists)
+            write_ECDF(f, testbedsettings.current_testbed.htmlDimsOfInterest[0], extension, captionStringFormat, functionGroups) # Wasssim: why constant values?!!!
+            write_ECDF(f, testbedsettings.current_testbed.htmlDimsOfInterest[1], extension, captionStringFormat, functionGroups)
+                
+            write_pptables(f, testbedsettings.current_testbed.htmlDimsOfInterest[0], captionStringFormat, first_function_number, last_function_number, bestAlgExists)
+            write_pptables(f, testbedsettings.current_testbed.htmlDimsOfInterest[1], captionStringFormat, first_function_number, last_function_number, bestAlgExists)
 
         elif htmlPage is HtmlPage.NON_SPECIFIED:
             currentHeader = header
@@ -364,8 +367,7 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
-            dimensions = [5, 20]
-
+            dimensions = testbedsettings.current_testbed.htmlDimsOfInterest
             headerECDF = ' Empirical cumulative distribution functions (ECDF)'
             f.write("<H2> %s </H2>\n" % headerECDF)
             for dimension in dimensions:
@@ -381,8 +383,8 @@ def save_single_functions_html(filename,
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
-            dimensions = [5, 20]
-            if not isBiobjective:
+            dimensions = testbedsettings.current_testbed.htmlDimsOfInterest
+            if bestAlgExists:
                 currentHeader = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % currentHeader)
                 for dimension in dimensions:
@@ -391,8 +393,11 @@ def save_single_functions_html(filename,
                 scenario = testbedsettings.current_testbed.scenario
                 f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption' + scenario + '##'))
 
+                dimensionList = '-D, '.join(str(x) for x in dimensions) + '-D'
+                index = dimensionList.rfind(",")
+                dimensionList = dimensionList[:index] + ' and' + dimensionList[index + 1:]
                 for typeKey, typeValue in functionGroups.iteritems():
-                    f.write('<p><b>%s in %s</b></p>' % (typeValue, '-D and '.join(str(x) for x in dimensions) + '-D'))
+                    f.write('<p><b>%s in %s</b></p>' % (typeValue, dimensionList))
                     f.write('<div>')
                     for dimension in dimensions:
                         f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, typeKey, extension), True))
