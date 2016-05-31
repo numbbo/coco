@@ -43,7 +43,7 @@ static void transform_vars_brs_evaluate(coco_problem_t *problem, const double *x
      * from 1, we use all even indices since C starts indexing
      * with 0.
      */
-    if (x[i] > 0.0 && i % 2 == 0) {
+    if (x[i] > 0.0 && i % 2 == 0) { /*TODO: Documentation: the condition should be Tosz(x_i - x_i^opt) > 0 in stead of z_i > 0*/
       factor *= 10.0;
     }
     data->x[i] = factor * x[i];

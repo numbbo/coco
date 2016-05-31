@@ -21,13 +21,17 @@ force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000  # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
-dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
+#dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
+# Wassim: dimensions_to_display is now part of current_testbed
+#dimensions_to_display_ls = (20, 40, 80, 160, 320, 640) # Wassim: large scale suite
 generate_svg_files = True  # generate the svg figures
 scaling_figures_with_boxes = True
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
 # Variables used in the routines defining desired output for BBOB.
-tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
+#tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
+# Wassim: tabDimsOfInterest is now part of current_testbed
+#tabDimsOfInterest = [40, 160]  # Wassim: large scale TODO: use it by generating new large-scale reference data
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
 target_runlength = 10  # used in ppfigs.main
@@ -43,9 +47,16 @@ xlimit_expensive = 1e3  # used in
 dim_related_markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 dim_related_colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 
-rldDimsOfInterest = (5, 20)
+#rldDimsOfInterest = (5, 20)
+# Wassim: rldDimsOfInterest is now part of current_testbed
+#rldDimsOfInterest = [40, 80] # Wassim: for large scale TODO: use it by generating new large-scale reference data
+
+#htmlDimsOfInterest = [5, 20] # Wassim: Empirical cumulative distribution functions (ECDF) and ERT loss ratios shown dimensions in html file
+# Wassim: htmlDimsOfInterest is now part of current_testbed
+#htmlDimsOfInterest_ls = [40, 80] # Wassim: for large scale
 
 simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max((0, in_a_hurry)))  # for tables and plots
+
 
 # single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default in pprldistr.plot method, on graph for each
 # single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each, seems not in use
@@ -227,6 +238,7 @@ inputsettings = 'color'
 isExpensive = False
 isRldOnSingleFcts = True
 isRLDistr = True
+#isLargeScale = False # Wassim: should no longer be used, use testbedsetting objects instead
 ##
 isLogLoss = True  # only affects rungeneric1
 isPickled = False  # only affects rungeneric1
@@ -238,7 +250,7 @@ isScaleUp = True  # only affects rungeneric2, only set here and not altered by a
 shortoptlist = "hvpo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
-               "verbose", "settings=", "conv",
+               "verbose", "settings=", "conv", "large-scale", # Wassim: added large-scale option
                "expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
                "sca-only", "no-svg"]
@@ -262,5 +274,3 @@ def getFontSize(nameList):
     maxFuncLength = max(len(i) for i in nameList)
     fontSize = 24 - max(0, 2 * ((maxFuncLength - 35) / 5))
     return fontSize
-
-

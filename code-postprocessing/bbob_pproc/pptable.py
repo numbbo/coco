@@ -93,7 +93,9 @@ def get_table_caption():
                 The median number of conducted function evaluations is additionally given in 
                 \textit{italics}, if the target in the last column was never reached. 
                 """
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single \
+        or isinstance(testbedsettings.current_testbed, testbedsettings.SingleObjectiveTestbed):
+          # Wassim: added a comparison to the SingleObjectiveTestbed
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:
@@ -169,7 +171,7 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             entry = dictFunc[f][0] # take the first element
             ertdata = entry.detERT(targetsOfInterest((f, d)))
     
-            if bestalgentries:            
+            if bestalgentries:
                 bestalgentry = bestalgentries[(d, f)]
                 bestalgdata = bestalgentry.detERT(targetsOfInterest((f,d)))
                 bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest((f,d)))
