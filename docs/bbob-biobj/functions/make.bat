@@ -8,6 +8,7 @@ if "%SPHINXBUILD%" == "" (
 set BUILDDIR=build
 set HTMLBUILDDIR=../../../../coco-doc/bbob-biobj/functions
 set PDF=bbob-biobj-functions.pdf
+set TEX=bbob-biobj-functions.tex
 set ALLSPHINXOPTS=-d %BUILDDIR%/doctrees %SPHINXOPTS% source
 set I18NSPHINXOPTS=%SPHINXOPTS% source
 if NOT "%PAPER%" == "" (
@@ -170,13 +171,19 @@ if "%1" == "latex" (
 )
 
 if "%1" == "latexpdf" (
+	copy source\index.rst index-backup.txt
+	python ..\..\replace.py ".. CHAPTERTITLE" "CHAPTERTITLE" source\index.rst
+	python ..\..\replace.py ".. CHAPTERUNDERLINE" "?????????????????????????????????????????????????????????????????????????" source/index.rst
 	%SPHINXBUILD% -b latex %ALLSPHINXOPTS% %BUILDDIR%/latex
+	move index-backup.txt source/index.rst
+	echo.Running LaTeX files through pdflatex...
 	cd %BUILDDIR%/latex
 	make all-pdf
 	cd %~dp0 
+	python ..\..\swap-abstract-and-toc.py %BUILDDIR%\latex\%TEX% ..\..\%PDF%
 	move %BUILDDIR%\latex\%PDF% ..\..\
 	echo.
-	echo.Build finished; see ../../%PDF%.
+	echo.Build finished; see ../../%PDF%
 	goto end
 )
 
