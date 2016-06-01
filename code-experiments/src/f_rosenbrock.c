@@ -127,6 +127,7 @@ static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t f
   double *M = coco_allocate_vector(dimension * dimension);
   double *b = coco_allocate_vector(dimension);
   double *current_row, **rot1, factor;
+  double tmp; /* Wassim: will serve to set the optimal solution "manually"*/
 
   fopt = bbob2009_compute_fopt(function, instance);
   rot1 = bbob2009_allocate_matrix(dimension, dimension);
@@ -141,12 +142,23 @@ static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t f
     }
     b[row] = 0.5;
   }
-  bbob2009_free_matrix(rot1, dimension);
+  /*bbob2009_free_matrix(rot1, dimension);*/
 
   problem = f_rosenbrock_allocate(dimension);
+  for (row = 0; row < dimension; row++) {
+    problem->best_parameter[row] = 0; /* Wassim: TODO: not a proper way of avoiding to trigger coco_warning("transform_vars_affine(): 'best_parameter' not updated, set to NAN")*/
+  }
   problem = transform_vars_affine(problem, M, b, dimension);
   problem = transform_obj_shift(problem, fopt);
+  for (column = 0; column < dimension; ++column) { /* Wassim: manually set xopt = rot1^T ones(dimension)/(2*factor) */
+    tmp = 0;
+    for (row = 0; row < dimension; ++row) {
+      tmp += rot1[row][column];
+    }
+    problem->best_parameter[column] = tmp / (2. * factor);
+  }
 
+  bbob2009_free_matrix(rot1, dimension);
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "2-moderate");
