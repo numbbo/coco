@@ -672,7 +672,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
 
             res = ("").join(str(item) for item in tableHtml)
             res = '\n<table class=\"sortable\" style=\"width:800px \">\n%s</table>\n<p/>\n' % res
-    
+
             if df[0] in testbedsettings.current_testbed.tabDimsOfInterest: # Manh
                 filename = os.path.join(outputdir, genericsettings.many_algorithm_file_name + '.html')
                 lines = []
