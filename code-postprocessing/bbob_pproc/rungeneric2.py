@@ -400,6 +400,15 @@ def main(argv=None):
             parentFileName=genericsettings.two_algorithm_file_name
         )
 
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.pptables_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            htmlPage=ppfig.HtmlPage.PPTABLES,
+            isBiobjective=dsList[0].isBiobjective(),
+            functionGroups=dsList0.getFuncGroups(),
+            parentFileName=genericsettings.many_algorithm_file_name
+        )
+
         if genericsettings.isFig:
             print("log aRT1/aRT0 vs target function values...")
             plt.rc("axes", **inset.rcaxeslarger)
