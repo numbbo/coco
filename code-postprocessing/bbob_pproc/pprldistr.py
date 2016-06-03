@@ -54,7 +54,8 @@ from .ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxtick
 from .pptex import color_to_latex, marker_to_latex
 
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)]
-# TODO: the method names in this module seem to be overly unclear or misleading and should be revised.
+# TODO: the method names in this module seem to be overly unclear or
+#       misleading and should be revised.
 
 refcolor = 'wheat'
 nbperdecade = 1 # markers in x-axis decades in ecdfs

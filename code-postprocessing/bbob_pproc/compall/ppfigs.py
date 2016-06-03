@@ -573,8 +573,6 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
                 )
 
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
-        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend5##', ecdfs_figure_caption(True, 5))
-        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend20##', ecdfs_figure_caption(True, 20))
 
         if verbose:
             print 'Wrote commands and legend to %s' % filename

@@ -11,6 +11,7 @@ Help:
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 
 import os
 import sys
@@ -35,17 +36,34 @@ from . import genericsettings, ppfig, testbedsettings
 from . import pproc, pptex
 from .pproc import DataSetList, processInputArgs
 from .ppfig import Usage
-from .toolsdivers import prepend_to_file, strip_pathname1, str_to_latex
+from .toolsdivers import prepend_to_file, strip_pathname1, str_to_latex, replace_in_file
 from .compall import pprldmany, pptables, ppfigs
 from . import ppconverrorbars
 
 import matplotlib.pyplot as plt
+from .toolsdivers import print_done
 
 __all__ = ['main']
 
 
 def usage():
-    print main.__doc__
+    print(main.__doc__)
+
+def grouped_ecdf_graphs(algdict, isBiobjective,
+                        order=None, outputdir='.', info='default'):
+    """ Generates ecdf graphs, aggregated over groups as
+        indicated via algdict
+    """
+    for gr, tmpdictAlg in algdict.iteritems():
+        dictDim = pproc.dictAlgByDim(tmpdictAlg)
+        for d, entries in dictDim.iteritems():
+            pprldmany.main(entries, # pass expensive flag here?
+                           isBiobjective,
+                           order=order,
+                           outputdir=outputdir,
+                           info=('%02dD_%s' % (d, gr)),
+                           verbose=genericsettings.verbose)
+
 
 def main(argv=None):
     r"""Main routine for post-processing the data of multiple algorithms.
@@ -230,19 +248,19 @@ def main(argv=None):
         config.target_values(genericsettings.isExpensive)
 
     except Usage, err:
-        print >>sys.stderr, err.msg
-        print >>sys.stderr, "for help use -h or --help"
+        print(err.msg, file=sys.stderr)
+        print("for help use -h or --help", file=sys.stderr)
         return 2
 
     if 1 < 3:
-        print ("Post-processing: will generate output " +
+        print("Post-processing: will generate output " +
                "data in folder %s" % outputdir)
-        print "  this might take several minutes."
+        print("  this might take several minutes.")
 
         if not os.path.exists(outputdir):
             os.makedirs(outputdir)
             if genericsettings.verbose:
-                print 'Folder %s was created.' % (outputdir)
+                print('Folder %s was created.' % (outputdir))
 
         # prepend the algorithm name command to the tex-command file
         lines = []
@@ -303,42 +321,63 @@ def main(argv=None):
             functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups()
         )
 
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.ppfigs_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            htmlPage=ppfig.HtmlPage.PPFIGS,
+            isBiobjective=dsList[0].isBiobjective(),
+            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
+            parentFileName=genericsettings.many_algorithm_file_name
+        )
+
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.pptables_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            htmlPage=ppfig.HtmlPage.PPTABLES,
+            isBiobjective=dsList[0].isBiobjective(),
+            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
+            parentFileName=genericsettings.many_algorithm_file_name
+        )
+
         # convergence plots
+        print("Generating convergence plots...")
         if genericsettings.isConv:
             ppconverrorbars.main(dictAlg,
                                  dsList[0].isBiobjective(),
                                  outputdir,
                                  genericsettings.verbose,
                                  genericsettings.many_algorithm_file_name)
+        print_done()
+
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if genericsettings.isRLDistr:
             config.config(dsList[0].testbed_name())
+
             # ECDFs per noise groups
-            dictNoi = pproc.dictAlgByNoi(dictAlg)
-            for ng, tmpdictAlg in dictNoi.iteritems():
-                dictDim = pproc.dictAlgByDim(tmpdictAlg)
-                for d, entries in dictDim.iteritems():
-                    # pprldmany.main(entries, inset.summarized_target_function_values,
-                    # from . import config
-                    # config.config()
-                    pprldmany.main(entries, # pass expensive flag here?
-                                   dsList[0].isBiobjective(),
-                                   order=sortedAlgs,
-                                   outputdir=outputdir,
-                                   info=('%02dD_%s' % (d, ng)),
-                                   verbose=genericsettings.verbose)
+            print("ECDF graphs per noise group...")
+            grouped_ecdf_graphs(pproc.dictAlgByNoi(dictAlg),
+                                dsList[0].isBiobjective(),
+                                order=sortedAlgs,
+                                outputdir=outputdir
+                               )
+            print_done()
+
             # ECDFs per function groups
-            dictFG = pproc.dictAlgByFuncGroup(dictAlg)
-            for fg, tmpdictAlg in dictFG.iteritems():
-                dictDim = pproc.dictAlgByDim(tmpdictAlg)
-                for d, entries in dictDim.iteritems():
-                    pprldmany.main(entries,
-                                   dsList[0].isBiobjective(),
-                                   order=sortedAlgs,
-                                   outputdir=outputdir,
-                                   info=('%02dD_%s' % (d, fg)),
-                                   verbose=genericsettings.verbose)
+            print("ECDF graphs per function group...")
+            grouped_ecdf_graphs(pproc.dictAlgByFuncGroup(dictAlg),
+                                dsList[0].isBiobjective(),
+                                order=sortedAlgs,
+                                outputdir=outputdir
+                               )
+
+            htmlFile = os.path.join(outputdir, genericsettings.many_algorithm_file_name + '.html')
+            replace_in_file(htmlFile, '##bbobECDFslegend5##', ppfigs.ecdfs_figure_caption(True, 5))
+            replace_in_file(htmlFile, '##bbobECDFslegend20##', ppfigs.ecdfs_figure_caption(True, 20))
+
+            print_done()
+
             # copy-paste from above, here for each function instead of function groups:
+            print("ECDF graphs per function...")
             if genericsettings.isRldOnSingleFcts:
                 # ECDFs for each function
                 if 1 < 3:
@@ -366,9 +405,10 @@ def main(argv=None):
                                            outputdir=single_fct_output_dir,
                                            info=('f%03d_%02dD' % (fg, d)),
                                            verbose=genericsettings.verbose)
-            print "ECDFs of run lengths figures done."
+            print_done()
 
         if genericsettings.isTab:
+            print("Generating comparison tables...")
             prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
                             ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
                              pptables.get_table_caption() + '}'])
@@ -384,10 +424,10 @@ def main(argv=None):
                         genericsettings.verbose,
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==
                                          testbedsettings.testbed_name_bi) else True))
-
-            print "Comparison tables done."
+            print_done()
 
         if genericsettings.isFig:
+            print("Scaling figures...")
             plt.rc("axes", labelsize=20, titlesize=24)
             plt.rc("xtick", labelsize=20)
             plt.rc("ytick", labelsize=20)
@@ -396,13 +436,13 @@ def main(argv=None):
             plt.rc('pdf', fonttype=42)
 
             ppfigs.main(dictAlg,
-                        genericsettings.many_algorithm_file_name,
+                        genericsettings.ppfigs_file_name,
                         dsList[0].isBiobjective(),
                         sortedAlgs,
                         outputdir,
                         genericsettings.verbose)
             plt.rcdefaults()
-            print "Scaling figures done."
+            print_done()
 
         plt.rcdefaults()
 

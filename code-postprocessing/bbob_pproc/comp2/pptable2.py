@@ -441,7 +441,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         res = ("").join(str(item) for item in tableHtml)
         res = '<p><b>%d-D</b></p>\n<table>\n%s</table>\n' % (d, res)
 
-        filename = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')
+        filename = os.path.join(outputdir, genericsettings.pptable2_file_name + '.html')
         lines = []
         with open(filename) as infile:
             for line in infile:

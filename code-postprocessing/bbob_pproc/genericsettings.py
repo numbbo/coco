@@ -209,6 +209,11 @@ index_html_file_name = 'index'
 ppconv_file_name = 'ppconv'
 pprldmany_file_name = 'pprldmany'
 pprldmany_group_file_name = 'pprldmany_gr'
+ppfigs_file_name = 'ppfigs'
+ppscatter_file_name = 'ppscatter'
+pptable2_file_name = 'pptable2'
+pptables_file_name = 'pptables'
+pprldistr2_file_name = 'pprldistr2'
 
 latex_commands_for_html = 'latex_commands_for_html'
 
