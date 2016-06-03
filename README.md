@@ -464,6 +464,20 @@ Details
   Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit
   Windows 7 machine with cygwin.
 
+Citation
+--------
+You may cite this work in a scientific context as
+```
+@ARTICLE{hansen2016cocoplat, 
+  author = {Hansen, N. and Auger, A. and Mersmann, O. and 
+             Tu{\v s}ar, T. and Brockhoff, D.},
+  title = {{COCO}: A Platform for Comparing Continuous Optimizers 
+             in a Black-Box Setting},
+  journal = {ArXiv e-prints},
+  volume = {arXiv:1603.08785},
+  year = 2016
+}
+```
 
 Links and Documentation <a name="Links"></a>
 -----------------------
