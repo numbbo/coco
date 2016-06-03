@@ -69,7 +69,7 @@ obtained before or at this time step.
 In the bi- and multi-objective case, e.g. on the biobjective ``bbob-biobj`` 
 test suite [TUS2016]_, the assessed quality
 indicator at the given time step is a hypervolume indicator computed from
-*all* solutions obtained (evaluated or recommended) before or at this time
+*all* solutions obtained before or at this time
 step. 
 
 .. [#] Time is considered to be *number of function evaluations* and, 
@@ -429,7 +429,7 @@ of the French National Research Agency.
   pp. 159-195.
   
 .. [HAN2016perf] N. Hansen, A. Auger, D. Brockhoff, D. Tušar, T. Tušar (2016). 
-  `COCO: Performance Assessment`__. *ArXiv e-prints*, `arXiv:1605.03560`__
+  `COCO: Performance Assessment`__. *ArXiv e-prints*, `arXiv:1605.03560`__.
 __ http://numbbo.github.io/coco-doc/perf-assessment
 __ http://arxiv.org/abs/1605.03560
 

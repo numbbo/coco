@@ -697,9 +697,8 @@ suite) in dimension :math:`n=5` each with 51 target precisions between :math:`10
    Illustration of empirical (cumulative) distribution function (ECDF) of
    runtimes on the sphere function using 51 relative targets uniform on a log
    scale between :math:`10^2` and :math:`10^{-8}`. The runtimes displayed
-   correspond to the pure random search algorithm in dimension 5. The cross on
-   the ECDF plots of COCO_ represents the median of the maximal length of the
-   unsuccessful runs to solve the problems aggregated within the ECDF. 
+   correspond to the pure random search algorithm in dimension 5. The 
+   (big) cross is the median number of evaluations in unsuccessful runs. 
 
 
 We can see in this plot, for example, that almost 20 percent of the problems 
