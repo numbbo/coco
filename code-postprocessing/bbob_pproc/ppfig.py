@@ -340,20 +340,10 @@ def save_single_functions_html(filename,
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPTABLE2:
-            currentHeader = 'Table showing the aRT in number of function evaluations'
-            if bestAlgExists:
-                currentHeader += ' divided by the best aRT measured during BBOB-2009'
-
-            f.write("\n<H2> %s </H2>\n" % currentHeader)
-            f.write("\n<!--pptable2Html-->\n")
-            key = 'bbobpptablestwolegend' + testbedsettings.current_testbed.scenario
-            f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
+            write_tables(f, captionStringFormat, bestAlgExists, 'pptable2Html', 'bbobpptablestwolegend')
 
         elif htmlPage is HtmlPage.PPTABLES:
-            write_pptables(f, 5, captionStringFormat, first_function_number,
-                           last_function_number, bestAlgExists)
-            write_pptables(f, 20, captionStringFormat, first_function_number,
-                           last_function_number, bestAlgExists)
+            write_tables(f, captionStringFormat, bestAlgExists, 'pptablesHtml', 'bbobpptablesmanylegend')
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
@@ -443,20 +433,15 @@ def write_ECDF(f, dimension, extension, captionStringFormat, functionGroups):
     f.write(captionStringFormat % ('\n##bbobECDFslegend%d##' % dimension))
 
 
-def write_pptables(f, dimension, captionStringFormat, first_function_number, last_function_number, bestAlgExists):
-    """Writes line for pptables images."""
-
-    additionalText = 'divided by the best aRT measured during BBOB-2009' if bestAlgExists else ''
-    currentHeader = 'Table showing the aRT in number of function evaluations %s ' \
-                    'for dimension %d' % (additionalText, dimension)
+def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key):
+    currentHeader = 'Table showing the aRT in number of function evaluations'
+    if best_alg_exists:
+        currentHeader += ' divided by the best aRT measured during BBOB-2009'
 
     f.write("\n<H2> %s </H2>\n" % currentHeader)
-    for ifun in range(first_function_number, last_function_number + 1):
-        f.write("\n<!--pptablesf%03d%02dDHtml-->\n" % (ifun, dimension))
-
-    if genericsettings.isTab:
-        key = 'bbobpptablesmanylegend' + testbedsettings.current_testbed.scenario
-        f.write(captionStringFormat % htmldesc.getValue('##' + key + str(dimension) + '##'))
+    f.write("\n<!--%s-->\n" % html_key)
+    key = legend_key + testbedsettings.current_testbed.scenario
+    f.write(caption_string_format % htmldesc.getValue('##' + key + '##'))
 
 
 def copy_js_files(outputdir):
