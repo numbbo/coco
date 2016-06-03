@@ -467,6 +467,9 @@ Details
 Citation
 --------
 You may cite this work in a scientific context as
+
+N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](http://numbbo.github.io/coco-doc/), _ArXiv e-prints_, [arXiv:1603.08785](http://arxiv.org/abs/1603.08785), 2016.
+
 ```
 @ARTICLE{hansen2016cocoplat, 
   author = {Hansen, N. and Auger, A. and Mersmann, O. and 
