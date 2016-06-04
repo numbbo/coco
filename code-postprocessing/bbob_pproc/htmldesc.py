@@ -23,7 +23,6 @@ def getValue(key):
     if (not descriptions):
 
         htmlFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), genericsettings.latex_commands_for_html + '.html')
-        
         if not os.path.isfile(htmlFile):
             return ''
             

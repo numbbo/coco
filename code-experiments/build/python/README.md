@@ -20,7 +20,7 @@ the following is lacking:
 - A C compiler, like `gcc`, which is invoked by `make`. 
 
 
-Getting Started
+Getting Started  <a name="Getting-Started"></a>
 ---------------
 
 See _Getting Started_ [here](../../../README.md#Getting-Started) for the first steps. Then

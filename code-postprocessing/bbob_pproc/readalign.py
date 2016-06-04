@@ -19,6 +19,7 @@ the experimental data.
 
 from __future__ import absolute_import
 
+import os, sys
 import numpy
 import warnings
 
@@ -150,7 +151,7 @@ class VMultiReader(MultiReader):
     idx = idxEvals # the alignment value is the number of function evaluations.
 
     def __init__(self, data, isBiobjective):
-        super(VMultiReader, self).__init__(data, isBiobjective)
+        super(VMultiReader, self).__init__(data)
         self.idxData = idxFBi if isBiobjective else idxFSingle # the data of concern are the function values.
 
     def isFinished(self):
@@ -176,7 +177,7 @@ class VMultiReader(MultiReader):
                     break
                 i.next()
         return numpy.insert(self.currentLine(), 0, currentValue)
-
+        
 
 class HMultiReader(MultiReader):
     """List of data arrays to be aligned horizontally.
@@ -189,23 +190,29 @@ class HMultiReader(MultiReader):
     idxData = idxEvals # the data of concern are the number of function evals.
 
     def __init__(self, data, isBiobjective):
-        super(HMultiReader, self).__init__(data, isBiobjective)
+        super(HMultiReader, self).__init__(data)
         # the alignment value is the function value.        
         self.idx = idxFBi if isBiobjective else idxFSingle 
         self.nbPtsF = nbPtsFBi if isBiobjective else nbPtsFSingle
         self.idxCurrentF = numpy.inf # Minimization
         # idxCurrentF is a float for the extreme case where it is infinite.
         # else it is an integer and then is the 'i' in 10**(i/nbPtsF)
+        self.isNegative = False
+        self.idxCurrentFOld = 0.
+
+    def calculateCurrentValue(self):
+        factor = -1. if self.isNegative else 1.        
+        return factor * numpy.power(10, self.idxCurrentF / self.nbPtsF)
 
     def isFinished(self):
         """Is finished when we found the last alignment value reached."""
 
-        currentValue = numpy.power(10, self.idxCurrentF / self.nbPtsF)
-        if currentValue == 0:
-            return True
+        currentValue = self.calculateCurrentValue()
 
+        # It can be more than one line for the previous alignment value.
+        # We iterate until we find a better value or to the end of the lines.
         for i in self:
-            while i.nextLine[self.idx] > currentValue and not i.isNearlyFinished:
+            while i.nextLine[self.idx] > currentValue and not i.isFinished:
                 i.next();
                 
         return not any(i.nextLine[self.idx] <= currentValue for i in self)
@@ -216,11 +223,17 @@ class HMultiReader(MultiReader):
         fvalues = self.currentValues()
         self.idxCurrentF = numpy.ceil(numpy.log10(max(fvalues) if max(fvalues) > 0 else 1e-19) * self.nbPtsF)
         # Returns the smallest 10^i/nbPtsF value larger than max(Fvalues)
-        return numpy.power(10, self.idxCurrentF / self.nbPtsF)
+        return self.calculateCurrentValue()
 
     def newCurrentValue(self):
-        self.idxCurrentF -= 1
-        return numpy.power(10, self.idxCurrentF / self.nbPtsF)
+        if self.idxCurrentF == -numpy.inf:
+            self.idxCurrentF = self.idxCurrentFOld
+            self.isNegative = True
+        elif self.isNegative:
+            self.idxCurrentF += 1
+        else:
+            self.idxCurrentF -= 1
+        return self.calculateCurrentValue()
 
     def align(self, currentValue):
         fvalues = []
@@ -237,8 +250,14 @@ class HMultiReader(MultiReader):
             raise ValueError, 'Value %g is not reached.'
 
         if max(fvalues) <= 0.:
-            self.idxCurrentF = -numpy.inf
-            currentValue = 0.
+            if currentValue > 0.:
+                self.idxCurrentFOld = self.idxCurrentF
+                self.idxCurrentF = -numpy.inf
+                currentValue = 0.
+            else:
+                self.idxCurrentF = max(self.idxCurrentF,
+                                       numpy.floor(numpy.log10(-max(fvalues)) * self.nbPtsF))
+                currentValue = self.calculateCurrentValue()
         else:
             self.idxCurrentF = min(self.idxCurrentF,
                                numpy.ceil(numpy.log10(max(fvalues)) * self.nbPtsF))
@@ -250,10 +269,9 @@ class HMultiReader(MultiReader):
 
             # The update of idxCurrentF is done so all the intermediate
             # function value trigger reached are not written, only the smallest
-            currentValue = numpy.power(10, self.idxCurrentF / self.nbPtsF)
+            currentValue = self.calculateCurrentValue()
 
         return numpy.insert(self.currentLine(), 0, currentValue)
-
 
 class ArrayMultiReader(MultiReader):
     """Class of *aligned* data arrays to be aligned together.
@@ -290,6 +308,13 @@ class VArrayMultiReader(ArrayMultiReader, VMultiReader):
         ArrayMultiReader.__init__(self, data)
         #TODO: Should this use super?
 
+class VArrayMultiReaderNew(ArrayMultiReader, VMultiReader):
+    """Wrapper class of *aligned* data arrays to be aligned vertically."""
+
+    def __init__(self, data):
+        ArrayMultiReader.__init__(self, data)
+        #TODO: Should this use super?
+
 class HArrayMultiReader(ArrayMultiReader, HMultiReader):
     """Wrapper class of *aligned* data arrays to be aligned horizontally."""
 
@@ -298,7 +323,8 @@ class HArrayMultiReader(ArrayMultiReader, HMultiReader):
         #TODO: Should this use super?
         self.nbPtsF = nbPtsFBi if isBiobjective else nbPtsFSingle
         self.idxCurrentF = numpy.inf #Minimization
-
+        self.isNegative = False
+        self.idxCurrentFOld = 0.
 
 #FUNCTION DEFINITIONS
 
@@ -320,7 +346,7 @@ def alignData(data, isBiobjective):
     if data.isFinished():
         res.append(data.align(currentValue))
 
-    while not data.isFinished():
+    while not data.isFinished() and currentValue:
         res.append(data.align(currentValue))
         currentValue = data.newCurrentValue()
 
@@ -355,18 +381,29 @@ def alignArrayData(data):
     # of the data.
 
 
-def split(dataFiles, dim=None):
+def openfile(filePath):
+    if not os.path.isfile(filePath):
+        if ('win32' in sys.platform) and len(filePath) > 259:
+            raise IOError(2, 'The path is too long for the file "%s".' % filePath)
+        else:
+            raise IOError(2, 'The file "%s" does not exist.' % filePath)
+    
+    return open(filePath, 'r')
+    
+    
+def split(dataFiles, isBiobjective, dim=None):
     """Split a list of data files into arrays corresponding to data sets."""
 
     dataSets = []
     for fil in dataFiles:
-        with open(fil, 'r') as f:
+        with openfile(fil) as f:
             # This doesnt work with windows.
             # content = numpy.loadtxt(fil, comments='%')
             lines = f.readlines()
 
         content = []
-
+        instanceToSkip = False
+        
         # Save values in array content. Check for nan and inf.
         for line in lines:
             # skip if comment
@@ -374,8 +411,21 @@ def split(dataFiles, dim=None):
                 if content:
                     dataSets.append(numpy.vstack(content))
                     content = []
+                    instanceToSkip = False
+                    
+                if isBiobjective:
+                    parts = line.split(',')
+                    for part in parts:
+                        if 'instance' in part:
+                            instance = int(part.split('=')[1])
+                            if instance > 5:
+                                instanceToSkip = True;
+                
                 continue
 
+            if instanceToSkip:
+                continue
+            
             # else remove end-of-line sign
             # and split into single strings
             data = line.strip('\n').split()
@@ -391,7 +441,11 @@ def split(dataFiles, dim=None):
                 elif data[id] in ('NaN', 'nan'):
                     data[id] = numpy.nan
                 else:
-                    data[id] = float(data[id])
+                    try:
+                        data[id] = float(data[id])
+                    except ValueError:
+                        warnings.warn('%s is not a valid number!' % data[id])
+                        data[id] = numpy.nan
 
             content.append(numpy.array(data))
             #Check that it always have the same length?

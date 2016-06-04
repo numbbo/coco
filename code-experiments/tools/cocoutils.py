@@ -21,6 +21,9 @@ except ImportError:
         Backported from Python 2.7 as it's implemented as pure python on stdlib.
         >>> check_output(['/usr/bin/python', '--version'])
         Python 2.6.2
+
+        WARNING: This method is also defined in ../../code-postprocessing/bbob_pproc/toolsdivers.py.
+        If you change something you have to change it in both files.
         """
         process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
         output, unused_err = process.communicate()
@@ -51,7 +54,11 @@ def hg(args):
 def git(args):
     """Run a git command and return its output.
 
-    All errors are deemed fatal and the system will quit."""
+    All errors are deemed fatal and the system will quit.
+
+    WARNING: This method is also defined in ../../code-postprocessing/bbob_pproc/toolsdivers.py.
+    If you change something you have to change it in both files.
+    """
     full_command = ['git']
     full_command.extend(args)
     try:
@@ -68,18 +75,24 @@ def is_dirty():
     raise NotImplementedError()
     return hg(['hg', 'id', '-i'])[-1] == '+'
 
-def git_version(pep440=True):
+def git_version(pep440=False):
     """Return somewhat readible version number from git, like
-    '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'"""
+    '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'
+
+    """
     try:
         res = git(['describe', '--tags'])
-        if pep440:
-            return '.'.join(res.split('-')[:2])
+    except:
+        res = os.path.split(os.getcwd())[-1]
+    if pep440:
+        while len(res) and res[0] not in '0123456789':
+            res = res[1:]
+        if '-' in res:
+           return '.'.join(res.split('-')[:2])
         else:
             return res
-    except:
-        # print('git version call failed')
-        return ''
+    else:
+        return res
 
 def git_revision():
     """Return unreadible git revision identifier, like

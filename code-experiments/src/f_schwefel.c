@@ -1,11 +1,16 @@
+/**
+ * @file f_schwefel.c
+ * @brief Implementation of the Schwefel function and problem.
+ */
+
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
 
 #include "coco.h"
 #include "coco_problem.c"
-#include "coco_generics.c"
 #include "suite_bbob_legacy_code.c"
+#include "transform_vars_conditioning.c"
 #include "transform_obj_shift.c"
 #include "transform_vars_scale.c"
 #include "transform_vars_affine.c"
@@ -13,11 +18,17 @@
 #include "transform_vars_z_hat.c"
 #include "transform_vars_x_hat.c"
 
+/**
+ * @brief Implements the Schwefel function without connections to any COCO structures.
+ */
 static double f_schwefel_raw(const double *x, const size_t number_of_variables) {
 
   size_t i = 0;
   double result;
   double penalty, sum;
+
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
 
   /* Boundary handling*/
   penalty = 0.0;
@@ -37,12 +48,18 @@ static double f_schwefel_raw(const double *x, const size_t number_of_variables) 
   return result;
 }
 
-static void f_schwefel_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_schwefel_raw(x, self->number_of_variables);
-  assert(y[0] >= self->best_value[0]);
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
+static void f_schwefel_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_schwefel_raw(x, problem->number_of_variables);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Allocates the basic Schwefel problem.
+ */
 static coco_problem_t *f_schwefel_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Schwefel function",
@@ -54,6 +71,9 @@ static coco_problem_t *f_schwefel_allocate(const size_t number_of_variables) {
   return problem;
 }
 
+/**
+ * @brief Creates the BBOB Schwefel problem.
+ */
 static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
                                                         const size_t dimension,
                                                         const size_t instance,
@@ -62,14 +82,7 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
                                                         const char *problem_name_template) {
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
-  size_t i, j;
-
-  const double condition = 10.;
-
-  double *M = coco_allocate_vector(dimension * dimension);
-  double *b = coco_allocate_vector(dimension);
-  double *current_row;
-
+  size_t i;
   double *tmp1 = coco_allocate_vector(dimension);
   double *tmp2 = coco_allocate_vector(dimension);
 
@@ -77,21 +90,9 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
   fopt = bbob2009_compute_fopt(function, instance);
   bbob2009_unif(tmp1, dimension, rseed);
   for (i = 0; i < dimension; ++i) {
-    xopt[i] = 0.5 * 4.2096874633;
+    xopt[i] = 0.5 * 4.2096874637;
     if (tmp1[i] - 0.5 < 0) {
       xopt[i] *= -1;
-    }
-  }
-
-  for (i = 0; i < dimension; ++i) {
-    b[i] = 0.0;
-    current_row = M + i * dimension;
-    for (j = 0; j < dimension; ++j) {
-      current_row[j] = 0.0;
-      if (i == j) {
-        double exponent = 1.0 * (int) i / ((double) (long) dimension - 1);
-        current_row[j] = pow(sqrt(condition), exponent);
-      }
     }
   }
 
@@ -101,21 +102,20 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
   }
 
   problem = f_schwefel_allocate(dimension);
-  problem = f_transform_obj_shift(problem, fopt);
-  problem = f_transform_vars_scale(problem, 100);
-  problem = f_transform_vars_shift(problem, tmp1, 0);
-  problem = f_transform_vars_affine(problem, M, b, dimension);
-  problem = f_transform_vars_shift(problem, tmp2, 0);
-  problem = f_transform_vars_z_hat(problem, xopt);
-  problem = f_transform_vars_scale(problem, 2);
-  problem = f_transform_vars_x_hat(problem, rseed);
+  problem = transform_vars_scale(problem, 100);
+  problem = transform_vars_shift(problem, tmp1, 0);
+  problem = transform_vars_conditioning(problem, 10.0);
+  problem = transform_vars_shift(problem, tmp2, 0);
+  problem = transform_vars_z_hat(problem, xopt);
+  problem = transform_vars_scale(problem, 2);
+  problem = transform_vars_x_hat(problem, rseed);
+  problem = transform_obj_shift(problem, fopt);
+
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "5-weakly-structured");
 
-  coco_free_memory(M);
-  coco_free_memory(b);
   coco_free_memory(tmp1);
   coco_free_memory(tmp2);
   coco_free_memory(xopt);

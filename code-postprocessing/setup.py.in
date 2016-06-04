@@ -16,9 +16,19 @@ setup(
     package_dir = {_name: 'bbob_pproc'},
     package_data={_name: ['*enchmarkshortinfos.txt',
                           '*enchmarkinfos.txt',
+                          'best*algentries*.pickle',
                           'best*algentries*.pickle.gz',
                           'pprldistr2009*.pickle.gz',
-                          'js/*', 'tth/*']},
+                          'latex_commands_for_html.html',
+    # this is not supposed to copy to the subfolder, see https://docs.python.org/2/distutils/setupscript.html
+    # but it does. 
+                          'js/*', 'tth/*', 
+                          '../latex-templates/*.tex',
+                          '../latex-templates/*.cls',
+                          '../latex-templates/*.sty',
+                          'data/IPOP-CMA-ES/*.pickle.gz',
+                          'data/RANDOMSEARCH/*.pickle.gz'
+                          ]},
     url = 'https://github.com/numbbo/coco',
     license = 'BSD',
     maintainer = 'Dejan Tusar',

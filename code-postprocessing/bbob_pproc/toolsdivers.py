@@ -9,6 +9,8 @@ from __future__ import absolute_import
 import os, sys, time
 import numpy as np
 import warnings
+from matplotlib import pyplot as plt
+from subprocess import CalledProcessError, STDOUT
 
 from . import genericsettings
 
@@ -202,3 +204,54 @@ def number_to_html(number_as_string):
             s = s.replace('e', ' x 10<sup>')
         s += '</sup>'
     return s
+
+def legend(*args, **kwargs):
+   kwargs.setdefault('framealpha', 0.2)
+   try:
+      plt.legend(*args, **kwargs)
+   except:
+      kwargs.pop('framealpha')
+      plt.legend(*args, **kwargs)
+      
+try:
+    from subprocess import check_output
+except ImportError:
+    import subprocess
+    def check_output(*popenargs, **kwargs):
+        r"""Run command with arguments and return its output as a byte string.
+        Backported from Python 2.7 as it's implemented as pure python on stdlib.
+
+        WARNING: This method is also defined in ../../code-experiments/tools/cocoutils.py.
+        If you change something you have to change it in both files.
+        """
+        process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
+        output, unused_err = process.communicate()
+        retcode = process.poll()
+        if retcode:
+            cmd = kwargs.get("args")
+            if cmd is None:
+                cmd = popenargs[0]
+            error = subprocess.CalledProcessError(retcode, cmd)
+            error.output = output
+            raise error
+        return output
+
+def git(args):
+    """Run a git command and return its output.
+
+    All errors are deemed fatal and the system will quit.
+
+    WARNING: This method is also defined in ../../code-experiments/tools/cocoutils.py.
+    If you change something you have to change it in both files.
+    """
+    full_command = ['git']
+    full_command.extend(args)
+    try:
+        output = check_output(full_command, env=os.environ,
+                              stderr=STDOUT, universal_newlines=True)
+        output = output.rstrip()
+    except CalledProcessError as e:
+        # print('Failed to execute "%s"' % str(full_command))
+        raise
+    return output
+      

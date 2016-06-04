@@ -8,7 +8,7 @@ from __future__ import absolute_import
 import os
 import numpy
 import matplotlib.pyplot as plt
-from .. import toolsstats, pproc
+from .. import toolsstats, pproc, toolsdivers
 from ..ppfig import saveFigure, consecutiveNumbers, plotUnifLogXMarkers
 from pdb import set_trace
 
@@ -36,7 +36,7 @@ def beautify(handles):
 
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-    plt.axvline(1, ls='-', color='k');  # symmetry line for ERT1/ERT0 = 1
+    plt.axvline(1, ls='-', color='k');  # symmetry line for aRT1/aRT0 = 1
     xlim = max(numpy.abs(numpy.log10(plt.xlim())))
     xlim = (min(0.1, 10.**(-xlim)), max(10., 10.**(xlim)))
     plt.axhline(0.5, ls=':', color='k', lw=2);  # symmetry line at y=0.5
@@ -71,7 +71,7 @@ def beautify(handles):
         ydata = numpy.insert(ydata, len(ydata), ydata[-1])
         i.set_data(xdata, ydata)
 
-    plt.legend(loc='best')
+    toolsdivers.legend(loc='best')
 
     # Inverted xticks
     x = axisHandle.get_xticks(minor=True)

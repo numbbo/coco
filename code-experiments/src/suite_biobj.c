@@ -1,10 +1,28 @@
+/**
+ * @file suite_biobj.c
+ * @brief Implementation of the bbob-biobj suite containing 55 functions and 6 dimensions.
+ *
+ * The bi-objective suite was created by combining two single-objective problems from the bbob suite.
+ *
+ * @note Because some bi-objective problems constructed from two single-objective ones have a single optimal
+ * value, some care must be taken when selecting the instances. The already verified instances are stored in
+ * suite_biobj_instances. If a new instance of the problem is called, a check ensures that the two underlying
+ * single-objective instances create a true bi-objective problem. However, these new instances need to be
+ * manually added to suite_biobj_instances, otherwise they will be computed each time the suite constructor
+ * is invoked with these instances.
+ */
+
 #include "coco.h"
-#include "mo_generics.c"
+#include "mo_utilities.c"
 #include "suite_bbob.c"
 #include "suite_biobj_best_values_hyp.c"
 
-/* An array of triples biobj_instance - problem1_instance - problem2_instance that should be updated
- * with new instances when they are selected. */
+/**
+ * @brief The array of triples biobj_instance - problem1_instance - problem2_instance connecting bi-objective
+ * suite instances to the instances of the bbob suite.
+ *
+ * It should be updated with new instances when they are chosen.
+ */
 static const size_t suite_biobj_instances[][3] = {
     { 1, 2, 4 },
     { 2, 3, 5 },
@@ -18,13 +36,16 @@ static const size_t suite_biobj_instances[][3] = {
     { 10, 21, 22 }
 };
 
-/* Data for the biobjective suite */
+/**
+ * @brief The bbob-biobj suite data type.
+ */
 typedef struct {
 
-  /* A matrix of new instances (equal in form to suite_biobj_instances) that needs to be used only when
-   * an instance that is not in suite_biobj_instances is being invoked. */
-  size_t **new_instances;
-  size_t max_new_instances;
+  size_t **new_instances;    /**< @brief A matrix of new instances (equal in form to suite_biobj_instances)
+                                   that needs to be used only when an instance that is not in
+                                   suite_biobj_instances is being invoked. */
+
+  size_t max_new_instances;  /**< @brief The maximal number of new instances. */
 
 } suite_biobj_t;
 
@@ -40,18 +61,24 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
                                            const size_t num_bbob_functions,
                                            const size_t *bbob_functions);
 
-static coco_suite_t *suite_biobj_allocate(void) {
+/**
+ * @brief Sets the dimensions and default instances for the bbob-biobj suite.
+ */
+static coco_suite_t *suite_biobj_initialize(void) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "instances:1-10");
+  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "year: 2016");
 
   return suite;
 }
 
-static char *suite_biobj_get_instances_by_year(const int year) {
+/**
+ * @brief Sets the instances associated with years for the bbob-biobj suite.
+ */
+static const char *suite_biobj_get_instances_by_year(const int year) {
 
   if (year == 2016) {
     return "1-10";
@@ -62,12 +89,32 @@ static char *suite_biobj_get_instances_by_year(const int year) {
   }
 }
 
+/**
+ * @brief Returns the problem from the bbob-biobj suite that corresponds to the given parameters.
+ *
+ * Creates the bi-objective problem by constructing it from two single-objective problems from the bbob
+ * suite. If the invoked instance number is not in suite_biobj_instances, the function uses the following
+ * formula to construct a new appropriate instance:
+ *
+ *   problem1_instance = 2 * biobj_instance + 1
+ *
+ *   problem2_instance = problem1_instance + 1
+ *
+ * If needed, problem2_instance is increased (see also the explanation of suite_biobj_get_new_instance).
+ *
+ * @param suite The COCO suite.
+ * @param function_idx Index of the function (starting from 0).
+ * @param dimension_idx Index of the dimension (starting from 0).
+ * @param instance_idx Index of the instance (starting from 0).
+ * @return The problem that corresponds to the given parameters.
+ */
 static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
                                                const size_t function_idx,
                                                const size_t dimension_idx,
                                                const size_t instance_idx) {
 
   const size_t num_bbob_functions = 10;
+  /* Functions from the bbob suite that are used to construct the bi-objective problem. */
   const size_t bbob_functions[] = { 1, 2, 6, 8, 13, 14, 15, 17, 20, 21 };
 
   coco_problem_t *problem1, *problem2, *problem = NULL;
@@ -83,9 +130,13 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   const size_t num_existing_instances = sizeof(suite_biobj_instances) / sizeof(suite_biobj_instances[0]);
   int instance_found = 0;
 
+  double *smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
+  double *largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
+
   /* A "magic" formula to compute the BBOB function index from the bi-objective function index */
-  function1_idx = num_bbob_functions -
-      (size_t) (-0.5 + sqrt(0.25 + 2.0 * (double) (suite->number_of_functions - function_idx - 1))) - 1;
+  function1_idx = num_bbob_functions
+      - coco_double_to_size_t(
+          floor(-0.5 + sqrt(0.25 + 2.0 * (double) (suite->number_of_functions - function_idx - 1)))) - 1;
   function2_idx = function_idx - (function1_idx * num_bbob_functions) +
       (function1_idx * (function1_idx + 1)) / 2;
 
@@ -127,9 +178,9 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
        * suite_biobj_instances, the allocation uses max_new_instances. */
       data->max_new_instances = suite->number_of_instances;
 
-      data->new_instances = coco_allocate_memory(data->max_new_instances * sizeof(size_t *));
+      data->new_instances = (size_t **) coco_allocate_memory(data->max_new_instances * sizeof(size_t *));
       for (i = 0; i < data->max_new_instances; i++) {
-        data->new_instances[i] = malloc(3 * sizeof(size_t));
+        data->new_instances[i] = (size_t *) malloc(3 * sizeof(size_t));
         for (j = 0; j < 3; j++) {
           data->new_instances[i][j] = 0;
         }
@@ -143,10 +194,10 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
     instance2 = suite_biobj_get_new_instance(suite, instance, instance1, num_bbob_functions, bbob_functions);
   }
 
-  problem1 = get_bbob_problem(bbob_functions[function1_idx], dimension, instance1);
-  problem2 = get_bbob_problem(bbob_functions[function2_idx], dimension, instance2);
+  problem1 = coco_get_bbob_problem(bbob_functions[function1_idx], dimension, instance1);
+  problem2 = coco_get_bbob_problem(bbob_functions[function2_idx], dimension, instance2);
 
-  problem = coco_stacked_problem_allocate(problem1, problem2);
+  problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest, largest_values_of_interest);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
@@ -154,14 +205,29 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
 
   /* Use the standard stacked problem_id as problem_name and construct a new suite-specific problem_id */
   coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "bbob-biobj_f%02d_i%02ld_d%02d", function, instance, dimension);
+  coco_problem_set_id(problem, "bbob-biobj_f%02lu_i%02lu_d%02lu", (unsigned long) function,
+  		(unsigned long) instance, (unsigned long) dimension);
 
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem1->problem_type, problem2->problem_type);
 
+  coco_free_memory(smallest_values_of_interest);
+  coco_free_memory(largest_values_of_interest);
+
   return problem;
 }
 
+/**
+ * @brief Computes the instance number of the second problem/objective so that the resulting bi-objective
+ * problem has more than a single optimal solution.
+ *
+ * Starts by setting instance2 = instance1 + 1 and increases this number until an appropriate instance has
+ * been found (or until a maximum number of tries has been reached, in which case it throws a coco_error).
+ * An appropriate instance is the one for which the resulting bi-objective problem (in any considered
+ * dimension) has the ideal and nadir points apart enough in the objective space and the extreme optimal
+ * points apart enough in the decision space. When the instance has been found, it is output through
+ * coco_warning, so that the user can see it and eventually manually add it to suite_biobj_instances.
+ */
 static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
                                            const size_t instance,
                                            const size_t instance1,
@@ -176,6 +242,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
   size_t d, f1, f2, i;
   size_t function1, function2, dimension;
   double norm;
+  double *smallest_values_of_interest, *largest_values_of_interest;
 
   suite_biobj_t *data;
   assert(suite->data);
@@ -203,15 +270,23 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
             continue;
           }
 
-          problem1 = get_bbob_problem(function1, dimension, instance1);
-          problem2 = get_bbob_problem(function2, dimension, instance2);
+          problem1 = coco_get_bbob_problem(function1, dimension, instance1);
+          problem2 = coco_get_bbob_problem(function2, dimension, instance2);
           if (problem) {
-            coco_stacked_problem_free(problem);
+            coco_problem_stacked_free(problem);
             problem = NULL;
           }
-          problem = coco_stacked_problem_allocate(problem1, problem2);
 
-          /* Check whether the ideal and reference points are too close in the objective space */
+          /* Set smallest and largest values of interest to some value (not important which, it just needs to be a
+           * vector of doubles of the right dimension) */
+          smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
+          largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
+          problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
+          		largest_values_of_interest);
+          coco_free_memory(smallest_values_of_interest);
+          coco_free_memory(largest_values_of_interest);
+
+          /* Check whether the ideal and nadir points are too close in the objective space */
           norm = mo_get_norm(problem->best_value, problem->nadir_value, 2);
           if (norm < 1e-1) { /* TODO How to set this value in a sensible manner? */
             coco_debug(
@@ -236,7 +311,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
     }
     /* Clean up */
     if (problem) {
-      coco_stacked_problem_free(problem);
+      coco_problem_stacked_free(problem);
       problem = NULL;
     }
 
@@ -246,8 +321,8 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
     } else {
       /* An appropriate instance was found */
       appropriate_instance_found = 1;
-      coco_info("suite_biobj_set_new_instance(): Instance %lu created from instances %lu and %lu", instance,
-          instance1, instance2);
+      coco_info("suite_biobj_set_new_instance(): Instance %lu created from instances %lu and %lu",
+      		(unsigned long) instance, (unsigned long) instance1, (unsigned long) instance2);
 
       /* Save the instance to new_instances */
       for (i = 0; i < data->max_new_instances; i++) {
@@ -262,7 +337,8 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
   }
 
   if (!appropriate_instance_found) {
-    coco_error("suite_biobj_get_new_instance(): Could not find suitable instance %lu in $lu tries", instance, num_tries);
+    coco_error("suite_biobj_get_new_instance(): Could not find suitable instance %lu in %lu tries",
+    		(unsigned long) instance, (unsigned long) num_tries);
     return 0; /* Never reached */
   }
 
@@ -270,7 +346,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
 }
 
 /**
- * Frees the memory of the given biobjective suite.
+ * @brief  Frees the memory of the given bi-objective suite.
  */
 static void suite_biobj_free(void *stuff) {
 
@@ -278,7 +354,7 @@ static void suite_biobj_free(void *stuff) {
   size_t i;
 
   assert(stuff != NULL);
-  data = stuff;
+  data = (suite_biobj_t *) stuff;
 
   if (data->new_instances) {
     for (i = 0; i < data->max_new_instances; i++) {
@@ -293,8 +369,9 @@ static void suite_biobj_free(void *stuff) {
 }
 
 /**
- * Returns the best known value for indicator_name matching the given key if the key is found, and raises an
- * error otherwise.  */
+ * @brief Returns the best known value for indicator_name matching the given key if the key is found, and
+ * throws a coco_error otherwise.
+ */
 static double suite_biobj_get_best_value(const char *indicator_name, const char *key) {
 
   size_t i, count;
@@ -303,7 +380,7 @@ static double suite_biobj_get_best_value(const char *indicator_name, const char 
 
   if (strcmp(indicator_name, "hyp") == 0) {
 
-    curr_key = coco_allocate_memory(COCO_PATH_MAX * sizeof(char));
+    curr_key = coco_allocate_string(COCO_PATH_MAX);
     count = sizeof(suite_biobj_best_values_hyp) / sizeof(char *);
     for (i = 0; i < count; i++) {
       sscanf(suite_biobj_best_values_hyp[i], "%s %lf", curr_key, &best_value);
