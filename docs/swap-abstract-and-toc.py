@@ -14,6 +14,7 @@ third, a space before each ``\\footnote`` command is removed.
 from __future__ import absolute_import, print_function
 import os, sys
 from subprocess import call, check_output, CalledProcessError
+from shutil import copyfile
 
 folder = os.path.join('build', 'latex')
 filename = 'coco-doc.tex'
@@ -47,8 +48,11 @@ def replace(old, new, file):
         s = f.read(int(1e9))  # no more than 1GB
     s = s.replace(old, new)
     # make backup
-    os.rename(file, os.path.join(os.path.dirname(file), 
-                       '__tmp__' + os.path.split(file)[-1] + '__tmp__'))
+    filebackup = os.path.join(os.path.dirname(file), 
+                       '__tmp__' + os.path.split(file)[-1] + '__tmp__')
+    if os.path.isfile(filebackup):
+            os.remove(filebackup) # deal with rename on windows
+    os.rename(file, filebackup)
     with open(file, 'w') as f:
         f.write(s)
 
@@ -72,6 +76,8 @@ def main(old, new, *files):
         counter += 1
         tfilename = p.join(p.dirname(filename), '__tmp__' + 
                            p.split(filename)[-1] + '__tmp__');
+        if os.path.isfile(tfilename):
+            os.remove(tfilename) # deal with rename on windows
         os.rename(filename, tfilename)
         with open(filename, 'a') as fp: # a is just in case
             for line in open(tfilename):
@@ -115,11 +121,11 @@ if __name__ == "__main__":
                 # print(output)
                 if len(sys.argv) > 2 and i in (0, 2):
                     try:
-                        os.system('cp ' + filename[:-4] + '.pdf ' + 
+                        copyfile(filename[:-4] + '.pdf ', 
                             os.path.join(oldwd, sys.argv[2]))
                     except:
-                        print('ERROR with cp ', filename[:-4] + '.pdf ' + 
-                            os.path.join(oldwd, sys.argv[2]))
+                        print('ERROR with copying ', filename[:-4] + '.pdf ' + 
+                            ' to ' + os.path.join(oldwd, sys.argv[2]))
                             
         except CalledProcessError as e:
             print("ERROR: return value=%i" % e.returncode)
