@@ -36,7 +36,7 @@ public class Problem {
 			
 			this.id = CocoJNI.cocoProblemGetId(pointer);
 			this.name = CocoJNI.cocoProblemGetName(pointer);
-			
+
 			this.index = CocoJNI.cocoProblemGetIndex(pointer);
 			
 			this.pointer = pointer;
@@ -80,8 +80,16 @@ public class Problem {
 		return this.number_of_constraints;
 	}
 	
+	public double[] getSmallestValuesOfInterest() {
+		return this.lower_bounds;
+	}
+	
 	public double getSmallestValueOfInterest(int index) {
 		return this.lower_bounds[index];
+	}
+
+	public double[] getLargestValuesOfInterest() {
+		return this.upper_bounds;
 	}
 	
 	public double getLargestValueOfInterest(int index) {
@@ -96,8 +104,16 @@ public class Problem {
 		return this.name;
 	}
 	
+	public long getEvaluations() {
+		return CocoJNI.cocoProblemGetEvaluations(pointer);
+	}
+	
 	public long getIndex() {
 		return this.index;
+	}
+	
+	public boolean isFinalTargetHit() {
+		return (CocoJNI.cocoProblemIsFinalTargetHit(pointer) == 1);
 	}
 	
 	/* toString method */

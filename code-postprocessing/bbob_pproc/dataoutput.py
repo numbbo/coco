@@ -29,24 +29,21 @@ from __future__ import absolute_import
 
 import os
 import sys
-import pickle
 import warnings
 import getopt
+
+from .pproc import DataSetList
+from .ppfig import Usage
+
+from pdb import set_trace
 
 if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
     #Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from .pproc import DataSetList
-
-from pdb import set_trace
-
 __all__ = ['main']
 
-class Usage(Exception):
-    def __init__(self, msg):
-        self.msg = msg
 
 def outputPickle(dsList, verbose=True):
     """Generates pickle files from a DataSetList."""
@@ -111,9 +108,9 @@ def main(argv=None):
             opts, args = getopt.getopt(argv, "h",
                                        ["help"])
         except getopt.error, msg:
-             raise Usage(msg)
+            raise Usage(msg)
 
-        if not (args):
+        if not args:
             usage()
             sys.exit()
 
@@ -127,7 +124,7 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        if (not verbose):
+        if not verbose:
             warnings.simplefilter('ignore')
 
         dsList = DataSetList(args)

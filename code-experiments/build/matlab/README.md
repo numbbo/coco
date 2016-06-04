@@ -9,7 +9,7 @@ below and give it a try. Then act upon failure, as in this case probably one of
 the following is lacking: 
 
 - Matlab is installed (version >=2008a) and in the path. Alternatively, you can also use the
-  open source platform Octave.
+  open source platform Octave (version >=4.0.0).
 
 - Python is not installed in the right version (>=2.6). We recommend using the Anaconda package
   (https://www.continuum.io) for installing python.
@@ -56,11 +56,9 @@ Details and Known Issues
   ```
   #define char16_t UINT16_T
   ```
-  right before the #include "mex.h" lines of the corresponding C files. This holds
-  especially for the more complicated example in ../../examples/bbob-biobj-matlab-smsemoa/.
-- When running with GNU Octave under Windows, you might experience that the Windows command window is closed on exit
-  of Octave. To solve this issue, find the `octave.bat` file in your Octave installation folder and remove the `exit`
-  in the last line.
+  right before the `#include "mex.h"` lines of the corresponding C files. This holds
+  especially for the more complicated example in `../../examples/bbob-biobj-matlab-smsemoa/`.
+
 
 Tested Environments
 -------------------

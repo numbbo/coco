@@ -1,9 +1,9 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generate ERT vs param. figures.
+"""Generate aRT vs param. figures.
 
-The figures will show the performance in terms of ERT on a log scale
+The figures will show the performance in terms of aRT on a log scale
 w.r.t. parameter. On the y-axis, data is represented as
 a number of function evaluations. Crosses (+) give the median number of
 function evaluations for the smallest reached target function value
@@ -14,12 +14,10 @@ function value (1e-8) was not reached.
 """
 from __future__ import absolute_import
 import os
-import sys
 import matplotlib.pyplot as plt
 import numpy as np
-from pdb import set_trace
-from . import toolsstats, bestalg
-from .ppfig import saveFigure, groupByRange
+from . import toolsstats, testbedsettings, genericsettings, toolsdivers
+from .ppfig import saveFigure
 
 __all__ = ['beautify', 'plot', 'main']
 
@@ -39,28 +37,15 @@ styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
 refcolor = 'wheat'
 # should correspond with the colors in pprldistr.
 
-dimsBBOB = (2, 3, 5, 10, 20, 40)
+#dimsBBOB = (2, 3, 5, 10, 20, 40) # Wassim: Deleted
 
-#Get benchmark short infos.
-def read_fun_infos(isBiobjective):
-    try:
-        funInfos = {}
-        
-        filename = 'biobj-benchmarkshortinfos.txt' if isBiobjective else 'benchmarkshortinfos.txt'        
-        infofile = os.path.join(os.path.split(__file__)[0], filename)
-        f = open(infofile, 'r')
-        for line in f:
-            if len(line) == 0 or line.startswith('%') or line.isspace() :
-                continue
-            funcId, funcInfo = line[0:-1].split(None, 1)
-            funInfos[int(funcId)] = funcId + ' ' + funcInfo
-        f.close()
-        return funInfos
-    except IOError, (errno, strerror):
-        print "I/O error(%s): %s" % (errno, strerror)
-        print 'Could not find file', infofile, \
-              'Titles in figures will not be displayed.'
-
+# Get benchmark short infos, prepended with the function id.
+def read_fun_infos():
+    funInfos = {}
+    for id in testbedsettings.current_testbed.short_names:
+        funInfos[int(id)] = str(id) + ' ' + testbedsettings.current_testbed.short_names[id]
+    return funInfos
+    
 def beautify():
     """Customize figure presentation."""
 
@@ -105,7 +90,7 @@ def beautify():
     plt.ylabel('Run Lengths')
 
 def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
-    """Generate plot of ERT vs param."""
+    """Generate plot of aRT vs param."""
 
     dictparam = dsList.dictByParam(param)
     params = sorted(dictparam) # sorted because we draw lines
@@ -119,7 +104,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
         rawdata[p] = dictparam[p][0].detEvals(targets)
         # expect dictparam[p] to have only one element
 
-    # plot lines for ERT
+    # plot lines for aRT
     xpltdata = params
     for i, t in enumerate(targets):
         ypltdata = []
@@ -128,7 +113,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
             unsucc = np.isnan(data)
             assert len(dictparam[p]) == 1
             data[unsucc] = dictparam[p][0].maxevals
-            # compute ERT
+            # compute aRT
             ert, srate, succ = toolsstats.sp(data, issuccessful=(unsucc == False))
             ypltdata.append(ert)
         res.extend(plt.plot(xpltdata, ypltdata, markersize=20,
@@ -171,7 +156,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
             unsucc = np.isnan(data)
             assert len(dictparam[p]) == 1
             data[unsucc] = dictparam[p][0].maxevals
-            # compute ERT
+            # compute aRT
             ert, srate, succ = toolsstats.sp(data, issuccessful=(unsucc == False))
             if srate == 1.:
                 break
@@ -185,7 +170,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
 def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
          param=('dim', 'Dimension'), is_normalized=True, outputdir='.',
          verbose=True):
-    """Generates figure of ERT vs. param.
+    """Generates figure of aRT vs. param.
 
     This script will generate as many figures as there are functions.
     For a given function and a given parameter value there should be
@@ -212,7 +197,7 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
     
     """
 
-    funInfos = read_fun_infos(dsList.isBiobjective())
+    funInfos = read_fun_infos()
 
     # TODO check input parameter param
     for func, dictfunc in dsList.dictByFunc().iteritems():
@@ -226,13 +211,13 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
 
         handles = plot(dictfunc, param[0], targets)
 
-        # # display best 2009
-        # if not bestalg.bestalgentries2009:
-        #     bestalg.loadBBOB2009()
+        # # display best algorithm
+        # if not bestalg.bestAlgorithmEntries:
+        #     bestalg.load_best_algorithm()
 
         # bestalgdata = []
         # for d in dimsBBOB:
-        #     entry = bestalg.bestalgentries2009[(d, func)]
+        #     entry = bestalg.bestAlgorithmEntries[(d, func)]
         #     tmp = entry.detERT([1e-8])[0]
         #     if not np.isinf(tmp):
         #         bestalgdata.append(tmp/d)
@@ -258,11 +243,12 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
         if is_normalized:
             plt.setp(plt.gca(), 'ylabel', plt.getp(a, 'ylabel') + ' / ' + param[1])
 
-        if func in (1, 24, 101, 130):
-            plt.legend(loc="best")
+        if func in testbedsettings.current_testbed.functions_with_legend:
+            toolsdivers.legend(loc="best")
         
+        fontSize = genericsettings.getFontSize(funInfos.values())
         if func in funInfos.keys():
-            a.set_title(funInfos[func])
+            a.set_title(funInfos[func], fontsize=fontSize)
 
         saveFigure(filename, verbose=verbose)
         plt.close()
