@@ -45,12 +45,12 @@ cdef class Archive:
     
     cdef up_to_date
     
-    def __cinit__(self, suite_name, function, dimension, instance):
+    def __cinit__(self, suite_name, function, instance, dimension):
             
         self._suite_name = _bstring(suite_name)
         self._function = function
-        self._dimension = dimension
         self._instance = instance
+        self._dimension = dimension
         self.up_to_date = False
         
         self.archive = coco_archive(self._suite_name, self._function, 

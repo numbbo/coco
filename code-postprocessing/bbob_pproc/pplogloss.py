@@ -849,6 +849,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
             text = consecutiveNumbers(sorted(funcs), 'f')
         else:
             text = 'f%d' % (funcs.pop())
+        text = text + ', %d-D' % d
         plt.text(0.5, 0.93, text, horizontalalignment="center",
                  transform=plt.gca().transAxes)
         beautify()
