@@ -138,16 +138,16 @@ def prepare_ecdfs_figure_caption():
     else:
         figure_caption = ecdfs_figure_caption_standard
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
-        # NOTE: no runlength-based targets supported yet
-        figure_caption = ecdfs_figure_caption_standard
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
-        if genericsettings.runlength_based_targets:
-            figure_caption = ecdfs_figure_caption_rlbased + bestyeartext
-        else:
-            figure_caption = ecdfs_figure_caption_standard + bestyeartext
-    else:
-        warnings.warn("Current settings do not support ppfigdim caption.")
+#    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+#        # NOTE: no runlength-based targets supported yet
+#        figure_caption = ecdfs_figure_caption_standard
+#    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+#        if genericsettings.runlength_based_targets:
+#            figure_caption = ecdfs_figure_caption_rlbased + bestyeartext
+#        else:
+#            figure_caption = ecdfs_figure_caption_standard + bestyeartext
+#    else:
+#        warnings.warn("Current settings do not support ppfigdim caption.")
 
     return figure_caption
 
@@ -265,18 +265,13 @@ def plotLegend(handles, maxval=None):
         for k in sorted(ys[j].keys()):
             #enforce best 2009 comes first in case of equality
             tmp = []
-            if not isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
-                for h in ys[j][k]:
-                    if plt.getp(h, 'label') == 'best 2009':
-                        tmp.insert(0, h)
-                    else:
-                        tmp.append(h)
-            else:
-                for h in ys[j][k]:
-                    if plt.getp(h, 'label') == 'best 2016':
-                        tmp.insert(0, h)
-                    else:
-                        tmp.append(h)
+            # Manh : a generalization
+            best_year = 'best %d' %testbedsettings.current_testbed.best_algorithm_year
+            for h in ys[j][k]:
+                if plt.getp(h, 'label') == best_year:
+                    tmp.insert(0, h)
+                else:
+                    tmp.append(h)
             #tmp.reverse()
             ys[j][k] = tmp
 
