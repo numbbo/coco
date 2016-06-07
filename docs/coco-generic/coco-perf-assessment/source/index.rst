@@ -57,8 +57,11 @@ COCO: Performance Assessment
 
 .. raw:: html
 
-   See also: <I>ArXiv e-prints</I>,
-   <A HREF="http://arxiv.org/abs/1605.03560">arXiv:1605.03560</A>, 2016.
+   <SMALL>To cite or access this document as pdf:</SMALL></BR>
+   N. Hansen, A. Auger, D. Brockhoff,  D. Tušar, and T. Tušar. 
+   <A HREF="http://arxiv.org/abs/1605.03560">
+   COCO: Performance Assessment. <I>ArXiv e-prints</I>,
+   arXiv:1605.03560</A>, 2016.
 
 .. raw:: latex
 
