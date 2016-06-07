@@ -664,11 +664,10 @@ def main(argv=None):
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictng in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictng)
-                for d, tmpdictdim in dictDim.iteritems():
+                for d, tmpdictdim in sorted(dictDim.iteritems()):
                     pptables.main(
                         tmpdictdim,
                         sortedAlgs,
-                        dsList[0].isBiobjective(),
                         outputdir,
                         genericsettings.verbose,
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==

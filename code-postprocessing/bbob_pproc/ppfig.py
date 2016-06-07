@@ -34,7 +34,7 @@ def enum(*sequential, **named):
     return type('Enum', (), enums)
 
 
-HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP',
+HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP', 'PPRLDMANY_BY_GROUP_MORE',
                 'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS')
 
 
@@ -70,6 +70,9 @@ def saveFigure(filename, figFormat=(), verbose=True):
         except IOError:
             warnings.warn('%s is not writeable.' % (filename + '.' + format))
 
+pprldmany_per_func_header = 'Runtime distributions (ECDFs) per function'
+pprldmany_per_func_dim_header = 'Runtime distributions (ECDFs) per function and dimension'
+pprldmany_per_group_dim_header = 'Runtime distributions (ECDFs) per group and dimension'
 
 html_header = """<HTML>
 <HEAD>
@@ -188,19 +191,25 @@ def getRldLink(htmlPage, currentDir, isBiobjective):
         if htmlPage == HtmlPage.ONE:
             fileName = '%s.html' % genericsettings.pprldmany_file_name
             links += add_link(currentDir, folder, fileName,
-                              'Runtime distribution plots',
+                              pprldmany_per_func_header,
                               ignoreFileExists=ignoreFileExists)
 
         if htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or not isBiobjective:
             fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
             links += add_link(currentDir, folder, fileName,
-                              'Runtime distribution plots (per dimension)',
+                              pprldmany_per_func_dim_header,
                               ignoreFileExists=ignoreFileExists)
 
         if htmlPage == HtmlPage.ONE:
             fileName = '%s_02D.html' % genericsettings.pprldmany_group_file_name
             links += add_link(currentDir, folder, fileName,
-                              'Runtime distribution plots by group (per dimension)',
+                              pprldmany_per_group_dim_header,
+                              ignoreFileExists=ignoreFileExists)
+
+        if htmlPage == HtmlPage.MANY:
+            fileName = '%s.html' % genericsettings.pprldmany_group_file_name
+            links += add_link(currentDir, '', fileName,
+                              pprldmany_per_group_dim_header,
                               ignoreFileExists=ignoreFileExists)
 
     return links
@@ -262,7 +271,7 @@ def save_single_functions_html(filename,
                 f.write('<H3><a href="pplogloss.html">Runtime loss ratios'
                         '</a></H3>\n')
 
-            headerECDF = ' Runtime distributions (ECDF) over all targets'
+            headerECDF = ' Runtime distributions (ECDFs) over all targets'
             f.write("<H2> %s </H2>\n" % headerECDF)
             f.write(addImage('pprldmany-single-functions/pprldmany.%s' % (extension), True))
 
@@ -284,9 +293,6 @@ def save_single_functions_html(filename,
             f.write(
                 '<H3><a href="%s.html">Average runtime for selected targets</a></H3>\n'
                 % genericsettings.pptables_file_name)
-
-            write_ECDF(f, 5, extension, captionStringFormat, functionGroups)
-            write_ECDF(f, 20, extension, captionStringFormat, functionGroups)
 
         elif htmlPage is HtmlPage.PPSCATTER:
             currentHeader = 'Scatter plots per function'
@@ -322,7 +328,7 @@ def save_single_functions_html(filename,
             if addLinkForNextDim:
                 f.write('"\n</A>\n')
         elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP:
-            currentHeader = 'Runtime distributions (ECDF), function groups over all targets'
+            currentHeader = pprldmany_per_group_dim_header
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
                 name_for_click = next_dimension_str(add_to_names)
@@ -332,6 +338,11 @@ def save_single_functions_html(filename,
                 f.write(addImage('%s_%s%s.%s' % (name, fg, add_to_names, extension), not addLinkForNextDim))
             if addLinkForNextDim:
                 f.write('"\n</A>\n')
+
+        elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP_MORE:
+            write_ECDF(f, 5, extension, captionStringFormat, functionGroups)
+            write_ECDF(f, 20, extension, captionStringFormat, functionGroups)
+
         elif htmlPage is HtmlPage.PPTABLE:
             currentHeader = 'aRT in number of function evaluations'
             f.write("<H2> %s </H2>\n" % currentHeader)
@@ -340,20 +351,10 @@ def save_single_functions_html(filename,
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPTABLE2:
-            currentHeader = 'Table showing the aRT in number of function evaluations'
-            if bestAlgExists:
-                currentHeader += ' divided by the best aRT measured during BBOB-2009'
-
-            f.write("\n<H2> %s </H2>\n" % currentHeader)
-            f.write("\n<!--pptable2Html-->\n")
-            key = 'bbobpptablestwolegend' + testbedsettings.current_testbed.scenario
-            f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
+            write_tables(f, captionStringFormat, bestAlgExists, 'pptable2Html', 'bbobpptablestwolegend')
 
         elif htmlPage is HtmlPage.PPTABLES:
-            write_pptables(f, 5, captionStringFormat, first_function_number,
-                           last_function_number, bestAlgExists)
-            write_pptables(f, 20, captionStringFormat, first_function_number,
-                           last_function_number, bestAlgExists)
+            write_tables(f, captionStringFormat, bestAlgExists, 'pptablesHtml', 'bbobpptablesmanylegend')
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
@@ -443,20 +444,15 @@ def write_ECDF(f, dimension, extension, captionStringFormat, functionGroups):
     f.write(captionStringFormat % ('\n##bbobECDFslegend%d##' % dimension))
 
 
-def write_pptables(f, dimension, captionStringFormat, first_function_number, last_function_number, bestAlgExists):
-    """Writes line for pptables images."""
-
-    additionalText = 'divided by the best aRT measured during BBOB-2009' if bestAlgExists else ''
-    currentHeader = 'Table showing the aRT in number of function evaluations %s ' \
-                    'for dimension %d' % (additionalText, dimension)
+def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key):
+    currentHeader = 'Table showing the aRT in number of function evaluations'
+    if best_alg_exists:
+        currentHeader += ' divided by the best aRT measured during BBOB-2009'
 
     f.write("\n<H2> %s </H2>\n" % currentHeader)
-    for ifun in range(first_function_number, last_function_number + 1):
-        f.write("\n<!--pptablesf%03d%02dDHtml-->\n" % (ifun, dimension))
-
-    if genericsettings.isTab:
-        key = 'bbobpptablesmanylegend' + testbedsettings.current_testbed.scenario
-        f.write(captionStringFormat % htmldesc.getValue('##' + key + str(dimension) + '##'))
+    f.write("\n<!--%s-->\n" % html_key)
+    key = legend_key + testbedsettings.current_testbed.scenario
+    f.write(caption_string_format % htmldesc.getValue('##' + key + '##'))
 
 
 def copy_js_files(outputdir):
