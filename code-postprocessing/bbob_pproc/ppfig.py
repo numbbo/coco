@@ -243,7 +243,7 @@ def save_single_functions_html(filename,
             functionGroups = OrderedDict([])
 
         function_group = "nzall" if genericsettings.isNoisy else "noiselessall"
-        if not htmlPage == HtmlPage.PPRLDMANY_BY_GROUP:
+        if not htmlPage in (HtmlPage.PPRLDMANY_BY_GROUP, HtmlPage.PPLOGLOSS):
             tempFunctionGroups = OrderedDict([(function_group, 'All functions')])
             tempFunctionGroups.update(functionGroups)
             functionGroups = tempFunctionGroups
@@ -347,7 +347,8 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.PPTABLE2:
             currentHeader = 'Table showing the aRT in number of function evaluations'
             if bestAlgExists:
-                currentHeader += ' divided by the best aRT measured during BBOB-2009'
+                currentHeader += ' divided by the best aRT measured during BBOB-%s' %str(testbedsettings.current_testbed.best_algorithm_year)
+            # Manh : the caption varies in best_algorithm_year
 
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             f.write("\n<!--pptable2Html-->\n")
@@ -400,15 +401,21 @@ def save_single_functions_html(filename,
             if bestAlgExists: # biObj is not the only one that has no bestAlg yet
                 currentHeader = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % currentHeader)
-                for dimension in dimensions:
-                    f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, function_group, extension), True))
-                f.write("\n<!--tables-->\n")
-                scenario = testbedsettings.current_testbed.scenario
-                f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption' + scenario + '##'))
 
                 dimensionList = '-D, '.join(str(x) for x in dimensions) + '-D'
                 index = dimensionList.rfind(",")
                 dimensionList = dimensionList[:index] + ' and' + dimensionList[index + 1:]
+
+                f.write('<p><b>%s in %s</b></p>' % ('All functions', dimensionList))
+                f.write('<div>')
+                for dimension in dimensions:
+                    f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, function_group, extension), True))
+                f.write('</div>')
+
+                f.write("\n<!--tables-->\n")
+                scenario = testbedsettings.current_testbed.scenario
+                f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption' + scenario + '##'))
+
                 for typeKey, typeValue in functionGroups.iteritems():
                     f.write('<p><b>%s in %s</b></p>' % (typeValue, dimensionList))
                     f.write('<div>')
@@ -441,8 +448,10 @@ def write_ECDF(f, dimension, extension, captionStringFormat, functionGroups):
 
 def write_pptables(f, dimension, captionStringFormat, first_function_number, last_function_number, bestAlgExists):
     """Writes line for pptables images."""
-
-    additionalText = 'divided by the best aRT measured during BBOB-2009' if bestAlgExists else ''
+    
+    additionalText = ('divided by the best aRT measured during BBOB-%s' %str(testbedsettings.current_testbed.best_algorithm_year)) if bestAlgExists else ''
+    # Manh : the caption varies in best_algorithm_year
+    
     currentHeader = 'Table showing the aRT in number of function evaluations %s ' \
                     'for dimension %d' % (additionalText, dimension)
 

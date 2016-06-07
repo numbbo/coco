@@ -56,11 +56,11 @@ def get_table_caption():
         
     table_caption_one = r"""%
         Average running time (\aRT\ in number of function 
-        evaluations) divided by the best \aRT\ measured during BBOB-2009. The \aRT\ 
+        evaluations) divided by the best \aRT\ measured during""" + (""" BBOB-%s.""" %str(testbedsettings.current_testbed.best_algorithm_year)) + r""" The \aRT\
         and in braces, as dispersion measure, the half difference between 90 and 
         10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
         the best \aRT\
-        """
+        """ # Manh : the caption varies in best_algorithm_year
     table_caption_two1 = (r"""%
         in the first. The different target \Df-values are shown in the top row. 
         \#succ is the number of trials that reached the (final) target $\fopt + """
@@ -74,11 +74,11 @@ def get_table_caption():
         The median number of conducted function evaluations is additionally given in 
         \textit{italics}, if the target in the last column was never reached. 
         \textbf{Bold} entries are statistically significantly better (according to
-        the rank-sum test) compared to the best algorithm in BBOB-2009, with
+        the rank-sum test) compared to the best algorithm in""" + (""" BBOB-%s, """ %str(testbedsettings.current_testbed.best_algorithm_year)) + r"""with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k > 1$ is following the
         $\downarrow$ symbol, with Bonferroni correction by the number of
         functions.
-        """
+        """ # Manh : the caption varies in best_algorithm_year
 
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet

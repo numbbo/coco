@@ -373,8 +373,10 @@ def main(argv=None):
                                )
 
             htmlFile = os.path.join(outputdir, genericsettings.many_algorithm_file_name + '.html')
-            replace_in_file(htmlFile, '##bbobECDFslegend5##', ppfigs.ecdfs_figure_caption(True, 5))
-            replace_in_file(htmlFile, '##bbobECDFslegend20##', ppfigs.ecdfs_figure_caption(True, 20))
+            
+            # Manh: generalization
+            for i in xrange(len(testbedsettings.current_testbed.rldDimsOfInterest)):
+                replace_in_file(htmlFile, '##bbobECDFslegend%d##' % testbedsettings.current_testbed.rldDimsOfInterest[i], ppfigs.ecdfs_figure_caption(True, testbedsettings.current_testbed.rldDimsOfInterest[i]))
 
             print_done()
 

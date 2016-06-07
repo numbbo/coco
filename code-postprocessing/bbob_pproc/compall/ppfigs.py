@@ -138,17 +138,16 @@ def prepare_ecdfs_figure_caption():
     else:
         figure_caption = ecdfs_figure_caption_standard
 
-      # Wassim: relaced what's below to have more generic code
-#    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
-#        figure_caption = ecdfs_figure_caption_standard
-#    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
-#        if genericsettings.runlength_based_targets:
-#            figure_caption = ecdfs_figure_caption_rlbased + bestyeartext
-#        else:
-#            figure_caption = ecdfs_figure_caption_standard + bestyeartext
-#   else:
-#       warnings.warn("Current settings do not support ppfigdim caption.")
+        figure_caption = ecdfs_figure_caption_standard
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+        if genericsettings.runlength_based_targets:
+            figure_caption = ecdfs_figure_caption_rlbased + bestyeartext
+        else:
+            figure_caption = ecdfs_figure_caption_standard + bestyeartext
+    else:
+        warnings.warn("Current settings do not support ppfigdim caption.")
 
     return figure_caption
 
@@ -612,9 +611,6 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
                     )
         
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
-        # Wassim: generalized what's below
-        for i in xrange(len(testbedsettings.current_testbed.rldDimsOfInterest)):
-          toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend%d##' % testbedsettings.current_testbed.rldDimsOfInterest[i], ecdfs_figure_caption(True, testbedsettings.current_testbed.rldDimsOfInterest[i]))
 
         if verbose:
             print 'Wrote commands and legend to %s' % filename
