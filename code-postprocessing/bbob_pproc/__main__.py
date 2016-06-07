@@ -60,6 +60,7 @@ def copy_latex_templates():
     shutil.copy(join_path(templateFolder, 'templateBBOBcmp.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'templateBIOBJarticle.tex'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'templateBIOBJmultiple.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), currentFolder)
     shutil.copy(join_path(templateFolder, 'comment.sty'), currentFolder)
     shutil.copy(join_path(templateFolder, 'acmcopyright.sty'), currentFolder)
@@ -107,6 +108,7 @@ def prepare_data(run_all_tests):
         retrieve_algorithm(dataPath, '2013', 'lmm-CMA-ES_auger_noiseless.tgz')
         retrieve_algorithm(dataPath, '2009', 'DE-PSO_garcia-nieto_noiseless.tgz')
         retrieve_algorithm(dataPath, '2009', 'VNS_garcia-martinez_noiseless.tgz')
+        retrieve_algorithm(dataPath, 'biobj-test', 'RS-4.tgz')
 
     return dataPath
 
@@ -221,6 +223,14 @@ def main(args):
         print('**  subtest 5 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on one algorithm with option --expensive.'
         run_latex_template("templateBBOBarticle.tex")
+
+        t0 = time.time()
+        result = os.system(python + command + ' --omit-single ' +
+                           join_path(data_path, 'RS.tgz') +
+                           join_path(data_path, 'RS-4.tgz'))
+        print('**  subtest 6 finished in ', time.time() - t0, ' seconds')
+        assert result == 0, 'Test failed: rungeneric on two bi-objective algorithms.'
+        run_latex_template("templateBIOBJmultiple.tex")
 
     print('launching doctest (it might be necessary to close a few pop up windows to finish)')
     t0 = time.time()
