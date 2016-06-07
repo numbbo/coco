@@ -338,6 +338,15 @@ def main(argv=None):
             parentFileName=genericsettings.many_algorithm_file_name
         )
 
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.pprldmany_group_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP_MORE,
+            isBiobjective=dsList[0].isBiobjective(),
+            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
+            parentFileName=genericsettings.many_algorithm_file_name
+        )
+
         # convergence plots
         print("Generating convergence plots...")
         if genericsettings.isConv:
@@ -369,7 +378,7 @@ def main(argv=None):
                                 outputdir=outputdir
                                 )
 
-            htmlFile = os.path.join(outputdir, genericsettings.many_algorithm_file_name + '.html')
+            htmlFile = os.path.join(outputdir, genericsettings.pprldmany_group_file_name + '.html')
             replace_in_file(htmlFile, '##bbobECDFslegend5##', ppfigs.ecdfs_figure_caption(True, 5))
             replace_in_file(htmlFile, '##bbobECDFslegend20##', ppfigs.ecdfs_figure_caption(True, 20))
 

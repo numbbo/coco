@@ -63,7 +63,7 @@ def get_table_caption():
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
         than 1, with Bonferroni correction of #2. """ +
                           (r"""A $\downarrow$ indicates the same tested against the best
-        algorithm of BBOB-2009."""
+        algorithm of BBOB-2009. """
                            if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
                            else "") + r"""Best results are printed in bold.
         """)
