@@ -651,7 +651,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             res = '\n<table class=\"sortable\" style=\"width:800px \">\n%s</table>\n<p/>\n' % res
 
             if df[0] in testbedsettings.current_testbed.tabDimsOfInterest: # Manh
-                filename = os.path.join(outputdir, genericsettings.many_algorithm_file_name + '.html')
+                filename = os.path.join(outputdir, genericsettings.pptables_file_name + '.html')
                 lines = []
                 with open(filename) as infile:
                     for line in infile:
