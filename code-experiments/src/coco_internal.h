@@ -137,7 +137,8 @@ struct coco_problem_s {
   char *problem_id;                    /**< @brief Problem ID (unique in the containing suite) */
   char *problem_type;                  /**< @brief Problem type */
 
-  size_t evaluations;                  /**< @brief Number of evaluations performed on the problem. */
+  size_t evaluations;                  /**< @brief Number of objective function evaluations performed on the problem. */
+  size_t evaluations_constraints;      /**< @brief Number of constraint function evaluations performed on the problem. */
 
   /* Convenience fields for output generation */
 

@@ -64,6 +64,7 @@ typedef struct {
   FILE *tdata_file; /* number of function evaluations aligned data file */
   FILE *rdata_file; /* restart info data file */
   size_t number_of_evaluations;
+  size_t number_of_evaluations_constraints;
   double best_fvalue;
   double last_fvalue;
   short written_last_eval; /* allows writing the the data of the final fun eval in the .tdat file if not already written by the t_trigger*/
@@ -350,7 +351,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
 static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, double *y) {
   logger_bbob_data_t *logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
   coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);
-  double *cons_values;
+  double *cons_values, initial_solution_fvalue;
   int is_feasible;
   size_t i;
 
@@ -364,6 +365,8 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     coco_debug("on problem %s ... ", coco_problem_get_id(inner_problem));
   }
   coco_evaluate_function(inner_problem, x, y);
+  
+  logger->number_of_evaluations_constraints = coco_problem_get_evaluations_constraints(problem);
   
   /* Add sanity check for optimal f value */
   if (problem->number_of_constraints > 0) {
@@ -379,20 +382,40 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   logger->written_last_eval = 0;
   logger->last_fvalue = y[0];
 
+  /* Check what should be logged in the first iteration */
   if (logger->number_of_evaluations == 1) {
+	  
+	 /* Evaluate the objective function at the initial solution and 
+     * store its value
+     */
+    coco_evaluate_function(inner_problem, inner_problem->initial_solution, 
+        &initial_solution_fvalue);
+      
     if (!is_feasible) {
-      /* Evaluate the objective function at the initial solution and 
-       * store its value into the vector "y"
-       */
-      coco_evaluate_function(inner_problem, inner_problem->initial_solution, y);
+		 
+		/* If x is infeasible, log the initial solution provided by Coco */
       for (i = 0; i < problem->number_of_variables; i++)
         logger->best_solution[i] = inner_problem->initial_solution[i];
+      y[0] = initial_solution_fvalue; 
     }
     else {
-      for (i = 0; i < problem->number_of_variables; i++)
-        logger->best_solution[i] = x[i];  
+		 
+		/* If the first observed point is worse than the initial solution
+		 * provided by Coco, log the latter instead
+		 */
+      if (initial_solution_fvalue < y[0]) {
+			
+        for (i = 0; i < problem->number_of_variables; i++)
+          logger->best_solution[i] = inner_problem->initial_solution[i];   
+        y[0] = initial_solution_fvalue; 
+      }
+      else {
+        for (i = 0; i < problem->number_of_variables; i++)
+          logger->best_solution[i] = x[i]; 
+      }
     }
-	 logger->best_fvalue = y[0];
+    logger->best_fvalue = y[0];
+    is_feasible = 1;
   }
   else if (y[0] < logger->best_fvalue && is_feasible) {
     logger->best_fvalue = y[0];
@@ -403,24 +426,24 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   /* Add a line in the .dat file for each logging target reached. */
   if (is_feasible) {
     if (coco_observer_targets_trigger(logger->targets, y[0] - logger->optimal_fvalue)) {
-      logger_bbob_write_data(logger->fdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
-          logger->optimal_fvalue, x, problem->number_of_variables);
+      logger_bbob_write_data(logger->fdata_file, 
+          logger->number_of_evaluations + logger->number_of_evaluations_constraints, y[0], 
+          logger->best_fvalue, logger->optimal_fvalue, x, problem->number_of_variables);
     }
-  }
-  else if (logger->number_of_evaluations == 1){
-    logger_bbob_write_data(logger->fdata_file, logger->number_of_evaluations, logger->best_fvalue, logger->best_fvalue,
-        logger->optimal_fvalue, logger->best_solution, problem->number_of_variables);
   }
 
   /* Add a line in the .tdat file each time an fevals trigger is reached.*/
-  if (coco_observer_evaluations_trigger(logger->evaluations, logger->number_of_evaluations)) {
+  if (coco_observer_evaluations_trigger(logger->evaluations, 
+        logger->number_of_evaluations + logger->number_of_evaluations_constraints)) {
     if (is_feasible) {
-      logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
-        logger->optimal_fvalue, x, problem->number_of_variables);
+      logger_bbob_write_data(logger->tdata_file, 
+          logger->number_of_evaluations + logger->number_of_evaluations_constraints, y[0], 
+          logger->best_fvalue, logger->optimal_fvalue, x, problem->number_of_variables);
     }
     else {
-      logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, logger->best_fvalue, 
-        logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, problem->number_of_variables);
+      logger_bbob_write_data(logger->tdata_file, 
+          logger->number_of_evaluations + logger->number_of_evaluations_constraints, logger->best_fvalue, 
+          logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, problem->number_of_variables);
     }
     logger->written_last_eval = 1;
   }
@@ -465,12 +488,15 @@ static void logger_bbob_free(void *stuff) {
      */
     if (!logger->written_last_eval) {
 		if (!logger->constrained_problem) {
-		  logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, logger->last_fvalue,
-            logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, logger->number_of_variables);
+		  logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, 
+		      logger->last_fvalue, logger->best_fvalue, logger->optimal_fvalue, 
+		      logger->best_solution, logger->number_of_variables);
 		}
 		else {
-        logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, logger->best_fvalue,
-            logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, logger->number_of_variables);
+        logger_bbob_write_data(logger->tdata_file, 
+            logger->number_of_evaluations + logger->number_of_evaluations_constraints, 
+            logger->best_fvalue, logger->best_fvalue, logger->optimal_fvalue, 
+            logger->best_solution, logger->number_of_variables);
       } 
 	 }
     fclose(logger->tdata_file);
@@ -531,6 +557,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   }
 
   logger_bbob->number_of_evaluations = 0;
+  logger_bbob->number_of_evaluations_constraints = 0;
   logger_bbob->best_solution = coco_allocate_vector(inner_problem->number_of_variables);
   /* TODO: the following inits are just to be in the safe side and
    * should eventually be removed. Some fields of the bbob_logger struct

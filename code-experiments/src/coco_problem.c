@@ -76,10 +76,13 @@ void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *
         problem->problem_id);
   }
   problem->evaluate_constraint(problem, x, y);
+  problem->evaluations_constraints++;
 }
 
 /**
- * Checks whether the point x is feasible or not.
+ * Checks whether the point x is feasible or not. This function is
+ * used internally, therefore its call to coco_evaluate_constraint() 
+ * should not increase the counter of constraint function evaluations.
  *
  * @param problem The given COCO problem.
  * @param x The decision vector.
@@ -91,6 +94,8 @@ int coco_is_feasible(coco_problem_t *problem, const double *x, double *cons_valu
   int is_feasible = 1;
   
   coco_evaluate_constraint(problem, x, cons_values);
+  /* decrement the counter incremented in coco_evaluate_constraint() */
+  problem->evaluations_constraints--; 
   
   for(i = 0; i < problem->number_of_constraints; ++i) {
     if (cons_values[i] > 0) {
@@ -175,6 +180,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->problem_id = NULL;
   problem->problem_type = NULL;
   problem->evaluations = 0;
+  problem->evaluations_constraints = 0;
   problem->final_target_delta[0] = 1e-8; /* in case to be modified by the benchmark */
   problem->best_observed_fvalue[0] = DBL_MAX;
   problem->best_observed_evaluation[0] = 0;
@@ -224,6 +230,7 @@ static coco_problem_t *coco_problem_duplicate(const coco_problem_t *other) {
   problem->problem_type = coco_strdup(other->problem_type);
 
   problem->evaluations = other->evaluations;
+  problem->evaluations_constraints = other->evaluations_constraints;
   problem->final_target_delta[0] = other->final_target_delta[0];
   problem->best_observed_fvalue[0] = other->best_observed_fvalue[0];
   problem->best_observed_evaluation[0] = other->best_observed_evaluation[0];
@@ -387,6 +394,11 @@ static void coco_problem_set_type(coco_problem_t *problem, const char *type, ...
 size_t coco_problem_get_evaluations(const coco_problem_t *problem) {
   assert(problem != NULL);
   return problem->evaluations;
+}
+
+size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem) {
+  assert(problem != NULL);
+  return problem->evaluations_constraints;
 }
 
 /**

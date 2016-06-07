@@ -328,9 +328,14 @@ size_t coco_problem_get_number_of_objectives(const coco_problem_t *problem);
 size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
 
 /**
- * @brief Returns the number of evaluations done on the problem.
+ * @brief Returns the number of objective function evaluations done on the problem.
  */
 size_t coco_problem_get_evaluations(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the number of constraint function evaluations done on the problem.
+ */
+size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem);
 
 /**
  * @brief Returns 1 if the final target was hit, 0 otherwise.
