@@ -49,6 +49,7 @@ __all__ = ['main']
 def usage():
     print(main.__doc__)
 
+
 def grouped_ecdf_graphs(algdict, isBiobjective,
                         order=None, outputdir='.', info='default'):
     """ Generates ecdf graphs, aggregated over groups as
@@ -57,7 +58,7 @@ def grouped_ecdf_graphs(algdict, isBiobjective,
     for gr, tmpdictAlg in algdict.iteritems():
         dictDim = pproc.dictAlgByDim(tmpdictAlg)
         for d, entries in dictDim.iteritems():
-            pprldmany.main(entries, # pass expensive flag here?
+            pprldmany.main(entries,  # pass expensive flag here?
                            isBiobjective,
                            order=order,
                            outputdir=outputdir,
@@ -174,7 +175,7 @@ def main(argv=None):
             usage()
             sys.exit()
 
-        #Process options
+        # Process options
         outputdir = genericsettings.outputdir
         for o, a in opts:
             if o in ("-v", "--verbose"):
@@ -188,7 +189,7 @@ def main(argv=None):
                 genericsettings.isNoisy = True
             elif o == "--noise-free":
                 genericsettings.isNoiseFree = True
-            #The next 3 are for testing purpose
+            # The next 3 are for testing purpose
             elif o == "--tab-only":
                 genericsettings.isRLDistr = False
                 genericsettings.isFig = False
@@ -224,18 +225,18 @@ def main(argv=None):
         # from bbob_pproc import bbob2010 as inset # input settings
         # TODO: conditional imports are NOT the way to go here
         if genericsettings.inputsettings == "color":
-            from . import config, genericsettings as inset # input settings
+            from . import config, genericsettings as inset  # input settings
             config.config()
         elif genericsettings.inputsettings == "grayscale":
             # this settings strategy (by proving different settings files) is problematic,
             # because it means copy-paste of the settings
             # file and future changes have a great chance to make the pasted files incompatible
             # as has most likely happened with grayscalesettings:
-            from . import config, grayscalesettings as inset # input settings
+            from . import config, grayscalesettings as inset  # input settings
             # better would be just adjust the previous settings, as config is doing it,
             # so a config_grayscalesettings.py module seems the better approach to go
         elif genericsettings.inputsettings == "black-white":
-            from . import config, bwsettings as inset # input settings
+            from . import config, bwsettings as inset  # input settings
         else:
             txt = ('Settings: %s is not an appropriate ' % genericsettings.inputsettings
                    + 'argument for input flag "--settings".')
@@ -254,32 +255,31 @@ def main(argv=None):
 
     if 1 < 3:
         print("Post-processing: will generate output " +
-               "data in folder %s" % outputdir)
+              "data in folder %s" % outputdir)
         print("  this might take several minutes.")
 
         if not os.path.exists(outputdir):
             os.makedirs(outputdir)
             if genericsettings.verbose:
-                print('Folder %s was created.' % (outputdir))
+                print('Folder %s was created.' % outputdir)
 
         # prepend the algorithm name command to the tex-command file
         lines = []
         for i, alg in enumerate(args):
             lines.append('\\providecommand{\\algorithm' + pptex.numtotext(i) +
-                         '}{' +  str_to_latex(strip_pathname1(alg)) + '}')
+                         '}{' + str_to_latex(strip_pathname1(alg)) + '}')
         prepend_to_file(os.path.join(outputdir,
-                        'bbob_pproc_commands.tex'), lines, 5000,
+                                     'bbob_pproc_commands.tex'), lines, 5000,
                         'bbob_proc_commands.tex truncated, consider removing '
                         + 'the file before the text run'
-                       )
+                        )
 
         dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=genericsettings.verbose)
 
         if not dsList:
             sys.exit()
 
-        if (any(ds.isBiobjective() for ds in dsList)
-                and any(not ds.isBiobjective() for ds in dsList)):
+        if any(ds.isBiobjective() for ds in dsList) and any(not ds.isBiobjective() for ds in dsList):
             sys.exit()
 
         for i in dictAlg:
@@ -293,16 +293,15 @@ def main(argv=None):
         config.target_values(genericsettings.isExpensive)
         config.config(dsList[0].testbed_name())
 
-
         for i in dsList:
             if i.dim not in genericsettings.dimensions_to_display:
                 continue
 
             if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) <
                     inset.instancesOfInterest):
-                warnings.warn('The data of %s do not list ' %(i) +
+                warnings.warn('The data of %s do not list ' % i +
                               'the correct instances ' +
-                              'of function F%d.' %(i.funcId))
+                              'of function F%d.' % i.funcId)
 
         plt.rc("axes", **inset.rcaxes)
         plt.rc("xtick", **inset.rctick)
@@ -339,6 +338,15 @@ def main(argv=None):
             parentFileName=genericsettings.many_algorithm_file_name
         )
 
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.pprldmany_group_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP_MORE,
+            isBiobjective=dsList[0].isBiobjective(),
+            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
+            parentFileName=genericsettings.many_algorithm_file_name
+        )
+
         # convergence plots
         print("Generating convergence plots...")
         if genericsettings.isConv:
@@ -359,7 +367,7 @@ def main(argv=None):
                                 dsList[0].isBiobjective(),
                                 order=sortedAlgs,
                                 outputdir=outputdir
-                               )
+                                )
             print_done()
 
             # ECDFs per function groups
@@ -368,9 +376,9 @@ def main(argv=None):
                                 dsList[0].isBiobjective(),
                                 order=sortedAlgs,
                                 outputdir=outputdir
-                               )
+                                )
 
-            htmlFile = os.path.join(outputdir, genericsettings.many_algorithm_file_name + '.html')
+            htmlFile = os.path.join(outputdir, genericsettings.pprldmany_group_file_name + '.html')
             replace_in_file(htmlFile, '##bbobECDFslegend5##', ppfigs.ecdfs_figure_caption(True, 5))
             replace_in_file(htmlFile, '##bbobECDFslegend20##', ppfigs.ecdfs_figure_caption(True, 20))
 
@@ -397,7 +405,7 @@ def main(argv=None):
                                                      'pprldmany-single-functions',
                                                      # + os.sep + ('f%03d' % fg),
                                                      dsList[0].isBiobjective()
-                                                    )
+                                                     )
                             if not os.path.exists(single_fct_output_dir):
                                 os.makedirs(single_fct_output_dir)
                             pprldmany.main(entries,
@@ -415,11 +423,10 @@ def main(argv=None):
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictng in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictng)
-                for d, tmpdictdim in dictDim.iteritems():
+                for d, tmpdictdim in sorted(dictDim.iteritems()):
                     pptables.main(
                         tmpdictdim,
                         sortedAlgs,
-                        dsList[0].isBiobjective(),
                         outputdir,
                         genericsettings.verbose,
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==
@@ -446,6 +453,6 @@ def main(argv=None):
 
         plt.rcdefaults()
 
+
 if __name__ == "__main__":
     sys.exit(main())
-
