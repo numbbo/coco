@@ -127,7 +127,7 @@ class GECCOBBOBTestbed(SingleObjectiveTestbed): #Wassim: now inherits from Singl
         self.rldDimsOfInterest = [5, 20]
         self.htmlDimsOfInterest = [5, 20]
         self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
-        self.best_algorithm_year = 2016
+        self.best_algorithm_year = 2009
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
