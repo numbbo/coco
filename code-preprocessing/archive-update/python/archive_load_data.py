@@ -152,7 +152,7 @@ def parse_old_arhive_file_name(file_name):
     except ValueError:
         dimension = None
 
-    return function, dimension, instance
+    return function, instance, dimension
 
 
 def get_instances(file_name):
@@ -174,29 +174,35 @@ def get_instances(file_name):
     return result
 
 
-def get_archive_file_info(file_name):
-    """Returns information on the problem instances contained in the given archive file in the form of the following
-       list of lists:
-       file_name, suite_name, function, dimension, instance1
-       file_name, suite_name, function, dimension, instance2
+def get_archive_file_info(file_name, functions, instances, dimensions):
+    """Returns information on the problem instances contained in the given archive file that also correspond to the
+       given functions, instances and dimensions in the form of the following list of lists:
+       file_name, suite_name, function, instance1, dimension
+       file_name, suite_name, function, instance2, dimension
        ...
        The suite_name, function and dimension are always retrieved from the file name, while instances are retrieved
        from the file name, if the file name is in form [suite-name]_f[function]_i[instance]_d[dimension]_*.*, and
        read from the file otherwise.
        :param file_name: archive file name
+       :param functions: functions to be considered
+       :param instances: instances to be considered
+       :param dimensions: dimensions to be considered
     """
     try:
         (suite_name, function, instance, dimension) = parse_archive_file_name(file_name)
+        if (function not in functions) or (dimension not in dimensions):
+            return None
         if not instance:
-            instances = get_instances(file_name)
+            instance_list = get_instances(file_name)
         else:
-            instances = [instance]
+            instance_list = [instance]
     except PreprocessingWarning as warning:
         raise PreprocessingWarning('Skipping file {}\n{}'.format(file_name, warning))
 
     result = []
-    for instance in instances:
-        result.append((file_name, suite_name, function, dimension, instance))
+    for instance in instance_list:
+        if instance in instances:
+            result.append((file_name, suite_name, function, instance, dimension))
     return result
 
 
