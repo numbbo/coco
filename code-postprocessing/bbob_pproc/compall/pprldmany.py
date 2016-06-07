@@ -821,8 +821,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             if plotType == PlotType.ALG:
                 add_to_names += '_%02dD' % (dim)
 
-            header = 'Runtime distributions (ECDF), single functions over all targets' if plotType == PlotType.DIM \
-                    else 'Runtime distributions (ECDF), single functions over all targets, single dimension'            
+            header = ppfig.pprldmany_per_func_header if plotType == PlotType.DIM else ppfig.pprldmany_per_func_dim_header
             ppfig.save_single_functions_html(
                 os.path.join(outputdir, fileName),
                 '', # algorithms names are clearly visible in the figure
