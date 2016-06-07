@@ -18,8 +18,8 @@
  * for every nondominated solution. Whether these files are created, at what point in time the logger writes
  * nondominated solutions to the archive and whether the decision variables are output or not depends on
  * the values of log_nondom_mode and log_nondom_mode. See the bi-objective observer constructor
- * observer_biobj() for more information. One .adat file is created for each problem function and dimension
- * and contains information for all instances of that problem.
+ * observer_biobj() for more information. One .adat file is created for each problem function, dimension
+ * and instance.
  *
  * @note Whenever in this file a ROI is mentioned, it means the region of interest in the objective space.
  * The ROI is a rectangle with the ideal and nadir points as its two opposite vertices.
@@ -519,7 +519,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   		problem->problem_name);
   fprintf(indicator->tdat_file, "%% instance = %lu, reference value = %.*e\n",
   		(unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
-  fprintf(indicator->tdat_file, "%% function eval_number | indicator value\n");
+  fprintf(indicator->tdat_file, "%% function evaluation | indicator value\n");
 
   return indicator;
 }
@@ -764,7 +764,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   logger_biobj_data_t *logger_biobj;
   observer_biobj_data_t *observer_biobj;
   const char nondom_folder_name[] = "archive";
-  char *path_name, *file_name = NULL, *prefix;
+  char *path_name, *file_name = NULL;
   size_t i;
 
   if (inner_problem->number_of_objectives != 2) {
@@ -803,15 +803,13 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
     coco_create_directory(path_name);
 
     /* Construct file name */
-    prefix = coco_remove_from_string(inner_problem->problem_id, "_i", "_d");
     if (logger_biobj->log_nondom_mode == LOG_NONDOM_ALL)
-      file_name = coco_strdupf("%s_nondom_all.adat", prefix);
+      file_name = coco_strdupf("%s_nondom_all.adat", inner_problem->problem_id);
     else if (logger_biobj->log_nondom_mode == LOG_NONDOM_FINAL)
-      file_name = coco_strdupf("%s_nondom_final.adat", prefix);
+      file_name = coco_strdupf("%s_nondom_final.adat", inner_problem->problem_id);
     coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
     if (logger_biobj->log_nondom_mode != LOG_NONDOM_NONE)
       coco_free_memory(file_name);
-    coco_free_memory(prefix);
 
     /* Open and initialize the archive file */
     logger_biobj->adat_file = fopen(path_name, "a");
