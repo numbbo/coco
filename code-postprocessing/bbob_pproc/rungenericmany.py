@@ -50,20 +50,33 @@ def usage():
     print(main.__doc__)
 
 
-def grouped_ecdf_graphs(algdict, isBiobjective,
-                        order=None, outputdir='.', info='default'):
+def grouped_ecdf_graphs(alg_dict, is_biobjective, order, output_dir, function_groups):
     """ Generates ecdf graphs, aggregated over groups as
         indicated via algdict
     """
-    for gr, tmpdictAlg in algdict.iteritems():
+    for gr, tmpdictAlg in alg_dict.iteritems():
         dictDim = pproc.dictAlgByDim(tmpdictAlg)
         for d, entries in dictDim.iteritems():
+
+            ppfig.save_single_functions_html(
+                os.path.join(output_dir, genericsettings.pprldmany_file_name),
+                '',  # algorithms names are clearly visible in the figure
+                add_to_names='_%02dD' % d,
+                htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP_MANY,
+                isBiobjective=is_biobjective,
+                functionGroups=function_groups,
+                parentFileName=genericsettings.many_algorithm_file_name
+            )
+
             pprldmany.main(entries,  # pass expensive flag here?
-                           isBiobjective,
+                           is_biobjective,
                            order=order,
-                           outputdir=outputdir,
+                           outputdir=output_dir,
                            info=('%02dD_%s' % (d, gr)),
                            verbose=genericsettings.verbose)
+
+            file_name = os.path.join(output_dir, '%s_%02dD.html' % (genericsettings.pprldmany_file_name, d))
+            replace_in_file(file_name, '##bbobECDFslegend##', ppfigs.ecdfs_figure_caption(True, d))
 
 
 def main(argv=None):
@@ -338,14 +351,6 @@ def main(argv=None):
             parentFileName=genericsettings.many_algorithm_file_name
         )
 
-        ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.pprldmany_group_file_name),
-            '',  # algorithms names are clearly visible in the figure
-            htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP_MORE,
-            isBiobjective=dsList[0].isBiobjective(),
-            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
-            parentFileName=genericsettings.many_algorithm_file_name
-        )
 
         # convergence plots
         print("Generating convergence plots...")
@@ -365,23 +370,18 @@ def main(argv=None):
             print("ECDF graphs per noise group...")
             grouped_ecdf_graphs(pproc.dictAlgByNoi(dictAlg),
                                 dsList[0].isBiobjective(),
-                                order=sortedAlgs,
-                                outputdir=outputdir
-                                )
+                                sortedAlgs,
+                                outputdir,
+                                dictAlg[sortedAlgs[0]].getFuncGroups())
             print_done()
 
             # ECDFs per function groups
             print("ECDF graphs per function group...")
             grouped_ecdf_graphs(pproc.dictAlgByFuncGroup(dictAlg),
                                 dsList[0].isBiobjective(),
-                                order=sortedAlgs,
-                                outputdir=outputdir
-                                )
-
-            htmlFile = os.path.join(outputdir, genericsettings.pprldmany_group_file_name + '.html')
-            replace_in_file(htmlFile, '##bbobECDFslegend5##', ppfigs.ecdfs_figure_caption(True, 5))
-            replace_in_file(htmlFile, '##bbobECDFslegend20##', ppfigs.ecdfs_figure_caption(True, 20))
-
+                                sortedAlgs,
+                                outputdir,
+                                dictAlg[sortedAlgs[0]].getFuncGroups())
             print_done()
 
             # copy-paste from above, here for each function instead of function groups:
