@@ -71,12 +71,12 @@ def prepare_figure_caption():
 
     caption_finish = r"""Markers on the upper or right edge indicate that the respective target
         value was never reached. Markers represent dimension:
-        2:{\color{cyan}+},
-        3:{\color{green!45!black}$\triangledown$},
-        5:{\color{blue}$\star$},
-        10:$\circ$,
-        20:{\color{red}$\Box$},
-        40:{\color{magenta}$\Diamond$}. """
+        %d:{\color{cyan}+},
+        %d:{\color{green!45!black}$\triangledown$},
+        %d:{\color{blue}$\star$},
+        %d:$\circ$,
+        %d:{\color{red}$\Box$},
+        %d:{\color{magenta}$\Diamond$}. """ %tuple(testbedsettings.current_testbed.dimensions_to_display) # Manh
 
 
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
