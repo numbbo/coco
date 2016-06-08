@@ -489,8 +489,9 @@ def main(argv=None):
             rungenericmany.grouped_ecdf_graphs(
                 pproc.dictAlgByNoi(dictAlg),
                 dsList[0].isBiobjective(),
-                order=sortedAlgs,
-                outputdir=outputdir)
+                sortedAlgs,
+                outputdir,
+                dictAlg[sortedAlgs[0]].getFuncGroups())
             print_done()
 
             # ECDFs per function groups, code copied from rungenericmany.py
@@ -499,8 +500,9 @@ def main(argv=None):
             rungenericmany.grouped_ecdf_graphs(
                 pproc.dictAlgByFuncGroup(dictAlg),
                 dsList[0].isBiobjective(),
-                order=sortedAlgs,
-                outputdir=outputdir)
+                sortedAlgs,
+                outputdir,
+                dictAlg[sortedAlgs[0]].getFuncGroups())
             print_done()
 
             print("ECDF runlength graphs...")
