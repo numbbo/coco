@@ -129,9 +129,10 @@ class ArchiveInfo:
 
         archive_info_list = []
         for input_file in input_files:
-            print(input_file)
             try:
                 archive_info_set = get_archive_file_info(input_file, functions, instances, dimensions)
+                if archive_info_set and len(archive_info_set)  > 0:
+                    print(input_file)
 
             # If any problems are encountered, the file is skipped
             except PreprocessingWarning as warning:
