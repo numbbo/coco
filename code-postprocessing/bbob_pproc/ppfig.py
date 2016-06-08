@@ -34,7 +34,7 @@ def enum(*sequential, **named):
     return type('Enum', (), enums)
 
 
-HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP', 'PPRLDMANY_BY_GROUP_MORE',
+HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP', 'PPRLDMANY_BY_GROUP_MANY',
                 'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS')
 
 
@@ -207,7 +207,7 @@ def getRldLink(htmlPage, currentDir, isBiobjective):
                               ignoreFileExists=ignoreFileExists)
 
         if htmlPage == HtmlPage.MANY:
-            fileName = '%s.html' % genericsettings.pprldmany_group_file_name
+            fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
             links += add_link(currentDir, '', fileName,
                               pprldmany_per_group_dim_header,
                               ignoreFileExists=ignoreFileExists)
@@ -339,9 +339,21 @@ def save_single_functions_html(filename,
             if addLinkForNextDim:
                 f.write('"\n</A>\n')
 
-        elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP_MORE:
-            write_ECDF(f, 5, extension, captionStringFormat, functionGroups)
-            write_ECDF(f, 20, extension, captionStringFormat, functionGroups)
+        elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP_MANY:
+            currentHeader = pprldmany_per_group_dim_header
+            f.write("\n<H2> %s </H2>\n" % currentHeader)
+            if addLinkForNextDim:
+                name_for_click = next_dimension_str(add_to_names)
+                f.write('<A HREF="%s">\n' % (name + name_for_click + '.html'))
+
+            for typeKey, typeValue in functionGroups.iteritems():
+                f.write('<p><b>%s</b></p>' % typeValue)
+                f.write(addImage('%s%s_%s.%s' % (name, add_to_names, typeKey, extension), not addLinkForNextDim))
+
+            if addLinkForNextDim:
+                f.write('"\n</A>\n')
+
+            f.write(captionStringFormat % '\n##bbobECDFslegend##')
 
         elif htmlPage is HtmlPage.PPTABLE:
             currentHeader = 'aRT in number of function evaluations'
@@ -427,21 +439,6 @@ def save_single_functions_html(filename,
             f.write(captionStringFormat % caption)
 
         f.write("\n</BODY>\n</HTML>")
-
-
-def write_ECDF(f, dimension, extension, captionStringFormat, functionGroups):
-    """Writes line for ECDF images."""
-
-    names = ['pprldmany']
-
-    headerECDF = 'Empirical Cumulative Distribution Functions (ECDFs) per function group for dimension %d' % dimension
-    f.write("\n<H2> %s </H2>\n" % headerECDF)
-    for typeKey, typeValue in functionGroups.iteritems():
-        f.write('<p><b>%s</b></p>' % typeValue)
-        for name in names:
-            f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
-
-    f.write(captionStringFormat % ('\n##bbobECDFslegend%d##' % dimension))
 
 
 def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key):
