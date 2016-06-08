@@ -26,11 +26,11 @@ def get_table_caption():
         TODO: \hvref and \fopt should be defined via the current_testbed, 
         preferably with a single latex command. 
     """
-
+    best_year = testbedsettings.current_testbed.best_algorithm_year # Manh
     table_caption_one = r"""%
         Average running time (\aRT\ in number of function
-        evaluations) divided by the respective best \aRT\ measured during""" + (""" BBOB-%s in
-        #1.""" %str(testbedsettings.current_testbed.best_algorithm_year)) + r"""
+        evaluations) divided by the respective best \aRT\ measured during""" + (""" BBOB-%d in
+        #1.""" %best_year) + r"""
         The \aRT\ and in braces, as dispersion measure, the half difference between
         10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and
         """ # Manh : the caption varies in best_algorithm_year
@@ -61,8 +61,8 @@ def get_table_caption():
         the rank-sum test) when compared to all other algorithms of the table, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
         than 1, with Bonferroni correction of #2. """ +
-        (r"""A $\downarrow$ indicates the same tested against the best
-        algorithm of BBOB-%s.""" %str(testbedsettings.current_testbed.best_algorithm_year)
+        (r""" A $\downarrow$ indicates the same tested against the best
+        algorithm of BBOB-%d. """ %best_year
         if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
         else "") + r"""Best results are printed in bold.
         """) # Manh : the caption varies in best_algorithm_year

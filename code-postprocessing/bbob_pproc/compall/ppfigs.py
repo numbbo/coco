@@ -105,10 +105,10 @@ def scaling_figure_caption(for_html = False):
 
 
 def prepare_ecdfs_figure_caption():
-
+    best_year = testbedsettings.current_testbed.best_algorithm_year # Manh
     bestyeartext = (
-                    r"The ``best %d'' line " % testbedsettings.current_testbed.best_algorithm_year +
-                    r"corresponds to the best \aRT\ observed during BBOB %d " % testbedsettings.current_testbed.best_algorithm_year +
+                    r"The ``best %d'' line " % best_year +
+                    r"corresponds to the best \aRT\ observed during BBOB %d " % best_year +
                     r"for each selected target."
                     )
 
@@ -266,9 +266,9 @@ def plotLegend(handles, maxval=None):
             #enforce best 2009 comes first in case of equality
             tmp = []
             # Manh : a generalization
-            best_year = 'best %d' %testbedsettings.current_testbed.best_algorithm_year
+            best_year_label = 'best %d' %testbedsettings.current_testbed.best_algorithm_year
             for h in ys[j][k]:
-                if plt.getp(h, 'label') == best_year:
+                if plt.getp(h, 'label') == best_year_label:
                     tmp.insert(0, h)
                 else:
                     tmp.append(h)
@@ -596,12 +596,12 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
             toolsdivers.prepend_to_file(latex_commands_filename,
                     [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}'
                      #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
-                     '\\providecommand{\\bbobppfigslegendlargescalefixed}[1]{',
+                     '\\providecommand{\\bbobppfigslegend}[1]{',
                      scaling_figure_caption(),
                      'Legend: '] + alg_definitions + ['}']
                     )
             toolsdivers.prepend_to_file(latex_commands_filename,
-                    ['\\providecommand{\\bbobECDFslegendlargescalefixed}[1]{',
+                    ['\\providecommand{\\bbobECDFslegend}[1]{',
                     ecdfs_figure_caption(), '}']
                     )
         

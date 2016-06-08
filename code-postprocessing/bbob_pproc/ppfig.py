@@ -347,7 +347,7 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.PPTABLE2:
             currentHeader = 'Table showing the aRT in number of function evaluations'
             if bestAlgExists:
-                currentHeader += ' divided by the best aRT measured during BBOB-%s' %str(testbedsettings.current_testbed.best_algorithm_year)
+                currentHeader += ' divided by the best aRT measured during BBOB-%d' %testbedsettings.current_testbed.best_algorithm_year
             # Manh : the caption varies in best_algorithm_year
 
             f.write("\n<H2> %s </H2>\n" % currentHeader)
@@ -449,7 +449,7 @@ def write_ECDF(f, dimension, extension, captionStringFormat, functionGroups):
 def write_pptables(f, dimension, captionStringFormat, first_function_number, last_function_number, bestAlgExists):
     """Writes line for pptables images."""
     
-    additionalText = ('divided by the best aRT measured during BBOB-%s' %str(testbedsettings.current_testbed.best_algorithm_year)) if bestAlgExists else ''
+    additionalText = ('divided by the best aRT measured during BBOB-%d' %testbedsettings.current_testbed.best_algorithm_year) if bestAlgExists else ''
     # Manh : the caption varies in best_algorithm_year
     
     currentHeader = 'Table showing the aRT in number of function evaluations %s ' \

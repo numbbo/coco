@@ -113,12 +113,13 @@ def scaling_figure_caption():
     #    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
     #    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
     #    "function value.  " +
+    best_year = testbedsettings.current_testbed.best_algorithm_year # Manh
     scaling_figure_caption_fixed = caption_part_one + r"""%
         % Shown are $\Df = 10^{\{values_of_interest\}}$.  
         Numbers above \aRT-symbols (if appearing) indicate the number of trials
         reaching the respective target. """ + (  # TODO: add here "(out of XYZ trials)"
         r"""The light thick line with
-        diamonds indicates the respective best result from BBOB-2009 for
+        diamonds indicates the respective best result from BBOB-%d """ %best_year + r"""for
         $\Df=10^{-8}$. """ if testbedsettings.current_testbed.name !=
         'bbob-biobj' else "") + """Horizontal lines mean linear scaling, slanted
         grid lines depict quadratic scaling.  
@@ -127,15 +128,15 @@ def scaling_figure_caption():
         Shown is the \aRT\ for 
         targets just not reached by
     %    the largest $\Df$-values $\ge10^{-8}$ for which the \aRT\ of 
-        the artificial GECCO-BBOB-2009 best algorithm  
+        the artificial""" + (""" GECCO-BBOB-%d""" %best_year) + r""" best algorithm
         within the given budget $k\times\DIM$, where $k$ is shown in the legend.
     %    was above $\{values_of_interest\}\times\DIM$ evaluations. 
         Numbers above \aRT-symbols indicate the number of trials reaching the respective target.  
-        The light thick line with diamonds indicates the respective best result from BBOB-2009 for 
+        The light thick line with diamonds indicates the respective best result from """ + ("""BBOB-%d""" %best_year) + r""" for
         the most difficult target. 
         Slanted grid lines indicate a scaling with ${\cal O}(\DIM)$ compared to ${\cal O}(1)$  
-        when using the respective 2009 best algorithm. 
-        """
+        when using the respective %d best algorithm.
+        """ %best_year
         # r"Shown is the \aRT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \aRT\ of the GECCO-BBOB-2009 best algorithm " + 
         # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
 
