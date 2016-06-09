@@ -27,14 +27,9 @@
  
 <title>No Title</title>
 
-##bbobECDFslegendrlbased5##
+##bbobECDFslegendrlbased##
 
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for all functions and subgroups in 5-D. The targets are chosen from BBOBPPFIGSTARGETRANGE such that the REFERENCEALGORITHM artificial algorithm just not reached them within a given budget of k &times; DIM, with k &#8712; {0.5, 1.2, 3, 10, 50}. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
-
-<div class="p"><!----></div>
-##bbobECDFslegendrlbased20##
-
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for all functions and subgroups in 20-D. The targets are chosen from BBOBPPFIGSTARGETRANGE such that the REFERENCEALGORITHM artificial algorithm just not reached them within a given budget of k &times; DIM, with k &#8712; {0.5, 1.2, 3, 10, 50}. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for all functions and subgroups in DIMVALUE-D. The targets are chosen from BBOBPPFIGSTARGETRANGE such that the REFERENCEALGORITHM artificial algorithm just not reached them within a given budget of k &times; DIM, with k &#8712; {0.5, 1.2, 3, 10, 50}. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
 
 <div class="p"><!----></div>
 ##bbobppfigslegendrlbased##
@@ -138,11 +133,11 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         algorithm of BBOB-2009.
 
 <div class="p"><!----></div>
-##bbobpptablesmanylegendrlbased5##
+##bbobpptablesmanylegendrlbased##
 
         Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
         evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
-        dimension 5.
+        different dimensions.
         The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
         10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
                 run-length based target, the corresponding best <span class="roman">aRT</span>&nbsp;        (preceded by the target &#8710;f-value in <i>italics</i>) in the first row. 
@@ -153,25 +148,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
         than 1, with Bonferroni correction of 48. A &#8595; indicates the same tested against the best
-        algorithm of BBOB-2009.Best results are printed in bold.
-
-<div class="p"><!----></div>
-##bbobpptablesmanylegendrlbased20##
-
-        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
-        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
-        dimension 20.
-        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
-        10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
-                run-length based target, the corresponding best <span class="roman">aRT</span>&nbsp;        (preceded by the target &#8710;f-value in <i>italics</i>) in the first row. 
-        #succ is the number of trials that reached the target value of the last column.
-                The median number of conducted function evaluations is additionally given in 
-        <i>italics</i>, if the target in the last column was never reached. 
-        Entries, succeeded by a star, are statistically significantly better (according to
-        the rank-sum test) when compared to all other algorithms of the table, with
-        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction of 48. A &#8595; indicates the same tested against the best
-        algorithm of BBOB-2009.Best results are printed in bold.
+        algorithm of BBOB-2009. Best results are printed in bold.
 
 <div class="p"><!----></div>
 ##bbobppscatterlegendrlbased##
@@ -216,14 +193,9 @@ Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of
         is the geometric mean.
 
 <div class="p"><!----></div>
-##bbobECDFslegendfixed5##
+##bbobECDFslegendfixed##
 
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for BBOBPPFIGSFTARGET targets with target precision in BBOBPPFIGSTARGETRANGE for all functions and subgroups in 5-D. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
-
-<div class="p"><!----></div>
-##bbobECDFslegendfixed20##
-
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for BBOBPPFIGSFTARGET targets with target precision in BBOBPPFIGSTARGETRANGE for all functions and subgroups in 20-D. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for BBOBPPFIGSFTARGET targets with target precision in BBOBPPFIGSTARGETRANGE for all functions and subgroups in DIMVALUE-D. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
 
 <div class="p"><!----></div>
 ##bbobppfigslegendfixed##
@@ -262,7 +234,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         algorithmA&nbsp;(<span style="color:#000000">&#176;</span>) and algorithmB&nbsp;(<span style="color:#000000">&#9830;</span>)        . Light beige lines show the ECDF of FEvals for target value
         &#8710;f
 =10<sup>&#8722;8</sup> of all algorithms benchmarked during
-        BBOB-2009. Right sub-columns: 
+        BBOB-2009. Right sub-columns:
         ECDF of FEval ratios of algorithmA&nbsp;divided by algorithmB for target
         function values 10<sup>k</sup> with k given in the legend; all
         trial pairs for each function. Pairs where both trials failed are disregarded,
@@ -326,11 +298,11 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         algorithm of BBOB-2009.
 
 <div class="p"><!----></div>
-##bbobpptablesmanylegendfixed5##
+##bbobpptablesmanylegendfixed##
 
         Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
         evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
-        dimension 5.
+        different dimensions.
         The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
         10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
                 target, the corresponding best <span class="roman">aRT</span>&nbsp;        in the first row. The different target &#8710;f-values are shown in the top row.
@@ -342,26 +314,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
         than 1, with Bonferroni correction of 48. A &#8595; indicates the same tested against the best
-        algorithm of BBOB-2009.Best results are printed in bold.
-
-<div class="p"><!----></div>
-##bbobpptablesmanylegendfixed20##
-
-        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
-        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
-        dimension 20.
-        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
-        10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
-                target, the corresponding best <span class="roman">aRT</span>&nbsp;        in the first row. The different target &#8710;f-values are shown in the top row.
-        #succ is the number of trials that reached the (final) target
-        f<sub><span class="roman">opt</span></sub>+ 10<sup>&#8722;8</sup>.
-                The median number of conducted function evaluations is additionally given in 
-        <i>italics</i>, if the target in the last column was never reached. 
-        Entries, succeeded by a star, are statistically significantly better (according to
-        the rank-sum test) when compared to all other algorithms of the table, with
-        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction of 48. A &#8595; indicates the same tested against the best
-        algorithm of BBOB-2009.Best results are printed in bold.
+        algorithm of BBOB-2009. Best results are printed in bold.
 
 <div class="p"><!----></div>
 ##bbobppscatterlegendfixed##
@@ -403,14 +356,9 @@ Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of
         is the geometric mean.
 
 <div class="p"><!----></div>
-##bbobECDFslegendbiobjfixed5##
+##bbobECDFslegendbiobjfixed##
 
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for BBOBPPFIGSFTARGET targets with target precision in BBOBPPFIGSTARGETRANGE for all functions and subgroups in 5-D. 
-
-<div class="p"><!----></div>
-##bbobECDFslegendbiobjfixed20##
-
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for BBOBPPFIGSFTARGET targets with target precision in BBOBPPFIGSTARGETRANGE for all functions and subgroups in 20-D. 
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for BBOBPPFIGSFTARGET targets with target precision in BBOBPPFIGSTARGETRANGE for all functions and subgroups in DIMVALUE-D. 
 
 <div class="p"><!----></div>
 ##bbobppfigslegendbiobjfixed##
@@ -448,7 +396,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         (FEvals/D)         to reach a target value I<sup><span class="roman">ref</span></sup>+&#8710;f with &#8710;f
 =10<sup>k</sup>, where
         k is given by the first value in the legend, for
-        algorithmA&nbsp;(<span style="color:#000000">&#176;</span>) and algorithmB&nbsp;(<span style="color:#000000">&#9830;</span>)        . Right sub-columns: 
+        algorithmA&nbsp;(<span style="color:#000000">&#176;</span>) and algorithmB&nbsp;(<span style="color:#000000">&#9830;</span>)        . Right sub-columns:
         ECDF of FEval ratios of algorithmA&nbsp;divided by algorithmB for target
         function values 10<sup>k</sup> with k given in the legend; all
         trial pairs for each function. Pairs where both trials failed are disregarded,
@@ -504,27 +452,10 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         following the &#8727; symbol, with Bonferroni correction of 48.
 
 <div class="p"><!----></div>
-##bbobpptablesmanylegendbiobjfixed5##
+##bbobpptablesmanylegendbiobjfixed##
 
         Average runtime (<span class="roman">aRT</span>) to reach given targets, measured
-        in number of function evaluations, in dimension 5. For each function, the <span class="roman">aRT</span>&nbsp;
-        and, in braces as dispersion measure, the half difference between 10 and 
-        90%-tile of (bootstrapped) runtimes is shown for the different
-        target &#8710;I-values as shown in the top row. 
-        #succ is the number of trials that reached the last target
-        I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;5</sup>.
-                The median number of conducted function evaluations is additionally given in 
-        <i>italics</i>, if the target in the last column was never reached. 
-        Entries, succeeded by a star, are statistically significantly better (according to
-        the rank-sum test) when compared to all other algorithms of the table, with
-        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction of 110. Best results are printed in bold.
-
-<div class="p"><!----></div>
-##bbobpptablesmanylegendbiobjfixed20##
-
-        Average runtime (<span class="roman">aRT</span>) to reach given targets, measured
-        in number of function evaluations, in dimension 20. For each function, the <span class="roman">aRT</span>&nbsp;
+        in number of function evaluations, in different dimensions. For each function, the <span class="roman">aRT</span>&nbsp;
         and, in braces as dispersion measure, the half difference between 10 and 
         90%-tile of (bootstrapped) runtimes is shown for the different
         target &#8710;I-values as shown in the top row. 
@@ -583,5 +514,5 @@ Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of
 T<sub><span class="small">E</span></sub>X
 by <a href="http://hutchinson.belmont.ma.us/tth/">
 T<sub><span class="small">T</span></sub>H</a>,
-version 4.08.<br />On 11 May 2016, 00:57.</small>
+version 4.08.<br />On 08 Jun 2016, 11:37.</small>
 </html>
