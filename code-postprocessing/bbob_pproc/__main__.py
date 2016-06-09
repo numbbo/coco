@@ -115,6 +115,7 @@ def prepare_data(run_all_tests):
         retrieve_algorithm(dataPath, '2009', 'DE-PSO_garcia-nieto_noiseless.tgz')
         retrieve_algorithm(dataPath, '2009', 'VNS_garcia-martinez_noiseless.tgz')
         retrieve_algorithm(dataPath, 'biobj-test', 'RS-4.tgz')
+        retrieve_algorithm(dataPath, 'biobj-test', 'RS-100.tgz')
 
     return dataPath
 
@@ -248,6 +249,16 @@ def main(args):
                            join_path(data_path, 'RS-4.tgz'))
         print('**  subtest 6 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bi-objective algorithms.'
+        run_latex_template("templateBIOBJmultiple.tex")
+        delete_files()
+        
+        t0 = time.time()
+        result = os.system(python + command + ' --omit-single ' +
+                           join_path(data_path, 'RS.tgz') +
+                           join_path(data_path, 'RS-4.tgz') + 
+                           join_path(data_path, 'RS-100.tgz'))
+        print('**  subtest 7 finished in ', time.time() - t0, ' seconds')
+        assert result == 0, 'Test failed: rungeneric on three bi-objective algorithms.'
         run_latex_template("templateBIOBJmultiple.tex")
         delete_files()
 
