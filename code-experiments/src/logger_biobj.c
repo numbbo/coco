@@ -592,18 +592,85 @@ static void logger_biobj_indicator_free(void *stuff) {
 
 }
 
+
+/*
+ * @brief Outputs the information according to the observer options.
+ *
+ * Outputs to the:
+ * - dat file, if the archive was updated and a new target was reached for an indicator;
+ * - tdat file, if the number of evaluations matches one of the predefined numbers.
+ *
+ * Note that a target is reached when
+ * best_value - current_value + additional_penalty <= relative_target_value
+ *
+ * The relative_target_value is a target for indicator difference, not the actual indicator value!
+ */
+static void logger_biobj_output(logger_biobj_data_t *logger,
+                                const coco_problem_t *problem,
+                                const int update_performed,
+                                const double *y) {
+  size_t i;
+  logger_biobj_indicator_t *indicator;
+
+  if (logger->compute_indicators) {
+    for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+
+      indicator = logger->indicators[i];
+      indicator->target_hit = 0;
+
+      /* If the update was performed, update the overall indicator value */
+      if (update_performed) {
+        /* Compute the overall_value of an indicator */
+        if (strcmp(indicator->name, "hyp") == 0) {
+          if (indicator->current_value == 0) {
+            /* Update the additional penalty for hypervolume (the minimal distance from the nondominated set
+             * to the ROI) */
+            double new_distance = mo_get_distance_to_ROI(y, problem->best_value, problem->nadir_value,
+                problem->number_of_objectives);
+            indicator->additional_penalty = coco_double_min(indicator->additional_penalty, new_distance);
+            assert(indicator->additional_penalty >= 0);
+          } else {
+            indicator->additional_penalty = 0;
+          }
+          indicator->overall_value = indicator->best_value - indicator->current_value
+              + indicator->additional_penalty;
+        } else {
+          coco_error("logger_biobj_evaluate(): Indicator computation not implemented yet for indicator %s",
+              indicator->name);
+        }
+
+        /* Check whether a target was hit */
+        indicator->target_hit = coco_observer_targets_trigger(indicator->targets, indicator->overall_value);
+      }
+
+      /* Log to the dat file if a target was hit */
+      if (indicator->target_hit) {
+        fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
+            logger->precision_f, indicator->overall_value, logger->precision_f,
+            ((coco_observer_targets_t *) indicator->targets)->value);
+      }
+
+      /* Log to the tdat file if the number of evaluations matches one of the predefined numbers */
+      indicator->evaluation_logged = coco_observer_evaluations_trigger(indicator->evaluations,
+          logger->number_of_evaluations);
+      if (indicator->evaluation_logged) {
+        fprintf(indicator->tdat_file, "%lu\t%.*e\n", (unsigned long) logger->number_of_evaluations,
+            logger->precision_f, indicator->overall_value);
+      }
+
+    }
+  }
+}
+
 /**
- * @brief Evaluates the function, increases the number of evaluations and outputs information based on the
+ * @brief Evaluates the function, increases the number of evaluations and outputs information according to
  * observer options.
  */
 static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, double *y) {
 
   logger_biobj_data_t *logger;
-
   logger_biobj_avl_item_t *node_item;
-  logger_biobj_indicator_t *indicator;
   int update_performed;
-  size_t i;
 
   logger = (logger_biobj_data_t *) coco_problem_transformed_get_data(problem);
 
@@ -630,63 +697,56 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
     fflush(logger->adat_file);
   }
 
-  /* Perform output to the:
-   * - dat file, if the archive was updated and a new target was reached for an indicator;
-   * - tdat file, if the number of evaluations matches one of the predefined numbers.
-   *
-   * Note that a target is reached when
-   * best_value - current_value + additional_penalty <= relative_target_value
-   *
-   * The relative_target_value is a target for indicator difference, not the actual indicator value!
-   */
-  if (logger->compute_indicators) {
-    for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+  /* Output according to observer options */
+  logger_biobj_output(logger, problem, update_performed, y);
+}
 
-      indicator = logger->indicators[i];
-      indicator->target_hit = 0;
+/**
+ * Sets the number of evaluations, adds the objective vector to the archive and outputs information according
+ * to observer options (but does not output the archive).
+ *
+ * @note Vector y must point to a correctly sized allocated memory region, the given evaluation number must
+ * be larger than the existing one.
+ *
+ * @param problem The given COCO problem.
+ * @param evaluation The number of evaluations.
+ * @param y The objective vector.
+ */
+void coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluation, const double *y) {
 
-      /* If the update was performed, update the overall indicator value */
-      if (update_performed) {
-        /* Compute the overall_value of an indicator */
-        if (strcmp(indicator->name, "hyp") == 0) {
-          if (indicator->current_value == 0) {
-            /* Update the additional penalty for hypervolume (the minimal distance from the nondominated set
-             * to the ROI) */
-            double new_distance = mo_get_distance_to_ROI(node_item->y,
-                problem->best_value, problem->nadir_value, problem->number_of_objectives);
-            indicator->additional_penalty = coco_double_min(indicator->additional_penalty, new_distance);
-            assert(indicator->additional_penalty >= 0);
-          } else {
-            indicator->additional_penalty = 0;
-          }
-          indicator->overall_value = indicator->best_value - indicator->current_value
-              + indicator->additional_penalty;
-        } else {
-          coco_error("logger_biobj_evaluate(): Indicator computation not implemented yet for indicator %s",
-              indicator->name);
-        }
+  logger_biobj_data_t *logger;
+  logger_biobj_avl_item_t *node_item;
+  int update_performed;
+  size_t i;
+  double *x;
 
-        /* Check whether a target was hit */
-        indicator->target_hit = coco_observer_targets_trigger(indicator->targets, indicator->overall_value);
-      }
+  assert(problem != NULL);
 
-      /* Log to the dat file if a target was hit */
-      if (indicator->target_hit) {
-        fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
-        		logger->precision_f, indicator->overall_value, logger->precision_f,
-            ((coco_observer_targets_t *) indicator->targets)->value);
-      }
+  logger = (logger_biobj_data_t *) coco_problem_transformed_get_data(problem);
 
-      /* Log to the tdat file if the number of evaluations matches one of the predefined numbers */
-      indicator->evaluation_logged = coco_observer_evaluations_trigger(indicator->evaluations,
-          logger->number_of_evaluations);
-      if (indicator->evaluation_logged) {
-        fprintf(indicator->tdat_file, "%lu\t%.*e\n", (unsigned long) logger->number_of_evaluations,
-        		logger->precision_f, indicator->overall_value);
-      }
+  /* Set the number of evaluations */
+  assert(logger->number_of_evaluations < evaluation);
+  logger->number_of_evaluations = evaluation;
 
-    }
-  }
+  /* Update the archive with the new solution */
+  x = coco_allocate_vector(problem->number_of_variables);
+  for (i = 0; i < problem->number_of_variables; i++)
+    x[i] = 0;
+  node_item = logger_biobj_node_create(x, y, logger->number_of_evaluations, logger->number_of_variables,
+      logger->number_of_objectives);
+  coco_free_memory(x);
+
+  /* Update the archive */
+  update_performed = logger_biobj_tree_update(logger, coco_problem_transformed_get_inner_problem(problem),
+      node_item);
+  if (!update_performed)
+    coco_warning("Solution %lu did not update the archive.", evaluation);
+
+  /* Output according to observer options */
+  if (logger->log_nondom_mode != LOG_NONDOM_NONE)
+    logger->log_nondom_mode = LOG_NONDOM_NONE;
+  logger_biobj_output(logger, problem, update_performed, y);
+
 }
 
 /**
