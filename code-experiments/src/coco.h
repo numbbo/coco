@@ -493,6 +493,11 @@ const char *coco_archive_get_next_solution_text(coco_archive_t *archive);
  * @brief Frees the archive.
  */
 void coco_archive_free(coco_archive_t *archive);
+
+/**
+ * @brief Reconstructs the output information of the bi-objective logger.
+ */
+void coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluation, const double *y);
 /**@}*/
 
 /***********************************************************************************************************/
