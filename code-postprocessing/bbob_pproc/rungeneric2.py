@@ -242,7 +242,7 @@ def main(argv=None):
             warnings.simplefilter('module')
             warnings.simplefilter('ignore')
 
-        print("Post-processing will generate comparison " +
+        print("\nPost-processing will generate comparison " +
               "data in folder %s" % outputdir)
         print("  this might take several minutes.")
 
