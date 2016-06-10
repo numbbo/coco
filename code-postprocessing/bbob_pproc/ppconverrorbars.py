@@ -121,7 +121,7 @@ def main(dictAlg, isBiobjective, outputdir='.', verbose=True, parentHtmlFileName
                                algname,
                                isBiobjective=isBiobjective,
                                parentFileName=parentHtmlFileName)  # first try
-    print("Convergence plots done.")
+
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -145,7 +145,7 @@ def prepare_ecdfs_figure_caption():
 def ecdfs_figure_caption(for_html = False, dimension = 0):
 
     if for_html:
-        key = '##bbobECDFslegend%s%d##' % (testbedsettings.current_testbed.scenario, dimension)
+        key = '##bbobECDFslegend%s##' % testbedsettings.current_testbed.scenario
         caption = htmldesc.getValue(key)
     else:
         caption = prepare_ecdfs_figure_caption()
@@ -156,6 +156,7 @@ def ecdfs_figure_caption(for_html = False, dimension = 0):
 
     caption = caption.replace('BBOBPPFIGSTARGETRANGE',
                               str(testbedsettings.current_testbed.pprldmany_target_range_latex))
+    caption = caption.replace('DIMVALUE', str(dimension))
 
     if genericsettings.runlength_based_targets:
         caption = caption.replace('REFERENCE_ALGORITHM', target.reference_algorithm)
@@ -571,8 +572,6 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
                 )
 
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
-        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend5##', ecdfs_figure_caption(True, 5))
-        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend20##', ecdfs_figure_caption(True, 20))
 
         if verbose:
             print 'Wrote commands and legend to %s' % filename
