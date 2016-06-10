@@ -489,8 +489,9 @@ def main(argv=None):
             rungenericmany.grouped_ecdf_graphs(
                 pproc.dictAlgByNoi(dictAlg),
                 dsList[0].isBiobjective(),
-                order=sortedAlgs,
-                outputdir=outputdir)
+                sortedAlgs,
+                outputdir,
+                dictAlg[sortedAlgs[0]].getFuncGroups())
             print_done()
 
             # ECDFs per function groups, code copied from rungenericmany.py
@@ -499,8 +500,9 @@ def main(argv=None):
             rungenericmany.grouped_ecdf_graphs(
                 pproc.dictAlgByFuncGroup(dictAlg),
                 dsList[0].isBiobjective(),
-                order=sortedAlgs,
-                outputdir=outputdir)
+                sortedAlgs,
+                outputdir,
+                dictAlg[sortedAlgs[0]].getFuncGroups())
             print_done()
 
             print("ECDF runlength graphs...")
@@ -664,11 +666,10 @@ def main(argv=None):
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictng in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictng)
-                for d, tmpdictdim in dictDim.iteritems():
+                for d, tmpdictdim in sorted(dictDim.iteritems()):
                     pptables.main(
                         tmpdictdim,
                         sortedAlgs,
-                        dsList[0].isBiobjective(),
                         outputdir,
                         genericsettings.verbose,
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==
