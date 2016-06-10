@@ -4,22 +4,22 @@ import os
 
 from .archive_exceptions import PreprocessingWarning, PreprocessingException
 from .archive_load_data import create_path, get_key_value, get_file_name_list, get_archive_file_info
-from .archive_load_data import read_best_values, write_best_values, parse_range
+from .archive_load_data import read_best_values, write_best_values
 from .coco_archive import Archive, log_level
 
 
 class ProblemInstanceInfo:
-    """Contains information on the problem instance: suite_name, function, dimension, instance and a list of file names
+    """Contains information on the problem instance: suite_name, function, instance, dimension and a list of file names
        with archived solutions for this problem instance.
     """
 
-    def __init__(self, _file_name, suite_name, function, dimension, instance):
+    def __init__(self, _file_name, suite_name, function, instance, dimension):
         """Instantiates a ProblemInstanceInfo object.
         """
         self.suite_name = suite_name
         self.function = function
-        self.dimension = dimension
         self.instance = instance
+        self.dimension = dimension
         self.file_names = [_file_name]
 
         self.current_file_initialized = False
@@ -29,21 +29,21 @@ class ProblemInstanceInfo:
     def __str__(self):
         return "{}_f{:02d}_i{:02d}_d{:02d}".format(self.suite_name, self.function, self.instance, self.dimension)
 
-    def equals(self, suite_name, function, dimension, instance):
-        """Returns true if this self has the same suite_name, function, dimension and instance as the given ones and
+    def equals(self, suite_name, function, instance, dimension):
+        """Returns true if this self has the same suite_name, function, instance and dimension as the given ones and
            false otherwise.
+           :param suite_name: suite name
+           :param function: function number
            :param instance: instance number
            :param dimension: dimension
-           :param function: function number
-           :param suite_name: suite name
         """
         if self.suite_name != suite_name:
             return False
         if self.function != function:
             return False
-        if self.dimension != dimension:
-            return False
         if self.instance != instance:
+            return False
+        if self.dimension != dimension:
             return False
         return True
 
@@ -112,10 +112,10 @@ class ArchiveInfo:
     """Collects information on the problem instances contained in all archives.
     """
 
-    def __init__(self, input_paths, instance_list):
+    def __init__(self, input_paths, functions, instances, dimensions):
         """Instantiates an ArchiveInfo object.
-           Extracts information from all archives found in the input_paths that correspond to one of the instances in
-           instance_list and returns the resulting ArchiveInfo. If instance_list is empty, all instances are collected.
+           Extracts information from all archives found in the input_paths that correspond to the given functions,
+           instances and dimensions. Returns the resulting ArchiveInfo.
         """
 
         self.problem_instances = []
@@ -125,13 +125,14 @@ class ArchiveInfo:
         # Read the information on the archive
         input_files = get_file_name_list(input_paths, ".adat")
         if len(input_files) == 0:
-            raise PreprocessingException('Folder \'{}\' does not exist or is empty'.format(input_path))
+            raise PreprocessingException('Folder \'{}\' does not exist or is empty'.format(input_paths))
 
         archive_info_list = []
         for input_file in input_files:
             print(input_file)
             try:
-                archive_info_set = get_archive_file_info(input_file)
+                archive_info_set = get_archive_file_info(input_file, functions, instances, dimensions)
+
             # If any problems are encountered, the file is skipped
             except PreprocessingWarning as warning:
                 print(warning)
@@ -146,7 +147,7 @@ class ArchiveInfo:
         print('Storing archive information...')
         for archive_info_set in archive_info_list:
             for archive_info_entry in archive_info_set:
-                self._add_entry(instance_list, *archive_info_entry)
+                self._add_entry(*archive_info_entry)
 
     def __str__(self):
         result = ""
@@ -155,24 +156,21 @@ class ArchiveInfo:
                 result += str(instance) + '\n'
         return result
 
-    def _add_entry(self, instance_list, _file_name, suite_name, function, dimension, instance):
-        """Adds a new ProblemInstanceInfo instance with the given suite_name, function, dimension, instance to the list
+    def _add_entry(self, _file_name, suite_name, function, instance, dimension):
+        """Adds a new ProblemInstanceInfo instance with the given suite_name, function, instance, dimension to the list
            of problem instances if an instance with these exact values does not exist yet. If it already exists, the
            current file_name is added to its list of file names.
-           Instance needs to be included in instance_list (if empty, all instances are added).
         """
-        if instance_list and instance not in instance_list:
-            return
 
         found = False
         for problem_instance in self.problem_instances:
-            if problem_instance.equals(suite_name, function, dimension, instance):
+            if problem_instance.equals(suite_name, function, instance, dimension):
                 problem_instance.file_names.append(_file_name)
                 found = True
                 break
 
         if not found:
-            self.problem_instances.append(ProblemInstanceInfo(_file_name, suite_name, function, dimension, instance))
+            self.problem_instances.append(ProblemInstanceInfo(_file_name, suite_name, function, instance, dimension))
 
     def get_next_problem_instance_info(self):
         """Returns the current ProblemInstanceInfo and increases the counter. If there are no more instances left,
@@ -227,24 +225,19 @@ def update_best_hypervolume(old_best_files, new_best_data, new_best_file):
     print('Done.')
 
 
-def merge_archives(input_path, output_path, instance_string):
+def merge_archives(input_path, output_path, functions, instances, dimensions):
     """Merges all archives from the input_path (removes any dominated solutions) and stores the consolidated archives
        in the output_path. Returns problem names and their new best hypervolume values in the form of a dictionary.
        :param input_path: input path
        :param output_path: output path (created if not existing before)
-       :param instance_string: string of instances that should be included in the merging (if empty, all instances are
-       included)
+       :param functions: functions to be included in the merging
+       :param instances: instances to be included in the merging
+       :param dimensions: dimensions to be included in the merging
     """
     result = {}
 
     print('Reading archive information...')
-    try:
-        instance_list = parse_range(instance_string)
-        print('Instances {}'.format(', '.join(map(str, instance_list))))
-    except PreprocessingException as exception:
-        print(exception)
-        instance_list = None
-    archive_info = ArchiveInfo(input_path, instance_list)
+    archive_info = ArchiveInfo(input_path, functions, instances, dimensions)
 
     print('Processing archives...')
     while True:
@@ -257,7 +250,7 @@ def merge_archives(input_path, output_path, instance_string):
 
         # Create an archive for this problem instance
         archive = Archive(problem_instance_info.suite_name, problem_instance_info.function,
-                          problem_instance_info.dimension, problem_instance_info.instance)
+                          problem_instance_info.instance, problem_instance_info.dimension)
 
         # Read the solutions from the files and add them to the archive
         problem_instance_info.fill_archive(archive)
