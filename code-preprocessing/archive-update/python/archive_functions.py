@@ -3,9 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import os
 
 from .archive_exceptions import PreprocessingWarning, PreprocessingException
-from .archive_load_data import create_path, get_key_value, get_file_name_list, get_archive_file_info
-from .archive_load_data import read_best_values, write_best_values
-from .coco_archive import Archive, log_level
+from .archive_load_data import create_path, get_key_value, get_file_name_list, get_archive_file_info, get_range
 
 
 class ProblemInstanceInfo:
@@ -55,23 +53,22 @@ class ProblemInstanceInfo:
             with open(f_name, 'r') as f:
 
                 instance_found = False
-                stop_reading = False
 
                 for line in f:
-                    if not line.strip():
+                    if not line.strip() or (line[0] == '%' and 'instance' not in line):
                         # Ignore empty lines
                         continue
-                    if (line[0] == '%') and stop_reading:
-                        break
-                    elif (line[0] == '%') and (not instance_found):
-                        if 'instance' in line:
+
+                    elif line[0] == '%' and 'instance' in line:
+                        if instance_found:
+                            break
+                        else:
                             value = get_key_value(line[1:], 'instance')
                             if int(value) == self.instance:
                                 instance_found = True
+
                     elif instance_found:
                         if line[0] != '%':
-                            if not stop_reading:
-                                stop_reading = True
                             # Solution found, feed it to the archive
                             try:
                                 archive.add_solution(float(line.split('\t')[1]), float(line.split('\t')[2]), line)
@@ -112,7 +109,7 @@ class ArchiveInfo:
     """Collects information on the problem instances contained in all archives.
     """
 
-    def __init__(self, input_paths, functions, instances, dimensions):
+    def __init__(self, input_paths, functions, instances, dimensions, output_files=True):
         """Instantiates an ArchiveInfo object.
            Extracts information from all archives found in the input_paths that correspond to the given functions,
            instances and dimensions. Returns the resulting ArchiveInfo.
@@ -131,14 +128,14 @@ class ArchiveInfo:
         for input_file in input_files:
             try:
                 archive_info_set = get_archive_file_info(input_file, functions, instances, dimensions)
-                if archive_info_set and len(archive_info_set)  > 0:
+                if archive_info_set is not None and len(archive_info_set) > 0 and output_files:
                     print(input_file)
 
             # If any problems are encountered, the file is skipped
             except PreprocessingWarning as warning:
                 print(warning)
             else:
-                if archive_info_set:
+                if archive_info_set is not None:
                     archive_info_list.append(archive_info_set)
                     count += 1
 
@@ -152,9 +149,9 @@ class ArchiveInfo:
 
     def __str__(self):
         result = ""
-        for instance in self.problem_instances:
-            if instance is not None:
-                result += str(instance) + '\n'
+        for problem_instance in self.problem_instances:
+            if problem_instance is not None:
+                result += str(problem_instance) + '\n'
         return result
 
     def _add_entry(self, _file_name, suite_name, function, instance, dimension):
@@ -183,85 +180,36 @@ class ArchiveInfo:
         self.current_instance += 1
         return self.problem_instances[self.current_instance - 1]
 
+    def get_function_string(self):
+        """Returns all the contained functions in a string form (using ranges where possible).
+        """
+        function_set = set()
+        for problem_instance in self.problem_instances:
+            function_set.add(problem_instance.function)
+        return get_range(function_set)
 
-def update_best_hypervolume(old_best_files, new_best_data, new_best_file):
-    """Updates the best hypervolume values. The old hypervolume values are read from old_best_files (a list of files),
-       while the new ones are passed through new_best_data. The resulting best values are appended to new_best_file
-       in a format that can be readily used by the COCO source code in C.
-       :param old_best_files: list of files containing best hypervolumes
-       :param new_best_data: dictionary with problem names and their new best hypervolumes
-       :param new_best_file: name of the file to which the new values will be appended
-    """
-    print('Updating best hypervolume values...')
+    def get_instance_string(self):
+        """Returns all the contained instances in a string form (using ranges where possible).
+        """
+        instance_set = set()
+        for problem_instance in self.problem_instances:
+            instance_set.add(problem_instance.instance)
+        return get_range(instance_set)
 
-    # Read the old best values from the given files
-    try:
-        old_best_data = read_best_values(old_best_files)
-    except IOError as err:
-        print(err)
-        print('Continuing nevertheless...')
-        result = new_best_data
-    else:
-        # Create a set of problem_names contained in at least one dictionary
-        problem_names = set(old_best_data.keys()).union(set(new_best_data.keys()))
-        result = {}
+    def get_dimension_string(self):
+        """Returns all the contained dimensions in a string form.
+        """
+        dimension_set = set()
+        for problem_instance in self.problem_instances:
+            dimension_set.add(problem_instance.dimension)
+        return ','.join(str(s) for s in sorted(dimension_set))
 
-        # Iterate over all problem names and store only the best (i.e. largest) hypervolumes
-        for problem_name in problem_names:
-            new_value = new_best_data.get(problem_name)
-            old_value = old_best_data.get(problem_name)
-            if new_value is None:
-                result.update({problem_name: float(old_value)})
-            elif old_value is None or (abs(float(old_value) - 1) < 1e-8):
-                # New value is always better when old_value equals 1
-                result.update({problem_name: float(new_value)})
-            else:
-                result.update({problem_name: max(float(new_value), float(old_value))})
+    def get_file_name_set(self):
+        """Returns the set of all contained files.
+        """
+        file_name_set = set()
+        for problem_instance in self.problem_instances:
+            for file_name in problem_instance.file_names:
+                file_name_set.add(file_name)
+        return sorted(file_name_set)
 
-            if new_value is not None and old_value is not None and float(new_value) > float(old_value):
-                print('{} HV improved by {:.15f}'.format(problem_name, float(new_value) - float(old_value)))
-
-    # Write the best values
-    write_best_values(result, new_best_file)
-    print('Done.')
-
-
-def merge_archives(input_path, output_path, functions, instances, dimensions):
-    """Merges all archives from the input_path (removes any dominated solutions) and stores the consolidated archives
-       in the output_path. Returns problem names and their new best hypervolume values in the form of a dictionary.
-       :param input_path: input path
-       :param output_path: output path (created if not existing before)
-       :param functions: functions to be included in the merging
-       :param instances: instances to be included in the merging
-       :param dimensions: dimensions to be included in the merging
-    """
-    result = {}
-
-    print('Reading archive information...')
-    archive_info = ArchiveInfo(input_path, functions, instances, dimensions)
-
-    print('Processing archives...')
-    while True:
-        # Get information about the next problem instance
-        problem_instance_info = archive_info.get_next_problem_instance_info()
-        if problem_instance_info is None:
-            break
-
-        old_level = log_level('warning')
-
-        # Create an archive for this problem instance
-        archive = Archive(problem_instance_info.suite_name, problem_instance_info.function,
-                          problem_instance_info.instance, problem_instance_info.dimension)
-
-        # Read the solutions from the files and add them to the archive
-        problem_instance_info.fill_archive(archive)
-
-        # Write the non-dominated solutions into output folder
-        problem_instance_info.write_archive_solutions(output_path, archive)
-
-        result.update({str(problem_instance_info): archive.hypervolume})
-        print('{}: {:.15f}'.format(problem_instance_info, archive.hypervolume))
-
-        log_level(old_level)
-
-    return result
