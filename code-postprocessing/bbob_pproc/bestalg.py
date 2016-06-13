@@ -18,6 +18,7 @@
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 
 import os
 import sys
@@ -351,7 +352,7 @@ def load_best_algorithm(force=False):
         bestAlgorithmEntries = None
         return bestAlgorithmEntries
 
-    print("Loading best algorithm data from %s ..." % bestAlgorithmFilename)
+    print("  Loading best algorithm data from %s ..." % bestAlgorithmFilename)
     sys.stdout.flush()
 
     bestAlgFilePath = os.path.split(__file__)[0]
@@ -368,7 +369,8 @@ def load_best_algorithm(force=False):
         bestAlgorithmEntries = None
 
     fid.close()
-    print_done()
+    #print("  ", end="")
+    #print_done()
 
     return bestAlgorithmEntries
 
