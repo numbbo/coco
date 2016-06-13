@@ -628,7 +628,7 @@ def test_postprocessing(allTests=False):
 
 def verify_postprocessing():
     install_postprocessing()
-    python('code-postprocessing/bbob_pproc', ['preparehtml.py', '-v'])
+    python('code-postprocessing/bbob_pproc', ['preparehtml.py', '-v'], verbose=True)
 
 ################################################################################
 ## Pre-processing
