@@ -682,7 +682,7 @@ class DataSet():
     def __init__(self, header, comment, data, indexfile, verbose=True):
         """Instantiate a DataSet.
 
-        The first three input argument corresponds to three consecutive
+        The first three input arguments correspond to three consecutive
         lines of an index file (.info extension).
 
         :keyword string header: information of the experiment
