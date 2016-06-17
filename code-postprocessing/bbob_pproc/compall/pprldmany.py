@@ -263,8 +263,8 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
             x3 = np.median(maxevals)
             if (x3 <= maxval and
                 # np.any(x2 <= x3) and   # maxval < median(maxevals)
-                    not plt.getp(res[-1], 'label').startswith('best')
-                ):  # TODO: HACK for not considering the best 2009 line
+                not plt.getp(res[-1], 'label').startswith('best')
+                ): # TODO: HACK for not considering a "best" algorithm line
                 try:
                     y3 = y2[x2 <= x3][-1]  # find right y-value for x3==median(maxevals)
                 except IndexError:  # median(maxevals) is smaller than any data, can only happen because of CrE?
@@ -352,10 +352,10 @@ def plotLegend(handles, maxval):
     i = 0  # loop over the elements of ys
     for j in sorted(ys.keys()):
         for k in reversed(sorted(ys[j].keys())):
-            # enforce best ever comes last in case of equality
+            # enforce "best" algorithm comes first in case of equality
             tmp = []
             for h in ys[j][k]:
-                if plt.getp(h, 'label') == 'best 2009':
+                if "best" in plt.getp(h, 'label'):
                     tmp.insert(0, h)
                 else:
                     tmp.append(h)
@@ -713,7 +713,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         args = {'ls': '-', 'linewidth': 6, 'marker': 'D', 'markersize': 11.,
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
-                'label': 'best 2009', 'zorder': -1}
+                'label': testbedsettings.current_testbed.best_algorithm_displayname,
+                'zorder': -1}
         lines.append(plotdata(np.array(xbest2009), x_limit, maxevalsbest2009,
                               CrE=0., **args))
 
@@ -768,8 +769,9 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 algtocommand[algname_to_label(alg)] = tmp
             if displaybest2009:
                 tmp = r'\algzeroperfprof'
-                f.write(r'\providecommand{%s}{best 2009}' % (tmp))
-                algtocommand['best 2009'] = tmp
+                bestalgname = testbedsettings.current_testbed.best_algorithm_displayname
+                f.write(r'\providecommand{%s}{%s}' % (tmp, bestalgname))
+                algtocommand[algname_to_label(bestalgname)] = tmp
 
             commandnames = []
             for label in labels:

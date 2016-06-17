@@ -254,10 +254,10 @@ def plotLegend(handles, maxval=None):
     i = 0 # loop over the elements of ys
     for j in sorted(ys.keys()):
         for k in sorted(ys[j].keys()):
-            #enforce best 2009 comes first in case of equality
+			# enforce that a "best" algorithm comes first in case of equality
             tmp = []
             for h in ys[j][k]:
-                if plt.getp(h, 'label') == 'best 2009':
+                if 'best' in plt.getp(h, 'label'):
                     tmp.insert(0, h)
                 else:
                     tmp.append(h)
