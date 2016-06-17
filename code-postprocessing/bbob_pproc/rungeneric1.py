@@ -454,7 +454,6 @@ def main(argv=None):
         ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
                                     dictFunc[dictFunc.keys()[0]][0].algId,
                                     htmlPage = ppfig.HtmlPage.ONE,
-                                    values_of_interest = values_of_interest,
                                     isBiobjective = dsList.isBiobjective(),
                                     functionGroups = dsList.getFuncGroups())
 
