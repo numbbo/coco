@@ -410,7 +410,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
     for f in dictFunc:
         filename = os.path.join(outputdir,'ppfigs_f%03d' % (f))
         handles = []
-        fix_styles(len(sortedAlgs))  # 
+        fix_styles(len(sortedAlgs), styles)  # 
         for i, alg in enumerate(sortedAlgs):
             dictDim = dictFunc[f][alg].dictByDim()  # this does not look like the most obvious solution
 
