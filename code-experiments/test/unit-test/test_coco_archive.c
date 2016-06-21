@@ -71,10 +71,68 @@ static void test_coco_archive(void **state) {
   (void)state; /* unused */
 }
 
+/**
+ * Tests updating the coco_archive with solutions better than the extremes.
+ */
+static void test_coco_archive_extreme_solutions(void **state) {
+
+  size_t number_of_evaluations, i;
+  double *y = coco_allocate_vector(2);
+  char *line;
+  coco_archive_t *archive;
+  double hypervolume;
+
+  archive = coco_archive("bbob-biobj", 18, 2, 3);
+
+  number_of_evaluations = 0;
+  y[0] = 5.222459558139120e+03;
+  y[1] = -1.054000000000000e+01;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  number_of_evaluations = 0;
+  y[0] = 2.070000000000000e+001;
+  y[1] = 3.604904192800397e+002;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  number_of_evaluations = 1;
+  y[0] = 5.2222140666e+03;
+  y[1] = -1.0540000000e+01;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  /* Checks that the computed hypervolume is correct */
+  assert(coco_archive_get_number_of_solutions(archive) == 2);
+  hypervolume = coco_archive_get_hypervolume(archive);
+  assert(about_equal_value(hypervolume, 0));
+
+  number_of_evaluations = 1;
+  y[0] = 5.2220345785e+03;
+  y[1] = -1.0539999999e+01;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  /* Checks that the computed hypervolume is correct */
+  assert(coco_archive_get_number_of_solutions(archive) == 3);
+  hypervolume = coco_archive_get_hypervolume(archive);
+  assert(about_equal_value(hypervolume, 8.1699208579037619e-05));
+
+  coco_free_memory(y);
+  coco_archive_free(archive);
+
+  (void)state; /* unused */
+}
+
 static int test_all_coco_archive(void) {
 
   const struct CMUnitTest tests[] = {
-  cmocka_unit_test(test_coco_archive) };
+  cmocka_unit_test(test_coco_archive),
+  cmocka_unit_test(test_coco_archive_extreme_solutions) };
 
   return cmocka_run_group_tests(tests, NULL, NULL);
 }

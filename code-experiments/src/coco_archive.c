@@ -194,9 +194,15 @@ int coco_archive_add_solution(coco_archive_t *archive, const double f1, const do
   node = avl_item_search_right(archive->tree, insert_item, NULL);
 
   if (node == NULL) {
-    /* The new point is an extremal point */
-    update = 1;
-    next_node = archive->tree->head;
+    if (avl_count(archive->tree) < 2) {
+      /* The new point is an extreme point */
+      update = 1;
+      next_node = archive->tree->head;
+    }
+    else {
+      /* The new point is equal to or better than an existing extreme (precision issues!), ignore */
+      update = 0;
+    }
   } else {
     node_objectives = coco_archive_node_item_get_vector((coco_archive_avl_item_t*) node->item);
     dominance = mo_get_dominance(insert_objectives, node_objectives, archive->number_of_objectives);
@@ -212,7 +218,7 @@ int coco_archive_add_solution(coco_archive_t *archive, const double f1, const do
       		avl_node_delete(archive->tree, node);
       }
     } else {
-      /* The new point is dominated, nothing more to do */
+      /* The new point is dominated or equal to an existing one, ignore */
       update = 0;
     }
   }
@@ -256,6 +262,8 @@ int coco_archive_add_solution(coco_archive_t *archive, const double f1, const do
  */
 static void coco_archive_update(coco_archive_t *archive) {
 
+  double comparison_precision = 1e-13;
+
   if (!archive->is_up_to_date) {
 
     avl_node_t *node, *left_node;
@@ -278,10 +286,16 @@ static void coco_archive_update(coco_archive_t *archive) {
       node_objectives = coco_archive_node_item_get_vector(node_item);
       left_node_objectives = coco_archive_node_item_get_vector(left_node_item);
       if (mo_solution_is_within_ROI(left_node_objectives, archive->ideal, archive->nadir, archive->number_of_objectives)) {
-        if (mo_solution_is_within_ROI(node_objectives, archive->ideal, archive->nadir, archive->number_of_objectives))
-          archive->hypervolume += (node_item->f1 - left_node_item->f1) * (archive->nadir[1] - left_node_item->f2);
-        else
-          archive->hypervolume += (archive->nadir[0] - left_node_item->f1) * (archive->nadir[1] - left_node_item->f2);
+        if (mo_solution_is_within_ROI(node_objectives, archive->ideal, archive->nadir, archive->number_of_objectives)) {
+          if (!coco_double_almost_equal(node_item->f1, left_node_item->f1, comparison_precision) &&
+              !coco_double_almost_equal(archive->nadir[1], left_node_item->f2, comparison_precision))
+              archive->hypervolume += (node_item->f1 - left_node_item->f1) * (archive->nadir[1] - left_node_item->f2);
+        }
+        else {
+          if (!coco_double_almost_equal(archive->nadir[0], left_node_item->f1, comparison_precision) &&
+              !coco_double_almost_equal(archive->nadir[1], left_node_item->f2, comparison_precision))
+            archive->hypervolume += (archive->nadir[0] - left_node_item->f1) * (archive->nadir[1] - left_node_item->f2);
+        }
       }
       coco_free_memory(node_objectives);
       coco_free_memory(left_node_objectives);

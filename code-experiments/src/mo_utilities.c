@@ -26,9 +26,9 @@ static int mo_get_dominance(const double *objectives1, const double *objectives2
   int flag2 = 0;
 
   for (i = 0; i < num_obj; i++) {
-  	if (coco_double_almost_equal(objectives1[i], objectives2[i], 1e-13)) {
-  		continue;
-  	} else if (objectives1[i] < objectives2[i]) {
+    if (coco_double_almost_equal(objectives1[i], objectives2[i], 1e-13)) {
+      continue;
+    } else if (objectives1[i] < objectives2[i]) {
       flag1 = 1;
     } else if (objectives1[i] > objectives2[i]) {
       flag2 = 1;

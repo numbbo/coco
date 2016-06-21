@@ -142,9 +142,13 @@ typedef struct {
 
 /**
  * @brief Creates and returns the information on the solution in the form of a node's item in the AVL tree.
+ *
+ * If, for precision issues, the solution seems to dominate an extreme point of the problem, it is made
+ * equal to that extreme point.
  */
-static logger_biobj_avl_item_t* logger_biobj_node_create(const double *x,
-                                                         const double *y,
+static logger_biobj_avl_item_t* logger_biobj_node_create(const coco_problem_t *problem,
+                                                         const double *x,
+                                                         double *y,
                                                          const size_t evaluation_number,
                                                          const size_t dim,
                                                          const size_t num_obj) {
@@ -167,6 +171,16 @@ static logger_biobj_avl_item_t* logger_biobj_node_create(const double *x,
   for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++)
     item->indicator_contribution[i] = 0;
   item->within_ROI = 0;
+
+  /* Adjust the solution if it seems to be better than an extreme point */
+  assert(num_obj == 2);
+  for (i = 0; i < 2; i++)
+    if (y[i] < problem->best_value[i]) {
+      coco_debug("Solution %lu: changed objective from %e to %e", (unsigned long) evaluation_number, y[i],
+          problem->best_value[i]);
+      y[i] = problem->best_value[i];
+    }
+
   return item;
 }
 
@@ -179,17 +193,6 @@ static void logger_biobj_node_free(logger_biobj_avl_item_t *item, void *userdata
   coco_free_memory(item->y);
   coco_free_memory(item);
   (void) userdata; /* To silence the compiler */
-}
-
-/**
- * @brief Checks if the given node item is within the ROI and stores this information in its
- * within_ROI field.
- */
-static void logger_biobj_check_within_ROI(const coco_problem_t *problem,
-                                          logger_biobj_avl_item_t *node_item) {
-
-  node_item->within_ROI = mo_solution_is_within_ROI(node_item->y, problem->best_value, problem->nadir_value,
-      problem->number_of_objectives);
 }
 
 /**
@@ -283,6 +286,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
   int dominance;
   size_t i;
   int previous_unavailable = 0;
+  double comparison_precision = 1e-13;
 
   /* Find the first point that is not worse than the new point (NULL if such point does not exist) */
   node = avl_item_search_right(logger->archive_tree, node_item, NULL);
@@ -343,7 +347,8 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
     avl_item_insert(logger->buffer_tree, node_item);
 
     if (logger->compute_indicators) {
-      logger_biobj_check_within_ROI(problem, node_item);
+      node_item->within_ROI = mo_solution_is_within_ROI(node_item->y, problem->best_value, problem->nadir_value,
+            problem->number_of_objectives);
       if (node_item->within_ROI) {
         /* Compute indicator value for new node and update the indicator value of the affected nodes */
         logger_biobj_avl_item_t *next_item, *previous_item;
@@ -354,10 +359,14 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
             for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
               logger->indicators[i]->current_value -= next_item->indicator_contribution[i];
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
-                next_item->indicator_contribution[i] = (node_item->y[0] - next_item->y[0])
-                    / (problem->nadir_value[0] - problem->best_value[0])
-                    * (problem->nadir_value[1] - next_item->y[1])
-                    / (problem->nadir_value[1] - problem->best_value[1]);
+                if (coco_double_almost_equal(node_item->y[0], next_item->y[0], comparison_precision) ||
+                    coco_double_almost_equal(problem->nadir_value[1], next_item->y[1], comparison_precision))
+                  next_item->indicator_contribution[i] = 0;
+                else
+                  next_item->indicator_contribution[i] = (node_item->y[0] - next_item->y[0])
+                      / (problem->nadir_value[0] - problem->best_value[0])
+                      * (problem->nadir_value[1] - next_item->y[1])
+                      / (problem->nadir_value[1] - problem->best_value[1]);
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -374,10 +383,14 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
           if (previous_item->within_ROI) {
             for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
-                node_item->indicator_contribution[i] = (previous_item->y[0] - node_item->y[0])
-                    / (problem->nadir_value[0] - problem->best_value[0])
-                    * (problem->nadir_value[1] - node_item->y[1])
-                    / (problem->nadir_value[1] - problem->best_value[1]);
+                if (coco_double_almost_equal(previous_item->y[0], node_item->y[0], comparison_precision) ||
+                    coco_double_almost_equal(problem->nadir_value[1], node_item->y[1], comparison_precision))
+                  next_item->indicator_contribution[i] = 0;
+                else
+                  node_item->indicator_contribution[i] = (previous_item->y[0] - node_item->y[0])
+                      / (problem->nadir_value[0] - problem->best_value[0])
+                      * (problem->nadir_value[1] - node_item->y[1])
+                      / (problem->nadir_value[1] - problem->best_value[1]);
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -395,10 +408,14 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
           /* Previous item does not exist or is out of ROI, use reference point instead */
           for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
             if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
-              node_item->indicator_contribution[i] = (problem->nadir_value[0] - node_item->y[0])
-                  / (problem->nadir_value[0] - problem->best_value[0])
-                  * (problem->nadir_value[1] - node_item->y[1])
-                  / (problem->nadir_value[1] - problem->best_value[1]);
+              if (coco_double_almost_equal(problem->nadir_value[0], node_item->y[0], comparison_precision) ||
+                  coco_double_almost_equal(problem->nadir_value[1], node_item->y[1], comparison_precision))
+                next_item->indicator_contribution[i] = 0;
+              else
+                node_item->indicator_contribution[i] = (problem->nadir_value[0] - node_item->y[0])
+                    / (problem->nadir_value[0] - problem->best_value[0])
+                    * (problem->nadir_value[1] - node_item->y[1])
+                    / (problem->nadir_value[1] - problem->best_value[1]);
             } else {
               coco_error(
                   "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -408,7 +425,10 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
         }
 
         for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
-          logger->indicators[i]->current_value += node_item->indicator_contribution[i];
+          if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
+            assert(node_item->indicator_contribution[i] >= 0);
+            logger->indicators[i]->current_value += node_item->indicator_contribution[i];
+          }
         }
       }
     }
@@ -515,18 +535,18 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
 
   /* Output header information to the dat file */
   fprintf(indicator->dat_file, "%%\n%% index = %lu, name = %s\n", (unsigned long) problem->suite_dep_index,
-  		problem->problem_name);
+      problem->problem_name);
   fprintf(indicator->dat_file, "%% instance = %lu, reference value = %.*e\n",
-  		(unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
+      (unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
   if (logger->log_nondom_mode == LOG_NONDOM_READ)
     fprintf(indicator->dat_file, "%% reconstructed\n");
   fprintf(indicator->dat_file, "%% function evaluation | indicator value | target hit\n");
 
   /* Output header information to the tdat file */
   fprintf(indicator->tdat_file, "%%\n%% index = %lu, name = %s\n", (unsigned long) problem->suite_dep_index,
-  		problem->problem_name);
+      problem->problem_name);
   fprintf(indicator->tdat_file, "%% instance = %lu, reference value = %.*e\n",
-  		(unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
+      (unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
   if (logger->log_nondom_mode == LOG_NONDOM_READ)
     fprintf(indicator->tdat_file, "%% reconstructed\n");
   fprintf(indicator->tdat_file, "%% function evaluation | indicator value\n");
@@ -542,19 +562,19 @@ static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator,
   /* Log the last eval_number in the dat file if wasn't already logged */
   if (!indicator->target_hit) {
     fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
-    		logger->precision_f, indicator->overall_value, logger->precision_f,
-				((coco_observer_targets_t *) indicator->targets)->value);
+        logger->precision_f, indicator->overall_value, logger->precision_f,
+        ((coco_observer_targets_t *) indicator->targets)->value);
   }
 
   /* Log the last eval_number in the tdat file if wasn't already logged */
   if (!indicator->evaluation_logged) {
     fprintf(indicator->tdat_file, "%lu\t%.*e\n", (unsigned long) logger->number_of_evaluations,
-    		logger->precision_f, indicator->overall_value);
+        logger->precision_f, indicator->overall_value);
   }
 
   /* Log the information in the info file */
   fprintf(indicator->info_file, ", %lu:%lu|%.1e", (unsigned long) logger->suite_dep_instance,
-  		(unsigned long) logger->number_of_evaluations, indicator->overall_value);
+      (unsigned long) logger->number_of_evaluations, indicator->overall_value);
   fflush(indicator->info_file);
 }
 
@@ -694,20 +714,21 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
   logger_biobj_data_t *logger;
   logger_biobj_avl_item_t *node_item;
   int update_performed;
+  coco_problem_t *inner_problem;
 
   logger = (logger_biobj_data_t *) coco_problem_transformed_get_data(problem);
+  inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
   /* Evaluate function */
-  coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
+  coco_evaluate_function(inner_problem, x, y);
   logger->number_of_evaluations++;
+
+  node_item = logger_biobj_node_create(inner_problem, x, y, logger->number_of_evaluations, logger->number_of_variables,
+      logger->number_of_objectives);
 
   /* Update the archive with the new solution, if it is not dominated by or equal to existing solutions in
    * the archive */
-  node_item = logger_biobj_node_create(x, y, logger->number_of_evaluations, logger->number_of_variables,
-      logger->number_of_objectives);
-
-  update_performed = logger_biobj_tree_update(logger, coco_problem_transformed_get_inner_problem(problem),
-      node_item);
+  update_performed = logger_biobj_tree_update(logger, inner_problem, node_item);
 
   /* If the archive was updated and you need to log all nondominated solutions, output the new solution to
    * nondom_file */
@@ -741,11 +762,13 @@ int coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluati
   logger_biobj_data_t *logger;
   logger_biobj_avl_item_t *node_item;
   int update_performed;
+  coco_problem_t *inner_problem;
   double *x;
   size_t i;
 
   assert(problem != NULL);
   logger = (logger_biobj_data_t *) coco_problem_transformed_get_data(problem);
+  inner_problem = coco_problem_transformed_get_inner_problem(problem);
   assert(logger->log_nondom_mode == LOG_NONDOM_READ);
 
   /* Set the number of evaluations */
@@ -759,13 +782,12 @@ int coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluati
   x = coco_allocate_vector(problem->number_of_variables);
   for (i = 0; i < problem->number_of_variables; i++)
     x[i] = 0;
-  node_item = logger_biobj_node_create(x, y, logger->number_of_evaluations, logger->number_of_variables,
-      logger->number_of_objectives);
+  node_item = logger_biobj_node_create(inner_problem, x, y, logger->number_of_evaluations,
+      logger->number_of_variables, logger->number_of_objectives);
   coco_free_memory(x);
 
   /* Update the archive */
-  update_performed = logger_biobj_tree_update(logger, coco_problem_transformed_get_inner_problem(problem),
-      node_item);
+  update_performed = logger_biobj_tree_update(logger, inner_problem, node_item);
 
   /* Output according to observer options */
   logger_biobj_output(logger, problem, update_performed, y);
@@ -906,14 +928,14 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
 
     /* Output header information */
     fprintf(logger_biobj->adat_file, "%% instance = %lu, name = %s\n",
-    		(unsigned long) inner_problem->suite_dep_instance, inner_problem->problem_name);
+        (unsigned long) inner_problem->suite_dep_instance, inner_problem->problem_name);
     if (logger_biobj->log_vars) {
       fprintf(logger_biobj->adat_file, "%% function evaluation | %lu objectives | %lu variables\n",
-      		(unsigned long) inner_problem->number_of_objectives,
-					(unsigned long) inner_problem->number_of_variables);
+          (unsigned long) inner_problem->number_of_objectives,
+          (unsigned long) inner_problem->number_of_variables);
     } else {
       fprintf(logger_biobj->adat_file, "%% function evaluation | %lu objectives \n",
-      		(unsigned long) inner_problem->number_of_objectives);
+          (unsigned long) inner_problem->number_of_objectives);
     }
   }
 
