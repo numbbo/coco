@@ -636,6 +636,7 @@ def install_preprocessing():
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
                'code-preprocessing/archive-update/interface/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-preprocessing/archive-update/interface/coco.h')
+    build_python()
     python('code-preprocessing/archive-update', ['setup.py', 'install', '--user'])
 
 

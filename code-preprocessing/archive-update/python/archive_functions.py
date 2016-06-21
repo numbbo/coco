@@ -50,6 +50,7 @@ class ProblemInstanceInfo:
            :param archive: archive to be filled with solutions
         """
         for f_name in self.file_names:
+            #print(f_name)
             with open(f_name, 'r') as f:
 
                 instance_found = False

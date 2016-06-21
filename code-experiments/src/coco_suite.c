@@ -115,7 +115,6 @@ coco_problem_t *coco_suite_get_problem_by_function_dimension_instance(coco_suite
                                                                       const size_t dimension,
                                                                       const size_t instance) {
 
-  coco_problem_t *problem;
   size_t i;
   int function_idx, dimension_idx, instance_idx;
   int found;
