@@ -242,7 +242,7 @@ def main(argv=None):
             warnings.simplefilter('module')
             warnings.simplefilter('ignore')
 
-        print("Post-processing will generate comparison " +
+        print("\nPost-processing will generate comparison " +
               "data in folder %s" % outputdir)
         print("  this might take several minutes.")
 
@@ -357,13 +357,6 @@ def main(argv=None):
             set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, ''))
 
         algorithm_name = "%s vs %s" % (algName1, algName0)
-        ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.two_algorithm_file_name),
-            algname=algorithm_name,
-            htmlPage=ppfig.HtmlPage.TWO,
-            isBiobjective=dsList0.isBiobjective(),
-            functionGroups=dsList0.getFuncGroups())
-
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.ppfigs_file_name),
             algname=algorithm_name,
@@ -489,8 +482,9 @@ def main(argv=None):
             rungenericmany.grouped_ecdf_graphs(
                 pproc.dictAlgByNoi(dictAlg),
                 dsList[0].isBiobjective(),
-                order=sortedAlgs,
-                outputdir=outputdir)
+                sortedAlgs,
+                outputdir,
+                dictAlg[sortedAlgs[0]].getFuncGroups())
             print_done()
 
             # ECDFs per function groups, code copied from rungenericmany.py
@@ -499,8 +493,9 @@ def main(argv=None):
             rungenericmany.grouped_ecdf_graphs(
                 pproc.dictAlgByFuncGroup(dictAlg),
                 dsList[0].isBiobjective(),
-                order=sortedAlgs,
-                outputdir=outputdir)
+                sortedAlgs,
+                outputdir,
+                dictAlg[sortedAlgs[0]].getFuncGroups())
             print_done()
 
             print("ECDF runlength graphs...")
@@ -664,11 +659,10 @@ def main(argv=None):
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictng in dictNoi.iteritems():
                 dictDim = pproc.dictAlgByDim(tmpdictng)
-                for d, tmpdictdim in dictDim.iteritems():
+                for d, tmpdictdim in sorted(dictDim.iteritems()):
                     pptables.main(
                         tmpdictdim,
                         sortedAlgs,
-                        dsList[0].isBiobjective(),
                         outputdir,
                         genericsettings.verbose,
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==
@@ -692,6 +686,13 @@ def main(argv=None):
                         genericsettings.verbose)
             plt.rcdefaults()
             print_done()
+
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.two_algorithm_file_name),
+            algname=algorithm_name,
+            htmlPage=ppfig.HtmlPage.TWO,
+            isBiobjective=dsList0.isBiobjective(),
+            functionGroups=dsList0.getFuncGroups())
 
         if (genericsettings.isFig or genericsettings.isRLDistr
             or genericsettings.isTab or genericsettings.isScatter
