@@ -385,8 +385,7 @@ def load_best_algorithm(force=False):
     
     
     
-    #print("  ", end="")
-    #print_done()
+    print_done()
 
     return bestAlgorithmEntries
 

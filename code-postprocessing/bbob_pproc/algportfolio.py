@@ -25,24 +25,26 @@ functions.
 
    # Collect and unarchive data
    dsets = {}
-   for alg in ('BIPOP-CMA-ES', 'NEWUOA'):
-       dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/' + alg + '.tar.gz'
-       filename, headers = urllib.urlretrieve(dataurl)
-       archivefile = tarfile.open(filename)
-       archivefile.extractall()  # write to disc
-       dsets[alg] = bb.load(glob.glob('BBOB2009pythondata/' + alg + '/ppdata_f0*_20.pickle'))
+   for alg in ('BIPOP-CMA-ES_hansen_noiseless', 'NEWUOA_ros_noiseless'):
+      dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/' + alg + '.tgz'
+      filename, headers = urllib.urlretrieve(dataurl)
+      archivefile = tarfile.open(filename)
+      archivefile.extractall()  # write to disc
+      dsets[alg] = bb.load(filename)
 
    # Generate the algorithm portfolio
    dspf = bb.algportfolio.build(dsets)
    dsets['Portfolio'] = dspf # store the portfolio in dsets
 
    # plot the run lengths distribution functions
-   figure()
+   plt.figure()
    for algname, ds in dsets.iteritems():
-       bb.compall.pprldmany.plot(ds, label=algname)
+      dataset = ds.dictByDimFunc()[10][13]  # DataSet dimension 10 on F13
+      bb.compall.pprldmany.plot(dataset, label=algname)
    bb.compall.pprldmany.beautify()
    legend(loc='best') # Display legend
-
+   plt.show()   
+   
 """
 
 # TODO: generalize behaviour for data sets that have different instances...
@@ -153,7 +155,7 @@ class DataSet(pp.DataSet):
                 tmpfunvals.append(ds.funvals[:, np.r_[0, corresp[j][i]+1]].copy())
             maxevals.append(np.sum(tmpmaxevals))
             finalfunvals.append(min(tmpfinalfunvals))
-            tmpevals = ra.alignArrayData(ra.HArrayMultiReader(tmpevals, dslist.isBiobjective()))
+            tmpevals = ra.alignArrayData(ra.HArrayMultiReader(tmpevals, dslist[0].isBiobjective()))
             tmpres = []
             for j in tmpevals:
                 tmp = []
