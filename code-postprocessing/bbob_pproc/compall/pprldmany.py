@@ -265,6 +265,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                 # np.any(x2 <= x3) and   # maxval < median(maxevals)
                 not plt.getp(res[-1], 'label').startswith('best')
                 ): # TODO: HACK for not considering a "best" algorithm line
+                
                 try:
                     y3 = y2[x2 <= x3][-1]  # find right y-value for x3==median(maxevals)
                 except IndexError:  # median(maxevals) is smaller than any data, can only happen because of CrE?

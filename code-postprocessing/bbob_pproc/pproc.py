@@ -318,7 +318,7 @@ class RunlengthBasedTargetValues(TargetValues):
         not smaller as target / 10**0.2. 
         
         Returned are the aRT for targets that, within the given budget, the
-        best 2009 algorithm just failed to achieve.
+        reference algorithm just failed to achieve.
 
         """            
         self.initialize()
