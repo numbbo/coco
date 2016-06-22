@@ -129,16 +129,15 @@ class ArchiveInfo:
         for input_file in input_files:
             try:
                 archive_info_set = get_archive_file_info(input_file, functions, instances, dimensions)
-                if archive_info_set is not None and len(archive_info_set) > 0 and output_files:
-                    print(input_file)
+                if archive_info_set is not None and len(archive_info_set) > 0:
+                    archive_info_list.append(archive_info_set)
+                    count += 1
+                    if output_files:
+                        print(input_file)
 
             # If any problems are encountered, the file is skipped
             except PreprocessingWarning as warning:
                 print(warning)
-            else:
-                if archive_info_set is not None:
-                    archive_info_list.append(archive_info_set)
-                    count += 1
 
         print('Successfully processed archive information from {} files.'.format(count))
 

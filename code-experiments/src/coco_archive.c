@@ -262,7 +262,7 @@ int coco_archive_add_solution(coco_archive_t *archive, const double f1, const do
  */
 static void coco_archive_update(coco_archive_t *archive) {
 
-  double comparison_precision = 1e-13;
+  double hyp;
 
   if (!archive->is_up_to_date) {
 
@@ -287,14 +287,14 @@ static void coco_archive_update(coco_archive_t *archive) {
       left_node_objectives = coco_archive_node_item_get_vector(left_node_item);
       if (mo_solution_is_within_ROI(left_node_objectives, archive->ideal, archive->nadir, archive->number_of_objectives)) {
         if (mo_solution_is_within_ROI(node_objectives, archive->ideal, archive->nadir, archive->number_of_objectives)) {
-          if (!coco_double_almost_equal(node_item->f1, left_node_item->f1, comparison_precision) &&
-              !coco_double_almost_equal(archive->nadir[1], left_node_item->f2, comparison_precision))
-              archive->hypervolume += (node_item->f1 - left_node_item->f1) * (archive->nadir[1] - left_node_item->f2);
+          hyp = (node_item->f1 - left_node_item->f1) * (archive->nadir[1] - left_node_item->f2);
+          if (hyp > 0)
+            archive->hypervolume += hyp;
         }
         else {
-          if (!coco_double_almost_equal(archive->nadir[0], left_node_item->f1, comparison_precision) &&
-              !coco_double_almost_equal(archive->nadir[1], left_node_item->f2, comparison_precision))
-            archive->hypervolume += (archive->nadir[0] - left_node_item->f1) * (archive->nadir[1] - left_node_item->f2);
+          hyp = (archive->nadir[0] - left_node_item->f1) * (archive->nadir[1] - left_node_item->f2);
+          if (hyp > 0)
+            archive->hypervolume += hyp;
         }
       }
       coco_free_memory(node_objectives);
