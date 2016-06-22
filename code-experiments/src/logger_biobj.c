@@ -286,7 +286,6 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
   int dominance;
   size_t i;
   int previous_unavailable = 0;
-  double comparison_precision = 1e-13;
 
   /* Find the first point that is not worse than the new point (NULL if such point does not exist) */
   node = avl_item_search_right(logger->archive_tree, node_item, NULL);
@@ -359,14 +358,13 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
             for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
               logger->indicators[i]->current_value -= next_item->indicator_contribution[i];
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
-                if (coco_double_almost_equal(node_item->y[0], next_item->y[0], comparison_precision) ||
-                    coco_double_almost_equal(problem->nadir_value[1], next_item->y[1], comparison_precision))
+                next_item->indicator_contribution[i] = (node_item->y[0] - next_item->y[0])
+                    / (problem->nadir_value[0] - problem->best_value[0])
+                    * (problem->nadir_value[1] - next_item->y[1])
+                    / (problem->nadir_value[1] - problem->best_value[1]);
+                if (next_item->indicator_contribution[i] < 0)
+                  /* Catch precision problems */
                   next_item->indicator_contribution[i] = 0;
-                else
-                  next_item->indicator_contribution[i] = (node_item->y[0] - next_item->y[0])
-                      / (problem->nadir_value[0] - problem->best_value[0])
-                      * (problem->nadir_value[1] - next_item->y[1])
-                      / (problem->nadir_value[1] - problem->best_value[1]);
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -383,14 +381,13 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
           if (previous_item->within_ROI) {
             for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
-                if (coco_double_almost_equal(previous_item->y[0], node_item->y[0], comparison_precision) ||
-                    coco_double_almost_equal(problem->nadir_value[1], node_item->y[1], comparison_precision))
-                  next_item->indicator_contribution[i] = 0;
-                else
-                  node_item->indicator_contribution[i] = (previous_item->y[0] - node_item->y[0])
-                      / (problem->nadir_value[0] - problem->best_value[0])
-                      * (problem->nadir_value[1] - node_item->y[1])
-                      / (problem->nadir_value[1] - problem->best_value[1]);
+                node_item->indicator_contribution[i] = (previous_item->y[0] - node_item->y[0])
+                    / (problem->nadir_value[0] - problem->best_value[0])
+                    * (problem->nadir_value[1] - node_item->y[1])
+                    / (problem->nadir_value[1] - problem->best_value[1]);
+                if (node_item->indicator_contribution[i] < 0)
+                  /* Catch precision problems */
+                  node_item->indicator_contribution[i] = 0;
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -408,14 +405,13 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
           /* Previous item does not exist or is out of ROI, use reference point instead */
           for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
             if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
-              if (coco_double_almost_equal(problem->nadir_value[0], node_item->y[0], comparison_precision) ||
-                  coco_double_almost_equal(problem->nadir_value[1], node_item->y[1], comparison_precision))
-                next_item->indicator_contribution[i] = 0;
-              else
-                node_item->indicator_contribution[i] = (problem->nadir_value[0] - node_item->y[0])
-                    / (problem->nadir_value[0] - problem->best_value[0])
-                    * (problem->nadir_value[1] - node_item->y[1])
-                    / (problem->nadir_value[1] - problem->best_value[1]);
+              node_item->indicator_contribution[i] = (problem->nadir_value[0] - node_item->y[0])
+                  / (problem->nadir_value[0] - problem->best_value[0])
+                  * (problem->nadir_value[1] - node_item->y[1])
+                  / (problem->nadir_value[1] - problem->best_value[1]);
+              if (node_item->indicator_contribution[i] < 0)
+                /* Catch precision problems */
+                node_item->indicator_contribution[i] = 0;
             } else {
               coco_error(
                   "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",

@@ -76,7 +76,7 @@ static void test_coco_archive(void **state) {
  */
 static void test_coco_archive_extreme_solutions(void **state) {
 
-  size_t number_of_evaluations, i;
+  size_t number_of_evaluations;
   double *y = coco_allocate_vector(2);
   char *line;
   coco_archive_t *archive;
@@ -128,11 +128,87 @@ static void test_coco_archive_extreme_solutions(void **state) {
   (void)state; /* unused */
 }
 
+/**
+ * Tests updating the coco_archive with similar solutions.
+ */
+static void test_coco_archive_precision_issues(void **state) {
+
+  size_t number_of_evaluations, count;
+  double *y = coco_allocate_vector(2);
+  char *line;
+  coco_archive_t *archive;
+  double hypervolume;
+
+  archive = coco_archive("bbob-biobj", 1, 2, 1);
+
+  number_of_evaluations = 0;
+  y[0] = 4.262796608000000e+02;
+  y[1] = -1.520400000000000e+02;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  count = coco_archive_get_number_of_solutions(archive);
+  hypervolume = coco_archive_get_hypervolume(archive);
+  assert(count == 2);
+  assert(about_equal_value(hypervolume, 0));
+
+  number_of_evaluations = 0;
+  y[0] = 3.944800000000000e+02;
+  y[1] = -1.202403392000000e+02;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  count = coco_archive_get_number_of_solutions(archive);
+  hypervolume = coco_archive_get_hypervolume(archive);
+  assert(count == 3);
+  assert(about_equal_value(hypervolume, 0));
+
+  number_of_evaluations = 342;
+  y[0] = 4.262796567880355e+02;
+  y[1] = -1.520399999999999e+02;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  count = coco_archive_get_number_of_solutions(archive);
+  hypervolume = coco_archive_get_hypervolume(archive);
+  assert(count == 3);
+  assert(about_equal_value(hypervolume, 0));
+
+  number_of_evaluations = 351;
+  y[0] = 4.262796555526893e+02;
+  y[1] = -1.520399999999998e+02;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  count = coco_archive_get_number_of_solutions(archive);
+  assert(count == 4);
+
+  number_of_evaluations = 2240;
+  y[0] = 4.262796544864155e+02;
+  y[1] = -1.520399999999997e+02;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  count = coco_archive_get_number_of_solutions(archive);
+  assert(count == 4);
+
+  coco_free_memory(y);
+  coco_archive_free(archive);
+
+  (void)state; /* unused */
+}
+
 static int test_all_coco_archive(void) {
 
   const struct CMUnitTest tests[] = {
   cmocka_unit_test(test_coco_archive),
-  cmocka_unit_test(test_coco_archive_extreme_solutions) };
+  cmocka_unit_test(test_coco_archive_extreme_solutions),
+  cmocka_unit_test(test_coco_archive_precision_issues) };
 
   return cmocka_run_group_tests(tests, NULL, NULL);
 }

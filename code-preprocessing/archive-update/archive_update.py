@@ -111,6 +111,8 @@ if __name__ == '__main__':
                         help='dimensions to be included in the processing of archives')
     parser.add_argument('--merge-only', action='store_true',
                         help='perform only merging of archives, do not update hypervolume values')
+    parser.add_argument('-h', '--hyp-file', default='new_best_values_hyp.c',
+                        help='name of the file to store new hypervolume values')
     parser.add_argument('output', help='path to the output folder')
     parser.add_argument('input', default=[], nargs='+', help='path(s) to the input folder(s)')
     args = parser.parse_args()
@@ -129,4 +131,4 @@ if __name__ == '__main__':
         file_names = ['suite_biobj_best_values_hyp.c']
         file_names = [os.path.abspath(os.path.join(base_path, '..', '..', 'code-experiments/src', file_name))
                       for file_name in file_names]
-        update_best_hypervolume(file_names, new_hypervolumes, os.path.join(args.output, '..', "new_best_values_hyp.c"))
+        update_best_hypervolume(file_names, new_hypervolumes, os.path.join(args.output, '..', args.hyp_file))
