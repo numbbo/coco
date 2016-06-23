@@ -176,8 +176,8 @@ static logger_biobj_avl_item_t* logger_biobj_node_create(const coco_problem_t *p
   assert(num_obj == 2);
   for (i = 0; i < 2; i++)
     if (y[i] < problem->best_value[i]) {
-      coco_debug("Solution %lu: changed objective from %e to %e", (unsigned long) evaluation_number, y[i],
-          problem->best_value[i]);
+      coco_debug("Precision issue, adjusting objective value of solution %lu",
+          (unsigned long) evaluation_number);
       y[i] = problem->best_value[i];
     }
 
@@ -291,7 +291,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
   node = avl_item_search_right(logger->archive_tree, node_item, NULL);
 
   if (node == NULL) {
-    /* The new point is an extremal point */
+    /* The new point is an extreme point */
     trigger_update = 1;
     next_node = logger->archive_tree->head;
   } else {
@@ -364,6 +364,8 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
                     / (problem->nadir_value[1] - problem->best_value[1]);
                 if (next_item->indicator_contribution[i] < 0)
                   /* Catch precision problems */
+                  coco_warning("Precision issue, setting indicator contribution %.*e to 0", logger->precision_f,
+                      next_item->indicator_contribution[i]);
                   next_item->indicator_contribution[i] = 0;
               } else {
                 coco_error(
@@ -387,6 +389,8 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
                     / (problem->nadir_value[1] - problem->best_value[1]);
                 if (node_item->indicator_contribution[i] < 0)
                   /* Catch precision problems */
+                  coco_warning("Precision issue, setting indicator contribution %.*e to 0", logger->precision_f,
+                      node_item->indicator_contribution[i]);
                   node_item->indicator_contribution[i] = 0;
               } else {
                 coco_error(
@@ -411,6 +415,8 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
                   / (problem->nadir_value[1] - problem->best_value[1]);
               if (node_item->indicator_contribution[i] < 0)
                 /* Catch precision problems */
+                coco_warning("Precision issue, setting indicator contribution %.*e to 0", logger->precision_f,
+                    node_item->indicator_contribution[i]);
                 node_item->indicator_contribution[i] = 0;
             } else {
               coco_error(
