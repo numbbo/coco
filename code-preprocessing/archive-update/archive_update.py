@@ -111,7 +111,7 @@ if __name__ == '__main__':
                         help='dimensions to be included in the processing of archives')
     parser.add_argument('--merge-only', action='store_true',
                         help='perform only merging of archives, do not update hypervolume values')
-    parser.add_argument('-h', '--hyp-file', default='new_best_values_hyp.c',
+    parser.add_argument('--hyp-file', default='new_best_values_hyp.c',
                         help='name of the file to store new hypervolume values')
     parser.add_argument('output', help='path to the output folder')
     parser.add_argument('input', default=[], nargs='+', help='path(s) to the input folder(s)')
