@@ -70,19 +70,15 @@ def log_reconstruct(input_path, output_path, algorithm_name, algorithm_info, fun
                         evaluation_found = False
 
                 elif line[0] != '%' and instance in instances:
-                    split = line.split()
-                    if len(split) < 3:
-                        raise PreprocessingWarning('Problem in file {}, line {}, skipping line'.format(input_file,
-                                                                                                       line))
-
                     try:
+                        split = line.split()
                         evaluation = int(split[0])
                         objective_vector = np.array(split[1:3])
                         updated = problem.logger_biobj_reconstruct(evaluation, objective_vector)
                         if updated == 0:
                             count_not_updated += 1
                     except ValueError as error:
-                        print('Skipping file {}\n{}'.format(input_file, error))
+                        print('Problem in file {}, line {}, skipping line\n{}'.format(input_file, line, error))
                         continue
 
                 elif line[0] == '%' and 'evaluations' in line:
@@ -94,9 +90,8 @@ def log_reconstruct(input_path, output_path, algorithm_name, algorithm_info, fun
 
             if problem is not None:
                 if not evaluation_found:
-                    raise PreprocessingWarning('Missing the line `% evaluations = ` in the previous '
-                                               'problem. This problem is file = {}, instance = {}'
-                                               .format(input_file, instance))
+                    print('Missing the line `% evaluations = ` in this or the previous problem. This is file = {}, '
+                          'instance = {}' .format(input_file, instance))
                 if count_not_updated > 0:
                     print('{} solutions did not update the archive'.format(count_not_updated))
                 problem.free()
