@@ -311,7 +311,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
         avl_node_delete(logger->archive_tree, node);
       }
     } else {
-      /* The new point is dominated, nothing more to do */
+      /* The new point is dominated or equal to an existing one, nothing more to do */
       trigger_update = 0;
     }
   }
@@ -364,7 +364,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
                     / (problem->nadir_value[1] - problem->best_value[1]);
                 if (next_item->indicator_contribution[i] < 0)
                   /* Catch precision problems */
-                  coco_warning("Precision issue, setting indicator contribution %.*e to 0", logger->precision_f,
+                  coco_warning("Precision issue, setting hypervolume contribution %.*e to 0", logger->precision_f,
                       next_item->indicator_contribution[i]);
                   next_item->indicator_contribution[i] = 0;
               } else {
@@ -389,7 +389,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
                     / (problem->nadir_value[1] - problem->best_value[1]);
                 if (node_item->indicator_contribution[i] < 0)
                   /* Catch precision problems */
-                  coco_warning("Precision issue, setting indicator contribution %.*e to 0", logger->precision_f,
+                  coco_warning("Precision issue, setting hypervolume contribution %.*e to 0", logger->precision_f,
                       node_item->indicator_contribution[i]);
                   node_item->indicator_contribution[i] = 0;
               } else {
@@ -415,7 +415,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
                   / (problem->nadir_value[1] - problem->best_value[1]);
               if (node_item->indicator_contribution[i] < 0)
                 /* Catch precision problems */
-                coco_warning("Precision issue, setting indicator contribution %.*e to 0", logger->precision_f,
+                coco_warning("Precision issue, setting hypervolume contribution %.*e to 0", logger->precision_f,
                     node_item->indicator_contribution[i]);
                 node_item->indicator_contribution[i] = 0;
             } else {
