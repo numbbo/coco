@@ -64,7 +64,7 @@ static double mo_get_norm(const double *first, const double *second, const size_
 /**
  * @brief Computes and returns the minimal normalized distance from the point y to the ROI.
  *
- * @note Assumes the point is dominated by the ideal point and dimension equals 2.
+ * @note Assumes the point is dominated by the ideal point and dimension equals 2. If the point is in the ROI, returns 0.
  */
 static double mo_get_distance_to_ROI(const double *y,
                                      const double *ideal,
@@ -72,14 +72,22 @@ static double mo_get_distance_to_ROI(const double *y,
                                      const size_t dimension) {
 
   double distance = 0;
+  int nadir_dominance_relation;
 
   assert(dimension == 2);
   assert(mo_get_dominance(ideal, y, 2) == 1);
 
-  /* y is weakly dominated by the nadir point */
-  if (mo_get_dominance(y, nadir, 2) <= -1) {
+  nadir_dominance_relation = mo_get_dominance(y, nadir, 2);
+  if (nadir_dominance_relation == 1) {
+    /* y is in the ROI */
+    return 0;
+  }
+
+  if (nadir_dominance_relation <= -1) {
+    /* y is weakly dominated by the nadir point */
     distance = mo_get_norm(y, nadir, 2);
   }
+  /* y and nadir are nondominated */
   else if (y[0] < nadir[0])
     distance = y[1] - nadir[1];
   else if (y[1] < nadir[1])

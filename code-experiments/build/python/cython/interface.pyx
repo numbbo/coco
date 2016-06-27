@@ -41,7 +41,7 @@ cdef extern from "coco.h":
     void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
     void coco_recommend_solution(coco_problem_t *problem, const double *x)
 
-    int coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluation, const double *y)
+    int coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluation, double *y)
     coco_problem_t *coco_suite_get_problem_by_function_dimension_instance(coco_suite_t *suite, const size_t function,
                                                                           const size_t dimension, const size_t instance)
 
