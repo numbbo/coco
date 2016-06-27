@@ -18,14 +18,15 @@
 
 static int run_all_tests(void)
 {
-  int result = test_all_coco_utilities();
+  int result = 0;
+  result += test_all_coco_archive();
+  result += test_all_logger_biobj();
+  result += test_all_coco_utilities();
   result += test_all_coco_string();
   result += test_all_mo_generics();
-  result += test_all_coco_archive();
   result += test_all_coco_observer();
   result += test_all_coco_problem();
   result += test_all_coco_suite();
-  result += test_all_logger_biobj();
 
   return result;
 }

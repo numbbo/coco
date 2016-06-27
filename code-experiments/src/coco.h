@@ -505,7 +505,7 @@ void coco_archive_free(coco_archive_t *archive);
 /**
  * @brief Reconstructs the output information of the bi-objective logger.
  */
-int coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluation, const double *y);
+int coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluation, double *y);
 /**@}*/
 
 /***********************************************************************************************************/

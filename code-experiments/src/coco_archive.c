@@ -263,6 +263,7 @@ int coco_archive_add_solution(coco_archive_t *archive, const double f1, const do
 static void coco_archive_update(coco_archive_t *archive) {
 
   double hyp;
+  int output_precision = 15;
 
   if (!archive->is_up_to_date) {
 
@@ -286,15 +287,15 @@ static void coco_archive_update(coco_archive_t *archive) {
       node_objectives = coco_archive_node_item_get_vector(node_item);
       left_node_objectives = coco_archive_node_item_get_vector(left_node_item);
       if (mo_solution_is_within_ROI(left_node_objectives, archive->ideal, archive->nadir, archive->number_of_objectives)) {
-        if (mo_solution_is_within_ROI(node_objectives, archive->ideal, archive->nadir, archive->number_of_objectives)) {
+        hyp = 0;
+        if (mo_solution_is_within_ROI(node_objectives, archive->ideal, archive->nadir, archive->number_of_objectives))
           hyp = (node_item->f1 - left_node_item->f1) * (archive->nadir[1] - left_node_item->f2);
-          if (hyp > 0)
-            archive->hypervolume += hyp;
-        }
-        else {
+        else
           hyp = (archive->nadir[0] - left_node_item->f1) * (archive->nadir[1] - left_node_item->f2);
-          if (hyp > 0)
-            archive->hypervolume += hyp;
+        if (hyp > 0) {
+          archive->hypervolume += hyp;
+        } else {
+          coco_warning("Precision issue, ignoring hypervolume contribution %.*e", output_precision, hyp);
         }
       }
       coco_free_memory(node_objectives);

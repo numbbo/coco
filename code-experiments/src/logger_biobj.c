@@ -362,11 +362,12 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
                     / (problem->nadir_value[0] - problem->best_value[0])
                     * (problem->nadir_value[1] - next_item->y[1])
                     / (problem->nadir_value[1] - problem->best_value[1]);
-                if (next_item->indicator_contribution[i] < 0)
+                if (next_item->indicator_contribution[i] < 0) {
                   /* Catch precision problems */
                   coco_warning("Precision issue, setting hypervolume contribution %.*e to 0", logger->precision_f,
                       next_item->indicator_contribution[i]);
                   next_item->indicator_contribution[i] = 0;
+                }
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -387,11 +388,12 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
                     / (problem->nadir_value[0] - problem->best_value[0])
                     * (problem->nadir_value[1] - node_item->y[1])
                     / (problem->nadir_value[1] - problem->best_value[1]);
-                if (node_item->indicator_contribution[i] < 0)
+                if (node_item->indicator_contribution[i] < 0) {
                   /* Catch precision problems */
                   coco_warning("Precision issue, setting hypervolume contribution %.*e to 0", logger->precision_f,
                       node_item->indicator_contribution[i]);
                   node_item->indicator_contribution[i] = 0;
+                }
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -413,11 +415,12 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
                   / (problem->nadir_value[0] - problem->best_value[0])
                   * (problem->nadir_value[1] - node_item->y[1])
                   / (problem->nadir_value[1] - problem->best_value[1]);
-              if (node_item->indicator_contribution[i] < 0)
+              if (node_item->indicator_contribution[i] < 0) {
                 /* Catch precision problems */
                 coco_warning("Precision issue, setting hypervolume contribution %.*e to 0", logger->precision_f,
                     node_item->indicator_contribution[i]);
                 node_item->indicator_contribution[i] = 0;
+              }
             } else {
               coco_error(
                   "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -751,15 +754,18 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
  * Sets the number of evaluations, adds the objective vector to the archive and outputs information according
  * to observer options (but does not output the archive).
  *
- * @note Vector y must point to a correctly sized allocated memory region, the given evaluation number must
+ * @note Vector y must point to a correctly sized allocated memory region and the given evaluation number must
  * be larger than the existing one.
+ *
+ * If, for precision issues, y seems to dominate an extreme point of the problem, it is made equal to that
+ * extreme point.
  *
  * @param problem The given COCO problem.
  * @param evaluation The number of evaluations.
  * @param y The objective vector.
  * @return 1 if archive was updated was done and 0 otherwise.
  */
-int coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluation, const double *y) {
+int coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluation, double *y) {
 
   logger_biobj_data_t *logger;
   logger_biobj_avl_item_t *node_item;

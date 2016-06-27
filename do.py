@@ -639,12 +639,6 @@ def install_preprocessing():
     copy_file('code-experiments/src/coco.h', 'code-preprocessing/archive-update/interface/coco.h')
     python('code-preprocessing/archive-update', ['setup.py', 'install', '--user'])
 
-
-def run_preprocessing():
-    install_preprocessing()
-    python('code-preprocessing/archive-update', ['archive_update.py'])
-
-
 ################################################################################
 ## Global
 def build():
@@ -767,7 +761,6 @@ Available commands for developers:
   leak-check              - Check for memory leaks in C
   
   install-preprocessing   - Install preprocessing (user-locally)
-  run-preprocessing       - Run preprocessing (update archives)
 
 To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
@@ -814,7 +807,6 @@ def main(args):
     elif cmd == 'verify-postprocessing': verify_postprocessing()
     elif cmd == 'leak-check': leak_check()
     elif cmd == 'install-preprocessing': install_preprocessing()
-    elif cmd == 'run-preprocessing': run_preprocessing()
     else: help()
 
 

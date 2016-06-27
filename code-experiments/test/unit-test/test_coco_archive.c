@@ -139,6 +139,8 @@ static void test_coco_archive_precision_issues(void **state) {
   coco_archive_t *archive;
   double hypervolume;
 
+  /* First example */
+
   archive = coco_archive("bbob-biobj", 1, 2, 1);
 
   number_of_evaluations = 0;
@@ -196,6 +198,69 @@ static void test_coco_archive_precision_issues(void **state) {
 
   count = coco_archive_get_number_of_solutions(archive);
   assert(count == 4);
+
+  coco_free_memory(y);
+  coco_archive_free(archive);
+
+  /* Second example */
+
+  archive = coco_archive("bbob-biobj", 12, 10, 7);
+
+  number_of_evaluations = 1;
+  y[0] = 2815;
+  y[1] = 100;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  count = coco_archive_get_number_of_solutions(archive);
+  hypervolume = coco_archive_get_hypervolume(archive);
+  assert(count == 3);
+  assert(about_equal_value(hypervolume, 9.998501993074473e-01));
+
+  number_of_evaluations = 1;
+  y[0] = 2790;
+  y[1] = 306;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  count = coco_archive_get_number_of_solutions(archive);
+  hypervolume = coco_archive_get_hypervolume(archive);
+  assert(count == 4);
+  assert(about_equal_value(hypervolume, 9.998510436916014e-01));
+
+  number_of_evaluations = 5118865;
+  y[0] = 2.809875541591976e+03;
+  y[1] = 3.059972106158142e+02 ;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  count = coco_archive_get_number_of_solutions(archive);
+  hypervolume = coco_archive_get_hypervolume(archive);
+  assert(count == 5);
+  assert(about_equal_value(hypervolume, 9.998510436916023e-01));
+
+  number_of_evaluations = 2173490;
+  y[0] = 2.814996411168355e+03;
+  y[1] = 3.047803494075471e+02;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  count = coco_archive_get_number_of_solutions(archive);
+  assert(count == 6);
+
+  number_of_evaluations = 361541;
+  y[0] = 2.940001451714048e+03;
+  y[1] = 2.886826783155979e+02;
+  line = coco_strdupf("%lu\t%f\t%f\n", (unsigned long) number_of_evaluations, y[0], y[1]);
+  coco_archive_add_solution(archive, y[0], y[1], line);
+  coco_free_memory(line);
+
+  count = coco_archive_get_number_of_solutions(archive);
+  assert(count == 7);
 
   coco_free_memory(y);
   coco_archive_free(archive);

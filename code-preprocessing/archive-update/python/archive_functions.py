@@ -72,7 +72,7 @@ class ProblemInstanceInfo:
                         if line[0] != '%':
                             # Solution found, feed it to the archive
                             try:
-                                archive.add_solution(float(line.split('\t')[1]), float(line.split('\t')[2]), line)
+                                archive.add_solution(float(line.split()[1]), float(line.split()[2]), line)
                             except IndexError:
                                 print('Problem in file {}, line {}, skipping line'.format(f_name, line))
                                 continue

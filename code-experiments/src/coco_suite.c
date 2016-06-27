@@ -152,7 +152,7 @@ coco_problem_t *coco_suite_get_problem_by_function_dimension_instance(coco_suite
   if (!found)
     return NULL;
 
-  return coco_suite_get_problem_from_indices(suite, function_idx, dimension_idx, instance_idx);
+  return coco_suite_get_problem_from_indices(suite, (size_t) function_idx, (size_t) dimension_idx, (size_t) instance_idx);
 }
 
 
