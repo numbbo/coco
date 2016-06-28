@@ -503,9 +503,9 @@ const char *coco_archive_get_next_solution_text(coco_archive_t *archive);
 void coco_archive_free(coco_archive_t *archive);
 
 /**
- * @brief Reconstructs the output information of the bi-objective logger.
+ * @brief Feeds the solution to the bi-objective logger for logger output reconstruction purposes.
  */
-int coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluation, double *y);
+int coco_logger_biobj_feed_solution(coco_problem_t *problem, const size_t evaluation, const double *y);
 /**@}*/
 
 /***********************************************************************************************************/

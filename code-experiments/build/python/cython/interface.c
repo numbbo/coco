@@ -1434,7 +1434,7 @@ static void __pyx_pf_6cocoex_9interface_8Observer_14__dealloc__(struct __pyx_obj
 static int __pyx_pf_6cocoex_9interface_7Problem___cinit__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_2constraint(CYTHON_UNUSED struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_x); /* proto */
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_4recommend(CYTHON_UNUSED struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_arx); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6logger_biobj_reconstruct(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_evaluation, PyObject *__pyx_v_y); /* proto */
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6logger_biobj_feed_solution(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_evaluation, PyObject *__pyx_v_y); /* proto */
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_8add_observer(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_observer); /* proto */
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_10_f0(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_x); /* proto */
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_12initial_solution(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
@@ -7909,15 +7909,15 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_4recommend(CYTHON_UNUSED s
 /* "cython\interface.pyx":715
  *         coco_recommend_solution(self.problem, <double *>np.PyArray_DATA(_x))
  * 
- *     def logger_biobj_reconstruct(self, evaluation, y):             # <<<<<<<<<<<<<<
- *         """Reconstruct the information output by logger_biobj from the given solution. Return 1 if the given solution
+ *     def logger_biobj_feed_solution(self, evaluation, y):             # <<<<<<<<<<<<<<
+ *         """Feed the given solution to logger_biobj in order to reconstruct its output. Return 1 if the given solution
  *         updated the archive and 0 otherwise.
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_7logger_biobj_reconstruct(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_6cocoex_9interface_7Problem_6logger_biobj_reconstruct[] = "Reconstruct the information output by logger_biobj from the given solution. Return 1 if the given solution\n        updated the archive and 0 otherwise.\n\n        Used by preprocessing when updating the .info, .dat and .tdat files with new indicator reference values.\n        ";
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_7logger_biobj_reconstruct(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_7logger_biobj_feed_solution(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_6cocoex_9interface_7Problem_6logger_biobj_feed_solution[] = "Feed the given solution to logger_biobj in order to reconstruct its output. Return 1 if the given solution\n        updated the archive and 0 otherwise.\n\n        Used by preprocessing when updating the .info, .dat and .tdat files with new indicator reference values.\n        ";
+static PyObject *__pyx_pw_6cocoex_9interface_7Problem_7logger_biobj_feed_solution(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_evaluation = 0;
   PyObject *__pyx_v_y = 0;
   int __pyx_lineno = 0;
@@ -7925,7 +7925,7 @@ static PyObject *__pyx_pw_6cocoex_9interface_7Problem_7logger_biobj_reconstruct(
   int __pyx_clineno = 0;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("logger_biobj_reconstruct (wrapper)", 0);
+  __Pyx_RefNannySetupContext("logger_biobj_feed_solution (wrapper)", 0);
   {
     static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_evaluation,&__pyx_n_s_y,0};
     PyObject* values[2] = {0,0};
@@ -7946,11 +7946,11 @@ static PyObject *__pyx_pw_6cocoex_9interface_7Problem_7logger_biobj_reconstruct(
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_y)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("logger_biobj_reconstruct", 1, 2, 2, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 715; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+          __Pyx_RaiseArgtupleInvalid("logger_biobj_feed_solution", 1, 2, 2, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 715; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "logger_biobj_reconstruct") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 715; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "logger_biobj_feed_solution") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 715; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -7963,20 +7963,20 @@ static PyObject *__pyx_pw_6cocoex_9interface_7Problem_7logger_biobj_reconstruct(
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("logger_biobj_reconstruct", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 715; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
+  __Pyx_RaiseArgtupleInvalid("logger_biobj_feed_solution", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 715; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
   __pyx_L3_error:;
-  __Pyx_AddTraceback("cocoex.interface.Problem.logger_biobj_reconstruct", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("cocoex.interface.Problem.logger_biobj_feed_solution", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_6logger_biobj_reconstruct(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self), __pyx_v_evaluation, __pyx_v_y);
+  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_6logger_biobj_feed_solution(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self), __pyx_v_evaluation, __pyx_v_y);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6logger_biobj_reconstruct(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_evaluation, PyObject *__pyx_v_y) {
+static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6logger_biobj_feed_solution(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_evaluation, PyObject *__pyx_v_y) {
   size_t __pyx_v__evaluation;
   PyArrayObject *__pyx_v__y = 0;
   __Pyx_LocalBuf_ND __pyx_pybuffernd__y;
@@ -7997,7 +7997,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6logger_biobj_reconstruct(
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("logger_biobj_reconstruct", 0);
+  __Pyx_RefNannySetupContext("logger_biobj_feed_solution", 0);
   __Pyx_INCREF(__pyx_v_y);
   __pyx_pybuffer__y.pybuffer.buf = NULL;
   __pyx_pybuffer__y.refcount = 0;
@@ -8216,7 +8216,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6logger_biobj_reconstruct(
  *         _y = y  # this is the final type conversion
  *         if self.problem is NULL:             # <<<<<<<<<<<<<<
  *             raise InvalidProblemException()
- *         return coco_logger_biobj_reconstruct(self.problem, _evaluation, <double *>np.PyArray_DATA(_y))
+ *         return coco_logger_biobj_feed_solution(self.problem, _evaluation, <double *>np.PyArray_DATA(_y))
  */
   __pyx_t_7 = ((__pyx_v_self->problem == NULL) != 0);
   if (__pyx_t_7) {
@@ -8225,7 +8225,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6logger_biobj_reconstruct(
  *         _y = y  # this is the final type conversion
  *         if self.problem is NULL:
  *             raise InvalidProblemException()             # <<<<<<<<<<<<<<
- *         return coco_logger_biobj_reconstruct(self.problem, _evaluation, <double *>np.PyArray_DATA(_y))
+ *         return coco_logger_biobj_feed_solution(self.problem, _evaluation, <double *>np.PyArray_DATA(_y))
  * 
  */
     __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_InvalidProblemException); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 731; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -8256,12 +8256,12 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6logger_biobj_reconstruct(
   /* "cython\interface.pyx":732
  *         if self.problem is NULL:
  *             raise InvalidProblemException()
- *         return coco_logger_biobj_reconstruct(self.problem, _evaluation, <double *>np.PyArray_DATA(_y))             # <<<<<<<<<<<<<<
+ *         return coco_logger_biobj_feed_solution(self.problem, _evaluation, <double *>np.PyArray_DATA(_y))             # <<<<<<<<<<<<<<
  * 
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_3 = __Pyx_PyInt_From_int(coco_logger_biobj_reconstruct(__pyx_v_self->problem, __pyx_v__evaluation, ((double *)PyArray_DATA(((PyArrayObject *)__pyx_v__y))))); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 732; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_3 = __Pyx_PyInt_From_int(coco_logger_biobj_feed_solution(__pyx_v_self->problem, __pyx_v__evaluation, ((double *)PyArray_DATA(((PyArrayObject *)__pyx_v__y))))); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 732; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_r = __pyx_t_3;
   __pyx_t_3 = 0;
@@ -8270,8 +8270,8 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6logger_biobj_reconstruct(
   /* "cython\interface.pyx":715
  *         coco_recommend_solution(self.problem, <double *>np.PyArray_DATA(_x))
  * 
- *     def logger_biobj_reconstruct(self, evaluation, y):             # <<<<<<<<<<<<<<
- *         """Reconstruct the information output by logger_biobj from the given solution. Return 1 if the given solution
+ *     def logger_biobj_feed_solution(self, evaluation, y):             # <<<<<<<<<<<<<<
+ *         """Feed the given solution to logger_biobj in order to reconstruct its output. Return 1 if the given solution
  *         updated the archive and 0 otherwise.
  */
 
@@ -8286,7 +8286,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_6logger_biobj_reconstruct(
     __Pyx_ErrFetch(&__pyx_type, &__pyx_value, &__pyx_tb);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd__y.rcbuffer->pybuffer);
   __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
-  __Pyx_AddTraceback("cocoex.interface.Problem.logger_biobj_reconstruct", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("cocoex.interface.Problem.logger_biobj_feed_solution", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   goto __pyx_L2;
   __pyx_L0:;
@@ -13948,7 +13948,7 @@ static int __pyx_setprop_6cocoex_9interface_7Problem__upper_bounds(PyObject *o, 
 static PyMethodDef __pyx_methods_6cocoex_9interface_Problem[] = {
   {"constraint", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_3constraint, METH_O, __pyx_doc_6cocoex_9interface_7Problem_2constraint},
   {"recommend", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_5recommend, METH_O, __pyx_doc_6cocoex_9interface_7Problem_4recommend},
-  {"logger_biobj_reconstruct", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_7logger_biobj_reconstruct, METH_VARARGS|METH_KEYWORDS, __pyx_doc_6cocoex_9interface_7Problem_6logger_biobj_reconstruct},
+  {"logger_biobj_feed_solution", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_7logger_biobj_feed_solution, METH_VARARGS|METH_KEYWORDS, __pyx_doc_6cocoex_9interface_7Problem_6logger_biobj_feed_solution},
   {"add_observer", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_9add_observer, METH_O, __pyx_doc_6cocoex_9interface_7Problem_8add_observer},
   {"_f0", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_11_f0, METH_O, __pyx_doc_6cocoex_9interface_7Problem_10_f0},
   {"initial_solution", (PyCFunction)__pyx_pw_6cocoex_9interface_7Problem_13initial_solution, METH_NOARGS, __pyx_doc_6cocoex_9interface_7Problem_12initial_solution},

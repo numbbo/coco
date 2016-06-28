@@ -74,7 +74,7 @@ def log_reconstruct(input_path, output_path, algorithm_name, algorithm_info, fun
                         split = line.split()
                         evaluation = int(split[0])
                         objective_vector = np.array(split[1:3])
-                        updated = problem.logger_biobj_reconstruct(evaluation, objective_vector)
+                        updated = problem.coco_logger_biobj_feed_solution(evaluation, objective_vector)
                         if updated == 0:
                             count_not_updated += 1
                     except ValueError as error:
@@ -86,7 +86,7 @@ def log_reconstruct(input_path, output_path, algorithm_name, algorithm_info, fun
                     evaluation = int(get_key_value(line[1:], 'evaluations'))
                     evaluation_found = True
                     if (evaluation > old_evaluation) and problem is not None and objective_vector is not None:
-                        problem.logger_biobj_reconstruct(evaluation, objective_vector)
+                        problem.coco_logger_biobj_feed_solution(evaluation, objective_vector)
 
             if problem is not None:
                 if not evaluation_found:

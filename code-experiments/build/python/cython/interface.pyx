@@ -41,7 +41,7 @@ cdef extern from "coco.h":
     void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
     void coco_recommend_solution(coco_problem_t *problem, const double *x)
 
-    int coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluation, double *y)
+    int coco_logger_biobj_feed_solution(coco_problem_t *problem, const size_t evaluation, const double *y)
     coco_problem_t *coco_suite_get_problem_by_function_dimension_instance(coco_suite_t *suite, const size_t function,
                                                                           const size_t dimension, const size_t instance)
 
@@ -712,8 +712,8 @@ cdef class Problem:
             raise InvalidProblemException()
         coco_recommend_solution(self.problem, <double *>np.PyArray_DATA(_x))
 
-    def logger_biobj_reconstruct(self, evaluation, y):
-        """Reconstruct the information output by logger_biobj from the given solution. Return 1 if the given solution
+    def logger_biobj_feed_solution(self, evaluation, y):
+        """Feed the given solution to logger_biobj in order to reconstruct its output. Return 1 if the given solution
         updated the archive and 0 otherwise.
 
         Used by preprocessing when updating the .info, .dat and .tdat files with new indicator reference values.
@@ -729,7 +729,7 @@ cdef class Problem:
         _y = y  # this is the final type conversion
         if self.problem is NULL:
             raise InvalidProblemException()
-        return coco_logger_biobj_reconstruct(self.problem, _evaluation, <double *>np.PyArray_DATA(_y))
+        return coco_logger_biobj_feed_solution(self.problem, _evaluation, <double *>np.PyArray_DATA(_y))
 
 
     def add_observer(self, observer):
