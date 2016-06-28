@@ -164,7 +164,7 @@ static void test_coco_archive_precision_issues(void **state) {
 
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
-  assert(count == 3);
+  assert(count == 2);
   assert(about_equal_value(hypervolume, 0));
 
   number_of_evaluations = 342;
@@ -176,7 +176,7 @@ static void test_coco_archive_precision_issues(void **state) {
 
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
-  assert(count == 3);
+  assert(count == 2);
   assert(about_equal_value(hypervolume, 0));
 
   number_of_evaluations = 351;
@@ -187,7 +187,8 @@ static void test_coco_archive_precision_issues(void **state) {
   coco_free_memory(line);
 
   count = coco_archive_get_number_of_solutions(archive);
-  assert(count == 4);
+  assert(count == 2);
+  assert(about_equal_value(hypervolume, 0));
 
   number_of_evaluations = 2240;
   y[0] = 4.262796544864155e+02;
@@ -197,9 +198,9 @@ static void test_coco_archive_precision_issues(void **state) {
   coco_free_memory(line);
 
   count = coco_archive_get_number_of_solutions(archive);
-  assert(count == 4);
+  assert(count == 2);
+  assert(about_equal_value(hypervolume, 0));
 
-  coco_free_memory(y);
   coco_archive_free(archive);
 
   /* Second example */
@@ -260,7 +261,7 @@ static void test_coco_archive_precision_issues(void **state) {
   coco_free_memory(line);
 
   count = coco_archive_get_number_of_solutions(archive);
-  assert(count == 7);
+  assert(count == 6);
 
   coco_free_memory(y);
   coco_archive_free(archive);

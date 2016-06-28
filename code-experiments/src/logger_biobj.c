@@ -21,8 +21,10 @@
  * observer_biobj() for more information. One .adat file is created for each problem function, dimension
  * and instance.
  *
- * @note Whenever in this file a ROI is mentioned, it means the region of interest in the objective space.
- * The ROI is a rectangle with the ideal and nadir points as its two opposite vertices.
+ * @note Whenever in this file a ROI is mentioned, it means the (normalized) region of interest in the
+ * objective space. The non-normalized ROI is a rectangle with the ideal and nadir points as its two
+ * opposite vertices, while the normalized ROI is the square [0, 1]^2. If not specifically mentioned, the
+ * normalized ROI is assumed.
  */
 
 #include <stdio.h>
@@ -128,10 +130,15 @@ typedef struct {
 
 /**
  * @brief The type for the node's item in the AVL tree as used by the bi-objective logger.
+ *
+ * Contains information on the exact objective values (y) and their rounded normalized values (normalized_y).
+ * The exact values are used for output, while archive update and indicator computation use the normalized
+ * values.
  */
 typedef struct {
   double *x;                 /**< @brief The decision values of this solution. */
   double *y;                 /**< @brief The values of objectives of this solution. */
+  double *normalized_y;      /**< @brief The values of normalized objectives of this solution. */
   size_t evaluation_number;  /**< @brief The evaluation number of when the solution was created. */
 
   double indicator_contribution[LOGGER_BIOBJ_NUMBER_OF_INDICATORS];
@@ -142,13 +149,10 @@ typedef struct {
 
 /**
  * @brief Creates and returns the information on the solution in the form of a node's item in the AVL tree.
- *
- * If, for precision issues, the solution seems to dominate an extreme point of the problem, it is made
- * equal to that extreme point.
  */
 static logger_biobj_avl_item_t* logger_biobj_node_create(const coco_problem_t *problem,
                                                          const double *x,
-                                                         double *y,
+                                                         const double *y,
                                                          const size_t evaluation_number,
                                                          const size_t dim,
                                                          const size_t num_obj) {
@@ -167,19 +171,14 @@ static logger_biobj_avl_item_t* logger_biobj_node_create(const coco_problem_t *p
     item->x[i] = x[i];
   for (i = 0; i < num_obj; i++)
     item->y[i] = y[i];
+
+  /* Compute the normalized y */
+  item->normalized_y = mo_normalize(item->y, problem->best_value, problem->nadir_value, num_obj);
+  item->within_ROI = mo_is_within_ROI(item->normalized_y, num_obj);
+
   item->evaluation_number = evaluation_number;
   for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++)
     item->indicator_contribution[i] = 0;
-  item->within_ROI = 0;
-
-  /* Adjust the solution if it seems to be better than an extreme point */
-  assert(num_obj == 2);
-  for (i = 0; i < 2; i++)
-    if (y[i] < problem->best_value[i]) {
-      coco_debug("Precision issue, adjusting objective value of solution %lu",
-          (unsigned long) evaluation_number);
-      y[i] = problem->best_value[i];
-    }
 
   return item;
 }
@@ -191,6 +190,7 @@ static void logger_biobj_node_free(logger_biobj_avl_item_t *item, void *userdata
 
   coco_free_memory(item->x);
   coco_free_memory(item->y);
+  coco_free_memory(item->normalized_y);
   coco_free_memory(item);
   (void) userdata; /* To silence the compiler */
 }
@@ -203,12 +203,12 @@ static void logger_biobj_node_free(logger_biobj_avl_item_t *item, void *userdata
 static int avl_tree_compare_by_last_objective(const logger_biobj_avl_item_t *item1,
                                               const logger_biobj_avl_item_t *item2,
                                               void *userdata) {
-  if (item1->y[1] < item2->y[1])
-    return -1;
-  else if (item1->y[1] > item2->y[1])
-    return 1;
-  else
+  if (coco_double_almost_equal(item1->normalized_y[1], item2->normalized_y[1], mo_precision))
     return 0;
+  else if (item1->normalized_y[1] < item2->normalized_y[1])
+    return -1;
+  else
+    return 1;
 
   (void) userdata; /* To silence the compiler */
 }
@@ -295,8 +295,8 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
     trigger_update = 1;
     next_node = logger->archive_tree->head;
   } else {
-    dominance = mo_get_dominance(node_item->y, ((logger_biobj_avl_item_t*) node->item)->y,
-        logger->number_of_objectives);
+    dominance = mo_get_dominance(node_item->normalized_y,
+        ((logger_biobj_avl_item_t*) node->item)->normalized_y, logger->number_of_objectives);
     if (dominance > -1) {
       trigger_update = 1;
       next_node = node->next;
@@ -325,8 +325,8 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
        * dominance = 0: the new node and the next node are nondominated
        * dominance = 1: the new node dominates the next node */
       node = next_node;
-      dominance = mo_get_dominance(node_item->y, ((logger_biobj_avl_item_t*) node->item)->y,
-          logger->number_of_objectives);
+      dominance = mo_get_dominance(node_item->normalized_y,
+          ((logger_biobj_avl_item_t*) node->item)->normalized_y, logger->number_of_objectives);
       if (dominance == 1) {
         /* The new point dominates the next point, remove the next point */
         if (logger->compute_indicators) {
@@ -346,8 +346,6 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
     avl_item_insert(logger->buffer_tree, node_item);
 
     if (logger->compute_indicators) {
-      node_item->within_ROI = mo_solution_is_within_ROI(node_item->y, problem->best_value, problem->nadir_value,
-            problem->number_of_objectives);
       if (node_item->within_ROI) {
         /* Compute indicator value for new node and update the indicator value of the affected nodes */
         logger_biobj_avl_item_t *next_item, *previous_item;
@@ -358,16 +356,9 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
             for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
               logger->indicators[i]->current_value -= next_item->indicator_contribution[i];
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
-                next_item->indicator_contribution[i] = (node_item->y[0] - next_item->y[0])
-                    / (problem->nadir_value[0] - problem->best_value[0])
-                    * (problem->nadir_value[1] - next_item->y[1])
-                    / (problem->nadir_value[1] - problem->best_value[1]);
-                if (next_item->indicator_contribution[i] < 0) {
-                  /* Catch precision problems */
-                  coco_warning("Precision issue, setting hypervolume contribution %.*e to 0", logger->precision_f,
-                      next_item->indicator_contribution[i]);
-                  next_item->indicator_contribution[i] = 0;
-                }
+                next_item->indicator_contribution[i] = (node_item->normalized_y[0] - next_item->normalized_y[0])
+                    * (1 - next_item->normalized_y[1]);
+                assert(next_item->indicator_contribution[i] > 0);
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -384,16 +375,9 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
           if (previous_item->within_ROI) {
             for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
-                node_item->indicator_contribution[i] = (previous_item->y[0] - node_item->y[0])
-                    / (problem->nadir_value[0] - problem->best_value[0])
-                    * (problem->nadir_value[1] - node_item->y[1])
-                    / (problem->nadir_value[1] - problem->best_value[1]);
-                if (node_item->indicator_contribution[i] < 0) {
-                  /* Catch precision problems */
-                  coco_warning("Precision issue, setting hypervolume contribution %.*e to 0", logger->precision_f,
-                      node_item->indicator_contribution[i]);
-                  node_item->indicator_contribution[i] = 0;
-                }
+                node_item->indicator_contribution[i] = (previous_item->normalized_y[0] - node_item->normalized_y[0])
+                    * (1 - node_item->normalized_y[1]);
+                assert(node_item->indicator_contribution[i] > 0);
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -411,16 +395,9 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
           /* Previous item does not exist or is out of ROI, use reference point instead */
           for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
             if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
-              node_item->indicator_contribution[i] = (problem->nadir_value[0] - node_item->y[0])
-                  / (problem->nadir_value[0] - problem->best_value[0])
-                  * (problem->nadir_value[1] - node_item->y[1])
-                  / (problem->nadir_value[1] - problem->best_value[1]);
-              if (node_item->indicator_contribution[i] < 0) {
-                /* Catch precision problems */
-                coco_warning("Precision issue, setting hypervolume contribution %.*e to 0", logger->precision_f,
-                    node_item->indicator_contribution[i]);
-                node_item->indicator_contribution[i] = 0;
-              }
+              node_item->indicator_contribution[i] = (1 - node_item->normalized_y[0])
+                  * (1 - node_item->normalized_y[1]);
+              assert(node_item->indicator_contribution[i] > 0);
             } else {
               coco_error(
                   "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -640,9 +617,8 @@ static void logger_biobj_indicator_free(void *stuff) {
  * The relative_target_value is a target for indicator difference, not the actual indicator value!
  */
 static void logger_biobj_output(logger_biobj_data_t *logger,
-                                coco_problem_t *problem,
                                 const int update_performed,
-                                const double *y) {
+                                const logger_biobj_avl_item_t *node_item) {
 
   size_t i, j;
   logger_biobj_indicator_t *indicator;
@@ -658,11 +634,10 @@ static void logger_biobj_output(logger_biobj_data_t *logger,
       if (update_performed) {
         /* Compute the overall_value of an indicator */
         if (strcmp(indicator->name, "hyp") == 0) {
-          if (indicator->current_value == 0) {
+          if (coco_double_almost_equal(indicator->current_value, 0, mo_precision)) {
             /* Update the additional penalty for hypervolume (the minimal distance from the nondominated set
              * to the ROI) */
-            double new_distance = mo_get_distance_to_ROI(y, problem->best_value, problem->nadir_value,
-                problem->number_of_objectives);
+            double new_distance = mo_get_distance_to_ROI(node_item->normalized_y, logger->number_of_objectives);
             indicator->additional_penalty = coco_double_min(indicator->additional_penalty, new_distance);
             assert(indicator->additional_penalty >= 0);
           } else {
@@ -747,7 +722,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
   }
 
   /* Output according to observer options */
-  logger_biobj_output(logger, problem, update_performed, y);
+  logger_biobj_output(logger, update_performed, node_item);
 }
 
 /**
@@ -798,7 +773,7 @@ int coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluati
   update_performed = logger_biobj_tree_update(logger, inner_problem, node_item);
 
   /* Output according to observer options */
-  logger_biobj_output(logger, problem, update_performed, y);
+  logger_biobj_output(logger, update_performed, node_item);
 
   return update_performed;
 }
