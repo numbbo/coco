@@ -196,7 +196,7 @@ If however algorithm internal computations dominate wall-clock time in a
 practical application, comparative runtime results *in number of function
 evaluations* can usually be adapted *a posteri* to reflect the practical
 scenario. 
-This hold also true for a speed up from parallelization.  
+This holds also true for a speed up from parallelization.  
 
 .. [#] A variable which lives on a ratio scale has a meaningful zero, 
    allows for division, and can be taken to the logarithm in a meaningful way. 
@@ -467,7 +467,7 @@ For example, different instances implement random translations of the search spa
 Randomized restarts on the other hand can be conducted from different initial points. 
 For translation invariant algorithms both mechanisms are equivalent and can be mutually exchanged. 
 
-We interpret thus runs performed on different instances :math:`\theta_1, \ldots, \theta_K` as repetitions of the same problem. 
+Thus, we interpret runs performed on different instances :math:`\theta_1, \ldots, \theta_K` as repetitions of the same problem. 
 Thereby we assume that instances of the same parametrized function |ftheta| are 
 similar to each other, and more specifically that they exhibit the same runtime
 distribution for each given |DI|. 
@@ -511,7 +511,7 @@ As given in :eq:`RTrestart` as |RTforDI|, the measured, simulated runtime is the
 Bootstrapping Runtimes
 ++++++++++++++++++++++++
 
-In practice, we repeat the above procedure a few hundred or thousand times, thereby sampling :math:`N` simulated runtimes from the same underlying distribution, 
+In practice, we repeat the above procedure between a hundred and a few thousand times, thereby sampling :math:`N` simulated runtimes from the same underlying distribution, 
 resembling the bootstrap algorithm [EFR1994]_. 
 To reduce the variance in this procedure, when desired, the first trial in each sample is picked deterministically instead of randomly as the :math:`1 + (N~\mathrm{mod}~K)`-th trial from the data. [#]_
 Picking the first trial data as specific instance |thetai| could also be
@@ -750,7 +750,7 @@ a single plot.
 
 The thick maroon line with diamond markers annotated as "best 2009" corresponds to the **artificial best 2009 algorithm**: for
 each set of problems with the same function, dimension and target precision, we select the algorithm with the smallest |aRT| from the `BBOB-2009 workshop`__ and use for these problems the data from the selected algorithm. 
-The algorithm is artificial because we may use even for different target values the runtime results from different algorithms. [#]_
+The algorithm is artificial because we may use for the same problem and dimension but for different target values the runtime results from different algorithms. [#]_
 
 We observe that the artificial best 2009 algorithm is about two to three time faster than the left envelope of all single algorithms and solves all problems in about :math:`10^7\, n` function evaluations.  
 
@@ -760,7 +760,7 @@ We observe that the artificial best 2009 algorithm is about two to three time fa
        left envelope of the ECDF of all algorithms from which it is
        constructed, that is, the ECDF of an algorithm from BBOB-2009 can
        cross the best 2009 curve. This may typically happen if an algorithm
-       has for the most easy problems a large runtime variation its |aRT| is 
+       has for the most easy problems a large runtime variation and its |aRT| is 
        not the best but the short runtimes
        show up to the left of the best 2009 graph.
 
