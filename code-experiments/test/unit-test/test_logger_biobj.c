@@ -141,9 +141,9 @@ static void test_logger_biobj_evaluate2(void **state) {
 }
 
 /**
- * Tests the coco_logger_biobj_reconstruct function.
+ * Tests the coco_logger_biobj_feed_solution function.
  */
-static void test_coco_logger_biobj_reconstruct(void **state) {
+static void test_coco_logger_biobj_feed_solution(void **state) {
 
   coco_suite_t *suite;
   coco_observer_t *observer;
@@ -169,25 +169,25 @@ static void test_coco_logger_biobj_reconstruct(void **state) {
   number_of_evaluations = 1;
   y[0] = 3.998010498047934e+06;
   y[1] = 3.032832203646995e+05;
-  coco_logger_biobj_reconstruct(problem, number_of_evaluations, y);
+  coco_logger_biobj_feed_solution(problem, number_of_evaluations, y);
   assert(about_equal_value(indicator->overall_value, 5.627463907182547e-01));
 
   number_of_evaluations = 3;
   y[0] = 2.455928115758100e+06;
   y[1] = 4.832453316303584e+05;
-  coco_logger_biobj_reconstruct(problem, number_of_evaluations, y);
+  coco_logger_biobj_feed_solution(problem, number_of_evaluations, y);
   assert(about_equal_value(indicator->overall_value, 5.517002077559761e-01));
 
   number_of_evaluations = 7;
   y[0] = 1.905500967744320e+06;
   y[1] = 7.225364079041419e+05;
-  coco_logger_biobj_reconstruct(problem, number_of_evaluations, y);
+  coco_logger_biobj_feed_solution(problem, number_of_evaluations, y);
   assert(about_equal_value(indicator->overall_value, 5.517002077559761e-01));
 
   number_of_evaluations = 15;
   y[0] = 5.134664589788270e+06;
   y[1] = 2.859068205979772e+05;
-  coco_logger_biobj_reconstruct(problem, number_of_evaluations, y);
+  coco_logger_biobj_feed_solution(problem, number_of_evaluations, y);
   assert(about_equal_value(indicator->overall_value, 5.282781576255882e-01));
 
   coco_free_memory(y);
@@ -203,7 +203,7 @@ static int test_all_logger_biobj(void) {
   const struct CMUnitTest tests[] = {
       cmocka_unit_test(test_logger_biobj_evaluate),
       cmocka_unit_test(test_logger_biobj_evaluate2),
-      cmocka_unit_test(test_coco_logger_biobj_reconstruct)
+      cmocka_unit_test(test_coco_logger_biobj_feed_solution)
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);

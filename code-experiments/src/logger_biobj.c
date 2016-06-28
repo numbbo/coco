@@ -278,7 +278,6 @@ static size_t logger_biobj_tree_output(FILE *file,
  * @return 1 if the update was performed and 0 otherwise.
  */
 static int logger_biobj_tree_update(logger_biobj_data_t *logger,
-                                    const coco_problem_t *problem,
                                     logger_biobj_avl_item_t *node_item) {
 
   avl_node_t *node, *next_node, *new_node;
@@ -708,7 +707,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
 
   /* Update the archive with the new solution, if it is not dominated by or equal to existing solutions in
    * the archive */
-  update_performed = logger_biobj_tree_update(logger, inner_problem, node_item);
+  update_performed = logger_biobj_tree_update(logger, node_item);
 
   /* If the archive was updated and you need to log all nondominated solutions, output the new solution to
    * nondom_file */
@@ -732,15 +731,12 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
  * @note Vector y must point to a correctly sized allocated memory region and the given evaluation number must
  * be larger than the existing one.
  *
- * If, for precision issues, y seems to dominate an extreme point of the problem, it is made equal to that
- * extreme point.
- *
  * @param problem The given COCO problem.
  * @param evaluation The number of evaluations.
  * @param y The objective vector.
  * @return 1 if archive was updated was done and 0 otherwise.
  */
-int coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluation, double *y) {
+int coco_logger_biobj_feed_solution(coco_problem_t *problem, const size_t evaluation, const double *y) {
 
   logger_biobj_data_t *logger;
   logger_biobj_avl_item_t *node_item;
@@ -770,7 +766,7 @@ int coco_logger_biobj_reconstruct(coco_problem_t *problem, const size_t evaluati
   coco_free_memory(x);
 
   /* Update the archive */
-  update_performed = logger_biobj_tree_update(logger, inner_problem, node_item);
+  update_performed = logger_biobj_tree_update(logger, node_item);
 
   /* Output according to observer options */
   logger_biobj_output(logger, update_performed, node_item);
