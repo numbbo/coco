@@ -55,7 +55,7 @@ from .. import pptex  # numtotex
 
 PlotType = ppfig.enum('ALG', 'DIM', 'FUNC')
 
-displaybest2009 = True
+displaybest = True
 x_limit = None  # not sure whether this is necessary/useful
 x_limit_default = 1e7  # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
 divide_by_dimension = True
@@ -610,8 +610,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     dictMaxEvals = {}  # list of (maxevals per function) per algorithm
 
     # funcsolved = [set()] * len(targets) # number of functions solved per target
-    xbest2009 = []
-    maxevalsbest2009 = []
+    xbest = []
+    maxevalsbest = []
     target_values = testbedsettings.current_testbed.pprldmany_target_values
 
     dictDimList = pp.dictAlgByDim(dictAlg)
@@ -657,13 +657,13 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                     dictData.setdefault(keyValue, []).extend(x)
                     dictMaxEvals.setdefault(keyValue, []).extend(runlengthunsucc)
 
-            displaybest2009 = plotType == PlotType.ALG
-            if displaybest2009:
+            displaybest = plotType == PlotType.ALG
+            if displaybest:
                 # set_trace()
                 bestalgentries = bestalg.load_best_algorithm()
 
                 if not bestalgentries:
-                    displaybest2009 = False
+                    displaybest = False
                 else:
                     bestalgentry = bestalgentries[(dim, f)]
                     bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
@@ -681,21 +681,21 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                         else:
                             x = perfprofsamplesize * [np.inf]
                             runlengthunsucc = []
-                        xbest2009.extend(x)
-                        maxevalsbest2009.extend(runlengthunsucc)
+                        xbest.extend(x)
+                        maxevalsbest.extend(runlengthunsucc)
 
     if order is None:
         order = dictData.keys()
 
     # Display data
     lines = []
-    if displaybest2009:
+    if displaybest:
         args = {'ls': '-', 'linewidth': 6, 'marker': 'D', 'markersize': 11.,
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
                 'label': testbedsettings.current_testbed.best_algorithm_displayname,
                 'zorder': -1}
-        lines.append(plotdata(np.array(xbest2009), x_limit, maxevalsbest2009,
+        lines.append(plotdata(np.array(xbest), x_limit, maxevalsbest,
                               CrE=0., **args))
 
     def algname_to_label(algname, dirname=None):
@@ -747,7 +747,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                         (tmp, toolsdivers.str_to_latex(
                             toolsdivers.strip_pathname2(algname_to_label(alg)))))
                 algtocommand[algname_to_label(alg)] = tmp
-            if displaybest2009:
+            if displaybest:
                 tmp = r'\algzeroperfprof'
                 bestalgname = testbedsettings.current_testbed.best_algorithm_displayname
                 f.write(r'\providecommand{%s}{%s}' % (tmp, bestalgname))

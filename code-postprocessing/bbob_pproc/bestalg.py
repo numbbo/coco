@@ -352,8 +352,10 @@ def load_best_algorithm(force=False):
 
     # If the file or folder name is not specified then we skip the load.
     if not best_algo_filename:
-        bestAlgorithmEntries = None
-        print("loading best algorithm data in %s failed" % best_algo_filename)
+        # print the following line only once to not mess the output:
+        if not (bestAlgorithmEntries == None):
+            warnings.warn("no best algorithm data specified")        
+        bestAlgorithmEntries = None        
         return bestAlgorithmEntries
 
     print("Loading best algorithm data from %s ..." % best_algo_filename)
@@ -361,7 +363,7 @@ def load_best_algorithm(force=False):
 
     best_alg_file_path = os.path.split(__file__)[0]
     pickleFilename = os.path.join(best_alg_file_path, best_algo_filename)
-    if pickleFilename.endswith('.gz'):
+    if pickleFilename.endswith('pickle.gz'):
         # TODO: for backwards compatibility: check whether algorithm is 
         # actually in pickle format (and not just based on the file ending)
 
@@ -369,7 +371,7 @@ def load_best_algorithm(force=False):
         try:
             bestAlgorithmEntries = pickle.load(fid)
         except:
-            warnings.warn("no best algorithm loaded")
+            warnings.warn("failed to open file %s" % pickleFilename)
             # raise  # outcomment to diagnose
             bestAlgorithmEntries = None
         fid.close()
