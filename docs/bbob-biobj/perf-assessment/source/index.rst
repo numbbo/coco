@@ -346,7 +346,7 @@ reference hypervolume indicator value.
 
 .. [#] Using the quality indicator value of the *true* Pareto set might not
    be desirable, because the set contains an infinite number of solutions, 
-   which is neither a possible nor a desirable goal to aspire in practice. 
+   which is neither a possible nor a desirable goal to aspire to in practice. 
 
 .. [#] Amongst others, we run versions of NSGA-II [DEB2002]_ via Matlab's
   ``gamultiobj`` function__, SMS-EMOA [BEU2007]_, MOEA/D [ZHA2007]_,
