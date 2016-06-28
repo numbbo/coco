@@ -70,7 +70,7 @@ It also describes how instances, targets and runtime are considered in the const
 .. #################################################################################
 .. #################################################################################
 
-
+.. _sec-introduction:
 
 Introduction
 ============
@@ -92,10 +92,19 @@ the problem dimension), :math:`f: \mathbb{R}^D \rightarrow \mathbb{R}`
 is the objective function, and :math:`g_i: \mathbb{R}^D \rightarrow \mathbb{R}`, :math:`i = 1, \ldots, l`, 
 are the constraint functions defined by :math:`g_i(x) \equiv a_i^T x`, with :math:`a_i \in \mathbb{R}^{D}`.
 
-A point :math:`x` is said to be a *feasible solution* if :math:`g_i(x) \leq 0` for all :math:`i`.
-The set of all feasible solutions is called the *feasible set*. An *optimal
-solution* is a feasible solution that has the lowest objective function value
-among all the feasible solutions.
+A point :math:`x \in \mathbb{R}^D` is said to be a *feasible solution* if :math:`g_i(x) \leq 0` for all :math:`i`.
+The set of all feasible solutions is called the *feasible set*, denoted here by :math:`\cal F`. An *optimal
+solution* is a point :math:`x^* \in \cal F` such that :math:`f(x^*) \leq f(x)` for all :math:`x \in \cal F`. 
+We also make distinction between *global optimal solution* and *local optimal solution*.
+The latter is a point :math:`x^* \in \cal F` such that :math:`f(x^*) \leq f(x)` for all :math:`x \in \cal N \cap \cal F`, 
+where :math:`\cal N` is a neighborhood of :math:`x^*`, while the former consider the entire set :math:`\cal F` in the definition. 
+In this documentation, we always refer the term "optimal solution" to "global optimal solution" and vice-versa. The latter term is used
+in contexts where local optimal solutions are also in discussion.
+
+A point :math:`x^* \in \mathbb{R}^D` is said to be an *unconstrained optimal solution* to :eq:`cons_prob` if :math:`f(x^*) \leq f(x)` 
+for all :math:`x \in \mathbb{R}^D`. Note that this definition does not require :math:`x^*` to be feasible. In other words,
+the constraints :math:`g_i` of the problem are not been considered in the definition. We consider the definition of a *constrained optimal solution* to be equal to that of an optimal solution, i.e. with the constraints being taken into account. By using
+the definitions of global and local optimal solutions given before, we go a step further to define *unconstrained global optimal solutions* and *unconstrained local optimal solutions*, where the constraints are not considered, as well as *constrained global optimal solutions* and *constrained local optimal solutions*, where the constraints are taken into account.
 
 Before delving into detail about how the constrained problems are built, we familiarize the reader with some terms that are used in the `Coco framework` and, in particular, in this suite.
 
@@ -144,6 +153,7 @@ Terminology
   to one call to the routine that evaluates *all* the constraints at once, 
   |coco_evaluate_constraint|_. Runtime is our central performance measure.
 
+.. _subsec-instances-and-problems:
 
 Instances and problems
 ----------------------
@@ -154,10 +164,10 @@ Instances and problems
   and the instance number, |j|.
 
   The parameter value |j| determines a so-called *constrained function 
-  instance*. It is used in the ``bbob-constr-lin`` test suite to 
+  instance*. This value is used in the ``bbob-constr-lin`` test suite to 
 
   (1) define an instance of the objective function,
-  (2) define an instance of the constraints for the constrained function,
+  (2) define an instance of the constraints in the constrained function,
   (3) encode the location of the optimal solution of the constrained function.
 
   **IMPORTANT:** constrained functions with the same objective function but with different constraints are 
@@ -178,11 +188,11 @@ Instances and problems
   using the identifier of the constrained function, |i|, and the instance number, |j|, in the seed
   formula. However, using only these values for generating these vectors would result on
   identical gradients as the same seed would be used in the building process. By using also their identifiers, 
-  1 and 2, we can generate different gradients.
+  1 and 2, we can generate different gradients, and, therefore, different constraints.
 
   As previously mentioned, translations and shiftings of linear constraints result on different
   linear constraints. Therefore, different instances of a constraint in the ``bbob-constr-lin``
-  test suite are equivalent to different constraints. 
+  test suite are equivalent to different constraints.
 
 *problem*
   We talk about a *problem*, |coco_problem_t|_, as a specific *constrained function instance* 
@@ -193,6 +203,7 @@ Instances and problems
   In the context of performance assessment, a target :math:`f`- or
   indicator-value is added to define a problem. 
 
+.. _subsec-raw-and-transformed-functions:
 
 Raw functions and transformed functions
 ---------------------------------------
@@ -207,12 +218,13 @@ As it can be seen, neither linear nor nonlinear transformations have been applie
 
 .. math::
 
-  f(x) = \|x-x_{\textrm{opt}}\|^2 + f_{\textrm{opt}},
+  f(x) = \|x-x^{\textrm{opt}}\|^2 + f_{\textrm{opt}},
 
-where the vector :math:`x_{\textrm{opt}}` and the scalar :math:`f_{\textrm{opt}}` are constants whose values depend on the function identifier and instance number. These constants determine the optimal solution and the optimal function value of the problem, respectively.
+where the vector :math:`x^{\textrm{opt}}` and the scalar :math:`f_{\textrm{opt}}` are constants whose values depend on the function identifier and instance number. These constants determine the optimal solution and the optimal function value of the problem, respectively.
 
-Linear transformations, by definition, do not change some properties of the functions to which they are applied to, such as symmetry. In order to make the functions less regular, `Coco` makes use of two nonlinear transformations, namely, :math:`T_{asy}^{\beta}` and :math:`T_{osz}` [HAN2009]_. The former is a symmetry breaking transformation while the latter introduces small, smooth but clearly visible irregularities. These nonlinear transformations can transform convex raw functions into nonconvex functions, for instance.
+Linear transformations, by definition, do not change some properties of the functions to which they are applied to, such as symmetry. In order to make the functions less regular, `Coco` makes use of two nonlinear transformations, namely, :math:`T_{\textrm{asy}}^{\beta}` and :math:`T_{\textrm{osz}}` [HAN2009]_. The former is a symmetry breaking transformation while the latter introduces small, smooth but clearly visible irregularities. These nonlinear transformations can transform convex raw functions into nonconvex functions, for instance.
 
+.. _sec-overview-test-suite:
 
 Overview of the proposed ``bbob-constr-lin`` test suite
 =======================================================
@@ -220,14 +232,15 @@ Overview of the proposed ``bbob-constr-lin`` test suite
 The ``bbob-constr-lin`` test suite provides 48 constrained functions in six
 dimensions (2, 3, 5, 10, 20, and 40) with a large number of possible instances. 
 The 48 functions are derived from combining 8 single-objective functions 
-with 6 different numbers of linear constraints: 1, 2, 10, dimension/2, dimension-1 
-and dimension+1.
+with 6 different numbers of linear constraints: 1, 2, 10, :math:`D/2`, :math:`D-1`
+and :math:`D+1`.
 
 While concrete details on each of
 the 48 ``bbob-constr-lin`` constrained functions are given in Section
 :ref:`sec-test-constrained-functions`, we will detail here the main rationale behind
 them together with their common properties.
 
+.. _subsec-main-features:
 
 Main features
 -------------
@@ -246,7 +259,7 @@ We summarize below the main features of the constrained functions in the ``bbob-
 
 * Use many functions already implemented in `Coco` as objective functions
 
-* Different number of constraints: :math:`1`, :math:`2`, :math:`10`, :math:`n/2`, :math:`n-1`, :math:`n+1`
+* Different number of constraints: :math:`1`, :math:`2`, :math:`10`, :math:`D/2`, :math:`D-1`, :math:`D+1`
 
 * The constraints are randomly generated
 
@@ -268,9 +281,10 @@ In order to make sure that the resulting feasible set is not empty, the followin
 
 The algorithm above ensures a feasible half-line defined by :math:`\{\alpha p\,|\,\alpha\geq0\}`.
 
+.. _subsec-defining-the-constrained-functions:
 
-Defining the optimal solution
------------------------------
+Defining the constrained functions
+----------------------------------
 
 The constrained functions are defined in a way such that their optimal solutions are different from the optimal solutions of their unconstrained counterparts. The reason for this choice lies in the fact that if both optimal solutions were equal, the constraints would have no major impact in the difficulty of the problem in the sense that an algorithm for unconstrained optimization could be run and obtain the optimal solution without considering any constraint.
 
@@ -292,48 +306,43 @@ Suppose that the function :math:`f` and the constraints :math:`g_i` are continuo
 
 A point that satisfies the KKT conditions is called a *KKT point*. Note that a KKT point is not necessarily a local optimal solution. The KKT conditions may be sufficient for optimality if some additional conditions are satisfied; for instance, if the objective function and the constraints :math:`g_i` are convex and constinuously differentiable over :math:`\R^D`. Furthermore, when convexity holds, the KKT point is also a global optimal solution. A more general result states that if the objective function is pseudoconvex and the constraints :math:`g_i` are quasiconvex, then the KKT conditions are sufficient for optimality and the KKT point is a global optimal solution. 
 
-**Transformations in the bbob-constr-lin test suite**
+**Generic algorithm for defining the constrained functions**
 
-We explain here the role of transformation functions in the ``bbob-constr-lin`` test suite. In principle, a transformation function may be applied to
+Initially, we choose the origin to be the optimal solution of the constrained functions. Then, we pick up a ``bbob`` function to be the objective function and we build the linear constraints in such a way that the origin becomes a KKT point and also the optimal solution to the final constrained function. Once the constrained function is well defined, we apply a translation to it (objective function + constraints) in order to move the optimal solution away from the origin. The steps for constructing the constrained functions can be summarized in an algorithmic way as it follows. Assume for now that the chosen ``bbob`` function does not contain any nonlinear transformation in its definition.
 
-* the objective function only;
+1. Pick up a ``bbob`` function :math:`f` to be the objective function.
 
-* the constraints only;
+2. Define the feasible direction :math:`p` as :math:`\nabla f(\mathbf{0})`.
 
-* the entire constrained function (objective function + constraints).
+3. Define the first constraint function :math:`g_1(x)` by setting its gradient to :math:`a_1 = -p`.
 
-Most of the ``bbob-constr-lin`` constrained functions are built by picking up a function from the ``bbob`` test suite to be the objective function and by generating linear constraints in a way that the optimal solution is well defined and known a priori. Once the constrained function is well composed, a linear transformation is applied to it, which means that the transformation is equally applied to the objective function and to the constraints.
+4. Generate the other constraints randomly using a normal distribution while making sure that :math:`p` remais feasible for each one.
 
-We note that a ``bbob`` function is a transformed function itself containing linear and possibly nonlinear transformations. However, in the definition of the ``bbob-constr-lin`` constrained functions, all the nonlinear transformations to the search space are applied first, which means that if some linear transformation (e.g. rotation, translation) is applied to the search space, then this transformation must come after all the nonlinear ones, if any. For example, consider the following transformed sphere function where both linear and nonlinear transformations have been applied to:
+The point :math:`p=\nabla f(\mathbf{0})` defined in Step 2 is used in the definition of the first linear constraint in Step 3 and also to guarantee nonemptiness of the feasible set in Step 4 (see Subsection :ref:`subsec-how-cons-are-built`). By setting the Lagrange multipliers :math:`\mu_1 = 1` and :math:`\mu_i = 0` for :math:`i=2,\ldots,l`, we have that all the KKT conditions are satisfied at the origin, which makes it a KKT point.
 
-.. math::
-  :label: trans_sphere1
+7 out of the 8 objective functions - all except the Rastrigin function, which is handled differently - composing the constrained functions in ``bbob-constr-lin`` are convex or pseudoconvex - without considering the nonlinear transformations -, which together with the fact that the linear constraints are also quasiconvex implies that a KKT point is also a global optimal solution to these constrained functions.
 
-  f(x) = \|z\|^2,\quad z = R\,(T_{asy}^{\beta}(T_{osz}(x))-x_{\textrm{opt}}),
+If the ``bbob`` function chosen in Step 2 includes nonlinear transformations, the algorithm above cannot ensure that the origin is the optimal solution up to Step 4 due to the lack of pseudoconvexity of the objective function, which was used to guarantee the sufficiency of the KKT conditions for optimality. To solve this issue, we add a new step between Step 1 and Step 2 where we remove the nonlinear transformations applied to the search space in the ``bbob`` function. The nonlinear transformations are applied to the whole constrained function (:math:`f` and :math:`g_i`) only after the constraints have been built and the origin has become the optimal solution. As we show in the Subsection :ref:`subsec-applying-nonlinear-transformations`, the application of nonlinear transformations to a constrained function does not change its optimal solution. 
 
-where :math:`R` is a rotation matrix, :math:`T_{asy}^{\beta}` and :math:`T_{osz}` are nonlinear transformations and the constant vector :math:`x_{\textrm{opt}}` defines a translation in the search space. Note that :math:`T_{asy}^{\beta}` and :math:`T_{osz}` are first applied to the search space defined by the variables :math:`x`, and only then a translation followed by a rotation are applied. Since a ``bbob`` function that has been chosen to the define a constrained function may not follow this rule, we solve this issue by "shifting" the nonlinear transformation that are misplaced. For example, a transformed function such as
+The final generic algorithm for the defining the constrained functions is given below. As it can be seen, we also added a new step to move the optimal solution away from the origin in the end.
 
-.. math::
-  :label: trans_sphere2
+1. Pick up a ``bbob`` function :math:`f` to be the objective function.
 
-  f(x) = \|z\|^2,\quad z = R\,T_{asy}^{\beta}T_{osz}(x-x_{\textrm{opt}}),
+2. Remove possible nonlinear transformations from :math:`f`.
 
-would become the one in :eq:`trans_sphere1`.
+3. Define the feasible direction :math:`p` as :math:`\nabla f(\mathbf{0})`.
 
-One particular note on nonlinear transformations is that, whenever they are present, they are equally applied to the objective function and to the constraints. That implies that, if a ``bbob`` function that has been chosen to be the objective function contains a nonlinear transformation, then this transformation will (possibly) be "shifted" and it will be applied to the constraints as well. 
+4. Define the first constraint function :math:`g_1(x)` by setting its gradient to :math:`a_1 = -p`.
 
-Another remark is that nonlinear transformations are initially not considered in the process of definition of the optimal solutions. Therefore, in what follows, we assume that no nonlinear transformation has been applied yet.
+5. Generate the other constraints randomly using a normal distribution while making sure that :math:`p` remais feasible for each one.
 
-**General construction**
+6. Apply to whole constrained function (objective function + constraints) the nonlinear transformations that were removed from the objective function in Step 2.
 
-7 out of the 8 objective functions - all except the Rastrigin function - composing the constrained functions in ``bbob-constr-lin`` are convex or pseudoconvex - without considering the nonlinear transformations -, which together with the fact that the linear constraints are also quasiconvex implies that a KKT point is also a global optimal solution to the constrained function. Those 7 functions are taken from the ``bbob`` test suite and have any nonlinear transformation temporarily removed. The nonlinear transformations are applied afterwards to the whole constrained function (:math:`f` and :math:`g_i`) while respecting the rule that they should come before than the linear transformations (the application of the nonlinear transformations to the constrained function will not change its optimal solution as it is proved in the next subsection). 
+7. Choose a random vector :math:`x^*` and move the optimal solution away from the origin by translating the constrained function (objective function + constraints) by :math:`-x^*`.
 
-We start by choosing the optimal solution to be initially at the origin. Since :math:`g_i(\mathbf{0}) \equiv a_i^T \mathbf{0} = 0 \leq 0`, for all :math:`i`, it follows that the origin is a feasible solution, which implies that the second KKT condition is satisfied. In order to achieve optimality, we define the gradient of the first constraint, :math:`a_1`, as :math:`a_1=-\nabla f(\mathbf{0})`. All the other linear constraints are randomly generated using a normal distribution as described in Subsection :ref:`subsec-how-cons-are-built`. The point :math:`p` that is chosen to guarantee nonemptiness of the feasible set is defined here as :math:`p=\nabla f(\mathbf{0})`. By setting the Lagrange multipliers :math:`\mu_1 = 1` and :math:`\mu_i = 0` for :math:`i=2,\ldots,l`, we have that all the KKT conditions are satisfied and that the origin is a KKT point.
+**Defining the constrained Rastrigin function**
 
-
-**Defining the optimal solution for the Rastrigin function**
-
-The process described before works for all the constrained functions in the current test suite except the one involving the Rastrigin function whose definition in ``bbob-constr-lin`` differs from that in the ``bbob`` test suite. The constrained Rastrigin function here is defined by
+The process described before works for all the constrained functions in the current test suite except the one involving the Rastrigin function as it is a multimodal function. Its definition in ``bbob-constr-lin`` differs from that in the ``bbob`` test suite, being given here by
 
 .. math::
    :label: rastrigin
@@ -341,12 +350,12 @@ The process described before works for all the constrained functions in the curr
 
    \begin{eqnarray*}
    \begin{array}{rc}
-                         & f(x) = 10\bigg(D - \displaystyle\sum_{i=1}^{D}\cos(2\pi v_i) \bigg) + \|v\|^2 + f_{\textrm{opt}} \\
-          \textrm{subject to} & g_i(z) \leq 0, \quad i = 1, \ldots, l,\\
+                          & f(x) = 10\bigg(D - \displaystyle\sum_{i=1}^{D}\cos(2\pi z_i) \bigg) + \|z\|^2 + f_{\textrm{opt}} \\
+      \textrm{subject to} & g_i(v) \leq 0, \quad i = 1, \ldots, l,\\
    \end{array}
    \end{eqnarray*}
 
-where :math:`v = z-x_{\textrm{opt}}` and :math:`z = T_{asy}^{\beta}(T_{osz}(x))`. Without the nonlinear transformations, it becomes
+where :math:`v = T_{\textrm{asy}}^{0.2}(T_{\textrm{osz}}(x - x^*))` and :math:`z = v-x^{\textrm{opt}}`. Without the nonlinear transformations and the translation by :math:`-x^*`, it becomes
 
 .. math::
    :label: rastrigin2
@@ -359,9 +368,11 @@ where :math:`v = z-x_{\textrm{opt}}` and :math:`z = T_{asy}^{\beta}(T_{osz}(x))`
    \end{array}
    \end{eqnarray*}
 
-Differently from the other 7 constrained functions, :eq:`rastrigin2` does not have a pseudoconvex objective function, but a multimodal one. Therefore, we define the optimal solution in this case in a different manner. We first set the constant vector :math:`x_{\textrm{opt}}=(-1,\ldots,-1)^T`. We then obtain a Rastrigin function whose unconstrained global optimal solution is at :math:`x_{\textrm{opt}}=(-1,\ldots,-1)^T`. By defintion, such a function contains many local optimal solution which are (approximately) located on the :math:`n`-dimensional integer lattice :math:`\mathbb{Z}^n` translated by :math:`-x_{\textrm{opt}}`.
+Differently from the other 7 constrained functions, :eq:`rastrigin2` does not have a pseudoconvex objective function. Therefore, we define the optimal solution in this case in a different manner. We first set the constant vector :math:`x^{\textrm{opt}}=(-1,\ldots,-1)^T`. We then obtain a Rastrigin function whose unconstrained global optimal solution is at :math:`x_{\textrm{opt}}=(-1,\ldots,-1)^T`. By defintion, such a function contains many local optimal solution which are (approximately) located on the :math:`n`-dimensional integer lattice :math:`\mathbb{Z}^n` translated by :math:`-x_{\textrm{opt}}`.
 
-After the translation, the origin vector is no more the unconstrained global optimal solution, but an unconstrained local optimal solution. In order to make it the constrained global optimal solution, we add a linear constraint function :math:`g_1(x) \equiv a_1^T x` whose gradient is given by :math:`a_1 = (-1,\ldots,-1)^T`. The Figure shows a 2-dimensional example of the resulting function. As it can be seen, all feasible solutions different from the origin have larger function value. Next, all the other linear constraints are randomly generated while guaranteeing that the point :math:`p=(1,\ldots,1)^T` remains feasible.
+Due to the translation of the objective function by :math:`-x_{\textrm{opt}}`, the origin is no more the unconstrained global optimal solution, but an unconstrained local optimal solution. In order to make it the constrained global optimal solution, we add a linear constraint function :math:`g_1(x) \equiv a_1^T x` whose gradient is given by :math:`a_1 = (-1,\ldots,-1)^T`. The Figure shows a 2-dimensional example of the resulting function. As it can be seen, all feasible solutions different from the origin have larger function values. Next, all the other linear constraints are randomly generated while guaranteeing that the point :math:`p=(1,\ldots,1)^T` remains feasible. We then apply the nonlinear transformations :math:`T_{\textrm{osz}}` and :math:`T_{\textrm{asy}}^{0.2}` to the constrained function. Finally, we choose a random vector :math:`x^*` and translate the constrained function by :math:`-x^*`.
+
+.. _subsec-applying-nonlinear-transformations:
 
 Applying nonlinear transformations
 ----------------------------------
@@ -413,31 +424,141 @@ Let :math:`z = t(u)`. Then, :math:`t^{-1}(z) = u`. By :eq:`nonlin_trans_proof` a
 This contradicts the assumption of :math:`x^*` being a global minimum to problem :eq:`cons_prob_trans1`. **Q.E.D.**
 
 
-Since the transformations :math:`T_{asy}^{\beta}` and :math:`T_{osz}` in ``Coco`` are strictly increasing functions, they both are injective, thus having inverse functions. Since the optimal solution :math:`x^*` to :eq:`cons_prob_trans1` is defined as the origin in the construction of the constrained functions, the proof given above implies that :math:`t^{-1}(x^*) = t^{-1}(\mathbf{0})` is an optimal solution to :eq:`cons_prob_trans2`. Besides that, by definition of :math:`T_{asy}^{\beta}` and :math:`T_{osz}`, we have that :math:`t(\mathbf{0})=\mathbf{0}` for any of these two transformations. Using this together with the fact that :math:`t(t^{-1}(\mathbf{0}))=\mathbf{0}` (by the property of inverse functions) and by the injectivity of :math:`t`, we must have :math:`t^{-1}(\mathbf{0})=\mathbf{0}`. This implies that the origin is still the optimal solution after any of these two nonlinear transformations have been applied to the constrained function.
-
-
-Algorithm for the construction of the constrained functions
------------------------------------------------------------
-
-The steps for constructing the constrained functions described in the previous subsections can be summarized in an algorithmic way as it follows.
-
-1. Remove the nonlinear transformation of the ``bbob`` function :math:`f` chosen to be the objective function.
-
-2. Define the feasible direction :math:`p` as :math:`\nabla f(\mathbf{0})`.
-
-3. Define the first constraint function :math:`g_1(x)` by setting its gradient to :math:`a_1 = -p`.
-
-4. Generate the other constraints randomly while making sure that :math:`p` remais feasible for each one.
-
-5. Possibly apply nonlinear transformations to the constrained function.
-
-6. Move the optimal solution away from the origin by applying a translation to the constrained function.
+Since the transformations :math:`T_{\textrm{asy}}^{\beta}` and :math:`T_{\textrm{osz}}` in ``Coco`` are strictly increasing functions, they both are injective, thus having inverse functions. Since the optimal solution :math:`x^*` to :eq:`cons_prob_trans1` is defined as the origin in the construction of the constrained functions, the proof given above implies that :math:`t^{-1}(x^*) = t^{-1}(\mathbf{0})` is an optimal solution to :eq:`cons_prob_trans2`. Besides that, by definition of :math:`T_{\textrm{asy}}^{\beta}` and :math:`T_{\textrm{osz}}`, we have that :math:`t(\mathbf{0})=\mathbf{0}` for any of these two transformations. Using this together with the fact that :math:`t(t^{-1}(\mathbf{0}))=\mathbf{0}` (by the property of inverse functions) and by the injectivity of :math:`t`, we must have :math:`t^{-1}(\mathbf{0})=\mathbf{0}`. This implies that the origin is still the optimal solution after any of these two nonlinear transformations have been applied to the constrained function.
 
 
 .. _sec-test-constrained-functions:
 
 The ``bbob-constr-lin`` constrained functions and their properties
 ==================================================================
+
+We now detail the 48 ``bbob-constr-lin`` constrained functions and the common properties associated to the groups that contain them.
+
+In total, there are 8 different objective functions, and each one is tested with 6 different numbers of linear constraints: :math:`1`, :math:`2`, :math:`10`, :math:`D/2`, :math:`D-1` and :math:`D+1`. The first objective function in the suite is given by the sphere function. The first constrained function, :math:`f_1`, is thus defined by the sphere function subject to 1 linear constraint. The second constrained function, :math:`f_2`, is defined by the sphere function subject to 2 linear constraints. The third cosntrained function, :math:`f_3`, is defined by the shpere function subject to 10 linear constraints, and so on. The 7th constrained function, :math:`f_7`, is then defined by the ellipsoidal function (the second objective function) subject to 1 linear constraint, and the same process repeats. 
+
+We divide the 48 constrained functions in groups with respect to their objective function. There are 8 groups, one for each objective function. Each group contains 6 different constrained functions as each objective function is tested with 6 different numbers of linear constraints. We list the groups below with some properties of the objective fuctions that define them. The number of linear constraints, :math:`l`, in a constrained function :math:`f_i` can be easily obtained by computing :math:`((i-1) \bmod 6) + 1`.
+
+**Group 1 - Constrained Sphere function:** :math:`f_1` -- :math:`f_6`
+
+.. math::
+  :label: cons_fun_sphere
+  :nowrap:
+
+   \begin{eqnarray*}
+   \begin{array}{rc}
+                          & f(x) = \|z\|^2 + f_{\textrm{opt}} \\
+      \textrm{subject to} & g_i(v) \leq 0, \quad i = 1, \ldots, l,\\
+   \end{array}
+   \end{eqnarray*}
+
+where :math:`v = x-x^*` and :math:`z = v-x^{\textrm{opt}}`.
+
+**Group 2 - Constrained Ellipsoid function:** :math:`f_7` -- :math:`f_{12}`
+
+.. math::
+  :label: cons_fun_ellipsoidal
+  :nowrap:
+
+   \begin{eqnarray*}
+   \begin{array}{rc}
+                          & f(x) = \displaystyle\sum_{i=1}^{D} 10^{6\frac{i-1}{D-1}} z_i^2 + f_{\textrm{opt}} \\
+      \textrm{subject to} & g_i(v) \leq 0, \quad i = 1, \ldots, l,\\
+   \end{array}
+   \end{eqnarray*}
+
+where :math:`v = T_{\textrm{osz}}(x-x^*)` and :math:`z = v-x^{\textrm{opt}}`.
+
+**Group 3 - Constrained Linear Slope:** :math:`f_{13}` -- :math:`f_{18}`
+
+.. math::
+  :label: cons_fun_linear_slope
+  :nowrap:
+
+   \begin{eqnarray*}
+   \begin{array}{rc}
+                          & f(x) = \displaystyle\sum_{i=1}^{D} 5 |s_i| - s_i\,z_i + f_{\textrm{opt}} \\
+      \textrm{subject to} & g_i(v) \leq 0, \quad i = 1, \ldots, l,\\
+   \end{array}
+   \end{eqnarray*}
+
+where :math:`v = x-x^*`, and :math:`z_i = v_i`  if :math:`x^{\textrm{opt}}_i v_i < 5^2` and 
+:math:`z_i = x^{\textrm{opt}}_i` otherwise, for  :math:`i = 1, \dots, D`.
+
+**Group 4 - Constrained Ellipsoid Rotated:** :math:`f_{19}` -- :math:`f_{24}`
+
+.. math::
+  :label: cons_fun_ellipsoid_rotated
+  :nowrap:
+
+   \begin{eqnarray*}
+   \begin{array}{rc}
+                          & f(x) = \displaystyle\sum_{i=1}^{D} 10^{6\frac{i-1}{D-1}} z_i^2 + f_{\textrm{opt}} \\
+      \textrm{subject to} & g_i(v) \leq 0, \quad i = 1, \ldots, l,\\
+   \end{array}
+   \end{eqnarray*}
+
+where :math:`v = T_{\textrm{osz}}(x-x^*)` and :math:`z = R\,(v-x^{\textrm{opt}})`.
+
+**Group 5 - Constrained Discus function:** :math:`f_{25}` -- :math:`f_{30}`
+
+.. math::
+  :label: cons_fun_discus
+  :nowrap:
+
+   \begin{eqnarray*}
+   \begin{array}{rc}
+                          & f(x) = 10^6 z_1^2 + \displaystyle\sum_{i=2}^{D} z_i^2 + f_{\textrm{opt}} \\
+      \textrm{subject to} & g_i(v) \leq 0, \quad i = 1, \ldots, l,\\
+   \end{array}
+   \end{eqnarray*}
+
+where :math:`v = T_{\textrm{osz}}(x-x^*)` and :math:`z = R\,(v-x^{\textrm{opt}})`.
+
+**Group 6 - Constrained Bent Cigar function:** :math:`f_{31}` -- :math:`f_{36}`
+
+.. math::
+  :label: cons_fun_bent_cigar
+  :nowrap:
+
+   \begin{eqnarray*}
+   \begin{array}{rc}
+                          & f(x) = z_1^2 + 10^6\displaystyle\sum_{i=2}^{D} z_i^2 + f_{\textrm{opt}} \\
+      \textrm{subject to} & g_i(v) \leq 0, \quad i = 1, \ldots, l,\\
+   \end{array}
+   \end{eqnarray*}
+
+where :math:`v = T_{\textrm{asy}}^{0.5}(x-x^*)` and :math:`z = R\,R\,(v-x^{\textrm{opt}})`.
+
+**Group 7 - Constrained Different Powers function:** :math:`f_{37}` -- :math:`f_{42}`
+
+.. math::
+  :label: cons_fun_different_powers
+  :nowrap:
+
+   \begin{eqnarray*}
+   \begin{array}{rc}
+                          & f(x) = \sqrt{10^6\displaystyle\sum_{i=1}^{D} |z_i|^{2+4\frac{i-1}{D-1}}} + f_{\textrm{opt}} \\
+      \textrm{subject to} & g_i(v) \leq 0, \quad i = 1, \ldots, l,\\
+   \end{array}
+   \end{eqnarray*}
+
+where :math:`v = x-x^*` and :math:`z = R\,(v-x^{\textrm{opt}})`.
+
+**Group 8 - Constrained Rastrigin function:** :math:`f_{43}` -- :math:`f_{48}`
+
+.. math::
+  :label: cons_fun_rastrigin
+  :nowrap:
+
+   \begin{eqnarray*}
+   \begin{array}{rc}
+                          & f(x) = 10\bigg(D - \displaystyle\sum_{i=1}^{D}\cos(2\pi z_i) \bigg) + \|z\|^2 + f_{\textrm{opt}} \\
+      \textrm{subject to} & g_i(v) \leq 0, \quad i = 1, \ldots, l,\\
+   \end{array}
+   \end{eqnarray*}
+
+where :math:`v = T_{\textrm{asy}}^{0.2}\,(T_{\textrm{osz}}(x-x^*))` and :math:`z = v-x^{\textrm{opt}}`.
+
 
 .. _`Coco framework`: https://github.com/numbbo/coco
 
