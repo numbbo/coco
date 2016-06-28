@@ -131,7 +131,7 @@ if __name__ == '__main__':
     parser.add_argument('input', default=[], nargs='+', help='path(s) to the input folder(s)')
     args = parser.parse_args()
 
-    print('Program called with arguments: \ninput folders = {}\n, fast = {}'.format(args.input, args.fast))
+    print('Program called with arguments: \ninput folders = {}\nfast = {}'.format(args.input, args.fast))
     print('functions = {} \ninstances = {}\ndimensions = {}\n'.format(args.functions, args.instances, args.dimensions))
 
     evaluations_append(args.input, args.functions, args.instances, args.dimensions, args.fast)

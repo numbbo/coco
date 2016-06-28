@@ -475,11 +475,11 @@ coco_archive_t *coco_archive(const char *suite_name,
                              const size_t dimension,
                              const size_t instance);
 /**
- * @brief Adds a solution with objectives (f1, f2) to the archive if none of the existing solutions in the
+ * @brief Adds a solution with objectives (y1, y2) to the archive if none of the existing solutions in the
  * archive dominates it. In this case, returns 1, otherwise the archive is not updated and the method
  * returns 0.
  */
-int coco_archive_add_solution(coco_archive_t *archive, const double f1, const double f2, const char *text);
+int coco_archive_add_solution(coco_archive_t *archive, const double y1, const double y2, const char *text);
 
 /**
  * @brief Returns the number of (non-dominated) solutions in the archive (computed first, if needed).
