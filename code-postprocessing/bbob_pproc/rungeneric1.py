@@ -263,7 +263,7 @@ def main(argv=None):
         algfolder = findfiles.get_output_directory_subfolder(args[0])
         outputdir = os.path.join(outputdir, algfolder)
         
-        print("Post-processing (1): will generate output " + 
+        print("\nPost-processing (1): will generate output " + 
                "data in folder %s" % outputdir)
         print("  this might take several minutes.")
 
@@ -343,7 +343,9 @@ def main(argv=None):
             plt.rc("font", **inset.rcfontlarger)
             plt.rc("legend", **inset.rclegendlarger)
             plt.rc('pdf', fonttype = 42)
+
             ppfigdim.main(dsList, values_of_interest, outputdir, genericsettings.verbose)
+
             plt.rcdefaults()
             print_done()
 
@@ -355,7 +357,7 @@ def main(argv=None):
         plt.rc('pdf', fonttype = 42)
 
         if genericsettings.isTab:
-            print("generating LaTeX tables...")
+            print("Generating LaTeX tables...")
             dictNoise = dsList.dictByNoise()
             for noise, sliceNoise in dictNoise.iteritems():
                 pptable.main(sliceNoise, inset.tabDimsOfInterest,
@@ -452,7 +454,6 @@ def main(argv=None):
         ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
                                     dictFunc[dictFunc.keys()[0]][0].algId,
                                     htmlPage = ppfig.HtmlPage.ONE,
-                                    values_of_interest = values_of_interest,
                                     isBiobjective = dsList.isBiobjective(),
                                     functionGroups = dsList.getFuncGroups())
 
