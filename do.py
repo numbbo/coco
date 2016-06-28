@@ -43,6 +43,7 @@ matlab_files = ['cocoCall.m', 'cocoEvaluateFunction.m', 'cocoObserver.m',
                 'cocoSetLogLevel.m', 'cocoSuite.m', 'cocoSuiteFree.m',
                 'cocoSuiteGetNextProblem.m', 'cocoSuiteGetProblem.m']
 
+
 ################################################################################
 ## C
 def build_c():
@@ -364,7 +365,8 @@ def run_matlab():
     build_matlab()
     wait_for_compilation_to_finish('./code-experiments/build/matlab/cocoCall')
     # run after compilation finished
-    run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'exampleexperiment, exit'], verbose=verbosity)
+    run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'exampleexperiment, exit'],
+        verbose=verbosity)
 
 
 def is_compiled(filenameprefix):
@@ -404,7 +406,7 @@ def build_matlab_sms():
                join(destination_folder, 'coco.c'), release)
     copy_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'))
     for f in matlab_files:
-        copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))    
+        copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
     copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
@@ -476,7 +478,8 @@ def test_octave():
     build_octave()
     try:
         if ('win32' in sys.platform):
-            run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'exampleexperiment.m'], verbose=verbosity)
+            run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'exampleexperiment.m'],
+                verbose=verbosity)
         else:
             run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'], verbose=verbosity)
     except subprocess.CalledProcessError:
@@ -493,7 +496,7 @@ def build_octave_sms():
                join(destination_folder, 'coco.c'), release)
     copy_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'))
     for f in matlab_files:
-        copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))            
+        copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
     copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
@@ -582,7 +585,7 @@ def build_java():
         jdkpath = '/System/Library/Frameworks/JavaVM.framework/Headers'
         jdkpath1 = '/Library/Java/JavaVirtualMachines/jdk' + jdkversion + '.jdk/Contents/Home/include'
         jdkpath2 = jdkpath1 + '/darwin'
-        run('code-experiments/build/java', ['gcc', '-I', jdkpath, '-I', jdkpath1, '-I', jdkpath2, '-c', 'CocoJNI.c'], 
+        run('code-experiments/build/java', ['gcc', '-I', jdkpath, '-I', jdkpath1, '-I', jdkpath2, '-c', 'CocoJNI.c'],
             verbose=verbosity)
         run('code-experiments/build/java', ['gcc', '-dynamiclib', '-o', 'libCocoJNI.jnilib',
                                             'CocoJNI.o'], verbose=verbosity)
@@ -632,18 +635,15 @@ def verify_postprocessing():
     # This is not affected by the verbosity value. Verbose should always be True.
     python('code-postprocessing/bbob_pproc', ['preparehtml.py', '-v'], verbose=True)
 
+
 ################################################################################
 ## Pre-processing
 def install_preprocessing():
+    build_python()
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
                'code-preprocessing/archive-update/interface/coco.c', release)
     copy_file('code-experiments/src/coco.h', 'code-preprocessing/archive-update/interface/coco.h')
     python('code-preprocessing/archive-update', ['setup.py', 'install', '--user'], verbose=verbosity)
-
-
-def run_preprocessing():
-    install_preprocessing()
-    python('code-preprocessing/archive-update', ['archive_update.py'], verbose=verbosity)
 
 
 ################################################################################
@@ -679,16 +679,16 @@ def test():
     test_python()
 
 
-
 verbosity = False
+
+
 def verbose(args):
-	
-	global verbosity
-	verbosity = True
-	main(args)
-	verbosity = False
-	
-	
+    global verbosity
+    verbosity = True
+    main(args)
+    verbosity = False
+
+
 def silent(args):
     """calls `main(args)` with redirected output to keep the console clean"""
     # redirect stdout and call main
@@ -779,7 +779,6 @@ Available commands for developers:
   leak-check              - Check for memory leaks in C
   
   install-preprocessing   - Install preprocessing (user-locally)
-  run-preprocessing       - Run preprocessing (update archives)
 
 To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
