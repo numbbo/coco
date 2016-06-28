@@ -117,8 +117,9 @@ def prepare_ecdfs_figure_caption():
                 r"for each selected target."
                 )
     refalgtext = (
-                  r"As reference algorithm, ``%s`` is shown as light " +
-                  r"thick line with diamond markers." % (testbed.best_algorithm_displayname)
+                  r"As reference algorithm, ``%s`` "  % (testbed.best_algorithm_displayname) +
+                  r"is shown as light " +
+                  r"thick line with diamond markers."
                  )
     if testbed.best_algorithm_displayname == "best 2009":
         refalgtext = best2009text
