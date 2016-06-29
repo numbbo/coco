@@ -301,7 +301,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
           norm = mo_get_norm(problem1->best_parameter, problem2->best_parameter, problem->number_of_variables);
           if (norm < apart_enough) {
             coco_debug(
-                "suite_biobj_get_new_instance(): The extremal optimal points of %s are too close in the decision space",
+                "suite_biobj_get_new_instance(): The extreme points of %s are too close in the decision space",
                 problem->problem_id);
             coco_debug("norm = %e", norm);
             break_search = 1;
