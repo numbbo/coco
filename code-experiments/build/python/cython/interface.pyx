@@ -41,6 +41,10 @@ cdef extern from "coco.h":
     void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
     void coco_recommend_solution(coco_problem_t *problem, const double *x)
 
+    int coco_logger_biobj_feed_solution(coco_problem_t *problem, const size_t evaluation, const double *y)
+    coco_problem_t *coco_suite_get_problem_by_function_dimension_instance(coco_suite_t *suite, const size_t function,
+                                                                          const size_t dimension, const size_t instance)
+
     coco_problem_t* coco_suite_get_next_problem(coco_suite_t*, coco_observer_t*)
     coco_problem_t* coco_suite_get_problem(coco_suite_t *, const size_t)
 
@@ -316,6 +320,42 @@ also report back a missing name to https://github.com/numbbo/coco/issues
                                 True, self._name).add_observer(observer)
         except:
             raise NoSuchProblemException(self.name, str(id))
+
+    def get_problem_by_function_dimension_instance(self, function, dimension, instance, observer=None):
+        """`get_problem_by_function_dimension_instance(self, id, observer=None)` returns a `Problem` instance,
+        by default unobserved, using function, dimension and instance to identify the desired problem. Note that
+        although a suite can contain multiple problems with the same function, dimension and instance, this function
+        will always return the first problem in the suite that corresponds to the given values.
+
+        >>> import cocoex as ex
+        >>> suite = ex.Suite("bbob-biobj", "", "")
+        >>> problem = suite.get_problem_by_function_dimension_instance(1, 2, 3)
+        >>> # work work work using problem
+        >>> problem.free()
+
+        Details:
+        - Function, dimension and instance are integer values from 1 on.
+
+        - This call does not affect the state of the `current_problem` and `current_index` attributes.
+
+        - For some suites and/or observers, the `free()` method of the problem must be called before the next call
+          of `get_problem_by_function_dimension_instance`. Otherwise Python might just silently die, which is e.g.
+          a known issue of the "bbob" observer.
+        """
+        cdef size_t _function = function # "conversion" to size_t
+        cdef size_t _dimension = dimension # "conversion" to size_t
+        cdef size_t _instance = instance # "conversion" to size_t
+
+        if not self.initialized:
+            raise ValueError("Suite has been finalized/free'ed")
+        try:
+            return Problem_init(coco_suite_get_problem_by_function_dimension_instance(self.suite, _function,
+                                                                                      _dimension, _instance),
+                                True, self._name).add_observer(observer)
+        except:
+            raise NoSuchProblemException(self.name, 'function: {}, dimension: {}, instance: {}'.format(function,
+                                                                                                       dimension,
+                                                                                                       instance))
 
     def __getitem__(self, key):
         """`self[i]` is a synonym for `self.get_problem(i)`, see `get_problem`
@@ -671,6 +711,26 @@ cdef class Problem:
         if self.problem is NULL:
             raise InvalidProblemException()
         coco_recommend_solution(self.problem, <double *>np.PyArray_DATA(_x))
+
+    def logger_biobj_feed_solution(self, evaluation, y):
+        """Feed the given solution to logger_biobj in order to reconstruct its output. Return 1 if the given solution
+        updated the archive and 0 otherwise.
+
+        Used by preprocessing when updating the .info, .dat and .tdat files with new indicator reference values.
+        """
+        cdef size_t _evaluation = evaluation # "conversion" to size_t
+        cdef np.ndarray[double, ndim=1, mode="c"] _y
+        y = np.array(y, copy=False, dtype=np.double, order='C')
+        if np.size(y) != self.number_of_objectives:
+            raise ValueError(
+                "Dimension, `np.size(y)==%d`, of input `y` does " % np.size(y) +
+                "not match the number of objectives `number_of_objectives==%d`."
+                             % self.number_of_objectives)
+        _y = y  # this is the final type conversion
+        if self.problem is NULL:
+            raise InvalidProblemException()
+        return coco_logger_biobj_feed_solution(self.problem, _evaluation, <double *>np.PyArray_DATA(_y))
+
 
     def add_observer(self, observer):
         """`add_observer(self, observer: Observer)`, see also `Observer`.

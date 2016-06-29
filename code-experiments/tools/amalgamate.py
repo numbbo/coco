@@ -8,6 +8,7 @@ from __future__ import print_function
 import sys
 import re
 from os import path
+from cocoutils import expand_file
 
 class Amalgator:
     def __init__(self, destination_file, release):
@@ -53,9 +54,18 @@ class Amalgator:
                     self.destination_fd.write(line)
                 line_number += 1
 
-def amalgamate(source_files, destination_file, release=False):
+
+def amalgamate(source_files, destination_file, release=False, replace_dict=None):
     print("AML\t%s -> %s" % (str(source_files), destination_file))
     amalgator = Amalgator(destination_file, release)
     for filename in source_files:
         amalgator.process_file(filename)
     amalgator.finish()
+    if replace_dict:
+        # Replace strings in the destination file
+        from shutil import copyfile
+        from os import remove
+        copyfile(destination_file, destination_file+'.in')
+        expand_file(destination_file+'.in', destination_file, replace_dict)
+        remove(destination_file+'.in')
+
