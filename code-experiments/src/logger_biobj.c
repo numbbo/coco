@@ -502,6 +502,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
         indicator_name, problem->problem_type, observer->algorithm_info);
     if (logger->log_nondom_mode == LOG_NONDOM_READ)
       fprintf(indicator->info_file, "\n%% reconstructed");
+    fprintf(indicator->info_file, "\n%% coco_version = %s", coco_version);
   }
   if ((observer_biobj->previous_function != problem->suite_dep_function)
     || (observer_biobj->previous_dimension != problem->number_of_variables)) {
