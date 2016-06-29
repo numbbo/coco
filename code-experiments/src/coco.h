@@ -46,6 +46,16 @@ extern "C" {
 #endif
 
 /**
+ * @brief COCO's version.
+ *
+ * Automatically updated by do.py.
+ */
+/**@{*/
+static const char coco_version[32] = "$COCO_VERSION";
+/**@}*/
+
+/***********************************************************************************************************/
+/**
  * @brief COCO's own pi constant. Simplifies the case, when the value of pi changes.
  */
 /**@{*/
