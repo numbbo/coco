@@ -3,10 +3,9 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import os
 import argparse
-from cocoprep.archive_load_data import parse_range
 
+from cocoprep.archive_load_data import parse_range, create_path, remove_empty_file
 from cocoprep.archive_load_data import get_file_name_list, parse_archive_file_name, parse_problem_instance_file_name
-from cocoprep.archive_load_data import create_path, remove_empty_file
 from cocoprep.archive_exceptions import PreprocessingException, PreprocessingWarning
 
 
@@ -142,10 +141,10 @@ if __name__ == '__main__':
                         help='upper bound of the decision space')
     parser.add_argument('output', help='path to the output folder')
     parser.add_argument('summary', help='file name for the summary')
-    parser.add_argument('input', default=[], nargs='+', help='path(s) to the input folder(s)')
+    parser.add_argument('input',  help='path to the input folder')
     args = parser.parse_args()
 
-    print('Program called with arguments: \ninput folders = {}\noutput folder = {}'.format(args.input, args.output))
+    print('Program called with arguments: \ninput folder = {}\noutput folder = {}'.format(args.input, args.output))
     print('summary file = {}'.format(args.summary))
     print('functions = {} \ninstances = {}\ndimensions = {}'.format(args.functions, args.instances, args.dimensions))
     print('lower bound = {} \nupper bound = {}\n'.format(args.lower_bound, args.upper_bound))
