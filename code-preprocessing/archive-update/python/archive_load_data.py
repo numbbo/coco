@@ -2,11 +2,14 @@
 """Raw pre-processing routines for loading data from archive files and files with best hypervolume values.
 """
 from __future__ import division, print_function, unicode_literals
+
 import os
 import os.path
 import re
 import six
 from time import gmtime, strftime
+from itertools import groupby
+from operator import itemgetter
 
 from .archive_exceptions import PreprocessingWarning, PreprocessingException
 
@@ -273,3 +276,20 @@ def parse_range(input_string=""):
             except:
                 raise PreprocessingException('Range {} not in correct format'.format(input_string))
     return list(selection)
+
+
+def get_range(input_set):
+    """Parses the input set containing integers, such as:
+       (1, 2, 10, 3, 4, 5)
+       Returns the shortest string of sorted integers and integer ranges:
+       1, 2-5, 10
+       :param input_set: input set with integers (if empty, the result is an empty string)
+    """
+    result = []
+    for k, g in groupby(enumerate(sorted(input_set)), lambda (i, x): i - x):
+        i_list = map(itemgetter(1), g)
+        if len(i_list) > 1:
+            result.append('{}-{}'.format(i_list[0], i_list[-1]))
+        else:
+            result.append('{}'.format(i_list[0]))
+    return ','.join(result)
