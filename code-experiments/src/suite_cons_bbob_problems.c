@@ -60,7 +60,7 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
                                                       const size_t number_of_linear_constraints,
                                                       const long rseed,
                                                       double *feasible_direction,
-                                                      const double *xshift,
+                                                      const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
                                                          		
@@ -104,7 +104,7 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  problem = transform_vars_shift(problem, xshift, 0);
+  problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -127,7 +127,7 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
                                                       const size_t number_of_linear_constraints,
                                                       const long rseed,
                                                       double *feasible_direction,
-                                                      const double *xshift,
+                                                      const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
@@ -173,7 +173,7 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  problem = transform_vars_shift(problem, xshift, 0);
+  problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -196,7 +196,7 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
                                                       const size_t number_of_linear_constraints,
                                                       const long rseed,
                                                       double *feasible_direction,
-                                                      const double *xshift,
+                                                      const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
@@ -242,7 +242,7 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  problem = transform_vars_shift(problem, xshift, 0);
+  problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -265,7 +265,7 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
                                                       const size_t number_of_linear_constraints,
                                                       const long rseed,
                                                       double *feasible_direction,
-                                                      const double *xshift,
+                                                      const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
@@ -309,7 +309,7 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  problem = transform_vars_shift(problem, xshift, 0);
+  problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -332,7 +332,7 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
                                                       const size_t number_of_linear_constraints,
                                                       const long rseed,
                                                       double *feasible_direction,
-                                                      const double *xshift,
+                                                      const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
@@ -378,7 +378,7 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  problem = transform_vars_shift(problem, xshift, 0);
+  problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -401,7 +401,7 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
                                                       const size_t number_of_linear_constraints,
                                                       const long rseed,
                                                       double *feasible_direction,
-                                                      const double *xshift,
+                                                      const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
@@ -447,7 +447,7 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  problem = transform_vars_shift(problem, xshift, 0);
+  problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -470,7 +470,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
                                                       const size_t number_of_linear_constraints,
                                                       const long rseed,
                                                       double *feasible_direction,
-                                                      const double *xshift,
+                                                      const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
@@ -514,7 +514,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  problem = transform_vars_shift(problem, xshift, 0);
+  problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
@@ -537,7 +537,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
                                                       const size_t number_of_linear_constraints,
                                                       const long rseed,
                                                       double *feasible_direction,
-                                                      const double *xshift,
+                                                      const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
 																			
@@ -572,12 +572,13 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
   problem->evaluations = 0;  
   
+  problem = transform_vars_asymmetric(problem, 0.2);
   problem = transform_vars_oscillate(problem);
   
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
    */
-  problem = transform_vars_shift(problem, xshift, 0);
+  problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem_type_temp, 
