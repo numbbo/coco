@@ -97,7 +97,7 @@ The set of all feasible solutions is called the *feasible set*, denoted here by 
 solution* is a point :math:`x^{\textrm{opt}} \in \cal F` such that :math:`f(x^{\textrm{opt}}) \leq f(x)` for all :math:`x \in \cal F`. 
 We also make distinction between *global optimal solution* and *local optimal solution*.
 The latter is a point :math:`x^{\textrm{opt}} \in \cal F` such that :math:`f(x^{\textrm{opt}}) \leq f(x)` for all :math:`x \in \cal N \cap \cal F`, 
-where :math:`\cal N` is a neighborhood of :math:`x^{\textrm{opt}}`, while the former consider the entire set :math:`\cal F` in the definition. 
+where :math:`\cal N` is a neighborhood of :math:`x^{\textrm{opt}}`, while the former considers the entire set :math:`\cal F` in the definition. 
 In this documentation, we always refer the term "optimal solution" to "global optimal solution" and vice-versa. The latter term is used
 in contexts where local optimal solutions are also in discussion.
 
@@ -148,9 +148,9 @@ Terminology
   We define *runtime*, or *run-length* as the *number of
   evaluations* conducted on a given problem until a prescribed target value is
   hit, also referred to as the sum of the number of *objective function* evaluations 
-  or |f|-evaluations and the number of *constraint* evaluations 
-  or |g|-evaluations. We emphasize here that one single *constraint evaluation* in `Coco` is equivalent
-  to one call to the routine that evaluates *all* the constraints at once, 
+  and the number of *constraint* evaluations. We emphasize here that one single 
+  *constraint evaluation* in `Coco` is equivalent to one call to the routine that 
+  evaluates *all* the constraints at once, 
   |coco_evaluate_constraint|_. Runtime is our central performance measure.
 
 .. _subsec-instances-and-problems:
@@ -179,7 +179,7 @@ Instances and problems
 
   .. math::
 
-    f(n, i, j)(\x) \quad \textrm{subject to}\quad g(n, i, k, j)(\x) \leq 0, \quad k = 1, \ldots, l.
+    f(n, i, j)(x) \quad \textrm{subject to}\quad g(n, i, k, j)(x) \leq 0, \quad k = 1, \ldots, l.
 
   The rationale behind the use of parameter |k| is the following. Suppose that a constrained function
   is composed of the objective function and two linear constraints :math:`g_1(x) \equiv a_i^T x` and 
@@ -268,7 +268,7 @@ How the constraints are built
 -----------------------------
 
 The linear constraints :math:`g_i` are defined by their gradients :math:`a_i` which are randomly generated using a normal distribution.
-In order to make sure that the resulting feasible set is not empty, the following steps are considered in the generation process.
+In order to ensure that the resulting feasible set contains points other than the origin, the following steps are considered in the generation process.
   
 1) Sample :math:`l` vectors :math:`a_1`, :math:`a_2`, :math:`\ldots`, :math:`a_l`.
 
@@ -307,7 +307,7 @@ A point that satisfies the KKT conditions is called a *KKT point*. Note that a K
 
 **Generic algorithm for defining the constrained functions**
 
-Initially, we choose the origin to be the optimal solution of the constrained functions. Then, we pick up a ``bbob`` function to be the objective function and we build the linear constraints in such a way that the origin becomes a KKT point and also the optimal solution to the final constrained function. Once the constrained function is well defined, we apply a translation to it (objective function + constraints) in order to move the optimal solution away from the origin. The steps for constructing the constrained functions can be summarized in an algorithmic way as it follows. Assume for now that the chosen ``bbob`` function does not contain any nonlinear transformation in its definition.
+Initially, we choose the origin to be the optimal solution of the constrained functions. Then, we pick up a ``bbob`` function to be the objective function and we build the linear constraints in such a way that the origin becomes a KKT point and also the optimal solution to the final constrained function. The first steps for constructing the constrained functions can be summarized in an algorithmic way as it follows. Assume for now that the chosen ``bbob`` function does not contain any nonlinear transformation in its definition.
 
 1. Pick up a ``bbob`` function :math:`f` to be the objective function.
 
@@ -317,11 +317,25 @@ Initially, we choose the origin to be the optimal solution of the constrained fu
 
 4. Generate the other constraints randomly using a normal distribution while making sure that :math:`p` remais feasible for each one.
 
-The point :math:`p=\nabla f(\mathbf{0})` defined in Step 2 is used in the definition of the first linear constraint in Step 3 and also to guarantee nonemptiness of the feasible set in Step 4 (see Subsection :ref:`subsec-how-cons-are-built`). By setting the Lagrange multipliers :math:`\mu_1 = 1` and :math:`\mu_i = 0` for :math:`i=2,\ldots,l`, we have that all the KKT conditions are satisfied at the origin, which makes it a KKT point.
+The point :math:`p=\nabla f(\mathbf{0})` defined in Step 2 is used in the definition of the first linear constraint in Step 3 and also to guarantee that the feasible set has more points than just the origin in Step 4 (see Subsection :ref:`subsec-how-cons-are-built`). By setting the Lagrange multipliers :math:`\mu_1 = 1` and :math:`\mu_i = 0` for :math:`i=2,\ldots,l`, we have that all the KKT conditions are satisfied at the origin, which makes it a KKT point. We give below an example of the definition of a constrained function with two figures. The figure on the left shows the Steps 1 to 3 while the one on the right shows the final constrained function. The hashed lines form the boundary of the feasible set :math:`\cal F` in each figure. Note that the point :math:`p` remains feasible after the addition of other linear constraintes in the figure on the right.
 
-7 out of the 8 objective functions - all except the Rastrigin function, which is handled differently - composing the constrained functions in ``bbob-constr-lin`` are convex or pseudoconvex - without considering the nonlinear transformations -, which together with the fact that the linear constraints are also quasiconvex implies that a KKT point is also a global optimal solution to these constrained functions.
+.. |logo1| image:: _figs/defining_a_constrained_function.png
+   :width: 100%
+   :align: middle
 
-If the ``bbob`` function chosen in Step 2 includes nonlinear transformations, the algorithm above cannot ensure that the origin is the optimal solution due to the lack of pseudoconvexity of the objective function, which was used to guarantee the sufficiency of the KKT conditions for optimality. To solve this issue, we add a new step between Step 1 and Step 2 where we remove the nonlinear transformations applied to the search space in the ``bbob`` function. The nonlinear transformations are applied to the whole constrained function (:math:`f` and :math:`g_i`) only after the constraints have been built and the origin has become the optimal solution. As we show in the Subsection :ref:`subsec-applying-nonlinear-transformations`, the application of the `Coco` nonlinear transformations to a constrained function whose optimal solution is at the origin does not change its optimal solution. 
+.. _fig-res-cons-func:
+
+.. |logo2| image:: _figs/final_constrained_function.png
+   :width: 100%
+   :align: middle
+
++---------+---------+
+| |logo1| | |logo2| |
++---------+---------+
+
+7 out of the 8 objective functions - all except the Rastrigin function, which is handled differently - composing the constrained functions in ``bbob-constr-lin`` are convex or pseudoconvex - without considering the nonlinear transformations -, which together with the fact that every linear constraint is also quasiconvex implies that a KKT point is also a global optimal solution to these constrained functions.
+
+If the ``bbob`` function chosen in Step 2 includes nonlinear transformations, the algorithm above cannot ensure that the origin is the optimal solution due to the lack of pseudoconvexity of the objective function, which was used to guarantee the sufficiency of the KKT conditions for optimality. To solve this issue, we add a new step between Step 1 and Step 2 where we remove the nonlinear transformations applied to the search space in the ``bbob`` function. The nonlinear transformations are applied to the whole constrained function (:math:`f` and :math:`g_i`) only after the constraints have been built and the origin has been defined as the optimal solution. As we show in the Subsection :ref:`subsec-applying-nonlinear-transformations`, the application of the `Coco` nonlinear transformations to a constrained function whose optimal solution is at the origin does not change its optimal solution. 
 
 The final generic algorithm for defining the constrained functions is given below. As it can be seen, we also added a new step to move the optimal solution away from the origin in the end.
 
@@ -369,7 +383,7 @@ where :math:`v = T_{\textrm{asy}}^{0.2}(T_{\textrm{osz}}(x - x^{\textrm{opt}}))`
 
 Differently from the other 7 constrained functions, :eq:`rastrigin2` does not have a pseudoconvex objective function. Therefore, we define the optimal solution in this case in a different manner. We first set the constant vector :math:`x^{\textrm{shift}}=(-1,\ldots,-1)^T`. We then obtain a Rastrigin function whose unconstrained global optimal solution is at :math:`x^{\textrm{shift}}=(-1,\ldots,-1)^T`. By defintion, such a function contains many local optimal solution which are (approximately) located on the :math:`n`-dimensional integer lattice :math:`\mathbb{Z}^n` translated by :math:`-x^{\textrm{shift}}`.
 
-Due to the translation of the objective function by :math:`-x^{\textrm{shift}}`, the origin is no more the unconstrained global optimal solution, but an unconstrained local optimal solution. In order to make it the constrained global optimal solution, we add a linear constraint function :math:`g_1(x) \equiv a_1^T x` whose gradient is given by :math:`a_1 = x^{\textrm{shift}}`. :numref:`fig-cons-rastrigin` shows a 2-dimensional example of the resulting function. As it can be seen, all the feasible local optimal solutions in the integer lattice, situated in the upper right part of of the graph, have larger function values than the origin's due to the fact that they are farther than the origin with respect to the unconstrained global optimal solution, :math:`x^{\textrm{shift}}=(-1,\ldots,-1)^T`, which increases the value of the term :math:`\|x-x^{\textrm{shift}}\|^2` in the function. 
+Due to the translation of the objective function by :math:`-x^{\textrm{shift}}`, the origin is no more the unconstrained global optimal solution, but an unconstrained local optimal solution. In order to make it the constrained global optimal solution, we add a linear constraint function :math:`g_1(x) \equiv a_1^T x` whose gradient is given by :math:`a_1 = x^{\textrm{shift}}`. :numref:`fig-cons-rastrigin` shows a 2-dimensional example of the resulting function. As it can be seen, all the constrained local optimal solutions in the integer lattice, situated in the upper right part of of the graph, have function values larger than the origin's due to the fact that they are farther with respect to the unconstrained global optimal solution, :math:`x^{\textrm{shift}}=(-1,\ldots,-1)^T`, which increases the value of the term :math:`\|x-x^{\textrm{shift}}\|^2` in the function and thus the function value itself.
 
 .. _fig-cons-rastrigin:
 
@@ -377,9 +391,9 @@ Due to the translation of the objective function by :math:`-x^{\textrm{shift}}`,
    :scale: 80
    :align: center
 
-   Construction of the constrained Rastrigin function.
+   Constrained Rastrigin function in :eq:`rastrigin2` with one single linear constraint :math:`g_1(x)\equiv a_1^T x \leq 0`, where :math:`a_1=x_{\textrm{shift}}=(-1,\ldots,-1)^T`.
 
-Next, all the other linear constraints are randomly generated while care is taken to keep the point :math:`p=-a_1=(1,\ldots,1)^T` feasible. We then apply the nonlinear transformations :math:`T_{\textrm{osz}}` and :math:`T_{\textrm{asy}}^{0.2}` to the constrained function to make it less regular. Finally, we choose a random vector :math:`x^{\textrm{opt}}` to be the optimal solution and translate the constrained function by :math:`-x^{\textrm{opt}}`.
+Next, all the other linear constraints are randomly generated while care is taken to keep the point :math:`p=-a_1=(1,\ldots,1)^T` feasible in order to guarantee at least a feasible half-line defined by :math:`\{\alpha p\,|\,\alpha\geq0\}`. We then apply the nonlinear transformations :math:`T_{\textrm{osz}}` and :math:`T_{\textrm{asy}}^{0.2}` to the constrained function to make it less regular. Finally, we choose a random vector :math:`x^{\textrm{opt}}` to be the optimal solution and translate the constrained function by :math:`-x^{\textrm{opt}}`.
 
 .. _subsec-applying-nonlinear-transformations:
 
@@ -607,6 +621,8 @@ where :math:`v = T_{\textrm{asy}}^{0.2}\,(T_{\textrm{osz}}(x-x^{\textrm{opt}}))`
 * Highly multimodal function with a comparatively regular structure for the placement of the local optimal solutions. The transformations :math:`T_{\textrm{asy}}` and :math:`T_{\textrm{osz}}` alleviate the symmetry and regularity of the original Rastrigin function.
 
 * Roughly :math:`10^n` local optimal solutions, conditioning is about :math:`10^6`.
+
+* As explained in the previous section, :math:`x^{\textrm{shift}}=(-1,\ldots,-1)^T` for this constrained function.
 
 .. _`Coco framework`: https://github.com/numbbo/coco
 
