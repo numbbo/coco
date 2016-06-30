@@ -459,6 +459,9 @@ def main(argv=None):
 
         latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
         prepend_to_file(latex_commands_file,
+                        ['\\providecommand{\\bbobloglosstablecaption}[1]{',
+                         pplogloss.table_caption(), '}'])
+        prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglossfigurecaption}[1]{',
                          pplogloss.figure_caption(), '}'])
         prepend_to_file(latex_commands_file,
