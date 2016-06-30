@@ -434,7 +434,7 @@ Instances
 ---------
 Our test functions are parametrized and instances are instantiations of the
 underlying parameters (see [HAN2016co]_). The instances for the bi-objective
-functions are using instances of each single objective function composing the
+functions are obtained using instances of each single objective function composing the
 bi-objective one. In addition, we assert two conditions:
 
   1. The Euclidean distance between the two single-objective optima (also called the 
