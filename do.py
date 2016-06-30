@@ -43,15 +43,19 @@ matlab_files = ['cocoCall.m', 'cocoEvaluateFunction.m', 'cocoObserver.m',
                 'cocoSetLogLevel.m', 'cocoSuite.m', 'cocoSuiteFree.m',
                 'cocoSuiteGetNextProblem.m', 'cocoSuiteGetProblem.m']
 
+
 ################################################################################
 ## C
 def build_c():
     """ Builds the C source code """
     global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'], 'code-experiments/build/c/coco.c', release)
-    copy_file('code-experiments/src/coco.h', 'code-experiments/build/c/coco.h')
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'], 'code-experiments/build/c/coco.c', release,
+               {"COCO_VERSION": git_version(pep440=True)})
+    expand_file('code-experiments/src/coco.h', 'code-experiments/build/c/coco.h',
+                {"COCO_VERSION": git_version(pep440=True)})
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/examples/bbob2009-c-cmaes/coco.c')
-    copy_file('code-experiments/build/c/coco.h', 'code-experiments/examples/bbob2009-c-cmaes/coco.h')
+    expand_file('code-experiments/build/c/coco.h', 'code-experiments/examples/bbob2009-c-cmaes/coco.h',
+                {'COCO_VERSION': git_version(pep440=True)})
     write_file(git_revision(), "code-experiments/build/c/REVISION")
     write_file(git_version(), "code-experiments/build/c/VERSION")
     if 11 < 3:
@@ -136,7 +140,8 @@ def build_c_unit_tests():
         copy_file(os.path.join(libraryPath, fileName),
                   os.path.join('code-experiments/test/unit-test', fileName))
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/unit-test/coco.c')
-    copy_file('code-experiments/src/coco.h', 'code-experiments/test/unit-test/coco.h')
+    expand_file('code-experiments/src/coco.h', 'code-experiments/test/unit-test/coco.h',
+                {'COCO_VERSION': git_version(pep440=True)})
     make("code-experiments/test/unit-test", "clean", verbose=verbosity)
     make("code-experiments/test/unit-test", "all", verbose=verbosity)
 
@@ -152,7 +157,8 @@ def run_c_unit_tests():
 def build_c_integration_tests():
     """ Builds integration tests in C """
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/integration-test/coco.c')
-    copy_file('code-experiments/src/coco.h', 'code-experiments/test/integration-test/coco.h')
+    expand_file('code-experiments/src/coco.h', 'code-experiments/test/integration-test/coco.h',
+                {'COCO_VERSION': git_version(pep440=True)})
     copy_file('code-experiments/src/bbob2009_testcases.txt',
               'code-experiments/test/integration-test/bbob2009_testcases.txt')
     copy_file('code-experiments/src/bbob2009_testcases2.txt',
@@ -179,7 +185,8 @@ def build_c_example_tests():
         time.sleep(1)  # Needed to avoid permission errors for os.makedirs
     os.makedirs('code-experiments/test/example-test')
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/example-test/coco.c')
-    copy_file('code-experiments/src/coco.h', 'code-experiments/test/example-test/coco.h')
+    expand_file('code-experiments/src/coco.h', 'code-experiments/test/example-test/coco.h',
+                {'COCO_VERSION': git_version(pep440=True)})
     copy_file('code-experiments/build/c/example_experiment.c',
               'code-experiments/test/example-test/example_experiment.c')
     copy_file('code-experiments/build/c/Makefile.in', 'code-experiments/test/example-test/Makefile.in')
@@ -225,8 +232,9 @@ def install_postprocessing():
 def _prep_python():
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'], 'code-experiments/build/python/cython/coco.c',
-               release)
-    copy_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h')
+               release, {"COCO_VERSION": git_version(pep440=True)})
+    expand_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h',
+                {'COCO_VERSION': git_version(pep440=True)})
     copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
     copy_file('code-experiments/src/bbob2009_testcases2.txt', 'code-experiments/build/python/bbob2009_testcases2.txt')
     copy_file('code-experiments/build/python/README.md', 'code-experiments/build/python/README.txt')
@@ -347,8 +355,9 @@ def build_matlab():
 
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_matlab.c'], 'code-experiments/build/matlab/coco.c',
-               release)
-    copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
+               release, {"COCO_VERSION": git_version(pep440=True)})
+    expand_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h',
+                {'COCO_VERSION': git_version(pep440=True)})
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
     run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'], verbose=verbosity)
@@ -364,7 +373,8 @@ def run_matlab():
     build_matlab()
     wait_for_compilation_to_finish('./code-experiments/build/matlab/cocoCall')
     # run after compilation finished
-    run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'exampleexperiment, exit'], verbose=verbosity)
+    run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'exampleexperiment, exit'],
+        verbose=verbosity)
 
 
 def is_compiled(filenameprefix):
@@ -401,10 +411,12 @@ def build_matlab_sms():
     destination_folder = 'code-experiments/examples/bbob-biobj-matlab-smsemoa'
     # amalgamate and copy files
     amalgamate(core_files + ['code-experiments/src/coco_runtime_matlab.c'],
-               join(destination_folder, 'coco.c'), release)
-    copy_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'))
+               join(destination_folder, 'coco.c'), release,
+               {"COCO_VERSION": git_version(pep440=True)})
+    expand_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'),
+                {'COCO_VERSION': git_version(pep440=True)})
     for f in matlab_files:
-        copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))    
+        copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
     copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
@@ -433,8 +445,10 @@ def build_octave():
 
     global release
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
-               'code-experiments/build/matlab/coco.c', release)
-    copy_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h')
+               'code-experiments/build/matlab/coco.c', release,
+               {"COCO_VERSION": git_version(pep440=True)})
+    expand_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h',
+                {'COCO_VERSION': git_version(pep440=True)})
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
 
@@ -476,7 +490,8 @@ def test_octave():
     build_octave()
     try:
         if ('win32' in sys.platform):
-            run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'exampleexperiment.m'], verbose=verbosity)
+            run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'exampleexperiment.m'],
+                verbose=verbosity)
         else:
             run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'], verbose=verbosity)
     except subprocess.CalledProcessError:
@@ -490,10 +505,12 @@ def build_octave_sms():
     destination_folder = 'code-experiments/examples/bbob-biobj-matlab-smsemoa'
     # amalgamate and copy files
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
-               join(destination_folder, 'coco.c'), release)
-    copy_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'))
+               join(destination_folder, 'coco.c'), release,
+               {"COCO_VERSION": git_version(pep440=True)})
+    expand_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'),
+                {'COCO_VERSION': git_version(pep440=True)})
     for f in matlab_files:
-        copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))            
+        copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
     copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
@@ -523,8 +540,10 @@ def run_matlab_sms():
 def build_java():
     """ Builds the example experiment in Java """
     global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'], 'code-experiments/build/java/coco.c', release)
-    copy_file('code-experiments/src/coco.h', 'code-experiments/build/java/coco.h')
+    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'], 'code-experiments/build/java/coco.c', release,
+               {"COCO_VERSION": git_version(pep440=True)})
+    expand_file('code-experiments/src/coco.h', 'code-experiments/build/java/coco.h',
+                {'COCO_VERSION': git_version(pep440=True)})
     write_file(git_revision(), "code-experiments/build/java/REVISION")
     write_file(git_version(), "code-experiments/build/java/VERSION")
     run('code-experiments/build/java', ['javac', 'CocoJNI.java'], verbose=verbosity)
@@ -582,7 +601,7 @@ def build_java():
         jdkpath = '/System/Library/Frameworks/JavaVM.framework/Headers'
         jdkpath1 = '/Library/Java/JavaVirtualMachines/jdk' + jdkversion + '.jdk/Contents/Home/include'
         jdkpath2 = jdkpath1 + '/darwin'
-        run('code-experiments/build/java', ['gcc', '-I', jdkpath, '-I', jdkpath1, '-I', jdkpath2, '-c', 'CocoJNI.c'], 
+        run('code-experiments/build/java', ['gcc', '-I', jdkpath, '-I', jdkpath1, '-I', jdkpath2, '-c', 'CocoJNI.c'],
             verbose=verbosity)
         run('code-experiments/build/java', ['gcc', '-dynamiclib', '-o', 'libCocoJNI.jnilib',
                                             'CocoJNI.o'], verbose=verbosity)
@@ -632,18 +651,21 @@ def verify_postprocessing():
     # This is not affected by the verbosity value. Verbose should always be True.
     python('code-postprocessing/bbob_pproc', ['preparehtml.py', '-v'], verbose=True)
 
+
 ################################################################################
 ## Pre-processing
 def install_preprocessing():
+    global release
+    expand_file(join('code-preprocessing/archive-update', 'setup.py.in'),
+                join('code-preprocessing/archive-update', 'setup.py'),
+                {'COCO_VERSION': git_version(pep440=True)})
+    build_python()
     amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
-               'code-preprocessing/archive-update/interface/coco.c', release)
-    copy_file('code-experiments/src/coco.h', 'code-preprocessing/archive-update/interface/coco.h')
+               'code-preprocessing/archive-update/interface/coco.c', release,
+               {"COCO_VERSION": git_version(pep440=True)})
+    expand_file('code-experiments/src/coco.h', 'code-preprocessing/archive-update/interface/coco.h',
+                {'COCO_VERSION': git_version(pep440=True)})
     python('code-preprocessing/archive-update', ['setup.py', 'install', '--user'], verbose=verbosity)
-
-
-def run_preprocessing():
-    install_preprocessing()
-    python('code-preprocessing/archive-update', ['archive_update.py'], verbose=verbosity)
 
 
 ################################################################################
@@ -679,16 +701,16 @@ def test():
     test_python()
 
 
-
 verbosity = False
+
+
 def verbose(args):
-	
-	global verbosity
-	verbosity = True
-	main(args)
-	verbosity = False
-	
-	
+    global verbosity
+    verbosity = True
+    main(args)
+    verbosity = False
+
+
 def silent(args):
     """calls `main(args)` with redirected output to keep the console clean"""
     # redirect stdout and call main
@@ -779,7 +801,6 @@ Available commands for developers:
   leak-check              - Check for memory leaks in C
   
   install-preprocessing   - Install preprocessing (user-locally)
-  run-preprocessing       - Run preprocessing (update archives)
 
 To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
