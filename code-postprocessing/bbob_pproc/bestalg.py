@@ -456,6 +456,78 @@ def customgenerate(args=algs2009):
     print('done with writing pickle...')
 
 
+def custom_generate(args=algs2009):
+    """Generates best algorithm data set.
+
+    It will create a folder bestAlg in the current working directory
+    with a pickle file corresponding to the bestalg dataSet of the
+    algorithms listed in variable args.
+
+    This method is called from the python command line from a directory
+    containing all necessary data folders::
+
+    >>> from bbob_pproc import bestalg
+    >>> import os
+    >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+    >>> os.chdir(os.path.join(path, 'data'))
+    >>> infoFile = 'ALPS/bbobexp_f2.info'
+    >>> if not os.path.exists(infoFile):
+    ...     import urllib
+    ...     import tarfile
+    ...     dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/ALPS_hornby_noiseless.tgz'
+    ...     filename, headers = urllib.urlretrieve(dataurl)
+    ...     archivefile = tarfile.open(filename)
+    ...     archivefile.extractall()
+    >>> os.chdir(os.path.join(path, 'data'))
+    >>> bestalg.customgenerate(('ALPS', '')) # doctest: +ELLIPSIS
+    Searching in...
+    >>> os.chdir(path)
+
+    """
+
+    output_dir = 'bestCustomAlg'
+
+    verbose = True
+    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
+
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+        if verbose:
+            print('Folder %s was created.' % output_dir)
+
+    filename_template = 'bbob-bestalg1_f%02d_d%02d.%s'
+    result = generate(dictAlg)
+
+    create_data_files(filename_template, output_dir, 'dat', result)
+    create_data_files(filename_template, output_dir, 'tdat', result)
+
+    print('Done with writing best algorithm files.')
+
+
+def create_data_files(filename_template, output_dir, extension, result):
+    for key, value in result.iteritems():
+
+        # TODO: throw an error
+        # if not len(value.target) == len(value.ert):
+
+        dict_evaluation = {}
+        for index in range(len(value.target)):
+            evaluation_value = value.ert[index]
+            target = value.target[index]
+            dict_evaluation[int(evaluation_value)] = target
+
+        lines = []
+        lines.append("%% Artificial instance")
+        for key_target, value_target in sorted(dict_evaluation.iteritems()):
+            lines.append("%d %10.9e %10.9e" % (key_target, value_target, value_target))
+
+        filename = os.path.join(output_dir, filename_template % (key[1], key[0], extension))
+        fid = open(filename, 'w')
+        for line in lines:
+            fid.write("%s\n" % line)
+        fid.close()
+
+
 def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
                                        target_ub=1e2):
     """Computes first the artificial best algorithm from given algorithm list
