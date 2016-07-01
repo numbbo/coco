@@ -146,7 +146,7 @@ Definitions and Terminology
 We remind in this section different definitions.
 
 *function instance, problem*
- Each function within COCO_ :math:`f^\theta: \mathbb{R}^n \to \mathbb{R}^m` is parametrized 
+ Each function :math:`f^\theta: \mathbb{R}^n \to \mathbb{R}^m` within COCO_ is parametrized 
  with parameter values :math:`\theta \in \Theta`. A parameter value determines a so-called *function 
  instance*. For example, :math:`\theta` encodes the location of the optimum of single-objective functions, 
  which means that different instances have shifted optima. In the ``bbob-biobj`` 
