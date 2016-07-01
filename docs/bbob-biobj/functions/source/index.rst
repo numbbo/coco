@@ -7,7 +7,6 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 .. the next two lines are necessary in LaTeX. They will be automatically 
   replaced to put away the \chapter level as ??? and let the "current" level
   become \section. 
-
 .. CHAPTERTITLE
 .. CHAPTERUNDERLINE
 
@@ -67,7 +66,7 @@ of function groups, instances, and potential objective space normalization.
    documentation also aims at summarizing the state-of-the-art in
    multi-objective black-box benchmarking, at giving the rational behind our
    approach, and at providing a simple tutorial on how to use these functions
-   for actual benchmarking within the Coco framework.
+   for actual benchmarking within the COCO_ framework.
 
 
 .. _COCO: https://github.com/numbbo/coco
@@ -77,7 +76,7 @@ of function groups, instances, and potential objective space normalization.
 .. _coco_problem_t: http://numbbo.github.io/coco-doc/C/coco_8h.html#a408ba01b98c78bf5be3df36562d99478
 
 .. summarizing the state-of-the-art in multi-objective black-box benchmarking, at 
-.. and at providing a simple tutorial on how to use these functions for actual benchmarking within the Coco framework.
+.. and at providing a simple tutorial on how to use these functions for actual benchmarking within the COCO_ framework.
 
 .. .. Note::
   
@@ -108,14 +107,14 @@ In the following, we consider bi-objective, unconstrained
 **minimization** problems of the form
 
 .. math::
-  \min_{x \in \mathbb{R}^D} f(x)=(f_\alpha(x),f_\beta(x)),
+  \min_{x \in \mathbb{R}^n} f(x)=(f_\alpha(x),f_\beta(x)),
 
-where :math:`D` is the number of variables of the problem (also called
-the problem dimension), :math:`f_\alpha: \mathbb{R}^D \rightarrow \mathbb{R}`
-and :math:`f_\beta: \mathbb{R}^D \rightarrow \mathbb{R}` are the two
+where :math:`n` is the number of variables of the problem (also called
+the problem dimension), :math:`f_\alpha: \mathbb{R}^n \rightarrow \mathbb{R}`
+and :math:`f_\beta: \mathbb{R}^n \rightarrow \mathbb{R}` are the two
 objective functions, and the :math:`\min` operator is related to the
-standard *dominance relation*. A solution :math:`x\in\mathbb{R}^D`
-is thereby said to *dominate* another solution :math:`y\in\mathbb{R}^D` if
+standard *dominance relation*. A solution :math:`x\in\mathbb{R}^n`
+is thereby said to *dominate* another solution :math:`y\in\mathbb{R}^n` if
 :math:`f_\alpha(x) \leq f_\alpha(y)` and :math:`f_\beta(x) \leq f_\beta(y)` hold and at
 least one of the inequalities is strict.
 
@@ -123,7 +122,7 @@ Solutions which are not dominated by any other solution in the search
 space are called *Pareto-optimal* or *efficient solutions*. All
 Pareto-optimal solutions constitute the *Pareto set* of which an 
 approximation is sought. The Pareto set's image in the
-objective space :math:`f(\mathbb{R}^D)` is called *Pareto front*.
+objective space :math:`f(\mathbb{R}^n)` is called *Pareto front*.
 
 The objective of the minimization problem is to find, with as few evaluations
 of |f| as possible, a set of non-dominated solutions which is (i) as large
@@ -147,20 +146,20 @@ Definitions and Terminology
 We remind in this section different definitions.
 
 *function instance, problem*
- Each function within COCO :math:`f^\theta: \mathbb{R}^D \to \mathbb{R}^m` is parametrized 
+ Each function within COCO_ :math:`f^\theta: \mathbb{R}^n \to \mathbb{R}^m` is parametrized 
  with parameter values :math:`\theta \in \Theta`. A parameter value determines a so-called *function 
  instance*. For example, :math:`\theta` encodes the location of the optimum of single-objective functions, 
  which means that different instances have shifted optima. In the ``bbob-biobj`` 
  test suite, :math:`m=2` and the function instances are determined by the instances of the underlying
  single-objective functions. 
  
- A *problem* is a function instance of a specific dimension :math:`D`.
+ A *problem* is a function instance of a specific dimension :math:`n`.
 
 *ideal point*
  The ideal point is defined as the vector in objective space that
  contains the optimal |f|-value for each objective *independently*. 
- More precisely let :math:`f_\alpha^{\rm opt}:= \inf_{x\in \mathbb{R}^D} f_\alpha(x)` and
- :math:`f_\beta^{\rm opt}:= \inf_{x\in \mathbb{R}^D} f_\beta(x)`, the ideal point is given by
+ More precisely let :math:`f_\alpha^{\rm opt}:= \inf_{x\in \mathbb{R}^n} f_\alpha(x)` and
+ :math:`f_\beta^{\rm opt}:= \inf_{x\in \mathbb{R}^n} f_\beta(x)`, the ideal point is given by
  
  .. math::
     :nowrap:
@@ -651,13 +650,13 @@ are defined here in short. It depends on these properties whether the optimizati
 is easy or hard to solve.
 
 A *separable* function does not show any dependencies between the
-variables and can therefore be solved by applying :math:`D` consecutive
+variables and can therefore be solved by applying :math:`n` consecutive
 one-dimensional optimizations along the coordinate axes while
 keeping the other variables fixed. Consequently, *non-separable*
 problems must be considered. They are much more difficult to solve. The
 typical well-established technique to generate non-separable
 functions from separable ones is the application of a rotation matrix
-:math:`\mathbf R` to :math:`x`, that is :math:`x \in \mathbb{R}^D \mapsto g(\mathbf R x)`, 
+:math:`\mathbf R` to :math:`x`, that is :math:`x \in \mathbb{R}^n \mapsto g(\mathbf R x)`, 
 where :math:`g` is a separable function. 
 
 A *unimodal* function has only one local minimum which is at the same
@@ -689,9 +688,9 @@ as large as :math:`10^{10}`.
 Domain Bounds
 -------------
 All bi-objective functions provided in the ``bbob-biobj`` suite are unbounded,
-i.e., defined on the entire real-valued space :math:`\mathbb{R}^D`. 
-The search domain of interest is defined as :math:`[-100,100]^D`, outside of 
-which non-dominated solutions are quite unlikely to be found. [#]_ The majority of non-dominated solutions are likely to lie even within :math:`[-5,5]^D`. 
+i.e., defined on the entire real-valued space :math:`\mathbb{R}^n`. 
+The search domain of interest is defined as :math:`[-100,100]^n`, outside of 
+which non-dominated solutions are quite unlikely to be found. [#]_ The majority of non-dominated solutions are likely to lie even within :math:`[-5,5]^n`. 
 
 .. Nevertheless, they are designed such that and bound-constraint methods are likely to be competitive. 
 
@@ -699,7 +698,7 @@ While we believe that the domain of interest contains the Pareto set,
 due to the nature of the ``bbob-biobj`` function definitions, there is no
 guarantee that this is always the case. 
 However, the extremal solutions and their neighborhood ball of radius one
-are guaranteed to lie within :math:`[-5,5]^D`.
+are guaranteed to lie within :math:`[-5,5]^n`.
 
 .. [#] The functions |coco_problem_get_smallest_value_of_interest|_ and 
   |coco_problem_get_largest_value_of_interest|_ 
@@ -766,7 +765,7 @@ and the attractive sector function (|f`6` in the bbob suite|_).
 Both objective functions are unimodal, but only the first objective is
 separable and truly convex quadratic. The attractive sector
 function is highly asymmetric, where only one *hypercone* (with
-angular base area) with a volume of roughly :math:`(1/2)^D`
+angular base area) with a volume of roughly :math:`(1/2)^n`
 yields low function values. The optimum of it is located at the tip
 of this cone. 
 
@@ -799,7 +798,7 @@ Contained in the *separable - moderate* function class.
 
 .. .. rubric:: Information gained from this function:
 
-.. * Can the search follow a long path with :math:`D-1` changes in
+.. * Can the search follow a long path with :math:`n-1` changes in
   the direction when it approaches one of the extremes of the
   Pareto front/Pareto set?
 
@@ -874,7 +873,7 @@ Here, however, transformations are performed to alleviate
 the original symmetry and regularity in the second objective.
 
 The properties of the second objective contain non-separabilty,
-multimodality (roughly :math:`10^D` local optima), a conditioning of
+multimodality (roughly :math:`10^n` local optima), a conditioning of
 about 10, and a large global amplitude compared to the local amplitudes.
 
 Contained in the *separable - multi-modal* function class.
@@ -918,7 +917,7 @@ and the Schwefel function (|f`20` in the bbob suite|_).
 
 While the first objective function is separable and unimodal,
 the second objective function is partially separable and highly
-multimodal---having the most prominent :math:`2^D` minima located
+multimodal---having the most prominent :math:`2^n` minima located
 comparatively close to the corners of the unpenalized search area. 
 
 Contained in the *separable - weakly-structured* function class.
@@ -985,7 +984,7 @@ is globally quadratic with smooth local irregularities, and
 highly ill-conditioned with a condition number of about
 :math:`10^6`. The second objective function is highly
 asymmetric, where only one *hypercone* (with
-angular base area) with a volume of roughly :math:`(1/2)^D`
+angular base area) with a volume of roughly :math:`(1/2)^n`
 yields low function values. The optimum of it is located at
 the tip of this cone. 
 
@@ -1017,7 +1016,7 @@ Contained in the *separable - moderate* function class.
 .. .. rubric:: Information gained from this function:
 
 .. * Can the search handle highly conditioned functions and follow a long
-  path with :math:`D-1` changes in the direction when it approaches the
+  path with :math:`n-1` changes in the direction when it approaches the
   Pareto front/Pareto set?
 
 
@@ -1083,7 +1082,7 @@ bbob suite|_) and the Rastrigin function (|f`15` in the bbob suite|_).
 
 The objective functions show rather opposite properties.
 The first one is separable, the second not. The first one
-is unimodal, the second highly multimodal (roughly :math:`10^D` local
+is unimodal, the second highly multimodal (roughly :math:`10^n` local
 optima). The first one is highly ill-conditioning (condition number of
 :math:`10^6`), the second one has a conditioning of about 10. Local
 non-linear transformations are performed in both objective functions
@@ -1134,7 +1133,7 @@ bbob suite|_) and the Schwefel function (|f`20` in the bbob suite|_).
 
 The first objective is unimodal, separable and highly ill-conditioned.
 The second objective is partially separable and highly multimodal---having
-the most prominent :math:`2^D` minima located comparatively close to the
+the most prominent :math:`2^n` minima located comparatively close to the
 corners of the unpenalized search area. 
 
 
@@ -1181,7 +1180,7 @@ Combination of two attractive sector functions (|f`6`
 in the bbob suite|_).
 Both functions are unimodal and highly asymmetric, where only one
 *hypercone* (with angular base area) per objective with a volume of
-roughly :math:`(1/2)^D` yields low function values. The objective
+roughly :math:`(1/2)^n` yields low function values. The objective
 functions' optima are located at the tips of those two cones. 
 
 Contained in the *moderate - moderate* function class.
@@ -1204,7 +1203,7 @@ in the bbob suite|_) and the Rosenbrock function (|f`8` in the bbob suite|_).
 
 The first function is unimodal but highly asymmetric, where only one
 *hypercone* (with angular base area) with a volume of
-roughly :math:`(1/2)^D` yields low function values (with the
+roughly :math:`(1/2)^n` yields low function values (with the
 optimum at the tip of the cone). The second
 objective is partially separable (tri-band structure) and has a local
 optimum with an attraction volume of about 25\%.
@@ -1229,7 +1228,7 @@ in the bbob suite|_) and the sharp ridge function (|f`13` in the bbob suite|_).
 Both objective functions are unimodal and non-separable. The
 first objective is highly asymmetric in the sense that only one
 *hypercone* (with angular base area) with a volume of
-roughly :math:`(1/2)^D` yields low function values (with the
+roughly :math:`(1/2)^n` yields low function values (with the
 optimum at the tip of the cone). For optimizing the second
 objective, a sharp, i.e., non-differentiable ridge has to be followed.
 
@@ -1253,7 +1252,7 @@ in the bbob suite|_) and the sum of different powers function
 Both objective functions are unimodal and non-separable. The
 first objective is highly asymmetric in the sense that only one
 *hypercone* (with angular base area) with a volume of
-roughly :math:`(1/2)^D` yields low function values (with the
+roughly :math:`(1/2)^n` yields low function values (with the
 optimum at the tip of the cone). When approaching the second
 objective's optimum, the sensitivies of the variables in the
 rotated search space become more and more different.
@@ -1277,7 +1276,7 @@ in the bbob suite|_) and the Rastrigin function
 (|f`15` in the bbob suite|_).
 
 Both objectives are non-separable, and the second one
-is highly multi-modal (roughly :math:`10^D` local
+is highly multi-modal (roughly :math:`10^n` local
 optima) while the first one is unimodal. Further
 properties are that the first objective is highly
 assymetric and the second has a conditioning of about 10.
@@ -1324,7 +1323,7 @@ in the bbob suite|_) and the Schwefel function (|f`20` in the bbob suite|_).
 
 The first objective is non-separable, unimodal, and asymmetric.
 The second objective is partially separable and highly multimodal---having
-the most prominent :math:`2^D` minima located comparatively close to the
+the most prominent :math:`2^n` minima located comparatively close to the
 corners of the unpenalized search area. 
 
 Contained in the *moderate - weakly-structured* function class.
@@ -1375,7 +1374,7 @@ Contained in the *moderate - moderate* function class.
 
 .. .. rubric:: Information gained from this function:
 
-.. * Can the search follow different long paths with $D-1$ changes in the
+.. * Can the search follow different long paths with $n-1$ changes in the
   direction when approaching the extremes of the Pareto front/Pareto set?
 .. * What is the effect when a combination of the two paths have to 
   be solved when a point in the middle of the Pareto front/Pareto set
@@ -1420,7 +1419,7 @@ Contained in the *moderate - ill-conditioned* function class.
 
 .. .. rubric:: Information gained from this function:
 
-.. * What are the effects of having to follow a long path with $D-1$ changes
+.. * What are the effects of having to follow a long path with $n-1$ changes
   in the direction when optimizing one objective function and an increasing
   conditioning when solving the other, in particular when trying to
   approximate the Pareto front/Pareto set not close to their extremes?
@@ -1436,7 +1435,7 @@ Combination of the Rosenbrock function (|f`8` in the bbob suite|_) and the Rastr
 The first objective function is partially separable (tri-band structure)
 and has a local optimum with an attraction volume of about 25\%.
 The second objective function is non-separable and
-highly multi-modal (roughly :math:`10^D` local
+highly multi-modal (roughly :math:`10^n` local
 optima).
 
 Contained in the *moderate - multi-modal* function class.
@@ -1482,7 +1481,7 @@ Schwefel function (|f`20` in the bbob suite|_).
 Both objective functions are partially separable.
 While the first objective function has a local optimum with an attraction
 volume of about 25\%, the second objective function is highly
-multimodal---having the most prominent :math:`2^D` minima located
+multimodal---having the most prominent :math:`2^n` minima located
 comparatively close to the corners of its unpenalized search area. 
 
 Contained in the *moderate - weakly-structured* function class.
@@ -1576,7 +1575,7 @@ Combination of the sharp ridge function (|f`13` in the bbob suite|_) and the Ras
 
 Both functions are non-separable. While the first one
 is unimodal and non-differentiable at its ridge, the second objective
-function is highly multi-modal (roughly :math:`10^D` local optima).
+function is highly multi-modal (roughly :math:`10^n` local optima).
 
 Contained in the *ill-conditioned - multi-modal* function class.
 
@@ -1620,7 +1619,7 @@ Schwefel function (|f`20` in the bbob suite|_).
 
 While the first objective function is unimodal, non-separable, and
 non-differentiable at its ridge, the second objective function is highly
-multimodal---having the most prominent :math:`2^D` minima located
+multimodal---having the most prominent :math:`2^n` minima located
 comparatively close to the corners of its unpenalized search area. 
 
 Contained in the *ill-conditioned - weakly-structured* function class.
@@ -1689,7 +1688,7 @@ Combination of the sum of different powers functions
 
 Both objective functions are non-separable. While the first one
 is unimodal, the second objective
-function is highly multi-modal (roughly :math:`10^D` local optima).
+function is highly multi-modal (roughly :math:`10^n` local optima).
 
 Contained in the *ill-conditioned - multi-modal* function class.
 
@@ -1734,7 +1733,7 @@ Combination of the sum of different powers functions
 Both objectives are non-separable.
 While the first objective function is unimodal,
 the second objective function is highly multimodal---having the most
-prominent :math:`2^D` minima located comparatively close to the corners
+prominent :math:`2^n` minima located comparatively close to the corners
 of its unpenalized search area. 
 
 Contained in the *ill-conditioned - weakly-structured* function class.
@@ -1782,7 +1781,7 @@ Combination of two Rastrigin functions
 (|f`15` in the bbob suite|_).
 
 Both objective functions are non-separable and highly multi-modal
-(roughly :math:`10^D` local optima).
+(roughly :math:`10^n` local optima).
 
 Contained in the *multi-modal - multi-modal* function class.
 
@@ -1820,8 +1819,8 @@ Combination of the Rastrigin function
 (|f`15` in the bbob suite|_) and the Schwefel function (|f`20` in the bbob suite|_).
 
 Both objective functions are non-separable and highly multi-modal where
-the first has roughly :math:`10^D` local optima and the most prominent
-:math:`2^D` minima of the second objective function are located
+the first has roughly :math:`10^n` local optima and the most prominent
+:math:`2^n` minima of the second objective function are located
 comparatively close to the corners of its unpenalized search area. 
 
 Contained in the *multi-modal - weakly-structured* function class.
@@ -1842,7 +1841,7 @@ Combination of the Rastrigin function
 101 peaks (|f`21` in the bbob suite|_).
 
 Both objective functions are non-separable and highly multi-modal where
-the first has roughly :math:`10^D` local optima and the second has 
+the first has roughly :math:`10^n` local optima and the second has 
 101 optima with position and height being unrelated and randomly
 chosen (different for each instantiation of the function).
 
@@ -1927,7 +1926,7 @@ Contained in the *multi-modal - weakly-structured* function class.
 Combination of two Schwefel functions (|f`20` in the bbob suite|_).
 
 Both objective functions are non-separable and highly multi-modal where
-the most prominent :math:`2^D` minima of each objective function are
+the most prominent :math:`2^n` minima of each objective function are
 located comparatively close to the corners of its unpenalized search area.
 Due to the combinatorial nature of the Schwefel function, it is likely
 in low dimensions that the Pareto set goes through the origin of the
@@ -1953,7 +1952,7 @@ Combination of the Schwefel function (|f`20` in the bbob suite|_) and the Gallag
 101 peaks (|f`21` in the bbob suite|_).
 
 Both objective functions are non-separable and highly multi-modal.
-For the first objective function, the most prominent :math:`2^D` minima
+For the first objective function, the most prominent :math:`2^n` minima
 are located comparatively close to the corners of its unpenalized search
 area. For the second objective, position and height of all  
 101 optima are unrelated and randomly
