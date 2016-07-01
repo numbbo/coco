@@ -25,13 +25,14 @@ import shlex
 authors = "The BBOBies"
 # WHEN CHANGING THIS CHANGE ALSO the abstract in index.rst accordingly
 abstract = """(this abstract might be outdated, see index.rst)
-PLEASE REWRITE The ``bbob-biobj`` test suite contains 55 bi-objective functions
-in continuous domain which are derived from combining functions of the
-well-known single-objective noiseless ``bbob`` test suite. Besides giving the
-actual function definitions and presenting their (known) properties, this
-documentation also aims at giving the rationale behind our approach in terms of
-function groups, instances, and potential objective space normalization.
+The ``bbob-constr-lin`` test suite contains 48 constrained functions in continuous domain 
+which are derived from combining functions of the well-known single-objective noiseless
+``bbob`` test suite with randomly-generated linear constraints. This document aims to define 
+those constrained functions as well as the approach used to build the linear constraints. 
+It also describes how instances, targets and runtime are considered in the constrained case.
 """
+
+numfig = True
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #needs_sphinx = '1.0'
@@ -168,7 +169,7 @@ html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = 'COCO: The Bi-objective Black-Box Optimization Benchmarking (bbob-biobj) Test Suite'
+html_title = 'COCO: The Linearly-Constrained Black-Box Optimization Benchmarking (bbob-constr-lin) Test Suite'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -289,9 +290,9 @@ latex_elements = {# The paper size ('letterpaper' or 'a4paper').
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'bbob-constr-lin-functions.tex', u'COCO: The PLEASE CHANGE TITLE Black Box Optimization Benchmarking (bbob-biobj) Test Suite',
+  (master_doc, 'bbob-constr-lin-functions.tex', u'COCO: The Black Box Optimization Benchmarking (bbob-constr-lin) Test Suite',
   r"""
-      PLEASE CHANGE AUTHORS,
+      Phillipe Rodrigues Sampaio$^2$,
       Tea Tu\v{s}ar$^1$, 
       Dimo Brockhoff$^1$,
       Nikolaus Hansen$^{2,3}$, 
@@ -348,8 +349,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'bbob-constr-lin-functions-doc', u'PLEASE CHANGE Function Documentation of the bbob-biobj Test Suite',
-   author, 'bbob-constr-lin-functions-doc', 'Documents all functions of the bbob-biobj test suite.',
+  (master_doc, 'bbob-constr-lin-functions-doc', u'Function Documentation of the bbob-constr-lin Test Suite',
+   author, 'bbob-constr-lin-functions-doc', 'Documents all functions of the bbob-constr-lin test suite.',
    'Miscellaneous'),
 ]
 
