@@ -18,6 +18,7 @@
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 
 import os
 import sys
@@ -54,6 +55,7 @@ algs2012 = ("ACOR", "BIPOPaCMA", "BIPOPsaACM", "aCMA", "CMAES", "aCMAa",
             "NBIPOPaCMA", "NIPOPaCMA", "DE-AUTO", "DE-BFGS", "DE-ROLL",
             "DE-SIMPLEX", "MVDE", "PSO-BFGS", "xNES", "xNESas", "SNES")
 
+
 # TODO: this should be reimplemented:
 #  o a best algorithm should derive from the DataSet class
 #  o a best algorithm and an algorithm portfolio are almost the same,
@@ -62,7 +64,7 @@ algs2012 = ("ACOR", "BIPOPaCMA", "BIPOPsaACM", "aCMA", "CMAES", "aCMAa",
 # CLASS DEFINITIONS
 
 
-class BestAlgSet():
+class BestAlgSet:
     """Unit element of best algorithm data set.
 
     Here unit element means for one function and one dimension.
@@ -88,10 +90,10 @@ class BestAlgSet():
 
     """
 
-    def __init__(self, dictAlg):
+    def __init__(self, dict_alg):
         """Instantiate one best algorithm data set.
 
-        :keyword dictAlg: dictionary of datasets, keys are algorithm
+        :keyword dict_alg: dictionary of datasets, keys are algorithm
                           names, values are 1-element
                           :py:class:`DataSetList`.
 
@@ -101,7 +103,7 @@ class BestAlgSet():
         # element which will be assigned as values in the following lines.
         d = set()
         f = set()
-        for i in dictAlg.values():
+        for i in dict_alg.values():
             d |= set(j.dim for j in i)
             f |= set(j.funcId for j in i)
 
@@ -115,7 +117,7 @@ class BestAlgSet():
         dictMaxEvals = {}
         dictFinalFunVals = {}
         tmpdictAlg = {}
-        for alg, i in dictAlg.iteritems():
+        for alg, i in dict_alg.iteritems():
             if len(i) == 0:
                 warnings.warn('Algorithm %s was not tested on f%d %d-D.'
                               % (alg, f, d))
@@ -125,17 +127,17 @@ class BestAlgSet():
                               % (alg, f, d))
                 continue
 
-            tmpdictAlg[alg] = i[0] # Assign ONLY the first element as value
+            tmpdictAlg[alg] = i[0]  # Assign ONLY the first element as value
             dictMaxEvals[alg] = i[0].maxevals
             dictFinalFunVals[alg] = i[0].finalfunvals
 
-        dictAlg = tmpdictAlg
+        dict_alg = tmpdictAlg
 
-        sortedAlgs = dictAlg.keys()
+        sortedAlgs = dict_alg.keys()
         # algorithms will be sorted along sortedAlgs which is now a fixed list
 
         # Align aRT
-        erts = list(np.transpose(np.vstack([dictAlg[i].target, dictAlg[i].ert]))
+        erts = list(np.transpose(np.vstack([dict_alg[i].target, dict_alg[i].ert]))
                     for i in sortedAlgs)
         res = readalign.alignArrayData(readalign.HArrayMultiReader(erts, False))
 
@@ -150,7 +152,7 @@ class BestAlgSet():
             currentbestalg = ''
             for j, tmpert in enumerate(curerts):
                 if np.isnan(tmpert):
-                    continue # TODO: don't disregard these entries
+                    continue  # TODO: don't disregard these entries
                 if tmpert == currentbestert:
                     # TODO: what do we do in case of ties?
                     # look at function values corresponding to the aRT?
@@ -168,7 +170,7 @@ class BestAlgSet():
 
         # write down the #fevals to reach the function value.
         for funval, alg in zip(res[:, 0], resalgs):
-            it = dictiter.setdefault(alg, iter(dictAlg[alg].evals))
+            it = dictiter.setdefault(alg, iter(dict_alg[alg].evals))
             curLine = dictcurLine.setdefault(alg, np.array([np.inf, 0]))
             while curLine[0] > funval:
                 try:
@@ -183,8 +185,8 @@ class BestAlgSet():
         setalgs = set(resalgs)
         dictFunValsNoFail = {}
         for alg in setalgs:
-            for curline in dictAlg[alg].funvals:
-                if (curline[1:] == dictAlg[alg].finalfunvals).any():
+            for curline in dict_alg[alg].funvals:
+                if (curline[1:] == dict_alg[alg].finalfunvals).any():
                     # only works because the funvals are monotonous
                     break
             dictFunValsNoFail[alg] = curline.copy()
@@ -205,8 +207,8 @@ class BestAlgSet():
 
         bestfinalfunvals = np.array([np.inf])
         for alg in sortedAlgs:
-            if np.median(dictAlg[alg].finalfunvals) < np.median(bestfinalfunvals):
-                bestfinalfunvals = dictAlg[alg].finalfunvals
+            if np.median(dict_alg[alg].finalfunvals) < np.median(bestfinalfunvals):
+                bestfinalfunvals = dict_alg[alg].finalfunvals
                 algbestfinalfunvals = alg
         self.bestfinalfunvals = bestfinalfunvals
         self.algbestfinalfunvals = algbestfinalfunvals
@@ -215,7 +217,7 @@ class BestAlgSet():
         return (self.__class__ is other.__class__ and
                 self.funcId == other.funcId and
                 self.dim == other.dim and
-                #self.precision == other.precision and
+                # self.precision == other.precision and
                 self.algId == other.algId and
                 self.comment == other.comment)
 
@@ -253,7 +255,7 @@ class BestAlgSet():
 
         if getattr(self, 'modsFromPickleVersion', True):
             try:
-                f = open(self.pickleFile, 'w') # TODO: what if file already exist?
+                f = open(self.pickleFile, 'w')  # TODO: what if file already exist?
                 pickle.dump(self, f)
                 f.close()
                 if verbose:
@@ -262,10 +264,10 @@ class BestAlgSet():
                 print("I/O error(%s): %s" % (errno, strerror))
             except pickle.PicklingError:
                 print("Could not pickle %s" % self)
-        #else: #What?
-            #if verbose:
-                #print('Skipped update of pickle file %s: no new data.'
-                       #% self.pickleFile)
+                # else: #What?
+                # if verbose:
+                # print('Skipped update of pickle file %s: no new data.'
+                # % self.pickleFile)
 
     def createDictInstance(self):
         """Returns a dictionary of the instances
@@ -297,6 +299,7 @@ class BestAlgSet():
             except IndexError:
                 res.append(np.inf)
         return res
+
     # TODO: return the algorithm here as well.
 
     def detEvals(self, targets):
@@ -349,7 +352,7 @@ def load_best_algorithm(force=False):
         bestAlgorithmEntries = None
         return bestAlgorithmEntries
 
-    print("Loading best algorithm data from %s ..." % bestAlgorithmFilename)
+    print("  Loading best algorithm data from %s ..." % bestAlgorithmFilename)
     sys.stdout.flush()
 
     bestAlgFilePath = os.path.split(__file__)[0]
@@ -366,7 +369,8 @@ def load_best_algorithm(force=False):
         bestAlgorithmEntries = None
 
     fid.close()
-    print_done()
+    #print("  ", end="")
+    #print_done()
 
     return bestAlgorithmEntries
 
@@ -375,17 +379,18 @@ def usage():
     print(__doc__)  # same as: sys.modules[__name__].__doc__, was: main.__doc__
 
 
-def generate(dictalg):
+def generate(dict_alg):
     """Generates dictionary of best algorithm data set.
     """
 
     # dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
     res = {}
-    for f, i in pproc.dictAlgByFun(dictalg).iteritems():
+    for f, i in pproc.dictAlgByFun(dict_alg).iteritems():
         for d, j in pproc.dictAlgByDim(i).iteritems():
             tmp = BestAlgSet(j)
             res[(d, f)] = tmp
     return res
+
 
 def customgenerate(args=algs2009):
     """Generates best algorithm data set.
@@ -434,6 +439,7 @@ def customgenerate(args=algs2009):
 
     print('done with writing pickle...')
 
+
 def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
                                        target_ub=1e2):
     """Computes first the artificial best algorithm from given algorithm list
@@ -472,20 +478,19 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
     for (d, f) in bestalgentries:
         print('dimension: %d, function: %d' % (d, f))
         print(f)
-        setofalgs = set(bestalgentries[d,f].algs)
+        setofalgs = set(bestalgentries[d, f].algs)
         # pre-processing data to only look at targets >= target_lb:
         correctedbestalgentries = []
-        for i in range(0,len(bestalgentries[d,f].target)):
-            if ((bestalgentries[d,f].target[i] >= target_lb) and
-                (bestalgentries[d,f].target[i] <= target_ub)):
-
-                correctedbestalgentries.append(bestalgentries[d,f].algs[i])
+        for i in range(0, len(bestalgentries[d, f].target)):
+            if ((bestalgentries[d, f].target[i] >= target_lb) and
+                    (bestalgentries[d, f].target[i] <= target_ub)):
+                correctedbestalgentries.append(bestalgentries[d, f].algs[i])
         print(len(correctedbestalgentries))
         # now count how often algorithm a is best for the extracted targets
         for a in setofalgs:
             # use setdefault to initialize with zero if a entry not existant:
             countsperalgorithm.setdefault((d, a), 0)
-            countsperalgorithm[(d,a)] += correctedbestalgentries.count(a)
+            countsperalgorithm[(d, a)] += correctedbestalgentries.count(a)
 
     selectedalgsperdimension = {}
     for (d, a) in sorted(countsperalgorithm):
@@ -497,7 +502,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
         print('%dD:' % d)
         for (count, alg) in sorted(selectedalgsperdimension[d], reverse=True):
             print(count, alg)
-        print( '\n')
+        print('\n')
 
     print(" done.")
 
@@ -517,8 +522,8 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
     # TODO: use pproc.TargetValues class as input target values
     # default target values:
     targets = pproc.TargetValues(
-        10**np.arange(np.log10(max((1e-8, target_lb))),
-                      np.log10(target_ub) + 1e-9, 0.2))
+        10 ** np.arange(np.log10(max((1e-8, target_lb))),
+                        np.log10(target_ub) + 1e-9, 0.2))
     # there should be a simpler way to express this to become the
     # interface of this function
 
@@ -551,7 +556,7 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
                     for astring in j:
                         currdictalg = dictAlg[astring].dictByDim()
                         if currdictalg.has_key(d):
-                            curralgdata = currdictalg[d][f-1]
+                            curralgdata = currdictalg[d][f - 1]
                             currERT = curralgdata.detERT([t])[0]
                             if (astring != best.algs[i]):
                                 if (currERT < secondbest_ERT):
@@ -573,19 +578,19 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
     countsperalgorithm = {}
     for (d, f) in selectedAlgsPerProblem:
         print('dimension: %d, function: %d' % (d, f))
-        setofalgs = set(selectedAlgsPerProblem[d,f])
+        setofalgs = set(selectedAlgsPerProblem[d, f])
 
         # now count how often algorithm a is best for the extracted targets
         for a in setofalgs:
             # use setdefault to initialize with zero if a entry not existant:
             countsperalgorithm.setdefault((d, a), 0)
-            countsperalgorithm[(d,a)] += selectedAlgsPerProblem[d,f].count(a)
+            countsperalgorithm[(d, a)] += selectedAlgsPerProblem[d, f].count(a)
 
     selectedalgsperdimension = {}
     for (d, a) in sorted(countsperalgorithm):
         if not selectedalgsperdimension.has_key(d):
             selectedalgsperdimension[d] = []
-        selectedalgsperdimension[d].append((countsperalgorithm[(d,a)], a))
+        selectedalgsperdimension[d].append((countsperalgorithm[(d, a)], a))
 
     for d in sorted(selectedalgsperdimension):
         print('%dD:' % d)

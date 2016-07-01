@@ -2,156 +2,142 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
+import argparse
 
 from cocoprep.archive_load_data import get_file_name_list, parse_archive_file_name
-from cocoprep.archive_load_data import get_key_value, create_path
+from cocoprep.archive_load_data import create_path, parse_range
 from cocoprep.archive_exceptions import PreprocessingException, PreprocessingWarning
-from cocoprep.archive_functions import Archive, log_level
+from cocoprep.coco_archive import Archive, log_level
 
 
-def finalize_output(precision_list, all_solutions, currently_nondominated=True):
-    """Finalizes all output files contained in precision_list.
-
-       Outputs some final statistics and closes the files. If currently_nondominated is false, outputs all the solutions
-       in the thinned archives (including the extreme ones).
-    """
-    for precision_dict in precision_list:
-        f_out = precision_dict.get('f_out')
-        if f_out and not f_out.closed:
-            while not currently_nondominated:
-                text = precision_dict.get('archive').get_next_solution_text()
-                if text is None:
-                    break
-                precision_dict['thinned_solutions'] += 1
-                f_out.write(text)
-            print('{} all: {} thinned: {} ({:.2f}%)'.format(precision_dict.get('name')[1:],
-                                                            all_solutions,
-                                                            precision_dict.get('thinned_solutions'),
-                                                            100 * precision_dict.get(
-                                                               'thinned_solutions') / all_solutions))
-            f_out.close()
-
-
-def archive_thinning(input_path, output_path, thinning_precisions, currently_nondominated=True):
+def archive_thinning(input_path, output_path, thinning_precision, currently_nondominated, functions, instances,
+                     dimensions):
     """Performs thinning of all the archives in the input path and stores the thinned archives in the output path.
+       Assumes one file contains one archive.
 
-       All input solutions are rounded according to the thinning precisions (in the normalized objective space) and
-       added to the archives (one archive per thinning precision). If currently_nondominated is True, all solutions that
-       are currently nondominated within the thinned archive are output. If currently_nondominated is False, only the
-       solutions that are contained in the final archive are output. In this case, the two extreme solutions are also
-       output.
+       For each archive, all input solutions are rounded according to the thinning precision (in the normalized
+       objective space) and added to the thinned archive. If currently_nondominated is True, all solutions that
+       are currently nondominated within the thinned archive are output. The two extreme solutions are not output.
+       If currently_nondominated is False, only the solutions that are contained in the final archive are output.
+       In this case, the two extreme solutions are also output.
     """
-    # Check whether input path exits
+    # Check whether input path exists
     input_files = get_file_name_list(input_path, ".adat")
     if len(input_files) == 0:
         raise PreprocessingException('Folder {} does not exist or is empty'.format(input_path))
 
     old_level = log_level('warning')
 
-    precision_list = []  # List of dictionaries - one for each given thinning precision
-    for prec in thinning_precisions:
-        precision_dict = {}
-        precision_dict.update({'precision': prec})
-        precision_dict.update({'name': '-{:.0e}'.format(prec)})
-        precision_list.append(precision_dict)
-
     for input_file in input_files:
-        for precision_dict in precision_list:
-            output_file_name = input_file.replace(input_path, output_path + precision_dict.get('name'))
-            precision_dict.update({'output_file': output_file_name})
-            create_path(os.path.dirname(output_file_name))
-            precision_dict.update({'thinned_solutions': 0})
-            precision_dict.update({'f_out': None})
-            precision_dict.update({'archive': None})
-            precision_dict.update({'thinned_solutions': 0})
-            precision_dict.update({'updated': 0})
-
         try:
             (suite_name, function, instance, dimension) = parse_archive_file_name(input_file)
+            if not instance:
+                raise PreprocessingWarning('Thinning does not work on files with multiple archives, use archive_split')
+            if (function not in functions) or (instance not in instances) or (dimension not in dimensions):
+                continue
         except PreprocessingWarning as warning:
             print('Skipping file {}\n{}'.format(input_file, warning))
             continue
 
         print(input_file)
 
-        normalization = None
-        ideal = None
+        output_file = input_file.replace(input_path, output_path)
+        create_path(os.path.dirname(output_file))
+        f_out = open(output_file, 'w')
+        thinned_archive = Archive(suite_name, function, instance, dimension)
+        thinned_solutions = 0
         all_solutions = 0
+
+        extreme1_text = thinned_archive.get_next_solution_text()
+        extreme2_text = thinned_archive.get_next_solution_text()
+        extreme1 = [float(x) for x in extreme1_text.split()[1:3]]
+        extreme2 = [float(x) for x in extreme2_text.split()[1:3]]
+        ideal = [min(x, y) for x, y in zip(extreme1, extreme2)]
+        nadir = [max(x, y) for x, y in zip(extreme1, extreme2)]
+        normalization = [x - y for x, y in zip(nadir, ideal)]
 
         with open(input_file, 'r') as f_in:
             for line in f_in:
-                if line[0] == '%' and 'instance' in line:
-                    finalize_output(precision_list, all_solutions, currently_nondominated)
-                    instance = int(get_key_value(line[1:], 'instance').strip(' \t\n\r'))
-                    # Limit to instance = 1, TODO: Filter functions and instances through parameters!
-                    if instance > 1:
-                        break
 
-                    # Create an archive for every precision
-                    for precision_dict in precision_list:
-                        precision_dict.update({'thinned_solutions': 0})
-                        precision_dict.update({'f_out': open(precision_dict.get('output_file'), 'a')})
-                        precision_dict.update({'archive': Archive(suite_name, function, dimension, instance)})
-                        precision_dict.update({'thinned_solutions': 0})
-                        precision_dict.update({'updated': 0})
-                        precision_dict.get('f_out').write(line)
-
-                    archive = precision_list[0].get('archive')
-                    extreme1 = [float(x) for x in archive.get_next_solution_text().split()[1:3]]
-                    extreme2 = [float(x) for x in archive.get_next_solution_text().split()[1:3]]
-                    ideal = [min(x, y) for x, y in zip(extreme1, extreme2)]
-                    nadir = [max(x, y) for x, y in zip(extreme1, extreme2)]
-                    normalization = [x - y for x, y in zip(nadir, ideal)]
-
-                elif line[0] == '%':
-                    for precision_dict in precision_list:
-                        f_out = precision_dict.get('f_out')
-                        if f_out and not f_out.closed:
-                            f_out.write(line)
+                if line[0] == '%':
+                    f_out.write(line)
 
                 elif len(line) == 0 or len(line.split()) < 3:
                     continue
 
-                else:  # The line contains a solution
+                elif line.split()[0] == '0':
+                    # The line contains an extreme solution, do nothing
+                    all_solutions += 1
+                    continue
+
+                else:
+                    # The line contains a 'regular' solution
                     try:
                         # Fill the archives with the rounded solutions values wrt the different precisions
                         f_original = [float(x) for x in line.split()[1:3]]
-                        for precision_dict in precision_list:
-                            precision = precision_dict.get('precision')
-                            f_normalized = [(f_original[i] - ideal[i]) / normalization[i] for i in range(2)]
-                            f_normalized = [round(f_normalized[i] / precision) for i in range(2)]
-                            f_normalized = [f_normalized[i] * precision for i in range(2)]
-                            updated = precision_dict.get('archive').add_solution(f_normalized[0], f_normalized[1], line)
-                            precision_dict.update({'updated': updated})
+                        f_normalized = [(f_original[i] - ideal[i]) / normalization[i] for i in range(2)]
+                        f_normalized = [round(f_normalized[i] / thinning_precision) for i in range(2)]
+                        f_normalized = [ideal[i] + f_normalized[i] * thinning_precision for i in range(2)]
+                        updated = thinned_archive.add_solution(f_normalized[0], f_normalized[1], line)
                     except IndexError:
                         print('Problem in file {}, line {}, skipping line'.format(input_file, line))
                         continue
                     finally:
                         all_solutions += 1
 
-                    if currently_nondominated:
-                        for precision_dict in precision_list:
-                            if precision_dict.get('updated') == 1 or line.split()[0] == '0':
-                                precision_dict['thinned_solutions'] += 1
-                                precision_dict.get('f_out').write(line)
+                    if currently_nondominated and (updated == 1):
+                        thinned_solutions += 1
+                        f_out.write(line)
 
-        finalize_output(precision_list, all_solutions, currently_nondominated)
+        if not currently_nondominated and (thinned_archive.number_of_solutions == 2):
+            # Output the two extreme solutions if they are the only two in the archive
+            f_out.write(extreme1_text)
+            f_out.write(extreme2_text)
+            thinned_solutions = 2
+
+        while not currently_nondominated:
+            text = thinned_archive.get_next_solution_text()
+            if text is None:
+                break
+            thinned_solutions += 1
+            f_out.write(text)
+
+        print('original: {} thinned: {} ({:.2f}%)'.format(all_solutions, thinned_solutions,
+                                                          100 * thinned_solutions / all_solutions))
+        f_out.close()
 
     log_level(old_level)
 
 
 if __name__ == '__main__':
-    """A script for thinning the archives of solutions w.r.t. a given precision.
+    """Performs thinning of archives w.r.t. the given precision (intended to use with already updated archives, not the
+       'basic' archives returned by an algorithm).
+
+       Important: Because the new archives always contain the two extreme solutions, any solutions outside the region
+       of interest in the objective space will be dominated and therefore ignored.
     """
-    import timing  # Used even if it looks like it's not (i.e. do not delete this line)
+    import timing
 
-    # TODO: These data should be overwritten from the command line parameters!
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--functions', type=parse_range, default=range(1, 56),
+                        help='function numbers to be included in the processing of archives')
+    parser.add_argument('-i', '--instances', type=parse_range, default=range(1, 11),
+                        help='instance numbers to be included in the processing of archives')
+    parser.add_argument('-d', '--dimensions', type=parse_range, default=[2, 3, 5, 10, 20, 40],
+                        help='dimensions to be included in the processing of archives')
+    parser.add_argument('-p', '--precision', type=float, default=1e-6,
+                        help='thinning precision')
+    parser.add_argument('--currently-nondominated', action='store_true',
+                        help='output currently nondominated solutions')
+    parser.add_argument('output', help='path to the output folder')
+    parser.add_argument('input', help='path to the input folder')
+    args = parser.parse_args()
 
-    # Set the default input and output paths
-    input_path = '/Volumes/STORAGE/Data/archives/archives-output_2016_03_30_only_i01-i05'
-    output_path = '/Volumes/STORAGE/Data/archives/thinning/output-archives_2016_03_30_only_i01-i05'
-    thinning_precisions = [5e-5, 1e-5, 5e-6]
+    print('Program called with arguments: \ninput folder = {}\noutput folder = {}'.format(args.input, args.output))
+    print('functions = {} \ninstances = {}\ndimensions = {}'.format(args.functions, args.instances, args.dimensions))
+    print('precision = {} \ncurrently-nondominated = {}\n'.format(args.precision, args.currently_nondominated))
 
     # Analyze the archives
-    archive_thinning(input_path, output_path, thinning_precisions, False)
+    archive_thinning(args.input, args.output, args.precision, args.currently_nondominated, args.functions,
+                     args.instances, args.dimensions)
 

@@ -37,6 +37,14 @@ except ImportError:
             raise error
         return output
 
+
+def check_output_with_print(verbose, *popenargs, **kwargs):
+    output = check_output(*popenargs, **kwargs)
+    if verbose:
+        print(output)
+
+    return output
+
 def hg(args):
     """Run a Mercurial command and return its output.
 
@@ -103,12 +111,12 @@ def git_revision():
         # print('git revision call failed')
         return ""
 
-def run(directory, args):
+def run(directory, args, verbose=False):
     print("RUN\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
     try:
         os.chdir(directory)
-        output = check_output(args, stderr=STDOUT, env=os.environ, 
+        output = check_output_with_print(verbose, args, stderr=STDOUT, env=os.environ,
                               universal_newlines=True)
         # print(output)
     except CalledProcessError as e:
@@ -118,7 +126,7 @@ def run(directory, args):
     finally:
         os.chdir(oldwd)
 
-def python(directory, args, env=None):
+def python(directory, args, env=None, verbose=False):
     print("PYTHON\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
     if os.environ.get('PYTHON') is not None:
@@ -132,7 +140,7 @@ def python(directory, args, env=None):
     full_command.extend(args)
     try:
         os.chdir(directory)
-        output = check_output(full_command, stderr=STDOUT, env=os.environ,
+        output = check_output_with_print(verbose, full_command, stderr=STDOUT, env=os.environ,
                               universal_newlines=True)
         # print(output)
     except CalledProcessError as e:
@@ -142,7 +150,7 @@ def python(directory, args, env=None):
     finally:
         os.chdir(oldwd)
 
-def rscript(directory, args, env=None):
+def rscript(directory, args, env=None, verbose=False):
     print("RSCRIPT\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
     if os.environ.get('RSCRIPT') is not None:
@@ -155,7 +163,7 @@ def rscript(directory, args, env=None):
     full_command.extend(args)
     try:
         os.chdir(directory)
-        output = check_output(full_command, stderr=STDOUT, env=os.environ,
+        output = check_output_with_print(verbose, full_command, stderr=STDOUT, env=os.environ,
                               universal_newlines=True)
     except CalledProcessError as e:
         print("ERROR: return value=%i" % e.returncode)
@@ -174,13 +182,13 @@ def copy_tree(source_directory, destination_directory):
         rmtree(destination_directory)
     print("COPY\t%s -> %s" % (source_directory, destination_directory))
     copytree(source_directory, destination_directory)
-    
+
 def write_file(string, destination):
     print("WRITE\t%s" % destination)
     with open(destination, 'w') as fd:
         fd.write(string)
 
-def make(directory, target):
+def make(directory, target, verbose=False):
     """Run make to build a target"""
     print("MAKE\t%s in %s" % (target, directory))
     oldwd = os.getcwd()
@@ -193,9 +201,9 @@ def make(directory, target):
             # Windows makefile
             copy_file('Makefile_win_gcc.in', 'Makefile')
         else:
-            copy_file('Makefile.in', 'Makefile')                
-        
-        output = check_output(['make', target], stderr=STDOUT, env=os.environ,
+            copy_file('Makefile.in', 'Makefile')
+
+        output = check_output_with_print(verbose, ['make', target], stderr=STDOUT, env=os.environ,
                               universal_newlines=True)
     except CalledProcessError as e:
         print("ERROR: return value=%i" % e.returncode)
