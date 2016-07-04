@@ -56,12 +56,16 @@ def grouped_ecdf_graphs(alg_dict, is_biobjective, order, output_dir, function_gr
     """
     for gr, tmpdictAlg in alg_dict.iteritems():
         dictDim = pproc.dictAlgByDim(tmpdictAlg)
-        for d, entries in dictDim.iteritems():
+        dims = sorted(dictDim)
+        for i, d in enumerate(dims):
+            entries = dictDim[d]
+            next_dim = dims[i+1] if i + 1 < len(dims) else dims[0]
 
             ppfig.save_single_functions_html(
                 os.path.join(output_dir, genericsettings.pprldmany_file_name),
                 '',  # algorithms names are clearly visible in the figure
                 add_to_names='_%02dD' % d,
+                next_html_page_suffix='_%02dD' % next_dim,
                 htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP_MANY,
                 isBiobjective=is_biobjective,
                 functionGroups=function_groups,
@@ -73,7 +77,10 @@ def grouped_ecdf_graphs(alg_dict, is_biobjective, order, output_dir, function_gr
                            order=order,
                            outputdir=output_dir,
                            info=('%02dD_%s' % (d, gr)),
-                           verbose=genericsettings.verbose)
+                           verbose=genericsettings.verbose,
+                           add_to_html_file_name='_%02dD' % d,
+                           next_html_page_suffix='_%02dD' % next_dim
+                           )
 
             file_name = os.path.join(output_dir, '%s_%02dD.html' % (genericsettings.pprldmany_file_name, d))
             replace_in_file(file_name, '##bbobECDFslegend##', ppfigs.ecdfs_figure_caption(True, d))
@@ -267,7 +274,7 @@ def main(argv=None):
         return 2
 
     if 1 < 3:
-        print("Post-processing: will generate output " +
+        print("\nPost-processing: will generate output " +
               "data in folder %s" % outputdir)
         print("  this might take several minutes.")
 
@@ -327,14 +334,6 @@ def main(argv=None):
         plt.rc('pdf', fonttype=42)
 
         ppfig.copy_js_files(outputdir)
-
-        ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.many_algorithm_file_name),
-            '',  # algorithms names are clearly visible in the figure
-            htmlPage=ppfig.HtmlPage.MANY,
-            isBiobjective=dsList[0].isBiobjective(),
-            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups()
-        )
 
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.ppfigs_file_name),
@@ -403,7 +402,10 @@ def main(argv=None):
                     dictFG = pproc.dictAlgByFun(dictAlg)
                     for fg, tmpdictAlg in dictFG.iteritems():
                         dictDim = pproc.dictAlgByDim(tmpdictAlg)
-                        for d, entries in dictDim.iteritems():
+                        dims = sorted(dictDim)
+                        for i, d in enumerate(dims):
+                            entries = dictDim[d]
+                            next_dim = dims[i + 1] if i + 1 < len(dims) else dims[0]
                             single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
                                                      'pprldmany-single-functions',
                                                      # + os.sep + ('f%03d' % fg),
@@ -415,7 +417,10 @@ def main(argv=None):
                                            order=sortedAlgs,
                                            outputdir=single_fct_output_dir,
                                            info=('f%03d_%02dD' % (fg, d)),
-                                           verbose=genericsettings.verbose)
+                                           verbose=genericsettings.verbose,
+                                           add_to_html_file_name='_%02dD' % d,
+                                           next_html_page_suffix='_%02dD' % next_dim
+                                           )
             print_done()
 
         if genericsettings.isTab:
@@ -435,6 +440,14 @@ def main(argv=None):
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==
                                          testbedsettings.testbed_name_bi) else True))
             print_done()
+
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.many_algorithm_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            htmlPage=ppfig.HtmlPage.MANY,
+            isBiobjective=dsList[0].isBiobjective(),
+            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups()
+        )
 
         if genericsettings.isFig:
             print("Scaling figures...")

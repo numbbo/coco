@@ -9,9 +9,9 @@
 #include "coco_utilities.c"
 #include "mo_utilities.c"
 
-/** @brief Enum for denoting the way in which the nondominated solutions are logged. */
+/** @brief Enum for denoting the way in which the nondominated solutions are treated. */
 typedef enum {
-  LOG_NONDOM_NONE, LOG_NONDOM_FINAL, LOG_NONDOM_ALL
+  LOG_NONDOM_NONE, LOG_NONDOM_FINAL, LOG_NONDOM_ALL, LOG_NONDOM_READ
 } observer_biobj_log_nondom_e;
 
 /** @brief Enum for denoting the when the decision variables are logged. */
@@ -23,7 +23,7 @@ typedef enum {
  * @brief The bbob-biobj observer data type.
  */
 typedef struct {
-  observer_biobj_log_nondom_e log_nondom_mode; /**< @brief How the nondominated solutions are logged. */
+  observer_biobj_log_nondom_e log_nondom_mode; /**< @brief Handling of the nondominated solutions. */
   observer_biobj_log_vars_e log_vars_mode;     /**< @brief When the decision variables are logged. */
 
   int compute_indicators;                      /**< @brief Whether to compute indicators. */
@@ -42,9 +42,11 @@ static void logger_biobj_free(void *logger);
  *
  * Possible options:
  *
- * - "log_nondominated: STRING" determines which nondominated solutions to log. STRING can take on the
- * values "none" (don't log nondominated solutions), "final" (log only the final nondominated solutions) and
- * "all" (log every solution that is nondominated at creation time). The default value is "all".
+ * - "log_nondominated: STRING" determines how the nondominated solutions are handled. STRING can take on the
+ * values "none" (don't log nondominated solutions), "final" (log only the final nondominated solutions),
+ * "all" (log every solution that is nondominated at creation time) and "read" (the nondominated solutions
+ * are not logged, but are passed to the logger as input - this is a functionality needed in pre-processing
+ * of the data). The default value is "all".
  *
  * - "log_decision_variables: STRING" determines whether the decision variables are to be logged in addition
  * to the objective variables in the output of nondominated solutions. STRING can take on the values "none"
@@ -80,6 +82,8 @@ static void observer_biobj(coco_observer_t *observer, const char *options, coco_
       observer_biobj->log_nondom_mode = LOG_NONDOM_FINAL;
     else if (strcmp(string_value, "all") == 0)
       observer_biobj->log_nondom_mode = LOG_NONDOM_ALL;
+    else if (strcmp(string_value, "read") == 0)
+      observer_biobj->log_nondom_mode = LOG_NONDOM_READ;
   }
 
   observer_biobj->log_vars_mode = LOG_VARS_LOW_DIM;

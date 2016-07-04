@@ -2,13 +2,12 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
+import argparse
 
 from cocoprep.archive_load_data import get_file_name_list, parse_archive_file_name
-from cocoprep.archive_load_data import create_path
+from cocoprep.archive_load_data import create_path, parse_range
 from cocoprep.archive_exceptions import PreprocessingException, PreprocessingWarning
-from cocoprep.archive_functions import Archive, log_level
-import argparse
-from cocoprep.archive_load_data import parse_range
+from cocoprep.coco_archive import Archive, log_level
 
 
 def archive_thinning(input_path, output_path, thinning_precision, currently_nondominated, functions, instances,
@@ -22,7 +21,7 @@ def archive_thinning(input_path, output_path, thinning_precision, currently_nond
        If currently_nondominated is False, only the solutions that are contained in the final archive are output.
        In this case, the two extreme solutions are also output.
     """
-    # Check whether input paths exist
+    # Check whether input path exists
     input_files = get_file_name_list(input_path, ".adat")
     if len(input_files) == 0:
         raise PreprocessingException('Folder {} does not exist or is empty'.format(input_path))
