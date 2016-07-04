@@ -115,6 +115,7 @@ def prepare_data(run_all_tests):
         retrieve_algorithm(dataPath, '2009', 'DE-PSO_garcia-nieto_noiseless.tgz')
         retrieve_algorithm(dataPath, '2009', 'VNS_garcia-martinez_noiseless.tgz')
         retrieve_algorithm(dataPath, 'biobj-test', 'RS-4.tgz')
+        retrieve_algorithm(dataPath, 'biobj-test', 'RS-100.tgz')
 
     return dataPath
 
@@ -197,7 +198,7 @@ def main(args):
     t0 = time.time()
     print(python + command + join_path(data_path, 'RS.tgz'))
     result = os.system(python + command + join_path(data_path, 'RS.tgz'))
-    print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
+    print('**  subtest 2 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
     run_latex_template("templateBIOBJarticle.tex")
     delete_files()
@@ -205,13 +206,13 @@ def main(args):
     if run_all_tests:
         t0 = time.time()
         print(time.asctime())
-        result = os.system(python + command +  # ' --omit-single ' +
+        result = os.system(python + command + ' --omit-single ' +
                            join_path(data_path, 'BIPOP-CMA-ES_hansen_noiseless.tgz') +
                            join_path(data_path, 'MCS_huyer_noiseless.tgz') +
                            join_path(data_path, 'NEWUOA_ros_noiseless.tgz') +
                            join_path(data_path, 'RANDOMSEARCH_auger_noiseless.tgz') +
                            join_path(data_path, 'BFGS_ros_noiseless.tgz'))
-        print('**  subtest 2 finished in ', time.time() - t0, ' seconds')
+        print('**  subtest 3 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on many algorithms.'
         run_latex_template("templateBBOBmany.tex")
         delete_files()
@@ -220,7 +221,7 @@ def main(args):
         result = os.system(python + command + '--conv' +
                            join_path(data_path, 'SMAC-BBOB_hutter_noiseless.tgz') +
                            join_path(data_path, 'lmm-CMA-ES_auger_noiseless.tgz'))
-        print('**  subtest 3 finished in ', time.time() - t0, ' seconds')
+        print('**  subtest 4 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two algorithms with option --conv.'
         run_latex_template("templateBBOBcmp.tex")
         delete_files()
@@ -229,7 +230,7 @@ def main(args):
         result = os.system(python + command + ' --omit-single ' +
                            join_path(data_path, 'DE-PSO_garcia-nieto_noiseless.tgz') +
                            join_path(data_path, 'VNS_garcia-martinez_noiseless.tgz'))
-        print('**  subtest 4 finished in ', time.time() - t0, ' seconds')
+        print('**  subtest 5 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two algorithms with option --omit-single.'
         run_latex_template("templateBBOBcmp.tex")
         delete_files()
@@ -237,7 +238,7 @@ def main(args):
         t0 = time.time()
         result = os.system(python + command + ' --expensive ' +
                            join_path(data_path, 'VNS_garcia-martinez_noiseless.tgz'))
-        print('**  subtest 5 finished in ', time.time() - t0, ' seconds')
+        print('**  subtest 6 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on one algorithm with option --expensive.'
         run_latex_template("templateBBOBarticle.tex")
         delete_files()
@@ -246,8 +247,18 @@ def main(args):
         result = os.system(python + command + ' --omit-single ' +
                            join_path(data_path, 'RS.tgz') +
                            join_path(data_path, 'RS-4.tgz'))
-        print('**  subtest 6 finished in ', time.time() - t0, ' seconds')
+        print('**  subtest 7 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bi-objective algorithms.'
+        run_latex_template("templateBIOBJmultiple.tex")
+        delete_files()
+        
+        t0 = time.time()
+        result = os.system(python + command + ' --omit-single ' +
+                           join_path(data_path, 'RS.tgz') +
+                           join_path(data_path, 'RS-4.tgz') + 
+                           join_path(data_path, 'RS-100.tgz'))
+        print('**  subtest 8 finished in ', time.time() - t0, ' seconds')
+        assert result == 0, 'Test failed: rungeneric on three bi-objective algorithms.'
         run_latex_template("templateBIOBJmultiple.tex")
         delete_files()
 

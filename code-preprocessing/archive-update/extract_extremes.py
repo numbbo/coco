@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os
 import argparse
 
-from cocoprep.archive_load_data import get_file_name_list, parse_archive_file_name
-from cocoprep.archive_load_data import get_key_value, create_path
+from cocoprep.archive_load_data import get_file_name_list, parse_archive_file_name, get_key_value, parse_range
 from cocoprep.archive_exceptions import PreprocessingException, PreprocessingWarning
-from cocoprep.archive_load_data import parse_range
 
 
 def extract_extremes(input_paths, output_file, functions, instances, dimensions):

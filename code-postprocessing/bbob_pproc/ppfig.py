@@ -89,27 +89,6 @@ html_header = """<HTML>
 """
 
 
-def next_dimension_str(s):
-    try:
-        dim = int(s.strip().strip('_').rstrip('D'))
-        return s.replace('%02d' % dim, '%02d' % next_dimension(dim))
-    except:
-        warnings.warn('next_dimension_str failed on "%s"' % s)
-        print(s)
-        raise
-
-
-def next_dimension(dim): # Wassim: too static! made it more flexible
-    """next dimension when clicking single function html pages"""
-    if dim == 2:
-        return 3
-    if dim == 3:
-        return 5
-    if dim == testbedsettings.current_testbed.dimensions_to_display[-1]: # Wassim: updated to make it more flexible
-        return testbedsettings.current_testbed.dimensions_to_display[0]
-    return 2 * dim
-
-
 def addImage(imageName, addLink):
     if addLink:
         return '<a href="file:%s"><IMG SRC="%s"></a>' % (2 * (imageName,))
@@ -182,7 +161,7 @@ def getConvLink(htmlPage, currentDir):
     return ''
 
 
-def getRldLink(htmlPage, currentDir, isBiobjective):
+def getRldLink(htmlPage, current_dir, isBiobjective):
     links = ''
     folder = 'pprldmany-single-functions'
 
@@ -191,29 +170,32 @@ def getRldLink(htmlPage, currentDir, isBiobjective):
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         if htmlPage == HtmlPage.ONE:
             fileName = '%s.html' % genericsettings.pprldmany_file_name
-            links += add_link(currentDir, folder, fileName,
+            links += add_link(current_dir, folder, fileName,
                               pprldmany_per_func_header,
                               ignoreFileExists=ignoreFileExists)
 
         if htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or not isBiobjective:
-            fileName = '%s_%02dD.html' % (genericsettings.pprldmany_file_name, testbedsettings.current_testbed.first_dimension)
-            # Wassim: now uses testbedsettings.current_testbed.first_dimension instead of hard-coded 2
-            # Wassim: TODO: make so that non-present plots are still clickable so one can get the next dim
-            links += add_link(currentDir, folder, fileName,
-                              pprldmany_per_func_dim_header,
-                              ignoreFileExists=ignoreFileExists)
+            path = os.path.join(os.path.realpath(current_dir), folder)
+            fileName = get_first_html_file(path, genericsettings.pprldmany_file_name)
+            if fileName:
+                links += add_link(current_dir, folder, fileName,
+                                  pprldmany_per_func_dim_header,
+                                  ignoreFileExists=ignoreFileExists)
+
         if htmlPage == HtmlPage.ONE:
-            fileName = '%s_%02dD.html' % (genericsettings.pprldmany_group_file_name, testbedsettings.current_testbed.first_dimension)
-            # Wassim: now uses testbedsettings.current_testbed.first_dimension instead of hard-coded 2
-            links += add_link(currentDir, folder, fileName,
-                              pprldmany_per_group_dim_header,
-                              ignoreFileExists=ignoreFileExists)
+            path = os.path.join(os.path.realpath(current_dir), folder)
+            fileName = get_first_html_file(path, genericsettings.pprldmany_group_file_name)
+            if fileName:
+                links += add_link(current_dir, folder, fileName,
+                                  pprldmany_per_group_dim_header,
+                                  ignoreFileExists=ignoreFileExists)
 
         if htmlPage == HtmlPage.MANY:
-            fileName = '%s_02D.html' % genericsettings.pprldmany_file_name
-            links += add_link(currentDir, '', fileName,
-                              pprldmany_per_group_dim_header,
-                              ignoreFileExists=ignoreFileExists)
+            fileName = get_first_html_file(current_dir, genericsettings.pprldmany_file_name)
+            if fileName:
+                links += add_link(current_dir, '', fileName,
+                                  pprldmany_per_group_dim_header,
+                                  ignoreFileExists=ignoreFileExists)
 
     return links
 
@@ -229,8 +211,8 @@ def save_single_functions_html(filename,
                                algname='',
                                extension='svg',
                                add_to_names='',
+                               next_html_page_suffix=None,
                                htmlPage=HtmlPage.NON_SPECIFIED,
-                               values_of_interest=[],
                                isBiobjective=False,
                                functionGroups=None,
                                parentFileName=None,  # used only with HtmlPage.NON_SPECIFIED
@@ -260,9 +242,10 @@ def save_single_functions_html(filename,
         first_function_number = testbedsettings.current_testbed.first_function_number
         last_function_number = testbedsettings.current_testbed.last_function_number
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
-        addLinkForNextDim = add_to_names.endswith('D')
-        bestAlgExists = bool(testbedsettings.current_testbed.best_algorithm_filename) #not isBiobjective # Wassim: or not isLargescale
 
+        addLinkForNextDim = next_html_page_suffix is not None and next_html_page_suffix != add_to_names
+        bestAlgExists = not isBiobjective
+        bestAlgExists = bool(testbedsettings.current_testbed.best_algorithm_filename) #not isBiobjective # Wassim: or not isLargescale
         dimensions = testbedsettings.current_testbed.htmlDimsOfInterest
         #genericsettings.htmlDimsOfInterest_ls if genericsettings.isLargeScale else genericsettings.htmlDimsOfInterest
 
@@ -307,16 +290,8 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.PPSCATTER:
             currentHeader = 'Scatter plots per function'
             f.write("\n<H2> %s </H2>\n" % currentHeader)
-            if addLinkForNextDim:
-                name_for_click = next_dimension_str(add_to_names)
-                f.write('<A HREF="%s">\n' % (filename.split(os.sep)[-1] +
-                                             name_for_click + '.html'))
             for ifun in range(first_function_number, last_function_number + 1):
-                f.write(addImage('ppscatter_f%03d%s.%s'
-                                 % (ifun, add_to_names, extension),
-                                 not addLinkForNextDim))
-            if addLinkForNextDim:
-                f.write('"\n</A>\n')
+                f.write(addImage('ppscatter_f%03d%s.%s' % (ifun, add_to_names, extension), True))
 
             f.write(captionStringFormat % '##bbobppscatterlegend##')
 
@@ -331,8 +306,7 @@ def save_single_functions_html(filename,
             currentHeader = header
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
-                name_for_click = next_dimension_str(add_to_names)
-                f.write('<A HREF="%s">\n' % (name + name_for_click + '.html'))
+                f.write('<A HREF="%s">\n' % (name + next_html_page_suffix + '.html'))
             for ifun in range(first_function_number, last_function_number + 1):
                 f.write(addImage('%s_f%03d%s.%s' % (name, ifun, add_to_names, extension), not addLinkForNextDim))
             if addLinkForNextDim:
@@ -341,8 +315,7 @@ def save_single_functions_html(filename,
             currentHeader = pprldmany_per_group_dim_header
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
-                name_for_click = next_dimension_str(add_to_names)
-                f.write('<A HREF="%s">\n' % (name + name_for_click + '.html'))
+                f.write('<A HREF="%s">\n' % (name + next_html_page_suffix + '.html'))
 
             for fg in functionGroups:
                 f.write(addImage('%s_%s%s.%s' % (name, fg, add_to_names, extension), not addLinkForNextDim))
@@ -353,8 +326,7 @@ def save_single_functions_html(filename,
             currentHeader = pprldmany_per_group_dim_header
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
-                name_for_click = next_dimension_str(add_to_names)
-                f.write('<A HREF="%s">\n' % (name + name_for_click + '.html'))
+                f.write('<A HREF="%s">\n' % (name + next_html_page_suffix + '.html'))
 
             for typeKey, typeValue in functionGroups.iteritems():
                 f.write('<p><b>%s</b></p>' % typeValue)
@@ -781,3 +753,43 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
             res.append(t)
 
     return res
+
+
+def get_first_html_file(current_dir, prefix):
+    filename_list = get_sorted_html_files(current_dir, prefix)
+    if filename_list:
+        return filename_list[0][0]
+
+    return None
+
+
+def get_sorted_html_files(current_dir, prefix):
+
+    suffix = 'D.html'
+    prefix += '_'
+
+    filename_dict = {}
+    for (dir_path, dir_names, file_names) in os.walk(current_dir):
+        for filename in file_names:
+            if filename.startswith(prefix) and filename.endswith(suffix):
+                stripped_filename = filename.replace(prefix, '').replace(suffix, '')
+                if stripped_filename.isdigit():
+                    key = int(stripped_filename)
+                    filename_dict[key] = filename
+        break
+
+    pair_list = []
+    firstFile = None
+    previousFile = None
+    for key, filename in sorted(filename_dict.items()):
+        if not firstFile:
+            firstFile = filename
+
+        if previousFile:
+            pair_list.append([previousFile, filename])
+        previousFile = filename
+
+    if firstFile and previousFile:
+        pair_list.append([previousFile, firstFile])
+
+    return pair_list
