@@ -342,6 +342,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
     }
 
     new_node = avl_item_insert(logger->archive_tree, node_item);
+    assert(new_node != NULL);
     avl_item_insert(logger->buffer_tree, node_item);
 
     if (logger->compute_indicators) {

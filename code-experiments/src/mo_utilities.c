@@ -22,7 +22,7 @@ static const double mo_precision = 1e-13;
  *
  * @note mo_discretization needs to be larger than mo_precision
  */
-static const double mo_discretization = 0.5 * 1e-13;
+static const double mo_discretization = 5 * 1e-13;
 
 /**
  * @brief Computes and returns the Euclidean norm of two dim-dimensional points first and second.
