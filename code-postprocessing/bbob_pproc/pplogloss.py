@@ -22,14 +22,14 @@ except ImportError:
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from matplotlib import mlab as mlab
 
-from . import toolsstats, bestalg
+from . import toolsstats, bestalg, testbedsettings
 from .pptex import writeFEvals2
 from .ppfig import saveFigure, consecutiveNumbers
 
 """
-aRT loss ratio of an algorithm A for comparison to BBOB-best2009. This works
-only as comparison to a set of algorithms that reach at least the same
-target values. Let f=f_A(EVALS) be the smallest target value such that the
+aRT loss ratio of an algorithm A for comparison to a reference/best algorithm.
+This works only as comparison to a set of algorithms that reach at least the
+same target values. Let f=f_A(EVALS) be the smallest target value such that the
 average running time of algorithm A was smaller than or equal to EVALS.
 Let aRT_A=EVALS, if aRT_best(next difficult f) < EVALS and
 aRT_A=aRT_A(f_A(EVALS)) otherwise (we have aRT_A(f_A(EVALS)) <= EVALS).
@@ -46,15 +46,15 @@ The aRT loss ratio for algorithm A is defined as:
       For a function subgroup the Box-Whisker is replaced with the four or five
       actual points with the function number written.
       Caption: aRT loss ratio: average running time, aRT (measured in number
-      of function evaluations), divided by the best aRT seen in BBOB-best2009 for
-      the respectively same function and target function value, plotted versus
-      number of function evaluations for the functions $f_1$--$f_{24}$ in
-      dimension $D=XXX$, corrected by the parameter-crafting-effort
-      $\exp(CrE)==YYY$. Line: geometric mean over all functions. Box-Whisker
-      error bars: 25-75\%-percentile range with median (box),
-      10-90\%-percentile range (line), and minimum and maximum aRT loss ratio
-      (points). Alternative Box-Whisker sentence: Points: aRT loss ratio for
-      each function
+      of function evaluations), divided by the best aRT seen in the reference
+      algorithm for the respectively same function and target function value,
+      plotted versus number of function evaluations for the functions
+      $f_1$--$f_{24}$ in dimension $D=XXX$, corrected by the
+      parameter-crafting-effort $\exp(CrE)==YYY$. Line: geometric mean over all
+      functions. Box-Whisker error bars: 25-75\%-percentile range with median
+      (box), 10-90\%-percentile range (line), and minimum and maximum aRT loss
+      ratio (points). Alternative Box-Whisker sentence: Points: aRT loss ratio
+      for each function.
     + The problem: how to find out CrE_A? Possible solution: ask for input in
       the script and put the given number into the caption and put exp(CrE_A)
       as small symbol on the y-axis of the figure for cross-checking.
@@ -73,54 +73,6 @@ different algorithms becomes incomparable. Also could aRT_A < aRT_best,
 even though aRT_best reaches a better f-value for the given EVALS.
 
 """
-
-"""OLD STUFF:
-aRT loss ratio: average running time, aRT (measured in number
-      of function evaluations), divided by the best aRT seen in BBOB-best2009 for
-      the respectively same function and target function value, plotted versus
-      number of function evaluations for the functions $f_1$--$f_{24}$ in
-      dimension $D=XXX$, corrected by the parameter-crafting-effort
-      $\exp(CrE)==YYY$. Line: geometric mean over all functions. Box-Whisker
-      error bars: 25-75\%-percentile range with median (box),
-      10-90\%-percentile range (line), and minimum and maximum aRT loss ratio
-      (points).
-Table:
-\aRT\ loss ratio (see also Figure~\ref{fig:ERTgraphs}) vs.\ a given budget
-$\FEvals$. Each cross ({\color{blue}$+$}) represents a single function. The
-target value \ftarget\ used for a given \FEvals\ is the smallest (best) recorded
-function value such that $\aRT(\ftarget)\le\FEvals$ for the presented algorithm.
-Shown is \FEvals\ divided by the respective best $\aRT(\ftarget)$ from BBOB-2009
-for functions $f_1$--$f_{24}$ in 5-D and 20-D. Line: geometric mean. Box-Whisker
-error bar: 25-75\%-ile with median (box), 10-90\%-ile (caps), and minimum and
-maximum \aRT\ loss ratio (points). The vertical line gives the maximal number of
-function evaluations in a single trial in this function subset.
-
-\aRT\ loss ratio. The aRT of the considered algorithm, the budget, is shown in
-the first column. For the loss ratio the budget is divided by the aRT for the
-respective best result from BBOB-2009 (see also Table~\ref{tab:ERTloss}).
-The last row $\text{RL}_{\text{US}}/\text{D}$ gives the number of function
-evaluations in unsuccessful runs divided by dimension. Shown are the smallest,
-10\%-ile, 25\%-ile, 50\%-ile, 75\%-ile and 90\%-ile value (smaller values are
-better). The aRT Loss ratio equals to one for the respective best algorithm from
-BBOB-2009. Typical median values are between ten and hundred.
-
-\aRT\ loss ratio. The aRT of the considered algorithm, the budget, is shown in
-the first column. For the loss ratio the budget is divided by the aRT for the
-respective best result from BBOB-2009 (see also Figure~\ref{fig:ERTlogloss}).
-The last row $\text{RL}_{\text{US}}/\text{D}$ gives the number of function
-evaluations in unsuccessful runs divided by dimension. Shown are the smallest,
-10\%-ile, 25\%-ile, 50\%-ile, 75\%-ile and 90\%-ile value (smaller values are
-better). The aRT Loss ratio equals to one for the respective best algorithm
-from BBOB-2009. Typical median values are between ten and hundred.
-
-such that $\aRT(\ftarget)\le\FEvals$ for the
-    Shown is \FEvals\ divided by the respective best $\aRT(\ftarget)$ from BBOB-2009
-    %
-    for functions $f_1$--$f_{24}$ in 5-D and 20-D.
-    %
-    % Each \aRT\ is multiplied by $\exp(\CrE)$ correcting for the parameter crafting effort.
-"""
-
 
 def table_caption():
     caption = r"""%

@@ -3,9 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import os
 import argparse
-from cocoprep.archive_load_data import parse_range
 
-from cocoprep.archive_load_data import create_path, get_file_name_list, parse_old_arhive_file_name
+from cocoprep.archive_load_data import create_path, get_file_name_list, parse_old_arhive_file_name, parse_range
 from cocoprep.archive_exceptions import PreprocessingException, PreprocessingWarning
 
 

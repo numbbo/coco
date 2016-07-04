@@ -3,9 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import os
 import argparse
-from cocoprep.archive_load_data import parse_range
 
-from cocoprep.archive_load_data import parse_archive_file_name, remove_empty_file
+from cocoprep.archive_load_data import parse_archive_file_name, parse_range
 from cocoprep.archive_load_data import create_path, get_key_value, get_file_name_list
 from cocoprep.archive_exceptions import PreprocessingException, PreprocessingWarning
 
@@ -15,7 +14,7 @@ def archive_split(input_paths, output_path, functions, instances, dimensions):
        instance. The check for multiple instances is done only through file names.
     """
 
-    # Check whether input path exists
+    # Check whether input paths exist
     input_files = get_file_name_list(input_paths, ".adat")
     if len(input_files) == 0:
         raise PreprocessingException('Folder {} does not exist or is empty'.format(input_paths))
@@ -35,6 +34,7 @@ def archive_split(input_paths, output_path, functions, instances, dimensions):
 
         print(input_file)
         f_out = None
+        instance = None
 
         with open(input_file, 'r') as f_in:
 
@@ -44,20 +44,29 @@ def archive_split(input_paths, output_path, functions, instances, dimensions):
                 if not line.strip():
                     # Ignore empty lines
                     continue
+
                 elif line[0] == '%':
                     if 'instance' in line:
-                        instance = int(get_key_value(line[1:], 'instance'))
                         if f_out and not f_out.closed:
+                            if len(buffered_lines) > 0:
+                                f_out.write(buffered_lines)
+                                buffered_lines = ''
                             f_out.close()
-                        output_file = os.path.join(output_path,
-                                                   '{}_f{:02d}_i{:02d}_d{:02d}_nondominated.adat'.format(suite_name,
-                                                                                                         function,
-                                                                                                         instance,
-                                                                                                         dimension))
-                        f_out = open(output_file, 'w')
-                    buffered_lines += line
+                        instance = int(get_key_value(line[1:], 'instance'))
+                        if instance in instances:
+                            output_file = os.path.join(output_path,
+                                                       '{}_f{:02d}_i{:02d}_d{:02d}_nondominated.adat'.format(suite_name,
+                                                                                                             function,
+                                                                                                             instance,
+                                                                                                             dimension))
+                            f_out = open(output_file, 'w')
+                        else:
+                            instance = None
 
-                elif (line[0] != '%') and (instance in instances):
+                    if instance:
+                        buffered_lines += line
+
+                elif (line[0] != '%') and instance:
                     if len(buffered_lines) > 0:
                         f_out.write(buffered_lines)
                         buffered_lines = ''
@@ -66,6 +75,8 @@ def archive_split(input_paths, output_path, functions, instances, dimensions):
             f_in.close()
 
         if f_out and not f_out.closed:
+            if len(buffered_lines) > 0:
+                f_out.write(buffered_lines)
             f_out.close()
 
 
@@ -79,7 +90,7 @@ if __name__ == '__main__':
                         help='function numbers to be included in the processing of archives')
     parser.add_argument('-i', '--instances', type=parse_range, default=range(1, 11),
                         help='instance numbers to be included in the processing of archives')
-    parser.add_argument('-d', '--dimensions', type=parse_range, default=[2, 3, 5],
+    parser.add_argument('-d', '--dimensions', type=parse_range, default=[2, 3, 5, 10, 20, 40],
                         help='dimensions to be included in the processing of archives')
     parser.add_argument('output', help='path to the output folder')
     parser.add_argument('input', default=[], nargs='+', help='path(s) to the input folder(s)')
