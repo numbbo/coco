@@ -102,10 +102,10 @@ class GECCOBBOBTestbed(Testbed):
         self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
         self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
         self.scenario = scenario_fixed
-        #self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
-        #self.best_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in best_algorithm_filename
-        self.best_algorithm_filename = 'data/RANDOMSEARCH'
-        self.best_algorithm_displayname = 'RANDOMSEARCH'  # TODO: should be read in from data set in best_algorithm_filename
+        self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
+        self.best_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in best_algorithm_filename
+        #self.best_algorithm_filename = 'data/RANDOMSEARCH'
+        #self.best_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in best_algorithm_filename
         self.short_names = get_short_names(self.shortinfo_filename)
         # expensive optimization settings:
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
