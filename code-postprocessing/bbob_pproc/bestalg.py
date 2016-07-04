@@ -26,6 +26,7 @@ import pickle
 import gzip
 import warnings
 import numpy as np
+import tarfile
 
 from . import readalign, pproc
 from .toolsdivers import print_done
@@ -497,17 +498,23 @@ def custom_generate(args=algs2009):
         if verbose:
             print('Folder %s was created.' % output_dir)
 
-    filename_template = 'bbob-bestalg1_f%02d_d%02d.%s'
     result = generate(dictAlg)
 
-    create_data_files(filename_template, output_dir, 'dat', result)
-    create_data_files(filename_template, output_dir, 'tdat', result)
+    create_data_files(output_dir, result, dsList[0].isBiobjective())
+
+    tar = tarfile.open(output_dir + ".tar.gz", "w:gz")
+    tar.add(output_dir)
+    tar.close()
 
     print('Done with writing best algorithm files.')
 
 
-def create_data_files(filename_template, output_dir, extension, result):
-    for key, value in result.iteritems():
+def create_data_files(output_dir, result, is_biobjective):
+
+    info_filename = 'bbob-bestalg'
+    filename_template = info_filename + '_f%02d_d%02d.%s'
+    info_lines = []
+    for key, value in sorted(result.iteritems()):
 
         # TODO: throw an error
         # if not len(value.target) == len(value.ert):
@@ -516,18 +523,56 @@ def create_data_files(filename_template, output_dir, extension, result):
         for index in range(len(value.target)):
             evaluation_value = value.ert[index]
             target = value.target[index]
-            dict_evaluation[int(evaluation_value)] = target
+            dict_evaluation[np.round(evaluation_value)] = target
+
+        sum_max_evals = 0
+        count_max_evals = 0
+        for alg_max_evals in value.maxevals.values():
+            sum_max_evals += sum(alg_max_evals)
+            count_max_evals += len(alg_max_evals)
+        average_max_evals = int(sum_max_evals / count_max_evals)
+
+        sum_final_fun_values = 0
+        count_final_fun_values = 0
+        for alg_final_fun_values in value.finalfunvals.values():
+            sum_final_fun_values += sum(alg_final_fun_values)
+            count_final_fun_values += len(alg_final_fun_values)
+        average_final_fun_values = sum_final_fun_values / count_final_fun_values
+
+        instance_data = "%d:%d|%10.9e" % (0, average_max_evals, average_final_fun_values)
+
+        if is_biobjective:
+            info_lines.append("algorithm = '%s' indicator = 'hyp'" % value.algId)
+            info_lines.append("%% %s" % value.comment)
+            info_lines.append("function = %d, dim = %d, %s, %s"
+                              % (key[1], key[0], filename_template % (key[1], key[0], 'dat'), instance_data))
+        else:
+            precision = value.target[len(value.target) - 1]
+            info_lines.append("funcId = %d, DIM = %d, Precision = %10.9e, algId = '%s'"
+                              % (key[1], key[0], precision, value.algId))
+            info_lines.append("%% %s" % value.comment)
+            info_lines.append("%s, %s" % (filename_template % (key[1], key[0], 'dat'), instance_data))
 
         lines = []
         lines.append("%% Artificial instance")
         for key_target, value_target in sorted(dict_evaluation.iteritems()):
             lines.append("%d %10.9e %10.9e" % (key_target, value_target, value_target))
 
-        filename = os.path.join(output_dir, filename_template % (key[1], key[0], extension))
-        fid = open(filename, 'w')
-        for line in lines:
-            fid.write("%s\n" % line)
-        fid.close()
+        filename = os.path.join(output_dir, filename_template % (key[1], key[0], 'dat'))
+        write_to_file(filename, lines)
+        filename = os.path.join(output_dir, filename_template % (key[1], key[0], 'tdat'))
+        write_to_file(filename, lines)
+
+
+    filename = os.path.join(output_dir, '%s.info' % info_filename)
+    write_to_file(filename, info_lines)
+
+
+def write_to_file(filename, lines):
+    fid = open(filename, 'w')
+    for line in lines:
+        fid.write("%s\n" % line)
+    fid.close()
 
 
 def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
