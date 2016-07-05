@@ -452,7 +452,7 @@ def customgenerate(args=algs2009):
 
     res = generate(dictAlg)
     picklefilename = os.path.join(outputdir, 'bestalg.pickle')
-    fid = open(picklefilename, 'w')
+    fid = gzip.open(picklefilename + ".gz", 'w')
     pickle.dump(res, fid)
     fid.close()
 
@@ -539,7 +539,7 @@ def create_data_files(output_dir, result, is_biobjective):
             count_final_fun_values += len(alg_final_fun_values)
         average_final_fun_values = sum_final_fun_values / count_final_fun_values
 
-        instance_data = "%d:%d|%10.9e" % (0, average_max_evals, average_final_fun_values)
+        instance_data = "%d:%d|%10.15e" % (0, average_max_evals, average_final_fun_values)
 
         if is_biobjective:
             info_lines.append("algorithm = '%s' indicator = 'hyp'" % value.algId)
@@ -548,7 +548,7 @@ def create_data_files(output_dir, result, is_biobjective):
                               % (key[1], key[0], filename_template % (key[1], key[0], 'dat'), instance_data))
         else:
             precision = value.target[len(value.target) - 1]
-            info_lines.append("funcId = %d, DIM = %d, Precision = %10.9e, algId = '%s'"
+            info_lines.append("funcId = %d, DIM = %d, Precision = %10.15e, algId = '%s'"
                               % (key[1], key[0], precision, value.algId))
             info_lines.append("%% %s" % value.comment)
             info_lines.append("%s, %s" % (filename_template % (key[1], key[0], 'dat'), instance_data))
@@ -556,7 +556,7 @@ def create_data_files(output_dir, result, is_biobjective):
         lines = []
         lines.append("%% Artificial instance")
         for key_target, value_target in sorted(dict_evaluation.iteritems()):
-            lines.append("%d %10.9e %10.9e" % (key_target, value_target, value_target))
+            lines.append("%d %10.15e %10.15e" % (key_target, value_target, value_target))
 
         filename = os.path.join(output_dir, filename_template % (key[1], key[0], 'dat'))
         write_to_file(filename, lines)
