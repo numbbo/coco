@@ -31,10 +31,10 @@ f2_id = 15
 f1_instance = 2 
 f2_instance = 3
 dim = 5 # in dimensions
-instancesubset = range(1,11) # bbob-biobj instances actually displayed
+instancesubset = range(1,2) # bbob-biobj instances actually displayed
 # Note: in single-objective bbobdocfunctions.pdf documentation, '0' seems to be the instance used
 
-functions = (2,6)
+functions = (6,8)
 instances = {1: (2, 4), 
              2: (3, 5),
              3: (7, 8),
@@ -53,4 +53,4 @@ for f1_id in functions:
         for i in instancesubset:
             generate_plots.generate_plots(f1_id, f2_id, instances[i][0],
                                           instances[i][1], dim,
-                                          folder='plots/', tofile=True)
+                                          folder='plots/', tofile=False)
