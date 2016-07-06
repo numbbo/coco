@@ -25,11 +25,12 @@ def get_table_caption():
     """ Sets table caption, based on the testbedsettings.current_testbed
         and genericsettings.runlength_based_targets.
     """    
-    
+    best_year = testbedsettings.current_testbed.best_algorithm_year # Manh
+    tabDimsOfInterest = testbedsettings.current_testbed.tabDimsOfInterest
     table_caption_one = r"""%
         Average running time (\aRT\ in number of function 
-        evaluations) divided by the respective best \aRT\ measured during BBOB-2009 in
-        dimensions 5 (left) and 20 (right).
+        evaluations) divided by the respective best \aRT\ measured during""" + (""" BBOB-%d in
+        dimensions %d (left) and %d (right). """ %tuple([best_year] + tabDimsOfInterest)) + r"""%
         The \aRT\ and in braces, as dispersion measure, the half difference between 10
         and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
         """
@@ -46,7 +47,7 @@ def get_table_caption():
         """
     table_caption_bi = r"""%
         Average runtime (\aRT) to reach given targets, measured
-        in number of function evaluations in dimensions 5 (left) and 20 (right).
+        in number of function evaluations in""" + ("""dimensions %d (left) and %d (right). """ %tuple(tabDimsOfInterest)) + r"""%
         For each function, the \aRT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
@@ -62,7 +63,7 @@ def get_table_caption():
         with $p=0.05$ or $p=10^{-k}$ where $k\in\{2,3,4,\dots\}$ is the number
         following the $\star$ symbol, with Bonferroni correction of #1.""" + 
         (r"""A $\downarrow$ indicates the same tested against the best
-        algorithm of BBOB-2009."""
+        algorithm of """ + ("""BBOB-%d.""" %best_year)
         if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
         else "")
         )
@@ -104,7 +105,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         info = '_' + info
 
     bestalgentries = bestalg.load_best_algorithm()
-    
+
     header = []
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
         header = [r'\#FEs/D']

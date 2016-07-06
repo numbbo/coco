@@ -66,7 +66,6 @@ def main(latex_commands_for_html):
 
     single_objective_testbed = testbedsettings.default_testbed_single_noisy if genericsettings.isNoisy \
         else testbedsettings.default_testbed_single
-
     for scenario in testbedsettings.all_scenarios:
         # set up scenario, especially wrt genericsettings
         if scenario == testbedsettings.scenario_rlbased:
@@ -78,6 +77,9 @@ def main(latex_commands_for_html):
         elif scenario == testbedsettings.scenario_biobjfixed:
             genericsettings.runlength_based_targets = False
             config.config(testbedsettings.default_testbed_bi)
+        elif scenario == testbedsettings.scenario_largescalefixed:
+            genericsettings.runlength_based_targets = False
+            config.config(testbedsettings.default_testbed_largescale)
         else:
             warnings.warn("Scenario not supported yet in HTML")
 
@@ -148,8 +150,9 @@ def main(latex_commands_for_html):
 
         # 6. pptables
         command_name = 'bbobpptablesmanylegend' + scenario
-        bonferroni = str(2 * (testbed.last_function_number - testbed.first_function_number + 1))
-        f.write(prepare_item_two(command_name, command_name, 'different dimensions', bonferroni))
+        for dim in testbed.htmlDimsOfInterest: #['5', '20']: # Wassim:
+            bonferroni = str(2 * (testbed.last_function_number - testbed.first_function_number + 1))
+            f.write(prepare_item_two(command_name + str(dim), command_name, 'dimension ' + str(dim), bonferroni))
 
         # 7. ppscatter
         param = '$f_{%d}$ - $f_{%d}$' % (testbed.first_function_number, testbed.last_function_number)

@@ -267,8 +267,11 @@ def main(argv=None):
             if genericsettings.isNoiseFree and not genericsettings.isNoisy:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('noiselessall', DataSetList())
 
+        #_dimensions_to_display = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls # Wassim: modify genericsettings.dimensions_to_display directly?
+        _dimensions_to_display = testbedsettings.current_testbed.dimensions_to_display
         for i in dsList:
-            if i.dim not in genericsettings.dimensions_to_display:
+            #if i.dim not in genericsettings.dimensions_to_display:
+            if i.dim not in _dimensions_to_display:
                 continue
 
             if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) <
@@ -433,7 +436,7 @@ def main(argv=None):
 
             # ECDFs of aRT ratios
             for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
-                if dim in inset.rldDimsOfInterest:
+                if dim in testbedsettings.current_testbed.rldDimsOfInterest: #inset.rldDimsOfInterest:
                     # ECDF for all functions altogether
                     try:
                         pprldistr2.main(dictDim0[dim], dictDim1[dim], dim,
@@ -503,7 +506,7 @@ def main(argv=None):
                 pprldistr.fmax = None  # Resetting the max final value
                 pprldistr.evalfmax = None  # Resetting the max #fevalsfactor
                 # ECDFs of all functions altogether
-                if dim in inset.rldDimsOfInterest:
+                if dim in testbedsettings.current_testbed.rldDimsOfInterest: #inset.rldDimsOfInterest:
                     try:
                         pprldistr.comp(dictDim1[dim], dictDim0[dim],
                                        testbedsettings.current_testbed.rldValsOfInterest,
@@ -609,8 +612,9 @@ def main(argv=None):
                             tmp1.extend(dictFunc1[f])
                         group0.append(tmp0)
                         group1.append(tmp1)
+                    
                     for i, g in enumerate(zip(group0, group1)):
-                        pptable2.main(g[0], g[1], inset.tabDimsOfInterest,
+                        pptable2.main(g[0], g[1], testbedsettings.current_testbed.tabDimsOfInterest, #inset.tabDimsOfInterest,
                                       outputdir,
                                       '%s%d' % (nGroup, i), genericsettings.verbose)
                 else:
@@ -625,7 +629,7 @@ def main(argv=None):
                     #                                      '%s' % (testbedsettings.testbedshortname), genericsettings.verbose)
                     else:
                         pptable2.main(dictNG0[nGroup], dictNG1[nGroup],
-                                      inset.tabDimsOfInterest,
+                                      testbedsettings.current_testbed.tabDimsOfInterest,# inset.tabDimsOfInterest,
                                       outputdir,
                                       '%s' % (nGroup), genericsettings.verbose)
 

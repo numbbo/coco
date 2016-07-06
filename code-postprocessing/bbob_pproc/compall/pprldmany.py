@@ -349,13 +349,14 @@ def plotLegend(handles, maxval):
         lh = 2
     fontsize = genericsettings.minmax_algorithm_fontsize[0] + np.min((1, np.exp(9 - lh))) * (
         genericsettings.minmax_algorithm_fontsize[-1] - genericsettings.minmax_algorithm_fontsize[0])
-    i = 0  # loop over the elements of ys
+    i = 0 # loop over the elements of ys
+    best_year = 'best %d' % testbedsettings.current_testbed.best_algorithm_year # Manh : set 'best 2009/2016'
     for j in sorted(ys.keys()):
         for k in reversed(sorted(ys[j].keys())):
             # enforce best ever comes last in case of equality
             tmp = []
             for h in ys[j][k]:
-                if plt.getp(h, 'label') == 'best 2009':
+                if plt.getp(h, 'label') == best_year:
                     tmp.insert(0, h)
                 else:
                     tmp.append(h)
@@ -633,6 +634,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     dictDimList = pp.dictAlgByDim(dictAlg)
     dims = sorted(dictDimList)
+
     for i, dim in enumerate(dims):
         divisor = dim if divide_by_dimension else 1
 
@@ -682,7 +684,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 # set_trace()
                 bestalgentries = bestalg.load_best_algorithm()
 
-                if not bestalgentries:
+                if not bestalgentries or not bestalgentries.has_key((dim,f)):
+                    # Wassim: if (dimension,function) is not present in bestalgentries, just ignore it
                     displaybest2009 = False
                 else:
                     bestalgentry = bestalgentries[(dim, f)]
@@ -709,11 +712,12 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     # Display data
     lines = []
+    best_year = 'best %d' %testbedsettings.current_testbed.best_algorithm_year # Manh : set 'best 2009/2016'
     if displaybest2009:
         args = {'ls': '-', 'linewidth': 6, 'marker': 'D', 'markersize': 11.,
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
-                'label': 'best 2009', 'zorder': -1}
+                'label': best_year, 'zorder': -1}
         lines.append(plotdata(np.array(xbest2009), x_limit, maxevalsbest2009,
                               CrE=0., **args))
 
@@ -768,8 +772,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 algtocommand[algname_to_label(alg)] = tmp
             if displaybest2009:
                 tmp = r'\algzeroperfprof'
-                f.write(r'\providecommand{%s}{best 2009}' % (tmp))
-                algtocommand['best 2009'] = tmp
+                f.write(r'\providecommand{%s}{best %d}' % (tmp, testbedsettings.current_testbed.best_algorithm_year )) # Manh
+                algtocommand[best_year] = tmp # Manh
 
             commandnames = []
             for label in labels:

@@ -105,12 +105,13 @@ def scaling_figure_caption(for_html = False):
 
 
 def prepare_ecdfs_figure_caption():
+    best_year = testbedsettings.current_testbed.best_algorithm_year # Manh
+    bestyeartext = (
+                    r"The ``best %d'' line " % best_year +
+                    r"corresponds to the best \aRT\ observed during BBOB %d " % best_year +
+                    r"for each selected target."
+                    )
 
-    best2009text = (
-                r"The ``best 2009'' line " +
-                r"corresponds to the best \aRT\ observed during BBOB 2009 " +
-                r"for each selected target."
-                )
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
@@ -128,16 +129,25 @@ def prepare_ecdfs_figure_caption():
                 r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. "
                 )
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
-        # NOTE: no runlength-based targets supported yet
-        figure_caption = ecdfs_figure_caption_standard
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+
+    if testbedsettings.current_testbed.best_algorithm_filename:
         if genericsettings.runlength_based_targets:
-            figure_caption = ecdfs_figure_caption_rlbased + best2009text
+            figure_caption = ecdfs_figure_caption_rlbased + bestyeartext
         else:
-            figure_caption = ecdfs_figure_caption_standard + best2009text
+            figure_caption = ecdfs_figure_caption_standard + bestyeartext
     else:
-        warnings.warn("Current settings do not support ppfigdim caption.")
+        figure_caption = ecdfs_figure_caption_standard
+
+#    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+#        # NOTE: no runlength-based targets supported yet
+#        figure_caption = ecdfs_figure_caption_standard
+#    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+#        if genericsettings.runlength_based_targets:
+#            figure_caption = ecdfs_figure_caption_rlbased + bestyeartext
+#        else:
+#            figure_caption = ecdfs_figure_caption_standard + bestyeartext
+#    else:
+#        warnings.warn("Current settings do not support ppfigdim caption.")
 
     return figure_caption
 
@@ -256,8 +266,10 @@ def plotLegend(handles, maxval=None):
         for k in sorted(ys[j].keys()):
             #enforce best 2009 comes first in case of equality
             tmp = []
+            # Manh : a generalization
+            best_year_label = 'best %d' %testbedsettings.current_testbed.best_algorithm_year
             for h in ys[j][k]:
-                if plt.getp(h, 'label') == 'best 2009':
+                if plt.getp(h, 'label') == best_year_label:
                     tmp.insert(0, h)
                 else:
                     tmp.append(h)
@@ -336,18 +348,29 @@ def beautify(legend=False, rightlegend=False):
 
     # ticks on axes
     #axisHandle.invert_xaxis()
-    dimticklist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
-    dimannlist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
+    #dimticklist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point?
+    dimticklist = testbedsettings.current_testbed.dimensions_to_display # Wassim: dimensions_to_display
+    # dimannlist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point?
+    dimannlist = testbedsettings.current_testbed.dimensions_to_display # Wassim: dimensions_to_display
     # TODO: All these should depend on (xlim, ylim)
 
     axisHandle.set_xticks(dimticklist)
     axisHandle.set_xticklabels([str(n) for n in dimannlist])
 
-    # axes limites
+    # axes limites # Wassim: what do these numbers mean exactly?!
+
+    # Wassim: to dynamically set xlim
+    import numpy
+    dim_min_margin = testbedsettings.current_testbed.dimensions_to_display[0] * 0.9
+    dim_max_margin = testbedsettings.current_testbed.dimensions_to_display[-1] * 1.125
+
     if rightlegend:
-        plt.xlim(1.8, 101) # 101 is 10 ** (numpy.log10(45/1.8)*1.25) * 1.8
+        #plt.xlim(1.8, 101) # 101 is 10 ** (numpy.log10(45/1.8)*1.25) * 1.8
+        #plt.xlim(19.8, 4500) # Wassim: for large-scale, the following is tentative
+        plt.xlim(  dim_min_margin,  10 ** (numpy.log10(dim_max_margin / dim_min_margin)*1.25) * dim_min_margin)
     else:
-        plt.xlim(1.8, 45)                # Should depend on xmin and xmax
+        #plt.xlim(1.8, 45)                # Should depend on xmin and xmax
+        plt.xlim(dim_min_margin, dim_max_margin) # Wassim: for large-scale
 
     tmp = axisHandle.get_yticks()
     tmp2 = []
@@ -440,7 +463,6 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
                         dimnbsucc.append(dim)
                         ynbsucc.append(float(data[0])/dim)
                         nbsucc.append('%d' % data[2])
-
             # Draw lines
             if 1 < 3:  # new version
                 # omit the line if a point in between is missing
@@ -559,18 +581,31 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
             
             alg_definitions.append((', ' if i > 0 else '') + '%s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
             alg_definitions_html += (', ' if i > 0 else '') + '%s: %s' % (symb_html, toolsdivers.str_to_latex(toolsdivers.strip_pathname1(sortedAlgs[i])))
-        toolsdivers.prepend_to_file(latex_commands_filename, 
-                [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
-                 #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
-                '\\providecommand{\\bbobppfigslegend}[1]{',
-                scaling_figure_caption(),
-                'Legend: '] + alg_definitions + ['}']
-                )
-        toolsdivers.prepend_to_file(latex_commands_filename, 
-                ['\\providecommand{\\bbobECDFslegend}[1]{',
-                ecdfs_figure_caption(), '}']
-                )
-
+        if not isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
+            toolsdivers.prepend_to_file(latex_commands_filename,
+                    [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
+                     #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
+                    '\\providecommand{\\bbobppfigslegend}[1]{',
+                    scaling_figure_caption(),
+                    'Legend: '] + alg_definitions + ['}']
+                    )
+            toolsdivers.prepend_to_file(latex_commands_filename, 
+                    ['\\providecommand{\\bbobECDFslegend}[1]{',
+                    ecdfs_figure_caption(), '}']
+                    )
+        else:
+            toolsdivers.prepend_to_file(latex_commands_filename,
+                    [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}'
+                     #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
+                     '\\providecommand{\\bbobppfigslegend}[1]{',
+                     scaling_figure_caption(),
+                     'Legend: '] + alg_definitions + ['}']
+                    )
+            toolsdivers.prepend_to_file(latex_commands_filename,
+                    ['\\providecommand{\\bbobECDFslegend}[1]{',
+                    ecdfs_figure_caption(), '}']
+                    )
+        
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
 
         if verbose:
