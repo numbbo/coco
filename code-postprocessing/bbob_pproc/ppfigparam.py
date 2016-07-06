@@ -19,7 +19,7 @@ import numpy as np
 from . import toolsstats, testbedsettings, genericsettings, toolsdivers
 from .ppfig import saveFigure
 
-__all__ = ['beautify', 'plot', 'main']
+__all__ = ['beautify', 'plot', 'read_fun_infos', 'main']
 
 avgstyle = dict(color='r', marker='x', markersize=20)
 medmarker = dict(linestyle='', marker='+', markersize=30, markeredgewidth=5,

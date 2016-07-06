@@ -90,7 +90,7 @@ def run_doctests():
     if not sys.version.startswith('3'):
         print("  CAVEAT: doctest OF cocoex.interface IS, FOR SOME REASON, " +
               "INEFFECTIVE IN PYTHON 2 ")
-    testmod(interface)
+    #testmod(interface)
     testmod(example_experiment)
 
 def _clean_up(folder, start_matches, protected):
