@@ -134,8 +134,7 @@ def main(latex_commands_for_html):
         # prepare tags for later HTML preparation
         testbed = testbedsettings.current_testbed
         # 1. ppfigs
-        for dim in testbed.htmlDimsOfInterest: #['5', '20']: # Wassim:
-            f.write(prepare_item('bbobECDFslegend' + scenario + str(dim), 'bbobECDFslegend' + scenario, str(dim)))
+        f.write(prepare_item('bbobECDFslegend' + scenario, '', 'DIMVALUE'))
         param = '$f_{%d}$ and $f_{%d}$' % (testbed.first_function_number, testbed.last_function_number)
         f.write(prepare_item('bbobppfigslegend' + scenario, param=param))
 
