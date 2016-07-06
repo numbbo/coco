@@ -150,9 +150,8 @@ def main(latex_commands_for_html):
 
         # 6. pptables
         command_name = 'bbobpptablesmanylegend' + scenario
-        for dim in testbed.htmlDimsOfInterest: #['5', '20']: # Wassim:
-            bonferroni = str(2 * (testbed.last_function_number - testbed.first_function_number + 1))
-            f.write(prepare_item_two(command_name + str(dim), command_name, 'dimension ' + str(dim), bonferroni))
+        bonferroni = str(2 * (testbed.last_function_number - testbed.first_function_number + 1))
+        f.write(prepare_item_two(command_name, command_name, 'different dimensions', bonferroni))
 
         # 7. ppscatter
         param = '$f_{%d}$ - $f_{%d}$' % (testbed.first_function_number, testbed.last_function_number)
