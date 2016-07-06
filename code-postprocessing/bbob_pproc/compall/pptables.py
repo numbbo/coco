@@ -675,7 +675,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                 res = '<br><p><b>%d-D</b></p>' % df[0] + res
                 firstFunction = False
 
-            if df[0] in testbedsettings.current_testbed.tabDimsOfInterest: # Manh
+            if True:
                 filename = os.path.join(outputdir, genericsettings.pptables_file_name + '.html')
 
                 lines = []
