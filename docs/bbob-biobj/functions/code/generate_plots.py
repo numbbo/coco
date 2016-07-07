@@ -71,7 +71,7 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
            -1.77536414,  1.92731362,  2.38098092, -0.23789751, -0.02411066,
            -0.37445709,  0.43547281,  0.32148583, -0.4257802 ,  0.15550121])[0:dim]
     rand_dir_2 = rand_dir_2/np.linalg.norm(rand_dir_2)
-
+    #rand_dir_3 = np.random.multivariate_normal(np.zeros(dim), np.identity(dim))
     rand_dir_3 = np.array([0.27274996,  0.09450028,  0.23123471, -0.17268026, -0.19352246,
             0.11116155,  1.91171592, -0.77188094,  0.50033182, -2.93726319,
            -0.0444466 , -0.83483599, -1.05971685,  0.35220208,  0.67446614,
@@ -81,9 +81,21 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
             0.32995442,  1.64754152, -0.23038488, -0.1996612 ,  0.7423728 ,
             0.41590582, -0.49735973, -0.16317831,  0.14116915,  0.33144299])[0:dim]
     rand_dir_3 = rand_dir_3/np.linalg.norm(rand_dir_3)    
+    #rand_dir_4 = np.random.multivariate_normal(np.zeros(dim), np.identity(dim))
+    rand_dir_4 = np.array([-1.64810074,  0.06035188, -1.08343971,  0.69871916, -1.57870908,
+            -0.39555544,  1.15952858,  0.82573846, -1.00821565,  0.46347426,
+            0.46817715, -0.70617468, -0.56754204, -1.77903594, -0.15184591,
+            2.10968445,  0.53652335, -0.03221351, -0.34664564,  1.69246492,
+            1.26043695,  0.20284844,  1.90425762, -0.43203046,  0.33297092,
+           -0.43151518, -0.27561938, -0.64456918, -1.52515793,  0.16840333,
+           -1.44740417, -0.07328904, -0.74026773,  0.02869038, -0.65416703,
+            0.55212071, -1.13507935, -1.18781606,  0.42888208, -1.47626463])[0:dim]
+    rand_dir_4 = rand_dir_4/np.linalg.norm(rand_dir_4)
+        
     
-    # rand_x = -4+8*np.random.rand(dim)
-    rand_x = np.array([-2.70496645, -0.39106794, -2.80086174, -3.66756864,  2.14644397,
+    # now sample two random points
+    # rand_x_1 = -4+8*np.random.rand(dim)
+    rand_x_1 = np.array([-2.70496645, -0.39106794, -2.80086174, -3.66756864,  2.14644397,
         2.78153367,  1.56329668,  2.35839362,  0.13302063, -2.91032329,
        -2.51556623, -2.35077186,  2.58377453,  1.17508714, -2.4457919 ,
         1.45033066, -1.23112017, -2.25318184,  2.41933833, -1.14164988,
@@ -91,16 +103,25 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
        -2.05345914, -2.4116529 ,  3.08138791, -2.23247829,  2.54796847,
        -0.936912  ,  3.35564688,  0.51737322, -0.92592536,  1.65481046,
        -2.52985307,  3.7431933 , -3.6630677 , -0.40448911,  1.33128767])[0:dim]    
+    # rand_x_2 = -4+8*np.random.rand(dim)
+    rand_x_2 = np.array([1.57461786, -3.44804825, -3.81020969,  2.83971589,  3.27253056,
+       -3.26623201,  3.79526151,  1.76316424,  1.79345621, -0.81215354,
+        2.06356913,  1.02657347,  2.99781081,  0.35872047,  3.69835244,
+       -1.68708122,  1.84948801, -0.86589091, -1.61500454, -1.03210602,
+        3.96363037, -1.30389274,  2.16486049, -2.77809263, -2.78117177,
+       -0.89747482,  3.85189385,  2.34298403,  1.45079637,  3.78130948,
+        2.55578938,  2.23402556,  0.79451819,  0.30563072,  1.91404655,
+        0.37739932, -2.07692776, -0.06961333, -2.73583526, -2.70524468])[0:dim]    
     
     # Construct solutions along rand_dir_1 through xopt1
     # ------------------------------------------------------
-    xgrid_rand_1 = np.tile(xopt1, (ngrid, 1))
-    xgrid_rand_1 = xgrid_rand_1 + np.dot(t.reshape(ngrid,1), np.array([rand_dir_1]))
+    xgrid_opt_1 = np.tile(xopt1, (ngrid, 1))
+    xgrid_opt_1 = xgrid_opt_1 + np.dot(t.reshape(ngrid,1), np.array([rand_dir_1]))
     
     # Construct solutions along rand_dir_2 through xopt2
     # ------------------------------------------------------
-    xgrid_rand_2 = np.tile(xopt2, (ngrid, 1))
-    xgrid_rand_2 = xgrid_rand_2 + np.dot(t.reshape(ngrid,1), np.array([rand_dir_2]))
+    xgrid_opt_2 = np.tile(xopt2, (ngrid, 1))
+    xgrid_opt_2 = xgrid_opt_2 + np.dot(t.reshape(ngrid,1), np.array([rand_dir_2]))
     
     # Construct solutions along line through xopt1 and xopt2
     # ------------------------------------------------------
@@ -113,16 +134,24 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
                
     # Construct solutions along a fully random line
     # ------------------------------------------------------
-    xgrid_rand = np.tile(rand_x, (ngrid, 1))
-    xgrid_rand = (xgrid_rand
+    xgrid_rand_1 = np.tile(rand_x_1, (ngrid, 1))
+    xgrid_rand_1 = (xgrid_rand_1
                   + np.dot(t.reshape(ngrid,1), np.array([rand_dir_3])))
+
+    # and for another fully random line
+    # ------------------------------------------------------
+    xgrid_rand_2 = np.tile(rand_x_2, (ngrid, 1))
+    xgrid_rand_2 = (xgrid_rand_2
+                  + np.dot(t.reshape(ngrid,1), np.array([rand_dir_4])))
+    
     
     # Evaluate the grid for each direction
     # -------------------------------------------
+    fgrid_opt_1 = [f1.evaluate(xgrid_opt_1), f2.evaluate(xgrid_opt_1)]
+    fgrid_opt_2 = [f1.evaluate(xgrid_opt_2), f2.evaluate(xgrid_opt_2)]
+    fgrid_12 = [f1.evaluate(xgrid_12), f2.evaluate(xgrid_12)]
     fgrid_rand_1 = [f1.evaluate(xgrid_rand_1), f2.evaluate(xgrid_rand_1)]
     fgrid_rand_2 = [f1.evaluate(xgrid_rand_2), f2.evaluate(xgrid_rand_2)]
-    fgrid_12 = [f1.evaluate(xgrid_12), f2.evaluate(xgrid_12)]
-    fgrid_rand = [f1.evaluate(xgrid_rand), f2.evaluate(xgrid_rand)]
     
     # plot reference sets if available:
     if inputfolder:
@@ -138,18 +167,18 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     # plot actual solutions along directions:
     numticks = 5
     nf = nadir-ideal # normalization factor used very often now
-    p1, = ax.loglog((fgrid_rand_1[0]-f1opt)/nf[0], (fgrid_rand_1[1]-f2opt)/nf[1], color=myc[0], ls=myls[2],
+    p1, = ax.loglog((fgrid_opt_1[0]-f1opt)/nf[0], (fgrid_opt_1[1]-f2opt)/nf[1], color=myc[0], ls=myls[2],
                     label=r'through $\mathsf{opt}_1$', **mylw)
     # print 'ticks' along the axes in equidistant t space:                          
-    p11, = ax.loglog((fgrid_rand_1[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
-                     (fgrid_rand_1[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
+    p11, = ax.loglog((fgrid_opt_1[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
+                     (fgrid_opt_1[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
                      color=myc[0], ls='', alpha=1, marker='+', markersize=10)
     
-    p2, = ax.loglog((fgrid_rand_2[0]-f1opt)/nf[0], (fgrid_rand_2[1]-f2opt)/nf[1], color=myc[1], ls=myls[2],
+    p2, = ax.loglog((fgrid_opt_2[0]-f1opt)/nf[0], (fgrid_opt_2[1]-f2opt)/nf[1], color=myc[1], ls=myls[2],
                     label=r'through $\mathsf{opt}_2$', **mylw)
     # print 'ticks' along the axes in equidistant t space:                          
-    p22, = ax.loglog((fgrid_rand_2[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
-                     (fgrid_rand_2[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
+    p22, = ax.loglog((fgrid_opt_2[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
+                     (fgrid_opt_2[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
                      color=myc[1], ls='', alpha=1, marker='+', markersize=10)    
     
     p3, = ax.loglog((fgrid_12[0]-f1opt)/nf[0], (fgrid_12[1]-f2opt)/nf[1],
@@ -160,26 +189,32 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
                      (fgrid_12[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
                      color=myc[2], ls='', alpha=1, marker='+', markersize=10)
     
-    p4, = ax.loglog((fgrid_rand[0]-f1opt)/nf[0], (fgrid_rand[1]-f2opt)/nf[1],
+    p4, = ax.loglog((fgrid_rand_1[0]-f1opt)/nf[0], (fgrid_rand_1[1]-f2opt)/nf[1],
                     color=myc[3], ls=myls[2],
-                    label=r'fully random direction', **mylw)
+                    label=r'two random directions', **mylw)
     # print 'ticks' along the axes in equidistant t space:                          
-    p4, = ax.loglog((fgrid_rand[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
-                    (fgrid_rand[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
+    p4, = ax.loglog((fgrid_rand_1[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
+                    (fgrid_rand_1[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
                     color=myc[3], ls='', alpha=1, marker='+', markersize=10)    
     
+    p5, = ax.loglog((fgrid_rand_2[0]-f1opt)/nf[0], (fgrid_rand_2[1]-f2opt)/nf[1],
+                    color=myc[3], ls=myls[2], **mylw)
+    # print 'ticks' along the axes in equidistant t space:                          
+    p5, = ax.loglog((fgrid_rand_2[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
+                    (fgrid_rand_2[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
+                    color=myc[3], ls='', alpha=1, marker='+', markersize=10)        
     
     # Get Pareto front from vectors of objective values obtained
-    objs = np.vstack((fgrid_rand_1[0], fgrid_rand_1[1])).transpose()
-    pfFlag_rand_1 = pf.callParetoFront(objs)
-    ax.loglog((fgrid_rand_1[0][pfFlag_rand_1]-f1opt)/nf[0],
-              (fgrid_rand_1[1][pfFlag_rand_1]-f2opt)/nf[1],
+    objs = np.vstack((fgrid_opt_1[0], fgrid_opt_1[1])).transpose()
+    pfFlag_opt_1 = pf.callParetoFront(objs)
+    ax.loglog((fgrid_opt_1[0][pfFlag_opt_1]-f1opt)/nf[0],
+              (fgrid_opt_1[1][pfFlag_opt_1]-f2opt)/nf[1],
               color=myc[0], ls='', marker='.', markersize=8, markeredgewidth=0,
               alpha=0.4)
-    objs = np.vstack((fgrid_rand_2[0], fgrid_rand_2[1])).transpose()
-    pfFlag_rand_2 = pf.callParetoFront(objs)
-    ax.loglog((fgrid_rand_2[0][pfFlag_rand_2]-f1opt)/nf[0],
-              (fgrid_rand_2[1][pfFlag_rand_2]-f2opt)/nf[1],
+    objs = np.vstack((fgrid_opt_2[0], fgrid_opt_2[1])).transpose()
+    pfFlag_opt_2 = pf.callParetoFront(objs)
+    ax.loglog((fgrid_opt_2[0][pfFlag_opt_2]-f1opt)/nf[0],
+              (fgrid_opt_2[1][pfFlag_opt_2]-f2opt)/nf[1],
               color=myc[1], ls='', marker='.', markersize=8, markeredgewidth=0,
               alpha=0.4)
     objs = np.vstack((fgrid_12[0], fgrid_12[1])).transpose()
@@ -188,10 +223,16 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
               (fgrid_12[1][pfFlag_12]-f2opt)/nf[1],
               color=myc[2], ls='', marker='.', markersize=8, markeredgewidth=0,
               alpha=0.4)
-    objs = np.vstack((fgrid_rand[0], fgrid_rand[1])).transpose()
-    pfFlag_rand = pf.callParetoFront(objs)
-    ax.loglog((fgrid_rand[0][pfFlag_rand]-f1opt)/nf[0],
-              (fgrid_rand[1][pfFlag_rand]-f2opt)/nf[1],
+    objs = np.vstack((fgrid_rand_1[0], fgrid_rand_1[1])).transpose()
+    pfFlag_rand_1 = pf.callParetoFront(objs)
+    ax.loglog((fgrid_rand_1[0][pfFlag_rand_1]-f1opt)/nf[0],
+              (fgrid_rand_1[1][pfFlag_rand_1]-f2opt)/nf[1],
+              color=myc[3], ls='', marker='.', markersize=8, markeredgewidth=0,
+              alpha=0.4)
+    objs = np.vstack((fgrid_rand_2[0], fgrid_rand_2[1])).transpose()
+    pfFlag_rand_2 = pf.callParetoFront(objs)
+    ax.loglog((fgrid_rand_2[0][pfFlag_rand_2]-f1opt)/nf[0],
+              (fgrid_rand_2[1][pfFlag_rand_2]-f2opt)/nf[1],
               color=myc[3], ls='', marker='.', markersize=8, markeredgewidth=0,
               alpha=0.4)
     
@@ -211,14 +252,15 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     [line.set_zorder(3) for line in ax.lines]
     fig.subplots_adjust(left=0.1) # more room for the y-axis label
     
-    # TODO: we might want to zoom in a bit:
-    #ax.set_xlim((0, 2*(nadir[0] - f1opt)))
-    #ax.set_ylim((0, 2*(nadir[1] - f2opt)))
+    # we might want to zoom in a bit:
+    ax.set_xlim((1e-6, plt.xlim()[1]))
+    ax.set_ylim((1e-6, plt.ylim()[1]))
+    #    ax.set_ylim((0, 2*(nadir[1] - f2opt)))
     
     # add rectangle as ROI
     ax.add_patch(patches.Rectangle(
             ((ideal[0]-f1opt)/nf[0] + 1e-16, (ideal[1]-f2opt)/nf[1] + 1e-16),
-             nadir[0]-ideal[0], nadir[1]-ideal[1],
+             (nadir[0]-ideal[0])/nf[0], (nadir[1]-ideal[1])/nf[1],
              alpha=0.05,
              color='k'))
     
@@ -253,27 +295,32 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     ax.plot(f_xopt1[0], f_xopt1[1], color='green', ls='', marker='*', markersize=8, markeredgewidth=0.5, markeredgecolor='black')
     ax.plot(f_xopt2[0], f_xopt2[1], color='blue', ls='', marker='*', markersize=8, markeredgewidth=0.5, markeredgecolor='black')
     
-    p1, = ax.plot(fgrid_rand_1[0], fgrid_rand_1[1], color=myc[0], ls=myls[2],
+    p1, = ax.plot(fgrid_opt_1[0], fgrid_opt_1[1], color=myc[0], ls=myls[2],
                     label=r'through $\mathsf{opt}_1$', **mylw)
     
-    p2, = ax.plot(fgrid_rand_2[0], fgrid_rand_2[1], color=myc[1], ls=myls[2],
+    p2, = ax.plot(fgrid_opt_2[0], fgrid_opt_2[1], color=myc[1], ls=myls[2],
                     label=r'through $\mathsf{opt}_2$', **mylw)
     
     p3, = ax.plot(fgrid_12[0], fgrid_12[1], color=myc[2], ls=myls[2],
                     label=r'through both optima', **mylw)
     
-    p4, = ax.plot(fgrid_rand[0], fgrid_rand[1], color=myc[3], ls=myls[2],
-                    label=r'fully random direction', **mylw)
+    p4, = ax.plot(fgrid_rand_1[0], fgrid_rand_1[1], color=myc[3], ls=myls[2],
+                    label=r'two random directions', **mylw)
+    
+    p4, = ax.plot(fgrid_rand_2[0], fgrid_rand_2[1], color=myc[3], ls=myls[2],
+                    **mylw)
         
     
     # plot non-dominated points
-    ax.plot(fgrid_rand_1[0][pfFlag_rand_1], fgrid_rand_1[1][pfFlag_rand_1], color=myc[0], ls='', marker='.', markersize=8, markeredgewidth=0,
+    ax.plot(fgrid_opt_1[0][pfFlag_opt_1], fgrid_opt_1[1][pfFlag_opt_1], color=myc[0], ls='', marker='.', markersize=8, markeredgewidth=0,
                                  alpha=0.4)
-    ax.plot(fgrid_rand_2[0][pfFlag_rand_2], fgrid_rand_2[1][pfFlag_rand_2], color=myc[1], ls='', marker='.', markersize=8, markeredgewidth=0,
+    ax.plot(fgrid_opt_2[0][pfFlag_opt_2], fgrid_opt_2[1][pfFlag_opt_2], color=myc[1], ls='', marker='.', markersize=8, markeredgewidth=0,
                                  alpha=0.4)
     ax.plot(fgrid_12[0][pfFlag_12], fgrid_12[1][pfFlag_12], color=myc[2], ls='', marker='.', markersize=8, markeredgewidth=0,
                                  alpha=0.4)
-    ax.plot(fgrid_rand[0][pfFlag_rand], fgrid_rand[1][pfFlag_rand], color=myc[3], ls='', marker='.', markersize=8, markeredgewidth=0,
+    ax.plot(fgrid_rand_1[0][pfFlag_rand_1], fgrid_rand_1[1][pfFlag_rand_1], color=myc[3], ls='', marker='.', markersize=8, markeredgewidth=0,
+                                 alpha=0.4)
+    ax.plot(fgrid_rand_2[0][pfFlag_rand_2], fgrid_rand_2[1][pfFlag_rand_2], color=myc[3], ls='', marker='.', markersize=8, markeredgewidth=0,
                                  alpha=0.4)
         
     
