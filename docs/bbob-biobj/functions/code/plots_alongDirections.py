@@ -18,10 +18,12 @@ import generate_plots
 ###########################################
 # parameters to play with:
 dims = (5,)
-functions = (1,2,3)
+functions = range(1,56)
+#functions = (1,2,3,10,20,30,54,55)
 instances = (1,)
 # Note: in single-objective bbobdocfunctions.pdf documentation, '0' seems to be the instance used
-inputfolderforParetoFronts = 'archives/before_workshop/archives/'
+#inputfolderforParetoFronts = 'archives/before_workshop/archives/'
+inputfolderforParetoFronts = 'F:/5D-archives-from-Tea/after_workshop/archives/'
 outputfolder = 'plots/before_workshop/'
 tofile = True # if True: files are written; if False: no files but screen output
 ###########################################
@@ -52,4 +54,6 @@ for problem_index, problem in enumerate(suite):
         print("processing %s..." % problem.id)
     
     generate_plots.generate_plots(f, d, i, f1_id, f2_id, i1, i2,
-                                  folder=outputfolder, tofile=tofile)
+                                  outputfolder=outputfolder, 
+                                  inputfolder=inputfolderforParetoFronts,
+                                  tofile=tofile)
