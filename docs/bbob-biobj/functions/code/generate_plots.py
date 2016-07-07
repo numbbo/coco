@@ -13,7 +13,7 @@ import paretofrontwrapper as pf # wrapper file and DLL must be in this folder
 
 
 
-def generate_plots(f1_id, f2_id, f1_instance, f2_instance, dim, folder="./", tofile=True):
+def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance, folder="./", tofile=True):
     ##############################################################
     #                                                            #
     # Objective Space of points on cut (log-scale).              #
@@ -181,7 +181,7 @@ def generate_plots(f1_id, f2_id, f1_instance, f2_instance, dim, folder="./", tof
     ax.set_xlabel(r'$f_1 - f_1^\mathsf{opt}$', fontsize=16)
     ax.set_ylabel(r'$f_2 - f_2^\mathsf{opt}$', fontsize=16)
     ax.legend(loc="best", framealpha=0.2)
-    ax.set_title("BBOB $f_{%d.%d}$ versus BBOB $f_{%d.%d}$ along three directions (%d-D)" % (f1_id, f1_instance, f2_id, f2_instance, dim))
+    ax.set_title("bbob-biobj $f_%d$ along three directions (%d-D, instance %d)" % (f_id, dim, inst_id))
     [line.set_zorder(3) for line in ax.lines]
     [line.set_zorder(3) for line in ax.lines]
     fig.subplots_adjust(left=0.1) # more room for the y-axis label
@@ -199,7 +199,7 @@ def generate_plots(f1_id, f2_id, f1_instance, f2_instance, dim, folder="./", tof
     if tofile:
         if not os.path.exists(folder):
             os.makedirs(folder)
-        filename = folder + "directions-f%d.%d-f%d.%d-logobjspace-%dD" % (f1_id, f1_instance, f2_id, f2_instance, dim)
+        filename = folder + "directions-f%02d-i%02d-d%02d-logobjspace" % (f_id, inst_id, dim)
         saveFigure(filename, verbose=True)
     else:   
         plt.show(block=True)
@@ -256,10 +256,10 @@ def generate_plots(f1_id, f2_id, f1_instance, f2_instance, dim, folder="./", tof
     
     
     # beautify:
-    ax.set_xlabel(r'$f_{%d.%d}$' % (f1_id, f1_instance), fontsize=16)
-    ax.set_ylabel(r'$f_{%d.%d}$' % (f2_id, f2_instance), fontsize=16)
+    ax.set_xlabel(r'first objective', fontsize=16)
+    ax.set_ylabel(r'second objective', fontsize=16)
     ax.legend(loc="best", framealpha=0.2)
-    ax.set_title("BBOB $f_{%d.%d}$ versus BBOB $f_{%d.%d}$ along three directions (%d-D)" % (f1_id, f1_instance, f2_id, f2_instance, dim))
+    ax.set_title("bbob-biobj $f_%d$ along three directions (%d-D, instance %d)" % (f_id, dim, inst_id))    
     [line.set_zorder(3) for line in ax.lines]
     [line.set_zorder(3) for line in ax.lines]
     fig.subplots_adjust(left=0.1) # more room for the y-axis label
@@ -282,7 +282,7 @@ def generate_plots(f1_id, f2_id, f1_instance, f2_instance, dim, folder="./", tof
     if tofile:
         if not os.path.exists(folder):
             os.makedirs(folder)
-        filename = folder + "directions-f%d.%d-f%d.%d-objspace-%dD" % (f1_id, f1_instance, f2_id, f2_instance, dim)
+        filename = folder + "directions-f%02d-i%02d-d%02d-objspace" % (f_id, inst_id, dim)
         saveFigure(filename, verbose=True)
     else:        
         plt.show(block=True)
