@@ -499,11 +499,10 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   /* Output header information to the info file */
   if (!info_file_exists) {
     /* Output algorithm name */
-    fprintf(indicator->info_file, "algorithm = '%s', indicator = '%s', folder = '%s'\n%% %s", observer->algorithm_name,
-        indicator_name, problem->problem_type, observer->algorithm_info);
+    fprintf(indicator->info_file, "algorithm = '%s', indicator = '%s', folder = '%s', coco_version = '%s'\n%% %s",
+        observer->algorithm_name, indicator_name, problem->problem_type, coco_version, observer->algorithm_info);
     if (logger->log_nondom_mode == LOG_NONDOM_READ)
-      fprintf(indicator->info_file, "\n%% reconstructed");
-    fprintf(indicator->info_file, "\n%% coco_version = %s", coco_version);
+      fprintf(indicator->info_file, " (reconstructed)");
   }
   if ((observer_biobj->previous_function != problem->suite_dep_function)
     || (observer_biobj->previous_dimension != problem->number_of_variables)) {
@@ -521,8 +520,6 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
       problem->problem_name);
   fprintf(indicator->dat_file, "%% instance = %lu, reference value = %.*e\n",
       (unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
-  if (logger->log_nondom_mode == LOG_NONDOM_READ)
-    fprintf(indicator->dat_file, "%% reconstructed\n");
   fprintf(indicator->dat_file, "%% function evaluation | indicator value | target hit\n");
 
   /* Output header information to the tdat file */
@@ -530,8 +527,6 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
       problem->problem_name);
   fprintf(indicator->tdat_file, "%% instance = %lu, reference value = %.*e\n",
       (unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
-  if (logger->log_nondom_mode == LOG_NONDOM_READ)
-    fprintf(indicator->tdat_file, "%% reconstructed\n");
   fprintf(indicator->tdat_file, "%% function evaluation | indicator value\n");
 
   return indicator;
