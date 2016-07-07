@@ -13,7 +13,8 @@ import paretofrontwrapper as pf # wrapper file and DLL must be in this folder
 
 
 
-def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance, folder="./", tofile=True):
+def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
+                   outputfolder="./", inputfolder=None, tofile=True):
     ##############################################################
     #                                                            #
     # Objective Space of points on cut (log-scale).              #
@@ -38,17 +39,16 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance, f
     f1, f1opt = bm.instantiate(f1_id, iinstance=f1_instance)
     f2, f2opt = bm.instantiate(f2_id, iinstance=f2_instance)
     
-    fdummy = f1.evaluate(np.zeros((1, dim)))
-    xopt1 = f1.arrxopt[0] # 0 as shape(f.arrxopt) == xpop.shape
+    fdummy = f1.evaluate(np.zeros((1, dim)))    
+    xopt1 = f1.xopt # formerly: `f1.arrxopt[0]` but did not work for all functions
     f_xopt1 = [f1opt, f2.evaluate(xopt1)]
     
     fdummy = f2.evaluate(np.zeros((1, dim)))
-    xopt2 = f2.arrxopt[0]
+    xopt2 = f2.xopt # formerly: `f2.arrxopt[0]` but did not work for all functions
     f_xopt2 = [f1.evaluate(xopt2), f2opt]
     
     nadir = np.array([f1.evaluate(xopt2), f2.evaluate(xopt1)])
     ideal = np.array([f1opt, f2opt])
-    
     
     # evaluate points along random directions through single optima:
     #rand_dir_1 = np.random.multivariate_normal(np.zeros(dim), np.identity(dim))
@@ -124,62 +124,87 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance, f
     fgrid_12 = [f1.evaluate(xgrid_12), f2.evaluate(xgrid_12)]
     fgrid_rand = [f1.evaluate(xgrid_rand), f2.evaluate(xgrid_rand)]
     
+    # plot reference sets if available:
+    if inputfolder:
+        filename = "bbob-biobj_f%02d_i%02d_d%02d_nondominated.adat" % (f_id, inst_id, dim)
+        A = np.array(np.loadtxt(inputfolder + filename, comments='%', usecols = (1,2)))
+            
+        # normalized plot, such that ideal and nadir are mapped to
+        # 0 and 1 respectively, assuming that the individual minima are
+        # stored in the first two lines of the archive files:
+        plt.plot((A[:,0] - min(A[0,0],A[1,0]))/abs(A[0,0]-A[1,0]),
+                 (A[:,1] - min(A[0,1],A[1,1]))/abs(A[0,1]-A[1,1]), '.k')
+        
+    # plot actual solutions along directions:
     numticks = 5
-    p1, = ax.loglog(fgrid_rand_1[0]-f1opt, fgrid_rand_1[1]-f2opt, color=myc[0], ls=myls[2],
+    nf = nadir-ideal # normalization factor used very often now
+    p1, = ax.loglog((fgrid_rand_1[0]-f1opt)/nf[0], (fgrid_rand_1[1]-f2opt)/nf[1], color=myc[0], ls=myls[2],
                     label=r'through $\mathsf{opt}_1$', **mylw)
     # print 'ticks' along the axes in equidistant t space:                          
-    p11, = ax.loglog(fgrid_rand_1[0][0:ngrid:ngrid//numticks]-f1opt,
-                     fgrid_rand_1[1][0:ngrid:ngrid//numticks]-f2opt,
+    p11, = ax.loglog((fgrid_rand_1[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
+                     (fgrid_rand_1[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
                      color=myc[0], ls='', alpha=1, marker='+', markersize=10)
     
-    p2, = ax.loglog(fgrid_rand_2[0]-f1opt, fgrid_rand_2[1]-f2opt, color=myc[1], ls=myls[2],
+    p2, = ax.loglog((fgrid_rand_2[0]-f1opt)/nf[0], (fgrid_rand_2[1]-f2opt)/nf[1], color=myc[1], ls=myls[2],
                     label=r'through $\mathsf{opt}_2$', **mylw)
     # print 'ticks' along the axes in equidistant t space:                          
-    p22, = ax.loglog(fgrid_rand_2[0][0:ngrid:ngrid//numticks]-f1opt,
-                     fgrid_rand_2[1][0:ngrid:ngrid//numticks]-f2opt,
+    p22, = ax.loglog((fgrid_rand_2[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
+                     (fgrid_rand_2[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
                      color=myc[1], ls='', alpha=1, marker='+', markersize=10)    
     
-    p3, = ax.loglog(fgrid_12[0]-f1opt, fgrid_12[1]-f2opt, color=myc[2], ls=myls[2],
+    p3, = ax.loglog((fgrid_12[0]-f1opt)/nf[0], (fgrid_12[1]-f2opt)/nf[1],
+                    color=myc[2], ls=myls[2],
                     label=r'through both optima', **mylw)
     # print 'ticks' along the axes in equidistant t space:                          
-    p33, = ax.loglog(fgrid_12[0][0:ngrid:ngrid//numticks]-f1opt,
-                     fgrid_12[1][0:ngrid:ngrid//numticks]-f2opt,
+    p33, = ax.loglog((fgrid_12[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
+                     (fgrid_12[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
                      color=myc[2], ls='', alpha=1, marker='+', markersize=10)
     
-    p4, = ax.loglog(fgrid_rand[0]-f1opt, fgrid_rand[1]-f2opt, color=myc[3], ls=myls[2],
+    p4, = ax.loglog((fgrid_rand[0]-f1opt)/nf[0], (fgrid_rand[1]-f2opt)/nf[1],
+                    color=myc[3], ls=myls[2],
                     label=r'fully random direction', **mylw)
     # print 'ticks' along the axes in equidistant t space:                          
-    p4, = ax.loglog(fgrid_rand[0][0:ngrid:ngrid//numticks]-f1opt,
-                     fgrid_rand[1][0:ngrid:ngrid//numticks]-f2opt,
-                     color=myc[3], ls='', alpha=1, marker='+', markersize=10)    
+    p4, = ax.loglog((fgrid_rand[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
+                    (fgrid_rand[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
+                    color=myc[3], ls='', alpha=1, marker='+', markersize=10)    
     
     
     # Get Pareto front from vectors of objective values obtained
     objs = np.vstack((fgrid_rand_1[0], fgrid_rand_1[1])).transpose()
     pfFlag_rand_1 = pf.callParetoFront(objs)
-    ax.loglog(fgrid_rand_1[0][pfFlag_rand_1]-f1opt, fgrid_rand_1[1][pfFlag_rand_1]-f2opt, color=myc[0], ls='', marker='.', markersize=8, markeredgewidth=0,
-                                 alpha=0.4)
+    ax.loglog((fgrid_rand_1[0][pfFlag_rand_1]-f1opt)/nf[0],
+              (fgrid_rand_1[1][pfFlag_rand_1]-f2opt)/nf[1],
+              color=myc[0], ls='', marker='.', markersize=8, markeredgewidth=0,
+              alpha=0.4)
     objs = np.vstack((fgrid_rand_2[0], fgrid_rand_2[1])).transpose()
     pfFlag_rand_2 = pf.callParetoFront(objs)
-    ax.loglog(fgrid_rand_2[0][pfFlag_rand_2]-f1opt, fgrid_rand_2[1][pfFlag_rand_2]-f2opt, color=myc[1], ls='', marker='.', markersize=8, markeredgewidth=0,
-                                 alpha=0.4)
+    ax.loglog((fgrid_rand_2[0][pfFlag_rand_2]-f1opt)/nf[0],
+              (fgrid_rand_2[1][pfFlag_rand_2]-f2opt)/nf[1],
+              color=myc[1], ls='', marker='.', markersize=8, markeredgewidth=0,
+              alpha=0.4)
     objs = np.vstack((fgrid_12[0], fgrid_12[1])).transpose()
     pfFlag_12 = pf.callParetoFront(objs)
-    ax.loglog(fgrid_12[0][pfFlag_12]-f1opt, fgrid_12[1][pfFlag_12]-f2opt, color=myc[2], ls='', marker='.', markersize=8, markeredgewidth=0,
-                                 alpha=0.4)
+    ax.loglog((fgrid_12[0][pfFlag_12]-f1opt)/nf[0],
+              (fgrid_12[1][pfFlag_12]-f2opt)/nf[1],
+              color=myc[2], ls='', marker='.', markersize=8, markeredgewidth=0,
+              alpha=0.4)
     objs = np.vstack((fgrid_rand[0], fgrid_rand[1])).transpose()
     pfFlag_rand = pf.callParetoFront(objs)
-    ax.loglog(fgrid_rand[0][pfFlag_rand]-f1opt, fgrid_rand[1][pfFlag_rand]-f2opt, color=myc[3], ls='', marker='.', markersize=8, markeredgewidth=0,
-                                 alpha=0.4)
+    ax.loglog((fgrid_rand[0][pfFlag_rand]-f1opt)/nf[0],
+              (fgrid_rand[1][pfFlag_rand]-f2opt)/nf[1],
+              color=myc[3], ls='', marker='.', markersize=8, markeredgewidth=0,
+              alpha=0.4)
     
     
     # plot nadir:
-    ax.loglog(nadir[0]-f1opt, nadir[1]-f2opt, color='k', ls='', marker='+', markersize=9, markeredgewidth=1.5,
-                                 alpha=0.9)
+    ax.loglog((nadir[0]-f1opt)/nf[0], (nadir[1]-f2opt)/nf[1],
+              color='k', ls='', marker='+', markersize=9, markeredgewidth=1.5,
+              alpha=0.9)
+    
     
     # beautify:
-    ax.set_xlabel(r'$f_1 - f_1^\mathsf{opt}$', fontsize=16)
-    ax.set_ylabel(r'$f_2 - f_2^\mathsf{opt}$', fontsize=16)
+    ax.set_xlabel(r'$f_1 - f_1^\mathsf{opt}$ (normalized)', fontsize=16)
+    ax.set_ylabel(r'$f_2 - f_2^\mathsf{opt}$ (normalized)', fontsize=16)
     ax.legend(loc="best", framealpha=0.2)
     ax.set_title("bbob-biobj $f_%d$ along three directions (%d-D, instance %d)" % (f_id, dim, inst_id))
     [line.set_zorder(3) for line in ax.lines]
@@ -192,14 +217,15 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance, f
     
     # add rectangle as ROI
     ax.add_patch(patches.Rectangle(
-            (ideal[0]-f1opt + 1e-6, ideal[1]-f2opt + 1e-6), nadir[0]-ideal[0], nadir[1]-ideal[1],
-            alpha=0.05,
-            color='k'))
+            ((ideal[0]-f1opt)/nf[0] + 1e-16, (ideal[1]-f2opt)/nf[1] + 1e-16),
+             nadir[0]-ideal[0], nadir[1]-ideal[1],
+             alpha=0.05,
+             color='k'))
     
     if tofile:
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-        filename = folder + "directions-f%02d-i%02d-d%02d-logobjspace" % (f_id, inst_id, dim)
+        if not os.path.exists(outputfolder):
+            os.makedirs(outputfolder)
+        filename = outputfolder + "directions-f%02d-i%02d-d%02d-logobjspace" % (f_id, inst_id, dim)
         saveFigure(filename, verbose=True)
     else:   
         plt.show(block=True)
@@ -218,6 +244,10 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance, f
     
     fig = plt.figure(2)
     ax = fig.add_subplot(111)
+    
+    # plot reference sets if available:
+    if inputfolder:
+        plt.plot(A[:,0], A[:,1], '.k')
     
     
     ax.plot(f_xopt1[0], f_xopt1[1], color='green', ls='', marker='*', markersize=8, markeredgewidth=0.5, markeredgecolor='black')
@@ -280,9 +310,9 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance, f
     
     
     if tofile:
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-        filename = folder + "directions-f%02d-i%02d-d%02d-objspace" % (f_id, inst_id, dim)
+        if not os.path.exists(outputfolder):
+            os.makedirs(outputfolder)
+        filename = outputfolder + "directions-f%02d-i%02d-d%02d-objspace" % (f_id, inst_id, dim)
         saveFigure(filename, verbose=True)
     else:        
         plt.show(block=True)
