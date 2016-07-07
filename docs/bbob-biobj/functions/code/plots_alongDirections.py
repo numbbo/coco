@@ -15,42 +15,41 @@ import generate_plots
 
 
 
+###########################################
+# parameters to play with:
+dims = (5,)
+functions = (1,2,3)
+instances = (1,)
+# Note: in single-objective bbobdocfunctions.pdf documentation, '0' seems to be the instance used
+inputfolderforParetoFronts = 'archives/before_workshop/archives/'
+outputfolder = 'plots/before_workshop/'
+tofile = True # if True: files are written; if False: no files but screen output
+###########################################
+
+
 suite_name = "bbob-biobj"
 suite_instance = "year:2016"
 suite_options = "dimensions: 2,3,5,10,20,40"
-
 suite = Suite(suite_name, suite_instance, suite_options)
 
-
-
-
-
-
-f1_id = 8 # in function_ids
-f2_id = 15
-f1_instance = 2 
-f2_instance = 3
-dim = 5 # in dimensions
-instancesubset = range(1,2) # bbob-biobj instances actually displayed
-# Note: in single-objective bbobdocfunctions.pdf documentation, '0' seems to be the instance used
-
-functions = (6,8)
-instances = {1: (2, 4), 
-             2: (3, 5),
-             3: (7, 8),
-             4: (9, 10),
-             5: (11, 12),
-             6: (13, 14),
-             7: (15, 16),
-             8: (17, 18),
-             9: (19, 21),
-             10: (21, 22)}
-
-for f1_id in functions:
-    for f2_id in functions:
-        if f2_id < f1_id:
-            continue # take care of not having combination f2 with f1 for example
-        for i in instancesubset:
-            generate_plots.generate_plots(f1_id, f2_id, instances[i][0],
-                                          instances[i][1], dim,
-                                          folder='plots/', tofile=False)
+for problem_index, problem in enumerate(suite):
+    
+    f = int(problem.id.lower().split('_f')[1].split('_')[0])
+    d = int(problem.id.lower().split('_d')[1].split('_')[0])
+    i = int(problem.id.lower().split('_i')[1].split('_')[0])
+    
+    f1_id = int(problem.name.lower().split('_f')[1].split('_')[0])
+    f2_id = int(problem.name.lower().split('_f')[2].split('_')[0])
+    
+    i1 = int(problem.name.lower().split('_i')[1].split('_')[0])
+    i2 = int(problem.name.lower().split('_i')[2].split('_')[0])
+    
+    if ((i not in instances) or (f not in functions)
+                             or (d not in dims)):
+        print("skipping %s..." % problem.id)
+        continue
+    else:
+        print("processing %s..." % problem.id)
+    
+    generate_plots.generate_plots(f, d, i, f1_id, f2_id, i1, i2,
+                                  folder=outputfolder, tofile=tofile)
