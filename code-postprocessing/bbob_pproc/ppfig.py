@@ -283,8 +283,8 @@ def save_single_functions_html(filename,
               % genericsettings.pptables_file_name)
 
           # Wassim: kept these two instructions from older code
-          write_ECDF(f, testbedsettings.current_testbed.htmlDimsOfInterest[0], extension, captionStringFormat, functionGroups)
-          write_ECDF(f, testbedsettings.current_testbed.htmlDimsOfInterest[1], extension, captionStringFormat, functionGroups)
+          #write_ECDF(f, testbedsettings.current_testbed.htmlDimsOfInterest[0], extension, captionStringFormat, functionGroups)
+          #write_ECDF(f, testbedsettings.current_testbed.htmlDimsOfInterest[1], extension, captionStringFormat, functionGroups)
 
 
         elif htmlPage is HtmlPage.PPSCATTER:
@@ -349,8 +349,8 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPTABLES:
             # Wassim: kept these two instructions below from older code
-            write_pptables(f, testbedsettings.current_testbed.htmlDimsOfInterest[0], captionStringFormat, first_function_number, last_function_number, bestAlgExists)
-            write_pptables(f, testbedsettings.current_testbed.htmlDimsOfInterest[1], captionStringFormat, first_function_number, last_function_number, bestAlgExists)
+            #write_pptables(f, testbedsettings.current_testbed.htmlDimsOfInterest[0], captionStringFormat, first_function_number, last_function_number, bestAlgExists)
+            #write_pptables(f, testbedsettings.current_testbed.htmlDimsOfInterest[1], captionStringFormat, first_function_number, last_function_number, bestAlgExists)
 
             write_tables(f, captionStringFormat, bestAlgExists, 'pptablesHtml', 'bbobpptablesmanylegend')
 
