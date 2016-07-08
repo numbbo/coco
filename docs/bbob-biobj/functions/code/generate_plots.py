@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+#
+# Called by plots_alongDirections and doing the actual plotting.
+#
+# based on code by Thanh-Do Tran 2012--2015
+# adapted by Dimo Brockhoff 2016
 
 from __future__ import absolute_import, division, print_function, unicode_literals
-
-import matplotlib
 from matplotlib import patches
 import matplotlib.pyplot as plt
 import numpy as np  # "pip install numpy" installs numpy
@@ -12,7 +15,6 @@ from bbob_pproc.ppfig import saveFigure
 
 import bbobbenchmarks as bm
 import paretofrontwrapper as pf # wrapper file and DLL must be in this folder
-
 
 
 def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
@@ -33,7 +35,7 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     
     # define lines as a + t*b
     tlim = 10 # 
-    ngrid = 10000
+    ngrid = 10001
     t = np.linspace(-tlim, tlim, num=ngrid, endpoint=True)
     
     # Query the optimum from the benchmark to get a working objective function:
@@ -169,9 +171,31 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
             decimals=3
             B = np.around(B, decimals=decimals)
             Blog = np.around(Blog, decimals=decimals)
-            # now filter out dominated points (and doubles)"
-            pfFlag = pf.callParetoFront(B)
-            pfFlaglog = pf.callParetoFront(Blog)
+            
+            if 11<3: # filter out dominated points (and doubles)
+                pfFlag = pf.callParetoFront(B)
+                pfFlaglog = pf.callParetoFront(Blog)
+            else: # filter out all but one point per grid cell
+                pfFlag = np.array([False] * len(B), dtype=bool)
+                # check corner case first:
+                if not (B[2][0] == B[0][0] and B[2][1] == B[0][1]):
+                    pfFlag[2] = True
+                else:
+                    B[2] = B[0]
+                for i in range(3,len(B)):
+                    if not (B[i][0] == B[i-1][0] and B[i][1] == B[i-1][1]):
+                        pfFlag[i] = True
+
+                pfFlaglog = np.array([False] * len(Blog), dtype=bool)
+                # check corner case first:
+                if not (Blog[2][0] == Blog[0][0] and Blog[2][1] == Blog[0][1]):
+                    pfFlaglog[2] = True
+                else:
+                    Blog[2] = Blog[0]
+                for i in range(3,len(Blog)):
+                    if not (Blog[i][0] == Blog[i-1][0] and Blog[i][1] == Blog[i-1][1]):
+                        pfFlaglog[i] = True
+
             # ensure that both extremes are still in, assuming they are stored in the beginning:
             pfFlag[0] = True
             pfFlaglog[0] = True
@@ -347,6 +371,7 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     ax.plot(fgrid_rand_2[0][pfFlag_rand_2], fgrid_rand_2[1][pfFlag_rand_2], color=myc[3], ls='', marker='.', markersize=8, markeredgewidth=0,
                                  alpha=0.4)
         
+  
     
     # plot nadir:
     ax.plot(nadir[0], nadir[1], color='k', ls='', marker='+', markersize=9, markeredgewidth=1.5,
