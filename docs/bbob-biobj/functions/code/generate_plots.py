@@ -371,8 +371,32 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     ax.plot(fgrid_rand_2[0][pfFlag_rand_2], fgrid_rand_2[1][pfFlag_rand_2], color=myc[3], ls='', marker='.', markersize=8, markeredgewidth=0,
                                  alpha=0.4)
         
+    # plot a few ticks along directions, equi-distant in search space:
+    numticks = 11
+    t_idx = np.linspace(0, ngrid-1, num=numticks, endpoint=True, dtype=int)
+    #p11, = ax.plot(fgrid_opt_1[0][t_idx],
+    #               fgrid_opt_1[1][t_idx],
+    #               color=myc[1], ls='', alpha=1, marker='+', markersize=18)
+                   
+    # first along direction through first optimum:
+    for i in range(1,numticks-1): # don't put ticks on extremes of the lines
+        before = np.array([fgrid_opt_1[0][t_idx[i]-1], fgrid_opt_1[1][t_idx[i]-1]])
+        after = np.array([fgrid_opt_1[0][t_idx[i]+1],  fgrid_opt_1[1][t_idx[i]+1]])
+        # rotation by 90 degrees to get direction
+        direction = np.dot((after-before)/(nadir-ideal), np.array([[0, -1], [1, 0]]))
+        # normalize length and scale again to full objective space
+        direction = 0.02 * direction / np.linalg.norm(direction)
+        direction = direction * (nadir-ideal)
+        
+        ax.plot([fgrid_opt_1[0][t_idx[i]] + direction[0]*0.05, fgrid_opt_1[0][t_idx[i]] + direction[0]*1.1],
+                [fgrid_opt_1[1][t_idx[i]] + direction[1]*0.05, fgrid_opt_1[1][t_idx[i]] + direction[1]*1.1],
+                   color='b', ls='-', **mylw)
+        
   
-    
+
+
+
+  
     # plot nadir:
     ax.plot(nadir[0], nadir[1], color='k', ls='', marker='+', markersize=9, markeredgewidth=1.5,
                                  alpha=0.9)
@@ -404,8 +428,7 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
             alpha=0.05,
             color='k'))
     
-    
-    
+
     
     
     
