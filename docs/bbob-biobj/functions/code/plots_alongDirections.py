@@ -56,4 +56,4 @@ for problem_index, problem in enumerate(suite):
     generate_plots.generate_plots(f, d, i, f1_id, f2_id, i1, i2,
                                   outputfolder=outputfolder, 
                                   inputfolder=inputfolderforParetoFronts,
-                                  tofile=tofile)
+                                  tofile=tofile, downsample=False)

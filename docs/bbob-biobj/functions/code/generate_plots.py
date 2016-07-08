@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import matplotlib
 from matplotlib import patches
 import matplotlib.pyplot as plt
@@ -14,7 +16,7 @@ import paretofrontwrapper as pf # wrapper file and DLL must be in this folder
 
 
 def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
-                   outputfolder="./", inputfolder=None, tofile=True):
+                   outputfolder="./", inputfolder=None, tofile=True, downsample=False):
     ##############################################################
     #                                                            #
     # Objective Space of points on cut (log-scale).              #
@@ -156,13 +158,21 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     # plot reference sets if available:
     if inputfolder:
         filename = "bbob-biobj_f%02d_i%02d_d%02d_nondominated.adat" % (f_id, inst_id, dim)
-        A = np.array(np.loadtxt(inputfolder + filename, comments='%', usecols = (1,2)))
-            
+        A = np.array(np.loadtxt(inputfolder + filename, comments='%', usecols = (1,2))) 
+        
+        if downsample:
+            # normalize A wrt ideal and nadir:
+            B = (A-ideal) / (nadir-ideal)
+            # cut precision to downsample:
+            B = np.around(B, decimals=4)
+            # now filter out dominated points (and doubles)
+            pfFlag = pf.callParetoFront(B)
+            A = A[pfFlag]
+
         # normalized plot, such that ideal and nadir are mapped to
-        # 0 and 1 respectively, assuming that the individual minima are
-        # stored in the first two lines of the archive files:
-        plt.plot((A[:,0] - min(A[0,0],A[1,0]))/abs(A[0,0]-A[1,0]),
-                 (A[:,1] - min(A[0,1],A[1,1]))/abs(A[0,1]-A[1,1]), '.k')
+        # 0 and 1 respectively
+        plt.loglog((A[:,0] - ideal[0])/(nadir[0]-ideal[0]),
+                 (A[:,1] - ideal[1])/(nadir[1]-ideal[1]), '.k', markersize=7)
         
     # plot actual solutions along directions:
     numticks = 5
