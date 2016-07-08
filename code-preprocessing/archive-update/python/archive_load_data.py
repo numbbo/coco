@@ -239,7 +239,7 @@ def write_best_values(dic, file_name):
     :param dic: dictionary containing problem names and their best known hypervolume values
     """
     with open(file_name, 'a') as f:
-        f.write(strftime('\n/* Best values on %d.%m.%Y %H:%M:%S */\n', gmtime()))
+        f.write(strftime('/* Best values on %d.%m.%Y %H:%M:%S */\n', gmtime()))
         for key, value in sorted(dic.items()):
             f.write('  \"{} {:.15f}\",\n'.format(key, value))
         f.close()
