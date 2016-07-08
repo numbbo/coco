@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
+#
+# Plots the objective space of (random) cuts through the search space
+# for the bbob-biobj functions together with some reference sets if available.
+#
+# Prerequisites:
+# * COCO postprocessing is installed (run `python do.py install-postprocessing`)
+# * the archive/reference sets are available in the specified folder
+#
 # based on code by Thanh-Do Tran 2012--2015
 # adapted by Dimo Brockhoff 2016
 
@@ -18,14 +26,14 @@ import generate_plots
 ###########################################
 # parameters to play with:
 dims = (5,)
-functions = range(2,56)
+functions = range(1,56)
 #functions = (1,2,3,10,20,30,54,55)
 instances = (1,)
 # Note: in single-objective bbobdocfunctions.pdf documentation, '0' seems to be the instance used
 #inputfolderforParetoFronts = 'archives/before_workshop/archives/'
 inputfolderforParetoFronts = 'F:/5D-archives-from-Tea/after_workshop/archives/'
 outputfolder = 'plots/before_workshop/'
-tofile = True # if True: files are written; if False: no files but screen output
+tofile = False # if True: files are written; if False: no files but screen output
 ###########################################
 
 
