@@ -51,7 +51,7 @@ def update_best_hypervolume(old_best_files, new_best_data, new_best_file):
     print('Done.')
 
 
-def merge_archives(input_path, output_path, functions, instances, dimensions):
+def merge_archives(input_path, output_path, functions, instances, dimensions, crop_variables):
     """Merges all archives from the input_path (removes any dominated solutions) and stores the consolidated archives
        in the output_path. Returns problem names and their new best hypervolume values in the form of a dictionary.
        :param input_path: input path
@@ -82,7 +82,7 @@ def merge_archives(input_path, output_path, functions, instances, dimensions):
         problem_instance_info.fill_archive(archive)
 
         # Write the non-dominated solutions into output folder
-        problem_instance_info.write_archive_solutions(output_path, archive)
+        problem_instance_info.write_archive_solutions(output_path, archive, crop_variables)
 
         result.update({str(problem_instance_info): archive.hypervolume})
         print('{}: {:.15f}'.format(problem_instance_info, archive.hypervolume))
@@ -98,7 +98,7 @@ if __name__ == '__main__':
        Input archives are read and merged so that the two extreme solutions and all non-dominated solutions are stored
        in the output archives. A file with the best known hypervolume values is generated from these hypervolumes and
        the ones stored in C source files (use --merge-only if you wish to do the merging without the update of
-       hypervolume values).
+       hypervolume values and --crop-variables if you want to keep only the objective values).
     """
     import timing
 
@@ -111,6 +111,8 @@ if __name__ == '__main__':
                         help='dimensions to be included in the processing of archives')
     parser.add_argument('--merge-only', action='store_true',
                         help='perform only merging of archives, do not update hypervolume values')
+    parser.add_argument('--crop-variables', action='store_true',
+                        help='don\'t include information on the variables in the output archives')
     parser.add_argument('--hyp-file', default='new_best_values_hyp.c',
                         help='name of the file to store new hypervolume values')
     parser.add_argument('output', help='path to the output folder')
@@ -121,7 +123,8 @@ if __name__ == '__main__':
     print('functions = {} \ninstances = {}\ndimensions = {}\n'.format(args.functions, args.instances, args.dimensions))
 
     # Merge the archives
-    new_hypervolumes = merge_archives(args.input, args.output, args.functions, args.instances, args.dimensions)
+    new_hypervolumes = merge_archives(args.input, args.output, args.functions, args.instances, args.dimensions,
+                                      args.crop_variables)
 
     timing.log('Finished merging', timing.now())
 
