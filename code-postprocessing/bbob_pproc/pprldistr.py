@@ -148,7 +148,7 @@ def caption_single():
     caption_left_rlbased_targets = r"""%
          Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$,
          to fall below $\fopt+\Df$ where \Df\ is the
-         target just not reached by the""" + ("""GECCO-BBOB-%d""" %best_year) + r""" best algorithm within a budget of
+         target just not reached by the """ + ("""GECCO-BBOB-%d""" %best_year) + r""" best algorithm within a budget of
          % largest $\Df$-value $\ge10^{-8}$ for which the best \ART\ seen in the """ + ("""GECCO-BBOB-%d""" %best_year) + r""" was yet above
          $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
     caption_wrap_up = r"""%
