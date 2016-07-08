@@ -18,7 +18,7 @@ import generate_plots
 ###########################################
 # parameters to play with:
 dims = (5,)
-functions = range(1,56)
+functions = range(2,56)
 #functions = (1,2,3,10,20,30,54,55)
 instances = (1,)
 # Note: in single-objective bbobdocfunctions.pdf documentation, '0' seems to be the instance used
@@ -56,4 +56,4 @@ for problem_index, problem in enumerate(suite):
     generate_plots.generate_plots(f, d, i, f1_id, f2_id, i1, i2,
                                   outputfolder=outputfolder, 
                                   inputfolder=inputfolderforParetoFronts,
-                                  tofile=tofile, downsample=False)
+                                  tofile=tofile, downsample=True)
