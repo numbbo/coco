@@ -424,7 +424,9 @@ def split(dataFiles, isBiobjective, dim=None):
                         if 'instance' in part:
                             instance = int(part.split('=')[1])
                             if instance > 5:
-                                instanceToSkip = True;
+                                instanceToSkip = True
+                            else:
+                                instanceToSkip = False
 
                 continue
 
