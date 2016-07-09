@@ -659,7 +659,8 @@ class DataSet():
                    'folder': ('folder', str),
                    'algId': ('algId', str),
                    'algorithm': ('algId', str),
-                   'suite': ('suite', str)}
+                   'suite': ('suite', str),
+                   'coco_version': ('coco_version', str)}
 
     def isBiobjective(self):
         return hasattr(self, 'indicator')
