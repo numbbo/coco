@@ -83,11 +83,12 @@ class ProblemInstanceInfo:
                                                                                                          self.instance))
 
     # noinspection PyTypeChecker
-    def write_archive_solutions(self, output_path, archive):
+    def write_archive_solutions(self, output_path, archive, crop_variables):
         """Appends solutions to a file in the output_path named according to self's suite_name, function, instance and
            dimension.
            :param archive: archive to be output
            :param output_path: output path (if it does not yet exist, it is created)
+           :param crop_variables: if true, the variables are omitted from the output
         """
         create_path(output_path)
         f_name = os.path.join(output_path, '{}_f{:02d}_i{:02d}_d{:02d}_nondominated.adat'.format(self.suite_name,
@@ -101,7 +102,10 @@ class ProblemInstanceInfo:
                 text = archive.get_next_solution_text()
                 if text is None:
                     break
-                f.write(text)
+                if crop_variables:
+                    f.write('\t'.join(text.split()[:3]) + '\n')
+                else:
+                    f.write(text)
 
             f.close()
 
