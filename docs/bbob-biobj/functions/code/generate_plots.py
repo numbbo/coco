@@ -220,40 +220,24 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     nf = nadir-ideal # normalization factor used very often now
     p1, = ax.loglog((fgrid_opt_1[0]-f1opt)/nf[0], (fgrid_opt_1[1]-f2opt)/nf[1], color=myc[1], ls=myls[2],
                     label=r'cuts through single optima', **mylw)
-    # print 'ticks' along the axes in equidistant t space:                          
-    p11, = ax.loglog((fgrid_opt_1[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
-                     (fgrid_opt_1[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
-                     color=myc[1], ls='', alpha=1, marker='+', markersize=8)
-    
     p2, = ax.loglog((fgrid_opt_2[0]-f1opt)/nf[0], (fgrid_opt_2[1]-f2opt)/nf[1], color=myc[1], ls=myls[2],
                     **mylw)
-    # print 'ticks' along the axes in equidistant t space:                          
-    p22, = ax.loglog((fgrid_opt_2[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
-                     (fgrid_opt_2[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
-                     color=myc[1], ls='', alpha=1, marker='+', markersize=8)    
-    
     p3, = ax.loglog((fgrid_12[0]-f1opt)/nf[0], (fgrid_12[1]-f2opt)/nf[1],
                     color=myc[2], ls=myls[2],
                     label=r'cut through both optima', **mylw)
-    # print 'ticks' along the axes in equidistant t space:                          
-    p33, = ax.loglog((fgrid_12[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
-                     (fgrid_12[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
-                     color=myc[2], ls='', alpha=1, marker='+', markersize=8)
-    
     p4, = ax.loglog((fgrid_rand_1[0]-f1opt)/nf[0], (fgrid_rand_1[1]-f2opt)/nf[1],
                     color=myc[3], ls=myls[2],
                     label=r'two random directions', **mylw)
-    # print 'ticks' along the axes in equidistant t space:                          
-    p4, = ax.loglog((fgrid_rand_1[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
-                    (fgrid_rand_1[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
-                    color=myc[3], ls='', alpha=1, marker='+', markersize=8)    
-    
     p5, = ax.loglog((fgrid_rand_2[0]-f1opt)/nf[0], (fgrid_rand_2[1]-f2opt)/nf[1],
                     color=myc[3], ls=myls[2], **mylw)
-    # print 'ticks' along the axes in equidistant t space:                          
-    p5, = ax.loglog((fgrid_rand_2[0][0:ngrid:ngrid//numticks]-f1opt)/nf[0],
-                    (fgrid_rand_2[1][0:ngrid:ngrid//numticks]-f2opt)/nf[1],
-                    color=myc[3], ls='', alpha=1, marker='+', markersize=8)        
+
+    # print 'ticks' along the axes in equidistant t space:
+    numticks = 11
+    plot_ticks([fgrid_opt_1[0], fgrid_opt_1[1]], numticks, nadir, ideal, ax, mylw, myc[1], logscale=True)
+    plot_ticks([fgrid_opt_2[0], fgrid_opt_2[1]], numticks, nadir, ideal, ax, mylw, myc[1], logscale=True)
+    plot_ticks([fgrid_12[0], fgrid_12[1]], numticks, nadir, ideal, ax, mylw, myc[2], logscale=True)
+    plot_ticks([fgrid_rand_1[0], fgrid_rand_1[1]], numticks, nadir, ideal, ax, mylw, myc[3], logscale=True)
+    plot_ticks([fgrid_rand_2[0], fgrid_rand_2[1]], numticks, nadir, ideal, ax, mylw, myc[3], logscale=True)
     
     # Get Pareto front from vectors of objective values obtained
     objs = np.vstack((fgrid_opt_1[0], fgrid_opt_1[1])).transpose()
@@ -298,7 +282,7 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     ax.set_xlabel(r'$f_1 - f_1^\mathsf{opt}$ (normalized)', fontsize=16)
     ax.set_ylabel(r'$f_2 - f_2^\mathsf{opt}$ (normalized)', fontsize=16)
     ax.legend(loc="best", framealpha=0.2)
-    ax.set_title("bbob-biobj $f_{%d}$ along three directions (%d-D, instance %d)" % (f_id, dim, inst_id))
+    ax.set_title("bbob-biobj $f_{%d}$ along linear search space directions (%d-D, instance %d)" % (f_id, dim, inst_id))
     [line.set_zorder(3) for line in ax.lines]
     [line.set_zorder(3) for line in ax.lines]
     fig.subplots_adjust(left=0.1) # more room for the y-axis label
@@ -358,6 +342,15 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     p4, = ax.plot(fgrid_rand_2[0], fgrid_rand_2[1], color=myc[3], ls=myls[2],
                     **mylw)
         
+    # plot a few ticks along directions, equi-distant in search space:
+    numticks = 11
+    plot_ticks(fgrid_opt_1, numticks, nadir, ideal, ax, mylw, 'b')
+    plot_ticks(fgrid_opt_2, numticks, nadir, ideal, ax, mylw, 'b')
+    plot_ticks(fgrid_12, numticks, nadir, ideal, ax, mylw, 'r')
+    plot_ticks(fgrid_rand_1, numticks, nadir, ideal, ax, mylw, 'y')
+    plot_ticks(fgrid_rand_2, numticks, nadir, ideal, ax, mylw, 'y')
+
+    
     
     # plot non-dominated points
     ax.plot(fgrid_opt_1[0][pfFlag_opt_1], fgrid_opt_1[1][pfFlag_opt_1], color=myc[1], ls='', marker='.', markersize=8, markeredgewidth=0,
@@ -371,32 +364,7 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     ax.plot(fgrid_rand_2[0][pfFlag_rand_2], fgrid_rand_2[1][pfFlag_rand_2], color=myc[3], ls='', marker='.', markersize=8, markeredgewidth=0,
                                  alpha=0.4)
         
-    # plot a few ticks along directions, equi-distant in search space:
-    numticks = 11
-    t_idx = np.linspace(0, ngrid-1, num=numticks, endpoint=True, dtype=int)
-    #p11, = ax.plot(fgrid_opt_1[0][t_idx],
-    #               fgrid_opt_1[1][t_idx],
-    #               color=myc[1], ls='', alpha=1, marker='+', markersize=18)
-                   
-    # first along direction through first optimum:
-    for i in range(1,numticks-1): # don't put ticks on extremes of the lines
-        before = np.array([fgrid_opt_1[0][t_idx[i]-1], fgrid_opt_1[1][t_idx[i]-1]])
-        after = np.array([fgrid_opt_1[0][t_idx[i]+1],  fgrid_opt_1[1][t_idx[i]+1]])
-        # rotation by 90 degrees to get direction
-        direction = np.dot((after-before)/(nadir-ideal), np.array([[0, -1], [1, 0]]))
-        # normalize length and scale again to full objective space
-        direction = 0.02 * direction / np.linalg.norm(direction)
-        direction = direction * (nadir-ideal)
-        
-        ax.plot([fgrid_opt_1[0][t_idx[i]] + direction[0]*0.05, fgrid_opt_1[0][t_idx[i]] + direction[0]*1.1],
-                [fgrid_opt_1[1][t_idx[i]] + direction[1]*0.05, fgrid_opt_1[1][t_idx[i]] + direction[1]*1.1],
-                   color='b', ls='-', **mylw)
-        
-  
 
-
-
-  
     # plot nadir:
     ax.plot(nadir[0], nadir[1], color='k', ls='', marker='+', markersize=9, markeredgewidth=1.5,
                                  alpha=0.9)
@@ -413,7 +381,7 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     ax.set_xlabel(r'first objective', fontsize=16)
     ax.set_ylabel(r'second objective', fontsize=16)
     ax.legend(loc="best", framealpha=0.2)
-    ax.set_title("bbob-biobj $f_{%d}$ along three directions (%d-D, instance %d)" % (f_id, dim, inst_id))    
+    ax.set_title("bbob-biobj $f_{%d}$ along linear search space directions (%d-D, instance %d)" % (f_id, dim, inst_id))    
     [line.set_zorder(3) for line in ax.lines]
     [line.set_zorder(3) for line in ax.lines]
     fig.subplots_adjust(left=0.1) # more room for the y-axis label
@@ -441,3 +409,73 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
         plt.show(block=True)
     
     plt.close()
+    
+    
+def plot_ticks(linepoints, numticks, nadir, ideal, ax, mylw, myc, logscale=False):
+    """
+    Plots numticks equi-distant ticks perpendicular to the line defined by
+    linepoints. nadir gives the nadir point and ideal the ideal point for
+    normalizing the ticks' length, ax gives the subplot to plot in and 
+    mylw and myc the line width and color parameters respectively.
+    
+    logscale==True enables plotting for loglog scale plots of objective space
+    """
+
+    # normalization in case of logscale:
+    if logscale:
+        linepoints[0] = (np.array(linepoints[0])-ideal[0])/(nadir[0]-ideal[0])
+        linepoints[1] = (np.array(linepoints[1])-ideal[1])/(nadir[1]-ideal[1])              
+    
+    t_idx = np.linspace(0, len(linepoints[0])-1, num=numticks, endpoint=True, dtype=int)
+    for i in range(1,numticks-1): # don't put ticks on extremes of the lines
+        before = np.array([linepoints[0][t_idx[i]-1], linepoints[1][t_idx[i]-1]])
+        after = np.array([linepoints[0][t_idx[i]+1], linepoints[1][t_idx[i]+1]])                            
+  
+        if logscale:
+            # rotation by 90 degrees to get direction in log-scale
+            if abs((after-before)[0]) < 1e-15:
+                # handle case by hand where log might not work:
+                if abs((after-before)[1]) + (after-before)[1] > 0:
+                    # rotated direction is negative
+                    direction = np.array([-0.1,0])
+                else:
+                    direction = np.array([0.1, 0])
+            elif abs((after-before)[1]) < 1e-15:
+                # handle the opposite case by hand where log might not work:
+                if abs((after-before)[0]) + (after-before)[0] > 0:
+                    # rotated direction is positive
+                    direction = np.array([0, 0.1])
+                else:
+                    direction = np.array([0, -0.1])
+            else:
+                direction = np.dot(np.log10(after)-np.log10(before), np.array([[0, -1], [1, 0]]))
+                # normalize length
+                direction = 0.1 * direction / np.linalg.norm(direction)
+
+            if (linepoints[0][t_idx[i]] <=0) or (linepoints[1][t_idx[i]] <=0):
+                continue
+            
+            startpoint = [np.log10(linepoints[0][t_idx[i]]) + direction[0]*0.2, np.log10(linepoints[0][t_idx[i]]) + direction[0]*1.1]
+            endpoint = [np.log10(linepoints[1][t_idx[i]]) + direction[1]*0.2, np.log10(linepoints[1][t_idx[i]]) + direction[1]*1.1]
+            
+            
+            # transform everything back to original space before loglog plot
+            startpoint[0] = 10**startpoint[0]
+            startpoint[1] = 10**startpoint[1]
+            endpoint[0] = 10**endpoint[0]
+            endpoint[1] = 10**endpoint[1]
+            
+            ax.loglog(startpoint, endpoint,
+                      color=myc, ls='-', **mylw)
+                      
+            
+        else:
+            # rotation by 90 degrees to get direction
+            direction = np.dot((after-before)/(nadir-ideal), np.array([[0, -1], [1, 0]]))
+            # normalize length and scale again to full objective space
+            direction = 0.02 * direction / np.linalg.norm(direction)
+            direction = direction * (nadir-ideal)
+            ax.plot([linepoints[0][t_idx[i]] + direction[0]*0.2, linepoints[0][t_idx[i]] + direction[0]*1.1],
+                    [linepoints[1][t_idx[i]] + direction[1]*0.2, linepoints[1][t_idx[i]] + direction[1]*1.1],
+                    color=myc, ls='-', **mylw)
+    return ax
