@@ -122,10 +122,31 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     xgrid_opt_1 = np.tile(xopt1, (ngrid, 1))
     xgrid_opt_1 = xgrid_opt_1 + np.dot(t.reshape(ngrid,1), np.array([rand_dir_1]))
     
+    # Construct solutions along coordinate axes through xopt1
+    # -------------------------------------------------------
+    xgrid_opt_1_along_axes = []
+    for k in range(dim):
+        xgrid_along_axis = np.tile(xopt1, (ngrid, 1))
+        x_dir = np.zeros(dim)
+        x_dir[k] = 1
+        xgrid_along_axis = xgrid_along_axis + np.dot(t.reshape(ngrid,1), np.array([x_dir]))
+        xgrid_opt_1_along_axes.append(xgrid_along_axis)
+    
     # Construct solutions along rand_dir_2 through xopt2
     # ------------------------------------------------------
     xgrid_opt_2 = np.tile(xopt2, (ngrid, 1))
     xgrid_opt_2 = xgrid_opt_2 + np.dot(t.reshape(ngrid,1), np.array([rand_dir_2]))
+    
+    # Construct solutions along coordinate axes through xopt1
+    # -------------------------------------------------------
+    xgrid_opt_2_along_axes = []
+    for k in range(dim):
+        xgrid_along_axis = np.tile(xopt2, (ngrid, 1))
+        x_dir = np.zeros(dim)
+        x_dir[k] = 1
+        xgrid_along_axis = xgrid_along_axis + np.dot(t.reshape(ngrid,1), np.array([x_dir]))
+        xgrid_opt_2_along_axes.append(xgrid_along_axis)
+        
     
     # Construct solutions along line through xopt1 and xopt2
     # ------------------------------------------------------
@@ -156,6 +177,14 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     fgrid_12 = [f1.evaluate(xgrid_12), f2.evaluate(xgrid_12)]
     fgrid_rand_1 = [f1.evaluate(xgrid_rand_1), f2.evaluate(xgrid_rand_1)]
     fgrid_rand_2 = [f1.evaluate(xgrid_rand_2), f2.evaluate(xgrid_rand_2)]
+    fgrid_opt_1_along_axes = []
+    for k in range(dim):    
+        fgrid_opt_1_along_axes.append([f1.evaluate(xgrid_opt_1_along_axes[k]),
+                                       f2.evaluate(xgrid_opt_1_along_axes[k])])                               
+    fgrid_opt_2_along_axes = []
+    for k in range(dim):    
+        fgrid_opt_2_along_axes.append([f1.evaluate(xgrid_opt_2_along_axes[k]),
+                                       f2.evaluate(xgrid_opt_2_along_axes[k])])                               
     
     # plot reference sets if available:
     if inputfolder:
@@ -218,6 +247,15 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     # plot actual solutions along directions:
     numticks = 5
     nf = nadir-ideal # normalization factor used very often now
+    for k in range(dim):    
+        p6, = ax.loglog(((fgrid_opt_1_along_axes[k])[0]-f1opt)/nf[0],
+                        ((fgrid_opt_1_along_axes[k])[1]-f2opt)/nf[1],
+                        color=myc[1], ls=myls[0], lw=1, alpha=0.3)
+    for k in range(dim):    
+        p7, = ax.loglog(((fgrid_opt_2_along_axes[k])[0]-f1opt)/nf[0],
+                        ((fgrid_opt_2_along_axes[k])[1]-f2opt)/nf[1],
+                        color=myc[1], ls=myls[0], lw=1, alpha=0.3)
+            
     p1, = ax.loglog((fgrid_opt_1[0]-f1opt)/nf[0], (fgrid_opt_1[1]-f2opt)/nf[1], color=myc[1], ls=myls[2],
                     label=r'cuts through single optima', **mylw)
     p2, = ax.loglog((fgrid_opt_2[0]-f1opt)/nf[0], (fgrid_opt_2[1]-f2opt)/nf[1], color=myc[1], ls=myls[2],
@@ -230,6 +268,8 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
                     label=r'two random directions', **mylw)
     p5, = ax.loglog((fgrid_rand_2[0]-f1opt)/nf[0], (fgrid_rand_2[1]-f2opt)/nf[1],
                     color=myc[3], ls=myls[2], **mylw)
+        
+    
 
     # print 'ticks' along the axes in equidistant t space:
     numticks = 11
@@ -288,8 +328,8 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     fig.subplots_adjust(left=0.1) # more room for the y-axis label
     
     # we might want to zoom in a bit:
-    ax.set_xlim((1e-6, plt.xlim()[1]))
-    ax.set_ylim((1e-6, plt.ylim()[1]))
+    ax.set_xlim((1e-3, plt.xlim()[1]))
+    ax.set_ylim((1e-3, plt.ylim()[1]))
     #    ax.set_ylim((0, 2*(nadir[1] - f2opt)))
     
     # add rectangle as ROI
@@ -327,6 +367,14 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
         plt.plot(A[:,0], A[:,1], '.k', markersize=8)
     
     
+    for k in range(dim):    
+        p6, = ax.plot((fgrid_opt_1_along_axes[k])[0],
+                      (fgrid_opt_1_along_axes[k])[1],
+                      color=myc[1], ls=myls[0], lw=1, alpha=0.3)
+    for k in range(dim):    
+        p7, = ax.plot((fgrid_opt_2_along_axes[k])[0],
+                      (fgrid_opt_2_along_axes[k])[1],
+                      color=myc[1], ls=myls[0], lw=1, alpha=0.3)    
     p1, = ax.plot(fgrid_opt_1[0], fgrid_opt_1[1], color=myc[1], ls=myls[2],
                     label=r'cuts through single optima', **mylw)
     
