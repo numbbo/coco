@@ -76,7 +76,7 @@ def prepare_figure_caption():
         %d:{\color{blue}$\star$},
         %d:$\circ$,
         %d:{\color{red}$\Box$},
-        %d:{\color{magenta}$\Diamond$}. """ %tuple(testbedsettings.current_testbed.dimensions_to_display) # Manh
+        %d:{\color{magenta}$\Diamond$}. """ %tuple(testbedsettings.current_testbed.dimensions_to_display)
 
 
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
