@@ -533,7 +533,8 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
         infotext = ''
         algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
         for alg in algorithms_with_data:
-            infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
+            if len(dictFunc[f][alg]) > 0:
+                infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
         infotext = infotext.rstrip(', ')
         infotext += ' instances'
         plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, infotext, fontsize=14)  # TODO: check
