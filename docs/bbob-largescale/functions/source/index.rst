@@ -35,8 +35,8 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 The ``bbob-largescale`` test suite containing 24 single objective
 functions in continuous domain is an extension of the well-known
 single-objective noiseless ``bbob`` test suite in large dimension.
-The core idea is to make rotational transformations :math:`\textbf{R}` and :math:`\textbf{Q}`
-in search space, introduced in the ``bbob`` test suite, cheaper but remaining some desired
+The core idea is to make rotational transformations :math:`\textbf{R}` and :math:`\textbf{Q}` in search space,
+introduced in the ``bbob`` test suite, cheaper but remaining some desired
 properties. This documentation presents our approach where the rotational transformation will
 be replaced by the product of a permutation matrix times a block-diagonal matrix times a
 permutation matrix in order to construct large scale testbeds.
@@ -84,7 +84,7 @@ where the number of variables, say :math:`n`, could be from hundreds to thousand
 extending the dimensions used in ``bbob`` test suite (up to 40) and consider values of :math:`n` up to at
 least 640.
 
-The objective is to find, as quickly as possible, one or several solutions |x| in the search
+The objective is to find, as quickly as possible, one or several solutions :math:`x` in the search
 space :math:`\mathbb{R}^n` with *small* value(s) of :math:`f(\x)\in\mathbb{R}`. We
 generally consider *time* to be the number of calls to the function :math:`f`.
 
@@ -197,8 +197,8 @@ desired properties:
 
 1. Have (almost) linear cost (due to the block structure of :math:`B`): both the amount of memory
 needed to store the matrix and the computational cost of applying the transformation matrix
-to a solution must scale, ideally, linearly with :math:`d` or at most in :math:`dlog(d)`
-or :math:`d^{1+\epsilon}` with :math:`\epsilon << 1`.
+to a solution must scale, ideally, linearly with :math:`n` or at most in :math:`nlog(n)`
+or :math:`n^{1+\epsilon}` with :math:`\epsilon << 1`.
 
 2. Introduce non-separability (applying two permutations): the desired scenario is to have
 a parameter/set of parameters that allows to control the difficulty and level of
@@ -221,7 +221,7 @@ Their parameters are
 - :math:`n`, defines the size of the matrix,
 - :math:`{s_1,\dots,s_{n_b}}`, the block sizes where :math:`n_b` is the number of blocks.
 
-Generating the Random Permutations
+Generating the Random Permutations :math:`P`
 ---------------------------------------
 When applying the permutations, especially :math:`P_{left}`, one wants to remain in control of the
 difficulty of the resulting problem. Ideally, the permutation should have a parameterization that easily
@@ -249,15 +249,14 @@ When :math:`r_s \leq (d-1)/2`, the average distance between the first and the se
 variable ranges from :math:`(\sqrt(2)-1)r_s + 1/2` to :math:`r_s/2 + 1/2`. It is maximal when the first
 swap variable is at least :math:`r_s` away from both extremes or is one of them.
 
-\textbf{Algorithm 1} describes the process of generating a permutation using a series of truncated uniform
+*Algorithm 1* describes the process of generating a permutation using a series of truncated uniform
 swaps. The parameters for generating these permutations are:
 
   - :math:`n`, the number of variables,
-  - :math:`n_s`, the number of swaps. Values proportional to :math:`n` will allow to make the next
-parameter the only free one,
+  - :math:`n_s`, the number of swaps. Values proportional to :math:`n` will allow to make the next parameter the only free one,
   - :math:`r_s`, the swap range and eventually the only free parameter. The swap range can be equivalently
-defined in the form :math:`rs = \ceil{r_rd}, with :math:`r_r \in [0, 1]`. Each variable moves in average
-about :math:`r_r × 50%` of the maximal distance :math:`n`.
+  defined in the form :math:`r_s = \ceil{r_r n}, with :math:`r_r \in [0, 1]`. Each variable moves in average
+  about :math:`r_r × 50 \%` of the maximal distance :math:`n`.
 
 The indexes of the variables are taken in a random order thanks to the permutation :math:`\pi`. This is
 done to avoid any bias with regards to which variables are selected as first swap variables when less
@@ -266,21 +265,23 @@ the swaps defined above by taking :math:`p_{\pi}(1), p_{\pi}(2), \dots, p_{\pi}(
 first swap variable. The resulting vector :math:`p` is returned as the
 desired permutation.
 
-\textbf{Algorithm 1}: Truncated Uniform Permutations
+*Algorithm 1*: Truncated Uniform Permutations
 
   Inputs: problem dimension :math:`n`, number of swaps :math:`n_s`, swap range :math:`r_s`.
+
   Output: a vector :math:`\textbf{p} \in \mathbb{N}^n`, defining a permutation.
-  1: :math:`\textbf{p} \leftarrow (1, \dots,n)`
-  2: generate a uniformly random permutation :math:`pi`
-  3: \textbf{for} :math:`1 leq k leq n_s` \textbf{do}
-  4:      :math:`i \leftarrow \pi(k), x_{\pi(k)} is the first swap variable
-  5:      :math:`l_b \leftarrow \max(1,i−r_s)`
-  6:      :math:`ub \leftarrow \min(d,i+r_s)`
-  7:      :math:`S \leftarrow {l_b, l_b + 1, \dots, ub} \backslash {i}`
-  8:      Sample :math:`j` uniformly in :math:`S`
-  9:      swap :math:`p_i` and :math:`p_j`
-  10: \textbf{end for}
-  11: return :math:`\textbf{p}`
+
+  1.:math:`\textbf{p} \leftarrow (1, \dots,n)`
+  2.generate a uniformly random permutation :math:`pi`
+  3.\textbf{for} :math:`1 leq k leq n_s` \textbf{do}
+  4.    :math:`i \leftarrow \pi(k), x_{\pi(k)} is the first swap variable
+  5.    :math:`l_b \leftarrow \max(1,i−r_s)`
+  6.    :math:`ub \leftarrow \min(d,i+r_s)`
+  7.    :math:`S \leftarrow {l_b, l_b + 1, \dots, ub} \backslash {i}`
+  8.    Sample :math:`j` uniformly in :math:`S`
+  9.    swap :math:`p_i` and :math:`p_j`
+  10.\textbf{end for}
+  11.return :math:`\textbf{p}`
 
 
 Other modifications
@@ -303,7 +304,7 @@ the ``bbob`` test suite.
     \end{align*}
 
 where :math:`\gamma(n) = \min(1, 40/n)` for such that a constant target value (e.g., :math:`10^{-8})
-represent the same level of difficulty arcross all dimensions :math:`n \geq 40`.
+represent the same level of difficulty arcross all dimensions :math:`n \geq 40.
 
 
 .. _`Coco framework`: https://github.com/numbbo/coco
@@ -319,6 +320,8 @@ represent the same level of difficulty arcross all dimensions :math:`n \geq 40`.
 
 This work was supported by the grant ANR-12-MONU-0009 (NumBBO) 
 of the French National Research Agency.
+
+
 
  
 .. ############################# References #########################################
