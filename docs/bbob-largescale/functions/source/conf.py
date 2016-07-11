@@ -27,11 +27,11 @@ authors = "The BBOBies"
 abstract = """The ``bbob-largescale`` test suite containing 24 single objective
     functions in continuous domain is an extension of the well-known
     single-objective noiseless ``bbob`` test suite in large dimension.
-    The core idea is to make rotational transformations |R| and |Q| for search space, introduced in
-    the ``bbob`` test suite, cheaper but remaining some desired properties. This documentation
-    presents our approach where the rotation operator will be replaced by the product of a permutation
-    matrix times a block-diagonal matrix times a permutation matrix in order to construct large scale
-    testbeds.
+    The core idea is to make rotational transformations :math:`\textbf{R}` and :math:`\textbf{Q}`
+    in search space, introduced in the ``bbob`` test suite, cheaper but remaining some desired
+    properties. This documentation presents our approach where the rotational transformation will
+    be replaced by the product of a permutation matrix times a block-diagonal matrix times a
+    permutation matrix in order to construct large scale testbeds.
 """
 
 # If your documentation needs a minimal Sphinx version, state it here.

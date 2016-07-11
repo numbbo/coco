@@ -35,11 +35,11 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 The ``bbob-largescale`` test suite containing 24 single objective
 functions in continuous domain is an extension of the well-known
 single-objective noiseless ``bbob`` test suite in large dimension.
-The core idea is to make rotational transformations |R| and |Q| for search space, introduced in
-the ``bbob`` test suite, cheaper but remaining some desired properties. This documentation
-presents our approach where the rotation operator will be replaced by the product of a permutation
-matrix times a block-diagonal matrix times a permutation matrix in order to construct large scale
-testbeds.
+The core idea is to make rotational transformations :math:`\textbf{R}` and :math:`\textbf{Q}`
+in search space, introduced in the ``bbob`` test suite, cheaper but remaining some desired
+properties. This documentation presents our approach where the rotational transformation will
+be replaced by the product of a permutation matrix times a block-diagonal matrix times a
+permutation matrix in order to construct large scale testbeds.
 
 .. raw:: latex
 
@@ -78,47 +78,46 @@ In ``bbob-largescale`` test suite, we consider single-objective, unconstrained m
 of the form
 
 .. math::
+    \min_{x \in \mathbb{R}^n} f(x),
 
-f: \mathbb{R}^D \to \mathbb{R},
-
-where the number of variables, say |D|, could be from hundreds to thousands. Here, we start by
-extending the dimensions used in ``bbob`` test suite (up to 40) and consider values of |D| up to at
+where the number of variables, say :math:`n`, could be from hundreds to thousands. Here, we start by
+extending the dimensions used in ``bbob`` test suite (up to 40) and consider values of :math:`n` up to at
 least 640.
 
 The objective is to find, as quickly as possible, one or several solutions |x| in the search
-space :math:`\mathbb{R}^D` with *small* value(s) of :math:`f(\x)\in\mathbb{R}`. We
-generally consider *time* to be the number of calls to the function |f|.
+space :math:`\mathbb{R}^n` with *small* value(s) of :math:`f(\x)\in\mathbb{R}`. We
+generally consider *time* to be the number of calls to the function :math:`f`.
 
 Definitions and Terminology
 ---------------------------
 We remind in this section different definitions.
 
 *function instance, problem*
-Each function within COCO :math:`f^\theta: \mathbb{R}^D \to \mathbb{R}` is parametrized
+Each function within COCO :math:`f^\theta: \mathbb{R}^n \to \mathbb{R}` is parametrized
 with parameter values :math:`\theta \in \Theta`. A parameter value determines a so-called *function
 instance*. For example, :math:`\theta` encodes the location of the optimum of single-objective functions,
 which means that different instances have shifted optima.
 
-A *problem* is a function instance of a specific dimension :math:`D`.
+A *problem* is a function instance of a specific dimension :math:`n`.
 
 *block-diagonal matrix*
 A *block-diagonal matrix* :math:`B` is a matrix of the form
 
 .. math::
-:nowrap:
+    :nowrap:
 
-\begin{equation*}
-B = \begin{pmatrix}
-B_1 & 0 & \dots & 0 \\
-0 & B_2 & \dots & 0 \\
-0 & 0 & \ddots & 0 \\
-0 & 0 & \dots & B_{n_b}
-\end{pmatrix}
-\end{equation*}
+        \begin{equation*}
+            B = \begin{pmatrix}
+            B_1 & 0 & \dots & 0 \\
+            0 & B_2 & \dots & 0 \\
+            0 & 0 & \ddots & 0 \\
+            0 & 0 & \dots & B_{n_b}
+            \end{pmatrix}
+    \end{equation*}
 
 where :math:`n_b`is the number of blocks and :math:`B_i, 1 \leq i \ leq n_b`
 are square matrices of sizes :math:`s_i \times s_i` satisfying :math:`s_i \geq 1`
-and :math:`\sum_{i=1}^{n_b}s_i = D`.
+and :math:`\sum_{i=1}^{n_b}s_i = n`.
 
 *permutation matrix*
 A *permutation matrix* :math:`P` is a square binary matrix that has exactly one entry of
@@ -166,49 +165,50 @@ matrices, with orthogonal transformations of linear computational complexity:
 permuted orthogonal block-diagonal matrices.
 
 Specifically, the matrix of rotational transformation will be represented as:
+
 .. math::
-:nowrap:
+    :nowrap:
 
-\begin{equation*}
-R = P_{left}BP_{right}
-\end{equation*}
+        \begin{equation*}
+        R = P_{left}BP_{right}
+    \end{equation*}
 
-Here, :math:`P_{left}, P_{right}` are two permutation matrices and |B| is a
+Here, :math:`P_{left}, P_{right}` are two permutation matrices and :math:`B` is a
 block-diagonal matrix of the form
 
 .. math::
-:nowrap:
+    :nowrap:
 
-\begin{equation*}
-B = \begin{pmatrix}
-B_1 & 0 & \dots & 0 \\
-0 & B_2 & \dots & 0 \\
-0 & 0 & \ddots & 0 \\
-0 & 0 & \dots & B_{n_b}
-\end{pmatrix}
-\end{equation*}
+        \begin{equation*}
+        B = \begin{pmatrix}
+        B_1 & 0 & \dots & 0 \\
+        0 & B_2 & \dots & 0 \\
+        0 & 0 & \ddots & 0 \\
+        0 & 0 & \dots & B_{n_b}
+        \end{pmatrix}
+    \end{equation*}
 
 where :math:`n_b`is the number of blocks and :math:`B_i, 1 \leq i \ leq n_b`
 are orthogonal square matrices of sizes :math:`s_i \times s_i` satisfying :math:`s_i \geq 1`
-and :math:`\sum_{i=1}^{n_b}s_i = D`. Therefore, the matrix |B| is also a orthogonal matrix.
+and :math:`\sum_{i=1}^{n_b}s_i = n`. Therefore, the matrix :math:`B` is also a orthogonal matrix.
 
-This reprentation allows the rotational transformation |R| to satisfy the three
+This reprentation allows the rotational transformation :math:`R` to satisfy the three
 desired properties:
 
-1. Have (almost) linear cost (due to the block structure of |B|): both the amount of memory
+1. Have (almost) linear cost (due to the block structure of :math:`B`): both the amount of memory
 needed to store the matrix and the computational cost of applying the transformation matrix
 to a solution must scale, ideally, linearly with :math:`d` or at most in :math:`dlog(d)`
-or :math:`d^{1+\epsilon}` with:math:`\epsilon << 1`.
+or :math:`d^{1+\epsilon}` with :math:`\epsilon << 1`.
 
 2. Introduce non-separability (applying two permutations): the desired scenario is to have
 a parameter/set of parameters that allows to control the difficulty and level of
 non-separability of the resulting problem in comparison to the original, non-transformed, problem.
 
-3. Preserve, apart from separability (due to orthogonality of |B|), the properties of the raw
+3. Preserve, apart from separability (due to orthogonality of :math:`B`), the properties of the raw
 function: as in the case when using a full orthogonal matrix, we want to preserve the
 condition number and eigenvalues of the original function when it is convex quadratic.
 
-Generating the orthogonal block matrix |B|
+Generating the orthogonal block matrix :math:`B`
 ---------------------------------------
 We want to have the matrices :math:`B_i, i=1,2,...,n_b` uniformly distributed in the set of
 orthogonal matrices of the same size (the orthogonal group :math:`O(s_i)`). We first
@@ -236,11 +236,11 @@ that are within a fixed range :math:`r_s` of the first swap variable. Let :math:
 variable to be swapped and :math:`j` be that of the second swap variable, then
 
 .. math::
-:nowrap:
+    :nowrap:
 
-\begin{equation*}
-j \sim U({l_b(i), \dots, u_b(i)} \backslash {i}),
-\end{equation*}
+        \begin{equation*}
+        j \sim U({l_b(i), \dots, u_b(i)} \backslash {i}),
+    \end{equation*}
 
 where :math:`U(S)` is the uniform distribution over the set :math:`S` and :math:`l_b(i) = \max(1,i-r_s)`
 and :math:`l_b(i) = \max(n,i+r_s)`.
@@ -251,12 +251,13 @@ swap variable is at least :math:`r_s` away from both extremes or is one of them.
 
 \textbf{Algorithm 1} describes the process of generating a permutation using a series of truncated uniform
 swaps. The parameters for generating these permutations are:
-- :math:`D`, the number of variables,
-- :math:`n_s`, the number of swaps. Values proportional to :math:`D` will allow to make the next
+
+  - :math:`n`, the number of variables,
+  - :math:`n_s`, the number of swaps. Values proportional to :math:`n` will allow to make the next
 parameter the only free one,
-- :math:`r_s`, the swap range and eventually the only free parameter. The swap range can be equivalently
+  - :math:`r_s`, the swap range and eventually the only free parameter. The swap range can be equivalently
 defined in the form :math:`rs = \ceil{r_rd}, with :math:`r_r \in [0, 1]`. Each variable moves in average
-about :math:`r_r × 50%` of the maximal distance :math:`D`.
+about :math:`r_r × 50%` of the maximal distance :math:`n`.
 
 The indexes of the variables are taken in a random order thanks to the permutation :math:`\pi`. This is
 done to avoid any bias with regards to which variables are selected as first swap variables when less
@@ -266,19 +267,21 @@ first swap variable. The resulting vector :math:`p` is returned as the
 desired permutation.
 
 \textbf{Algorithm 1}: Truncated Uniform Permutations
-Inputs: problem dimension :math:`n`, number of swaps :math:`n_s`, swap range :math:`r_s`.
-Output: a vector :math:`\textbf{p} \in \mathbb{N}^D`, defining a permutation.
-1: :math:`\textbf{p} \leftarrow (1, \dots,n)`
-2: generate a uniformly random permutation :math:`pi`
-3: \textbf{for} :math:`1 leq k leq n_s` \textbf{do}
-4:      :math:`i \leftarrow \pi(k), x_{\pi(k)} is the first swap variable
-5:      :math:`l_b \leftarrow \max(1,i−r_s)`
-6:      :math:`ub \leftarrow \min(d,i+r_s)`
-7:      :math:`S \leftarrow {l_b, l_b + 1, \dots, ub} \backslash {i}`
-8:      Sample :math:`j` uniformly in :math:`S`
-9:      swap :math:`p_i` and :math:`p_j`
-10: \textbf{end for}
-11: return :math:`\textbf{p}`
+
+  Inputs: problem dimension :math:`n`, number of swaps :math:`n_s`, swap range :math:`r_s`.
+  Output: a vector :math:`\textbf{p} \in \mathbb{N}^n`, defining a permutation.
+  1: :math:`\textbf{p} \leftarrow (1, \dots,n)`
+  2: generate a uniformly random permutation :math:`pi`
+  3: \textbf{for} :math:`1 leq k leq n_s` \textbf{do}
+  4:      :math:`i \leftarrow \pi(k), x_{\pi(k)} is the first swap variable
+  5:      :math:`l_b \leftarrow \max(1,i−r_s)`
+  6:      :math:`ub \leftarrow \min(d,i+r_s)`
+  7:      :math:`S \leftarrow {l_b, l_b + 1, \dots, ub} \backslash {i}`
+  8:      Sample :math:`j` uniformly in :math:`S`
+  9:      swap :math:`p_i` and :math:`p_j`
+  10: \textbf{end for}
+  11: return :math:`\textbf{p}`
+
 
 Other modifications
 ---------------------------------------
@@ -290,21 +293,17 @@ have a constant proportion of distinct axes that remain consistent with
 the ``bbob`` test suite.
 
 .. math::
-:nowrap:
+    :nowrap:
 
-\begin{align*}
-f_{raw}^{CigarGen} &= \gamma(d) \left(\sum_{i=1}^{\lceil d/40 \rceil} z_i^2 + 10^6 \sum_{i=\lceil d/40 \rceil+1}^n z_i^2 \right) \\
-f_{raw}^{DiffPow} &= \gamma(d) \sum_{i=1}^n |z_i|^{\left(2 + 4 \times \frac{i-1}{n-1} \right)} \\
-f_{raw}^{Elli} &= \gamma(d) \sum_{i=1}^n 10^{6\frac{i-1}{n-1}} z_i^2 \\
-f_{raw}^{TabletGen} &= \gamma(d) \left(10^6\sum_{i=1}^{\lceil d/40 \rceil} z_i^2 +
-\sum_{i=\lceil d/40 \rceil+1}^n z_i^2 \right).
-\end{align*}
+        \begin{align*}
+        f_{raw}^{CigarGen} &= \gamma(n) \left(\sum_{i=1}^{\lceil n/40 \rceil} z_i^2 + 10^6 \sum_{i=\lceil n/40 \rceil+1}^n z_i^2 \right) \\
+        f_{raw}^{DiffPow} &= \gamma(n) \sum_{i=1}^n |z_i|^{\left(2 + 4 \times \frac{i-1}{n-1} \right)} \\
+        f_{raw}^{Elli} &= \gamma(n) \sum_{i=1}^n 10^{6\frac{i-1}{n-1}} z_i^2 \\
+        f_{raw}^{TabletGen} &= \gamma(n) \left(10^6\sum_{i=1}^{\lceil n/40 \rceil} z_i^2 + \sum_{i=\lceil n/40 \rceil+1}^n z_i^2 \right).
+    \end{align*}
 
-where :math:`\gamma(d) = \min(1, 40/d)` for such that a constant target value (e.g., :math:`10^{-8})
+where :math:`\gamma(n) = \min(1, 40/n)` for such that a constant target value (e.g., :math:`10^{-8})
 represent the same level of difficulty arcross all dimensions :math:`n \geq 40`.
-
-OTHER SECTIONS YOU MIGHT NEED
-==================================================
 
 
 .. _`Coco framework`: https://github.com/numbbo/coco
