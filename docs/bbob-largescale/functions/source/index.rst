@@ -254,9 +254,7 @@ swaps. The parameters for generating these permutations are:
 
   - :math:`n`, the number of variables,
   - :math:`n_s`, the number of swaps. Values proportional to :math:`n` will allow to make the next parameter the only free one,
-  - :math:`r_s`, the swap range and eventually the only free parameter. The swap range can be equivalently
-  defined in the form :math:`r_s = \ceil{r_r n}, with :math:`r_r \in [0, 1]`. Each variable moves in average
-  about :math:`r_r × 50 \%` of the maximal distance :math:`n`.
+  - :math:`r_s`, the swap range and eventually the only free parameter. The swap range can be equivalently defined in the form :math:`r_s = \ceil{r_r n}, with :math:`r_r \in [0, 1]`. Each variable moves in average about :math:`r_r × 50 \%` of the maximal distance :math:`n`.
 
 The indexes of the variables are taken in a random order thanks to the permutation :math:`\pi`. This is
 done to avoid any bias with regards to which variables are selected as first swap variables when less
@@ -265,23 +263,23 @@ the swaps defined above by taking :math:`p_{\pi}(1), p_{\pi}(2), \dots, p_{\pi}(
 first swap variable. The resulting vector :math:`p` is returned as the
 desired permutation.
 
-*Algorithm 1*: Truncated Uniform Permutations
+*Algorithm 1: Truncated Uniform Permutations*
 
   Inputs: problem dimension :math:`n`, number of swaps :math:`n_s`, swap range :math:`r_s`.
-
   Output: a vector :math:`\textbf{p} \in \mathbb{N}^n`, defining a permutation.
 
-  1.:math:`\textbf{p} \leftarrow (1, \dots,n)`
-  2.generate a uniformly random permutation :math:`pi`
-  3.\textbf{for} :math:`1 leq k leq n_s` \textbf{do}
-  4.    :math:`i \leftarrow \pi(k), x_{\pi(k)} is the first swap variable
-  5.    :math:`l_b \leftarrow \max(1,i−r_s)`
-  6.    :math:`ub \leftarrow \min(d,i+r_s)`
-  7.    :math:`S \leftarrow {l_b, l_b + 1, \dots, ub} \backslash {i}`
-  8.    Sample :math:`j` uniformly in :math:`S`
-  9.    swap :math:`p_i` and :math:`p_j`
-  10.\textbf{end for}
-  11.return :math:`\textbf{p}`
+    1.:math:`\textbf{p} \leftarrow (1, \dots,n)`
+    2.generate a uniformly random permutation :math:`pi`
+    3.\textbf{for} :math:`1 leq k leq n_s` \textbf{do}
+    4.    :math:`i \leftarrow \pi(k), x_{\pi(k)} is the first swap variable
+    5.    :math:`l_b \leftarrow \max(1,i−r_s)`
+    6.    :math:`ub \leftarrow \min(d,i+r_s)`
+    7.    :math:`S \leftarrow {l_b, l_b + 1, \dots, ub} \backslash {i}`
+    8.    Sample :math:`j` uniformly in :math:`S`
+    9.    swap :math:`p_i` and :math:`p_j`
+    10.\textbf{end for}
+    11.return :math:`\textbf{p}` 
+
 
 
 Other modifications
@@ -296,15 +294,15 @@ the ``bbob`` test suite.
 .. math::
     :nowrap:
 
-        \begin{align*}
-        f_{raw}^{CigarGen} &= \gamma(n) \left(\sum_{i=1}^{\lceil n/40 \rceil} z_i^2 + 10^6 \sum_{i=\lceil n/40 \rceil+1}^n z_i^2 \right) \\
-        f_{raw}^{DiffPow} &= \gamma(n) \sum_{i=1}^n |z_i|^{\left(2 + 4 \times \frac{i-1}{n-1} \right)} \\
-        f_{raw}^{Elli} &= \gamma(n) \sum_{i=1}^n 10^{6\frac{i-1}{n-1}} z_i^2 \\
-        f_{raw}^{TabletGen} &= \gamma(n) \left(10^6\sum_{i=1}^{\lceil n/40 \rceil} z_i^2 + \sum_{i=\lceil n/40 \rceil+1}^n z_i^2 \right).
-    \end{align*}
+        \begin{equation*}
+        f_{raw}^{CigarGen} = \gamma(n) \left(\sum_{i=1}^{\lceil n/40 \rceil} z_i^2 + 10^6 \sum_{i=\lceil n/40 \rceil+1}^n z_i^2 \right) \\
+        f_{raw}^{DiffPow} = \gamma(n) \sum_{i=1}^n |z_i|^{\left(2 + 4 \times \frac{i-1}{n-1} \right)} \\
+        f_{raw}^{Elli} = \gamma(n) \sum_{i=1}^n 10^{6\frac{i-1}{n-1}} z_i^2 \\
+        f_{raw}^{TabletGen} = \gamma(n) \left(10^6\sum_{i=1}^{\lceil n/40 \rceil} z_i^2 + \sum_{i=\lceil n/40 \rceil+1}^n z_i^2 \right).
+    \end{equation*}
 
 where :math:`\gamma(n) = \min(1, 40/n)` for such that a constant target value (e.g., :math:`10^{-8})
-represent the same level of difficulty arcross all dimensions :math:`n \geq 40.
+represent the same level of difficulty arcross all dimensions :math:`n \geq 40.`
 
 
 .. _`Coco framework`: https://github.com/numbbo/coco
