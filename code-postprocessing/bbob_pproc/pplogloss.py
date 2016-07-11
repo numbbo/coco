@@ -124,7 +124,7 @@ such that $\aRT(\ftarget)\le\FEvals$ for the
 
 
 def table_caption():
-    best_year = testbedsettings.current_testbed.best_algorithm_year # Manh
+    best_year = testbedsettings.current_testbed.best_algorithm_year
     caption = r"""%
         \aRT\ loss ratio versus the budget in number of $f$-evaluations
         divided by dimension.

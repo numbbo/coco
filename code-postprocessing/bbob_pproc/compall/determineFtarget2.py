@@ -434,7 +434,7 @@ def main(argv=None):
         sys.exit()
 
     verboseflag = False
-    dims = testbedsettings.current_testbed.dimensions_to_display # Manh
+    dims = testbedsettings.current_testbed.dimensions_to_display
     funcs = range(1,25)  # default values list()
     directory = args  # directories which contains data...
     # Process options

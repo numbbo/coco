@@ -135,7 +135,7 @@ def load_previous_RLBdata(filename=previous_RLBdata_filename):
 
 
 def caption_single():
-    best_year = testbedsettings.current_testbed.best_algorithm_year # Manh
+    best_year = testbedsettings.current_testbed.best_algorithm_year
     caption_part_one = r"""%
          Empirical cumulative distribution functions (ECDF), plotting the fraction of
          trials with an outcome not larger than the respective value on the $x$-axis.
@@ -188,10 +188,11 @@ def caption_single():
     return figure_caption.replace(r'TO_BE_REPLACED', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$')
 
 def caption_two():
-    best_year = testbedsettings.current_testbed.best_algorithm_year # Manh
+    best_year = testbedsettings.current_testbed.best_algorithm_year
     caption_two_part_one = r"""%
         Empirical cumulative distributions (ECDF)
-        of run lengths and speed-up ratios """ + ("""in %d-D (left) and %d-D (right). """ %tuple(testbedsettings.current_testbed.tabDimsOfInterest)) + r"""Left sub-columns: ECDF of
+        of run lengths and speed-up ratios """ + ("""in %d-D (left) and %d-D (right).""" % tuple(testbedsettings.current_testbed.tabDimsOfInterest)) + r"""
+        Left sub-columns: ECDF of
         the number of function evaluations divided by dimension $D$
         (FEvals/D) """
 
