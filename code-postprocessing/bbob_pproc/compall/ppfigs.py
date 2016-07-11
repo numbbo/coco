@@ -105,7 +105,7 @@ def scaling_figure_caption(for_html = False):
 
 
 def prepare_ecdfs_figure_caption():
-    best_year = testbedsettings.current_testbed.best_algorithm_year # Manh
+    best_year = testbedsettings.current_testbed.best_algorithm_year
     bestyeartext = (
                     r"The ``best %d'' line " % best_year +
                     r"corresponds to the best \aRT\ observed during BBOB %d " % best_year +
@@ -266,7 +266,6 @@ def plotLegend(handles, maxval=None):
         for k in sorted(ys[j].keys()):
             #enforce best 2009 comes first in case of equality
             tmp = []
-            # Manh : a generalization
             best_year_label = 'best %d' %testbedsettings.current_testbed.best_algorithm_year
             for h in ys[j][k]:
                 if plt.getp(h, 'label') == best_year_label:
@@ -581,7 +580,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
             
             alg_definitions.append((', ' if i > 0 else '') + '%s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
             alg_definitions_html += (', ' if i > 0 else '') + '%s: %s' % (symb_html, toolsdivers.str_to_latex(toolsdivers.strip_pathname1(sortedAlgs[i])))
-        if not isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
+        if not isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed):
             toolsdivers.prepend_to_file(latex_commands_filename,
                     [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
                      #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),

@@ -25,7 +25,7 @@ def get_table_caption():
     """ Sets table caption, based on the testbedsettings.current_testbed
         and genericsettings.runlength_based_targets.
     """    
-    best_year = testbedsettings.current_testbed.best_algorithm_year # Manh
+    best_year = testbedsettings.current_testbed.best_algorithm_year
     tabDimsOfInterest = testbedsettings.current_testbed.tabDimsOfInterest
     table_caption_one = r"""%
         Average running time (\aRT\ in number of function 
@@ -47,7 +47,7 @@ def get_table_caption():
         """
     table_caption_bi = r"""%
         Average runtime (\aRT) to reach given targets, measured
-        in number of function evaluations in""" + ("""dimensions %d (left) and %d (right). """ %tuple(tabDimsOfInterest)) + r"""%
+        in number of function evaluations in """ + ("""dimensions %d (left) and %d (right). """ %tuple(tabDimsOfInterest)) + r"""%
         For each function, the \aRT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different

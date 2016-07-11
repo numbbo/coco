@@ -53,14 +53,14 @@ def get_table_caption():
     """ Sets table caption, based on the testbedsettings.current_testbed
         and genericsettings.runlength_based_targets.
     """    
-    best_year = testbedsettings.current_testbed.best_algorithm_year # Manh
+    best_year = testbedsettings.current_testbed.best_algorithm_year
     table_caption_one = r"""%
         Average running time (\aRT\ in number of function 
         evaluations) divided by the best \aRT\ measured during""" + (""" BBOB-%d.""" %best_year) + r""" The \aRT\
         and in braces, as dispersion measure, the half difference between 90 and 
         10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
         the best \aRT\
-        """ # Manh : the caption varies in best_algorithm_year
+        """
     table_caption_two1 = (r"""%
         in the first. The different target \Df-values are shown in the top row. 
         \#succ is the number of trials that reached the (final) target $\fopt + """
@@ -78,7 +78,7 @@ def get_table_caption():
         $p = 0.05$ or $p = 10^{-k}$ when the number $k > 1$ is following the
         $\downarrow$ symbol, with Bonferroni correction by the number of
         functions.
-        """ # Manh : the caption varies in best_algorithm_year
+        """
 
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
