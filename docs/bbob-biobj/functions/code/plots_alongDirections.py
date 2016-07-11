@@ -32,8 +32,8 @@ instances = (1,)
 # Note: in single-objective bbobdocfunctions.pdf documentation, '0' seems to be the instance used
 #inputfolderforParetoFronts = 'archives/before_workshop/archives/'
 inputfolderforParetoFronts = 'F:/5D-archives-from-Tea/after_workshop/archives/'
-outputfolder = 'plots/before_workshop/'
-tofile = False # if True: files are written; if False: no files but screen output
+outputfolder = 'plots/after_workshop/'
+tofile = True # if True: files are written; if False: no files but screen output
 ###########################################
 
 

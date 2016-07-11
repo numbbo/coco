@@ -75,25 +75,25 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
            -1.77536414,  1.92731362,  2.38098092, -0.23789751, -0.02411066,
            -0.37445709,  0.43547281,  0.32148583, -0.4257802 ,  0.15550121])[0:dim]
     rand_dir_2 = rand_dir_2/np.linalg.norm(rand_dir_2)
-    #rand_dir_3 = np.random.multivariate_normal(np.zeros(dim), np.identity(dim))
-    rand_dir_3 = np.array([0.27274996,  0.09450028,  0.23123471, -0.17268026, -0.19352246,
-            0.11116155,  1.91171592, -0.77188094,  0.50033182, -2.93726319,
-           -0.0444466 , -0.83483599, -1.05971685,  0.35220208,  0.67446614,
-           -0.66144976,  0.15873096,  0.63002013, -0.75455445,  0.11553671,
-            0.53268058, -0.17107212, -2.68158842,  1.76162118, -1.10528215,
-           -1.3174873 , -0.56827552,  0.8938743 , -1.40129273,  1.24724136,
-            0.32995442,  1.64754152, -0.23038488, -0.1996612 ,  0.7423728 ,
-            0.41590582, -0.49735973, -0.16317831,  0.14116915,  0.33144299])[0:dim]
-    rand_dir_3 = rand_dir_3/np.linalg.norm(rand_dir_3)    
-    #rand_dir_4 = np.random.multivariate_normal(np.zeros(dim), np.identity(dim))
-    rand_dir_4 = np.array([-1.64810074,  0.06035188, -1.08343971,  0.69871916, -1.57870908,
-            -0.39555544,  1.15952858,  0.82573846, -1.00821565,  0.46347426,
-            0.46817715, -0.70617468, -0.56754204, -1.77903594, -0.15184591,
-            2.10968445,  0.53652335, -0.03221351, -0.34664564,  1.69246492,
-            1.26043695,  0.20284844,  1.90425762, -0.43203046,  0.33297092,
-           -0.43151518, -0.27561938, -0.64456918, -1.52515793,  0.16840333,
-           -1.44740417, -0.07328904, -0.74026773,  0.02869038, -0.65416703,
-            0.55212071, -1.13507935, -1.18781606,  0.42888208, -1.47626463])[0:dim]
+    rand_dir_3 = np.random.multivariate_normal(np.zeros(dim), np.identity(dim))
+#    rand_dir_3 = np.array([0.27274996,  0.09450028,  0.23123471, -0.17268026, -0.19352246,
+#            0.11116155,  1.91171592, -0.77188094,  0.50033182, -2.93726319,
+#           -0.0444466 , -0.83483599, -1.05971685,  0.35220208,  0.67446614,
+#           -0.66144976,  0.15873096,  0.63002013, -0.75455445,  0.11553671,
+#            0.53268058, -0.17107212, -2.68158842,  1.76162118, -1.10528215,
+#           -1.3174873 , -0.56827552,  0.8938743 , -1.40129273,  1.24724136,
+#            0.32995442,  1.64754152, -0.23038488, -0.1996612 ,  0.7423728 ,
+#            0.41590582, -0.49735973, -0.16317831,  0.14116915,  0.33144299])[0:dim]
+#    rand_dir_3 = rand_dir_3/np.linalg.norm(rand_dir_3)    
+    rand_dir_4 = np.random.multivariate_normal(np.zeros(dim), np.identity(dim))
+#    rand_dir_4 = np.array([-1.64810074,  0.06035188, -1.08343971,  0.69871916, -1.57870908,
+#            -0.39555544,  1.15952858,  0.82573846, -1.00821565,  0.46347426,
+#            0.46817715, -0.70617468, -0.56754204, -1.77903594, -0.15184591,
+#            2.10968445,  0.53652335, -0.03221351, -0.34664564,  1.69246492,
+#            1.26043695,  0.20284844,  1.90425762, -0.43203046,  0.33297092,
+#           -0.43151518, -0.27561938, -0.64456918, -1.52515793,  0.16840333,
+#           -1.44740417, -0.07328904, -0.74026773,  0.02869038, -0.65416703,
+#            0.55212071, -1.13507935, -1.18781606,  0.42888208, -1.47626463])[0:dim]
     rand_dir_4 = rand_dir_4/np.linalg.norm(rand_dir_4)
         
     
@@ -120,7 +120,7 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     # Construct solutions along rand_dir_1 through xopt1
     # ------------------------------------------------------
     xgrid_opt_1 = np.tile(xopt1, (ngrid, 1))
-    xgrid_opt_1 = xgrid_opt_1 + np.dot(t.reshape(ngrid,1), np.array([rand_dir_1]))
+    xgrid_opt_1 = np.array(xgrid_opt_1 + np.dot(t.reshape(ngrid,1), np.array([rand_dir_1])))
     
     # Construct solutions along coordinate axes through xopt1
     # -------------------------------------------------------
@@ -131,11 +131,12 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
         x_dir[k] = 1
         xgrid_along_axis = xgrid_along_axis + np.dot(t.reshape(ngrid,1), np.array([x_dir]))
         xgrid_opt_1_along_axes.append(xgrid_along_axis)
+    xgrid_opt_1_along_axes = np.array(xgrid_opt_1_along_axes)
     
     # Construct solutions along rand_dir_2 through xopt2
     # ------------------------------------------------------
     xgrid_opt_2 = np.tile(xopt2, (ngrid, 1))
-    xgrid_opt_2 = xgrid_opt_2 + np.dot(t.reshape(ngrid,1), np.array([rand_dir_2]))
+    xgrid_opt_2 = np.array(xgrid_opt_2 + np.dot(t.reshape(ngrid,1), np.array([rand_dir_2])))
     
     # Construct solutions along coordinate axes through xopt1
     # -------------------------------------------------------
@@ -146,28 +147,28 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
         x_dir[k] = 1
         xgrid_along_axis = xgrid_along_axis + np.dot(t.reshape(ngrid,1), np.array([x_dir]))
         xgrid_opt_2_along_axes.append(xgrid_along_axis)
+    xgrid_opt_2_along_axes = np.array(xgrid_opt_2_along_axes)
         
     
     # Construct solutions along line through xopt1 and xopt2
     # ------------------------------------------------------
     xgrid_12 = np.tile((xopt1+xopt2)/2, (ngrid, 1))
-    xgrid_12 = (xgrid_12
-                + np.dot(t.reshape(ngrid,1),
-                         np.array([xopt2-xopt1])/np.linalg.norm([xopt2-xopt1])
+    xgrid_12 = np.array(xgrid_12 + np.dot(t.reshape(ngrid,1),
+                        np.array([xopt2-xopt1])/np.linalg.norm([xopt2-xopt1])
                         )
                )
                
     # Construct solutions along a fully random line
     # ------------------------------------------------------
     xgrid_rand_1 = np.tile(rand_x_1, (ngrid, 1))
-    xgrid_rand_1 = (xgrid_rand_1
-                  + np.dot(t.reshape(ngrid,1), np.array([rand_dir_3])))
+    xgrid_rand_1 = np.array(xgrid_rand_1
+                   + np.dot(t.reshape(ngrid,1), np.array([rand_dir_3])))
 
     # and for another fully random line
     # ------------------------------------------------------
     xgrid_rand_2 = np.tile(rand_x_2, (ngrid, 1))
-    xgrid_rand_2 = (xgrid_rand_2
-                  + np.dot(t.reshape(ngrid,1), np.array([rand_dir_4])))
+    xgrid_rand_2 = np.array(xgrid_rand_2
+                   + np.dot(t.reshape(ngrid,1), np.array([rand_dir_4])))
     
     
     # Evaluate the grid for each direction
@@ -444,10 +445,6 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
             alpha=0.05,
             color='k'))
     
-
-    
-    
-    
     if tofile:
         if not os.path.exists(outputfolder):
             os.makedirs(outputfolder)
@@ -457,6 +454,111 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
         plt.show(block=True)
     
     plt.close()
+    
+    
+    ##############################################################
+    #                                                            #
+    # Finally, the corresponding plots in search space, i.e.     #
+    # projections of it onto the variables x_1 and x_(dim-1)     #
+    # (or x1, x2 in the case of not enough variables).           #
+    #                                                            #
+    ##############################################################
+    fig = plt.figure(3)
+    ax = fig.add_subplot(111)
+    
+    # plot reference sets if available:
+    #if inputfolder:
+    #    plt.plot(A[:,0], A[:,1], '.k', markersize=8)
+    
+    ax.set_xlabel(r'$x_1$', fontsize=16)
+    # fix second variable in addition to x_1:
+    if dim > 2:
+        second_variable = -2
+        ax.set_ylabel(r'$x_{%d}$' % (dim-1), fontsize=16)
+    else:
+        second_variable = 1
+        ax.set_ylabel(r'$x_{%d}$' % dim, fontsize=16)
+    
+    # read and plot best Pareto set approximation
+    if inputfolder:
+        filename = "bbob-biobj_f%02d_i%02d_d%02d_nondominated.adat" % (f_id, inst_id, dim)
+        X = []
+        with open(inputfolder + filename) as f:
+            for line in f:
+                splitline = line.split()
+                if len(splitline) == (dim + 3):  # has line x-values?
+                    X.append(np.array(splitline[3:], dtype=np.float))
+        X = np.array(X)
+        plt.plot(X[:, 0], X[:, second_variable], '.k', markersize=8)
+    # end of reading in and plotting best Pareto set approximation
+    
+    
+    for k in range(dim):    
+        p6, = ax.plot(xgrid_opt_1_along_axes[k][:, 0],
+                      xgrid_opt_1_along_axes[k][:, second_variable],
+                      color=myc[1], ls=myls[0], lw=1, alpha=0.3)
+    for k in range(dim):
+        p7, = ax.plot(xgrid_opt_2_along_axes[k][:, 0],
+                      xgrid_opt_2_along_axes[k][:, second_variable],
+                      color=myc[1], ls=myls[0], lw=1, alpha=0.3)
+    
+    p1, = ax.plot(xgrid_opt_1[:, 0], xgrid_opt_1[:, second_variable], color=myc[1], ls=myls[2],
+                    label=r'cuts through single optima', **mylw)
+    
+    p2, = ax.plot(xgrid_opt_2[:, 0], xgrid_opt_2[:, second_variable], color=myc[1], ls=myls[2],
+                    **mylw)
+    
+    p3, = ax.plot(xgrid_12[:, 0], xgrid_12[:, second_variable], color=myc[2], ls=myls[2],
+                    label=r'cut through both optima', **mylw)
+    
+    p4, = ax.plot(xgrid_rand_1[:, 0], xgrid_rand_1[:, second_variable], color=myc[3], ls=myls[2],
+                    label=r'two random directions', **mylw)
+    
+    p5, = ax.plot(xgrid_rand_2[:, 0], xgrid_rand_2[:, second_variable], color=myc[3], ls=myls[2],
+                    **mylw)
+       
+    # plot non-dominated points
+    ax.plot(xgrid_opt_1[pfFlag_opt_1, 0], xgrid_opt_1[pfFlag_opt_1, second_variable], color=myc[1], ls='', marker='.', markersize=8, markeredgewidth=0,
+                                 alpha=0.4)
+    ax.plot(xgrid_opt_2[pfFlag_opt_2, 0], xgrid_opt_2[pfFlag_opt_2, second_variable], color=myc[1], ls='', marker='.', markersize=8, markeredgewidth=0,
+                                 alpha=0.4)
+    ax.plot(xgrid_12[pfFlag_12, 0], xgrid_12[pfFlag_12, second_variable], color=myc[2], ls='', marker='.', markersize=8, markeredgewidth=0,
+                                 alpha=0.4)
+    ax.plot(xgrid_rand_1[pfFlag_rand_1, 0], xgrid_rand_1[pfFlag_rand_1, second_variable], color=myc[3], ls='', marker='.', markersize=8, markeredgewidth=0,
+                                 alpha=0.4)
+    ax.plot(xgrid_rand_2[pfFlag_rand_2, 0], xgrid_rand_2[pfFlag_rand_2, second_variable], color=myc[3], ls='', marker='.', markersize=8, markeredgewidth=0,
+                                 alpha=0.4)
+                                 
+                                 
+             
+    # highlight the region [-5,5]
+    ax.add_patch(patches.Rectangle(
+            (-5, -5), 10, 10,
+            alpha=0.05,
+            color='k'))
+    
+    # beautify
+    ax.set_xlim([-6, 6])
+    ax.set_ylim([-6, 6])
+    if dim == 2:
+        ax.set_title("decision space of bbob-biobj $f_{%d}$ (%d-D, instance %d)" % (f_id, dim, inst_id))    
+    else:
+        ax.set_title("proejection of bbob-biobj $f_{%d}$ decision space (%d-D, instance %d)" % (f_id, dim, inst_id))    
+    ax.legend(loc="best", framealpha=0.2)
+        
+    # printing
+    if tofile:
+        if not os.path.exists(outputfolder):
+            os.makedirs(outputfolder)
+        filename = outputfolder + "directions-f%02d-i%02d-d%02d-searchspace" % (f_id, inst_id, dim)
+        saveFigure(filename, verbose=True)
+    else:        
+        plt.show(block=True)
+    
+    plt.close()
+    
+    
+    
     
     
 def plot_ticks(linepoints, numticks, nadir, ideal, ax, mylw, myc, logscale=False):
