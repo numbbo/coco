@@ -535,6 +535,9 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
         for alg in algorithms_with_data:
             if len(dictFunc[f][alg]) > 0:
                 infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
+            else:
+                warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
+
         infotext = infotext.rstrip(', ')
         infotext += ' instances'
         plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, infotext, fontsize=14)  # TODO: check
