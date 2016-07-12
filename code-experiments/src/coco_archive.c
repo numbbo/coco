@@ -232,7 +232,11 @@ int coco_archive_add_solution(coco_archive_t *archive, const double y1, const do
       }
     }
 
-    avl_item_insert(archive->tree, insert_item);
+    if(avl_item_insert(archive->tree, insert_item) == NULL) {
+      coco_warning("Solution %s did not update the archive", text);
+      update = 0;
+    }
+
     archive->is_up_to_date = 0;
   }
 
