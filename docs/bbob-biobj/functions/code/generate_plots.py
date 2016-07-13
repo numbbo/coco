@@ -190,7 +190,11 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     # plot reference sets if available:
     if inputfolder:
         filename = "bbob-biobj_f%02d_i%02d_d%02d_nondominated.adat" % (f_id, inst_id, dim)
-        A = np.array(np.loadtxt(inputfolder + filename, comments='%', usecols = (1,2))) 
+        try:
+            A = np.array(np.loadtxt(inputfolder + filename, comments='%', usecols = (1,2)))
+        except:
+            print("Problem opening %s" % (inputfolder + filename))
+
         
         if downsample:
             # normalize A wrt ideal and nadir (and take care of having no inf
@@ -234,8 +238,8 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
             Alog = A[pfFlaglog]
             A = A[pfFlag]
             # finally sort wrt f_1 axis:
-            Alog = Alog[Alog[:,0].argsort()]
-            A = A[A[:,0].argsort()]
+            Alog = Alog[Alog[:,0].argsort(kind='mergesort')]
+            A = A[A[:,0].argsort(kind='mergesort')]
             
 
         # normalized plot, such that ideal and nadir are mapped to
@@ -482,17 +486,44 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     # read and plot best Pareto set approximation
     if inputfolder:
         filename = "bbob-biobj_f%02d_i%02d_d%02d_nondominated.adat" % (f_id, inst_id, dim)
-        X = []
+        C = []
         with open(inputfolder + filename) as f:
             for line in f:
                 splitline = line.split()
                 if len(splitline) == (dim + 3):  # has line x-values?
-                    X.append(np.array(splitline[3:], dtype=np.float))
-        X = np.array(X)
-        plt.plot(X[:, 0], X[:, second_variable], '.k', markersize=8)
+                    C.append(np.array(splitline[3:], dtype=np.float))
+        C = np.array(C)
+        C = C[C[:, second_variable].argsort(kind='mergesort')] # sort wrt x_{second_variable} first
+        C = C[C[:, 0].argsort(kind='mergesort')] # now wrt x_1 to finally get a stable sort
+        pareto_set_approx_size = C.shape[0]
+
+        # filter out all but one point per grid cell in the 
+        # (x_1, x_{second_variable}) space
+        if downsample:
+            decimals=2
+            X = np.around(C, decimals=decimals)
+            # sort wrt x_{second_variable} first
+            idx_1 = X[:, second_variable].argsort(kind='mergesort')
+            X = X[idx_1] 
+            # now wrt x_1 to finally get a stable sort
+            idx_2 = X[:, 0].argsort(kind='mergesort')
+            X = X[idx_2]
+            xflag = np.array([False] * len(X), dtype=bool)
+            xflag[0] = True # always take the first point
+            for i in range(1, len(X)):
+                if not (X[i,0] == X[i-1,0] and
+                        X[i,second_variable] == X[i-1, second_variable]):
+                    xflag[i] = True
+            X = ((C[idx_1])[idx_2])[xflag]
+
+        pareto_set_sample_size = X.shape[0]
+        
+        paretosetlabel = ('reference set (%d of %d points)' %
+                          (pareto_set_sample_size, pareto_set_approx_size))
+        plt.plot(X[:, 0], X[:, second_variable], '.k', markersize=8,
+                 label=paretosetlabel)
     # end of reading in and plotting best Pareto set approximation
-    
-    
+
     for k in range(dim):    
         p6, = ax.plot(xgrid_opt_1_along_axes[k][:, 0],
                       xgrid_opt_1_along_axes[k][:, second_variable],
@@ -501,22 +532,22 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
         p7, = ax.plot(xgrid_opt_2_along_axes[k][:, 0],
                       xgrid_opt_2_along_axes[k][:, second_variable],
                       color=myc[1], ls=myls[0], lw=1, alpha=0.3)
-    
+
     p1, = ax.plot(xgrid_opt_1[:, 0], xgrid_opt_1[:, second_variable], color=myc[1], ls=myls[2],
                     label=r'cuts through single optima', **mylw)
-    
+
     p2, = ax.plot(xgrid_opt_2[:, 0], xgrid_opt_2[:, second_variable], color=myc[1], ls=myls[2],
                     **mylw)
-    
+
     p3, = ax.plot(xgrid_12[:, 0], xgrid_12[:, second_variable], color=myc[2], ls=myls[2],
                     label=r'cut through both optima', **mylw)
-    
+
     p4, = ax.plot(xgrid_rand_1[:, 0], xgrid_rand_1[:, second_variable], color=myc[3], ls=myls[2],
                     label=r'two random directions', **mylw)
-    
+
     p5, = ax.plot(xgrid_rand_2[:, 0], xgrid_rand_2[:, second_variable], color=myc[3], ls=myls[2],
                     **mylw)
-       
+
     # plot non-dominated points
     ax.plot(xgrid_opt_1[pfFlag_opt_1, 0], xgrid_opt_1[pfFlag_opt_1, second_variable], color=myc[1], ls='', marker='.', markersize=8, markeredgewidth=0,
                                  alpha=0.4)
@@ -528,9 +559,8 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
                                  alpha=0.4)
     ax.plot(xgrid_rand_2[pfFlag_rand_2, 0], xgrid_rand_2[pfFlag_rand_2, second_variable], color=myc[3], ls='', marker='.', markersize=8, markeredgewidth=0,
                                  alpha=0.4)
-                                 
-                                 
-             
+
+
     # highlight the region [-5,5]
     ax.add_patch(patches.Rectangle(
             (-5, -5), 10, 10,
@@ -543,9 +573,10 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
     if dim == 2:
         ax.set_title("decision space of bbob-biobj $f_{%d}$ (%d-D, instance %d)" % (f_id, dim, inst_id))    
     else:
-        ax.set_title("proejection of bbob-biobj $f_{%d}$ decision space (%d-D, instance %d)" % (f_id, dim, inst_id))    
-    ax.legend(loc="best", framealpha=0.2)
-        
+        ax.set_title("projection of decision space for bbob-biobj $f_{%d}$ (%d-D, instance %d)" % (f_id, dim, inst_id))    
+    ax.legend(loc="best", framealpha=0.2, numpoints=1)
+    fig.subplots_adjust(left=0.1) # more room for the y-axis label    
+    
     # printing
     if tofile:
         if not os.path.exists(outputfolder):
