@@ -23,6 +23,8 @@ import os, sys
 import numpy
 import warnings
 
+from . import testbedsettings
+
 from pdb import set_trace
 
 # GLOBAL VARIABLES
@@ -423,7 +425,7 @@ def split(dataFiles, isBiobjective, dim=None):
                     for part in parts:
                         if 'instance' in part:
                             instance = int(part.split('=')[1])
-                            if instance > 5:
+                            if instance not in testbedsettings.current_testbed.instancesOfInterest:
                                 instanceToSkip = True
                             else:
                                 instanceToSkip = False

@@ -2,6 +2,8 @@ import os
 import numpy as np
 import warnings
 
+from . import genericsettings
+
 scenario_rlbased = 'rlbased'
 scenario_fixed = 'fixed'
 scenario_biobjfixed = 'biobjfixed'
@@ -108,6 +110,7 @@ class GECCOBBOBTestbed(Testbed):
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptable2_target_runlengths = self.pptable_target_runlengths  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptables_target_runlengths = self.pptable_target_runlengths  # used in config for expensive setting
+        self.instancesOfInterest = genericsettings.instancesOfInterest2016
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
@@ -164,3 +167,4 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptables_target_runlengths = [2, 10, 50]  # used in config for expensive setting
+        self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}  # 2016 biobjective instances
