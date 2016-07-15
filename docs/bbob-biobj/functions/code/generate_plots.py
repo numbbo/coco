@@ -10,6 +10,7 @@ from matplotlib import patches
 import matplotlib.pyplot as plt
 import numpy as np  # "pip install numpy" installs numpy
 import os
+import sys
 
 from bbob_pproc.ppfig import saveFigure
 
@@ -194,6 +195,8 @@ def generate_plots(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
             A = np.array(np.loadtxt(inputfolder + filename, comments='%', usecols = (1,2)))
         except:
             print("Problem opening %s" % (inputfolder + filename))
+            e = sys.exc_info()[0]
+            print("   Error: %s" % e)
 
         
         if downsample:
