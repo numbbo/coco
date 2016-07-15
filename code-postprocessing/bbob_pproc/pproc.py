@@ -724,6 +724,9 @@ class DataSet():
         self.readmaxevals = []
         self.readfinalFminusFtarget = []
 
+        if not testbedsettings.current_testbed:
+            testbedsettings.load_current_testbed(self.testbed_name(), TargetValues)
+
         # Split line in data file name(s) and run time information.
         parts = data.split(', ')
         for elem in parts:
@@ -748,8 +751,9 @@ class DataSet():
             else:
                 if not ':' in elem:
                     
-                    # We take only the first 5 instances for the bi-objective case (for now).
-                    if self.isBiobjective() and ast.literal_eval(elem) > 5:
+                    # We might take only a subset of the given instances for the bi-objective case (for now).
+                    if (self.isBiobjective() and
+                        ast.literal_eval(elem) not in testbedsettings.current_testbed.instancesOfInterest):
                         continue
 
                     # if elem does not have ':' it means the run was not
@@ -766,10 +770,10 @@ class DataSet():
                     self.readfinalFminusFtarget.append(numpy.inf)
                 else:
                     itrial, info = elem.split(':', 1)
-                    # We take only the first 5 instances for the bi-objective case (for now).
-                    if self.isBiobjective() and ast.literal_eval(itrial) > 5:
+                    # We might take only a subset of the given instances for the bi-objective case (for now).
+                    if (self.isBiobjective() and
+                        ast.literal_eval(itrial) not in testbedsettings.current_testbed.instancesOfInterest):
                         continue
-
                     self.instancenumbers.append(ast.literal_eval(itrial))
                     self.isFinalized.append(True)
                     readmaxevals, readfinalf = info.split('|', 1)
@@ -880,9 +884,6 @@ class DataSet():
         
         """
 
-        if not testbedsettings.current_testbed:
-            testbedsettings.load_current_testbed(self.testbed_name(), TargetValues)
-
         if isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
@@ -920,10 +921,10 @@ class DataSet():
         """
         is_consistent = True
         
-        instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))        
+        instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))
         
-        # We take only the first 5 instances for the bi-objective case (for now).
-        expectedNumberOfInstances = 5 if self.isBiobjective() else 15        
+        # We might take only a subset of all provided instances for the bi-objective case (for now).
+        expectedNumberOfInstances = len(testbedsettings.current_testbed.instancesOfInterest) if self.isBiobjective() else 15
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
             # check exception of 2009 data sets with 3 times instances 1:5
             for i in set(self.instancenumbers):
