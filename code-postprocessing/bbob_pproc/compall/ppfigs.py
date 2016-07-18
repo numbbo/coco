@@ -124,7 +124,8 @@ def prepare_ecdfs_figure_caption():
     if testbed.best_algorithm_displayname == "best 2009":
         refalgtext = best2009text
     if (testbed.best_algorithm_displayname == "best 2016"
-            and testbed.isinstanceOf(testbedsettings.GECCOBiObjBBOBTestbed)):
+            and isinstance(testbed, testbedsettings.GECCOBiObjBBOBTestbed)
+            ):
         refalgtext = best2016biobjtext
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
