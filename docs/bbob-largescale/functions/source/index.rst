@@ -214,8 +214,7 @@ orthogonal matrices of the same size. To this, we firstly generate square matric
 size :math:`s_i, i=i=1,2,...,n_b` whose entries are i.i.d. standard normally distributed.
 Then we apply the Gram-Schmidt process to orthogonalize these matrices.
 
-Orthogonal block-diagonal matrices are the raw transformation matrices for our large scale functions.
-Their parameters are:
+The parameter of this procedure includes:
 
 - :math:`n`, defines the size of the matrix,
 - :math:`{s_1,\dots,s_{n_b}}`, the block sizes where :math:`n_b` is the number of blocks.
@@ -245,12 +244,9 @@ series of truncated uniform swaps with the following parameters:
 - :math:`n_s`, the number of swaps.
 - :math:`r_s`, the swap range.
 
-The indexes of the variables are taken in a random order thanks to the permutation :math:`\pi`. This is
-done to avoid any bias with regards to which variables are selected as first swap variables when less
-than :math:`n` swaps are applied. We start with :math:`p` initially the identity permutation. We apply
-the swaps defined above by taking :math:`p_{\pi}(1), p_{\pi}(2), \dots, p_{\pi}(n_s)`, successively, as
-first swap variable. The resulting vector :math:`p` is returned as the
-desired permutation.
+Starting with the identity permutation :math:`p`, we apply the swaps defined above
+by taking :math:`p_{\pi}(1), p_{\pi}(2), \dots, p_{\pi}(n_s)`, successively, as
+first swap variable. The resulting vector :math:`p` will be the desired permutation.
 
 *Algorithm 1: Truncated Uniform Permutations*
 
