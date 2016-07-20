@@ -24,15 +24,7 @@ import shlex
 # -- General configuration ------------------------------------------------
 authors = "The BBOBies"
 # WHEN CHANGING THIS CHANGE ALSO the abstract in index.rst accordingly
-abstract = """The ``bbob-largescale`` test suite containing 24 single objective
-    functions in continuous domain is an extension of the well-known
-    single-objective noiseless ``bbob`` test suite [HAN2009]_, which has been used since 2009 in
-    the `BBOB workshop series`_, in large dimension. The core idea is to make rotational
-    transformations :math:`\textbf{R}, \textbf{Q}` in search space that
-    appear in the ``bbob`` test suite cheaper while retaining some desired
-    properties. This documentation presents our approach where the rotational transformation will
-    be replaced by the product of a permutation matrix times a block-diagonal matrix times a
-    permutation matrix in order to construct large scale testbeds.
+abstract = """The bbob-largescale test suite containing 24 single objective functions in continuous domain is an extension of the well-known single-objective noiseless bbob test suite [HAN2009], which has been used since 2009 in the BBOB workshop series, in large dimension. The core idea is to make rotational transformations R, Q in search space that appear in the bbob test suite cheaper while retaining some desired properties. This documentation presents our approach where the rotational transformation will be replaced by the combination of a block-diagonal matrix with two permutation matrices in order to construct test functions.
 """
 
 # If your documentation needs a minimal Sphinx version, state it here.
