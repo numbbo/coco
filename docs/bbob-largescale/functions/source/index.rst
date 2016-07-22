@@ -308,13 +308,14 @@ Generating the orthogonal block matrix :math:`B`
 ------------------------------------------------
 The sub-matrices :math:`B_i, i=1,2,...,n_b` will be uniformly distributed in the set of
 orthogonal matrices of the same size. To this, we firstly generate square matrices with
-size :math:`s_i, i=i=1,2,...,n_b` whose entries are i.i.d. standard normally distributed.
+size :math:`s_i, i=1,2,...,n_b` whose entries are i.i.d. standard normally distributed.
 Then we apply the Gram-Schmidt process to orthogonalize these matrices.
 
 The parameter of this procedure includes:
 
-- :math:`n`, defines the size of the matrix,
-- :math:`{s_1,\dots,s_{n_b}}`, the block sizes where :math:`n_b` is the number of blocks.
+- the dimension of problem :math:`n`,
+- the block sizes :math:`{s_1,\dots,s_{n_b}}`, where :math:`n_b` is the number of blocks. In this test suite, we set :math:`s_i = s := \min\{n, 40\}, \forall i=1,2,...,n_b` and thus :math:`n_b = \lceil n/s \rceil`.
+
 
 Generating the permutation :math:`P`
 ------------------------------------
@@ -368,16 +369,22 @@ results in [AIT2016]_ show that with such parameters, the proportion of variable
 moved from their original position when applying Algorithm 1 is approximately 100\% for all
 dimension 20, 40, 80, 160, 320, 640 of the ``bbob-largescale`` test suite and so on.
 
+**Important remark:** Although the compelexity of test suite is reduced considerably, we recommend running the experiment on this test suite in parallel.
+
+
 Functions in ``bbob-largescale`` test suite
 =============================================
 The Table below presents the definition of 24 functions used in the ``bbob-largescale`` test suite.
 Beside the important modification on the rotational transformations, we also make two changes to the raw
-functions in the ``bbob`` test suite. Firstly, functions are normalized by the
-parameter :math:`\gamma(n) = \min(1, 40/n)` to have uniform target values
-that are comparable over a wide range of dimensions. Secondly, the Discus, Bent Cigar, and
-Sharp Ridge functions are generalized such that they have a constant proportion of distinct
-axes that remain consistent with the ``bbob`` test suite.
+functions in the ``bbob`` test suite.
 
+- All functions, except to the Schwefel function, are normalized by the parameter :math:`\gamma(n) = \min(1, 40/n)` to have uniform target values that are comparable over a wide range of dimensions.
+
+- The Discus, Bent Cigar, and Sharp Ridge functions are generalized such that they have a constant proportion of distinct axes that remain consistent with the ``bbob`` test suite.
+
+To deeply understand the properties of these functions, one can see the document_ for details.
+
+.. _document: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf#page=65
 
 .. list-table::
     :header-rows: 1
@@ -485,7 +492,7 @@ axes that remain consistent with the ``bbob`` test suite.
        -
 
     *  - Schwefel Function
-       - :math:`f_{20}(\mathbf{x}) = \gamma(n)\times\left(-\dfrac{1}{n} \sum_{i=1}^{n} z_i\sin\left(\sqrt{\vert z_i\vert}\right)\right) + 4.189828872724339 + 100f_{pen}(\mathbf{z}/100)+\mathbf{f}_{\text{opt}}`
+       - :math:`f_{20}(\mathbf{x}) = -\dfrac{1}{n} \sum_{i=1}^{n} z_i\sin\left(\sqrt{\vert z_i\vert}\right) + 4.189828872724339 + 100f_{pen}(\mathbf{z}/100)+\mathbf{f}_{\text{opt}}`
        - :math:`\mathbf{\hat{x}} = 2 \times \mathbf{1}_{-}^{+} \otimes \mathbf{x}, \\ \hat{z}_1 = \hat{x}_1, \hat{z}_{i+1}=\hat{x}_{i+1} + 0.25 \left(\hat{x}_{i} - 2\left|x_i^{\text{opt}}\right|\right), \text{ for } i=1, \dots, n-1, \\ \mathbf{z} = 100 \left(\mathbf{\Lambda}^{10} \left(\mathbf{\hat{z}} - 2\left|\mathbf{x}^{\text{opt}}\right|\right) + 2\left|\mathbf{x}^{\text{opt}}\right|\right), \\ \mathbf{x}^{\text{opt}} = 4.2096874633/2 \mathbf{1}_{-}^{+}`
 
     *  - Gallagher’s Gaussian 101-me Peaks Function
