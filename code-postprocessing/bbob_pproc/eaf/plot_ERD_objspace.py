@@ -24,10 +24,10 @@ import generate_ERD_plot
 # parameters to play with:
 dims = (2,)
 #functions = range(1,56)
-functions = (2,)
-instances = (3,)
+functions = (1,)
+instances = (6,)
 inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/MAT-SMS/archive/'
-#inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
+inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
 outputfolder = 'plots/'
 tofile = False # if True: files are written; if False: no files but screen output
 ###########################################
