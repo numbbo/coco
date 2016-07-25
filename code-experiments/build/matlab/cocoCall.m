@@ -11,7 +11,11 @@
 % where COCOFUNCTION and the variable argument list are one of the following:
 %
 %   * cocoEvaluateFunction: problem, x, y 
-%       Evaluates problem in point x and saves the result in y. 
+%       Evaluates the objective function at point x and saves the result in y. 
+%   * cocoEvaluateConstraint: problem, x, y 
+%       Evaluates the constraints at point x and saves the result in y. 
+%   * cocoIsFeasible: problem, x, y 
+%       Returns 1 if the point x is feasible and 0 otherwise, with the option of saving the constraint values in y. 
 %   * cocoObserver: observer_name, observer_options
 %       Returns a new COCO observer. 
 %   * cocoObserverFree: observer

@@ -70,11 +70,29 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
  */
 void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
   /* implements a safer version of problem->evaluate(problem, x, y) */
+  size_t i, j;
   assert(problem != NULL);
   if (problem->evaluate_constraint == NULL) {
     coco_error("coco_evaluate_constraint(): No constraint function implemented for problem %s",
         problem->problem_id);
   }
+  
+  /* Set constraints vector to INFINITY if the decision vector contains any INFINITY values */
+  for (i = 0; i < coco_problem_get_dimension(problem); i++) {
+    if (coco_is_inf(x[i])) {
+      for (j = 0; j < coco_problem_get_number_of_constraints(problem); j++) {
+        y[j] = fabs(x[i]);
+      }
+      return;
+    }
+  }
+  
+  /* Set constraints vector to NAN if the decision vector contains any NAN values */
+  if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
+    coco_vector_set_to_nan(y, coco_problem_get_number_of_constraints(problem));
+    return;
+  }
+  
   problem->evaluate_constraint(problem, x, y);
   problem->evaluations_constraints++;
 }
@@ -92,6 +110,13 @@ int coco_is_feasible(coco_problem_t *problem, const double *x, double *cons_valu
   
   size_t i;
   int is_feasible = 1;
+  
+  /* Return 0 if the decision vector contains any INFINITY or NaN values */
+  for (i = 0; i < coco_problem_get_dimension(problem); i++) {
+    if (coco_is_inf(x[i]) || 
+        coco_vector_contains_nan(x, coco_problem_get_dimension(problem)))
+      return 0;
+  }
   
   coco_evaluate_constraint(problem, x, cons_values);
   /* decrement the counter incremented in coco_evaluate_constraint() */

@@ -168,6 +168,7 @@ def run_c_integration_tests():
         run('code-experiments/test/integration-test', ['./test_coco', 'bbob2009_testcases2.txt'])
         run('code-experiments/test/integration-test', ['./test_instance_extraction'])
         run('code-experiments/test/integration-test', ['./test_biobj'])
+        run('code-experiments/test/integration-test', ['./test_bbob-constrained'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
