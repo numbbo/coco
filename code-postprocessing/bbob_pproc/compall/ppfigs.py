@@ -124,7 +124,8 @@ def prepare_ecdfs_figure_caption():
     if testbed.best_algorithm_displayname == "best 2009":
         refalgtext = best2009text
     if (testbed.best_algorithm_displayname == "best 2016"
-            and testbed.isinstanceOf(testbedsettings.GECCOBiObjBBOBTestbed)):
+            and isinstance(testbed, testbedsettings.GECCOBiObjBBOBTestbed)
+            ):
         refalgtext = best2016biobjtext
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
@@ -548,7 +549,11 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
         infotext = ''
         algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
         for alg in algorithms_with_data:
-            infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
+            if len(dictFunc[f][alg]) > 0:
+                infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
+            else:
+                warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
+
         infotext = infotext.rstrip(', ')
         infotext += ' instances'
         plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, infotext, fontsize=14)  # TODO: check
