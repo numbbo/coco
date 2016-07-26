@@ -226,8 +226,6 @@ def main(argv=None):
                 inputdir = a
             elif o in ("--no-svg"):
                 genericsettings.generate_svg_files = False
-            elif o in ("--constrained"):
-                testbedsettings.default_testbed_single = 'CONSBBOBTestbed'
             else:
                 isAssigned = False
                 if o in longoptlist or o in shortoptlist:

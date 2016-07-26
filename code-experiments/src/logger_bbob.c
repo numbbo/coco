@@ -77,6 +77,7 @@ typedef struct {
   size_t instance_id;
   size_t number_of_variables;
   double optimal_fvalue;
+  char *suite_name;
 
   coco_observer_targets_t *targets;          /**< @brief Triggers based on target values. */
   coco_observer_evaluations_t *evaluations;  /**< @brief Triggers based on the number of evaluations. */
@@ -267,10 +268,9 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
         }
         fclose(tmp_file);
       }
-
-      fprintf(*target_file, "funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s'\n",
+      fprintf(*target_file, "funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', suite = '%s'\n",
           (int) strtol(function_id, NULL, 10), (unsigned long) logger->number_of_variables, pow(10, -8),
-          logger->observer->algorithm_name);
+          logger->observer->algorithm_name, logger->suite_name);
       fprintf(*target_file, "%%\n");
       strncat(used_dataFile_path, "_i", COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
       strncat(used_dataFile_path, bbob_infoFile_firstInstance_char,
@@ -571,8 +571,10 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   
   if (inner_problem->number_of_constraints > 0) {
     logger_bbob->constrained_problem = 1;
+    logger_bbob->suite_name = "CONSBBOBTestbed";
   } else {
     logger_bbob->constrained_problem = 0;
+    logger_bbob->suite_name = "GECCOBBOBTestbed";
   }
   
   /* Initialize triggers based on target values and number of evaluations */
