@@ -120,7 +120,7 @@ class GECCOBBOBTestbed(Testbed):
 
 
 class CONSBBOBTestbed(GECCOBBOBTestbed):
-    """Testebed for constrained problems.
+    """Testbed for constrained problems.
     """
 
     def __init__(self, target_values):
@@ -134,6 +134,7 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         self.first_function_number = 1
         self.last_function_number = 48
         self.best_algorithm_filename = ''
+        self.short_names = get_short_names(self.shortinfo_filename)
         
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):

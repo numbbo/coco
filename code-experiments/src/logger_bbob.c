@@ -349,7 +349,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
 /**
  * Layer added to the transformed-problem evaluate_function by the logger
  */
-static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, double *y) {
+static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) {
   logger_bbob_data_t *logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
   coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);
   double *cons_values, initial_solution_fvalue;
@@ -395,8 +395,10 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     if (!is_feasible) {
 		 
 		/* If x is infeasible, log the initial solution provided by Coco */
-      for (i = 0; i < problem->number_of_variables; i++)
+      for (i = 0; i < problem->number_of_variables; i++) {
+        x[i] = inner_problem->initial_solution[i];
         logger->best_solution[i] = inner_problem->initial_solution[i];
+      }
       y[0] = initial_solution_fvalue; 
     }
     else {
@@ -406,8 +408,10 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
 		 */
       if (initial_solution_fvalue < y[0]) {
 			
-        for (i = 0; i < problem->number_of_variables; i++)
+        for (i = 0; i < problem->number_of_variables; i++) {
+          x[i] = inner_problem->initial_solution[i];
           logger->best_solution[i] = inner_problem->initial_solution[i];   
+        }
         y[0] = initial_solution_fvalue; 
       }
       else {
