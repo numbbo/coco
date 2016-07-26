@@ -469,23 +469,7 @@ def custom_generate(args=algs2009):
     This method is called from the python command line from a directory
     containing all necessary data folders::
 
-    >>> from bbob_pproc import bestalg
-    >>> import os
-    >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
-    >>> os.chdir(os.path.join(path, 'data'))
-    >>> infoFile = 'ALPS/bbobexp_f2.info'
-    >>> if not os.path.exists(infoFile):
-    ...     import urllib
-    ...     import tarfile
-    ...     dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/ALPS_hornby_noiseless.tgz'
-    ...     filename, headers = urllib.urlretrieve(dataurl)
-    ...     archivefile = tarfile.open(filename)
-    ...     archivefile.extractall()
-    >>> os.chdir(os.path.join(path, 'data'))
-    >>> bestalg.customgenerate(('ALPS', '')) # doctest: +ELLIPSIS
-    Searching in...
-    >>> os.chdir(path)
-
+    TODO: write the doctest
     """
 
     output_dir = 'bestCustomAlg'
