@@ -222,7 +222,7 @@ the COCO framework. We will explain in this section how this test suite is built
 The single-objective ``bbob`` functions
 ---------------------------------------
 The ``bbob`` test suite relies on the use of a number of raw functions from
-which 24 different problems are generated. Initially, the raw function
+which 24 ``bbob`` functions are generated. Initially, the raw function
 is designed. Then, a series of transformations on the raw function, such as
 linear transformations (e.g., translation, rotation, scaling) and/or non-linear
 transformations (e.g., :math:`T_{\text{osz}}, T_{\text{asy}}`)
