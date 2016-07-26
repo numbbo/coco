@@ -144,7 +144,6 @@ static coco_problem_t *f_bent_cigar_cons_bbob_problem_allocate(const size_t func
   problem = f_bent_cigar_allocate(dimension);
   problem = transform_obj_shift(problem, fopt);
   problem = transform_vars_affine(problem, M, b, dimension);
-  problem = transform_vars_affine(problem, M, b, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
   
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
