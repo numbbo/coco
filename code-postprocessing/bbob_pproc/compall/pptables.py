@@ -19,6 +19,7 @@ http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
 
 """
 
+
 def get_table_caption():
     """ Sets table caption, based on the testbedsettings.current_testbed
         and genericsettings.runlength_based_targets.
@@ -61,10 +62,10 @@ def get_table_caption():
         the rank-sum test) when compared to all other algorithms of the table, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
         than 1, with Bonferroni correction of #2. """ +
-        (r"""A $\downarrow$ indicates the same tested against the best
-        algorithm of BBOB-2009."""
-        if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
-        else "") + r"""Best results are printed in bold.
+                          (r"""A $\downarrow$ indicates the same tested against the best
+        algorithm of BBOB-2009. """
+                           if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
+                           else "") + r"""Best results are printed in bold.
         """)
 
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
@@ -81,6 +82,7 @@ def get_table_caption():
 
     return table_caption
 
+
 with_table_heading = False  # in case the page is long enough
 
 allmintarget = {}
@@ -95,6 +97,7 @@ samplesize = genericsettings.simulated_runlength_bootstrap_sample_size
 precfloat = 2
 precscien = 2
 precdispersion = 1  # significant digits for dispersion
+
 
 def cite(algName, isNoisefree, isNoisy):
     """Returns the citation key associated to the algorithm name.
@@ -210,11 +213,12 @@ def cite(algName, isNoisefree, isNoisy):
 
     if res:
         res = r"\cite{%s}" % (", ".join(res))
-        #set_trace()
+        # set_trace()
     else:
-        #res = r"\cite{add_an_entry_for_%s_in_bbob.bib}" % algName
+        # res = r"\cite{add_an_entry_for_%s_in_bbob.bib}" % algName
         res = ""
     return res
+
 
 def getTopIndicesOfColumns(table, maxRank=None):
     """For each column, returns a list of the maxRank-ranked elements.
@@ -225,14 +229,14 @@ def getTopIndicesOfColumns(table, maxRank=None):
     if maxRank is None:
         maxRank = numpy.shape(table)[0]
 
-    ranked = [] # the length of ranked will be the number of columns in table.
+    ranked = []  # the length of ranked will be the number of columns in table.
     ttable = numpy.transpose(table)
     for line in ttable:
-        sid = line.argsort() # returns the sorted index of the elements of line
+        sid = line.argsort()  # returns the sorted index of the elements of line
         prevValue = None
         rank = []
         for idx in sid:
-            if line[idx] == prevValue: # tie
+            if line[idx] == prevValue:  # tie
                 continue
             prevValue = line[idx]
             rank.extend(numpy.where(line == prevValue)[0])
@@ -242,8 +246,9 @@ def getTopIndicesOfColumns(table, maxRank=None):
 
     return ranked
 
+
 # TODO: function_headings argument need to be tested, default should be changed according to templates
-def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, function_targets_line=True):  # [1, 13, 101]
+def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line=True):  # [1, 13, 101]
     """Generate one table per func with results of multiple algorithms."""
     """Difference with the first version:
 
@@ -261,7 +266,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
     # TODO: method is long, terrible to read, split if possible
 
     bestalgentries = bestalg.load_best_algorithm()
-    
+
     testbed = testbedsettings.current_testbed
 
     # Sort data per dimension and function
@@ -276,9 +281,11 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
 
     nbtests = len(dictData)
 
-    funInfos = ppfigparam.read_fun_infos()    
+    funInfos = ppfigparam.read_fun_infos()
 
-    for df in dictData:
+    firstFunction = True
+
+    for df in sorted(dictData):
         # Generate one table per df
         # first update targets for each dimension-function pair if needed:
         targetsOfInterest = testbed.pptablemany_targetsOfInterest((df[1], df[0]))
@@ -286,18 +293,18 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             targetf = targetsOfInterest[-1]
         else:
             targetf = testbed.pptable_ftarget
-        
+
         # best 2009
-        if bestalgentries:        
+        if bestalgentries:
             refalgentry = bestalgentries[df]
             refalgert = refalgentry.detERT(targetsOfInterest)
-            refalgevals = (refalgentry.detEvals((targetf, ))[0][0])
+            refalgevals = (refalgentry.detEvals((targetf,))[0][0])
 
         # Process the data
         # The following variables will be lists of elements each corresponding
         # to an algorithm
         algnames = []
-        #algdata = []
+        # algdata = []
         algerts = []
         algevals = []
         algdisp = []
@@ -325,47 +332,47 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             algnames.append(sortedAlgs[n])
 
             evals = entry.detEvals(targetsOfInterest)
-            #tmpdata = []
+            # tmpdata = []
             tmpdisp = []
             tmpert = []
             for i, e in enumerate(evals):
                 succ = (numpy.isnan(e) == False)
-                ec = e.copy() # note: here was the previous bug (changes made in e also appeared in evals !)
+                ec = e.copy()  # note: here was the previous bug (changes made in e also appeared in evals !)
                 ec[succ == False] = entry.maxevals[succ == False]
                 ert = toolsstats.sp(ec, issuccessful=succ)[0]
-                #tmpdata.append(ert/refalgert[i])
+                # tmpdata.append(ert/refalgert[i])
                 if succ.any():
                     tmp = toolsstats.drawSP(ec[succ], entry.maxevals[succ == False],
-                                           [10, 50, 90], samplesize=samplesize)[0]
-                    tmpdisp.append((tmp[-1] - tmp[0])/2.)
+                                            [10, 50, 90], samplesize=samplesize)[0]
+                    tmpdisp.append((tmp[-1] - tmp[0]) / 2.)
                 else:
                     tmpdisp.append(numpy.nan)
                 tmpert.append(ert)
             algerts.append(tmpert)
             algevals.append(evals)
-            #algdata.append(tmpdata)
+            # algdata.append(tmpdata)
             algdisp.append(tmpdisp)
             algmedmaxevals.append(numpy.median(entry.maxevals))
             algmedfinalfunvals.append(numpy.median(entry.finalfunvals))
-            #algmedmaxevals.append(numpy.median(entry.maxevals)/df[0])
-            #algmedfinalfunvals.append(numpy.median(entry.finalfunvals))
+            # algmedmaxevals.append(numpy.median(entry.maxevals)/df[0])
+            # algmedfinalfunvals.append(numpy.median(entry.finalfunvals))
 
-            if bestalgentries:            
+            if bestalgentries:
                 algtestres.append(significancetest(refalgentry, entry, targetsOfInterest))
 
             # determine success probability for Df = 1e-8
-            e = entry.detEvals((targetf ,))[0]
+            e = entry.detEvals((targetf,))[0]
             algnbsucc.append(numpy.sum(numpy.isnan(e) == False))
             algnbruns.append(len(e))
 
         # Process over all data
         # find best values...
-            
+
         nalgs = len(dictData[df])
         maxRank = 1 + numpy.floor(0.14 * nalgs)  # number of algs to be displayed in bold
 
-        isBoldArray = [] # Point out the best values
-        algfinaldata = [] # Store median function values/median number of function evaluations
+        isBoldArray = []  # Point out the best values
+        algfinaldata = []  # Store median function values/median number of function evaluations
         tmptop = getTopIndicesOfColumns(algerts, maxRank=maxRank)
         for i, erts in enumerate(algerts):
             tmp = []
@@ -377,12 +384,14 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         # significance test of best given algorithm against all others
         best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
         significance_versus_others = significance_all_best_vs_other(algentries, targetsOfInterest, best_alg_idx)[0]
-                
+
         # Create the table
         table = []
         tableHtml = []
-        spec = r'@{}c@{}|*{%d}{@{\,}r@{}X@{\,}}|@{}r@{}@{}l@{}' % (len(targetsOfInterest)) # in case StrLeft not working: replaced c@{} with l@{ }
-        spec = r'@{}c@{}|*{%d}{@{}r@{}X@{}}|@{}r@{}@{}l@{}' % (len(targetsOfInterest)) # in case StrLeft not working: replaced c@{} with l@{ }
+        spec = r'@{}c@{}|*{%d}{@{\,}r@{}X@{\,}}|@{}r@{}@{}l@{}' % (
+        len(targetsOfInterest))  # in case StrLeft not working: replaced c@{} with l@{ }
+        spec = r'@{}c@{}|*{%d}{@{}r@{}X@{}}|@{}r@{}@{}l@{}' % (
+        len(targetsOfInterest))  # in case StrLeft not working: replaced c@{} with l@{ }
         extraeol = []
 
         # Generate header lines
@@ -399,7 +408,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                 curlineHtml = ['<thead>\n<tr>\n<th>#FEs/D<br>REPLACEH</th>\n']
                 counter = 1
                 for i in targetsOfInterest.labels():
-                    curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % i) 
+                    curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % i)
                     curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
                     counter += 1
             else:
@@ -412,61 +421,63 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                 counter = 1
                 for t in targetsOfInterest:
                     curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
-                                % writeFEvals2(t, precision=1, isscientific=True))
-                    curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (writeFEvals2(t, precision=1, isscientific=True), counter))
+                                   % writeFEvals2(t, precision=1, isscientific=True))
+                    curlineHtml.append(
+                        '<td>%s<br>REPLACE%d</td>\n' % (writeFEvals2(t, precision=1, isscientific=True), counter))
                     counter += 1
-#                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
-#                            % writeFEvals2(targetsOfInterest[-1], precision=1, isscientific=True))
+                #                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
+                #                            % writeFEvals2(targetsOfInterest[-1], precision=1, isscientific=True))
             if (testbed.name == testbedsettings.testbed_name_bi):
                 curline.append(r'\multicolumn{2}{|@{}l@{}}{\begin{rotate}{30}\#succ\end{rotate}}')
             else:
                 curline.append(r'\multicolumn{2}{|@{}l@{}}{\#succ}')
             curlineHtml.append('<td>#succ<br>REPLACEF</td>\n</tr>\n</thead>\n')
             table.append(curline)
-        
-        extraeol.append(r'\hline')
-#        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
 
-        curline = [r'\aRT{}$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]] 
+        extraeol.append(r'\hline')
+        #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
+
+        curline = [r'\aRT{}$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]]
         replaceValue = '\aRT{}<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
-        
-        
+
         if bestalgentries:
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
                 counter = 1
                 for i in xrange(len(refalgert[:-1])):
-                    temp="%.1e" % targetsOfInterest((df[1], df[0]))[i]
-                    if temp[-2]=="0":
-                        temp=temp[:-2]+temp[-1]
+                    temp = "%.1e" % targetsOfInterest((df[1], df[0]))[i]
+                    if temp[-2] == "0":
+                        temp = temp[:-2] + temp[-1]
                     curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
-                                       % (temp, writeFEvalsMaxPrec(refalgert[i], 2)))
+                                   % (temp, writeFEvalsMaxPrec(refalgert[i], 2)))
                     replaceValue = '<i>%s</i>:%s' % (temp, writeFEvalsMaxPrec(refalgert[i], 2))
                     curlineHtml = [item.replace('REPLACE%d' % counter, replaceValue) for item in curlineHtml]
                     counter += 1
-                    
-                temp="%.1e" % targetsOfInterest((df[1], df[0]))[-1]
-                if temp[-2]=="0":
-                    temp=temp[:-2]+temp[-1]
+
+                temp = "%.1e" % targetsOfInterest((df[1], df[0]))[-1]
+                if temp[-2] == "0":
+                    temp = temp[:-2] + temp[-1]
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
-                                   % (temp ,writeFEvalsMaxPrec(refalgert[-1], 2))) 
-                replaceValue = '<i>%s</i>:%s' % (temp, writeFEvalsMaxPrec(refalgert[-1], 2)) 
+                               % (temp, writeFEvalsMaxPrec(refalgert[-1], 2)))
+                replaceValue = '<i>%s</i>:%s' % (temp, writeFEvalsMaxPrec(refalgert[-1], 2))
                 curlineHtml = [item.replace('REPLACE%d' % counter, replaceValue) for item in curlineHtml]
-            else:            
+            else:
                 # write #fevals of the reference alg
                 counter = 1
                 for i in refalgert[:-1]:
                     curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
-                                       % writeFEvalsMaxPrec(i, 2))
-                    curlineHtml = [item.replace('REPLACE%d' % counter, writeFEvalsMaxPrec(i, 2)) for item in curlineHtml]
+                                   % writeFEvalsMaxPrec(i, 2))
+                    curlineHtml = [item.replace('REPLACE%d' % counter, writeFEvalsMaxPrec(i, 2)) for item in
+                                   curlineHtml]
                     counter += 1
                 curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
-                                   % writeFEvalsMaxPrec(refalgert[-1], 2))
-                curlineHtml = [item.replace('REPLACE%d' % counter, writeFEvalsMaxPrec(refalgert[-1], 2)) for item in curlineHtml]
+                               % writeFEvalsMaxPrec(refalgert[-1], 2))
+                curlineHtml = [item.replace('REPLACE%d' % counter, writeFEvalsMaxPrec(refalgert[-1], 2)) for item in
+                               curlineHtml]
 
             # write the success ratio for the reference alg
-            tmp2 = numpy.sum(numpy.isnan(refalgevals) == False) # count the nb of success
+            tmp2 = numpy.sum(numpy.isnan(refalgevals) == False)  # count the nb of success
             curline.append('%d' % (tmp2))
             if tmp2 > 0:
                 curline.append('/%d' % len(refalgevals))
@@ -474,8 +485,8 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
             else:
                 replaceValue = '%d' % tmp2
             curlineHtml = [item.replace('REPLACEF', replaceValue) for item in curlineHtml]
-            
-        else: # if not bestalgentries
+
+        else:  # if not bestalgentries
             curline.append(r'\multicolumn{%d}{@{}c@{}|}{} & ' % (2 * (len(targetsOfInterest))))
             for counter in range(1, len(targetsOfInterest) + 1):
                 curlineHtml = [item.replace('REPLACE%d' % counter, '&nbsp;') for item in curlineHtml]
@@ -487,51 +498,54 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
         tableHtml.append('<tbody>\n')
         extraeol.append('')
 
-        #for i, gna in enumerate(zip((1, 2, 3), ('bla', 'blo', 'bli'))):
-            #print i, gna, gno
-            #set_trace()
+        # for i, gna in enumerate(zip((1, 2, 3), ('bla', 'blo', 'bli'))):
+        # print i, gna, gno
+        # set_trace()
         # Format data
-        #if df == (5, 17):
-            #set_trace()
+        # if df == (5, 17):
+        # set_trace()
 
         header = r'\providecommand{\ntables}{%d}' % len(testbed.pptablemany_targetsOfInterest)
         for i, alg in enumerate(algnames):
             tableHtml.append('<tr>\n')
-            #algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
-            #data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
+            # algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
+            # data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
             commandname = r'\alg%stables' % numtotext(i)
-#            header += r'\providecommand{%s}{{%s}{}}' % (commandname, str_to_latex(strip_pathname(alg)))
+            #            header += r'\providecommand{%s}{{%s}{}}' % (commandname, str_to_latex(strip_pathname(alg)))
             header += r'\providecommand{%s}{\StrLeft{%s}{\ntables}}' % (commandname, str_to_latex(strip_pathname1(alg)))
             curline = [commandname + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
             curlineHtml = ['<th>%s</th>\n' % str_to_latex(strip_pathname1(alg))]
 
-            zipToEnumerate = zip(algerts[i], algdisp[i], isBoldArray[i], algtestres[i]) if bestalgentries else zip(algerts[i], algdisp[i], isBoldArray[i])
-            
-            for j, tmp in enumerate(zipToEnumerate): # j is target index
+            zipToEnumerate = zip(algerts[i], algdisp[i], isBoldArray[i], algtestres[i]) if bestalgentries else zip(
+                algerts[i], algdisp[i], isBoldArray[i])
+
+            for j, tmp in enumerate(zipToEnumerate):  # j is target index
                 if bestalgentries:
                     ert, dispersion, isBold, testres = tmp
                 else:
                     ert, dispersion, isBold = tmp
-                    
+
                 alignment = '@{\,}X@{\,}'
                 if j == len(algerts[i]) - 1:
                     alignment = '@{\,}X@{\,}|'
 
-                data = ert/refalgert[j] if bestalgentries else ert
+                data = ert / refalgert[j] if bestalgentries else ert
                 # write star for significance against all other algorithms
                 str_significance_subsup = ''
                 str_significance_subsup_html = ''
-                if (len(best_alg_idx) > 0 and len(significance_versus_others) > 0 and 
-                    i == best_alg_idx[j] and nbtests * significance_versus_others[j][1] < 0.05):
+                if (len(best_alg_idx) > 0 and len(significance_versus_others) > 0 and
+                            i == best_alg_idx[j] and nbtests * significance_versus_others[j][1] < 0.05):
                     logp = -numpy.ceil(numpy.log10(nbtests * significance_versus_others[j][1]))
                     logp = numpy.min((9, logp))  # not messing up the format and handling inf
-                    str_significance_subsup =  r"^{%s%s}" % (significance_vs_others_symbol, str(int(logp)) if logp > 1 else '')
-                    str_significance_subsup_html = '<sup>%s%s</sup>' % (significance_vs_others_symbol_html, str(int(logp)) if logp > 1 else '')
+                    str_significance_subsup = r"^{%s%s}" % (
+                    significance_vs_others_symbol, str(int(logp)) if logp > 1 else '')
+                    str_significance_subsup_html = '<sup>%s%s</sup>' % (
+                    significance_vs_others_symbol_html, str(int(logp)) if logp > 1 else '')
 
-                if bestalgentries:                
+                if bestalgentries:
                     # moved out of the above else: this was a bug!?
                     z, p = testres
-                    if (nbtests * p) < 0.05 and data < 1. and z < 0.: 
+                    if (nbtests * p) < 0.05 and data < 1. and z < 0.:
                         if not numpy.isinf(refalgert[j]):
                             tmpevals = algevals[i][j].copy()
                             tmpevals[numpy.isnan(tmpevals)] = algentries[i].maxevals[numpy.isnan(tmpevals)]
@@ -540,16 +554,17 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                             bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
                             tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
                             bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
-    
-                        #The conditions are now that aRT < aRT_best and
+
+                        # The conditions are now that aRT < aRT_best and
                         # all(sorted(FEvals_best) > sorted(FEvals_current)).
                         if numpy.isinf(refalgert[j]) or all(tmpevals < bestevals):
                             nbstars = -numpy.ceil(numpy.log10(nbtests * p))
                             # tmp2[-1] += r'$^{%s}$' % superscript
-                            str_significance_subsup += r'_{%s%s}' % (significance_vs_ref_symbol, 
+                            str_significance_subsup += r'_{%s%s}' % (significance_vs_ref_symbol,
                                                                      str(int(nbstars)) if nbstars > 1 else '')
-                            str_significance_subsup_html = '<sub>%s%s</sub>' % (significance_vs_ref_symbol_html, 
-                                                                 str(int(nbstars)) if nbstars > 1 else '')
+                            str_significance_subsup_html = '<sub>%s%s</sub>' % (significance_vs_ref_symbol_html,
+                                                                                str(int(
+                                                                                    nbstars)) if nbstars > 1 else '')
                 if str_significance_subsup:
                     str_significance_subsup = '$%s$' % str_significance_subsup
 
@@ -562,15 +577,15 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                         tableentry = r'\textbf{%s}' % writeFEvalsMaxPrec(algerts[i][j], 2)
                         tableentryHtml = '<b>%s</b>' % writeFEvalsMaxPrec(algerts[i][j], 2)
                         if dispersion and numpy.isfinite(dispersion):
-                            tableentry += r'\mbox{\tiny (%s)}' %  writeFEvalsMaxPrec(dispersion, precdispersion)
+                            tableentry += r'\mbox{\tiny (%s)}' % writeFEvalsMaxPrec(dispersion, precdispersion)
                             tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion, precdispersion)
-                        
-                        curline.append(r'\multicolumn{2}{%s}{%s}%s' 
-                                       % (alignment, 
+
+                        curline.append(r'\multicolumn{2}{%s}{%s}%s'
+                                       % (alignment,
                                           tableentry,
                                           str_significance_subsup))
-                                       
-                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>\n' 
+
+                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>\n'
                                            % (algerts[i][j],
                                               tableentryHtml,
                                               str_significance_subsup_html))
@@ -579,10 +594,12 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                     tmp = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
                     tmpHtml = writeFEvalsMaxPrec(data, precfloat, maxfloatrepr=maxfloatrepr)
                     sortKey = data
-                    if data >= maxfloatrepr or data < 0.01: # either inf or scientific notation
+                    if data >= maxfloatrepr or data < 0.01:  # either inf or scientific notation
                         if numpy.isinf(data) and j == len(algerts[i]) - 1:
-                            tmp += r'\,\textit{%s}' % writeFEvalsMaxPrec(algfinaldata[i][1], 0, maxfloatrepr=maxfloatrepr)
-                            tmpHtml += '<i>%s</i>' % writeFEvalsMaxPrec(algfinaldata[i][1], 0, maxfloatrepr=maxfloatrepr)
+                            tmp += r'\,\textit{%s}' % writeFEvalsMaxPrec(algfinaldata[i][1], 0,
+                                                                         maxfloatrepr=maxfloatrepr)
+                            tmpHtml += '<i>%s</i>' % writeFEvalsMaxPrec(algfinaldata[i][1], 0,
+                                                                        maxfloatrepr=maxfloatrepr)
                             sortKey = algfinaldata[i][1]
                         else:
                             tmp = writeFEvalsMaxPrec(data, precscien, maxfloatrepr=data)
@@ -591,8 +608,8 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                                 tmp = r'\textbf{%s}' % tmp
 
                         if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion/refalgert[j] if bestalgentries else dispersion
-                            if tmpdisp >= maxfloatrepr or tmpdisp < 0.005: # TODO: hack
+                            tmpdisp = dispersion / refalgert[j] if bestalgentries else dispersion
+                            if tmpdisp >= maxfloatrepr or tmpdisp < 0.005:  # TODO: hack
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                             else:
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=maxfloatrepr)
@@ -601,7 +618,8 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                         curline.append(r'\multicolumn{2}{%s}{%s%s}' % (alignment, tmp, str_significance_subsup))
                         if (numpy.isinf(sortKey)):
                             sortKey = sys.maxint
-                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>' % (sortKey, tmpHtml, str_significance_subsup_html))
+                        curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>' % (
+                        sortKey, tmpHtml, str_significance_subsup_html))
                     else:
                         tmp2 = tmp.split('.', 1)
                         if len(tmp2) < 2:
@@ -620,7 +638,7 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                             tmp2html = []
                             tmp2html.extend(tmp2)
                         if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion/refalgert[j] if bestalgentries else dispersion
+                            tmpdisp = dispersion / refalgert[j] if bestalgentries else dispersion
                             if tmpdisp >= maxfloatrepr or tmpdisp < 0.01:
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                             else:
@@ -632,11 +650,12 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
                         curline.extend(tmp2)
                         tmp2html = ("").join(str(item) for item in tmp2html)
                         curlineHtml.append('<td sorttable_customkey=\"%f\">%s</td>' % (data, tmp2html))
-                                        
+
             curline.append('%d' % algnbsucc[i])
             curline.append('/%d' % algnbruns[i])
             table.append(curline)
-            curlineHtml.append('<td sorttable_customkey=\"%d\">%d/%d</td>\n' % (algnbsucc[i], algnbsucc[i], algnbruns[i]))
+            curlineHtml.append(
+                '<td sorttable_customkey=\"%d\">%d/%d</td>\n' % (algnbsucc[i], algnbsucc[i], algnbruns[i]))
             curlineHtml = [i.replace('$\infty$', '&infin;') for i in curlineHtml]
             tableHtml.extend(curlineHtml[:])
             extraeol.append('')
@@ -651,25 +670,27 @@ def main(dictAlg, sortedAlgs, isBiobjective, outputdir='.', verbose=True, functi
 
             res = ("").join(str(item) for item in tableHtml)
             res = '\n<table class=\"sortable\" style=\"width:800px \">\n%s</table>\n<p/>\n' % res
-    
-            if df[0] in (5, 20):
+            if firstFunction:
+                res = '<br><p><b>%d-D</b></p>' % df[0] + res
+                firstFunction = False
+
+            if True:
                 filename = os.path.join(outputdir, genericsettings.pptables_file_name + '.html')
                 lines = []
                 with open(filename) as infile:
                     for line in infile:
-                        if '<!--' + 'pptablesf%03d%02dDHtml' % (df[1], df[0]) + '-->' in line:
+                        if '<!--' + 'pptablesHtml' + '-->' in line:
                             lines.append(res)
                         lines.append(line)
-                        
+
                 with open(filename, 'w') as outfile:
                     for line in lines:
-                        outfile.write(line)     
-    
+                        outfile.write(line)
+
             if verbose:
                 print 'Wrote table in %s' % filename
         except:
             raise
         else:
             f.close()
-        # TODO: return status
-
+            # TODO: return status

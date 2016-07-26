@@ -587,7 +587,6 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     ppfig.copy_js_files(outputdir)
     
     funInfos = ppfigparam.read_fun_infos()    
-    
     fontSize = genericsettings.getFontSize(funInfos.values())
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
@@ -606,6 +605,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
             # print(plt.rcParams['font.size'])
             funcName = funInfos[func]
             plt.gca().set_title(funcName, fontsize=fontSize)
+
         plot_previous_algorithms(func, _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
         with warnings.catch_warnings(record=True) as ws:

@@ -113,6 +113,57 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
 }
 
 /**
+ * @note: While a suite can contain multiple problems with equal function, dimension and instance, this
+ * function always returns the first problem in the suite with the given function, dimension and instance
+ * values. If the given values don't correspond to a problem, the function returns NULL.
+ */
+coco_problem_t *coco_suite_get_problem_by_function_dimension_instance(coco_suite_t *suite,
+                                                                      const size_t function,
+                                                                      const size_t dimension,
+                                                                      const size_t instance) {
+
+  size_t i;
+  int function_idx, dimension_idx, instance_idx;
+  int found;
+
+  found = 0;
+  for (i = 0; i < suite->number_of_functions; i++) {
+    if (suite->functions[i] == function) {
+      function_idx = (int) i;
+      found = 1;
+      break;
+    }
+  }
+  if (!found)
+    return NULL;
+
+  found = 0;
+  for (i = 0; i < suite->number_of_dimensions; i++) {
+    if (suite->dimensions[i] == dimension) {
+      dimension_idx = (int) i;
+      found = 1;
+      break;
+    }
+  }
+  if (!found)
+    return NULL;
+
+  found = 0;
+  for (i = 0; i < suite->number_of_instances; i++) {
+    if (suite->instances[i] == instance) {
+      instance_idx = (int) i;
+      found = 1;
+      break;
+    }
+  }
+  if (!found)
+    return NULL;
+
+  return coco_suite_get_problem_from_indices(suite, (size_t) function_idx, (size_t) dimension_idx, (size_t) instance_idx);
+}
+
+
+/**
  * @brief Allocates the space for a coco_suite_t instance.
  *
  * This function sets the functions and dimensions contained in the suite, while the instances are set by

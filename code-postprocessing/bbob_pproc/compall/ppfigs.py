@@ -147,7 +147,7 @@ def prepare_ecdfs_figure_caption():
 def ecdfs_figure_caption(for_html = False, dimension = 0):
 
     if for_html:
-        key = '##bbobECDFslegend%s%d##' % (testbedsettings.current_testbed.scenario, dimension)
+        key = '##bbobECDFslegend%s##' % testbedsettings.current_testbed.scenario
         caption = htmldesc.getValue(key)
     else:
         caption = prepare_ecdfs_figure_caption()
@@ -158,6 +158,7 @@ def ecdfs_figure_caption(for_html = False, dimension = 0):
 
     caption = caption.replace('BBOBPPFIGSTARGETRANGE',
                               str(testbedsettings.current_testbed.pprldmany_target_range_latex))
+    caption = caption.replace('DIMVALUE', str(dimension))
 
     if genericsettings.runlength_based_targets:
         caption = caption.replace('REFERENCE_ALGORITHM', target.reference_algorithm)
@@ -411,7 +412,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
     for f in dictFunc:
         filename = os.path.join(outputdir,'ppfigs_f%03d' % (f))
         handles = []
-        fix_styles(len(sortedAlgs))  # 
+        fix_styles(len(sortedAlgs), styles)  # 
         for i, alg in enumerate(sortedAlgs):
             dictDim = dictFunc[f][alg].dictByDim()  # this does not look like the most obvious solution
 
@@ -534,7 +535,11 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
         infotext = ''
         algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
         for alg in algorithms_with_data:
-            infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
+            if len(dictFunc[f][alg]) > 0:
+                infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
+            else:
+                warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
+
         infotext = infotext.rstrip(', ')
         infotext += ' instances'
         plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, infotext, fontsize=14)  # TODO: check

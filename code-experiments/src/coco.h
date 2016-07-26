@@ -46,6 +46,16 @@ extern "C" {
 #endif
 
 /**
+ * @brief COCO's version.
+ *
+ * Automatically updated by do.py.
+ */
+/**@{*/
+static const char coco_version[32] = "$COCO_VERSION";
+/**@}*/
+
+/***********************************************************************************************************/
+/**
  * @brief COCO's own pi constant. Simplifies the case, when the value of pi changes.
  */
 /**@{*/
@@ -136,6 +146,14 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
  * @brief Returns the problem of the suite defined by problem_index.
  */
 coco_problem_t *coco_suite_get_problem(coco_suite_t *suite, const size_t problem_index);
+
+/**
+ * @brief Returns the first problem of the suite defined by function, dimension and instance numbers.
+ */
+coco_problem_t *coco_suite_get_problem_by_function_dimension_instance(coco_suite_t *suite,
+                                                                      const size_t function,
+                                                                      const size_t dimension,
+                                                                      const size_t instance);
 
 /**
  * @brief Returns the number of problems in the given suite.
@@ -471,7 +489,7 @@ const char *coco_set_log_level(const char *level);
 /***********************************************************************************************************/
 
 /**
- * @name Methods regarding COCO archives (used when pre-processing MO data)
+ * @name Methods regarding COCO archives and log files (used when pre-processing MO data)
  */
 /**@{*/
 
@@ -483,11 +501,11 @@ coco_archive_t *coco_archive(const char *suite_name,
                              const size_t dimension,
                              const size_t instance);
 /**
- * @brief Adds a solution with objectives (f1, f2) to the archive if none of the existing solutions in the
+ * @brief Adds a solution with objectives (y1, y2) to the archive if none of the existing solutions in the
  * archive dominates it. In this case, returns 1, otherwise the archive is not updated and the method
  * returns 0.
  */
-int coco_archive_add_solution(coco_archive_t *archive, const double f1, const double f2, const char *text);
+int coco_archive_add_solution(coco_archive_t *archive, const double y1, const double y2, const char *text);
 
 /**
  * @brief Returns the number of (non-dominated) solutions in the archive (computed first, if needed).
@@ -509,6 +527,11 @@ const char *coco_archive_get_next_solution_text(coco_archive_t *archive);
  * @brief Frees the archive.
  */
 void coco_archive_free(coco_archive_t *archive);
+
+/**
+ * @brief Feeds the solution to the bi-objective logger for logger output reconstruction purposes.
+ */
+int coco_logger_biobj_feed_solution(coco_problem_t *problem, const size_t evaluation, const double *y);
 /**@}*/
 
 /***********************************************************************************************************/

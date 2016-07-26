@@ -271,6 +271,7 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
       fprintf(*target_file, "funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', suite = '%s'\n",
           (int) strtol(function_id, NULL, 10), (unsigned long) logger->number_of_variables, pow(10, -8),
           logger->observer->algorithm_name, logger->suite_name);
+      fprintf(*target_file, "%% coco_version = %s\n", coco_version);
       fprintf(*target_file, "%%\n");
       strncat(used_dataFile_path, "_i", COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
       strncat(used_dataFile_path, bbob_infoFile_firstInstance_char,

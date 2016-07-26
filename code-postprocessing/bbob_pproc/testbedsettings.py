@@ -2,6 +2,8 @@ import os
 import numpy as np
 import warnings
 
+from . import genericsettings
+
 scenario_rlbased = 'rlbased'
 scenario_fixed = 'fixed'
 scenario_biobjfixed = 'biobjfixed'
@@ -109,6 +111,12 @@ class GECCOBBOBTestbed(Testbed):
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptable2_target_runlengths = self.pptable_target_runlengths  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptables_target_runlengths = self.pptable_target_runlengths  # used in config for expensive setting
+        self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
+                           10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 1,
+                           21: 1, 22: 1, 23: 1, 24: 1, 25: 1, 26: 1, 27: 1, 28: 1, 29: 1, 30: 1,
+                           31: 1, 32: 1, 33: 1, 34: 1, 35: 1, 36: 1, 37: 1, 38: 1, 39: 1, 40: 1,
+                           41: 1, 42: 1, 43: 1, 44: 1, 45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1,
+                           51: 1, 52: 1, 53: 1, 54: 1, 55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1}
 
 
 class CONSBBOBTestbed(GECCOBBOBTestbed):
@@ -173,7 +181,8 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptable_targetsOfInterest = targetValues(
             (1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # possibly changed in config for all tables
         self.pptable2_targetsOfInterest = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # used for pptable2
-        self.pptablemany_targetsOfInterest = targetValues((1e-0, 1e-2, 1e-5))  # used for pptables
+        #self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
+        self.pptablemany_targetsOfInterest = targetValues((1, 1e-1, 1e-2, 1e-3))  # used for pptables
         self.scenario = scenario_biobjfixed
         self.best_algorithm_filename = ''
         self.short_names = get_short_names(self.shortinfo_filename)
@@ -181,3 +190,4 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptables_target_runlengths = [2, 10, 50]  # used in config for expensive setting
+        self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}  # 2016 biobjective instances

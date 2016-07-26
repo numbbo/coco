@@ -12,6 +12,7 @@ Help:
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 
 import os
 import sys
@@ -68,7 +69,7 @@ def _splitshortoptlist(shortoptlist):
     return res
 
 def usage():
-    print main.__doc__
+    print(main.__doc__)
 
 def main(argv=None):
     r"""Main routine for post-processing data from COCO.
@@ -221,7 +222,7 @@ def main(argv=None):
             elif o in ("--in-a-hurry", ):
                 genericsettings.in_a_hurry = int(a)
                 if genericsettings.in_a_hurry:
-                    print 'in_a_hurry like', genericsettings.in_a_hurry, '(should finally be set to zero)'
+                    print('in_a_hurry like ', genericsettings.in_a_hurry, ' (should finally be set to zero)')
             elif o in ("--input-path", ):
                 inputdir = a
             elif o in ("--no-svg"):
@@ -248,14 +249,14 @@ def main(argv=None):
             warnings.filterwarnings('module', '.*', UserWarning, '.*')
             #warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
 
-        print ("Post-processing: will generate output " +
+        print("\nPost-processing: will generate output " +
                "data in folder %s" % outputdir)
-        print "  this might take several minutes."
+        print("  this might take several minutes.")
 
         if not os.path.exists(outputdir):
             os.makedirs(outputdir)
             if genericsettings.verbose:
-                print 'Folder %s was created.' % (outputdir)
+                print('Folder %s was created.' % (outputdir))
 
         truncate_latex_command_file(os.path.join(outputdir,
                                                  'bbob_pproc_commands.tex'))
@@ -283,14 +284,15 @@ def main(argv=None):
         print_done()
 
     #TODO prevent loading the data every time...
-
+        
     except Usage, err:
-        print >>sys.stderr, err.msg
-        print >>sys.stderr, "for help use -h or --help"
+        print(err.msg, file=sys.stderr)
+        print("For help use -h or --help", file=sys.stderr)
         return 2
+
 
 if __name__ == "__main__":
     res = main()
     if genericsettings.test:
-        print res
+        print(res)
     # sys.exit(res)
