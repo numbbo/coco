@@ -21,8 +21,11 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. raw:: html
 
-  See also: <I>ArXiv e-prints</I>,
-   <A HREF="http://arxiv.org/abs/1603.08785">arXiv:1603.08785</A>, 2016.
+   <I>To cite or access this document as <tt>pdf</tt>:</I><BR>
+   N. Hansen, A. Auger, O. Mersmann, T. Tušar, and D. Brockhoff (2016). 
+   <A HREF="http://arxiv.org/abs/1603.08785">
+   COCO: A platform for Comparing Continuous Optimizers in a Black-Box Setting</A>. 
+   <I>ArXiv e-prints</I>, arXiv:1603.08785.
 
 .. raw:: latex
 
@@ -200,17 +203,23 @@ in Python, becomes as simple [#]_ as
 
    #!/usr/bin/env python
    """Python script to benchmark fmin of scipy.optimize"""
-   import cocoex  
+   from numpy.random import rand
+   import cocoex 
    try: import cocopp  # new (future) name
    except ImportError: import bbob_pproc as cocopp  # old name
    from scipy.optimize import fmin
  
    suite = cocoex.Suite("bbob", "year: 2016", "")
+   budget_multiply = 1e4  # use 1e1 or even 2 for a quick test run
    observer = cocoex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
     
    for p in suite:  # loop over all problems
        observer.observe(p)  # prepare logging of necessary data
        fmin(p, p.initial_solution)  # disp=False would silence fmin output
+       while (not p.final_target_hit and  # apply restarts, if so desired
+              p.evaluations < p.dimension * budget_multiplier):
+           fmin(p, p.lower_bounds + (rand(p.dimension) + rand(p.dimension)) * 
+                       (p.upper_bounds - p.lower_bounds) / 2)
      
    cocopp.main('exdata/myoptimizer-on-bbob')  # invoke data post-processing
 
@@ -250,7 +259,7 @@ hundred different algorithms by dozens of researchers.
    That is, the results of benchmarking often provide no indication of 
    *relevance*;
    the main output is often hundreds of tabulated numbers interpretable on
-   an ordinal scale (ranking) only. 
+   an ordinal (ranking) scale only. 
    Addressing a point of a common confusion, *statistical* significance is only
    a secondary and by no means sufficient condition for *relevance*. 
    
@@ -260,9 +269,7 @@ hundred different algorithms by dozens of researchers.
 __ https://www.github.com/numbbo/coco
 __ http://numbbo.github.io/coco-doc/C/
    
-.. [#] In order to get even more insightful results on the comparatively 
-   difficult ``bbob`` benchmark suite, additionally randomized restarts are advisable. 
-   Example code is given in |example_experiment.py|_ which runs
+.. [#] See also |example_experiment.py|_ which runs
    out-of-the-box as a benchmarking Python script.  
 
 .. [#] For example, see here__, here__ or here__ to access all data submitted 
@@ -280,7 +287,7 @@ __ http://coco.gforge.inria.fr/doku.php?id=bbob-2009
 Why COCO_?
 ----------
 
-Appart from diminishing the burden (time) and the pitfalls, bugs
+Appart from diminishing the time burden and the pitfalls, bugs
 or omissions of the repetitive coding task for experimenters, our aim is to
 provide a *conceptual guideline for better benchmarking*. Our setup and 
 guideline has the following defining features.  
@@ -303,32 +310,33 @@ guideline has the following defining features.
    experiment, the experimental procedure is *budget-free* [HAN2016ex]_.
 
 #. A single performance measure is used --- and thereafter aggregated and 
-   displayed in 
-   several ways --- namely **runtime**, *measured in 
+   displayed in several ways ---, namely **runtime**, *measured in 
    number of* |f|-*evaluations* [HAN2016perf]_. This runtime measure has the 
    advantages to 
 
    - be independent of the computational platform, language, compiler, coding 
      styles, and other specific experimental conditions [#]_
+   - be independent, as a measurement, of the specific function on which it has
+     been obtained
    - be relevant, meaningful and easily interpretable without expert domain knowledge
    - be quantitative on the ratio scale [#]_ [STE1946]_
    - assume a wide range of values 
-   - aggregate over a collection of values in a meaningful way.
+   - aggregate over a collection of values in a meaningful way [#]_.
      
    A *missing* runtime value is considered as possible outcome (see below).
     
 #. The display is as comprehensible, intuitive and informative as possible. 
    We believe that the details matter. 
-   Aggregation over dimension is avoided, because dimension is an a priori
-   known parameter that can and should be used for algorithm design decisions. 
+   Aggregation over dimension is avoided, because dimension is a parameter 
+   known in advance that can and should be used for algorithm design decisions. 
    This is possible without significant drawbacks, because all functions are 
    scalable in the dimension. 
    
 We believe however that in the *process* of algorithm *design*, a benchmarking 
 framework like COCO_ has its limitations. 
 During the design phase, usually fewer benchmark functions should be used, the
-functions and measuring tools should be tailored to the given algorithm and the
-design question, and the overall procedure should often be rather informal and
+functions and measuring tools should be tailored to the given algorithm and 
+design question, and the overall procedure should usually be rather informal and
 interactive with rapid iterations. 
 A benchmarking framework then serves to conduct the formalized validation
 experiment of the design *outcome* and can be used for regression testing. 
@@ -346,7 +354,10 @@ experiment of the design *outcome* and can be used for regression testing.
        internal computational effort of the algorithm in CPU or wall clock time. 
 
 .. [#] As opposed to a ranking of algorithms based on their solution quality
-       achieved after a given budget.  
+       achieved after a given budget. 
+       
+.. [#] With the caveat that the *arithmetic average* is dominated by large values
+       which can compromise its informative value.
 
 .. .. [#] Wikipedia__ gives a reasonable introduction to scale types.
 .. .. was 261754099
@@ -372,7 +383,8 @@ We specify a few terms which are used later.
   can be evaluated and returns an |f|-value or -vector and, in case,
   a |g|-vector. 
   In the context of performance assessment, a target :math:`f`- or
-  indicator-value is added to define a problem. 
+  indicator-value is added to define a problem. A problem is considered as
+  solved when the given or the most difficult available target is obtained. 
   
 *runtime*
   We define *runtime*, or *run-length* [HOO1998]_ as the *number of
@@ -394,14 +406,17 @@ We specify a few terms which are used later.
 .. |fi| replace:: :math:`f_i`
 
 
-Functions, Instances, Problems, and Targets 
-============================================
+Functions, Instances, and Problems
+=====================================
 
 In the COCO_ framework we consider **functions**, |fi|, for each suite
 distinguished by their identifier :math:`i=1,2,\dots` .  
-Functions are further
-*parametrized* by the (input) dimension, |n|, and the instance number, |j|, [#]_
-that is, for a given |m| we have
+Functions are further *parametrized* by the (input) dimension, |n|, and the
+instance number, |j|. 
+We can think of |j| as an index to a continuous parameter vector setting, as it
+parametrizes, among others things, translations and rotations. In practice, |j|
+is the discrete identifier for single instantiations of these parameters. 
+For a given |m|, we then have
 
 .. math::
 
@@ -410,14 +425,10 @@ that is, for a given |m| we have
     
 Varying |n| or |j| leads to a variation of the same function
 |i| of a given suite. 
-By fixing |n| and |j| for function |fi|, we define an optimization **problem**
+Fixing |n| and |j| of function |fi| defines an optimization **problem**
 :math:`(n, i, j)\equiv(f_i, n, j)` that can be presented to the optimization algorithm. Each problem receives again
 an index in the suite, mapping the triple :math:`(n, i, j)` to a single
 number. 
-
-
-.. The Instance Concept
-   -----------------------
 
 As the formalization above suggests, the differentiation between function (index) 
 and instance index is of purely semantic nature. 
@@ -426,7 +437,7 @@ interpret the results. We interpret **varying the instance** parameter as
 a natural randomization for experiments [#]_ in order to 
 
  - generate repetitions on a function and
- - average away irrelevant aspects of the function thereby providing
+ - average away irrelevant aspects of the function definition, thereby providing
  
     - generality which alleviates the problem of overfitting, and
     - a fair setup which prevents intentional or unintentional exploitation of 
@@ -435,12 +446,6 @@ a natural randomization for experiments [#]_ in order to
 For example, we consider the absolute location of the optimum not a defining
 function feature. Consequently, in a typical COCO_ benchmark suite, instances
 with randomized search space translations are presented to the optimizer. [#]_
-
-
-.. [#] We can think of |j| as an index to a continuous parameter vector setting, 
-   as it parametrizes, among others things, translations and rotations. In
-   practice, |j| is the discrete identifier for single instantiations of 
-   these parameters. 
 
 
 .. [#] Changing or sweeping through a relevant feature of the problem class,
@@ -458,8 +463,8 @@ Runtime and Target Values
 
 In order to measure the runtime of an algorithm on a problem, we
 establish a hitting time condition. 
-We prescribe a **target value**, |t|, which is an |f|- or
-indicator-value [HAN2016perf]_ [BRO2016]_. 
+We prescribe a **target value**, |t|, which is an |f|-value or more generally a
+quality indicator-value [HAN2016perf]_ [BRO2016]_. 
 For a single run, when an algorithm reaches or surpasses the target value |t|
 on problem |p|, we say it has *solved the problem* |pt| --- it was successful. [#]_
 
@@ -492,18 +497,19 @@ Therefore, larger budgets are preferable --- however they should not come at
 the expense of abandoning reasonable termination conditions. Instead,
 restarts should be done [HAN2016ex]_. 
 
-.. [#] Note the use of the term *problem* in two meanings: as the problem the
-    algorithm is benchmarked on, |p|, and as the problem, |pt|, an algorithm can
+.. [#] Reflecting the *anytime* aspect of the experimental setup, 
+    we use the term *problem* in two meanings: as the problem the
+    algorithm is benchmarked on, |p|, and as the problem, |pt|, an algorithm may
     solve by hitting the target |t| with the runtime, |RT(pt)|, or may fail to solve. 
     Each problem |p| gives raise to a collection of dependent problems |pt|. 
     Viewed as random variables, the events |RT(pt)| given |p| are not
     independent events for different values of |t|. 
   
 .. [#] Target values are directly linked to a problem, leaving the burden to 
-    properly define the targets with the designer of the benchmark suite. 
-    The alternative is to present final |f|- or indicator-values as results,
-    leaving the (rather unsurmountable) burden to interpret these values to the
-    reader. 
+    define the targets with the designer of the benchmark suite. 
+    The alternative, namely to present the obtained |f|- or indicator-values as results,
+    leaves the (rather unsurmountable) burden to interpret the meaning of these 
+    indicator values to the experimenter or the final audience. 
     Fortunately, there is an automatized generic way to generate target values
     from observed runtimes, the so-called run-length based target values
     [HAN2016perf]_. 
@@ -521,8 +527,8 @@ Restarts and Simulated Restarts
 -------------------------------
 
 An optimization algorithm is bound to terminate and, in the single-objective case, return a recommended 
-solution, |x|, for the problem, |p|. 
-It solves thereby all problems |pt| for which :math:`f(\x)\le t`. 
+solution, |x|, for the problem, |p|. [#]_
+The algorithm solves thereby all problems |pt| for which :math:`f(\x)\le t`. 
 Independent restarts from different, randomized initial solutions are a simple
 but powerful tool to increase the number of solved problems [HAR1999]_ --- namely by increasing the number of |t|-values, for which the problem |p|
 was solved. [#]_ 
@@ -532,14 +538,15 @@ greater runtimes [HAN2016perf]_.
 Therefore, we call our approach *budget-free*. 
 Restarts however "*improve the reliability, comparability, precision, and "visibility" of the measured results*" [HAN2016ex]_.
 
-*Simulated restarts* [HAN2010]_ [HAN2016perf]_ are used to determine a runtime for unsuccessful runs. Semantically, this is only valid if we interpret different 
-instances as random repetitions. 
+*Simulated restarts* [HAN2010]_ [HAN2016perf]_ are used to determine a runtime for unsuccessful runs. 
+Semantically, *this is only valid if we can interpret different 
+instances as random repetitions*. 
 Resembling the bootstrapping method [EFR1994]_, when we face an unsolved problem, 
 we draw uniformly at random a new |j| until we find an instance such that |pt| 
 was solved. [#]_
 The evaluations done on the first unsolved problem and on all subsequently
 drawn unsolved problems are added to the runtime on the last problem and
-are considered as runtime on the original unsolved problem.  
+are considered as runtime on the originally unsolved problem.  
 This method is applied if a problem instance was not solved and is
 (only) available if at least one problem instance was solved.
 It allows to directly compare algorithms with different success probabilities. 
@@ -548,9 +555,12 @@ It allows to directly compare algorithms with different success probabilities.
    minimum runtime from those solved instances which are accompanied by at least
    one unsolved instance (that is, for the same |pt| except of |j|).
 
+.. [#] More specifically, we use the anytime scenario where we consider 
+   at each evaluation the evolving quality indicator value. 
 
-.. [#] For a given problem |p|, the number of acquired runtime values, |RT(pt)|
-  is monotonously increasing with the budget used. Considered as random
+.. [#] The quality indicator is always defined such that for a given problem |p| the 
+  number of acquired runtime values |RT(pt)| (hitting a target indicator value |t|)
+  is monotonously increasing with the used budget. Considered as random
   variables, these runtimes are not independent. 
 
 .. [#] More specifically, we consider the problems :math:`(f_i, n, j, t(j))` for
@@ -567,7 +577,7 @@ up to :math:`100\times15\times100=150\,000` runtimes for the performance assessm
 To make them amenable to the experimenter, we need to summarize these data. 
 
 Our idea behind an aggregation is to make a statistical summary over a set or
-subset of *problems of interest* over which we assume a uniform distribution. 
+subset of *problems of interest over which we assume a uniform distribution*. 
 From a practical perspective this means to have no simple way to distinguish
 between these problems and to select an optimization algorithm accordingly --- in
 which case an aggregation for a single algorithm would not be helpful --- 
@@ -577,13 +587,13 @@ should be used for algorithm selection.
 
 We have several ways to aggregate the resulting runtimes. 
 
- - Empirical distribution functions (|ECDFs|). In the domain of 
+ - Empirical (cumulative) distribution functions (|ECDFs|). In the domain of 
    optimization, |ECDFs| are also known as *data profiles* [MOR2009]_. We
    prefer the simple |ECDF| over the more innovative performance profiles
    [MOR2002]_ for two reasons.
    |ECDFs| (i) do not depend on other (presented) algorithms, that is, they are
    unconditionally comparable across different publications, and (ii) let us
-   distinguish for the considered algorithm in a natural way easy problems from
+   distinguish, for the considered algorithm, in a natural way easy problems from
    difficult problems. [#]_ 
    We usually display |ECDFs| on the log scale, which makes the area
    above the curve and the *difference area* between two curves a meaningful
@@ -599,9 +609,9 @@ We have several ways to aggregate the resulting runtimes.
    is recommended. 
    
  - Restarts and simulated restarts, see Section :ref:`sec:Restarts`, do not 
-   literally aggregate runtimes (which are literally defined only when |t| was
-   hit).  They aggregate, however, time data to eventually supplement missing runtime
-   values. 
+   aggregate runtimes in the literal meaning (they are literally defined only when |t| was
+   hit).  They aggregate, however, time data to eventually supplement, if applicable, 
+   all missing runtime values. 
 
 .. [#] When reading a performance profile, a question immediately crossing ones 
    mind is often whether a large runtime difference is observed mainly because
