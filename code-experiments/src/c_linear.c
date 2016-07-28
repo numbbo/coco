@@ -253,7 +253,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
   if(gradient) {
 
     for (i = 0; i < dimension; ++i) 
-      gradient[i] *= norm_factor;
+      coco_scale_vector(gradient, dimension, norm_factor);
     problem = c_linear_transform(problem, gradient);
 
   }

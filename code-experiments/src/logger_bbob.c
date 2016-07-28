@@ -91,6 +91,14 @@ static const char *bbob_file_header_str = "%% function evaluation | "
     "best measured fitness | "
     "x1 | "
     "x2...\n";
+    
+static const char *bbob_constrained_file_header_str = "%% f + g evaluations | "
+    "noise-free fitness - Fopt (%13.12e) | "
+    "best noise-free fitness - Fopt | "
+    "measured fitness | "
+    "best measured fitness | "
+    "x1 | "
+    "x2...\n";
 
 /**
  * adds a formated line to a data file
@@ -333,14 +341,24 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
   strncat(dataFile_path, bbob_infoFile_firstInstance_char,
   COCO_PATH_MAX - strlen(dataFile_path) - 1);
+  
   logger_bbob_open_dataFile(&(logger->fdata_file), logger->observer->result_folder, dataFile_path, ".dat");
-  fprintf(logger->fdata_file, bbob_file_header_str, logger->optimal_fvalue);
+  if (logger->constrained_problem)
+    fprintf(logger->fdata_file, bbob_constrained_file_header_str, logger->optimal_fvalue);
+  else
+    fprintf(logger->fdata_file, bbob_file_header_str, logger->optimal_fvalue);
 
   logger_bbob_open_dataFile(&(logger->tdata_file), logger->observer->result_folder, dataFile_path, ".tdat");
-  fprintf(logger->tdata_file, bbob_file_header_str, logger->optimal_fvalue);
+  if (logger->constrained_problem)
+    fprintf(logger->tdata_file, bbob_constrained_file_header_str, logger->optimal_fvalue);
+  else
+    fprintf(logger->tdata_file, bbob_file_header_str, logger->optimal_fvalue);
 
   logger_bbob_open_dataFile(&(logger->rdata_file), logger->observer->result_folder, dataFile_path, ".rdat");
-  fprintf(logger->rdata_file, bbob_file_header_str, logger->optimal_fvalue);
+  if (logger->constrained_problem)
+    fprintf(logger->rdata_file, bbob_constrained_file_header_str, logger->optimal_fvalue);
+  else
+    fprintf(logger->rdata_file, bbob_file_header_str, logger->optimal_fvalue);
   logger->is_initialized = 1;
   coco_free_memory(tmpc_dim);
   coco_free_memory(tmpc_funId);

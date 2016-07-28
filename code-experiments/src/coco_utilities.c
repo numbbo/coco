@@ -968,6 +968,30 @@ static void coco_normalize_vector(double *x, size_t dimension) {
       x[i] /= norm;
   }
 }
+
+/**
+ * @brief Normalizes vector x and multiplies each componenent by alpha.
+ *
+ */
+static void coco_scale_vector(double *x, size_t dimension, double alpha) {
+  
+  size_t i;
+  double norm = 0.0;
+  
+  assert(x);
+  
+  for (i = 0; i < dimension; ++i)
+    norm += x[i] * x[i];
+    
+  norm = sqrt(norm);
+  
+  if (norm != 0) {
+    for (i = 0; i < dimension; ++i) {
+      x[i] /= norm;
+      x[i] *= alpha;
+	 }
+  }
+}
 /**@}*/
 
 /***********************************************************************************************************/

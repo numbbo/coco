@@ -167,7 +167,16 @@ void example_experiment(const char *suite_name,
     /* Run the algorithm at least once */
     for (run = 1; run <= 1 + INDEPENDENT_RESTARTS; run++) {
 
-      size_t evaluations_done = coco_problem_get_evaluations(PROBLEM);
+      size_t evaluations_done;
+      
+      if (coco_problem_get_number_of_constraints(PROBLEM)>0) {
+        evaluations_done = coco_problem_get_evaluations(PROBLEM);
+      }
+      else {
+        evaluations_done = coco_problem_get_evaluations(PROBLEM) + 
+            coco_problem_get_evaluations_constraints(PROBLEM);
+      }
+
       long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - (long) evaluations_done;
 
       /* Break the loop if the target was hit or there are no more remaining evaluations */
