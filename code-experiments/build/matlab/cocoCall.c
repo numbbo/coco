@@ -90,6 +90,7 @@ void cocoIsFeasible(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     int nb_constraints;
     double *x;
     double *y;
+    int *is_feasible;
 
     /* check for proper number of arguments */
     if(nrhs!=2) {
@@ -120,7 +121,7 @@ void cocoIsFeasible(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     y = mxGetPr(plhs[1]);
     
     /* call coco_is_feasible(...) */
-    is_feasible = coco_is_feasible(problem, x, y);
+    *is_feasible = coco_is_feasible(problem, x, y);
 }
 
 void cocoObserver(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
