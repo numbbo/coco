@@ -21,11 +21,12 @@ $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 .. raw:: html
 
-   <I>To cite or access this document as <tt>pdf</tt>:</I><BR>
+   <SMALL><I>To cite or access this document as <tt>pdf</tt>:</I><BR>
    N. Hansen, A. Auger, O. Mersmann, T. Tušar, and D. Brockhoff (2016). 
-   <A HREF="http://arxiv.org/abs/1603.08785">
+   <A HREF="http://arxiv.org/pdf/1603.08785">
    COCO: A platform for Comparing Continuous Optimizers in a Black-Box Setting</A>. 
-   <I>ArXiv e-prints</I>, arXiv:1603.08785.
+   <I>ArXiv e-prints</I>, 
+   <A HREF="http://arxiv.org/abs/1603.08785">arXiv:1603.08785</A>.</SMALL>
 
 .. raw:: latex
 
@@ -210,7 +211,7 @@ in Python, becomes as simple [#]_ as
    from scipy.optimize import fmin
  
    suite = cocoex.Suite("bbob", "year: 2016", "")
-   budget_multiply = 1e4  # use 1e1 or even 2 for a quick test run
+   budget_multiply = 1e4  # use 1e1 or even 2 for a quick first test run
    observer = cocoex.Observer("bbob", "result_folder: myoptimizer-on-bbob")
     
    for p in suite:  # loop over all problems
@@ -775,3 +776,4 @@ __ http://arxiv.org/abs/1603.08776
 
 
 .. ############################## END Document #######################################
+
