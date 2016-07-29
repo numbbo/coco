@@ -18,11 +18,10 @@ from itertools import product
 from bbob_pproc.ppfig import saveFigure
 import bbobbenchmarks as bm
 
-logscale = True
-downsample = True
+
 decimals=2 # precision for downsampling
 maxplot = 2 # maximal displayed value (assuming nadir in [1,1])
-precision = 5e-4 # smallest displayed value at maxplot*precision in logscale
+precision = 1e-4 # smallest displayed value at maxplot*precision in logscale
 
 biobjinst = {1: [2, 4],
              2: [3, 5],
@@ -37,7 +36,8 @@ biobjinst = {1: [2, 4],
 
 
 def generate_ERD_plot(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
-                   outputfolder="./", inputfolder=None, tofile=True):
+                   outputfolder="./", inputfolder=None, tofile=True,
+                   logscale = True, downsample = True):
     ##############################################################
     #                                                            #
     # Objective Space plot indicating for each (grid) point      #
@@ -143,7 +143,7 @@ def generate_ERD_plot(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance
 
     
     # plot grid in normalized 2*[ideal, nadir]:
-    n = 50 # number of grid points per objective
+    n = 60 # number of grid points per objective
     if logscale:    
         #gridpoints = 10**(np.log10(maxplot) * (np.array(list(product(range(n),range(n))))/(n-1)))
         gridpoints = np.log10(maxplot * 10**(np.log10(precision)*np.array(list(product(range(n),range(n))))/(n-1)))
@@ -153,39 +153,38 @@ def generate_ERD_plot(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance
     colors = compute_aRT(gridpoints, A)
 
     # normalize colors:
-    print(colors)
-    colors = 255*(colors/max(colors))
-    print(colors)
-    
-    #plt.scatter(gridpoints[:,0], gridpoints[:,1], c=colors, cmap='autumn_r', lw=0, norm=matplotlib.colors.LogNorm())
-    plt.scatter(gridpoints[:,0], gridpoints[:,1], marker='s', c=colors, cmap='autumn_r', s=80, lw=0, norm=matplotlib.colors.LogNorm())
-    
-    
+    logcolors = np.log10(colors)
+    logcolors = (1-(np.nanmax(logcolors)-logcolors)/(np.nanmax(logcolors)-np.nanmin(logcolors)))
 
-#    autumn = plt.get_cmap('autumn_r') 
-#    scalarMap = matplotlib.cm.ScalarMappable(cmap=autumn)
-#    scalarMap.set_norm(matplotlib.colors.LogNorm())
+    # sort gridpoints (and of cours colors) wrt. their aRT:
+    idx = logcolors.argsort(kind='mergesort')
+    colors = colors[idx]
+    logcolors = logcolors[idx]
+    gridpoints = gridpoints[idx]
 
+    for i in range(len(gridpoints)-1, -1, -1):
+        if not np.isfinite(logcolors[i]):
+            continue # no finite aRT                    
+        if logscale:
+            ax.add_artist(patches.Rectangle(
+                ((gridpoints[i])[0], (gridpoints[i])[1]),
+                 np.log10(maxplot)-(gridpoints[i])[0],
+                 np.log10(maxplot)-(gridpoints[i])[1],
+                 alpha=1.0,
+                 color=matplotlib.cm.autumn_r(logcolors[i])))
+        else:
+            ax.add_artist(patches.Rectangle(
+                ((gridpoints[i])[0], (gridpoints[i])[1]),
+                 maxplot-(gridpoints[i])[0],
+                 maxplot-(gridpoints[i])[1],
+                 alpha=1.0,
+                 color=matplotlib.cm.autumn_r(logcolors[i])))
+            
+    #plt.scatter(gridpoints[:,0], gridpoints[:,1], marker='s', c=colors, cmap='autumn_r', s=80, lw=0, norm=matplotlib.colors.LogNorm())
+    #plt.scatter(gridpoints[:,0], gridpoints[:,1], marker='s', c=colors, cmap='autumn_r', s=10, lw=0, norm=matplotlib.colors.LogNorm())    
+        
     
-#    for i in range(len(gridpoints)):
-#        if not np.isfinite(colors[i]):
-#            continue # no finite aRT
-#        if logscale:
-#            ax.add_patch(patches.Rectangle(
-#                ((gridpoints[i])[0], (gridpoints[i])[1]),
-#                 np.log10(maxplot)-(gridpoints[i])[0],
-#                 np.log10(maxplot)-(gridpoints[i])[1],
-#                 alpha=1.0,
-#                 color=matplotlib.cm.autumn_r(colors[i])),
-#                 cmap='autumn_r')
-#        else:
-#            ax.add_patch(patches.Rectangle(
-#                (gridpoints[:,0], gridpoints[:,1]), maxplot-gridpoints[:,0], maxplot-gridpoints[:,1],
-#                alpha=0.05,
-#                color='k'))
-#            
-    
-    plt.colorbar()
+    #plt.colorbar()
     
     # beautify:
     ax.set_title("aRT in objective space for bbob-biobj function $f_{%d}$ (%d-D, %d instances)" % (f_id, dim, len(A)))
