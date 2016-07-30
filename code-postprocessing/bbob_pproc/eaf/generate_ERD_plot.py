@@ -143,8 +143,8 @@ def generate_ERD_plot(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance
 
     
     # plot grid in normalized 2*[ideal, nadir]:
-    n = 60 # number of grid points per objective
-    if logscale:    
+    n = 10 # number of grid points per objective
+    if logscale:
         #gridpoints = 10**(np.log10(maxplot) * (np.array(list(product(range(n),range(n))))/(n-1)))
         gridpoints = np.log10(maxplot * 10**(np.log10(precision)*np.array(list(product(range(n),range(n))))/(n-1)))
     else:
@@ -236,7 +236,7 @@ def compute_aRT(points, A):
 #            print(a)
             for i in range(len(points)):
                 if not points_finished[i]:
-                    if dominates(np.array([a[1], a[2]]), points[i]):
+                    if weakly_dominates([a[1], a[2]], points[i]):
 #                        print("(%e, %e) dominates (%e, %e)" % (a[1], a[2], points[i][0], points[i][1]))
 #                        print("recorded runtime here: %d" % a[0])
                         runtime_to_attain_points[i] = a[0]
@@ -262,7 +262,7 @@ def compute_aRT(points, A):
     
     return aRT
     
-def dominates(a,b):
+def weakly_dominates(a,b):
     """ returns True iff a dominates b wrt. minimization """
     
-    return (a[0] < b[0]) and (a[1] < b[1])
+    return (a[0] <= b[0]) and (a[1] <= b[1])
