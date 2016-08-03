@@ -410,7 +410,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
     for f in dictFunc:
         filename = os.path.join(outputdir,'ppfigs_f%03d' % (f))
         handles = []
-        fix_styles(len(sortedAlgs))  # 
+        fix_styles(len(sortedAlgs), styles)  # 
         for i, alg in enumerate(sortedAlgs):
             dictDim = dictFunc[f][alg].dictByDim()  # this does not look like the most obvious solution
 
@@ -533,7 +533,11 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
         infotext = ''
         algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
         for alg in algorithms_with_data:
-            infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
+            if len(dictFunc[f][alg]) > 0:
+                infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
+            else:
+                warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
+
         infotext = infotext.rstrip(', ')
         infotext += ' instances'
         plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, infotext, fontsize=14)  # TODO: check

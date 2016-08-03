@@ -497,10 +497,10 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
                  plotType=PlotType.DIM)
 
     dictFG = pp.dictAlgByFun(dictAlg)
-    for fg, tmpdictAlg in dictFG.iteritems():
+    for fg, tempDictAlg in dictFG.iteritems():
 
         if isSingleAlgorithm:
-            main(tmpdictAlg,
+            main(tempDictAlg,
                  isBiobjective,
                  order=sortedAlgs,
                  outputdir=single_fct_output_dir,
@@ -510,23 +510,30 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
                  plotType=PlotType.DIM)
 
         if not (isSingleAlgorithm and isBiobjective):
-            dictDim = pp.dictAlgByDim(tmpdictAlg)
-            for d, entries in dictDim.iteritems():
+            dictDim = pp.dictAlgByDim(tempDictAlg)
+            dims = sorted(dictDim)
+            for i, d in enumerate(dims):
+                entries = dictDim[d]
+                next_dim = dims[i + 1] if i + 1 < len(dims) else dims[0]
                 main(entries,
                      isBiobjective,
                      order=sortedAlgs,
                      outputdir=single_fct_output_dir,
                      info='f%03d_%02dD' % (fg, d),
                      verbose=verbose,
-                     parentHtmlFileName=parentHtmlFileName)
+                     parentHtmlFileName=parentHtmlFileName,
+                     add_to_html_file_name='_%02dD' % d,
+                     next_html_page_suffix='_%02dD' % next_dim)
 
     if isSingleAlgorithm:
         functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
 
         dictDim = pp.dictAlgByDim(dictAlg)
-        for d, tmpdictAlg in dictDim.iteritems():
-
-            dictFG = pp.dictAlgByFuncGroup(tmpdictAlg)
+        dims = sorted(dictDim)
+        for i, d in enumerate(dims):
+            tempDictAlg = dictDim[d]
+            next_dim = dims[i+1] if i + 1 < len(dims) else dims[0]
+            dictFG = pp.dictAlgByFuncGroup(tempDictAlg)
             for fg, entries in dictFG.iteritems():
                 main(entries,
                      isBiobjective,
@@ -541,6 +548,7 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
                 os.path.join(single_fct_output_dir, genericsettings.pprldmany_group_file_name),
                 '',
                 add_to_names='_%02dD' % d,
+                next_html_page_suffix='_%02dD' % next_dim,
                 htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP,
                 isBiobjective=isBiobjective,
                 functionGroups=functionGroups,
@@ -549,7 +557,8 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
 
 
 def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
-         dimension=None, verbose=True, parentHtmlFileName=None, plotType=PlotType.ALG):
+         dimension=None, verbose=True, parentHtmlFileName=None, plotType=PlotType.ALG,
+         add_to_html_file_name='', next_html_page_suffix=None):
     """Generates a figure showing the performance of algorithms.
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
@@ -827,15 +836,13 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         ppfig.saveFigure(figureName, verbose=verbose)
         if len(dictFunc) == 1 or plotType == PlotType.DIM:
             fileName = genericsettings.pprldmany_file_name
-            add_to_names = ''
-            if plotType == PlotType.ALG:
-                add_to_names += '_%02dD' % (dim)
 
             header = ppfig.pprldmany_per_func_header if plotType == PlotType.DIM else ppfig.pprldmany_per_func_dim_header
             ppfig.save_single_functions_html(
                 os.path.join(outputdir, fileName),
                 '',  # algorithms names are clearly visible in the figure
-                add_to_names=add_to_names,
+                add_to_names=add_to_html_file_name,
+                next_html_page_suffix=next_html_page_suffix,
                 htmlPage=ppfig.HtmlPage.NON_SPECIFIED,
                 isBiobjective=isBiobjective,
                 parentFileName='../%s' % parentHtmlFileName if parentHtmlFileName else None,

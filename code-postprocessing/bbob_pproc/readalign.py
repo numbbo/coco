@@ -23,19 +23,21 @@ import os, sys
 import numpy
 import warnings
 
+from . import testbedsettings
+
 from pdb import set_trace
 
-
-#GLOBAL VARIABLES
-idxEvals = 0 # index of the column where to find the evaluations
+# GLOBAL VARIABLES
+idxEvals = 0  # index of the column where to find the evaluations
 # Single objective case
-idxFSingle = 2 # index of the column where to find the function values
-nbPtsFSingle = 5 # nb of target function values for each decade.
+idxFSingle = 2  # index of the column where to find the function values
+nbPtsFSingle = 5  # nb of target function values for each decade.
 # Bi-objective case
-idxFBi = 1 # index of the column where to find the function values
-nbPtsFBi = 10 # nb of target function values for each decade.
+idxFBi = 1  # index of the column where to find the function values
+nbPtsFBi = 10  # nb of target function values for each decade.
 
-#CLASS DEFINITIONS
+
+# CLASS DEFINITIONS
 class MultiReader(list):
     """List of data arrays to be aligned.
 
@@ -72,7 +74,7 @@ class MultiReader(list):
 
     def __init__(self, data, isHArray=False):
         for i in data:
-            if len(i) > 0: # ie. if the data array is not empty.
+            if len(i) > 0:  # ie. if the data array is not empty.
                 self.append(self.SingleReader(i, isHArray))
 
     def currentLine(self):
@@ -87,21 +89,21 @@ class MultiReader(list):
         """Gets the list of the next alignment values."""
         return list(i.nextLine[self.idx] for i in self if not i.isFinished)
 
-    #def isFinished(self):
+        # def isFinished(self):
         """When all the data is read."""
-        #pass
+        # pass
 
-    #def getInitialValue(self):
+        # def getInitialValue(self):
         """Returns the initial alignment value."""
-        #pass
+        # pass
 
-    #def newCurrentValue(self):
+        # def newCurrentValue(self):
         """Returns the next alignment value."""
-        #pass
+        # pass
 
-    #def align(self, currentValue):
+        # def align(self, currentValue):
         """Process all the elements of self to make them aligned."""
-        #pass
+        # pass
 
     class SingleReader:
         """Single data array reader class."""
@@ -124,7 +126,7 @@ class MultiReader(list):
             """Returns the next (last if undefined) line of the array data."""
 
             if not self.isFinished:
-                if not self.isNearlyFinished: # the next line is still defined
+                if not self.isNearlyFinished:  # the next line is still defined
                     self.currentLine = self.nextLine.copy()
                     # Update nextLine
                     try:
@@ -134,7 +136,7 @@ class MultiReader(list):
                 else:
                     self.isFinished = True
                     self.currentLine[self.idxEvals] = numpy.nan
-                    #TODO: the line above was not valid for the MultiArrayReader
+                    # TODO: the line above was not valid for the MultiArrayReader
 
             return self.currentLine
 
@@ -148,11 +150,11 @@ class VMultiReader(MultiReader):
 
     """
 
-    idx = idxEvals # the alignment value is the number of function evaluations.
+    idx = idxEvals  # the alignment value is the number of function evaluations.
 
     def __init__(self, data, isBiobjective):
         super(VMultiReader, self).__init__(data)
-        self.idxData = idxFBi if isBiobjective else idxFSingle # the data of concern are the function values.
+        self.idxData = idxFBi if isBiobjective else idxFSingle  # the data of concern are the function values.
 
     def isFinished(self):
         return all(i.isFinished for i in self)
@@ -177,7 +179,7 @@ class VMultiReader(MultiReader):
                     break
                 i.next()
         return numpy.insert(self.currentLine(), 0, currentValue)
-        
+
 
 class HMultiReader(MultiReader):
     """List of data arrays to be aligned horizontally.
@@ -187,21 +189,21 @@ class HMultiReader(MultiReader):
 
     """
 
-    idxData = idxEvals # the data of concern are the number of function evals.
+    idxData = idxEvals  # the data of concern are the number of function evals.
 
     def __init__(self, data, isBiobjective):
         super(HMultiReader, self).__init__(data)
         # the alignment value is the function value.        
-        self.idx = idxFBi if isBiobjective else idxFSingle 
+        self.idx = idxFBi if isBiobjective else idxFSingle
         self.nbPtsF = nbPtsFBi if isBiobjective else nbPtsFSingle
-        self.idxCurrentF = numpy.inf # Minimization
+        self.idxCurrentF = numpy.inf  # Minimization
         # idxCurrentF is a float for the extreme case where it is infinite.
         # else it is an integer and then is the 'i' in 10**(i/nbPtsF)
         self.isNegative = False
         self.idxCurrentFOld = 0.
 
     def calculateCurrentValue(self):
-        factor = -1. if self.isNegative else 1.        
+        factor = -1. if self.isNegative else 1.
         return factor * numpy.power(10, self.idxCurrentF / self.nbPtsF)
 
     def isFinished(self):
@@ -214,7 +216,7 @@ class HMultiReader(MultiReader):
         for i in self:
             while i.nextLine[self.idx] > currentValue and not i.isFinished:
                 i.next();
-                
+
         return not any(i.nextLine[self.idx] <= currentValue for i in self)
 
     def getInitialValue(self):
@@ -245,7 +247,7 @@ class HMultiReader(MultiReader):
             if i.currentLine[self.idx] <= currentValue:
                 fvalues.append(i.currentLine[self.idx])
 
-        #This should not happen
+        # This should not happen
         if not fvalues:
             raise ValueError, 'Value %g is not reached.'
 
@@ -260,7 +262,7 @@ class HMultiReader(MultiReader):
                 currentValue = self.calculateCurrentValue()
         else:
             self.idxCurrentF = min(self.idxCurrentF,
-                               numpy.ceil(numpy.log10(max(fvalues)) * self.nbPtsF))
+                                   numpy.ceil(numpy.log10(max(fvalues)) * self.nbPtsF))
             # Above line may return: Warning: divide by zero encountered in
             # log10 in the case of negative fvalues.
             # In the case of negative values for fvalues, self.idxCurrentF
@@ -272,6 +274,7 @@ class HMultiReader(MultiReader):
             currentValue = self.calculateCurrentValue()
 
         return numpy.insert(self.currentLine(), 0, currentValue)
+
 
 class ArrayMultiReader(MultiReader):
     """Class of *aligned* data arrays to be aligned together.
@@ -287,13 +290,13 @@ class ArrayMultiReader(MultiReader):
 
     """
 
-    idx = 0 # We expect the alignment value to be the 1st column.
+    idx = 0  # We expect the alignment value to be the 1st column.
 
     def __init__(self, data, isHArray=False):
-        #super(ArrayMultiReader, self).__init__(data, True)
+        # super(ArrayMultiReader, self).__init__(data, True)
         MultiReader.__init__(self, data, isHArray)
-        #for i in self:
-            #i.nbRuns = (numpy.shape(i.data)[1] - 1)
+        # for i in self:
+        # i.nbRuns = (numpy.shape(i.data)[1] - 1)
 
     def currentLine(self):
         """Aggregates currentLines information."""
@@ -301,32 +304,36 @@ class ArrayMultiReader(MultiReader):
         res.extend(list(i.currentLine[1:] for i in self))
         return numpy.hstack(res)
 
+
 class VArrayMultiReader(ArrayMultiReader, VMultiReader):
     """Wrapper class of *aligned* data arrays to be aligned vertically."""
 
     def __init__(self, data):
         ArrayMultiReader.__init__(self, data)
-        #TODO: Should this use super?
+        # TODO: Should this use super?
+
 
 class VArrayMultiReaderNew(ArrayMultiReader, VMultiReader):
     """Wrapper class of *aligned* data arrays to be aligned vertically."""
 
     def __init__(self, data):
         ArrayMultiReader.__init__(self, data)
-        #TODO: Should this use super?
+        # TODO: Should this use super?
+
 
 class HArrayMultiReader(ArrayMultiReader, HMultiReader):
     """Wrapper class of *aligned* data arrays to be aligned horizontally."""
 
     def __init__(self, data, isBiobjective):
         ArrayMultiReader.__init__(self, data, isHArray=True)
-        #TODO: Should this use super?
+        # TODO: Should this use super?
         self.nbPtsF = nbPtsFBi if isBiobjective else nbPtsFSingle
-        self.idxCurrentF = numpy.inf #Minimization
+        self.idxCurrentF = numpy.inf  # Minimization
         self.isNegative = False
         self.idxCurrentFOld = 0.
 
-#FUNCTION DEFINITIONS
+
+# FUNCTION DEFINITIONS
 
 def alignData(data, isBiobjective):
     """Aligns the data from a list of data arrays.
@@ -336,13 +343,13 @@ def alignData(data, isBiobjective):
 
     """
 
-    #TODO: is template dependent.
+    # TODO: is template dependent.
 
     idxF = idxFBi if isBiobjective else idxFSingle
-    
+
     res = []
     currentValue = data.getInitialValue()
-    #set_trace()
+    # set_trace()
     if data.isFinished():
         res.append(data.align(currentValue))
 
@@ -364,11 +371,11 @@ def alignArrayData(data):
 
     """
 
-    #TODO: is template dependent.
+    # TODO: is template dependent.
 
     res = []
     currentValue = data.getInitialValue()
-    #set_trace()
+    # set_trace()
     if data.isFinished():
         res.append(data.align(currentValue))
 
@@ -387,10 +394,10 @@ def openfile(filePath):
             raise IOError(2, 'The path is too long for the file "%s".' % filePath)
         else:
             raise IOError(2, 'The file "%s" does not exist.' % filePath)
-    
+
     return open(filePath, 'r')
-    
-    
+
+
 def split(dataFiles, isBiobjective, dim=None):
     """Split a list of data files into arrays corresponding to data sets."""
 
@@ -403,7 +410,7 @@ def split(dataFiles, isBiobjective, dim=None):
 
         content = []
         instanceToSkip = False
-        
+
         # Save values in array content. Check for nan and inf.
         for line in lines:
             # skip if comment
@@ -412,20 +419,22 @@ def split(dataFiles, isBiobjective, dim=None):
                     dataSets.append(numpy.vstack(content))
                     content = []
                     instanceToSkip = False
-                    
+
                 if isBiobjective:
                     parts = line.split(',')
                     for part in parts:
                         if 'instance' in part:
                             instance = int(part.split('=')[1])
-                            if instance > 5:
-                                instanceToSkip = True;
-                
+                            if instance not in testbedsettings.current_testbed.instancesOfInterest:
+                                instanceToSkip = True
+                            else:
+                                instanceToSkip = False
+
                 continue
 
             if instanceToSkip:
                 continue
-            
+
             # else remove end-of-line sign
             # and split into single strings
             data = line.strip('\n').split()
@@ -448,7 +457,7 @@ def split(dataFiles, isBiobjective, dim=None):
                         data[id] = numpy.nan
 
             content.append(numpy.array(data))
-            #Check that it always have the same length?
+            # Check that it always have the same length?
         if content:
             dataSets.append(numpy.vstack(content))
 
