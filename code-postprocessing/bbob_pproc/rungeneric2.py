@@ -358,13 +358,6 @@ def main(argv=None):
 
         algorithm_name = "%s vs %s" % (algName1, algName0)
         ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.two_algorithm_file_name),
-            algname=algorithm_name,
-            htmlPage=ppfig.HtmlPage.TWO,
-            isBiobjective=dsList0.isBiobjective(),
-            functionGroups=dsList0.getFuncGroups())
-
-        ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.ppfigs_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.PPFIGS,
@@ -693,6 +686,13 @@ def main(argv=None):
                         genericsettings.verbose)
             plt.rcdefaults()
             print_done()
+
+        ppfig.save_single_functions_html(
+            os.path.join(outputdir, genericsettings.two_algorithm_file_name),
+            algname=algorithm_name,
+            htmlPage=ppfig.HtmlPage.TWO,
+            isBiobjective=dsList0.isBiobjective(),
+            functionGroups=dsList0.getFuncGroups())
 
         if (genericsettings.isFig or genericsettings.isRLDistr
             or genericsettings.isTab or genericsettings.isScatter
