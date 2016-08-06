@@ -97,7 +97,7 @@ function evaluations in a single trial in this function subset.
 
 \aRT\ loss ratio. The aRT of the considered algorithm, the budget, is shown in
 the first column. For the loss ratio the budget is divided by the aRT for the
-respective best result from BBOB-2009 (see also Table~\ref{tab:ERTloss}).
+respective best result from BBOB-2009 (see also Table~\ref{tab:aRTloss}).
 The last row $\text{RL}_{\text{US}}/\text{D}$ gives the number of function
 evaluations in unsuccessful runs divided by dimension. Shown are the smallest,
 10\%-ile, 25\%-ile, 50\%-ile, 75\%-ile and 90\%-ile value (smaller values are
@@ -147,7 +147,7 @@ def table_caption():
 
 def figure_caption():
     caption = r"""%
-        \aRT\ loss ratios (see Figure~\ref{tab:ERTloss} for details).
+        \aRT\ loss ratios (see Figure~\ref{tab:aRTloss} for details).
         Each cross ({\color{blue}$+$}) represents a single function, the line
         is the geometric mean.
         """
