@@ -596,6 +596,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         # display number of instances in data:
         instanceText = '%d instances' % len(((dictFunc[func][0]).instancenumbers))
         plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, instanceText, fontsize=14)
+        # TODO: make the offset depend on maximal displayed y value instead of 0.5
   
         if func in testbedsettings.current_testbed.functions_with_legend:
             toolsdivers.legend(loc="best")
