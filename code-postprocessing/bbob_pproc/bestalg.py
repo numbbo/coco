@@ -490,7 +490,7 @@ def custom_generate(args=algs2009):
     tar.add(output_dir)
     tar.close()
 
-    print('Done with writing best algorithm files.')
+    print('Best algorithm files were written to %s.tar.gz' % output_dir)
 
 
 def create_data_files(output_dir, result, is_biobjective):
