@@ -19,9 +19,9 @@ static int about_equal(const double a, const double b) {
   {
     const double absolute_error = fabs(a - b);
     const double larger = fabs(a) > fabs(b) ? a : b;
-    const double relative_error = fabs((a - b) / larger);
+    const double relative_error = fabs((a - b) / (fabs(larger) + 2 * DBL_MIN));
   
-    if (absolute_error < 2 * DBL_MIN)
+    if (absolute_error < 2 * DBL_MIN) /* looks quite tight as condition */
       return 1;
     return relative_error < 4e-6;
   }
