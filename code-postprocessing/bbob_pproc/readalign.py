@@ -175,7 +175,7 @@ class VMultiReader(MultiReader):
     def align(self, currentValue):
         for i in self:
             while not i.isFinished:
-                if i.nextLine[self.idx] > currentValue:
+                if i.nextLine[self.idx] > currentValue and not is_close(i.nextLine[self.idx], currentValue):
                     break
                 i.next()
         return numpy.insert(self.currentLine(), 0, currentValue)
