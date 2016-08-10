@@ -730,7 +730,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         except KeyError:
             continue
 
-        args = styles[(i) % len(styles)]
+        args = styles[i % len(styles)]
+        args = args.copy()
         args['linewidth'] = 1.5
         args['markersize'] = 12.
         args['markeredgewidth'] = 1.5
