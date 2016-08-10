@@ -549,13 +549,13 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
             infotext += '%d, ' % n
 
         infotext = infotext.rstrip(', ')
-        infotext += ' instances'
-        plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, infotext, fontsize=14)
-        # TODO: make the offset depend on maximal displayed y value instead of 0.5
-        
-        plt.text(plt.xlim()[0], plt.ylim()[0], 
-                 'target ' + target.label_name() + ': ' + target.label(0),
-                 fontsize=14)  # TODO: check
+        infotext += ' instances\n'
+        infotext += 'target ' + target.label_name() + ': ' + target.label(0)
+        plt.text(plt.xlim()[0], plt.ylim()[0],
+                 infotext, fontsize=14, horizontalalignment="left",
+                 verticalalignment="bottom")
+
+
 
         saveFigure(filename, verbose=verbose)
 

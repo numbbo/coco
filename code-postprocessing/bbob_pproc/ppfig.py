@@ -46,8 +46,8 @@ def saveFigure(filename, figFormat=(), verbose=True):
 
     """
     coco_version = pkg_resources.require('bbob_pproc')[0].version
-    plt.text(0.35, 0.01, coco_version,
-             horizontalalignment="left",
+    plt.text(0.5, 0.01, coco_version,
+             horizontalalignment="center",
              verticalalignment="bottom",
              fontsize=10,
              color='0.5',

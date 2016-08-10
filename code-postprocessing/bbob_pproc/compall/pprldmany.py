@@ -809,6 +809,18 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                             ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f'))
         if not (plotType == PlotType.DIM):
             text += ', %d-D' % dimList[0]
+    # add information about smallest and largest target and their number
+    text += '\n'
+    targetstrings = target_values.labels()
+    if isinstance(target_values, pp.RunlengthBasedTargetValues):
+        text += (str(len(targetstrings)) + ' target RLs/dim: ' +
+                 targetstrings[0] + '..' +
+                 targetstrings[len(targetstrings)-1] + '\n')
+        text += '   from ' + testbedsettings.current_testbed.best_algorithm_filename
+    else:
+        text += (str(len(targetstrings)) + ' targets in ' +
+                 targetstrings[0] + '..' +
+                 targetstrings[len(targetstrings)-1])        
     # add number of instances 
     text += '\n'
     num_of_instances = []
@@ -820,7 +832,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     # issue a warning if number of instances is inconsistant, otherwise
     # display only the present number of instances, i.e. remove copies
     if len(set(num_of_instances)) > 1:
-        warnings.warn('Number of instances inconsistent over all algorithms.')
+        warnings.warn('Number of instances inconsistent over all algorithms: %s instances found.' % str(num_of_instances))
     else:
         num_of_instances = set(num_of_instances)
     for n in num_of_instances:
@@ -828,6 +840,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             
     text = text.rstrip(', ')
     text += ' instances'
+
     plt.text(0.01, 0.98, text, horizontalalignment="left",
              verticalalignment="top", transform=plt.gca().transAxes, size='small')
     if len(dictFunc) == 1:
