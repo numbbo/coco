@@ -282,9 +282,8 @@ latex_elements = {
     \renewcommand{\textfraction}{0.0}  % allow minimal text w. figs
     %   Parameters for FLOAT pages (not text pages):
     \renewcommand{\floatpagefraction}{0.9}  % require fuller float pages
-	% N.B.: floatpagefraction MUST be less than topfraction !!
+    % N.B.: floatpagefraction MUST be less than topfraction !!
     \renewcommand{\dblfloatpagefraction}{0.8}  % require fuller float pages
-  
 """ + latex_commands,
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
