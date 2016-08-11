@@ -123,10 +123,10 @@ def main(latex_commands_for_html):
 
         # 8. pplogloss
         f.writelines(prepare_providecommand('bbobloglosstablecaption', scenario,
-                                            pplogloss.table_caption().replace('Figure~\\ref{fig:ERTlogloss}',
+                                            pplogloss.table_caption().replace('Figure~\\ref{fig:aRTlogloss}',
                                                                               'the following figure')))
         f.writelines(prepare_providecommand('bbobloglossfigurecaption', scenario,
-                                            pplogloss.figure_caption().replace('Figure~\\ref{tab:ERTloss}',
+                                            pplogloss.figure_caption().replace('Figure~\\ref{tab:aRTloss}',
                                                                                'the previous figure')))
 
         # prepare tags for later HTML preparation
