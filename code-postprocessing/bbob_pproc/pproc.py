@@ -30,6 +30,7 @@ import numpy, numpy as np
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 from . import genericsettings, findfiles, toolsstats, toolsdivers
+from . import testbedsettings
 from .readalign import split, alignData, HMultiReader, VMultiReader, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from .ppfig import consecutiveNumbers, Usage
@@ -190,7 +191,7 @@ class RunlengthBasedTargetValues(TargetValues):
         >>> os.chdir("..")
         >>> targets = bb.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension==True
         >>> targets(fun_dim=(1, 20)) # doctest:+ELLIPSIS
-        Loading best algorithm data from ...
+          Loading best algorithm data from ...
         array([  6.30957345e+01,   5.75439938e+01,   1.00000000e-08,
                  1.00000000e-08,   1.00000000e-08])
         >>> os.chdir(cwd)
@@ -245,7 +246,7 @@ class RunlengthBasedTargetValues(TargetValues):
             defines "how much more difficult".
 
         TODO: check use case where ``reference_data`` is a dictionary similar
-        to ``bestalg.bestalgentries2009`` with each key dim_fun a reference
+        to ``bestalg.bestAlgorithmEntries`` with each key dim_fun a reference
         DataSet, computed by bestalg module or portfolio module.
 
             dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
@@ -329,6 +330,11 @@ class RunlengthBasedTargetValues(TargetValues):
         dim_fun = tuple(reversed(fun_dim))
         if fun_dim[0] > 100 and self.run_lengths[-1] * fun_dim[1]**self.times_dimension < 1e3:
             ValueError("short running times don't work on noisy functions")
+
+        if not self.reference_data:
+            raise ValueError, 'When running with the runlegth based target values ' \
+                              'the reference data (i.e. best algorithm) must exist.'
+
         ds = self.reference_data[dim_fun]
         if 11 < 3:   
             try:
@@ -594,6 +600,7 @@ class DataSet():
         readmaxevals
         splitByTrials
         target
+        testbed_name
         >>> all(ds.evals[:, 0] == ds.target)  # first column of ds.evals is the "target" f-value
         True
         >>> ds.evals[0::10, (0,5,6)]  # show row 0,10,20,... and of the result columns 0,5,6, index 0 is ftarget
@@ -651,10 +658,27 @@ class DataSet():
                    'indicator': ('indicator', str),
                    'folder': ('folder', str),
                    'algId': ('algId', str),
-                   'algorithm': ('algId', str)}
+                   'algorithm': ('algId', str),
+                   'suite': ('suite', str),
+                   'coco_version': ('coco_version', str)}
 
     def isBiobjective(self):
         return hasattr(self, 'indicator')
+
+    def testbed_name(self):
+        testbed = None
+        if hasattr(self, 'suite'):
+            testbed = getattr(self, 'suite')
+
+        if not testbed:
+            if self.isBiobjective():
+                testbed = testbedsettings.default_testbed_bi
+            elif genericsettings.isNoisy:
+                testbed = testbedsettings.default_testbed_single_noisy
+            else:
+                testbed = testbedsettings.default_testbed_single
+
+        return testbed
     
     def __init__(self, header, comment, data, indexfile, verbose=True):
         """Instantiate a DataSet.
@@ -700,6 +724,9 @@ class DataSet():
         self.readmaxevals = []
         self.readfinalFminusFtarget = []
 
+        if not testbedsettings.current_testbed:
+            testbedsettings.load_current_testbed(self.testbed_name(), TargetValues)
+
         # Split line in data file name(s) and run time information.
         parts = data.split(', ')
         for elem in parts:
@@ -724,8 +751,9 @@ class DataSet():
             else:
                 if not ':' in elem:
                     
-                    # We take only the first 5 instances for the bi-objective case (for now).
-                    if self.isBiobjective() and ast.literal_eval(elem) > 5:
+                    # We might take only a subset of the given instances for the bi-objective case (for now).
+                    if (self.isBiobjective() and
+                        ast.literal_eval(elem) not in testbedsettings.current_testbed.instancesOfInterest):
                         continue
 
                     # if elem does not have ':' it means the run was not
@@ -742,10 +770,10 @@ class DataSet():
                     self.readfinalFminusFtarget.append(numpy.inf)
                 else:
                     itrial, info = elem.split(':', 1)
-                    # We take only the first 5 instances for the bi-objective case (for now).
-                    if self.isBiobjective() and ast.literal_eval(itrial) > 5:
+                    # We might take only a subset of the given instances for the bi-objective case (for now).
+                    if (self.isBiobjective() and
+                        ast.literal_eval(itrial) not in testbedsettings.current_testbed.instancesOfInterest):
                         continue
-
                     self.instancenumbers.append(ast.literal_eval(itrial))
                     self.isFinalized.append(True)
                     readmaxevals, readfinalf = info.split('|', 1)
@@ -855,7 +883,8 @@ class DataSet():
         does not exist.
         
         """
-        if isinstance(genericsettings.loadCurrentTestbed(self.isBiobjective(), TargetValues), genericsettings.GECCOBBOBTestbed):
+
+        if isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
             while i > 1 and not self.isBiobjective() and self.evals[i-1][0] <= self.precision:
@@ -892,10 +921,10 @@ class DataSet():
         """
         is_consistent = True
         
-        instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))        
+        instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))
         
-        # We take only the first 5 instances for the bi-objective case (for now).
-        expectedNumberOfInstances = 5 if self.isBiobjective() else 15        
+        # We might take only a subset of all provided instances for the bi-objective case (for now).
+        expectedNumberOfInstances = len(testbedsettings.current_testbed.instancesOfInterest) if self.isBiobjective() else 15
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
             # check exception of 2009 data sets with 3 times instances 1:5
             for i in set(self.instancenumbers):
@@ -956,13 +985,14 @@ class DataSet():
 
         The number of returned evals is ``self.nbRuns() * sample_size_per_instance``.
 
+        TODO: the return value is inconsistent between the code and the comment!
+
         TODO: attaching a count to each point would help to reduce the data size (and
         probably the plotting spead) significantly.
 
         """
         raise NotImplementedError()
         data_rows = self.detEvals(targets)
-        all_evals, all_counts = [], []
         for d in data_rows:
             evals, counts = toolsstats.runtimes_with_restarts(d, sample_size_per_instance)
             # this should become a runtimes class with a counts and an evals attribute

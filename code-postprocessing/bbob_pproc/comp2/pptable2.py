@@ -14,18 +14,15 @@ from __future__ import absolute_import
 
 import os, warnings
 import numpy
-import matplotlib.pyplot as plt
-from .. import genericsettings, bestalg, toolsstats, pproc
-from ..pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec, writeLabels
+from .. import genericsettings, testbedsettings, bestalg, toolsstats, pproc
+from ..pptex import tableLaTeX, writeFEvals2, writeFEvalsMaxPrec, writeLabels
 from ..toolsstats import significancetest
-
-from pdb import set_trace
 
 
 samplesize = genericsettings.simulated_runlength_bootstrap_sample_size 
 
 def get_table_caption():
-    """ Sets table caption, based on the genericsettings.current_testbed
+    """ Sets table caption, based on the testbedsettings.current_testbed
         and genericsettings.runlength_based_targets.
     """    
     
@@ -40,7 +37,7 @@ def get_table_caption():
         target, the corresponding best \aRT\
         in the first row. The different target \Df-values are shown in the top row. 
         \#succ is the number of trials that reached the (final) target
-        $\fopt + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+        $\fopt + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
         """
     table_caption_two2 = r"""%
         run-length based target, the corresponding best \aRT\
@@ -55,7 +52,7 @@ def get_table_caption():
         90\%-tile of (bootstrapped) runtimes is shown for the different
         target \Df-values as shown in the top row. 
         \#succ is the number of trials that reached the last target    
-        $\hvref + """ + genericsettings.current_testbed.hardesttargetlatex + r"""$.
+        $\hvref + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
         """
     table_caption_rest = (r"""%
         The median number of conducted function evaluations is additionally given in 
@@ -66,14 +63,14 @@ def get_table_caption():
         following the $\star$ symbol, with Bonferroni correction of #1.""" + 
         (r"""A $\downarrow$ indicates the same tested against the best
         algorithm of BBOB-2009."""
-        if not (genericsettings.current_testbed.name == genericsettings.testbed_name_bi)
+        if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
         else "")
         )
         
-    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         table_caption = table_caption_bi + table_caption_rest
-    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:
@@ -89,7 +86,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
 
     #TODO: method is long, split if possible
 
-    testbed = genericsettings.current_testbed
+    testbed = testbedsettings.current_testbed
     targetsOfInterest = testbed.pptable2_targetsOfInterest
 
 
@@ -443,7 +440,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
         res = ("").join(str(item) for item in tableHtml)
         res = '<p><b>%d-D</b></p>\n<table>\n%s</table>\n' % (d, res)
 
-        filename = os.path.join(outputdir, genericsettings.two_algorithm_file_name + '.html')
+        filename = os.path.join(outputdir, genericsettings.pptable2_file_name + '.html')
         lines = []
         with open(filename) as infile:
             for line in infile:

@@ -10,15 +10,14 @@ figures.
 """
 
 import numpy
-from bbob_pproc import ppfigdim, pprldistr, pplogloss
+from bbob_pproc import ppfigdim, pprldistr, pplogloss, genericsettings
 from bbob_pproc.comp2 import ppscatter, ppfig2, pprldistr2
 from bbob_pproc.compall import pprldmany, ppfigs
 
 
 print "Using black and white settings."
 
-instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
-                       11:1, 12:1, 13:1, 14:1, 15:1}
+instancesOfInterest = genericsettings.instancesOfInterest
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables
@@ -182,10 +181,10 @@ rldDimsOfInterest = (5, 20)
 
 single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each
 summarized_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)   # all in one figure
-summarized_target_function_values = (100, 10, 1e0, 1e-1, 1e-2, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8) 
+summarized_target_function_values = (100, 10, 1e0, 1e-1, 1e-2, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8)
 summarized_target_function_values = tuple(10**numpy.r_[-8:2:0.2]) # 1e2 and 1e-8
-#summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-8  
-#summarized_target_function_values = tuple(10**numpy.r_[-1:2:0.2]) # easy easy 
+#summarized_target_function_values = tuple(10**numpy.r_[-7:-1:0.2]) # 1e2 and 1e-8
+#summarized_target_function_values = tuple(10**numpy.r_[-1:2:0.2]) # easy easy
 # summarized_target_function_values = (10, 1e0, 1e-1)   # all in one figure
 
 #tableconstant_target_function_values = (1e3, 1e2, 1e1, 1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-7)

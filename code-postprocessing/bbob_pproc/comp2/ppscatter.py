@@ -40,7 +40,7 @@ try:
 except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
-from .. import genericsettings, htmldesc, ppfigparam
+from .. import genericsettings, htmldesc, ppfigparam, testbedsettings
 from ..ppfig import saveFigure
 from .. import toolsdivers
 from .. import pproc
@@ -79,10 +79,10 @@ def prepare_figure_caption():
         40:{\color{magenta}$\Diamond$}. """
 
 
-    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         caption = caption_start_fixed + caption_finish
-    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
             caption = caption_start_rlbased + caption_finish
         else:
@@ -95,10 +95,10 @@ def prepare_figure_caption():
 
 def figure_caption(for_html = False):
 
-    targets = genericsettings.current_testbed.ppscatter_target_values
+    targets = testbedsettings.current_testbed.ppscatter_target_values
     if for_html:
         caption = htmldesc.getValue('##bbobppscatterlegend' +
-                                    genericsettings.current_testbed.scenario + '##')
+                                    testbedsettings.current_testbed.scenario + '##')
     else:
         caption = prepare_figure_caption()
 
@@ -167,13 +167,13 @@ def main(dsList0, dsList1, outputdir, verbose=True):
     dictFunc1 = dsList1.dictByFunc()
     funcs = set(dictFunc0.keys()) & set(dictFunc1.keys())
 
-    targets = genericsettings.current_testbed.ppscatter_target_values
+    targets = testbedsettings.current_testbed.ppscatter_target_values
     if isinstance(targets, pproc.RunlengthBasedTargetValues):
         linewidth = linewidth_rld_based
     else:
         linewidth = linewidth_default
 
-    funInfos = ppfigparam.read_fun_infos(dsList0.isBiobjective())    
+    funInfos = ppfigparam.read_fun_infos()    
 
     for f in funcs:
         dictDim0 = dictFunc0[f].dictByDim()
@@ -328,7 +328,43 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                              markeredgecolor=colors[i], markeredgewidth=2,
                              transform=ax.transAxes, clip_on=False)
 
-                #set_trace()
+        targetlabels = targets.labels()
+        if isinstance(targets, pproc.RunlengthBasedTargetValues):
+            text = (str(len(targetlabels)) + ' target RLs/dim: ' +
+                    targetlabels[0] + '..' +
+                    targetlabels[len(targetlabels)-1] + '\n')
+            text += '   from ' + testbedsettings.current_testbed.best_algorithm_filename
+        else:
+            text = (str(len(targetlabels)) + ' targets in ' +
+                    targetlabels[0] + '..' +
+                    targetlabels[len(targetlabels)-1])
+        # add number of instances 
+        text += '\n'
+        num_of_instances_alg0 = []
+        num_of_instances_alg1 = []
+        for d in dims:
+            num_of_instances_alg0.append((dictDim0[d][0]).nbRuns())
+            num_of_instances_alg1.append((dictDim1[d][0]).nbRuns())
+        # issue a warning if the numbers of instances are inconsistent:
+        if (len(set(num_of_instances_alg0)) > 1):
+            warnings.warn('Inconsistent numbers of instances over dimensions found for ALG0:\n\
+                           found instances %s' % str(num_of_instances_alg0))
+        if (len(set(num_of_instances_alg1)) > 1):
+            warnings.warn('Inconsistent numbers of instances over dimensions found for ALG1:\n\
+                           found instances %s' % str(num_of_instances_alg1))
+        if (len(set(num_of_instances_alg0)) == 1 and len(set(num_of_instances_alg0)) == 1):
+            text += '%s and %s instances' % (num_of_instances_alg0[0], num_of_instances_alg1[0])
+        else:
+            for n in num_of_instances_alg0:
+                text += '%d, ' % n
+            text = text.rstrip(', ')
+            text += ' and '
+            for n in num_of_instances_alg1:
+                text += '%d, ' % n
+            text = text.rstrip(', ')
+            text += ' instances'
+        plt.text(0.01, 0.98, text, horizontalalignment="left",
+                 verticalalignment="top", transform=plt.gca().transAxes, size='small')
 
         beautify()
 

@@ -22,7 +22,7 @@ except ImportError:
 
 import numpy as np 
 
-from .. import toolsstats, readalign, ppfigparam, genericsettings, toolsdivers
+from .. import toolsstats, readalign, ppfigparam, testbedsettings, toolsdivers
 from ..toolsstats import ranksumtest
 from ..ppfig import saveFigure, plotUnifLogXMarkers
 #try:
@@ -261,7 +261,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
     
     # minfvalue = pproc.TargetValues.cast(minfvalue)
 
-    funInfos = ppfigparam.read_fun_infos(dsList0.isBiobjective())    
+    funInfos = ppfigparam.read_fun_infos()    
 
     dictFun0 = dsList0.dictByFunc()
     dictFun1 = dsList1.dictByFunc()
@@ -421,7 +421,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
         if func in funInfos.keys():
             plt.title(funInfos[func])
 
-        if func in genericsettings.current_testbed.functions_with_legend:
+        if func in testbedsettings.current_testbed.functions_with_legend:
             toolsdivers.legend(loc='best')
 
         # save

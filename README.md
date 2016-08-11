@@ -53,7 +53,9 @@ _Additional_ requirements for running an algorithm in a specific language.
   containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
   These are necessary to build the C extensions for the Python `cocoex` module for Windows. 
   The package contains 32-bit and 64-bit compilers and the Windows SDK headers.
+* **Pyhon on Linux**: `python-dev` must be installed to compile/install the `cocoex` module.
 * **Octave**: Octave 4.0.0 or later. On operating systems other than Windows, earlier versions might work.
+  Under Linux the package `liboctave-dev` might be necessary. 
 
 ### Guaranties (None)
 We tested the framework on Mac OSX, Ubuntu linux, Fedora linux, and Windows (XP,
@@ -342,7 +344,26 @@ processes if there is any) before to run the `do.py` command again.
 
 
 ### Octave
-none for the moment
+
+#### `octave-dev` under Linux
+When running 
+```
+  python do.py run-octave
+```
+or 
+```
+  python do.py build-octave
+```
+and seeing something like
+```
+   [...]
+   compiling cocoCall.c...error: mkoctfile: please install the Debian package "liboctave-dev" to get the mkoctfile command
+```
+then, unsurprisingly, installing `liboctave-dev` like
+```
+  sudo apt-get install liboctave-dev
+```
+should do the job. 
 
 
 ### Python
@@ -388,6 +409,17 @@ cython/interface.c:4:20: error: Python.h: file not found
 cython/interface.c:6:6: error: #error Python headers needed to compile C extensions, please install development version of Python.
 error: command 'gcc' failed with exit status 1
 ```
+or
+```
+$ python do.py run-python  # or build-python
+[...]
+cython/interface.c -o build/temp.linux-x86_64-2.7/cython/interface.o
+cython/interface.c:4:20: fatal error: Python.h: No such file or directory
+#include "Python.h"
+^
+compilation terminated.
+error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+```
 Under Linux
 ```
   sudo apt-get install python-dev
@@ -432,6 +464,23 @@ Details
   Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit
   Windows 7 machine with cygwin.
 
+Citation
+--------
+You may cite this work in a scientific context as
+
+N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](http://numbbo.github.io/coco-doc/), _ArXiv e-prints_, [arXiv:1603.08785](http://arxiv.org/abs/1603.08785), 2016.
+
+```
+@ARTICLE{hansen2016cocoplat, 
+  author = {Hansen, N. and Auger, A. and Mersmann, O. and 
+             Tu{\v s}ar, T. and Brockhoff, D.},
+  title = {{COCO}: A Platform for Comparing Continuous Optimizers 
+             in a Black-Box Setting},
+  journal = {ArXiv e-prints},
+  volume = {arXiv:1603.08785},
+  year = 2016
+}
+```
 
 Links and Documentation <a name="Links"></a>
 -----------------------

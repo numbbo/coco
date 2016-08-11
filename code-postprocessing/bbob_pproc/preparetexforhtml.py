@@ -12,6 +12,7 @@ import sys
 import warnings
 
 from . import genericsettings, pplogloss, ppfigdim, pptable, pprldistr, config
+from . import testbedsettings
 from .compall import pptables, ppfigs
 from .comp2 import ppscatter, pptable2
 
@@ -41,9 +42,10 @@ header = """
 \\newcommand{\\nruns}{\ensuremath{\mathrm{Nruns}}}
 \\newcommand{\\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
 \\newcommand{\\Df}{\ensuremath{\Delta f}}
+\\newcommand{\\DI}{\ensuremath{\Delta I}}
 \\newcommand{\\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
 \\newcommand{\\fopt}{\ensuremath{f_\mathrm{opt}}}
-\\newcommand{\\hvref}{\ensuremath{HV_\mathrm{ref}}}
+\\newcommand{\\hvref}{I^{\mathrm{ref}}}
 \\newcommand{\\ftarget}{\ensuremath{f_\mathrm{t}}}
 \\newcommand{\\CrE}{\ensuremath{\mathrm{CrE}}}
 \\newcommand{\\change}[1]{{\color{red} #1}}
@@ -62,17 +64,20 @@ def main(latex_commands_for_html):
 
     f.write(header)
 
-    for scenario in genericsettings.all_scenarios:
+    single_objective_testbed = testbedsettings.default_testbed_single_noisy if genericsettings.isNoisy \
+        else testbedsettings.default_testbed_single
+
+    for scenario in testbedsettings.all_scenarios:
         # set up scenario, especially wrt genericsettings
-        if scenario == genericsettings.scenario_rlbased:
+        if scenario == testbedsettings.scenario_rlbased:
             genericsettings.runlength_based_targets = True
-            config.config(isBiobjective=False)
-        elif scenario == genericsettings.scenario_fixed:
+            config.config(single_objective_testbed)
+        elif scenario == testbedsettings.scenario_fixed:
             genericsettings.runlength_based_targets = False
-            config.config(isBiobjective=False)
-        elif scenario == genericsettings.scenario_biobjfixed:
+            config.config(single_objective_testbed)
+        elif scenario == testbedsettings.scenario_biobjfixed:
             genericsettings.runlength_based_targets = False
-            config.config(isBiobjective=True)
+            config.config(testbedsettings.default_testbed_bi)
         else:
             warnings.warn("Scenario not supported yet in HTML")
 
@@ -108,7 +113,7 @@ def main(latex_commands_for_html):
         f.writelines(prepare_providecommand('bbobpptablestwolegend', scenario, pptable2Legend))
 
         # 6. pptables
-        f.writelines(prepare_providecommand('bbobpptablesmanylegend', scenario, pptables.get_table_caption()))
+        f.writelines(prepare_providecommand_two('bbobpptablesmanylegend', scenario, pptables.get_table_caption()))
 
         # 7. ppscatter
         ppscatterLegend = ppscatter.prepare_figure_caption().replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
@@ -118,17 +123,17 @@ def main(latex_commands_for_html):
 
         # 8. pplogloss
         f.writelines(prepare_providecommand('bbobloglosstablecaption', scenario,
-                                            pplogloss.table_caption().replace('Figure~\\ref{fig:ERTlogloss}',
+                                            pplogloss.table_caption().replace('Figure~\\ref{fig:aRTlogloss}',
                                                                               'the following figure')))
         f.writelines(prepare_providecommand('bbobloglossfigurecaption', scenario,
-                                            pplogloss.figure_caption().replace('Figure~\\ref{tab:ERTloss}',
+                                            pplogloss.figure_caption().replace('Figure~\\ref{tab:aRTloss}',
                                                                                'the previous figure')))
 
         # prepare tags for later HTML preparation
+        testbed = testbedsettings.current_testbed
         # 1. ppfigs
-        for dim in ['5', '20']:
-            f.write(prepare_item('bbobECDFslegend' + scenario + dim, 'bbobECDFslegend' + scenario, str(dim)))
-        param = '$f_1$ and $f_{%d}$' % genericsettings.current_testbed.number_of_functions
+        f.write(prepare_item('bbobECDFslegend' + scenario, '', 'DIMVALUE'))
+        param = '$f_{%d}$ and $f_{%d}$' % (testbed.first_function_number, testbed.last_function_number)
         f.write(prepare_item('bbobppfigslegend' + scenario, param=param))
 
         # 2. pprldistr
@@ -143,11 +148,11 @@ def main(latex_commands_for_html):
 
         # 6. pptables
         command_name = 'bbobpptablesmanylegend' + scenario
-        for dim in ['5', '20']:
-            f.write(prepare_item(command_name + dim, command_name, 'dimension ' + dim))
+        bonferroni = str(2 * (testbed.last_function_number - testbed.first_function_number + 1))
+        f.write(prepare_item_two(command_name, command_name, 'different dimensions', bonferroni))
 
         # 7. ppscatter
-        param = '$f_1$ - $f_{%d}$' % genericsettings.current_testbed.number_of_functions
+        param = '$f_{%d}$ - $f_{%d}$' % (testbed.first_function_number, testbed.last_function_number)
         f.write(prepare_item('bbobppscatterlegend' + scenario, param=param))
 
         # 8. pplogloss
@@ -161,9 +166,17 @@ def main(latex_commands_for_html):
 def prepare_providecommand(command, scenario, captiontext):
     return ['\\providecommand{\\', command, scenario, '}[1]{\n', captiontext, '\n}\n']
 
+def prepare_providecommand_two(command, scenario, captiontext):
+    return ['\\providecommand{\\', command, scenario, '}[2]{\n', captiontext, '\n}\n']
 
 def prepare_item(name, command_name='', param=''):
     if not command_name:
         command_name = name
 
     return '\#\#%s\#\#\n\\%s{%s}\n' % (name, command_name, param)
+
+def prepare_item_two(name, command_name='', paramOne='', paramTwo=''):
+    if not command_name:
+        command_name = name
+
+    return '\#\#%s\#\#\n\\%s{%s}{%s}\n' % (name, command_name, paramOne, paramTwo)
