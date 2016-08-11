@@ -9,6 +9,7 @@ import numpy
 import warnings
 from pdb import set_trace
 from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings, htmldesc, ppfigparam
+from .. import testbedsettings
 from ..ppfig import saveFigure
 from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 
@@ -65,10 +66,10 @@ def prepare_scaling_figure_caption():
     scaling_figure_caption_fixed = scaling_figure_caption_start_fixed + scaling_figure_caption_end
     scaling_figure_caption_rlbased = scaling_figure_caption_start_rlbased + scaling_figure_caption_end
 
-    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         figure_caption = scaling_figure_caption_fixed
-    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
             figure_caption = scaling_figure_caption_rlbased
         else:
@@ -83,11 +84,11 @@ def scaling_figure_caption(for_html = False):
 
     if for_html:
         figure_caption = htmldesc.getValue('##bbobppfigslegend' +
-                                           genericsettings.current_testbed.scenario + '##')
+                                           testbedsettings.current_testbed.scenario + '##')
     else:
         figure_caption = prepare_scaling_figure_caption()
 
-    target = genericsettings.current_testbed.ppfigs_ftarget
+    target = testbedsettings.current_testbed.ppfigs_ftarget
     target = pproc.TargetValues.cast([target] if numpy.isscalar(target) else target)
     assert len(target) == 1
 
@@ -127,10 +128,10 @@ def prepare_ecdfs_figure_caption():
                 r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. "
                 )
 
-    if genericsettings.current_testbed.name == genericsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         figure_caption = ecdfs_figure_caption_standard
-    elif genericsettings.current_testbed.name == genericsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
             figure_caption = ecdfs_figure_caption_rlbased + best2009text
         else:
@@ -144,24 +145,25 @@ def prepare_ecdfs_figure_caption():
 def ecdfs_figure_caption(for_html = False, dimension = 0):
 
     if for_html:
-        key = '##bbobECDFslegend%s%d##' % (genericsettings.current_testbed.scenario, dimension)
+        key = '##bbobECDFslegend%s##' % testbedsettings.current_testbed.scenario
         caption = htmldesc.getValue(key)
     else:
         caption = prepare_ecdfs_figure_caption()
 
-    target = genericsettings.current_testbed.ppfigs_ftarget
+    target = testbedsettings.current_testbed.ppfigs_ftarget
     target = pproc.TargetValues.cast([target] if numpy.isscalar(target) else target)
     assert len(target) == 1
 
     caption = caption.replace('BBOBPPFIGSTARGETRANGE',
-                              str(genericsettings.current_testbed.pprldmany_target_range_latex))
+                              str(testbedsettings.current_testbed.pprldmany_target_range_latex))
+    caption = caption.replace('DIMVALUE', str(dimension))
 
     if genericsettings.runlength_based_targets:
         caption = caption.replace('REFERENCE_ALGORITHM', target.reference_algorithm)
         caption = caption.replace('REFERENCEALGORITHM', target.reference_algorithm)
     else:
         caption = caption.replace('BBOBPPFIGSFTARGET',
-                                  str(len(genericsettings.current_testbed.pprldmany_target_values)))
+                                  str(len(testbedsettings.current_testbed.pprldmany_target_values)))
 
     return caption
 
@@ -170,9 +172,9 @@ def get_ecdfs_single_fcts_caption():
     ''' For the moment, only the bi-objective case is covered! '''
     s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
          of objective function evaluations divided by dimension (FEvals/DIM) for the $""" +
-            str(len(genericsettings.current_testbed.pprldmany_target_values)) +
+            str(len(testbedsettings.current_testbed.pprldmany_target_values)) +
             r"$ targets " + 
-            str(genericsettings.current_testbed.pprldmany_target_range_latex) +
+            str(testbedsettings.current_testbed.pprldmany_target_range_latex) +
             r" for functions $f_1$ to $f_{16}$ and all dimensions. "
             )
     return s
@@ -184,9 +186,9 @@ def get_ecdfs_all_groups_caption():
 #            r"(FEvals/DIM) for " +
     s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes, measured in number
          of objective function evaluations, divided by dimension (FEvals/DIM) for the $""" +
-            str(len(genericsettings.current_testbed.pprldmany_target_values)) +
+            str(len(testbedsettings.current_testbed.pprldmany_target_values)) +
             r"$ targets " + 
-            str(genericsettings.current_testbed.pprldmany_target_range_latex) +
+            str(testbedsettings.current_testbed.pprldmany_target_range_latex) +
             r" for all function groups and all dimensions. The aggregation" +
             r" over all 55 functions is shown in the last plot."
             )
@@ -391,14 +393,14 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
     
     """
     # target becomes a TargetValues "list" with one element
-    target = genericsettings.current_testbed.ppfigs_ftarget
+    target = testbedsettings.current_testbed.ppfigs_ftarget
     target = pproc.TargetValues.cast([target] if numpy.isscalar(target) else target)
     latex_commands_filename = os.path.join(outputdir, 'bbob_pproc_commands.tex')
     assert isinstance(target, pproc.TargetValues) 
     if len(target) != 1:
         raise ValueError('only a single target can be managed in ppfigs, ' + str(len(target)) + ' targets were given')
     
-    funInfos = ppfigparam.read_fun_infos(isBiobjective)    
+    funInfos = ppfigparam.read_fun_infos()    
 
     dictFunc = pproc.dictAlgByFun(dictAlg)
     if sortedAlgs is None:
@@ -408,7 +410,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
     for f in dictFunc:
         filename = os.path.join(outputdir,'ppfigs_f%03d' % (f))
         handles = []
-        fix_styles(len(sortedAlgs))  # 
+        fix_styles(len(sortedAlgs), styles)  # 
         for i, alg in enumerate(sortedAlgs):
             dictDim = dictFunc[f][alg].dictByDim()  # this does not look like the most obvious solution
 
@@ -517,7 +519,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
         if f in funInfos.keys():
             plt.gca().set_title(funInfos[f], fontsize=fontSize)
 
-        functions_with_legend = genericsettings.current_testbed.functions_with_legend
+        functions_with_legend = testbedsettings.current_testbed.functions_with_legend
         isLegend = False
         if legend:
             plotLegend(handles)
@@ -530,14 +532,30 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
         # bottom labels with #instances and type of targets:
         infotext = ''
         algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
+        
+        num_of_instances = []
         for alg in algorithms_with_data:
-            infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
+            if len(dictFunc[f][alg]) > 0:
+                num_of_instances.append(len((dictFunc[f][alg])[0].instancenumbers))
+            else:
+                warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
+        # issue a warning if number of instances is inconsistant, otherwise
+        # display only the present number of instances, i.e. remove copies
+        if len(set(num_of_instances)) > 1:
+            warnings.warn('Number of instances inconsistent over all algorithms.')
+        else:
+            num_of_instances = set(num_of_instances)
+        for n in num_of_instances:
+            infotext += '%d, ' % n
+
         infotext = infotext.rstrip(', ')
-        infotext += ' instances'
-        plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, infotext, fontsize=14)  # TODO: check
-        plt.text(plt.xlim()[0], plt.ylim()[0], 
-                 'target ' + target.label_name() + ': ' + target.label(0),
-                 fontsize=14)  # TODO: check
+        infotext += ' instances\n'
+        infotext += 'target ' + target.label_name() + ': ' + target.label(0)
+        plt.text(plt.xlim()[0], plt.ylim()[0],
+                 infotext, fontsize=14, horizontalalignment="left",
+                 verticalalignment="bottom")
+
+
 
         saveFigure(filename, verbose=verbose)
 
@@ -570,8 +588,6 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
                 )
 
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
-        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend5##', ecdfs_figure_caption(True, 5))
-        toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend20##', ecdfs_figure_caption(True, 20))
 
         if verbose:
             print 'Wrote commands and legend to %s' % filename

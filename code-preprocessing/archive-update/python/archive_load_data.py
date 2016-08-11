@@ -2,11 +2,14 @@
 """Raw pre-processing routines for loading data from archive files and files with best hypervolume values.
 """
 from __future__ import division, print_function, unicode_literals
+
 import os
 import os.path
 import re
 import six
 from time import gmtime, strftime
+from itertools import groupby
+from operator import itemgetter
 
 from .archive_exceptions import PreprocessingWarning, PreprocessingException
 
@@ -152,7 +155,7 @@ def parse_old_arhive_file_name(file_name):
     except ValueError:
         dimension = None
 
-    return function, dimension, instance
+    return function, instance, dimension
 
 
 def get_instances(file_name):
@@ -174,29 +177,35 @@ def get_instances(file_name):
     return result
 
 
-def get_archive_file_info(file_name):
-    """Returns information on the problem instances contained in the given archive file in the form of the following
-       list of lists:
-       file_name, suite_name, function, dimension, instance1
-       file_name, suite_name, function, dimension, instance2
+def get_archive_file_info(file_name, functions, instances, dimensions):
+    """Returns information on the problem instances contained in the given archive file that also correspond to the
+       given functions, instances and dimensions in the form of the following list of lists:
+       file_name, suite_name, function, instance1, dimension
+       file_name, suite_name, function, instance2, dimension
        ...
        The suite_name, function and dimension are always retrieved from the file name, while instances are retrieved
        from the file name, if the file name is in form [suite-name]_f[function]_i[instance]_d[dimension]_*.*, and
        read from the file otherwise.
        :param file_name: archive file name
+       :param functions: functions to be considered
+       :param instances: instances to be considered
+       :param dimensions: dimensions to be considered
     """
     try:
         (suite_name, function, instance, dimension) = parse_archive_file_name(file_name)
+        if (function not in functions) or (dimension not in dimensions):
+            return None
         if not instance:
-            instances = get_instances(file_name)
+            instance_list = get_instances(file_name)
         else:
-            instances = [instance]
+            instance_list = [instance]
     except PreprocessingWarning as warning:
         raise PreprocessingWarning('Skipping file {}\n{}'.format(file_name, warning))
 
     result = []
-    for instance in instances:
-        result.append((file_name, suite_name, function, dimension, instance))
+    for instance in instance_list:
+        if instance in instances:
+            result.append((file_name, suite_name, function, instance, dimension))
     return result
 
 
@@ -230,7 +239,7 @@ def write_best_values(dic, file_name):
     :param dic: dictionary containing problem names and their best known hypervolume values
     """
     with open(file_name, 'a') as f:
-        f.write(strftime('\n/* Best values on %d.%m.%Y %H:%M:%S */\n', gmtime()))
+        f.write(strftime('/* Best values on %d.%m.%Y %H:%M:%S */\n', gmtime()))
         for key, value in sorted(dic.items()):
             f.write('  \"{} {:.15f}\",\n'.format(key, value))
         f.close()
@@ -267,3 +276,20 @@ def parse_range(input_string=""):
             except:
                 raise PreprocessingException('Range {} not in correct format'.format(input_string))
     return list(selection)
+
+
+def get_range(input_set):
+    """Parses the input set containing integers, such as:
+       (1, 2, 10, 3, 4, 5)
+       Returns the shortest string of sorted integers and integer ranges:
+       1, 2-5, 10
+       :param input_set: input set with integers (if empty, the result is an empty string)
+    """
+    result = []
+    for k, g in groupby(enumerate(sorted(input_set)), lambda (i, x): i - x):
+        i_list = map(itemgetter(1), g)
+        if len(i_list) > 1:
+            result.append('{}-{}'.format(i_list[0], i_list[-1]))
+        else:
+            result.append('{}'.format(i_list[0]))
+    return ','.join(result)

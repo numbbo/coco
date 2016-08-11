@@ -446,11 +446,11 @@ static char *coco_string_trim(char *string) {
 	endp = string + len;
 
 	/* Move the front and back pointers to address the first non-whitespace characters from each end. */
-	while (isspace(*frontp)) {
+	while (isspace((unsigned char) *frontp)) {
 		++frontp;
 	}
 	if (endp != frontp) {
-		while (isspace(*(--endp)) && endp != frontp) {
+		while (isspace((unsigned char) *(--endp)) && endp != frontp) {
 		}
 	}
 
