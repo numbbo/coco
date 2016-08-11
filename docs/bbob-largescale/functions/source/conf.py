@@ -24,13 +24,15 @@ import shlex
 # -- General configuration ------------------------------------------------
 authors = "The BBOBies"
 # WHEN CHANGING THIS CHANGE ALSO the abstract in index.rst accordingly
-abstract = """PLEASE CHANGE (this abstract might be outdated, see index.rst)
-The ``bbob-biobj`` test suite contains 55 bi-objective functions
-in continuous domain which are derived from combining functions of the
-well-known single-objective noiseless ``bbob`` test suite. Besides giving the
-actual function definitions and presenting their (known) properties, this
-documentation also aims at giving the rationale behind our approach in terms of
-function groups, instances, and potential objective space normalization.
+abstract = """The ``bbob-largescale`` test suite containing 24 single objective
+    functions in continuous domain is an extension of the well-known
+    single-objective noiseless ``bbob`` test suite [HAN2009]_, which has been used since 2009 in
+    the `BBOB workshop series`_, in large dimension. The core idea is to make rotational
+    transformations :math:`\textbf{R}, \textbf{Q}` in search space that
+    appear in the ``bbob`` test suite cheaper while retaining some desired
+    properties. This documentation presents our approach where the rotational transformation will
+    be replaced by the combination of a block-diagonal matrix with two
+    permutation matrices in order to construct test functions.
 """
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -168,7 +170,7 @@ html_theme = 'bizstyle'  # white/blue, quite good, too blue on the start page
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = 'COCO: CHANGE TITLE The Bi-objective Black-Box Optimization Benchmarking (bbob-biobj) Test Suite'
+html_title = 'COCO: The Large Scale Black-Box Optimization Benchmarking (bbob-largescale) Test Suite'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -289,10 +291,11 @@ latex_elements = {# The paper size ('letterpaper' or 'a4paper').
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'bbob-largescale-functions.tex', u'COCO: PLEASE CHANGE The Bi-objective Black Box Optimization Benchmarking (bbob-biobj) Test Suite',
+  (master_doc, 'bbob-largescale-functions.tex', u'COCO: The Large Scale Black-Box Optimization Benchmarking (bbob-largescale) Test Suite',
   r"""
-      PLEASE CHANGE,
-      Tea Tu\v{s}ar$^1$, 
+      Ouassim Ait Elhara$^3$,
+      Duc Manh Nguyen$^{2,3}$,
+      Tea Tu\v{s}ar$^1$,
       Dimo Brockhoff$^1$,
       Nikolaus Hansen$^{2,3}$, 
       Anne Auger$^{2,3}$ 
@@ -334,7 +337,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'bbob-largescale-functions-doc', u'PLEASE CHANGE Function Documentation of the bbob-biobj Test Suite',
+    (master_doc, 'bbob-largescale-functions-doc', u'Function Documentation of the bbob-largescale Test Suite',
      [author], 1)
 ]
 
@@ -348,8 +351,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  (master_doc, 'bbob-largescale-functions-doc', u'PLEASE CHANGE Function Documentation of the bbob-biobj Test Suite',
-   author, 'bbob-largescale-functions-doc', 'PLEASE CHANGE Documents all functions of the bbob-biobj test suite.',
+  (master_doc, 'bbob-largescale-functions-doc', u'Function Documentation of the bbob-largescale Test Suite',
+   author, 'bbob-largescale-functions-doc', 'Documents all functions of the bbob-largescale test suite.',
    'Miscellaneous'),
 ]
 
