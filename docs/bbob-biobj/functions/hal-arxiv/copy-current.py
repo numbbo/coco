@@ -10,15 +10,17 @@ Related: the file ``*sub?.zip`` is a submission "tag".
 
 """
 import os
+
+this_dir = 'hal-arxiv'
+build_origin = '../build/latex'  # this script lies in folder this_dir
+
 c = os.system
 wd = os.getcwd
 
-build_origin = '../build/latex'  # this script lies in hal-arxiv
-
 if __name__ == '__main__':
     entry_folder = wd()
-    if not entry_folder.endswith('hal-arxiv'):
-        os.chdir('hal-arxiv')
+    if not entry_folder.endswith(this_dir):
+        os.chdir(this_dir)
     working_folder = wd()
     # we could make a try finally block here
     os.chdir(build_origin)
