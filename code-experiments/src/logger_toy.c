@@ -95,10 +95,11 @@ static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *inn
   problem->evaluate_function = logger_toy_evaluate;
 
   /* Output initial information */
+  assert(coco_problem_get_suite(inner_problem));
   fprintf(logger_toy->log_file, "\n");
-  fprintf(logger_toy->log_file, "%% problem_id = %s, problem_name = %s\n", coco_problem_get_id(inner_problem),
-      coco_problem_get_name(inner_problem));
-  fprintf(logger_toy->log_file, "%% coco_version = %s\n", coco_version);
+  fprintf(logger_toy->log_file, "suite = '%s', problem_id = '%s', problem_name = '%s', coco_version = '%s'\n",
+          coco_problem_get_suite(inner_problem)->suite_name, coco_problem_get_id(inner_problem),
+          coco_problem_get_name(inner_problem), coco_version);
   fprintf(logger_toy->log_file, "%% evaluation number | function value | target hit | %lu variables \n",
   		(unsigned long) inner_problem->number_of_variables);
 
