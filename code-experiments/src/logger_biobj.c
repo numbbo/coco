@@ -499,8 +499,16 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   /* Output header information to the info file */
   if (!info_file_exists) {
     /* Output algorithm name */
-    fprintf(indicator->info_file, "algorithm = '%s', indicator = '%s', folder = '%s', coco_version = '%s'\n%% %s",
-        observer->algorithm_name, indicator_name, problem->problem_type, coco_version, observer->algorithm_info);
+    assert(problem->suite);
+    /* TODO: Use this once suite can be read by the postprocessing
+    fprintf(indicator->info_file,
+        "suite = '%s', algorithm = '%s', indicator = '%s', folder = '%s', coco_version = '%s'\n%% %s",
+        problem->suite->suite_name, observer->algorithm_name, indicator_name, problem->problem_type,
+        coco_version, observer->algorithm_info);*/
+    fprintf(indicator->info_file,
+        "algorithm = '%s', indicator = '%s', folder = '%s', coco_version = '%s'\n%% %s",
+        observer->algorithm_name, indicator_name, problem->problem_type,
+        coco_version, observer->algorithm_info);
     if (logger->log_nondom_mode == LOG_NONDOM_READ)
       fprintf(indicator->info_file, " (reconstructed)");
   }
