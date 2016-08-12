@@ -182,7 +182,8 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
                                       const char *folder_path,
                                       const char *indexFile_prefix,
                                       const char *function_id,
-                                      const char *dataFile_path) {
+                                      const char *dataFile_path,
+                                      const char *suite_name) {
   /* to add the instance number TODO: this should be done outside to avoid redoing this for the .*dat files */
   char used_dataFile_path[COCO_PATH_MAX] = { 0 };
   int errnum, newLine; /* newLine is at 1 if we need a new line in the info file */
@@ -266,10 +267,16 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
         fclose(tmp_file);
       }
 
-      fprintf(*target_file, "funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s'\n",
-          (int) strtol(function_id, NULL, 10), (unsigned long) logger->number_of_variables, pow(10, -8),
-          logger->observer->algorithm_name);
-      fprintf(*target_file, "%% coco_version = %s\n", coco_version);
+      fprintf(*target_file,
+          "funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', coco_version = '%s'\n",
+          (int) strtol(function_id, NULL, 10), (unsigned long) logger->number_of_variables,
+          pow(10, -8), logger->observer->algorithm_name, coco_version);
+      /* TODO: Use this once suite can be read by the postprocessing
+      fprintf(*target_file,
+          "suite = '%s', funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', coco_version = '%s'\n",
+          suite_name, (int) strtol(function_id, NULL, 10), (unsigned long) logger->number_of_variables,
+          pow(10, -8), logger->observer->algorithm_name, coco_version);
+      */
       fprintf(*target_file, "%%\n");
       strncat(used_dataFile_path, "_i", COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
       strncat(used_dataFile_path, bbob_infoFile_firstInstance_char,
@@ -323,8 +330,9 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   strncat(dataFile_path, tmpc_dim, COCO_PATH_MAX - strlen(dataFile_path) - 1);
 
   /* index/info file */
+  assert(coco_problem_get_suite(inner_problem));
   logger_bbob_openIndexFile(logger, logger->observer->result_folder, indexFile_prefix, tmpc_funId,
-      dataFile_path);
+      dataFile_path, coco_problem_get_suite(inner_problem)->suite_name);
   fprintf(logger->index_file, ", %lu", (unsigned long) coco_problem_get_suite_dep_instance(inner_problem));
   /* data files */
   /* TODO: definitely improvable but works for now */
