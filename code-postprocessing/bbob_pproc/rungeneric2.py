@@ -270,12 +270,17 @@ def main(argv=None):
         for i in dsList:
             if i.dim not in genericsettings.dimensions_to_display:
                 continue
-
-            if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) <
-                    inset.instancesOfInterest):
-                warnings.warn('The data of %s do not list ' % (i) +
+            # check whether current set of instances correspond to correct
+            # setting of a BBOB workshop and issue a warning otherwise:            
+            curr_instances = (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)))
+            correct = False
+            for instance_set_of_interest in inset.instancesOfInterest:
+                if curr_instances == instance_set_of_interest:
+                    correct = True
+            if not correct:
+                warnings.warn('The data of %s do not list ' % i +
                               'the correct instances ' +
-                              'of function F%d.' % (i.funcId))
+                              'of function F%d.' % i.funcId)
 
         if len(sortedAlgs) < 2:
             raise Usage('Expect data from two different algorithms, could ' +
