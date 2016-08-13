@@ -14,7 +14,7 @@ static int about_equal_value(const double a, const double b) {
   {
     const double absolute_error = fabs(a - b);
     const double larger = fabs(a) > fabs(b) ? a : b;
-    const double relative_error = fabs((a - b) / larger);
+    const double relative_error = fabs((a - b) / (fabs(larger) + 1e-23));
 
     if (absolute_error < 1e-13)
       return 1;

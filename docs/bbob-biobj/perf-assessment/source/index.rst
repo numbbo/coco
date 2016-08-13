@@ -20,7 +20,7 @@ Biobjective Performance Assessment with the COCO Platform
 
 .. raw:: html
 
-   See: <I>ArXiv e-prints</I>,
+   See also: <I>ArXiv e-prints</I>,
    <A HREF="http://arxiv.org/abs/1605.01746">arXiv:1605.01746</A>, 2016.
 
 
@@ -64,13 +64,12 @@ target value a runtime is measured (or no runtime value is available if the
 indicator does not reach the target value) [HAN2016perf]_. 
 In the single-objective, noise-free case, the assessed quality indicator is, at 
 each given time step, the function value of the best solution the algorithm has
-obtained (evaluated or recommended, see [HAN2016ex]_) before or at this time
-step. 
+obtained before or at this time step. 
 
 In the bi- and multi-objective case, e.g. on the biobjective ``bbob-biobj`` 
 test suite [TUS2016]_, the assessed quality
 indicator at the given time step is a hypervolume indicator computed from
-*all* solutions obtained (evaluated or recommended) before or at this time
+*all* solutions obtained before or at this time
 step. 
 
 .. [#] Time is considered to be *number of function evaluations* and, 
@@ -94,8 +93,8 @@ In this section, we introduce the definitions of some basic terms and concepts.
  We call a problem *solved* by an optimization algorithm if the algorithm
  reaches a quality indicator value at least as good as the associated target value.
  The number of function evaluations needed to surpass the target value for the first time
- is COCO_'s central performance measure. [HAN2016co]_ In case a single
- quality indicator is used for all problems in a benchmark suite, we can drop the
+ is COCO_'s central performance measure [HAN2016co]_. Most often a single
+ quality indicator is used for all problems in a benchmark suite, such we can drop the
  quality indicator and refer to a problem as a quadruple :math:`f_\theta,\theta,n,I_{\rm target}`.
  Note that typically more than one problem for a *function instance* of
  :math:`(f_\theta,\theta,n)` is defined by choosing more than one target value.
@@ -142,7 +141,7 @@ Performance Assessment with a Quality Indicator
 
 For measuring the runtime on a given problem, we consider a quality indicator
 which is to be optimized (minimized). 
-In the noiseless single-objective case, the quality indicator is the best so-far observed objective function value (recommendations can replace previous observations). 
+In the noiseless single-objective case, the quality indicator is the best so-far observed objective function value (where recommendations might be taken into account). 
 In the case of the ``bbob-biobj`` test suite, the quality indicator is based on the
 hypervolume indicator of the *archive* :math:`A_t`.
 
@@ -226,7 +225,7 @@ Rationales Behind the Performance Measure
  We believe using an archive to keep all non-dominated solutions is relevant in practice
  in bi-objective real-world applications, in particular when function evaluations are
  expensive. Using an external archive for the performance assessment has the additional
- advantage that no populuation size needs to be prescribed and algorithms with different
+ advantage that no population size needs to be prescribed and algorithms with different
  or even changing population sizes can be easily compared.
 
 
@@ -347,7 +346,7 @@ reference hypervolume indicator value.
 
 .. [#] Using the quality indicator value of the *true* Pareto set might not
    be desirable, because the set contains an infinite number of solutions, 
-   which is neither a possible nor a desirable goal to aspire in practice. 
+   which is neither a possible nor a desirable goal to aspire to in practice. 
 
 .. [#] Amongst others, we run versions of NSGA-II [DEB2002]_ via Matlab's
   ``gamultiobj`` function__, SMS-EMOA [BEU2007]_, MOEA/D [ZHA2007]_,
@@ -398,8 +397,6 @@ values from the `Github repository of COCO`__.
 
     \section*{Acknowledgements}
 
-This work was supported by the grant ANR-12-MONU-0009 (NumBBO) 
-of the French National Research Agency.
 
 The authors would like to thank Thanh-Do Tran for his
 contributions and assistance with the preliminary code of the bi-objective 
@@ -409,6 +406,9 @@ requests, code testing, and many valuable discussions. Special thanks go
 to Olaf Mersmann for the inital rewriting of the COCO platform without which
 the bi-objective extension of COCO would not have happened.
    
+This work was supported by the grant ANR-12-MONU-0009 (NumBBO) 
+of the French National Research Agency.
+
 
 .. ############################# References ##################################
 .. raw:: html
@@ -428,10 +428,10 @@ the bi-objective extension of COCO would not have happened.
   self-adaptation in evolution strategies. *Evolutionary computation*, 9(2),
   pp. 159-195.
   
-.. [HAN2016perf] N. Hansen, A. Auger, D. Brockhoff, D. Tušar, T. Tušar
-   (2016). `COCO: Performance Assessment`__, *ArXiv e-prints*, `arXiv:160x.xxxxx`__.
-.. __: http://numbbo.github.io/coco-doc/perf-assessment
-.. __: http://arxiv.org/abs/160x.xxxxx
+.. [HAN2016perf] N. Hansen, A. Auger, D. Brockhoff, D. Tušar, T. Tušar (2016). 
+  `COCO: Performance Assessment`__. *ArXiv e-prints*, `arXiv:1605.03560`__.
+__ http://numbbo.github.io/coco-doc/perf-assessment
+__ http://arxiv.org/abs/1605.03560
 
 .. [HAN2016co] N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff (2016).
    `COCO: A Platform for Comparing Continuous Optimizers in a Black-Box 
