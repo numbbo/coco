@@ -730,7 +730,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         except KeyError:
             continue
 
-        args = styles[(i) % len(styles)]
+        args = styles[i % len(styles)]
+        args = args.copy()
         args['linewidth'] = 1.5
         args['markersize'] = 12.
         args['markeredgewidth'] = 1.5
@@ -809,15 +810,38 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                             ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f'))
         if not (plotType == PlotType.DIM):
             text += ', %d-D' % dimList[0]
+    # add information about smallest and largest target and their number
+    text += '\n'
+    targetstrings = target_values.labels()
+    if isinstance(target_values, pp.RunlengthBasedTargetValues):
+        text += (str(len(targetstrings)) + ' target RLs/dim: ' +
+                 targetstrings[0] + '..' +
+                 targetstrings[len(targetstrings)-1] + '\n')
+        text += '   from ' + testbedsettings.current_testbed.best_algorithm_filename
+    else:
+        text += (str(len(targetstrings)) + ' targets in ' +
+                 targetstrings[0] + '..' +
+                 targetstrings[len(targetstrings)-1])        
     # add number of instances 
     text += '\n'
+    num_of_instances = []
     for alg in algorithms_with_data:
-        if dictAlgperFunc[alg]:
-            text += '%d, ' % len(dictAlgperFunc[alg][0].instancenumbers)
+        if len(dictAlgperFunc[alg]) > 0:
+            num_of_instances.append(len((dictAlgperFunc[alg])[0].instancenumbers))
         else:
-            text += '0, '
+            warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
+    # issue a warning if number of instances is inconsistant, otherwise
+    # display only the present number of instances, i.e. remove copies
+    if len(set(num_of_instances)) > 1:
+        warnings.warn('Number of instances inconsistent over all algorithms: %s instances found.' % str(num_of_instances))
+    else:
+        num_of_instances = set(num_of_instances)
+    for n in num_of_instances:
+        text += '%d, ' % n
+            
     text = text.rstrip(', ')
     text += ' instances'
+
     plt.text(0.01, 0.98, text, horizontalalignment="left",
              verticalalignment="top", transform=plt.gca().transAxes, size='small')
     if len(dictFunc) == 1:
