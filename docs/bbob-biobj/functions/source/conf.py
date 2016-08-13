@@ -266,6 +266,20 @@ latex_elements = {# The paper size ('letterpaper' or 'a4paper').
   \newcommand{\ignore}[1]{}  % never used
   \newcommand{\COCO}{\href{https://githum.com/numbbo/coco}{COCO}}
   \newcommand{\ff}[1]{\ensuremath{f_{#1}}} 
+    \renewcommand{\topfraction}{1} % max fraction of floats at top
+    \renewcommand{\bottomfraction}{1} % max fraction of floats at bottom
+    %   Parameters for TEXT pages (not float pages):
+    \setcounter{topnumber}{3}
+    \setcounter{bottomnumber}{3}
+    \setcounter{totalnumber}{3}     % 2 may work better
+    \setcounter{dbltopnumber}{4}    % for 2-column pages
+    \renewcommand{\dbltopfraction}{1}  % fit big float above 2-col. text
+    \renewcommand{\textfraction}{0.0}  % allow minimal text w. figs
+    %   Parameters for FLOAT pages (not text pages):
+    \renewcommand{\floatpagefraction}{0.9}  % require fuller float pages
+    % N.B.: floatpagefraction MUST be less than topfraction !!
+    \renewcommand{\dblfloatpagefraction}{0.8}  % require fuller float pages
+  
 """ + latex_commands,
 # Latex figure (float) alignment
 #'figure_align': 'htbp',
