@@ -19,7 +19,7 @@
 static double f_sharp_ridge_raw(const double *x, const size_t number_of_variables) {
 
   static const double alpha = 100.0;
-  const double vars_40 = number_of_variables <= 40 ? 1 : number_of_variables / 40.0;
+  const double vars_40 = 1; /* generalized: number_of_variables <= 40 ? 1 : number_of_variables / 40.0; */
   size_t i = 0;
   double result;
 
