@@ -801,12 +801,12 @@ Available commands for developers:
   test-python3            - Build and run minimal test of Python 3 module
   test-octave             - Build and run example experiment in Octave
   test-postprocessing     - Runs some of the post-processing tests
-  test-postprocessing-all - Runs all of the post-processing tests
+  test-postprocessing-all - Runs all of the post-processing tests [needs access to the internet]
   verify-postprocessing   - Checks if the generated html is up-to-date
   leak-check              - Check for memory leaks in C
   
   install-preprocessing   - Install preprocessing (user-locally)
-  test-preprocessing      - Runs some preprocessing tests
+  test-preprocessing      - Runs preprocessing tests [needs access to the internet]
 
 To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
