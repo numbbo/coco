@@ -206,7 +206,7 @@ def main(args):
     if run_all_tests:
         t0 = time.time()
         print(time.asctime())
-        result = os.system(python + command + ' --omit-single ' +
+        result = os.system(python + command +
                            join_path(data_path, 'BIPOP-CMA-ES_hansen_noiseless.tgz') +
                            join_path(data_path, 'MCS_huyer_noiseless.tgz') +
                            join_path(data_path, 'NEWUOA_ros_noiseless.tgz') +
