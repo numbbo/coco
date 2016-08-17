@@ -63,7 +63,8 @@
 \usepackage{xstring} % for string operations
 \usepackage{wasysym} % Table legend with symbols input from post-processing
 \usepackage{MnSymbol} % Table legend with symbols input from post-processing
-%\usepackage[hidelinks]{hyperref} % make COCO papers clickable
+\usepackage[colorlinks=true, linkcolor=blue]{hyperref} % make COCO papers clickable
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Definitions
@@ -116,8 +117,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
-
-\IfFileExists{\bbobdatapath ppfig2_f001.pdf}{2 algorithms currently not supported}{}
 
 %
 % --- Author Metadata here ---
@@ -748,4 +747,184 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 %
 
 % \clearpage % otherwise the last figure might be missing
+
+\clearpage
+\appendix
+
+The following pages present additional results that do not fit into the actual paper due to the page limit.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Scaling of aRT with dimension
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}
+\begin{tabular}{@{\hspace*{-0.018\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}}
+\includegraphics[width=0.223\textwidth]{ppfigs_f001}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f002}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f003}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f004}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f005}\\[-1.8ex]
+\includegraphics[width=0.223\textwidth]{ppfigs_f006}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f007}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f008}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f009}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f010}\\[-1.8ex]
+\includegraphics[width=0.223\textwidth]{ppfigs_f011}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f012}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f013}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f014}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f015}\\[-1.8ex]
+\includegraphics[width=0.223\textwidth]{ppfigs_f016}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f017}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f018}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f019}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f020}\\[-1.8ex]
+\includegraphics[width=0.223\textwidth]{ppfigs_f021}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f022}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f023}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f024}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f025}\\[-1.8ex]
+\includegraphics[width=0.223\textwidth]{ppfigs_f026}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f027}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f028}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f029}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f030}
+\end{tabular}
+\vspace{-3ex}
+\caption[Expected running time divided by dimension
+         versus dimension]{
+         \label{fig:scaling1}
+         \bbobppfigslegend{$f_1$ and $f_{30}$}
+}
+\end{figure*}
+
+\begin{figure*}
+\begin{tabular}{@{\hspace*{-0.018\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}l@{\hspace*{-0.02\textwidth}}}
+\includegraphics[width=0.223\textwidth]{ppfigs_f031}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f032}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f033}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f034}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f035}\\[-1.8ex]
+\includegraphics[width=0.223\textwidth]{ppfigs_f036}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f037}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f038}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f039}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f040}\\[-1.8ex]
+\includegraphics[width=0.223\textwidth]{ppfigs_f041}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f042}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f043}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f044}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f045}\\[-1.8ex]
+\includegraphics[width=0.223\textwidth]{ppfigs_f046}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f047}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f048}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f049}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f050}\\[-1.8ex]
+\includegraphics[width=0.223\textwidth]{ppfigs_f051}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f052}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f053}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f054}&
+\includegraphics[width=0.223\textwidth]{ppfigs_f055}
+\end{tabular}
+\vspace{-3ex}
+\caption[Expected running time divided by dimension
+         versus dimension]{
+         \label{fig:scaling2}
+         \bbobppfigslegend{$f_{31}$ and $f_{55}$}
+}
+\end{figure*}
+
+\IfFileExists{\bbobdatapath ppfig2_f001.pdf}{}{\end{document}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Scatter plots per function.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\rot}[2][2.5]{
+  \hspace*{-3.5\baselineskip}%
+  \begin{rotate}{90}\hspace{#1em}#2
+  \end{rotate}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}
+\centering
+\begin{tabular}{*{5}{@{}c@{}}}
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f001}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f002}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f003}& 
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f004}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f005}\\[-2.2ex]
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f006}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f007}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f008}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f009}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f010}\\[-2.2ex]
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f011}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f012}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f013}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f014}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f015}\\[-2.2ex]
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f016}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f017}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f018}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f019}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f020}\\[-2.2ex]
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f021}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f022}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f023}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f024}&
+		\includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f025}\\[-2.2ex]
+		\includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f026}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f027}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f028}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f029}&
+		\includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f030}
+\end{tabular}
+\caption{\label{fig:scatterplots}
+\bbobppscatterlegend{$f_1$--$f_{30}$}
+}
+\end{figure*}
+
+\begin{figure*}
+\centering
+\begin{tabular}{*{5}{@{}c@{}}}
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f031}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f032}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f033}& 
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f034}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f035}\\[-2.2ex]
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f036}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f037}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f038}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f039}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f040}\\[-2.2ex]
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f041}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f042}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f043}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f044}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f045}\\[-2.2ex]
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f046}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f047}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f048}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f049}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f050}\\[-2.2ex]
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f051}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f052}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f053}&
+    \includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f054}&
+		\includegraphics[width=0.20\textwidth, trim= 20mm 1mm 32mm 10mm, clip]{ppscatter_f055}
+\end{tabular}
+\caption{\label{fig:scatterplots}
+\bbobppscatterlegend{$f_{31}$--$f_{55}$}
+}
+\end{figure*}
+
+
 \end{document}
+
+
+
