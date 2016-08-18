@@ -91,12 +91,13 @@ class BestAlgSet:
 
     """
 
-    def __init__(self, dict_alg):
-        """Instantiate one best algorithm data set.
+    def __init__(self, dict_alg, algId='Virtual Best Algorithm'):
+        """Instantiate one best algorithm data set with name algId.
 
         :keyword dict_alg: dictionary of datasets, keys are algorithm
                           names, values are 1-element
                           :py:class:`DataSetList`.
+        :keyword algId: name of the to-be-constructed algorithm as string
 
         """
 
@@ -201,7 +202,7 @@ class BestAlgSet:
         self.dim = d
         self.funcId = f
         self.algs = resalgs
-        self.algId = 'Virtual Best Algorithm'
+        self.algId = algId
         self.comment = 'Combination of ' + ', '.join(sortedAlgs)
         self.ert = np.array(reserts)
         self.target = res[:, 0]
@@ -398,7 +399,7 @@ def usage():
     print(__doc__)  # same as: sys.modules[__name__].__doc__, was: main.__doc__
 
 
-def generate(dict_alg):
+def generate(dict_alg, algId):
     """Generates dictionary of best algorithm data set.
     """
 
@@ -406,13 +407,16 @@ def generate(dict_alg):
     res = {}
     for f, i in pproc.dictAlgByFun(dict_alg).iteritems():
         for d, j in pproc.dictAlgByDim(i).iteritems():
-            tmp = BestAlgSet(j)
+            tmp = BestAlgSet(j, algId)
             res[(d, f)] = tmp
     return res
 
 
-def customgenerate(args=algs2009):
+def deprecated_customgenerate(args=algs2009):
     """Generates best algorithm data set.
+
+    This functionality is deprecated because it writes
+    unsupported pickle files.
 
     It will create a folder bestAlg in the current working directory
     with a pickle file corresponding to the bestalg dataSet of the
@@ -459,12 +463,13 @@ def customgenerate(args=algs2009):
     print('done with writing pickle...')
 
 
-def custom_generate(args=algs2009):
-    """Generates best algorithm data set.
+def custom_generate(args=algs2009, algId='bestCustomAlg'):
+    """Generates best algorithm data set from a given set of algorithms.
 
-    It will create a folder bestAlg in the current working directory
-    with a pickle file corresponding to the bestalg dataSet of the
-    algorithms listed in variable args.
+    It will create a folder named as algId in the current working directory
+    corresponding to the bestalg dataSet of the algorithms listed in
+    variable args. This folder is furthermore added to a `.tar.gz` file
+    of the same name.
 
     This method is called from the python command line from a directory
     containing all necessary data folders::
@@ -472,7 +477,7 @@ def custom_generate(args=algs2009):
     TODO: write the doctest
     """
 
-    output_dir = 'bestCustomAlg'
+    output_dir = algId
 
     genericsettings.verbose = True
     dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args)
@@ -482,7 +487,7 @@ def custom_generate(args=algs2009):
         if genericsettings.verbose:
             print('Folder %s was created.' % output_dir)
 
-    result = generate(dictAlg)
+    result = generate(dictAlg, algId)
 
     create_data_files(output_dir, result, dsList[0].isBiobjective())
 

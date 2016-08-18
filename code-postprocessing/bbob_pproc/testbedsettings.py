@@ -104,7 +104,7 @@ class GECCOBBOBTestbed(Testbed):
         self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
         self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
         self.scenario = scenario_fixed
-        self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
+        self.best_algorithm_filename = 'best2009-bbob.tar.gz'
         self.best_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in best_algorithm_filename
         #self.best_algorithm_filename = 'data/RANDOMSEARCH'
         #self.best_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in best_algorithm_filename
@@ -133,6 +133,8 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
         self.functions_with_legend = (101, 130)
         self.first_function_number = 101
         self.last_function_number = 130
+        self.best_algorithm_filename = 'best2009-bbob-noisy.tar.gz'
+        self.best_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in best_algorithm_filename
 
 
 class GECCOBiObjBBOBTestbed(Testbed):
@@ -171,7 +173,8 @@ class GECCOBiObjBBOBTestbed(Testbed):
         #self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
         self.pptablemany_targetsOfInterest = targetValues((1, 1e-1, 1e-2, 1e-3))  # used for pptables
         self.scenario = scenario_biobjfixed
-        self.best_algorithm_filename = 'bestbiobjalgentries2016.pickle.gz'
+        self.best_algorithm_filename = 'best2016-bbob-biobj.tar.gz'
+        self.best_algorithm_filename = 'bestalgentries2016.pickle.gz' # TODO produce correct best2016 algo and delete this line
         self.best_algorithm_displayname = 'best 2016' # TODO: should be read in from data set in best_algorithm_filename
         self.short_names = get_short_names(self.shortinfo_filename)
         # expensive optimization settings:

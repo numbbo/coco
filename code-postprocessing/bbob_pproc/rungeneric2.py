@@ -678,6 +678,7 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.two_algorithm_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.TWO,
+
             functionGroups=dsList0.getFuncGroups())
 
         if (genericsettings.isFig or genericsettings.isRLDistr
