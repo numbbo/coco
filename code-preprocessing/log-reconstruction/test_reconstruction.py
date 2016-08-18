@@ -123,7 +123,7 @@ def run_log_reconstruct():
         for name in files:
             compare_files(abspath(join(root, name)),
                           abspath(join(root, name)).replace('exdata', 'test-data'),
-                          1e-12)
+                          1e-8)
 
 
 def run_merge_lines():
@@ -148,7 +148,7 @@ def run_merge_lines():
         for name in files:
             compare_files(abspath(join(root, name)),
                           abspath(join(root, name)).replace('exdata', 'test-data'),
-                          1e-12)
+                          1e-8)
 
 
 def test_all():
