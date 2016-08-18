@@ -13,6 +13,55 @@ def almost_equal(value1, value2, precision):
     return abs(value1 - value2) < precision
 
 
+def get_lines(file_name):
+    with open(file_name, 'r') as f:
+        result = f.readlines()
+        f.close()
+    return result
+
+
+def is_float(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
+def compare_files(first_file, second_file, precision=1e-6):
+    """
+    Returns true if two files are equal and False otherwise. Any numbers are compared w.r.t. the given precision.
+    Values of the "coco_version" are ignored.
+    """
+
+    lines1 = get_lines(first_file)
+    lines2 = get_lines(second_file)
+
+    if len(lines1) != len(lines2):
+        return False
+
+    for line1, line2 in zip(lines1, lines2):
+
+        words1 = line1.split()
+        words2 = line2.split()
+
+        if len(words1) != len(words2):
+            return False
+
+        for word1, word2 in zip(words1, words2):
+
+            if "coco_version" in word1 and "coco_version" in word2:
+                break
+
+            if is_float(word1) and is_float(word2):
+                if not almost_equal(float(word1), float(word2), precision):
+                    return False
+            else:
+                if word1 != word2:
+                    return False
+    return True
+
+
 def prepare_archive_data(download_data=False):
     """
     Prepares the data needed for the tests (cleans up the test-data folder of unnecessary files) and, if download_data
@@ -113,7 +162,6 @@ def run_archive_reformat():
     """
     from archive_reformat import reformat_archives
     from cocoprep.archive_load_data import parse_range
-    import filecmp
 
     base_path = dirname(__file__)
     reformat_archives(abspath(join(base_path, 'test-data', 'archives-input')),
@@ -124,9 +172,8 @@ def run_archive_reformat():
 
     for root, dirs, files in walk(abspath(join(base_path, 'test-data', 'archives-reformatted')), topdown=False):
         for name in files:
-            assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-results', name)),
-                               abspath(join(base_path, 'test-data', 'archives-reformatted', name)),
-                               shallow=False)
+            assert compare_files(abspath(join(base_path, 'test-data', 'archives-results', name)),
+                                 abspath(join(base_path, 'test-data', 'archives-reformatted', name)))
 
 
 def run_archive_split():
@@ -135,7 +182,6 @@ def run_archive_split():
     """
     from archive_split import archive_split
     from cocoprep.archive_load_data import parse_range
-    import filecmp
 
     base_path = dirname(__file__)
     archive_split(abspath(join(base_path, 'test-data', 'archives-input')),
@@ -146,9 +192,8 @@ def run_archive_split():
 
     for root, dirs, files in walk(abspath(join(base_path, 'test-data', 'archives-split')), topdown=False):
         for name in files:
-            assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-results', name)),
-                               abspath(join(base_path, 'test-data', 'archives-split', name)),
-                               shallow=False)
+            assert compare_files(abspath(join(base_path, 'test-data', 'archives-results', name)),
+                                 abspath(join(base_path, 'test-data', 'archives-split', name)))
 
 
 def run_archive_thinning():
@@ -157,7 +202,6 @@ def run_archive_thinning():
     """
     from archive_thinning import archive_thinning
     from cocoprep.archive_load_data import parse_range
-    import filecmp
 
     base_path = dirname(__file__)
     archive_thinning(abspath(join(base_path, 'test-data', 'archives-input')),
@@ -170,9 +214,8 @@ def run_archive_thinning():
 
     for root, dirs, files in walk(abspath(join(base_path, 'test-data', 'archives-thinned')), topdown=False):
         for name in files:
-            assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-results', name)),
-                               abspath(join(base_path, 'test-data', 'archives-thinned', name)),
-                               shallow=False)
+            assert compare_files(abspath(join(base_path, 'test-data', 'archives-results', name)),
+                                 abspath(join(base_path, 'test-data', 'archives-thinned', name)))
 
 
 def run_archive_analysis():
@@ -181,7 +224,6 @@ def run_archive_analysis():
     """
     from archive_analysis import archive_analysis, summary_analysis
     from cocoprep.archive_load_data import parse_range
-    import filecmp
 
     base_path = dirname(__file__)
     archive_analysis(abspath(join(base_path, 'test-data', 'archives-input')),
@@ -194,9 +236,8 @@ def run_archive_analysis():
 
     for root, dirs, files in walk(abspath(join(base_path, 'test-data', 'archives-analysis')), topdown=False):
         for name in files:
-            assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-results', name)),
-                               abspath(join(base_path, 'test-data', 'archives-analysis', name)),
-                               shallow=False)
+            assert compare_files(abspath(join(base_path, 'test-data', 'archives-results', name)),
+                                 abspath(join(base_path, 'test-data', 'archives-analysis', name)))
 
     summary_analysis(abspath(join(base_path, 'test-data', 'archives-analysis')),
                      abspath(join(base_path, 'test-data', 'archives-analysis.txt')),
@@ -206,9 +247,8 @@ def run_archive_analysis():
                      parse_range('1-10'),
                      parse_range('2,3,5,10,20,40'))
 
-    assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-analysis.txt')),
-                       abspath(join(base_path, 'test-data', 'archives-results', 'archives-analysis.txt')),
-                       shallow=False)
+    assert compare_files(abspath(join(base_path, 'test-data', 'archives-analysis.txt')),
+                         abspath(join(base_path, 'test-data', 'archives-results', 'archives-analysis.txt')))
 
 
 def run_archive_difference():
@@ -217,7 +257,6 @@ def run_archive_difference():
     """
     from archive_difference import archive_difference
     from cocoprep.archive_load_data import parse_range
-    import filecmp
 
     base_path = dirname(__file__)
     archive_difference(abspath(join(base_path, 'test-data', 'archives-input', 'a')),
@@ -227,9 +266,8 @@ def run_archive_difference():
                        parse_range('1-10'),
                        parse_range('2,3,5,10,20,40'))
 
-    assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-diff.txt')),
-                       abspath(join(base_path, 'test-data', 'archives-results', 'archives-diff.txt')),
-                       shallow=False)
+    assert compare_files(abspath(join(base_path, 'test-data', 'archives-diff.txt')),
+                         abspath(join(base_path, 'test-data', 'archives-results', 'archives-diff.txt')))
 
 
 def run_extract_extremes():
@@ -238,7 +276,6 @@ def run_extract_extremes():
     """
     from extract_extremes import extract_extremes
     from cocoprep.archive_load_data import parse_range
-    import filecmp
 
     base_path = dirname(__file__)
     extract_extremes(abspath(join(base_path, 'test-data', 'archives-input')),
@@ -247,9 +284,8 @@ def run_extract_extremes():
                      parse_range('1-10'),
                      parse_range('2,3,5,10,20,40'))
 
-    assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-extremes.txt')),
-                       abspath(join(base_path, 'test-data', 'archives-results', 'archives-extremes.txt')),
-                       shallow=False)
+    assert compare_files(abspath(join(base_path, 'test-data', 'archives-extremes.txt')),
+                         abspath(join(base_path, 'test-data', 'archives-results', 'archives-extremes.txt')))
 
 
 def test_all():
