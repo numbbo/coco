@@ -9,32 +9,52 @@ from os.path import dirname, abspath, join, exists
 from os import walk, remove, rmdir, chdir, chmod, mkdir
 
 
-def compare_files(first_file, second_file):
+def almost_equal(value1, value2, precision):
+    return abs(value1 - value2) < precision
+
+
+def get_lines(file_name):
+    with open(file_name, 'r') as f:
+        result = f.readlines()
+        f.close()
+    return result
+
+
+def is_float(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
+def compare_files(first_file, second_file, precision):
     """
-    Returns true if two files are equal and False otherwise. If the files are '.info' files, only the lines not
-    containing the "coco_version" string are compared.
+    Returns true if two files are equal and False otherwise. Any numbers are compared w.r.t. the given precision.
+    Values of the "coco_version" are ignored.
     """
-    import filecmp
 
-    def get_lines(file_name):
-        with open(file_name, 'r') as f:
-            result = f.readlines()
-            f.close()
-        return result
+    lines1 = get_lines(first_file)
+    lines2 = get_lines(second_file)
 
-    if not first_file.endswith('.info'):
-        assert filecmp.cmp(first_file, second_file, shallow=False)
+    assert len(lines1) == len(lines2)
 
-    else:
-        lines1 = get_lines(first_file)
-        lines2 = get_lines(second_file)
+    for line1, line2 in zip(lines1, lines2):
 
-        assert len(lines1) == len(lines2)
+        words1 = line1.split()
+        words2 = line2.split()
 
-        for line1, line2 in zip(lines1, lines2):
-            if "coco_version" in line1 and "coco_version" in line2:
-                continue
-            assert line1 == line2
+        assert len(words1) == len(words2)
+
+        for word1, word2 in zip(words1, words2):
+
+            if "coco_version" in word1 and "coco_version" in word2:
+                break
+
+            if is_float(word1) and is_float(word2):
+                assert almost_equal(float(word1), float(word2), precision)
+            else:
+                assert word1 == word2
 
 
 def prepare_reconstruction_data(download_data=False):
@@ -102,7 +122,8 @@ def run_log_reconstruct():
     for root, dirs, files in walk(abspath(join(base_path, 'exdata', 'reconstruction')), topdown=False):
         for name in files:
             compare_files(abspath(join(root, name)),
-                          abspath(join(root, name)).replace('exdata', 'test-data'))
+                          abspath(join(root, name)).replace('exdata', 'test-data'),
+                          1e-12)
 
 
 def run_merge_lines():
@@ -126,7 +147,8 @@ def run_merge_lines():
     for root, dirs, files in walk(out_path, topdown=False):
         for name in files:
             compare_files(abspath(join(root, name)),
-                          abspath(join(root, name)).replace('exdata', 'test-data'))
+                          abspath(join(root, name)).replace('exdata', 'test-data'),
+                          1e-12)
 
 
 def test_all():
