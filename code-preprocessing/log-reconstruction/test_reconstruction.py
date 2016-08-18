@@ -28,7 +28,7 @@ def is_float(s):
         return False
 
 
-def compare_files(first_file, second_file, precision):
+def compare_files(first_file, second_file, precision=1e-6):
     """
     Returns true if two files are equal and False otherwise. Any numbers are compared w.r.t. the given precision.
     Values of the "coco_version" are ignored.
@@ -122,8 +122,7 @@ def run_log_reconstruct():
     for root, dirs, files in walk(abspath(join(base_path, 'exdata', 'reconstruction')), topdown=False):
         for name in files:
             compare_files(abspath(join(root, name)),
-                          abspath(join(root, name)).replace('exdata', 'test-data'),
-                          1e-8)
+                          abspath(join(root, name)).replace('exdata', 'test-data'))
 
 
 def run_merge_lines():
@@ -147,8 +146,7 @@ def run_merge_lines():
     for root, dirs, files in walk(out_path, topdown=False):
         for name in files:
             compare_files(abspath(join(root, name)),
-                          abspath(join(root, name)).replace('exdata', 'test-data'),
-                          1e-8)
+                          abspath(join(root, name)).replace('exdata', 'test-data'))
 
 
 def test_all():
