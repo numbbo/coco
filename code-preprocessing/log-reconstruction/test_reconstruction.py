@@ -1,33 +1,36 @@
 # A series of tests to check whether the python scripts of log-reconstruction perform correctly.
 # Start the tests by writing
 # py.test
-# in a terminal window
+# or
+# python -m pytest
+# in a terminal window on this folder
 
 from os.path import dirname, abspath, join, exists
 from os import walk, remove, rmdir, chdir, chmod, mkdir
 
 
-def prepare_reconstruction_data():
+def prepare_reconstruction_data(download_data=False):
     """
-    Unpacks the data to the test-data folder.
+    Prepares the data needed for the tests (deletes the exdata folder) and, if download_data is True, downloads the
+    test data from the internet.
     """
     import urllib
     import tarfile
     cleanup_reconstruction_data()
     data_folder = abspath(join(dirname(__file__), 'test-data'))
-    if not exists(abspath(join(data_folder, 'archives-input'))) or not exists(
-            abspath(join(data_folder, 'reconstruction'))):
+    if download_data and (not exists(abspath(join(data_folder, 'archives-input'))) or not exists(
+            abspath(join(data_folder, 'reconstruction')))):
         cleanup_reconstruction_data(True)
         chdir(abspath(dirname(__file__)))
-        data_url = 'http://dis.ijs.si/tea/tmp/log-reconstruction-test-data.tgz'
+        data_url = 'link-to-log-reconstruction-test-data.tgz'
         filename, headers = urllib.urlretrieve(data_url)
         tar_file = tarfile.open(filename)
         tar_file.extractall()
 
-    for root, dirs, files in walk(data_folder, topdown=False):
-        for name in files:
-            # Change file permission so it can be deleted
-            chmod(join(root, name), 0777)
+        for root, dirs, files in walk(data_folder, topdown=False):
+            for name in files:
+                # Change file permission so it can be deleted
+                chmod(join(root, name), 0777)
 
 
 def cleanup_reconstruction_data(delete_all=False):
