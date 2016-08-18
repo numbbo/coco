@@ -64,7 +64,7 @@ def beautify():
     limits = plt.ylim()
     plt.ylim(max((limits[0], final_target)), limits[1])
 
-def main(dictAlg, isBiobjective, outputdir='.', verbose=True, parentHtmlFileName=None):
+def main(dictAlg, outputdir='.', parentHtmlFileName=None):
     """Main routine for generating convergence plots
 
     """
@@ -111,7 +111,7 @@ def main(dictAlg, isBiobjective, outputdir='.', verbose=True, parentHtmlFileName
                     warned = True
             beautify()
             saveFigure(os.path.join(outputdir, figurename.replace(' ', '')),
-                       genericsettings.getFigFormats(), verbose=verbose)
+                       genericsettings.getFigFormats())
             plt.close()
     try:
         algname = str(dictFun[l].keys()[0][0])
@@ -119,7 +119,6 @@ def main(dictAlg, isBiobjective, outputdir='.', verbose=True, parentHtmlFileName
         algname = str(dictFun[l].keys()[0])
     save_single_functions_html(os.path.join(outputdir, 'ppconv'),
                                algname,
-                               isBiobjective=isBiobjective,
                                parentFileName=parentHtmlFileName)  # first try
 
 

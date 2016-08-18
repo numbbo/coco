@@ -50,7 +50,7 @@ def usage():
     print(main.__doc__)
 
 
-def grouped_ecdf_graphs(alg_dict, is_biobjective, order, output_dir, function_groups):
+def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups):
     """ Generates ecdf graphs, aggregated over groups as
         indicated via algdict
     """
@@ -67,17 +67,14 @@ def grouped_ecdf_graphs(alg_dict, is_biobjective, order, output_dir, function_gr
                 add_to_names='_%02dD' % d,
                 next_html_page_suffix='_%02dD' % next_dim,
                 htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP_MANY,
-                isBiobjective=is_biobjective,
                 functionGroups=function_groups,
                 parentFileName=genericsettings.many_algorithm_file_name
             )
 
             pprldmany.main(entries,  # pass expensive flag here?
-                           is_biobjective,
                            order=order,
                            outputdir=output_dir,
                            info=('%02dD_%s' % (d, gr)),
-                           verbose=genericsettings.verbose,
                            add_to_html_file_name='_%02dD' % d,
                            next_html_page_suffix='_%02dD' % next_dim
                            )
@@ -294,12 +291,9 @@ def main(argv=None):
                         + 'the file before the text run'
                         )
 
-        dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=genericsettings.verbose)
+        dsList, sortedAlgs, dictAlg = processInputArgs(args)
 
         if not dsList:
-            sys.exit()
-
-        if any(ds.isBiobjective() for ds in dsList) and any(not ds.isBiobjective() for ds in dsList):
             sys.exit()
 
         for i in dictAlg:
@@ -341,7 +335,6 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.ppfigs_file_name),
             '',  # algorithms names are clearly visible in the figure
             htmlPage=ppfig.HtmlPage.PPFIGS,
-            isBiobjective=dsList[0].isBiobjective(),
             functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
             parentFileName=genericsettings.many_algorithm_file_name
         )
@@ -350,7 +343,6 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.pptables_file_name),
             '',  # algorithms names are clearly visible in the figure
             htmlPage=ppfig.HtmlPage.PPTABLES,
-            isBiobjective=dsList[0].isBiobjective(),
             functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
             parentFileName=genericsettings.many_algorithm_file_name
         )
@@ -360,9 +352,7 @@ def main(argv=None):
         print("Generating convergence plots...")
         if genericsettings.isConv:
             ppconverrorbars.main(dictAlg,
-                                 dsList[0].isBiobjective(),
                                  outputdir,
-                                 genericsettings.verbose,
                                  genericsettings.many_algorithm_file_name)
         print_done()
 
@@ -373,7 +363,6 @@ def main(argv=None):
             # ECDFs per noise groups
             print("ECDF graphs per noise group...")
             grouped_ecdf_graphs(pproc.dictAlgByNoi(dictAlg),
-                                dsList[0].isBiobjective(),
                                 sortedAlgs,
                                 outputdir,
                                 dictAlg[sortedAlgs[0]].getFuncGroups())
@@ -382,7 +371,6 @@ def main(argv=None):
             # ECDFs per function groups
             print("ECDF graphs per function group...")
             grouped_ecdf_graphs(pproc.dictAlgByFuncGroup(dictAlg),
-                                dsList[0].isBiobjective(),
                                 sortedAlgs,
                                 outputdir,
                                 dictAlg[sortedAlgs[0]].getFuncGroups())
@@ -394,11 +382,9 @@ def main(argv=None):
                 # ECDFs for each function
                 if 1 < 3:
                     pprldmany.all_single_functions(dictAlg,
-                                                   dsList[0].isBiobjective(),
                                                    False,
                                                    sortedAlgs,
                                                    outputdir,
-                                                   genericsettings.verbose,
                                                    genericsettings.many_algorithm_file_name)
                 else:  # subject to removal
                     dictFG = pproc.dictAlgByFun(dictAlg)
@@ -409,9 +395,8 @@ def main(argv=None):
                             entries = dictDim[d]
                             next_dim = dims[i + 1] if i + 1 < len(dims) else dims[0]
                             single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
-                                                     'pprldmany-single-functions',
-                                                     # + os.sep + ('f%03d' % fg),
-                                                     dsList[0].isBiobjective()
+                                                     'pprldmany-single-functions'
+                                                     # + os.sep + ('f%03d' % fg)
                                                      )
                             if not os.path.exists(single_fct_output_dir):
                                 os.makedirs(single_fct_output_dir)
@@ -419,7 +404,6 @@ def main(argv=None):
                                            order=sortedAlgs,
                                            outputdir=single_fct_output_dir,
                                            info=('f%03d_%02dD' % (fg, d)),
-                                           verbose=genericsettings.verbose,
                                            add_to_html_file_name='_%02dD' % d,
                                            next_html_page_suffix='_%02dD' % next_dim
                                            )
@@ -438,7 +422,6 @@ def main(argv=None):
                         tmpdictdim,
                         sortedAlgs,
                         outputdir,
-                        genericsettings.verbose,
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==
                                          testbedsettings.testbed_name_bi) else True))
             print_done()
@@ -447,7 +430,6 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.many_algorithm_file_name),
             '',  # algorithms names are clearly visible in the figure
             htmlPage=ppfig.HtmlPage.MANY,
-            isBiobjective=dsList[0].isBiobjective(),
             functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups()
         )
 
@@ -462,10 +444,8 @@ def main(argv=None):
 
             ppfigs.main(dictAlg,
                         genericsettings.ppfigs_file_name,
-                        dsList[0].isBiobjective(),
                         sortedAlgs,
-                        outputdir,
-                        genericsettings.verbose)
+                        outputdir)
             plt.rcdefaults()
             print_done()
 

@@ -31,7 +31,7 @@ import tarfile
 from . import readalign, pproc
 from .toolsdivers import print_done
 from .ppfig import Usage
-from . import toolsstats, testbedsettings, cococommands
+from . import toolsstats, testbedsettings, genericsettings
 
 bestAlgorithmEntries = {}
 
@@ -229,7 +229,7 @@ class BestAlgSet:
         return ('{alg: %s, F%d, dim: %d}'
                 % (self.algId, self.funcId, self.dim))
 
-    def pickle(self, outputdir=None, verbose=True):
+    def pickle(self, outputdir=None):
         """Save instance to a pickle file.
 
         Saves the instance to a pickle file. If not specified
@@ -259,14 +259,14 @@ class BestAlgSet:
                 f = open(self.pickleFile, 'w')  # TODO: what if file already exist?
                 pickle.dump(self, f)
                 f.close()
-                if verbose:
+                if genericsettings.verbose:
                     print('Saved pickle in %s.' % self.pickleFile)
             except IOError, (errno, strerror):
                 print("I/O error(%s): %s" % (errno, strerror))
             except pickle.PicklingError:
                 print("Could not pickle %s" % self)
                 # else: #What?
-                # if verbose:
+                # if genericsettings.verbose:
                 # print('Skipped update of pickle file %s: no new data.'
                 # % self.pickleFile)
 
@@ -380,7 +380,7 @@ def load_best_algorithm(force=False):
         # processInputArgs need an empty second argument to work:
         algList = (os.path.join(best_alg_file_path, best_algo_filename), '')
         
-        dsList, sortedAlgs, dictAlg = pproc.processInputArgs(algList, verbose=False)
+        dsList, sortedAlgs, dictAlg = pproc.processInputArgs(algList)
         #loadedRefAlg = cococommands.load(os.path.join(best_alg_file_path,
         #                                               best_algo_filename))
         
@@ -402,7 +402,7 @@ def generate(dict_alg):
     """Generates dictionary of best algorithm data set.
     """
 
-    # dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
+    # dsList, sortedAlgs, dictAlg = processInputArgs(args)
     res = {}
     for f, i in pproc.dictAlgByFun(dict_alg).iteritems():
         for d, j in pproc.dictAlgByDim(i).iteritems():
@@ -442,12 +442,12 @@ def customgenerate(args=algs2009):
 
     outputdir = 'bestCustomAlg'
 
-    verbose = True
-    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
+    genericsettings.verbose = True
+    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args)
 
     if not os.path.exists(outputdir):
         os.mkdir(outputdir)
-        if verbose:
+        if genericsettings.verbose:
             print('Folder %s was created.' % outputdir)
 
     res = generate(dictAlg)
@@ -474,12 +474,12 @@ def custom_generate(args=algs2009):
 
     output_dir = 'bestCustomAlg'
 
-    verbose = True
-    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
+    genericsettings.verbose = True
+    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args)
 
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
-        if verbose:
+        if genericsettings.verbose:
             print('Folder %s was created.' % output_dir)
 
     result = generate(dictAlg)
@@ -648,8 +648,8 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
 
     print('Loading algorithm data from given algorithm list...\n')
 
-    verbose = True
-    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
+    genericsettings.verbose = True
+    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args)
 
     print('This may take a while (depending on the number of algorithms)')
 

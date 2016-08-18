@@ -250,7 +250,7 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
                          zorder=20, markeredgewidth = 0.2 * linewidth,
                          transform=trans, clip_on=False)
 
-def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
+def main(dsList0, dsList1, minfvalue=1e-8, outputdir=''):
     """Returns aRT1/aRT0 comparison figure."""
 
     #plt.rc("axes", labelsize=20, titlesize=24)
@@ -425,7 +425,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir='', verbose=True):
             toolsdivers.legend(loc='best')
 
         # save
-        saveFigure(filename, verbose=verbose)
+        saveFigure(filename)
         plt.close()
         #set_trace()
 

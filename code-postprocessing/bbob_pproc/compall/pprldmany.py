@@ -449,8 +449,8 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
     return res
 
 
-def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=None,
-                         outputdir='.', verbose=0, parentHtmlFileName=None):
+def all_single_functions(dictAlg, isSingleAlgorithm, sortedAlgs=None,
+                         outputdir='.', parentHtmlFileName=None):
     single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
                              'pprldmany-single-functions'
                              # + os.sep + ('f%03d' % fg)
@@ -460,22 +460,18 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
 
     if isSingleAlgorithm:
         main(dictAlg,
-             isBiobjective,
              order=sortedAlgs,
              outputdir=single_fct_output_dir,
              info='',
-             verbose=verbose,
              parentHtmlFileName=parentHtmlFileName,
              plotType=PlotType.DIM)
 
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
         for fg, entries in dictFG.iteritems():
             main(entries,
-                 isBiobjective,
                  order=sortedAlgs,
                  outputdir=single_fct_output_dir,
                  info='%s' % (fg),
-                 verbose=verbose,
                  parentHtmlFileName=parentHtmlFileName,
                  plotType=PlotType.DIM)
 
@@ -484,26 +480,21 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
 
         if isSingleAlgorithm:
             main(tempDictAlg,
-                 isBiobjective,
                  order=sortedAlgs,
                  outputdir=single_fct_output_dir,
                  info='f%03d' % (fg),
-                 verbose=verbose,
                  parentHtmlFileName=parentHtmlFileName,
                  plotType=PlotType.DIM)
-
-        if not (isSingleAlgorithm and isBiobjective):
+        else:
             dictDim = pp.dictAlgByDim(tempDictAlg)
             dims = sorted(dictDim)
             for i, d in enumerate(dims):
                 entries = dictDim[d]
                 next_dim = dims[i + 1] if i + 1 < len(dims) else dims[0]
                 main(entries,
-                     isBiobjective,
                      order=sortedAlgs,
                      outputdir=single_fct_output_dir,
                      info='f%03d_%02dD' % (fg, d),
-                     verbose=verbose,
                      parentHtmlFileName=parentHtmlFileName,
                      add_to_html_file_name='_%02dD' % d,
                      next_html_page_suffix='_%02dD' % next_dim)
@@ -519,11 +510,9 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
             dictFG = pp.dictAlgByFuncGroup(tempDictAlg)
             for fg, entries in dictFG.iteritems():
                 main(entries,
-                     isBiobjective,
                      order=sortedAlgs,
                      outputdir=single_fct_output_dir,
                      info='gr_%s_%02dD' % (fg, d),
-                     verbose=verbose,
                      parentHtmlFileName=parentHtmlFileName,
                      plotType=PlotType.FUNC)
 
@@ -533,14 +522,13 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
                 add_to_names='_%02dD' % d,
                 next_html_page_suffix='_%02dD' % next_dim,
                 htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP,
-                isBiobjective=isBiobjective,
                 functionGroups=functionGroups,
                 parentFileName='../%s' % parentHtmlFileName if parentHtmlFileName else None
             )
 
 
-def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
-         dimension=None, verbose=True, parentHtmlFileName=None, plotType=PlotType.ALG,
+def main(dictAlg, order=None, outputdir='.', info='default',
+         dimension=None, parentHtmlFileName=None, plotType=PlotType.ALG,
          add_to_html_file_name='', next_html_page_suffix=None):
     """Generates a figure showing the performance of algorithms.
 
@@ -555,7 +543,6 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     :param list order: sorted list of keys to dictAlg for plotting order
     :param str outputdir: output directory
     :param str info: output file name suffix
-    :param bool verbose: controls verbosity
     :param str parentHtmlFileName: defines the parent html page 
 
     """
@@ -770,7 +757,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                     f.write('\n' + r'\vfill \mbox{%s}' % commandnames[i])
                 f.write('}}\n')
             # f.write(footleg)
-            if verbose:
+            if genericsettings.verbose:
                 print 'Wrote right-hand legend in %s' % fileName
 
     if info:
@@ -839,7 +826,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     a.set_xticklabels(tmp)
 
     if save_figure:
-        ppfig.saveFigure(figureName, verbose=verbose)
+        ppfig.saveFigure(figureName)
         if len(dictFunc) == 1 or plotType == PlotType.DIM:
             fileName = genericsettings.pprldmany_file_name
 
@@ -850,7 +837,6 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 add_to_names=add_to_html_file_name,
                 next_html_page_suffix=next_html_page_suffix,
                 htmlPage=ppfig.HtmlPage.NON_SPECIFIED,
-                isBiobjective=isBiobjective,
                 parentFileName='../%s' % parentHtmlFileName if parentHtmlFileName else None,
                 header=header)
 
