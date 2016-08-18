@@ -105,12 +105,28 @@ def scaling_figure_caption(for_html = False):
 
 
 def prepare_ecdfs_figure_caption():
-
+    testbed = testbedsettings.current_testbed
     best2009text = (
                 r"The ``best 2009'' line " +
                 r"corresponds to the best \aRT\ observed during BBOB 2009 " +
                 r"for each selected target."
                 )
+    best2016biobjtext = (
+                r"The ``best 2016'' line " +
+                r"corresponds to the best \aRT\ observed during BBOB 2016 " +
+                r"for each selected target."
+                )
+    refalgtext = (
+                  r"As reference algorithm, ``%s`` "  % (testbed.best_algorithm_displayname) +
+                  r"is shown as light " +
+                  r"thick line with diamond markers."
+                 )
+    if testbed.best_algorithm_displayname == "best 2009":
+        refalgtext = best2009text
+    if (testbed.best_algorithm_displayname == "best 2016"
+            and isinstance(testbed, testbedsettings.GECCOBiObjBBOBTestbed)
+            ):
+        refalgtext = best2016biobjtext
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
@@ -128,14 +144,14 @@ def prepare_ecdfs_figure_caption():
                 r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. "
                 )
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+    if testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
-        figure_caption = ecdfs_figure_caption_standard
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+        figure_caption = ecdfs_figure_caption_standard + refalgtext
+    elif testbed.name == testbedsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
-            figure_caption = ecdfs_figure_caption_rlbased + best2009text
+            figure_caption = ecdfs_figure_caption_rlbased + refalgtext
         else:
-            figure_caption = ecdfs_figure_caption_standard + best2009text
+            figure_caption = ecdfs_figure_caption_standard + refalgtext
     else:
         warnings.warn("Current settings do not support ppfigdim caption.")
 
@@ -254,10 +270,10 @@ def plotLegend(handles, maxval=None):
     i = 0 # loop over the elements of ys
     for j in sorted(ys.keys()):
         for k in sorted(ys[j].keys()):
-            #enforce best 2009 comes first in case of equality
+			# enforce that a "best" algorithm comes first in case of equality
             tmp = []
             for h in ys[j][k]:
-                if plt.getp(h, 'label') == 'best 2009':
+                if 'best' in plt.getp(h, 'label'):
                     tmp.insert(0, h)
                 else:
                     tmp.append(h)

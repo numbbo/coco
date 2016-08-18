@@ -175,7 +175,7 @@ class VMultiReader(MultiReader):
     def align(self, currentValue):
         for i in self:
             while not i.isFinished:
-                if i.nextLine[self.idx] > currentValue:
+                if i.nextLine[self.idx] > currentValue and not is_close(i.nextLine[self.idx], currentValue):
                     break
                 i.next()
         return numpy.insert(self.currentLine(), 0, currentValue)
@@ -241,10 +241,10 @@ class HMultiReader(MultiReader):
         fvalues = []
         for i in self:
             while not i.isFinished:
-                if i.currentLine[self.idx] <= currentValue:
+                if i.currentLine[self.idx] <= currentValue or is_close(i.currentLine[self.idx], currentValue):
                     break
                 i.next()
-            if i.currentLine[self.idx] <= currentValue:
+            if i.currentLine[self.idx] <= currentValue or is_close(i.currentLine[self.idx], currentValue):
                 fvalues.append(i.currentLine[self.idx])
 
         # This should not happen
@@ -462,3 +462,7 @@ def split(dataFiles, isBiobjective, dim=None):
             dataSets.append(numpy.vstack(content))
 
     return dataSets
+
+
+def is_close(a, b, rel_tol=1e-09, abs_tol=0.0):
+    return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)

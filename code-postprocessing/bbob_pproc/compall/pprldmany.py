@@ -55,7 +55,7 @@ from .. import pptex  # numtotex
 
 PlotType = ppfig.enum('ALG', 'DIM', 'FUNC')
 
-displaybest2009 = True
+displaybest = True
 x_limit = None  # not sure whether this is necessary/useful
 x_limit_default = 1e7  # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
 divide_by_dimension = True
@@ -135,24 +135,6 @@ show_algorithms = eseda + ('BFGS',)  # ()==all
 # 'avg NEWUOA', 'NEWUOA', 'full NEWUOA', 'BFGS', 'MCS (Neum)', 'GLOBAL', 'NELDER (Han)',
 # 'NELDER (Doe)', 'Monte Carlo') # ()==all
 show_algorithms = ()  # could be one of the list above
-function_IDs = ()
-function_IDs = range(1, 200)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122,
-
-
-# function_IDs = range(101,199)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122,
-# function_IDs = fmulti # funi fmulti  # range(103, 131, 3)   # displayed functions
-# function_IDs = [1,2,3,4,5] # separable functions
-# function_IDs = [6,7,8,9]   # moderate functions
-# function_IDs = [10,11,12,13,14] # ill-conditioned functions
-# function_IDs = [15,16,17,18,19] # multi-modal functions
-# function_IDs = [20,21,22,23,24] # weak structure functions
-# function_IDs = range(101,131) # noisy testbed
-# function_IDs = range(101,106+1)  # moderate noise
-# function_IDs = range(107,130+1)  # severe noise
-# function_IDs = range(101,130+1, 3)  # gauss noise
-# function_IDs = range(102,130+1, 3)  # unif noise
-# function_IDs = range(103,130+1, 3)  # cauchy noise
-# function_IDs = range(15,25) # multimodal nonseparable
 
 # '-'     solid line style
 # '--'    dashed line style
@@ -263,8 +245,9 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
             x3 = np.median(maxevals)
             if (x3 <= maxval and
                 # np.any(x2 <= x3) and   # maxval < median(maxevals)
-                    not plt.getp(res[-1], 'label').startswith('best')
-                ):  # TODO: HACK for not considering the best 2009 line
+                not plt.getp(res[-1], 'label').startswith('best')
+                ): # TODO: HACK for not considering a "best" algorithm line
+                
                 try:
                     y3 = y2[x2 <= x3][-1]  # find right y-value for x3==median(maxevals)
                 except IndexError:  # median(maxevals) is smaller than any data, can only happen because of CrE?
@@ -352,10 +335,10 @@ def plotLegend(handles, maxval):
     i = 0  # loop over the elements of ys
     for j in sorted(ys.keys()):
         for k in reversed(sorted(ys[j].keys())):
-            # enforce best ever comes last in case of equality
+            # enforce "best" algorithm comes first in case of equality
             tmp = []
             for h in ys[j][k]:
-                if plt.getp(h, 'label') == 'best 2009':
+                if "best" in plt.getp(h, 'label'):
                     tmp.insert(0, h)
                 else:
                     tmp.append(h)
@@ -627,8 +610,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     dictMaxEvals = {}  # list of (maxevals per function) per algorithm
 
     # funcsolved = [set()] * len(targets) # number of functions solved per target
-    xbest2009 = []
-    maxevalsbest2009 = []
+    xbest = []
+    maxevalsbest = []
     target_values = testbedsettings.current_testbed.pprldmany_target_values
 
     dictDimList = pp.dictAlgByDim(dictAlg)
@@ -639,9 +622,6 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         dictDim = dictDimList[dim]
         dictFunc = pp.dictAlgByFun(dictDim)
         for f, dictAlgperFunc in dictFunc.iteritems():
-            if function_IDs and f not in function_IDs:
-                continue
-
             # print target_values((f, dim))
             for j, t in enumerate(target_values((f, dim))):
                 # for j, t in enumerate(testbedsettings.current_testbed.ecdf_target_values(1e2, f)):
@@ -677,13 +657,13 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                     dictData.setdefault(keyValue, []).extend(x)
                     dictMaxEvals.setdefault(keyValue, []).extend(runlengthunsucc)
 
-            displaybest2009 = plotType == PlotType.ALG
-            if displaybest2009:
+            displaybest = plotType == PlotType.ALG
+            if displaybest:
                 # set_trace()
                 bestalgentries = bestalg.load_best_algorithm()
 
                 if not bestalgentries:
-                    displaybest2009 = False
+                    displaybest = False
                 else:
                     bestalgentry = bestalgentries[(dim, f)]
                     bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
@@ -701,20 +681,21 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                         else:
                             x = perfprofsamplesize * [np.inf]
                             runlengthunsucc = []
-                        xbest2009.extend(x)
-                        maxevalsbest2009.extend(runlengthunsucc)
+                        xbest.extend(x)
+                        maxevalsbest.extend(runlengthunsucc)
 
     if order is None:
         order = dictData.keys()
 
     # Display data
     lines = []
-    if displaybest2009:
+    if displaybest:
         args = {'ls': '-', 'linewidth': 6, 'marker': 'D', 'markersize': 11.,
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
-                'label': 'best 2009', 'zorder': -1}
-        lines.append(plotdata(np.array(xbest2009), x_limit, maxevalsbest2009,
+                'label': testbedsettings.current_testbed.best_algorithm_displayname,
+                'zorder': -1}
+        lines.append(plotdata(np.array(xbest), x_limit, maxevalsbest,
                               CrE=0., **args))
 
     def algname_to_label(algname, dirname=None):
@@ -767,10 +748,11 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                         (tmp, toolsdivers.str_to_latex(
                             toolsdivers.strip_pathname2(algname_to_label(alg)))))
                 algtocommand[algname_to_label(alg)] = tmp
-            if displaybest2009:
+            if displaybest:
                 tmp = r'\algzeroperfprof'
-                f.write(r'\providecommand{%s}{best 2009}' % (tmp))
-                algtocommand['best 2009'] = tmp
+                bestalgname = testbedsettings.current_testbed.best_algorithm_displayname
+                f.write(r'\providecommand{%s}{%s}' % (tmp, bestalgname))
+                algtocommand[algname_to_label(bestalgname)] = tmp
 
             commandnames = []
             for label in labels:

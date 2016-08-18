@@ -22,14 +22,14 @@ except ImportError:
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from matplotlib import mlab as mlab
 
-from . import toolsstats, bestalg
+from . import toolsstats, bestalg, testbedsettings
 from .pptex import writeFEvals2
 from .ppfig import saveFigure, consecutiveNumbers
 
 """
-aRT loss ratio of an algorithm A for comparison to BBOB-best2009. This works
-only as comparison to a set of algorithms that reach at least the same
-target values. Let f=f_A(EVALS) be the smallest target value such that the
+aRT loss ratio of an algorithm A for comparison to a reference/best algorithm.
+This works only as comparison to a set of algorithms that reach at least the
+same target values. Let f=f_A(EVALS) be the smallest target value such that the
 average running time of algorithm A was smaller than or equal to EVALS.
 Let aRT_A=EVALS, if aRT_best(next difficult f) < EVALS and
 aRT_A=aRT_A(f_A(EVALS)) otherwise (we have aRT_A(f_A(EVALS)) <= EVALS).
@@ -46,15 +46,15 @@ The aRT loss ratio for algorithm A is defined as:
       For a function subgroup the Box-Whisker is replaced with the four or five
       actual points with the function number written.
       Caption: aRT loss ratio: average running time, aRT (measured in number
-      of function evaluations), divided by the best aRT seen in BBOB-best2009 for
-      the respectively same function and target function value, plotted versus
-      number of function evaluations for the functions $f_1$--$f_{24}$ in
-      dimension $D=XXX$, corrected by the parameter-crafting-effort
-      $\exp(CrE)==YYY$. Line: geometric mean over all functions. Box-Whisker
-      error bars: 25-75\%-percentile range with median (box),
-      10-90\%-percentile range (line), and minimum and maximum aRT loss ratio
-      (points). Alternative Box-Whisker sentence: Points: aRT loss ratio for
-      each function
+      of function evaluations), divided by the best aRT seen in the reference
+      algorithm for the respectively same function and target function value,
+      plotted versus number of function evaluations for the functions
+      $f_1$--$f_{24}$ in dimension $D=XXX$, corrected by the
+      parameter-crafting-effort $\exp(CrE)==YYY$. Line: geometric mean over all
+      functions. Box-Whisker error bars: 25-75\%-percentile range with median
+      (box), 10-90\%-percentile range (line), and minimum and maximum aRT loss
+      ratio (points). Alternative Box-Whisker sentence: Points: aRT loss ratio
+      for each function.
     + The problem: how to find out CrE_A? Possible solution: ask for input in
       the script and put the given number into the caption and put exp(CrE_A)
       as small symbol on the y-axis of the figure for cross-checking.

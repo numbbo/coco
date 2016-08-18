@@ -191,7 +191,7 @@ class RunlengthBasedTargetValues(TargetValues):
         >>> os.chdir("..")
         >>> targets = bb.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension==True
         >>> targets(fun_dim=(1, 20)) # doctest:+ELLIPSIS
-          Loading best algorithm data from ...
+        Loading best algorithm data from ...
         array([  6.30957345e+01,   5.75439938e+01,   1.00000000e-08,
                  1.00000000e-08,   1.00000000e-08])
         >>> os.chdir(cwd)
@@ -318,7 +318,7 @@ class RunlengthBasedTargetValues(TargetValues):
         not smaller as target / 10**0.2. 
         
         Returned are the aRT for targets that, within the given budget, the
-        best 2009 algorithm just failed to achieve.
+        reference algorithm just failed to achieve.
 
         """            
         self.initialize()
@@ -683,7 +683,7 @@ class DataSet():
     def __init__(self, header, comment, data, indexfile, verbose=True):
         """Instantiate a DataSet.
 
-        The first three input argument corresponds to three consecutive
+        The first three input arguments correspond to three consecutive
         lines of an index file (.info extension).
 
         :keyword string header: information of the experiment

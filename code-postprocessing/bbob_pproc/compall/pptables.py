@@ -293,7 +293,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
         else:
             targetf = testbed.pptable_ftarget
 
-        # best 2009
+        # reference algorithm
         if bestalgentries:
             refalgentry = bestalgentries[df]
             refalgert = refalgentry.detERT(targetsOfInterest)
