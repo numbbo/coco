@@ -37,14 +37,16 @@ def compare_files(first_file, second_file, precision=1e-6):
     lines1 = get_lines(first_file)
     lines2 = get_lines(second_file)
 
-    assert len(lines1) == len(lines2)
+    if len(lines1) != len(lines2):
+        return False
 
     for line1, line2 in zip(lines1, lines2):
 
         words1 = line1.split()
         words2 = line2.split()
 
-        assert len(words1) == len(words2)
+        if len(words1) != len(words2):
+            return False
 
         for word1, word2 in zip(words1, words2):
 
@@ -52,9 +54,12 @@ def compare_files(first_file, second_file, precision=1e-6):
                 break
 
             if is_float(word1) and is_float(word2):
-                assert almost_equal(float(word1), float(word2), precision)
+                if not almost_equal(float(word1), float(word2), precision):
+                    return False
             else:
-                assert word1 == word2
+                if word1 != word2:
+                    return False
+    return True
 
 
 def prepare_reconstruction_data(download_data=False):
