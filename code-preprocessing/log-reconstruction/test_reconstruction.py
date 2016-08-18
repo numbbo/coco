@@ -9,6 +9,34 @@ from os.path import dirname, abspath, join, exists
 from os import walk, remove, rmdir, chdir, chmod, mkdir
 
 
+def compare_files(first_file, second_file):
+    """
+    Returns true if two files are equal and False otherwise. If the files are '.info' files, only the lines not
+    containing the "coco_version" string are compared.
+    """
+    import filecmp
+
+    def get_lines(file_name):
+        with open(file_name, 'r') as f:
+            result = f.readlines()
+            f.close()
+        return result
+
+    if not first_file.endswith('.info'):
+        assert filecmp.cmp(first_file, second_file, shallow=False)
+
+    else:
+        lines1 = get_lines(first_file)
+        lines2 = get_lines(second_file)
+
+        assert len(lines1) == len(lines2)
+
+        for line1, line2 in zip(lines1, lines2):
+            if "coco_version" in line1 and "coco_version" in line2:
+                continue
+            assert line1 == line2
+
+
 def prepare_reconstruction_data(download_data=False):
     """
     Prepares the data needed for the tests (deletes the exdata folder) and, if download_data is True, downloads the
@@ -61,7 +89,6 @@ def run_log_reconstruct():
     """
     from log_reconstruct import log_reconstruct
     from cocoprep.archive_load_data import parse_range
-    import filecmp
 
     base_path = dirname(__file__)
     log_reconstruct(abspath(join(base_path, 'test-data', 'archives-input')),
@@ -74,8 +101,8 @@ def run_log_reconstruct():
 
     for root, dirs, files in walk(abspath(join(base_path, 'exdata', 'reconstruction')), topdown=False):
         for name in files:
-            assert filecmp.cmp(abspath(join(root, name)),
-                               abspath(join(root, name)).replace('exdata', 'test-data'))
+            compare_files(abspath(join(root, name)),
+                          abspath(join(root, name)).replace('exdata', 'test-data'))
 
 
 def run_merge_lines():
@@ -84,7 +111,6 @@ def run_merge_lines():
     """
     from merge_lines_in_info_files import merge_lines_in
     import shutil
-    import filecmp
 
     base_path = dirname(__file__)
     in_path = abspath(join(base_path, 'exdata', 'reconstruction'))
@@ -99,8 +125,8 @@ def run_merge_lines():
 
     for root, dirs, files in walk(out_path, topdown=False):
         for name in files:
-            assert filecmp.cmp(abspath(join(root, name)),
-                               abspath(join(root, name)).replace('exdata', 'test-data'))
+            compare_files(abspath(join(root, name)),
+                          abspath(join(root, name)).replace('exdata', 'test-data'))
 
 
 def test_all():

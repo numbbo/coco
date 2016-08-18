@@ -125,7 +125,8 @@ def run_archive_reformat():
     for root, dirs, files in walk(abspath(join(base_path, 'test-data', 'archives-reformatted')), topdown=False):
         for name in files:
             assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-results', name)),
-                               abspath(join(base_path, 'test-data', 'archives-reformatted', name)))
+                               abspath(join(base_path, 'test-data', 'archives-reformatted', name)),
+                               shallow=False)
 
 
 def run_archive_split():
@@ -146,7 +147,8 @@ def run_archive_split():
     for root, dirs, files in walk(abspath(join(base_path, 'test-data', 'archives-split')), topdown=False):
         for name in files:
             assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-results', name)),
-                               abspath(join(base_path, 'test-data', 'archives-split', name)))
+                               abspath(join(base_path, 'test-data', 'archives-split', name)),
+                               shallow=False)
 
 
 def run_archive_thinning():
@@ -169,7 +171,8 @@ def run_archive_thinning():
     for root, dirs, files in walk(abspath(join(base_path, 'test-data', 'archives-thinned')), topdown=False):
         for name in files:
             assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-results', name)),
-                               abspath(join(base_path, 'test-data', 'archives-thinned', name)))
+                               abspath(join(base_path, 'test-data', 'archives-thinned', name)),
+                               shallow=False)
 
 
 def run_archive_analysis():
@@ -192,7 +195,8 @@ def run_archive_analysis():
     for root, dirs, files in walk(abspath(join(base_path, 'test-data', 'archives-analysis')), topdown=False):
         for name in files:
             assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-results', name)),
-                               abspath(join(base_path, 'test-data', 'archives-analysis', name)))
+                               abspath(join(base_path, 'test-data', 'archives-analysis', name)),
+                               shallow=False)
 
     summary_analysis(abspath(join(base_path, 'test-data', 'archives-analysis')),
                      abspath(join(base_path, 'test-data', 'archives-analysis.txt')),
@@ -203,7 +207,8 @@ def run_archive_analysis():
                      parse_range('2,3,5,10,20,40'))
 
     assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-analysis.txt')),
-                       abspath(join(base_path, 'test-data', 'archives-results', 'archives-analysis.txt')))
+                       abspath(join(base_path, 'test-data', 'archives-results', 'archives-analysis.txt')),
+                       shallow=False)
 
 
 def run_archive_difference():
@@ -223,7 +228,8 @@ def run_archive_difference():
                        parse_range('2,3,5,10,20,40'))
 
     assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-diff.txt')),
-                       abspath(join(base_path, 'test-data', 'archives-results', 'archives-diff.txt')))
+                       abspath(join(base_path, 'test-data', 'archives-results', 'archives-diff.txt')),
+                       shallow=False)
 
 
 def run_extract_extremes():
@@ -242,7 +248,8 @@ def run_extract_extremes():
                      parse_range('2,3,5,10,20,40'))
 
     assert filecmp.cmp(abspath(join(base_path, 'test-data', 'archives-extremes.txt')),
-                       abspath(join(base_path, 'test-data', 'archives-results', 'archives-extremes.txt')))
+                       abspath(join(base_path, 'test-data', 'archives-results', 'archives-extremes.txt')),
+                       shallow=False)
 
 
 def test_all():
