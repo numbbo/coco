@@ -524,7 +524,7 @@ def plot_previous_algorithms(func, target=None):  # lambda x: [1e-8]):
                    zorder= -2)
     return res
 
-def main(dsList, _valuesOfInterest, outputdir, verbose=True):
+def main(dsList, _valuesOfInterest, outputdir):
     """From a DataSetList, returns a convergence and aRT/dim figure vs dim.
     
     Uses data of BBOB 2009 (:py:mod:`bbob_pproc.bestalg`).
@@ -535,7 +535,6 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
                                   There will be as many graphs as there are 
                                   elements in this input. 
     :param string outputdir: output directory
-    :param bool verbose: controls verbosity
     
     """
 
@@ -557,7 +556,6 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     ppfig.save_single_functions_html(
         os.path.join(outputdir, 'ppfigdim'),
         htmlPage = ppfig.HtmlPage.NON_SPECIFIED,
-        isBiobjective = dsList.isBiobjective(),
         parentFileName=genericsettings.single_algorithm_file_name,
         header = 'Average number of <i>f</i>-evaluations to reach target',
         caption = caption)
@@ -565,21 +563,18 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     ppfig.save_single_functions_html(
         os.path.join(outputdir, 'pptable'),
         htmlPage = ppfig.HtmlPage.PPTABLE,
-        isBiobjective = dsList.isBiobjective(),
         parentFileName=genericsettings.single_algorithm_file_name)
 
     ppfig.save_single_functions_html(
         os.path.join(outputdir, 'pprldistr'),
         htmlPage = ppfig.HtmlPage.PPRLDISTR,
-        isBiobjective = dsList.isBiobjective(),
         functionGroups = dsList.getFuncGroups(),
         parentFileName=genericsettings.single_algorithm_file_name)
 
-    if not dsList.isBiobjective():    
+    if not dsList.isBiobjective():
         ppfig.save_single_functions_html(
             os.path.join(outputdir, 'pplogloss'),
             htmlPage = ppfig.HtmlPage.PPLOGLOSS,
-            isBiobjective = dsList.isBiobjective(),
             functionGroups = dsList.getFuncGroups(),
             parentFileName=genericsettings.single_algorithm_file_name)
 
@@ -609,7 +604,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         plot_previous_algorithms(func, _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
         with warnings.catch_warnings(record=True) as ws:
-            ppfig.saveFigure(filename, verbose=verbose)
+            ppfig.saveFigure(filename)
             if len(ws):
                 for w in ws:
                     print(w)

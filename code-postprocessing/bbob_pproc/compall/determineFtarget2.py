@@ -5,6 +5,8 @@ import os, sys, getopt
 import numpy
 from pdb import set_trace
 
+from .. import genericsettings
+
 # this file/module is seemingly unused
 
 # parameters for manipulating the target list, should partly rather become a pre-processing function for the RL-plots
@@ -433,7 +435,6 @@ def main(argv=None):
         usage()
         sys.exit()
 
-    verboseflag = False
     dims = [2,3,5,10,20,40]  # default values list()
     funcs = range(1,25)  # default values list()
     directory = args  # directories which contains data...
@@ -457,7 +458,7 @@ def main(argv=None):
         elif o in ("--noisefree"):
             funcs = range(1,25)
         elif o in ("-v","--verbose"):
-            verboseflag = True
+            genericsettings.verbose = True
         else:
             assert False, "unhandled option"
 
@@ -475,7 +476,7 @@ def main(argv=None):
         half = int(round(len(funcs)/2))
 
     # create dataset
-    datasetfull = pproc.DataSetList(directory,verbose = verboseflag)
+    datasetfull = pproc.DataSetList(directory)
     # print datasetfull
     # loop over dimension and functions
     for dim in dims:

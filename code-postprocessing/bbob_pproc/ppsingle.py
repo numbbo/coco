@@ -115,7 +115,7 @@ def generatefig(dsList):
         plot(i)
         beautify()
 
-def main(dsList, outputdir, verbose=True):
+def main(dsList, outputdir):
     """Generate output image files of function values vs. function evaluations."""
 
     generatefigure(dsList)

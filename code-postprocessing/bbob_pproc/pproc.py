@@ -249,7 +249,7 @@ class RunlengthBasedTargetValues(TargetValues):
         to ``bestalg.bestAlgorithmEntries`` with each key dim_fun a reference
         DataSet, computed by bestalg module or portfolio module.
 
-            dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
+            dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args)
             ref_data = bestalg.generate(dictAlg)
             targets = RunlengthBasedTargetValues([1, 2, 4, 8], ref_data)
 
@@ -680,7 +680,7 @@ class DataSet():
 
         return testbed
     
-    def __init__(self, header, comment, data, indexfile, verbose=True):
+    def __init__(self, header, comment, data, indexfile):
         """Instantiate a DataSet.
 
         The first three input arguments correspond to three consecutive
@@ -691,7 +691,6 @@ class DataSet():
         :keyword string data: information on the runs of the experiment
         :keyword string indexfile: string for the file name from where
                                    the information come
-        :keyword bool verbose: controls verbosity
 
         """
         # Extract information from the header line.
@@ -780,7 +779,7 @@ class DataSet():
                     self.readmaxevals.append(int(readmaxevals))
                     self.readfinalFminusFtarget.append(float(readfinalf))
 
-        if verbose:
+        if genericsettings.verbose:
             print "%s" % self.__repr__()
 
         # Treat successively the data in dat and tdat files:
@@ -788,7 +787,7 @@ class DataSet():
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
         data = HMultiReader(split(dataFiles, self.isBiobjective()), self.isBiobjective())
-        if verbose:
+        if genericsettings.verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
        
@@ -810,7 +809,7 @@ class DataSet():
             raise Usage("Missing tdat files in '{0}'. Please rerun the experiments." % filepath)
 
         data = VMultiReader(split(dataFiles, self.isBiobjective()), self.isBiobjective())
-        if verbose:
+        if genericsettings.verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
         
@@ -833,7 +832,7 @@ class DataSet():
                 #dataFiles = list(i.rsplit('.', 1)[0] + ext for i in self.dataFiles)
                 #data = info[0](split(dataFiles))
                 ## split is a method from readalign, info[0] is a method of readalign
-                #if verbose:
+                #if genericsettings.verbose:
                     #print ("Processing %s: %d/%d trials found." #% (dataFiles, len(data), len(self.itrials)))
                 #(adata, maxevals, finalfunvals) = alignData(data)
                 #setattr(self, info[1], adata)
@@ -1118,7 +1117,7 @@ class DataSet():
         #dim, funcId, algId, precision
         return
 
-    def pickle(self, outputdir=None, verbose=True, gzipped=True):
+    def pickle(self, outputdir=None, gzipped=True):
         """Save this instance to a pickle file.
 
         Saves this instance to a (by default gzipped) pickle file. If not 
@@ -1158,7 +1157,7 @@ class DataSet():
                     f = open(self.pickleFile, 'w') # TODO: what if file already exist?
                 pickle.dump(self, f)
                 f.close()
-                if verbose:
+                if genericsettings.verbose:
                     print 'Saved pickle in %s.' %(self.pickleFile)
             except IOError, (errno, strerror):
                 print "I/O error(%s): %s" % (errno, strerror)
@@ -1439,14 +1438,13 @@ class DataSetList(list):
     #Do not inherit from set because DataSet instances are mutable which means
     #they might change over time.
 
-    def __init__(self, args=[], verbose=False, check_data_type=True):
+    def __init__(self, args=[], check_data_type=True):
         """Instantiate self from a list of folder- or filenames or 
         ``DataSet`` instances.
 
         :keyword list args: strings being either info file names, folder
                             containing info files or pickled data files,
                             or a list of DataSets.
-        :keyword bool verbose: controls verbosity.
 
         Exceptions:
         Warning -- Unexpected user input.
@@ -1477,14 +1475,14 @@ class DataSetList(list):
         fnames = []
         for name in args:
             if isinstance(name, basestring) and findfiles.is_recognized_repository_filetype(name):
-                fnames.extend(findfiles.main(name, verbose))
+                fnames.extend(findfiles.main(name))
             else:
                 fnames.append(name)
         for name in fnames: 
             if isinstance(name, DataSet):
                 self.append(name)
             elif name.endswith('.info'):
-                self.processIndexFile(name, verbose)
+                self.processIndexFile(name)
             elif name.endswith('.pickle') or name.endswith('.pickle.gz'):
                 try:
                     # cocofy(name)
@@ -1497,7 +1495,7 @@ class DataSetList(list):
                     except pickle.UnpicklingError:
                         print '%s could not be unpickled.' %(name)
                     f.close()
-                    if verbose > 1:
+                    if genericsettings.verbose > 1:
                         print 'Unpickled %s.' % (name)
                     try:
                         entry.instancenumbers = entry.itrials  # has been renamed
@@ -1524,12 +1522,12 @@ class DataSetList(list):
         if len(self) and data_consistent:
             print("  Data consistent according to test in consistency_check() in pproc.DataSet")
             
-    def processIndexFile(self, indexFile, verbose=True):
+    def processIndexFile(self, indexFile):
         """Reads in an index (.info?) file information on the different runs."""
 
         try:
             f = openfile(indexFile)
-            if verbose:
+            if genericsettings.verbose:
                 print 'Processing %s.' % indexFile
 
             # Read all data sets within one index file.
@@ -1555,7 +1553,7 @@ class DataSetList(list):
                     data_file_names.append(data)
                     nbLine += 3
                     #TODO: check that something is not wrong with the 3 lines.
-                    ds = DataSet(header, comment, data, indexFile, verbose)                    
+                    ds = DataSet(header, comment, data, indexFile)                    
                     if len(ds.instancenumbers) > 0:                    
                         self.append(ds)
                 except StopIteration:
@@ -2263,7 +2261,7 @@ def set_unique_algId(ds_list, ds_list_reference, taken_ids=None):
                 i += 1
             ds.algId = algId + ' ' + str(i)
 
-def processInputArgs(args, verbose=True):
+def processInputArgs(args):
     """Process command line arguments.
 
     Returns several instances of :py:class:`DataSetList`, and a list of 
@@ -2276,7 +2274,6 @@ def processInputArgs(args, verbose=True):
     kept in different locations for efficiency reasons.
 
     :keyword list args: string arguments for folder names
-    :keyword bool verbose: controlling verbosity
 
     :returns (all_datasets, pathnames, datasetlists_by_alg):
       all_datasets
@@ -2299,10 +2296,10 @@ def processInputArgs(args, verbose=True):
         if i == '': # might cure an lf+cr problem when using cywin under Windows
             continue
         if findfiles.is_recognized_repository_filetype(i):
-            filelist = findfiles.main(i, verbose)
+            filelist = findfiles.main(i)
             #Do here any sorting or filtering necessary.
             #filelist = list(i for i in filelist if i.count('ppdata_f005'))
-            tmpDsList = DataSetList(filelist, verbose)
+            tmpDsList = DataSetList(filelist)
             for ds in tmpDsList:
                 ds._data_folder = i
             #Nota: findfiles will find all info AND pickle files in folder i.

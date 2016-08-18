@@ -104,7 +104,7 @@ def get_table_caption():
     return table_caption
         
 
-def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
+def main(dsList, dimsOfInterest, outputdir, info=''):
     """Generate a table of ratio aRT/aRTbest vs target precision.
     
     1 table per dimension will be generated.
@@ -447,5 +447,5 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             for line in lines:
                 outfile.write(line)     
 
-        if verbose:
+        if genericsettings.verbose:
             print "Table written in %s" % outputfile

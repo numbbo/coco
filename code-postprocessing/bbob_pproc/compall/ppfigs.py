@@ -397,7 +397,7 @@ def generateData(dataSet, target):
     res[3] = numpy.max(dataSet.maxevals)
     return res
 
-def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppdata', verbose=True):
+def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
     """From a DataSetList, returns figures showing the scaling: aRT/dim vs dim.
     
     One function and one target per figure.
@@ -573,7 +573,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
 
 
 
-        saveFigure(filename, verbose=verbose)
+        saveFigure(filename)
 
         plt.close()
 
@@ -605,7 +605,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
 
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
 
-        if verbose:
+        if genericsettings.verbose:
             print 'Wrote commands and legend to %s' % filename
 
         # this is obsolete (however check templates)
@@ -620,7 +620,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
                                 marker_to_latex(styles[i]['marker']))
             f.write((', ' if i > 0 else '') + '%s:%s' % (symb, writeLabels(sortedAlgs[i])))
         f.close()    
-        if verbose:
+        if genericsettings.verbose:
             print '(obsolete) Wrote legend in %s' % filename
     except IOError:
         raise
@@ -639,7 +639,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
             if f in functions_with_legend:
                 toolsdivers.legend()
 
-        saveFigure(filename, figFormat=genericsettings.getFigFormats(), verbose=verbose)
+        saveFigure(filename, figFormat=genericsettings.getFigFormats())
 
         plt.close()
 
