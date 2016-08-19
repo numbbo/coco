@@ -105,7 +105,7 @@ class GECCOBBOBTestbed(Testbed):
         self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
         self.scenario = scenario_fixed
         #self.best_algorithm_filename = 'best2009-bbob.tar.gz'
-        self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
+        self.best_algorithm_filename = 'bestalgentries2009.tar.gz'
         self.best_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in best_algorithm_filename
         #self.best_algorithm_filename = 'data/RANDOMSEARCH'
         #self.best_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in best_algorithm_filename
