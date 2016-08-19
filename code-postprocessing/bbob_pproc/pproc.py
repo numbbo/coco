@@ -438,7 +438,7 @@ class RunlengthBasedTargetValues(TargetValues):
             print targets
 
         if self.unique_target_values:
-            len_ = len(targets)
+            #len_ = len(targets)
             targets = np.array(list(reversed(sorted(set(targets)))))
             # print(' '.join((str(len(targets)), 'of', str(len_), 'targets kept')))
         if discretize:
