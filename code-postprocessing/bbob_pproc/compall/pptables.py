@@ -247,7 +247,7 @@ def getTopIndicesOfColumns(table, maxRank=None):
 
 
 # TODO: function_headings argument need to be tested, default should be changed according to templates
-def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line=True):  # [1, 13, 101]
+def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1, 13, 101]
     """Generate one table per func with results of multiple algorithms."""
     """Difference with the first version:
 
@@ -693,7 +693,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                     for line in lines:
                         outfile.write(line)
 
-            if verbose:
+            if genericsettings.verbose:
                 print 'Wrote table in %s' % filename
         except:
             raise

@@ -246,7 +246,7 @@ def main(argv=None):
               "data in folder %s" % outputdir)
         print("  this might take several minutes.")
 
-        dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=genericsettings.verbose)
+        dsList, sortedAlgs, dictAlg = processInputArgs(args)
 
         if 1 < 3 and len(sortedAlgs) != 2:
             raise ValueError('rungeneric2.py needs exactly two algorithms to '
@@ -366,7 +366,6 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.ppfigs_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.PPFIGS,
-            isBiobjective=dsList0.isBiobjective(),
             functionGroups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.two_algorithm_file_name
         )
@@ -375,7 +374,6 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.ppscatter_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.PPSCATTER,
-            isBiobjective=dsList0.isBiobjective(),
             functionGroups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.two_algorithm_file_name
         )
@@ -384,7 +382,6 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.pprldistr2_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.PPRLDISTR2,
-            isBiobjective=dsList0.isBiobjective(),
             functionGroups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.two_algorithm_file_name
         )
@@ -393,7 +390,6 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.pptable2_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.PPTABLE2,
-            isBiobjective=dsList0.isBiobjective(),
             functionGroups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.two_algorithm_file_name
         )
@@ -402,7 +398,6 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.pptables_file_name),
             '',  # algorithms names are clearly visible in the figure
             htmlPage=ppfig.HtmlPage.PPTABLES,
-            isBiobjective=dsList[0].isBiobjective(),
             functionGroups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.many_algorithm_file_name
         )
@@ -416,7 +411,7 @@ def main(argv=None):
             plt.rc("legend", **inset.rclegendlarger)
             plt.rc('pdf', fonttype=42)
             ppfig2.main(dsList0, dsList1, testbedsettings.current_testbed.ppfig2_ftarget,
-                        outputdir, genericsettings.verbose)
+                        outputdir)
             print_done()
 
         plt.rc("axes", **inset.rcaxes)
@@ -444,8 +439,7 @@ def main(argv=None):
                         pprldistr2.main(dictDim0[dim], dictDim1[dim], dim,
                                         testbedsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
-                                        '%02dD_all' % dim,
-                                        genericsettings.verbose)
+                                        '%02dD_all' % dim)
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.' % dim)
                         continue
@@ -458,8 +452,7 @@ def main(argv=None):
                         pprldistr2.main(dictFG1[fGroup], dictFG0[fGroup], dim,
                                         testbedsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
-                                        '%02dD_%s' % (dim, fGroup),
-                                        genericsettings.verbose)
+                                        '%02dD_%s' % (dim, fGroup))
 
                     # ECDFs per noise groups
                     dictFN0 = dictDim0[dim].dictByNoise()
@@ -469,8 +462,7 @@ def main(argv=None):
                         pprldistr2.main(dictFN1[fGroup], dictFN0[fGroup], dim,
                                         testbedsettings.current_testbed.rldValsOfInterest,
                                         outputdir,
-                                        '%02dD_%s' % (dim, fGroup),
-                                        genericsettings.verbose)
+                                        '%02dD_%s' % (dim, fGroup))
 
             prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
                             ['\\providecommand{\\bbobpprldistrlegendtwo}[1]{',
@@ -486,7 +478,6 @@ def main(argv=None):
             print("ECDF graphs per noise group...")
             rungenericmany.grouped_ecdf_graphs(
                 pproc.dictAlgByNoi(dictAlg),
-                dsList[0].isBiobjective(),
                 sortedAlgs,
                 outputdir,
                 dictAlg[sortedAlgs[0]].getFuncGroups())
@@ -497,7 +488,6 @@ def main(argv=None):
             print("ECDF runlength graphs per function group...")
             rungenericmany.grouped_ecdf_graphs(
                 pproc.dictAlgByFuncGroup(dictAlg),
-                dsList[0].isBiobjective(),
                 sortedAlgs,
                 outputdir,
                 dictAlg[sortedAlgs[0]].getFuncGroups())
@@ -514,7 +504,7 @@ def main(argv=None):
                                        testbedsettings.current_testbed.rldValsOfInterest,
                                        # TODO: let rldVals... possibly be RL-based targets
                                        True,
-                                       outputdir, 'all', genericsettings.verbose)
+                                       outputdir, 'all')
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.'
                                       % (dim))
@@ -528,7 +518,7 @@ def main(argv=None):
                         pprldistr.comp(dictFG1[fGroup], dictFG0[fGroup],
                                        testbedsettings.current_testbed.rldValsOfInterest, True,
                                        outputdir,
-                                       '%s' % fGroup, genericsettings.verbose)
+                                       '%s' % fGroup)
 
                     # ECDFs per noise groups
                     dictFN0 = dictDim0[dim].dictByNoise()
@@ -537,7 +527,7 @@ def main(argv=None):
                         pprldistr.comp(dictFN1[fGroup], dictFN0[fGroup],
                                        testbedsettings.current_testbed.rldValsOfInterest, True,
                                        outputdir,
-                                       '%s' % fGroup, genericsettings.verbose)
+                                       '%s' % fGroup)
             print_done()
 
             # copy-paste from above, here for each function instead of function groups
@@ -545,20 +535,16 @@ def main(argv=None):
                 print("ECDF graphs per function...")
                 # ECDFs for each function
                 pprldmany.all_single_functions(dictAlg,
-                                               dsList[0].isBiobjective(),
                                                False,
                                                sortedAlgs,
                                                outputdir,
-                                               genericsettings.verbose,
                                                genericsettings.two_algorithm_file_name)
                 print_done()
 
         if genericsettings.isConv:
             print("Convergence plots...")
             ppconverrorbars.main(dictAlg,
-                                 dsList[0].isBiobjective(),
                                  outputdir,
-                                 genericsettings.verbose,
                                  genericsettings.two_algorithm_file_name)
             print_done()
 
@@ -566,8 +552,7 @@ def main(argv=None):
 
         if genericsettings.isScatter:
             print("Scatter plots...")
-            ppscatter.main(dsList1, dsList0, outputdir,
-                           verbose=genericsettings.verbose)
+            ppscatter.main(dsList1, dsList0, outputdir)
             prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
                             ['\\providecommand{\\bbobppscatterlegend}[1]{',
                              ppscatter.figure_caption(),
@@ -617,7 +602,7 @@ def main(argv=None):
                     for i, g in enumerate(zip(group0, group1)):
                         pptable2.main(g[0], g[1], inset.tabDimsOfInterest,
                                       outputdir,
-                                      '%s%d' % (nGroup, i), genericsettings.verbose)
+                                      '%s%d' % (nGroup, i))
                 else:
                     if 11 < 3:  # future handling:
                         dictFunc0 = dsList0.dictByFunc()
@@ -627,12 +612,12 @@ def main(argv=None):
                     # nbgroups = int(numpy.ceil(len(funcs)/testbedsettings.numberOfFunctions))
                     #                        pptable2.main(dsList0, dsList1,
                     #                                      testbedsettings.tabDimsOfInterest, outputdir,
-                    #                                      '%s' % (testbedsettings.testbedshortname), genericsettings.verbose)
+                    #                                      '%s' % (testbedsettings.testbedshortname))
                     else:
                         pptable2.main(dictNG0[nGroup], dictNG1[nGroup],
                                       inset.tabDimsOfInterest,
                                       outputdir,
-                                      '%s' % (nGroup), genericsettings.verbose)
+                                      '%s' % (nGroup))
 
             prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
                             ['\\providecommand{\\bbobpptablestwolegend}[1]{',
@@ -669,7 +654,6 @@ def main(argv=None):
                         tmpdictdim,
                         sortedAlgs,
                         outputdir,
-                        genericsettings.verbose,
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==
                                          testbedsettings.testbed_name_bi) else True))
             print_done()
@@ -685,10 +669,8 @@ def main(argv=None):
 
             ppfigs.main(dictAlg,
                         genericsettings.ppfigs_file_name,
-                        dsList[0].isBiobjective(),
                         sortedAlgs,
-                        outputdir,
-                        genericsettings.verbose)
+                        outputdir)
             plt.rcdefaults()
             print_done()
 
@@ -696,7 +678,7 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.two_algorithm_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.TWO,
-            isBiobjective=dsList0.isBiobjective(),
+
             functionGroups=dsList0.getFuncGroups())
 
         if (genericsettings.isFig or genericsettings.isRLDistr

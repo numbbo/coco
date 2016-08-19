@@ -22,7 +22,7 @@ except ImportError:
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from matplotlib import mlab as mlab
 
-from . import toolsstats, bestalg, testbedsettings
+from . import toolsstats, bestalg, testbedsettings, genericsettings
 from .pptex import writeFEvals2
 from .ppfig import saveFigure, consecutiveNumbers
 
@@ -519,14 +519,13 @@ def beautify():
     #a.yaxis.grid(True, which='minor')
     a.yaxis.grid(True, which='major')
 
-def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
+def generateTable(dsList, CrE=0., outputdir='.', info='default'):
     """Generates aRT loss ratio tables.
 
     :param DataSetList dsList: input data set
     :param float CrE: crafting effort (see COCO documentation)
     :param string outputdir: output folder (must exist)
     :param string info: string suffix for output file names
-    :param bool verbose: controls verbosity
 
     """
 
@@ -554,13 +553,13 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default', verbose=True):
         data = generateData(dsList, EVALS, CrE)
 
         generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS,
-                               data, outputdir, info, verbose)
+                               data, outputdir, info)
         generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS,
-                                data, outputdir, info, verbose)
+                                data, outputdir, info)
 
 
 def generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
-                           outputdir='.', info='default', verbose=True):
+                           outputdir='.', info='default'):
     """Generates single aRT loss ratio table.
 
     :param DataSetList dsList: input data set
@@ -572,7 +571,6 @@ def generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
     :param data:
     :param string outputdir: output folder (must exist)
     :param string info: string suffix for output file names
-    :param bool verbose: controls verbosity
 
     """
 
@@ -654,11 +652,11 @@ def generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
     f = open(filename, 'w')
     f.write(res)
     f.close()
-    if verbose:
+    if genericsettings.verbose:
         print "Wrote aRT loss ratio table in %s." % filename
 
 def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
-                            outputdir='.', info='default', verbose=True):
+                            outputdir='.', info='default'):
     """Generates single aRT loss ratio table.
 
     :param DataSetList dsList: input data set
@@ -670,7 +668,6 @@ def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
     :param data:
     :param string outputdir: output folder (must exist)
     :param string info: string suffix for output file names
-    :param bool verbose: controls verbosity
 
     """
 
@@ -777,11 +774,11 @@ def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
         for line in lines:
             outfile.write(line)
 
-    if verbose:
+    if genericsettings.verbose:
         print "Wrote aRT loss ratio table in %s." % filename
 
 def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
-                   info='default', verbose=True):
+                   info='default'):
     """Generates aRT loss ratio figures.
 
     :param DataSetList dsList: input data set
@@ -793,7 +790,6 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
                                  in the generated figures.
     :param string outputdir: output folder (must exist)
     :param string info: string suffix for output file names
-    :param bool verbose: controls verbosity
 
     """
 
@@ -856,18 +852,17 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
         if evalf:
             plt.xlim(xmin=evalf[0]-0.5, xmax=evalf[1]+0.5)
 
-        saveFigure(filename, verbose=verbose)
+        saveFigure(filename)
 
         #plt.show()
         plt.close()
 
         #plt.rcdefaults()
 
-def main(dsList, CrE=0., isStoringXRange=True, outputdir='.', info='default',
-         verbose=True):
+def main(dsList, CrE=0., isStoringXRange=True, outputdir='.', info='default'):
     """Generates aRT loss ratio boxplot figures.
 
     Calls method generateFigure.
 
     """
-    generateFigure(dsList, CrE, isStoringXRange, outputdir, info, verbose)
+    generateFigure(dsList, CrE, isStoringXRange, outputdir, info)

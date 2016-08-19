@@ -104,6 +104,7 @@ class GECCOBBOBTestbed(Testbed):
         self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
         self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
         self.scenario = scenario_fixed
+        #self.best_algorithm_filename = 'best2009-bbob.tar.gz'
         self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
         self.best_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in best_algorithm_filename
         #self.best_algorithm_filename = 'data/RANDOMSEARCH'
@@ -119,6 +120,7 @@ class GECCOBBOBTestbed(Testbed):
                            31: 1, 32: 1, 33: 1, 34: 1, 35: 1, 36: 1, 37: 1, 38: 1, 39: 1, 40: 1,
                            41: 1, 42: 1, 43: 1, 44: 1, 45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1,
                            51: 1, 52: 1, 53: 1, 54: 1, 55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1}
+        #self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
@@ -133,6 +135,8 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
         self.functions_with_legend = (101, 130)
         self.first_function_number = 101
         self.last_function_number = 130
+        self.best_algorithm_filename = 'best2009-bbob-noisy.tar.gz'
+        self.best_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in best_algorithm_filename
 
 
 class GECCOBiObjBBOBTestbed(Testbed):
@@ -171,7 +175,8 @@ class GECCOBiObjBBOBTestbed(Testbed):
         #self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
         self.pptablemany_targetsOfInterest = targetValues((1, 1e-1, 1e-2, 1e-3))  # used for pptables
         self.scenario = scenario_biobjfixed
-        self.best_algorithm_filename = 'bestbiobjalgentries2016.pickle.gz'
+        self.best_algorithm_filename = 'best2016-bbob-biobj.tar.gz'
+        self.best_algorithm_filename = 'bestalgentries2016.pickle.gz' # TODO produce correct best2016 algo and delete this line
         self.best_algorithm_displayname = 'best 2016' # TODO: should be read in from data set in best_algorithm_filename
         self.short_names = get_short_names(self.shortinfo_filename)
         # expensive optimization settings:

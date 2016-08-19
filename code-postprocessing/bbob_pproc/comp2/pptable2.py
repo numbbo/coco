@@ -138,7 +138,7 @@ def get_table_caption():
     return table_caption
 
 
-def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
+def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
     """One table per dimension, modified to fit in 1 page per table."""
 
     #TODO: method is long, split if possible
@@ -509,6 +509,6 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info='', verbose=True):
             for line in lines:
                 outfile.write(line)     
 
-        if verbose:
+        if genericsettings.verbose:
             print "Table written in %s" % outputfile
 
