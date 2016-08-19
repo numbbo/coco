@@ -1396,7 +1396,11 @@ class DataSet():
         return list(tmp[i][1:] for i in targets)
 
     def plot_funvals(self, **kwargs):
-        """plot data of `funvals` attribute, versatile"""
+        """plot data of `funvals` attribute, versatile
+
+        TODO: seems outdated on 19/8/2016
+              ("isfinite" instead of "np.isfinite" and not called from anywhere)
+        """
         kwargs.setdefault('clip_on', False)
         for funvals in self.funvals.T[1:]:  # loop over the rows of the transposed array
             idx = isfinite(funvals > 1e-19)
@@ -1408,7 +1412,11 @@ class DataSet():
     def plot(self, **kwargs):
         """plot data from `evals` attribute.
 
-        `**kwargs` is passed to `matplolib.loglog`. """
+        `**kwargs` is passed to `matplolib.loglog`. 
+        
+        TODO: seems outdated on 19/8/2016
+        ("isfinite" instead of "np.isfinite" and not called from anywhere)        
+        """
         kwargs.setdefault('clip_on', False)
         for evals in self.evals.T[1:]:  # loop over the rows of the transposed array
             idx = np.logical_and(self.evals[:, 0] > 1e-19, isfinite(evals))
