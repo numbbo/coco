@@ -237,6 +237,10 @@ our issue tracker at https://github.com/numbbo/coco/issues.
   the archives of algorithms to create/update the hypervolume
   reference values for the `bbob-biobj` test suite
 
+* code-preprocessing/log-reconstruction/ contains internal code for reconstructing
+  output of the `bbob-biobj` logger from archive files (needed when the hypervolume
+  reference values are updated)
+
 * docs should contain an updated version of the documentation, see above.
 
 * howtos contains a few text files with internal howtos.
