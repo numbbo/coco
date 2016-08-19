@@ -209,7 +209,6 @@ class BestAlgSet:
         self.ert = np.array(reserts)
         self.target = res[:, 0]
         self.testbed = dict_alg[sortedAlgs[0]].testbed_name() # TODO: not nice
-        print(self.testbed)
 
         bestfinalfunvals = np.array([np.inf])
         for alg in sortedAlgs:
