@@ -27,6 +27,7 @@ import gzip
 import warnings
 import numpy as np
 import tarfile
+import pkg_resources
 
 from . import readalign, pproc
 from .toolsdivers import print_done
@@ -204,6 +205,7 @@ class BestAlgSet:
         self.algs = resalgs
         self.algId = algId
         self.comment = 'Combination of ' + ', '.join(sortedAlgs)
+        self.comment += '; coco_version: ' + pkg_resources.require('bbob_pproc')[0].version
         self.ert = np.array(reserts)
         self.target = res[:, 0]
 
@@ -384,8 +386,7 @@ def load_best_algorithm(force=False):
         dsList, sortedAlgs, dictAlg = pproc.processInputArgs(algList)
         #loadedRefAlg = cococommands.load(os.path.join(best_alg_file_path,
         #                                               best_algo_filename))
-        
-        bestAlgorithmEntries = generate(dictAlg)
+        bestAlgorithmEntries = generate(dictAlg, dsList[0].algId)
     
     
     
