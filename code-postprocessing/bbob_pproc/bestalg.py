@@ -208,6 +208,8 @@ class BestAlgSet:
         self.comment += '; coco_version: ' + pkg_resources.require('bbob_pproc')[0].version
         self.ert = np.array(reserts)
         self.target = res[:, 0]
+        self.testbed = dict_alg[sortedAlgs[0]].testbed_name() # TODO: not nice
+        print(self.testbed)
 
         bestfinalfunvals = np.array([np.inf])
         for alg in sortedAlgs:
@@ -490,7 +492,7 @@ def custom_generate(args=algs2009, algId='bestCustomAlg'):
 
     result = generate(dictAlg, algId)
 
-    create_data_files(output_dir, result, dsList[0].isBiobjective())
+    create_data_files(output_dir, result)
 
     tar = tarfile.open(output_dir + ".tar.gz", "w:gz")
     tar.add(output_dir)
@@ -499,7 +501,7 @@ def custom_generate(args=algs2009, algId='bestCustomAlg'):
     print('Best algorithm files were written to %s.tar.gz' % output_dir)
 
 
-def create_data_files(output_dir, result, is_biobjective):
+def create_data_files(output_dir, result):
 
     info_filename = 'bbob-bestalg'
     filename_template = info_filename + '_f%02d_d%02d.%s'
@@ -531,7 +533,7 @@ def create_data_files(output_dir, result, is_biobjective):
 
         instance_data = "%d:%d|%10.15e" % (0, average_max_evals, average_final_fun_values)
 
-        if is_biobjective:
+        if result[result.keys()[0]].testbed == testbedsettings.GECCOBiObjBBOBTestbed:
             info_lines.append("algorithm = '%s' indicator = 'hyp'" % value.algId)
             info_lines.append("%% %s" % value.comment)
             info_lines.append("function = %d, dim = %d, %s, %s"
@@ -590,7 +592,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
     """
 
     print("Generating best algorithm data from given algorithm list...")
-    customgenerate(algnamelist)
+    deprecated_customgenerate(algnamelist)
 
     bestalgfilepath = 'bestCustomAlg'
     picklefilename = os.path.join(bestalgfilepath, 'bestalg.pickle')
