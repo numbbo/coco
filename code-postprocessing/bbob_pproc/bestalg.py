@@ -27,11 +27,12 @@ import gzip
 import warnings
 import numpy as np
 import tarfile
+import pkg_resources
 
 from . import readalign, pproc
 from .toolsdivers import print_done
 from .ppfig import Usage
-from . import toolsstats, testbedsettings, cococommands
+from . import toolsstats, testbedsettings, genericsettings
 
 bestAlgorithmEntries = {}
 
@@ -91,12 +92,13 @@ class BestAlgSet:
 
     """
 
-    def __init__(self, dict_alg):
-        """Instantiate one best algorithm data set.
+    def __init__(self, dict_alg, algId='Virtual Best Algorithm'):
+        """Instantiate one best algorithm data set with name algId.
 
         :keyword dict_alg: dictionary of datasets, keys are algorithm
                           names, values are 1-element
                           :py:class:`DataSetList`.
+        :keyword algId: name of the to-be-constructed algorithm as string
 
         """
 
@@ -201,10 +203,12 @@ class BestAlgSet:
         self.dim = d
         self.funcId = f
         self.algs = resalgs
-        self.algId = 'Virtual Best Algorithm'
+        self.algId = algId
         self.comment = 'Combination of ' + ', '.join(sortedAlgs)
+        self.comment += '; coco_version: ' + pkg_resources.require('bbob_pproc')[0].version
         self.ert = np.array(reserts)
         self.target = res[:, 0]
+        self.testbed = dict_alg[sortedAlgs[0]].testbed_name() # TODO: not nice
 
         bestfinalfunvals = np.array([np.inf])
         for alg in sortedAlgs:
@@ -229,7 +233,7 @@ class BestAlgSet:
         return ('{alg: %s, F%d, dim: %d}'
                 % (self.algId, self.funcId, self.dim))
 
-    def pickle(self, outputdir=None, verbose=True):
+    def pickle(self, outputdir=None):
         """Save instance to a pickle file.
 
         Saves the instance to a pickle file. If not specified
@@ -259,14 +263,14 @@ class BestAlgSet:
                 f = open(self.pickleFile, 'w')  # TODO: what if file already exist?
                 pickle.dump(self, f)
                 f.close()
-                if verbose:
+                if genericsettings.verbose:
                     print('Saved pickle in %s.' % self.pickleFile)
             except IOError, (errno, strerror):
                 print("I/O error(%s): %s" % (errno, strerror))
             except pickle.PicklingError:
                 print("Could not pickle %s" % self)
                 # else: #What?
-                # if verbose:
+                # if genericsettings.verbose:
                 # print('Skipped update of pickle file %s: no new data.'
                 # % self.pickleFile)
 
@@ -380,11 +384,10 @@ def load_best_algorithm(force=False):
         # processInputArgs need an empty second argument to work:
         algList = (os.path.join(best_alg_file_path, best_algo_filename), '')
         
-        dsList, sortedAlgs, dictAlg = pproc.processInputArgs(algList, verbose=False)
+        dsList, sortedAlgs, dictAlg = pproc.processInputArgs(algList)
         #loadedRefAlg = cococommands.load(os.path.join(best_alg_file_path,
         #                                               best_algo_filename))
-        
-        bestAlgorithmEntries = generate(dictAlg)
+        bestAlgorithmEntries = generate(dictAlg, dsList[0].algId)
     
     
     
@@ -398,21 +401,24 @@ def usage():
     print(__doc__)  # same as: sys.modules[__name__].__doc__, was: main.__doc__
 
 
-def generate(dict_alg):
+def generate(dict_alg, algId):
     """Generates dictionary of best algorithm data set.
     """
 
-    # dsList, sortedAlgs, dictAlg = processInputArgs(args, verbose=verbose)
+    # dsList, sortedAlgs, dictAlg = processInputArgs(args)
     res = {}
     for f, i in pproc.dictAlgByFun(dict_alg).iteritems():
         for d, j in pproc.dictAlgByDim(i).iteritems():
-            tmp = BestAlgSet(j)
+            tmp = BestAlgSet(j, algId)
             res[(d, f)] = tmp
     return res
 
 
-def customgenerate(args=algs2009):
+def deprecated_customgenerate(args=algs2009):
     """Generates best algorithm data set.
+
+    This functionality is deprecated because it writes
+    unsupported pickle files.
 
     It will create a folder bestAlg in the current working directory
     with a pickle file corresponding to the bestalg dataSet of the
@@ -442,12 +448,12 @@ def customgenerate(args=algs2009):
 
     outputdir = 'bestCustomAlg'
 
-    verbose = True
-    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
+    genericsettings.verbose = True
+    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args)
 
     if not os.path.exists(outputdir):
         os.mkdir(outputdir)
-        if verbose:
+        if genericsettings.verbose:
             print('Folder %s was created.' % outputdir)
 
     res = generate(dictAlg)
@@ -459,12 +465,13 @@ def customgenerate(args=algs2009):
     print('done with writing pickle...')
 
 
-def custom_generate(args=algs2009):
-    """Generates best algorithm data set.
+def custom_generate(args=algs2009, algId='bestCustomAlg'):
+    """Generates best algorithm data set from a given set of algorithms.
 
-    It will create a folder bestAlg in the current working directory
-    with a pickle file corresponding to the bestalg dataSet of the
-    algorithms listed in variable args.
+    It will create a folder named as algId in the current working directory
+    corresponding to the bestalg dataSet of the algorithms listed in
+    variable args. This folder is furthermore added to a `.tar.gz` file
+    of the same name.
 
     This method is called from the python command line from a directory
     containing all necessary data folders::
@@ -472,19 +479,19 @@ def custom_generate(args=algs2009):
     TODO: write the doctest
     """
 
-    output_dir = 'bestCustomAlg'
+    output_dir = algId
 
-    verbose = True
-    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
+    genericsettings.verbose = True
+    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args)
 
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
-        if verbose:
+        if genericsettings.verbose:
             print('Folder %s was created.' % output_dir)
 
-    result = generate(dictAlg)
+    result = generate(dictAlg, algId)
 
-    create_data_files(output_dir, result, dsList[0].isBiobjective())
+    create_data_files(output_dir, result)
 
     tar = tarfile.open(output_dir + ".tar.gz", "w:gz")
     tar.add(output_dir)
@@ -493,7 +500,7 @@ def custom_generate(args=algs2009):
     print('Best algorithm files were written to %s.tar.gz' % output_dir)
 
 
-def create_data_files(output_dir, result, is_biobjective):
+def create_data_files(output_dir, result):
 
     info_filename = 'bbob-bestalg'
     filename_template = info_filename + '_f%02d_d%02d.%s'
@@ -525,7 +532,7 @@ def create_data_files(output_dir, result, is_biobjective):
 
         instance_data = "%d:%d|%10.15e" % (0, average_max_evals, average_final_fun_values)
 
-        if is_biobjective:
+        if result[result.keys()[0]].testbed == testbedsettings.GECCOBiObjBBOBTestbed:
             info_lines.append("algorithm = '%s' indicator = 'hyp'" % value.algId)
             info_lines.append("%% %s" % value.comment)
             info_lines.append("function = %d, dim = %d, %s, %s"
@@ -584,7 +591,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
     """
 
     print("Generating best algorithm data from given algorithm list...")
-    customgenerate(algnamelist)
+    deprecated_customgenerate(algnamelist)
 
     bestalgfilepath = 'bestCustomAlg'
     picklefilename = os.path.join(bestalgfilepath, 'bestalg.pickle')
@@ -648,8 +655,8 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
 
     print('Loading algorithm data from given algorithm list...\n')
 
-    verbose = True
-    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
+    genericsettings.verbose = True
+    dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args)
 
     print('This may take a while (depending on the number of algorithms)')
 

@@ -25,7 +25,7 @@ from . import genericsettings
 def is_recognized_repository_filetype(filename):
     return os.path.isdir(filename.strip()) or filename.find('.tar') > 0 or filename.find('.tgz') > 0
 
-def main(directory='.', verbose=True):
+def main(directory='.'):
     """Lists "data" files recursively in a given directory, tar files
     are extracted.
 
@@ -40,14 +40,14 @@ def main(directory='.', verbose=True):
 
     # Search through the directory directory and all its subfolders.
     for root, _dirs, files in os.walk(directory):
-        if verbose:
+        if genericsettings.verbose:
             print 'Searching in %s ...' % root
 
         for elem in files:
             if elem.endswith('.info') or elem.endswith('.pickle') or elem.endswith('.pickle.gz'):
                 filelist.append(os.path.join(root, elem))
 
-    if verbose:
+    if genericsettings.verbose:
         print 'Found %d file(s).' % (len(filelist))
     if not filelist:
         warnings.warn('Could not find any file of interest in %s!' % root)

@@ -529,7 +529,7 @@ def plotFVDistr(dsList, budget, min_f=None, **plotArgs):
         return None
 
 def comp(dsList0, dsList1, targets, isStoringXMax=False,
-         outputdir='', info='default', verbose=True):
+         outputdir='', info='default'):
     """Generate figures of ECDF that compare 2 algorithms.
 
     :param DataSetList dsList0: list of DataSet instances for ALG0
@@ -543,7 +543,6 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
                                figures.
     :param string outputdir: output directory (must exist)
     :param string info: string suffix for output file names.
-    :param bool verbose: control verbosity
 
     """
     # plt.rc("axes", labelsize=20, titlesize=24)
@@ -626,7 +625,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
         plt.text(0.5, 0.98, text, horizontalalignment="center",
                  verticalalignment="top", transform=plt.gca().transAxes) # bbox=dict(ec='k', fill=False),
         beautifyRLD(evalfmax)
-        saveFigure(filename, verbose=verbose)
+        saveFigure(filename)
         plt.close(fig)
 
 def beautify():
@@ -773,7 +772,7 @@ def plotRLB_previous_algorithms(dim, funcs):
 
 
 def main(dsList, isStoringXMax=False, outputdir='',
-         info='default', verbose=True):
+         info='default'):
     """Generate figures of empirical cumulative distribution functions.
 
     This method has a feature which allows to keep the same boundaries
@@ -794,7 +793,6 @@ def main(dsList, isStoringXMax=False, outputdir='',
                                xlim in the generated figures.
     :param string outputdir: output directory (must exist)
     :param string info: string suffix for output file names.
-    :param bool verbose: control verbosity
 
     """
     # plt.rc("axes", labelsize=20, titlesize=24)
@@ -859,7 +857,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
 
 
         beautifyRLD(evalfmax)
-        saveFigure(filename, verbose=verbose)
+        saveFigure(filename)
         plt.close(fig)
 
         # second figure: Function Value Distribution
@@ -876,7 +874,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
         plt.text(0.98, 0.02, text, horizontalalignment="right",
                  transform=plt.gca().transAxes) # bbox=dict(ec='k', fill=False),
         beautifyFVD(isStoringXMax=isStoringXMax, ylabel=False)
-        saveFigure(filename, verbose=verbose)
+        saveFigure(filename)
         plt.close(fig)
         # plt.rcdefaults()
 
