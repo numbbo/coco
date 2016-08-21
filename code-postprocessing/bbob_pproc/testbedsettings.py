@@ -50,7 +50,6 @@ def get_short_names(file_name):
 
 class Testbed(object):
     """this might become the future way to have settings related to testbeds
-    TODO: should go somewhere else than genericsettings.py
     TODO: how do we pass information from the benchmark to the post-processing?
 
     """
@@ -78,49 +77,97 @@ class GECCOBBOBTestbed(Testbed):
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
     """
 
-    def __init__(self, targetValues):
-        # TODO: should become a function, as low_budget is a display setting
-        # not a testbed setting
-        # only the short info, how to deal with both infos?
-        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
-        self.shortinfo_filename = 'benchmarkshortinfos.txt'
-        self.name = testbed_name_single
-        self.short_names = {}
-        self.hardesttargetlatex = '10^{-8}'  # used for ppfigs, pptable, pptable2, and pptables
-        self.ppfigs_ftarget = 1e-8
-        self.ppfig2_ftarget = 1e-8
-        self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  # possibly changed in config
-        self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
-        self.pprldmany_target_values = targetValues(10 ** np.arange(2, -8.2, -0.2))  # possibly changed in config
-        self.pprldmany_target_range_latex = '$10^{[-8..2]}$'
-        self.ppscatter_target_values = targetValues(np.logspace(-8, 2, 46))
-        self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)  # possibly changed in config
-        self.ppfvdistr_min_target = 1e-8
-        self.functions_with_legend = (1, 24, 101, 130)
-        self.first_function_number = 1
-        self.last_function_number = 24
-        self.pptable_ftarget = 1e-8  # value for determining the success ratio in all tables
-        self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))  # for pptable and pptables
-        self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
-        self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
-        self.scenario = scenario_fixed
-        #self.best_algorithm_filename = 'best2009-bbob.tar.gz'
-        self.best_algorithm_filename = 'bestalgentries2009.tar.gz'
-        self.best_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in best_algorithm_filename
-        #self.best_algorithm_filename = 'data/RANDOMSEARCH'
-        #self.best_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in best_algorithm_filename
-        self.short_names = get_short_names(self.shortinfo_filename)
+    settings = dict(
+        info_filename = 'GECCOBBOBbenchmarkinfos.txt',
+        shortinfo_filename = 'benchmarkshortinfos.txt',
+        name = testbed_name_single,
+        short_names = {},
+        hardesttargetlatex = '10^{-8}',  # used for ppfigs, pptable, pptable2, and pptables
+        ppfigs_ftarget = 1e-8,
+        ppfig2_ftarget = 1e-8,
+        ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)),  # possibly changed in config
+        pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8)),  # possibly changed in config
+        pprldmany_target_values = targetValues(10 ** np.arange(2, -8.2, -0.2)),  # possibly changed in config
+        pprldmany_target_range_latex = '$10^{[-8..2]}$',
+        ppscatter_target_values = targetValues(np.logspace(-8, 2, 46)),
+        rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8),  # possibly changed in config
+        ppfvdistr_min_target = 1e-8,
+        functions_with_legend = (1, 24, 101, 130),
+        first_function_number = 1,
+        last_function_number = 24,
+        pptable_ftarget = 1e-8,  # value for determining the success ratio in all tables
+        pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7)),  # for pptable and pptables
+        pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7)),  # used for pptable2
+        pptablemany_targetsOfInterest = self.pptable_targetsOfInterest,
+        scenario = scenario_fixed,
+        #.best_algorithm_filename = 'best2009-bbob.tar.gz',
+        best_algorithm_filename = 'bestalgentries2009.pickle.gz',
+        best_algorithm_displayname = 'best 2009',  # TODO: should be read in from data set in best_algorithm_filename
+        #.best_algorithm_filename = 'data/RANDOMSEARCH'
+        #.best_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in best_algorithm_filename
+        short_names = get_short_names(self.shortinfo_filename),
         # expensive optimization settings:
-        self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
-        self.pptable2_target_runlengths = self.pptable_target_runlengths  # [0.5, 2, 10, 50]  # used in config for expensive setting
-        self.pptables_target_runlengths = self.pptable_target_runlengths  # used in config for expensive setting
-        self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
-                           10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 1,
-                           21: 1, 22: 1, 23: 1, 24: 1, 25: 1, 26: 1, 27: 1, 28: 1, 29: 1, 30: 1,
-                           31: 1, 32: 1, 33: 1, 34: 1, 35: 1, 36: 1, 37: 1, 38: 1, 39: 1, 40: 1,
-                           41: 1, 42: 1, 43: 1, 44: 1, 45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1,
-                           51: 1, 52: 1, 53: 1, 54: 1, 55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1}
-        #self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+        pptable_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
+        pptable2_target_runlengths = self.pptable_target_runlengths,  # [0.5, 2, 10, 50]  # used in config for expensive setting
+        pptables_target_runlengths = self.pptable_target_runlengths,  # used in config for expensive setting
+        instancesOfInterest = None # None: consider all instances
+        #.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
+        #                   10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 1,
+        #                   21: 1, 22: 1, 23: 1, 24: 1, 25: 1, 26: 1, 27: 1, 28: 1, 29: 1, 30: 1,
+        #                   31: 1, 32: 1, 33: 1, 34: 1, 35: 1, 36: 1, 37: 1, 38: 1, 39: 1, 40: 1,
+        #                   41: 1, 42: 1, 43: 1, 44: 1, 45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1,
+        #                   51: 1, 52: 1, 53: 1, 54: 1, 55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1} # consider only 2009-2016 instances
+        #.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+    ) 
+
+    def __init__(self, targetValues):
+        
+        for key, val in GECCOBBOTestbed.settings.items():
+            setattr(self, key, val)
+        if 11 < 3:
+            # TODO: should become a function, as low_budget is a display setting
+            # not a testbed setting
+            # only the short info, how to deal with both infos?
+            self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
+            self.shortinfo_filename = 'benchmarkshortinfos.txt'
+            self.name = testbed_name_single
+            self.short_names = {}
+            self.hardesttargetlatex = '10^{-8}'  # used for ppfigs, pptable, pptable2, and pptables
+            self.ppfigs_ftarget = 1e-8
+            self.ppfig2_ftarget = 1e-8
+            self.ppfigdim_target_values = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8))  # possibly changed in config
+            self.pprldistr_target_values = targetValues((10., 1e-1, 1e-4, 1e-8))  # possibly changed in config
+            self.pprldmany_target_values = targetValues(10 ** np.arange(2, -8.2, -0.2))  # possibly changed in config
+            self.pprldmany_target_range_latex = '$10^{[-8..2]}$'
+            self.ppscatter_target_values = targetValues(np.logspace(-8, 2, 46))
+            self.rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8)  # possibly changed in config
+            self.ppfvdistr_min_target = 1e-8
+            self.functions_with_legend = (1, 24, 101, 130)
+            self.first_function_number = 1
+            self.last_function_number = 24
+            self.pptable_ftarget = 1e-8  # value for determining the success ratio in all tables
+            self.pptable_targetsOfInterest = targetValues((10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7))  # for pptable and pptables
+            self.pptable2_targetsOfInterest = targetValues((1e+1, 1e-1, 1e-3, 1e-5, 1e-7))  # used for pptable2
+            self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
+            self.scenario = scenario_fixed
+            #self.best_algorithm_filename = 'best2009-bbob.tar.gz'
+            self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
+            self.best_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in best_algorithm_filename
+            #self.best_algorithm_filename = 'data/RANDOMSEARCH'
+            #self.best_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in best_algorithm_filename
+            self.short_names = get_short_names(self.shortinfo_filename)
+            # expensive optimization settings:
+            self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
+            self.pptable2_target_runlengths = self.pptable_target_runlengths  # [0.5, 2, 10, 50]  # used in config for expensive setting
+            self.pptables_target_runlengths = self.pptable_target_runlengths  # used in config for expensive setting
+            self.instancesOfInterest = None # None: consider all instances
+            #self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
+            #                   10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 1,
+            #                   21: 1, 22: 1, 23: 1, 24: 1, 25: 1, 26: 1, 27: 1, 28: 1, 29: 1, 30: 1,
+            #                   31: 1, 32: 1, 33: 1, 34: 1, 35: 1, 36: 1, 37: 1, 38: 1, 39: 1, 40: 1,
+            #                   41: 1, 42: 1, 43: 1, 44: 1, 45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1,
+            #                   51: 1, 52: 1, 53: 1, 54: 1, 55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1} # consider only 2009-2016 instances
+            #self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
@@ -183,5 +230,6 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptables_target_runlengths = [2, 10, 50]  # used in config for expensive setting
-        self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}  # 2016 biobjective instances
+        self.instancesOfInterest = None # None: consider all instances
+        #self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}  # 2016 biobjective instances
         #self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
