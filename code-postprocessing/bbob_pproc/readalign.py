@@ -409,7 +409,6 @@ def split(dataFiles, isBiobjective, dim=None):
             lines = f.readlines()
 
         content = []
-        instanceToSkip = False
 
         # Save values in array content. Check for nan and inf.
         for line in lines:
@@ -418,21 +417,6 @@ def split(dataFiles, isBiobjective, dim=None):
                 if content:
                     dataSets.append(numpy.vstack(content))
                     content = []
-                    instanceToSkip = False
-
-                if isBiobjective:
-                    parts = line.split(',')
-                    for part in parts:
-                        if 'instance' in part:
-                            instance = int(part.split('=')[1])
-                            if instance not in testbedsettings.current_testbed.instancesOfInterest:
-                                instanceToSkip = True
-                            else:
-                                instanceToSkip = False
-
-                continue
-
-            if instanceToSkip:
                 continue
 
             # else remove end-of-line sign

@@ -641,6 +641,30 @@ class DataSet():
                [  4.00000000e+01,   3.98107171e-01,   4.81333333e+03],
                [ -1.00000000e+00,   1.00000000e-08,   6.09626667e+03]])
         
+        Note that the load of a data set depends on the set of instances
+        specified in testbedsettings.current_testbed.instancesOfInterest
+        (None means all instances are read in):
+        >>> import sys
+        >>> import os
+        >>> import urllib
+        >>> import tarfile
+        >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+        >>> os.chdir(path)
+        >>> import bbob_pproc as bb
+        >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
+        >>> if not os.path.exists(infoFile):
+        ...   os.chdir(os.path.join(path, 'data'))
+        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
+        ...   filename, headers = urllib.urlretrieve(dataurl)
+        ...   archivefile = tarfile.open(filename)
+        ...   archivefile.extractall()
+        ...   os.chdir(path)
+        >>> dslist = bb.load(infoFile)
+          Data consistent according to test in consistency_check() in pproc.DataSet
+        >>> len(dslist[0].instances)
+        15
+        # not yet finished...
+        
     """
 
     # TODO: unit element of the post-processing: one algorithm, one problem
@@ -750,8 +774,9 @@ class DataSet():
             else:
                 if not ':' in elem:
                     
-                    # We might take only a subset of the given instances for the bi-objective case (for now).
-                    if (self.isBiobjective() and
+                    # We might take only a subset of the given instances,
+                    # given in testbedsettings.current_testbed.instancesOfInterest:
+                    if (testbedsettings.current_testbed.instancesOfInterest and
                         ast.literal_eval(elem) not in testbedsettings.current_testbed.instancesOfInterest):
                         continue
 
@@ -769,8 +794,9 @@ class DataSet():
                     self.readfinalFminusFtarget.append(numpy.inf)
                 else:
                     itrial, info = elem.split(':', 1)
-                    # We might take only a subset of the given instances for the bi-objective case (for now).
-                    if (self.isBiobjective() and
+                    # We might take only a subset of the given instances,
+                    # given in testbedsettings.current_testbed.instancesOfInterest:
+                    if (testbedsettings.current_testbed.instancesOfInterest and
                         ast.literal_eval(itrial) not in testbedsettings.current_testbed.instancesOfInterest):
                         continue
                     self.instancenumbers.append(ast.literal_eval(itrial))
@@ -923,7 +949,10 @@ class DataSet():
         instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))
         
         # We might take only a subset of all provided instances for the bi-objective case (for now).
-        expectedNumberOfInstances = len(testbedsettings.current_testbed.instancesOfInterest) if self.isBiobjective() else 15
+        if not testbedsettings.current_testbed.instancesOfInterest: # case of no specified instances
+            expectedNumberOfInstances = 10 if self.isBiobjective() else 15
+        else:
+            expectedNumberOfInstances = len(testbedsettings.current_testbed.instancesOfInterest)
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
             # check exception of 2009 data sets with 3 times instances 1:5
             for i in set(self.instancenumbers):
@@ -2294,6 +2323,9 @@ def processInputArgs(args):
       datasetlists_by_alg
         a dictionary which associates each algorithm via its input path
         name to a DataSetList
+
+
+
 
     """
     dsList = list()

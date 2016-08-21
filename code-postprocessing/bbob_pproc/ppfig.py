@@ -19,6 +19,8 @@ from . import genericsettings, testbedsettings, toolsstats, htmldesc
 
 bbox_inches_choices = {  # do we also need pad_inches = 0?
     'svg': 'tight',
+    #'png': 'tight', # uncomment for bbob-biobj figures
+    #'pdf': 'tight', # uncomment for bbob-biobj figures
 }
 
 
