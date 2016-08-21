@@ -642,7 +642,7 @@ class DataSet():
                [ -1.00000000e+00,   1.00000000e-08,   6.09626667e+03]])
         
         Note that the load of a data set depends on the set of instances
-        specified in testbedsettings.current_testbed.instancesOfInterest
+        specified in testbedsettings' TestBed class (or its children)
         (None means all instances are read in):
         >>> import sys
         >>> import os
@@ -663,9 +663,10 @@ class DataSet():
           Data consistent according to test in consistency_check() in pproc.DataSet
         >>> dslist[0].instancenumbers
         [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5]
-        
-        >>> ds = dslist[3]  # a single data set of type DataSet
-        
+        because testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] was None
+        >>> bb.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = [1, 2]
+        >>> dslist[0].instancenumbers
+        [1, 1, 1, 2, 2, 2]
     """
 
     # TODO: unit element of the post-processing: one algorithm, one problem
