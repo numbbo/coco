@@ -661,9 +661,10 @@ class DataSet():
         ...   os.chdir(path)
         >>> dslist = bb.load(infoFile)
           Data consistent according to test in consistency_check() in pproc.DataSet
-        >>> len(dslist[0].instances)
-        15
-        # not yet finished...
+        >>> dslist[0].instancenumbers
+        [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5]
+        
+        >>> ds = dslist[3]  # a single data set of type DataSet
         
     """
 
