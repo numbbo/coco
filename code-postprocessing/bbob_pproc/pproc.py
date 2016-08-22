@@ -663,10 +663,23 @@ class DataSet():
           Data consistent according to test in consistency_check() in pproc.DataSet
         >>> dslist[0].instancenumbers
         [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5]
+        >>> dsList[0].evals[-1]
+        array([  1.00000000e-08,   2.59000000e+02,   2.57000000e+02,
+                 2.67000000e+02,   2.49000000e+02,   3.33000000e+02,
+                 2.77000000e+02,   2.37000000e+02,   2.33000000e+02,
+                 3.25000000e+02,   2.93000000e+02,   2.58000000e+02,
+                 2.43000000e+02,   2.41000000e+02,   2.31000000e+02,
+                 2.24000000e+02])
         because testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] was None
-        >>> bb.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = [1, 2]
-        >>> dslist[0].instancenumbers
-        [1, 1, 1, 2, 2, 2]
+        >>> bb.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = [1, 3]
+        >>> bb.config.config('GECCOBBOBTestbed') # make sure that settings are used
+        >>> dslist2 = bb.load(infoFile)
+        >>> dslist2[0].instancenumbers
+        [1, 1, 1, 3, 3, 3]
+        >>> dsList2[0].evals[-1]
+        array([  1.00000000e-08,   2.59000000e+02,   2.57000000e+02,
+                 2.67000000e+02,   2.37000000e+02,   2.33000000e+02,
+                 3.25000000e+02])
     """
 
     # TODO: unit element of the post-processing: one algorithm, one problem
@@ -754,6 +767,7 @@ class DataSet():
 
         # Split line in data file name(s) and run time information.
         parts = data.split(', ')
+        idx_of_instances_to_load = []
         for elem in parts:
             if elem.endswith('dat'):
                 #Windows data to Linux processing
@@ -780,6 +794,8 @@ class DataSet():
                     # given in testbedsettings.current_testbed.instancesOfInterest:
                     if (testbedsettings.current_testbed.instancesOfInterest and
                         ast.literal_eval(elem) not in testbedsettings.current_testbed.instancesOfInterest):
+
+                        idx_of_instances_to_load.append(False)
                         continue
 
                     # if elem does not have ':' it means the run was not
@@ -788,6 +804,7 @@ class DataSet():
                     # In this case, what should we do? Either we try to process
                     # the corresponding data anyway or we leave it out.
                     # For now we leave it in.
+                    idx_of_instances_to_load.append(True)
                     self.isFinalized.append(False)
                     warnings.warn('Caught an ill-finalized run in %s for %s'
                                   % (indexfile,
@@ -799,9 +816,11 @@ class DataSet():
                     # We might take only a subset of the given instances,
                     # given in testbedsettings.current_testbed.instancesOfInterest:
                     if (testbedsettings.current_testbed.instancesOfInterest and
-                        ast.literal_eval(itrial) not in testbedsettings.current_testbed.instancesOfInterest):
+                            ast.literal_eval(itrial) not in testbedsettings.current_testbed.instancesOfInterest):
+                        idx_of_instances_to_load.append(False)
                         continue
                     self.instancenumbers.append(ast.literal_eval(itrial))
+                    idx_of_instances_to_load.append(True)
                     self.isFinalized.append(True)
                     readmaxevals, readfinalf = info.split('|', 1)
                     self.readmaxevals.append(int(readmaxevals))
@@ -814,7 +833,7 @@ class DataSet():
         # put into variable dataFiles the files where to look for data
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
-        data = HMultiReader(split(dataFiles, self.isBiobjective()), self.isBiobjective())
+        data = HMultiReader(split(dataFiles, self.isBiobjective(), idx_to_load=idx_of_instances_to_load), self.isBiobjective())
         if genericsettings.verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
@@ -836,7 +855,7 @@ class DataSet():
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
             raise Usage("Missing tdat files in '{0}'. Please rerun the experiments." % filepath)
 
-        data = VMultiReader(split(dataFiles, self.isBiobjective()), self.isBiobjective())
+        data = VMultiReader(split(dataFiles, self.isBiobjective(), idx_to_load=idx_of_instances_to_load), self.isBiobjective())
         if genericsettings.verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))

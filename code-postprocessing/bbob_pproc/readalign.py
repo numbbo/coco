@@ -23,7 +23,7 @@ import os, sys
 import numpy
 import warnings
 
-from . import testbedsettings
+from . import genericsettings
 
 from pdb import set_trace
 
@@ -398,8 +398,12 @@ def openfile(filePath):
     return open(filePath, 'r')
 
 
-def split(dataFiles, isBiobjective, dim=None):
-    """Split a list of data files into arrays corresponding to data sets."""
+def split(dataFiles, isBiobjective, idx_to_load=None, dim=None):
+    """Split a list of data files into arrays corresponding to data sets.
+       The Boolean list idx_to_load is thereby indicating whether a
+       given part of the split is to be considered or not if None, all
+       instances are considered.
+    """
 
     dataSets = []
     for fil in dataFiles:
@@ -409,14 +413,19 @@ def split(dataFiles, isBiobjective, dim=None):
             lines = f.readlines()
 
         content = []
+        idx = 0 # instance index for checking in idx_to_load
 
         # Save values in array content. Check for nan and inf.
         for line in lines:
             # skip if comment
             if line.startswith('%'):
                 if content:
-                    dataSets.append(numpy.vstack(content))
+                    if idx_to_load and idx_to_load[idx]:
+                        dataSets.append(numpy.vstack(content))
+                    elif genericsettings.verbose:
+                            print('skipped instance...')
                     content = []
+                    idx = idx + 1
                 continue
 
             # else remove end-of-line sign
@@ -443,7 +452,10 @@ def split(dataFiles, isBiobjective, dim=None):
             content.append(numpy.array(data))
             # Check that it always have the same length?
         if content:
-            dataSets.append(numpy.vstack(content))
+            if idx_to_load and idx_to_load[idx]:
+                dataSets.append(numpy.vstack(content))
+            elif genericsettings.verbose:
+                    print('skipped instance...')
 
     return dataSets
 
