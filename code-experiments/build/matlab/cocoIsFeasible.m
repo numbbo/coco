@@ -10,5 +10,5 @@
 % Returns:
 %    is_feasible   1 if x is feasible and 0 otherwise
 %    y             Vector of constraints values resulting from the evaluation
-function [is_feasible, y] = cocoIsFeasible(f, x)
-[is_feasible, y] = cocoCall('cocoIsFeasible', f, x);
+function [is_feasible, y] = cocoIsFeasible(problem, x)
+[is_feasible, y] = cocoCall('cocoIsFeasible', problem, x);
