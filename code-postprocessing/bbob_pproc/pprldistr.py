@@ -511,8 +511,8 @@ def plotFVDistr(dsList, budget, min_f=None, **plotArgs):
     for ds in dsList:
         for i, fvals in enumerate(ds.funvals):
             if fvals[0] > budget * ds.dim:
-                assert (i > 0, 'first entry ' + str(fvals[0]) +
-                        'was smaller than maximal budget ' + str(budget * ds.dim))
+                assert i > 0, 'first entry ' + str(fvals[0]) + \
+                        'was smaller than maximal budget ' + str(budget * ds.dim)
                 fvals = ds.funvals[i - 1]
                 break
         # vals = fvals[1:].copy() / target[i.funcId]

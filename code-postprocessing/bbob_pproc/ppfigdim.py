@@ -591,13 +591,14 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
         beautify(axesLabel=False)
+        
+        # display number of instances in data and used targets type:
+        display_text = '%d instances\n' % len(((dictFunc[func][0]).instancenumbers))
+        display_text += _valuesOfInterest.short_info
         plt.text(plt.xlim()[0], plt.ylim()[0],
-                 _valuesOfInterest.short_info, fontsize=14)
-				 
-        # display number of instances in data:
-        instanceText = '%d instances' % len(((dictFunc[func][0]).instancenumbers))
-        plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, instanceText, fontsize=14)
-  
+                 display_text, fontsize=14, horizontalalignment="left",
+                 verticalalignment="bottom")
+
         if func in testbedsettings.current_testbed.functions_with_legend:
             toolsdivers.legend(loc="best")
         if func in funInfos.keys():

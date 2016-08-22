@@ -329,7 +329,43 @@ def main(dsList0, dsList1, outputdir, verbose=True):
                              markeredgecolor=colors[i], markeredgewidth=2,
                              transform=ax.transAxes, clip_on=False)
 
-                #set_trace()
+        targetlabels = targets.labels()
+        if isinstance(targets, pproc.RunlengthBasedTargetValues):
+            text = (str(len(targetlabels)) + ' target RLs/dim: ' +
+                    targetlabels[0] + '..' +
+                    targetlabels[len(targetlabels)-1] + '\n')
+            text += '   from ' + testbedsettings.current_testbed.best_algorithm_filename
+        else:
+            text = (str(len(targetlabels)) + ' targets in ' +
+                    targetlabels[0] + '..' +
+                    targetlabels[len(targetlabels)-1])
+        # add number of instances 
+        text += '\n'
+        num_of_instances_alg0 = []
+        num_of_instances_alg1 = []
+        for d in dims:
+            num_of_instances_alg0.append((dictDim0[d][0]).nbRuns())
+            num_of_instances_alg1.append((dictDim1[d][0]).nbRuns())
+        # issue a warning if the numbers of instances are inconsistent:
+        if (len(set(num_of_instances_alg0)) > 1):
+            warnings.warn('Inconsistent numbers of instances over dimensions found for ALG0:\n\
+                           found instances %s' % str(num_of_instances_alg0))
+        if (len(set(num_of_instances_alg1)) > 1):
+            warnings.warn('Inconsistent numbers of instances over dimensions found for ALG1:\n\
+                           found instances %s' % str(num_of_instances_alg1))
+        if (len(set(num_of_instances_alg0)) == 1 and len(set(num_of_instances_alg0)) == 1):
+            text += '%s and %s instances' % (num_of_instances_alg0[0], num_of_instances_alg1[0])
+        else:
+            for n in num_of_instances_alg0:
+                text += '%d, ' % n
+            text = text.rstrip(', ')
+            text += ' and '
+            for n in num_of_instances_alg1:
+                text += '%d, ' % n
+            text = text.rstrip(', ')
+            text += ' instances'
+        plt.text(0.01, 0.98, text, horizontalalignment="left",
+                 verticalalignment="top", transform=plt.gca().transAxes, size='small')
 
         beautify()
 

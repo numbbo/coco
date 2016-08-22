@@ -148,6 +148,7 @@ struct coco_problem_s {
 
   /* Fields depending on the containing benchmark suite */
 
+  coco_suite_t *suite;                 /**< @brief Pointer to the containing suite (NULL if not given) */
   size_t suite_dep_index;              /**< @brief Suite-depending problem index (starting from 0) */
   size_t suite_dep_function;           /**< @brief Suite-depending function */
   size_t suite_dep_instance;           /**< @brief Suite-depending instance */

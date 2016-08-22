@@ -534,18 +534,30 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
         # bottom labels with #instances and type of targets:
         infotext = ''
         algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
+        
+        num_of_instances = []
         for alg in algorithms_with_data:
             if len(dictFunc[f][alg]) > 0:
-                infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
+                num_of_instances.append(len((dictFunc[f][alg])[0].instancenumbers))
             else:
                 warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
+        # issue a warning if number of instances is inconsistant, otherwise
+        # display only the present number of instances, i.e. remove copies
+        if len(set(num_of_instances)) > 1:
+            warnings.warn('Number of instances inconsistent over all algorithms.')
+        else:
+            num_of_instances = set(num_of_instances)
+        for n in num_of_instances:
+            infotext += '%d, ' % n
 
         infotext = infotext.rstrip(', ')
-        infotext += ' instances'
-        plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, infotext, fontsize=14)  # TODO: check
-        plt.text(plt.xlim()[0], plt.ylim()[0], 
-                 'target ' + target.label_name() + ': ' + target.label(0),
-                 fontsize=14)  # TODO: check
+        infotext += ' instances\n'
+        infotext += 'target ' + target.label_name() + ': ' + target.label(0)
+        plt.text(plt.xlim()[0], plt.ylim()[0],
+                 infotext, fontsize=14, horizontalalignment="left",
+                 verticalalignment="bottom")
+
+
 
         saveFigure(filename, verbose=verbose)
 

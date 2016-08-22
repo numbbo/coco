@@ -172,7 +172,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pprldmany_target_values = targetValues(target_values)  # possibly changed in config
         self.pprldmany_target_range_latex = '$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$'
         # ppscatter_target_values are copied from the single objective case. Define the correct values!
-        self.ppscatter_target_values = targetValues(np.logspace(-8, 2, 46))  # that does not look right here!
+        self.ppscatter_target_values = targetValues(np.logspace(-5, 1, 51))  # that does not look right here!
         self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5)  # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)

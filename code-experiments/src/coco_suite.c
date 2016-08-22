@@ -109,6 +109,8 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     return NULL;
   }
 
+  coco_problem_set_suite(problem, suite);
+
   return problem;
 }
 

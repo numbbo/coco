@@ -209,6 +209,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->final_target_delta[0] = 1e-8; /* in case to be modified by the benchmark */
   problem->best_observed_fvalue[0] = DBL_MAX;
   problem->best_observed_evaluation[0] = 0;
+  problem->suite = NULL; /* To be initialized in the coco_suite_get_problem_from_indices() function */
   problem->suite_dep_index = 0;
   problem->suite_dep_function = 0;
   problem->suite_dep_instance = 0;
@@ -260,6 +261,7 @@ static coco_problem_t *coco_problem_duplicate(const coco_problem_t *other) {
   problem->best_observed_fvalue[0] = other->best_observed_fvalue[0];
   problem->best_observed_evaluation[0] = other->best_observed_evaluation[0];
 
+  problem->suite = other->suite;
   problem->suite_dep_index = other->suite_dep_index;
   problem->suite_dep_function = other->suite_dep_function;
   problem->suite_dep_instance = other->suite_dep_instance;
@@ -329,6 +331,7 @@ void coco_problem_free(coco_problem_t *problem) {
     problem->best_parameter = NULL;
     problem->best_value = NULL;
     problem->nadir_value = NULL;
+    problem->suite = NULL;
     problem->data = NULL;
     problem->initial_solution = NULL;
     coco_free_memory(problem);
@@ -571,18 +574,28 @@ void coco_problem_get_initial_solution(const coco_problem_t *problem, double *in
   }
 }
 
+static coco_suite_t *coco_problem_get_suite(const coco_problem_t *problem) {
+  assert(problem != NULL);
+  return problem->suite;
+}
+
+static void coco_problem_set_suite(coco_problem_t *problem, const coco_suite_t *suite) {
+  assert(problem != NULL);
+  problem->suite = suite;
+}
+
 size_t coco_problem_get_suite_dep_index(const coco_problem_t *problem) {
   assert(problem != NULL);
   return problem->suite_dep_index;
 }
 
-size_t coco_problem_get_suite_dep_function(const coco_problem_t *problem) {
+static size_t coco_problem_get_suite_dep_function(const coco_problem_t *problem) {
   assert(problem != NULL);
   assert(problem->suite_dep_function > 0);
   return problem->suite_dep_function;
 }
 
-size_t coco_problem_get_suite_dep_instance(const coco_problem_t *problem) {
+static size_t coco_problem_get_suite_dep_instance(const coco_problem_t *problem) {
   assert(problem != NULL);
   assert(problem->suite_dep_instance > 0);
   return problem->suite_dep_instance;
