@@ -390,7 +390,6 @@ def load_best_algorithm(force=False):
         bestAlgorithmEntries = generate(dictAlg, dsList[0].algId)
     
     
-    
     print_done()
 
     return bestAlgorithmEntries
@@ -498,6 +497,8 @@ def custom_generate(args=algs2009, algId='bestCustomAlg'):
     tar.close()
 
     print('Best algorithm files were written to %s.tar.gz' % output_dir)
+    print('...using instances ', end='')
+    print(dsList[0].instancenumbers)
 
 
 def create_data_files(output_dir, result):

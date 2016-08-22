@@ -120,7 +120,7 @@ class GECCOBBOBTestbed(Testbed):
         #                   31: 1, 32: 1, 33: 1, 34: 1, 35: 1, 36: 1, 37: 1, 38: 1, 39: 1, 40: 1,
         #                   41: 1, 42: 1, 43: 1, 44: 1, 45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1,
         #                   51: 1, 52: 1, 53: 1, 54: 1, 55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1} # consider only 2009-2016 instances
-        #.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+        #.instancesOfInterest = {1: 1, 2: 1}
     ) 
 
     def __init__(self, targetValues):
@@ -210,7 +210,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptablemany_targetsOfInterest = targetValues((1, 1e-1, 1e-2, 1e-3))  # used for pptables
         self.scenario = scenario_biobjfixed
         self.best_algorithm_filename = 'best2016-bbob-biobj.tar.gz'
-        self.best_algorithm_filename = 'bestalgentries2016.pickle.gz' # TODO produce correct best2016 algo and delete this line
+        self.best_algorithm_filename = 'refalgs/best2016-bbob-biobj-v2.0.tar.gz' # TODO produce correct best2016 algo and delete this line
         self.best_algorithm_displayname = 'best 2016' # TODO: should be read in from data set in best_algorithm_filename
         self.short_names = get_short_names(self.shortinfo_filename)
         # expensive optimization settings:
