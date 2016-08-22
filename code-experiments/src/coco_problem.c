@@ -579,7 +579,7 @@ static coco_suite_t *coco_problem_get_suite(const coco_problem_t *problem) {
   return problem->suite;
 }
 
-static void coco_problem_set_suite(coco_problem_t *problem, const coco_suite_t *suite) {
+static void coco_problem_set_suite(coco_problem_t *problem, coco_suite_t *suite) {
   assert(problem != NULL);
   problem->suite = suite;
 }

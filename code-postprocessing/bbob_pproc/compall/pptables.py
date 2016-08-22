@@ -401,29 +401,23 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                           % (2 * len(targetsOfInterest) + 2, header)])
             extraeol.append('')
 
-        curlineHtml = []
+        # generate line with displayed quality indicator and targets:
         if function_targets_line is True or (function_targets_line and df[1] in function_targets_line):
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 curline = [r'\#FEs/D']
-                curlineHtml = ['<thead>\n<tr>\n<th>#FEs/D<br>REPLACEH</th>\n']
                 counter = 1
                 for i in targetsOfInterest.labels():
                     curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % i)
-                    curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
                     counter += 1
             else:
                 if (testbed.name == testbedsettings.testbed_name_bi):
                     curline = [r'$\Df$']
-                    curlineHtml = ['<thead>\n<tr>\n<th>&#916; HV<sub>ref</sub><br>REPLACEH</th>\n']
                 else:
                     curline = [r'$\Delta f_\mathrm{opt}$']
-                    curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']
                 counter = 1
                 for t in targetsOfInterest:
                     curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
                                    % writeFEvals2(t, precision=1, isscientific=True))
-                    curlineHtml.append(
-                        '<td>%s<br>REPLACE%d</td>\n' % (writeFEvals2(t, precision=1, isscientific=True), counter))
                     counter += 1
                 #                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
                 #                            % writeFEvals2(targetsOfInterest[-1], precision=1, isscientific=True))
@@ -431,16 +425,36 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                 curline.append(r'\multicolumn{2}{|@{}l@{}}{\begin{rotate}{30}\#succ\end{rotate}}')
             else:
                 curline.append(r'\multicolumn{2}{|@{}l@{}}{\#succ}')
-            curlineHtml.append('<td>#succ<br>REPLACEF</td>\n</tr>\n</thead>\n')
             table.append(curline)
 
+        # do the same for the HTML output, but all the time:
+        curlineHtml = []
+        if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+            curlineHtml = ['<thead>\n<tr>\n<th>#FEs/D<br>REPLACEH</th>\n']
+            counter = 1
+            for i in targetsOfInterest.labels():
+                curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
+                counter += 1
+        else:
+            if (testbed.name == testbedsettings.testbed_name_bi):
+                curlineHtml = ['<thead>\n<tr>\n<th>&#916; HV<sub>ref</sub><br>REPLACEH</th>\n']
+            else:
+                curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']
+            counter = 1
+            for t in targetsOfInterest:
+                curlineHtml.append(
+                    '<td>%s<br>REPLACE%d</td>\n' % (writeFEvals2(t, precision=1, isscientific=True), counter))
+                counter += 1
+        curlineHtml.append('<td>#succ<br>REPLACEF</td>\n</tr>\n</thead>\n')
+ 
         extraeol.append(r'\hline')
         #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
-
-        curline = [r'\aRT{}$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]]
-        replaceValue = '\aRT{}<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
+        
+        # line with function name and potential aRT values of bestalg
+        curline = [r'\textbf{f%d}' % df[1]]
+        replaceValue = '<b>f%d</b>' % df[1]
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
-
+        
         if bestalgentries:
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
@@ -497,13 +511,6 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
         tableHtml.extend(curlineHtml[:])
         tableHtml.append('<tbody>\n')
         extraeol.append('')
-
-        # for i, gna in enumerate(zip((1, 2, 3), ('bla', 'blo', 'bli'))):
-        # print i, gna, gno
-        # set_trace()
-        # Format data
-        # if df == (5, 17):
-        # set_trace()
 
         header = r'\providecommand{\ntables}{%d}' % len(testbed.pptablemany_targetsOfInterest)
         for i, alg in enumerate(algnames):

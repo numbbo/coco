@@ -143,8 +143,7 @@ def main(argv=None):
         --no-rld-single-fcts
 
             do not generate runlength distribution figures for each
-            single function. These figures are not (yet) used
-            in the LaTeX templates.
+            single function.
 
         --input-path=INPUTPATH
 

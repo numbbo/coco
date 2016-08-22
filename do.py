@@ -669,6 +669,11 @@ def install_preprocessing():
     python('code-preprocessing/archive-update', ['setup.py', 'install', '--user'], verbose=verbosity)
 
 
+def test_preprocessing():
+    install_preprocessing()
+    python('code-preprocessing/archive-update', ['-m', 'pytest'], verbose=verbosity)
+    python('code-preprocessing/log-reconstruction', ['-m', 'pytest'], verbose=verbosity)
+
 ################################################################################
 ## Global
 def build():
@@ -796,12 +801,13 @@ Available commands for developers:
   test-python2            - Build and run minimal test of Python 2 module
   test-python3            - Build and run minimal test of Python 3 module
   test-octave             - Build and run example experiment in Octave
-  test-postprocessing     - Runs some of the post-processing tests.
-  test-postprocessing-all - Runs all of the post-processing tests.
-  verify-postprocessing   - Checks if the generated html is up-to-date.
+  test-postprocessing     - Runs some of the post-processing tests
+  test-postprocessing-all - Runs all of the post-processing tests [needs access to the internet]
+  verify-postprocessing   - Checks if the generated html is up-to-date
   leak-check              - Check for memory leaks in C
   
   install-preprocessing   - Install preprocessing (user-locally)
+  test-preprocessing      - Runs preprocessing tests [needs access to the internet]
 
 To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
@@ -849,7 +855,7 @@ def main(args):
     elif cmd == 'verify-postprocessing': verify_postprocessing()
     elif cmd == 'leak-check': leak_check()
     elif cmd == 'install-preprocessing': install_preprocessing()
-    elif cmd == 'run-preprocessing': run_preprocessing()
+    elif cmd == 'test-preprocessing': test_preprocessing()
     else: help()
 
 
