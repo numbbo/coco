@@ -96,35 +96,13 @@ static void transform_vars_asymmetric_free(void *thing) {
 }
 
 /**
- * @brief Evaluates the inverse of the asymmetric function at "x" and
- *        stores the result into "x" itself
- */
-static void transform_vars_asymmetric_evaluate_inverse(coco_problem_t *problem, 
-                                                       double *x) {
-  size_t i;
-  double exponent;
-  transform_vars_asymmetric_data_t *data;
-  
-  if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
-  	coco_vector_set_to_nan(x, coco_problem_get_dimension(problem));
-  	return;
-  }
-
-  data = (transform_vars_asymmetric_data_t *) coco_problem_transformed_get_data(problem);
-
-  for (i = 0; i < problem->number_of_variables; ++i) {
-    if (x[i] > 0.0) {
-      exponent = 1.0
-          + ((data->beta * (double) (long) i) / ((double) (long) problem->number_of_variables - 1.0)) * sqrt(x[i]);
-      x[i] = pow(x[i], (1.0/exponent));
-    }
-  }
-}
-
-/**
  * @brief Creates the transformation.
  */
 static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, const double beta) {
+  
+  size_t i;
+  int is_feasible;
+  double alpha, *cons_values;
   transform_vars_asymmetric_data_t *data;
   coco_problem_t *problem;
   
@@ -141,9 +119,22 @@ static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, 
 	  
     problem->evaluate_constraint = transform_vars_asymmetric_evaluate_constraint;
     
-    /* Update the initial solution if any */
-    if(inner_problem->initial_solution)
-      transform_vars_asymmetric_evaluate_inverse(problem, problem->initial_solution);
+    /* Check if the initial solution remains feasible after
+     * the transformation. If not, do a backtracking
+     * towards the origin until it becomes feasible.
+     */
+    if (inner_problem->initial_solution) {
+      cons_values = coco_allocate_vector(problem->number_of_constraints);
+      is_feasible = coco_is_feasible(problem, inner_problem->initial_solution, cons_values);
+      alpha = 1.0;
+      while (!is_feasible) {
+        alpha *= 0.8;
+        for (i = 0; i < problem->number_of_variables; ++i)
+          problem->initial_solution[i] *= alpha;
+        is_feasible = coco_is_feasible(problem, problem->initial_solution, cons_values);
+      }
+      coco_free_memory(cons_values);
+    }
   }
   
   if (coco_problem_best_parameter_not_zero(inner_problem)) {
