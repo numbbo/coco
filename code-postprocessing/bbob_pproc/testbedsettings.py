@@ -165,7 +165,7 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
     def __init__(self, target_values):
         super(GECCOBBOBNoisyTestbed, self).__init__(target_values)
 
-        for key, val in GECCOBBONoisyTestbed.settings.items():
+        for key, val in GECCOBBOBNoisyTestbed.settings.items():
             setattr(self, key, val)
         if 11 < 3:
             # override settings if needed...
@@ -174,7 +174,8 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
 
 
 class GECCOBiObjBBOBTestbed(Testbed):
-    """Testbed used in the GECCO biobjective BBOB workshop 2016.
+    """Testbed used in the GECCO biobjective BBOB workshop 2016 to display
+       data sets run on the `bbob-biobj` test suite.
     """
 
     def __init__(self, targetValues):
@@ -184,19 +185,16 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
         self.shortinfo_filename = 'biobj-benchmarkshortinfos.txt'
         self.name = testbed_name_bi
-        self.short_names = {}
+        self.short_names = get_short_names(self.shortinfo_filename)
         self.hardesttargetlatex = '10^{-5}'  # used for ppfigs, pptable, pptable2, and pptables
         self.ppfigs_ftarget = 1e-5
         self.ppfig2_ftarget = 1e-5                
         self.ppfigdim_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # possibly changed in config
         self.pprldistr_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-5))  # possibly changed in config
-        #target_values = np.append(np.append(10 ** np.arange(0, -5.1, -0.1), [0]), -10 ** np.arange(-5, -3.9, 0.2))
-        target_values = 10 ** np.arange(0, -5.1, -0.1)
+        target_values = np.append(np.append(10 ** np.arange(0, -5.1, -0.1), [0]), -10 ** np.arange(-5, -3.9, 0.2))
         self.pprldmany_target_values = targetValues(target_values)  # possibly changed in config
-        #self.pprldmany_target_range_latex = '$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$'
-        self.pprldmany_target_range_latex = '$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}\}$'
-        # ppscatter_target_values are copied from the single objective case. Define the correct values!
-        self.ppscatter_target_values = targetValues(np.logspace(-5, 1, 51))  # that does not look right here!
+        self.pprldmany_target_range_latex = '$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$'
+        self.ppscatter_target_values = targetValues(np.logspace(-5, 1, 51))
         self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5)  # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)
@@ -206,17 +204,14 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptable_targetsOfInterest = targetValues(
             (1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # possibly changed in config for all tables
         self.pptable2_targetsOfInterest = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # used for pptable2
-        #self.pptablemany_targetsOfInterest = self.pptable_targetsOfInterest
         self.pptablemany_targetsOfInterest = targetValues((1, 1e-1, 1e-2, 1e-3))  # used for pptables
         self.scenario = scenario_biobjfixed
         self.best_algorithm_filename = 'best2016-bbob-biobj.tar.gz'
         self.best_algorithm_filename = 'refalgs/best2016-bbob-biobj-v2.0.tar.gz' # TODO produce correct best2016 algo and delete this line
         self.best_algorithm_displayname = 'best 2016' # TODO: should be read in from data set in best_algorithm_filename
-        self.short_names = get_short_names(self.shortinfo_filename)
+        self.instancesOfInterest = None # None: consider all instances        
         # expensive optimization settings:
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptables_target_runlengths = [2, 10, 50]  # used in config for expensive setting
-        self.instancesOfInterest = None # None: consider all instances
-        #self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}  # 2016 biobjective instances
-        #self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+        
