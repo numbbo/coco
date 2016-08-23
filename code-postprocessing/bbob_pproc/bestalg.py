@@ -439,7 +439,7 @@ def deprecated_customgenerate(args=algs2009):
     ...     archivefile = tarfile.open(filename)
     ...     archivefile.extractall()
     >>> os.chdir(os.path.join(path, 'data'))
-    >>> bestalg.customgenerate(('ALPS', '')) # doctest: +ELLIPSIS
+    >>> bestalg.custom_generate(('ALPS', '')) # doctest: +ELLIPSIS
     Searching in...
     >>> os.chdir(path)
 
@@ -475,7 +475,6 @@ def custom_generate(args=algs2009, algId='bestCustomAlg'):
     This method is called from the python command line from a directory
     containing all necessary data folders::
 
-    TODO: write the doctest
     """
 
     output_dir = algId

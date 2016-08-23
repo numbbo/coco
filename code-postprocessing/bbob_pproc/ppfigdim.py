@@ -571,7 +571,7 @@ def main(dsList, _valuesOfInterest, outputdir):
         functionGroups = dsList.getFuncGroups(),
         parentFileName=genericsettings.single_algorithm_file_name)
 
-    if not dsList.isBiobjective():
+    if not testbedsettings.current_testbed.best_algorithm_filename == '':
         ppfig.save_single_functions_html(
             os.path.join(outputdir, 'pplogloss'),
             htmlPage = ppfig.HtmlPage.PPLOGLOSS,

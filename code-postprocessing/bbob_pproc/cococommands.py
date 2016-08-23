@@ -34,6 +34,7 @@ Examples:
     ...   archivefile.extractall()
     ...   os.chdir(path)
     >>> ds = bb.load(infoFile)
+    ...
       Data consistent according to test in consistency_check() in pproc.DataSet
 
 * Get some information on a :py:class:`DataSetList` instance::
