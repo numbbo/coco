@@ -22,6 +22,7 @@ Examples:
     >>> import tarfile
     >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
     >>> os.chdir(path)
+    >>> bb.genericsettings.verbose = False # ensure to make below doctests work 
 
 * Load a data set, assign to variable :py:data:`ds`::
 
@@ -34,7 +35,6 @@ Examples:
     ...   archivefile.extractall()
     ...   os.chdir(path)
     >>> ds = bb.load(infoFile)
-    ...
       Data consistent according to test in consistency_check() in pproc.DataSet
 
 * Get some information on a :py:class:`DataSetList` instance::

@@ -420,7 +420,7 @@ def split(dataFiles, isBiobjective, idx_to_load=None, dim=None):
             # skip if comment
             if line.startswith('%'):
                 if content:
-                    if idx_to_load and idx_to_load[idx]:
+                    if (idx_to_load == None) or (idx_to_load and idx_to_load[idx]):
                         dataSets.append(numpy.vstack(content))
                     elif genericsettings.verbose:
                             print('skipped instance...')
