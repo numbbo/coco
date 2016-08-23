@@ -7,8 +7,8 @@ cimport numpy as np
 
 from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
 
-known_suite_names = [b"bbob", b"bbob-biobj"]
-_known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-largescale"]
+known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-constrained"]
+_known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-constrained", b"bbob-largescale"]
 
 # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
 # __all__ = ['Problem', 'Benchmark']
@@ -39,6 +39,7 @@ cdef extern from "coco.h":
     void coco_problem_get_initial_solution(coco_problem_t *problem, double *x)
     void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
     void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
+    int coco_is_feasible(coco_problem_t *problem, const double *x, double *y)
     void coco_recommend_solution(coco_problem_t *problem, const double *x)
 
     int coco_logger_biobj_feed_solution(coco_problem_t *problem, const size_t evaluation, const double *y)
@@ -58,6 +59,7 @@ cdef extern from "coco.h":
     const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem)
     double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations(const coco_problem_t *problem)
+    size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem)
     double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
     int coco_problem_final_target_hit(const coco_problem_t *problem)
 
@@ -678,7 +680,6 @@ cdef class Problem:
 
         By convention, constraints with values >= 0 are satisfied.
         """
-        raise NotImplementedError("has never been tested, incomment this to start testing")
         cdef np.ndarray[double, ndim=1, mode="c"] _x
         x = np.array(x, copy=False, dtype=np.double, order='C')
         if np.size(x) != self.number_of_variables:
@@ -693,6 +694,27 @@ cdef class Problem:
                                <double *>np.PyArray_DATA(_x),
                                <double *>np.PyArray_DATA(self.constraint_values))
         return np.array(self.constraint_values, copy=True)
+    def is_feasible(self, x):
+        """return 1 if `x` is feasible and 0 otherwise; also return the
+        constraint values for `x`. 
+
+        By convention, constraints with values >= 0 are satisfied.
+        """
+        raise NotImplementedError("has never been tested, incomment this to start testing")
+        cdef np.ndarray[double, ndim=1, mode="c"] _x
+        x = np.array(x, copy=False, dtype=np.double, order='C')
+        if np.size(x) != self.number_of_variables:
+            raise ValueError(
+                "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
+                "not match the problem dimension `number_of_variables==%d`." 
+                             % self.number_of_variables)
+        _x = x  # this is the final type conversion
+        if self.problem is NULL:
+            raise InvalidProblemException()
+        is_feasible = coco_is_feasible(self.problem, 
+                                       <double *>np.PyArray_DATA(_x), 
+                                       <double *>np.PyArray_DATA(self.constraint_values))
+        return (is_feasible, np.array(self.constraint_values, copy=True))
     def recommend(self, arx):
         """Recommend a solution, return `None`.
 
@@ -787,6 +809,9 @@ cdef class Problem:
     @property
     def evaluations(self):
         return coco_problem_get_evaluations(self.problem)
+    @property
+    def evaluations_constraints(self):
+        return coco_problem_get_evaluations_constraints(self.problem)
     @property
     def final_target_hit(self):
         """return 1 if the final target is known and has been hit, 0 otherwise

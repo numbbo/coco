@@ -135,6 +135,8 @@ def random_search(fun, lbounds, ubounds, budget):
         # about five times faster than "for k in range(budget):..."
         X = lbounds + (ubounds - lbounds) * np.random.rand(chunk, dim)
         F = [fun(x) for x in X]
+        if fun.number_of_constraints > 0:
+            C = [fun.constraint(x) for x in X] 
         if fun.number_of_objectives == 1:
             index = np.argmin(F)
             if f_min is None or F[index] < f_min:
@@ -165,7 +167,7 @@ def batch_loop(solver, suite, observer, budget,
         runs = coco_optimize(solver, problem, budget * problem.dimension, max_runs)
         if verbose:
             print_flush("!" if runs > 2 else ":" if runs > 1 else ".")
-        short_info.add_evals(problem.evaluations, runs)
+        short_info.add_evals(problem.evaluations + problem.evaluations_constraints, runs)
         problem.free()
         addressed_problems += [problem.id]
     print(short_info.function_done() + short_info.dimension_done())
@@ -198,7 +200,7 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
               fun.evaluations)
 
     for restarts in range(int(max_runs)):
-        remaining_evals = max_evals - fun.evaluations
+        remaining_evals = max_evals - fun.evaluations - fun.evaluations_constraints
         x0 = center + (restarts > 0) * 0.8 * range_ * (
                 np.random.rand(fun.dimension) - 0.5)
         fun(x0)  # can be incommented, if this is done by the solver
@@ -231,14 +233,15 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
         else:
             raise ValueError("no entry for solver %s" % str(solver.__name__))
 
-        if fun.evaluations >= max_evals or fun.final_target_hit:
+        if fun.evaluations + fun.evaluations_constraints >= max_evals or \
+           fun.final_target_hit:
             break
         # quit if fun.evaluations did not increase
-        if fun.evaluations <= max_evals - remaining_evals:
-            if max_evals - fun.evaluations > fun.dimension + 1:
+        if fun.evaluations + fun.evaluations_constraints <= max_evals - remaining_evals:
+            if max_evals - fun.evaluations - fun.evaluations_constraints > fun.dimension + 1:
                 print("WARNING: %d evaluations remaining" %
                       remaining_evals)
-            if fun.evaluations < max_evals - remaining_evals:
+            if fun.evaluations + fun.evaluations_constraints < max_evals - remaining_evals:
                 raise RuntimeError("function evaluations decreased")
             break
     return restarts + 1
@@ -255,11 +258,13 @@ current_batch = 1      # 1..number_of_batches
 ##############################################################################
 SOLVER = random_search
 #SOLVER = my_solver # fmin_slsqp # SOLVER = cma.fmin
-suite_name = "bbob-biobj"
+suite_name = "bbob-constrained"
+#suite_name = "bbob-biobj"
 #suite_name = "bbob"
 suite_instance = "year:2016"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
-observer_name = suite_name
+observer_name = "bbob"
+#observer_name = suite_name
 observer_options = (
     ' result_folder: %s_on_%s_budget%04dxD '
                  % (SOLVER.__name__, suite_name, budget) +
