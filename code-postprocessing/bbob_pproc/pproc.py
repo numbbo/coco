@@ -30,7 +30,7 @@ import numpy, numpy as np
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 from . import genericsettings, findfiles, toolsstats, toolsdivers
-from . import testbedsettings, config
+from . import testbedsettings
 from .readalign import split, alignData, HMultiReader, VMultiReader, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from .ppfig import consecutiveNumbers, Usage
@@ -528,6 +528,7 @@ class DataSet():
         >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
         >>> os.chdir(path)
         >>> import bbob_pproc as bb
+        >>> bb.genericsettings.verbose = False # ensure to make doctests work        
         >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
         >>> if not os.path.exists(infoFile):
         ...   os.chdir(os.path.join(path, 'data'))
@@ -537,7 +538,6 @@ class DataSet():
         ...   archivefile.extractall()
         ...   os.chdir(path)
         >>> dslist = bb.load(infoFile)
-        ...
           Data consistent according to test in consistency_check() in pproc.DataSet
         >>> print dslist  # doctest:+ELLIPSIS
         [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
@@ -652,6 +652,7 @@ class DataSet():
         >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
         >>> os.chdir(path)
         >>> import bbob_pproc as bb
+        >>> bb.genericsettings.verbose = False # ensure to make doctests work
         >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
         >>> if not os.path.exists(infoFile):
         ...   os.chdir(os.path.join(path, 'data'))
@@ -661,28 +662,30 @@ class DataSet():
         ...   archivefile.extractall()
         ...   os.chdir(path)
         >>> dslist = bb.load(infoFile)
-        ...
           Data consistent according to test in consistency_check() in pproc.DataSet
-        >>> dslist[0].instancenumbers
+        >>> dslist[2].instancenumbers
         [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5]
-        >>> dslist.dictByDimFunc()[2][1][0].evals[-1]
-        array([  1.00000000e-08,   2.59000000e+02,   2.57000000e+02,
-                 2.67000000e+02,   2.49000000e+02,   3.33000000e+02,
-                 2.77000000e+02,   2.37000000e+02,   2.33000000e+02,
-                 3.25000000e+02,   2.93000000e+02,   2.58000000e+02,
-                 2.43000000e+02,   2.41000000e+02,   2.31000000e+02,
-                 2.24000000e+02])       
-        >>>  # because testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] was None
+        >>> dslist[2].evals[-1]
+        array([  1.00000000e-08,   2.14200000e+03,   1.95800000e+03,
+                 2.31700000e+03,   2.22700000e+03,   2.26900000e+03,
+                 2.09000000e+03,   2.32400000e+03,   2.30500000e+03,
+                 2.20700000e+03,   1.96200000e+03,   2.42800000e+03,
+                 2.21400000e+03,   1.97000000e+03,   1.92400000e+03,
+                 2.01200000e+03])
+        >>> # because testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] was None
         >>> bb.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = [1, 3]
         >>> bb.config.config('GECCOBBOBTestbed') # make sure that settings are used
         >>> dslist2 = bb.load(infoFile)
-        ...
-        >>> dslist2[0].instancenumbers
+          Data consistent according to test in consistency_check() in pproc.DataSet
+        >>> dslist2[2].instancenumbers
         [1, 1, 1, 3, 3, 3]
-        >>> dslist2.dictByDimFunc()[2][1][0].evals[-1]
-        array([  1.00000000e-08,   2.59000000e+02,   2.57000000e+02,
-                 2.67000000e+02,   2.37000000e+02,   2.33000000e+02,
-                 3.25000000e+02])
+        >>> dslist2[2].evals[-1]
+        array([  1.00000000e-08,   2.14200000e+03,   1.95800000e+03,
+                 2.31700000e+03,   2.32400000e+03,   2.30500000e+03,
+                 2.20700000e+03])
+        >>> # set things back to cause no troubles elsewhere:
+        >>> bb.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = None
+        >>> bb.config.config('GECCOBBOBTestbed') # make sure that settings are used
 
     """
 
@@ -973,9 +976,6 @@ class DataSet():
         
         instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))
         
-        # make sure that testbedsettings.current_testbed exists:
-        if not testbedsettings.current_testbed:
-            config.config(self.testbed_name)
         
         # We might take only a subset of all provided instances...
         if not testbedsettings.current_testbed.instancesOfInterest: # case of no specified instances

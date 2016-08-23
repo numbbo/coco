@@ -439,7 +439,7 @@ def deprecated_customgenerate(args=algs2009):
     ...     archivefile = tarfile.open(filename)
     ...     archivefile.extractall()
     >>> os.chdir(os.path.join(path, 'data'))
-    >>> bestalg.custom_generate(('ALPS', '')) # doctest: +ELLIPSIS
+    >>> bestalg.custom_generate(('ALPS', ''), 'refAlgFromALPS') # doctest: +ELLIPSIS
     Searching in...
     >>> os.chdir(path)
 
@@ -455,7 +455,7 @@ def deprecated_customgenerate(args=algs2009):
         if genericsettings.verbose:
             print('Folder %s was created.' % outputdir)
 
-    res = generate(dictAlg)
+    res = generate(dictAlg, outputdir)
     picklefilename = os.path.join(outputdir, 'bestalg.pickle')
     fid = gzip.open(picklefilename + ".gz", 'w')
     pickle.dump(res, fid)
