@@ -86,10 +86,11 @@ def archive_analysis(input_paths, output_path, lower_bound, upper_bound, functio
 
         try:
             (suite_name, function, instance, dimension) = parse_archive_file_name(input_file)
+            if (function not in functions) or (dimension not in dimensions) or (dimension > 5):
+                continue
             if not instance:
                 raise PreprocessingWarning('Analysis does not work on files with multiple archives, use archive_split')
-            if (function not in functions) or (instance not in instances) or (dimension not in dimensions) or \
-                    (dimension > 5):
+            if instance not in instances:
                 continue
         except PreprocessingWarning as warning:
             print('Skipping file {}\n{}'.format(input_file, warning))
