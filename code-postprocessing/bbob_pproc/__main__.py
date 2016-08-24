@@ -256,8 +256,9 @@ def main(args):
         delete_files()
         
         t0 = time.time()
-        result = os.system(python + command + ' --omit-single ' +
+        result = os.system(python + command + ' --omit-single ' + '"' +
                            join_path(data_path, 'GA-MULTIOBJ(NSGA-II).tgz') +
+                           '"' +
                            join_path(data_path, 'RS-4.tgz') + 
                            join_path(data_path, 'RS-100.tgz'))
         print('**  subtest 8 finished in ', time.time() - t0, ' seconds')
