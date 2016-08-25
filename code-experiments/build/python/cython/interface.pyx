@@ -39,7 +39,6 @@ cdef extern from "coco.h":
     void coco_problem_get_initial_solution(coco_problem_t *problem, double *x)
     void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
     void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y)
-    int coco_is_feasible(coco_problem_t *problem, const double *x, double *y)
     void coco_recommend_solution(coco_problem_t *problem, const double *x)
 
     int coco_logger_biobj_feed_solution(coco_problem_t *problem, const size_t evaluation, const double *y)
@@ -694,26 +693,6 @@ cdef class Problem:
                                <double *>np.PyArray_DATA(_x),
                                <double *>np.PyArray_DATA(self.constraint_values))
         return np.array(self.constraint_values, copy=True)
-    def is_feasible(self, x):
-        """return 1 if `x` is feasible and 0 otherwise; also return the
-        constraint values for `x`. 
-
-        By convention, constraints with values >= 0 are satisfied.
-        """
-        cdef np.ndarray[double, ndim=1, mode="c"] _x
-        x = np.array(x, copy=False, dtype=np.double, order='C')
-        if np.size(x) != self.number_of_variables:
-            raise ValueError(
-                "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
-                "not match the problem dimension `number_of_variables==%d`." 
-                             % self.number_of_variables)
-        _x = x  # this is the final type conversion
-        if self.problem is NULL:
-            raise InvalidProblemException()
-        is_feasible = coco_is_feasible(self.problem, 
-                                       <double *>np.PyArray_DATA(_x), 
-                                       <double *>np.PyArray_DATA(self.constraint_values))
-        return is_feasible, np.array(self.constraint_values, copy=True)
     def recommend(self, arx):
         """Recommend a solution, return `None`.
 

@@ -81,6 +81,9 @@ void cocoEvaluateConstraint(int nlhs, mxArray *plhs[], int nrhs, const mxArray *
     coco_evaluate_constraint(problem, x, y);
 }
 
+/* This is an internal function used in the bbob logger and
+ * should not be available to the user. To be deleted.
+ */
 void cocoIsFeasible(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     size_t *ref;
