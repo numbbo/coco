@@ -6,6 +6,5 @@ for i= 1:budget
     cocoEvaluateFunction(problem, x);
     if cocoProblemGetNumberOfConstraints(problem) > 0
         cocoEvaluateConstraint(problem, x)
-        [is_feasible, y] = cocoIsFeasible(problem, x);
     end
 end
