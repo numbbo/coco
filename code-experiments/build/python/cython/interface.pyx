@@ -700,7 +700,6 @@ cdef class Problem:
 
         By convention, constraints with values >= 0 are satisfied.
         """
-        raise NotImplementedError("has never been tested, incomment this to start testing")
         cdef np.ndarray[double, ndim=1, mode="c"] _x
         x = np.array(x, copy=False, dtype=np.double, order='C')
         if np.size(x) != self.number_of_variables:
@@ -714,7 +713,7 @@ cdef class Problem:
         is_feasible = coco_is_feasible(self.problem, 
                                        <double *>np.PyArray_DATA(_x), 
                                        <double *>np.PyArray_DATA(self.constraint_values))
-        return (is_feasible, np.array(self.constraint_values, copy=True))
+        return is_feasible, np.array(self.constraint_values, copy=True)
     def recommend(self, arx):
         """Recommend a solution, return `None`.
 

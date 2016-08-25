@@ -141,6 +141,7 @@ def random_search(fun, lbounds, ubounds, budget):
             index = np.argmin(F)
             if f_min is None or F[index] < f_min:
                 x_min, f_min = X[index], F[index]
+                feasible, c_vals = fun.is_feasible(x_min)
         budget -= chunk
     return x_min
 
