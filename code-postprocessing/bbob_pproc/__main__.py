@@ -116,7 +116,7 @@ def prepare_data(run_all_tests):
         retrieve_algorithm(dataPath, '2009', 'VNS_garcia-martinez_noiseless.tgz')
         retrieve_algorithm(dataPath, 'bbob-biobj-2016', 'RS-4.tgz')
         retrieve_algorithm(dataPath, 'bbob-biobj-2016', 'RS-100.tgz')
-        retrieve_algorithm(dataPath, 'bbob-biobj-2016', 'GA-MULTIOBJ(NSGA-II).tgz')
+        retrieve_algorithm(dataPath, 'bbob-biobj-2016', 'GA-MULTIOBJ-NSGA-II.tgz')
         retrieve_algorithm(dataPath, '2009', 'BFGS_ros_noisy.tgz')
         retrieve_algorithm(dataPath, '2009', 'MCS_huyer_noisy.tgz')        
 
@@ -257,7 +257,7 @@ def main(args):
         
         t0 = time.time()
         result = os.system(python + command + ' --omit-single ' +
-                           join_path(data_path, 'GA-MULTIOBJ(NSGA-II).tgz') +
+                           join_path(data_path, 'GA-MULTIOBJ-NSGA-II.tgz') +
                            join_path(data_path, 'RS-4.tgz') + 
                            join_path(data_path, 'RS-100.tgz'))
         print('**  subtest 8 finished in ', time.time() - t0, ' seconds')
@@ -311,7 +311,7 @@ def main(args):
     # print('    more info in file _bbob_pproc_doctest_.txt)')
     print('*** done testing module bbob_pproc ***')
 
-    if failure_count > 0:
+    if failure_count > 0:                 
         raise ValueError('%d of %d tests failed' % (failure_count, test_count))
 
 
