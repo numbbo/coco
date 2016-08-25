@@ -116,7 +116,7 @@ def prepare_data(run_all_tests):
         retrieve_algorithm(dataPath, '2009', 'VNS_garcia-martinez_noiseless.tgz')
         retrieve_algorithm(dataPath, 'bbob-biobj-2016', 'RS-4.tgz')
         retrieve_algorithm(dataPath, 'bbob-biobj-2016', 'RS-100.tgz')
-        retrieve_algorithm(dataPath, 'bbob-biobj-2016', 'GA-MULTIOBJ-NSGA-II.tgz')
+        retrieve_algorithm(dataPath, 'biobj-test', 'NSGA-II.tgz') # diff. location due to Jenkins settings with too long paths
         retrieve_algorithm(dataPath, '2009', 'BFGS_ros_noisy.tgz')
         retrieve_algorithm(dataPath, '2009', 'MCS_huyer_noisy.tgz')        
 
@@ -256,8 +256,12 @@ def main(args):
         delete_files()
         
         t0 = time.time()
+        # Note: we use the original GA-MULTIOBJ-NSGA-II.tgz data set
+        # but with a shorter file name from the biobj-test folder
+        # to avoid problems with too long path names on the windows
+        # Jenkins slave
         result = os.system(python + command + ' --omit-single ' +
-                           join_path(data_path, 'GA-MULTIOBJ-NSGA-II.tgz') +
+                           join_path(data_path, 'NSGA-II.tgz') +
                            join_path(data_path, 'RS-4.tgz') + 
                            join_path(data_path, 'RS-100.tgz'))
         print('**  subtest 8 finished in ', time.time() - t0, ' seconds')
