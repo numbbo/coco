@@ -123,7 +123,7 @@ int coco_is_feasible(coco_problem_t *problem, const double *x, double *cons_valu
   problem->evaluations_constraints--; 
   
   for(i = 0; i < problem->number_of_constraints; ++i) {
-    if (cons_values[i] > 1.0e+05) {
+    if (cons_values[i] > 0) {
       is_feasible = 0;
       break;
     }
