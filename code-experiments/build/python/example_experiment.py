@@ -24,6 +24,7 @@ import os, sys
 import time
 import numpy as np  # "pip install numpy" installs numpy
 import cocoex
+import scipy
 from cocoex import Suite, Observer, log_level
 verbose = 1
 
@@ -225,6 +226,9 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
         elif solver.__name__ == 'fmin_slsqp':
             solver(fun, x0, iter=1 + remaining_evals / fun.dimension,
                    iprint=-1)
+        elif solver.__name__ in ("fmin_cobyla", ):
+            x0 = fun.initial_solution
+            solver(fun, x0, fun.constraint, maxfun = remaining_evals//2)
 ############################ ADD HERE ########################################
         # ### IMPLEMENT HERE THE CALL TO ANOTHER SOLVER/OPTIMIZER ###
         # elif True:
@@ -256,7 +260,8 @@ max_runs = 1e9  # number of (almost) independent trials per problem instance
 number_of_batches = 1  # allows to run everything in several batches
 current_batch = 1      # 1..number_of_batches
 ##############################################################################
-SOLVER = random_search
+#SOLVER = random_search
+SOLVER = scipy.optimize.fmin_cobyla
 #SOLVER = my_solver # fmin_slsqp # SOLVER = cma.fmin
 suite_name = "bbob-constrained"
 #suite_name = "bbob-biobj"
