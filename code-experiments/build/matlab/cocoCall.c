@@ -81,52 +81,6 @@ void cocoEvaluateConstraint(int nlhs, mxArray *plhs[], int nrhs, const mxArray *
     coco_evaluate_constraint(problem, x, y);
 }
 
-/* This is an internal function used in the bbob logger and
- * should not be available to the user. To be deleted.
- */
-void cocoIsFeasible(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
-{
-    size_t *ref;
-    mxArray *problem_prop;
-    coco_problem_t *problem = NULL;
-    /* const char *class_name = NULL; */
-    int nb_constraints;
-    double *x;
-    double *y;
-    int *is_feasible;
-
-    /* check for proper number of arguments */
-    if(nrhs!=2) {
-        mexErrMsgIdAndTxt("cocoIsFeasible:nrhs","Two inputs required.");
-    }
-    /* get the problem */
-    ref = (size_t *) mxGetData(prhs[0]);
-    problem = (coco_problem_t *)(*ref);
-    /* make sure the second input argument is array of doubles */
-    if(!mxIsDouble(prhs[1])) {
-        mexErrMsgIdAndTxt("cocoIsFeasible:notDoubleArray","Input x must be an array of doubles.");
-    }
-    /* test if input dimension is consistent with problem dimension */
-    if(!(mxGetN(prhs[1]) == 1 & mxGetM(prhs[1]) == coco_problem_get_dimension(problem)) 
-          & !(mxGetM(prhs[1]) == 1 & mxGetN(prhs[1]) == coco_problem_get_dimension(problem))) {
-        mexErrMsgIdAndTxt("cocoIsFeasible:wrongDimension", "Input x does not comply with problem dimension.");
-    }
-    /* get the x vector */
-    x = mxGetPr(prhs[1]);
-    
-    /* prepare the return value */
-    plhs[0] = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL); 
-    is_feasible = (int *)mxGetData(plhs[0]);
-    
-    /* check for proper number of outputs */
-    nb_constraints = coco_problem_get_number_of_constraints(problem);
-    plhs[1] = mxCreateDoubleMatrix(1, (size_t)nb_constraints, mxREAL);
-    y = mxGetPr(plhs[1]);
-    
-    /* call coco_is_feasible(...) */
-    *is_feasible = coco_is_feasible(problem, x, y);
-}
-
 void cocoObserver(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     char *observer_name;
@@ -632,8 +586,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoEvaluateFunction(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoevaluateconstraint") == 0) {
         cocoEvaluateConstraint(nlhs, plhs, nrhs-1, prhs+1);
-    } else if (strcmp(cocofunction, "cocoisfeasible") == 0) {
-        cocoIsFeasible(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoobserver") == 0) {
         cocoObserver(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoobserverfree") == 0) {
