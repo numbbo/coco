@@ -302,7 +302,7 @@ void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *
 /**
  * @brief Returns 1 if c(x) = 0, and 0 otherwise.
  */
-int coco_is_feasible(coco_problem_t *problem, const double *x, double *cons_values);
+int coco_is_feasible(coco_problem_t *problem, const double *x, double *cons_values, double threshold);
 
 /**
  * @brief Evaluates the gradient of the function at x and stores it

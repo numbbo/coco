@@ -43,7 +43,7 @@ static void transform_vars_shift_evaluate_function(coco_problem_t *problem, cons
   
   if (problem->number_of_constraints > 0) {
     cons_values = coco_allocate_vector(problem->number_of_constraints);
-    is_feasible = coco_is_feasible(problem, x, cons_values);
+    is_feasible = coco_is_feasible(problem, x, cons_values, 0.0);
     coco_free_memory(cons_values);    
     if (is_feasible)
       assert(y[0] + 1e-13 >= problem->best_value[0]);

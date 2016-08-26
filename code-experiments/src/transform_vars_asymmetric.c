@@ -51,7 +51,7 @@ static void transform_vars_asymmetric_evaluate_function(coco_problem_t *problem,
   
   if (problem->number_of_constraints > 0) {
     cons_values = coco_allocate_vector(problem->number_of_constraints);
-    is_feasible = coco_is_feasible(problem, x, cons_values);
+    is_feasible = coco_is_feasible(problem, x, cons_values, 0.0);
     coco_free_memory(cons_values);    
     if (is_feasible)
       assert(y[0] + 1e-13 >= problem->best_value[0]);
@@ -125,13 +125,13 @@ static coco_problem_t *transform_vars_asymmetric(coco_problem_t *inner_problem, 
      */
     if (inner_problem->initial_solution) {
       cons_values = coco_allocate_vector(problem->number_of_constraints);
-      is_feasible = coco_is_feasible(problem, inner_problem->initial_solution, cons_values);
+      is_feasible = coco_is_feasible(problem, inner_problem->initial_solution, cons_values, 0.0);
       alpha = 1.0;
       while (!is_feasible) {
         alpha *= 0.8;
         for (i = 0; i < problem->number_of_variables; ++i)
           problem->initial_solution[i] *= alpha;
-        is_feasible = coco_is_feasible(problem, problem->initial_solution, cons_values);
+        is_feasible = coco_is_feasible(problem, problem->initial_solution, cons_values, 0.0);
       }
       coco_free_memory(cons_values);
     }

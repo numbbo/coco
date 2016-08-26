@@ -121,10 +121,10 @@ static void test_coco_is_feasible(void **state) {
   	 number_of_constraints = coco_problem_get_number_of_constraints(problem);
   	 y = coco_allocate_vector(number_of_constraints);
     
-    assert(coco_is_feasible(problem, x, y) == 0);
+    assert(coco_is_feasible(problem, x, y, 0.0) == 0);
     
     coco_problem_get_initial_solution(problem, initial_solution);
-    assert(coco_is_feasible(problem, initial_solution, y) == 1);
+    assert(coco_is_feasible(problem, initial_solution, y, 0.0) == 1);
     
     coco_free_memory(y);
   }

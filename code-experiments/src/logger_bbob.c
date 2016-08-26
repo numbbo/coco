@@ -372,11 +372,12 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
 static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) {
   logger_bbob_data_t *logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
   coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);
-  double *cons_values, initial_solution_fvalue;
-  int is_feasible;
+  double *cons_values, initial_solution_fvalue, feasibility_threshold;
+  int is_feasible, is_truly_feasible;
   size_t i;
 
   is_feasible = 1;
+  feasibility_threshold = 1.0e-05;
 
   if (!logger->is_initialized) {
     logger_bbob_initialize(logger, inner_problem);
@@ -389,12 +390,19 @@ static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) 
   
   logger->number_of_evaluations_constraints = coco_problem_get_evaluations_constraints(problem);
   
-  /* Add sanity check for optimal f value */
+  /* Check if the current point is feasible and do a sanity check 
+   * for optimal f value 
+   */
   if (problem->number_of_constraints > 0) {
     cons_values = coco_allocate_vector(problem->number_of_constraints);
-    is_feasible = coco_is_feasible(inner_problem, x, cons_values);
+    /* Allow logging approximately feasible points */
+    is_feasible = coco_is_feasible(inner_problem, x, cons_values, 
+                                   feasibility_threshold);
+    /* Used for the sanity check only */
+    is_truly_feasible = coco_is_feasible(inner_problem, x, cons_values, 
+                                   0.0);
     coco_free_memory(cons_values);    
-    if (is_feasible)
+    if (is_truly_feasible)
       assert(y[0] + 1e-13 >= logger->optimal_fvalue);
   }
   else { assert(y[0] + 1e-13 >= logger->optimal_fvalue); }

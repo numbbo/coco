@@ -103,10 +103,14 @@ void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *
  * should not increase the counter of constraint function evaluations.
  *
  * @param problem The given COCO problem.
- * @param x The decision vector.
- * @param y The vector of constraints that is the result of the evaluation.
+ * @param x Decision vector.
+ * @param cons_values Vector of contraints values resulting from evaluation.
+ * @param threshold Feasibility threshold
  */
-int coco_is_feasible(coco_problem_t *problem, const double *x, double *cons_values) {
+int coco_is_feasible(coco_problem_t *problem, 
+                     const double *x, 
+                     double *cons_values, 
+                     double threshold) {
   
   size_t i;
   int is_feasible = 1;
@@ -123,7 +127,7 @@ int coco_is_feasible(coco_problem_t *problem, const double *x, double *cons_valu
   problem->evaluations_constraints--; 
   
   for(i = 0; i < problem->number_of_constraints; ++i) {
-    if (cons_values[i] > 0) {
+    if (cons_values[i] > threshold) {
       is_feasible = 0;
       break;
     }
@@ -791,7 +795,7 @@ static void coco_problem_stacked_evaluate_function(coco_problem_t *problem, cons
    */
   if (problem->number_of_constraints > 0) {
     cons_values = coco_allocate_vector(problem->number_of_constraints);
-    is_feasible = coco_is_feasible(problem, x, cons_values);
+    is_feasible = coco_is_feasible(problem, x, cons_values, 0.0);
     coco_free_memory(cons_values);   
     if (is_feasible)
       assert(y[0] + 1e-13 >= problem->best_value[0]);
