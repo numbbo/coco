@@ -359,9 +359,6 @@ static void logger_bbob_finalize(const logger_bbob_data_t *logger){
     coco_debug("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue,
               (unsigned long) logger->number_of_evaluations);
   }
-  /* log the final information of the run in the info file*/
-  fprintf(logger->index_file, ":%ld|%.1e", logger->number_of_evaluations,
-          logger->best_fvalue - logger->optimal_fvalue);
 
   /* log the last evaluation (if not logged) in the *.tdata file*/
   if (!logger->written_last_eval) {
@@ -386,10 +383,9 @@ static void logger_bbob_free(void *stuff) {
 
   logger_bbob_finalize(logger);
   if (logger->index_file != NULL) {
-
-    /*fprintf(logger->index_file, ":%lu|%.1e", (unsigned long) logger->number_of_evaluations,
-        logger->best_fvalue - logger->optimal_fvalue);*/
-    fclose(logger->index_file); /*Wassim: now done in logger_bbob_finalize*/
+    fprintf(logger->index_file, ":%lu|%.1e", (unsigned long) logger->number_of_evaluations,
+        logger->best_fvalue - logger->optimal_fvalue);
+    fclose(logger->index_file);
     logger->index_file = NULL;
   }
   if (logger->fdata_file != NULL) {
