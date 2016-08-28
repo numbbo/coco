@@ -264,9 +264,9 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
 
     # TODO: method is long, terrible to read, split if possible
 
-    bestalgentries = bestalg.load_best_algorithm()
-
     testbed = testbedsettings.current_testbed
+
+    bestalgentries = bestalg.load_best_algorithm(testbed.best_algorithm_filename)
 
     # Sort data per dimension and function
     dictData = {}
