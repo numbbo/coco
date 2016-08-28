@@ -736,8 +736,8 @@ class DataSet():
                     genericsettings.isNoiseless = False
                     testbed = testbedsettings.default_testbed_single_noisy
                 else:
-                    genericsettings.isNoisy = True
-                    genericsettings.isNoiseless = False
+                    genericsettings.isNoisy = False
+                    genericsettings.isNoiseless = True
                     testbed = testbedsettings.default_testbed_single
 
         return testbed
