@@ -78,24 +78,22 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
 <div class="p"><!----></div>
 ##bbobppfigdimlegendrlbased##
 
-        Scaling of runtime to reach f<sub><span class="roman">opt</span></sub>+10<sup>#</sup> with dimension;
-        runtime is measured in number of f-evaluations and # is given in the legend;
+        Scaling of runtime with dimension to reach certain target values &#8710;f.
         Lines: average runtime (<span class="roman">aRT</span>);
         Cross (+): median runtime of successful runs to reach the most difficult
         target that was reached at least once (but not always);
         Cross (<span style="color:#FF0000">&times;</span>): maximum number of
         f-evaluations in any trial. Notched
         boxes: interquartile range with median of simulated runs;
-                                All values are divided by dimension and 
-        plotted as log<sub>10</sub> values versus dimension.                 Shown is the <span class="roman">aRT</span>&nbsp;for 
-        targets just not reached by
-            the artificial GECCO-BBOB-2009 best algorithm  
-        within the given budget k&times;<span class="roman">DIM</span>, where k is shown in the legend.
-            Numbers above <span class="roman">aRT</span>-symbols indicate the number of trials reaching the respective target.  
-        The light thick line with diamonds indicates the respective best result from BBOB-2009 for 
-        the most difficult target. 
-        Slanted grid lines indicate a scaling with <span style="font-family:helvetica"><i>O</i></span>(<span class="roman">DIM</span>) compared to <span style="font-family:helvetica"><i>O</i></span>(1)  
-        when using the respective 2009 best algorithm. 
+                All values are divided by dimension and 
+        plotted as log<sub>10</sub> values versus dimension.                 Shown is the <span class="roman">aRT</span>&nbsp;for targets just not reached by the best algorithm from BBOB 2009
+        within the given budget k&times;<span class="roman">DIM</span>, where k is shown in the
+        legend. Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number
+        of trials reaching the respective target. The light thick
+        line with diamonds indicates the best <span class="roman">aRT</span>&nbsp;measured during BBOB 2009 for the most difficult
+        target. Slanted
+        grid lines indicate a scaling with <span style="font-family:helvetica"><i>O</i></span>(<span class="roman">DIM</span>) compared to
+        <span style="font-family:helvetica"><i>O</i></span>(1) when using the respective best 2009 algorithm.
 
 <div class="p"><!----></div>
 ##bbobpptablecaptionrlbased##
@@ -246,21 +244,21 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
 <div class="p"><!----></div>
 ##bbobppfigdimlegendfixed##
 
-        Scaling of runtime to reach f<sub><span class="roman">opt</span></sub>+10<sup>#</sup> with dimension;
-        runtime is measured in number of f-evaluations and # is given in the legend;
+        Scaling of runtime with dimension to reach certain target values &#8710;f.
         Lines: average runtime (<span class="roman">aRT</span>);
         Cross (+): median runtime of successful runs to reach the most difficult
         target that was reached at least once (but not always);
         Cross (<span style="color:#FF0000">&times;</span>): maximum number of
         f-evaluations in any trial. Notched
         boxes: interquartile range with median of simulated runs;
-                                All values are divided by dimension and 
-        plotted as log<sub>10</sub> values versus dimension.                         Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number of trials
-        reaching the respective target. The light thick line with
-        diamonds indicates the respective best result from BBOB-2009 for
-        &#8710;f
-=10<sup>&#8722;8</sup>. Horizontal lines mean linear scaling, slanted
-        grid lines depict quadratic scaling.  
+                All values are divided by dimension and 
+        plotted as log<sub>10</sub> values versus dimension.                 Shown is the <span class="roman">aRT</span>&nbsp;for fixed values of &#8710;f
+= 10<sup>k</sup> with k given
+        in the legend.
+        Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number of trials
+        reaching the respective target. The light thick line with diamonds indicates the best <span class="roman">aRT</span>&nbsp;measured during BBOB 2009.
+        Horizontal lines mean linear scaling, slanted
+        grid lines depict quadratic scaling.
 
 <div class="p"><!----></div>
 ##bbobpptablecaptionfixed##
@@ -409,18 +407,21 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
 <div class="p"><!----></div>
 ##bbobppfigdimlegendbiobjfixed##
 
-        Scaling of runtime to reach I<sup><span class="roman">ref</span></sup>+10<sup>#</sup> with dimension;
-        runtime is measured in number of f-evaluations and # is given in the legend;
+        Scaling of runtime with dimension to reach certain target values &#8710;I.
         Lines: average runtime (<span class="roman">aRT</span>);
         Cross (+): median runtime of successful runs to reach the most difficult
         target that was reached at least once (but not always);
         Cross (<span style="color:#FF0000">&times;</span>): maximum number of
         f-evaluations in any trial. Notched
         boxes: interquartile range with median of simulated runs;
-                                All values are divided by dimension and 
-        plotted as log<sub>10</sub> values versus dimension.                         Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number of trials
-        reaching the respective target. Horizontal lines mean linear scaling, slanted
-        grid lines depict quadratic scaling.  
+                All values are divided by dimension and 
+        plotted as log<sub>10</sub> values versus dimension.                 Shown is the <span class="roman">aRT</span>&nbsp;for fixed values of &#8710;I
+= 10<sup>k</sup> with k given
+        in the legend.
+        Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number of trials
+        reaching the respective target. The light thick line with diamonds indicates the best <span class="roman">aRT</span>&nbsp;measured during BBOB 2016.
+        Horizontal lines mean linear scaling, slanted
+        grid lines depict quadratic scaling.
 
 <div class="p"><!----></div>
 ##bbobpptablecaptionbiobjfixed##
@@ -518,5 +519,5 @@ Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of
 T<sub><span class="small">E</span></sub>X
 by <a href="http://hutchinson.belmont.ma.us/tth/">
 T<sub><span class="small">T</span></sub>H</a>,
-version 4.08.<br />On 23 Aug 2016, 16:48.</small>
+version 4.08.<br />On 24 Aug 2016, 14:34.</small>
 </html>

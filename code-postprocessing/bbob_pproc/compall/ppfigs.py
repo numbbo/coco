@@ -106,14 +106,9 @@ def scaling_figure_caption(for_html = False):
 
 def prepare_ecdfs_figure_caption():
     testbed = testbedsettings.current_testbed
-    best2009text = (
-                r"The ``best 2009'' line " +
-                r"corresponds to the best \aRT\ observed during BBOB 2009 " +
-                r"for each selected target."
-                )
-    best2016biobjtext = (
-                r"The ``best 2016'' line " +
-                r"corresponds to the best \aRT\ observed during BBOB 2016 " +
+    bestalgtext = (
+                r"The ``{}'' line " +
+                r"corresponds to the best \aRT\ observed during {} " +
                 r"for each selected target."
                 )
     refalgtext = (
@@ -121,12 +116,14 @@ def prepare_ecdfs_figure_caption():
                   r"is shown as light " +
                   r"thick line with diamond markers."
                  )
-    if testbed.best_algorithm_displayname == "best 2009":
-        refalgtext = best2009text
-    if (testbed.best_algorithm_displayname == "best 2016"
+    if "best 2009" in testbed.best_algorithm_displayname:
+        refalgtext = bestalgtext.format("best 2009", "BBOB 2009")
+    if "best 2009-16" in testbed.best_algorithm_displayname:
+        refalgtext = bestalgtext.format("best 2009-16", "all BBOB workshops from 2009 till 2016")
+    if ("best 2016" in testbed.best_algorithm_displayname
             and isinstance(testbed, testbedsettings.GECCOBiObjBBOBTestbed)
             ):
-        refalgtext = best2016biobjtext
+        refalgtext = bestalgtext.format("best 2016", "BBOB 2016")
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
@@ -494,7 +491,7 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
             #             verticalalignment='bottom',
             #             horizontalalignment='center')
 
-        bestalgentries = bestalg.load_best_algorithm()
+        bestalgentries = bestalg.load_best_algorithm(testbedsettings.current_testbed.best_algorithm_filename)
 
         if bestalgentries:        
             bestalgdata = []

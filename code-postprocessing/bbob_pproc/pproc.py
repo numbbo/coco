@@ -187,14 +187,18 @@ class RunlengthBasedTargetValues(TargetValues):
     
         >>> import os
         >>> import bbob_pproc as bb
-        >>> cwd = os.getcwd()
-        >>> os.chdir("..")
+        >>> # make sure to use the right `bbob` test suite for the test below:
+        >>> bb.genericsettings.isNoisy = False
+        >>> bb.genericsettings.isNoiseFree = False
+        >>> bb.config.config('GECCOBBOBTestbed')
         >>> targets = bb.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension==True
+        >>> # make also sure to have loaded the corresponding reference algo
+        >>> # from BBOB-2009:
+        >>> targets.reference_data = 'testbedsettings'
         >>> targets(fun_dim=(1, 20)) # doctest:+ELLIPSIS
         Loading best algorithm data from ...
-        array([  6.30957345e+01,   5.75439938e+01,   1.00000000e-08,
+        array([  6.30957345e+01,   3.98107171e+01,   1.00000000e-08,
                  1.00000000e-08,   1.00000000e-08])
-        >>> os.chdir(cwd)
              
     returns a list of target f-values for F1 in 20-D, based on the 
     aRT values ``[0.5,...,50]``. 
@@ -216,7 +220,7 @@ class RunlengthBasedTargetValues(TargetValues):
         else:
             return RunlengthBasedTargetValues(run_lengths_or_class_instance, *args, **kwargs)
         
-    def __init__(self, run_lengths, reference_data='bestAlgorithm',
+    def __init__(self, run_lengths, reference_data='testbedsettings',
                  smallest_target=1e-8, times_dimension=True, 
                  force_different_targets_factor=10**0.04,
                  unique_target_values=False,
@@ -227,10 +231,12 @@ class RunlengthBasedTargetValues(TargetValues):
         
         :param run_lengths: sequence of values. 
         :param reference_data: 
-            can be a string like ``"bestAlgorithm"`` or a dictionary
+            can be a string indicating the filename of a best algorithm
+            data set such as ``"refalgs/best2009-bbob.tar.gz"`` or a dictionary
             of best data sets (e.g. from ``bestalg.generate(...)``)
             or a list of algorithm folder/data names (not thoroughly
-            tested).
+            tested). If chosen as ``testbedsettings``, the best algorithm
+            specified in testbedsettings.py will be used.
         :param smallest_target:
         :param times_dimension:
         :param force_different_targets_factor:
@@ -272,12 +278,15 @@ class RunlengthBasedTargetValues(TargetValues):
         """lazy initialization to prevent slow import"""
         if self.initialized:
             return self
-        if self.reference_data == 'bestAlgorithm': # bestalg data are loaded
-            self.reference_algorithm = self.reference_data
-            self._short_info = 'reference budgets from ' + self.reference_data
+        #if self.reference_data == 'bestAlgorithm': # bestalg data are loaded
+        if self.reference_data == 'testbedsettings': # bestalg data are loaded according to testbedsettings
+            #self.reference_algorithm = self.reference_data
+            self.reference_algorithm = testbedsettings.current_testbed.best_algorithm_filename
+            #self._short_info = 'reference budgets from ' + self.reference_data
+            self._short_info = 'reference budgets from ' + self.reference_algorithm
 
             from . import bestalg
-            self.reference_data = bestalg.load_best_algorithm()
+            self.reference_data = bestalg.load_best_algorithm(self.reference_algorithm, force=True)
             # TODO: remove targets smaller than 1e-8
         elif type(self.reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work
             self._short_info = 'reference budgets from ' + self.reference_data
@@ -719,10 +728,17 @@ class DataSet():
         if not testbed:
             if self.isBiobjective():
                 testbed = testbedsettings.default_testbed_bi
-            elif genericsettings.isNoisy:
-                testbed = testbedsettings.default_testbed_single_noisy
             else:
-                testbed = testbedsettings.default_testbed_single
+                # detect by hand whether we are in the noisy or the
+                # noiseless case (TODO: is there a better way?)
+                if self.funcId > 100:
+                    genericsettings.isNoisy = True
+                    genericsettings.isNoiseless = False
+                    testbed = testbedsettings.default_testbed_single_noisy
+                else:
+                    genericsettings.isNoisy = True
+                    genericsettings.isNoiseless = False
+                    testbed = testbedsettings.default_testbed_single
 
         return testbed
     
@@ -976,10 +992,14 @@ class DataSet():
         
         instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))
         
+        if '% Combination of ' in self.comment:
+            # a short test for BestAlgSet...
+            return self.instancenumbers == [0]
         
         # We might take only a subset of all provided instances...
         if not testbedsettings.current_testbed.instancesOfInterest: # case of no specified instances
-            expectedNumberOfInstances = 10 if self.isBiobjective() else 15
+            expectedNumberOfInstances = 10 if isinstance(testbedsettings.current_testbed,
+                    testbedsettings.GECCOBiObjBBOBTestbed) else 15
         else:
             expectedNumberOfInstances = len(testbedsettings.current_testbed.instancesOfInterest)
         if len(set(self.instancenumbers)) < len(self.instancenumbers):

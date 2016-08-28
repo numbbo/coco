@@ -206,7 +206,7 @@ def generateData(dsList, evals, CrE_A):
     #if D == 3:
        #set_trace()
 
-    bestalgentries = bestalg.load_best_algorithm()
+    bestalgentries = bestalg.load_best_algorithm(testbedsettings.current_testbed.best_algorithm_filename)
 
     for fun, tmpdsList in dsList.dictByFunc().iteritems():
         assert len(tmpdsList) == 1
@@ -530,7 +530,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default'):
     """
 
     # If there is no best algorithm.
-    if not bestalg.load_best_algorithm():
+    if not bestalg.load_best_algorithm(testbedsettings.current_testbed.best_algorithm_filename):
         return
 
     #Set variables
@@ -800,7 +800,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
     #plt.rc("legend", fontsize=20)
 
     # If there is no best algorithm.
-    if not bestalg.load_best_algorithm():
+    if not bestalg.load_best_algorithm(testbedsettings.current_testbed.best_algorithm_filename):
         return
 
     if isStoringXRange:

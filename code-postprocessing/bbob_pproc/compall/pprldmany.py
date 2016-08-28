@@ -647,7 +647,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             displaybest = plotType == PlotType.ALG
             if displaybest:
                 # set_trace()
-                bestalgentries = bestalg.load_best_algorithm()
+                bestalgentries = bestalg.load_best_algorithm(testbedsettings.current_testbed.best_algorithm_filename)
 
                 if not bestalgentries:
                     displaybest = False
