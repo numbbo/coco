@@ -103,7 +103,7 @@ def prepare_data(run_all_tests):
     # retrieve_algorithm(dataPath, '2010', 'IPOP-ACTCMA-ES_ros_noiseless.tar.gz')
     # [outcommented and replaced by BIPOP until 2010 data is in new format]
     retrieve_algorithm(dataPath, '2009', 'BFGS_ros_noiseless.tgz')
-    retrieve_algorithm(dataPath, 'biobj-test', 'RS_on_bbob-biobj-test.tgz', 'RS.tgz')
+    retrieve_algorithm(dataPath, 'bbob-biobj-2016', 'RS-4.tgz')
 
     if run_all_tests:
         retrieve_algorithm(dataPath, '2009', 'BIPOP-CMA-ES_hansen_noiseless.tgz')
@@ -114,8 +114,11 @@ def prepare_data(run_all_tests):
         retrieve_algorithm(dataPath, '2013', 'lmm-CMA-ES_auger_noiseless.tgz')
         retrieve_algorithm(dataPath, '2009', 'DE-PSO_garcia-nieto_noiseless.tgz')
         retrieve_algorithm(dataPath, '2009', 'VNS_garcia-martinez_noiseless.tgz')
-        retrieve_algorithm(dataPath, 'biobj-test', 'RS-4.tgz')
-        retrieve_algorithm(dataPath, 'biobj-test', 'RS-100.tgz')
+        retrieve_algorithm(dataPath, 'bbob-biobj-2016', 'RS-4.tgz')
+        retrieve_algorithm(dataPath, 'bbob-biobj-2016', 'RS-100.tgz')
+        retrieve_algorithm(dataPath, 'biobj-test', 'N-II.tgz') # diff. location and name due to Jenkins settings with too long paths
+        retrieve_algorithm(dataPath, '2009', 'BFGS_ros_noisy.tgz')
+        retrieve_algorithm(dataPath, '2009', 'MCS_huyer_noisy.tgz')        
 
     return dataPath
 
@@ -196,8 +199,8 @@ def main(args):
     delete_files()
 
     t0 = time.time()
-    print(python + command + join_path(data_path, 'RS.tgz'))
-    result = os.system(python + command + join_path(data_path, 'RS.tgz'))
+    print(python + command + join_path(data_path, 'RS-4.tgz'))
+    result = os.system(python + command + join_path(data_path, 'RS-4.tgz'))
     print('**  subtest 2 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
     run_latex_template("templateBIOBJarticle.tex")
@@ -245,22 +248,38 @@ def main(args):
 
         t0 = time.time()
         result = os.system(python + command + ' --omit-single ' +
-                           join_path(data_path, 'RS.tgz') +
-                           join_path(data_path, 'RS-4.tgz'))
+                           join_path(data_path, 'RS-4.tgz') +
+                           join_path(data_path, 'RS-100.tgz'))
         print('**  subtest 7 finished in ', time.time() - t0, ' seconds')
-        assert result == 0, 'Test failed: rungeneric on two bi-objective algorithms.'
+        assert result == 0, 'Test failed: rungeneric on two bbob-biobj algorithms.'
         run_latex_template("templateBIOBJmultiple.tex")
         delete_files()
         
         t0 = time.time()
+        # Note: we use the original GA-MULTIOBJ-NSGA-II.tgz data set
+        # but with a shorter file name from the biobj-test folder
+        # to avoid problems with too long path names on the windows
+        # Jenkins slave
         result = os.system(python + command + ' --omit-single ' +
-                           join_path(data_path, 'RS.tgz') +
+                           join_path(data_path, 'N-II.tgz') +
                            join_path(data_path, 'RS-4.tgz') + 
                            join_path(data_path, 'RS-100.tgz'))
         print('**  subtest 8 finished in ', time.time() - t0, ' seconds')
-        assert result == 0, 'Test failed: rungeneric on three bi-objective algorithms.'
+        assert result == 0, 'Test failed: rungeneric on three bbob-biobj algorithms.'
         run_latex_template("templateBIOBJmultiple.tex")
         delete_files()
+        
+        # testing data from bbob-noisy suite:
+        t0 = time.time()
+        result = os.system(python + command +
+                           join_path(data_path, 'MCS_huyer_noisy.tgz') +
+                           join_path(data_path, 'BFGS_ros_noisy.tgz'))
+        print('**  subtest 9 finished in ', time.time() - t0, ' seconds')
+        assert result == 0, 'Test failed: rungeneric on two bbob-noisy algorithms.'
+        # TODO: include noisy LaTeX templates into github repository and add test:
+        #run_latex_template("templateBBOBnoisy.tex")
+        delete_files()
+
 
     print('launching doctest (it might be necessary to close a few pop up windows to finish)')
     t0 = time.time()
@@ -296,7 +315,7 @@ def main(args):
     # print('    more info in file _bbob_pproc_doctest_.txt)')
     print('*** done testing module bbob_pproc ***')
 
-    if failure_count > 0:
+    if failure_count > 0:                 
         raise ValueError('%d of %d tests failed' % (failure_count, test_count))
 
 
