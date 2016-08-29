@@ -712,8 +712,7 @@ cdef class Problem:
         coco_evaluate_constraint(self.problem,
                                <double *>np.PyArray_DATA(_x),
                                <double *>np.PyArray_DATA(self.constraint_values))
-        cevals = np.array(self.constraint_values, copy=True)
-        return np.array([-y for y in cevals])
+        return np.array([-y for y in self.constraint_values])
     def recommend(self, arx):
         """Recommend a solution, return `None`.
 
