@@ -596,8 +596,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
         >>> import os
         >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
         >>> os.chdir(path)
-        >>> os.chdir(os.path.join(path, "data"))
-        >>> bestalg.getAllContributingAlgorithmsToBest(('IPOP-CMA-ES', 'RANDOMSEARCH')) # doctest:+ELLIPSIS
+        >>> bestalg.getAllContributingAlgorithmsToBest(('data/IPOP-CMA-ES', 'data/RANDOMSEARCH')) # doctest:+ELLIPSIS
         Generating best algorithm data...
         >>> os.chdir(path)
 
