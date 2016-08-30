@@ -997,7 +997,9 @@ class DataSet():
             return self.instancenumbers == [0]
         
         # We might take only a subset of all provided instances...
-        if not testbedsettings.current_testbed.instancesOfInterest: # case of no specified instances
+        if not testbedsettings.current_testbed:
+            expectedNumberOfInstances = 15 # standard choice
+        elif not testbedsettings.current_testbed.instancesOfInterest: # case of no specified instances
             expectedNumberOfInstances = 10 if isinstance(testbedsettings.current_testbed,
                     testbedsettings.GECCOBiObjBBOBTestbed) else 15
         else:
