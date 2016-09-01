@@ -552,8 +552,16 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   problem = f_rastrigin_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
   
+  /* Define the feasible_direction and, consequently, the initial
+   * solution provided by the testbed as a point in (1,2)^n. This avoids
+   * providing a local optimal solution (such as all-ones) as initial 
+   * solution to the user. Otherwise, algorithms that look for local 
+   * optima would stop at iteration 1 if they used such an initial
+   * solution.
+   */
+  srand(rseed);
   for (i = 0; i < dimension; ++i)
-    feasible_direction[i] = 1.0;
+    feasible_direction[i] = 1.0 + (double)rand()/((double)RAND_MAX+1);
      
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
       dimension, instance, number_of_linear_constraints, norm_factor,

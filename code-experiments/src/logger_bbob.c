@@ -277,10 +277,10 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
         }
         fclose(tmp_file);
       }
-      fprintf(*target_file, "funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', suite = '%s'\n",
-          (int) strtol(function_id, NULL, 10), (unsigned long) logger->number_of_variables, pow(10, -8),
-          logger->observer->algorithm_name, logger->suite_name);
-      fprintf(*target_file, "%% coco_version = %s\n", coco_version);
+      fprintf(*target_file,
+          "suite = '%s', funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', coco_version = '%s'\n",
+          suite_name, (int) strtol(function_id, NULL, 10), (unsigned long) logger->number_of_variables,
+          pow(10, -8), logger->observer->algorithm_name, coco_version);
       fprintf(*target_file, "%%\n");
       strncat(used_dataFile_path, "_i", COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
       strncat(used_dataFile_path, bbob_infoFile_firstInstance_char,
@@ -602,14 +602,8 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   logger_bbob->last_fvalue = DBL_MAX;
   logger_bbob->is_initialized = 0;
   
-  if (inner_problem->number_of_constraints > 0) {
-    logger_bbob->constrained_problem = 1;
-    logger_bbob->suite_name = "CONSBBOBTestbed";
-  } else {
-    logger_bbob->constrained_problem = 0;
-    logger_bbob->suite_name = "GECCOBBOBTestbed";
-  }
-  
+  logger_bbob->constrained_problem = (inner_problem->number_of_constraints > 0);
+    
   /* Initialize triggers based on target values and number of evaluations */
   logger_bbob->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
   logger_bbob->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, inner_problem->number_of_variables);
