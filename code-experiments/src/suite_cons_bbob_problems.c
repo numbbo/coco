@@ -2,7 +2,61 @@
  * @file  suite_cons_bbob_problems.c
  * @brief Implementation of the problems in the constrained BBOB suite.
  * 
- * This suite contains linearly-constrained problems. 
+ * This suite contains 48 constrained functions in continuous domain 
+ * which are derived from combining 8 single-objective functions of the
+ * noiseless bbob test suite with randomly-generated 
+ * linear constraints perturbed by nonlinear transformations.
+ * Each one of the 8 functions is combined with 6 different numbers of 
+ * constraints: 1, 2, 10, n/2, n-1 and n+1.
+ * 
+ * The generic algorithm for defining the constrained functions is given below:
+ * 
+ * 1. Pick up a 'bbob' function f whose raw version is pseudoconvex 
+ *    to be the objective function.
+ * 2. Remove possible nonlinear transformations from f. (see note below)
+ * 3. In order to make sure that the feasible set to be built is not
+ *    empty, we must choose a direction p that should be kept feasible.
+ *    Define p as the gradient of f at the origin.
+ * 4. Define the first constraint function g_1(x) by setting its 
+ *    gradient to a_1 = -p. By definition, g_1(p) < 0. Thus p is feasible
+ *    for g_1.
+ * 5. Generate the other constraints randomly while making sure that 
+ *    p remains feasible for each one.
+ * 6. Apply to the whole constrained function the nonlinear transformations 
+ *    that were removed from the objective function in Step 2. (see note below)
+ * 7. Choose a random point xopt and move the optimum away from the 
+ *    origin to xopt by translating the constrained function by -xopt.
+ * 
+ * @note a_1 is set to -p, i.e. the gradient of f at the origin, in order to 
+ *       have the KKT conditions easily satisfied.
+ * 
+ * @note The pseudoconvexity in Step 1 guarantees that the KKT conditions 
+ *       are sufficient for optimality.
+ * 
+ * @note The removal of possible nonlinear transformations in Step 2
+ *       and posterior application in Step 6 are necessary to make
+ *       sure that the KKT conditions are satisfied in the optimum
+ *       - until then the origin. As explained in the documentation, 
+ *       the application of the nonlinear transformations in Step 6 
+ *       does not affect the location of the optimum.
+ * 
+ * @note Steps 1 and 2 are done within the 'allocate' function of the
+ *       objective function, e.g. f_ellipsoid_cons_bbob_problem_allocate().
+ * 
+ * @note Steps 4 and 5 are done within c_linear_cons_bbob_problem_allocate().
+ * 
+ * @note The constrained Rastrigin function's construction differs a bit
+ *       from the steps above. Since it is a multimodal function with
+ *       well distributed local optima, we choose one of its local optima
+ *       to be the global constrained optimum by adding constraints 
+ *       that pass through that point.
+ * 
+ * @note An initial solution is provided to the user by the testbed.
+ *       With exception of the the constrained Rastrigin function, the
+ *       initial solution is the feasible direction p scaled by
+ *       a constant.
+ * 
+ * 
  */
 
 #include <math.h>
@@ -549,6 +603,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   
   char *problem_type_temp = NULL;
 	 
+  /* The function below has global minimum at (-1,-1,...,-1) */
   problem = f_rastrigin_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
   
@@ -597,6 +652,3 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   return problem;
  
 }
-
-
-
