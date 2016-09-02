@@ -52,9 +52,9 @@
  *       that pass through that point.
  * 
  * @note An initial solution is provided to the user by the testbed.
- *       With exception of the the constrained Rastrigin function, the
- *       initial solution is the feasible direction p scaled by
- *       a constant.
+ *       With the exception of the constrained Rastrigin function, the
+ *       initial solution is always the feasible direction p scaled by 
+ *       some constant.
  * 
  * 
  */
