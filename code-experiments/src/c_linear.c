@@ -130,7 +130,8 @@ static coco_problem_t *guarantee_feasible_point(coco_problem_t *problem,
     for (i = 0; i < problem->number_of_variables; ++i)
       data->gradient[i] *= -1.0;
           
-  problem->initial_solution = coco_duplicate_vector(feasible_direction, problem->number_of_variables);
+  problem->initial_solution = coco_duplicate_vector(feasible_direction, 
+      problem->number_of_variables);
  
   data = NULL;  
   return problem;
@@ -248,7 +249,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
   
   /* Set the gradient of the linear constraint if it is given.
    * This should be the case of the construction of the first 
-   * linear constraint only
+   * linear constraint only.
    */
   if(gradient) {
 
@@ -256,7 +257,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
     problem = c_linear_transform(problem, gradient);
 
   }
-  else{ /* randomly generate the gradient of the linear constraint */
+  else{ /* Randomly generate the gradient of the linear constraint */
 	  
     gradient_linear_constraint = coco_allocate_vector(dimension);
     rseed_cons = (long)(function + 10000 * instance 
@@ -287,8 +288,8 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
 }
 
 /**
- * @brief Builds a coco_roblem containing all the linear constraints by
- *        stacking them all.
+ * @brief Builds a coco_problem_t containing all the linear constraints
+ *        by stacking them all.
  */
 static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,

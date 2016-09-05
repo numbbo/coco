@@ -9,16 +9,28 @@
  * Each one of the 8 functions is combined with 6 different numbers of 
  * constraints: 1, 2, 10, n/2, n-1 and n+1.
  * 
- * The generic algorithm for defining the constrained functions is given below:
+ * We consider constrained optimization problems of the form
  * 
- * 1. Pick up a 'bbob' function f whose raw version is pseudoconvex 
- *    to be the objective function.
+ *     min f(x) s.t. g_i(x) <= 0, i=1,...,l.
+ * 
+ * The constrained functions are built in a way such that the 
+ * KKT conditions are satisied at the origin, which is the initial
+ * optimal solution. We then translate the constrained function
+ * by a random vector in order to move the optimal solution away
+ * from the origin. 
+ * 
+ * ***************************************************
+ * General idea for building the constrained functions
+ * ***************************************************
+ * 
+ * 1. Choose a bbob function f whose raw version is pseudoconvex
+ *    to be the objective function. (see note below)
  * 2. Remove possible nonlinear transformations from f. (see note below)
- * 3. In order to make sure that the feasible set to be built is not
- *    empty, we must choose a direction p that should be kept feasible.
+ * 3. In order to make sure that the feasible set is not empty,
+ *    we choose a direction p that should be feasible.
  *    Define p as the gradient of f at the origin.
- * 4. Define the first constraint function g_1(x) by setting its 
- *    gradient to a_1 = -p. By definition, g_1(p) < 0. Thus p is feasible
+ * 4. Define the first constraint g_1(x)=a_1'*x by setting its gradient
+ *    to a_1 = -p. By definition, g_1(p) < 0. Thus p is feasible
  *    for g_1.
  * 5. Generate the other constraints randomly while making sure that 
  *    p remains feasible for each one.
@@ -26,9 +38,6 @@
  *    that were removed from the objective function in Step 2. (see note below)
  * 7. Choose a random point xopt and move the optimum away from the 
  *    origin to xopt by translating the constrained function by -xopt.
- * 
- * @note a_1 is set to -p, i.e. the gradient of f at the origin, in order to 
- *       have the KKT conditions easily satisfied.
  * 
  * @note The pseudoconvexity in Step 1 guarantees that the KKT conditions 
  *       are sufficient for optimality.
@@ -40,6 +49,9 @@
  *       the application of the nonlinear transformations in Step 6 
  *       does not affect the location of the optimum.
  * 
+ * @note a_1 is set to -p, i.e. the negative gradient of f at the origin, 
+ *       in order to have the KKT conditions easily satisfied.
+ *
  * @note Steps 1 and 2 are done within the 'allocate' function of the
  *       objective function, e.g. f_ellipsoid_cons_bbob_problem_allocate().
  * 
@@ -51,11 +63,19 @@
  *       to be the global constrained optimum by adding constraints 
  *       that pass through that point.
  * 
- * @note An initial solution is provided to the user by the testbed.
- *       With the exception of the constrained Rastrigin function, the
- *       initial solution is always the feasible direction p scaled by 
- *       some constant.
+ * @note The testbed provides the user an initial solution which is given
+ *       by the feasible direction p scaled by some constant.
  * 
+ * *************************************************
+ * COCO data structure for the constrained functions
+ * *************************************************
+ * 
+ * First, we create a coco_problem_t object for the objective function.
+ * Then, coco_problem_t objects are created for each constraint and
+ * stacked together into a single coco_problem_t object (see "c_linear.c"). 
+ * Finally, the coco_problem_t object containing the constraints and 
+ * the coco_problem_t object containing the objective function are 
+ * stacked together to form the constrained function.
  * 
  */
 
@@ -72,7 +92,7 @@
 #include "f_sphere.c"
 
 /**
- * @brief Calculates the obj. function type based on the value
+ * @brief Calculates the objective function type based on the value
  *        of "function"
  */
 static size_t obj_function_type(const size_t function) {

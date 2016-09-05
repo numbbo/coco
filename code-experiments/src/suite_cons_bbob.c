@@ -1,7 +1,8 @@
 /**
  * @file  suite_cons_bbob.c
  * @brief Implementation of the constrained bbob suite containing 
- *        linearly-constrained problems in 6 dimensions.
+ *        48 constrained problems in 6 dimensions. See comments in
+ *        "suite_cons_bbob_problems.c" for more details.
  */
 
 #include "coco.h"
