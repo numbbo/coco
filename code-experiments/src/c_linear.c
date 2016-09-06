@@ -48,7 +48,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
                                                       const size_t dimension,
                                                       const size_t instance,
                                                       const size_t constraint_number,
-                                                      const double norm_factor,
+                                                      const double linear_cons_norm,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template,
                                                       double *gradient,
@@ -58,7 +58,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
                                                       const size_t dimension,
                                                       const size_t instance,
                                                       const size_t number_of_linear_constraints,
-                                                      const double norm_factor,
+                                                      const double linear_cons_norm,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template,
                                                       const double *feasible_direction);
@@ -275,7 +275,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
                                                       const size_t dimension,
                                                       const size_t instance,
                                                       const size_t constraint_number,
-                                                      const double norm_factor,
+                                                      const double linear_cons_norm,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template,
                                                       double *gradient,
@@ -296,7 +296,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
    */
   if(gradient) {
 
-    coco_scale_vector(gradient, dimension, norm_factor);
+    coco_scale_vector(gradient, dimension, linear_cons_norm);
     problem = c_linear_transform(problem, gradient);
 
   }
@@ -308,10 +308,10 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
     srand(rseed_cons);
      
     /* Generate a pseudorandom number that is normally distributed
-     * with mean mu and variance sigma (= norm_factor)
+     * with mean mu and variance sigma (= linear_cons_norm)
      */
     for (i = 0; i < dimension; ++i)
-      gradient_linear_constraint[i] = randn(0.0, norm_factor);
+      gradient_linear_constraint[i] = randn(0.0, linear_cons_norm);
 
     problem = c_linear_transform(problem, gradient_linear_constraint);
     coco_free_memory(gradient_linear_constraint);
@@ -339,7 +339,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
                                                       const size_t dimension,
                                                       const size_t instance,
                                                       const size_t number_of_linear_constraints,
-                                                      const double norm_factor,
+                                                      const double linear_cons_norm,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template,
                                                       const double *feasible_direction) {
@@ -360,7 +360,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
    * its gradient
    */  
   problem_c = c_linear_single_cons_bbob_problem_allocate(function, 
-      dimension, instance, 1, norm_factor, problem_id_template, 
+      dimension, instance, 1, linear_cons_norm, problem_id_template, 
       problem_name_template, gradient_c1, feasible_direction);
   
   /* Store the pointer to the first gradient for later */
@@ -373,7 +373,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
 	 
     /* Instantiate a new problem containing one linear constraint only */
     problem_c2 = c_linear_single_cons_bbob_problem_allocate(function, 
-        dimension, instance, i, norm_factor, problem_id_template, 
+        dimension, instance, i, linear_cons_norm, problem_id_template, 
         problem_name_template, NULL, feasible_direction);
 		
     problem_c = coco_problem_stacked_allocate(problem_c, problem_c2,
