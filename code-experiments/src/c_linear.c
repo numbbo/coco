@@ -11,6 +11,15 @@
 #include <assert.h>
 
 #include "coco.h"
+#include "coco_internal.h"
+
+/**
+ * @brief Data type for the linear constraints.
+ */
+typedef struct {
+  double *gradient;
+  double *x;
+} linear_constraint_data_t;	
 
 static void c_sum_variables_evaluate(coco_problem_t *self, 
                                      const double *x, 
@@ -20,8 +29,8 @@ static void c_linear_single_evaluate(coco_problem_t *self,
                                      const double *x, 
                                      double *y);
                                         
-static coco_problem_t *guarantee_feasible_point(coco_problem_t *problem,
-                                                const double *feasible_point);
+static coco_problem_t *c_guarantee_feasible_point(coco_problem_t *problem,
+                                                  const double *feasible_point);
                                                
 static void c_linear_gradient_free(void *thing);
 
@@ -29,7 +38,10 @@ static coco_problem_t *c_sum_variables_allocate(const size_t number_of_variables
 
 static coco_problem_t *c_linear_transform(coco_problem_t *inner_problem, 
                                           const double *gradient);
-                                                   
+         
+static coco_problem_t *c_linear_shuffle(coco_problem_t *problem_c, 
+                                        linear_constraint_data_t *data_c1);
+                                                                                    
 double randn(double mu, double sigma);
                                                    
 static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t function,
@@ -49,14 +61,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
                                                       const double norm_factor,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template,
-                                                      const double *feasible_direction);                                                     
-/**
- * @brief Data type for the linear constraints.
- */
-typedef struct {
-  double *gradient;
-  double *x;
-} linear_constraint_data_t;	
+                                                      const double *feasible_direction);
 
 /**
  * @brief Evaluates the linear constraint with all-ones gradient at
@@ -107,7 +112,7 @@ static void c_linear_single_evaluate(coco_problem_t *self,
  *        the constraint in "problem" and records it as the 
  *        initial feasible solution to this coco_problem.
  */
-static coco_problem_t *guarantee_feasible_point(coco_problem_t *problem,
+static coco_problem_t *c_guarantee_feasible_point(coco_problem_t *problem,
                                                 const double *feasible_direction) {
   
   size_t i;
@@ -184,6 +189,44 @@ static coco_problem_t *c_linear_transform(coco_problem_t *inner_problem,
   self->evaluate_constraint = c_linear_single_evaluate;
 
   return self;
+}
+
+/**
+ * @brief Exchange the first constraint for another one, if any, by
+ *        exchanging their gradients.
+ */
+static coco_problem_t *c_linear_shuffle(coco_problem_t *problem_c,
+                                        linear_constraint_data_t *data_c1) {
+  
+  coco_problem_t *iter_problem;
+  coco_problem_stacked_data_t *stacked_data;
+  linear_constraint_data_t *constraint_data;
+  double aux;
+  size_t i, exchanged;
+  
+  if (problem_c->number_of_constraints < 2)
+    return problem_c;
+  
+  iter_problem = problem_c;
+  /* random_number = rand() % (maximum + 1 - minimum) + minimum */
+  exchanged = rand() % (problem_c->number_of_constraints + 1 - 2) + 2;
+  
+  for (i = problem_c->number_of_constraints; i > exchanged; --i) {
+    stacked_data = (coco_problem_stacked_data_t*) iter_problem->data;
+    iter_problem = stacked_data->problem1;
+  }
+  
+  stacked_data = (coco_problem_stacked_data_t*) iter_problem->data;
+  iter_problem = stacked_data->problem2;
+  constraint_data = (linear_constraint_data_t *) coco_problem_transformed_get_data(iter_problem);
+  
+  for (i = 0; i < problem_c->number_of_variables; ++i) {
+    aux = constraint_data->gradient[i];
+    constraint_data->gradient[i] = data_c1->gradient[i];
+    data_c1->gradient[i] = aux;
+  }
+  
+  return problem_c;
 }
 
 /**
@@ -269,6 +312,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
      */
     for (i = 0; i < dimension; ++i)
       gradient_linear_constraint[i] = randn(0.0, norm_factor);
+
     problem = c_linear_transform(problem, gradient_linear_constraint);
     coco_free_memory(gradient_linear_constraint);
   }
@@ -277,7 +321,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
    * this constraint and set it as initial_solution
    */
   if(feasible_direction)
-    problem = guarantee_feasible_point(problem, feasible_direction);
+    problem = c_guarantee_feasible_point(problem, feasible_direction);
   
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
@@ -304,6 +348,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   
   coco_problem_t *problem_c = NULL;
   coco_problem_t *problem_c2 = NULL;
+  linear_constraint_data_t *data_c1 = NULL;
   double *gradient_c1 = NULL;
   
   gradient_c1 = coco_allocate_vector(dimension);
@@ -317,6 +362,9 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   problem_c = c_linear_single_cons_bbob_problem_allocate(function, 
       dimension, instance, 1, norm_factor, problem_id_template, 
       problem_name_template, gradient_c1, feasible_direction);
+  
+  /* Store the pointer to the first gradient for later */
+  data_c1 = (linear_constraint_data_t *) coco_problem_transformed_get_data(problem_c);
 	 
   /* Instantiate the other linear constraints (if any) and stack them 
    * all into problem_c
@@ -342,6 +390,9 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
     coco_problem_set_type(problem_c, "%s_%s", problem_c2->problem_type, 
         problem_c2->problem_type);
   }
+  
+  /* Exchange the first constraint position for another one if any */
+  problem_c = c_linear_shuffle(problem_c, data_c1);
   
   coco_free_memory(gradient_c1);
   
