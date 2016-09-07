@@ -204,7 +204,10 @@ class BestAlgSet:
         self.funcId = f
         self.algs = resalgs
         self.algId = algId
-        self.comment = 'Combination of ' + ', '.join(sortedAlgs)
+        if len(sortedAlgs) > 1:
+            self.comment = 'Combination of ' + ', '.join(sortedAlgs)
+        else:
+            self.comment = dict_alg[sortedAlgs[0]].comment
         self.comment += '; coco_version: ' + pkg_resources.require('bbob_pproc')[0].version
         self.ert = np.array(reserts)
         self.target = res[:, 0]
