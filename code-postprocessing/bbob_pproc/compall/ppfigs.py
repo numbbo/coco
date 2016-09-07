@@ -116,14 +116,17 @@ def prepare_ecdfs_figure_caption():
                   r"is shown as light " +
                   r"thick line with diamond markers."
                  )
-    if "best 2009" in testbed.best_algorithm_displayname:
-        refalgtext = bestalgtext.format("best 2009", "BBOB 2009")
-    if "best 2009-16" in testbed.best_algorithm_displayname:
-        refalgtext = bestalgtext.format("best 2009-16", "all BBOB workshops from 2009 till 2016")
-    if ("best 2016" in testbed.best_algorithm_displayname
-            and isinstance(testbed, testbedsettings.GECCOBiObjBBOBTestbed)
-            ):
-        refalgtext = bestalgtext.format("best 2016", "BBOB 2016")
+
+    if testbed.best_algorithm_displayname:
+        if "best 2009" in testbed.best_algorithm_displayname:
+            refalgtext = bestalgtext.format("best 2009", "BBOB 2009")
+        if "best 2009-16" in testbed.best_algorithm_displayname:
+            refalgtext = bestalgtext.format("best 2009-16", "all BBOB workshops from 2009 till 2016")
+        if ("best 2016" in testbed.best_algorithm_displayname
+                and isinstance(testbed, testbedsettings.GECCOBiObjBBOBTestbed)
+                ):
+            refalgtext = bestalgtext.format("best 2016", "BBOB 2016")
+
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
