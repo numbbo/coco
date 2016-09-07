@@ -131,49 +131,50 @@ def scaling_figure_caption():
         if (testbed.name == testbedsettings.testbed_name_single or
                 testbed.name == testbedsettings.default_testbed_single_noisy
                 or testbed.name == testbedsettings.testbed_name_bi):
-            if "best 2009" in testbed.best_algorithm_displayname:
-                scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2009")
-                scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                        "the best algorithm from BBOB 2009",
-                        "the best \\aRT\\ measured during BBOB 2009",
-                        'best 2009')
-            elif "best 2010" in testbed.best_algorithm_displayname:
-                scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2010")
-                scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                        "the best algorithm from BBOB 2010",
-                        "the best \\aRT\\ measured during BBOB 2010",
-                        'best 2010')
-            elif "best 2012" in testbed.best_algorithm_displayname:
-                scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2012")
-                scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                        "the best algorithm from BBOB 2012",
-                        "the best \\aRT\\ measured during BBOB 2012",
-                        'best 2012')
-            elif "best 2013" in testbed.best_algorithm_displayname:
-                scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2013")
-                scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                        "the best algorithm from BBOB 2013",
-                        "the best \\aRT\\ measured during BBOB 2013",
-                        'best 2013')
-            elif "best 2016" in testbed.best_algorithm_displayname:
-                scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2016")
-                scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                        "the best algorithm from BBOB 2016",
-                        "the best \\aRT\\ measured during BBOB 2016",
-                        'best 2016')
-            elif "best 2009-16" in testbed.best_algorithm_displayname:
-                scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2009--16")
-                scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                        "the best algorithm of BBOB 2009--2016",
-                        "the best \\aRT\\ measured during BBOB 2009--16",
-                        'best 2009--16')
-            else:
-                scaling_figure_caption_fixed = scaling_figure_caption_fixed.format(
-                        'the \\aRT\\ of the reference algorithm %s' % testbed.best_algorithm_displayname)
-                scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                        'the reference algorithm %s' % testbed.best_algorithm_displayname,
-                        'the \\aRT\\ of the reference algorithm %s' % testbed.best_algorithm_displayname,
-                        'reference')
+            if testbed.best_algorithm_displayname:
+                if "best 2009" in testbed.best_algorithm_displayname:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2009")
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            "the best algorithm from BBOB 2009",
+                            "the best \\aRT\\ measured during BBOB 2009",
+                            'best 2009')
+                elif "best 2010" in testbed.best_algorithm_displayname:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2010")
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            "the best algorithm from BBOB 2010",
+                            "the best \\aRT\\ measured during BBOB 2010",
+                            'best 2010')
+                elif "best 2012" in testbed.best_algorithm_displayname:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2012")
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            "the best algorithm from BBOB 2012",
+                            "the best \\aRT\\ measured during BBOB 2012",
+                            'best 2012')
+                elif "best 2013" in testbed.best_algorithm_displayname:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2013")
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            "the best algorithm from BBOB 2013",
+                            "the best \\aRT\\ measured during BBOB 2013",
+                            'best 2013')
+                elif "best 2016" in testbed.best_algorithm_displayname:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2016")
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            "the best algorithm from BBOB 2016",
+                            "the best \\aRT\\ measured during BBOB 2016",
+                            'best 2016')
+                elif "best 2009-16" in testbed.best_algorithm_displayname:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2009--16")
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            "the best algorithm of BBOB 2009--2016",
+                            "the best \\aRT\\ measured during BBOB 2009--16",
+                            'best 2009--16')
+                else:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format(
+                            'the \\aRT\\ of the reference algorithm %s' % testbed.best_algorithm_displayname)
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            'the reference algorithm %s' % testbed.best_algorithm_displayname,
+                            'the \\aRT\\ of the reference algorithm %s' % testbed.best_algorithm_displayname,
+                            'reference')
         else:
             raise NotImplementedError('reference algorithm not supported for this testbed')
 

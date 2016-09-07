@@ -400,7 +400,7 @@ def load_best_algorithm(best_algo_filename, force=False, relative_load=True):
         bestAlgorithmEntries = generate(dictAlg, dsList[0].algId)
         # set best_algorithm_displayname in testbedsetting if not present:
         if testbedsettings.current_testbed:
-            if testbedsettings.current_testbed.best_algorithm_displayname == None:
+            if testbedsettings.current_testbed.best_algorithm_displayname is None:
                 testbedsettings.current_testbed.best_algorithm_displayname = dsList[0].algId
 
     print_done()
