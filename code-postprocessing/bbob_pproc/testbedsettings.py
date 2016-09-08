@@ -31,6 +31,19 @@ def load_current_testbed(testbed_name, target_values):
     return current_testbed
 
 
+def get_testbed_from_suite(suite_name):
+
+    if suite_name == 'bbob':
+        return default_testbed_single
+    elif suite_name == 'bbob-noisy':
+        return default_testbed_single_noisy
+    elif suite_name == 'bbob-biobj':
+        return default_testbed_bi
+    else:
+        raise ValueError('Mapping from suite name to testbed class for suite %s does not exist. '
+                         'Add it to get_testbed_from_suite in testbedsettings.py to process this data.' % suite_name)
+
+
 def get_short_names(file_name):
     try:
         info_list = open(os.path.join(os.path.dirname(__file__), file_name), 'r').read().split('\n')
