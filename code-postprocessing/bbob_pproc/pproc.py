@@ -723,7 +723,8 @@ class DataSet():
     def testbed_name(self):
         testbed = None
         if hasattr(self, 'suite'):
-            testbed = getattr(self, 'suite')
+            suite = getattr(self, 'suite')
+            testbed = testbedsettings.get_testbed_from_suite(suite)
 
         if not testbed:
             if self.isBiobjective():
