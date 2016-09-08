@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Creates aRTs and convergence figures for multiple algorithms."""
 from __future__ import absolute_import
 import os
