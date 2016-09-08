@@ -1585,17 +1585,19 @@ class DataSetList(list):
         for i in self:
             if i == o:
                 isFound = True
-                if i.instancenumbers == o.instancenumbers and any([_i > 5 for _i in i.instancenumbers]):
+                if 11 < 3 and i.instancenumbers == o.instancenumbers and any([_i > 5 for _i in i.instancenumbers]):
                     warnings.warn("same DataSet found twice, second one from "
-                        + str(o.indexFiles) + " is disregarded for instances "
+                        + str(o.indexFiles) + " with instances "
                         + str(i.instancenumbers))
+                    # todo: this check should be done in a
+                    #       consistency checking method, as the one below
                     break
                 if set(i.instancenumbers).intersection(o.instancenumbers) \
-                        and any([_i >5 for _i in set(i.instancenumbers).intersection(o.instancenumbers)]):
+                        and any([_i > 5 for _i in set(i.instancenumbers).intersection(o.instancenumbers)]):
                     warnings.warn('instances ' + str(set(i.instancenumbers).intersection(o.instancenumbers))
                                   + (' found several times. Read data for F%d in %d-D' % (i.funcId, i.dim)) 
                                   # + ' found several times. Read data for F%(argone)d in %(argtwo)d-D ' % {'argone':i.funcId, 'argtwo':i.dim}
-                                  + 'are likely to be inconsistent. ')
+                                  + 'might be inconsistent. ')
                 # tmp = set(i.dataFiles).symmetric_difference(set(o.dataFiles))
                 #Check if there are new data considered.
                 if 1 < 3:
