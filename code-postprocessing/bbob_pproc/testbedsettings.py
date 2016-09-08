@@ -93,7 +93,8 @@ class Testbed(object):
 
 
 class GECCOBBOBTestbed(Testbed):
-    """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
+    """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015,
+       and 2016.
     """
 
     shortinfo_filename = 'benchmarkshortinfos.txt'
@@ -167,7 +168,8 @@ class GECCOBBOBTestbed(Testbed):
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
-    """The noisy testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015.
+    """The noisy testbed used in the GECCO BBOB workshops 2009, 2010, 2012,
+       2013, 2015, and 2016.
     """
 
     settings = dict(
@@ -196,40 +198,62 @@ class GECCOBiObjBBOBTestbed(Testbed):
        data sets run on the `bbob-biobj` test suite.
     """
 
-    def __init__(self, targetValues):
-        # TODO: should become a function, as low_budget is a display setting
-        # not a testbed setting
-        # only the short info, how to deal with both infos?
-        self.info_filename = 'GECCOBBOBbenchmarkinfos.txt'
-        self.shortinfo_filename = 'biobj-benchmarkshortinfos.txt'
-        self.name = testbed_name_bi
-        self.short_names = get_short_names(self.shortinfo_filename)
-        self.hardesttargetlatex = '10^{-5}'  # used for ppfigs, pptable, pptable2, and pptables
-        self.ppfigs_ftarget = 1e-5
-        self.ppfig2_ftarget = 1e-5                
-        self.ppfigdim_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # possibly changed in config
-        self.pprldistr_target_values = targetValues((1e-1, 1e-2, 1e-3, 1e-5))  # possibly changed in config
-        target_values = np.append(np.append(10 ** np.arange(0, -5.1, -0.1), [0]), -10 ** np.arange(-5, -3.9, 0.2))
-        self.pprldmany_target_values = targetValues(target_values)  # possibly changed in config
-        self.pprldmany_target_range_latex = '$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$'
-        self.ppscatter_target_values = targetValues(np.logspace(-5, 1, 51))
-        self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5)  # possibly changed in config
-        self.ppfvdistr_min_target = 1e-5
-        self.functions_with_legend = (1, 30, 31, 55)
-        self.first_function_number = 1
-        self.last_function_number = 55
-        self.pptable_ftarget = 1e-5  # value for determining the success ratio in all tables
-        self.pptable_targetsOfInterest = targetValues(
-            (1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # possibly changed in config for all tables
-        self.pptable2_targetsOfInterest = targetValues((1e-1, 1e-2, 1e-3, 1e-4, 1e-5))  # used for pptable2
-        self.pptablemany_targetsOfInterest = targetValues((1, 1e-1, 1e-2, 1e-3))  # used for pptables
-        self.scenario = scenario_biobjfixed
-        self.best_algorithm_filename = 'best2016-bbob-biobj.tar.gz'
-        self.best_algorithm_filename = 'refalgs/best2016-bbob-biobj-v2.0.tar.gz' # TODO produce correct best2016 algo and delete this line
-        self.best_algorithm_displayname = 'best 2016' # TODO: should be read in from data set in best_algorithm_filename
-        self.instancesOfInterest = None # None: consider all instances        
+    shortinfo_filename = 'biobj-benchmarkshortinfos.txt'
+    pptable_target_runlengths = [0.5, 1.2, 3, 10, 50] # used in config for expensive setting
+    pptable_targetsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7) # for pptable and pptablemany
+
+    settings = dict(
+        info_filename = 'GECCOBBOBbenchmarkinfos.txt',
+        shortinfo_filename = shortinfo_filename,
+        name = testbed_name_bi,
+        short_names = get_short_names(shortinfo_filename),
+        hardesttargetlatex = '10^{-5}',  # used for ppfigs, pptable, pptable2, and pptables
+        ppfigs_ftarget = 1e-5,
+        ppfig2_ftarget = 1e-5,
+        ppfigdim_target_values = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5),
+        pprldistr_target_values = (1e-1, 1e-2, 1e-3, 1e-5),
+        pprldmany_target_values = np.append(np.append(10 ** np.arange(0, -5.1, -0.1), [0]), -10 ** np.arange(-5, -3.9, 0.2)),
+        pprldmany_target_range_latex = '$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$',
+        ppscatter_target_values = np.logspace(-5, 1, 51),
+        rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5),
+        ppfvdistr_min_target = 1e-5,
+        functions_with_legend = (1, 30, 31, 55),
+        first_function_number = 1,
+        last_function_number = 55,
+        pptable_ftarget = 1e-5,  # value for determining the success ratio in all tables
+        pptable_targetsOfInterest = (1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5),
+        pptable2_targetsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5),  # used for pptable2
+        pptablemany_targetsOfInterest = (1, 1e-1, 1e-2, 1e-3),  # used for pptables
+        scenario = scenario_biobjfixed,
+        best_algorithm_filename = 'refalgs/best2016-bbob-biobj-v2.0.tar.gz', # TODO produce correct best2016 algo and delete this line
+        best_algorithm_displayname = 'best 2016', # TODO: should be read in from data set in best_algorithm_filename
+        instancesOfInterest = None, # None: consider all instances        
         # expensive optimization settings:
-        self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
-        self.pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
-        self.pptables_target_runlengths = [2, 10, 50]  # used in config for expensive setting
+        pptable_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
+        pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
+        pptables_target_runlengths = [2, 10, 50]  # used in config for expensive setting
+    ) 
+
+    def __init__(self, targetValues):
         
+        for key, val in GECCOBiObjBBOBTestbed.settings.items():
+            setattr(self, key, val)
+
+        # set targets according to targetValues class (possibly all changed
+        # in config:
+        self.ppfigdim_target_values = targetValues(self.ppfigdim_target_values)
+        self.pprldistr_target_values = targetValues(self.pprldistr_target_values)
+        self.pprldmany_target_values = targetValues(self.pprldmany_target_values)
+        self.ppscatter_target_values = targetValues(self.ppscatter_target_values)
+        self.pptable_targetsOfInterest = targetValues(self.pptable_targetsOfInterest)
+        self.pptable2_targetsOfInterest = targetValues(self.pptable2_targetsOfInterest)
+        self.pptablemany_targetsOfInterest = targetValues(self.pptablemany_targetsOfInterest)
+            
+        if 11 < 3:
+            # override settings if needed...
+            self.best_algorithm_filename = 'refalgs/best2016-bbob-biobj-v2.0.tar.gz'
+            self.best_algorithm_displayname = 'best 2016'  # TODO: should be read in from data set in best_algorithm_filename
+            self.short_names = get_short_names(self.shortinfo_filename)
+            self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+
+
