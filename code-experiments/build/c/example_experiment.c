@@ -169,7 +169,7 @@ void example_experiment(const char *suite_name,
 
       size_t evaluations_done;
       
-      if (coco_problem_get_number_of_constraints(PROBLEM)>0) {
+      if (coco_problem_get_number_of_constraints(PROBLEM)==0) {
         evaluations_done = coco_problem_get_evaluations(PROBLEM);
       }
       else {

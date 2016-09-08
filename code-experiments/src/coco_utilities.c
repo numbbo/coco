@@ -963,7 +963,7 @@ static void coco_scale_vector(double *x, size_t dimension, double alpha) {
     
   norm = sqrt(norm);
   
-  if (norm != 0) {
+  if (norm != 0.0) {
     for (i = 0; i < dimension; ++i) {
       x[i] /= norm;
       x[i] *= alpha;

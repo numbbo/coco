@@ -643,7 +643,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
    */
   srand(rseed);
   for (i = 0; i < dimension; ++i)
-    feasible_direction[i] = 1.0 + (double)rand()/((double)RAND_MAX+1);
+    feasible_direction[i] = 50.0 + (double)rand()/((double)RAND_MAX+1);
      
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
       dimension, instance, number_of_linear_constraints, linear_cons_norm,
