@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Creates aRTs and convergence figures for multiple algorithms."""
 from __future__ import absolute_import
 import os
@@ -106,12 +105,28 @@ def scaling_figure_caption(for_html = False):
 
 
 def prepare_ecdfs_figure_caption():
-
-    best2009text = (
-                r"The ``best 2009'' line " +
-                r"corresponds to the best \aRT\ observed during BBOB 2009 " +
+    testbed = testbedsettings.current_testbed
+    bestalgtext = (
+                r"The ``{}'' line " +
+                r"corresponds to the best \aRT\ observed during {} " +
                 r"for each selected target."
                 )
+    refalgtext = (
+                  r"As reference algorithm, ``%s`` "  % (testbed.best_algorithm_displayname) +
+                  r"is shown as light " +
+                  r"thick line with diamond markers."
+                 )
+
+    if testbed.best_algorithm_displayname:
+        if "best 2009" in testbed.best_algorithm_displayname:
+            refalgtext = bestalgtext.format("best 2009", "BBOB 2009")
+        if "best 2009-16" in testbed.best_algorithm_displayname:
+            refalgtext = bestalgtext.format("best 2009-16", "all BBOB workshops from 2009 till 2016")
+        if ("best 2016" in testbed.best_algorithm_displayname
+                and isinstance(testbed, testbedsettings.GECCOBiObjBBOBTestbed)
+                ):
+            refalgtext = bestalgtext.format("best 2016", "BBOB 2016")
+
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
@@ -129,15 +144,14 @@ def prepare_ecdfs_figure_caption():
                 r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. "
                 )
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+    if testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
-        figure_caption = ecdfs_figure_caption_standard
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single or \
-         testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        figure_caption = ecdfs_figure_caption_standard + refalgtext
+    elif testbed.name == testbedsettings.testbed_name_single:
         if genericsettings.runlength_based_targets:
-            figure_caption = ecdfs_figure_caption_rlbased + best2009text
+            figure_caption = ecdfs_figure_caption_rlbased + refalgtext
         else:
-            figure_caption = ecdfs_figure_caption_standard + best2009text
+            figure_caption = ecdfs_figure_caption_standard + refalgtext
     else:
         warnings.warn("Current settings do not support ppfigdim caption.")
 
@@ -256,10 +270,10 @@ def plotLegend(handles, maxval=None):
     i = 0 # loop over the elements of ys
     for j in sorted(ys.keys()):
         for k in sorted(ys[j].keys()):
-            #enforce best 2009 comes first in case of equality
+			# enforce that a "best" algorithm comes first in case of equality
             tmp = []
             for h in ys[j][k]:
-                if plt.getp(h, 'label') == 'best 2009':
+                if 'best' in plt.getp(h, 'label'):
                     tmp.insert(0, h)
                 else:
                     tmp.append(h)
@@ -383,7 +397,7 @@ def generateData(dataSet, target):
     res[3] = numpy.max(dataSet.maxevals)
     return res
 
-def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppdata', verbose=True):
+def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
     """From a DataSetList, returns figures showing the scaling: aRT/dim vs dim.
     
     One function and one target per figure.
@@ -480,7 +494,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
             #             verticalalignment='bottom',
             #             horizontalalignment='center')
 
-        bestalgentries = bestalg.load_best_algorithm()
+        bestalgentries = bestalg.load_best_algorithm(testbedsettings.current_testbed.best_algorithm_filename)
 
         if bestalgentries:        
             bestalgdata = []
@@ -559,7 +573,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
 
 
 
-        saveFigure(filename, verbose=verbose)
+        saveFigure(filename)
 
         plt.close()
 
@@ -591,7 +605,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
 
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
 
-        if verbose:
+        if genericsettings.verbose:
             print 'Wrote commands and legend to %s' % filename
 
         # this is obsolete (however check templates)
@@ -606,7 +620,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
                                 marker_to_latex(styles[i]['marker']))
             f.write((', ' if i > 0 else '') + '%s:%s' % (symb, writeLabels(sortedAlgs[i])))
         f.close()    
-        if verbose:
+        if genericsettings.verbose:
             print '(obsolete) Wrote legend in %s' % filename
     except IOError:
         raise
@@ -625,7 +639,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
             if f in functions_with_legend:
                 toolsdivers.legend()
 
-        saveFigure(filename, figFormat=genericsettings.getFigFormats(), verbose=verbose)
+        saveFigure(filename, figFormat=genericsettings.getFigFormats())
 
         plt.close()
 

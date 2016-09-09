@@ -19,6 +19,8 @@ from . import genericsettings, testbedsettings, toolsstats, htmldesc
 
 bbox_inches_choices = {  # do we also need pad_inches = 0?
     'svg': 'tight',
+    #'png': 'tight', # uncomment for bbob-biobj figures
+    #'pdf': 'tight', # uncomment for bbob-biobj figures
 }
 
 
@@ -38,7 +40,7 @@ HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP', 'PP
                 'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS')
 
 
-def saveFigure(filename, figFormat=(), verbose=True):
+def saveFigure(filename, figFormat=()):
     """Save figure into an image file.
 
     `figFormat` can be a string or a list of strings, like
@@ -65,7 +67,7 @@ def saveFigure(filename, figFormat=(), verbose=True):
                         format=format,
                         bbox_inches=bbox_inches_choices.get(format, None)
                         )
-            if verbose:
+            if genericsettings.verbose:
                 print('Wrote figure in %s.' % (filename + '.' + format))
         except IOError:
             warnings.warn('%s is not writeable.' % (filename + '.' + format))
@@ -161,7 +163,7 @@ def getConvLink(htmlPage, currentDir):
     return ''
 
 
-def getRldLink(htmlPage, current_dir, isBiobjective):
+def getRldLink(htmlPage, current_dir):
     links = ''
     folder = 'pprldmany-single-functions'
 
@@ -173,7 +175,9 @@ def getRldLink(htmlPage, current_dir, isBiobjective):
                               pprldmany_per_func_header,
                               ignoreFileExists=ignoreFileExists)
 
-        if htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or not isBiobjective:
+        if (htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or
+                not isinstance(testbedsettings.current_testbed,
+                               testbedsettings.GECCOBiObjBBOBTestbed)):
             path = os.path.join(os.path.realpath(current_dir), folder)
             fileName = get_first_html_file(path, genericsettings.pprldmany_file_name)
             if fileName:
@@ -212,7 +216,6 @@ def save_single_functions_html(filename,
                                add_to_names='',
                                next_html_page_suffix=None,
                                htmlPage=HtmlPage.NON_SPECIFIED,
-                               isBiobjective=False,
                                functionGroups=None,
                                parentFileName=None,  # used only with HtmlPage.NON_SPECIFIED
                                header=None,  # used only with HtmlPage.NON_SPECIFIED
@@ -224,7 +227,7 @@ def save_single_functions_html(filename,
         header_title = algname + ' ' + name + add_to_names
         links = getHomeLink(htmlPage)
         links += getConvLink(htmlPage, currentDir)
-        links += getRldLink(htmlPage, currentDir, isBiobjective)
+        links += getRldLink(htmlPage, currentDir)
         links += getParentLink(htmlPage, parentFileName)
 
         f.write(html_header % (header_title.strip().replace(' ', ', '), algname, links))
@@ -242,7 +245,7 @@ def save_single_functions_html(filename,
         last_function_number = testbedsettings.current_testbed.last_function_number
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
         addLinkForNextDim = next_html_page_suffix is not None and next_html_page_suffix != add_to_names
-        bestAlgExists = not isBiobjective
+        bestAlgExists = testbedsettings.current_testbed.best_algorithm_filename != ''
 
         if htmlPage is HtmlPage.ONE:
             f.write('<H3><a href="ppfigdim.html">Average runtime versus '
@@ -251,7 +254,7 @@ def save_single_functions_html(filename,
                     'targets</a></H3>\n')
             f.write('<H3><a href="pprldistr.html">Runtime for selected '
                     'targets and f-distributions</a></H3>\n')
-            if not isBiobjective:
+            if testbedsettings.current_testbed.best_algorithm_filename != '':
                 f.write('<H3><a href="pplogloss.html">Runtime loss ratios'
                         '</a></H3>\n')
 
@@ -381,7 +384,7 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
             dimensions = genericsettings.rldDimsOfInterest
-            if not isBiobjective:
+            if not testbedsettings.current_testbed.best_algorithm_filename != '':
                 currentHeader = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % currentHeader)
 

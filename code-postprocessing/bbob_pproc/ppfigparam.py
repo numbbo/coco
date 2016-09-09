@@ -168,8 +168,7 @@ def plot(dsList, param='dim', targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8)):
     return res
 
 def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
-         param=('dim', 'Dimension'), is_normalized=True, outputdir='.',
-         verbose=True):
+         param=('dim', 'Dimension'), is_normalized=True, outputdir='.'):
     """Generates figure of aRT vs. param.
 
     This script will generate as many figures as there are functions.
@@ -193,7 +192,6 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
                                  x values
     :keyword string outputdir: name of output directory for the image
                                files
-    :keyword bool verbose: controls verbosity
     
     """
 
@@ -250,5 +248,5 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
         if func in funInfos.keys():
             a.set_title(funInfos[func], fontsize=fontSize)
 
-        saveFigure(filename, verbose=verbose)
+        saveFigure(filename)
         plt.close()

@@ -22,6 +22,7 @@ Examples:
     >>> import tarfile
     >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
     >>> os.chdir(path)
+    >>> bb.genericsettings.verbose = False # ensure to make below doctests work 
 
 * Load a data set, assign to variable :py:data:`ds`::
 
@@ -73,7 +74,7 @@ def info(dsList):
 # TODO: method for pickling data in the current folder!
 def pickle(dsList):
     """Pickle a DataSetList."""
-    dsList.pickle(verbose=True)
+    dsList.pickle()
     # TODO this will create a folder with suffix -pickle from anywhere:
     # make sure the output folder is created at the right location
 

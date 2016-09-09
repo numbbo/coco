@@ -151,7 +151,7 @@ def beautify():
     #    plt.setp(line, color='b', marker='o', markersize=10)
     #set_trace()
 
-def main(dsList0, dsList1, outputdir, verbose=True):
+def main(dsList0, dsList1, outputdir):
     """Generate a scatter plot figure.
     
     TODO: """
@@ -397,7 +397,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             plt.ylabel(funInfos[f], fontsize=fontSize)
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
-        saveFigure(filename, verbose=verbose)
+        saveFigure(filename)
         plt.close()
 
     #plt.rcdefaults()

@@ -187,14 +187,18 @@ class RunlengthBasedTargetValues(TargetValues):
     
         >>> import os
         >>> import bbob_pproc as bb
-        >>> cwd = os.getcwd()
-        >>> os.chdir("..")
+        >>> # make sure to use the right `bbob` test suite for the test below:
+        >>> bb.genericsettings.isNoisy = False
+        >>> bb.genericsettings.isNoiseFree = False
+        >>> bb.config.config('GECCOBBOBTestbed')
         >>> targets = bb.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension==True
+        >>> # make also sure to have loaded the corresponding reference algo
+        >>> # from BBOB-2009:
+        >>> targets.reference_data = 'testbedsettings'
         >>> targets(fun_dim=(1, 20)) # doctest:+ELLIPSIS
-          Loading best algorithm data from ...
-        array([  6.30957345e+01,   5.75439938e+01,   1.00000000e-08,
+        Loading best algorithm data from ...
+        array([  6.30957345e+01,   3.98107171e+01,   1.00000000e-08,
                  1.00000000e-08,   1.00000000e-08])
-        >>> os.chdir(cwd)
              
     returns a list of target f-values for F1 in 20-D, based on the 
     aRT values ``[0.5,...,50]``. 
@@ -216,7 +220,7 @@ class RunlengthBasedTargetValues(TargetValues):
         else:
             return RunlengthBasedTargetValues(run_lengths_or_class_instance, *args, **kwargs)
         
-    def __init__(self, run_lengths, reference_data='bestAlgorithm',
+    def __init__(self, run_lengths, reference_data='testbedsettings',
                  smallest_target=1e-8, times_dimension=True, 
                  force_different_targets_factor=10**0.04,
                  unique_target_values=False,
@@ -227,10 +231,12 @@ class RunlengthBasedTargetValues(TargetValues):
         
         :param run_lengths: sequence of values. 
         :param reference_data: 
-            can be a string like ``"bestAlgorithm"`` or a dictionary
+            can be a string indicating the filename of a best algorithm
+            data set such as ``"refalgs/best2009-bbob.tar.gz"`` or a dictionary
             of best data sets (e.g. from ``bestalg.generate(...)``)
             or a list of algorithm folder/data names (not thoroughly
-            tested).
+            tested). If chosen as ``testbedsettings``, the best algorithm
+            specified in testbedsettings.py will be used.
         :param smallest_target:
         :param times_dimension:
         :param force_different_targets_factor:
@@ -249,7 +255,7 @@ class RunlengthBasedTargetValues(TargetValues):
         to ``bestalg.bestAlgorithmEntries`` with each key dim_fun a reference
         DataSet, computed by bestalg module or portfolio module.
 
-            dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args, verbose=verbose)
+            dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args)
             ref_data = bestalg.generate(dictAlg)
             targets = RunlengthBasedTargetValues([1, 2, 4, 8], ref_data)
 
@@ -272,12 +278,15 @@ class RunlengthBasedTargetValues(TargetValues):
         """lazy initialization to prevent slow import"""
         if self.initialized:
             return self
-        if self.reference_data == 'bestAlgorithm': # bestalg data are loaded
-            self.reference_algorithm = self.reference_data
-            self._short_info = 'reference budgets from ' + self.reference_data
+        #if self.reference_data == 'bestAlgorithm': # bestalg data are loaded
+        if self.reference_data == 'testbedsettings': # bestalg data are loaded according to testbedsettings
+            #self.reference_algorithm = self.reference_data
+            self.reference_algorithm = testbedsettings.current_testbed.best_algorithm_filename
+            #self._short_info = 'reference budgets from ' + self.reference_data
+            self._short_info = 'reference budgets from ' + self.reference_algorithm
 
             from . import bestalg
-            self.reference_data = bestalg.load_best_algorithm()
+            self.reference_data = bestalg.load_best_algorithm(self.reference_algorithm, force=True)
             # TODO: remove targets smaller than 1e-8
         elif type(self.reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work
             self._short_info = 'reference budgets from ' + self.reference_data
@@ -318,7 +327,7 @@ class RunlengthBasedTargetValues(TargetValues):
         not smaller as target / 10**0.2. 
         
         Returned are the aRT for targets that, within the given budget, the
-        best 2009 algorithm just failed to achieve.
+        reference algorithm just failed to achieve.
 
         """            
         self.initialize()
@@ -438,7 +447,7 @@ class RunlengthBasedTargetValues(TargetValues):
             print targets
 
         if self.unique_target_values:
-            len_ = len(targets)
+            #len_ = len(targets)
             targets = np.array(list(reversed(sorted(set(targets)))))
             # print(' '.join((str(len(targets)), 'of', str(len_), 'targets kept')))
         if discretize:
@@ -528,6 +537,7 @@ class DataSet():
         >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
         >>> os.chdir(path)
         >>> import bbob_pproc as bb
+        >>> bb.genericsettings.verbose = False # ensure to make doctests work        
         >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
         >>> if not os.path.exists(infoFile):
         ...   os.chdir(os.path.join(path, 'data'))
@@ -631,7 +641,7 @@ class DataSet():
           1.0e-05 |     513     546     563     584     593 |    562.5  15
           1.0e-08 |     568     594     611     628     635 |    609.6  15
 
-        >>> import numpy as np  # not necessary in IPython
+        >>> import numpy as np
         >>> idx = range(0, 50, 10) + [-1]
         >>> np.array([idx, ds.target[idx], ds.ert[idx]]).T  # aRT average runtime for some targets
         array([[  0.00000000e+00,   3.98107171e+07,   1.00000000e+00],
@@ -641,6 +651,51 @@ class DataSet():
                [  4.00000000e+01,   3.98107171e-01,   4.81333333e+03],
                [ -1.00000000e+00,   1.00000000e-08,   6.09626667e+03]])
         
+        Note that the load of a data set depends on the set of instances
+        specified in testbedsettings' TestBed class (or its children)
+        (None means all instances are read in):
+        >>> import sys
+        >>> import os
+        >>> import urllib
+        >>> import tarfile
+        >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+        >>> os.chdir(path)
+        >>> import bbob_pproc as bb
+        >>> bb.genericsettings.verbose = False # ensure to make doctests work
+        >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
+        >>> if not os.path.exists(infoFile):
+        ...   os.chdir(os.path.join(path, 'data'))
+        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
+        ...   filename, headers = urllib.urlretrieve(dataurl)
+        ...   archivefile = tarfile.open(filename)
+        ...   archivefile.extractall()
+        ...   os.chdir(path)
+        >>> dslist = bb.load(infoFile)
+          Data consistent according to test in consistency_check() in pproc.DataSet
+        >>> dslist[2].instancenumbers
+        [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5]
+        >>> dslist[2].evals[-1]
+        array([  1.00000000e-08,   2.14200000e+03,   1.95800000e+03,
+                 2.31700000e+03,   2.22700000e+03,   2.26900000e+03,
+                 2.09000000e+03,   2.32400000e+03,   2.30500000e+03,
+                 2.20700000e+03,   1.96200000e+03,   2.42800000e+03,
+                 2.21400000e+03,   1.97000000e+03,   1.92400000e+03,
+                 2.01200000e+03])
+        >>> # because testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] was None
+        >>> bb.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = [1, 3]
+        >>> bb.config.config('GECCOBBOBTestbed') # make sure that settings are used
+        >>> dslist2 = bb.load(infoFile)
+          Data consistent according to test in consistency_check() in pproc.DataSet
+        >>> dslist2[2].instancenumbers
+        [1, 1, 1, 3, 3, 3]
+        >>> dslist2[2].evals[-1]
+        array([  1.00000000e-08,   2.14200000e+03,   1.95800000e+03,
+                 2.31700000e+03,   2.32400000e+03,   2.30500000e+03,
+                 2.20700000e+03])
+        >>> # set things back to cause no troubles elsewhere:
+        >>> bb.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = None
+        >>> bb.config.config('GECCOBBOBTestbed') # make sure that settings are used
+
     """
 
     # TODO: unit element of the post-processing: one algorithm, one problem
@@ -668,22 +723,30 @@ class DataSet():
     def testbed_name(self):
         testbed = None
         if hasattr(self, 'suite'):
-            testbed = getattr(self, 'suite')
+            suite = getattr(self, 'suite')
+            testbed = testbedsettings.get_testbed_from_suite(suite)
 
         if not testbed:
             if self.isBiobjective():
                 testbed = testbedsettings.default_testbed_bi
-            elif genericsettings.isNoisy:
-                testbed = testbedsettings.default_testbed_single_noisy
             else:
-                testbed = testbedsettings.default_testbed_single
+                # detect by hand whether we are in the noisy or the
+                # noiseless case (TODO: is there a better way?)
+                if self.funcId > 100:
+                    genericsettings.isNoisy = True
+                    genericsettings.isNoiseless = False
+                    testbed = testbedsettings.default_testbed_single_noisy
+                else:
+                    genericsettings.isNoisy = False
+                    genericsettings.isNoiseless = True
+                    testbed = testbedsettings.default_testbed_single
 
         return testbed
     
-    def __init__(self, header, comment, data, indexfile, verbose=True):
+    def __init__(self, header, comment, data, indexfile):
         """Instantiate a DataSet.
 
-        The first three input argument corresponds to three consecutive
+        The first three input arguments correspond to three consecutive
         lines of an index file (.info extension).
 
         :keyword string header: information of the experiment
@@ -691,7 +754,6 @@ class DataSet():
         :keyword string data: information on the runs of the experiment
         :keyword string indexfile: string for the file name from where
                                    the information come
-        :keyword bool verbose: controls verbosity
 
         """
         # Extract information from the header line.
@@ -729,6 +791,7 @@ class DataSet():
 
         # Split line in data file name(s) and run time information.
         parts = data.split(', ')
+        idx_of_instances_to_load = []
         for elem in parts:
             if elem.endswith('dat'):
                 #Windows data to Linux processing
@@ -751,9 +814,12 @@ class DataSet():
             else:
                 if not ':' in elem:
                     
-                    # We might take only a subset of the given instances for the bi-objective case (for now).
-                    if (self.isBiobjective() and
+                    # We might take only a subset of the given instances,
+                    # given in testbedsettings.current_testbed.instancesOfInterest:
+                    if (testbedsettings.current_testbed.instancesOfInterest and
                         ast.literal_eval(elem) not in testbedsettings.current_testbed.instancesOfInterest):
+
+                        idx_of_instances_to_load.append(False)
                         continue
 
                     # if elem does not have ':' it means the run was not
@@ -762,6 +828,7 @@ class DataSet():
                     # In this case, what should we do? Either we try to process
                     # the corresponding data anyway or we leave it out.
                     # For now we leave it in.
+                    idx_of_instances_to_load.append(True)
                     self.isFinalized.append(False)
                     warnings.warn('Caught an ill-finalized run in %s for %s'
                                   % (indexfile,
@@ -770,25 +837,28 @@ class DataSet():
                     self.readfinalFminusFtarget.append(numpy.inf)
                 else:
                     itrial, info = elem.split(':', 1)
-                    # We might take only a subset of the given instances for the bi-objective case (for now).
-                    if (self.isBiobjective() and
-                        ast.literal_eval(itrial) not in testbedsettings.current_testbed.instancesOfInterest):
+                    # We might take only a subset of the given instances,
+                    # given in testbedsettings.current_testbed.instancesOfInterest:
+                    if (testbedsettings.current_testbed.instancesOfInterest and
+                            ast.literal_eval(itrial) not in testbedsettings.current_testbed.instancesOfInterest):
+                        idx_of_instances_to_load.append(False)
                         continue
                     self.instancenumbers.append(ast.literal_eval(itrial))
+                    idx_of_instances_to_load.append(True)
                     self.isFinalized.append(True)
                     readmaxevals, readfinalf = info.split('|', 1)
                     self.readmaxevals.append(int(readmaxevals))
                     self.readfinalFminusFtarget.append(float(readfinalf))
 
-        if verbose:
+        if genericsettings.verbose:
             print "%s" % self.__repr__()
 
         # Treat successively the data in dat and tdat files:
         # put into variable dataFiles the files where to look for data
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
-        data = HMultiReader(split(dataFiles, self.isBiobjective()), self.isBiobjective())
-        if verbose:
+        data = HMultiReader(split(dataFiles, self.isBiobjective(), idx_to_load=idx_of_instances_to_load), self.isBiobjective())
+        if genericsettings.verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
        
@@ -809,8 +879,8 @@ class DataSet():
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
             raise Usage("Missing tdat files in '{0}'. Please rerun the experiments." % filepath)
 
-        data = VMultiReader(split(dataFiles, self.isBiobjective()), self.isBiobjective())
-        if verbose:
+        data = VMultiReader(split(dataFiles, self.isBiobjective(), idx_to_load=idx_of_instances_to_load), self.isBiobjective())
+        if genericsettings.verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
         
@@ -833,7 +903,7 @@ class DataSet():
                 #dataFiles = list(i.rsplit('.', 1)[0] + ext for i in self.dataFiles)
                 #data = info[0](split(dataFiles))
                 ## split is a method from readalign, info[0] is a method of readalign
-                #if verbose:
+                #if genericsettings.verbose:
                     #print ("Processing %s: %d/%d trials found." #% (dataFiles, len(data), len(self.itrials)))
                 #(adata, maxevals, finalfunvals) = alignData(data)
                 #setattr(self, info[1], adata)
@@ -907,7 +977,7 @@ class DataSet():
                 # warnings.warn('exact final precision was not recorded, next lower value set close to final precision')
                 # print '*** warning: final precision was not recorded'
                 assert self.evals[-1][0] < self.precision # shall not have changed
-            assert self.evals[-1][0] > 0
+#            assert self.evals[-1][0] > 0
             self.maxevals = self._detMaxEvals()
 
     def _complement_data(self, step=10**0.2, final_target=1e-8):
@@ -923,8 +993,18 @@ class DataSet():
         
         instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))
         
-        # We might take only a subset of all provided instances for the bi-objective case (for now).
-        expectedNumberOfInstances = len(testbedsettings.current_testbed.instancesOfInterest) if self.isBiobjective() else 15
+        if '% Combination of ' in self.comment:
+            # a short test for BestAlgSet...
+            return self.instancenumbers == [0]
+        
+        # We might take only a subset of all provided instances...
+        if not testbedsettings.current_testbed:
+            expectedNumberOfInstances = 15 # standard choice
+        elif not testbedsettings.current_testbed.instancesOfInterest: # case of no specified instances
+            expectedNumberOfInstances = 10 if isinstance(testbedsettings.current_testbed,
+                    testbedsettings.GECCOBiObjBBOBTestbed) else 15
+        else:
+            expectedNumberOfInstances = len(testbedsettings.current_testbed.instancesOfInterest)
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
             # check exception of 2009 data sets with 3 times instances 1:5
             for i in set(self.instancenumbers):
@@ -1118,7 +1198,7 @@ class DataSet():
         #dim, funcId, algId, precision
         return
 
-    def pickle(self, outputdir=None, verbose=True, gzipped=True):
+    def pickle(self, outputdir=None, gzipped=True):
         """Save this instance to a pickle file.
 
         Saves this instance to a (by default gzipped) pickle file. If not 
@@ -1158,7 +1238,7 @@ class DataSet():
                     f = open(self.pickleFile, 'w') # TODO: what if file already exist?
                 pickle.dump(self, f)
                 f.close()
-                if verbose:
+                if genericsettings.verbose:
                     print 'Saved pickle in %s.' %(self.pickleFile)
             except IOError, (errno, strerror):
                 print "I/O error(%s): %s" % (errno, strerror)
@@ -1397,7 +1477,11 @@ class DataSet():
         return list(tmp[i][1:] for i in targets)
 
     def plot_funvals(self, **kwargs):
-        """plot data of `funvals` attribute, versatile"""
+        """plot data of `funvals` attribute, versatile
+
+        TODO: seems outdated on 19/8/2016
+              ("isfinite" instead of "np.isfinite" and not called from anywhere)
+        """
         kwargs.setdefault('clip_on', False)
         for funvals in self.funvals.T[1:]:  # loop over the rows of the transposed array
             idx = isfinite(funvals > 1e-19)
@@ -1409,7 +1493,11 @@ class DataSet():
     def plot(self, **kwargs):
         """plot data from `evals` attribute.
 
-        `**kwargs` is passed to `matplolib.loglog`. """
+        `**kwargs` is passed to `matplolib.loglog`. 
+        
+        TODO: seems outdated on 19/8/2016
+        ("isfinite" instead of "np.isfinite" and not called from anywhere)        
+        """
         kwargs.setdefault('clip_on', False)
         for evals in self.evals.T[1:]:  # loop over the rows of the transposed array
             idx = np.logical_and(self.evals[:, 0] > 1e-19, isfinite(evals))
@@ -1439,14 +1527,13 @@ class DataSetList(list):
     #Do not inherit from set because DataSet instances are mutable which means
     #they might change over time.
 
-    def __init__(self, args=[], verbose=False, check_data_type=True):
+    def __init__(self, args=[], check_data_type=True):
         """Instantiate self from a list of folder- or filenames or 
         ``DataSet`` instances.
 
         :keyword list args: strings being either info file names, folder
                             containing info files or pickled data files,
                             or a list of DataSets.
-        :keyword bool verbose: controls verbosity.
 
         Exceptions:
         Warning -- Unexpected user input.
@@ -1477,14 +1564,14 @@ class DataSetList(list):
         fnames = []
         for name in args:
             if isinstance(name, basestring) and findfiles.is_recognized_repository_filetype(name):
-                fnames.extend(findfiles.main(name, verbose))
+                fnames.extend(findfiles.main(name))
             else:
                 fnames.append(name)
         for name in fnames: 
             if isinstance(name, DataSet):
                 self.append(name)
             elif name.endswith('.info'):
-                self.processIndexFile(name, verbose)
+                self.processIndexFile(name)
             elif name.endswith('.pickle') or name.endswith('.pickle.gz'):
                 try:
                     # cocofy(name)
@@ -1497,7 +1584,7 @@ class DataSetList(list):
                     except pickle.UnpicklingError:
                         print '%s could not be unpickled.' %(name)
                     f.close()
-                    if verbose > 1:
+                    if genericsettings.verbose > 1:
                         print 'Unpickled %s.' % (name)
                     try:
                         entry.instancenumbers = entry.itrials  # has been renamed
@@ -1524,12 +1611,12 @@ class DataSetList(list):
         if len(self) and data_consistent:
             print("  Data consistent according to test in consistency_check() in pproc.DataSet")
             
-    def processIndexFile(self, indexFile, verbose=True):
+    def processIndexFile(self, indexFile):
         """Reads in an index (.info?) file information on the different runs."""
 
         try:
             f = openfile(indexFile)
-            if verbose:
+            if genericsettings.verbose:
                 print 'Processing %s.' % indexFile
 
             # Read all data sets within one index file.
@@ -1555,7 +1642,7 @@ class DataSetList(list):
                     data_file_names.append(data)
                     nbLine += 3
                     #TODO: check that something is not wrong with the 3 lines.
-                    ds = DataSet(header, comment, data, indexFile, verbose)                    
+                    ds = DataSet(header, comment, data, indexFile)                    
                     if len(ds.instancenumbers) > 0:                    
                         self.append(ds)
                 except StopIteration:
@@ -1585,17 +1672,19 @@ class DataSetList(list):
         for i in self:
             if i == o:
                 isFound = True
-                if i.instancenumbers == o.instancenumbers and any([_i > 5 for _i in i.instancenumbers]):
+                if 11 < 3 and i.instancenumbers == o.instancenumbers and any([_i > 5 for _i in i.instancenumbers]):
                     warnings.warn("same DataSet found twice, second one from "
-                        + str(o.indexFiles) + " is disregarded for instances "
+                        + str(o.indexFiles) + " with instances "
                         + str(i.instancenumbers))
+                    # todo: this check should be done in a
+                    #       consistency checking method, as the one below
                     break
                 if set(i.instancenumbers).intersection(o.instancenumbers) \
-                        and any([_i >5 for _i in set(i.instancenumbers).intersection(o.instancenumbers)]):
+                        and any([_i > 5 for _i in set(i.instancenumbers).intersection(o.instancenumbers)]):
                     warnings.warn('instances ' + str(set(i.instancenumbers).intersection(o.instancenumbers))
                                   + (' found several times. Read data for F%d in %d-D' % (i.funcId, i.dim)) 
                                   # + ' found several times. Read data for F%(argone)d in %(argtwo)d-D ' % {'argone':i.funcId, 'argtwo':i.dim}
-                                  + 'are likely to be inconsistent. ')
+                                  + 'might be inconsistent. ')
                 # tmp = set(i.dataFiles).symmetric_difference(set(o.dataFiles))
                 #Check if there are new data considered.
                 if 1 < 3:
@@ -2285,7 +2374,7 @@ def set_unique_algId(ds_list, ds_list_reference, taken_ids=None):
                 i += 1
             ds.algId = algId + ' ' + str(i)
 
-def processInputArgs(args, verbose=True):
+def processInputArgs(args):
     """Process command line arguments.
 
     Returns several instances of :py:class:`DataSetList`, and a list of 
@@ -2298,7 +2387,6 @@ def processInputArgs(args, verbose=True):
     kept in different locations for efficiency reasons.
 
     :keyword list args: string arguments for folder names
-    :keyword bool verbose: controlling verbosity
 
     :returns (all_datasets, pathnames, datasetlists_by_alg):
       all_datasets
@@ -2312,6 +2400,9 @@ def processInputArgs(args, verbose=True):
         a dictionary which associates each algorithm via its input path
         name to a DataSetList
 
+
+
+
     """
     dsList = list()
     sortedAlgs = list()
@@ -2321,10 +2412,10 @@ def processInputArgs(args, verbose=True):
         if i == '': # might cure an lf+cr problem when using cywin under Windows
             continue
         if findfiles.is_recognized_repository_filetype(i):
-            filelist = findfiles.main(i, verbose)
+            filelist = findfiles.main(i)
             #Do here any sorting or filtering necessary.
             #filelist = list(i for i in filelist if i.count('ppdata_f005'))
-            tmpDsList = DataSetList(filelist, verbose)
+            tmpDsList = DataSetList(filelist)
             for ds in tmpDsList:
                 ds._data_folder = i
             #Nota: findfiles will find all info AND pickle files in folder i.

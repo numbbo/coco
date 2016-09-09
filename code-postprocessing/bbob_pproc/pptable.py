@@ -105,7 +105,7 @@ def get_table_caption():
     return table_caption
         
 
-def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
+def main(dsList, dimsOfInterest, outputdir, info=''):
     """Generate a table of ratio aRT/aRTbest vs target precision.
     
     1 table per dimension will be generated.
@@ -120,16 +120,17 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
     #in the following the reference algorithm is the one given in
     #bestalg.bestalgentries which is the virtual best of BBOB
     dictDim = dsList.dictByDim()
+    testbed = testbedsettings.current_testbed
 
-    targetf = testbedsettings.current_testbed.pptable_ftarget
-    targetsOfInterest = testbedsettings.current_testbed.pptable_targetsOfInterest
+    targetf = testbed.pptable_ftarget
+    targetsOfInterest = testbed.pptable_targetsOfInterest
 
     if info:
         info = '_' + info
         # insert a separator between the default file name and the additional
         # information string.
 
-    bestalgentries = bestalg.load_best_algorithm()
+    bestalgentries = bestalg.load_best_algorithm(testbed.best_algorithm_filename)
     
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
         header = [r'\#FEs/D']
@@ -448,5 +449,5 @@ def main(dsList, dimsOfInterest, outputdir, info='', verbose=True):
             for line in lines:
                 outfile.write(line)     
 
-        if verbose:
+        if genericsettings.verbose:
             print "Table written in %s" % outputfile
