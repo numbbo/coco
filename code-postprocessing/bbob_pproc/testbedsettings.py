@@ -2,6 +2,8 @@ import os
 import numpy as np
 import warnings
 
+from . import genericsettings
+
 scenario_rlbased = 'rlbased'
 scenario_fixed = 'fixed'
 scenario_biobjfixed = 'biobjfixed'
@@ -128,6 +130,13 @@ class GECCOBBOBTestbed(SingleObjectiveTestbed): #Wassim: now inherits from Singl
         self.htmlDimsOfInterest = [5, 20]
         self.best_algorithm_filename = 'bestalgentries2009.pickle.gz'
         self.best_algorithm_year = 2009
+        
+        self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
+                           10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 1,
+                           21: 1, 22: 1, 23: 1, 24: 1, 25: 1, 26: 1, 27: 1, 28: 1, 29: 1, 30: 1,
+                           31: 1, 32: 1, 33: 1, 34: 1, 35: 1, 36: 1, 37: 1, 38: 1, 39: 1, 40: 1,
+                           41: 1, 42: 1, 43: 1, 44: 1, 45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1,
+                           51: 1, 52: 1, 53: 1, 54: 1, 55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1}
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
@@ -189,7 +198,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pprldmany_target_values = targetValues(target_values)  # possibly changed in config
         self.pprldmany_target_range_latex = '$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$'
         # ppscatter_target_values are copied from the single objective case. Define the correct values!
-        self.ppscatter_target_values = targetValues(np.logspace(-8, 2, 46))  # that does not look right here!
+        self.ppscatter_target_values = targetValues(np.logspace(-5, 1, 51))  # that does not look right here!
         self.rldValsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5)  # possibly changed in config
         self.ppfvdistr_min_target = 1e-5
         self.functions_with_legend = (1, 30, 31, 55)
@@ -209,14 +218,10 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50]  # [0.5, 2, 10, 50]  # used in config for expensive setting
         self.pptables_target_runlengths = [2, 10, 50]  # used in config for expensive setting
-
+        self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}  # 2016 biobjective instances
+        
         self.dimensions_to_display = [2, 3, 5, 10, 20, 40]
         self.tabDimsOfInterest = [5, 20]
         self.rldDimsOfInterest = [5, 20]
         self.htmlDimsOfInterest = [5, 20]
         self.first_dimension = 2
-
-
-
-
-

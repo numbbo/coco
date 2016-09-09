@@ -300,12 +300,18 @@ def main(argv=None):
         # Wassim: now checkes the highest dimension testbed instead of the first for eventual large-scale scenarii
 
         if (genericsettings.verbose):
-            for i in dsList:
-                if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) != 
-                    inset.instancesOfInterest):
-                    warnings.warn('The data of %s do not list ' % (i) + 
-                                  'the correct instances ' + 
-                                  'of function F%d.' % (i.funcId))
+            for i in dsList:                
+                # check whether current set of instances correspond to correct
+                # setting of a BBOB workshop and issue a warning otherwise:            
+                curr_instances = (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)))
+                correct = False
+                for instance_set_of_interest in inset.instancesOfInterest:
+                    if curr_instances == instance_set_of_interest:
+                        correct = True
+                if not correct:
+                    warnings.warn('The data of %s do not list ' % i +
+                                  'the correct instances ' +
+                                  'of function F%d.' % i.funcId)
 
         dictAlg = dsList.dictByAlg()
 

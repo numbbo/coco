@@ -264,7 +264,7 @@ def main(argv=None):
 
         if not genericsettings.verbose:
             warnings.filterwarnings('module', '.*', Warning, '.*')  # same warning just once
-            warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
+            #warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
 
         config.target_values(genericsettings.isExpensive)
 
@@ -319,9 +319,14 @@ def main(argv=None):
             #if i.dim not in genericsettings.dimensions_to_display:
             if i.dim not in _dimensions_to_display:
                 continue
-
-            if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) <
-                    inset.instancesOfInterest):
+            # check whether current set of instances correspond to correct
+            # setting of a BBOB workshop and issue a warning otherwise:            
+            curr_instances = (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)))
+            correct = False
+            for instance_set_of_interest in inset.instancesOfInterest:
+                if curr_instances == instance_set_of_interest:
+                    correct = True
+            if not correct:
                 warnings.warn('The data of %s do not list ' % i +
                               'the correct instances ' +
                               'of function F%d.' % i.funcId)
