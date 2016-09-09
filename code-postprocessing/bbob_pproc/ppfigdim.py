@@ -57,6 +57,7 @@ import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 
 from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam, htmldesc, toolsdivers
 from . import testbedsettings
@@ -385,6 +386,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
 
         mediandata = {}
         displaynumber = {}
+        no_target_reached = 1;
         for i_target in range(len(valuesOfInterest)):
             succ = []
             unsucc = []
@@ -408,6 +410,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
                         displaynumber[dim] = ((dim, tmp[0], tmp[2]))
                     mediandata[dim] = (i_target, tmp[-1])
                     unsucc.append(np.append(dim, np.nan))
+                    no_target_reached = 0
                 else:
                     unsucc.append(np.append(dim, tmp[-2]))  # total number of fevals
 
@@ -480,6 +483,13 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
             res.extend(plt.plot(tmp[:, 0], maxevals / tmp[:, 0]**ynormalize_by_dimension,
                        color=styles[len(valuesOfInterest) - 1]['color'],
                        ls='', marker='x', markersize=20))
+            if no_target_reached:
+                ylim_maxevals = max(maxevals / tmp[:, 0]**ynormalize_by_dimension)
+                ylim = (ylim[0], math.ceil(ylim_maxevals))
+                plt.annotate('no target reached', xy=(0.5, 0.5), xycoords='axes fraction', fontsize=14,
+                            horizontalalignment='center', verticalalignment='center')
+            else:
+                ylim = (ylim[0], math.ceil(ylim[1]))
             plt.ylim(ylim)
         # median
         if mediandata:
@@ -605,13 +615,14 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
         beautify(axesLabel=False)
+        
+        # display number of instances in data and used targets type:
+        display_text = '%d instances\n' % len(((dictFunc[func][0]).instancenumbers))
+        display_text += _valuesOfInterest.short_info
         plt.text(plt.xlim()[0], plt.ylim()[0],
-                 _valuesOfInterest.short_info, fontsize=14)
+                 display_text, fontsize=14, horizontalalignment="left",
+                 verticalalignment="bottom")
 
-        # display number of instances in data:
-        instanceText = '%d instances' % len(((dictFunc[func][0]).instancenumbers))
-        plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, instanceText, fontsize=14)
-  
         if func in testbedsettings.current_testbed.functions_with_legend:
             toolsdivers.legend(loc="best")
         if func in funInfos.keys():
