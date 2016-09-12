@@ -438,12 +438,8 @@ also report back a missing name to https://github.com/numbbo/coco/issues
 
         >>> import cocoex as ex
         >>> suite = ex.Suite("bbob", "", "")
-        >>> suite.indices[suite.current_index]  # raises an exception, as current_index is None
-        Traceback (most recent call last):
-          . . .
-          File "<doctest cocoex.interface.__test__.Suite.current_index (line 301)[2]>", line 1, in <module>
-            suite.indices[suite.current_index]  # raises an exception, as current_index is None
-        TypeError: list indices must be integers, not NoneType
+        >>> suite.current_index is None
+        True
         >>> suite.next_problem().id[-17:].lower()
         'bbob_f001_i01_d02'
         >>> suite.current_index, suite.indices[suite.current_index]
