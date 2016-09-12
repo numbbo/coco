@@ -529,10 +529,29 @@ cdef class Observer:
     """Observer which can be "attached to" one or several problems, however not
     necessarily at the same time.
 
-    See method `observe(problem)` for details.
+    The typical observer records data to be used in the COCO post-processing
+    module `cocopp` afterwards.
 
-    A typical `Observer` implementation records data to be used in the COCO
-    post-processing.
+    >>> import cocoex as ex
+    >>> suite = ex.Suite("bbob", "", "")
+    >>> assert len(suite) == 2160
+    >>> f = suite.get_problem(33)
+    >>> assert f.id.endswith('f003_i04_d02')
+    >>> observer = ex.Observer("bbob",
+    ...                        "result_folder: mysolver_on_bbob")
+    >>> f.add_observer(observer)  # the same as observer.observe(f)  # doctest: +ELLIPSIS
+    <cocoex...
+    >>> # work work work with observed f
+    >>> f.free()
+
+    Details:
+    - `f.free()` in the above example must be called before to observe
+      another problem with the "bbob" observer. Otherwise the Python
+      interpreter will crash due to an error raised from the C code.
+    - Due to technical sublties between Python/Cython/C, the pointer to the
+      underlying C observer is passed by global assignment with
+      `_update_current_observer_global()`
+
 
     """
     cdef coco_observer_t* _observer
@@ -555,28 +574,6 @@ cdef class Observer:
     def observe(self, problem):
         """`observe(problem)` let `self` observe the `problem: Problem` by
         calling `problem.add_observer(self)`.
-
-        The typical observer records data to be used in the COCO post-processing
-        afterwards.
-
-        >>> import cocoex as ex
-        >>> suite = ex.Suite("bbob", "", "")
-        >>> assert len(suite) == 2160
-        >>> f = suite.get_problem(33)
-        >>> assert isinstance(f, Problem)
-        >>> assert f.id.endswith('f003_i04_d02')
-        >>> observer = ex.Observer("bbob", "").observe(f)
-        >>> # work work work with f
-        >>> f.free()
-
-        Details:
-        - `f.free()` in the above example must be called before to observe
-          another problem with the "bbob" observer. Otherwise the Python
-          interpreter will crash due to an error raised from the C code.
-        - Due to technical sublties between Python/Cython/C, the pointer to the
-          underlying C observer is passed by global assignment with
-          `_update_current_observer_global()`
-
         """
         self._update_current_observer_global()
         # problem.problem = coco_problem_add_observer(problem.problem, self._observer)
