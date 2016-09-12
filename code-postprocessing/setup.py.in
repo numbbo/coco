@@ -30,7 +30,7 @@ setup(
                           '../latex-templates/*.sty',
                           '../latex-templates/*.bib',
                           'data/IPOP-CMA-ES.tgz',
-                          'data/RANDOMSEARCH.tgz'
+                          'data/MCS.tgz'
                           ]},
     url = 'https://github.com/numbbo/coco',
     license = 'BSD',
