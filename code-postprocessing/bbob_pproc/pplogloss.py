@@ -123,31 +123,82 @@ such that $\aRT(\ftarget)\le\FEvals$ for the
 
 
 def table_caption():
-    caption = r"""%
+    table_caption = r"""%
         \aRT\ loss ratio versus the budget in number of $f$-evaluations
         divided by dimension.
         For each given budget \FEvals, the target value \ftarget\ is computed
-        as the best target $f$-value reached within the
+        as the best target $\F$-value reached within the
         budget by the given algorithm.
         Shown is then the \aRT\ to reach \ftarget\ for the given algorithm
-        or the budget, if the GECCO-BBOB-2009 best algorithm
+        or the budget, if {}
         reached a better target within the budget,
-        divided by the best \aRT\
-        seen in GECCO-BBOB-2009 to reach \ftarget.
+        divided by the {} to reach \ftarget.
+        """
+        
+    caption_end = r"""%
         Line: geometric mean. Box-Whisker error bar: 25-75\%-ile with median
         (box), 10-90\%-ile (caps), and minimum and maximum \aRT\ loss ratio
         (points). The vertical line gives the maximal number of function evaluations
         in a single trial in this function subset. See also
         Figure~\ref{fig:aRTlogloss} for results on each function subgroup.
         """
+       
+    testbed = testbedsettings.current_testbed
+        
+    if testbed.best_algorithm_filename:
+        if (testbed.name == testbedsettings.testbed_name_single or
+                testbed.name == testbedsettings.default_testbed_single_noisy
+                or testbed.name == testbedsettings.testbed_name_bi):
+            if testbed.best_algorithm_displayname:
+                if "best 2009" in testbed.best_algorithm_displayname:
+                    table_caption = table_caption.format(
+                            "the best algorithm from BBOB-2009",
+                            "best \\aRT\\ seen in BBOB-2009")
+                elif "best 2010" in testbed.best_algorithm_displayname:
+                    table_caption = table_caption.format(
+                            "the best algorithm from BBOB-2010",
+                            "best \\aRT\\ seen in BBOB-2010")
+                elif "best 2012" in testbed.best_algorithm_displayname:
+                    table_caption = table_caption.format(
+                            "the best algorithm from BBOB-2012",
+                            "best \\aRT\\ seen in BBOB-2012")
+                elif "best 2013" in testbed.best_algorithm_displayname:
+                    table_caption = table_caption.format(
+                            "the best algorithm from BBOB-2013",
+                            "best \\aRT\\ seen in BBOB-2013")
+                elif "best 2016" in testbed.best_algorithm_displayname:
+                    table_caption = table_caption.format(
+                            "the best algorithm from BBOB-2016",
+                            "best \\aRT\\ seen in BBOB-2016")
+                elif "best 2009-16" in testbed.best_algorithm_displayname:
+                    table_caption = table_caption.format(
+                            "the best algorithm of BBOB 2009--2016",
+                            "best \\aRT\\ seen in BBOB 2009--16")
+                else:
+                    table_caption = table_caption.format(
+                            'the reference algorithm %s' % testbed.best_algorithm_displayname,
+                            '\\aRT\\ of the reference algorithm %s' % testbed.best_algorithm_displayname)
+        else:
+            raise NotImplementedError('reference algorithm not supported for this testbed')
 
-    # Currently all scenarios have the same caption.
-    return caption
+    
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+        table_caption = table_caption.replace('\\fopt', '\\hvref')
+        table_caption = table_caption.replace('\\Df', '\\DI')
+        table_caption = table_caption.replace('$\F$', '$I_{\mathrm HV}^{\mathrm COCO}$')
+    else:
+        table_caption = table_caption.replace('$\F$', '$f$')
+
+    table_caption = table_caption + caption_end
+
+
+    return table_caption
 
 
 def figure_caption():
     caption = r"""%
         \aRT\ loss ratios (see Figure~\ref{tab:aRTloss} for details).
+
         Each cross ({\color{blue}$+$}) represents a single function, the line
         is the geometric mean.
         """
