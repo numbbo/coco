@@ -18,6 +18,12 @@ default_testbed_bi = 'GECCOBiObjBBOBTestbed'
 
 current_testbed = None
 
+suite_to_testbed = {
+    'bbob' : default_testbed_single,
+    'bbob-noisy' : default_testbed_single_noisy,
+    'bbob-biobj' : default_testbed_bi
+}
+
 
 def load_current_testbed(testbed_name, target_values):
     global current_testbed
@@ -26,22 +32,20 @@ def load_current_testbed(testbed_name, target_values):
         constructor = globals()[testbed_name]
         current_testbed = constructor(target_values)
     else:
-        raise ValueError('Testbed class %s does not exist. Add it to testbedsettings.py to process this data.' % testbed_name)
+        raise ValueError('Testbed class %s does not exist. Add it to testbedsettings.py to process this data.'
+                         % testbed_name)
 
     return current_testbed
 
 
 def get_testbed_from_suite(suite_name):
 
-    if suite_name == 'bbob':
-        return default_testbed_single
-    elif suite_name == 'bbob-noisy':
-        return default_testbed_single_noisy
-    elif suite_name == 'bbob-biobj':
-        return default_testbed_bi
+    if suite_name in suite_to_testbed:
+        return suite_to_testbed[suite_name]
     else:
         raise ValueError('Mapping from suite name to testbed class for suite %s does not exist. '
-                         'Add it to get_testbed_from_suite in testbedsettings.py to process this data.' % suite_name)
+                         'Add it to suite_to_testbed dictionary in testbedsettings.py to process this data.'
+                         % suite_name)
 
 
 def get_short_names(file_name):
