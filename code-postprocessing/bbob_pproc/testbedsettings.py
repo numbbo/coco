@@ -97,12 +97,12 @@ class GECCOBBOBTestbed(Testbed):
        and 2016.
     """
 
-    shortinfo_filename = 'benchmarkshortinfos.txt'
+    shortinfo_filename = 'bbob-benchmarkshortinfos.txt'
     pptable_target_runlengths = [0.5, 1.2, 3, 10, 50] # used in config for expensive setting
     pptable_targetsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7) # for pptable and pptablemany
 
     settings = dict(
-        info_filename = 'GECCOBBOBbenchmarkinfos.txt',
+        info_filename = 'bbob-benchmarkinfos.txt',
         shortinfo_filename = shortinfo_filename,
         name = testbed_name_single,
         short_names = get_short_names(shortinfo_filename),
@@ -172,7 +172,12 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
        2013, 2015, and 2016.
     """
 
+    shortinfo_filename = 'bbob-noisy-benchmarkshortinfos.txt'
+
     settings = dict(
+        info_filename = 'bbob-noisy-benchmarkinfos.txt',
+        shortinfo_filename = shortinfo_filename,
+        short_names = get_short_names(shortinfo_filename),
         name = testbed_name_single, # TODO: until we clean the code which uses this name, we need to use it also here.
         functions_with_legend = (101, 130),
         first_function_number = 101,
@@ -198,12 +203,12 @@ class GECCOBiObjBBOBTestbed(Testbed):
        data sets run on the `bbob-biobj` test suite.
     """
 
-    shortinfo_filename = 'biobj-benchmarkshortinfos.txt'
+    shortinfo_filename = 'bbob-biobj-benchmarkshortinfos.txt'
     pptable_target_runlengths = [0.5, 1.2, 3, 10, 50] # used in config for expensive setting
     pptable_targetsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7) # for pptable and pptablemany
 
     settings = dict(
-        info_filename = 'GECCOBBOBbenchmarkinfos.txt',
+        info_filename = 'bbob-biobj-benchmarkinfos.txt',
         shortinfo_filename = shortinfo_filename,
         name = testbed_name_bi,
         short_names = get_short_names(shortinfo_filename),
