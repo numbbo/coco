@@ -333,7 +333,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 4:
         number_of_batches = int(sys.argv[4])
     if len(sys.argv) > 5:
-        messages = ['Argument "%s" disregarded (only 3 arguments are recognized).' % sys.argv[i]
+        messages = ['Argument "%s" disregarded (only 4 arguments are recognized).' % sys.argv[i]
             for i in range(5, len(sys.argv))]
         messages.append('See "python example_experiment.py -h" for help.')
         raise ValueError('\n'.join(messages))
