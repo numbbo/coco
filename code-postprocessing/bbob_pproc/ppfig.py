@@ -254,7 +254,7 @@ def save_single_functions_html(filename,
                     'targets</a></H3>\n')
             f.write('<H3><a href="pprldistr.html">Runtime for selected '
                     'targets and f-distributions</a></H3>\n')
-            if testbedsettings.current_testbed.best_algorithm_filename != '':
+            if bestAlgExists:
                 f.write('<H3><a href="pplogloss.html">Runtime loss ratios'
                         '</a></H3>\n')
 
@@ -384,7 +384,7 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
             dimensions = genericsettings.rldDimsOfInterest
-            if not testbedsettings.current_testbed.best_algorithm_filename != '':
+            if bestAlgExists:
                 currentHeader = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % currentHeader)
 
