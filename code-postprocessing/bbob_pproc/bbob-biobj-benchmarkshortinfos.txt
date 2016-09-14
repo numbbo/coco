@@ -1,0 +1,55 @@
+1 Sphere/Sphere
+2 Sphere/sep. Ellipsoid
+3 Sphere/Attractive sector
+4 Sphere/Rosenbrock
+5 Sphere/Sharp ridge
+6 Sphere/Different Powers
+7 Sphere/Rastrigin
+8 Sphere/Schaffer F7
+9 Sphere/Schwefel
+10 Sphere/Gallagher 101
+11 sep. Ellipsoid/sep. Ellipsoid
+12 sep. Ellipsoid/Attractive sector
+13 sep. Ellipsoid/Rosenbrock
+14 sep. Ellipsoid/Sharp ridge
+15 sep. Ellipsoid/Different Powers
+16 sep. Ellipsoid/Rastrigin
+17 sep. Ellipsoid/Schaffer F7
+18 sep. Ellipsoid/Schwefel
+19 sep. Ellipsoid/Gallagher 101
+20 Attractive sector/Attractive sector
+21 Attractive sector/Rosenbrock
+22 Attractive sector/Sharp ridge
+23 Attractive sector/Different Powers
+24 Attractive sector/Rastrigin
+25 Attractive sector/Schaffer F7
+26 Attractive sector/Schwefel
+27 Attractive sector/Gallagher 101
+28 Rosenbrock/Rosenbrock
+29 Rosenbrock/Sharp ridge
+30 Rosenbrock/Different Powers
+31 Rosenbrock/Rastrigin
+32 Rosenbrock/Schaffer F7
+33 Rosenbrock/Schwefel
+34 Rosenbrock/Gallagher 101
+35 Sharp ridge/Sharp ridge
+36 Sharp ridge/Different Powers
+37 Sharp ridge/Rastrigin
+38 Sharp ridge/Schaffer F7
+39 Sharp ridge/Schwefel
+40 Sharp ridge/Gallagher 101
+41 Different Powers/Different Powers
+42 Different Powers/Rastrigin
+43 Different Powers/Schaffer F7
+44 Different Powers/Schwefel
+45 Different Powers/Gallagher 101
+46 Rastrigin/Rastrigin
+47 Rastrigin/Schaffer F7
+48 Rastrigin/Schwefel
+49 Rastrigin/Gallagher 101
+50 Schaffer F7/Schaffer F7
+51 Schaffer F7/Schwefel
+52 Schaffer F7/Gallagher 101
+53 Schwefel/Schwefel
+54 Schwefel/Gallagher 101
+55 Gallagher 101/Gallagher 101
