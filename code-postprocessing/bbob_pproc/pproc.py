@@ -485,7 +485,8 @@ class RunlengthBasedTargetValues(TargetValues):
         """
         raise NotImplementedError
               
-class DataSet():
+
+class DataSet(object):
     """Unit element for the COCO post-processing.
 
     An instance of this class is created from one unit element of
@@ -559,12 +560,26 @@ class DataSet():
         DataSet(BIPOP-CMA-ES on f2 10-D)
         >>> for d in dir(ds): print d  # dir(ds) shows attributes and methods of ds
         _DataSet__parseHeader
+        __class__
+        __delattr__
+        __dict__
         __doc__
         __eq__
+        __format__
+        __getattribute__
+        __hash__
         __init__
         __module__
         __ne__
+        __new__
+        __reduce__
+        __reduce_ex__
         __repr__
+        __setattr__
+        __sizeof__
+        __str__
+        __subclasshook__
+        __weakref__
         _attributes
         _complement_data
         _cut_data

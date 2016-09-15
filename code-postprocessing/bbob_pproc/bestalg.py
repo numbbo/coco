@@ -66,7 +66,7 @@ algs2012 = ("ACOR", "BIPOPaCMA", "BIPOPsaACM", "aCMA", "CMAES", "aCMAa",
 # CLASS DEFINITIONS
 
 
-class BestAlgSet:
+class BestAlgSet(object):
     """Unit element of best algorithm data set.
 
     Here unit element means for one function and one dimension.
@@ -597,11 +597,23 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
 
         >>> from bbob_pproc import bestalg
         >>> import os
+        >>> import urllib
         >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
         >>> os.chdir(path)
-        >>> bestalg.getAllContributingAlgorithmsToBest(('data/IPOP-CMA-ES.tgz', 'data/MCS.tgz')) # doctest:+ELLIPSIS
-        Generating best algorithm data...
+        >>> infoFile = 'data/BIPOP-CMA-ES.tgz'
+        >>> if not os.path.exists(infoFile):
+        ...   os.chdir(os.path.join(path, 'data'))
+        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
+        ...   filename, headers = urllib.urlretrieve(dataurl, 'BIPOP-CMA-ES.tgz')
         >>> os.chdir(path)
+        >>> infoFile = 'data/MCS.tgz'
+        >>> if not os.path.exists(infoFile):
+        ...   os.chdir(os.path.join(path, 'data'))
+        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/MCS_huyer_noiseless.tgz'
+        ...   filename, headers = urllib.urlretrieve(dataurl, 'MCS.tgz')
+        >>> os.chdir(path)
+        >>> bestalg.getAllContributingAlgorithmsToBest(('data/BIPOP-CMA-ES.tgz', 'data/MCS.tgz')) # doctest:+ELLIPSIS
+        Generating best algorithm data...
 
     """
 
