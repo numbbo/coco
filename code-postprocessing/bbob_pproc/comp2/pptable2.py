@@ -115,12 +115,7 @@ def get_table_caption():
                                 testbed.best_algorithm_displayname)
                 text_end = text_end_ref_alg.format(
                                 testbed.best_algorithm_displayname)  
-        
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
-        # NOTE: no runlength-based targets supported yet
-        table_caption = table_caption_bi + table_caption_rest
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single or \
-         testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+
         if genericsettings.runlength_based_targets:
             table_caption = (text_intro + text_middle_runlengthbased +
                              text_all + text_end)

@@ -286,7 +286,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
   double *gradient_linear_constraint = NULL;
   coco_problem_t *problem = NULL;
   
-  long rseed_cons;
+  long seed_cons;
   
   problem = c_sum_variables_allocate(dimension);
   
@@ -303,9 +303,9 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
   else{ /* Randomly generate the gradient of the linear constraint */
 	  
     gradient_linear_constraint = coco_allocate_vector(dimension);
-    rseed_cons = (long)(function + 10000 * instance 
-                                 + 50000 * constraint_number);
-    srand(rseed_cons);
+    seed_cons = (long)(function + 10000 * instance 
+                                + 50000 * constraint_number);
+    srand(seed_cons);
      
     /* Generate a pseudorandom number that is normally distributed
      * with mean mu and variance sigma (= linear_cons_norm)

@@ -693,26 +693,6 @@ cdef class Problem:
                                <double *>np.PyArray_DATA(_x),
                                <double *>np.PyArray_DATA(self.constraint_values))
         return np.array(self.constraint_values, copy=True)
-    def inverted_sign_constraint(self, x):
-        """return constraint values for `x` with inverted sign. 
-
-        By convention, constraints with values <= 0 are satisfied.
-        So in this case, constraints with values >=0 are satisfied.
-        """
-        cdef np.ndarray[double, ndim=1, mode="c"] _x
-        x = np.array(x, copy=False, dtype=np.double, order='C')
-        if np.size(x) != self.number_of_variables:
-            raise ValueError(
-                "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
-                "not match the problem dimension `number_of_variables==%d`." 
-                             % self.number_of_variables)
-        _x = x  # this is the final type conversion
-        if self.problem is NULL:
-            raise InvalidProblemException()
-        coco_evaluate_constraint(self.problem,
-                               <double *>np.PyArray_DATA(_x),
-                               <double *>np.PyArray_DATA(self.constraint_values))
-        return np.array([-y for y in self.constraint_values])
     def recommend(self, arx):
         """Recommend a solution, return `None`.
 

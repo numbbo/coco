@@ -22,7 +22,8 @@ current_testbed = None
 suite_to_testbed = {
     'bbob' : default_testbed_single,
     'bbob-noisy' : default_testbed_single_noisy,
-    'bbob-biobj' : default_testbed_bi
+    'bbob-biobj' : default_testbed_bi,
+    'bbob-constrained' : 'CONSBBOBTestbed'
 }
 
 
@@ -274,6 +275,5 @@ class GECCOBiObjBBOBTestbed(Testbed):
             self.best_algorithm_displayname = 'best 2016'  # TODO: should be read in from data set in best_algorithm_filename
             self.short_names = get_short_names(self.shortinfo_filename)
             self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
-
-
->>>>>>> upstream/feature-refalg
+            
+            

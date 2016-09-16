@@ -143,7 +143,7 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
   coco_problem_t *problem_c = NULL;
   
   double linear_cons_norm = 10.0;
-  double feasible_direction_norm = 50.0;
+  double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;                
@@ -211,7 +211,7 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   coco_problem_t *problem_c = NULL;
   
   double linear_cons_norm = 10.0;
-  double feasible_direction_norm = 50.0;
+  double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
@@ -281,7 +281,7 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
   coco_problem_t *problem_c = NULL;
   
   double linear_cons_norm = 10.0;
-  double feasible_direction_norm = 50.0;
+  double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
@@ -351,7 +351,7 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
   coco_problem_t *problem_c = NULL;
   
   double linear_cons_norm = 10.0;
-  double feasible_direction_norm = 50.0;
+  double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
@@ -419,7 +419,7 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
   coco_problem_t *problem_c = NULL;
   
   double linear_cons_norm = 10.0;
-  double feasible_direction_norm = 50.0;
+  double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
@@ -489,7 +489,7 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   coco_problem_t *problem_c = NULL;
   
   double linear_cons_norm = 10.0;
-  double feasible_direction_norm = 50.0;
+  double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
@@ -522,7 +522,7 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
   problem->evaluations = 0;  
      
-  problem = transform_vars_asymmetric(problem, 0.5);
+  problem = transform_vars_asymmetric(problem, 0.2);
   
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin 
@@ -559,7 +559,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   coco_problem_t *problem_c = NULL;
   
   double linear_cons_norm = 10.0;
-  double feasible_direction_norm = 50.0;
+  double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
@@ -627,6 +627,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   coco_problem_t *problem_c = NULL;
   
   double linear_cons_norm = 10.0;
+  double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
 	 
@@ -643,7 +644,8 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
    */
   srand(rseed);
   for (i = 0; i < dimension; ++i)
-    feasible_direction[i] = 50.0 + (double)rand()/((double)RAND_MAX+1);
+    feasible_direction[i] = feasible_direction_norm + 
+                            (double)rand()/((double)RAND_MAX+1);
      
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
       dimension, instance, number_of_linear_constraints, linear_cons_norm,
