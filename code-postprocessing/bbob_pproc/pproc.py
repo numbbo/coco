@@ -992,7 +992,7 @@ class DataSet(object):
                 # warnings.warn('exact final precision was not recorded, next lower value set close to final precision')
                 # print '*** warning: final precision was not recorded'
                 assert self.evals[-1][0] < self.precision # shall not have changed
-#            assert self.evals[-1][0] > 0
+            assert self.evals[-1][0] > 0
             self.maxevals = self._detMaxEvals()
 
     def _complement_data(self, step=10**0.2, final_target=1e-8):

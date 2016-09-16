@@ -106,9 +106,12 @@ class BestAlgSet(object):
         # element which will be assigned as values in the following lines.
         d = set()
         f = set()
+        pr = 0
         for i in dict_alg.values():
             d |= set(j.dim for j in i)
             f |= set(j.funcId for j in i)
+            if len(i) > 0 and hasattr(i[0], 'precision'):
+                pr = max(pr, max(j.precision for j in i))
 
         if len(f) > 1 or len(d) > 1:
             Usage('Expect the data of algorithms for only one function and '
@@ -202,6 +205,8 @@ class BestAlgSet(object):
         self.funvalsnofail = dictFunValsNoFail
         self.dim = d
         self.funcId = f
+        if pr > 0:
+            self.precision = pr
         self.algs = resalgs
         self.algId = algId
         if len(sortedAlgs) > 1:
@@ -554,9 +559,8 @@ def create_data_files(output_dir, result):
             info_lines.append("function = %d, dim = %d, %s, %s"
                               % (key[1], key[0], filename_template % (key[1], key[0], 'dat'), instance_data))
         else:
-            precision = value.target[len(value.target) - 1]
             info_lines.append("funcId = %d, DIM = %d, Precision = %10.15e, algId = '%s'"
-                              % (key[1], key[0], precision, value.algId))
+                              % (key[1], key[0], value.precision, value.algId))
             info_lines.append("%% %s" % value.comment)
             info_lines.append("%s, %s" % (filename_template % (key[1], key[0], 'dat'), instance_data))
 
@@ -569,7 +573,6 @@ def create_data_files(output_dir, result):
         write_to_file(filename, lines)
         filename = os.path.join(output_dir, filename_template % (key[1], key[0], 'tdat'))
         write_to_file(filename, lines)
-
 
     filename = os.path.join(output_dir, '%s.info' % info_filename)
     write_to_file(filename, info_lines)
