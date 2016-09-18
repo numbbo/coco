@@ -21,7 +21,7 @@ import bbobbenchmarks as bm
 
 decimals=2 # precision for downsampling
 maxplot = 2 # maximal displayed value (assuming nadir in [1,1])
-precision = 1e-4 # smallest displayed value at maxplot*precision in logscale
+precision = 1e-4 # smallest displayed value in logscale
 
 biobjinst = {1: [2, 4],
              2: [3, 5],
@@ -35,19 +35,19 @@ biobjinst = {1: [2, 4],
              10: [21, 22]}
 
 
-def generate_ERD_plot(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance,
+def generate_ERD_plot(f_id, dim, f1_id, f2_id,
                    outputfolder="./", inputfolder=None, tofile=True,
                    logscale = True, downsample = True):
-    ##############################################################
-    #                                                            #
-    # Objective Space plot indicating for each (grid) point      #
-    # the runtime of the algorithm to attain it.                 #
-    #                                                            #
-    # Assumes that each instance is only contained once in the   #
-    # data.                                                      #
-    #                                                            #
-    ##############################################################
-    
+    """
+    Objective Space plot, indicating for each (grid) point
+    the runtime of the algorithm to attain it.
+
+    Takes into account the corresponding COCO archive files in
+    the given outputfolder
+
+    Assumes that each instance is only contained once in the
+    data.
+    """
     
     
     # obtain the data of the algorithm run to display:
@@ -107,12 +107,8 @@ def generate_ERD_plot(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance
                     splitline = line.split()
                     newline = np.array(splitline[:3], dtype=np.float)
                     # normalize objective vector:
-                    if logscale:
-                        newline[1] = np.log10((newline[1]-ideals[instance][0])/(nadirs[instance][0]-ideals[instance][0]))
-                        newline[2] = np.log10((newline[2]-ideals[instance][1])/(nadirs[instance][1]-ideals[instance][1]))
-                    else:
-                        newline[1] = (newline[1]-ideals[instance][0])/(nadirs[instance][0]-ideals[instance][0])
-                        newline[2] = (newline[2]-ideals[instance][1])/(nadirs[instance][1]-ideals[instance][1])
+                    newline[1] = (newline[1]-ideals[instance][0])/(nadirs[instance][0]-ideals[instance][0])
+                    newline[2] = (newline[2]-ideals[instance][1])/(nadirs[instance][1]-ideals[instance][1])
 
                     B.append(newline)
                     
@@ -142,11 +138,10 @@ def generate_ERD_plot(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance
 #    plt.show()
 
     
-    # plot grid in normalized 2*[ideal, nadir]:
-    n = 10 # number of grid points per objective
+    # plot grid in normalized [precision, maxplot]:
+    n = 30 # number of grid points per objective
     if logscale:
-        #gridpoints = 10**(np.log10(maxplot) * (np.array(list(product(range(n),range(n))))/(n-1)))
-        gridpoints = np.log10(maxplot * 10**(np.log10(precision)*np.array(list(product(range(n),range(n))))/(n-1)))
+        gridpoints = np.log10(10**(maxplot*np.array(list(product(range(n),range(n))))/(n-1)+precision))
     else:
         gridpoints = maxplot * np.array(list(product(range(n),range(n))))/(n-1)
     
@@ -155,27 +150,31 @@ def generate_ERD_plot(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance
     # normalize colors:
     logcolors = np.log10(colors)
     logcolors = (1-(np.nanmax(logcolors)-logcolors)/(np.nanmax(logcolors)-np.nanmin(logcolors)))
+    
 
-    # sort gridpoints (and of cours colors) wrt. their aRT:
+
+    # sort gridpoints (and of course colors) wrt. their aRT:
     idx = logcolors.argsort(kind='mergesort')
+    #N = len(gridpoints)-1
     colors = colors[idx]
     logcolors = logcolors[idx]
     gridpoints = gridpoints[idx]
 
     for i in range(len(gridpoints)-1, -1, -1):
+    #for i in range(1, len(gridpoints)-3, 1):
         if not np.isfinite(logcolors[i]):
-            continue # no finite aRT                    
+            continue # no finite aRT
         if logscale:
             ax.add_artist(patches.Rectangle(
                 ((gridpoints[i])[0], (gridpoints[i])[1]),
-                 np.log10(maxplot)-(gridpoints[i])[0],
-                 np.log10(maxplot)-(gridpoints[i])[1],
+                 maxplot-(gridpoints[i])[0],
+                 maxplot-(gridpoints[i])[1],
                  alpha=1.0,
                  color=matplotlib.cm.autumn_r(logcolors[i])))
         else:
             ax.add_artist(patches.Rectangle(
                 ((gridpoints[i])[0], (gridpoints[i])[1]),
-                 maxplot-(gridpoints[i])[0],
+                 maxplot(gridpoints[i])[0],
                  maxplot-(gridpoints[i])[1],
                  alpha=1.0,
                  color=matplotlib.cm.autumn_r(logcolors[i])))
@@ -195,8 +194,10 @@ def generate_ERD_plot(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance
         ax.set_xlabel(r'log10($f_1 - f_1^\mathsf{opt}$) (normalized)', fontsize=16)
         ax.set_ylabel(r'log10($f_2 - f_2^\mathsf{opt}$) (normalized)', fontsize=16)    
         # we might want to zoom in a bit:
-        ax.set_xlim((np.log10(precision), np.log10(maxplot)))
-        ax.set_ylim((np.log10(precision), np.log10(maxplot)))
+        ax.set_xlim(precision, maxplot)
+        ax.set_ylim(precision, maxplot)
+        ax.set_xscale('log')
+        ax.set_yscale('log')
     else:
         ax.set_xlabel(r'$f_1 - f_1^\mathsf{opt}$ (normalized)', fontsize=16)
         ax.set_ylabel(r'$f_2 - f_2^\mathsf{opt}$ (normalized)', fontsize=16)    
@@ -211,7 +212,7 @@ def generate_ERD_plot(f_id, dim, inst_id, f1_id, f2_id, f1_instance, f2_instance
         filename = outputfolder + "aRTobjspace-f%02d-d%02d" % (f_id, dim)
         if logscale:
             filename = filename + "-log"
-        saveFigure(filename, verbose=True)
+        saveFigure(filename)
     else:        
         plt.show(block=True)
 
