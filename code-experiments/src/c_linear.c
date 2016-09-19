@@ -1,7 +1,7 @@
 /**
  * @file  c_linear.c
- * @brief Implementation of problems with linear constraints for the
- *        suite of constrained problems.
+ * @brief Implements the linear constraints for the suite of 
+ *        constrained problems.
  */
 
 #include <stdlib.h>
