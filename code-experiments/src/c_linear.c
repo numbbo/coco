@@ -194,6 +194,11 @@ static coco_problem_t *c_linear_transform(coco_problem_t *inner_problem,
 /**
  * @brief Exchange the first constraint for another one, if any, by
  *        exchanging their gradients.
+ * 
+ * It picks a random constraint number different from one and runs
+ * through the stack of constraints until the chosen constraint is found.
+ * Then it extracts the gradient from it and exchange it for the
+ * first constraint's.
  */
 static coco_problem_t *c_linear_shuffle(coco_problem_t *problem_c,
                                         linear_constraint_data_t *data_c1) {
@@ -204,22 +209,33 @@ static coco_problem_t *c_linear_shuffle(coco_problem_t *problem_c,
   double aux;
   size_t i, exchanged;
   
+  /* Nothing to do if there is only one constraint */
   if (problem_c->number_of_constraints < 2)
     return problem_c;
   
   iter_problem = problem_c;
-  /* random_number = rand() % (maximum + 1 - minimum) + minimum */
+  
+  /* Pick up a random constraint number.
+  /* formula: random_number = rand() % (maximum + 1 - minimum) + minimum 
+   */
   exchanged = rand() % (problem_c->number_of_constraints + 1 - 2) + 2;
   
+  /* Run through the stack until the chosen constraint is found */
   for (i = problem_c->number_of_constraints; i > exchanged; --i) {
     stacked_data = (coco_problem_stacked_data_t*) iter_problem->data;
     iter_problem = stacked_data->problem1;
   }
   
   stacked_data = (coco_problem_stacked_data_t*) iter_problem->data;
+  /* stacked_data->problem1 contains the other problems in the stack
+   * while stacked_data->problem2 contains the sought problem whose
+   * number is given by the value of 'exchanged'
+   */
   iter_problem = stacked_data->problem2;
+  
   constraint_data = (linear_constraint_data_t *) coco_problem_transformed_get_data(iter_problem);
   
+  /* Exchange the gradients */
   for (i = 0; i < problem_c->number_of_variables; ++i) {
     aux = constraint_data->gradient[i];
     constraint_data->gradient[i] = data_c1->gradient[i];
@@ -269,7 +285,7 @@ double randn(double mu, double sigma) {
 }
 
 /**
- * @brief Builds a coco_problem containing one single linear constraint.
+ * @brief Builds a coco_problem_t containing one single linear constraint.
  */
 static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
@@ -318,7 +334,10 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
   }
   
   /* Guarantee that the vector feasible_point is feasible w.r.t. to
-   * this constraint and set it as initial_solution
+   * this constraint and set it as the initial solution.
+   * The initial solution will be copied later to the constrained function
+   * coco_problem_t object once the objective function and the constraint(s) 
+   * are stacked together in coco_problem_stacked_allocate().
    */
   if(feasible_direction)
     problem = c_guarantee_feasible_point(problem, feasible_direction);

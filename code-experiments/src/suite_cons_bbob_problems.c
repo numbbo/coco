@@ -153,12 +153,16 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;    
   
+  /* Create the objective function */
   problem = f_sphere_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
 	 
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);	 
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
 	 
+  /* Create the constraints. Use the gradient of the objective
+   * function at the origin to build the first constraint. 
+   */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
       dimension, instance, number_of_linear_constraints, linear_cons_norm,
       problem_id_template, problem_name_template, feasible_direction);
@@ -169,15 +173,19 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
       problem_c->largest_values_of_interest);
 	    
   /* Define problem->best_parameter as the origin and store its
-   * objective function value into problem->best_value
+   * objective function value into problem->best_value.
    */
   for (i = 0; i < dimension; ++i)
     problem->best_parameter[i] = 0.0;  
-  coco_evaluate_function(problem, problem->best_parameter, problem->best_value);  
+  coco_evaluate_function(problem, problem->best_parameter, problem->best_value); 
+   
+  /* Since the call to coco_evaluation_function above increments the 
+   * number of f-evaluations, reset it to zero.
+   */
   problem->evaluations = 0;  
   
   /* Apply a translation to the whole problem so that the constrained 
-   * minimum is no longer at the origin 
+   * minimum is no longer at the origin.
    */
   problem = transform_vars_shift(problem, xopt, 0);
  
@@ -221,33 +229,45 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
      
+  /* Create the objective function */
   problem = f_ellipsoid_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
 
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
   
+  /* Create the constraints. Use the gradient of the objective
+   * function at the origin to build the first constraint. 
+   */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
       dimension, instance, number_of_linear_constraints, linear_cons_norm,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
+  
+  /* Build the final constrained function by stacking the objective
+   * function and the constraints into one coco_problem_t type.
+   */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
       problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
-   * objective function value into problem->best_value
+   * objective function value into problem->best_value.
    */
   for (i = 0; i < dimension; ++i)
     problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
+  
+  /* Since the call to coco_evaluation_function above increments the 
+   * number of f-evaluations, reset it to zero.
+   */
   problem->evaluations = 0;  
   
   problem = transform_vars_oscillate(problem);
   
   /* Apply a translation to the whole problem so that the constrained 
-   * minimum is no longer at the origin 
+   * minimum is no longer at the origin.
    */
   problem = transform_vars_shift(problem, xopt, 0);
  
@@ -291,33 +311,45 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
 	 
+  /* Create the objective function */
   problem = f_ellipsoid_rotated_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
       
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
   
+  /* Create the constraints. Use the gradient of the objective
+   * function at the origin to build the first constraint. 
+   */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
       dimension, instance, number_of_linear_constraints, linear_cons_norm,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
+  
+  /* Build the final constrained function by stacking the objective
+   * function and the constraints into one coco_problem_t type.
+   */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
       problem_c->largest_values_of_interest);
      
   /* Define problem->best_parameter as the origin and store its
-   * objective function value into problem->best_value
+   * objective function value into problem->best_value.
    */
   for (i = 0; i < dimension; ++i)
     problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
+  
+  /* Since the call to coco_evaluation_function above increments the 
+   * number of f-evaluations, reset it to zero.
+   */
   problem->evaluations = 0;  
   
   problem = transform_vars_oscillate(problem);
   
   /* Apply a translation to the whole problem so that the constrained 
-   * minimum is no longer at the origin 
+   * minimum is no longer at the origin .
    */
   problem = transform_vars_shift(problem, xopt, 0);
  
@@ -361,31 +393,43 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
 	 
+  /* Create the objective function */
   problem = f_linear_slope_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
       
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
   
+  /* Create the constraints. Use the gradient of the objective
+   * function at the origin to build the first constraint. 
+   */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
       dimension, instance, number_of_linear_constraints, linear_cons_norm,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
+  
+  /* Build the final constrained function by stacking the objective
+   * function and the constraints into one coco_problem_t type.
+   */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
       problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
-   * objective function value into problem->best_value
+   * objective function value into problem->best_value.
    */
   for (i = 0; i < dimension; ++i)
     problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
+  
+  /* Since the call to coco_evaluation_function above increments the 
+   * number of f-evaluations, reset it to zero.
+   */
   problem->evaluations = 0;  
   
   /* Apply a translation to the whole problem so that the constrained 
-   * minimum is no longer at the origin 
+   * minimum is no longer at the origin.
    */
   problem = transform_vars_shift(problem, xopt, 0);
  
@@ -429,17 +473,25 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
 
+  /* Create the objective function */
   problem = f_discus_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
       
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
 
+  /* Create the constraints. Use the gradient of the objective
+   * function at the origin to build the first constraint. 
+   */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
       dimension, instance, number_of_linear_constraints, linear_cons_norm,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
+  
+  /* Build the final constrained function by stacking the objective
+   * function and the constraints into one coco_problem_t type.
+   */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
       problem_c->largest_values_of_interest);
@@ -450,12 +502,16 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
   for (i = 0; i < dimension; ++i)
     problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
+  
+  /* Since the call to coco_evaluation_function above increments the 
+   * number of f-evaluations, reset it to zero.
+   */
   problem->evaluations = 0;  
      
   problem = transform_vars_oscillate(problem);
   
   /* Apply a translation to the whole problem so that the constrained 
-   * minimum is no longer at the origin 
+   * minimum is no longer at the origin. 
    */
   problem = transform_vars_shift(problem, xopt, 0);
  
@@ -499,33 +555,45 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
 	 
+  /* Create the objective function */
   problem = f_bent_cigar_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
       
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
 
+  /* Create the constraints. Use the gradient of the objective
+   * function at the origin to build the first constraint. 
+   */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
       dimension, instance, number_of_linear_constraints, linear_cons_norm,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
+  
+  /* Build the final constrained function by stacking the objective
+   * function and the constraints into one coco_problem_t type.
+   */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
       problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
-   * objective function value into problem->best_value
+   * objective function value into problem->best_value.
    */
   for (i = 0; i < dimension; ++i)
     problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
+  
+  /* Since the call to coco_evaluation_function above increments the 
+   * number of f-evaluations, reset it to zero.
+   */
   problem->evaluations = 0;  
      
   problem = transform_vars_asymmetric(problem, 0.2);
   
   /* Apply a translation to the whole problem so that the constrained 
-   * minimum is no longer at the origin 
+   * minimum is no longer at the origin. 
    */
   problem = transform_vars_shift(problem, xopt, 0);
  
@@ -569,31 +637,43 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
 	 
+  /* Create the objective function */
   problem = f_different_powers_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
       
   coco_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
   
+  /* Create the constraints. Use the gradient of the objective
+   * function at the origin to build the first constraint. 
+   */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
       dimension, instance, number_of_linear_constraints, linear_cons_norm,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
+  
+  /* Build the final constrained function by stacking the objective
+   * function and the constraints into one coco_problem_t type.
+   */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
       problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
-   * objective function value into problem->best_value
+   * objective function value into problem->best_value.
    */
   for (i = 0; i < dimension; ++i)
     problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
+  
+  /* Since the call to coco_evaluation_function above increments the 
+   * number of f-evaluations, reset it to zero.
+   */
   problem->evaluations = 0;  
      
   /* Apply a translation to the whole problem so that the constrained 
-   * minimum is no longer at the origin 
+   * minimum is no longer at the origin.
    */
   problem = transform_vars_shift(problem, xopt, 0);
  
@@ -631,7 +711,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   
   char *problem_type_temp = NULL;
 	 
-  /* The function below has global minimum at (-1,-1,...,-1) */
+  /* Create the objective function */
   problem = f_rastrigin_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
   
@@ -647,28 +727,39 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
     feasible_direction[i] = feasible_direction_norm + 
                             (double)rand()/((double)RAND_MAX+1);
      
+  /* Create the constraints. Use the feasible direction above
+   * to build the first constraint. 
+   */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
       dimension, instance, number_of_linear_constraints, linear_cons_norm,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
+  
+  /* Build the final constrained function by stacking the objective
+   * function and the constraints into one coco_problem_t type.
+   */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
       problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
-   * objective function value into problem->best_value
+   * objective function value into problem->best_value.
    */
   for (i = 0; i < dimension; ++i)
     problem->best_parameter[i] = 0.0;
   coco_evaluate_function(problem, problem->best_parameter, problem->best_value);
+  
+  /* Since the call to coco_evaluation_function above increments the 
+   * number of f-evaluations, reset it to zero.
+   */
   problem->evaluations = 0;  
   
   problem = transform_vars_asymmetric(problem, 0.2);
   problem = transform_vars_oscillate(problem);
   
   /* Apply a translation to the whole problem so that the constrained 
-   * minimum is no longer at the origin 
+   * minimum is no longer at the origin. 
    */
   problem = transform_vars_shift(problem, xopt, 0);
  
