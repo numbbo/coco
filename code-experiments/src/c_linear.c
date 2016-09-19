@@ -128,7 +128,7 @@ static coco_problem_t *c_guarantee_feasible_point(coco_problem_t *problem,
    */
   coco_evaluate_constraint(problem, feasible_direction, &constraint_value);
   
-  /* Flip the constraint in "problem" if the chosen feasible_direction
+  /* Flip the constraint in "problem" if feasible_direction
    * is not feasible w.r.t. the constraint in "problem".
    */
   if (constraint_value > 0)
@@ -153,7 +153,7 @@ static void c_linear_gradient_free(void *thing) {
 }
 
 /**
- * @brief Allocates a linear constraint problem with all-ones gradient.
+ * @brief Allocates a linear constraint coco_problem_t with all-ones gradient.
  */
 static coco_problem_t *c_sum_variables_allocate(const size_t number_of_variables) {
 
