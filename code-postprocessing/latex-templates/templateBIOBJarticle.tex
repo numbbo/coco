@@ -52,7 +52,8 @@
 \usepackage{graphicx}
 \usepackage{rotating}
 \usepackage[dvipsnames]{xcolor}  % color is sufficient
-%\usepackage[hidelinks]{hyperref} % make COCO papers clickable
+\usepackage[colorlinks=true, linkcolor=blue]{hyperref} % make COCO papers clickable
+
 \pdfpagewidth=8.5in
 \pdfpageheight=11in
 \special{papersize=8.5in,11in}
@@ -429,7 +430,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 % initial runs of your .tex file to
 % produce the bibliography for the citations in your paper.
 \bibliographystyle{abbrv}
-\bibliography{bbob}  % bbob.bib is the name of the Bibliography in this case
+\bibliography{./bbob}  % bbob.bib is the name of the Bibliography in this case
 % You must have a proper ".bib" file and remember to run:
 % latex bibtex latex latex
 % to resolve all references
