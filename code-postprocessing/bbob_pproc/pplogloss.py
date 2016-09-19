@@ -86,7 +86,7 @@ aRT loss ratio: average running time, aRT (measured in number
       10-90\%-percentile range (line), and minimum and maximum aRT loss ratio
       (points).
 Table:
-\aRT\ loss ratio (see also Figure~\ref{fig:ERTgraphs}) vs.\ a given budget
+\aRT\ loss ratio (see also Figure~\ref{fig:aRTgraphs}) vs.\ a given budget
 $\FEvals$. Each cross ({\color{blue}$+$}) represents a single function. The
 target value \ftarget\ used for a given \FEvals\ is the smallest (best) recorded
 function value such that $\aRT(\ftarget)\le\FEvals$ for the presented algorithm.
