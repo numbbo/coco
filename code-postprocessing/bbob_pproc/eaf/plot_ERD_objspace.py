@@ -22,15 +22,18 @@ import generate_ERD_plot
 
 ###########################################
 # parameters to play with:
-dims = (2,)
+dims = (5,)
 #functions = range(1,56)
 functions = (3,)
 #inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/MAT-SMS/archive/'
-inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
+#inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
+inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/gamultiobj/gamultiobj_on_bbob-biobj/archive/'
 outputfolder = 'plots/'
 tofile = False # if True: files are written; if False: no files but screen output
 logscale = True # plot in logscale
 downsample = True # downsample archive to a reasonable number of points (for efficiency reasons)
+with_grid = True # if True the aRT values on a regular grid are plotted
+                  # if False, the aRT values on the downsampled points are plotted
 ###########################################
 
 
@@ -55,4 +58,5 @@ for problem_index, problem in enumerate(suite):
                                   inputfolder=inputarchivefolder,
                                   tofile=tofile,
                                   logscale=logscale,
-                                  downsample=downsample)
+                                  downsample=downsample,
+                                  with_grid=with_grid)

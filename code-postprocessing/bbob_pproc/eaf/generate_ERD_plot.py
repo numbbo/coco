@@ -22,6 +22,9 @@ import bbobbenchmarks as bm
 decimals=2 # precision for downsampling
 maxplot = 2 # maximal displayed value (assuming nadir in [1,1])
 precision = 1e-4 # smallest displayed value in logscale
+maxbudget = '1e6 * dim'  # largest budget for normalization of aRT-->sampling conversion
+minbudget = '1'          # smallest budget for normalization of aRT-->sampling conversion
+                       
 
 biobjinst = {1: [2, 4],
              2: [3, 5],
@@ -37,7 +40,7 @@ biobjinst = {1: [2, 4],
 
 def generate_ERD_plot(f_id, dim, f1_id, f2_id,
                    outputfolder="./", inputfolder=None, tofile=True,
-                   logscale = True, downsample = True):
+                   logscale=True, downsample=True, with_grid=False):
     """
     Objective Space plot, indicating for each (grid) point
     the runtime of the algorithm to attain it.
@@ -69,28 +72,11 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
                         # objective space
                         blen = len(B)
                         if downsample:
-                            C = np.array(B)
-                            C = C[C[:, 2].argsort(kind='mergesort')] # sort wrt second objective
-                            C = C[C[:, 1].argsort(kind='mergesort')] # now wrt first objective
-                            X = np.around(C, decimals=decimals)
-                            # sort wrt second objective first
-                            idx_1 = X[:, 2].argsort(kind='mergesort')
-                            X = X[idx_1]
-                            # now wrt first objective to finally get a stable sort
-                            idx_2 = X[:, 1].argsort(kind='mergesort')
-                            X = X[idx_2]
-                            xflag = np.array([False] * len(X), dtype=bool)
-                            xflag[0] = True # always take the first point
-                            for i in range(1, len(X)):
-                                if not (X[i, 1] == X[i-1, 1] and
-                                        X[i, 2] == X[i-1, 2]):
-                                    xflag[i] = True
-                            X = ((C[idx_1])[idx_2])[xflag]
-                            B = X[X[:, 0].argsort(kind='mergesort')] # sort again wrt. #FEs
-
+                            B = sample_down(B, decimals)
                         print("instance data points downsampled from %d to %d" % (blen, len(B)))
                         
                         A[instance] = B
+
                     # reset instance and B:
                     instance = int((line.split()[3])[:-1])
                     B = []
@@ -112,10 +98,14 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
 
                     B.append(newline)
                     
-
             # store data of final instance:
             if instance not in A and not instance == -1:
+                blen = len(B)
+                if downsample:
+                    B = sample_down(B, decimals)
                 A[instance] = B
+                print("instance data points downsampled from %d to %d" % (blen, len(B)))
+
             print("all %d instances read in" % len(A))
 
 
@@ -139,18 +129,35 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
 
     
     # plot grid in normalized [precision, maxplot]:
-    n = 30 # number of grid points per objective
-    if logscale:
-        gridpoints = np.log10(10**(maxplot*np.array(list(product(range(n),range(n))))/(n-1)+precision))
+    n = 50 # number of grid points per objective
+    if with_grid:
+        if logscale:
+            gridpoints = np.log10(10**(maxplot*np.array(list(product(range(n),range(n))))/(n-1)+precision))
+        else:
+            gridpoints = maxplot * np.array(list(product(range(n),range(n))))/(n-1)
     else:
-        gridpoints = maxplot * np.array(list(product(range(n),range(n))))/(n-1)
+        gridpoints = []
+        for key in A:
+            for a in A[key]:
+                gridpoints.append([a[1], a[2]]) # extract only objective vector
+        gridpoints = np.array(gridpoints)
+
+    print(gridpoints)
+    print(len(gridpoints))
     
     colors = compute_aRT(gridpoints, A)
 
+    print(colors)
+    print(np.nanmax(colors))
+    print(np.nanmin(colors))
+    
     # normalize colors:
     logcolors = np.log10(colors)
-    logcolors = (1-(np.nanmax(logcolors)-logcolors)/(np.nanmax(logcolors)-np.nanmin(logcolors)))
-    
+    logcolors = (logcolors - np.log10(eval(minbudget)))/(np.log10(eval(maxbudget))-np.log10(eval(minbudget)))
+
+    print(logcolors)
+    print(np.nanmax(logcolors))
+    print(np.nanmin(logcolors))
 
 
     # sort gridpoints (and of course colors) wrt. their aRT:
@@ -159,6 +166,8 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
     colors = colors[idx]
     logcolors = logcolors[idx]
     gridpoints = gridpoints[idx]
+    
+    print(logcolors)
 
     for i in range(len(gridpoints)-1, -1, -1):
     #for i in range(1, len(gridpoints)-3, 1):
@@ -170,14 +179,17 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
                  maxplot-(gridpoints[i])[0],
                  maxplot-(gridpoints[i])[1],
                  alpha=1.0,
-                 color=matplotlib.cm.autumn_r(logcolors[i])))
+                 color=matplotlib.cm.hot_r(logcolors[i])))
         else:
+            print('////////////')
+            print(logcolors[i])
+            print(gridpoints[i])
             ax.add_artist(patches.Rectangle(
                 ((gridpoints[i])[0], (gridpoints[i])[1]),
-                 maxplot(gridpoints[i])[0],
+                 maxplot-(gridpoints[i])[0],
                  maxplot-(gridpoints[i])[1],
                  alpha=1.0,
-                 color=matplotlib.cm.autumn_r(logcolors[i])))
+                 color=matplotlib.cm.hot_r(logcolors[i])))
             
     #plt.scatter(gridpoints[:,0], gridpoints[:,1], marker='s', c=colors, cmap='autumn_r', s=80, lw=0, norm=matplotlib.colors.LogNorm())
     #plt.scatter(gridpoints[:,0], gridpoints[:,1], marker='s', c=colors, cmap='autumn_r', s=10, lw=0, norm=matplotlib.colors.LogNorm())    
@@ -267,3 +279,48 @@ def weakly_dominates(a,b):
     """ returns True iff a dominates b wrt. minimization """
     
     return (a[0] <= b[0]) and (a[1] <= b[1])
+    
+def sample_down(B, decimals):
+    """ Samples down the solutions in B, given as (#funevals, f_1, f_2)
+        entries in a list or an np.array such that only one of the solutions
+        with the same objective vector is kept when they are rounded to the
+        given decimal.
+        
+        >>> A = [[1, 2.155, 3.342],
+        ...      [2, 2.171, 3.326],
+        ...      [2, 2.174, 3.329],
+        ...      [4, 4, 2.2]]
+        >>> sample_down(A, 2)
+        array([[ 1.   ,  2.155,  3.342],
+               [ 2.   ,  2.171,  3.326],
+               [ 4.   ,  4.   ,  2.2  ]])
+        >>> sample_down(A, 1)
+        array([[ 1.   ,  2.155,  3.342],
+               [ 4.   ,  4.   ,  2.2  ]])
+
+    """
+    C = np.array(B)
+    C = C[C[:, 2].argsort(kind='mergesort')] # sort wrt second objective
+    C = C[C[:, 1].argsort(kind='mergesort')] # now wrt first objective
+    X = np.around(C, decimals=decimals)
+    # sort wrt second objective first
+    idx_1 = X[:, 2].argsort(kind='mergesort')
+    X = X[idx_1]
+    # now wrt first objective to finally get a stable sort
+    idx_2 = X[:, 1].argsort(kind='mergesort')
+    X = X[idx_2]
+    xflag = np.array([False] * len(X), dtype=bool)
+    xflag[0] = True # always take the first point
+    for i in range(1, len(X)):
+        if not (X[i, 1] == X[i-1, 1] and
+                X[i, 2] == X[i-1, 2]):
+            xflag[i] = True
+    X = ((C[idx_1])[idx_2])[xflag]
+    B = X[X[:, 0].argsort(kind='mergesort')] # sort again wrt. #FEs
+
+    return B
+    
+    
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
