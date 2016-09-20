@@ -416,7 +416,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) 
   /* Check what should be logged in the first iteration */
   if (logger->number_of_evaluations == 1) {
 	  
-	 /* Evaluate the objective function at the initial solution and 
+    /* Evaluate the objective function at the initial solution and 
      * store its value
      */
     coco_evaluate_function(inner_problem, inner_problem->initial_solution, 
@@ -424,7 +424,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) 
       
     if (!is_feasible) {
 		 
-		/* If x is infeasible, log the initial solution provided by Coco */
+      /* If x is infeasible, log the initial solution provided by Coco instead */
       for (i = 0; i < problem->number_of_variables; i++) {
         x[i] = inner_problem->initial_solution[i];
         logger->best_solution[i] = inner_problem->initial_solution[i];
@@ -433,9 +433,9 @@ static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) 
     }
     else {
 		 
-		/* If the first observed point is worse than the initial solution
-		 * provided by Coco, log the latter instead
-		 */
+      /* If the first observed point is worse than the initial solution
+       * provided by Coco, log the latter instead
+       */
       if (initial_solution_fvalue < y[0]) {
 			
         for (i = 0; i < problem->number_of_variables; i++) {
