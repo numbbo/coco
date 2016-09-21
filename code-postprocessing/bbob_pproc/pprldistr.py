@@ -314,7 +314,7 @@ def beautifyRLD(xlimit_max=None):
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
         a.set_xlabel('log10 of (f+g)-evals / dimension')
     else:
-		  a.set_xlabel('log10 of FEvals / DIM')
+        a.set_xlabel('log10 of FEvals / DIM')
     a.set_ylabel('proportion of trials')
     logxticks()
     if xlimit_max:
@@ -650,7 +650,7 @@ def beautify():
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
         axisHandle.set_xlabel('log10 of (f+g)-evals / dimension')
     else:
-		  axisHandle.set_xlabel('log10 of FEvals / DIM')
+        axisHandle.set_xlabel('log10 of FEvals / DIM')
     axisHandle.set_ylabel('proportion of trials')
     # Grid options
     logxticks()
