@@ -7,7 +7,8 @@ from . import genericsettings
 scenario_rlbased = 'rlbased'
 scenario_fixed = 'fixed'
 scenario_biobjfixed = 'biobjfixed'
-all_scenarios = [scenario_rlbased, scenario_fixed, scenario_biobjfixed]
+scenario_constrainedfixed = 'constrainedfixed'
+all_scenarios = [scenario_rlbased, scenario_fixed, scenario_biobjfixed, scenario_constrainedfixed]
 
 testbed_name_single = 'bbob'
 testbed_name_bi = 'bbob-biobj'
@@ -16,6 +17,7 @@ testbed_name_cons = 'bbob-constrained'
 default_testbed_single = 'GECCOBBOBTestbed'
 default_testbed_single_noisy = 'GECCOBBOBNoisyTestbed'
 default_testbed_bi = 'GECCOBiObjBBOBTestbed'
+default_testbed_cons = 'CONSBBOBTestbed'
 
 current_testbed = None
 
@@ -23,7 +25,7 @@ suite_to_testbed = {
     'bbob' : default_testbed_single,
     'bbob-noisy' : default_testbed_single_noisy,
     'bbob-biobj' : default_testbed_bi,
-    'bbob-constrained' : 'CONSBBOBTestbed'
+    'bbob-constrained' : default_testbed_cons
 }
 
 
@@ -185,6 +187,7 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         self.last_function_number = 48
         self.best_algorithm_filename = ''
         self.short_names = get_short_names(self.shortinfo_filename)
+        self.scenario = scenario_constrainedfixed
         
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):

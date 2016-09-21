@@ -139,13 +139,17 @@ def caption_single():
          Empirical cumulative distribution functions (ECDF), plotting the fraction of
          trials with an outcome not larger than the respective value on the $x$-axis.
          #1"""
-    caption_left_fixed_targets = (r"""%
-         Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension $D$,
+    caption_left_fixed_targets = r"""%
+         Left subplots: ECDF of the number of function evaluations """ + (
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons
+         else r"""(FEvals)""") + (r""" divided by search space dimension $D$,
          to fall below $\fopt+\Df$ with $\Df=10^{k}$, where $k$ is the first value in the legend.
          The thick red line represents the most difficult target value $\fopt+""" +
          testbedsettings.current_testbed.hardesttargetlatex + """$. """)
     caption_left_rlbased_targets = r"""%
-         Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$,
+         Left subplots: ECDF of number of function evaluations """ + (
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons
+         else r"""(FEvals)""") + r""" divided by search space dimension $D$,
          to fall below $\fopt+\Df$ where \Df\ is the
          target just not reached by the GECCO-BBOB-2009 best algorithm within a budget of
          % largest $\Df$-value $\ge10^{-8}$ for which the best \ART\ seen in the GECCO-BBOB-2009 was yet above
@@ -307,7 +311,10 @@ def beautifyRLD(xlimit_max=None):
     """
     a = plt.gca()
     a.set_xscale('log')
-    a.set_xlabel('log10 of FEvals / DIM')
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        a.set_xlabel('log10 of (f+g)-evals / dimension')
+    else:
+		  a.set_xlabel('log10 of FEvals / DIM')
     a.set_ylabel('proportion of trials')
     logxticks()
     if xlimit_max:
@@ -640,7 +647,10 @@ def beautify():
     plt.subplot(121)
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-    axisHandle.set_xlabel('log10 of FEvals / DIM')
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        axisHandle.set_xlabel('log10 of (f+g)-evals / dimension')
+    else:
+		  axisHandle.set_xlabel('log10 of FEvals / DIM')
     axisHandle.set_ylabel('proportion of trials')
     # Grid options
     logxticks()

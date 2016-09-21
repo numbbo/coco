@@ -179,9 +179,15 @@ def beautify():
 
     global divide_by_dimension
     if divide_by_dimension:
-        plt.xlabel('log10 of (# f-evals / dimension)', fontsize=label_fontsize)
+        if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+            plt.xlabel('log10 of # (f+g)-evals / dimension', fontsize=label_fontsize)
+        else:
+            plt.xlabel('log10 of (# f-evals / dimension)', fontsize=label_fontsize)
     else:
-        plt.xlabel('log10 of # f-evals', fontsize=label_fontsize)
+        if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+            plt.xlabel('log10 of # (f+g)-evals', fontsize=label_fontsize)
+        else:
+            plt.xlabel('log10 of # f-evals', fontsize=label_fontsize)
     plt.ylabel('Proportion of function+target pairs', fontsize=label_fontsize)
     ppfig.logxticks()
     pprldistr.beautifyECDF()

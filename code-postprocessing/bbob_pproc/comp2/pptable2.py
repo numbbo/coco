@@ -115,6 +115,16 @@ def get_table_caption():
                                 testbed.best_algorithm_displayname)
                 text_end = text_end_ref_alg.format(
                                 testbed.best_algorithm_displayname)  
+                                
+        elif testbed.name == testbedsettings.testbed_name_cons:
+            if "best 2016" in testbed.best_algorithm_displayname:
+                text_intro = text_intro_best_alg.format("BBOB 2016")
+                text_end = text_end_best_alg.format("BBOB 2016")
+            else:
+                text_intro = text_intro_ref_alg.format(
+                                testbed.best_algorithm_displayname)
+                text_end = text_end_ref_alg.format(
+                                testbed.best_algorithm_displayname)  
 
         if genericsettings.runlength_based_targets:
             table_caption = (text_intro + text_middle_runlengthbased +
