@@ -305,7 +305,7 @@ def main(argv=None):
         # set target values
         from . import config
         config.target_values(genericsettings.isExpensive)
-        config.config(dsList[0].testbed_name())
+        config.config(dsList[0].testbed_name)
 
         for i in dsList:
             if i.dim not in genericsettings.dimensions_to_display:
@@ -358,7 +358,7 @@ def main(argv=None):
 
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if genericsettings.isRLDistr:
-            config.config(dsList[0].testbed_name())
+            config.config(dsList[0].testbed_name)
 
             # ECDFs per noise groups
             print("ECDF graphs per noise group...")

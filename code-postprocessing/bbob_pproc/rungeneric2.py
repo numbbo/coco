@@ -308,7 +308,7 @@ def main(argv=None):
             i.algId = alg1name
 
         config.target_values(genericsettings.isExpensive)
-        config.config(dsList[0].testbed_name())
+        config.config(dsList[0].testbed_name)
 
         ######################### Post-processing #############################
         if (genericsettings.isFig or genericsettings.isRLDistr

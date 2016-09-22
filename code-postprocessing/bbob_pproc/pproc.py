@@ -608,6 +608,7 @@ class DataSet(object):
         funcId
         funvals
         generateRLData
+        get_testbed_name
         indexFiles
         info
         instancenumbers
@@ -735,7 +736,7 @@ class DataSet(object):
     def isBiobjective(self):
         return hasattr(self, 'indicator')
 
-    def testbed_name(self):
+    def get_testbed_name(self):
         testbed = None
         if hasattr(self, 'suite'):
             suite = getattr(self, 'suite')
@@ -800,9 +801,10 @@ class DataSet(object):
         self.isFinalized = []
         self.readmaxevals = []
         self.readfinalFminusFtarget = []
+        self.testbed_name = self.get_testbed_name()
 
         if not testbedsettings.current_testbed:
-            testbedsettings.load_current_testbed(self.testbed_name(), TargetValues)
+            testbedsettings.load_current_testbed(self.testbed_name, TargetValues)
 
         # Split line in data file name(s) and run time information.
         parts = data.split(', ')

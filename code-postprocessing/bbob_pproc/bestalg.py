@@ -216,7 +216,7 @@ class BestAlgSet(object):
         self.comment += '; coco_version: ' + pkg_resources.require('bbob_pproc')[0].version
         self.ert = np.array(reserts)
         self.target = res[:, 0]
-        self.testbed = dict_alg[sortedAlgs[0]].testbed_name() # TODO: not nice
+        self.testbed = dict_alg[sortedAlgs[0]].testbed_name # TODO: not nice
 
         bestfinalfunvals = np.array([np.inf])
         for alg in sortedAlgs:
