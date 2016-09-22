@@ -31,9 +31,11 @@ def archive_thinning(input_path, output_path, thinning_precision, currently_nond
     for input_file in input_files:
         try:
             (suite_name, function, instance, dimension) = parse_archive_file_name(input_file)
+            if (function not in functions) or (dimension not in dimensions):
+                continue
             if not instance:
                 raise PreprocessingWarning('Thinning does not work on files with multiple archives, use archive_split')
-            if (function not in functions) or (instance not in instances) or (dimension not in dimensions):
+            if instance not in instances:
                 continue
         except PreprocessingWarning as warning:
             print('Skipping file {}\n{}'.format(input_file, warning))
