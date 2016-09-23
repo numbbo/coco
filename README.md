@@ -111,7 +111,7 @@ Getting Started <a name="Getting-Started"></a>
   compiled, in case). As the details vary, see the respective read-me's 
   and/or example experiment files:
 
-  - `C` [read me](./coco-experiments/build/c/README.txt) 
+  - `C` [read me](./code-experiments/build/c/README.md) 
     and [example experiment](./code-experiments/build/c/example_experiment.c)
   - `Java` [read me](./code-experiments/build/java/README.md)
     and [example experiment](./code-experiments/build/java/ExampleExperiment.java)
