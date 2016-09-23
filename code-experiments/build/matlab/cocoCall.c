@@ -45,6 +45,42 @@ void cocoEvaluateFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *pr
     coco_evaluate_function(problem, x, y);
 }
 
+void cocoEvaluateConstraint(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    size_t *ref;
+    mxArray *problem_prop;
+    coco_problem_t *problem = NULL;
+    /* const char *class_name = NULL; */
+    int nb_constraints;
+    double *x;
+    double *y;
+
+    /* check for proper number of arguments */
+    if(nrhs!=2) {
+        mexErrMsgIdAndTxt("cocoEvaluateConstraint:nrhs","Two inputs required.");
+    }
+    /* get the problem */
+    ref = (size_t *) mxGetData(prhs[0]);
+    problem = (coco_problem_t *)(*ref);
+    /* make sure the second input argument is array of doubles */
+    if(!mxIsDouble(prhs[1])) {
+        mexErrMsgIdAndTxt("cocoEvaluateConstraint:notDoubleArray","Input x must be an array of doubles.");
+    }
+    /* test if input dimension is consistent with problem dimension */
+    if(!(mxGetN(prhs[1]) == 1 & mxGetM(prhs[1]) == coco_problem_get_dimension(problem)) 
+          & !(mxGetM(prhs[1]) == 1 & mxGetN(prhs[1]) == coco_problem_get_dimension(problem))) {
+        mexErrMsgIdAndTxt("cocoEvaluateConstraint:wrongDimension", "Input x does not comply with problem dimension.");
+    }
+    /* get the x vector */
+    x = mxGetPr(prhs[1]);
+    /* prepare the return value */
+    nb_constraints = coco_problem_get_number_of_constraints(problem);
+    plhs[0] = mxCreateDoubleMatrix(1, (size_t)nb_constraints, mxREAL);
+    y = mxGetPr(plhs[0]);
+    /* call coco_evaluate_constraint(...) */
+    coco_evaluate_constraint(problem, x, y);
+}
+
 void cocoObserver(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     char *observer_name;
@@ -188,6 +224,26 @@ void cocoProblemGetEvaluations(int nlhs, mxArray *plhs[], int nrhs, const mxArra
     res[0] = coco_problem_get_evaluations(problem);
 }
 
+void cocoProblemGetEvaluationsConstraints(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    size_t *ref;
+    coco_problem_t *problem = NULL;
+    const mwSize dims[2] = {1, 1};
+    size_t *res;
+
+    /* check for proper number of arguments */
+    if(nrhs!=1) {
+        mexErrMsgIdAndTxt("cocoProblemGetEvaluationsConstraints:nrhs","One input required.");
+    }
+    /* get the problem */
+    ref = (size_t *)mxGetData(prhs[0]);
+    problem = (coco_problem_t *)(*ref);
+    /* prepare the return value */
+    plhs[0] = mxCreateNumericArray(2, dims, mxINT32_CLASS, mxREAL);
+    res = (size_t *)mxGetData(plhs[0]);
+    res[0] = coco_problem_get_evaluations_constraints(problem);
+}
+
 void cocoProblemGetId(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     size_t *ref;
@@ -294,6 +350,26 @@ void cocoProblemGetNumberOfObjectives(int nlhs, mxArray *plhs[], int nrhs, const
     plhs[0] = mxCreateNumericArray(2, dims, mxINT32_CLASS, mxREAL);
     res = (size_t *)mxGetData(plhs[0]);
     res[0] = coco_problem_get_number_of_objectives(problem);
+}
+
+void cocoProblemGetNumberOfConstraints(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    size_t *ref;
+    coco_problem_t *problem = NULL;
+    const mwSize dims[2] = {1, 1};
+    size_t *res;
+
+    /* check for proper number of arguments */
+    if(nrhs!=1) {
+        mexErrMsgIdAndTxt("cocoProblemGetNumberOfConstraints:nrhs","One input required.");
+    }
+    /* get the problem */
+    ref = (size_t *)mxGetData(prhs[0]);
+    problem = (coco_problem_t *)(*ref);
+    /* prepare the return value */
+    plhs[0] = mxCreateNumericArray(2, dims, mxINT32_CLASS, mxREAL);
+    res = (size_t *)mxGetData(plhs[0]);
+    res[0] = coco_problem_get_number_of_constraints(problem);
 }
 
 void cocoProblemGetSmallestValuesOfInterest(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
@@ -508,6 +584,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     /* Now the big 'switch' accessing all supported Coco functions. */
     if (strcmp(cocofunction, "cocoevaluatefunction") == 0) {
         cocoEvaluateFunction(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocoevaluateconstraint") == 0) {
+        cocoEvaluateConstraint(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoobserver") == 0) {
         cocoObserver(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoobserverfree") == 0) {
@@ -522,6 +600,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoProblemGetDimension(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetevaluations") == 0) {
         cocoProblemGetEvaluations(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocoproblemgetevaluationsconstraints") == 0) {
+        cocoProblemGetEvaluationsConstraints(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetid") == 0) {
         cocoProblemGetId(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetinitialsolution") == 0) {
@@ -532,6 +612,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoProblemGetName(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetnumberofobjectives") == 0) {
         cocoProblemGetNumberOfObjectives(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocoproblemgetnumberofconstraints") == 0) {
+        cocoProblemGetNumberOfConstraints(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetsmallestvaluesofinterest") == 0) {
         cocoProblemGetSmallestValuesOfInterest(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemisvalid") == 0) {

@@ -139,13 +139,17 @@ def caption_single():
          Empirical cumulative distribution functions (ECDF), plotting the fraction of
          trials with an outcome not larger than the respective value on the $x$-axis.
          #1"""
-    caption_left_fixed_targets = (r"""%
-         Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension $D$,
+    caption_left_fixed_targets = r"""%
+         Left subplots: ECDF of the number of function evaluations """ + (
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons
+         else r"""(FEvals)""") + (r""" divided by search space dimension $D$,
          to fall below $\fopt+\Df$ with $\Df=10^{k}$, where $k$ is the first value in the legend.
          The thick red line represents the most difficult target value $\fopt+""" +
          testbedsettings.current_testbed.hardesttargetlatex + """$. """)
     caption_left_rlbased_targets = r"""%
-         Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$,
+         Left subplots: ECDF of number of function evaluations """ + (
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons
+         else r"""(FEvals)""") + r""" divided by search space dimension $D$,
          to fall below $\fopt+\Df$ where \Df\ is the
          target just not reached by the GECCO-BBOB-2009 best algorithm within a budget of
          % largest $\Df$-value $\ge10^{-8}$ for which the best \ART\ seen in the GECCO-BBOB-2009 was yet above
@@ -173,7 +177,8 @@ def caption_single():
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_single_fixed.replace('\\fopt', '\\hvref')
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single or \
+         testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_single_rlbased
         else:
@@ -244,7 +249,8 @@ def caption_two():
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_two_fixed.replace('\\fopt', '\\hvref')
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single or \
+         testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_two_rlbased
         else:
@@ -305,7 +311,10 @@ def beautifyRLD(xlimit_max=None):
     """
     a = plt.gca()
     a.set_xscale('log')
-    a.set_xlabel('log10 of FEvals / DIM')
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        a.set_xlabel('log10 of (f+g)-evals / dimension')
+    else:
+        a.set_xlabel('log10 of FEvals / DIM')
     a.set_ylabel('proportion of trials')
     logxticks()
     if xlimit_max:
@@ -529,7 +538,7 @@ def plotFVDistr(dsList, budget, min_f=None, **plotArgs):
         return None
 
 def comp(dsList0, dsList1, targets, isStoringXMax=False,
-         outputdir='', info='default', verbose=True):
+         outputdir='', info='default'):
     """Generate figures of ECDF that compare 2 algorithms.
 
     :param DataSetList dsList0: list of DataSet instances for ALG0
@@ -543,7 +552,6 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
                                figures.
     :param string outputdir: output directory (must exist)
     :param string info: string suffix for output file names.
-    :param bool verbose: control verbosity
 
     """
     # plt.rc("axes", labelsize=20, titlesize=24)
@@ -626,7 +634,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
         plt.text(0.5, 0.98, text, horizontalalignment="center",
                  verticalalignment="top", transform=plt.gca().transAxes) # bbox=dict(ec='k', fill=False),
         beautifyRLD(evalfmax)
-        saveFigure(filename, verbose=verbose)
+        saveFigure(filename)
         plt.close(fig)
 
 def beautify():
@@ -639,7 +647,10 @@ def beautify():
     plt.subplot(121)
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-    axisHandle.set_xlabel('log10 of FEvals / DIM')
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        axisHandle.set_xlabel('log10 of (f+g)-evals / dimension')
+    else:
+        axisHandle.set_xlabel('log10 of FEvals / DIM')
     axisHandle.set_ylabel('proportion of trials')
     # Grid options
     logxticks()
@@ -773,7 +784,7 @@ def plotRLB_previous_algorithms(dim, funcs):
 
 
 def main(dsList, isStoringXMax=False, outputdir='',
-         info='default', verbose=True):
+         info='default'):
     """Generate figures of empirical cumulative distribution functions.
 
     This method has a feature which allows to keep the same boundaries
@@ -794,7 +805,6 @@ def main(dsList, isStoringXMax=False, outputdir='',
                                xlim in the generated figures.
     :param string outputdir: output directory (must exist)
     :param string info: string suffix for output file names.
-    :param bool verbose: control verbosity
 
     """
     # plt.rc("axes", labelsize=20, titlesize=24)
@@ -859,7 +869,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
 
 
         beautifyRLD(evalfmax)
-        saveFigure(filename, verbose=verbose)
+        saveFigure(filename)
         plt.close(fig)
 
         # second figure: Function Value Distribution
@@ -876,7 +886,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
         plt.text(0.98, 0.02, text, horizontalalignment="right",
                  transform=plt.gca().transAxes) # bbox=dict(ec='k', fill=False),
         beautifyFVD(isStoringXMax=isStoringXMax, ylabel=False)
-        saveFigure(filename, verbose=verbose)
+        saveFigure(filename)
         plt.close(fig)
         # plt.rcdefaults()
 

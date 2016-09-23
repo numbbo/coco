@@ -82,7 +82,8 @@ def prepare_figure_caption():
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         caption = caption_start_fixed + caption_finish
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single or \
+         testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
         if genericsettings.runlength_based_targets:
             caption = caption_start_rlbased + caption_finish
         else:
@@ -150,7 +151,7 @@ def beautify():
     #    plt.setp(line, color='b', marker='o', markersize=10)
     #set_trace()
 
-def main(dsList0, dsList1, outputdir, verbose=True):
+def main(dsList0, dsList1, outputdir):
     """Generate a scatter plot figure.
     
     TODO: """
@@ -396,7 +397,7 @@ def main(dsList0, dsList1, outputdir, verbose=True):
             plt.ylabel(funInfos[f], fontsize=fontSize)
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
-        saveFigure(filename, verbose=verbose)
+        saveFigure(filename)
         plt.close()
 
     #plt.rcdefaults()

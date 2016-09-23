@@ -300,6 +300,17 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
 void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y);
 
 /**
+ * @brief Returns 1 if c(x) = 0, and 0 otherwise.
+ */
+int coco_is_feasible(coco_problem_t *problem, const double *x, double *cons_values, double threshold);
+
+/**
+ * @brief Evaluates the gradient of the function at x and stores it
+ *        at y.
+ */
+void coco_evaluate_gradient(coco_problem_t *problem, const double *x, double *y);
+
+/**
  * @brief Recommends a solution as the current best guesses to the problem.
  */
 void coco_recommend_solution(coco_problem_t *problem, const double *x);
@@ -335,9 +346,14 @@ size_t coco_problem_get_number_of_objectives(const coco_problem_t *problem);
 size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
 
 /**
- * @brief Returns the number of evaluations done on the problem.
+ * @brief Returns the number of objective function evaluations done on the problem.
  */
 size_t coco_problem_get_evaluations(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the number of constraint function evaluations done on the problem.
+ */
+size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem);
 
 /**
  * @brief Returns 1 if the final target was hit, 0 otherwise.

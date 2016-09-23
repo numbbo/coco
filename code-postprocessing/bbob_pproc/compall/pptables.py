@@ -71,7 +71,8 @@ def get_table_caption():
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
         table_caption = table_caption_one_bi + table_caption_rest
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single or \
+         testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:
@@ -247,7 +248,7 @@ def getTopIndicesOfColumns(table, maxRank=None):
 
 
 # TODO: function_headings argument need to be tested, default should be changed according to templates
-def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line=True):  # [1, 13, 101]
+def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1, 13, 101]
     """Generate one table per func with results of multiple algorithms."""
     """Difference with the first version:
 
@@ -264,9 +265,9 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
 
     # TODO: method is long, terrible to read, split if possible
 
-    bestalgentries = bestalg.load_best_algorithm()
-
     testbed = testbedsettings.current_testbed
+
+    bestalgentries = bestalg.load_best_algorithm(testbed.best_algorithm_filename)
 
     # Sort data per dimension and function
     dictData = {}
@@ -293,7 +294,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
         else:
             targetf = testbed.pptable_ftarget
 
-        # best 2009
+        # reference algorithm
         if bestalgentries:
             refalgentry = bestalgentries[df]
             refalgert = refalgentry.detERT(targetsOfInterest)
@@ -693,7 +694,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                     for line in lines:
                         outfile.write(line)
 
-            if verbose:
+            if genericsettings.verbose:
                 print 'Wrote table in %s' % filename
         except:
             raise

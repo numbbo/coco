@@ -18,6 +18,8 @@ setup(
                           '*enchmarkinfos.txt',
                           'best*algentries*.pickle',
                           'best*algentries*.pickle.gz',
+                          'best*.tar.gz',
+                          'refalgs/best*.tar.gz',
                           'pprldistr2009*.pickle.gz',
                           'latex_commands_for_html.html',
     # this is not supposed to copy to the subfolder, see https://docs.python.org/2/distutils/setupscript.html

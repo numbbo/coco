@@ -7,6 +7,8 @@ import sys
 from pdb import set_trace
 import getopt
 
+from .. import genericsettings
+
 # this file/module is seemingly unused
 
 ''' TODO:
@@ -354,7 +356,6 @@ def main(argv=None):
         usage()
         sys.exit()
 
-    verboseflag = False
     dims = list()
     funcs = list()
     directory = args  # directories which contains data...
@@ -379,7 +380,7 @@ def main(argv=None):
         elif o in ("--noisefree"):
             funcs = range(1, 25)
         elif o in ("-v", "--verbose"):
-            verboseflag = True
+            genericsettings.verbose = True
         else:
             assert False, "unhandled option"
 
@@ -397,7 +398,7 @@ def main(argv=None):
         half = int(round(len(funcs)/2))
 
     # create dataset
-    datasetfull = pproc.DataSetList(directory, verbose=verboseflag)
+    datasetfull = pproc.DataSetList(directory)
 
     # loop over dimension and functions
     for dim in dims:

@@ -82,18 +82,17 @@ dimensions = genericsettings.dimensions_to_display
 
 def scaling_figure_caption():
 
+    testbed = testbedsettings.current_testbed
+
     caption_part_one = r"""%
-        Scaling of runtime to reach $\fopt+10^{\#}$ with dimension;
-        runtime is measured in number of $f$-evaluations and $\#$ is given in the legend;
+        Scaling of runtime with dimension to reach certain target values \Df.
         Lines: average runtime (\aRT);
         Cross (+): median runtime of successful runs to reach the most difficult
         target that was reached at least once (but not always);
         Cross ({\color{red}$\times$}): maximum number of
         $f$-evaluations in any trial. """ + (r"""Notched
         boxes: interquartile range with median of simulated runs;
-        % to reach $\fopt+10^{\#}$.
         """ if genericsettings.scaling_figures_with_boxes else "") + """%
-        % Colors represent different target values. 
         All values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """
         plotted as $\log_{10}$ values versus dimension. %
         """
@@ -108,46 +107,89 @@ def scaling_figure_caption():
     #    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
     #    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
     #    "function value.  " +
-    scaling_figure_caption_fixed = caption_part_one + r"""%
-        % Shown are $\Df = 10^{\{values_of_interest\}}$.  
+    scaling_figure_caption_fixed = r"""%
+        Shown is the \aRT\ for fixed values of $\Df = 10^k$ with $k$ given
+        in the legend.
         Numbers above \aRT-symbols (if appearing) indicate the number of trials
         reaching the respective target. """ + (  # TODO: add here "(out of XYZ trials)"
-        r"""The light thick line with
-        diamonds indicates the respective best result from BBOB-2009 for
-        $\Df=10^{-8}$. """ if testbedsettings.current_testbed.name !=
-        'bbob-biobj' else "") + """Horizontal lines mean linear scaling, slanted
-        grid lines depict quadratic scaling.  
+        r"""The light thick line with diamonds indicates {}.
+        """ if testbed.best_algorithm_filename
+        else "") + r"""Horizontal lines mean linear scaling, slanted
+        grid lines depict quadratic scaling."""
+    scaling_figure_caption_rlbased = r"""%
+        Shown is the \aRT\ for targets just not reached by {}
+        within the given budget $k\times\DIM$, where $k$ is shown in the
+        legend. Numbers above \aRT-symbols (if appearing) indicate the number
+        of trials reaching the respective target. """ + (r"""The light thick
+        line with diamonds indicates {} for the most difficult
+        target. """ if testbed.best_algorithm_filename else "") + r"""Slanted
+        grid lines indicate a scaling with $\cal O$$(\DIM)$ compared to
+        $\cal O$$(1)$ when using the respective {} algorithm.
         """
-    scaling_figure_caption_rlbased = caption_part_one + r"""%
-        Shown is the \aRT\ for 
-        targets just not reached by
-    %    the largest $\Df$-values $\ge10^{-8}$ for which the \aRT\ of 
-        the artificial GECCO-BBOB-2009 best algorithm  
-        within the given budget $k\times\DIM$, where $k$ is shown in the legend.
-    %    was above $\{values_of_interest\}\times\DIM$ evaluations. 
-        Numbers above \aRT-symbols indicate the number of trials reaching the respective target.  
-        The light thick line with diamonds indicates the respective best result from BBOB-2009 for 
-        the most difficult target. 
-        Slanted grid lines indicate a scaling with ${\cal O}(\DIM)$ compared to ${\cal O}(1)$  
-        when using the respective 2009 best algorithm. 
-        """
-        # r"Shown is the \aRT\ for the smallest $\Df$-values $\ge10^{-8}$ for which the \aRT\ of the GECCO-BBOB-2009 best algorithm " + 
-        # r"was below $10^{\{values_of_interest\}}\times\DIM$ evaluations. " + 
+
+    if testbed.best_algorithm_filename:
+        if (testbed.name == testbedsettings.testbed_name_single or
+                testbed.name == testbedsettings.default_testbed_single_noisy
+                or testbed.name == testbedsettings.testbed_name_bi):
+            if testbed.best_algorithm_displayname:
+                if "best 2009" in testbed.best_algorithm_displayname:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2009")
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            "the best algorithm from BBOB 2009",
+                            "the best \\aRT\\ measured during BBOB 2009",
+                            'best 2009')
+                elif "best 2010" in testbed.best_algorithm_displayname:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2010")
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            "the best algorithm from BBOB 2010",
+                            "the best \\aRT\\ measured during BBOB 2010",
+                            'best 2010')
+                elif "best 2012" in testbed.best_algorithm_displayname:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2012")
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            "the best algorithm from BBOB 2012",
+                            "the best \\aRT\\ measured during BBOB 2012",
+                            'best 2012')
+                elif "best 2013" in testbed.best_algorithm_displayname:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2013")
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            "the best algorithm from BBOB 2013",
+                            "the best \\aRT\\ measured during BBOB 2013",
+                            'best 2013')
+                elif "best 2016" in testbed.best_algorithm_displayname:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2016")
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            "the best algorithm from BBOB 2016",
+                            "the best \\aRT\\ measured during BBOB 2016",
+                            'best 2016')
+                elif "best 2009-16" in testbed.best_algorithm_displayname:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2009--16")
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            "the best algorithm of BBOB 2009--2016",
+                            "the best \\aRT\\ measured during BBOB 2009--16",
+                            'best 2009--16')
+                else:
+                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format(
+                            'the \\aRT\\ of the reference algorithm %s' % testbed.best_algorithm_displayname)
+                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
+                            'the reference algorithm %s' % testbed.best_algorithm_displayname,
+                            'the \\aRT\\ of the reference algorithm %s' % testbed.best_algorithm_displayname,
+                            'reference')
+        else:
+            raise NotImplementedError('reference algorithm not supported for this testbed')
+
+    if genericsettings.runlength_based_targets:
+        figure_caption = caption_part_one + scaling_figure_caption_rlbased
+    else:
+        figure_caption = caption_part_one + scaling_figure_caption_fixed
 
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
-        # NOTE: no runlength-based targets supported yet
-        figure_caption = scaling_figure_caption_fixed.replace('\\fopt', '\\hvref')
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
-        if genericsettings.runlength_based_targets:
-            figure_caption = scaling_figure_caption_rlbased
-        else:
-            figure_caption = scaling_figure_caption_fixed
-    else:
-        warnings.warn("Current settings do not support ppfigdim caption.")
-
-    values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
-    figure_caption = figure_caption.replace('values_of_interest',
-                                          ', '.join(values_of_interest.labels()))
+        figure_caption = figure_caption.replace('\\fopt', '\\hvref')
+        figure_caption = figure_caption.replace('\\Df', '\\DI')
+        
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        figure_caption = figure_caption.replace('$f$', '$(f+g)$')
+        
     return figure_caption
 
 def beautify(axesLabel=True):
@@ -494,15 +536,18 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
     return res
 
 def plot_previous_algorithms(func, target=None):  # lambda x: [1e-8]):
-    """Add graph of the BBOB-2009 virtual best algorithm using the
+    """Add graph of the reference algorithm, specified in
+    testbedsettings.current_testbed using the
     last, most difficult target in ``target``."""
     
+    testbed = testbedsettings.current_testbed    
+    
     if not target:
-        target = testbedsettings.current_testbed.ppfigdim_target_values
+        target = testbed.ppfigdim_target_values
         
     target = pproc.TargetValues.cast(target)
 
-    bestalgentries = bestalg.load_best_algorithm()
+    bestalgentries = bestalg.load_best_algorithm(testbed.best_algorithm_filename)
     
     if not bestalgentries:
         return None
@@ -524,7 +569,7 @@ def plot_previous_algorithms(func, target=None):  # lambda x: [1e-8]):
                    zorder= -2)
     return res
 
-def main(dsList, _valuesOfInterest, outputdir, verbose=True):
+def main(dsList, _valuesOfInterest, outputdir):
     """From a DataSetList, returns a convergence and aRT/dim figure vs dim.
     
     Uses data of BBOB 2009 (:py:mod:`bbob_pproc.bestalg`).
@@ -535,7 +580,6 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
                                   There will be as many graphs as there are 
                                   elements in this input. 
     :param string outputdir: output directory
-    :param bool verbose: controls verbosity
     
     """
 
@@ -553,33 +597,32 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
     key = 'bbobppfigdimlegend' + testbedsettings.current_testbed.scenario
     joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
     caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
+    header = 'Average number of <i>f</i>-evaluations to reach target'
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        header = header.replace('<i>f</i>', '<i>(f+g)</i>')
 
     ppfig.save_single_functions_html(
         os.path.join(outputdir, 'ppfigdim'),
         htmlPage = ppfig.HtmlPage.NON_SPECIFIED,
-        isBiobjective = dsList.isBiobjective(),
         parentFileName=genericsettings.single_algorithm_file_name,
-        header = 'Average number of <i>f</i>-evaluations to reach target',
+        header = header,
         caption = caption)
 
     ppfig.save_single_functions_html(
         os.path.join(outputdir, 'pptable'),
         htmlPage = ppfig.HtmlPage.PPTABLE,
-        isBiobjective = dsList.isBiobjective(),
         parentFileName=genericsettings.single_algorithm_file_name)
 
     ppfig.save_single_functions_html(
         os.path.join(outputdir, 'pprldistr'),
         htmlPage = ppfig.HtmlPage.PPRLDISTR,
-        isBiobjective = dsList.isBiobjective(),
         functionGroups = dsList.getFuncGroups(),
         parentFileName=genericsettings.single_algorithm_file_name)
 
-    if not dsList.isBiobjective():    
+    if not testbedsettings.current_testbed.best_algorithm_filename == '':
         ppfig.save_single_functions_html(
             os.path.join(outputdir, 'pplogloss'),
             htmlPage = ppfig.HtmlPage.PPLOGLOSS,
-            isBiobjective = dsList.isBiobjective(),
             functionGroups = dsList.getFuncGroups(),
             parentFileName=genericsettings.single_algorithm_file_name)
 
@@ -609,7 +652,7 @@ def main(dsList, _valuesOfInterest, outputdir, verbose=True):
         plot_previous_algorithms(func, _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
         with warnings.catch_warnings(record=True) as ws:
-            ppfig.saveFigure(filename, verbose=verbose)
+            ppfig.saveFigure(filename)
             if len(ws):
                 for w in ws:
                     print(w)

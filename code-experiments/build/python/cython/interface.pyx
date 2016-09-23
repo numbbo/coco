@@ -7,8 +7,8 @@ cimport numpy as np
 
 from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
 
-known_suite_names = [b"bbob", b"bbob-biobj"]
-_known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-largescale"]
+known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-constrained"]
+_known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-constrained", b"bbob-largescale"]
 
 # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
 # __all__ = ['Problem', 'Benchmark']
@@ -58,6 +58,7 @@ cdef extern from "coco.h":
     const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem)
     double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations(const coco_problem_t *problem)
+    size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem)
     double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
     int coco_problem_final_target_hit(const coco_problem_t *problem)
 
@@ -669,9 +670,8 @@ cdef class Problem:
     def constraint(self, x):
         """return constraint values for `x`. 
 
-        By convention, constraints with values >= 0 are satisfied.
+        By convention, constraints with values <= 0 are satisfied.
         """
-        raise NotImplementedError("has never been tested, incomment this to start testing")
         cdef np.ndarray[double, ndim=1, mode="c"] _x
         x = np.array(x, copy=False, dtype=np.double, order='C')
         if np.size(x) != self.number_of_variables:
@@ -795,6 +795,9 @@ cdef class Problem:
     @property
     def evaluations(self):
         return coco_problem_get_evaluations(self.problem)
+    @property
+    def evaluations_constraints(self):
+        return coco_problem_get_evaluations_constraints(self.problem)
     @property
     def final_target_hit(self):
         """return 1 if the final target is known and has been hit, 0 otherwise

@@ -56,6 +56,7 @@ static int bbob_logger_is_open = 0; /* this could become lock-list of .info file
 typedef struct {
   coco_observer_t *observer;
   int is_initialized;
+  int constrained_problem;
   /*char *path;// relative path to the data folder. //Wassim: now fetched from the observer */
   /*const char *alg_name; the alg name, for now, temporarily the same as the path. Wassim: Now in the observer */
   FILE *index_file; /* index file */
@@ -63,6 +64,7 @@ typedef struct {
   FILE *tdata_file; /* number of function evaluations aligned data file */
   FILE *rdata_file; /* restart info data file */
   size_t number_of_evaluations;
+  size_t number_of_evaluations_constraints;
   double best_fvalue;
   double last_fvalue;
   short written_last_eval; /* allows writing the the data of the final fun eval in the .tdat file if not already written by the t_trigger*/
@@ -75,6 +77,7 @@ typedef struct {
   size_t instance_id;
   size_t number_of_variables;
   double optimal_fvalue;
+  char *suite_name;
 
   coco_observer_targets_t *targets;          /**< @brief Triggers based on target values. */
   coco_observer_evaluations_t *evaluations;  /**< @brief Triggers based on the number of evaluations. */
@@ -82,6 +85,14 @@ typedef struct {
 } logger_bbob_data_t;
 
 static const char *bbob_file_header_str = "%% function evaluation | "
+    "noise-free fitness - Fopt (%13.12e) | "
+    "best noise-free fitness - Fopt | "
+    "measured fitness | "
+    "best measured fitness | "
+    "x1 | "
+    "x2...\n";
+    
+static const char *bbob_constrained_file_header_str = "%% f + g evaluations | "
     "noise-free fitness - Fopt (%13.12e) | "
     "best noise-free fitness - Fopt | "
     "measured fitness | "
@@ -266,17 +277,12 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
         }
         fclose(tmp_file);
       }
-
-      fprintf(*target_file,
-          "funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', coco_version = '%s'\n",
-          (int) strtol(function_id, NULL, 10), (unsigned long) logger->number_of_variables,
-          pow(10, -8), logger->observer->algorithm_name, coco_version);
-      /* TODO: Use this once suite can be read by the postprocessing
+      
       fprintf(*target_file,
           "suite = '%s', funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', coco_version = '%s'\n",
           suite_name, (int) strtol(function_id, NULL, 10), (unsigned long) logger->number_of_variables,
           pow(10, -8), logger->observer->algorithm_name, coco_version);
-      */
+
       fprintf(*target_file, "%%\n");
       strncat(used_dataFile_path, "_i", COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
       strncat(used_dataFile_path, bbob_infoFile_firstInstance_char,
@@ -339,14 +345,24 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
   strncat(dataFile_path, bbob_infoFile_firstInstance_char,
   COCO_PATH_MAX - strlen(dataFile_path) - 1);
+  
   logger_bbob_open_dataFile(&(logger->fdata_file), logger->observer->result_folder, dataFile_path, ".dat");
-  fprintf(logger->fdata_file, bbob_file_header_str, logger->optimal_fvalue);
+  if (logger->constrained_problem)
+    fprintf(logger->fdata_file, bbob_constrained_file_header_str, logger->optimal_fvalue);
+  else
+    fprintf(logger->fdata_file, bbob_file_header_str, logger->optimal_fvalue);
 
   logger_bbob_open_dataFile(&(logger->tdata_file), logger->observer->result_folder, dataFile_path, ".tdat");
-  fprintf(logger->tdata_file, bbob_file_header_str, logger->optimal_fvalue);
+  if (logger->constrained_problem)
+    fprintf(logger->tdata_file, bbob_constrained_file_header_str, logger->optimal_fvalue);
+  else
+    fprintf(logger->tdata_file, bbob_file_header_str, logger->optimal_fvalue);
 
   logger_bbob_open_dataFile(&(logger->rdata_file), logger->observer->result_folder, dataFile_path, ".rdat");
-  fprintf(logger->rdata_file, bbob_file_header_str, logger->optimal_fvalue);
+  if (logger->constrained_problem)
+    fprintf(logger->rdata_file, bbob_constrained_file_header_str, logger->optimal_fvalue);
+  else
+    fprintf(logger->rdata_file, bbob_file_header_str, logger->optimal_fvalue);
   logger->is_initialized = 1;
   coco_free_memory(tmpc_dim);
   coco_free_memory(tmpc_funId);
@@ -355,11 +371,15 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
 /**
  * Layer added to the transformed-problem evaluate_function by the logger
  */
-static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, double *y) {
+static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) {
   logger_bbob_data_t *logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
-  coco_problem_t * inner_problem = coco_problem_transformed_get_inner_problem(problem);
-
+  coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);
+  double *cons_values, initial_solution_fvalue, feasibility_threshold;
+  int is_feasible, is_truly_feasible;
   size_t i;
+
+  is_feasible = 1;
+  feasibility_threshold = 1.0e-05;
 
   if (!logger->is_initialized) {
     logger_bbob_initialize(logger, inner_problem);
@@ -369,34 +389,103 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     coco_debug("on problem %s ... ", coco_problem_get_id(inner_problem));
   }
   coco_evaluate_function(inner_problem, x, y);
-  logger->last_fvalue = y[0];
+  
+  logger->number_of_evaluations_constraints = coco_problem_get_evaluations_constraints(problem);
+  
+  /* Check if the current point is feasible and do a sanity check 
+   * for optimal f value 
+   */
+  if (problem->number_of_constraints > 0) {
+    cons_values = coco_allocate_vector(problem->number_of_constraints);
+    /* Allow logging approximately feasible points */
+    is_feasible = coco_is_feasible(inner_problem, x, cons_values, 
+                                   feasibility_threshold);
+    /* Used for the sanity check only */
+    is_truly_feasible = coco_is_feasible(inner_problem, x, cons_values, 
+                                   0.0);
+    coco_free_memory(cons_values);    
+    if (is_truly_feasible)
+      assert(y[0] + 1e-13 >= logger->optimal_fvalue);
+  }
+  else { assert(y[0] + 1e-13 >= logger->optimal_fvalue); }
+  
+  logger->number_of_evaluations++;
   logger->written_last_eval = 0;
-  if (logger->number_of_evaluations == 0 || y[0] < logger->best_fvalue) {
+  logger->last_fvalue = y[0];
+
+  /* Check what should be logged in the first iteration */
+  if (logger->number_of_evaluations == 1) {
+	  
+    /* Evaluate the objective function at the initial solution and 
+     * store its value
+     */
+    coco_evaluate_function(inner_problem, inner_problem->initial_solution, 
+        &initial_solution_fvalue);
+      
+    if (!is_feasible) {
+		 
+      /* If x is infeasible, log the initial solution provided by Coco instead */
+      for (i = 0; i < problem->number_of_variables; i++) {
+        x[i] = inner_problem->initial_solution[i];
+        logger->best_solution[i] = inner_problem->initial_solution[i];
+      }
+      y[0] = initial_solution_fvalue; 
+    }
+    else {
+		 
+      /* If the first observed point is worse than the initial solution
+       * provided by Coco, log the latter instead
+       */
+      if (initial_solution_fvalue < y[0]) {
+			
+        for (i = 0; i < problem->number_of_variables; i++) {
+          x[i] = inner_problem->initial_solution[i];
+          logger->best_solution[i] = inner_problem->initial_solution[i];   
+        }
+        y[0] = initial_solution_fvalue; 
+      }
+      else {
+        for (i = 0; i < problem->number_of_variables; i++)
+          logger->best_solution[i] = x[i]; 
+      }
+    }
+    logger->best_fvalue = y[0];
+    is_feasible = 1;
+  }
+  else if (y[0] < logger->best_fvalue && is_feasible) {
     logger->best_fvalue = y[0];
     for (i = 0; i < problem->number_of_variables; i++)
       logger->best_solution[i] = x[i];
   }
-  logger->number_of_evaluations++;
-
-  /* Add sanity check for optimal f value */
-  assert(y[0] + 1e-13 >= logger->optimal_fvalue);
 
   /* Add a line in the .dat file for each logging target reached. */
+  if (is_feasible) {
     if (coco_observer_targets_trigger(logger->targets, y[0] - logger->optimal_fvalue)) {
-
-    logger_bbob_write_data(logger->fdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
-        logger->optimal_fvalue, x, problem->number_of_variables);
+      logger_bbob_write_data(logger->fdata_file, 
+          logger->number_of_evaluations + logger->number_of_evaluations_constraints, y[0], 
+          logger->best_fvalue, logger->optimal_fvalue, x, problem->number_of_variables);
+    }
   }
 
   /* Add a line in the .tdat file each time an fevals trigger is reached.*/
-  if (coco_observer_evaluations_trigger(logger->evaluations, logger->number_of_evaluations)) {
+  if (coco_observer_evaluations_trigger(logger->evaluations, 
+        logger->number_of_evaluations + logger->number_of_evaluations_constraints)) {
+    if (is_feasible) {
+      logger_bbob_write_data(logger->tdata_file, 
+          logger->number_of_evaluations + logger->number_of_evaluations_constraints, y[0], 
+          logger->best_fvalue, logger->optimal_fvalue, x, problem->number_of_variables);
+    }
+    else {
+      logger_bbob_write_data(logger->tdata_file, 
+          logger->number_of_evaluations + logger->number_of_evaluations_constraints, logger->best_fvalue, 
+          logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, problem->number_of_variables);
+    }
     logger->written_last_eval = 1;
-    logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, y[0], logger->best_fvalue,
-        logger->optimal_fvalue, x, problem->number_of_variables);
   }
 
   /* Flush output so that impatient users can see progress. */
   fflush(logger->fdata_file);
+     
 }
 
 /**
@@ -433,9 +522,18 @@ static void logger_bbob_free(void *stuff) {
      * "instance" of problem for each restart in the beginning
      */
     if (!logger->written_last_eval) {
-      logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, logger->last_fvalue,
-          logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, logger->number_of_variables);
-    }
+		if (!logger->constrained_problem) {
+		  logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, 
+		      logger->last_fvalue, logger->best_fvalue, logger->optimal_fvalue, 
+		      logger->best_solution, logger->number_of_variables);
+		}
+		else {
+        logger_bbob_write_data(logger->tdata_file, 
+            logger->number_of_evaluations + logger->number_of_evaluations_constraints, 
+            logger->best_fvalue, logger->best_fvalue, logger->optimal_fvalue, 
+            logger->best_solution, logger->number_of_variables);
+      } 
+	 }
     fclose(logger->tdata_file);
     logger->tdata_file = NULL;
   }
@@ -494,6 +592,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   }
 
   logger_bbob->number_of_evaluations = 0;
+  logger_bbob->number_of_evaluations_constraints = 0;
   logger_bbob->best_solution = coco_allocate_vector(inner_problem->number_of_variables);
   /* TODO: the following inits are just to be in the safe side and
    * should eventually be removed. Some fields of the bbob_logger struct
@@ -501,10 +600,12 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
    */
   logger_bbob->function_id = coco_problem_get_suite_dep_function(inner_problem);
   logger_bbob->instance_id = coco_problem_get_suite_dep_instance(inner_problem);
-  logger_bbob->written_last_eval = 1;
+  logger_bbob->written_last_eval = 0;
   logger_bbob->last_fvalue = DBL_MAX;
   logger_bbob->is_initialized = 0;
-
+  
+  logger_bbob->constrained_problem = (inner_problem->number_of_constraints > 0);
+    
   /* Initialize triggers based on target values and number of evaluations */
   logger_bbob->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
   logger_bbob->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, inner_problem->number_of_variables);

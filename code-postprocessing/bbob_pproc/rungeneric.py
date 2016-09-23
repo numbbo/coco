@@ -43,7 +43,7 @@ if __name__ == "__main__":
         res = cocopp.rungeneric.main(sys.argv[1:])
         sys.exit(res)
 
-from . import genericsettings, rungeneric1, rungeneric2, rungenericmany, ppfig
+from . import genericsettings, testbedsettings, rungeneric1, rungeneric2, rungenericmany, ppfig
 from .toolsdivers import truncate_latex_command_file, print_done
 from .ppfig import Usage
 

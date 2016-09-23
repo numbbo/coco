@@ -55,7 +55,7 @@ from .. import pptex  # numtotex
 
 PlotType = ppfig.enum('ALG', 'DIM', 'FUNC')
 
-displaybest2009 = True
+displaybest = True
 x_limit = None  # not sure whether this is necessary/useful
 x_limit_default = 1e7  # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
 divide_by_dimension = True
@@ -135,24 +135,6 @@ show_algorithms = eseda + ('BFGS',)  # ()==all
 # 'avg NEWUOA', 'NEWUOA', 'full NEWUOA', 'BFGS', 'MCS (Neum)', 'GLOBAL', 'NELDER (Han)',
 # 'NELDER (Doe)', 'Monte Carlo') # ()==all
 show_algorithms = ()  # could be one of the list above
-function_IDs = ()
-function_IDs = range(1, 200)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122,
-
-
-# function_IDs = range(101,199)  # sep ros high mul mulw == 1, 6, 10, 15, 20, 101, 107, 122,
-# function_IDs = fmulti # funi fmulti  # range(103, 131, 3)   # displayed functions
-# function_IDs = [1,2,3,4,5] # separable functions
-# function_IDs = [6,7,8,9]   # moderate functions
-# function_IDs = [10,11,12,13,14] # ill-conditioned functions
-# function_IDs = [15,16,17,18,19] # multi-modal functions
-# function_IDs = [20,21,22,23,24] # weak structure functions
-# function_IDs = range(101,131) # noisy testbed
-# function_IDs = range(101,106+1)  # moderate noise
-# function_IDs = range(107,130+1)  # severe noise
-# function_IDs = range(101,130+1, 3)  # gauss noise
-# function_IDs = range(102,130+1, 3)  # unif noise
-# function_IDs = range(103,130+1, 3)  # cauchy noise
-# function_IDs = range(15,25) # multimodal nonseparable
 
 # '-'     solid line style
 # '--'    dashed line style
@@ -197,9 +179,15 @@ def beautify():
 
     global divide_by_dimension
     if divide_by_dimension:
-        plt.xlabel('log10 of (# f-evals / dimension)', fontsize=label_fontsize)
+        if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+            plt.xlabel('log10 of # (f+g)-evals / dimension', fontsize=label_fontsize)
+        else:
+            plt.xlabel('log10 of (# f-evals / dimension)', fontsize=label_fontsize)
     else:
-        plt.xlabel('log10 of # f-evals', fontsize=label_fontsize)
+        if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+            plt.xlabel('log10 of # (f+g)-evals', fontsize=label_fontsize)
+        else:
+            plt.xlabel('log10 of # f-evals', fontsize=label_fontsize)
     plt.ylabel('Proportion of function+target pairs', fontsize=label_fontsize)
     ppfig.logxticks()
     pprldistr.beautifyECDF()
@@ -263,8 +251,9 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
             x3 = np.median(maxevals)
             if (x3 <= maxval and
                 # np.any(x2 <= x3) and   # maxval < median(maxevals)
-                    not plt.getp(res[-1], 'label').startswith('best')
-                ):  # TODO: HACK for not considering the best 2009 line
+                not plt.getp(res[-1], 'label').startswith('best')
+                ): # TODO: HACK for not considering a "best" algorithm line
+                
                 try:
                     y3 = y2[x2 <= x3][-1]  # find right y-value for x3==median(maxevals)
                 except IndexError:  # median(maxevals) is smaller than any data, can only happen because of CrE?
@@ -352,10 +341,10 @@ def plotLegend(handles, maxval):
     i = 0  # loop over the elements of ys
     for j in sorted(ys.keys()):
         for k in reversed(sorted(ys[j].keys())):
-            # enforce best ever comes last in case of equality
+            # enforce "best" algorithm comes first in case of equality
             tmp = []
             for h in ys[j][k]:
-                if plt.getp(h, 'label') == 'best 2009':
+                if "best" in plt.getp(h, 'label'):
                     tmp.insert(0, h)
                 else:
                     tmp.append(h)
@@ -466,8 +455,8 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
     return res
 
 
-def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=None,
-                         outputdir='.', verbose=0, parentHtmlFileName=None):
+def all_single_functions(dictAlg, isSingleAlgorithm, sortedAlgs=None,
+                         outputdir='.', parentHtmlFileName=None):
     single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
                              'pprldmany-single-functions'
                              # + os.sep + ('f%03d' % fg)
@@ -477,22 +466,18 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
 
     if isSingleAlgorithm:
         main(dictAlg,
-             isBiobjective,
              order=sortedAlgs,
              outputdir=single_fct_output_dir,
              info='',
-             verbose=verbose,
              parentHtmlFileName=parentHtmlFileName,
              plotType=PlotType.DIM)
 
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
         for fg, entries in dictFG.iteritems():
             main(entries,
-                 isBiobjective,
                  order=sortedAlgs,
                  outputdir=single_fct_output_dir,
                  info='%s' % (fg),
-                 verbose=verbose,
                  parentHtmlFileName=parentHtmlFileName,
                  plotType=PlotType.DIM)
 
@@ -501,26 +486,21 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
 
         if isSingleAlgorithm:
             main(tempDictAlg,
-                 isBiobjective,
                  order=sortedAlgs,
                  outputdir=single_fct_output_dir,
                  info='f%03d' % (fg),
-                 verbose=verbose,
                  parentHtmlFileName=parentHtmlFileName,
                  plotType=PlotType.DIM)
-
-        if not (isSingleAlgorithm and isBiobjective):
+        else:
             dictDim = pp.dictAlgByDim(tempDictAlg)
             dims = sorted(dictDim)
             for i, d in enumerate(dims):
                 entries = dictDim[d]
                 next_dim = dims[i + 1] if i + 1 < len(dims) else dims[0]
                 main(entries,
-                     isBiobjective,
                      order=sortedAlgs,
                      outputdir=single_fct_output_dir,
                      info='f%03d_%02dD' % (fg, d),
-                     verbose=verbose,
                      parentHtmlFileName=parentHtmlFileName,
                      add_to_html_file_name='_%02dD' % d,
                      next_html_page_suffix='_%02dD' % next_dim)
@@ -536,11 +516,9 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
             dictFG = pp.dictAlgByFuncGroup(tempDictAlg)
             for fg, entries in dictFG.iteritems():
                 main(entries,
-                     isBiobjective,
                      order=sortedAlgs,
                      outputdir=single_fct_output_dir,
                      info='gr_%s_%02dD' % (fg, d),
-                     verbose=verbose,
                      parentHtmlFileName=parentHtmlFileName,
                      plotType=PlotType.FUNC)
 
@@ -550,14 +528,13 @@ def all_single_functions(dictAlg, isBiobjective, isSingleAlgorithm, sortedAlgs=N
                 add_to_names='_%02dD' % d,
                 next_html_page_suffix='_%02dD' % next_dim,
                 htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP,
-                isBiobjective=isBiobjective,
                 functionGroups=functionGroups,
                 parentFileName='../%s' % parentHtmlFileName if parentHtmlFileName else None
             )
 
 
-def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
-         dimension=None, verbose=True, parentHtmlFileName=None, plotType=PlotType.ALG,
+def main(dictAlg, order=None, outputdir='.', info='default',
+         dimension=None, parentHtmlFileName=None, plotType=PlotType.ALG,
          add_to_html_file_name='', next_html_page_suffix=None):
     """Generates a figure showing the performance of algorithms.
 
@@ -572,7 +549,6 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     :param list order: sorted list of keys to dictAlg for plotting order
     :param str outputdir: output directory
     :param str info: output file name suffix
-    :param bool verbose: controls verbosity
     :param str parentHtmlFileName: defines the parent html page 
 
     """
@@ -627,8 +603,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     dictMaxEvals = {}  # list of (maxevals per function) per algorithm
 
     # funcsolved = [set()] * len(targets) # number of functions solved per target
-    xbest2009 = []
-    maxevalsbest2009 = []
+    xbest = []
+    maxevalsbest = []
     target_values = testbedsettings.current_testbed.pprldmany_target_values
 
     dictDimList = pp.dictAlgByDim(dictAlg)
@@ -639,9 +615,6 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         dictDim = dictDimList[dim]
         dictFunc = pp.dictAlgByFun(dictDim)
         for f, dictAlgperFunc in dictFunc.iteritems():
-            if function_IDs and f not in function_IDs:
-                continue
-
             # print target_values((f, dim))
             for j, t in enumerate(target_values((f, dim))):
                 # for j, t in enumerate(testbedsettings.current_testbed.ecdf_target_values(1e2, f)):
@@ -677,13 +650,13 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                     dictData.setdefault(keyValue, []).extend(x)
                     dictMaxEvals.setdefault(keyValue, []).extend(runlengthunsucc)
 
-            displaybest2009 = plotType == PlotType.ALG
-            if displaybest2009:
+            displaybest = plotType == PlotType.ALG
+            if displaybest:
                 # set_trace()
-                bestalgentries = bestalg.load_best_algorithm()
+                bestalgentries = bestalg.load_best_algorithm(testbedsettings.current_testbed.best_algorithm_filename)
 
                 if not bestalgentries:
-                    displaybest2009 = False
+                    displaybest = False
                 else:
                     bestalgentry = bestalgentries[(dim, f)]
                     bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
@@ -701,20 +674,21 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                         else:
                             x = perfprofsamplesize * [np.inf]
                             runlengthunsucc = []
-                        xbest2009.extend(x)
-                        maxevalsbest2009.extend(runlengthunsucc)
+                        xbest.extend(x)
+                        maxevalsbest.extend(runlengthunsucc)
 
     if order is None:
         order = dictData.keys()
 
     # Display data
     lines = []
-    if displaybest2009:
+    if displaybest:
         args = {'ls': '-', 'linewidth': 6, 'marker': 'D', 'markersize': 11.,
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
-                'label': 'best 2009', 'zorder': -1}
-        lines.append(plotdata(np.array(xbest2009), x_limit, maxevalsbest2009,
+                'label': testbedsettings.current_testbed.best_algorithm_displayname,
+                'zorder': -1}
+        lines.append(plotdata(np.array(xbest), x_limit, maxevalsbest,
                               CrE=0., **args))
 
     def algname_to_label(algname, dirname=None):
@@ -767,10 +741,11 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                         (tmp, toolsdivers.str_to_latex(
                             toolsdivers.strip_pathname2(algname_to_label(alg)))))
                 algtocommand[algname_to_label(alg)] = tmp
-            if displaybest2009:
+            if displaybest:
                 tmp = r'\algzeroperfprof'
-                f.write(r'\providecommand{%s}{best 2009}' % (tmp))
-                algtocommand['best 2009'] = tmp
+                bestalgname = testbedsettings.current_testbed.best_algorithm_displayname
+                f.write(r'\providecommand{%s}{%s}' % (tmp, bestalgname))
+                algtocommand[algname_to_label(bestalgname)] = tmp
 
             commandnames = []
             for label in labels:
@@ -788,7 +763,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                     f.write('\n' + r'\vfill \mbox{%s}' % commandnames[i])
                 f.write('}}\n')
             # f.write(footleg)
-            if verbose:
+            if genericsettings.verbose:
                 print 'Wrote right-hand legend in %s' % fileName
 
     if info:
@@ -857,7 +832,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
     a.set_xticklabels(tmp)
 
     if save_figure:
-        ppfig.saveFigure(figureName, verbose=verbose)
+        ppfig.saveFigure(figureName)
         if len(dictFunc) == 1 or plotType == PlotType.DIM:
             fileName = genericsettings.pprldmany_file_name
 
@@ -868,7 +843,6 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 add_to_names=add_to_html_file_name,
                 next_html_page_suffix=next_html_page_suffix,
                 htmlPage=ppfig.HtmlPage.NON_SPECIFIED,
-                isBiobjective=isBiobjective,
                 parentFileName='../%s' % parentHtmlFileName if parentHtmlFileName else None,
                 header=header)
 

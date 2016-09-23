@@ -7,6 +7,7 @@ This test can and should become much more sophisticated.
 
 """
 
+from __future__ import absolute_import, division, print_function, unicode_literals
 import os, sys, time, inspect
 import fnmatch
 import urllib

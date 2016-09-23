@@ -88,14 +88,13 @@ def computeERT(fevals, maxevals):
     res = toolsstats.sp(data, issuccessful=success)
     return res[0]
 
-def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach, verbose=True):
+def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach):
     """Creates ECDF of run length ratios.
 
     :param DataSetList dsList0: reference
     :param DataSetList dsList1: data set list of algorithm of interest
     :param int dim: dimension
     :param TargetValues targetValuesToReach: target function values
-    :param bool verbose: controls verbosity
 
     :returns: handles
 
@@ -196,7 +195,7 @@ def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach, verbose=True):
 
     return res
 
-def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
+def plotLogRel(indexEntries0, indexEntries1, isByInstance=True):
     """Creates one run length distribution from a sequence of indexEntries.
 
     The function and dimension are given.
@@ -204,7 +203,6 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
     indexEntries0 -- reference
     indexEntries1
     isByInstance -- loop over the function instances instead of the functions
-    verbose
 
     Outputs:
     res -- resulting plot.
@@ -340,7 +338,7 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True, verbose=True):
     return res#, fsolved, funcs
 
 def main(dsList0, dsList1, dim, targetsOfInterest=None,
-         outputdir='', info='default', verbose=True):
+         outputdir='', info='default'):
     """Generate figures of empirical cumulative distribution functions.
 
     :param DataSetList dsList0: data set of reference algorithm
@@ -355,7 +353,6 @@ def main(dsList0, dsList1, dim, targetsOfInterest=None,
                                xlim in the generated figures.
     :param string outputdir: output directory (must exist)
     :param string info: string suffix for output file names.
-    :param bool verbose: control verbosity
 
     Outputs:
     Image files of the empirical cumulative distribution functions.
@@ -370,7 +367,7 @@ def main(dsList0, dsList1, dim, targetsOfInterest=None,
     figureName = os.path.join(outputdir,'pplogabs_%s' %(info))
 
     handles = plotLogAbs(dsList0, dsList1, dim,
-                         targetsOfInterest, verbose=verbose)
+                         targetsOfInterest)
 
     beautify(handles)
 
@@ -382,7 +379,7 @@ def main(dsList0, dsList1, dim, targetsOfInterest=None,
     plt.text(0.98, 0.02, text, horizontalalignment="right",
              transform=plt.gca().transAxes)
 
-    saveFigure(figureName, verbose=verbose)
+    saveFigure(figureName)
     plt.close()
 
     #plt.rcdefaults()

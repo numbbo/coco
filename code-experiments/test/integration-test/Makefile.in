@@ -17,13 +17,14 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 
 ########################################################################
 ## Toplevel targets
-all: test_coco test_instance_extraction test_biobj
+all: test_coco test_instance_extraction test_biobj test_bbob-constrained
 
 clean:
 	rm -f coco.o 
 	rm -f test_coco.o test_coco  
 	rm -f test_instance_extraction.o test_instance_extraction  
 	rm -f test_biobj.o test_biobj  
+	rm -f test_bbob-constrained.o test_bbob-constrained  
 
 ########################################################################
 ## Programs
@@ -36,6 +37,9 @@ test_instance_extraction: test_instance_extraction.o coco.o
 test_biobj: test_biobj.o coco.o
 	${CC} ${CCFLAGS} -o test_biobj coco.o test_biobj.o ${LDFLAGS}  
 
+test_bbob-constrained: test_bbob-constrained.o coco.o
+	${CC} ${CCFLAGS} -o test_bbob-constrained coco.o test_bbob-constrained.o ${LDFLAGS}  
+
 ########################################################################
 ## Additional dependencies
 coco.o: coco.h coco.c
@@ -46,3 +50,5 @@ test_instance_extraction.o: coco.h coco.c test_instance_extraction.c
 	${CC} -c ${CCFLAGS} -o test_instance_extraction.o test_instance_extraction.c
 test_biobj.o: coco.h coco.c test_biobj.c
 	${CC} -c ${CCFLAGS} -o test_biobj.o test_biobj.c
+test_bbob-constrained.o: coco.h coco.c test_bbob-constrained.c
+	${CC} -c ${CCFLAGS} -o test_bbob-constrained.o test_bbob-constrained.c

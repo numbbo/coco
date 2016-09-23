@@ -45,13 +45,13 @@ if __name__ == "__main__":
 __all__ = ['main']
 
 
-def outputPickle(dsList, verbose=True):
+def outputPickle(dsList):
     """Generates pickle files from a DataSetList."""
     dictAlg = dsList.dictByAlg()
     for alg, entries in dictAlg.iteritems():
         #if not _isListed(alg):
         #    updateAlgorithmInfo(alg)
-        entries.pickle(verbose=verbose)
+        entries.pickle()
 
 def usage():
     print main.__doc__
@@ -114,8 +114,6 @@ def main(argv=None):
             usage()
             sys.exit()
 
-        verbose = False
-
         #Process options
         for o, a in opts:
             if o in ("-h", "--help"):
@@ -124,11 +122,11 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        if not verbose:
+        if not genericsettings.verbose:
             warnings.simplefilter('ignore')
 
         dsList = DataSetList(args)
-        outputPickle(dsList, verbose=True)
+        outputPickle(dsList)
 
     except Usage, err:
         print >>sys.stderr, err.msg

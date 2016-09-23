@@ -947,6 +947,29 @@ static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, 
   return count;
 }
 
+/**
+ * @brief Normalizes vector x and multiplies each componenent by alpha.
+ *
+ */
+static void coco_scale_vector(double *x, size_t dimension, double alpha) {
+  
+  size_t i;
+  double norm = 0.0;
+  
+  assert(x);
+  
+  for (i = 0; i < dimension; ++i)
+    norm += x[i] * x[i];
+    
+  norm = sqrt(norm);
+  
+  if (norm != 0.0) {
+    for (i = 0; i < dimension; ++i) {
+      x[i] /= norm;
+      x[i] *= alpha;
+	 }
+  }
+}
 /**@}*/
 
 /***********************************************************************************************************/

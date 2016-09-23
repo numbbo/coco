@@ -61,10 +61,14 @@ def config(testbed_name=None):
 
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets
     if genericsettings.runlength_based_targets in (True, 1):
-        print 'Using bestGECCO2009 based target values: now for each function the target ' + \
-              'values differ, but the "level of difficulty" is "the same". '
+        
+        print('Reference algorithm based target values, using ' +
+              tbs.current_testbed.best_algorithm_filename +
+              ': now for each function, the target ' + 
+              'values differ, but the "level of difficulty" ' +
+              'is "the same". ')
 
-        reference_data = 'bestAlgorithm'
+        reference_data = 'testbedsettings'
         # pprldmany:
         if 1 < 3:  # not yet functional, captions need to be adjusted and the bug reported by Ilya sorted out
             # pprldmany.caption = ... captions are still hard coded in LaTeX

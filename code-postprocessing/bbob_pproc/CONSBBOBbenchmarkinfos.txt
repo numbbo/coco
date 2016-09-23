@@ -1,0 +1,55 @@
+% SEPARABLE
+1 Sphere and 1 linear constraint
+2 Sphere and 2 linear constraints
+3 Sphere and 10 linear constraints
+4 Sphere and dimension/2 linear constraints
+5 Sphere and dimension-1 linear constraints
+6 Sphere and dimension+1 linear constraints
+7 Ellipsoid separable with oscillate x-transformation, condition 1e6, and 1 linear constraint with oscillate x-transformation
+8 Ellipsoid separable with oscillate x-transformation, condition 1e6, and 2 linear constraints with oscillate x-transformation
+9 Ellipsoid separable with oscillate x-transformation, condition 1e6, and 10 linear constraints with oscillate x-transformation
+10 Ellipsoid separable with oscillate x-transformation, condition 1e6, and dimension/2 linear constraints with oscillate x-transformation
+11 Ellipsoid separable with oscillate x-transformation, condition 1e6, dimension-1 linear constraints with oscillate x-transformation
+12 Ellipsoid separable with oscillate x-transformation, condition 1e6, dimension+1 linear constraints with oscillate x-transformation
+13 Linear slope, neutral extension outside the domain (not flat), and 1 linear constraint
+14 Linear slope, neutral extension outside the domain (not flat), and 2 linear constraints
+15 Linear slope, neutral extension outside the domain (not flat), and 10 linear constraints
+16 Linear slope, neutral extension outside the domain (not flat), and dimension/2 linear constraints
+17 Linear slope, neutral extension outside the domain (not flat), and dimension-1 linear constraints
+18 Linear slope, neutral extension outside the domain (not flat), and dimension+1 linear constraints
+
+% HIGH CONDITION
+19 Ellipsoid with oscillate x-transformation, condition 1e6, and 1 linear constraint with oscillate x-transformation
+20 Ellipsoid with oscillate x-transformation, condition 1e6, and 2 linear constraints with oscillate x-transformation
+21 Ellipsoid with oscillate x-transformation, condition 1e6, and 10 linear constraints with oscillate x-transformation
+22 Ellipsoid with oscillate x-transformation, condition 1e6, and dimension/2 linear constraints with oscillate x-transformation
+23 Ellipsoid with oscillate x-transformation, condition 1e6, dimension-1 linear constraints with oscillate x-transformation
+24 Ellipsoid with oscillate x-transformation, condition 1e6, dimension+1 linear constraints with oscillate x-transformation
+25 Discus with oscillate x-transformation, condition 1e6, and 1 linear constraint with oscillate x-transformation
+26 Discus with oscillate x-transformation, condition 1e6, and 2 linear constraints with oscillate x-transformation
+27 Discus with oscillate x-transformation, condition 1e6, and 10 linear constraints with oscillate x-transformation
+28 Discus with oscillate x-transformation, condition 1e6, and dimension/2 linear constraints with oscillate x-transformation
+29 Discus with oscillate x-transformation, condition 1e6, dimension-1 linear constraints with oscillate x-transformation
+30 Discus with oscillate x-transformation, condition 1e6, dimension+1 linear constraints with oscillate x-transformation
+31 Bent cigar with asymmetric x-transformation, condition 1e6, and 1 linear constraint with asymmetric x-transformation
+32 Bent cigar with asymmetric x-transformation, condition 1e6, and 2 linear constraints with asymmetric x-transformation
+33 Bent cigar with asymmetric x-transformation, condition 1e6, and 10 linear constraints with asymmetric x-transformation
+34 Bent cigar with asymmetric x-transformation, condition 1e6, and dimension/2 linear constraints with asymmetric x-transformation
+35 Bent cigar with asymmetric x-transformation, condition 1e6, dimension-1 linear constraints with asymmetric x-transformation
+36 Bent cigar with asymmetric x-transformation, condition 1e6, dimension+1 linear constraints with asymmetric x-transformation
+37 Sum of different powers, and 1 linear constraint
+38 Sum of different powers, and 2 linear constraints
+39 Sum of different powers, and 10 linear constraints
+40 Sum of different powers, and dimension/2 linear constraints
+41 Sum of different powers, dimension-1 linear constraints
+42 Sum of different powers, dimension+1 linear constraints
+
+% MULTI-MODAL
+43 Rastrigin with oscillate x-transformations, condition 10, and 1 linear constraint
+44 Rastrigin with oscillate x-transformations, condition 10, and 2 linear constraints
+45 Rastrigin with oscillate x-transformations, condition 10, and 10 linear constraints
+46 Rastrigin with oscillate x-transformations, condition 10, and dimension/2 linear constraints
+47 Rastrigin with oscillate x-transformations, condition 10, dimension-1 linear constraints
+48 Rastrigin with oscillate x-transformations, condition 10, dimension+1 linear constraints
+
+
