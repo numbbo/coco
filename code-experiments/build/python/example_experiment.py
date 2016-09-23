@@ -1,23 +1,38 @@
 #!/usr/bin/env python
-"""Use case for the COCO experimentation module `cocoex` which can be used as
-template.
+"""Python script for the COCO experimentation module `cocoex`.
 
 Usage from a system shell::
 
-    python example_experiment.py 3 1 20
+    python example_experiment.py bbob
 
-runs the first of 20 batches with maximal budget
-of 3 * dimension f-evaluations.
+runs a full but short experiment on the bbob suite. The optimization
+algorithm used is determined by the `SOLVER` attribute in this file.
+
+    python example_experiment.py bbob 20
+
+runs the same experiment but with a budget of 20 * dimension
+f-evaluations.
+
+    python example_experiment.py bbob-biobj 1e3 1 20
+
+runs the first of 20 batches with maximal budget of
+1000 * dimension f-evaluations on the bbob-biobj suite.
+All batches must be run to generate a complete data set.
 
 Usage from a python shell::
 
     >>> import example_experiment as ee
-    >>> ee.main(3, 1, 1)  # doctest: +ELLIPSIS
+    >>> ee.suite_name = "bbob-biobj"
+    >>> ee.main(5, 100, 100)  # doctest: +ELLIPSIS
     Benchmarking solver...
 
-does the same but runs the "first" of one single batch.
+runs the last of 100 batches with budget 5 * dimension.
+
+Calling `example_experiment` without parameters prints this
+help and the available suite names.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
+del absolute_import, division, print_function, unicode_literals
 try: range = xrange
 except NameError: pass
 import os, sys
@@ -35,6 +50,14 @@ except: pass
 try: range = xrange  # let range always be an iterator
 except NameError: pass
 
+def default_observers():
+    """return a map from suite names to default observer names"""
+    # this is a function only to make the doc available and
+    # because @property doesn't work on module level
+    return {'bbob':'bbob',
+            'bbob-largescale':'bbob',  # todo: needs to be confirmed
+            'bbob-constrained':'bbob',  # todo: needs to be confirmed
+            'bbob-biobj': 'bbob-biobj'}
 
 def print_flush(*args):
     """print without newline and flush"""
@@ -265,11 +288,10 @@ SOLVER = optimize.fmin_cobyla
 #SOLVER = my_solver # fmin_slsqp # SOLVER = cma.fmin
 suite_name = "bbob-constrained"
 #suite_name = "bbob-biobj"
-#suite_name = "bbob"
+# suite_name = "bbob"
 suite_instance = "year:2016"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
-observer_name = "bbob"
-#observer_name = suite_name
+observer_name = default_observers()[suite_name]
 observer_options = (
     ' result_folder: %s_on_%s_budget%04dxD '
                  % (SOLVER.__name__, suite_name, budget) +
@@ -303,22 +325,25 @@ def main(budget=budget,
 # ===============================================
 if __name__ == '__main__':
     """read input parameters and call `main()`"""
-    if len(sys.argv) > 1:
-        if sys.argv[1] in ["--help", "-h"]:
+    if len(sys.argv) < 2 or sys.argv[1] in ["--help", "-h"]:
             print(__doc__)
+            print("Recognized suite names: " + str(cocoex.known_suite_names))
             exit(0)
-        budget = float(sys.argv[1])
+    suite_name = sys.argv[1]
+    observer_name = default_observers()[suite_name]
+    if len(sys.argv) > 2:
+        budget = float(sys.argv[2])
         if observer_options.find('budget') > 0:  # reflect budget in folder name
             idx = observer_options.find('budget')
             observer_options = observer_options[:idx+6] + \
                 "%04d" % int(budget + 0.5) + observer_options[idx+10:]
-    if len(sys.argv) > 2:
-        current_batch = int(sys.argv[2])
     if len(sys.argv) > 3:
-        number_of_batches = int(sys.argv[3])
+        current_batch = int(sys.argv[3])
     if len(sys.argv) > 4:
-        messages = ['Argument "%s" disregarded (only 3 arguments are recognized).' % sys.argv[i]
-            for i in range(4, len(sys.argv))]
+        number_of_batches = int(sys.argv[4])
+    if len(sys.argv) > 5:
+        messages = ['Argument "%s" disregarded (only 4 arguments are recognized).' % sys.argv[i]
+            for i in range(5, len(sys.argv))]
         messages.append('See "python example_experiment.py -h" for help.')
         raise ValueError('\n'.join(messages))
     main(budget, max_runs, current_batch, number_of_batches)

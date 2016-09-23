@@ -96,7 +96,7 @@ cdef class Suite:
     ...                 (fun.number_of_objectives,
     ...                  suite.number_of_objectives[0],
     ...                  suite.number_of_objectives[-1]))
-    ...     observer.observe(fun)
+    ...     fun.observe_with(observer)
     ...     assert fun.number_of_objectives == suite.number_of_objectives[0]
     ...     # run run run using fun  # doctest: +ELLIPSIS
     Number of objectives 2, 2, 2...
@@ -120,8 +120,10 @@ cdef class Suite:
     >>> observer = Observer("bbob",
     ...              "result_folder: %s_on_%s" % (solver.__name__, "bbob2009"))
     >>> for fun in suite:
+    ...     if fun.dimension > 10:
+    ...         break
     ...     print('Current problem index = %d' % fun.index)
-    ...     observer.observe(fun)
+    ...     fun.observe_with(observer)
     ...     solver(fun, fun.lower_bounds, fun.upper_bounds, MAX_FE)
     ...   # data should be now in the "exdata/random_search_on_bbob2009" folder
     ...   # doctest: +ELLIPSIS
@@ -275,8 +277,7 @@ also report back a missing name to https://github.com/numbbo/coco/issues
                                         self.suite, index)
             self.current_problem_ = Problem_init(self._current_problem,
                                                 True, self._name)
-            if observer:
-                observer.observe(self.current_problem_)
+            self.current_problem_.observe_with(observer)
         return self.current_problem_
     def get_problem(self, id, observer=None):
         """`get_problem(self, id, observer=None)` returns a `Problem` instance,
@@ -318,15 +319,16 @@ also report back a missing name to https://github.com/numbbo/coco/issues
             index = self._ids.index(id)
         try:
             return Problem_init(coco_suite_get_problem(self.suite, self._indices[index]),
-                                True, self._name).add_observer(observer)
+                                True, self._name).observe_with(observer)
         except:
             raise NoSuchProblemException(self.name, str(id))
 
     def get_problem_by_function_dimension_instance(self, function, dimension, instance, observer=None):
-        """`get_problem_by_function_dimension_instance(self, id, observer=None)` returns a `Problem` instance,
-        by default unobserved, using function, dimension and instance to identify the desired problem. Note that
-        although a suite can contain multiple problems with the same function, dimension and instance, this function
-        will always return the first problem in the suite that corresponds to the given values.
+        """returns a `Problem` instance, by default unobserved, using function,
+        dimension and instance to identify the desired problem.
+
+        If a suite contains multiple problems with the same function, dimension
+        and instance, the first corresponding problem is returned.
 
         >>> import cocoex as ex
         >>> suite = ex.Suite("bbob-biobj", "", "")
@@ -337,11 +339,13 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         Details:
         - Function, dimension and instance are integer values from 1 on.
 
-        - This call does not affect the state of the `current_problem` and `current_index` attributes.
+        - This call does not affect the state of the `current_problem` and
+          `current_index` attributes.
 
-        - For some suites and/or observers, the `free()` method of the problem must be called before the next call
-          of `get_problem_by_function_dimension_instance`. Otherwise Python might just silently die, which is e.g.
-          a known issue of the "bbob" observer.
+        - For some suites and/or observers, the `free()` method of the problem
+          must be called before the next call of
+          `get_problem_by_function_dimension_instance`. Otherwise Python might
+          just silently die, which is e.g. a known issue of the "bbob" observer.
         """
         cdef size_t _function = function # "conversion" to size_t
         cdef size_t _dimension = dimension # "conversion" to size_t
@@ -352,7 +356,7 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         try:
             return Problem_init(coco_suite_get_problem_by_function_dimension_instance(self.suite, _function,
                                                                                       _dimension, _instance),
-                                True, self._name).add_observer(observer)
+                                True, self._name).observe_with(observer)
         except:
             raise NoSuchProblemException(self.name, 'function: {}, dimension: {}, instance: {}'.format(function,
                                                                                                        dimension,
@@ -439,12 +443,8 @@ also report back a missing name to https://github.com/numbbo/coco/issues
 
         >>> import cocoex as ex
         >>> suite = ex.Suite("bbob", "", "")
-        >>> suite.indices[suite.current_index]  # raises an exception, as current_index is None
-        Traceback (most recent call last):
-          . . .
-          File "<doctest cocoex.interface.__test__.Suite.current_index (line 301)[2]>", line 1, in <module>
-            suite.indices[suite.current_index]  # raises an exception, as current_index is None
-        TypeError: list indices must be integers, not NoneType
+        >>> suite.current_index is None
+        True
         >>> suite.next_problem().id[-17:].lower()
         'bbob_f001_i01_d02'
         >>> suite.current_index, suite.indices[suite.current_index]
@@ -530,10 +530,29 @@ cdef class Observer:
     """Observer which can be "attached to" one or several problems, however not
     necessarily at the same time.
 
-    See method `observe(problem)` for details.
+    The typical observer records data to be used in the COCO post-processing
+    module `cocopp` afterwards.
 
-    A typical `Observer` implementation records data to be used in the COCO
-    post-processing.
+    >>> import cocoex as ex
+    >>> suite = ex.Suite("bbob", "", "")
+    >>> assert len(suite) == 2160
+    >>> f = suite.get_problem(33)
+    >>> assert f.id.endswith('f003_i04_d02')
+    >>> observer = ex.Observer("bbob",
+    ...                        "result_folder: doctest")
+    >>> f.observe_with(observer)  # the same as observer.observe(f)  # doctest: +ELLIPSIS
+    <cocoex...
+    >>> # work work work with observed f
+    >>> f.free()
+
+    Details:
+    - `f.free()` in the above example must be called before to observe
+      another problem with the "bbob" observer. Otherwise the Python
+      interpreter will crash due to an error raised from the C code.
+    - Due to technical sublties between Python/Cython/C, the pointer to the
+      underlying C observer is passed by global assignment with
+      `_update_current_observer_global()`
+
 
     """
     cdef coco_observer_t* _observer
@@ -555,35 +574,9 @@ cdef class Observer:
 
     def observe(self, problem):
         """`observe(problem)` let `self` observe the `problem: Problem` by
-        calling `problem.add_observer(self)`.
-
-        The typical observer records data to be used in the COCO post-processing
-        afterwards.
-
-        >>> import cocoex as ex
-        >>> suite = ex.Suite("bbob", "", "")
-        >>> assert len(suite) == 2160
-        >>> f = suite.get_problem(33)
-        >>> assert isinstance(f, Problem)
-        >>> assert f.id.endswith('f003_i04_d02')
-        >>> observer = ex.Observer("bbob", "").observe(f)
-        >>> # work work work with f
-        >>> f.free()
-
-        Details:
-        - `f.free()` in the above example must be called before to observe
-          another problem with the "bbob" observer. Otherwise the Python
-          interpreter will crash due to an error raised from the C code.
-        - Due to technical sublties between Python/Cython/C, the pointer to the
-          underlying C observer is passed by global assignment with
-          `_update_current_observer_global()`
-
+        calling `problem.observe_with(self)`.
         """
-        self._update_current_observer_global()
-        # problem.problem = coco_problem_add_observer(problem.problem, self._observer)
-        # cannot be done here, because problem.problem is not recognized as C variable here
-        # the alternative would be to pass the problem pointer to a global variable
-        problem.add_observer(self)
+        problem.observe_with(self)
         return self
 
     @property
@@ -713,10 +706,13 @@ cdef class Problem:
         coco_recommend_solution(self.problem, <double *>np.PyArray_DATA(_x))
 
     def logger_biobj_feed_solution(self, evaluation, y):
-        """Feed the given solution to logger_biobj in order to reconstruct its output. Return 1 if the given solution
-        updated the archive and 0 otherwise.
+        """Feed the given solution to logger_biobj in order to reconstruct its
+        output.
 
-        Used by preprocessing when updating the .info, .dat and .tdat files with new indicator reference values.
+        Return 1 if the given solution updated the archive and 0 otherwise.
+
+        Used by preprocessing when updating the .info, .dat and .tdat files
+        with new indicator reference values.
         """
         cdef size_t _evaluation = evaluation # "conversion" to size_t
         cdef np.ndarray[double, ndim=1, mode="c"] _y
@@ -733,9 +729,21 @@ cdef class Problem:
 
 
     def add_observer(self, observer):
-        """`add_observer(self, observer: Observer)`, see also `Observer`.
+        """`add_observer(self, observer: Observer)`, see `observe_with`.
+        """
+        return self.observe_with(observer)
 
-        `observer` can be `None`, in which case nothing is done. 
+    def observe_with(self, observer):
+        """`observe_with(self, observer: Observer)` attaches an observer
+        to this problem.
+
+        Attaching an observer can be considered as wrapping the observer
+        around the problem. For the observer to be finalized, the problem
+        must be free'd (implictly or explicitly).
+
+        Details: `observer` can be `None`, in which case nothing is done.
+
+        See also: class `Observer`
         """
         if observer:
             assert self.problem
