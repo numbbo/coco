@@ -278,17 +278,17 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
 # ===============================================
 ######################### CHANGE HERE ########################################
 # CAVEAT: this might be modified from input args
-budget = 200  # maxfevals = budget x dimension ### INCREASE budget WHEN THE DATA CHAIN IS STABLE ###
+budget = 2  # maxfevals = budget x dimension ### INCREASE budget WHEN THE DATA CHAIN IS STABLE ###
 max_runs = 1e9  # number of (almost) independent trials per problem instance
 number_of_batches = 1  # allows to run everything in several batches
 current_batch = 1      # 1..number_of_batches
 ##############################################################################
-#SOLVER = random_search
-SOLVER = optimize.fmin_cobyla
+SOLVER = random_search
+#SOLVER = optimize.fmin_cobyla
 #SOLVER = my_solver # fmin_slsqp # SOLVER = cma.fmin
-suite_name = "bbob-constrained"
+#suite_name = "bbob-constrained"
 #suite_name = "bbob-biobj"
-# suite_name = "bbob"
+suite_name = "bbob"
 suite_instance = "year:2016"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
 observer_name = default_observers()[suite_name]
