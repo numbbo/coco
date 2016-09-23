@@ -255,9 +255,9 @@ void my_random_search(evaluate_function_t evaluate_func,
       range = upper_bounds[j] - lower_bounds[j];
       x[j] = lower_bounds[j] + coco_random_uniform(random_generator) * range;
     }
-
     /* Call COCO's evaluate function where all the logging is performed */
     evaluate_func(x, functions_values);
+    
     if (number_of_constraints > 0 )
       evaluate_cons(x, constraints_values);
 

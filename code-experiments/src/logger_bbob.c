@@ -414,7 +414,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) 
   logger->last_fvalue = y[0];
 
   /* Check what should be logged in the first iteration */
-  if (logger->number_of_evaluations == 1) {
+  if (logger->number_of_evaluations == 1 && problem->number_of_constraints > 0) {
 	  
     /* Evaluate the objective function at the initial solution and 
      * store its value
