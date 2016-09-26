@@ -211,7 +211,7 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
 
         # # display best algorithm
         # if not bestalg.bestAlgorithmEntries:
-        #     bestalg.load_best_algorithm()
+        #     bestalg.load_reference_algorithm()
 
         # bestalgdata = []
         # for d in dimsBBOB:

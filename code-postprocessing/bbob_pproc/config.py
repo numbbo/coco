@@ -63,7 +63,7 @@ def config(testbed_name=None):
     if genericsettings.runlength_based_targets in (True, 1):
         
         print('Reference algorithm based target values, using ' +
-              tbs.current_testbed.best_algorithm_filename +
+              tbs.current_testbed.reference_algorithm_filename +
               ': now for each function, the target ' + 
               'values differ, but the "level of difficulty" ' +
               'is "the same". ')

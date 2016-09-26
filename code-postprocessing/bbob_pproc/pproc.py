@@ -281,12 +281,12 @@ class RunlengthBasedTargetValues(TargetValues):
         #if self.reference_data == 'bestAlgorithm': # bestalg data are loaded
         if self.reference_data == 'testbedsettings': # bestalg data are loaded according to testbedsettings
             #self.reference_algorithm = self.reference_data
-            self.reference_algorithm = testbedsettings.current_testbed.best_algorithm_filename
+            self.reference_algorithm = testbedsettings.current_testbed.reference_algorithm_filename
             #self._short_info = 'reference budgets from ' + self.reference_data
             self._short_info = 'reference budgets from ' + self.reference_algorithm
 
             from . import bestalg
-            self.reference_data = bestalg.load_best_algorithm(self.reference_algorithm, force=True)
+            self.reference_data = bestalg.load_reference_algorithm(self.reference_algorithm, force=True)
             # TODO: remove targets smaller than 1e-8
         elif type(self.reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work
             self._short_info = 'reference budgets from ' + self.reference_data
@@ -2260,23 +2260,23 @@ class DataSetList(list):
         rld, left_envelope = self.run_length_distributions(
             dimension, target_values, fun_list,
             reference_data_set_list=reference_dataset_list)
-        best_algorithms = []
+        reference_algorithms = []
         idx = left_envelope >= smallest_evaluation_to_use
         for alg in rld:
             try:
                 if reference_dataset_list:
-                    best_algorithms.append([alg, toolsstats.prctile(rld[alg][0][idx], [5])[0],
+                    reference_algorithms.append([alg, toolsstats.prctile(rld[alg][0][idx], [5])[0],
                                             rld[alg], left_envelope,
                                             toolsstats.prctile(rld[alg][0], [2, 5, 15, 25, 50], ignore_nan=False)])
                 else:
-                    best_algorithms.append([alg, np.nanmin(rld[alg][0][idx] / left_envelope[idx]),
+                    reference_algorithms.append([alg, np.nanmin(rld[alg][0][idx] / left_envelope[idx]),
                                             rld[alg], left_envelope,
                                             toolsstats.prctile(rld[alg][0] / left_envelope, [2, 5, 15, 25, 50], ignore_nan=False)])
             except ValueError:
                 warnings.warn(str(alg) + ' could not be processed for get_sorted_algorithms ')
 
-        best_algorithms.sort(key=lambda x: x[1])
-        return best_algorithms
+        reference_algorithms.sort(key=lambda x: x[1])
+        return reference_algorithms
 
 
 def parseinfoold(s):

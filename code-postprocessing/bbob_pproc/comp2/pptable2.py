@@ -86,35 +86,35 @@ def get_table_caption():
         algorithm {}."""
         
     
-    if testbed.best_algorithm_displayname:
+    if testbed.reference_algorithm_displayname:
         if (testbed.name == testbedsettings.testbed_name_single or
                 testbed.name == testbedsettings.default_testbed_single_noisy):
-            if "best 2009" in testbed.best_algorithm_displayname:
+            if "best 2009" in testbed.reference_algorithm_displayname:
                 text_intro = text_intro_best_alg.format("BBOB 2009")
                 text_end = text_end_best_alg.format("BBOB 2009")
-            elif "best 2010" in testbed.best_algorithm_displayname:
+            elif "best 2010" in testbed.reference_algorithm_displayname:
                 text_intro = text_intro_best_alg.format("BBOB 2010")
                 text_end = text_end_best_alg.format("BBOB 2010")
-            elif "best 2012" in testbed.best_algorithm_displayname:
+            elif "best 2012" in testbed.reference_algorithm_displayname:
                 text_intro = text_intro_best_alg.format("BBOB 2012")
                 text_end = text_end_best_alg.format("BBOB 2012")
-            elif "best 2009-2016" in testbed.best_algorithm_displayname:
+            elif "best 2009-2016" in testbed.reference_algorithm_displayname:
                 text_intro = text_intro_best_alg.format("BBOB 2009--16")
                 text_end = text_end_best_alg.format("BBOB 2009--16")
             else:
                 text_intro = text_intro_ref_alg.format(
-                                testbed.best_algorithm_displayname)
+                                testbed.reference_algorithm_displayname)
                 text_end = text_end_ref_alg.format(
-                                testbed.best_algorithm_displayname)
+                                testbed.reference_algorithm_displayname)
         elif testbed.name == testbedsettings.testbed_name_bi:
-            if "best 2016" in testbed.best_algorithm_displayname:
+            if "best 2016" in testbed.reference_algorithm_displayname:
                 text_intro = text_intro_best_alg.format("BBOB 2016")
                 text_end = text_end_best_alg.format("BBOB 2016")
             else:
                 text_intro = text_intro_ref_alg.format(
-                                testbed.best_algorithm_displayname)
+                                testbed.reference_algorithm_displayname)
                 text_end = text_end_ref_alg.format(
-                                testbed.best_algorithm_displayname)  
+                                testbed.reference_algorithm_displayname)  
         
         if genericsettings.runlength_based_targets:
             table_caption = (text_intro + text_middle_runlengthbased +
@@ -159,7 +159,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
     if info:
         info = '_' + info
 
-    bestalgentries = bestalg.load_best_algorithm(testbedsettings.current_testbed.best_algorithm_filename)
+    bestalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
     
     header = []
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):

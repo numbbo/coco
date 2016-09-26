@@ -245,7 +245,7 @@ def save_single_functions_html(filename,
         last_function_number = testbedsettings.current_testbed.last_function_number
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
         addLinkForNextDim = next_html_page_suffix is not None and next_html_page_suffix != add_to_names
-        bestAlgExists = testbedsettings.current_testbed.best_algorithm_filename != ''
+        bestAlgExists = testbedsettings.current_testbed.reference_algorithm_filename != ''
 
         if htmlPage is HtmlPage.ONE:
             f.write('<H3><a href="ppfigdim.html">Average runtime versus '

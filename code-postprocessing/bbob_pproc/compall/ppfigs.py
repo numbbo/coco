@@ -111,17 +111,17 @@ def prepare_ecdfs_figure_caption():
                 r"for each selected target."
                 )
     refalgtext = (
-                  r"As reference algorithm, ``%s`` "  % (testbed.best_algorithm_displayname) +
+                  r"As reference algorithm, ``%s`` "  % (testbed.reference_algorithm_displayname) +
                   r"is shown as light " +
                   r"thick line with diamond markers."
                  )
 
-    if testbed.best_algorithm_displayname:
-        if "best 2009" in testbed.best_algorithm_displayname:
+    if testbed.reference_algorithm_displayname:
+        if "best 2009" in testbed.reference_algorithm_displayname:
             refalgtext = bestalgtext.format("best 2009", "BBOB 2009")
-        if "best 2009-16" in testbed.best_algorithm_displayname:
+        if "best 2009-16" in testbed.reference_algorithm_displayname:
             refalgtext = bestalgtext.format("best 2009-16", "all BBOB workshops from 2009 till 2016")
-        if ("best 2016" in testbed.best_algorithm_displayname
+        if ("best 2016" in testbed.reference_algorithm_displayname
                 and isinstance(testbed, testbedsettings.GECCOBiObjBBOBTestbed)
                 ):
             refalgtext = bestalgtext.format("best 2016", "BBOB 2016")
@@ -493,7 +493,7 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
             #             verticalalignment='bottom',
             #             horizontalalignment='center')
 
-        bestalgentries = bestalg.load_best_algorithm(testbedsettings.current_testbed.best_algorithm_filename)
+        bestalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
 
         if bestalgentries:        
             bestalgdata = []
