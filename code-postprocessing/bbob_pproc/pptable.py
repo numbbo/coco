@@ -129,7 +129,7 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
         # insert a separator between the default file name and the additional
         # information string.
 
-    bestalgentries = bestalg.load_best_algorithm(testbed.best_algorithm_filename)
+    bestalgentries = bestalg.load_reference_algorithm(testbed.reference_algorithm_filename)
     
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
         header = [r'\#FEs/D']

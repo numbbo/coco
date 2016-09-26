@@ -647,7 +647,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             displaybest = plotType == PlotType.ALG
             if displaybest:
                 # set_trace()
-                bestalgentries = bestalg.load_best_algorithm(testbedsettings.current_testbed.best_algorithm_filename)
+                bestalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
 
                 if not bestalgentries:
                     displaybest = False
@@ -680,7 +680,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         args = {'ls': '-', 'linewidth': 6, 'marker': 'D', 'markersize': 11.,
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
-                'label': testbedsettings.current_testbed.best_algorithm_displayname,
+                'label': testbedsettings.current_testbed.reference_algorithm_displayname,
                 'zorder': -1}
         lines.append(plotdata(np.array(xbest), x_limit, maxevalsbest,
                               CrE=0., **args))
@@ -737,7 +737,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 algtocommand[algname_to_label(alg)] = tmp
             if displaybest:
                 tmp = r'\algzeroperfprof'
-                bestalgname = testbedsettings.current_testbed.best_algorithm_displayname
+                bestalgname = testbedsettings.current_testbed.reference_algorithm_displayname
                 f.write(r'\providecommand{%s}{%s}' % (tmp, bestalgname))
                 algtocommand[algname_to_label(bestalgname)] = tmp
 
@@ -786,7 +786,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         text += (str(len(targetstrings)) + ' target RLs/dim: ' +
                  targetstrings[0] + '..' +
                  targetstrings[len(targetstrings)-1] + '\n')
-        text += '   from ' + testbedsettings.current_testbed.best_algorithm_filename
+        text += '   from ' + testbedsettings.current_testbed.reference_algorithm_filename
     else:
         text += (str(len(targetstrings)) + ' targets in ' +
                  targetstrings[0] + '..' +

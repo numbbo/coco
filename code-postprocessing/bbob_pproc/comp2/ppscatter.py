@@ -333,7 +333,7 @@ def main(dsList0, dsList1, outputdir):
             text = (str(len(targetlabels)) + ' target RLs/dim: ' +
                     targetlabels[0] + '..' +
                     targetlabels[len(targetlabels)-1] + '\n')
-            text += '   from ' + testbedsettings.current_testbed.best_algorithm_filename
+            text += '   from ' + testbedsettings.current_testbed.reference_algorithm_filename
         else:
             text = (str(len(targetlabels)) + ' targets in ' +
                     targetlabels[0] + '..' +

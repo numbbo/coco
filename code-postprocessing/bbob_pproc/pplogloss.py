@@ -145,39 +145,39 @@ def table_caption():
        
     testbed = testbedsettings.current_testbed
         
-    if testbed.best_algorithm_filename:
+    if testbed.reference_algorithm_filename:
         if (testbed.name == testbedsettings.testbed_name_single or
                 testbed.name == testbedsettings.default_testbed_single_noisy
                 or testbed.name == testbedsettings.testbed_name_bi):
-            if testbed.best_algorithm_displayname:
-                if "best 2009" in testbed.best_algorithm_displayname:
+            if testbed.reference_algorithm_displayname:
+                if "best 2009" in testbed.reference_algorithm_displayname:
                     table_caption = table_caption.format(
                             "the best algorithm from BBOB-2009",
                             "best \\aRT\\ seen in BBOB-2009")
-                elif "best 2010" in testbed.best_algorithm_displayname:
+                elif "best 2010" in testbed.reference_algorithm_displayname:
                     table_caption = table_caption.format(
                             "the best algorithm from BBOB-2010",
                             "best \\aRT\\ seen in BBOB-2010")
-                elif "best 2012" in testbed.best_algorithm_displayname:
+                elif "best 2012" in testbed.reference_algorithm_displayname:
                     table_caption = table_caption.format(
                             "the best algorithm from BBOB-2012",
                             "best \\aRT\\ seen in BBOB-2012")
-                elif "best 2013" in testbed.best_algorithm_displayname:
+                elif "best 2013" in testbed.reference_algorithm_displayname:
                     table_caption = table_caption.format(
                             "the best algorithm from BBOB-2013",
                             "best \\aRT\\ seen in BBOB-2013")
-                elif "best 2016" in testbed.best_algorithm_displayname:
+                elif "best 2016" in testbed.reference_algorithm_displayname:
                     table_caption = table_caption.format(
                             "the best algorithm from BBOB-2016",
                             "best \\aRT\\ seen in BBOB-2016")
-                elif "best 2009-16" in testbed.best_algorithm_displayname:
+                elif "best 2009-16" in testbed.reference_algorithm_displayname:
                     table_caption = table_caption.format(
                             "the best algorithm of BBOB 2009--2016",
                             "best \\aRT\\ seen in BBOB 2009--16")
                 else:
                     table_caption = table_caption.format(
-                            'the reference algorithm %s' % testbed.best_algorithm_displayname,
-                            '\\aRT\\ of the reference algorithm %s' % testbed.best_algorithm_displayname)
+                            'the reference algorithm %s' % testbed.reference_algorithm_displayname,
+                            '\\aRT\\ of the reference algorithm %s' % testbed.reference_algorithm_displayname)
         else:
             raise NotImplementedError('reference algorithm not supported for this testbed')
 
@@ -257,7 +257,7 @@ def generateData(dsList, evals, CrE_A):
     #if D == 3:
        #set_trace()
 
-    bestalgentries = bestalg.load_best_algorithm(testbedsettings.current_testbed.best_algorithm_filename)
+    bestalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
 
     for fun, tmpdsList in dsList.dictByFunc().iteritems():
         assert len(tmpdsList) == 1
@@ -581,7 +581,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default'):
     """
 
     # If there is no best algorithm.
-    if not bestalg.load_best_algorithm(testbedsettings.current_testbed.best_algorithm_filename):
+    if not bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename):
         return
 
     #Set variables
@@ -851,7 +851,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
     #plt.rc("legend", fontsize=20)
 
     # If there is no best algorithm.
-    if not bestalg.load_best_algorithm(testbedsettings.current_testbed.best_algorithm_filename):
+    if not bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename):
         return
 
     if isStoringXRange:
