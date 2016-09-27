@@ -30,7 +30,7 @@ clean:
 
 ########################################################################
 ## Programs
-test_coco: test_coco.o coco.o
+test_coco: test_coco.o coco.o 
 	${CC} ${CCFLAGS} -o test_coco coco.o test_coco.o ${LDFLAGS}  
 	
 test_instance_extraction: test_instance_extraction.o coco.o

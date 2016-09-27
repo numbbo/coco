@@ -144,7 +144,7 @@ int coco_is_feasible(coco_problem_t *problem,
  * @param y The gradient of the function evaluated at the point x.
  */
 void coco_evaluate_gradient(coco_problem_t *problem, const double *x, double *y) {
-  /* implements a safer version of problem->evaluate(problem, x, y) */
+  /* implements a safer version of problem->evaluate_gradient(problem, x, y) */
   assert(problem != NULL);
   if (problem->evaluate_gradient == NULL) {
     coco_error("coco_evaluate_gradient(): No gradient function implemented for problem %s",

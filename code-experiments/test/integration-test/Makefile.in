@@ -20,7 +20,7 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 all: test_coco test_instance_extraction test_biobj test_bbob-constrained
 
 clean:
-	rm -f coco.o 
+	rm -f coco.o  
 	rm -f test_coco.o test_coco  
 	rm -f test_instance_extraction.o test_instance_extraction  
 	rm -f test_biobj.o test_biobj  
