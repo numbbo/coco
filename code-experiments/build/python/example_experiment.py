@@ -185,7 +185,8 @@ def batch_loop(solver, suite, observer, budget,
             continue
         observer.observe(problem)
         short_info.print(problem) if verbose else None
-        runs = coco_optimize(solver, problem, budget * problem.dimension, max_runs)
+        runs = coco_optimize(solver, problem, budget * problem.dimension,
+                             max_runs)
         if verbose:
             print_flush("!" if runs > 2 else ":" if runs > 1 else ".")
         short_info.add_evals(problem.evaluations, runs)
@@ -282,12 +283,12 @@ suite_name = "bbob-biobj"
 # suite_name = "bbob"
 suite_instance = "year:2016"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
-observer_name = default_observers()[suite_name]
 observer_options = (
     ' result_folder: %s_on_%s_budget%04dxD '
                  % (SOLVER.__name__, suite_name, budget) +
     ' algorithm_name: %s ' % SOLVER.__name__ +
-    ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
+    ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # might get overwritten in main(...)
+
 ######################### END CHANGE HERE ####################################
 
 # ===============================================
@@ -300,8 +301,20 @@ def main(budget=budget,
     """Initialize suite and observer, then benchmark solver by calling
     `batch_loop(SOLVER, suite, observer, budget,...`.
     """
+    observer_name = default_observers()[suite_name]
+    observer_options = (
+        ' result_folder: %s_on_%s_budget%04dxD '
+                 % (SOLVER.__name__, suite_name, budget) +
+        ' algorithm_name: %s ' % SOLVER.__name__ +
+        ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
+    if observer_options.find('budget') > 0:  # reflect budget in folder name
+        idx = observer_options.find('budget')
+        observer_options = observer_options[:idx+6] + \
+            "%04d" % int(budget + 0.5) + observer_options[idx+10:]
+
     observer = Observer(observer_name, observer_options)
     suite = Suite(suite_name, suite_instance, suite_options)
+
     print("Benchmarking solver '%s' with budget=%d*dimension on %s suite, %s"
           % (' '.join(str(SOLVER).split()[:2]), budget,
              suite.name, time.asctime()))
@@ -321,13 +334,8 @@ if __name__ == '__main__':
             print("Recognized suite names: " + str(cocoex.known_suite_names))
             exit(0)
     suite_name = sys.argv[1]
-    observer_name = default_observers()[suite_name]
     if len(sys.argv) > 2:
         budget = float(sys.argv[2])
-        if observer_options.find('budget') > 0:  # reflect budget in folder name
-            idx = observer_options.find('budget')
-            observer_options = observer_options[:idx+6] + \
-                "%04d" % int(budget + 0.5) + observer_options[idx+10:]
     if len(sys.argv) > 3:
         current_batch = int(sys.argv[3])
     if len(sys.argv) > 4:
