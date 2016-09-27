@@ -659,7 +659,8 @@ class DataSet():
                    'folder': ('folder', str),
                    'algId': ('algId', str),
                    'algorithm': ('algId', str),
-                   'suite': ('suite', str)}
+                   'suite': ('suite', str),
+                   'coco_version': ('coco_version', str)}
 
     def isBiobjective(self):
         return hasattr(self, 'indicator')
@@ -668,10 +669,15 @@ class DataSet():
         testbed = None
         if hasattr(self, 'suite'):
             testbed = getattr(self, 'suite')
-
+        if  isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed):
+            # Wassim: prevents from sitching back to GECCOBBOBTestbed once we are in large-scale
+            # Wassim: TODO: not perfect, should be done in a better way, by simply keeping a single instace of current_testbed
+            testbed = testbedsettings.default_testbed_largescale
         if not testbed:
             if self.isBiobjective():
                 testbed = testbedsettings.default_testbed_bi
+            elif self.dim > 40: #Wassim: TODO: the suite should be transmitted in the data files, not this way
+                testbed = testbedsettings.default_testbed_largescale
             elif genericsettings.isNoisy:
                 testbed = testbedsettings.default_testbed_single_noisy
             else:
@@ -723,6 +729,9 @@ class DataSet():
         self.readmaxevals = []
         self.readfinalFminusFtarget = []
 
+        if not testbedsettings.current_testbed:
+            testbedsettings.load_current_testbed(self.testbed_name(), TargetValues)
+
         # Split line in data file name(s) and run time information.
         parts = data.split(', ')
         for elem in parts:
@@ -747,8 +756,9 @@ class DataSet():
             else:
                 if not ':' in elem:
                     
-                    # We take only the first 5 instances for the bi-objective case (for now).
-                    if self.isBiobjective() and ast.literal_eval(elem) > 5:
+                    # We might take only a subset of the given instances for the bi-objective case (for now).
+                    if (self.isBiobjective() and
+                        ast.literal_eval(elem) not in testbedsettings.current_testbed.instancesOfInterest):
                         continue
 
                     # if elem does not have ':' it means the run was not
@@ -765,10 +775,10 @@ class DataSet():
                     self.readfinalFminusFtarget.append(numpy.inf)
                 else:
                     itrial, info = elem.split(':', 1)
-                    # We take only the first 5 instances for the bi-objective case (for now).
-                    if self.isBiobjective() and ast.literal_eval(itrial) > 5:
+                    # We might take only a subset of the given instances for the bi-objective case (for now).
+                    if (self.isBiobjective() and
+                        ast.literal_eval(itrial) not in testbedsettings.current_testbed.instancesOfInterest):
                         continue
-
                     self.instancenumbers.append(ast.literal_eval(itrial))
                     self.isFinalized.append(True)
                     readmaxevals, readfinalf = info.split('|', 1)
@@ -879,13 +889,17 @@ class DataSet():
         
         """
 
-        if not testbedsettings.current_testbed:
+        # Wassim: this should be done on the dataSetList level, and here only if it's not yet set
+        if not testbedsettings.current_testbed or \
+              isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed):
             testbedsettings.load_current_testbed(self.testbed_name(), TargetValues)
 
-        if isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed):
+        if isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed) or \
+           isinstance(testbedsettings.current_testbed, testbedsettings.SingleObjectiveTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
             while i > 1 and not self.isBiobjective() and self.evals[i-1][0] <= self.precision:
+                #Wassim: can GECCOBBOBTestbed be biObjective?!
                 i -= 1
             i += 1
             if i < Ndata:
@@ -919,10 +933,10 @@ class DataSet():
         """
         is_consistent = True
         
-        instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))        
+        instancedict = dict((j, self.instancenumbers.count(j)) for j in set(self.instancenumbers))
         
-        # We take only the first 5 instances for the bi-objective case (for now).
-        expectedNumberOfInstances = 5 if self.isBiobjective() else 15        
+        # We might take only a subset of all provided instances for the bi-objective case (for now).
+        expectedNumberOfInstances = len(testbedsettings.current_testbed.instancesOfInterest) if self.isBiobjective() else 15
         if len(set(self.instancenumbers)) < len(self.instancenumbers):
             # check exception of 2009 data sets with 3 times instances 1:5
             for i in set(self.instancenumbers):
@@ -1515,7 +1529,7 @@ class DataSetList(list):
                 warnings.warn(s)
                 print s
             self.sort()
-
+        self.current_testbed = testbedsettings.current_testbed #Wassim: to be sure
         data_consistent = True
         for ds in self:
             data_consistent = data_consistent and ds.consistency_check()
@@ -1536,7 +1550,7 @@ class DataSetList(list):
             header = ''
             while True:
                 try:
-                    if 'indicator' not in header:
+                    if 'indicator' not in header: #Wassim: not very generic!
                         header = f.next()
                         while not header.strip(): # remove blank lines
                             header = f.next()
@@ -1553,7 +1567,16 @@ class DataSetList(list):
                     data_file_names.append(data)
                     nbLine += 3
                     #TODO: check that something is not wrong with the 3 lines.
-                    ds = DataSet(header, comment, data, indexFile, verbose)                    
+                    ds = DataSet(header, comment, data, indexFile, verbose)
+                    #print
+                    #print "dsList"
+                    #print testbedsettings.current_testbed
+                    #print "dsList"
+                    # Wassim: testbedsettings.current_testbed is now set here
+                    #if not testbedsettings.current_testbed or \
+                    #        isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed):
+                    #   testbedsettings.load_current_testbed(ds.testbed_name(), TargetValues)
+                    #
                     if len(ds.instancenumbers) > 0:                    
                         self.append(ds)
                 except StopIteration:
@@ -1583,17 +1606,19 @@ class DataSetList(list):
         for i in self:
             if i == o:
                 isFound = True
-                if i.instancenumbers == o.instancenumbers and any([_i > 5 for _i in i.instancenumbers]):
+                if 11 < 3 and i.instancenumbers == o.instancenumbers and any([_i > 5 for _i in i.instancenumbers]):
                     warnings.warn("same DataSet found twice, second one from "
-                        + str(o.indexFiles) + " is disregarded for instances "
+                        + str(o.indexFiles) + " with instances "
                         + str(i.instancenumbers))
+                    # todo: this check should be done in a
+                    #       consistency checking method, as the one below
                     break
                 if set(i.instancenumbers).intersection(o.instancenumbers) \
-                        and any([_i >5 for _i in set(i.instancenumbers).intersection(o.instancenumbers)]):
+                        and any([_i > 5 for _i in set(i.instancenumbers).intersection(o.instancenumbers)]):
                     warnings.warn('instances ' + str(set(i.instancenumbers).intersection(o.instancenumbers))
                                   + (' found several times. Read data for F%d in %d-D' % (i.funcId, i.dim)) 
                                   # + ' found several times. Read data for F%(argone)d in %(argtwo)d-D ' % {'argone':i.funcId, 'argtwo':i.dim}
-                                  + 'are likely to be inconsistent. ')
+                                  + 'might be inconsistent. ')
                 # tmp = set(i.dataFiles).symmetric_difference(set(o.dataFiles))
                 #Check if there are new data considered.
                 if 1 < 3:

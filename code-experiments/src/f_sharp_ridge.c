@@ -12,6 +12,11 @@
 #include "transform_obj_shift.c"
 #include "transform_vars_affine.c"
 #include "transform_vars_shift.c"
+#include "transform_vars_conditioning.c"
+
+#include "transform_vars_permutation.c"
+#include "transform_vars_blockrotation.c"
+#include "transform_obj_norm_by_dim.c"
 
 /**
  * @brief Implements the sharp ridge function without connections to any COCO structures.
@@ -19,6 +24,7 @@
 static double f_sharp_ridge_raw(const double *x, const size_t number_of_variables) {
 
   static const double alpha = 100.0;
+  const double vars_40 = 1; /* generalized: number_of_variables <= 40 ? 1 : number_of_variables / 40.0; */
   size_t i = 0;
   double result;
 
@@ -28,10 +34,12 @@ static double f_sharp_ridge_raw(const double *x, const size_t number_of_variable
   	return NAN;
 
   result = 0.0;
-  for (i = 1; i < number_of_variables; ++i) {
+  for (i = ceil(vars_40); i < number_of_variables; ++i) {
     result += x[i] * x[i];
   }
-  result = alpha * sqrt(result) + x[0] * x[0];
+  result = alpha * sqrt(result / vars_40);
+  for (i = 0; i < ceil(vars_40); ++i)
+    result += x[i] * x[i] / vars_40;
 
   return result;
 }
@@ -110,3 +118,5 @@ static coco_problem_t *f_sharp_ridge_bbob_problem_allocate(const size_t function
   coco_free_memory(xopt);
   return problem;
 }
+
+

@@ -20,10 +20,12 @@ def archive_difference(first_path, second_path, differences, functions, instance
     for i, first_file in enumerate(first_files):
         try:
             (suite_name, function, instance, dimension) = parse_archive_file_name(first_file)
+            if (function not in functions) or (dimension not in dimensions):
+                continue
             if not instance:
                 raise PreprocessingWarning('Checking for differences does not work on files with multiple archives, '
                                            'use archive_split')
-            if (function not in functions) or (instance not in instances) or (dimension not in dimensions):
+            if instance not in instances:
                 continue
         except PreprocessingWarning as warning:
             print('Skipping file {}\n{}'.format(first_file, warning))
@@ -39,10 +41,12 @@ def archive_difference(first_path, second_path, differences, functions, instance
     for i, second_file in enumerate(second_files):
         try:
             (suite_name, function, instance, dimension) = parse_archive_file_name(second_file)
+            if (function not in functions) or (dimension not in dimensions):
+                continue
             if not instance:
                 raise PreprocessingWarning('Checking for differences does not work on files with multiple archives, '
                                            'use archive_split')
-            if (function not in functions) or (instance not in instances) or (dimension not in dimensions):
+            if instance not in instances:
                 continue
         except PreprocessingWarning as warning:
             print('Skipping file {}\n{}'.format(second_file, warning))

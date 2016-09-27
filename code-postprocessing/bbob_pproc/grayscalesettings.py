@@ -9,7 +9,7 @@ This module modifies module-defined variables so
 """
 
 import numpy
-from bbob_pproc import ppfigdim, pprldistr, pplogloss
+from bbob_pproc import ppfigdim, pprldistr, pplogloss, genericsettings
 from bbob_pproc.comp2 import ppscatter, ppfig2, pprldistr2
 from bbob_pproc.compall import pprldmany, ppfigs
 
@@ -29,8 +29,7 @@ def convtograyscale(rgb):
 
 print "Using grayscale settings."
 
-instancesOfInterest = {1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1,
-                       11:1, 12:1, 13:1, 14:1, 15:1}
+instancesOfInterest = genericsettings.instancesOfInterest
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables

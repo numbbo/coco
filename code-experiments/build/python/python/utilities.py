@@ -9,7 +9,7 @@ def about_equal(a, b, precision=1e-6):
     
     absolute_error = abs(a - b)
     larger = a if abs(a) > abs(b) else b
-    relative_error = abs((a - b) / larger)
+    relative_error = abs(a - b) / (abs(larger) + 2 * float_info.min)
 
     if absolute_error < (2 * float_info.min):
         return True

@@ -41,7 +41,11 @@ def prepare_html(texFile):
     
     print('pdflatex done')
     
-    tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth\\tth.exe')
+    if ('win32' in sys.platform):
+        tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth\\tth.exe')
+    else:
+        tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth_C/tth')
+
     args = "%s %s" % (tthFile, texFile)
     subprocess.call(args.split(), stdout=FNULL, stderr=FNULL, shell=False)    
 

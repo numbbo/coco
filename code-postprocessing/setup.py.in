@@ -26,6 +26,7 @@ setup(
                           '../latex-templates/*.tex',
                           '../latex-templates/*.cls',
                           '../latex-templates/*.sty',
+                          '../latex-templates/*.bib',
                           'data/IPOP-CMA-ES/*.pickle.gz',
                           'data/RANDOMSEARCH/*.pickle.gz'
                           ]},

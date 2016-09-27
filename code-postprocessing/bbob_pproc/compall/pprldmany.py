@@ -349,13 +349,14 @@ def plotLegend(handles, maxval):
         lh = 2
     fontsize = genericsettings.minmax_algorithm_fontsize[0] + np.min((1, np.exp(9 - lh))) * (
         genericsettings.minmax_algorithm_fontsize[-1] - genericsettings.minmax_algorithm_fontsize[0])
-    i = 0  # loop over the elements of ys
+    i = 0 # loop over the elements of ys
+    best_year = 'best %d' % testbedsettings.current_testbed.best_algorithm_year
     for j in sorted(ys.keys()):
         for k in reversed(sorted(ys[j].keys())):
             # enforce best ever comes last in case of equality
             tmp = []
             for h in ys[j][k]:
-                if plt.getp(h, 'label') == 'best 2009':
+                if plt.getp(h, 'label') == best_year:
                     tmp.insert(0, h)
                 else:
                     tmp.append(h)
@@ -633,6 +634,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     dictDimList = pp.dictAlgByDim(dictAlg)
     dims = sorted(dictDimList)
+
     for i, dim in enumerate(dims):
         divisor = dim if divide_by_dimension else 1
 
@@ -682,7 +684,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 # set_trace()
                 bestalgentries = bestalg.load_best_algorithm()
 
-                if not bestalgentries:
+                if not bestalgentries or not bestalgentries.has_key((dim,f)):
+                    # Wassim: if (dimension,function) is not present in bestalgentries, just ignore it
                     displaybest2009 = False
                 else:
                     bestalgentry = bestalgentries[(dim, f)]
@@ -709,11 +712,12 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
 
     # Display data
     lines = []
+    best_year = 'best %d' %testbedsettings.current_testbed.best_algorithm_year
     if displaybest2009:
         args = {'ls': '-', 'linewidth': 6, 'marker': 'D', 'markersize': 11.,
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
-                'label': 'best 2009', 'zorder': -1}
+                'label': best_year, 'zorder': -1}
         lines.append(plotdata(np.array(xbest2009), x_limit, maxevalsbest2009,
                               CrE=0., **args))
 
@@ -730,7 +734,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         except KeyError:
             continue
 
-        args = styles[(i) % len(styles)]
+        args = styles[i % len(styles)]
+        args = args.copy()
         args['linewidth'] = 1.5
         args['markersize'] = 12.
         args['markeredgewidth'] = 1.5
@@ -768,8 +773,8 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                 algtocommand[algname_to_label(alg)] = tmp
             if displaybest2009:
                 tmp = r'\algzeroperfprof'
-                f.write(r'\providecommand{%s}{best 2009}' % (tmp))
-                algtocommand['best 2009'] = tmp
+                f.write(r'\providecommand{%s}{best %d}' % (tmp, testbedsettings.current_testbed.best_algorithm_year ))
+                algtocommand[best_year] = tmp
 
             commandnames = []
             for label in labels:
@@ -809,15 +814,38 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
                             ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f'))
         if not (plotType == PlotType.DIM):
             text += ', %d-D' % dimList[0]
+    # add information about smallest and largest target and their number
+    text += '\n'
+    targetstrings = target_values.labels()
+    if isinstance(target_values, pp.RunlengthBasedTargetValues):
+        text += (str(len(targetstrings)) + ' target RLs/dim: ' +
+                 targetstrings[0] + '..' +
+                 targetstrings[len(targetstrings)-1] + '\n')
+        text += '   from ' + testbedsettings.current_testbed.best_algorithm_filename
+    else:
+        text += (str(len(targetstrings)) + ' targets in ' +
+                 targetstrings[0] + '..' +
+                 targetstrings[len(targetstrings)-1])        
     # add number of instances 
     text += '\n'
+    num_of_instances = []
     for alg in algorithms_with_data:
-        if dictAlgperFunc[alg]:
-            text += '%d, ' % len(dictAlgperFunc[alg][0].instancenumbers)
+        if len(dictAlgperFunc[alg]) > 0:
+            num_of_instances.append(len((dictAlgperFunc[alg])[0].instancenumbers))
         else:
-            text += '0, '
+            warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
+    # issue a warning if number of instances is inconsistant, otherwise
+    # display only the present number of instances, i.e. remove copies
+    if len(set(num_of_instances)) > 1:
+        warnings.warn('Number of instances inconsistent over all algorithms: %s instances found.' % str(num_of_instances))
+    else:
+        num_of_instances = set(num_of_instances)
+    for n in num_of_instances:
+        text += '%d, ' % n
+            
     text = text.rstrip(', ')
     text += ' instances'
+
     plt.text(0.01, 0.98, text, horizontalalignment="left",
              verticalalignment="top", transform=plt.gca().transAxes, size='small')
     if len(dictFunc) == 1:
