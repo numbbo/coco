@@ -38,6 +38,7 @@ except NameError: pass
 import os, sys
 import time
 import numpy as np  # "pip install numpy" installs numpy
+import warnings
 import cocoex
 from cocoex import Suite, Observer, log_level
 verbose = 1
@@ -169,7 +170,8 @@ def random_search(fun, lbounds, ubounds, budget):
 # loops over a benchmark problem suite
 # ===============================================
 def batch_loop(solver, suite, observer, budget,
-               max_runs, current_batch, number_of_batches):
+               max_runs, current_batch, number_of_batches,
+               observer_options=None):
     """loop over all problems in `suite` calling
     `coco_optimize(solver, problem, budget * problem.dimension, max_runs)`
     for each eligible problem.
@@ -185,7 +187,8 @@ def batch_loop(solver, suite, observer, budget,
             continue
         observer.observe(problem)
         short_info.print(problem) if verbose else None
-        runs = coco_optimize(solver, problem, budget * problem.dimension, max_runs)
+        runs = coco_optimize(solver, problem, budget * problem.dimension,
+                             max_runs, observer_options=observer_options)
         if verbose:
             print_flush("!" if runs > 2 else ":" if runs > 1 else ".")
         short_info.add_evals(problem.evaluations, runs)
@@ -204,7 +207,7 @@ def batch_loop(solver, suite, observer, budget,
 #===============================================
 # interface: ADD AN OPTIMIZER BELOW
 #===============================================
-def coco_optimize(solver, fun, max_evals, max_runs=1e9):
+def coco_optimize(solver, fun, max_evals, max_runs=1e9, observer_options=None):
     """`fun` is a callable, to be optimized by `solver`.
 
     The `solver` is called repeatedly with different initial solutions
@@ -237,7 +240,11 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
                 x0 = "%f + %f * np.random.rand(%d)" % (
                         center[0], 0.8 * range_[0], fun.dimension)
                 sigma0 = 0.2
-                restarts_ = 6 * (observer_options.find('IPOP') >= 0)
+                if observer_options:
+                    restarts_ = 6 * (observer_options.find('IPOP') >= 0)
+                else:
+                    restarts_ = 10
+                    warnings.warn('Number of restarts set to 10 since no observer options are given.')
 
             solver(fun, x0, sigma0 * range_[0], restarts=restarts_,
                    options=dict(scaling=range_/range_[0], maxfevals=remaining_evals,
@@ -281,13 +288,7 @@ SOLVER = random_search
 suite_name = "bbob-biobj"
 # suite_name = "bbob"
 suite_instance = "year:2016"
-suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
-observer_name = default_observers()[suite_name]
-observer_options = (
-    ' result_folder: %s_on_%s_budget%04dxD '
-                 % (SOLVER.__name__, suite_name, budget) +
-    ' algorithm_name: %s ' % SOLVER.__name__ +
-    ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
+suite_options = "" # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
 ######################### END CHANGE HERE ####################################
 
 # ===============================================
@@ -296,12 +297,25 @@ observer_options = (
 def main(budget=budget,
          max_runs=max_runs,
          current_batch=current_batch,
-         number_of_batches=number_of_batches):
+         number_of_batches=number_of_batches,
+         suite_name=suite_name):
     """Initialize suite and observer, then benchmark solver by calling
     `batch_loop(SOLVER, suite, observer, budget,...`.
     """
+    observer_name = default_observers()[suite_name]
+    observer_options = (
+    ' result_folder: %s_on_%s_budget%04dxD '
+                 % (SOLVER.__name__, suite_name, budget) +
+    ' algorithm_name: %s ' % SOLVER.__name__ +
+    ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
+    if observer_options.find('budget') > 0:  # reflect budget in folder name
+        idx = observer_options.find('budget')
+        observer_options = observer_options[:idx+6] + \
+            "%04d" % int(budget + 0.5) + observer_options[idx+10:]
+
     observer = Observer(observer_name, observer_options)
     suite = Suite(suite_name, suite_instance, suite_options)
+
     print("Benchmarking solver '%s' with budget=%d*dimension on %s suite, %s"
           % (' '.join(str(SOLVER).split()[:2]), budget,
              suite.name, time.asctime()))
@@ -310,7 +324,7 @@ def main(budget=budget,
               number_of_batches)
     t0 = time.clock()
     batch_loop(SOLVER, suite, observer, budget, max_runs,
-               current_batch, number_of_batches)
+               current_batch, number_of_batches, observer_options=observer_options)
     print(", %s (%s total elapsed time)." % (time.asctime(), ascetime(time.clock() - t0)))
 
 # ===============================================
@@ -321,13 +335,8 @@ if __name__ == '__main__':
             print("Recognized suite names: " + str(cocoex.known_suite_names))
             exit(0)
     suite_name = sys.argv[1]
-    observer_name = default_observers()[suite_name]
     if len(sys.argv) > 2:
         budget = float(sys.argv[2])
-        if observer_options.find('budget') > 0:  # reflect budget in folder name
-            idx = observer_options.find('budget')
-            observer_options = observer_options[:idx+6] + \
-                "%04d" % int(budget + 0.5) + observer_options[idx+10:]
     if len(sys.argv) > 3:
         current_batch = int(sys.argv[3])
     if len(sys.argv) > 4:
@@ -337,4 +346,4 @@ if __name__ == '__main__':
             for i in range(5, len(sys.argv))]
         messages.append('See "python example_experiment.py -h" for help.')
         raise ValueError('\n'.join(messages))
-    main(budget, max_runs, current_batch, number_of_batches)
+    main(budget, max_runs, current_batch, number_of_batches, suite_name)
