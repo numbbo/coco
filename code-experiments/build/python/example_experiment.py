@@ -170,8 +170,7 @@ def random_search(fun, lbounds, ubounds, budget):
 # loops over a benchmark problem suite
 # ===============================================
 def batch_loop(solver, suite, observer, budget,
-               max_runs, current_batch, number_of_batches,
-               observer_options=None):
+               max_runs, current_batch, number_of_batches):
     """loop over all problems in `suite` calling
     `coco_optimize(solver, problem, budget * problem.dimension, max_runs)`
     for each eligible problem.
@@ -188,7 +187,7 @@ def batch_loop(solver, suite, observer, budget,
         observer.observe(problem)
         short_info.print(problem) if verbose else None
         runs = coco_optimize(solver, problem, budget * problem.dimension,
-                             max_runs, observer_options=observer_options)
+                             max_runs)
         if verbose:
             print_flush("!" if runs > 2 else ":" if runs > 1 else ".")
         short_info.add_evals(problem.evaluations, runs)
@@ -207,7 +206,7 @@ def batch_loop(solver, suite, observer, budget,
 #===============================================
 # interface: ADD AN OPTIMIZER BELOW
 #===============================================
-def coco_optimize(solver, fun, max_evals, max_runs=1e9, observer_options=None):
+def coco_optimize(solver, fun, max_evals, max_runs=1e9):
     """`fun` is a callable, to be optimized by `solver`.
 
     The `solver` is called repeatedly with different initial solutions
@@ -289,6 +288,12 @@ suite_name = "bbob-biobj"
 # suite_name = "bbob"
 suite_instance = "year:2016"
 suite_options = "" # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
+observer_options = (
+    ' result_folder: %s_on_%s_budget%04dxD '
+                 % (SOLVER.__name__, suite_name, budget) +
+    ' algorithm_name: %s ' % SOLVER.__name__ +
+    ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # might get overwritten in main(...)
+
 ######################### END CHANGE HERE ####################################
 
 # ===============================================
@@ -297,17 +302,16 @@ suite_options = "" # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
 def main(budget=budget,
          max_runs=max_runs,
          current_batch=current_batch,
-         number_of_batches=number_of_batches,
-         suite_name=suite_name):
+         number_of_batches=number_of_batches):
     """Initialize suite and observer, then benchmark solver by calling
     `batch_loop(SOLVER, suite, observer, budget,...`.
     """
     observer_name = default_observers()[suite_name]
     observer_options = (
-    ' result_folder: %s_on_%s_budget%04dxD '
+        ' result_folder: %s_on_%s_budget%04dxD '
                  % (SOLVER.__name__, suite_name, budget) +
-    ' algorithm_name: %s ' % SOLVER.__name__ +
-    ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
+        ' algorithm_name: %s ' % SOLVER.__name__ +
+        ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
     if observer_options.find('budget') > 0:  # reflect budget in folder name
         idx = observer_options.find('budget')
         observer_options = observer_options[:idx+6] + \
@@ -324,7 +328,7 @@ def main(budget=budget,
               number_of_batches)
     t0 = time.clock()
     batch_loop(SOLVER, suite, observer, budget, max_runs,
-               current_batch, number_of_batches, observer_options=observer_options)
+               current_batch, number_of_batches)
     print(", %s (%s total elapsed time)." % (time.asctime(), ascetime(time.clock() - t0)))
 
 # ===============================================
@@ -346,4 +350,4 @@ if __name__ == '__main__':
             for i in range(5, len(sys.argv))]
         messages.append('See "python example_experiment.py -h" for help.')
         raise ValueError('\n'.join(messages))
-    main(budget, max_runs, current_batch, number_of_batches, suite_name)
+    main(budget, max_runs, current_batch, number_of_batches)
