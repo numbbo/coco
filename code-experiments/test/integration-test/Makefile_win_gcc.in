@@ -25,7 +25,7 @@ clean:
 	IF EXIST "test_instance_extraction.exe" DEL /F test_instance_extraction.exe
 	IF EXIST "test_biobj.o" DEL /F test_biobj.o 
 	IF EXIST "test_biobj.exe" DEL /F test_biobj.exe
-        IF EXIST "test_bbob-constrained.o" DEL /F test_bbob-constrained.o 
+	IF EXIST "test_bbob-constrained.o" DEL /F test_bbob-constrained.o 
 	IF EXIST "test_bbob-constrained.exe" DEL /F test_bbob-constrained.exe
 
 ########################################################################
