@@ -25,6 +25,7 @@ from matplotlib import mlab as mlab
 from . import toolsstats, bestalg
 from .pptex import writeFEvals2
 from .ppfig import saveFigure, consecutiveNumbers
+from . import testbedsettings
 
 """
 aRT loss ratio of an algorithm A for comparison to BBOB-best2009. This works
@@ -85,7 +86,7 @@ aRT loss ratio: average running time, aRT (measured in number
       10-90\%-percentile range (line), and minimum and maximum aRT loss ratio
       (points).
 Table:
-\aRT\ loss ratio (see also Figure~\ref{fig:ERTgraphs}) vs.\ a given budget
+\aRT\ loss ratio (see also Figure~\ref{fig:aRTgraphs}) vs.\ a given budget
 $\FEvals$. Each cross ({\color{blue}$+$}) represents a single function. The
 target value \ftarget\ used for a given \FEvals\ is the smallest (best) recorded
 function value such that $\aRT(\ftarget)\le\FEvals$ for the presented algorithm.
@@ -97,7 +98,7 @@ function evaluations in a single trial in this function subset.
 
 \aRT\ loss ratio. The aRT of the considered algorithm, the budget, is shown in
 the first column. For the loss ratio the budget is divided by the aRT for the
-respective best result from BBOB-2009 (see also Table~\ref{tab:ERTloss}).
+respective best result from BBOB-2009 (see also Table~\ref{tab:aRTloss}).
 The last row $\text{RL}_{\text{US}}/\text{D}$ gives the number of function
 evaluations in unsuccessful runs divided by dimension. Shown are the smallest,
 10\%-ile, 25\%-ile, 50\%-ile, 75\%-ile and 90\%-ile value (smaller values are
@@ -106,7 +107,7 @@ BBOB-2009. Typical median values are between ten and hundred.
 
 \aRT\ loss ratio. The aRT of the considered algorithm, the budget, is shown in
 the first column. For the loss ratio the budget is divided by the aRT for the
-respective best result from BBOB-2009 (see also Figure~\ref{fig:ERTlogloss}).
+respective best result from BBOB-2009 (see also Figure~\ref{fig:aRTlogloss}).
 The last row $\text{RL}_{\text{US}}/\text{D}$ gives the number of function
 evaluations in unsuccessful runs divided by dimension. Shown are the smallest,
 10\%-ile, 25\%-ile, 50\%-ile, 75\%-ile and 90\%-ile value (smaller values are
@@ -123,6 +124,7 @@ such that $\aRT(\ftarget)\le\FEvals$ for the
 
 
 def table_caption():
+    best_year = testbedsettings.current_testbed.best_algorithm_year
     caption = r"""%
         \aRT\ loss ratio versus the budget in number of $f$-evaluations
         divided by dimension.
@@ -130,15 +132,14 @@ def table_caption():
         as the best target $f$-value reached within the
         budget by the given algorithm.
         Shown is then the \aRT\ to reach \ftarget\ for the given algorithm
-        or the budget, if the GECCO-BBOB-2009 best algorithm
+        or the budget, """ + (r"""if the GECCO-BBOB-%d best algorithm
         reached a better target within the budget,
-        divided by the best \aRT\
-        seen in GECCO-BBOB-2009 to reach \ftarget.
+        divided by the best \aRT\ seen in GECCO-BBOB-%d""" %(best_year, best_year)) + r""" to reach \ftarget.
         Line: geometric mean. Box-Whisker error bar: 25-75\%-ile with median
         (box), 10-90\%-ile (caps), and minimum and maximum \aRT\ loss ratio
         (points). The vertical line gives the maximal number of function evaluations
         in a single trial in this function subset. See also
-        Figure~\ref{fig:ERTlogloss} for results on each function subgroup.
+        Figure~\ref{fig:aRTlogloss} for results on each function subgroup.
         """
 
     # Currently all scenarios have the same caption.
@@ -147,7 +148,7 @@ def table_caption():
 
 def figure_caption():
     caption = r"""%
-        \aRT\ loss ratios (see Figure~\ref{tab:ERTloss} for details).
+        \aRT\ loss ratios (see Figure~\ref{tab:aRTloss} for details).
         Each cross ({\color{blue}$+$}) represents a single function, the line
         is the geometric mean.
         """

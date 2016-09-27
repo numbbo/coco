@@ -81,7 +81,7 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_affine_free, "transform_vars_affine");
   problem->evaluate_function = transform_vars_affine_evaluate;
   if (coco_problem_best_parameter_not_zero(inner_problem)) {
-    coco_warning("transform_vars_affine(): 'best_parameter' not updated, set to NAN");
+    coco_debug("transform_vars_affine(): 'best_parameter' not updated, set to NAN");
     coco_vector_set_to_nan(inner_problem->best_parameter, inner_problem->number_of_variables);
   }
   return problem;

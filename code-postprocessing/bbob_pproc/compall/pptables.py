@@ -27,13 +27,13 @@ def get_table_caption():
         TODO: \hvref and \fopt should be defined via the current_testbed, 
         preferably with a single latex command. 
     """
-
+    best_year = testbedsettings.current_testbed.best_algorithm_year
     table_caption_one = r"""%
-        Average running time (\aRT\ in number of function 
-        evaluations) divided by the respective best \aRT\ measured during BBOB-2009 in
-        #1.
-        The \aRT\ and in braces, as dispersion measure, the half difference between 
-        10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
+        Average running time (\aRT\ in number of function
+        evaluations) divided by the respective best \aRT\ measured during""" + (""" BBOB-%d in
+        #1.""" %best_year) + r"""
+        The \aRT\ and in braces, as dispersion measure, the half difference between
+        10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and
         """
     table_caption_two1 = r"""%
         target, the corresponding best \aRT\
@@ -55,18 +55,20 @@ def get_table_caption():
         \#succ is the number of trials that reached the last target
         $\hvref + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
         """
+
     table_caption_rest = (r"""%
         The median number of conducted function evaluations is additionally given in 
-        \textit{italics}, if the target in the last column was never reached. 
+        \textit{italics}, if the target in the last column was never reached.
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
         than 1, with Bonferroni correction of #2. """ +
                           (r"""A $\downarrow$ indicates the same tested against the best
-        algorithm of BBOB-2009. """
-                           if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
+        algorithm of BBOB-%d. """ %best_year
+                           if (testbedsettings.current_testbed.best_algorithm_filename)
                            else "") + r"""Best results are printed in bold.
         """)
+
 
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
@@ -382,8 +384,8 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
 
         # significance test of best given algorithm against all others
         best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
-        significance_versus_others = significance_all_best_vs_other(algentries, targetsOfInterest, best_alg_idx)[0]
 
+        significance_versus_others = significance_all_best_vs_other(algentries, targetsOfInterest, best_alg_idx)[0] # Wassim: seems to crash when data is incomplete 
         # Create the table
         table = []
         tableHtml = []
@@ -400,29 +402,23 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                           % (2 * len(targetsOfInterest) + 2, header)])
             extraeol.append('')
 
-        curlineHtml = []
+        # generate line with displayed quality indicator and targets:
         if function_targets_line is True or (function_targets_line and df[1] in function_targets_line):
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 curline = [r'\#FEs/D']
-                curlineHtml = ['<thead>\n<tr>\n<th>#FEs/D<br>REPLACEH</th>\n']
                 counter = 1
                 for i in targetsOfInterest.labels():
                     curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % i)
-                    curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
                     counter += 1
             else:
                 if (testbed.name == testbedsettings.testbed_name_bi):
                     curline = [r'$\Df$']
-                    curlineHtml = ['<thead>\n<tr>\n<th>&#916; HV<sub>ref</sub><br>REPLACEH</th>\n']
                 else:
                     curline = [r'$\Delta f_\mathrm{opt}$']
-                    curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']
                 counter = 1
                 for t in targetsOfInterest:
                     curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
                                    % writeFEvals2(t, precision=1, isscientific=True))
-                    curlineHtml.append(
-                        '<td>%s<br>REPLACE%d</td>\n' % (writeFEvals2(t, precision=1, isscientific=True), counter))
                     counter += 1
                 #                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
                 #                            % writeFEvals2(targetsOfInterest[-1], precision=1, isscientific=True))
@@ -430,16 +426,36 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                 curline.append(r'\multicolumn{2}{|@{}l@{}}{\begin{rotate}{30}\#succ\end{rotate}}')
             else:
                 curline.append(r'\multicolumn{2}{|@{}l@{}}{\#succ}')
-            curlineHtml.append('<td>#succ<br>REPLACEF</td>\n</tr>\n</thead>\n')
             table.append(curline)
 
+        # do the same for the HTML output, but all the time:
+        curlineHtml = []
+        if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+            curlineHtml = ['<thead>\n<tr>\n<th>#FEs/D<br>REPLACEH</th>\n']
+            counter = 1
+            for i in targetsOfInterest.labels():
+                curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
+                counter += 1
+        else:
+            if (testbed.name == testbedsettings.testbed_name_bi):
+                curlineHtml = ['<thead>\n<tr>\n<th>&#916; HV<sub>ref</sub><br>REPLACEH</th>\n']
+            else:
+                curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']
+            counter = 1
+            for t in targetsOfInterest:
+                curlineHtml.append(
+                    '<td>%s<br>REPLACE%d</td>\n' % (writeFEvals2(t, precision=1, isscientific=True), counter))
+                counter += 1
+        curlineHtml.append('<td>#succ<br>REPLACEF</td>\n</tr>\n</thead>\n')
+ 
         extraeol.append(r'\hline')
         #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
-
-        curline = [r'\aRT{}$_{\text{best}}$'] if with_table_heading else [r'\textbf{f%d}' % df[1]]
-        replaceValue = '\aRT{}<sub>best</sub>' if with_table_heading else ('<b>f%d</b>' % df[1])
+        
+        # line with function name and potential aRT values of bestalg
+        curline = [r'\textbf{f%d}' % df[1]]
+        replaceValue = '<b>f%d</b>' % df[1]
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
-
+        
         if bestalgentries:
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
@@ -496,13 +512,6 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
         tableHtml.extend(curlineHtml[:])
         tableHtml.append('<tbody>\n')
         extraeol.append('')
-
-        # for i, gna in enumerate(zip((1, 2, 3), ('bla', 'blo', 'bli'))):
-        # print i, gna, gno
-        # set_trace()
-        # Format data
-        # if df == (5, 17):
-        # set_trace()
 
         header = r'\providecommand{\ntables}{%d}' % len(testbed.pptablemany_targetsOfInterest)
         for i, alg in enumerate(algnames):
@@ -675,6 +684,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
 
             if True:
                 filename = os.path.join(outputdir, genericsettings.pptables_file_name + '.html')
+
                 lines = []
                 with open(filename) as infile:
                     for line in infile:

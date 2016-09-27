@@ -295,15 +295,23 @@ def main(argv=None):
         
         from . import config
         config.target_values(genericsettings.isExpensive)
-        config.config(dsList[0].testbed_name())
+        #config.config(dsList[0].testbed_name()) #Wassim: why configure only on the lowest dim!!!!!!!
+        config.config(dsList.dictByDim()[max(dsList.dictByDim().keys())][0].testbed_name())
+        # Wassim: now checkes the highest dimension testbed instead of the first for eventual large-scale scenarii
 
         if (genericsettings.verbose):
-            for i in dsList:
-                if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) != 
-                    inset.instancesOfInterest):
-                    warnings.warn('The data of %s do not list ' % (i) + 
-                                  'the correct instances ' + 
-                                  'of function F%d.' % (i.funcId))
+            for i in dsList:                
+                # check whether current set of instances correspond to correct
+                # setting of a BBOB workshop and issue a warning otherwise:            
+                curr_instances = (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)))
+                correct = False
+                for instance_set_of_interest in inset.instancesOfInterest:
+                    if curr_instances == instance_set_of_interest:
+                        correct = True
+                if not correct:
+                    warnings.warn('The data of %s do not list ' % i +
+                                  'the correct instances ' +
+                                  'of function F%d.' % i.funcId)
 
         dictAlg = dsList.dictByAlg()
 
@@ -360,7 +368,7 @@ def main(argv=None):
             print("Generating LaTeX tables...")
             dictNoise = dsList.dictByNoise()
             for noise, sliceNoise in dictNoise.iteritems():
-                pptable.main(sliceNoise, inset.tabDimsOfInterest,
+                pptable.main(sliceNoise, testbedsettings.current_testbed.tabDimsOfInterest, #inset.tabDimsOfInterest,#Wassim:
                              outputdir, noise, genericsettings.verbose)
             print_done()
 
@@ -373,7 +381,7 @@ def main(argv=None):
                               'results will be mixed in the "all functions" '
                               'ECDF figures.')
             dictDim = dsList.dictByDim()
-            for dim in inset.rldDimsOfInterest:
+            for dim in testbedsettings.current_testbed.rldDimsOfInterest: #inset.rldDimsOfInterest: #Wassim:
                 try:
                     sliceDim = dictDim[dim]
                 except KeyError:
@@ -430,24 +438,28 @@ def main(argv=None):
                     except (SyntaxError, NameError, ValueError):
                         print("Float value required.")
                 dictDim = sliceNoise.dictByDim()
-                for d in inset.rldDimsOfInterest:
+                for d in testbedsettings.current_testbed.rldDimsOfInterest: #inset.rldDimsOfInterest: #Wassim:
                     try:
                         sliceDim = dictDim[d]
                     except KeyError:
                         continue
                     info = '%s' % ng
-                    pplogloss.main(sliceDim, CrE, True,
+                    try: # Wassim: warning for large-scale data, TODO: use different reference data or just not plot it
+                        pplogloss.main(sliceDim, CrE, True,
                                    outputdir, info,
                                    verbose=genericsettings.verbose)
-                    pplogloss.generateTable(sliceDim, CrE,
+                        pplogloss.generateTable(sliceDim, CrE,
                                             outputdir, info,
                                             verbose=genericsettings.verbose)
-                    for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
-                        info = '%s' % fGroup
-                        pplogloss.main(sliceFuncGroup, CrE, True,
+                        for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
+                            info = '%s' % fGroup
+                            pplogloss.main(sliceFuncGroup, CrE, True,
                                        outputdir, info,
                                        verbose=genericsettings.verbose)
-                    pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
+                            pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
+                    except KeyError:
+                        warnings.warn("bestAlg data not found, no pplogloss output")
+
             print_done()
 
         dictFunc = dsList.dictByFunc()

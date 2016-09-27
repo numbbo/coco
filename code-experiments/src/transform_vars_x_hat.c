@@ -71,7 +71,7 @@ static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, const
 
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_x_hat_free, "transform_vars_x_hat");
   problem->evaluate_function = transform_vars_x_hat_evaluate;
-  /* Dirty way of setting the best parameter of the transformed f_schwefel... */
+  /* Dirty way of setting the best parameter of the transformed f_schwefel... Wassim: WHY?!!*/
   bbob2009_unif(data->x, problem->number_of_variables, data->seed);
   result = strstr(coco_problem_get_id(inner_problem), "schwefel");
 	if (result != NULL) {

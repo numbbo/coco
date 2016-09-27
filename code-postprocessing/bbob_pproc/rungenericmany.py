@@ -264,7 +264,7 @@ def main(argv=None):
 
         if not genericsettings.verbose:
             warnings.filterwarnings('module', '.*', Warning, '.*')  # same warning just once
-            warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
+            #warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
 
         config.target_values(genericsettings.isExpensive)
 
@@ -313,12 +313,20 @@ def main(argv=None):
         config.target_values(genericsettings.isExpensive)
         config.config(dsList[0].testbed_name())
 
+        #_dimensions_to_display = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls # Wassim: modify genericsettings.dimensions_to_display directly?
+        _dimensions_to_display = testbedsettings.current_testbed.dimensions_to_display
         for i in dsList:
-            if i.dim not in genericsettings.dimensions_to_display:
+            #if i.dim not in genericsettings.dimensions_to_display:
+            if i.dim not in _dimensions_to_display:
                 continue
-
-            if (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)) <
-                    inset.instancesOfInterest):
+            # check whether current set of instances correspond to correct
+            # setting of a BBOB workshop and issue a warning otherwise:            
+            curr_instances = (dict((j, i.instancenumbers.count(j)) for j in set(i.instancenumbers)))
+            correct = False
+            for instance_set_of_interest in inset.instancesOfInterest:
+                if curr_instances == instance_set_of_interest:
+                    correct = True
+            if not correct:
                 warnings.warn('The data of %s do not list ' % i +
                               'the correct instances ' +
                               'of function F%d.' % i.funcId)
