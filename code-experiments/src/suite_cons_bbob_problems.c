@@ -142,7 +142,6 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double linear_cons_norm = 10.0;
   double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
@@ -164,7 +163,7 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
    * function at the origin to build the first constraint. 
    */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-      dimension, instance, number_of_linear_constraints, linear_cons_norm,
+      dimension, instance, number_of_linear_constraints,
       problem_id_template, problem_name_template, feasible_direction);
 	    
   problem_type_temp = coco_strdup(problem->problem_type);
@@ -218,7 +217,6 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double linear_cons_norm = 10.0;
   double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
@@ -240,7 +238,7 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
    * function at the origin to build the first constraint. 
    */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-      dimension, instance, number_of_linear_constraints, linear_cons_norm,
+      dimension, instance, number_of_linear_constraints,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
@@ -300,7 +298,6 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double linear_cons_norm = 10.0;
   double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
@@ -322,7 +319,7 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
    * function at the origin to build the first constraint. 
    */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-      dimension, instance, number_of_linear_constraints, linear_cons_norm,
+      dimension, instance, number_of_linear_constraints,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
@@ -382,7 +379,6 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double linear_cons_norm = 10.0;
   double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
@@ -404,7 +400,7 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
    * function at the origin to build the first constraint. 
    */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-      dimension, instance, number_of_linear_constraints, linear_cons_norm,
+      dimension, instance, number_of_linear_constraints,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
@@ -462,7 +458,6 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double linear_cons_norm = 10.0;
   double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
@@ -484,7 +479,7 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
    * function at the origin to build the first constraint. 
    */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-      dimension, instance, number_of_linear_constraints, linear_cons_norm,
+      dimension, instance, number_of_linear_constraints,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
@@ -544,7 +539,6 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double linear_cons_norm = 10.0;
   double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
@@ -566,7 +560,7 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
    * function at the origin to build the first constraint. 
    */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-      dimension, instance, number_of_linear_constraints, linear_cons_norm,
+      dimension, instance, number_of_linear_constraints,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
@@ -626,7 +620,6 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double linear_cons_norm = 10.0;
   double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
@@ -648,7 +641,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
    * function at the origin to build the first constraint. 
    */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-      dimension, instance, number_of_linear_constraints, linear_cons_norm,
+      dimension, instance, number_of_linear_constraints,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
@@ -706,7 +699,6 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double linear_cons_norm = 10.0;
   double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
@@ -731,7 +723,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
    * to build the first constraint. 
    */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
-      dimension, instance, number_of_linear_constraints, linear_cons_norm,
+      dimension, instance, number_of_linear_constraints,
       problem_id_template, problem_name_template, feasible_direction);
       
   problem_type_temp = coco_strdup(problem->problem_type);
