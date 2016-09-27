@@ -38,7 +38,6 @@ except NameError: pass
 import os, sys
 import time
 import numpy as np  # "pip install numpy" installs numpy
-import warnings
 import cocoex
 from cocoex import Suite, Observer, log_level
 verbose = 1
@@ -239,11 +238,7 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
                 x0 = "%f + %f * np.random.rand(%d)" % (
                         center[0], 0.8 * range_[0], fun.dimension)
                 sigma0 = 0.2
-                if observer_options:
-                    restarts_ = 6 * (observer_options.find('IPOP') >= 0)
-                else:
-                    restarts_ = 10
-                    warnings.warn('Number of restarts set to 10 since no observer options are given.')
+                restarts_ = 6 * (observer_options.find('IPOP') >= 0)
 
             solver(fun, x0, sigma0 * range_[0], restarts=restarts_,
                    options=dict(scaling=range_/range_[0], maxfevals=remaining_evals,
@@ -287,7 +282,7 @@ SOLVER = random_search
 suite_name = "bbob-biobj"
 # suite_name = "bbob"
 suite_instance = "year:2016"
-suite_options = "" # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
+suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
 observer_options = (
     ' result_folder: %s_on_%s_budget%04dxD '
                  % (SOLVER.__name__, suite_name, budget) +
