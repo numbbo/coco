@@ -32,7 +32,6 @@ Calling `example_experiment` without parameters prints this
 help and the available suite names.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
-del absolute_import, division, print_function, unicode_literals
 try: range = xrange
 except NameError: pass
 import os, sys
@@ -40,6 +39,8 @@ import time
 import numpy as np  # "pip install numpy" installs numpy
 import cocoex
 from cocoex import Suite, Observer, log_level
+del absolute_import, division, print_function, unicode_literals
+
 verbose = 1
 
 try: import cma  # cma.fmin is a solver option, "pip install cma" installs cma
@@ -49,17 +50,59 @@ except: pass
 try: range = xrange  # let range always be an iterator
 except NameError: pass
 
-def default_observers():
+def default_observers(update={}):
     """return a map from suite names to default observer names"""
     # this is a function only to make the doc available and
     # because @property doesn't work on module level
-    return {'bbob':'bbob',
-            'bbob-largescale':'bbob',  # todo: needs to be confirmed
-            'bbob-constraint':'bbob',  # todo: needs to be confirmed
-            'bbob-biobj': 'bbob-biobj'}
+    _default_observers.update(update)
+    return _default_observers
+_default_observers = {
+    'bbob': 'bbob',
+    'bbob-biobj': 'bbob-biobj',
+    'bbob-constrained': 'bbob',
+    'bbob-largescale': 'bbob',  # todo: needs to be confirmed
+    }
+
+class ObserverOptions(dict):
+    """a `dict` with observer options which can be passed to
+    the (C-based) `Observer` via the `as_string` property.
+
+    Details: When the `Observer` class in future accepts a dictionary
+    also, this class becomes superfluous and could be replaced by a method
+    `default_observer_options` similar to `default_observers`.
+    """
+    def __init__(self, options={}):
+        """set default options from global variables and input ``options``.
+
+        Default values are created "dynamically" based on the setting
+        of module-wide variables `SOLVER`, `suite_name`, and `budget`.
+        """
+        try:
+            default_options = {  # set defaults based on current global vars
+                'result_folder': '%s_on_%s_budget%04dxD '
+                                % (SOLVER.__name__, suite_name, budget),
+                'algorithm_name': '%s ' % SOLVER.__name__
+                }
+        except:
+            default_options = {}
+        dict.__init__(self, default_options)
+        self.update(options)
+    def update(self, *args, **kwargs):
+        """add or update options"""
+        dict.update(self, *args, **kwargs)
+        return self
+    @property
+    def as_string(self):
+        """string representation which is accepted by `Observer` class,
+        which calls the underlying C interface
+        """
+        s = str(self).replace(',', ' ')
+        for c in ["u'", 'u"', "'", '"', "{", "}"]:
+            s = s.replace(c, '')
+        return s
 
 def print_flush(*args):
-    """print without newline and flush"""
+    """print without newline but with flush"""
     print(*args, end="")
     sys.stdout.flush()
 
@@ -272,6 +315,8 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
 # ===============================================
 ######################### CHANGE HERE ########################################
 # CAVEAT: this might be modified from input args
+suite_name = "bbob-biobj"
+suite_name = "bbob"  # always overwritten when called from system shell
 budget = 2  # maxfevals = budget x dimension ### INCREASE budget WHEN THE DATA CHAIN IS STABLE ###
 max_runs = 1e9  # number of (almost) independent trials per problem instance
 number_of_batches = 1  # allows to run everything in several batches
@@ -279,16 +324,8 @@ current_batch = 1      # 1..number_of_batches
 ##############################################################################
 SOLVER = random_search
 #SOLVER = my_solver # fmin_slsqp # SOLVER = cma.fmin
-suite_name = "bbob-biobj"
-# suite_name = "bbob"
 suite_instance = "year:2016"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
-observer_options = (
-    ' result_folder: %s_on_%s_budget%04dxD '
-                 % (SOLVER.__name__, suite_name, budget) +
-    ' algorithm_name: %s ' % SOLVER.__name__ +
-    ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # might get overwritten in main(...)
-
 ######################### END CHANGE HERE ####################################
 
 # ===============================================
@@ -302,11 +339,12 @@ def main(budget=budget,
     `batch_loop(SOLVER, suite, observer, budget,...`.
     """
     observer_name = default_observers()[suite_name]
-    observer_options = (
-        ' result_folder: %s_on_%s_budget%04dxD '
-                 % (SOLVER.__name__, suite_name, budget) +
-        ' algorithm_name: %s ' % SOLVER.__name__ +
-        ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
+    observer_options = ObserverOptions({
+                        'algorithm_info': "A SIMPLE RANDOM SEARCH ALGORITHM", # CHANGE/INCOMMENT THIS!
+                        # 'algorithm_name': "",  # default already provided from SOLVER name
+                        # 'result_folder': "",  # default already provided from several global vars
+                       }).as_string
+
     if observer_options.find('budget') > 0:  # reflect budget in folder name
         idx = observer_options.find('budget')
         observer_options = observer_options[:idx+6] + \
