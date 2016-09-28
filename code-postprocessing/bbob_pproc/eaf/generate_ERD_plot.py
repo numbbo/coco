@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-#
-# Called by plots_alongDirections and doing the actual plotting.
-#
-# based on code by Thanh-Do Tran 2012--2015
-# adapted by Dimo Brockhoff 2016
+"""
+ Called by plots_alongDirections and doing the actual plotting of aRT values
+ to attain all objective vectors in a certain interval [ideal, c*nadir] with
+ c being the constant `maxplot` defined below.
+
+ based on code by Thanh-Do Tran 2012--2015
+ adapted by Dimo Brockhoff 2016
+"""
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 from matplotlib import patches
@@ -21,7 +24,7 @@ import bbobbenchmarks as bm
 
 decimals=2 # precision for downsampling
 maxplot = 2 # maximal displayed value (assuming nadir in [1,1])
-precision = 1e-4 # smallest displayed value in logscale
+precision = 1e-3 # smallest displayed value in logscale
 maxbudget = '1e6 * dim'  # largest budget for normalization of aRT-->sampling conversion
 minbudget = '1'          # smallest budget for normalization of aRT-->sampling conversion
                        
@@ -129,36 +132,26 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
 
     
     # plot grid in normalized [precision, maxplot]:
-    n = 50 # number of grid points per objective
+    n = 150 # number of grid points per objective
     if with_grid:
         if logscale:
             gridpoints = np.log10(10**(maxplot*np.array(list(product(range(n),range(n))))/(n-1)+precision))
         else:
             gridpoints = maxplot * np.array(list(product(range(n),range(n))))/(n-1)
     else:
+        raise NotImplementedError # there is currently a bug in the code!!!
+        
         gridpoints = []
         for key in A:
             for a in A[key]:
                 gridpoints.append([a[1], a[2]]) # extract only objective vector
         gridpoints = np.array(gridpoints)
 
-    print(gridpoints)
-    print(len(gridpoints))
-    
     colors = compute_aRT(gridpoints, A)
 
-    print(colors)
-    print(np.nanmax(colors))
-    print(np.nanmin(colors))
-    
     # normalize colors:
     logcolors = np.log10(colors)
     logcolors = (logcolors - np.log10(eval(minbudget)))/(np.log10(eval(maxbudget))-np.log10(eval(minbudget)))
-
-    print(logcolors)
-    print(np.nanmax(logcolors))
-    print(np.nanmin(logcolors))
-
 
     # sort gridpoints (and of course colors) wrt. their aRT:
     idx = logcolors.argsort(kind='mergesort')
@@ -166,8 +159,6 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
     colors = colors[idx]
     logcolors = logcolors[idx]
     gridpoints = gridpoints[idx]
-    
-    print(logcolors)
 
     for i in range(len(gridpoints)-1, -1, -1):
     #for i in range(1, len(gridpoints)-3, 1):
@@ -181,9 +172,6 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
                  alpha=1.0,
                  color=matplotlib.cm.hot_r(logcolors[i])))
         else:
-            print('////////////')
-            print(logcolors[i])
-            print(gridpoints[i])
             ax.add_artist(patches.Rectangle(
                 ((gridpoints[i])[0], (gridpoints[i])[1]),
                  maxplot-(gridpoints[i])[0],
@@ -245,17 +233,12 @@ def compute_aRT(points, A):
         runtime_to_attain_points = [np.nan] * len(points)
         max_runtimes = np.zeros(len(points))
         for a in A[key]:
-#            print('..........................')
-#            print(a)
             for i in range(len(points)):
                 if not points_finished[i]:
                     if weakly_dominates([a[1], a[2]], points[i]):
-#                        print("(%e, %e) dominates (%e, %e)" % (a[1], a[2], points[i][0], points[i][1]))
-#                        print("recorded runtime here: %d" % a[0])
                         runtime_to_attain_points[i] = a[0]
                         points_finished[i] = True
                     else:
-#                        print("(%e, %e) does not dominate (%e, %e)" % (a[1], a[2], points[i][0], points[i][1]))
                         max_runtimes[i] = a[0]
             if min(points_finished): # all grid points dominated
                 break
@@ -276,7 +259,7 @@ def compute_aRT(points, A):
     return aRT
     
 def weakly_dominates(a,b):
-    """ returns True iff a dominates b wrt. minimization """
+    """ Returns True iff a dominates b wrt. minimization """
     
     return (a[0] <= b[0]) and (a[1] <= b[1])
     

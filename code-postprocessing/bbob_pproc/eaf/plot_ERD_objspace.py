@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: UTF-8 -*-
-#
-# Plots the empirical runtime distribution in objective space of
-# of a single run for the bbob-biobj functions obtained from
-# the available archives of an algorithm output.
-#
-#
-# adapted by Dimo Brockhoff 2016
+"""
+ Plots the empirical runtime distribution (aka aRT values) in objective space
+ of all given runs for single function and dimension pairs of the bbob-biobj
+ function suite obtained from the available archives of an algorithm output.
+
+
+ adapted by Dimo Brockhoff 2016
+"""
 
 from __future__ import absolute_import, division, print_function, unicode_literals
 try: range = xrange  # let range always be an iterator
