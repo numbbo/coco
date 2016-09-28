@@ -47,6 +47,7 @@ double randn(double mu, double sigma);
 static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
+                                                      const size_t number_of_linear_constraints,
                                                       const size_t constraint_number,
                                                       const double factor1,
                                                       const char *problem_id_template,
@@ -286,10 +287,16 @@ double randn(double mu, double sigma) {
 
 /**
  * @brief Builds a coco_problem_t containing one single linear constraint.
+ * 
+ * This function is called by c_linear_cons_bbob_problem_allocate(),
+ * the central function that stacks all the constraints built by
+ * c_linear_single_cons_bbob_problem_allocate() into one single
+ * coco_problem_t object.
  */
 static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
+                                                      const size_t number_of_linear_constraints,
                                                       const size_t constraint_number,
                                                       const double factor1,
                                                       const char *problem_id_template,
@@ -310,22 +317,31 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
                                 + 50000 * constraint_number);
   srand(seed_cons_i);
   
+  /* The constraints gradients are scaled with random numbers
+   * 10**U[0,1] and 10**U_i[0,2], where U[a, b] is uniform in [a,b] 
+   * and only U_i is drawn for each constraint individually. 
+   * The random number 10**U[0,1] is given by the variable 'factor1' 
+   * while the random number 10**U_i[0,2] is calculated below and 
+   * stored as 'factor2'. (The exception is when the number of
+   * constraints is n+1, in which case 'factor2' defines a random
+   * number 10**U_i[0,1])
+   */
+     
+  if (number_of_linear_constraints == dimension + 1)
+    exp2 = rand() / (RAND_MAX / (1 + 1) + 1);
+  else 
+    exp2 = rand() / (RAND_MAX / (2 + 1) + 1);
+  factor2 = pow(10.0, exp2);
+    
+  
   /* Set the gradient of the linear constraint if it is given.
    * This should be the case of the construction of the first 
    * linear constraint only.
    */
   if(gradient) {
 	  
-	 /* Scale the gradient of the first constraint with random numbers
-	  * 10**U[0,1] and 10**U_i[0,2] where U[a, b] is uniform in [a,b] 
-	  * and only U_i is drawn for each constraint individually. 
-	  * The random number 10**U[0,1] is given by the variable 'factor1' 
-	  * while the random number 10**U_i[0,2] is calculated below and 
-	  * stored as 'factor2'.
-     */
+	 
     coco_scale_vector(gradient, dimension, 1.0);
-    exp2 = rand() / (RAND_MAX / (2 + 1) + 1);
-    factor2 = pow(10.0, exp2);
     for (i = 0; i < dimension; ++i)
       gradient[i] *= factor1 * factor2;
     
@@ -336,15 +352,9 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
 	  
     gradient_linear_constraint = coco_allocate_vector(dimension);
      
-    /* Generate a pseudorandom number with distribution
-     * 10**U[0,1] * N_i(0, I) * 10**U_i[0,2], where U[a, b] is uniform 
-     * in [a,b] and only U_i is drawn for each constraint individually. 
-     * The random number 10**U[0,1] is given by the variable 'factor1' 
-     * while the random number 10**U_i[0,2] is calculated below and 
-     * stored as 'factor2'.
+    /* Generate a pseudorandom vector with distribution N_i(0, I)
+     * and scale it with 'factor1' and 'factor2' (see comments above)
      */
-    exp2 = rand() / (RAND_MAX / (2 + 1) + 1);
-    factor2 = pow(10.0, exp2);
     for (i = 0; i < dimension; ++i)
       gradient_linear_constraint[i] = factor1 * randn(0.0, 1.0) * factor2;
 
@@ -378,6 +388,12 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
  * in [a,b] and only U_i is drawn for each constraint individually. 
  * The exception is the first constraint, whose gradient is given by
  * 10**U[0,1] * (-feasible_direction) * 10**U_i[0,2].
+ * 
+ * Each constraint is built by calling the function
+ * c_linear_single_cons_bbob_problem_allocate(), which returns a
+ * coco_problem_t object that defines the constraint. The resulting
+ * coco_problem_t objects are then stacked together into one single
+ * coco_problem_t object that is returned by the function.
  */
 static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
@@ -421,8 +437,9 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
    * its gradient.
    */ 
   problem_c = c_linear_single_cons_bbob_problem_allocate(function, 
-      dimension, instance, 1, factor1, problem_id_template, 
-      problem_name_template, gradient_c1, feasible_direction);
+      dimension, instance, number_of_linear_constraints, 1, factor1, 
+      problem_id_template, problem_name_template, gradient_c1, 
+      feasible_direction);
   
   /* Store the pointer to the first gradient for later */
   data_c1 = (linear_constraint_data_t *) coco_problem_transformed_get_data(problem_c);
@@ -434,8 +451,9 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
 	 
     /* Instantiate a new problem containing one linear constraint only */
     problem_c2 = c_linear_single_cons_bbob_problem_allocate(function, 
-        dimension, instance, i, factor1, problem_id_template, 
-        problem_name_template, NULL, feasible_direction);
+        dimension, instance, number_of_linear_constraints, i, factor1, 
+        problem_id_template, problem_name_template, NULL, 
+        feasible_direction);
 		
     problem_c = coco_problem_stacked_allocate(problem_c, problem_c2,
         problem_c2->smallest_values_of_interest, problem_c2->largest_values_of_interest);
