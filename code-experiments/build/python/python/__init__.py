@@ -4,7 +4,7 @@ framework.
 The module provides benchmark test beds in the `Suite` class
 and output data facilities in the `Observer` class.
 
-See the documentation of the `Suite` class::
+See the documentation of the `Suite` class:
 
 >>> import cocoex as ex
 >>> help(ex.Suite)  # doctest: +ELLIPSIS
@@ -13,7 +13,8 @@ Help on class Suite...
 [...
 
 A more complete example use case can be found in the `example_experiment.py`
-file. """
+file.
+"""
 from __future__ import absolute_import, division, print_function, unicode_literals
 from . import utilities
 try:
