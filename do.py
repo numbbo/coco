@@ -636,7 +636,19 @@ def test_java():
 def test_postprocessing(allTests=False):
     install_postprocessing()
     if allTests:
-        python('code-postprocessing/bbob_pproc', ['__main__.py', 'all'], verbose=verbosity)
+        try:
+            # run example experiment to have a recent data set to postprocess:
+            build_python()
+            run(os.path.join('code-experiments', 'build', 'python'),
+                ['python', 'example_experiment.py', 'bbob', '2'])
+            run(os.path.join('code-experiments', 'build', 'python'),
+                ['python', 'example_experiment.py', 'bbob-biobj', '2'])
+            python('code-postprocessing/bbob_pproc', ['__main__.py', 'all'], verbose=verbosity)
+        except subprocess.CalledProcessError:
+            sys.exit(-1)
+        finally:
+            # always remove folder of previously run experiments:
+            shutil.rmtree('code-experiments/build/python/exdata/')
     else:
         python('code-postprocessing/bbob_pproc', ['__main__.py'], verbose=verbosity)
     # python('code-postprocessing', ['-m', 'bbob_pproc'])
