@@ -150,13 +150,13 @@ def beautify():
     #    plt.setp(line, color='b', marker='o', markersize=10)
     #set_trace()
 
-def main(dsList0, dsList1, outputdir):
+def main(dsList0, dsList1, outputdir, settings):
     """Generate a scatter plot figure.
     
     TODO: """
 
     markers = genericsettings.dim_related_markers
-    colors = genericsettings.dim_related_colors
+    colors = settings.dim_related_colors
     #plt.rc("axes", labelsize=24, titlesize=24)
     #plt.rc("xtick", labelsize=20)
     #plt.rc("ytick", labelsize=20)

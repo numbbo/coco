@@ -449,42 +449,45 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
     return res
 
 
-def all_single_functions(dictAlg, isSingleAlgorithm, sortedAlgs=None,
-                         outputdir='.', parentHtmlFileName=None):
-    single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
+def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
+                         output_dir='.', parent_html_file_name=None, settings=genericsettings):
+    single_fct_output_dir = (output_dir.rstrip(os.sep) + os.sep +
                              'pprldmany-single-functions'
                              # + os.sep + ('f%03d' % fg)
                              )
     if not os.path.exists(single_fct_output_dir):
         os.makedirs(single_fct_output_dir)
 
-    if isSingleAlgorithm:
-        main(dictAlg,
-             order=sortedAlgs,
+    if is_single_algorithm:
+        main(dict_alg,
+             order=sorted_algs,
              outputdir=single_fct_output_dir,
              info='',
-             parentHtmlFileName=parentHtmlFileName,
-             plotType=PlotType.DIM)
+             parentHtmlFileName=parent_html_file_name,
+             plotType=PlotType.DIM,
+             settings=settings)
 
-        dictFG = pp.dictAlgByFuncGroup(dictAlg)
+        dictFG = pp.dictAlgByFuncGroup(dict_alg)
         for fg, entries in dictFG.iteritems():
             main(entries,
-                 order=sortedAlgs,
+                 order=sorted_algs,
                  outputdir=single_fct_output_dir,
                  info='%s' % (fg),
-                 parentHtmlFileName=parentHtmlFileName,
-                 plotType=PlotType.DIM)
+                 parentHtmlFileName=parent_html_file_name,
+                 plotType=PlotType.DIM,
+                 settings=settings)
 
-    dictFG = pp.dictAlgByFun(dictAlg)
+    dictFG = pp.dictAlgByFun(dict_alg)
     for fg, tempDictAlg in dictFG.iteritems():
 
-        if isSingleAlgorithm:
+        if is_single_algorithm:
             main(tempDictAlg,
-                 order=sortedAlgs,
+                 order=sorted_algs,
                  outputdir=single_fct_output_dir,
                  info='f%03d' % (fg),
-                 parentHtmlFileName=parentHtmlFileName,
-                 plotType=PlotType.DIM)
+                 parentHtmlFileName=parent_html_file_name,
+                 plotType=PlotType.DIM,
+                 settings=settings)
         else:
             dictDim = pp.dictAlgByDim(tempDictAlg)
             dims = sorted(dictDim)
@@ -492,17 +495,18 @@ def all_single_functions(dictAlg, isSingleAlgorithm, sortedAlgs=None,
                 entries = dictDim[d]
                 next_dim = dims[i + 1] if i + 1 < len(dims) else dims[0]
                 main(entries,
-                     order=sortedAlgs,
+                     order=sorted_algs,
                      outputdir=single_fct_output_dir,
                      info='f%03d_%02dD' % (fg, d),
-                     parentHtmlFileName=parentHtmlFileName,
+                     parentHtmlFileName=parent_html_file_name,
                      add_to_html_file_name='_%02dD' % d,
-                     next_html_page_suffix='_%02dD' % next_dim)
+                     next_html_page_suffix='_%02dD' % next_dim,
+                     settings=settings)
 
-    if isSingleAlgorithm:
-        functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
+    if is_single_algorithm:
+        functionGroups = dict_alg[dict_alg.keys()[0]].getFuncGroups()
 
-        dictDim = pp.dictAlgByDim(dictAlg)
+        dictDim = pp.dictAlgByDim(dict_alg)
         dims = sorted(dictDim)
         for i, d in enumerate(dims):
             tempDictAlg = dictDim[d]
@@ -510,11 +514,12 @@ def all_single_functions(dictAlg, isSingleAlgorithm, sortedAlgs=None,
             dictFG = pp.dictAlgByFuncGroup(tempDictAlg)
             for fg, entries in dictFG.iteritems():
                 main(entries,
-                     order=sortedAlgs,
+                     order=sorted_algs,
                      outputdir=single_fct_output_dir,
                      info='gr_%s_%02dD' % (fg, d),
-                     parentHtmlFileName=parentHtmlFileName,
-                     plotType=PlotType.FUNC)
+                     parentHtmlFileName=parent_html_file_name,
+                     plotType=PlotType.FUNC,
+                     settings=settings)
 
             ppfig.save_single_functions_html(
                 os.path.join(single_fct_output_dir, genericsettings.pprldmany_group_file_name),
@@ -523,13 +528,13 @@ def all_single_functions(dictAlg, isSingleAlgorithm, sortedAlgs=None,
                 next_html_page_suffix='_%02dD' % next_dim,
                 htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP,
                 functionGroups=functionGroups,
-                parentFileName='../%s' % parentHtmlFileName if parentHtmlFileName else None
+                parentFileName='../%s' % parent_html_file_name if parent_html_file_name else None
             )
 
 
 def main(dictAlg, order=None, outputdir='.', info='default',
          dimension=None, parentHtmlFileName=None, plotType=PlotType.ALG,
-         add_to_html_file_name='', next_html_page_suffix=None):
+         add_to_html_file_name='', next_html_page_suffix=None, settings = genericsettings):
     """Generates a figure showing the performance of algorithms.
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
@@ -708,8 +713,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         args['label'] = algname_to_label(alg)
         if plotType == PlotType.DIM:
             args['marker'] = genericsettings.dim_related_markers[i]
-            args['markeredgecolor'] = genericsettings.dim_related_colors[i]
-            args['color'] = genericsettings.dim_related_colors[i]
+            if settings is genericsettings:
+                args['markeredgecolor'] = genericsettings.dim_related_colors[i]
+                args['color'] = genericsettings.dim_related_colors[i]
 
             # args['markevery'] = perfprofsamplesize # option available in latest version of matplotlib
             # elif len(show_algorithms) > 0:

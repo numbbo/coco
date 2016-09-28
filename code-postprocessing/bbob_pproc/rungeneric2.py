@@ -480,7 +480,9 @@ def main(argv=None):
                 pproc.dictAlgByNoi(dictAlg),
                 sortedAlgs,
                 outputdir,
-                dictAlg[sortedAlgs[0]].getFuncGroups())
+                dictAlg[sortedAlgs[0]].getFuncGroups(),
+                inset
+            )
             print_done()
 
             # ECDFs per function groups, code copied from rungenericmany.py
@@ -490,7 +492,9 @@ def main(argv=None):
                 pproc.dictAlgByFuncGroup(dictAlg),
                 sortedAlgs,
                 outputdir,
-                dictAlg[sortedAlgs[0]].getFuncGroups())
+                dictAlg[sortedAlgs[0]].getFuncGroups(),
+                inset
+            )
             print_done()
 
             print("ECDF runlength graphs...")
@@ -538,7 +542,8 @@ def main(argv=None):
                                                False,
                                                sortedAlgs,
                                                outputdir,
-                                               genericsettings.two_algorithm_file_name)
+                                               genericsettings.two_algorithm_file_name,
+                                               settings=inset)
                 print_done()
 
         if genericsettings.isConv:
@@ -552,7 +557,7 @@ def main(argv=None):
 
         if genericsettings.isScatter:
             print("Scatter plots...")
-            ppscatter.main(dsList1, dsList0, outputdir)
+            ppscatter.main(dsList1, dsList0, outputdir, inset)
             prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
                             ['\\providecommand{\\bbobppscatterlegend}[1]{',
                              ppscatter.figure_caption(),
