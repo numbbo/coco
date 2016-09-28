@@ -19,11 +19,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from . import utilities
 try:
     from . import _interface
-    from ._interface import Suite as _Suite, Observer as _Observer, known_suite_names, log_level
+    from ._interface import Suite as _Suite, Observer as _Observer
+    from ._interface import known_suite_names, log_level
 except Exception as _e:
     from . import interface as _interface
     # print("numbbo/code-experiments/build/python/python/__init__.py: could not import '_interface', trying 'interface'", _e)
-    from .interface import Suite as _Suite, Observer as _Observer, known_suite_names, log_level
+    from .interface import Suite as _Suite, Observer as _Observer
+    from .interface import known_suite_names, log_level
 del absolute_import, division, print_function, unicode_literals
 
 # from .utilities import about_equal
@@ -348,6 +350,7 @@ class Observer(_Observer):
     """
 
     def __init__(self, name, options):
+        """``options`` can be a string or a `dict`"""
         super(Observer, self).__init__(name, options)
 
     def observe(self, problem):
