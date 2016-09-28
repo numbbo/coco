@@ -503,3 +503,30 @@ Links and Documentation <a name="Links"></a>
   - via the above "Download ZIP" button or 
   - by typing `git clone https://github.com/numbbo/coco.git` or 
   - via https://github.com/numbbo/coco/archive/master.zip in your browser
+  
+Comprehensive List of Documentations <a name="Documentations"></a>
+--------------------------------------------
+* General introduction: http://numbbo.github.io/coco-doc
+* Experimental setup: http://numbbo.github.io/coco-doc/experimental-setup/
+* Testbeds
+  - bbob: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf ^1
+  - bbob-biobj: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
+  - bbob-noisy (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
+  - bbob-constrained (in progress): http://numbbo.github.io/coco-doc/bbob-constrained/functions/
+  - bbob-largescale (in progress): http://numbbo.github.io/coco-doc/bbob-largescale/functions/
+
+* Performance assessment: http://numbbo.github.io/coco-doc/perf-assessment/
+* Performance assessment for biobjective testbed: http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/
+
+* APIs
+  - ``C`` experiments code: http://numbbo.github.io/coco-doc/C
+  - Python experiments code `cocoex`: https://www.lri.fr/~hansen/cocoex_apidocs/cocoex.html
+  - Postprocessing code: https://www.lri.fr/~hansen/bbob_pproc_apidocs/bbob_pproc.html
+
+* Somewhat outdated documents:
+  - Full description of the platform: http://coco.lri.fr/COCOdoc/
+  - Experimental setup before 2016: http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
+ - Old framework software documentation: http://coco.lri.fr/downloads/download15.03/bbobdocsoftware.pdf
+
+^1: see #837 for a pending erratum
+
