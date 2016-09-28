@@ -25,7 +25,7 @@ import generate_ERD_plot
 # parameters to play with:
 dims = (5,)
 #functions = range(1,56)
-functions = (3,)
+functions = (2,)
 #inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/MAT-SMS/archive/'
 #inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
 inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/gamultiobj/gamultiobj_on_bbob-biobj/archive/'
@@ -51,9 +51,12 @@ for problem_index, problem in enumerate(suite):
     
     f1_id = int(problem.name.lower().split('_f')[1].split('_')[0])
     f2_id = int(problem.name.lower().split('_f')[2].split('_')[0])
+
+    if d not in dims or f not in functions:
+        continue
         
     print("processing %s..." % problem.id)
-    
+        
     generate_ERD_plot.generate_ERD_plot(f, d, f1_id, f2_id,
                                   outputfolder=outputfolder, 
                                   inputfolder=inputarchivefolder,

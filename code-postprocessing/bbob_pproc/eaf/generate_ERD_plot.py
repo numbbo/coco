@@ -23,11 +23,12 @@ import bbobbenchmarks as bm
 
 
 decimals=2 # precision for downsampling
-maxplot = 2 # maximal displayed value (assuming nadir in [1,1])
+maxplot = 5 # maximal displayed value (assuming nadir in [1,1])
 precision = 1e-3 # smallest displayed value in logscale
 maxbudget = '1e6 * dim'  # largest budget for normalization of aRT-->sampling conversion
 minbudget = '1'          # smallest budget for normalization of aRT-->sampling conversion
-                       
+n = 100 # number of grid points per objective
+grayscale = False
 
 biobjinst = {1: [2, 4],
              2: [3, 5],
@@ -132,7 +133,6 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
 
     
     # plot grid in normalized [precision, maxplot]:
-    n = 150 # number of grid points per objective
     if with_grid:
         if logscale:
             gridpoints = np.log10(10**(maxplot*np.array(list(product(range(n),range(n))))/(n-1)+precision))
@@ -160,6 +160,11 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
     logcolors = logcolors[idx]
     gridpoints = gridpoints[idx]
 
+    if grayscale:
+        erd_colormap = matplotlib.cm.gray_r
+    else:
+        erd_colormap = matplotlib.cm.hot_r
+
     for i in range(len(gridpoints)-1, -1, -1):
     #for i in range(1, len(gridpoints)-3, 1):
         if not np.isfinite(logcolors[i]):
@@ -170,14 +175,14 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
                  maxplot-(gridpoints[i])[0],
                  maxplot-(gridpoints[i])[1],
                  alpha=1.0,
-                 color=matplotlib.cm.hot_r(logcolors[i])))
+                 color=erd_colormap(logcolors[i])))
         else:
             ax.add_artist(patches.Rectangle(
                 ((gridpoints[i])[0], (gridpoints[i])[1]),
                  maxplot-(gridpoints[i])[0],
                  maxplot-(gridpoints[i])[1],
                  alpha=1.0,
-                 color=matplotlib.cm.hot_r(logcolors[i])))
+                 color=erd_colormap(logcolors[i])))
             
     #plt.scatter(gridpoints[:,0], gridpoints[:,1], marker='s', c=colors, cmap='autumn_r', s=80, lw=0, norm=matplotlib.colors.LogNorm())
     #plt.scatter(gridpoints[:,0], gridpoints[:,1], marker='s', c=colors, cmap='autumn_r', s=10, lw=0, norm=matplotlib.colors.LogNorm())    
