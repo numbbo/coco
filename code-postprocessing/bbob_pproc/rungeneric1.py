@@ -408,7 +408,8 @@ def main(argv=None):
                                                True,
                                                None,
                                                outputdir,
-                                               genericsettings.single_algorithm_file_name)
+                                               genericsettings.single_algorithm_file_name,
+                                               settings=inset)
                 print_done()
             
         if genericsettings.isLogLoss:

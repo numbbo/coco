@@ -286,7 +286,7 @@ pprldistr2.rldStyles = ({'color': '0.', 'ls': '--'},
                         {'color': '0.3'})
 
 ppscatter.markersize = 14.
-ppscatter.colors = ('0.525', '0.295', '0.11', '0.', '0.3', '0.3075', '0.', '0.6675', '0.', '0.525', '0.3', '0.3075')
+dim_related_colors = ('0.525', '0.295', '0.11', '0.', '0.3', '0.3075', '0.', '0.6675', '0.', '0.525', '0.3', '0.3075')
 
 pprldmany.fontsize = 20.0
 pprldmany.styles = [{'marker': 'o', 'linestyle': '-', 'color': '0.11'},

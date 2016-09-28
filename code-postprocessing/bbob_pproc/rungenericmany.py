@@ -50,7 +50,7 @@ def usage():
     print(main.__doc__)
 
 
-def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups):
+def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings):
     """ Generates ecdf graphs, aggregated over groups as
         indicated via algdict
     """
@@ -76,7 +76,8 @@ def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups):
                            outputdir=output_dir,
                            info=('%02dD_%s' % (d, gr)),
                            add_to_html_file_name='_%02dD' % d,
-                           next_html_page_suffix='_%02dD' % next_dim
+                           next_html_page_suffix='_%02dD' % next_dim,
+                           settings=settings
                            )
 
             file_name = os.path.join(output_dir, '%s_%02dD.html' % (genericsettings.pprldmany_file_name, d))
@@ -365,7 +366,9 @@ def main(argv=None):
             grouped_ecdf_graphs(pproc.dictAlgByNoi(dictAlg),
                                 sortedAlgs,
                                 outputdir,
-                                dictAlg[sortedAlgs[0]].getFuncGroups())
+                                dictAlg[sortedAlgs[0]].getFuncGroups(),
+                                inset
+                                )
             print_done()
 
             # ECDFs per function groups
@@ -373,7 +376,9 @@ def main(argv=None):
             grouped_ecdf_graphs(pproc.dictAlgByFuncGroup(dictAlg),
                                 sortedAlgs,
                                 outputdir,
-                                dictAlg[sortedAlgs[0]].getFuncGroups())
+                                dictAlg[sortedAlgs[0]].getFuncGroups(),
+                                inset
+                                )
             print_done()
 
             # copy-paste from above, here for each function instead of function groups:
@@ -385,7 +390,8 @@ def main(argv=None):
                                                    False,
                                                    sortedAlgs,
                                                    outputdir,
-                                                   genericsettings.many_algorithm_file_name)
+                                                   genericsettings.many_algorithm_file_name,
+                                                   settings=inset)
                 else:  # subject to removal
                     dictFG = pproc.dictAlgByFun(dictAlg)
                     for fg, tmpdictAlg in dictFG.iteritems():
@@ -405,7 +411,8 @@ def main(argv=None):
                                            outputdir=single_fct_output_dir,
                                            info=('f%03d_%02dD' % (fg, d)),
                                            add_to_html_file_name='_%02dD' % d,
-                                           next_html_page_suffix='_%02dD' % next_dim
+                                           next_html_page_suffix='_%02dD' % next_dim,
+                                           settings=inset
                                            )
             print_done()
 
