@@ -6,12 +6,12 @@ Usage from a system shell::
     python example_experiment.py bbob
 
 runs a full but short experiment on the bbob suite. The optimization
-algorithm used is determined by the `SOLVER` attribute in this file.
+algorithm used is determined by the `SOLVER` attribute in this file::
 
     python example_experiment.py bbob 20
 
 runs the same experiment but with a budget of 20 * dimension
-f-evaluations.
+f-evaluations::
 
     python example_experiment.py bbob-biobj 1e3 1 20
 
@@ -19,12 +19,12 @@ runs the first of 20 batches with maximal budget of
 1000 * dimension f-evaluations on the bbob-biobj suite.
 All batches must be run to generate a complete data set.
 
-Usage from a python shell::
+Usage from a python shell:
 
-    >>> import example_experiment as ee
-    >>> ee.suite_name = "bbob-biobj"
-    >>> ee.main(5, 100, 100)  # doctest: +ELLIPSIS
-    Benchmarking solver...
+>>> import example_experiment as ee
+>>> ee.suite_name = "bbob-biobj"
+>>> ee.main(5, 100, 100)  # doctest: +ELLIPSIS
+Benchmarking solver...
 
 runs the last of 100 batches with budget 5 * dimension.
 
