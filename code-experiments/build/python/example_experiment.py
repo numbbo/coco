@@ -91,6 +91,14 @@ class ObserverOptions(dict):
         """add or update options"""
         dict.update(self, *args, **kwargs)
         return self
+    def update_gracefully(self, options):
+        """update from each entry of parameter ``options: dict`` but only
+        if key is not already present
+        """
+        for key in options:
+            if key not in self:
+                self[key] = options[key]
+        return self
     @property
     def as_string(self):
         """string representation which is accepted by `Observer` class,
@@ -326,7 +334,7 @@ SOLVER = random_search
 #SOLVER = my_solver # fmin_slsqp # SOLVER = cma.fmin
 suite_instance = "year:2016"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
-observer_options = ObserverOptions({
+observer_options = ObserverOptions({  # is a dictionary
                     'algorithm_info': "A SIMPLE RANDOM SEARCH ALGORITHM", # CHANGE/INCOMMENT THIS!
                     # 'algorithm_name': "",  # default already provided from SOLVER name
                     # 'result_folder': "",  # default already provided from several global vars
@@ -364,7 +372,8 @@ def main(budget=budget,
     t0 = time.clock()
     batch_loop(SOLVER, suite, observer, budget, max_runs,
                current_batch, number_of_batches)
-    print(", %s (%s total elapsed time)." % (time.asctime(), ascetime(time.clock() - t0)))
+    print(", %s (%s total elapsed time)." % 
+            (time.asctime(), ascetime(time.clock() - t0)))
 
 # ===============================================
 if __name__ == '__main__':
