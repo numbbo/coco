@@ -23,10 +23,12 @@ Usage from a python shell:
 
 >>> import example_experiment as ee
 >>> ee.suite_name = "bbob-biobj"
->>> ee.main(5, 100, 100)  # doctest: +ELLIPSIS
+>>> ee.SOLVER = ee.random_search  # which is default anyway
+>>> ee.observer_options['algorithm_info'] = "default of example_experiment.py"
+>>> ee.main(5, 1+9, 2, 300)  # doctest: +ELLIPSIS
 Benchmarking solver...
 
-runs the last of 100 batches with budget 5 * dimension.
+runs the second of 300 batches with budget 5 * dimension and at most 9 restarts.
 
 Calling `example_experiment` without parameters prints this
 help and the available suite names.
