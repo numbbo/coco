@@ -65,7 +65,8 @@ _default_observers = {
     'bbob-largescale': 'bbob',  # todo: needs to be confirmed
     }
 def default_observer_options(budget_=None, suite_name_=None):
-    """return defaults computed from input parameters or current global vars"""
+    """return defaults computed from input parameters or current global vars
+    """
     global budget, suite_name
     if budget_ is None:
         budget_ = budget
@@ -74,10 +75,14 @@ def default_observer_options(budget_=None, suite_name_=None):
     opts = {}
     try:
         opts.update({'result_folder': '%s_on_%s_budget%04dxD'
-                            % (SOLVER.__name__, suite_name_, budget_)})
+                    % (SOLVER.__name__, suite_name_, budget_)})
     except: pass
     try:
-        opts.update({'algorithm_name': '%s' % SOLVER.__name__})
+        solver_module = '(%s)' % SOLVER.__module__
+    except:
+        solver_module = ''
+    try:
+        opts.update({'algorithm_name': SOLVER.__name__ + solver_module})
     except: pass
     return opts
 class ObserverOptions(dict):
@@ -339,10 +344,10 @@ number_of_batches = 1  # allows to run everything in several batches
 current_batch = 1      # 1..number_of_batches
 ##############################################################################
 SOLVER = random_search
-#SOLVER = my_solver # fmin_slsqp # SOLVER = cma.fmin
+# SOLVER = my_solver # SOLVER = fmin_slsqp # SOLVER = cma.fmin
 suite_instance = "year:2016"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
-observer_options = ObserverOptions({  # is a dictionary
+observer_options = ObserverOptions({  # is (inherited from) a dictionary
                     'algorithm_info': "A SIMPLE RANDOM SEARCH ALGORITHM", # CHANGE/INCOMMENT THIS!
                     # 'algorithm_name': "",  # default already provided from SOLVER name
                     # 'result_folder': "",  # default already provided from several global vars
@@ -357,7 +362,7 @@ def main(budget=budget,
          current_batch=current_batch,
          number_of_batches=number_of_batches):
     """Initialize suite and observer, then benchmark solver by calling
-    `batch_loop(SOLVER, suite, observer, budget,...`.
+    ``batch_loop(SOLVER, suite, observer, budget,...``
     """
     observer_name = default_observers()[suite_name]
     observer_options.update_gracefully(default_observer_options())
