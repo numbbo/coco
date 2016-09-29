@@ -281,7 +281,7 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
                 x0 = "%f + %f * np.random.rand(%d)" % (
                         center[0], 0.8 * range_[0], fun.dimension)
                 sigma0 = 0.2
-                restarts_ = 6 * (observer_options.find('IPOP') >= 0)
+                restarts_ = 6 * (observer_options.as_string.find('IPOP') >= 0)
 
             solver(fun, x0, sigma0 * range_[0], restarts=restarts_,
                    options=dict(scaling=range_/range_[0], maxfevals=remaining_evals,
