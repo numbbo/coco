@@ -217,9 +217,17 @@ static coco_problem_t *c_linear_shuffle(coco_problem_t *problem_c,
   
   /* Pick up a random constraint number other than 1.
    * formula for U[M,N]: 
-   * M + rand() / (RAND_MAX / (N - M + 1) + 1)
+   * random = M + (rand() / (RAND_MAX + 1.0)) * (N - M + 1)
+   * 
+   * Notes:
+   * 
+   * 1. (rand() / (RAND_MAX + 1.0)) ranges from 0.0 to 0.9999. The 1.0
+   *    instead of 1 causes RAND_MAX + 1.0 to be evaluated as a double.
+   * 
+   * 2. 'random' ranges from M to (N+0.9999), but, since 'exchanged'
+   *    is of type size_t, the fraction is discarded.
    */
-  exchanged = 2 + rand() / (RAND_MAX / (problem_c->number_of_constraints - 2 + 1) + 1);
+  exchanged = 2 + (rand() / (RAND_MAX + 1.0)) * (problem_c->number_of_constraints - 2 + 1);
   
   /* Run through the stack until the chosen constraint is found */
   for (i = problem_c->number_of_constraints; i > exchanged; --i) {
@@ -328,9 +336,9 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
    */
      
   if (number_of_linear_constraints == dimension + 1)
-    exp2 = rand() / (RAND_MAX / (1 + 1) + 1);
+    exp2 = (double)rand() / (double)RAND_MAX;
   else 
-    exp2 = rand() / (RAND_MAX / (2 + 1) + 1);
+    exp2 = 2.0 * ((double)rand() / (double)RAND_MAX);
   factor2 = pow(10.0, exp2);
     
   
@@ -424,13 +432,10 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
    * for each constraint individually.
    */
   
-  /* Calculate the first random factor 10**U[0,1].
-   * Formula for U[N,M]:
-   * M + rand() / (RAND_MAX / (N - M + 1) + 1)
-   */
+  /* Calculate the first random factor 10**U[0,1]. */
   seed_cons = (long)(function + 10000 * instance);
   srand(seed_cons);
-  exp1 = rand() / (RAND_MAX / (1 + 1) + 1);
+  exp1 = (double)rand() / (double)RAND_MAX;
   factor1 = pow(10.0, exp1);
   
   /* Build the first linear constraint using 'gradient_c1' to build
