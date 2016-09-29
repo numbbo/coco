@@ -62,7 +62,22 @@ _default_observers = {
     'bbob-constrained': 'bbob',
     'bbob-largescale': 'bbob',  # todo: needs to be confirmed
     }
-
+def default_observer_options(budget_=None, suite_name_=None):
+    """return defaults computed from input parameters or current global vars"""
+    global budget, suite_name
+    if budget_ is None:
+        budget_ = budget
+    if suite_name_ is None:
+        suite_name_ = suite_name
+    opts = {}
+    try:
+        opts.update({'result_folder': '%s_on_%s_budget%04dxD '
+                            % (SOLVER.__name__, suite_name_, budget_)})
+    except: pass
+    try:
+        opts.update({'algorithm_name': '%s ' % SOLVER.__name__})
+    except: pass
+    return opts
 class ObserverOptions(dict):
     """a `dict` with observer options which can be passed to
     the (C-based) `Observer` via the `as_string` property.
