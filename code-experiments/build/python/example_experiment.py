@@ -71,11 +71,11 @@ def default_observer_options(budget_=None, suite_name_=None):
         suite_name_ = suite_name
     opts = {}
     try:
-        opts.update({'result_folder': '%s_on_%s_budget%04dxD '
+        opts.update({'result_folder': '%s_on_%s_budget%04dxD'
                             % (SOLVER.__name__, suite_name_, budget_)})
     except: pass
     try:
-        opts.update({'algorithm_name': '%s ' % SOLVER.__name__})
+        opts.update({'algorithm_name': '%s' % SOLVER.__name__})
     except: pass
     return opts
 class ObserverOptions(dict):
@@ -92,16 +92,7 @@ class ObserverOptions(dict):
         Default values are created "dynamically" based on the setting
         of module-wide variables `SOLVER`, `suite_name`, and `budget`.
         """
-        try:
-            default_options = {  # set defaults based on current global vars
-                'result_folder': '%s_on_%s_budget%04dxD '
-                                % (SOLVER.__name__, suite_name, budget),
-                'algorithm_name': '%s ' % SOLVER.__name__
-                }
-        except:
-            default_options = {}
-        dict.__init__(self, default_options)
-        self.update(options)
+        dict.__init__(self, options)
     def update(self, *args, **kwargs):
         """add or update options"""
         dict.update(self, *args, **kwargs)
@@ -367,15 +358,9 @@ def main(budget=budget,
     `batch_loop(SOLVER, suite, observer, budget,...`.
     """
     observer_name = default_observers()[suite_name]
-    observer_options_str = observer_options.as_string
-    # todo: modify only result_folder entry in dict
+    observer_options.update_gracefully(default_observer_options())
 
-    if observer_options_str.find('budget') > 0:  # reflect budget in folder name
-        idx = observer_options_str.find('budget')
-        observer_options_str = observer_options_str[:idx+6] + \
-            "%04d" % int(budget + 0.5) + observer_options_str[idx+10:]
-
-    observer = Observer(observer_name, observer_options_str)
+    observer = Observer(observer_name, observer_options.as_string)
     suite = Suite(suite_name, suite_instance, suite_options)
 
     print("Benchmarking solver '%s' with budget=%d*dimension on %s suite, %s"
