@@ -161,17 +161,16 @@ class Suite(_Suite):
         synonym.
 
         Details:
-
-        - Here an `index` takes values between 0 and `len(self) - 1` and can in
-          principle be different from the problem index in the benchmark suite.
-
-        - This call does not affect the state of the `current_problem` and
-          `current_index` attributes.
-
-        - For some suites and/or observers, the `free()` method of the problem
-          must be called before the next call of `get_problem`. Otherwise Python
-          might just silently die, which is e.g. a known issue of the "bbob"
-          observer.
+            - Here an `index` takes values between 0 and `len(self) - 1` and can in
+              principle be different from the problem index in the benchmark suite.
+    
+            - This call does not affect the state of the `current_problem` and
+              `current_index` attributes.
+    
+            - For some suites and/or observers, the `free()` method of the problem
+              must be called before the next call of `get_problem`. Otherwise Python
+              might just silently die, which is e.g. a known issue of the "bbob"
+              observer.
 
         See also `ids`.
         """
@@ -191,15 +190,15 @@ class Suite(_Suite):
         >>> problem.free()
 
         Details:
-        - Function, dimension and instance are integer values from 1 on.
-
-        - This call does not affect the state of the `current_problem` and
-          `current_index` attributes.
-
-        - For some suites and/or observers, the `free()` method of the problem
-          must be called before the next call of
-          `get_problem_by_function_dimension_instance`. Otherwise Python might
-          just silently die, which is e.g. a known issue of the "bbob" observer.
+            - Function, dimension and instance are integer values from 1 on.
+    
+            - This call does not affect the state of the `current_problem` and
+              `current_index` attributes.
+    
+            - For some suites and/or observers, the `free()` method of the problem
+              must be called before the next call of
+              `get_problem_by_function_dimension_instance`. Otherwise Python might
+              just silently die, which is e.g. a known issue of the "bbob" observer.
         """
         return super(Suite, self).get_problem_by_function_dimension_instance(
                 function, dimension, instance, observer)
@@ -338,14 +337,13 @@ class Observer(_Observer):
     >>> f.free()
 
     Details:
-
-    - ``f.free()`` in the above example must be called before to observe
-      another problem with the "bbob" observer. Otherwise the Python
-      interpreter will crash due to an error raised from the C code.
-
-    - Due to technical sublties between Python/Cython/C, the pointer to the
-      underlying C observer is passed by global assignment with
-      `_update_current_observer_global()`
+        - ``f.free()`` in the above example must be called before to observe
+          another problem with the "bbob" observer. Otherwise the Python
+          interpreter will crash due to an error raised from the C code.
+    
+        - Due to technical sublties between Python/Cython/C, the pointer to the
+          underlying C observer is passed by global assignment with
+          `_update_current_observer_global()`
 
     """
 
@@ -375,7 +373,7 @@ class Observer(_Observer):
 
 # this definition is copy-edited from interface, solely to pass docstrings to pydoctor
 class Problem(_interface.Problem):
-    """`Problem` instances are usually generated using `Suite`.
+    """`Problem` instances are usually generated using class `Suite`.
     
     The main feature of a problem instance is that it is callable, returning the
     objective function value when called with a candidate solution as input.
@@ -407,8 +405,8 @@ class Problem(_interface.Problem):
         return self.observe_with(observer)
 
     def observe_with(self, observer):
-        """`observe_with(self, observer: Observer)` attaches an observer
-        to this problem.
+        """``observe_with(self, observer: Observer)`` attaches an `Observer`
+        instance to this problem.
 
         Attaching an observer can be considered as wrapping the observer
         around the problem. For the observer to be finalized, the problem
@@ -461,6 +459,7 @@ class Problem(_interface.Problem):
         return super(Problem, self).upper_bounds
     @property
     def evaluations(self):
+        """number of times this `Problem` instance was evaluated"""
         return super(Problem, self).evaluations()
     @property
     def final_target_hit(self):
@@ -509,11 +508,12 @@ class Problem(_interface.Problem):
         return str(self)
 
 def log_level(level=None):
-    """`log_level(level=None)` return current log level and
-    set new log level if `level is not None and level`.
-    
-    `level` must be 'error' or 'warning' or 'info' or 'debug', listed
-    with increasing verbosity, or '' which doesn't change anything.
+    """``log_level(level=None)`` return current log level and
+    set new log level if ``level is not None and level``.
+
+    :param level: must be 'error' or 'warning' or 'info' or 'debug', listed
+        with increasing verbosity, or '' which doesn't change anything.
+
     """
     return _interface.log_level(level)
 
