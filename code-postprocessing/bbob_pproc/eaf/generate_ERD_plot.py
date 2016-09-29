@@ -27,7 +27,7 @@ maxplot = 5 # maximal displayed value (assuming nadir in [1,1])
 precision = 1e-3 # smallest displayed value in logscale
 maxbudget = '1e6 * dim'  # largest budget for normalization of aRT-->sampling conversion
 minbudget = '1'          # smallest budget for normalization of aRT-->sampling conversion
-n = 100 # number of grid points per objective
+n = 50 # number of grid points per objective
 grayscale = False
 
 biobjinst = {1: [2, 4],
@@ -119,23 +119,25 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
         print("   Error: %s" % e)
 
     fig = plt.figure(1)
+    #fig.set_size_inches(fig.get_size_inches()[1], fig.get_size_inches()[1]) # make axes equal
     ax = fig.add_subplot(111)
 
-    # print all points of all runs
+    # print all (downsampled) points of all runs
 #    for key in A:
 #        for a in A[key]:
 #            plt.plot(a[1], a[2], 'xk')
 
 
 #    for a in A[1]:
-#        plt.plot(a[1], a[2], 'xk')
-#    plt.show()
+#        plt.plot(a[1], a[2], 'ob')
+    
 
     
     # plot grid in normalized [precision, maxplot]:
     if with_grid:
         if logscale:
-            gridpoints = np.log10(10**(maxplot*np.array(list(product(range(n),range(n))))/(n-1)+precision))
+            log_range = np.logspace(np.log10(precision), np.log10(maxplot), num=n, endpoint=True, base=10.0)
+            gridpoints = np.array(list(product(log_range, log_range)))
         else:
             gridpoints = maxplot * np.array(list(product(range(n),range(n))))/(n-1)
     else:
@@ -169,15 +171,7 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
     #for i in range(1, len(gridpoints)-3, 1):
         if not np.isfinite(logcolors[i]):
             continue # no finite aRT
-        if logscale:
-            ax.add_artist(patches.Rectangle(
-                ((gridpoints[i])[0], (gridpoints[i])[1]),
-                 maxplot-(gridpoints[i])[0],
-                 maxplot-(gridpoints[i])[1],
-                 alpha=1.0,
-                 color=erd_colormap(logcolors[i])))
-        else:
-            ax.add_artist(patches.Rectangle(
+        ax.add_artist(patches.Rectangle(
                 ((gridpoints[i])[0], (gridpoints[i])[1]),
                  maxplot-(gridpoints[i])[0],
                  maxplot-(gridpoints[i])[1],
@@ -208,7 +202,8 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
         ax.set_ylabel(r'$f_2 - f_2^\mathsf{opt}$ (normalized)', fontsize=16)    
         # we might want to zoom in a bit:
         ax.set_xlim((0, maxplot))
-        ax.set_ylim((0, maxplot))        
+        ax.set_ylim((0, maxplot))
+    
     
     # printing
     if tofile:
