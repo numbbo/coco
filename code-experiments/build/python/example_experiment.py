@@ -326,11 +326,11 @@ SOLVER = random_search
 #SOLVER = my_solver # fmin_slsqp # SOLVER = cma.fmin
 suite_instance = "year:2016"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
-observer_options = {
+observer_options = ObserverOptions({
                     'algorithm_info': "A SIMPLE RANDOM SEARCH ALGORITHM", # CHANGE/INCOMMENT THIS!
                     # 'algorithm_name': "",  # default already provided from SOLVER name
                     # 'result_folder': "",  # default already provided from several global vars
-                   }
+                   })
 ######################### END CHANGE HERE ####################################
 
 # ===============================================
@@ -344,7 +344,8 @@ def main(budget=budget,
     `batch_loop(SOLVER, suite, observer, budget,...`.
     """
     observer_name = default_observers()[suite_name]
-    observer_options_str = ObserverOptions(observer_options).as_string
+    observer_options_str = observer_options.as_string
+    # todo: modify only result_folder entry in dict
 
     if observer_options_str.find('budget') > 0:  # reflect budget in folder name
         idx = observer_options_str.find('budget')
