@@ -286,14 +286,14 @@ def main(args):
                                                      '../../code-experiments/build/python/exdata'))
         t0 = time.time()
         result = os.system(python + command +
-                           join_path(recent_data_path, 'random_search_on_bbob_budget0002xD'))
+                           join_path(recent_data_path, 'RS-bb'))
         print('**  subtest 10 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob`.'
         delete_files()
 
         t0 = time.time()
         result = os.system(python + command +
-                           join_path(recent_data_path, 'random_search_on_bbob-biobj_budget0002xD'))
+                           join_path(recent_data_path, 'RS-bi'))
         print('**  subtest 11 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-biobj`.'
         delete_files()

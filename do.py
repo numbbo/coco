@@ -639,10 +639,20 @@ def test_postprocessing(allTests=False):
         try:
             # run example experiment to have a recent data set to postprocess:
             build_python()
-            run(os.path.join('code-experiments', 'build', 'python'),
-                ['python', 'example_experiment.py', 'bbob', '2'])
-            run(os.path.join('code-experiments', 'build', 'python'),
-                ['python', 'example_experiment.py', 'bbob-biobj', '2'])
+            python('code-experiments/build/python/', ['-c', '''  
+try:
+    import example_experiment as ee
+except Exception as e:
+    print(e)
+ee.SOLVER = ee.random_search  # which is default anyway
+ee.suite_name = "bbob-biobj"
+ee.observer_options['result_folder'] = "RS-bi"
+ee.main()  # doctest: +ELLIPSIS
+ee.suite_name = "bbob"
+ee.observer_options['result_folder'] = "RS-bb"
+ee.main()  # doctest: +ELLIPSIS
+            '''], verbose=verbosity)
+            # now run all tests
             python('code-postprocessing/bbob_pproc', ['__main__.py', 'all'], verbose=verbosity)
         except subprocess.CalledProcessError:
             sys.exit(-1)
