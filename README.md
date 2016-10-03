@@ -520,8 +520,9 @@ Comprehensive List of Documentations <a name="Documentations"></a>
 
 * APIs
   - ``C`` experiments code: http://numbbo.github.io/coco-doc/C
-  - Python experiments code `cocoex`: https://www.lri.fr/~hansen/cocoex_apidocs/cocoex.html
-  - Postprocessing code: https://www.lri.fr/~hansen/bbob_pproc_apidocs/bbob_pproc.html
+  - Python experiments code `cocoex`: http://coco.lri.fr/apidocs-cocoex/cocoex.html
+  - Python `example_experiment.py`: http://coco.lri.fr/apidocs-example_experiment/example_experiment.html
+  - Postprocessing code: http://coco.lri.fr/apidocs-bbob_pproc/bbob_pproc.html
 
 * Somewhat outdated documents:
   - Full description of the platform: http://coco.lri.fr/COCOdoc/
