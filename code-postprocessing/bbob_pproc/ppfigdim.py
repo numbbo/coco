@@ -60,6 +60,7 @@ import numpy as np
 
 from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam, htmldesc, toolsdivers
 from . import testbedsettings
+from . import captions
 
 xlim_max = None
 ynormalize_by_dimension = True  # not at all tested yet
@@ -81,112 +82,43 @@ refcolor = 'wheat'
 dimensions = genericsettings.dimensions_to_display
 
 def scaling_figure_caption():
+    """Provides a figure caption with the help of captions.py for
+       replacing common texts, abbreviations, etc.
+    """
 
-    testbed = testbedsettings.current_testbed
-
-    caption_part_one = r"""%
-        Scaling of runtime with dimension to reach certain target values \Df.
+    caption_text = r"""%
+        Scaling of runtime with dimension to reach certain target values !!DF!!.
         Lines: average runtime (\aRT);
         Cross (+): median runtime of successful runs to reach the most difficult
         target that was reached at least once (but not always);
         Cross ({\color{red}$\times$}): maximum number of
-        $f$-evaluations in any trial. """ + (r"""Notched
-        boxes: interquartile range with median of simulated runs;
-        """ if genericsettings.scaling_figures_with_boxes else "") + """%
-        All values are """ + ("""divided by dimension and """ if ynormalize_by_dimension else "") + """
+        $f$-evaluations in any trial. !!NOTCHED_BOXES!!
+        All values are !!DIVIDED_BY_DIMENSION!! 
         plotted as $\log_{10}$ values versus dimension. %
         """
-
-    #""" .replace('REPLACE_THIS', r"interquartile range with median (notched boxes) of simulated runlengths to reach $\fopt+\Df$;"
-    #                if genericsettings.scaling_figures_with_boxes else '')
-    #    # r"(the exponent is given in the legend of #1). " + 
-    #    "For each function and dimension, $\\aRT(\\Df)$ equals to $\\nbFEs(\\Df)$ " +
-    #    "divided by the number of successful trials, where a trial is " +
-    #    "successful if $\\fopt+\\Df$ was surpassed. The " +
-    #    "$\\nbFEs(\\Df)$ are the total number (the sum) of $f$-evaluations while " +
-    #    "$\\fopt+\\Df$ was not surpassed in a trial, from all " +  
-    #    "(successful and unsuccessful) trials, and \\fopt\\ is the optimal " +
-    #    "function value.  " +
-    scaling_figure_caption_fixed = r"""%
-        Shown is the \aRT\ for fixed values of $\Df = 10^k$ with $k$ given
+    
+    caption_part_absolute_targets = (r"""%
+        Shown is the \aRT\ for fixed values of $!!DF!! = 10^k$ with $k$ given
         in the legend.
         Numbers above \aRT-symbols (if appearing) indicate the number of trials
-        reaching the respective target. """ + (  # TODO: add here "(out of XYZ trials)"
-        r"""The light thick line with diamonds indicates {}.
-        """ if testbed.reference_algorithm_filename
-        else "") + r"""Horizontal lines mean linear scaling, slanted
-        grid lines depict quadratic scaling."""
-    scaling_figure_caption_rlbased = r"""%
-        Shown is the \aRT\ for targets just not reached by {}
+        reaching the respective target. """ + # TODO: add here "(out of XYZ trials)"
+        r"""!!LIGHT_THICK_LINE!! Horizontal lines mean linear scaling, slanted
+        grid lines depict quadratic scaling.""")
+
+    caption_part_rlbased_targets = r"""%
+        Shown is the \aRT\ for targets just not reached by !!THE_REF_ALG!!
         within the given budget $k\times\DIM$, where $k$ is shown in the
         legend. Numbers above \aRT-symbols (if appearing) indicate the number
-        of trials reaching the respective target. """ + (r"""The light thick
-        line with diamonds indicates {} for the most difficult
-        target. """ if testbed.reference_algorithm_filename else "") + r"""Slanted
+        of trials reaching the respective target. !!LIGHT_THICK_LINE!! Slanted
         grid lines indicate a scaling with $\cal O$$(\DIM)$ compared to
-        $\cal O$$(1)$ when using the respective {} algorithm.
+        $\cal O$$(1)$ when using the respective reference algorithm.
         """
 
-    if testbed.reference_algorithm_filename:
-        if (testbed.name == testbedsettings.testbed_name_single or
-                testbed.name == testbedsettings.default_testbed_single_noisy
-                or testbed.name == testbedsettings.testbed_name_bi):
-            if testbed.reference_algorithm_displayname:
-                if "best 2009" in testbed.reference_algorithm_displayname:
-                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2009")
-                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                            "the best algorithm from BBOB 2009",
-                            "the best \\aRT\\ measured during BBOB 2009",
-                            'best 2009')
-                elif "best 2010" in testbed.reference_algorithm_displayname:
-                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2010")
-                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                            "the best algorithm from BBOB 2010",
-                            "the best \\aRT\\ measured during BBOB 2010",
-                            'best 2010')
-                elif "best 2012" in testbed.reference_algorithm_displayname:
-                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2012")
-                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                            "the best algorithm from BBOB 2012",
-                            "the best \\aRT\\ measured during BBOB 2012",
-                            'best 2012')
-                elif "best 2013" in testbed.reference_algorithm_displayname:
-                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2013")
-                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                            "the best algorithm from BBOB 2013",
-                            "the best \\aRT\\ measured during BBOB 2013",
-                            'best 2013')
-                elif "best 2016" in testbed.reference_algorithm_displayname:
-                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2016")
-                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                            "the best algorithm from BBOB 2016",
-                            "the best \\aRT\\ measured during BBOB 2016",
-                            'best 2016')
-                elif "best 2009-16" in testbed.reference_algorithm_displayname:
-                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format("the best \\aRT\\ measured during BBOB 2009--16")
-                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                            "the best algorithm of BBOB 2009--2016",
-                            "the best \\aRT\\ measured during BBOB 2009--16",
-                            'best 2009--16')
-                else:
-                    scaling_figure_caption_fixed = scaling_figure_caption_fixed.format(
-                            'the \\aRT\\ of the reference algorithm %s' % testbed.reference_algorithm_displayname)
-                    scaling_figure_caption_rlbased = scaling_figure_caption_rlbased.format(
-                            'the reference algorithm %s' % testbed.reference_algorithm_displayname,
-                            'the \\aRT\\ of the reference algorithm %s' % testbed.reference_algorithm_displayname,
-                            'reference')
-        else:
-            raise NotImplementedError('reference algorithm not supported for this testbed')
-
     if genericsettings.runlength_based_targets:
-        figure_caption = caption_part_one + scaling_figure_caption_rlbased
+        figure_caption = captions.replace(caption_text + caption_part_rlbased_targets)
     else:
-        figure_caption = caption_part_one + scaling_figure_caption_fixed
+        figure_caption = captions.replace(caption_text + caption_part_absolute_targets)
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
-        figure_caption = figure_caption.replace('\\fopt', '\\hvref')
-        figure_caption = figure_caption.replace('\\Df', '\\DI')
-        
     return figure_caption
 
 def beautify(axesLabel=True):
