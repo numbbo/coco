@@ -280,7 +280,7 @@ SOLVER = random_search
 #SOLVER = my_solver # fmin_slsqp # SOLVER = cma.fmin
 suite_name = "bbob-biobj"
 # suite_name = "bbob"
-suite_instance = "year:2016"
+suite_instance = ""  # "year:2016"  # incommented as it seems not to work with bbob-largescale
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
 observer_name = default_observers()[suite_name]
 observer_options = (
