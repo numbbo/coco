@@ -149,7 +149,7 @@ int main(int argc, char **argv) {
   fprintf(stderr, "%i of %i tests passed (failure rate %.2f%%)\n",
           number_of_testcases - number_of_failures, (int)number_of_testcases,
           (100.0 * number_of_failures) / number_of_testcases);
-
+  
   /* Free any remaining allocated memory */
   if (NULL != problem)
     coco_problem_free(problem);

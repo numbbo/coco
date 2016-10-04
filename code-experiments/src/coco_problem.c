@@ -136,6 +136,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->suite_dep_function = 0;
   problem->suite_dep_instance = 0;
   problem->data = NULL;
+  problem->versatile_data = NULL; /* Wassim: added to be able to pass data from one transformation to another*/
   return problem;
 }
 
@@ -153,6 +154,8 @@ static coco_problem_t *coco_problem_duplicate(const coco_problem_t *other) {
   problem->evaluate_constraint = other->evaluate_constraint;
   problem->recommend_solution = other->recommend_solution;
   problem->problem_free_function = other->problem_free_function;
+  
+  problem->versatile_data = other->versatile_data; /* Wassim: make the pointers the same*/
 
   for (i = 0; i < problem->number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = other->smallest_values_of_interest[i];

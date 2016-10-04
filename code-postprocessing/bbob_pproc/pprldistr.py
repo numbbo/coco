@@ -135,6 +135,7 @@ def load_previous_RLBdata(filename=previous_RLBdata_filename):
 
 
 def caption_single():
+    best_year = testbedsettings.current_testbed.best_algorithm_year
     caption_part_one = r"""%
          Empirical cumulative distribution functions (ECDF), plotting the fraction of
          trials with an outcome not larger than the respective value on the $x$-axis.
@@ -147,8 +148,8 @@ def caption_single():
     caption_left_rlbased_targets = r"""%
          Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$,
          to fall below $\fopt+\Df$ where \Df\ is the
-         target just not reached by the GECCO-BBOB-2009 best algorithm within a budget of
-         % largest $\Df$-value $\ge10^{-8}$ for which the best \ART\ seen in the GECCO-BBOB-2009 was yet above
+         target just not reached by the """ + ("""GECCO-BBOB-%d""" %best_year) + r""" best algorithm within a budget of
+         % largest $\Df$-value $\ge10^{-8}$ for which the best \ART\ seen in the """ + ("""GECCO-BBOB-%d""" %best_year) + r""" was yet above
          $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
     caption_wrap_up = r"""%
          Legends indicate for each target the number of functions that were solved in at
@@ -161,7 +162,7 @@ def caption_single():
          (from right to left cycling cyan-magenta-black\dots) and final $\Df$-value (red),
          where \Df\ and \textsf{Df} denote the difference to the optimal function value. """ + (
          r"""Light brown lines in the background show ECDFs for the most difficult target of all
-         algorithms benchmarked during BBOB-2009.""" if testbedsettings.current_testbed.name != testbedsettings.testbed_name_bi
+         algorithms benchmarked during """ + ("""BBOB-%d.""" %best_year) if testbedsettings.current_testbed.name != testbedsettings.testbed_name_bi
          else r"""Shown are aggregations over functions where the single
          objectives are in the same BBOB function class, as indicated on the
          left side and the aggregation over all 55 functions in the last
@@ -171,9 +172,12 @@ def caption_single():
     caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_wrap_up + caption_right
 
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+        # Wassim: why if/else, isn't the purpose of current_testbed to avoir this!!!
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_single_fixed.replace('\\fopt', '\\hvref')
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single \
+            or isinstance(testbedsettings.current_testbed, testbedsettings.SingleObjectiveTestbed):
+        # Wassim: added a comparison to the SingleObjectiveTestbed
         if genericsettings.runlength_based_targets:
             figure_caption = caption_single_rlbased
         else:
@@ -184,9 +188,10 @@ def caption_single():
     return figure_caption.replace(r'TO_BE_REPLACED', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$')
 
 def caption_two():
+    best_year = testbedsettings.current_testbed.best_algorithm_year
     caption_two_part_one = r"""%
         Empirical cumulative distributions (ECDF)
-        of run lengths and speed-up ratios in 5-D (left) and 20-D (right).
+        of run lengths and speed-up ratios """ + ("""in %d-D (left) and %d-D (right).""" % tuple(testbedsettings.current_testbed.tabDimsOfInterest)) + r"""
         Left sub-columns: ECDF of
         the number of function evaluations divided by dimension $D$
         (FEvals/D) """
@@ -203,9 +208,9 @@ def caption_two():
     caption_two_fixed_targets_part3 = r""")%
         . """ + (r"""Light beige lines show the ECDF of FEvals for target value
         $\Df=10^{-8}$ of all algorithms benchmarked during
-        BBOB-2009. """ if testbedsettings.current_testbed.name != testbedsettings.testbed_name_bi
+        """ + ("""BBOB-%d. """ %best_year) if testbedsettings.current_testbed.name != testbedsettings.testbed_name_bi
         else "") + r"""Right sub-columns:
-        ECDF of FEval ratios of \algorithmA\ divided by \algorithmB for target
+        ECDF of FEval ratios of \algorithmA\ divided by \algorithmB\ for target
         function values $10^k$ with $k$ given in the legend; all
         trial pairs for each function. Pairs where both trials failed are disregarded,
         pairs where one trial failed are visible in the limits being $>0$ or $<1$. The
@@ -216,7 +221,7 @@ def caption_two():
         \algorithmA\ ("""
     caption_two_rlbased_targets_part2 = r""") and \algorithmB\ ("""
     caption_two_rlbased_targets_part3 = r"""%
-        ) where \Df\ is the target just not reached by the GECCO-BBOB-2009 best
+        ) where \Df\ is the target just not reached by the""" + (""" GECCO-BBOB-%d""" %best_year) + r""" best
         algorithm within a budget of $k\times\DIM$ evaluations, with $k$ being the
         value in the legend. 
         Right sub-columns:

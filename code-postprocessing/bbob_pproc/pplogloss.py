@@ -25,6 +25,7 @@ from matplotlib import mlab as mlab
 from . import toolsstats, bestalg
 from .pptex import writeFEvals2
 from .ppfig import saveFigure, consecutiveNumbers
+from . import testbedsettings
 
 """
 aRT loss ratio of an algorithm A for comparison to BBOB-best2009. This works
@@ -123,6 +124,7 @@ such that $\aRT(\ftarget)\le\FEvals$ for the
 
 
 def table_caption():
+    best_year = testbedsettings.current_testbed.best_algorithm_year
     caption = r"""%
         \aRT\ loss ratio versus the budget in number of $f$-evaluations
         divided by dimension.
@@ -130,10 +132,9 @@ def table_caption():
         as the best target $f$-value reached within the
         budget by the given algorithm.
         Shown is then the \aRT\ to reach \ftarget\ for the given algorithm
-        or the budget, if the GECCO-BBOB-2009 best algorithm
+        or the budget, """ + (r"""if the GECCO-BBOB-%d best algorithm
         reached a better target within the budget,
-        divided by the best \aRT\
-        seen in GECCO-BBOB-2009 to reach \ftarget.
+        divided by the best \aRT\ seen in GECCO-BBOB-%d""" %(best_year, best_year)) + r""" to reach \ftarget.
         Line: geometric mean. Box-Whisker error bar: 25-75\%-ile with median
         (box), 10-90\%-ile (caps), and minimum and maximum \aRT\ loss ratio
         (points). The vertical line gives the maximal number of function evaluations

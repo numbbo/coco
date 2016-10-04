@@ -166,6 +166,7 @@ def getRldLink(htmlPage, current_dir, isBiobjective):
     folder = 'pprldmany-single-functions'
 
     ignoreFileExists = genericsettings.isRldOnSingleFcts
+    # Wassim: why is this set to True? We shouldn't generate pages for nonn-existing plots or at least the pages should just be clickable to get the next one
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         if htmlPage == HtmlPage.ONE:
             fileName = '%s.html' % genericsettings.pprldmany_file_name
@@ -241,8 +242,12 @@ def save_single_functions_html(filename,
         first_function_number = testbedsettings.current_testbed.first_function_number
         last_function_number = testbedsettings.current_testbed.last_function_number
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
+
         addLinkForNextDim = next_html_page_suffix is not None and next_html_page_suffix != add_to_names
         bestAlgExists = not isBiobjective
+        bestAlgExists = bool(testbedsettings.current_testbed.best_algorithm_filename) #not isBiobjective # Wassim: or not isLargescale
+        dimensions = testbedsettings.current_testbed.htmlDimsOfInterest
+        #genericsettings.htmlDimsOfInterest_ls if genericsettings.isLargeScale else genericsettings.htmlDimsOfInterest
 
         if htmlPage is HtmlPage.ONE:
             f.write('<H3><a href="ppfigdim.html">Average runtime versus '
@@ -258,9 +263,9 @@ def save_single_functions_html(filename,
             headerECDF = ' Runtime distributions (ECDFs) over all targets'
             f.write("<H2> %s </H2>\n" % headerECDF)
             f.write(addImage('pprldmany-single-functions/pprldmany.%s' % (extension), True))
+            # Wassim: added the folder name pprldmany-single-functions
 
         elif htmlPage is HtmlPage.TWO:
-
             f.write(
                 '<H3><a href="%s.html">Average runtime with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
             f.write('<H3><a href="%s.html">Scatter plots</a></H3>\n' % genericsettings.ppscatter_file_name)
@@ -271,12 +276,11 @@ def save_single_functions_html(filename,
                 % genericsettings.pptable2_file_name)
 
         elif htmlPage is HtmlPage.MANY:
-
-            f.write(
-                '<H3><a href="%s.html">Average runtime with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
-            f.write(
-                '<H3><a href="%s.html">Average runtime for selected targets</a></H3>\n'
-                % genericsettings.pptables_file_name)
+          f.write(
+              '<H3><a href="%s.html">Average runtime with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
+          f.write(
+              '<H3><a href="%s.html">Average runtime for selected targets</a></H3>\n'
+              % genericsettings.pptables_file_name)
 
         elif htmlPage is HtmlPage.PPSCATTER:
             currentHeader = 'Scatter plots per function'
@@ -343,8 +347,7 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
-            dimensions = genericsettings.rldDimsOfInterest
-
+            dimensions = testbedsettings.current_testbed.rldDimsOfInterest
             headerECDF = ' Empirical cumulative distribution functions (ECDF)'
             f.write("<H2> %s </H2>\n" % headerECDF)
             for dimension in dimensions:
@@ -361,7 +364,7 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPRLDISTR2:
             names = ['pprldistr', 'pplogabs']
-            dimensions = genericsettings.rldDimsOfInterest
+            dimensions = testbedsettings.current_testbed.rldDimsOfInterest
 
             headerECDF = 'Empirical cumulative distribution functions ' \
                          '(ECDFs) per function group'
@@ -380,8 +383,8 @@ def save_single_functions_html(filename,
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
-            dimensions = genericsettings.rldDimsOfInterest
-            if not isBiobjective:
+            dimensions = testbedsettings.current_testbed.rldDimsOfInterest
+            if bestAlgExists: # biObj is not the only one that has no bestAlg yet
                 currentHeader = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % currentHeader)
 
@@ -417,7 +420,7 @@ def save_single_functions_html(filename,
 def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key):
     currentHeader = 'Table showing the aRT in number of function evaluations'
     if best_alg_exists:
-        currentHeader += ' divided by the best aRT measured during BBOB-2009'
+        currentHeader += ' divided by the best aRT measured during BBOB-%d' %testbedsettings.current_testbed.best_algorithm_year
 
     f.write("\n<H2> %s </H2>\n" % currentHeader)
     f.write("\n<!--%s-->\n" % html_key)
