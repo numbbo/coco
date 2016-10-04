@@ -1,0 +1,84 @@
+% SEPARABLE - SEPARABLE
+1 Sphere/Sphere
+2 Sphere/sep. Ellipsoid
+11 sep. Ellipsoid/sep. Ellipsoid
+
+% SEPARABLE - MODERATE
+3 Sphere/Attractive sector
+4 Sphere/Rosenbrock
+12 sep. Ellipsoid/Attractive sector
+13 sep. Ellipsoid/Rosenbrock
+
+% SEPARABLE - ILL-CONDITIONED
+5 Sphere/Sharp ridge
+6 Sphere/Different Powers
+14 sep. Ellipsoid/Sharp ridge
+15 sep. Ellipsoid/Different Powers
+
+% SEPARABLE - MULTI-MODAL
+7 Sphere/Rastrigin
+8 Sphere/Schaffer F7
+16 sep. Ellipsoid/Rastrigin
+17 sep. Ellipsoid/Schaffer F7
+
+% SEPARABLE - WEAKLY-STRUCTURED
+9 Sphere/Schwefel
+10 Sphere/Gallagher 101
+18 sep. Ellipsoid/Schwefel
+19 sep. Ellipsoid/Gallagher 101
+
+% MODERATE - MODERATE
+20 Attractive sector/Attractive sector
+21 Attractive sector/Rosenbrock
+28 Rosenbrock/Rosenbrock
+
+% MODERATE - ILL-CONDITIONED
+22 Attractive sector/Sharp ridge
+23 Attractive sector/Different Powers
+29 Rosenbrock/Sharp ridge
+30 Rosenbrock/Different Powers
+
+% MODERATE - MULTI-MODAL
+24 Attractive sector/Rastrigin
+25 Attractive sector/Schaffer F7
+31 Rosenbrock/Rastrigin
+32 Rosenbrock/Schaffer F7
+
+% MODERATE - WEAKLY-STRUCTURED
+26 Attractive sector/Schwefel
+27 Attractive sector/Gallagher 101
+33 Rosenbrock/Schwefel
+34 Rosenbrock/Gallagher 101
+
+% ILL-CONDITIONED - ILL-CONDITIONED
+35 Sharp ridge/Sharp ridge
+36 Sharp ridge/Different Powers
+41 Different Powers/Different Powers
+
+% ILL-CONDITIONED - MULTI-MODAL
+37 Sharp ridge/Rastrigin
+38 Sharp ridge/Schaffer F7
+42 Different Powers/Rastrigin
+43 Different Powers/Schaffer F7
+
+% ILL-CONDITIONED - WEAKLY-STRUCTURED
+39 Sharp ridge/Schwefel
+40 Sharp ridge/Gallagher 101
+44 Different Powers/Schwefel
+45 Different Powers/Gallagher 101
+
+% MULTI-MODAL - MULTI-MODAL
+46 Rastrigin/Rastrigin
+47 Rastrigin/Schaffer F7
+50 Schaffer F7/Schaffer F7
+
+% MULTI-MODAL - WEAKLY-STRUCTURED
+48 Rastrigin/Schwefel
+49 Rastrigin/Gallagher 101
+51 Schaffer F7/Schwefel
+52 Schaffer F7/Gallagher 101
+
+% WEAKLY-STRUCTURED - WEAKLY-STRUCTURED
+53 Schwefel/Schwefel
+54 Schwefel/Gallagher 101
+55 Gallagher 101/Gallagher 101
