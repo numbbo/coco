@@ -398,7 +398,7 @@ def openfile(filePath):
     return open(filePath, 'r')
 
 
-def split(dataFiles, isBiobjective, idx_to_load=None, dim=None):
+def split(dataFiles, idx_to_load=None, dim=None):
     """Split a list of data files into arrays corresponding to data sets.
        The Boolean list idx_to_load is thereby indicating whether a
        given part of the split is to be considered or not if None, all
