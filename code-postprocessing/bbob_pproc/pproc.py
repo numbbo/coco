@@ -588,6 +588,7 @@ class DataSet(object):
         _evals
         _extra_attr
         algId
+        algs
         comment
         computeERTfromEvals
         consistency_check
