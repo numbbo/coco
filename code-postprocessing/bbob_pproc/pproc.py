@@ -792,8 +792,9 @@ class DataSet(object):
         self.indexFiles = [indexfile]
         self.dataFiles = []
         self.instancenumbers = []
+        self.algs = []
         self.evals = []  # to be removed if evals becomes a property, see below
-        """``evals`` are the central data. Each line ``evals[i]`` has a 
+        """``evals`` are the central data. Each line ``evals[i]`` has a
         (target) function value in ``evals[i][0]`` and the function evaluation
         for which this target was reached the first time in trials 1,...
         in ``evals[i][1:]``.""" 
@@ -874,7 +875,8 @@ class DataSet(object):
         # put into variable dataFiles the files where to look for data
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
-        data = HMultiReader(split(dataFiles, idx_to_load=idx_of_instances_to_load), self.isBiobjective())
+        datasets, algorithms = split(dataFiles, idx_to_load=idx_of_instances_to_load)
+        data = HMultiReader(datasets, self.isBiobjective())
         if genericsettings.verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
@@ -882,6 +884,7 @@ class DataSet(object):
         if data:
             (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
             self.evals = adata
+            self.algs = algorithms
             try:
                 for i in range(len(maxevals)):
                     self.maxevals[i] = max(maxevals[i], self.maxevals[i])
@@ -896,7 +899,8 @@ class DataSet(object):
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
             raise Usage("Missing tdat files in '{0}'. Please rerun the experiments." % filepath)
 
-        data = VMultiReader(split(dataFiles, idx_to_load=idx_of_instances_to_load), self.isBiobjective())
+        datasets, algorithms = split(dataFiles, idx_to_load=idx_of_instances_to_load)
+        data = VMultiReader(datasets, self.isBiobjective())
         if genericsettings.verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))

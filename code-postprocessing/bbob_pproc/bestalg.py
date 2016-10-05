@@ -123,6 +123,7 @@ class BestAlgSet(object):
         dictMaxEvals = {}
         dictFinalFunVals = {}
         tmpdictAlg = {}
+        best_algorithms = []
         for alg, i in dict_alg.iteritems():
             if len(i) == 0:
                 warnings.warn('Algorithm %s was not tested on f%d %d-D.'
@@ -136,6 +137,7 @@ class BestAlgSet(object):
             tmpdictAlg[alg] = i[0]  # Assign ONLY the first element as value
             dictMaxEvals[alg] = i[0].maxevals
             dictFinalFunVals[alg] = i[0].finalfunvals
+            best_algorithms = i[0].algs
 
         dict_alg = tmpdictAlg
 
@@ -207,7 +209,7 @@ class BestAlgSet(object):
         self.funcId = f
         if pr > 0:
             self.precision = pr
-        self.algs = resalgs
+        self.algs = best_algorithms if best_algorithms else resalgs
         self.algId = algId
         if len(sortedAlgs) > 1:
             self.comment = 'Combination of ' + ', '.join(sortedAlgs)
