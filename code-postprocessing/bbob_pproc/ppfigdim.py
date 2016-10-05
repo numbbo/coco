@@ -92,8 +92,8 @@ def scaling_figure_caption():
         Cross (+): median runtime of successful runs to reach the most difficult
         target that was reached at least once (but not always);
         Cross ({\color{red}$\times$}): maximum number of
-        $f$-evaluations in any trial. !!NOTCHED_BOXES!!
-        All values are !!DIVIDED_BY_DIMENSION!! 
+        $f$-evaluations in any trial. !!NOTCHED-BOXES!!
+        All values are !!DIVIDED-BY-DIMENSION!! 
         plotted as $\log_{10}$ values versus dimension. %
         """
     
@@ -102,14 +102,14 @@ def scaling_figure_caption():
         in the legend.
         Numbers above \aRT-symbols (if appearing) indicate the number of trials
         reaching the respective target. """ + # TODO: add here "(out of XYZ trials)"
-        r"""!!LIGHT_THICK_LINE!! Horizontal lines mean linear scaling, slanted
+        r"""!!LIGHT-THICK-LINE!! Horizontal lines mean linear scaling, slanted
         grid lines depict quadratic scaling.""")
 
     caption_part_rlbased_targets = r"""%
-        Shown is the \aRT\ for targets just not reached by !!THE_REF_ALG!!
+        Shown is the \aRT\ for targets just not reached by !!THE-REF-ALG!!
         within the given budget $k\times\DIM$, where $k$ is shown in the
         legend. Numbers above \aRT-symbols (if appearing) indicate the number
-        of trials reaching the respective target. !!LIGHT_THICK_LINE!! Slanted
+        of trials reaching the respective target. !!LIGHT-THICK-LINE!! Slanted
         grid lines indicate a scaling with $\cal O$$(\DIM)$ compared to
         $\cal O$$(1)$ when using the respective reference algorithm.
         """

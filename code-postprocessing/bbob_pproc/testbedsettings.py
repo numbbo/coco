@@ -10,6 +10,7 @@ scenario_biobjfixed = 'biobjfixed'
 all_scenarios = [scenario_rlbased, scenario_fixed, scenario_biobjfixed]
 
 testbed_name_single = 'bbob'
+testbed_name_single_noisy = 'bbob-noisy'
 testbed_name_bi = 'bbob-biobj'
 
 default_testbed_single = 'GECCOBBOBTestbed'
@@ -107,7 +108,7 @@ class GECCOBBOBTestbed(Testbed):
         name = testbed_name_single,
         short_names = get_short_names(shortinfo_filename),
         hardesttargetlatex = '10^{-8}',  # used for ppfigs, pptable, pptable2, and pptables
-        ppfigs_ftarget = 1e-8,
+        ppfigs_ftarget = 1e-8,  # to set target runlength in expensive setting, use genericsettings.target_runlength
         ppfig2_ftarget = 1e-8,
         ppfigdim_target_values = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
         pprldistr_target_values = (10., 1e-1, 1e-4, 1e-8),
@@ -213,7 +214,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         name = testbed_name_bi,
         short_names = get_short_names(shortinfo_filename),
         hardesttargetlatex = '10^{-5}',  # used for ppfigs, pptable, pptable2, and pptables
-        ppfigs_ftarget = 1e-5,
+        ppfigs_ftarget = 1e-5,  # to set target runlength in expensive setting, use genericsettings.target_runlength
         ppfig2_ftarget = 1e-5,
         ppfigdim_target_values = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5),
         pprldistr_target_values = (1e-1, 1e-2, 1e-3, 1e-5),

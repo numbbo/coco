@@ -46,16 +46,13 @@ def config(testbed_name=None):
 
     genericsettings.simulated_runlength_bootstrap_sample_size = (10 + 990 / (1 + 10 * max(0, genericsettings.in_a_hurry)))
 
-    # TODO: implement runlength based targets once we have a reference
-    # bestAlg for the biobjective case
-    # TODO: once this is solved, make sure that expensive setting is not
-    # available if no bestAlg or other reference algorithm is available
-    if tbs.current_testbed and tbs.current_testbed.name == tbs.testbed_name_bi:
-        if (genericsettings.isExpensive in (True, 1) or
-                genericsettings.runlength_based_targets in (True, 1)):
+    if tbs.current_testbed and tbs.current_testbed.name not in tbs.suite_to_testbed:
+        if ((genericsettings.isExpensive in (True, 1) or
+                genericsettings.runlength_based_targets in (True, 1)) and
+				tbs.current_testbed.reference_algorithm_filename == ''):
             warnings.warn('Expensive setting not yet supported with ' +
-                          'bbob-biobj testbed; using non-expensive setting ' +
-                          'instead.')
+                          tbs.current_testbed.name +
+                          ' testbed; using non-expensive setting instead.')
             genericsettings.isExpensive = False
             genericsettings.runlength_based_targets = False
 

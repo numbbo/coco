@@ -184,7 +184,10 @@ def ecdfs_figure_caption(for_html = False, dimension = 0):
 
 
 def get_ecdfs_single_fcts_caption():
-    ''' For the moment, only the bi-objective case is covered! '''
+    ''' Returns figure caption for single function ECDF plots.
+    
+        Note: for the moment, only the bbob-biobj test suite case is supported.    
+    '''
     s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
          of objective function evaluations divided by dimension (FEvals/DIM) for the $""" +
             str(len(testbedsettings.current_testbed.pprldmany_target_values)) +
@@ -195,18 +198,21 @@ def get_ecdfs_single_fcts_caption():
     return s
 
 def get_ecdfs_all_groups_caption():
-    ''' For the moment, only the bi-objective case is covered! '''
-#    s = (r"Bootstrapped empirical cumulative distribution of the number " +
-#            r"of objective function evaluations divided by dimension " +
-#            r"(FEvals/DIM) for " +
-    s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes, measured in number
-         of objective function evaluations, divided by dimension (FEvals/DIM) for the $""" +
-            str(len(testbedsettings.current_testbed.pprldmany_target_values)) +
-            r"$ targets " + 
-            str(testbedsettings.current_testbed.pprldmany_target_range_latex) +
-            r" for all function groups and all dimensions. The aggregation" +
-            r" over all 55 functions is shown in the last plot."
-            )
+    ''' Returns figure caption for ECDF plots aggregating over function groups. '''
+    
+    testbed = testbedsettings.current_testbed
+    
+    s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
+         runtimes, measured in number of objective function evaluations,
+         divided by dimension (FEvals/DIM) for the $""" +
+         str(len(testbedsettings.current_testbed.pprldmany_target_values)) +
+         r"$ targets " + 
+         str(testbedsettings.current_testbed.pprldmany_target_range_latex) +
+         r" for all function groups and all dimensions. The aggregation" +
+         r" over all " +
+         str(testbed.last_function_number - testbed.first_function_number + 1) +
+         r" functions is shown in the last plot."
+        )
     return s
     
 def plotLegend(handles, maxval=None):

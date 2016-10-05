@@ -44,6 +44,7 @@ from .. import genericsettings, htmldesc, ppfigparam, testbedsettings
 from ..ppfig import saveFigure
 from .. import toolsdivers
 from .. import pproc
+from .. import captions
 
 dimensions = (2, 3, 5, 10, 20, 40)
 
@@ -59,14 +60,14 @@ offset = 0. #0.02 offset provides a way to move away the box boundaries to displ
 def prepare_figure_caption():
 
     caption_start_fixed = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations)
-        of \algorithmB\ ($x$-axis) versus \algorithmA\ ($y$-axis) for $NBTARGETS$ target values
-        $\Df \in [NBLOW, NBUP]$ in each dimension on functions #1. """
+        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS!!$ target values
+        $!!DF!! \in [!!NBLOW!!, !!NBUP!!]$ in each dimension on functions #1. """
 
     caption_start_rlbased = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations)
-        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $NBTARGETS$ runlength-based target
-        function values for budgets between $NBLOW$ and $NBUP$ evaluations.
-        Each runlength-based target $f$-value is chosen such that the \aRT{}s of the
-        REFERENCE_ALGORITHM artificial algorithm for the given and a slightly easier
+        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS!!$ runlength-based target
+        values for budgets between $!!NBLOW!!$ and $!!NBUP!!$ evaluations.
+        Each runlength-based target $!!F!!$-value is chosen such that the \aRT{}s of 
+        !!THE-REF-ALG!! for the given and a slightly easier
         target bracket the reference budget. """
 
     caption_finish = r"""Markers on the upper or right edge indicate that the respective target
@@ -79,17 +80,11 @@ def prepare_figure_caption():
         40:{\color{magenta}$\Diamond$}. """
 
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
-        # NOTE: no runlength-based targets supported yet
-        caption = caption_start_fixed + caption_finish
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
-        if genericsettings.runlength_based_targets:
-            caption = caption_start_rlbased + caption_finish
-        else:
-            caption = caption_start_fixed + caption_finish
+    if genericsettings.runlength_based_targets:
+        caption = caption_start_rlbased + caption_finish
     else:
-        warnings.warn("Current settings do not support ppfigdim caption.")
-
+        caption = caption_start_fixed + caption_finish
+    
     return caption
 
 
