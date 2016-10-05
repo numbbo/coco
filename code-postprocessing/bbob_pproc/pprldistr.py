@@ -59,7 +59,6 @@ from . import captions
 
 refcolor = 'wheat'
 nbperdecade = 1 # markers in x-axis decades in ecdfs
-single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)]
 
 runlen_xlimits_max = None # is possibly manipulated in config
 runlen_xlimits_min = 1 # set to 10**-0.5 in runlength case in config
@@ -853,7 +852,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
         fig = plt.figure()
         plotFVDistr(dictdim, np.inf, testbed.ppfvdistr_min_target, **rldStyles[-1])
         # coloring right to left
-        for j, max_eval_factor in enumerate(single_runlength_factors):
+        for j, max_eval_factor in enumerate(genericsettings.single_runlength_factors):
             if max_eval_factor > maxEvalsFactor:
                 break
             plotFVDistr(dictdim, max_eval_factor, testbed.ppfvdistr_min_target,
