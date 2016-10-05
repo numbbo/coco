@@ -566,8 +566,11 @@ def create_data_files(output_dir, result):
 
         lines = []
         lines.append("%% Artificial instance")
+        i = 0
         for key_target, value_target in sorted(dict_evaluation.iteritems()):
-            lines.append("%d %10.15e %10.15e" % (key_target, value_target, value_target))
+            alg_for_target = os.path.basename(value.algs[i])
+            lines.append("%d %10.15e %10.15e %s" % (key_target, value_target, value_target, alg_for_target))
+            i += 1
 
         filename = os.path.join(output_dir, filename_template % (key[1], key[0], 'dat'))
         write_to_file(filename, lines)
