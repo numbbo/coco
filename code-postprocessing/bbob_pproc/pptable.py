@@ -29,6 +29,7 @@ from . import genericsettings, bestalg, toolsstats, pproc
 from . import testbedsettings
 from .pptex import tableLaTeX, writeFEvals2, writeFEvalsMaxPrec
 from .toolsstats import significancetest
+from . import captions
 
 from pdb import set_trace
 
@@ -101,7 +102,7 @@ def get_table_caption():
                 \textit{italics}, if the target in the last column was never reached. 
                 """
 
-    return table_caption
+    return captions.replace(table_caption)
         
 
 def main(dsList, dimsOfInterest, outputdir, info=''):

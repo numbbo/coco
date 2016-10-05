@@ -140,11 +140,11 @@ def caption_single():
          trials with an outcome not larger than the respective value on the $x$-axis.
          #1"""
     caption_left_fixed_targets = (r"""%
-         Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension,
+         Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ with $!!DF!!=10^{k}$, where $k$ is the first value in the legend.
          The thick red line represents the most difficult target value $!!FOPT!!+ !!HARDEST-TARGET-LATEX!!$. """)
     caption_left_rlbased_targets = r"""%
-         Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension,
+         Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ where !!DF!!{} is the
          target just not reached by !!THE-REF-ALG!! within a budget of
          $k\times!!DIM!!$ evaluations, where $k$ is the first value in the legend. """
