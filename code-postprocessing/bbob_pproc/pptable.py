@@ -25,10 +25,9 @@ from __future__ import absolute_import
 import os
 import warnings
 import numpy as np
-import matplotlib.pyplot as plt
 from . import genericsettings, bestalg, toolsstats, pproc
 from . import testbedsettings
-from .pptex import tableLaTeX, tableLaTeXStar, writeFEvals2, writeFEvalsMaxPrec
+from .pptex import tableLaTeX, writeFEvals2, writeFEvalsMaxPrec
 from .toolsstats import significancetest
 
 from pdb import set_trace
@@ -54,52 +53,53 @@ def get_table_caption():
         and genericsettings.runlength_based_targets.
     """    
         
-    table_caption_one = r"""%
+    table_caption_start = r"""%
         Average running time (\aRT\ in number of function 
-        evaluations) divided by the best \aRT\ measured during BBOB-2009. The \aRT\ 
+        evaluations) divided by the best \aRT\ of !!THE-REF-ALG!!. The \aRT\ 
         and in braces, as dispersion measure, the half difference between 90 and 
         10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
         the best \aRT\
         """
-    table_caption_two1 = (r"""%
-        in the first. The different target \Df-values are shown in the top row. 
-        \#succ is the number of trials that reached the (final) target $\fopt + """
-        + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
+    table_caption_rlbased = (r"""%
+        in the first. The different target !!DF!!-values are shown in the top row. 
+        \#succ is the number of trials that reached the (final) target $!!FOPT!! 
+        + !!HARDEST-TARGET-LATEX!!$.
         """)
-    table_caption_two2 = r"""%
-        (preceded by the target \Df-value in \textit{italics}) in the first. 
+    table_caption_fixedtargets = r"""%
+        (preceded by the target !!DF!!-value in \textit{italics}) in the first. 
         \#succ is the number of trials that reached the target value of the last column.
         """
     table_caption_rest = r"""%
         The median number of conducted function evaluations is additionally given in 
         \textit{italics}, if the target in the last column was never reached. 
         \textbf{Bold} entries are statistically significantly better (according to
-        the rank-sum test) compared to the best algorithm in BBOB-2009, with
+        the rank-sum test) compared to !!THE-REF-ALG!!, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k > 1$ is following the
         $\downarrow$ symbol, with Bonferroni correction by the number of
         functions.
         """
-
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
-        # NOTE: no runlength-based targets supported yet
-        table_caption = r"""%
+        
+    if testbedsettings.current_testbed.name in testbedsettings.suite_to_testbed:
+        if genericsettings.runlength_based_targets:
+            table_caption = table_caption_start + table_caption_rlbased + table_caption_rest
+        else:
+            table_caption = table_caption_start + table_caption_fixedtargets + table_caption_rest
+    else:
+        warnings.warn("Current settings do not support pptable caption.")
+        # what follows is the old table caption for the bbob-biobj case before
+        # a reference algortihm was available and that could be re-used for
+        # other new test suites where this is the case:
+        table_caption_no_reference_algorithm = r"""%
                 Average runtime (\aRT) to reach given targets, measured
                 in number of function evaluations. For each function, the \aRT\ 
                 and, in braces as dispersion measure, the half difference between 10 and 
                 90\%-tile of (bootstrapped) runtimes is shown for the different
-                target \Df-values as shown in the top row. 
+                target !!DF!!-values as shown in the top row. 
                 \#succ is the number of trials that reached the last target 
-                $\hvref + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
+                $!!FOPT!! + !!HARDEST-TARGET-LATEX!!$.
                 The median number of conducted function evaluations is additionally given in 
                 \textit{italics}, if the target in the last column was never reached. 
                 """
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
-        if genericsettings.runlength_based_targets:
-            table_caption = table_caption_one + table_caption_two2 + table_caption_rest
-        else:
-            table_caption = table_caption_one + table_caption_two1 + table_caption_rest
-    else:
-        warnings.warn("Current settings do not support pptable caption.")
 
     return table_caption
         
@@ -426,8 +426,6 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
         else:
             spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
         #res = r'\providecommand{\algshort}{%s}' % alg1 + '\n'
-        #res += tableLaTeXStar(table, width=r'0.45\textwidth', spec=spec,
-                              #extraeol=extraeol)
         res = tableLaTeX(table, spec=spec, extraeol=extraeol)
         f = open(outputfile, 'w')
         f.write(res)
