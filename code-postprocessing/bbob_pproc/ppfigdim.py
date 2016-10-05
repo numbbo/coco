@@ -92,8 +92,8 @@ def scaling_figure_caption():
         Cross (+): median runtime of successful runs to reach the most difficult
         target that was reached at least once (but not always);
         Cross ({\color{red}$\times$}): maximum number of
-        $f$-evaluations in any trial. !!NOTCHED_BOXES!!
-        All values are !!DIVIDED_BY_DIMENSION!! 
+        $f$-evaluations in any trial. !!NOTCHED-BOXES!!
+        All values are !!DIVIDED-BY-DIMENSION!! 
         plotted as $\log_{10}$ values versus dimension. %
         """
     

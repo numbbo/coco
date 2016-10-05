@@ -52,8 +52,8 @@ from . import genericsettings, pproc, toolsdivers
 from . import testbedsettings
 from .ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
 from .pptex import color_to_latex, marker_to_latex
+from . import captions
 
-single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)]
 # TODO: the method names in this module seem to be overly unclear or
 #       misleading and should be revised.
 
@@ -140,48 +140,35 @@ def caption_single():
          trials with an outcome not larger than the respective value on the $x$-axis.
          #1"""
     caption_left_fixed_targets = (r"""%
-         Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension $D$,
-         to fall below $\fopt+\Df$ with $\Df=10^{k}$, where $k$ is the first value in the legend.
-         The thick red line represents the most difficult target value $\fopt+""" +
-         testbedsettings.current_testbed.hardesttargetlatex + """$. """)
+         Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension,
+         to fall below $!!FOPT!!+!!DF!!$ with $!!DF!!=10^{k}$, where $k$ is the first value in the legend.
+         The thick red line represents the most difficult target value $!!FOPT!!+ !!HARDEST-TARGET-LATEX!!$. """)
     caption_left_rlbased_targets = r"""%
-         Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$,
-         to fall below $\fopt+\Df$ where \Df\ is the
-         target just not reached by the GECCO-BBOB-2009 best algorithm within a budget of
-         % largest $\Df$-value $\ge10^{-8}$ for which the best \ART\ seen in the GECCO-BBOB-2009 was yet above
-         $k\times\DIM$ evaluations, where $k$ is the first value in the legend. """
-    caption_wrap_up = r"""%
-         Legends indicate for each target the number of functions that were solved in at
-         least one trial within the displayed budget. """
+         Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension,
+         to fall below $!!FOPT!!+!!DF!!$ where !!DF!!{} is the
+         target just not reached by !!THE-REF-ALG!! within a budget of
+         $k\times!!DIM!!$ evaluations, where $k$ is the first value in the legend. """
     caption_right = r"""%
-         Right subplots: ECDF of the
-         best achieved $\Df$
-         for running times of TO_BE_REPLACED
+         Legends indicate for each target the number of functions that were solved in at
+         least one trial within the displayed budget.
+         Right subplots: ECDF of the best achieved $!!DF!!$
+         for running times of !!SINGLE-RUNLENGTH-FACTORS!!
          function evaluations
-         (from right to left cycling cyan-magenta-black\dots) and final $\Df$-value (red),
-         where \Df\ and \textsf{Df} denote the difference to the optimal function value. """ + (
-         r"""Light brown lines in the background show ECDFs for the most difficult target of all
-         algorithms benchmarked during BBOB-2009.""" if testbedsettings.current_testbed.name != testbedsettings.testbed_name_bi
-         else r"""Shown are aggregations over functions where the single
-         objectives are in the same BBOB function class, as indicated on the
-         left side and the aggregation over all 55 functions in the last
-         row.""")
+         (from right to left cycling cyan-magenta-black\dots) and final $!!DF!!$-value (red),
+         where !!DF!! and \textsf{Df} denote the difference to the optimal function value. 
+         !!LIGHT-BROWN-LINES!!"""
 
-    caption_single_fixed = caption_part_one + caption_left_fixed_targets + caption_wrap_up + caption_right
-    caption_single_rlbased = caption_part_one + caption_left_rlbased_targets + caption_wrap_up + caption_right
-
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
-        # NOTE: no runlength-based targets supported yet
-        figure_caption = caption_single_fixed.replace('\\fopt', '\\hvref')
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
+                                                testbedsettings.default_testbed_single_noisy,
+                                                testbedsettings.testbed_name_bi]:
         if genericsettings.runlength_based_targets:
-            figure_caption = caption_single_rlbased
+            figure_caption = caption_part_one + caption_left_rlbased_targets + caption_right
         else:
-            figure_caption = caption_single_fixed
+            figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
     else:
         warnings.warn("Current settings do not support pprldistr caption.")
 
-    return figure_caption.replace(r'TO_BE_REPLACED', '$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$')
+    return captions.replace(figure_caption)
 
 def caption_two():
     caption_two_part_one = r"""%

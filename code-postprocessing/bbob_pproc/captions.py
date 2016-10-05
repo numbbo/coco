@@ -13,8 +13,8 @@ from . import testbedsettings
 
 
 # certain settings, only needed for the captions for now are grouped here:
-ynormalize_by_dimension = True               
-
+ynormalize_by_dimension = True
+single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)]
 
 
 def replace(text):
@@ -58,14 +58,23 @@ def get_reference_algorithm_text():
 
     return text
     
-    
+# please try to avoid underscores in the labels to not break the HTML code:
 replace_dict = {
-        '!!NOTCHED_BOXES!!': lambda: r"""Notched boxes: interquartile range with median of simulated runs; """ 
+        '!!NOTCHED-BOXES!!': lambda: r"""Notched boxes: interquartile range with median of simulated runs; """ 
             if genericsettings.scaling_figures_with_boxes else "",
-        '!!DF!!': lambda: r"""\\Df""" if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi) else r"""\\DI""",
-        '!!FOPT!!': lambda: r"""\\fopt""" if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi) else r"""\\hvref""",
-        '!!DIVIDED_BY_DIMENSION!!': lambda: r"""divided by dimension and """ if ynormalize_by_dimension else "",
-        '!!LIGHT_THICK_LINE!!': lambda: r"""The light thick line with diamonds indicates """ + get_reference_algorithm_text() + r""" for the most difficult target. """ if testbedsettings.current_testbed.reference_algorithm_filename else "",
+        '!!DF!!': lambda: r"""\Df""" if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi) else r"""\DI""",
+        '!!FOPT!!': lambda: r"""\fopt""" if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi) else r"""\hvref""",
+        '!!DIVIDED-BY-DIMENSION!!': lambda: r"""divided by dimension and """ if ynormalize_by_dimension else "",
+        '!!LIGHT-THICK-LINE!!': lambda: r"""The light thick line with diamonds indicates """ + get_reference_algorithm_text() + r""" for the most difficult target. """ if testbedsettings.current_testbed.reference_algorithm_filename else "",
         '!!F!!': lambda: r"""I_{\mathrm HV}^{\mathrm COCO}""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi else "f",
-        '!!THE_REF_ALG!!': get_reference_algorithm_text
+        '!!THE_REF_ALG!!': get_reference_algorithm_text,
+        '!!HARDEST-TARGET-LATEX!!': lambda: testbedsettings.current_testbed.hardesttargetlatex,
+        '!!DIM!!': lambda: r"""\DIM""",
+        '!!SINGLE-RUNLENGTH-FACTORS!!': lambda: '$' + 'D, '.join([str(i) for i in single_runlength_factors[:6]]) + 'D,\dots$',
+        '!!LIGHT-BROWN-LINES!!': lambda: r"""Light brown lines in the background show ECDFs for the most difficult target of all
+            algorithms benchmarked during BBOB-2009.""" if testbedsettings.current_testbed.name != testbedsettings.testbed_name_bi
+            else r"""Shown are aggregations over functions where the single
+            objectives are in the same BBOB function class, as indicated on the
+            left side and the aggregation over all 55 functions in the last row.""" 
          }
+
