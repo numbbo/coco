@@ -874,7 +874,7 @@ class DataSet(object):
         # put into variable dataFiles the files where to look for data
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
-        data = HMultiReader(split(dataFiles, self.isBiobjective(), idx_to_load=idx_of_instances_to_load), self.isBiobjective())
+        data = HMultiReader(split(dataFiles, idx_to_load=idx_of_instances_to_load), self.isBiobjective())
         if genericsettings.verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
@@ -896,7 +896,7 @@ class DataSet(object):
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
             raise Usage("Missing tdat files in '{0}'. Please rerun the experiments." % filepath)
 
-        data = VMultiReader(split(dataFiles, self.isBiobjective(), idx_to_load=idx_of_instances_to_load), self.isBiobjective())
+        data = VMultiReader(split(dataFiles, idx_to_load=idx_of_instances_to_load), self.isBiobjective())
         if genericsettings.verbose:
             print ("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
