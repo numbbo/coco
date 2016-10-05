@@ -59,6 +59,7 @@ from . import captions
 
 refcolor = 'wheat'
 nbperdecade = 1 # markers in x-axis decades in ecdfs
+single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)]
 
 runlen_xlimits_max = None # is possibly manipulated in config
 runlen_xlimits_min = 1 # set to 10**-0.5 in runlength case in config

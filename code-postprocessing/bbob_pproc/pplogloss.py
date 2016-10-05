@@ -130,9 +130,9 @@ def table_caption():
         as the best target $!!F!!$-value reached within the
         budget by the given algorithm.
         Shown is then the \aRT\ to reach \ftarget\ for the given algorithm
-        or the budget, if !!THE_REF_ALG!!
+        or the budget, if !!THE-REF-ALG!!
         reached a better target within the budget,
-        divided by the \aRT\ of !!THE_REF_ALG!! to reach \ftarget.
+        divided by the \aRT\ of !!THE-REF-ALG!! to reach \ftarget.
         Line: geometric mean. Box-Whisker error bar: 25-75\%-ile with median
         (box), 10-90\%-ile (caps), and minimum and maximum \aRT\ loss ratio
         (points). The vertical line gives the maximal number of function evaluations
