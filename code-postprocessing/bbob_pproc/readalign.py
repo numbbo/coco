@@ -193,7 +193,7 @@ class HMultiReader(MultiReader):
 
     def __init__(self, data, isBiobjective):
         super(HMultiReader, self).__init__(data)
-        # the alignment value is the function value.        
+        # the alignment value is the function value.
         self.idx = idxFBi if isBiobjective else idxFSingle
         self.nbPtsF = nbPtsFBi if isBiobjective else nbPtsFSingle
         self.idxCurrentF = numpy.inf  # Minimization
@@ -406,6 +406,7 @@ def split(dataFiles, idx_to_load=None, dim=None):
     """
 
     dataSets = []
+    algorithms = []
     for fil in dataFiles:
         with openfile(fil) as f:
             # This doesnt work with windows.
@@ -446,7 +447,12 @@ def split(dataFiles, idx_to_load=None, dim=None):
                     try:
                         data[id] = float(data[id])
                     except ValueError:
-                        warnings.warn('%s is not a valid number!' % data[id])
+                        # If the last value is not a number then it's the best algorithm name.
+                        # In this case we don't update the data[id].
+                        if id == len(data) - 1:
+                            algorithms.append(data[id])
+                        else:
+                            warnings.warn('%s is not a valid number!' % data[id])
                         data[id] = numpy.nan
 
             content.append(numpy.array(data))
@@ -457,7 +463,7 @@ def split(dataFiles, idx_to_load=None, dim=None):
             elif genericsettings.verbose:
                     print('skipped instance...')
 
-    return dataSets
+    return dataSets, algorithms
 
 
 def is_close(a, b, rel_tol=1e-09, abs_tol=0.0):
