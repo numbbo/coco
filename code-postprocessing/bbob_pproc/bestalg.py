@@ -209,7 +209,8 @@ class BestAlgSet(object):
         self.funcId = f
         if pr > 0:
             self.precision = pr
-        self.algs = best_algorithms if best_algorithms else resalgs
+        # self.algs = best_algorithms if best_algorithms else resalgs
+        self.algs = resalgs
         self.algId = algId
         if len(sortedAlgs) > 1:
             self.comment = 'Combination of ' + ', '.join(sortedAlgs)
