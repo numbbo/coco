@@ -123,13 +123,12 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
     ax = fig.add_subplot(111)
 
     # print all (downsampled) points of all runs
-#    for key in A:
-#        for a in A[key]:
-#            plt.plot(a[1], a[2], 'xk')
+    for key in A:
+        for a in A[key]:
+            plt.plot(a[1], a[2], 'xk')
 
-
-#    for a in A[1]:
-#        plt.plot(a[1], a[2], 'ob')
+    for a in A[9]:
+        plt.plot(a[1], a[2], 'ob')
     
 
     
@@ -149,7 +148,13 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
                 gridpoints.append([a[1], a[2]]) # extract only objective vector
         gridpoints = np.array(gridpoints)
 
+
+    for g in gridpoints:
+        plt.plot(g[0], g[1], '+m')
+
+
     colors = compute_aRT(gridpoints, A)
+
 
     # normalize colors:
     logcolors = np.log10(colors)
@@ -221,9 +226,17 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
     
 def compute_aRT(points, A):
     """ Computes the average runtime to attain the objective vectors in points
-        by the algorithm, with algorithm data given in dictionary A)
+        by the algorithm, with algorithm data given in dictionary A).
+        
+        Assumes that the algorithm data in A is given in the order of
+        increasing number of function evaluations for each entry.
+        
+        >>> A = {0: [[1, 1, 1], [3, 0.75, 0.5], [7, 0.5, 0.6]],
+        ... 1: [[1, 0.9, 0.9], [2, 0.5, 0.4]]}
+        >>> gridpoints = [[0.6, 0.5]]
+        >>> compute_aRT(gridpoints, A)
+        array([ 9.])
     """
-
     sum_runtimes_successful = np.zeros(len(points))
     num_runtimes_successful = np.zeros(len(points))
     sum_runtimes_unsuccessful = np.zeros(len(points))
@@ -239,15 +252,16 @@ def compute_aRT(points, A):
                         runtime_to_attain_points[i] = a[0]
                         points_finished[i] = True
                     else:
-                        max_runtimes[i] = a[0]
+                        max_runtimes[i] = a[0]                        
             if min(points_finished): # all grid points dominated
                 break
         for i in range(len(points)):
-            if runtime_to_attain_points[i] == np.nan:
+            if runtime_to_attain_points[i] is np.nan:
                 sum_runtimes_unsuccessful[i] = sum_runtimes_unsuccessful[i] + max_runtimes[i]
             else:
                 sum_runtimes_successful[i] = sum_runtimes_successful[i] + runtime_to_attain_points[i]
-                num_runtimes_successful[i] = num_runtimes_successful[i] + 1
+                num_runtimes_successful[i] = num_runtimes_successful[i] + 1                
+                
         
     aRT = np.zeros(len(points))
     for i in range(len(points)):
@@ -282,6 +296,7 @@ def sample_down(B, decimals):
                [ 4.   ,  4.   ,  2.2  ]])
 
     """
+    
     C = np.array(B)
     C = C[C[:, 2].argsort(kind='mergesort')] # sort wrt second objective
     C = C[C[:, 1].argsort(kind='mergesort')] # now wrt first objective

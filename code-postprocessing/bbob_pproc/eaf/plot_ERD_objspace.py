@@ -29,6 +29,7 @@ functions = (2,)
 #inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/MAT-SMS/archive/'
 #inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
 inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/gamultiobj/gamultiobj_on_bbob-biobj/archive/'
+#inputarchivefolder = './NSGA-II-archive-test/'
 outputfolder = 'plots/'
 tofile = False # if True: files are written; if False: no files but screen output
 logscale = True # plot in logscale
