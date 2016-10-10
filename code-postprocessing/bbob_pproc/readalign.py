@@ -448,7 +448,6 @@ def split(dataFiles, idx_to_load=None, dim=None):
                         data[id] = float(data[id])
                     except ValueError:
                         # If the last value is not a number then it's the best algorithm name.
-                        # In this case we don't update the data[id].
                         if id == len(data) - 1:
                             algorithms.append(data[id])
                         else:
@@ -462,6 +461,9 @@ def split(dataFiles, idx_to_load=None, dim=None):
                 dataSets.append(numpy.vstack(content))
             elif genericsettings.verbose:
                     print('skipped instance...')
+
+    if len(algorithms) < len(dataSets):
+        algorithms = []
 
     return dataSets, algorithms
 

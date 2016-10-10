@@ -885,6 +885,8 @@ class DataSet(object):
         if data:
             (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
             self.evals = adata
+            if len(algorithms) > 0:
+                algorithms= align_algorithms(algorithms, [item[1] for item in adata])
             self.algs = algorithms
             try:
                 for i in range(len(maxevals)):
@@ -2351,6 +2353,13 @@ def parseinfo(s):
         res.append((elem0, elem1))  # TODO: what are elem0 and elem1?
     return res
 
+
+def align_algorithms(algorithms, evals):
+    for i, item in enumerate(evals):
+        if i + 1 < len(evals) and evals[i] == evals[i + 1]:
+            algorithms.insert(i, algorithms[i])
+
+    return algorithms
 
 def set_unique_algId(ds_list, ds_list_reference, taken_ids=None):
     """on return, elements in ``ds_list`` do not have an ``algId``

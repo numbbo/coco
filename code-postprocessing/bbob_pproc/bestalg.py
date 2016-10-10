@@ -209,8 +209,7 @@ class BestAlgSet(object):
         self.funcId = f
         if pr > 0:
             self.precision = pr
-        # self.algs = best_algorithms if best_algorithms else resalgs
-        self.algs = resalgs
+        self.algs = best_algorithms if best_algorithms else resalgs
         self.algId = algId
         if len(sortedAlgs) > 1:
             self.comment = 'Combination of ' + ', '.join(sortedAlgs)
@@ -220,6 +219,8 @@ class BestAlgSet(object):
         self.ert = np.array(reserts)
         self.target = res[:, 0]
         self.testbed = dict_alg[sortedAlgs[0]].testbed_name # TODO: not nice
+        if hasattr(dict_alg[sortedAlgs[0]], 'suite'):
+            self.suite = getattr(dict_alg[sortedAlgs[0]], 'suite')
 
         bestfinalfunvals = np.array([np.inf])
         for alg in sortedAlgs:
@@ -556,14 +557,20 @@ def create_data_files(output_dir, result):
 
         instance_data = "%d:%d|%10.15e" % (0, average_max_evals, average_final_fun_values)
 
-        if result[result.keys()[0]].testbed == testbedsettings.GECCOBiObjBBOBTestbed:
-            info_lines.append("algorithm = '%s' indicator = 'hyp'" % value.algId)
+        if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
+            header = "algorithm = '%s' indicator = 'hyp'" % value.algId
+            if hasattr(value, 'suite'):
+                header += " suite = '%s'" % getattr(value, 'suite')
+            info_lines.append(header)
             info_lines.append("%% %s" % value.comment)
             info_lines.append("function = %d, dim = %d, %s, %s"
                               % (key[1], key[0], filename_template % (key[1], key[0], 'dat'), instance_data))
         else:
-            info_lines.append("funcId = %d, DIM = %d, Precision = %10.15e, algId = '%s'"
-                              % (key[1], key[0], value.precision, value.algId))
+            header = "funcId = %d, DIM = %d, Precision = %10.15e, algId = '%s'" \
+                     % (key[1], key[0], value.precision, value.algId)
+            if hasattr(value, 'suite'):
+                header += " suite = '%s'" % getattr(value, 'suite')
+            info_lines.append(header)
             info_lines.append("%% %s" % value.comment)
             info_lines.append("%s, %s" % (filename_template % (key[1], key[0], 'dat'), instance_data))
 
