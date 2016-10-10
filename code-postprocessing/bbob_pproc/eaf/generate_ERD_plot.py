@@ -122,13 +122,13 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
     #fig.set_size_inches(fig.get_size_inches()[1], fig.get_size_inches()[1]) # make axes equal
     ax = fig.add_subplot(111)
 
-    # print all (downsampled) points of all runs
-    for key in A:
-        for a in A[key]:
-            plt.plot(a[1], a[2], 'xk')
+#    # print all (downsampled) points of all runs
+#    for key in A:
+#        for a in A[key]:
+#            plt.plot(a[1], a[2], 'xk')
 
-    for a in A[9]:
-        plt.plot(a[1], a[2], 'ob')
+#    for a in A[9]:
+#        plt.plot(a[1], a[2], 'ob')
     
 
     
@@ -149,8 +149,8 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
         gridpoints = np.array(gridpoints)
 
 
-    for g in gridpoints:
-        plt.plot(g[0], g[1], '+m')
+#    for g in gridpoints:
+#        plt.plot(g[0], g[1], '+m')
 
 
     colors = compute_aRT(gridpoints, A)
@@ -171,6 +171,7 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
         erd_colormap = matplotlib.cm.gray_r
     else:
         erd_colormap = matplotlib.cm.hot_r
+        #erd_colormap = matplotlib.cm.nipy_spectral_r
 
     for i in range(len(gridpoints)-1, -1, -1):
     #for i in range(1, len(gridpoints)-3, 1):
@@ -223,6 +224,7 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
 
     plt.close()
     
+    return gridpoints, colors
     
 def compute_aRT(points, A):
     """ Computes the average runtime to attain the objective vectors in points
