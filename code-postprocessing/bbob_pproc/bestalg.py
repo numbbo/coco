@@ -33,6 +33,7 @@ from . import readalign, pproc
 from .toolsdivers import print_done
 from .ppfig import Usage
 from . import toolsstats, testbedsettings, genericsettings
+from .pproc import DataSet
 
 bestAlgorithmEntries = {}
 
@@ -59,14 +60,13 @@ algs2012 = ("ACOR", "BIPOPaCMA", "BIPOPsaACM", "aCMA", "CMAES", "aCMAa",
 
 
 # TODO: this should be reimplemented:
-#  o a best algorithm should derive from the DataSet class
 #  o a best algorithm and an algorithm portfolio are almost the same,
 #    they should derive from a CombinedAlgorithmDataSet?
 
 # CLASS DEFINITIONS
 
 
-class BestAlgSet(object):
+class BestAlgSet(DataSet):
     """Unit element of best algorithm data set.
 
     Here unit element means for one function and one dimension.
