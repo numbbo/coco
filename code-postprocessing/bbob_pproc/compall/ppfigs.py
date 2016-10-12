@@ -526,7 +526,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
                            )
             handles.append(tmp)
         
-        if show_significance: # plot significance-stars
+        if show_significance and 0: # plot significance-stars # Wassim: TODO: put back
             xstar, ystar = [], []
             dims = sorted(pproc.dictAlgByDim(dictFunc[f]))
             for i, dim in enumerate(dims):
@@ -560,14 +560,15 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
         # bottom labels with #instances and type of targets:
         infotext = ''
         algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
-        for alg in algorithms_with_data:
-            infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
-        infotext = infotext.rstrip(', ')
-        infotext += ' instances'
-        plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, infotext, fontsize=14)  # TODO: check
-        plt.text(plt.xlim()[0], plt.ylim()[0], 
-                 'target ' + target.label_name() + ': ' + target.label(0),
-                 fontsize=14)  # TODO: check
+        # Wassim: TODO: put back
+        #for alg in algorithms_with_data:
+        #    infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
+        #infotext = infotext.rstrip(', ')
+        #infotext += ' instances'
+        #plt.text(plt.xlim()[0], plt.ylim()[0]+0.5, infotext, fontsize=14)  # TODO: check
+        #plt.text(plt.xlim()[0], plt.ylim()[0],
+        #         'target ' + target.label_name() + ': ' + target.label(0),
+        #         fontsize=14)  # TODO: check
 
         saveFigure(filename, verbose=verbose)
 

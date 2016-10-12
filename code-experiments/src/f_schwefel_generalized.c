@@ -27,6 +27,7 @@ static double f_schwefel_generalized_raw(const double *x, const size_t number_of
   size_t i = 0;
   double result;
   double penalty, sum;
+  const double Schwefel_constant = 4.189828872724339;
 
   /* Boundary handling*/
   penalty = 0.0;
@@ -41,7 +42,8 @@ static double f_schwefel_generalized_raw(const double *x, const size_t number_of
   for (i = 0; i < number_of_variables; ++i) {
     sum += x[i] * sin(sqrt(fabs(x[i])));
   }
-  result = 0.01 * (penalty - sum);
+  result = 0.01 * (penalty + Schwefel_constant*100. - sum / (double) number_of_variables);
+  /*result = 0.01 * (penalty - sum);*/
 
   return result;
 }
@@ -81,7 +83,7 @@ static coco_problem_t *f_schwefel_generalized_bbob_problem_allocate(const size_t
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
   size_t i;
-  const double Schwefel_constant = 4.189828872724339;
+  /*const double Schwefel_constant = 4.189828872724339;*//* Wassim: now inside the raw function*/
   double *tmp1 = coco_allocate_vector(dimension);
   double *tmp2 = coco_allocate_vector(dimension);
 
@@ -108,8 +110,8 @@ static coco_problem_t *f_schwefel_generalized_bbob_problem_allocate(const size_t
   problem = transform_vars_z_hat(problem, xopt);
   problem = transform_vars_scale(problem, 2);
   problem = transform_vars_x_hat(problem, rseed);
-  problem = transform_obj_norm_by_dim(problem);
-  problem = transform_obj_shift(problem, Schwefel_constant); /* We could add the Schwefel_constant before normalizing */
+  /*problem = transform_obj_norm_by_dim(problem);*//* Wassim: there is already a normalization by dimension*/
+  /*problem = transform_obj_shift(problem, Schwefel_constant);*/ /* Wassim: now in the raw definition */
   problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);

@@ -190,7 +190,7 @@ static coco_problem_t *f_schaffers_permblockdiag_bbob_problem_allocate(const siz
     problem = transform_vars_permutation(problem, P12, dimension);
     
     problem = transform_vars_shift(problem, xopt, 0);
-    problem = transform_obj_norm_by_dim(problem);
+    /*problem = transform_obj_norm_by_dim(problem);*//* Wassim: there is already a normalization by dimension*/
     problem = transform_obj_penalize(problem, penalty_factor / (double) dimension);
     problem = transform_obj_shift(problem, fopt);
     

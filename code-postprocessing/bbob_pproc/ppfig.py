@@ -429,7 +429,7 @@ def save_single_functions_html(filename,
 def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key):
     currentHeader = 'Table showing the aRT in number of function evaluations'
     if best_alg_exists:
-        currentHeader += ' divided by the best aRT measured during BBOB-2009'
+        currentHeader += ' divided by the best aRT measured during BBOB-2009' 
 
     f.write("\n<H2> %s </H2>\n" % currentHeader)
     f.write("\n<!--%s-->\n" % html_key)

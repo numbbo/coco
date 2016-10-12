@@ -180,7 +180,7 @@ static coco_problem_t *f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_all
   problem = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
   problem = transform_vars_permutation(problem, P1, dimension);
   
-  /*problem = transform_obj_norm_by_dim(problem);*//* Wassim: already normalized in the raw function. Should probably be changed so that the raw function is limited to the sum */
+  /*problem = transform_obj_norm_by_dim(problem);*//* Wassim: there is already a normalization by dimension*/
   problem = transform_obj_shift(problem, fopt);
   
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
