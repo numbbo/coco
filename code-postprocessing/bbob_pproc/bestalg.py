@@ -92,7 +92,7 @@ class BestAlgSet(DataSet):
 
     """
 
-    def __init__(self, dict_alg, algId='Virtual Best Algorithm'):
+    def __init__(self, dict_alg, instance_numbers, algId='Virtual Best Algorithm'):
         """Instantiate one best algorithm data set with name algId.
 
         :keyword dict_alg: dictionary of datasets, keys are algorithm
@@ -216,6 +216,7 @@ class BestAlgSet(DataSet):
         else:
             self.comment = dict_alg[sortedAlgs[0]].comment
         self.comment += '; coco_version: ' + pkg_resources.require('bbob_pproc')[0].version
+        self.comment += '; instance_numbers: ' + ','.join(str(i) for i in instance_numbers)
         self.ert = np.array(reserts)
         self.target = res[:, 0]
         self.testbed = dict_alg[sortedAlgs[0]].testbed_name # TODO: not nice
@@ -408,7 +409,7 @@ def load_reference_algorithm(best_algo_filename, force=False, relative_load=True
     else:
         algList = [os.path.join(best_alg_file_path, best_algo_filename)]
         dsList, sortedAlgs, dictAlg = pproc.processInputArgs(algList)
-        bestAlgorithmEntries = generate(dictAlg, dsList[0].algId)
+        bestAlgorithmEntries = generate(dictAlg, dsList[0].algId, dsList[0].instancenumbers)
         # set reference_algorithm_displayname in testbedsetting if not present:
         if testbedsettings.current_testbed:
             if testbedsettings.current_testbed.reference_algorithm_displayname is None:
@@ -424,7 +425,7 @@ def usage():
     print(__doc__)  # same as: sys.modules[__name__].__doc__, was: main.__doc__
 
 
-def generate(dict_alg, algId):
+def generate(dict_alg, algId, instance_numbers):
     """Generates dictionary of best algorithm data set.
     """
 
@@ -432,7 +433,7 @@ def generate(dict_alg, algId):
     res = {}
     for f, i in pproc.dictAlgByFun(dict_alg).iteritems():
         for d, j in pproc.dictAlgByDim(i).iteritems():
-            tmp = BestAlgSet(j, algId)
+            tmp = BestAlgSet(j, instance_numbers, algId)
             res[(d, f)] = tmp
     return res
 
@@ -479,7 +480,7 @@ def deprecated_customgenerate(args=algs2009):
         if genericsettings.verbose:
             print('Folder %s was created.' % outputdir)
 
-    res = generate(dictAlg, outputdir)
+    res = generate(dictAlg, outputdir, dsList[0].instancenumbers)
     picklefilename = os.path.join(outputdir, 'bestalg.pickle')
     fid = gzip.open(picklefilename + ".gz", 'w')
     pickle.dump(res, fid)
@@ -511,7 +512,7 @@ def custom_generate(args=algs2009, algId='bestCustomAlg'):
         if genericsettings.verbose:
             print('Folder %s was created.' % output_dir)
 
-    result = generate(dictAlg, algId)
+    result = generate(dictAlg, algId, dsList[0].instancenumbers)
 
     create_data_files(output_dir, result)
 
@@ -709,7 +710,7 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
     for f, i in pproc.dictAlgByFun(dictAlg).iteritems():
         for d, j in pproc.dictAlgByDim(i).iteritems():
             selectedAlgsPerProblemDF = []
-            best = BestAlgSet(j)
+            best = BestAlgSet(j, dsList[0].instancenumbers)
 
             for i in range(0, len(best.target)):
                 t = best.target[i]
