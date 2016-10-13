@@ -280,6 +280,23 @@ def main(args):
         #run_latex_template("templateBBOBnoisy.tex")
         delete_files()
 
+        # testing data from recent runs, prepared in do.py:
+        recent_data_path = os.path.abspath(join_path(os.path.dirname(__file__),
+                                                     '../../code-experiments/build/python/exdata'))
+        t0 = time.time()
+        result = os.system(python + command +
+                           join_path(recent_data_path, 'RS-bb'))
+        print('**  subtest 10 finished in ', time.time() - t0, ' seconds')
+        assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob`.'
+        delete_files()
+
+        t0 = time.time()
+        result = os.system(python + command +
+                           join_path(recent_data_path, 'RS-bi'))
+        print('**  subtest 11 finished in ', time.time() - t0, ' seconds')
+        assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-biobj`.'
+        delete_files()
+
 
     print('launching doctest (it might be necessary to close a few pop up windows to finish)')
     t0 = time.time()

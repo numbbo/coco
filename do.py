@@ -636,7 +636,29 @@ def test_java():
 def test_postprocessing(allTests=False):
     install_postprocessing()
     if allTests:
-        python('code-postprocessing/bbob_pproc', ['__main__.py', 'all'], verbose=verbosity)
+        try:
+            # run example experiment to have a recent data set to postprocess:
+            build_python()
+            python('code-experiments/build/python/', ['-c', '''  
+try:
+    import example_experiment as ee
+except Exception as e:
+    print(e)
+ee.SOLVER = ee.random_search  # which is default anyway
+ee.suite_name = "bbob-biobj"
+ee.observer_options['result_folder'] = "RS-bi"  # use a short path for Jenkins
+ee.main()  # doctest: +ELLIPSIS
+ee.suite_name = "bbob"
+ee.observer_options['result_folder'] = "RS-bb"
+ee.main()  # doctest: +ELLIPSIS
+            '''], verbose=verbosity)
+            # now run all tests
+            python('code-postprocessing/bbob_pproc', ['__main__.py', 'all'], verbose=verbosity)
+        except subprocess.CalledProcessError:
+            sys.exit(-1)
+        finally:
+            # always remove folder of previously run experiments:
+            shutil.rmtree('code-experiments/build/python/exdata/')
     else:
         python('code-postprocessing/bbob_pproc', ['__main__.py'], verbose=verbosity)
     # python('code-postprocessing', ['-m', 'bbob_pproc'])
