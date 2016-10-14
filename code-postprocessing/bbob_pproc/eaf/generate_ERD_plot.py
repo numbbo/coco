@@ -27,6 +27,7 @@ maxplot = 10 # maximal displayed value (assuming nadir in [1,1])
 precision = 1e-3 # smallest displayed value in logscale
 maxbudget = '1e6 * dim'  # largest budget for normalization of aRT-->sampling conversion
 minbudget = '1'          # smallest budget for normalization of aRT-->sampling conversion
+cropbudget = maxbudget   # objective vectors produced after cropbudget not taken into account
 n = 200 # number of grid points per objective
 grayscale = False
 
@@ -147,7 +148,8 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
     """
     Returns a set of points in objective space and their corresponding
     aRT values for the specified algorithm data (on function `f_id` in
-    dimension `dim`, given in the folder `inputfolder`).
+    dimension `dim`, given in the folder `inputfolder`). Data points
+    produced after cropbudget function evaluations are not taken into account.
     
     The points in objective space are thereby either generated on a grid
     (if `with_grid == True` either in logscale or not) or constructed from the
@@ -205,11 +207,12 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
                 else:
                     splitline = line.split()
                     newline = np.array(splitline[:3], dtype=np.float)
-                    # normalize objective vector:
-                    newline[1] = (newline[1]-ideals[instance][0])/(nadirs[instance][0]-ideals[instance][0])
-                    newline[2] = (newline[2]-ideals[instance][1])/(nadirs[instance][1]-ideals[instance][1])
+                    if newline[0] <= eval(cropbudget):
+                        # normalize objective vector:
+                        newline[1] = (newline[1]-ideals[instance][0])/(nadirs[instance][0]-ideals[instance][0])
+                        newline[2] = (newline[2]-ideals[instance][1])/(nadirs[instance][1]-ideals[instance][1])
 
-                    B.append(newline)
+                        B.append(newline)
                     
             # store data of final instance:
             if instance not in A and not instance == -1:
@@ -278,59 +281,56 @@ def generate_ERD_ratio_plot(f_id, dim, f1_id, f2_id,
                                     dim, f1_id, f2_id, inputfolder=inputfolder_2,
                                     downsample=downsample, with_grid=True)
 
+    # resort gridpoints from lower left to top right in order to not loose
+    # the right color by overlapping rectangles...
+    idx = gridpoints[:,1].argsort(kind='mergesort')
+    gridpoints = gridpoints[idx]
+    aRTs_1 = aRTs_1[idx]
+    aRTs_2 = aRTs_2[idx]
+    idx = gridpoints[:,0].argsort(kind='mergesort')
+    gridpoints = gridpoints[idx]
+    aRTs_1 = aRTs_1[idx]
+    aRTs_2 = aRTs_2[idx]
+
     fig = plt.figure(1)
     ax = fig.add_subplot(111)
-
-
-    np.set_printoptions(threshold='nan')
-    aRTratios = (aRTs_2 / aRTs_1)
-    aRTratios.sort()
-    print(aRTratios)
-    print('kjhkjhkjhkjhkjhkjhkjhkjhkjhkjhkjhkjhkjhkjhkjhkjhkjh')
     
     # compute ratios (in favor of each algorithm: i.e. positive if ratio>1
     # in favor of Algorithm A and negative in ratio>1 in favor of Algorithm B)
-    ratio_in_favor_of_Alg1 = np.maximum(aRTs_2 / aRTs_1, 1)
-    ratio_in_favor_of_Alg2 = np.maximum(aRTs_1 / aRTs_2, 1)
-    
-    print(len(ratio_in_favor_of_Alg1))
-    print('bssssssssssssssssssssssssssst')
-    
+    ratio_in_favor_of_Alg1 = np.fmax(aRTs_2 / aRTs_1, 1.)
+    ratio_in_favor_of_Alg2 = np.fmax(aRTs_1 / aRTs_2, 1.)
+
     aRT_ratios = np.zeros(len(ratio_in_favor_of_Alg1))
     for i in range(len(ratio_in_favor_of_Alg1)):
         aRT_ratios[i] = ratio_in_favor_of_Alg1[i] if ratio_in_favor_of_Alg1[i] > 1 else 0
         aRT_ratios[i] = - ratio_in_favor_of_Alg2[i] if ratio_in_favor_of_Alg2[i] > 1 else aRT_ratios[i]
 
-    print(aRT_ratios)
-    
-
-    logcolors = aRT_ratios
-
+    norm = matplotlib.colors.Normalize(vmin=-5.,vmax=5., clip=False)
     if grayscale:
         erd_colormap = matplotlib.cm.gray_r
     else:
         erd_colormap = matplotlib.cm.RdBu
 
-    for i in range(len(gridpoints)-1, -1, -1):
-    #for i in range(1, len(gridpoints)-3, 1):
-        if not np.isfinite(logcolors[i]):
-            continue # no finite aRT
-#        ax.add_artist(patches.Rectangle(
-#                ((gridpoints[i])[0], (gridpoints[i])[1]),
-#                 maxplot-(gridpoints[i])[0],
-#                 maxplot-(gridpoints[i])[1],
-#                 alpha=1.0,
-#                 color=erd_colormap(logcolors[i])))
-        print(logcolors[i])
-        print(erd_colormap(logcolors[i]))
-        print('}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}')
-        ax.plot((gridpoints[i])[0], (gridpoints[i])[1], 's', color=erd_colormap(logcolors[i]), markersize=18)
-    
+
     # Add a single point outside of the axis range with the same cmap and norm
     axscat = plt.scatter([-100], [-100], c=[0], cmap=erd_colormap)
-    cb = plt.colorbar()
+    axscat.set_clim([-10, 10])                # mainly to set correct tick values
+
+    for i in range(len(gridpoints)):
+    #for i in range(1, len(gridpoints)-3, 1):
+        if not np.isfinite(aRT_ratios[i]):
+            continue # no finite aRT
+        ax.add_artist(patches.Rectangle(
+                ((gridpoints[i])[0], (gridpoints[i])[1]),
+                 maxplot-(gridpoints[i])[0],
+                 maxplot-(gridpoints[i])[1],
+                 alpha=1.0,
+                 color=erd_colormap(norm(aRT_ratios[i]))))
+#        ax.plot((gridpoints[i])[0], (gridpoints[i])[1], 's', color=erd_colormap(norm(aRT_ratios[i])), markersize=18)
+    
+    cb = plt.colorbar(ticks=[-5, -2.5, 0, 2.5, 5])  # mainly to set correct tick values
+    cb.ax.set_yticklabels(['-5', '-2.5', '0', '2.5', '5'])
     cb.set_label("aRT ratio")
-    #fig.colorbar(axscat)
     
     # beautify:
     ax.set_title("aRT ratios in objective space for bbob-biobj function $f_{%d}$ (%d-D)" % (f_id, dim))

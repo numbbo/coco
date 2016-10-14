@@ -31,23 +31,12 @@ import generate_ERD_plot
 dims = (5,)
 #functions = range(1,56)
 functions = (2,)
-#inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/MAT-SMS/archive/'
-inputarchivefolder_2 = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
-inputarchivefolder_1 = 'C:/Users/dimo/Desktop/coco-master-git/gamultiobj/gamultiobj_on_bbob-biobj/archive/'
-#inputarchivefolder = './NSGA-II-archive-test/'
+inputarchivefolder_1 = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
+inputarchivefolder_2 = 'C:/Users/dimo/Desktop/coco-master-git/gamultiobj/gamultiobj_on_bbob-biobj/archive/'
 outputfolder = 'plots/'
-tofile = False # if True: files are written; if False: no files but screen output
+tofile = True # if True: files are written; if False: no files but screen output
 logscale = True # plot in logscale
 downsample = True # downsample archive to a reasonable number of points (for efficiency reasons)
-with_grid = True # if True the aRT values on a regular grid are plotted
-                  # if False, the aRT values on the downsampled points are plotted
-grayscale = False
-
-maxbudget = '1e6 * d'  # largest budget for normalization of aRT-->sampling conversion
-minbudget = '1'          # smallest budget for normalization of aRT-->sampling conversion
-maxplot = 5 # maximal displayed value (assuming nadir in [1,1])
-precision = 1e-3 # smallest displayed value in logscale
-
 ###########################################
 
 
@@ -72,7 +61,7 @@ for problem_index, problem in enumerate(suite):
    
 
     generate_ERD_plot.generate_ERD_ratio_plot(f, d, f1_id, f2_id,
-                   outputfolder="./", inputfolder_1=inputarchivefolder_1, 
+                   outputfolder=outputfolder, inputfolder_1=inputarchivefolder_1, 
                    inputfolder_2=inputarchivefolder_2, tofile=tofile,
                    logscale=logscale, downsample=downsample)
 
