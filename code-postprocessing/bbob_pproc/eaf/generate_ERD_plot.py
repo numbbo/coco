@@ -28,7 +28,7 @@ precision = 1e-3 # smallest displayed value in logscale
 maxbudget = '1e6 * dim'  # largest budget for normalization of aRT-->sampling conversion
 minbudget = '1'          # smallest budget for normalization of aRT-->sampling conversion
 cropbudget = maxbudget   # objective vectors produced after cropbudget not taken into account
-n = 200 # number of grid points per objective
+n = 50 # number of grid points per objective
 grayscale = False
 
 biobjinst = {1: [2, 4],
@@ -105,7 +105,6 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
     cb.ax.set_yticklabels(['1', '1e2*n',        # attention: might be wrong
                            '1e4*n', '1e6*n'])  # if minbudget or maxbudget
                                                  # are changed !!!!!
-    cb.set_label("aRT ratio")
     
     # beautify:
     ax.set_title("aRT in objective space for bbob-biobj function $f_{%d}$ (%d-D)" % (f_id, dim))
@@ -283,6 +282,7 @@ def generate_ERD_ratio_plot(f_id, dim, f1_id, f2_id,
 
     # resort gridpoints from lower left to top right in order to not loose
     # the right color by overlapping rectangles...
+    # assuming that gridpoints and gridpoints_2 are the same
     idx = gridpoints[:,1].argsort(kind='mergesort')
     gridpoints = gridpoints[idx]
     aRTs_1 = aRTs_1[idx]
@@ -296,16 +296,23 @@ def generate_ERD_ratio_plot(f_id, dim, f1_id, f2_id,
     ax = fig.add_subplot(111)
     
     # compute ratios (in favor of each algorithm: i.e. positive if ratio>1
-    # in favor of Algorithm A and negative in ratio>1 in favor of Algorithm B)
-    ratio_in_favor_of_Alg1 = np.fmax(aRTs_2 / aRTs_1, 1.)
-    ratio_in_favor_of_Alg2 = np.fmax(aRTs_1 / aRTs_2, 1.)
+    # in favor of Algorithm A and negative if ratio>1 in favor of Algorithm B)
+    ratio_in_favor_of_Alg1 = np.maximum(aRTs_2 / aRTs_1, 1.)
+    ratio_in_favor_of_Alg2 = np.maximum(aRTs_1 / aRTs_2, 1.)
 
     aRT_ratios = np.zeros(len(ratio_in_favor_of_Alg1))
     for i in range(len(ratio_in_favor_of_Alg1)):
-        aRT_ratios[i] = ratio_in_favor_of_Alg1[i] if ratio_in_favor_of_Alg1[i] > 1 else 0
-        aRT_ratios[i] = - ratio_in_favor_of_Alg2[i] if ratio_in_favor_of_Alg2[i] > 1 else aRT_ratios[i]
+        if np.isfinite(ratio_in_favor_of_Alg1[i]) and np.isfinite(ratio_in_favor_of_Alg2[i]):
+            aRT_ratios[i] = ratio_in_favor_of_Alg1[i] if ratio_in_favor_of_Alg1[i] > 1 else 0
+            aRT_ratios[i] = - ratio_in_favor_of_Alg2[i] if ratio_in_favor_of_Alg2[i] > 1 else aRT_ratios[i]
+        elif not np.isfinite(ratio_in_favor_of_Alg1[i]) and np.isfinite(ratio_in_favor_of_Alg2[i]):
+            aRT_ratios[i] = - np.inf
+        elif np.isfinite(ratio_in_favor_of_Alg1[i]) and not np.isfinite(ratio_in_favor_of_Alg2[i]):
+            aRT_ratios[i] = np.inf
+        else: # both aRT values are infinite
+            aRT_ratios[i] = 0
 
-    norm = matplotlib.colors.Normalize(vmin=-5.,vmax=5., clip=False)
+    norm = matplotlib.colors.Normalize(vmin=-10.,vmax=10., clip=False)
     if grayscale:
         erd_colormap = matplotlib.cm.gray_r
     else:
@@ -319,7 +326,23 @@ def generate_ERD_ratio_plot(f_id, dim, f1_id, f2_id,
     for i in range(len(gridpoints)):
     #for i in range(1, len(gridpoints)-3, 1):
         if not np.isfinite(aRT_ratios[i]):
-            continue # no finite aRT
+            if np.isfinite(aRTs_1) and not np.isfinite(aRTs_2):
+                ax.add_artist(patches.Rectangle(
+                    ((gridpoints[i])[0], (gridpoints[i])[1]),
+                     maxplot-(gridpoints[i])[0],
+                     maxplot-(gridpoints[i])[1],
+                     alpha=1.0,
+                     color='green'))
+                print('green')
+            if not np.isfinite(aRTs_1) and np.isfinite(aRTs_2):
+                ax.add_artist(patches.Rectangle(
+                    ((gridpoints[i])[0], (gridpoints[i])[1]),
+                     maxplot-(gridpoints[i])[0],
+                     maxplot-(gridpoints[i])[1],
+                     alpha=1.0,
+                     color='magenta'))
+                print('magenta')
+            continue # no finite aRT for >= 1 algo
         ax.add_artist(patches.Rectangle(
                 ((gridpoints[i])[0], (gridpoints[i])[1]),
                  maxplot-(gridpoints[i])[0],
@@ -328,9 +351,9 @@ def generate_ERD_ratio_plot(f_id, dim, f1_id, f2_id,
                  color=erd_colormap(norm(aRT_ratios[i]))))
 #        ax.plot((gridpoints[i])[0], (gridpoints[i])[1], 's', color=erd_colormap(norm(aRT_ratios[i])), markersize=18)
     
-    cb = plt.colorbar(ticks=[-5, -2.5, 0, 2.5, 5])  # mainly to set correct tick values
-    cb.ax.set_yticklabels(['-5', '-2.5', '0', '2.5', '5'])
-    cb.set_label("aRT ratio")
+    cb = plt.colorbar(ticks=[-10, -5, 0, 5, 10])  # mainly to set correct tick values
+    cb.ax.set_yticklabels(['10', '5', '0', '5', '10'])
+    cb.set_label("<-- in favor of Algo B      aRT ratio      in favor of Algo A -->")
     
     # beautify:
     ax.set_title("aRT ratios in objective space for bbob-biobj function $f_{%d}$ (%d-D)" % (f_id, dim))
