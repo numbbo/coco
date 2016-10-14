@@ -105,10 +105,10 @@ def scaling_figure_caption(for_html = False):
 
 
 def prepare_ecdfs_figure_caption():
-
+    best_year = testbedsettings.current_testbed.best_algorithm_year
     bestyeartext = (
-                    r"The ``best %d'' line " % testbedsettings.current_testbed.best_algorithm_year +
-                    r"corresponds to the best \aRT\ observed during BBOB %d " % testbedsettings.current_testbed.best_algorithm_year +
+                    r"The ``best %d'' line " % best_year +
+                    r"corresponds to the best \aRT\ observed during BBOB %d " % best_year +
                     r"for each selected target."
                     )
 
@@ -138,17 +138,16 @@ def prepare_ecdfs_figure_caption():
     else:
         figure_caption = ecdfs_figure_caption_standard
 
-      # Wassim: relaced what's below to have more generic code
 #    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
-        # NOTE: no runlength-based targets supported yet
+#        # NOTE: no runlength-based targets supported yet
 #        figure_caption = ecdfs_figure_caption_standard
 #    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
 #        if genericsettings.runlength_based_targets:
 #            figure_caption = ecdfs_figure_caption_rlbased + bestyeartext
 #        else:
 #            figure_caption = ecdfs_figure_caption_standard + bestyeartext
-#   else:
-#       warnings.warn("Current settings do not support ppfigdim caption.")
+#    else:
+#        warnings.warn("Current settings do not support ppfigdim caption.")
 
     return figure_caption
 
@@ -267,18 +266,12 @@ def plotLegend(handles, maxval=None):
         for k in sorted(ys[j].keys()):
             #enforce best 2009 comes first in case of equality
             tmp = []
-            if not isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
-                for h in ys[j][k]:
-                    if plt.getp(h, 'label') == 'best 2009':
-                        tmp.insert(0, h)
-                    else:
-                        tmp.append(h)
-            else:
-                for h in ys[j][k]:
-                    if plt.getp(h, 'label') == 'best 2016':
-                        tmp.insert(0, h)
-                    else:
-                        tmp.append(h)
+            best_year_label = 'best %d' %testbedsettings.current_testbed.best_algorithm_year
+            for h in ys[j][k]:
+                if plt.getp(h, 'label') == best_year_label:
+                    tmp.insert(0, h)
+                else:
+                    tmp.append(h)
             #tmp.reverse()
             ys[j][k] = tmp
 
@@ -560,6 +553,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
         # bottom labels with #instances and type of targets:
         infotext = ''
         algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
+
         # Wassim: TODO: put back
         #for alg in algorithms_with_data:
         #    infotext += '%d, ' % len((dictFunc[f][alg])[0].instancenumbers)
@@ -569,6 +563,27 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
         #plt.text(plt.xlim()[0], plt.ylim()[0],
         #         'target ' + target.label_name() + ': ' + target.label(0),
         #         fontsize=14)  # TODO: check
+        num_of_instances = []
+        for alg in algorithms_with_data:
+            if len(dictFunc[f][alg]) > 0:
+                num_of_instances.append(len((dictFunc[f][alg])[0].instancenumbers))
+            else:
+                warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
+        # issue a warning if number of instances is inconsistant, otherwise
+        # display only the present number of instances, i.e. remove copies
+        if len(set(num_of_instances)) > 1:
+            warnings.warn('Number of instances inconsistent over all algorithms.')
+        else:
+            num_of_instances = set(num_of_instances)
+        for n in num_of_instances:
+            infotext += '%d, ' % n
+
+        infotext = infotext.rstrip(', ')
+        infotext += ' instances\n'
+        infotext += 'target ' + target.label_name() + ': ' + target.label(0)
+        plt.text(plt.xlim()[0], plt.ylim()[0],
+                 infotext, fontsize=14, horizontalalignment="left",
+                 verticalalignment="bottom")
 
         saveFigure(filename, verbose=verbose)
 
@@ -588,7 +603,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
             
             alg_definitions.append((', ' if i > 0 else '') + '%s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
             alg_definitions_html += (', ' if i > 0 else '') + '%s: %s' % (symb_html, toolsdivers.str_to_latex(toolsdivers.strip_pathname1(sortedAlgs[i])))
-        if not isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed): # Manh : option large scale
+        if not isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed):
             toolsdivers.prepend_to_file(latex_commands_filename,
                     [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
                      #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
@@ -604,19 +619,16 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
             toolsdivers.prepend_to_file(latex_commands_filename,
                     [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}'
                      #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
-                     '\\providecommand{\\bbobppfigslegendlargescalefixed}[1]{',
+                     '\\providecommand{\\bbobppfigslegend}[1]{',
                      scaling_figure_caption(),
                      'Legend: '] + alg_definitions + ['}']
                     )
             toolsdivers.prepend_to_file(latex_commands_filename,
-                    ['\\providecommand{\\bbobECDFslegendlargescalefixed}[1]{',
+                    ['\\providecommand{\\bbobECDFslegend}[1]{',
                     ecdfs_figure_caption(), '}']
                     )
         
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
-        # Wassim: generalized what's below
-        for i in xrange(len(testbedsettings.current_testbed.rldDimsOfInterest)):
-          toolsdivers.replace_in_file(htmlFile, '##bbobECDFslegend%d##' % testbedsettings.current_testbed.rldDimsOfInterest[i], ecdfs_figure_caption(True, testbedsettings.current_testbed.rldDimsOfInterest[i]))
 
         if verbose:
             print 'Wrote commands and legend to %s' % filename

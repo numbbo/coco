@@ -1,21 +1,37 @@
 #!/usr/bin/env python
-"""Use case for the COCO experimentation module `cocoex` which can be used as
-template.
+"""Python script for the COCO experimentation module `cocoex`.
 
 Usage from a system shell::
 
-    python example_experiment.py 3 1 20
+    python example_experiment.py bbob
 
-runs the first of 20 batches with maximal budget
-of 3 * dimension f-evaluations.
+runs a full but short experiment on the bbob suite. The optimization
+algorithm used is determined by the `SOLVER` attribute in this file::
 
-Usage from a python shell::
+    python example_experiment.py bbob 20
 
-    >>> import example_experiment as ee
-    >>> ee.main(3, 1, 1)  # doctest: +ELLIPSIS
-    Benchmarking solver...
+runs the same experiment but with a budget of 20 * dimension
+f-evaluations::
 
-does the same but runs the "first" of one single batch.
+    python example_experiment.py bbob-biobj 1e3 1 20
+
+runs the first of 20 batches with maximal budget of
+1000 * dimension f-evaluations on the bbob-biobj suite.
+All batches must be run to generate a complete data set.
+
+Usage from a python shell:
+
+>>> import example_experiment as ee
+>>> ee.suite_name = "bbob-biobj"
+>>> ee.SOLVER = ee.random_search  # which is default anyway
+>>> ee.observer_options['algorithm_info'] = "default of example_experiment.py"
+>>> ee.main(5, 1+9, 2, 300)  # doctest: +ELLIPSIS
+Benchmarking solver...
+
+runs the second of 300 batches with budget 5 * dimension and at most 9 restarts.
+
+Calling `example_experiment` without parameters prints this
+help and the available suite names.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 try: range = xrange
@@ -25,6 +41,8 @@ import time
 import numpy as np  # "pip install numpy" installs numpy
 import cocoex
 from cocoex import Suite, Observer, log_level
+del absolute_import, division, print_function, unicode_literals
+
 verbose = 1
 
 try: import cma  # cma.fmin is a solver option, "pip install cma" installs cma
@@ -34,9 +52,78 @@ except: pass
 try: range = xrange  # let range always be an iterator
 except NameError: pass
 
+def default_observers(update={}):
+    """return a map from suite names to default observer names"""
+    # this is a function only to make the doc available and
+    # because @property doesn't work on module level
+    _default_observers.update(update)
+    return _default_observers
+_default_observers = {
+    'bbob': 'bbob',
+    'bbob-biobj': 'bbob-biobj',
+    'bbob-constrained': 'bbob',
+    'bbob-largescale': 'bbob',  # todo: needs to be confirmed
+    }
+def default_observer_options(budget_=None, suite_name_=None):
+    """return defaults computed from input parameters or current global vars
+    """
+    global budget, suite_name
+    if budget_ is None:
+        budget_ = budget
+    if suite_name_ is None:
+        suite_name_ = suite_name
+    opts = {}
+    try:
+        opts.update({'result_folder': '%s_on_%s_budget%04dxD'
+                    % (SOLVER.__name__, suite_name_, budget_)})
+    except: pass
+    try:
+        solver_module = '(%s)' % SOLVER.__module__
+    except:
+        solver_module = ''
+    try:
+        opts.update({'algorithm_name': SOLVER.__name__ + solver_module})
+    except: pass
+    return opts
+class ObserverOptions(dict):
+    """a `dict` with observer options which can be passed to
+    the (C-based) `Observer` via the `as_string` property.
+
+    Details: When the `Observer` class in future accepts a dictionary
+    also, this class becomes superfluous and could be replaced by a method
+    `default_observer_options` similar to `default_observers`.
+    """
+    def __init__(self, options={}):
+        """set default options from global variables and input ``options``.
+
+        Default values are created "dynamically" based on the setting
+        of module-wide variables `SOLVER`, `suite_name`, and `budget`.
+        """
+        dict.__init__(self, options)
+    def update(self, *args, **kwargs):
+        """add or update options"""
+        dict.update(self, *args, **kwargs)
+        return self
+    def update_gracefully(self, options):
+        """update from each entry of parameter ``options: dict`` but only
+        if key is not already present
+        """
+        for key in options:
+            if key not in self:
+                self[key] = options[key]
+        return self
+    @property
+    def as_string(self):
+        """string representation which is accepted by `Observer` class,
+        which calls the underlying C interface
+        """
+        s = str(self).replace(',', ' ')
+        for c in ["u'", 'u"', "'", '"', "{", "}"]:
+            s = s.replace(c, '')
+        return s
 
 def print_flush(*args):
-    """print without newline and flush"""
+    """print without newline but with flush"""
     print(*args, end="")
     sys.stdout.flush()
 
@@ -162,7 +249,8 @@ def batch_loop(solver, suite, observer, budget,
             continue
         observer.observe(problem)
         short_info.print(problem) if verbose else None
-        runs = coco_optimize(solver, problem, budget * problem.dimension, max_runs)
+        runs = coco_optimize(solver, problem, budget * problem.dimension,
+                             max_runs)
         if verbose:
             print_flush("!" if runs > 2 else ":" if runs > 1 else ".")
         short_info.add_evals(problem.evaluations, runs)
@@ -214,7 +302,7 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
                 x0 = "%f + %f * np.random.rand(%d)" % (
                         center[0], 0.8 * range_[0], fun.dimension)
                 sigma0 = 0.2
-                restarts_ = 6 * (observer_options.find('IPOP') >= 0)
+                restarts_ = 6 * (observer_options.as_string.find('IPOP') >= 0)
 
             solver(fun, x0, sigma0 * range_[0], restarts=restarts_,
                    options=dict(scaling=range_/range_[0], maxfevals=remaining_evals,
@@ -248,23 +336,22 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
 # ===============================================
 ######################### CHANGE HERE ########################################
 # CAVEAT: this might be modified from input args
+suite_name = "bbob-biobj"
+suite_name = "bbob"  # always overwritten when called from system shell
 budget = 2  # maxfevals = budget x dimension ### INCREASE budget WHEN THE DATA CHAIN IS STABLE ###
 max_runs = 1e9  # number of (almost) independent trials per problem instance
 number_of_batches = 1  # allows to run everything in several batches
 current_batch = 1      # 1..number_of_batches
 ##############################################################################
 SOLVER = random_search
-#SOLVER = my_solver # fmin_slsqp # SOLVER = cma.fmin
-suite_name = "bbob-biobj"
-#suite_name = "bbob"
-suite_instance = "year:2016"
+# SOLVER = my_solver # SOLVER = fmin_slsqp # SOLVER = cma.fmin
+suite_instance = ""  # "year:2016"  # incommented as it seems not to work with bbob-largescale
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
-observer_name = suite_name
-observer_options = (
-    ' result_folder: %s_on_%s_budget%04dxD '
-                 % (SOLVER.__name__, suite_name, budget) +
-    ' algorithm_name: %s ' % SOLVER.__name__ +
-    ' algorithm_info: "A SIMPLE RANDOM SEARCH ALGORITHM" ')  # CHANGE THIS
+observer_options = ObserverOptions({  # is (inherited from) a dictionary
+                    'algorithm_info': "A SIMPLE RANDOM SEARCH ALGORITHM", # CHANGE/INCOMMENT THIS!
+                    # 'algorithm_name': "",  # default already provided from SOLVER name
+                    # 'result_folder': "",  # default already provided from several global vars
+                   })
 ######################### END CHANGE HERE ####################################
 
 # ===============================================
@@ -275,10 +362,14 @@ def main(budget=budget,
          current_batch=current_batch,
          number_of_batches=number_of_batches):
     """Initialize suite and observer, then benchmark solver by calling
-    `batch_loop(SOLVER, suite, observer, budget,...`.
+    ``batch_loop(SOLVER, suite, observer, budget,...``
     """
-    observer = Observer(observer_name, observer_options)
+    observer_name = default_observers()[suite_name]
+    observer_options.update_gracefully(default_observer_options())
+
+    observer = Observer(observer_name, observer_options.as_string)
     suite = Suite(suite_name, suite_instance, suite_options)
+
     print("Benchmarking solver '%s' with budget=%d*dimension on %s suite, %s"
           % (' '.join(str(SOLVER).split()[:2]), budget,
              suite.name, time.asctime()))
@@ -288,27 +379,26 @@ def main(budget=budget,
     t0 = time.clock()
     batch_loop(SOLVER, suite, observer, budget, max_runs,
                current_batch, number_of_batches)
-    print(", %s (%s total elapsed time)." % (time.asctime(), ascetime(time.clock() - t0)))
+    print(", %s (%s total elapsed time)." % 
+            (time.asctime(), ascetime(time.clock() - t0)))
 
 # ===============================================
 if __name__ == '__main__':
     """read input parameters and call `main()`"""
-    if len(sys.argv) > 1:
-        if sys.argv[1] in ["--help", "-h"]:
+    if len(sys.argv) < 2 or sys.argv[1] in ["--help", "-h"]:
             print(__doc__)
+            print("Recognized suite names: " + str(cocoex.known_suite_names))
             exit(0)
-        budget = float(sys.argv[1])
-        if observer_options.find('budget') > 0:  # reflect budget in folder name
-            idx = observer_options.find('budget')
-            observer_options = observer_options[:idx+6] + \
-                "%04d" % int(budget + 0.5) + observer_options[idx+10:]
+    suite_name = sys.argv[1]
     if len(sys.argv) > 2:
-        current_batch = int(sys.argv[2])
+        budget = float(sys.argv[2])
     if len(sys.argv) > 3:
-        number_of_batches = int(sys.argv[3])
+        current_batch = int(sys.argv[3])
     if len(sys.argv) > 4:
-        messages = ['Argument "%s" disregarded (only 3 arguments are recognized).' % sys.argv[i]
-            for i in range(4, len(sys.argv))]
+        number_of_batches = int(sys.argv[4])
+    if len(sys.argv) > 5:
+        messages = ['Argument "%s" disregarded (only 4 arguments are recognized).' % sys.argv[i]
+            for i in range(5, len(sys.argv))]
         messages.append('See "python example_experiment.py -h" for help.')
         raise ValueError('\n'.join(messages))
     main(budget, max_runs, current_batch, number_of_batches)

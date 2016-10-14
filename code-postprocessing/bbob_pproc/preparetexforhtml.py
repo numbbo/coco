@@ -125,18 +125,16 @@ def main(latex_commands_for_html):
 
         # 8. pplogloss
         f.writelines(prepare_providecommand('bbobloglosstablecaption', scenario,
-                                            pplogloss.table_caption().replace('Figure~\\ref{fig:ERTlogloss}',
+                                            pplogloss.table_caption().replace('Figure~\\ref{fig:aRTlogloss}',
                                                                               'the following figure')))
         f.writelines(prepare_providecommand('bbobloglossfigurecaption', scenario,
-                                            pplogloss.figure_caption().replace('Figure~\\ref{tab:ERTloss}',
+                                            pplogloss.figure_caption().replace('Figure~\\ref{tab:aRTloss}',
                                                                                'the previous figure')))
 
         # prepare tags for later HTML preparation
         testbed = testbedsettings.current_testbed
         # 1. ppfigs
-        for dim in testbed.htmlDimsOfInterest: #['5', '20']: # Wassim:
-            f.write(prepare_item('bbobECDFslegend' + scenario + str(dim), 'bbobECDFslegend' + scenario, str(dim)))
-
+        f.write(prepare_item('bbobECDFslegend' + scenario, '', 'DIMVALUE'))
         param = '$f_{%d}$ and $f_{%d}$' % (testbed.first_function_number, testbed.last_function_number)
         f.write(prepare_item('bbobppfigslegend' + scenario, param=param))
 
@@ -152,9 +150,8 @@ def main(latex_commands_for_html):
 
         # 6. pptables
         command_name = 'bbobpptablesmanylegend' + scenario
-        for dim in testbed.htmlDimsOfInterest: #['5', '20']: # Wassim:
-            bonferroni = str(2 * (testbed.last_function_number - testbed.first_function_number + 1))
-            f.write(prepare_item_two(command_name + str(dim), command_name, 'dimension ' + str(dim), bonferroni))
+        bonferroni = str(2 * (testbed.last_function_number - testbed.first_function_number + 1))
+        f.write(prepare_item_two(command_name, command_name, 'different dimensions', bonferroni))
 
         # 7. ppscatter
         param = '$f_{%d}$ - $f_{%d}$' % (testbed.first_function_number, testbed.last_function_number)

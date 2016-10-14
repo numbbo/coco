@@ -636,7 +636,29 @@ def test_java():
 def test_postprocessing(allTests=False):
     install_postprocessing()
     if allTests:
-        python('code-postprocessing/bbob_pproc', ['__main__.py', 'all'], verbose=verbosity)
+        try:
+            # run example experiment to have a recent data set to postprocess:
+            build_python()
+            python('code-experiments/build/python/', ['-c', '''  
+try:
+    import example_experiment as ee
+except Exception as e:
+    print(e)
+ee.SOLVER = ee.random_search  # which is default anyway
+ee.suite_name = "bbob-biobj"
+ee.observer_options['result_folder'] = "RS-bi"  # use a short path for Jenkins
+ee.main()  # doctest: +ELLIPSIS
+ee.suite_name = "bbob"
+ee.observer_options['result_folder'] = "RS-bb"
+ee.main()  # doctest: +ELLIPSIS
+            '''], verbose=verbosity)
+            # now run all tests
+            python('code-postprocessing/bbob_pproc', ['__main__.py', 'all'], verbose=verbosity)
+        except subprocess.CalledProcessError:
+            sys.exit(-1)
+        finally:
+            # always remove folder of previously run experiments:
+            shutil.rmtree('code-experiments/build/python/exdata/')
     else:
         python('code-postprocessing/bbob_pproc', ['__main__.py'], verbose=verbosity)
     # python('code-postprocessing', ['-m', 'bbob_pproc'])
@@ -667,6 +689,11 @@ def install_preprocessing():
                 {'COCO_VERSION': git_version(pep440=True)})
     python('code-preprocessing/archive-update', ['setup.py', 'install', '--user'], verbose=verbosity)
 
+
+def test_preprocessing():
+    install_preprocessing()
+    python('code-preprocessing/archive-update', ['-m', 'pytest'], verbose=verbosity)
+    python('code-preprocessing/log-reconstruction', ['-m', 'pytest'], verbose=verbosity)
 
 ################################################################################
 ## Global
@@ -795,12 +822,13 @@ Available commands for developers:
   test-python2            - Build and run minimal test of Python 2 module
   test-python3            - Build and run minimal test of Python 3 module
   test-octave             - Build and run example experiment in Octave
-  test-postprocessing     - Runs some of the post-processing tests.
-  test-postprocessing-all - Runs all of the post-processing tests.
-  verify-postprocessing   - Checks if the generated html is up-to-date.
+  test-postprocessing     - Runs some of the post-processing tests
+  test-postprocessing-all - Runs all of the post-processing tests [needs access to the internet]
+  verify-postprocessing   - Checks if the generated html is up-to-date
   leak-check              - Check for memory leaks in C
   
   install-preprocessing   - Install preprocessing (user-locally)
+  test-preprocessing      - Runs preprocessing tests [needs access to the internet]
 
 To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
@@ -848,7 +876,7 @@ def main(args):
     elif cmd == 'verify-postprocessing': verify_postprocessing()
     elif cmd == 'leak-check': leak_check()
     elif cmd == 'install-preprocessing': install_preprocessing()
-    elif cmd == 'run-preprocessing': run_preprocessing()
+    elif cmd == 'test-preprocessing': test_preprocessing()
     else: help()
 
 

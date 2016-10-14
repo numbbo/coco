@@ -53,10 +53,10 @@ def get_table_caption():
     """ Sets table caption, based on the testbedsettings.current_testbed
         and genericsettings.runlength_based_targets.
     """    
-        
+    best_year = testbedsettings.current_testbed.best_algorithm_year
     table_caption_one = r"""%
         Average running time (\aRT\ in number of function 
-        evaluations) divided by the best \aRT\ measured during BBOB-2009. The \aRT\ 
+        evaluations) divided by the best \aRT\ measured during""" + (""" BBOB-%d.""" %best_year) + r""" The \aRT\
         and in braces, as dispersion measure, the half difference between 90 and 
         10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
         the best \aRT\
@@ -74,7 +74,7 @@ def get_table_caption():
         The median number of conducted function evaluations is additionally given in 
         \textit{italics}, if the target in the last column was never reached. 
         \textbf{Bold} entries are statistically significantly better (according to
-        the rank-sum test) compared to the best algorithm in BBOB-2009, with
+        the rank-sum test) compared to the best algorithm in""" + (""" BBOB-%d, """ %best_year) + r"""with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k > 1$ is following the
         $\downarrow$ symbol, with Bonferroni correction by the number of
         functions.

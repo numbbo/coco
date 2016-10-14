@@ -46,8 +46,8 @@ def saveFigure(filename, figFormat=(), verbose=True):
 
     """
     coco_version = pkg_resources.require('bbob_pproc')[0].version
-    plt.text(0.35, 0.01, coco_version,
-             horizontalalignment="left",
+    plt.text(0.5, 0.01, coco_version,
+             horizontalalignment="center",
              verticalalignment="bottom",
              fontsize=10,
              color='0.5',
@@ -282,11 +282,6 @@ def save_single_functions_html(filename,
               '<H3><a href="%s.html">Average runtime for selected targets</a></H3>\n'
               % genericsettings.pptables_file_name)
 
-          # Wassim: kept these two instructions from older code
-          #write_ECDF(f, testbedsettings.current_testbed.htmlDimsOfInterest[0], extension, captionStringFormat, functionGroups)
-          #write_ECDF(f, testbedsettings.current_testbed.htmlDimsOfInterest[1], extension, captionStringFormat, functionGroups)
-
-
         elif htmlPage is HtmlPage.PPSCATTER:
             currentHeader = 'Scatter plots per function'
             f.write("\n<H2> %s </H2>\n" % currentHeader)
@@ -348,10 +343,6 @@ def save_single_functions_html(filename,
             write_tables(f, captionStringFormat, bestAlgExists, 'pptable2Html', 'bbobpptablestwolegend')
 
         elif htmlPage is HtmlPage.PPTABLES:
-            # Wassim: kept these two instructions below from older code
-            #write_pptables(f, testbedsettings.current_testbed.htmlDimsOfInterest[0], captionStringFormat, first_function_number, last_function_number, bestAlgExists)
-            #write_pptables(f, testbedsettings.current_testbed.htmlDimsOfInterest[1], captionStringFormat, first_function_number, last_function_number, bestAlgExists)
-
             write_tables(f, captionStringFormat, bestAlgExists, 'pptablesHtml', 'bbobpptablesmanylegend')
 
         elif htmlPage is HtmlPage.PPRLDISTR:
@@ -429,7 +420,7 @@ def save_single_functions_html(filename,
 def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key):
     currentHeader = 'Table showing the aRT in number of function evaluations'
     if best_alg_exists:
-        currentHeader += ' divided by the best aRT measured during BBOB-2009' 
+        currentHeader += ' divided by the best aRT measured during BBOB-%d' %testbedsettings.current_testbed.best_algorithm_year
 
     f.write("\n<H2> %s </H2>\n" % currentHeader)
     f.write("\n<!--%s-->\n" % html_key)

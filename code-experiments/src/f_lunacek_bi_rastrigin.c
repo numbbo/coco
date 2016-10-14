@@ -279,7 +279,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin_problem_allocate(const size_t numb
   
   coco_problem_t *problem = coco_problem_allocate_from_scalars("lunacek_bi_rastrigin function",
                                                                f_lunacek_bi_rastrigin_evaluate_core, f_lunacek_bi_rastrigin_versatile_data_free, number_of_variables, -5.0, 5.0, 0.0);
-
+    
   problem->versatile_data = (f_lunacek_bi_rastrigin_versatile_data_t *) coco_allocate_memory(sizeof(f_lunacek_bi_rastrigin_versatile_data_t));
   ((f_lunacek_bi_rastrigin_versatile_data_t *) problem->versatile_data)->x_hat = coco_allocate_vector(number_of_variables); /* Manh: Allocate x_hat in versatile_data */
   coco_problem_set_id(problem, "%s_d%04lu", "lunacek_bi_rastrigin", number_of_variables);
@@ -369,7 +369,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
   /* apply transformations to sub-problems */
   sub_problem_tmp = &((f_lunacek_bi_rastrigin_versatile_data_t *) problem->versatile_data)->sub_problem_mu0;
   *sub_problem_tmp = transform_vars_shift(*sub_problem_tmp, mu0_vector, 0);
-  
+
   sub_problem_tmp = &((f_lunacek_bi_rastrigin_versatile_data_t *) problem->versatile_data)->sub_problem_mu1;
   *sub_problem_tmp = transform_vars_shift(*sub_problem_tmp, mu1_vector, 0);
   *sub_problem_tmp = transform_obj_scale(*sub_problem_tmp, s);  /* Manh: need to use s */
@@ -395,10 +395,11 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
   for ( i = 0; i < dimension; i++) { /* Wassim: to silence warning about best_parameter*/
     problem->best_parameter[i] = 0.5 * mu0 * sign_vector[i]; /* TODO: Documentation no 0.5 in documentation! */
   }
-  
+
   /* f_lunacek_bi_rastrigin_evaluate_core(problem, problem->best_parameter, problem->best_value);
   printf("\n %f , x_opt[0]= %f\n", problem->best_value[0], problem->best_parameter[0]);*//* Wassim: for testing purposes, might end up being the one kept though*/
 
+  
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "block-rotated_weakly-structured");

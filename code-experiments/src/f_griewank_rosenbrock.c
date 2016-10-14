@@ -140,7 +140,7 @@ static coco_problem_t *f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_all
   double fopt;
   coco_problem_t *problem = NULL;
   double *shift, scales;
-  size_t i;
+  size_t i, j, k, next_bs_change;
   
   double **B;
   const double *const *B_copy;
@@ -150,6 +150,9 @@ static coco_problem_t *f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_all
   size_t nb_blocks;
   size_t swap_range;
   size_t nb_swaps;
+  double tmp; /* Manh: will serve to set the optimal solution "manually"*/
+  double *best_parameter = coco_allocate_vector(dimension); /* Manh: will serve to set the optimal solution "manually"*/
+
   
   block_sizes = coco_get_block_sizes(&nb_blocks, dimension, "bbob-largescale");
   swap_range = coco_get_swap_range(dimension, "bbob-largescale");
@@ -182,11 +185,29 @@ static coco_problem_t *f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_all
   
   /*problem = transform_obj_norm_by_dim(problem);*//* Wassim: there is already a normalization by dimension*/
   problem = transform_obj_shift(problem, fopt);
-  
+
+  /* Manh: manually set xopt = rot1^T ones(dimension)/(2*scales) */
+  next_bs_change = 0;
+  for (k = 0; k < nb_blocks; ++k){
+    for (j = 0; j < block_sizes[k]; ++j) { /* Manh: firstly, set xopt_1 = (B^T)*(P_2^T)*ones(dimension)/(2*scales) */
+      tmp = 0;
+      for (i = 0; i < block_sizes[k]; ++i) {
+        tmp += B[next_bs_change + i][j];
+      }
+      best_parameter[next_bs_change + j] = tmp / (2. * scales);
+    }
+    next_bs_change += block_sizes[k];
+  }
+
+  for (j = 0; j < dimension; ++j) { /* Manh: secondly, set xopt = (P_1^T)* xopt_1 */
+    problem->best_parameter[P1[j]] = best_parameter[j];
+  }
+
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "block-rotated_multi-modal");
   
+  coco_free_memory(best_parameter);
   coco_free_memory(shift);
   coco_free_block_matrix(B, dimension);
   coco_free_memory(P1);
