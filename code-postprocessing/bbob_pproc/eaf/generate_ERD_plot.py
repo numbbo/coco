@@ -28,7 +28,7 @@ precision = 1e-3 # smallest displayed value in logscale
 maxbudget = '1e6 * dim'  # largest budget for normalization of aRT-->sampling conversion
 minbudget = '1'          # smallest budget for normalization of aRT-->sampling conversion
 cropbudget = maxbudget   # objective vectors produced after cropbudget not taken into account
-n = 50 # number of grid points per objective
+n = 200 # number of grid points per objective
 grayscale = False
 
 biobjinst = {1: [2, 4],
@@ -275,10 +275,12 @@ def generate_ERD_ratio_plot(f_id, dim, f1_id, f2_id,
     [gridpoints, aRTs_1, A] = get_all_aRT_values_in_objective_space(f_id,
                                     dim, f1_id, f2_id, inputfolder=inputfolder_1,
                                     downsample=downsample, with_grid=True)
+    print('Computing aRT values for %s done.' % inputfolder_1)
 
     [gridpoints_2, aRTs_2, A] = get_all_aRT_values_in_objective_space(f_id,
                                     dim, f1_id, f2_id, inputfolder=inputfolder_2,
                                     downsample=downsample, with_grid=True)
+    print('Computing aRT values for %s done.' % inputfolder_2)
 
     # resort gridpoints from lower left to top right in order to not loose
     # the right color by overlapping rectangles...

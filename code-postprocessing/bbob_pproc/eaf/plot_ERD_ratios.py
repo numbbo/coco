@@ -30,9 +30,20 @@ import generate_ERD_plot
 # parameters to play with:
 dims = (5,)
 #functions = range(1,56)
-functions = (2,)
-inputarchivefolder_1 = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
+functions = (1,)
+inputarchivefolder_2 = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
+inputarchivefolder_1 = 'C:/Users/dimo/Desktop/coco-master-git/gamultiobj/gamultiobj_on_bbob-biobj/archive/'
+
+inputarchivefolder_1 = './RS-5/'
+inputarchivefolder_2 = './MO-DIRECT-hv-rank/'
+
+inputarchivefolder_1 = './RS-5/'
+inputarchivefolder_2 = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
+
+inputarchivefolder_1 = './RS-5/'
 inputarchivefolder_2 = 'C:/Users/dimo/Desktop/coco-master-git/gamultiobj/gamultiobj_on_bbob-biobj/archive/'
+
+
 outputfolder = 'plots/'
 tofile = True # if True: files are written; if False: no files but screen output
 logscale = True # plot in logscale

@@ -15,6 +15,7 @@ except NameError: pass
 import numpy as np  # "pip install numpy" installs numpy
 import cocoex
 from cocoex import Suite, Observer, log_level
+import time
 verbose = 1
 
 import generate_ERD_plot
@@ -25,10 +26,11 @@ import generate_ERD_plot
 # parameters to play with:
 dims = (5,)
 #functions = range(1,56)
-functions = (2,)
+functions = (1,)
 #inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/MAT-SMS/archive/'
 #inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
 inputarchivefolder = 'C:/Users/dimo/Desktop/coco-master-git/gamultiobj/gamultiobj_on_bbob-biobj/archive/'
+inputarchivefolder = './MO-DIRECT-hv-rank/'
 #inputarchivefolder = './NSGA-II-archive-test/'
 outputfolder = 'plots/'
 tofile = True # if True: files are written; if False: no files but screen output
@@ -57,6 +59,7 @@ for problem_index, problem in enumerate(suite):
         continue
         
     print("processing %s..." % problem.id)
+    print(time.ctime())
         
     generate_ERD_plot.generate_ERD_plot(f, d, f1_id, f2_id,
                                   outputfolder=outputfolder, 
