@@ -9,19 +9,12 @@
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
-import os
 try: range = xrange  # let range always be an iterator
 except NameError: pass
-import numpy as np  # "pip install numpy" installs numpy
-import cocoex
-from cocoex import Suite, Observer, log_level
-import matplotlib
-from matplotlib import patches
-from matplotlib import pyplot as plt
+from cocoex import Suite
 
 verbose = 1
 
-from bbob_pproc.ppfig import saveFigure
 import generate_aRTA_plot
 
 

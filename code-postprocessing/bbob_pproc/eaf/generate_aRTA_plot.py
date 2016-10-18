@@ -1,8 +1,20 @@
 # -*- coding: utf-8 -*-
 """
- Called by plots_alongDirections and doing the actual plotting of aRT values
- to attain all objective vectors in a certain interval [ideal, c*nadir] with
- c being the constant `maxplot` defined below.
+ Called by plot_aRTA_function.py and plot_aRTA_ratios.py and does the actual
+ reading in of COCO archive data and plotting of aRT values
+ to attain all objective vectors in a certain interval [ideal, maxplot] 
+ if logscale=False or in the interval [precision, maxplot] with logscale=True.
+
+ Data might be downsampled (if downsample=True) to the precision
+ 10^{-decimals}. All algorithm data is furthermore cropped after
+ `eval(cropbudget)` many function evaluations.
+ 
+ Note that for the moment, only aRTA function and aRTA ratio plots that rely on
+ a grid of `n \times n` points in objective space are provided.
+ 
+ Prerequisite: the bbob_pproc module of the COCO platform needs to be installed.
+ Run therefore `python do.py install-postprocessing` once in the root folder
+ of the github project before.
 
  based on code by Thanh-Do Tran 2012--2015
  adapted by Dimo Brockhoff 2016
@@ -15,7 +27,6 @@ import matplotlib
 import numpy as np  # "pip install numpy" installs numpy
 import os
 import sys
-import colorsys
 from itertools import product
 
 from bbob_pproc.ppfig import saveFigure
@@ -48,12 +59,12 @@ def generate_aRTA_plot(f_id, dim, f1_id, f2_id,
                    logscale=True, downsample=True, with_grid=False):
     """
     Objective Space plot, indicating for each (grid) point
-    the runtime of the algorithm to attain it.
+    the runtime of the algorithm to attain it (aka aRTA function plots).
 
     Takes into account the corresponding COCO archive files in
-    the given outputfolder
+    the given outputfolder.
 
-    Assumes that each instance is only contained once in the
+    Assumes for now that each instance is only contained once in the
     data.
     """
     
@@ -63,19 +74,6 @@ def generate_aRTA_plot(f_id, dim, f1_id, f2_id,
 
     fig = plt.figure(1)
     ax = fig.add_subplot(111)
-
-#    # print all (downsampled) points of all runs
-#    for key in A:
-#        for a in A[key]:
-#            plt.plot(a[1], a[2], 'xk')
-
-#    for a in A[9]:
-#        plt.plot(a[1], a[2], 'ob')
-    
-
-#    for g in gridpoints:
-#        plt.plot(g[0], g[1], '+m')
-
 
     # normalize colors:
     logcolors = np.log10(aRTs)
@@ -88,7 +86,6 @@ def generate_aRTA_plot(f_id, dim, f1_id, f2_id,
         #aRTA_colormap = matplotlib.cm.nipy_spectral_r
 
     for i in range(len(gridpoints)-1, -1, -1):
-    #for i in range(1, len(gridpoints)-3, 1):
         if not np.isfinite(logcolors[i]):
             continue # no finite aRT
         ax.add_artist(patches.Rectangle(
@@ -100,17 +97,15 @@ def generate_aRTA_plot(f_id, dim, f1_id, f2_id,
             
     # Add a single point outside of the axis range with the same cmap and norm
     axscat = plt.scatter([-100], [-100], c=[0], cmap=aRTA_colormap)
-    axscat.set_clim([0, 100])                # mainly to set correct tick values
-    cb = plt.colorbar(ticks=[0, 33, 66, 100])   # mainly to set correct tick values
-    cb.ax.set_yticklabels(['1', '1e2*n',        # attention: might be wrong
-                           '1e4*n', '1e6*n'])  # if minbudget or maxbudget
-                                                 # are changed !!!!!
+    axscat.set_clim([0, 100])                 # mainly to set correct tick values
+    cb = plt.colorbar(ticks=[0, 33, 66, 100]) # mainly to set correct tick values
+    cb.ax.set_yticklabels(['1', '1e2*n',      # attention: might be wrong
+                           '1e4*n', '1e6*n']) # if minbudget or maxbudget
+                                              # are changed !!!!!
     
     # beautify:
-    ax.set_title("aRT in objective space for bbob-biobj function $f_{%d}$ (%d-D)" % (f_id, dim))
+    ax.set_title("aRTA function plot for bbob-biobj function $f_{%d}$ (%d-D)" % (f_id, dim))
     [line.set_zorder(3) for line in ax.lines]
-    [line.set_zorder(3) for line in ax.lines]
-    #fig.subplots_adjust(left=0.1) # more room for the y-axis label
     if logscale:                
         ax.set_xlabel(r'log10($f_1 - f_1^\mathsf{opt}$) (normalized)', fontsize=16)
         ax.set_ylabel(r'log10($f_2 - f_2^\mathsf{opt}$) (normalized)', fontsize=16)    
@@ -125,13 +120,12 @@ def generate_aRTA_plot(f_id, dim, f1_id, f2_id,
         # we might want to zoom in a bit:
         ax.set_xlim((0, maxplot))
         ax.set_ylim((0, maxplot))
-    
-    
+        
     # printing
     if tofile:
         if not os.path.exists(outputfolder):
             os.makedirs(outputfolder)
-        filename = outputfolder + "aRTobjspace-f%02d-d%02d" % (f_id, dim)
+        filename = outputfolder + "aRTA-f%02d-d%02d" % (f_id, dim)
         if logscale:
             filename = filename + "-log"
         saveFigure(filename)
@@ -153,19 +147,19 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
     The points in objective space are thereby either generated on a grid
     (if `with_grid == True` either in logscale or not) or constructed from the
     actual data points of the algorithm (TODO: not supported yet). Note that
-    the points will be already sorted in order of their aRTs.
+    the returned points will be already sorted in order of their aRTs (in
+    decreasing order).
     
     If `downsample == True`, the input data will be reduced by taking into
     account only one input point per objective space cell where the cells
-    are given by cutting the objective vectors to the given number of
-    `decimals` decimals. For later plotting of the input points, the
+    are given by cutting the objective vectors to the given precision of
+    `10^{-decimals}`. For later plotting of the input points, the
     already downsampled input points are also returned as a third argument
     (in a dictionary, giving for each entry the data points associated to
     the corresponding instance/run).
 
     Assumes that each instance is only contained once in the data.
     """
-    
     
     # obtain the data of the algorithm run to display:
     filename = "bbob-biobj_f%02d_d%02d_nondom_all.adat" % (f_id, dim)
@@ -264,9 +258,9 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
                    inputfolder_2=None, tofile=True,
                    logscale=True, downsample=True):
     """
-    Objective Space plot, showing the aRT ratios between two algorithms,
-    given in `inputfolder_1` and `inputfolder_2` for each point on a grid in
-    objective space.
+    Objective Space plot, showing the aRT ratios between two algorithms
+    (aka aRTA ratio function), given in `inputfolder_1` and `inputfolder_2`
+    for each point on a grid in objective space.
 
     Assumes that each instance is only contained once in the
     data.
@@ -326,7 +320,6 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
     axscat.set_clim([-10, 10])                # mainly to set correct tick values
 
     for i in range(len(gridpoints)):
-    #for i in range(1, len(gridpoints)-3, 1):
         if not np.isfinite(aRT_ratios[i]):
             if np.isfinite(aRTs_1) and not np.isfinite(aRTs_2):
                 ax.add_artist(patches.Rectangle(
@@ -351,17 +344,14 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
                  maxplot-(gridpoints[i])[1],
                  alpha=1.0,
                  color=aRTA_colormap(norm(aRT_ratios[i]))))
-#        ax.plot((gridpoints[i])[0], (gridpoints[i])[1], 's', color=aRTA_colormap(norm(aRT_ratios[i])), markersize=18)
     
     cb = plt.colorbar(ticks=[-10, -5, 0, 5, 10])  # mainly to set correct tick values
     cb.ax.set_yticklabels(['10', '5', '0', '5', '10'])
-    cb.set_label("<-- in favor of Algo B      aRT ratio      in favor of Algo A -->")
+    cb.set_label("<-- in favor of Algo B      aRTA ratio      in favor of Algo A -->")
     
     # beautify:
-    ax.set_title("aRT ratios in objective space for bbob-biobj function $f_{%d}$ (%d-D)" % (f_id, dim))
+    ax.set_title("aRTA ratio function plot for bbob-biobj function $f_{%d}$ (%d-D)" % (f_id, dim))
     [line.set_zorder(3) for line in ax.lines]
-    [line.set_zorder(3) for line in ax.lines]
-    #fig.subplots_adjust(left=0.1) # more room for the y-axis label
     if logscale:                
         ax.set_xlabel(r'log10($f_1 - f_1^\mathsf{opt}$) (normalized)', fontsize=16)
         ax.set_ylabel(r'log10($f_2 - f_2^\mathsf{opt}$) (normalized)', fontsize=16)    
@@ -376,8 +366,7 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
         # we might want to zoom in a bit:
         ax.set_xlim((0, maxplot))
         ax.set_ylim((0, maxplot))
-    
-    
+        
     # printing
     if tofile:
         if not os.path.exists(outputfolder):
@@ -395,7 +384,7 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
     
 def compute_aRT(points, A):
     """ Computes the average runtime to attain the objective vectors in points
-        by the algorithm, with algorithm data given in dictionary A).
+        by the algorithm, with algorithm data given in dictionary A.
         
         Assumes that the algorithm data in A is given in the order of
         increasing number of function evaluations for each entry.
@@ -442,7 +431,7 @@ def compute_aRT(points, A):
     return aRT
     
 def weakly_dominates(a,b):
-    """ Returns True iff a dominates b wrt. minimization """
+    """ Returns True iff a weakly dominates b wrt. minimization """
     
     return (a[0] <= b[0]) and (a[1] <= b[1])
     
@@ -450,7 +439,7 @@ def sample_down(B, decimals):
     """ Samples down the solutions in B, given as (#funevals, f_1, f_2)
         entries in a list or an np.array such that only one of the solutions
         with the same objective vector is kept when they are rounded to the
-        given decimal.
+        precision `10^{-decimal}`.
         
         >>> A = [[1, 2.155, 3.342],
         ...      [2, 2.171, 3.326],

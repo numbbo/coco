@@ -12,9 +12,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 try: range = xrange  # let range always be an iterator
 except NameError: pass
-import numpy as np  # "pip install numpy" installs numpy
-import cocoex
-from cocoex import Suite, Observer, log_level
+from cocoex import Suite
 import time
 verbose = 1
 
