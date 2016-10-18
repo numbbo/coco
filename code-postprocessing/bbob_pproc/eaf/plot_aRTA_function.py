@@ -16,8 +16,7 @@ from cocoex import Suite
 import time
 verbose = 1
 
-import generate_aRTA_plot
-
+from bbob_pproc.eaf import generate_aRTA_plot
 
 
 ###########################################

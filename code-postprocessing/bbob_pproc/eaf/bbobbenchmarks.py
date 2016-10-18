@@ -33,7 +33,7 @@ Module attributes:
 
 Examples:
 
->>> import bbobbenchmarks as bn
+>>> from bbob_pproc.eaf import bbobbenchmarks as bn
 >>> for s in bn.nfreeinfos:
 ...    print s
 1: Noise-free Sphere function
@@ -69,8 +69,8 @@ Examples:
 <BLANKLINE>
 <BLANKLINE>
 >>> f3 = bn.F3(13)  # instantiate function 3 on instance 13
->>> f3.evaluate([0, 1, 2]) # also: f3([0, 1, 2])
-59.87335291
+>>> f3.evaluate([0, 1, 2]) # also: f3([0, 1, 2]) # doctest: +ELLIPSIS 
+59.8733529...
 >>> f3.evaluate([[0, 1, 2], [3, 4, 5]])
 array([  59.87335291,  441.17409304])
 >>> print bn.instantiate(5)[1] # returns evaluation function and target
@@ -372,10 +372,10 @@ class AbstractTestFunction():
         
         Example:
 
-            >>> import bbobbenchmarks as bn
+            >>> from bbob_pproc.eaf import bbobbenchmarks as bn
             >>> f3 = bn.F3(13) # instantiate function 3 on instance 13
-            >>> f3([0, 1, 2])  # call f3, same as f3.evaluate([0, 1, 2])
-            59.87335291
+            >>> f3([0, 1, 2])  # call f3, same as f3.evaluate([0, 1, 2])  # doctest: +ELLIPSIS
+            59.8733529...
 
         """
         return self.evaluate(x)

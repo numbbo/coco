@@ -30,7 +30,7 @@ import sys
 from itertools import product
 
 from bbob_pproc.ppfig import saveFigure
-import bbobbenchmarks as bm
+from bbob_pproc.eaf import bbobbenchmarks as bm
 
 
 decimals=2 # precision for downsampling
@@ -383,17 +383,20 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
     
     
 def compute_aRT(points, A):
-    """ Computes the average runtime to attain the objective vectors in points
-        by the algorithm, with algorithm data given in dictionary A.
-        
-        Assumes that the algorithm data in A is given in the order of
-        increasing number of function evaluations for each entry.
-        
-        >>> A = {0: [[1, 1, 1], [3, 0.75, 0.5], [7, 0.5, 0.6]],
-        ... 1: [[1, 0.9, 0.9], [2, 0.5, 0.4]]}
-        >>> gridpoints = [[0.6, 0.5]]
-        >>> compute_aRT(gridpoints, A)
-        array([ 9.])
+    """
+    Computes the average runtime to attain the objective vectors in points
+    by the algorithm, with algorithm data given in dictionary A.
+    
+    Assumes that the algorithm data in A is given in the order of
+    increasing number of function evaluations for each entry.
+    
+    >>> from bbob_pproc.eaf import generate_aRTA_plot
+    >>> A = {0: [[1, 1, 1], [3, 0.75, 0.5], [7, 0.5, 0.6]],
+    ... 1: [[1, 0.9, 0.9], [2, 0.5, 0.4]]}
+    >>> gridpoints = [[0.6, 0.5]]
+    >>> generate_aRTA_plot.compute_aRT(gridpoints, A)
+    array([ 9.])
+    
     """
     sum_runtimes_successful = np.zeros(len(points))
     num_runtimes_successful = np.zeros(len(points))
@@ -441,15 +444,16 @@ def sample_down(B, decimals):
         with the same objective vector is kept when they are rounded to the
         precision `10^{-decimal}`.
         
+        >>> from bbob_pproc.eaf import generate_aRTA_plot
         >>> A = [[1, 2.155, 3.342],
         ...      [2, 2.171, 3.326],
         ...      [2, 2.174, 3.329],
         ...      [4, 4, 2.2]]
-        >>> sample_down(A, 2)
+        >>> generate_aRTA_plot.sample_down(A, 2)
         array([[ 1.   ,  2.155,  3.342],
                [ 2.   ,  2.171,  3.326],
                [ 4.   ,  4.   ,  2.2  ]])
-        >>> sample_down(A, 1)
+        >>> generate_aRTA_plot.sample_down(A, 1)
         array([[ 1.   ,  2.155,  3.342],
                [ 4.   ,  4.   ,  2.2  ]])
 
