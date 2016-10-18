@@ -15,8 +15,7 @@ from cocoex import Suite
 
 verbose = 1
 
-import generate_aRTA_plot
-
+from bbob_pproc.eaf import generate_aRTA_plot
 
 
 ###########################################
