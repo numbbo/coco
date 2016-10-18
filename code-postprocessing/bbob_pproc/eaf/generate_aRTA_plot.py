@@ -28,7 +28,7 @@ precision = 1e-3 # smallest displayed value in logscale
 maxbudget = '1e6 * dim'  # largest budget for normalization of aRT-->sampling conversion
 minbudget = '1'          # smallest budget for normalization of aRT-->sampling conversion
 cropbudget = maxbudget   # objective vectors produced after cropbudget not taken into account
-n = 200 # number of grid points per objective
+n = 100 # number of grid points per objective
 grayscale = False
 
 biobjinst = {1: [2, 4],
@@ -43,7 +43,7 @@ biobjinst = {1: [2, 4],
              10: [21, 22]}
 
 
-def generate_ERD_plot(f_id, dim, f1_id, f2_id,
+def generate_aRTA_plot(f_id, dim, f1_id, f2_id,
                    outputfolder="./", inputfolder=None, tofile=True,
                    logscale=True, downsample=True, with_grid=False):
     """
@@ -82,10 +82,10 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
     logcolors = (logcolors - np.log10(eval(minbudget)))/(np.log10(eval(maxbudget))-np.log10(eval(minbudget)))
 
     if grayscale:
-        erd_colormap = matplotlib.cm.gray_r
+        aRTA_colormap = matplotlib.cm.gray_r
     else:
-        erd_colormap = matplotlib.cm.hot_r
-        #erd_colormap = matplotlib.cm.nipy_spectral_r
+        aRTA_colormap = matplotlib.cm.hot_r
+        #aRTA_colormap = matplotlib.cm.nipy_spectral_r
 
     for i in range(len(gridpoints)-1, -1, -1):
     #for i in range(1, len(gridpoints)-3, 1):
@@ -96,10 +96,10 @@ def generate_ERD_plot(f_id, dim, f1_id, f2_id,
                  maxplot-(gridpoints[i])[0],
                  maxplot-(gridpoints[i])[1],
                  alpha=1.0,
-                 color=erd_colormap(logcolors[i])))
+                 color=aRTA_colormap(logcolors[i])))
             
     # Add a single point outside of the axis range with the same cmap and norm
-    axscat = plt.scatter([-100], [-100], c=[0], cmap=erd_colormap)
+    axscat = plt.scatter([-100], [-100], c=[0], cmap=aRTA_colormap)
     axscat.set_clim([0, 100])                # mainly to set correct tick values
     cb = plt.colorbar(ticks=[0, 33, 66, 100])   # mainly to set correct tick values
     cb.ax.set_yticklabels(['1', '1e2*n',        # attention: might be wrong
@@ -259,7 +259,7 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
     
 
 
-def generate_ERD_ratio_plot(f_id, dim, f1_id, f2_id,
+def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
                    outputfolder="./", inputfolder_1=None, 
                    inputfolder_2=None, tofile=True,
                    logscale=True, downsample=True):
@@ -316,13 +316,13 @@ def generate_ERD_ratio_plot(f_id, dim, f1_id, f2_id,
 
     norm = matplotlib.colors.Normalize(vmin=-10.,vmax=10., clip=False)
     if grayscale:
-        erd_colormap = matplotlib.cm.gray_r
+        aRTA_colormap = matplotlib.cm.gray_r
     else:
-        erd_colormap = matplotlib.cm.RdBu
+        aRTA_colormap = matplotlib.cm.RdBu
 
 
     # Add a single point outside of the axis range with the same cmap and norm
-    axscat = plt.scatter([-100], [-100], c=[0], cmap=erd_colormap)
+    axscat = plt.scatter([-100], [-100], c=[0], cmap=aRTA_colormap)
     axscat.set_clim([-10, 10])                # mainly to set correct tick values
 
     for i in range(len(gridpoints)):
@@ -350,8 +350,8 @@ def generate_ERD_ratio_plot(f_id, dim, f1_id, f2_id,
                  maxplot-(gridpoints[i])[0],
                  maxplot-(gridpoints[i])[1],
                  alpha=1.0,
-                 color=erd_colormap(norm(aRT_ratios[i]))))
-#        ax.plot((gridpoints[i])[0], (gridpoints[i])[1], 's', color=erd_colormap(norm(aRT_ratios[i])), markersize=18)
+                 color=aRTA_colormap(norm(aRT_ratios[i]))))
+#        ax.plot((gridpoints[i])[0], (gridpoints[i])[1], 's', color=aRTA_colormap(norm(aRT_ratios[i])), markersize=18)
     
     cb = plt.colorbar(ticks=[-10, -5, 0, 5, 10])  # mainly to set correct tick values
     cb.ax.set_yticklabels(['10', '5', '0', '5', '10'])

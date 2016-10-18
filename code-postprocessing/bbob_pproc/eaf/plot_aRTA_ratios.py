@@ -22,7 +22,7 @@ from matplotlib import pyplot as plt
 verbose = 1
 
 from bbob_pproc.ppfig import saveFigure
-import generate_ERD_plot
+import generate_aRTA_plot
 
 
 
@@ -71,7 +71,7 @@ for problem_index, problem in enumerate(suite):
     print("processing %s..." % problem.id)
    
 
-    generate_ERD_plot.generate_ERD_ratio_plot(f, d, f1_id, f2_id,
+    generate_aRTA_plot.generate_aRTA_ratio_plot(f, d, f1_id, f2_id,
                    outputfolder=outputfolder, inputfolder_1=inputarchivefolder_1, 
                    inputfolder_2=inputarchivefolder_2, tofile=tofile,
                    logscale=logscale, downsample=downsample)

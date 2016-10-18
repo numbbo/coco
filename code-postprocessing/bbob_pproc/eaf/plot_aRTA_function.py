@@ -18,7 +18,7 @@ from cocoex import Suite, Observer, log_level
 import time
 verbose = 1
 
-import generate_ERD_plot
+import generate_aRTA_plot
 
 
 
@@ -61,7 +61,7 @@ for problem_index, problem in enumerate(suite):
     print("processing %s..." % problem.id)
     print(time.ctime())
         
-    generate_ERD_plot.generate_ERD_plot(f, d, f1_id, f2_id,
+    generate_aRTA_plot.generate_aRTA_plot(f, d, f1_id, f2_id,
                                   outputfolder=outputfolder, 
                                   inputfolder=inputarchivefolder,
                                   tofile=tofile,
