@@ -166,7 +166,7 @@ def getRldLink(htmlPage, current_dir, isBiobjective):
     folder = 'pprldmany-single-functions'
 
     ignoreFileExists = genericsettings.isRldOnSingleFcts
-    # Wassim: why is this set to True? We shouldn't generate pages for nonn-existing plots or at least the pages should just be clickable to get the next one
+    # Wassim: why is this set to True? We shouldn't generate pages for non-existing plots or at least the pages should just be clickable to get the next one
     if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         if htmlPage == HtmlPage.ONE:
             fileName = '%s.html' % genericsettings.pprldmany_file_name

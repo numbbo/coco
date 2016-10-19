@@ -385,7 +385,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
         # significance test of best given algorithm against all others
         best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
 
-        #significance_versus_others = significance_all_best_vs_other(algentries, targetsOfInterest, best_alg_idx)[0] # Wassim: seems to crash when data is incomplete
+        significance_versus_others = significance_all_best_vs_other(algentries, targetsOfInterest, best_alg_idx)[0] # Wassim: seems to crash when data is incomplete
         # Create the table
         table = []
         tableHtml = []
@@ -541,8 +541,8 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
                 # write star for significance against all other algorithms
                 str_significance_subsup = ''
                 str_significance_subsup_html = ''
-                if len(best_alg_idx) > 0 and 0: #len(significance_versus_others) > 0 and Wassim: TODO: uncomment
-                            #i == best_alg_idx[j] and nbtests * significance_versus_others[j][1] < 0.05):
+                if (len(best_alg_idx) > 0 and len(significance_versus_others) > 0 and
+                            i == best_alg_idx[j] and nbtests * significance_versus_others[j][1] < 0.05):
                     logp = -numpy.ceil(numpy.log10(nbtests * significance_versus_others[j][1]))
                     logp = numpy.min((9, logp))  # not messing up the format and handling inf
                     str_significance_subsup = r"^{%s%s}" % (
