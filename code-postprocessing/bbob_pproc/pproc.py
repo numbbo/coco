@@ -25,6 +25,8 @@ import ast
 import re
 import pickle, gzip  # gzip is for future functionality: we probably never want to pickle without gzip anymore
 import warnings
+import json
+import hashlib
 from pdb import set_trace
 import numpy, numpy as np
 import matplotlib.pyplot as plt
@@ -625,6 +627,7 @@ class DataSet(object):
         precision
         readfinalFminusFtarget
         readmaxevals
+        reference_values
         splitByTrials
         target
         testbed_name
@@ -794,6 +797,7 @@ class DataSet(object):
         self.dataFiles = []
         self.instancenumbers = []
         self.algs = []
+        self.reference_values = {}
         self.evals = []  # to be removed if evals becomes a property, see below
         """``evals`` are the central data. Each line ``evals[i]`` has a
         (target) function value in ``evals[i][0]`` and the function evaluation
@@ -876,7 +880,7 @@ class DataSet(object):
         # put into variable dataFiles the files where to look for data
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
-        datasets, algorithms = split(dataFiles, idx_to_load=idx_of_instances_to_load)
+        datasets, algorithms, reference_values = split(dataFiles, idx_to_load=idx_of_instances_to_load)
         data = HMultiReader(datasets, self.isBiobjective())
         if genericsettings.verbose:
             print ("Processing %s: %d/%d trials found."
@@ -885,8 +889,9 @@ class DataSet(object):
         if data:
             (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
             self.evals = adata
+            self.reference_values = reference_values
             if len(algorithms) > 0:
-                algorithms= align_algorithms(algorithms, [item[1] for item in adata])
+                algorithms = align_algorithms(algorithms, [item[1] for item in adata])
             self.algs = algorithms
             try:
                 for i in range(len(maxevals)):
@@ -902,7 +907,7 @@ class DataSet(object):
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
             raise Usage("Missing tdat files in '{0}'. Please rerun the experiments." % filepath)
 
-        datasets, algorithms = split(dataFiles, idx_to_load=idx_of_instances_to_load)
+        datasets, algorithms, reference_values = split(dataFiles, idx_to_load=idx_of_instances_to_load)
         data = VMultiReader(datasets, self.isBiobjective())
         if genericsettings.verbose:
             print ("Processing %s: %d/%d trials found."
@@ -2285,6 +2290,15 @@ class DataSetList(list):
         reference_algorithms.sort(key=lambda x: x[1])
         return reference_algorithms
 
+    def get_reference_values_hash(self):
+        all_reference_values = {}
+        for dataSet in self:
+            key = '%d_%d' % (dataSet.funcId, dataSet.dim)
+            all_reference_values[key] = dataSet.reference_values
+
+        reference_values_string = json.dumps(all_reference_values, sort_keys=True)
+        return hashlib.sha1(reference_values_string).hexdigest()
+
 
 def parseinfoold(s):
     """Deprecated: Extract data from a header line in an index entry.
@@ -2416,6 +2430,7 @@ def processInputArgs(args):
     dsList = list()
     sortedAlgs = list()
     dictAlg = {}
+    current_hash = None
     for i in args:
         i = i.strip()
         if i == '': # might cure an lf+cr problem when using cywin under Windows
@@ -2432,12 +2447,16 @@ def processInputArgs(args):
             #redundant information. Only, the process could be more efficient
             #if pickle files were in a whole other location.
 
+            alg = i.rstrip(os.path.sep)
+            if current_hash is not None and current_hash <> tmpDsList.get_reference_values_hash():
+                warnings.warn(" Reference values for the algorithm '%s' are different!" % alg)
+
             set_unique_algId(tmpDsList, dsList)
             dsList.extend(tmpDsList)
+            current_hash = tmpDsList.get_reference_values_hash()
             #alg = os.path.split(i.rstrip(os.sep))[1]  # trailing slash or backslash
             #if alg == '':
             #    alg = os.path.split(os.path.split(i)[0])[1]
-            alg = i.rstrip(os.path.sep)
             print '  using:', alg
 
             # Prevent duplicates

@@ -407,6 +407,7 @@ def split(dataFiles, idx_to_load=None, dim=None):
 
     dataSets = []
     algorithms = []
+    reference_values = {}
     for fil in dataFiles:
         with openfile(fil) as f:
             # This doesnt work with windows.
@@ -415,26 +416,42 @@ def split(dataFiles, idx_to_load=None, dim=None):
 
         content = []
         idx = 0 # instance index for checking in idx_to_load
+        current_instance = 0
+        current_reference_value = 0
 
         # Save values in array content. Check for nan and inf.
         for line in lines:
-            # skip if comment
             if line.startswith('%'):
                 if content:
-                    if (idx_to_load == None) or (idx_to_load and idx_to_load[idx]):
+                    if (idx_to_load is None) or (idx_to_load and idx_to_load[idx]):
                         dataSets.append(numpy.vstack(content))
+                        if current_instance > 0:
+                            reference_values[current_instance] = current_reference_value
                     elif genericsettings.verbose:
                             print('skipped instance...')
                     content = []
-                    idx = idx + 1
+                    current_instance = 0
+                    current_reference_value = 0
+                    idx += 1
+
+                # Get the current instance and reference value.
+                parts = line.strip('\n').strip('\%').split(', ')
+                for elem in parts:
+                    if '=' in elem:
+                        key, value = elem.split('=', 1)
+                        if key.strip() == 'instance':
+                            current_instance = int(value.strip())
+                        elif key.strip() == 'reference value':
+                            current_reference_value = float(value.strip())
+
                 continue
 
             # else remove end-of-line sign
             # and split into single strings
             data = line.strip('\n').split()
             if dim and len(data) != dim + 5:
-                warnings.warn('Incomplete line %s in  ' % (line) +
-                              'data file %s: ' % (fil))
+                warnings.warn('Incomplete line %s in  ' % line +
+                              'data file %s: ' % fil)
                 continue
             for id in xrange(len(data)):
                 if data[id] in ('Inf', 'inf'):
@@ -459,13 +476,15 @@ def split(dataFiles, idx_to_load=None, dim=None):
         if content:
             if idx_to_load and idx_to_load[idx]:
                 dataSets.append(numpy.vstack(content))
+                if current_instance > 0:
+                    reference_values[current_instance] = current_reference_value
             elif genericsettings.verbose:
                     print('skipped instance...')
 
     if len(algorithms) < len(dataSets):
         algorithms = []
 
-    return dataSets, algorithms
+    return dataSets, algorithms, reference_values
 
 
 def is_close(a, b, rel_tol=1e-09, abs_tol=0.0):
