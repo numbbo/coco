@@ -245,7 +245,7 @@ def main(argv=None):
             raise Usage(txt)
         
         if 11 < 3:
-            from bbob_pproc import config  # input settings
+            from . import config  # input settings
             config.config()
             import imp
             # import testbedsettings as testbedsettings # input settings

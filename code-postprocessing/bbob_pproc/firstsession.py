@@ -119,7 +119,7 @@ legend()
 
 # Plot target precision versus function evaluations with error bars
 figure() # open a new figure
-from bbob_pproc.toolsstats import prctile
+from .toolsstats import prctile
 q = array(list(prctile(i, [25, 50, 75]) for i in evals))
 xmed = q[:, 1]
 xlow = xmed - q[:, 0]
@@ -134,21 +134,21 @@ grid()
 legend()
 
 # Empirical cumulative distribution function figure
-from bbob_pproc import pprldistr
+from . import pprldistr
 ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
 figure()
 pprldistr.plot(ds)
 pprldistr.beautify() # resize the window to view whole figure
 
 # Empirical cumulative distribution function of bootstrapped aRT figure
-from bbob_pproc.compall import pprldmany
+from .compall import pprldmany
 ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
 figure()
 pprldmany.plot(ds)
 pprldmany.beautify()
 
 # Scaling figure
-from bbob_pproc import ppfigdim
+from . import ppfigdim
 ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_*.pickle'))
 figure()
 ppfigdim.plot(ds)
