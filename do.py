@@ -646,7 +646,7 @@ except Exception as e:
     print(e)
 ee.SOLVER = ee.random_search  # which is default anyway
 ee.suite_name = "bbob-biobj"
-ee.observer_options['result_folder'] = "RS-bi"
+ee.observer_options['result_folder'] = "RS-bi"  # use a short path for Jenkins
 ee.main()  # doctest: +ELLIPSIS
 ee.suite_name = "bbob"
 ee.observer_options['result_folder'] = "RS-bb"
