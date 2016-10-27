@@ -24,7 +24,7 @@ from matplotlib import mlab as mlab
 
 from . import toolsstats, bestalg, testbedsettings, genericsettings, captions
 from .pptex import writeFEvals2
-from .ppfig import saveFigure, consecutiveNumbers
+from .ppfig import save_figure, consecutiveNumbers
 
 """
 aRT loss ratio of an algorithm A for comparison to a reference/best algorithm.
@@ -853,7 +853,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
         if evalf:
             plt.xlim(xmin=evalf[0]-0.5, xmax=evalf[1]+0.5)
 
-        saveFigure(filename)
+        save_figure(filename, dsdim[0].algId)
 
         #plt.show()
         plt.close()

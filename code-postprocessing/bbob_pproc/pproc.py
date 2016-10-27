@@ -2472,8 +2472,18 @@ def processInputArgs(args):
             txt = "Input folder '" + str(i) + "' could not be found."
             raise Exception(txt)
 
+    calculate_reference_values(DataSetList(dsList))
+
     return dsList, sortedAlgs, dictAlg
     
+
+def calculate_reference_values(dsList):
+
+    dict_alg = dsList.dictByAlg()
+    for key, value in dict_alg.iteritems():
+        testbedsettings.update_reference_values(key[0], value.get_reference_values_hash())
+
+
 class DictAlg(dict):
     def __init__(self, d={}):
         dict.__init__(self, d)  # was: super.__init(d)

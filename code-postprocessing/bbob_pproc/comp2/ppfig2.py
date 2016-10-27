@@ -24,7 +24,7 @@ import numpy as np
 
 from .. import toolsstats, readalign, ppfigparam, testbedsettings, toolsdivers
 from ..toolsstats import ranksumtest
-from ..ppfig import saveFigure, plotUnifLogXMarkers
+from ..ppfig import save_figure, plotUnifLogXMarkers
 #try:
     #supersede this module own ranksumtest method
     #from scipy.stats import ranksumtest as ranksumtest
@@ -425,7 +425,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir=''):
             toolsdivers.legend(loc='best')
 
         # save
-        saveFigure(filename)
+        save_figure(filename, dsList0[0].algId)
         plt.close()
         #set_trace()
 

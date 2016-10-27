@@ -9,7 +9,7 @@ import warnings
 from pdb import set_trace
 from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings, htmldesc, ppfigparam
 from .. import testbedsettings
-from ..ppfig import saveFigure
+from ..ppfig import save_figure
 from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 
 # styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
@@ -576,9 +576,7 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
                  infotext, fontsize=14, horizontalalignment="left",
                  verticalalignment="bottom")
 
-
-
-        saveFigure(filename)
+        save_figure(filename, sortedAlgs[0])
 
         plt.close()
 
@@ -644,7 +642,7 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
             if f in functions_with_legend:
                 toolsdivers.legend()
 
-        saveFigure(filename, figFormat=genericsettings.getFigFormats())
+        save_figure(filename, sortedAlgs[0], fig_format=genericsettings.getFigFormats())
 
         plt.close()
 

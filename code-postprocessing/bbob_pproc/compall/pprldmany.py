@@ -50,7 +50,7 @@ from .. import toolsstats, bestalg, genericsettings, testbedsettings
 from .. import pproc as pp  # import dictAlgByDim, dictAlgByFun
 from .. import toolsdivers  # strip_pathname, str_to_latex
 from .. import pprldistr  # plotECDF, beautifyECDF
-from .. import ppfig  # consecutiveNumbers, saveFigure, plotUnifLogXMarkers, logxticks
+from .. import ppfig  # consecutiveNumbers, save_figure, plotUnifLogXMarkers, logxticks
 from .. import pptex  # numtotex
 
 PlotType = ppfig.enum('ALG', 'DIM', 'FUNC')
@@ -832,7 +832,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     a.set_xticklabels(tmp)
 
     if save_figure:
-        ppfig.saveFigure(figureName)
+        ppfig.save_figure(figureName, dictAlg[dictAlg.keys()[0]][0].algId)
         if len(dictFunc) == 1 or plotType == PlotType.DIM:
             fileName = genericsettings.pprldmany_file_name
 

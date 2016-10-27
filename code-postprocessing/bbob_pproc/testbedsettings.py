@@ -48,6 +48,28 @@ def get_testbed_from_suite(suite_name):
                          'Add it to suite_to_testbed dictionary in testbedsettings.py to process this data.'
                          % suite_name)
 
+reference_values = {}
+
+
+def update_reference_values(algorithm, reference_value):
+
+    global reference_values
+
+    if reference_values and reference_values[reference_values.keys()[0]] <> reference_value:
+        warnings.warn(" Reference values for the algorithm '%s' are different!" % algorithm)
+
+    reference_values[algorithm] = reference_value
+
+
+def get_reference_values(algorithm):
+
+    global reference_values
+
+    if reference_values and algorithm in reference_values:
+        return reference_values[algorithm]
+
+    return None
+
 
 def get_short_names(file_name):
     try:

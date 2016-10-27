@@ -29,7 +29,7 @@ import os
 import sys
 from itertools import product
 
-from bbob_pproc.ppfig import saveFigure
+from bbob_pproc.ppfig import save_figure
 from bbob_pproc.eaf import bbobbenchmarks as bm
 
 
@@ -128,7 +128,7 @@ def generate_aRTA_plot(f_id, dim, f1_id, f2_id,
         filename = outputfolder + "aRTA-f%02d-d%02d" % (f_id, dim)
         if logscale:
             filename = filename + "-log"
-        saveFigure(filename)
+        save_figure(filename)
     else:        
         plt.show(block=True)
 
@@ -374,7 +374,7 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
         filename = outputfolder + "aRT-ratios-objSpace-f%02d-d%02d" % (f_id, dim)
         if logscale:
             filename = filename + "-log"
-        saveFigure(filename)
+        save_figure(filename)
     else:        
         plt.show(block=True)
 

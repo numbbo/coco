@@ -1,13 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""For generating performance profiles. This module is not in use (anymore or not yet?). 
+"""For generating performance profiles. This module is not in use (anymore or not yet?).
 
 **Example**
 
 .. plot::
    :width: 75%
-   
+
    import urllib
    import tarfile
    import glob
@@ -33,7 +33,7 @@
    # plot the profiles
    figure()
    # bb.compall.ppperfprof.plotmultiple(dsets, dsref=bb.bestalg.bestAlgorithmEntries)
-   
+
 """
 from __future__ import absolute_import
 
@@ -42,7 +42,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from .. import genericsettings, toolsstats, bestalg
 from ..pprldistr import plotECDF, beautifyECDF
-from ..ppfig import saveFigure, logxticks
+from ..ppfig import save_figure, logxticks
 from .pprldmany import plotLegend
 
 __all__ = ['beautify', 'main', 'plot']
@@ -90,14 +90,14 @@ def beautify():
 def plotmultiple(dictAlg, dsref=None, order=None, targets=defaulttargets,
                  istoolsstats=False, rhleg=True):
     """Generate performance profile figure.
-    
+
     :param dict dictAlg: dictionary of :py:class:`DataSetList` instances
                          one instance = one algorithm
     :param DataSetList dsref: reference data set
     :param seq targets: target function values
     :param bool istoolsstats: if True, uses bootstrapped distribution
     :param bool rhleg: if True, displays the right-hand legend
-    
+
     """
 
     if not dsref:
@@ -132,7 +132,7 @@ def plot(dsList, dsref, targets=defaulttargets, istoolsstats=False, **kwargs):
     :param DataSetList dsref: reference data set for normalization
     :param seq targets: target function values
     :param dict kwargs: additional parameters provided to plot function.
-    
+
     :returns: handles
 
     """
@@ -141,8 +141,8 @@ def plot(dsList, dsref, targets=defaulttargets, istoolsstats=False, **kwargs):
     data = []
     for entry in dsList:
         for t in targets:
-            # TODO: alternative: min(dsref[(entry.dim, entry.funcId)].detEvals((t,))[0]) 
-            #       is the min from the alg with the best aRT 
+            # TODO: alternative: min(dsref[(entry.dim, entry.funcId)].detEvals((t,))[0])
+            #       is the min from the alg with the best aRT
             flg_ert = 1
             if flg_ert:
                 normalizer = dsref[(entry.dim, entry.funcId)].detERT((t,))[0]
@@ -205,7 +205,7 @@ def main(dictAlg, dsref=None, order=None, targets=defaulttargets, outputdir='',
 
     :param dict dictAlg: dictionary of :py:class:`DataSetList` instances, one
                          dataSetList
-    
+
     :param list targets: target function values
     :param list order: sorted list of keys to dictAlg for plotting order
 
@@ -213,5 +213,5 @@ def main(dictAlg, dsref=None, order=None, targets=defaulttargets, outputdir='',
     for d, dictalgdim in dictAlg.dictAlgByDim().iteritems():
         plotmultiple(dictalgdim, dsref, targets)
         figureName = os.path.join(outputdir, 'ppperfprof_%02dD_%s' % (d, info))
-        saveFigure(figureName, verbose=verbose)
+        save_figure(figureName, verbose=verbose)
         plt.close()
