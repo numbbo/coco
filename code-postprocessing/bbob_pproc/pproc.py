@@ -2293,8 +2293,13 @@ class DataSetList(list):
     def get_reference_values_hash(self):
         all_reference_values = {}
         for dataSet in self:
-            key = '%d_%d' % (dataSet.funcId, dataSet.dim)
-            all_reference_values[key] = dataSet.reference_values
+            #if reference values exist
+            if dataSet.reference_values:
+                key = '%d_%d' % (dataSet.funcId, dataSet.dim)
+                all_reference_values[key] = dataSet.reference_values
+
+        if not all_reference_values:
+            return None
 
         reference_values_string = json.dumps(all_reference_values, sort_keys=True)
         return hashlib.sha1(reference_values_string).hexdigest()
@@ -2472,12 +2477,12 @@ def processInputArgs(args):
             txt = "Input folder '" + str(i) + "' could not be found."
             raise Exception(txt)
 
-    calculate_reference_values(DataSetList(dsList))
+    store_reference_values(DataSetList(dsList))
 
     return dsList, sortedAlgs, dictAlg
     
 
-def calculate_reference_values(dsList):
+def store_reference_values(dsList):
 
     dict_alg = dsList.dictByAlg()
     for key, value in dict_alg.iteritems():
