@@ -12,7 +12,7 @@ _name = 'bbob_pproc'  # package name, should change to cocopp, however pickle fi
 setup(
     name = _name,
     version = "$COCO_VERSION",
-    packages = [_name, _name + '.comp2', _name + '.compall'],
+    packages = [_name, _name + '.comp2', _name + '.compall', _name + '.eaf'],
     package_dir = {_name: 'bbob_pproc'},
     package_data={_name: ['*enchmarkshortinfos.txt',
                           '*enchmarkinfos.txt',
