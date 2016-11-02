@@ -227,12 +227,12 @@ def main(argv=None):
 
         # from bbob_pproc import bbob2010 as inset # input settings
         if genericsettings.inputsettings == "color":
-            from bbob_pproc import genericsettings as inset  # input settings
+            from . import genericsettings as inset  # input settings
             config.config()
         elif genericsettings.inputsettings == "grayscale":  # probably very much obsolete
-            from bbob_pproc import grayscalesettings as inset  # input settings
+            from . import grayscalesettings as inset  # input settings
         elif genericsettings.inputsettings == "black-white":  # probably very much obsolete
-            from bbob_pproc import bwsettings as inset  # input settings
+            from . import bwsettings as inset  # input settings
         else:
             txt = ('Settings: %s is not an appropriate ' % genericsettings.inputsettings
                    + 'argument for input flag "--settings".')

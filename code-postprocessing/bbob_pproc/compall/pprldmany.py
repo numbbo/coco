@@ -855,6 +855,5 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 if __name__ == "__main__":
     # should become a test case
     import sys
-    import bbob_pproc
 
     sys.path.append('.')

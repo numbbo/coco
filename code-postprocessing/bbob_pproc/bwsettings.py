@@ -10,9 +10,9 @@ figures.
 """
 
 import numpy
-from bbob_pproc import ppfigdim, pprldistr, pplogloss, genericsettings
-from bbob_pproc.comp2 import ppscatter, ppfig2, pprldistr2
-from bbob_pproc.compall import pprldmany, ppfigs
+from . import ppfigdim, pprldistr, pplogloss, genericsettings
+from .comp2 import ppscatter, ppfig2, pprldistr2
+from .compall import pprldmany, ppfigs
 
 
 print "Using black and white settings."

@@ -14,7 +14,10 @@ if __name__ == "__main__":
     import matplotlib
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
-from bbob_pproc import preparetexforhtml, genericsettings
+try:
+    from . import preparetexforhtml, genericsettings
+except:
+    from bbob_pproc import preparetexforhtml, genericsettings
 
 
 def main(args):

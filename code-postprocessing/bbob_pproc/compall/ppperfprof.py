@@ -38,16 +38,12 @@
 from __future__ import absolute_import
 
 import os
-import warnings
-from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
-from bbob_pproc import genericsettings, toolsstats, bestalg
-from bbob_pproc.pproc import dictAlgByDim, dictAlgByFun
-from bbob_pproc.pprldistr import plotECDF, beautifyECDF
-from bbob_pproc.ppfig import saveFigure, plotUnifLogXMarkers, logxticks
-from bbob_pproc.pptex import writeLabels, numtotext
-from bbob_pproc.compall.pprldmany import plotLegend
+from .. import genericsettings, toolsstats, bestalg
+from ..pprldistr import plotECDF, beautifyECDF
+from ..ppfig import saveFigure, logxticks
+from .pprldmany import plotLegend
 
 __all__ = ['beautify', 'main', 'plot']
 

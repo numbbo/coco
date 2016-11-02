@@ -100,6 +100,9 @@ def prepare_data(run_all_tests):
 
     dataPath = os.path.abspath(join_path(os.path.dirname(__file__), 'data'))
 
+    if not os.path.exists(dataPath):
+        os.makedirs(dataPath)
+
     # Retrieving the algorithms
     # retrieve_algorithm(dataPath, '2010', 'IPOP-ACTCMA-ES_ros_noiseless.tar.gz')
     # [outcommented and replaced by BIPOP until 2010 data is in new format]

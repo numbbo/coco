@@ -33,6 +33,7 @@ from . import readalign, pproc
 from .toolsdivers import print_done
 from .ppfig import Usage
 from . import toolsstats, testbedsettings, genericsettings
+from .pproc import DataSet
 
 bestAlgorithmEntries = {}
 
@@ -59,14 +60,13 @@ algs2012 = ("ACOR", "BIPOPaCMA", "BIPOPsaACM", "aCMA", "CMAES", "aCMAa",
 
 
 # TODO: this should be reimplemented:
-#  o a best algorithm should derive from the DataSet class
 #  o a best algorithm and an algorithm portfolio are almost the same,
 #    they should derive from a CombinedAlgorithmDataSet?
 
 # CLASS DEFINITIONS
 
 
-class BestAlgSet(object):
+class BestAlgSet(DataSet):
     """Unit element of best algorithm data set.
 
     Here unit element means for one function and one dimension.
@@ -92,7 +92,7 @@ class BestAlgSet(object):
 
     """
 
-    def __init__(self, dict_alg, algId='Virtual Best Algorithm'):
+    def __init__(self, dict_alg, instance_numbers, algId='Virtual Best Algorithm'):
         """Instantiate one best algorithm data set with name algId.
 
         :keyword dict_alg: dictionary of datasets, keys are algorithm
@@ -216,9 +216,11 @@ class BestAlgSet(object):
         else:
             self.comment = dict_alg[sortedAlgs[0]].comment
         self.comment += '; coco_version: ' + pkg_resources.require('bbob_pproc')[0].version
+        self.comment += '; instance_numbers: ' + ','.join(str(i) for i in instance_numbers)
         self.ert = np.array(reserts)
         self.target = res[:, 0]
         self.testbed = dict_alg[sortedAlgs[0]].testbed_name # TODO: not nice
+        self.suite = getattr(dict_alg[sortedAlgs[0]], 'suite', None)
 
         bestfinalfunvals = np.array([np.inf])
         for alg in sortedAlgs:
@@ -407,7 +409,7 @@ def load_reference_algorithm(best_algo_filename, force=False, relative_load=True
     else:
         algList = [os.path.join(best_alg_file_path, best_algo_filename)]
         dsList, sortedAlgs, dictAlg = pproc.processInputArgs(algList)
-        bestAlgorithmEntries = generate(dictAlg, dsList[0].algId)
+        bestAlgorithmEntries = generate(dictAlg, dsList[0].algId, dsList[0].instancenumbers)
         # set reference_algorithm_displayname in testbedsetting if not present:
         if testbedsettings.current_testbed:
             if testbedsettings.current_testbed.reference_algorithm_displayname is None:
@@ -423,7 +425,7 @@ def usage():
     print(__doc__)  # same as: sys.modules[__name__].__doc__, was: main.__doc__
 
 
-def generate(dict_alg, algId):
+def generate(dict_alg, algId, instance_numbers):
     """Generates dictionary of best algorithm data set.
     """
 
@@ -431,7 +433,7 @@ def generate(dict_alg, algId):
     res = {}
     for f, i in pproc.dictAlgByFun(dict_alg).iteritems():
         for d, j in pproc.dictAlgByDim(i).iteritems():
-            tmp = BestAlgSet(j, algId)
+            tmp = BestAlgSet(j, instance_numbers, algId)
             res[(d, f)] = tmp
     return res
 
@@ -478,7 +480,7 @@ def deprecated_customgenerate(args=algs2009):
         if genericsettings.verbose:
             print('Folder %s was created.' % outputdir)
 
-    res = generate(dictAlg, outputdir)
+    res = generate(dictAlg, outputdir, dsList[0].instancenumbers)
     picklefilename = os.path.join(outputdir, 'bestalg.pickle')
     fid = gzip.open(picklefilename + ".gz", 'w')
     pickle.dump(res, fid)
@@ -510,7 +512,7 @@ def custom_generate(args=algs2009, algId='bestCustomAlg'):
         if genericsettings.verbose:
             print('Folder %s was created.' % output_dir)
 
-    result = generate(dictAlg, algId)
+    result = generate(dictAlg, algId, dsList[0].instancenumbers)
 
     create_data_files(output_dir, result)
 
@@ -555,14 +557,21 @@ def create_data_files(output_dir, result):
 
         instance_data = "%d:%d|%10.15e" % (0, average_max_evals, average_final_fun_values)
 
-        if result[result.keys()[0]].testbed == testbedsettings.GECCOBiObjBBOBTestbed:
-            info_lines.append("algorithm = '%s' indicator = 'hyp'" % value.algId)
+        test_suite = getattr(value, 'suite', None)
+        if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
+            header = "algorithm = '%s' indicator = 'hyp'" % value.algId
+            if test_suite is not None:
+                header += " suite = '%s'" % test_suite
+            info_lines.append(header)
             info_lines.append("%% %s" % value.comment)
             info_lines.append("function = %d, dim = %d, %s, %s"
                               % (key[1], key[0], filename_template % (key[1], key[0], 'dat'), instance_data))
         else:
-            info_lines.append("funcId = %d, DIM = %d, Precision = %10.15e, algId = '%s'"
-                              % (key[1], key[0], value.precision, value.algId))
+            header = "funcId = %d, DIM = %d, Precision = %10.15e, algId = '%s'" \
+                     % (key[1], key[0], value.precision, value.algId)
+            if test_suite is not None:
+                header += " suite = '%s'" % test_suite
+            info_lines.append(header)
             info_lines.append("%% %s" % value.comment)
             info_lines.append("%s, %s" % (filename_template % (key[1], key[0], 'dat'), instance_data))
 
@@ -701,7 +710,7 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
     for f, i in pproc.dictAlgByFun(dictAlg).iteritems():
         for d, j in pproc.dictAlgByDim(i).iteritems():
             selectedAlgsPerProblemDF = []
-            best = BestAlgSet(j)
+            best = BestAlgSet(j, dsList[0].instancenumbers)
 
             for i in range(0, len(best.target)):
                 t = best.target[i]

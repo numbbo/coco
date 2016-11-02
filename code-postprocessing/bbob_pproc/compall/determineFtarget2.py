@@ -7,6 +7,7 @@ import numpy
 from pdb import set_trace
 
 from .. import genericsettings
+from .. import pproc
 
 # this file/module is seemingly unused
 
@@ -35,8 +36,6 @@ if __name__ == "__main__":
     # Test system independent method:
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-# import bbob_pproc.pproc as pproc
-from bbob_pproc import pproc
 
 ### Class Definitions ###
 

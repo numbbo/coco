@@ -28,10 +28,10 @@ if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
     sys.path.append(os.path.join(filepath, os.path.pardir))
 
-from bbob_pproc import findfiles
-from bbob_pproc.pproc import parseinfo
-from bbob_pproc.readalign import split
-from bbob_pproc.ppfig import Usage
+from . import findfiles
+from .pproc import parseinfo
+from .readalign import split
+from .ppfig import Usage
 
 # Used by getopt:
 shortoptlist = "hvpfo:"

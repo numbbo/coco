@@ -5,12 +5,12 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from bbob_pproc import toolsstats
-from pdb import set_trace
+from . import toolsstats
 
 lineprops = ('color', 'linestyle', 'linewidth', 'marker', 'markeredgecolor',
              'markeredgewidth', 'markerfacecolor', 'markerfacecoloralt',
              'markersize')
+
 
 def beautify():
     a = plt.gca()
