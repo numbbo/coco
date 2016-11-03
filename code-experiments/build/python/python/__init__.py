@@ -130,7 +130,11 @@ class Suite(_Suite):
     See also `Observer` and `example_experiment.py`.
     """
     def __init__(self, suite_name, suite_instance, suite_options):
-        super(Suite, self).__init__(suite_name, suite_instance, suite_options)
+        """``suite_instance`` and ``suite_options`` can be empty strings."""
+        # this __init__ defines the arguments for _Suite.__cinit__,
+        # which is called implicitly. Calling the super class init fails in Python 3.
+        # super(Suite, self).__init__(suite_name, suite_instance, suite_options)
+        # _Suite.__cinit__(self, suite_name, suite_instance, suite_options)
     def reset(self):
         """reset to original state, affecting `next_problem()`,
         `current_problem`, `current_index`"""
@@ -349,7 +353,9 @@ class Observer(_Observer):
 
     def __init__(self, name, options):
         """``options`` can be a string or a `dict`"""
-        super(Observer, self).__init__(name, options)
+        # this __init__ defines the arguments for _Observer.__cinit__,
+        # which is called implicitly
+        # super(Observer, self).__init__(name, options)  # fails (only) in Python 3
 
     def observe(self, problem):
         """`observe(problem)` let `self` observe the `problem: Problem` by
