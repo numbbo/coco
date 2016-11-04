@@ -61,6 +61,14 @@ def update_reference_values(algorithm, reference_value):
     reference_values[algorithm] = reference_value
 
 
+def copy_reference_values(old_algorithm_id, new_algoritm_id):
+
+    global reference_values
+
+    if reference_values and old_algorithm_id in reference_values and new_algoritm_id not in reference_values:
+        reference_values[new_algoritm_id] = reference_values[old_algorithm_id]
+
+
 def get_reference_values(algorithm):
 
     global reference_values

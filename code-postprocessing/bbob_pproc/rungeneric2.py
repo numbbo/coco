@@ -303,8 +303,10 @@ def main(argv=None):
         tmppath1, alg1name = os.path.split(sortedAlgs[1].rstrip(os.sep))
 
         for i in dsList0:
+            testbedsettings.copy_reference_values(i.algId, alg0name)
             i.algId = alg0name
         for i in dsList1:
+            testbedsettings.copy_reference_values(i.algId, alg1name)
             i.algId = alg1name
 
         config.target_values(genericsettings.isExpensive)
