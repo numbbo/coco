@@ -735,7 +735,8 @@ class DataSet(object):
                    'algId': ('algId', str),
                    'algorithm': ('algId', str),
                    'suite': ('suite', str),
-                   'coco_version': ('coco_version', str)}
+                   'coco_version': ('coco_version', str),
+                   'reference_values_hash': ('reference_values_hash', str)}
 
     def isBiobjective(self):
         return hasattr(self, 'indicator')
@@ -2292,14 +2293,19 @@ class DataSetList(list):
 
     def get_reference_values_hash(self):
         all_reference_values = {}
+        reference_values_hash = None
         for dataSet in self:
-            #if reference values exist
+            # if reference values exist
             if dataSet.reference_values:
                 key = '%d_%d' % (dataSet.funcId, dataSet.dim)
                 all_reference_values[key] = dataSet.reference_values
 
+            # If this is the best algorithm then the reference values hash may exist.
+            if reference_values_hash is None:
+                reference_values_hash = getattr(dataSet, 'reference_values_hash', None)
+
         if not all_reference_values:
-            return None
+            return reference_values_hash
 
         reference_values_string = json.dumps(all_reference_values, sort_keys=True)
         return hashlib.sha1(reference_values_string).hexdigest()

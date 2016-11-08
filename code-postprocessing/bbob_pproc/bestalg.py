@@ -559,11 +559,15 @@ def create_data_files(output_dir, result):
 
         test_suite = getattr(value, 'suite', None)
         if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
-            header = "algorithm = '%s' indicator = 'hyp'" % value.algId
-            if test_suite is not None:
-                header += " suite = '%s'" % test_suite
-            info_lines.append(header)
-            info_lines.append("%% %s" % value.comment)
+            if not info_lines:
+                header = "algorithm = '%s', indicator = 'hyp'" % value.algId
+                if test_suite is not None:
+                    header += ", suite = '%s'" % test_suite
+                reference_values = testbedsettings.get_first_reference_values()
+                if reference_values is not None:
+                    header += ", reference_values_hash = '%s'" % reference_values
+                info_lines.append(header)
+                info_lines.append("%% %s" % value.comment)
             info_lines.append("function = %d, dim = %d, %s, %s"
                               % (key[1], key[0], filename_template % (key[1], key[0], 'dat'), instance_data))
         else:

@@ -56,17 +56,18 @@ def update_reference_values(algorithm, reference_value):
     global reference_values
 
     if reference_values and reference_values[reference_values.keys()[0]] <> reference_value:
-        warnings.warn(" Reference values for the algorithm '%s' are different!" % algorithm)
+        warnings.warn(" Reference values for the algorithm '%s' are different from the algorithm '%s'"
+                      % (algorithm, reference_values.keys()[0]))
 
     reference_values[algorithm] = reference_value
 
 
-def copy_reference_values(old_algorithm_id, new_algoritm_id):
+def copy_reference_values(old_algorithm_id, new_algorithm_id):
 
     global reference_values
 
-    if reference_values and old_algorithm_id in reference_values and new_algoritm_id not in reference_values:
-        reference_values[new_algoritm_id] = reference_values[old_algorithm_id]
+    if reference_values and old_algorithm_id in reference_values and new_algorithm_id not in reference_values:
+        reference_values[new_algorithm_id] = reference_values[old_algorithm_id]
 
 
 def get_reference_values(algorithm):
@@ -75,6 +76,16 @@ def get_reference_values(algorithm):
 
     if reference_values and algorithm in reference_values:
         return reference_values[algorithm]
+
+    return None
+
+
+def get_first_reference_values():
+
+    global reference_values
+
+    if reference_values and len(reference_values) > 0:
+        return reference_values[reference_values.keys()[0]]
 
     return None
 

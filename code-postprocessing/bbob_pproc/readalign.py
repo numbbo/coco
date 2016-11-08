@@ -425,10 +425,12 @@ def split(dataFiles, idx_to_load=None, dim=None):
                 if content:
                     if (idx_to_load is None) or (idx_to_load and idx_to_load[idx]):
                         dataSets.append(numpy.vstack(content))
-                        if current_instance > 0:
-                            reference_values[current_instance] = current_reference_value
                     elif genericsettings.verbose:
                             print('skipped instance...')
+                    # Use only the reference values from instances 1 to 5.
+                    if current_instance in (1, 2, 3, 4, 5):
+                        reference_values[current_instance] = current_reference_value
+
                     content = []
                     current_instance = 0
                     current_reference_value = 0
@@ -476,10 +478,12 @@ def split(dataFiles, idx_to_load=None, dim=None):
         if content:
             if idx_to_load and idx_to_load[idx]:
                 dataSets.append(numpy.vstack(content))
-                if current_instance > 0:
-                    reference_values[current_instance] = current_reference_value
             elif genericsettings.verbose:
                     print('skipped instance...')
+
+            # Use only the reference values from instances 1 to 5.
+            if current_instance in (1, 2, 3, 4, 5):
+                reference_values[current_instance] = current_reference_value
 
     if len(algorithms) < len(dataSets):
         algorithms = []
