@@ -40,7 +40,7 @@ HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP', 'PP
                 'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS')
 
 
-def saveFigure(filename, figFormat=()):
+def save_figure(filename, algorithm=None, fig_format=()):
     """Save figure into an image file.
 
     `figFormat` can be a string or a list of strings, like
@@ -48,19 +48,21 @@ def saveFigure(filename, figFormat=()):
 
     """
     coco_version = pkg_resources.require('bbob_pproc')[0].version
-    plt.text(0.5, 0.01, coco_version,
+    reference_values = testbedsettings.get_reference_values(algorithm)
+    label = coco_version if reference_values is None else "%s, %s" % (coco_version, reference_values)
+    plt.text(0.5, 0.01, label,
              horizontalalignment="center",
              verticalalignment="bottom",
              fontsize=10,
              color='0.5',
              transform=plt.gca().transAxes)
 
-    if not figFormat:
-        figFormat = genericsettings.getFigFormats()
+    if not fig_format:
+        fig_format = genericsettings.getFigFormats()
 
-    if isinstance(figFormat, basestring):
-        figFormat = (figFormat,)
-    for format in figFormat:
+    if isinstance(fig_format, basestring):
+        fig_format = (fig_format,)
+    for format in fig_format:
         try:
             plt.savefig(filename + '.' + format,
                         dpi=60 if genericsettings.in_a_hurry else 300,

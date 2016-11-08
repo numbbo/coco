@@ -29,7 +29,7 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from . import genericsettings, pproc
-from .ppfig import saveFigure, save_single_functions_html
+from .ppfig import save_figure, save_single_functions_html
 from .toolsstats import prctile
 
 import matplotlib.pyplot as plt
@@ -110,8 +110,8 @@ def main(dictAlg, outputdir='.', parentHtmlFileName=None):
                         print('Warning: floating point error when plotting errorbars, ignored')
                     warned = True
             beautify()
-            saveFigure(os.path.join(outputdir, figurename.replace(' ', '')),
-                       genericsettings.getFigFormats())
+            save_figure(os.path.join(outputdir, figurename.replace(' ', '')),
+                        genericsettings.getFigFormats())
             plt.close()
     try:
         algname = str(dictFun[l].keys()[0][0])

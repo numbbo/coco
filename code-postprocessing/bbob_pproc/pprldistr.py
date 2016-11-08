@@ -50,7 +50,7 @@ import numpy as np
 from pdb import set_trace
 from . import genericsettings, pproc, toolsdivers
 from . import testbedsettings
-from .ppfig import consecutiveNumbers, plotUnifLogXMarkers, saveFigure, logxticks
+from .ppfig import consecutiveNumbers, plotUnifLogXMarkers, save_figure, logxticks
 from .pptex import color_to_latex, marker_to_latex
 from . import captions
 
@@ -612,7 +612,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
         plt.text(0.5, 0.98, text, horizontalalignment="center",
                  verticalalignment="top", transform=plt.gca().transAxes) # bbox=dict(ec='k', fill=False),
         beautifyRLD(evalfmax)
-        saveFigure(filename)
+        save_figure(filename, dsList0[0].algId)
         plt.close(fig)
 
 def beautify():
@@ -844,7 +844,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
 
 
         beautifyRLD(evalfmax)
-        saveFigure(filename)
+        save_figure(filename, dsList[0].algId)
         plt.close(fig)
 
         # second figure: Function Value Distribution
@@ -861,7 +861,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
         plt.text(0.98, 0.02, text, horizontalalignment="right",
                  transform=plt.gca().transAxes) # bbox=dict(ec='k', fill=False),
         beautifyFVD(isStoringXMax=isStoringXMax, ylabel=False)
-        saveFigure(filename)
+        save_figure(filename, dsList[0].algId)
         plt.close(fig)
         # plt.rcdefaults()
 

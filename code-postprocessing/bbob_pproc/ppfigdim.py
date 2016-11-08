@@ -578,7 +578,7 @@ def main(dsList, _valuesOfInterest, outputdir):
         plot_previous_algorithms(func, _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
         with warnings.catch_warnings(record=True) as ws:
-            ppfig.saveFigure(filename)
+            ppfig.save_figure(filename, dsList[0].algId)
             if len(ws):
                 for w in ws:
                     print(w)

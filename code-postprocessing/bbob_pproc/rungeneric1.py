@@ -37,7 +37,7 @@ if __name__ == "__main__":
 import warnings, getopt, numpy as np
 
 from . import genericsettings, testbedsettings, ppfig, pptable, pprldistr, ppfigdim, pplogloss, findfiles
-from .pproc import DataSetList
+from .pproc import DataSetList, store_reference_values
 from .ppfig import Usage
 from .toolsdivers import print_done, prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
 from . import ppconverrorbars
@@ -287,6 +287,8 @@ def main(argv=None):
             dsList = dsList.dictByNoise().get('nzall', DataSetList())
         if genericsettings.isNoiseFree and not genericsettings.isNoisy:
             dsList = dsList.dictByNoise().get('noiselessall', DataSetList())
+
+        store_reference_values(dsList)
 
         # compute maxfuneval values
         dict_max_fun_evals = {}

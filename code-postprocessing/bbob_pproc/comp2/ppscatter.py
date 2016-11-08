@@ -41,7 +41,7 @@ except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from .. import genericsettings, htmldesc, ppfigparam, testbedsettings
-from ..ppfig import saveFigure
+from ..ppfig import save_figure
 from .. import toolsdivers
 from .. import pproc
 from .. import captions
@@ -391,7 +391,7 @@ def main(dsList0, dsList1, outputdir, settings):
             plt.ylabel(funInfos[f], fontsize=fontSize)
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
-        saveFigure(filename)
+        save_figure(filename, dsList0[0].algId)
         plt.close()
 
     #plt.rcdefaults()

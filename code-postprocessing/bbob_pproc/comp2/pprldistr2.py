@@ -9,7 +9,7 @@ import os
 import numpy
 import matplotlib.pyplot as plt
 from .. import toolsstats, pproc, toolsdivers
-from ..ppfig import saveFigure, consecutiveNumbers, plotUnifLogXMarkers
+from ..ppfig import save_figure, consecutiveNumbers, plotUnifLogXMarkers
 from pdb import set_trace
 
 #__all__ = []
@@ -379,7 +379,7 @@ def main(dsList0, dsList1, dim, targetsOfInterest=None,
     plt.text(0.98, 0.02, text, horizontalalignment="right",
              transform=plt.gca().transAxes)
 
-    saveFigure(figureName)
+    save_figure(figureName, dsList0[0].algId)
     plt.close()
 
     #plt.rcdefaults()
