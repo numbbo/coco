@@ -26,7 +26,7 @@ if __name__ == "__main__":
 try:
     from . import pproc
 except:
-    from bbob_pproc import pproc
+    from cocopp import pproc
 
 ### Class Definitions ###
 

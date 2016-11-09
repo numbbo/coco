@@ -23,7 +23,7 @@ function evaluations of unsuccessful runs divided by dimension.
     import glob
     from pylab import *
     
-    import bbob_pproc as bb
+    import cocopp as bb
     
     # Collect and unarchive data (3.4MB)
     dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'

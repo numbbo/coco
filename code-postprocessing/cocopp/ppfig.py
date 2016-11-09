@@ -47,7 +47,7 @@ def save_figure(filename, algorithm=None, fig_format=()):
     ``('pdf', 'svg')``
 
     """
-    coco_version = pkg_resources.require('bbob_pproc')[0].version
+    coco_version = pkg_resources.require('cocopp')[0].version
     reference_values = testbedsettings.get_reference_values(algorithm)
     label = coco_version if reference_values is None else "%s, %s" % (coco_version, reference_values)
     plt.text(0.5, 0.01, label,
@@ -547,7 +547,7 @@ def consecutiveNumbers(data, prefix=''):
     Example::
       >>> import os
       >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname('__file__'))))
-      >>> import bbob_pproc as bb
+      >>> import cocopp as bb
       >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9])
       '0-2, 4, 5, 7-9'
       >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9], 'f')

@@ -8,8 +8,8 @@ logging a whole experiment.
 
 Example: 
 
-    >>> from bbob_pproc.eaf import fgeneric
-    >>> from bbob_pproc.eaf import bbobbenchmarks as bb
+    >>> from cocopp.eaf import fgeneric
+    >>> from cocopp.eaf import bbobbenchmarks as bb
     >>> import shutil
     >>> f = fgeneric.LoggingFunction('fgeneric_doctest_no_algorihm', 'no-name-algorithm')  # like a LoggingFunction class 
     >>> f.setfun(bb.F1()).ftarget  # assumes that F1().fopt is accessible, prints target value

@@ -175,7 +175,7 @@ def main(argv=None):
 
     From the python interpreter::
 
-        >> import bbob_pproc as pp
+        >> import cocopp as pp
         >> pp.main('-o outputfolder folder1 folder2')
 
       This will execute the post-processing on the data found in

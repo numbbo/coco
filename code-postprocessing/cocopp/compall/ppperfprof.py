@@ -13,9 +13,9 @@
    import glob
    from pylab import *
    import pickle
-   import bbob_pproc as bb
-   import bbob_pproc.compall.ppperfprof
-   import bbob_pproc.bestalg
+   import cocopp as bb
+   import cocopp.compall.ppperfprof
+   import cocopp.bestalg
 
    # Collect and unarchive data
    dsets = {}

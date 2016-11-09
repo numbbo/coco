@@ -19,7 +19,7 @@ def fix_data_number(data, ndata=15,
 
     :param data: is a (row)-vector
 
-    >>> from bbob_pproc.toolsstats import fix_data_number
+    >>> from cocopp.toolsstats import fix_data_number
     >>> data = [1,2,4]
     >>> assert len(fix_data_number(data, 1)) == 1
     >>> assert len(fix_data_number(data, 3)) == 3

@@ -29,7 +29,7 @@ from ..ppfig import save_figure, plotUnifLogXMarkers
     #supersede this module own ranksumtest method
     #from scipy.stats import ranksumtest as ranksumtest
 #except ImportError:
-    #from bbob_pproc.toolsstats import ranksumtest
+    #from cocopp.toolsstats import ranksumtest
     #pass
 
 dimensions = (2, 3, 5, 10, 20, 40)

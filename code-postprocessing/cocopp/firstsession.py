@@ -24,7 +24,7 @@ import tarfile
 from pylab import *
 ion() # may be needed for figures to be shown when executing the script
 
-import bbob_pproc as bb
+import cocopp as bb
 
 # Collect and unarchive data (~20MB)
 dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'

@@ -146,7 +146,7 @@ def main(argv=None):
     * From the python interpreter (requires that the path to this
       package is in python search path)::
 
-        >> import bbob_pproc as bb
+        >> import cocopp as bb
         >> bb.rungeneric1.main('-o outputfolder folder1'.split())
 
       This will execute the post-processing on the index files found in
@@ -232,7 +232,7 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        # from bbob_pproc import bbob2010 as inset # input settings
+        # from cocopp import bbob2010 as inset # input settings
         if genericsettings.inputsettings == "color":
             from . import genericsettings as inset  # input settings
         elif genericsettings.inputsettings == "grayscale":

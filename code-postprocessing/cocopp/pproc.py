@@ -87,7 +87,7 @@ def cocofy(filename):
     import fileinput
     for line in fileinput.input(filename, inplace=1):
 #       if "bbob" in line:
-        sys.stdout.write(line.replace("bbob_pproc","coco_pproc"))
+        sys.stdout.write(line.replace("cocopp","cocopp"))
     fileinput.close
 
 # CLASS DEFINITIONS
@@ -96,7 +96,7 @@ class TargetValues(object):
     """store and retrieve a list of target function values::
 
         >>> import numpy as np
-        >>> import bbob_pproc.pproc as pp
+        >>> import cocopp.pproc as pp
         >>> targets = [10**i for i in np.arange(2, -8.1, -0.2)]
         >>> targets_as_class = pp.TargetValues(targets)
         >>> assert targets_as_class() == targets
@@ -188,7 +188,7 @@ class RunlengthBasedTargetValues(TargetValues):
     reference runlengths::
     
         >>> import os
-        >>> import bbob_pproc as bb
+        >>> import cocopp as bb
         >>> # make sure to use the right `bbob` test suite for the test below:
         >>> bb.genericsettings.isNoisy = False
         >>> bb.genericsettings.isNoiseFree = False
@@ -292,8 +292,8 @@ class RunlengthBasedTargetValues(TargetValues):
             # TODO: remove targets smaller than 1e-8
         elif type(self.reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work
             self._short_info = 'reference budgets from ' + self.reference_data
-            dsl = DataSetList(os.path.join(sys.modules[globals()['__name__']].__file__.split('bbob_pproc')[0], 
-                                           'bbob_pproc', 'data', self.reference_data))  
+            dsl = DataSetList(os.path.join(sys.modules[globals()['__name__']].__file__.split('cocopp')[0],
+                                           'cocopp', 'data', self.reference_data))
             dsd = {}
             for ds in dsl:
                 # ds._clean_data()
@@ -539,7 +539,7 @@ class DataSet(object):
         >>> import tarfile
         >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
         >>> os.chdir(path)
-        >>> import bbob_pproc as bb
+        >>> import cocopp as bb
         >>> bb.genericsettings.verbose = False # ensure to make doctests work        
         >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
         >>> if not os.path.exists(infoFile):
@@ -554,7 +554,7 @@ class DataSet(object):
         >>> print dslist  # doctest:+ELLIPSIS
         [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
         >>> type(dslist)
-        <class 'bbob_pproc.pproc.DataSetList'>
+        <class 'cocopp.pproc.DataSetList'>
         >>> len(dslist)
         6
         >>> ds = dslist[3]  # a single data set of type DataSet
@@ -680,7 +680,7 @@ class DataSet(object):
         >>> import tarfile
         >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
         >>> os.chdir(path)
-        >>> import bbob_pproc as bb
+        >>> import cocopp as bb
         >>> bb.genericsettings.verbose = False # ensure to make doctests work
         >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
         >>> if not os.path.exists(infoFile):

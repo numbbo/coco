@@ -17,7 +17,7 @@ if __name__ == "__main__":
 try:
     from . import preparetexforhtml, genericsettings
 except:
-    from bbob_pproc import preparetexforhtml, genericsettings
+    from cocopp import preparetexforhtml, genericsettings
 
 
 def main(args):

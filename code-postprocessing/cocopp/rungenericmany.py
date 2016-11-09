@@ -164,7 +164,7 @@ def main(argv=None):
     * From the python interpreter (requires that the path to this
       package is in python search path)::
 
-        >> import bbob_pproc as bb
+        >> import cocopp as bb
         >> bb.rungenericmany.main('-o outputfolder folder1 folder2'.split())
 
       This will execute the post-processing on the data found in
@@ -240,7 +240,7 @@ def main(argv=None):
             else:
                 assert False, "unhandled option"
 
-        # from bbob_pproc import bbob2010 as inset # input settings
+        # from cocopp import bbob2010 as inset # input settings
         # TODO: conditional imports are NOT the way to go here
         if genericsettings.inputsettings == "color":
             from . import config, genericsettings as inset  # input settings

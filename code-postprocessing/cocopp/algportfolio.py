@@ -19,9 +19,9 @@ functions.
    import glob
    from pylab import *
    import pickle
-   import bbob_pproc as bb
-   import bbob_pproc.compall.pprldmany
-   import bbob_pproc.algportfolio
+   import cocopp as bb
+   import cocopp.compall.pprldmany
+   import cocopp.algportfolio
 
    # Collect and unarchive data
    dsets = {}

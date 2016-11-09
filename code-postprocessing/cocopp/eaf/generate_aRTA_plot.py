@@ -29,8 +29,8 @@ import os
 import sys
 from itertools import product
 
-from bbob_pproc.ppfig import save_figure
-from bbob_pproc.eaf import bbobbenchmarks as bm
+from cocopp.ppfig import save_figure
+from cocopp.eaf import bbobbenchmarks as bm
 
 
 decimals=2 # precision for downsampling
@@ -390,7 +390,7 @@ def compute_aRT(points, A):
     Assumes that the algorithm data in A is given in the order of
     increasing number of function evaluations for each entry.
     
-    >>> from bbob_pproc.eaf import generate_aRTA_plot
+    >>> from cocopp.eaf import generate_aRTA_plot
     >>> A = {0: [[1, 1, 1], [3, 0.75, 0.5], [7, 0.5, 0.6]],
     ... 1: [[1, 0.9, 0.9], [2, 0.5, 0.4]]}
     >>> gridpoints = [[0.6, 0.5]]
@@ -444,7 +444,7 @@ def sample_down(B, decimals):
         with the same objective vector is kept when they are rounded to the
         precision `10^{-decimal}`.
         
-        >>> from bbob_pproc.eaf import generate_aRTA_plot
+        >>> from cocopp.eaf import generate_aRTA_plot
         >>> A = [[1, 2.155, 3.342],
         ...      [2, 2.171, 3.326],
         ...      [2, 2.174, 3.329],

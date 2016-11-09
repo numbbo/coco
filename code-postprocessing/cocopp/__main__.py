@@ -27,7 +27,7 @@ matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
 # depreciated, to be removed, see end of file
 if 11 < 3 and __name__ == "__main__" and not is_module:
-    """import bbob_pproc/cocopp as module and run tests or rungeneric.main"""
+    """import cocopp as module and run tests or rungeneric.main"""
     args = sys.argv[1:] if len(sys.argv) else []
     filepath = os.path.split(sys.argv[0])[0]
     sys.path.append(os.path.join(os.getcwd(), filepath))  # needed from the shell
@@ -188,12 +188,12 @@ def main(args):
 
     data_path = ' ' + prepare_data(run_all_tests)
 
-    command = ' bbob_pproc --no-svg --settings=grayscale '
+    command = ' cocopp --no-svg --settings=grayscale '
 
     copy_latex_templates()
     print('LaTeX templates copied.')
 
-    print('*** testing module bbob_pproc ***')
+    print('*** testing module cocopp ***')
     t0 = time.time()
     print(python + command + '--conv' + join_path(data_path, 'BFGS_ros_noiseless.tgz'))
     result = os.system(python + command + '--conv' + join_path(data_path, 'BFGS_ros_noiseless.tgz'))
@@ -334,7 +334,7 @@ def main(args):
         process_doctest_output(fn)
     print('** doctest finished in ', time.time() - t0, ' seconds')
     # print('    more info in file _bbob_pproc_doctest_.txt)')
-    print('*** done testing module bbob_pproc ***')
+    print('*** done testing module cocopp ***')
 
     if failure_count > 0:                 
         raise ValueError('%d of %d tests failed' % (failure_count, test_count))
@@ -342,9 +342,9 @@ def main(args):
 
 """
         sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
-        import bbob_pproc as bb
+        import cocopp as bb
         print(dir(bb))
-        #bb=imp.load_module("bbob_pproc",*imp.find_module("bbob_pproc"))
+        #bb=imp.load_module("cocopp",*imp.find_module("bbob_pproc"))
         #pproc=imp.load_module("pproc",*imp.find_module("pproc"))
         #print(pproc)
         #doctest.testmod(bb.pproc,verbose=True)

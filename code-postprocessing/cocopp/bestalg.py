@@ -215,7 +215,7 @@ class BestAlgSet(DataSet):
             self.comment = 'Combination of ' + ', '.join(sortedAlgs)
         else:
             self.comment = dict_alg[sortedAlgs[0]].comment
-        self.comment += '; coco_version: ' + pkg_resources.require('bbob_pproc')[0].version
+        self.comment += '; coco_version: ' + pkg_resources.require('cocopp')[0].version
         self.comment += '; instance_numbers: ' + ','.join(str(i) for i in instance_numbers)
         self.ert = np.array(reserts)
         self.target = res[:, 0]
@@ -451,7 +451,7 @@ def deprecated_customgenerate(args=algs2009):
     This method is called from the python command line from a directory
     containing all necessary data folders::
 
-    >>> from bbob_pproc import bestalg
+    >>> from cocopp import bestalg
     >>> import os
     >>> path = os.path.abspath(os.path.dirname('__file__'))
     >>> os.chdir(os.path.join(path, 'data'))
@@ -616,7 +616,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
        This method should be called from the python command line from a directory
        containing all necessary data folders::
 
-        >>> from bbob_pproc import bestalg
+        >>> from cocopp import bestalg
         >>> import os
         >>> import urllib
         >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))

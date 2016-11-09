@@ -38,4 +38,4 @@ __all__ = ['comp2', 'compall', 'eaf', 'main', 'ppfigdim', 'pplogloss',
            'rungeneric1', 'rungeneric2', 'rungenericmany', 'algportfolio',
            'pptex', 'toolsstats']
 
-__version__ = pkg_resources.require('bbob_pproc')[0].version
+__version__ = pkg_resources.require('cocopp')[0].version

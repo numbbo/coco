@@ -96,7 +96,7 @@ def main(argv=None):
     * From the python interactive shell (requires that the path to this
       package is in python search path)::
 
-        >> import bbob_pproc as bb
+        >> import cocopp as bb
         >> bb.dataoutput.main('folder1')
 
     """

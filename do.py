@@ -225,7 +225,7 @@ def install_postprocessing():
     expand_file(join('code-postprocessing', 'setup.py.in'),
                 join('code-postprocessing', 'setup.py'),
                 {'COCO_VERSION': git_version(pep440=True)})
-    # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/bbob_pproc/latex-templates')
+    # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/cocopp/latex-templates')
     python('code-postprocessing', ['setup.py', 'install', '--user'], verbose=verbosity)
 
 
@@ -653,25 +653,25 @@ ee.observer_options['result_folder'] = "RS-bb"
 ee.main()  # doctest: +ELLIPSIS
             '''], verbose=verbosity)
             # now run all tests
-            python('code-postprocessing/bbob_pproc', ['__main__.py', 'all'], verbose=verbosity)
+            python('code-postprocessing/cocopp', ['__main__.py', 'all'], verbose=verbosity)
         except subprocess.CalledProcessError:
             sys.exit(-1)
         finally:
             # always remove folder of previously run experiments:
             shutil.rmtree('code-experiments/build/python/exdata/')
     else:
-        python('code-postprocessing/bbob_pproc', ['__main__.py'], verbose=verbosity)
-    # python('code-postprocessing', ['-m', 'bbob_pproc'])
+        python('code-postprocessing/cocopp', ['__main__.py'], verbose=verbosity)
+    # python('code-postprocessing', ['-m', 'cocopp'])
     if 11 < 3:  # provisorial test fo biobj data
         run_c()
-        python('code-experiments/build/c', ['-m', 'bbob_pproc',
+        python('code-experiments/build/c', ['-m', 'cocopp',
                                             'RS_on_bbob-biobj'], verbose=verbosity)
 
 
 def verify_postprocessing():
     install_postprocessing()
     # This is not affected by the verbosity value. Verbose should always be True.
-    python('code-postprocessing/bbob_pproc', ['preparehtml.py', '-v'], verbose=True)
+    python('code-postprocessing/cocopp', ['preparehtml.py', '-v'], verbose=True)
 
 
 ################################################################################

@@ -33,7 +33,7 @@ Module attributes:
 
 Examples:
 
->>> from bbob_pproc.eaf import bbobbenchmarks as bn
+>>> from cocopp.eaf import bbobbenchmarks as bn
 >>> for s in bn.nfreeinfos:
 ...    print s
 1: Noise-free Sphere function
@@ -372,7 +372,7 @@ class AbstractTestFunction():
         
         Example:
 
-            >>> from bbob_pproc.eaf import bbobbenchmarks as bn
+            >>> from cocopp.eaf import bbobbenchmarks as bn
             >>> f3 = bn.F3(13) # instantiate function 3 on instance 13
             >>> f3([0, 1, 2])  # call f3, same as f3.evaluate([0, 1, 2])  # doctest: +ELLIPSIS
             59.8733529...

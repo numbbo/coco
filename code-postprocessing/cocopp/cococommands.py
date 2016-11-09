@@ -16,7 +16,7 @@ Examples:
 
 * Start by importing :py:mod:`bbob_pproc`::
 
-    >>> import bbob_pproc as bb # load bbob_pproc
+    >>> import cocopp as bb # load bbob_pproc
     >>> import os
     >>> import urllib
     >>> import tarfile
@@ -89,8 +89,8 @@ def systeminfo():
     try:
         from . import __version__ as version
     except:
-        from bbob_pproc import __version__ as version
-    print('bbob_pproc %s' % version)
+        from cocopp import __version__ as version
+    print('cocopp %s' % version)
 
 
 # do something to lead a single DataSet instead?
