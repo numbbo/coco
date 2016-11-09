@@ -8,12 +8,12 @@ import sys
 import setuptools
 from distutils.core import setup
 
-_name = 'bbob_pproc'  # package name, should change to cocopp, however pickle files fail
+_name = 'cocopp'
 setup(
     name = _name,
     version = "$COCO_VERSION",
     packages = [_name, _name + '.comp2', _name + '.compall', _name + '.eaf'],
-    package_dir = {_name: 'bbob_pproc'},
+    package_dir = {_name: 'cocopp'},
     package_data={_name: ['*enchmarkshortinfos.txt',
                           '*enchmarkinfos.txt',
                           'best*algentries*.pickle',
