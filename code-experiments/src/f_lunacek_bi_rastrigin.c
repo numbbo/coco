@@ -397,7 +397,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
   }
 
   /* f_lunacek_bi_rastrigin_evaluate_core(problem, problem->best_parameter, problem->best_value);
-  printf("\n %f , x_opt[0]= %f\n", problem->best_value[0], problem->best_parameter[0]);*//* Wassim: for testing purposes, might end up being the one kept though*/
+  printf("\n %f , x_opt[0]= %f\n", problem->best_value[0], problem->best_parameter[0]);*/ /* Wassim: for testing purposes, might end up being the one kept though*/
 
   
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);

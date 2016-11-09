@@ -364,8 +364,8 @@ static void logger_bbob_finalize(const logger_bbob_data_t *logger){
               (unsigned long) logger->number_of_evaluations);
   }
   /* log the final information of the run in the info file*/
-  //fprintf(logger->index_file, ":%ld|%.1e", logger->number_of_evaluations,
-  //        logger->best_fvalue - logger->optimal_fvalue);
+  /*fprintf(logger->index_file, ":%ld|%.1e", logger->number_of_evaluations,
+          logger->best_fvalue - logger->optimal_fvalue);*/
 
   /* log the last evaluation (if not logged) in the *.tdata file*/
   if (!logger->written_last_eval) {

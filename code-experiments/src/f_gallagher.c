@@ -513,7 +513,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     *problem_i = transform_vars_permutation(*problem_i, P1, dimension);
     *problem_i = transform_vars_shift(*problem_i, y_i, 0);
 
-    /* *problem_i = transform_obj_norm_by_dim(*problem_i);*//* for the scalar product *//* Wassim: there is already a normalization by dimension*/
+    /* *problem_i = transform_obj_norm_by_dim(*problem_i);*/ /* for the scalar product */ /* Wassim: there is already a normalization by dimension*/
 
     coco_free_memory(P_Lambda);
     coco_free_memory(y_i);

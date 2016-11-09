@@ -143,7 +143,7 @@ static double **ls_copy_block_matrix(const double *const *B, const size_t dimens
   idx_blocksize = 0;
   current_blocksize = block_sizes[idx_blocksize];
   next_bs_change = block_sizes[idx_blocksize];
-  assert(nb_blocks != 0); /*tmp*//*to silence warning*/
+  assert(nb_blocks != 0); /*tmp*/ /*to silence warning*/
   for (i = 0; i < dimension; i++) {
     if (i >= next_bs_change) {
       idx_blocksize++;

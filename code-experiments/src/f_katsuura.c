@@ -38,7 +38,7 @@ static double f_katsuura_raw(const double *x, const size_t number_of_variables) 
       tmp += fabs(tmp2 * x[i] - coco_double_round(tmp2 * x[i])) / tmp2;
     }
     tmp = 1.0 + ((double) (long) i + 1) * tmp;
-    /*result *= tmp;*//* Wassim TODO: delete once consistency check passed*/
+    /*result *= tmp;*/ /* Wassim TODO: delete once consistency check passed*/
     result *= pow(tmp, 10. / pow((double) number_of_variables, 1.2));
   }
   /*result = 10. / ((double) number_of_variables) / ((double) number_of_variables)
@@ -193,7 +193,7 @@ static coco_problem_t *f_katsuura_permblockdiag_bbob_problem_allocate(const size
   problem = transform_vars_permutation(problem, P11, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
 
-  /*problem = transform_obj_norm_by_dim(problem);*//* Wassim: does not seem to be needed*/
+  /*problem = transform_obj_norm_by_dim(problem);*/ /* Wassim: does not seem to be needed*/
   problem = transform_obj_penalize(problem, penalty_factor);
   problem = transform_obj_shift(problem, fopt); /*TODO: documentation, there is no fopt in the definition of this function*/
 
