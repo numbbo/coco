@@ -7,7 +7,7 @@ import os
 import sys
 import subprocess
 
-# Add the path to bbob_pproc
+# Add the path to cocopp
 if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
     sys.path.append(os.path.join(filepath, os.path.pardir))

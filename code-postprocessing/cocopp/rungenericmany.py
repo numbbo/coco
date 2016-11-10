@@ -4,9 +4,9 @@
 """Process data to be included in a generic template.
 
 Synopsis:
-    ``python path_to_folder/bbob_pproc/rungenericmany.py [OPTIONS] FOLDER``
+    ``python -m cocopp.rungenericmany [OPTIONS] FOLDER``
 Help:
-    ``python path_to_folder/bbob_pproc/rungenericmany.py -h``
+    ``python -m cocopp.rungenericmany -h``
 
 """
 
@@ -23,12 +23,9 @@ if __name__ == "__main__":
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
     # matplotlib.use('pdf')
     filepath = os.path.split(sys.argv[0])[0]
-    # Add the path to bbob_pproc/.. folder
+    # Add the path to cocopp/.. folder
     sys.path.append(os.path.join(filepath, os.path.pardir))
-    try:
-        import bbob_pproc as cocopp
-    except ImportError:
-        import cocopp
+    import cocopp
     res = cocopp.rungenericmany.main(sys.argv[1:])
     sys.exit(res)
 
@@ -151,13 +148,13 @@ def main(argv=None):
 
     * Calling the rungenericmany.py interface from the command line::
 
-        $ python bbob_pproc/rungenericmany.py -v AMALGAM BFGS BIPOP-CMA-ES
+        $ python -m cocopp.rungenericmany -v AMALGAM BFGS BIPOP-CMA-ES
 
 
     * Loading this package and calling the main from the command line
       (requires that the path to this package is in python search path)::
 
-        $ python -m bbob_pproc.rungenericmany -h
+        $ python -m cocopp.rungenericmany -h
 
       This will print out this help message.
 

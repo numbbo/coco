@@ -11,13 +11,8 @@ from .. import genericsettings
 
 # this file/module is seemingly unused
 
-''' TODO:
-'''
-# add path to bbob_pproc
-#filepath = '/home/fst/coco/BBOB/code/python/bbob_pproc/'
-#sys.path.append(os.path.join(filepath, os.path.pardir))
 if __name__ == "__main__":
-    # append path without trailing '/bbob_pproc', using os.sep fails in mingw32
+    # append path without trailing '/cocopp', using os.sep fails in mingw32
     #sys.path.append(filepath.replace('\\', '/').rsplit('/', 1)[0])
     (filepath, filename) = os.path.split(sys.argv[0])
     # Test system independent method:

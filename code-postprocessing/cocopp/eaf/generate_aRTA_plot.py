@@ -12,7 +12,7 @@
  Note that for the moment, only aRTA function and aRTA ratio plots that rely on
  a grid of `n \times n` points in objective space are provided.
  
- Prerequisite: the bbob_pproc module of the COCO platform needs to be installed.
+ Prerequisite: the cocopp module of the COCO platform needs to be installed.
  Run therefore `python do.py install-postprocessing` once in the root folder
  of the github project before.
 

@@ -1,15 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Process data and generates some comparison results.
-
-   Synopsis:
-      python path_to_folder/bbob_pproc/runcompall.py [OPTIONS] FOLDER_NAME...
-
-   Help:
-      python path_to_folder/bbob_pproc/runcompall.py -h
-
-"""
+"""Process data and generates some comparison results."""
 
 from __future__ import absolute_import
 
@@ -18,9 +10,9 @@ import numpy
 from pdb import set_trace
 from . import toolsdivers
 
-# Add the path to bbob_pproc
+# Add the path to cocopp
 if __name__ == "__main__":
-    # append path without trailing '/bbob_pproc', using os.sep fails in mingw32
+    # append path without trailing '/cocopp', using os.sep fails in mingw32
     #sys.path.append(filepath.replace('\\', '/').rsplit('/', 1)[0])
     (filepath, filename) = os.path.split(sys.argv[0])
     #Test system independent method:

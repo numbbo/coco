@@ -16,7 +16,7 @@ from . import testbedsettings
 from .compall import pptables, ppfigs
 from .comp2 import ppscatter, pptable2
 
-# Add the path to bbob_pproc
+# Add the path to cocopp
 if __name__ == "__main__":
     (filepath, filename) = os.path.split(sys.argv[0])
     sys.path.append(os.path.join(filepath, os.path.pardir))

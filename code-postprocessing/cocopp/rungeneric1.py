@@ -8,10 +8,10 @@ the postprocessing on the given files and folders arguments, using the
 :file:`.info` files found recursively.
 
 Synopsis:
-    ``python path_to_folder/bbob_pproc/rungeneric1.py [OPTIONS] FOLDER``
+    ``python -m cocopp.rungeneric1 [OPTIONS] FOLDER``
 
 Help:
-    ``python path_to_folder/bbob_pproc/rungeneric1.py -h``
+    ``python -m cocopp.rungeneric1 --help``
 
 """
 
@@ -25,12 +25,9 @@ import matplotlib
 if __name__ == "__main__":
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
     filepath = os.path.split(sys.argv[0])[0]
-    # Add the path to bbob_pproc/.. folder
+    # Add the path to cocopp/.. folder
     sys.path.append(os.path.join(filepath, os.path.pardir))
-    try:
-        import bbob_pproc as cocopp
-    except ImportError:
-        import cocopp
+    import cocopp
     res = cocopp.rungeneric1.main(sys.argv[1:])
     sys.exit(res)
 
@@ -124,13 +121,13 @@ def main(argv=None):
 
     * Calling the rungeneric1.py interface from the command line::
 
-        $ python bbob_pproc/rungeneric1.py -v experiment1
+        $ python -m cocopp.rungeneric1 -v experiment1
 
       will post-process the folder experiment1 and all its containing
       data, base on the .info files found in the folder. The result will
       appear in the default output folder. The -v option adds verbosity. ::
 
-        $ python bbob_pproc/rungeneric1.py -o exp2 experiment2/*.info
+        $ python -m cocopp.rungeneric1 -o exp2 experiment2/*.info
 
       This will execute the post-processing on the info files found in
       :file:`experiment2`. The result will be located in the alternative
@@ -139,15 +136,16 @@ def main(argv=None):
     * Loading this package and calling the main from the command line
       (requires that the path to this package is in python search path)::
 
-        $ python -m bbob_pproc.rungeneric1 -h
+        $ python -m cocopp.rungeneric1 -h
 
       This will print out this help message.
 
     * From the python interpreter (requires that the path to this
-      package is in python search path)::
+      package is in python search path; most simply achieved by running
+      `python do.py install-postprocessing`)::
 
-        >> import cocopp as bb
-        >> bb.rungeneric1.main('-o outputfolder folder1'.split())
+        >> import cocopp as pp
+        >> pp.rungeneric1.main('-o outputfolder folder1'.split())
 
       This will execute the post-processing on the index files found in
       :file:`folder1`. The ``-o`` option changes the output folder from
@@ -168,7 +166,7 @@ def main(argv=None):
             except getopt.error, msg:
                 raise Usage(msg)
 
-        if not (args) and not '--help' in argv and not 'h' in argv:
+        if not (args) and not '--help' in argv and not '-h' in argv:
             print('not enough input arguments given')
             print('cave: the following options also need an argument:')
             print([o for o in genericsettings.longoptlist if o[-1] == '='])

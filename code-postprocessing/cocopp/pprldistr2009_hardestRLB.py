@@ -4,7 +4,6 @@ Generates "pprldistr2009_RLB.pickle.gz" that is used to plot, in the background,
 # datapath = "../../data-archive/data/gecco-bbob-1-24/2009/data"
 datapaths = ["../../data-archive/data/gecco-bbob-1-24/2009/data", "../../data-archive/data/gecco-bbob-noisy/2009/data"]
 savepath = "cocopp/pprldistr2009_hardestRLB.pickle"
-# savepath = "bbob_pproc/pprldistr2009_RLB.pickle"
 import pickle
 import cocopp as bb
 import numpy as np
