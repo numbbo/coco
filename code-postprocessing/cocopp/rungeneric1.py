@@ -93,8 +93,8 @@ def main(argv=None):
         --settings=SETTINGS
             changes the style of the output figures and tables. At the
             moment the only differences are  in the colors of the output
-            figures. SETTINGS can be either "grayscale", "color" or
-            "black-white". The default setting is "color".
+            figures. SETTINGS can be either "grayscale" or "color".
+            The default setting is "color".
         --tab-only, --fig-only, --rld-only, --los-only
             these options can be used to output respectively the TeX
             tables, convergence and aRTs graphs figures, run length

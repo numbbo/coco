@@ -12,14 +12,6 @@ from .. import testbedsettings
 from ..ppfig import save_figure
 from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 
-# styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
-#           {'color': 'b'},
-#           {'color': 'c', 'marker': 'v', 'markeredgecolor': 'c'},
-#           {'color': 'g'},
-#           {'color': 'y', 'marker': '^', 'markeredgecolor': 'y'},
-#           {'color': 'm'},
-#           {'color': 'r', 'marker': 's', 'markeredgecolor': 'r'}] # sort of rainbow style
-
 show_significance = 0.01  # for zero nothing is shown
 
 styles = genericsettings.line_styles

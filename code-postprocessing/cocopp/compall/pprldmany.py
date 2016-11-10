@@ -713,9 +713,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         args['label'] = algname_to_label(alg)
         if plotType == PlotType.DIM:
             args['marker'] = genericsettings.dim_related_markers[i]
-            if settings is genericsettings:
-                args['markeredgecolor'] = genericsettings.dim_related_colors[i]
-                args['color'] = genericsettings.dim_related_colors[i]
+            args['markeredgecolor'] = genericsettings.dim_related_colors[i]
+            args['color'] = genericsettings.dim_related_colors[i]
 
             # args['markevery'] = perfprofsamplesize # option available in latest version of matplotlib
             # elif len(show_algorithms) > 0:

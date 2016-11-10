@@ -122,9 +122,9 @@ def main(argv=None):
             processes only part of the data.
         --settings=SETTINGS
             changes the style of the output figures and tables. At the
-            moment, the only differences are in the colors of the
-            output figures. SETTINGS can be either "grayscale", "color"
-            or "black-white". The default setting is "color".
+            moment the only differences are  in the colors of the output
+            figures. SETTINGS can be either "grayscale" or "color".
+            The default setting is "color".
         --tab-only, --rld-only, --fig-only
             these options can be used to output respectively the
             comparison TeX tables, the run lengths distributions or the

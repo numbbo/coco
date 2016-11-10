@@ -107,11 +107,11 @@ def main(argv=None):
             :file:`OUTPUTDIR`
         --noise-free, --noisy
             processes only part of the data.
-        --settings=SETTING
+        --settings=SETTINGS
             changes the style of the output figures and tables. At the
-            moment only the only differences are in the colors of the
-            output figures. SETTING can be either "grayscale", "color"
-            or "black-white". The default setting is "color".
+            moment the only differences are  in the colors of the output
+            figures. SETTINGS can be either "grayscale" or "color".
+            The default setting is "color".
         --fig-only, --rld-only, --tab-only, --sca-only
             these options can be used to output respectively the aRT
             graphs figures, run length distribution figures or the
