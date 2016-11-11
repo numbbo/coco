@@ -138,7 +138,7 @@ Getting Started <a name="Getting-Started"></a>
 6.  **Postprocess** the data from the results folder by typing
 
     ```
-    python -m cocoex [-o OUTPUT_FOLDERNAME] YOURDATAFOLDER [MORE_DATAFOLDERS]
+    python -m cocopp [-o OUTPUT_FOLDERNAME] YOURDATAFOLDER [MORE_DATAFOLDERS]
     ```
 
   Any subfolder in the folder arguments will be searched for logged data. That is, 
@@ -230,7 +230,7 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 
 * code-experiments/test contains unit- and integration-tests, mainly for internal use
 
-* code-postprocessing/cocoex contains the postprocessing code, written in
+* code-postprocessing/cocopp contains the postprocessing code, written in
   python, with which algorithm data sets can be read in and the performance of
   the algorithms can be displayed in terms of data profiles, aRT vs. dimension
   plots, or simple tables.
@@ -533,7 +533,7 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - ``C`` experiments code: http://numbbo.github.io/coco-doc/C
   - Python experiments code `cocoex`: http://coco.gforge.inria.fr/apidocs-cocoex/cocoex.html
   - Python `example_experiment.py`: http://coco.gforge.inria.fr/apidocs-example_experiment/example_experiment.html
-  - Postprocessing code: http://coco.gforge.inria.fr/apidocs-cocoex/cocoex.html
+  - Postprocessing code: http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html
 
 * Somewhat outdated documents:
   - Full description of the platform: http://coco.lri.fr/COCOdoc/
