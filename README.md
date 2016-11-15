@@ -162,7 +162,7 @@ Getting Started <a name="Getting-Started"></a>
   
 8. The experiments can be **parallelized** with any re-distribution of single
   problem instances to batches (see
-  [`example_experiment.py`](./code-experiments/build/python/example_experiment.py) 
+  [`example_experiment.py`](./code-experiments/build/python/example_experiment.py#L235) 
   for an example). Each batch must write in a different target folder (this
   should happen automatically). Results of each batch must be kept under their
   separate folder as is. These folders then must be moved/copied into a single
