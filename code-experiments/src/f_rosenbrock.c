@@ -221,7 +221,7 @@ static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const si
 
   problem = transform_obj_norm_by_dim(problem);
   problem = transform_obj_shift(problem, fopt);
-  
+
   /* Manh: manually set xopt = rot1^T ones(dimension)/(2*factor) */
   next_bs_change = 0;
   for (k = 0; k < nb_blocks; ++k){
@@ -234,16 +234,15 @@ static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const si
     }
     next_bs_change += block_sizes[k];
   }
-    
+
   for (j = 0; j < dimension; ++j) { /* Manh: secondly, set xopt = (P_1^T)* xopt_1 */
     problem->best_parameter[P1[j]] = best_parameter[j];
   }
-  
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "block-rotated_moderate");
-  
+
   coco_free_memory(best_parameter);
   coco_free_memory(minus_half);
   coco_free_block_matrix(B, dimension);

@@ -198,8 +198,8 @@ static void f_lunacek_bi_rastrigin_versatile_data_free(coco_problem_t *problem) 
   if (versatile_data->sub_problem_mu1 != NULL) {
     coco_problem_free(versatile_data->sub_problem_mu1);
   }
-  /*Manh: free the x_hat*/
-  coco_free_memory(versatile_data->x_hat);
+
+  coco_free_memory(versatile_data->x_hat);  /*Manh: free the x_hat*/
   coco_free_memory(versatile_data);
   problem->versatile_data = NULL;
   problem->problem_free_function = NULL;
@@ -242,9 +242,9 @@ static double f_lunacek_bi_rastrigin_core(const double *x, const size_t number_o
   double result = 0.0;
   double y0, y1;
   double *x_hat;
-  
+
   x_hat = f_lunacek_bi_rastrigin_versatile_data->x_hat;
-    
+
   problem_sub_mu0 = f_lunacek_bi_rastrigin_versatile_data->sub_problem_mu0;
   problem_sub_mu0->evaluate_function(problem_sub_mu0, x_hat, &y0);
 
@@ -390,14 +390,14 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
   problem = transform_obj_norm_by_dim(problem);
   problem = transform_obj_penalize(problem, penalty_factor);
   problem = transform_obj_shift(problem, fopt);
-  
+
   /* set best_parameter and best value*/
   for ( i = 0; i < dimension; i++) { /* Wassim: to silence warning about best_parameter*/
     problem->best_parameter[i] = 0.5 * mu0 * sign_vector[i]; /* TODO: Documentation no 0.5 in documentation! */
   }
-    
+
   /* f_lunacek_bi_rastrigin_evaluate_core(problem, problem->best_parameter, problem->best_value);
-  printf("\n %f , x_opt[0]= %f\n", problem->best_value[0], problem->best_parameter[0]);*//* Wassim: for testing purposes, might end up being the one kept though*/
+  printf("\n %f , x_opt[0]= %f\n", problem->best_value[0], problem->best_parameter[0]);*/ /* Wassim: for testing purposes, might end up being the one kept though*/
 
   
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
@@ -418,5 +418,4 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
   coco_free_memory(sign_vector);
   return problem;
 }
-
 

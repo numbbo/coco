@@ -553,7 +553,7 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
         # bottom labels with #instances and type of targets:
         infotext = ''
         algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
-        
+
         num_of_instances = []
         for alg in algorithms_with_data:
             if len(dictFunc[f][alg]) > 0:
@@ -575,8 +575,6 @@ def main(dictAlg, htmlFilePrefix, isBiobjective, sortedAlgs=None, outputdir='ppd
         plt.text(plt.xlim()[0], plt.ylim()[0],
                  infotext, fontsize=14, horizontalalignment="left",
                  verticalalignment="bottom")
-
-
 
         saveFigure(filename, verbose=verbose)
 

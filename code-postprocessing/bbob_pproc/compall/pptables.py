@@ -385,7 +385,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
         # significance test of best given algorithm against all others
         best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
 
-        significance_versus_others = significance_all_best_vs_other(algentries, targetsOfInterest, best_alg_idx)[0] # Wassim: seems to crash when data is incomplete 
+        significance_versus_others = significance_all_best_vs_other(algentries, targetsOfInterest, best_alg_idx)[0] # Wassim: seems to crash when data is incomplete
         # Create the table
         table = []
         tableHtml = []
@@ -450,12 +450,12 @@ def main(dictAlg, sortedAlgs, outputdir='.', verbose=True, function_targets_line
  
         extraeol.append(r'\hline')
         #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
-        
+
         # line with function name and potential aRT values of bestalg
         curline = [r'\textbf{f%d}' % df[1]]
         replaceValue = '<b>f%d</b>' % df[1]
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
-        
+
         if bestalgentries:
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals

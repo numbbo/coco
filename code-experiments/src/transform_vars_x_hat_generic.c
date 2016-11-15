@@ -23,9 +23,9 @@ typedef struct {
  * @brief Data type for the versatile_data_t
  */
 typedef struct {
-    coco_problem_t *sub_problem_mu0;
-    coco_problem_t *sub_problem_mu1;
-    double *x_hat;
+  coco_problem_t *sub_problem_mu0;
+  coco_problem_t *sub_problem_mu1;
+  double *x_hat;
 } f_lunacek_bi_rastrigin_versatile_data_t;
 
 
@@ -76,3 +76,5 @@ static coco_problem_t *transform_vars_x_hat_generic(coco_problem_t *inner_proble
 
   return problem;
 }
+
+

@@ -842,7 +842,7 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
         num_of_instances = set(num_of_instances)
     for n in num_of_instances:
         text += '%d, ' % n
-            
+
     text = text.rstrip(', ')
     text += ' instances'
 

@@ -332,7 +332,7 @@ def main(args):
     # print('    more info in file _bbob_pproc_doctest_.txt)')
     print('*** done testing module bbob_pproc ***')
 
-    if failure_count > 0:                 
+    if failure_count > 0:
         raise ValueError('%d of %d tests failed' % (failure_count, test_count))
 
 
