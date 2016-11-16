@@ -10,7 +10,7 @@ Example use:
 * from the shell, assuming folder FOLDER contains raw experimental
   data::
 
-    $ python pathtococo/python/bbob_pproc/dataoutput.py FOLDER
+    $ python pathtococo/python/cocopp/dataoutput.py FOLDER
 
     Searching in FOLDER ...
     Searching in FOLDER/data_f1 ...
@@ -84,12 +84,12 @@ def main(argv=None):
 
     * Calling the dataoutput.py interface from the command line::
 
-        $ python bbob_pproc/dataoutput.py experiment2/*.info
+        $ python cocopp/dataoutput.py experiment2/*.info
 
     * Loading this package and calling the main from the command line
       (requires that the path to this package is in the search path)::
 
-        $ python -m bbob_pproc.dataoutput -h
+        $ python -m cocopp.dataoutput -h
 
       This will print out this help message.
 

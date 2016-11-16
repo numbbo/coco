@@ -81,7 +81,7 @@ def _DataSet_complement_data(self, step=10**0.2, final_target=1e-8):
     self._is_complemented_data = True # TODO: will remain true forever, this needs to be set to False again somewhere? 
 
 def cocofy(filename):
-    """Replaces bbob_pproc references in pickles files with coco_pproc
+    """Replaces cocopp references in pickles files with coco_pproc
         This could become necessary for future backwards compatibility,
         however rather should become a class method. """
     import fileinput

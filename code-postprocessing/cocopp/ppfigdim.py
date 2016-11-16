@@ -501,7 +501,7 @@ def plot_previous_algorithms(func, target=None):  # lambda x: [1e-8]):
 def main(dsList, _valuesOfInterest, outputdir):
     """From a DataSetList, returns a convergence and aRT/dim figure vs dim.
     
-    Uses data of BBOB 2009 (:py:mod:`bbob_pproc.bestalg`).
+    Uses data of BBOB 2009 (:py:mod:`cocopp.bestalg`).
     
     :param DataSetList dsList: data sets
     :param seq _valuesOfInterest: target precisions, either as list or as

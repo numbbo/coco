@@ -10,13 +10,13 @@ line of the examples below.
 The main data structures used in COCO are :py:class:`DataSet`, which
 corresponds to data of one algorithm on one problem, and
 :py:class:`DataSetList`, which is for collections of :py:class:`DataSet`
-instances. Both classes are implemented in :py:mod:`bbob_pproc.pproc`.
+instances. Both classes are implemented in :py:mod:`cocopp.pproc`.
 
 Examples:
 
-* Start by importing :py:mod:`bbob_pproc`::
+* Start by importing :py:mod:`cocopp`::
 
-    >>> import cocopp as bb # load bbob_pproc
+    >>> import cocopp as bb # load cocopp
     >>> import os
     >>> import urllib
     >>> import tarfile

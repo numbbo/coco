@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""``python bbob_pproc`` tests the package bbob_pproc and should run through
+"""``python cocopp`` tests the package cocopp and should run through
 smoothly from a system command shell. It however depends on data files that
 might not be available (to be improved).
 
@@ -33,11 +33,7 @@ if 11 < 3 and __name__ == "__main__" and not is_module:
     sys.path.append(os.path.join(os.getcwd(), filepath))  # needed from the shell
     sys.path.append(os.path.join(filepath, os.path.pardir))  # needed in do.py
 
-    try:
-        import bbob_pproc as cocopp
-    except ImportError:
-        # raise  # outcomment to diagnose the reason
-        import cocopp
+    import cocopp
     # run either this main here as cocopp._main or rungeneric.main
     if len(args) == 0:
         print("WARNING: this tests the post-processing, this will change "
@@ -173,7 +169,7 @@ def delete_files():
 
 
 def main(args):
-    """these tests are executed when ``python bbob_pproc`` is called.
+    """these tests are executed when ``python cocopp`` is called.
 
     with ``wine`` as second argument ``C:\\Python26\\python.exe``
     instead of ``python`` is called
@@ -309,7 +305,7 @@ def main(args):
         failure_count = 0
         test_count = 0
         # doctest.testmod(report=True, verbose=True)  # this is quite cool!
-        # go through the py files in the bbob_pproc folder
+        # go through the py files in the cocopp folder
         currentPath = os.getcwd()
         newPath = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
         os.chdir(newPath)
@@ -324,7 +320,7 @@ def main(args):
         os.chdir(currentPath)
     else:
         stdout = sys.stdout
-        fn = '_bbob_pproc_doctest_.txt'
+        fn = '_cocopp_doctest_.txt'
         try:
             with open(fn, 'w') as f:
                 sys.stdout = f
@@ -333,7 +329,7 @@ def main(args):
             sys.stdout = stdout
         process_doctest_output(fn)
     print('** doctest finished in ', time.time() - t0, ' seconds')
-    # print('    more info in file _bbob_pproc_doctest_.txt)')
+    # print('    more info in file _cocopp_doctest_.txt)')
     print('*** done testing module cocopp ***')
 
     if failure_count > 0:                 
@@ -344,7 +340,7 @@ def main(args):
         sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
         import cocopp as bb
         print(dir(bb))
-        #bb=imp.load_module("cocopp",*imp.find_module("bbob_pproc"))
+        #bb=imp.load_module("cocopp",*imp.find_module("cocopp"))
         #pproc=imp.load_module("pproc",*imp.find_module("pproc"))
         #print(pproc)
         #doctest.testmod(bb.pproc,verbose=True)

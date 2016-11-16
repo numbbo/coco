@@ -4,10 +4,10 @@
 """Process data to be included in a latex template.
 
 Synopsis:
-    ``python path_to_folder/bbob_pproc/rungeneric.py [OPTIONS] FOLDERS``
+    ``python path_to_folder/cocopp/rungeneric.py [OPTIONS] FOLDERS``
 
 Help:
-    ``python path_to_folder/bbob_pproc/rungeneric.py -h``
+    ``python path_to_folder/cocopp/rungeneric.py -h``
 
 """
 
@@ -36,10 +36,8 @@ if __name__ == "__main__":
         # module. Like this all relative imports will work smoothly.
         (filepath, filename) = os.path.split(sys.argv[0])
         sys.path.append(os.path.join(filepath, os.path.pardir))
-        try:
-            import bbob_pproc as cocopp
-        except ImportError:
-            import cocopp
+
+        import cocopp
         res = cocopp.rungeneric.main(sys.argv[1:])
         sys.exit(res)
 
@@ -76,7 +74,7 @@ def main(argv=None):
 
     Synopsis::
 
-        python -m bbob_pproc [data_folder [more_data_folders]]
+        python -m cocopp [data_folder [more_data_folders]]
 
     For this call to work, the path to this package must be in python
     search path, that is,
@@ -88,11 +86,11 @@ def main(argv=None):
 
     This routine will:
 
-    * call sub-routine :py:func:`bbob_pproc.rungeneric1.main` for each
+    * call sub-routine :py:func:`cocopp.rungeneric1.main` for each
       input argument; each input argument will be used as output
       sub-folder relative to the main output folder,
-    * call either sub-routines :py:func:`bbob_pproc.rungeneric2.main`
-      (2 input arguments) or :py:func:`bbob_pproc.rungenericmany.main`
+    * call either sub-routines :py:func:`cocopp.rungeneric2.main`
+      (2 input arguments) or :py:func:`cocopp.rungenericmany.main`
       (more than 2) for the input arguments altogether.
 
     The output figures and tables written by default to the output folder
@@ -137,7 +135,7 @@ def main(argv=None):
 
         --omit-single
 
-            omit calling :py:func:`bbob_pproc.rungeneric1.main`, if
+            omit calling :py:func:`cocopp.rungeneric1.main`, if
             more than one data path argument is provided.
 
         --no-rld-single-fcts
@@ -167,11 +165,11 @@ def main(argv=None):
 
     Printing out this help message::
 
-        $ python -m bbob_pproc.rungeneric -h
+        $ python -m cocopp.rungeneric -h
 
     Post-processing two algorithms in verbose mode::
 
-        $ python -m bbob_pproc -v AMALGAM BIPOP-CMA-ES
+        $ python -m cocopp -v AMALGAM BIPOP-CMA-ES
 
     From the python interpreter::
 

@@ -4,10 +4,10 @@
 """Routines for the comparison of 2 algorithms.
 
 Synopsis:
-    ``python path_to_folder/bbob_pproc/rungeneric2.py [OPTIONS] FOLDER_NAME1 FOLDER_NAME2...``
+    ``python path_to_folder/cocopp/rungeneric2.py [OPTIONS] FOLDER_NAME1 FOLDER_NAME2...``
 
 Help:
-    ``python path_to_folder/bbob_pproc/rungeneric2.py -h``
+    ``python path_to_folder/cocopp/rungeneric2.py -h``
 
 """
 
@@ -24,12 +24,9 @@ import matplotlib
 if __name__ == "__main__":
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
     filepath = os.path.split(sys.argv[0])[0]
-    # Add the path to bbob_pproc/.. folder
+    # Add the path to cocopp/.. folder
     sys.path.append(os.path.join(filepath, os.path.pardir))
-    try:
-        import bbob_pproc as cocopp
-    except ImportError:
-        import cocopp
+    import cocopp
     res = cocopp.rungeneric2.main(sys.argv[1:])
     sys.exit(res)
 
@@ -43,12 +40,10 @@ if __name__ == "__main__":
     # matplotlib.use('pdf')
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
     filepath = os.path.split(sys.argv[0])[0]
-    # Add the path to bbob_pproc/.. folder
+    # Add the path to cocopp/.. folder
     sys.path.append(os.path.join(filepath, os.path.pardir))
-    try:
-        import bbob_pproc as cocopp
-    except ImportError:
-        import cocopp
+
+    import cocopp
     res = cocopp.rungeneric2.main(sys.argv[1:])
     sys.exit(res)
 
@@ -137,7 +132,7 @@ def main(argv=None):
 
     * Calling the rungeneric2.py interface from the command line::
 
-        $ python bbob_pproc/rungeneric2.py -v Alg0-baseline Alg1-of-interest
+        $ python cocopp/rungeneric2.py -v Alg0-baseline Alg1-of-interest
 
       will post-process the data from folders :file:`Alg0-baseline` and
       :file:`Alg1-of-interest`, the former containing data for the

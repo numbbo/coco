@@ -4,10 +4,10 @@
 """Module for checking data sets.
 
 Synopsis:
-    ``python path_to_folder/bbob_pproc/sanitycheck.py [OPTIONS] FOLDER``
+    ``python path_to_folder/cocopp/sanitycheck.py [OPTIONS] FOLDER``
 
 Help:
-    ``python path_to_folder/bbob_pproc/sanitycheck.py -h``
+    ``python path_to_folder/cocopp/sanitycheck.py -h``
 
 """
 
@@ -22,7 +22,7 @@ import pickle
 import ast
 from pdb import set_trace
 
-# Add the path to bbob_pproc
+# Add the path to cocopp
 if __name__ == "__main__":
     # os.path.split is system independent
     (filepath, filename) = os.path.split(sys.argv[0])
