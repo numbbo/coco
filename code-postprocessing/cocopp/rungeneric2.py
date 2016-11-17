@@ -321,7 +321,7 @@ def main(argv=None):
             for i, alg in enumerate(args):
                 lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' +
                              str_to_latex(strip_pathname1(alg)) + '}')
-            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+            prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
                             lines, 1000, 'bbob_proc_commands.tex truncated, '
                             + 'consider removing the file before the text run'
                             )
@@ -461,7 +461,7 @@ def main(argv=None):
                                         outputdir,
                                         '%02dD_%s' % (dim, fGroup))
 
-            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+            prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
                             ['\\providecommand{\\bbobpprldistrlegendtwo}[1]{',
                              pprldistr.caption_two(),  # depends on the config
                              # setting, should depend
@@ -555,7 +555,7 @@ def main(argv=None):
         if genericsettings.isScatter:
             print("Scatter plots...")
             ppscatter.main(dsList1, dsList0, outputdir, inset)
-            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+            prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
                             ['\\providecommand{\\bbobppscatterlegend}[1]{',
                              ppscatter.figure_caption(),
                              '}'
@@ -621,7 +621,7 @@ def main(argv=None):
                                       outputdir,
                                       '%s' % (nGroup))
 
-            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+            prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
                             ['\\providecommand{\\bbobpptablestwolegend}[1]{',
                              pptable2.get_table_caption(),
                              '}'
@@ -645,7 +645,7 @@ def main(argv=None):
             # The following is copied from rungenericmany.py to comply
             # with the bi-objective many-algorithm LaTeX template
             print("Generating new tables (pptables.py)...")
-            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+            prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
                             ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
                              pptables.get_table_caption() + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)

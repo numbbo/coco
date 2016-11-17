@@ -152,7 +152,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
     alg0 = set(i[0] for i in dsList0.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, '')[0:3]
     alg1 = set(i[0] for i in dsList1.dictByAlg().keys()).pop().replace(genericsettings.extraction_folder_prefix, '')[0:3]
 
-    open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a'
+    open(os.path.join(outputdir, 'cocopp_commands.tex'), 'a'
          ).write(r'\providecommand{\algorithmAshort}{%s}' % writeLabels(alg0) + '\n' +
                  r'\providecommand{\algorithmBshort}{%s}' % writeLabels(alg1) + '\n')
 
@@ -484,7 +484,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
         spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
         res = r'\providecommand{\algorithmAshort}{%s}' % writeLabels(alg0) + '\n'
         res += r'\providecommand{\algorithmBshort}{%s}' % writeLabels(alg1) + '\n'
-        # open(os.path.join(outputdir, 'bbob_pproc_commands.tex'), 'a').write(res)
+        # open(os.path.join(outputdir, 'cocopp_commands.tex'), 'a').write(res)
         
         #res += tableLaTeXStar(table, width=r'0.45\textwidth', spec=spec,
                               #extraeol=extraeol)

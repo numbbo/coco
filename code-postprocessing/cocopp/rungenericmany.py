@@ -285,7 +285,7 @@ def main(argv=None):
             lines.append('\\providecommand{\\algorithm' + pptex.numtotext(i) +
                          '}{' + str_to_latex(strip_pathname1(alg)) + '}')
         prepend_to_file(os.path.join(outputdir,
-                                     'bbob_pproc_commands.tex'), lines, 5000,
+                                     'cocopp_commands.tex'), lines, 5000,
                         'bbob_proc_commands.tex truncated, consider removing '
                         + 'the file before the text run'
                         )
@@ -416,7 +416,7 @@ def main(argv=None):
 
         if genericsettings.isTab:
             print("Generating comparison tables...")
-            prepend_to_file(os.path.join(outputdir, 'bbob_pproc_commands.tex'),
+            prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
                             ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
                              pptables.get_table_caption() + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)

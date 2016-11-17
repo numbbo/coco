@@ -256,7 +256,7 @@ def main(argv=None):
                 print('Folder %s was created.' % (outputdir))
 
         truncate_latex_command_file(os.path.join(outputdir,
-                                                 'bbob_pproc_commands.tex'))
+                                                 'cocopp_commands.tex'))
 
         for i in range(len(args)):  # prepend common path inputdir to all names
             args[i] = os.path.join(inputdir, args[i])
@@ -273,7 +273,7 @@ def main(argv=None):
             rungenericmany.main(genopts + ["-o", outputdir] + args)
 
         open(os.path.join(outputdir,
-                          'bbob_pproc_commands.tex'), 'a').close() 
+                          'cocopp_commands.tex'), 'a').close()
 
         ppfig.save_index_html_file(os.path.join(outputdir, genericsettings.index_html_file_name))
         # ppdata file is now deprecated.
