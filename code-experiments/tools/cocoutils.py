@@ -22,7 +22,7 @@ except ImportError:
         >>> check_output(['/usr/bin/python', '--version'])
         Python 2.6.2
 
-        WARNING: This method is also defined in ../../code-postprocessing/bbob_pproc/toolsdivers.py.
+        WARNING: This method is also defined in ../../code-postprocessing/cocopp/toolsdivers.py.
         If you change something you have to change it in both files.
         """
         process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
@@ -64,7 +64,7 @@ def git(args):
 
     All errors are deemed fatal and the system will quit.
 
-    WARNING: This method is also defined in ../../code-postprocessing/bbob_pproc/toolsdivers.py.
+    WARNING: This method is also defined in ../../code-postprocessing/cocopp/toolsdivers.py.
     If you change something you have to change it in both files.
     """
     full_command = ['git']
