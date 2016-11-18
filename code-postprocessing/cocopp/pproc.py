@@ -2308,7 +2308,9 @@ class DataSetList(list):
             return reference_values_hash
 
         reference_values_string = json.dumps(all_reference_values, sort_keys=True)
-        return hashlib.sha1(reference_values_string).hexdigest()
+        result = hashlib.sha1(reference_values_string).hexdigest()
+        # The generated hash it's very long so we truncate it.
+        return result[:16]
 
 
 def parseinfoold(s):
