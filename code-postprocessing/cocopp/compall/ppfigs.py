@@ -408,7 +408,7 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
     # target becomes a TargetValues "list" with one element
     target = testbedsettings.current_testbed.ppfigs_ftarget
     target = pproc.TargetValues.cast([target] if numpy.isscalar(target) else target)
-    latex_commands_filename = os.path.join(outputdir, 'bbob_pproc_commands.tex')
+    latex_commands_filename = os.path.join(outputdir, 'cocopp_commands.tex')
     assert isinstance(target, pproc.TargetValues) 
     if len(target) != 1:
         raise ValueError('only a single target can be managed in ppfigs, ' + str(len(target)) + ' targets were given')

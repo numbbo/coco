@@ -27,6 +27,7 @@ if __name__ == "__main__":
     filepath = os.path.split(sys.argv[0])[0]
     # Add the path to cocopp/.. folder
     sys.path.append(os.path.join(filepath, os.path.pardir))
+
     import cocopp
     res = cocopp.rungeneric1.main(sys.argv[1:])
     sys.exit(res)
@@ -449,7 +450,7 @@ def main(argv=None):
                                     htmlPage = ppfig.HtmlPage.ONE,
                                     functionGroups = dsList.getFuncGroups())
 
-        latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'bbob_pproc_commands.tex')
+        latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'cocopp_commands.tex')
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglosstablecaption}[1]{',
                          pplogloss.table_caption(), '}'])

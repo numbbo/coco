@@ -81,7 +81,7 @@ def _DataSet_complement_data(self, step=10**0.2, final_target=1e-8):
     self._is_complemented_data = True # TODO: will remain true forever, this needs to be set to False again somewhere? 
 
 def cocofy(filename):
-    """Replaces bbob_pproc references in pickles files with coco_pproc
+    """Replaces cocopp references in pickles files with coco_pproc
         This could become necessary for future backwards compatibility,
         however rather should become a class method. """
     import fileinput
@@ -2308,7 +2308,9 @@ class DataSetList(list):
             return reference_values_hash
 
         reference_values_string = json.dumps(all_reference_values, sort_keys=True)
-        return hashlib.sha1(reference_values_string).hexdigest()
+        result = hashlib.sha1(reference_values_string).hexdigest()
+        # The generated hash it's very long so we truncate it.
+        return result[:16]
 
 
 def parseinfoold(s):
