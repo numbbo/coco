@@ -95,9 +95,9 @@ html_header = """<HTML>
 
 def addImage(imageName, addLink):
     if addLink:
-        return '<a href="file:%s"><IMG SRC="%s"></a>' % (2 * (imageName,))
+        return '<a href="file:%s"><IMG SRC="%s" height="66%%"></a>' % (2 * (imageName,))
     else:
-        return '<IMG SRC="%s">' % imageName
+        return '<IMG SRC="%s" height="66%%">' % imageName
 
 
 def add_link(currentDir, folder, fileName, label, indent='', ignoreFileExists=False):
