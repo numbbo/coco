@@ -33,7 +33,7 @@ history (which should rather not be done when the branch has become public).
 This is conceptually what `svn update` does: providing the most current base, on top of which a 
 commit can be done. Putting it differently, in `svn` every  `merge` is in fact a `rebase`. 
 This is almost always what we want if the branch is local and not accessible to any collaborators yet.
-`--rebase`` can also be set as default option for `pull` in your local `git`.
+`--rebase` can also be set as default option for `pull` in your local `git`.
 
 See also: 
 - https://git-scm.com/docs/git-rebase
