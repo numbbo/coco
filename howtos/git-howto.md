@@ -26,7 +26,7 @@ or `master` branch. This latter use-case is more like `svn commit`. In this case
 
 `git rebase branch-to-use-as-base` and `git pull --rebase` start from the HEAD of 
 the `branch-to-use-as-base` and
-add all differences of the given branch on top of it, as if these changes would have
+add all differences of the current branch on top of it, as if these changes would have
 been done and committed after the changes of the base branch. Thereby `rebase` not only 
 changes the current branch (by using remote changes, like `merge` does), but also rewrites its 
 history (which should rather not be done when the branch has become public). 
