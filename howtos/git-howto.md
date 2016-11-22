@@ -27,12 +27,12 @@ or `master` branch. This scenario is more like `svn commit`. In this case,
 `git rebase branch-to-use-as-base` and `git pull --rebase`
 start from the HEAD of the `branch-to-use-as-base` and
 add all differences of the current branch on top of it, as if these changes would have
-been done and committed after the changes of the base branch. Thereby `rebase` not only 
+been done and committed _after_ the changes of the base branch. Thereby `rebase` not only 
 changes the current branch (by using remote changes, like `merge` does), but also rewrites
 its history (which should rather not be done when the branch has become public). 
 This is conceptually what `svn update` does: providing the most current base, on top of which a 
 commit can be done. Putting it differently, in `svn` every  `merge` is in fact a `rebase`.
-`rebase`, not `merge`, is almost always what we want if the branch is local and not accessible 
+`rebase`, not `merge`, is almost always what we want if the branch we merge _into_ is local and not accessible 
 to any collaborators yet. `--rebase` can also be set as default option for `pull` in your local `git`.
 
 See also: 
