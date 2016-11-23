@@ -415,10 +415,10 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                     curline = [r'$\Delta f_\mathrm{opt}$']
                 counter = 1
                 for t in targetsOfInterest:
-                    curline.append(r'\multicolumn{2}{@{\,}X@{\,}}{%s}'
+                    curline.append(r'\multicolumn{2}{@{\,}l@{\,}}{%s}'
                                    % writeFEvals2(t, precision=1, isscientific=True))
                     counter += 1
-                #                curline.append(r'\multicolumn{2}{@{\,}X@{}|}{%s}'
+                #                curline.append(r'\multicolumn{2}{@{\,}l@{}|}{%s}'
                 #                            % writeFEvals2(targetsOfInterest[-1], precision=1, isscientific=True))
             if (testbed.name == testbedsettings.testbed_name_bi):
                 curline.append(r'\multicolumn{2}{|@{}l@{}}{\begin{rotate}{30}\#succ\end{rotate}}')
@@ -531,9 +531,9 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                 else:
                     ert, dispersion, isBold = tmp
 
-                alignment = '@{\,}X@{\,}'
+                alignment = '@{\,}l@{\,}'
                 if j == len(algerts[i]) - 1:
-                    alignment = '@{\,}X@{\,}|'
+                    alignment = '@{\,}l@{\,}|'
 
                 data = ert / refalgert[j] if bestalgentries else ert
                 # write star for significance against all other algorithms
