@@ -302,34 +302,31 @@ def save_single_functions_html(filename,
             currentHeader = header
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
-                f.write('<A HREF="%s">\n' % (name + next_html_page_suffix + '.html'))
+                f.write('<p><A HREF="%s">Next dimension</A><p>\n' % (name + next_html_page_suffix + '.html'))
             for ifun in range(first_function_number, last_function_number + 1):
-                f.write(addImage('%s_f%03d%s.%s' % (name, ifun, add_to_names, extension), not addLinkForNextDim))
+                f.write(addImage('%s_f%03d%s.%s' % (name, ifun, add_to_names, extension), True))
             if addLinkForNextDim:
-                f.write('"\n</A>\n')
+                f.write('<p><A HREF="%s">Next dimension</A><p>\n' % (name + next_html_page_suffix + '.html'))
         elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP:
             currentHeader = pprldmany_per_group_dim_header
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
-                f.write('<A HREF="%s">\n' % (name + next_html_page_suffix + '.html'))
-
+                f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
             for fg in functionGroups:
-                f.write(addImage('%s_%s%s.%s' % (name, fg, add_to_names, extension), not addLinkForNextDim))
+                f.write(addImage('%s_%s%s.%s' % (name, fg, add_to_names, extension), True))
             if addLinkForNextDim:
-                f.write('"\n</A>\n')
+                f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
 
         elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP_MANY:
             currentHeader = pprldmany_per_group_dim_header
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
-                f.write('<A HREF="%s">\n' % (name + next_html_page_suffix + '.html'))
-
+                f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
             for typeKey, typeValue in functionGroups.iteritems():
                 f.write('<p><b>%s</b></p>' % typeValue)
-                f.write(addImage('%s%s_%s.%s' % (name, add_to_names, typeKey, extension), not addLinkForNextDim))
-
+                f.write(addImage('%s%s_%s.%s' % (name, add_to_names, typeKey, extension), True))
             if addLinkForNextDim:
-                f.write('"\n</A>\n')
+                f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
 
             f.write(captionStringFormat % '\n##bbobECDFslegend##')
 
