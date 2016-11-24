@@ -93,11 +93,11 @@ html_header = """<HTML>
 """
 
 
-def addImage(imageName, addLink):
+def addImage(imageName, addLink, height=135):
     if addLink:
-        return '<a href="file:%s"><IMG SRC="%s" height="66%%"></a>' % (2 * (imageName,))
+        return '<a href="file:%s"><IMG SRC="%s" height="%dem"></a>' % (imageName, imageName, height)
     else:
-        return '<IMG SRC="%s" height="66%%">' % imageName
+        return '<IMG SRC="%s" height="%dem">' % (imageName, height)
 
 
 def add_link(currentDir, folder, fileName, label, indent='', ignoreFileExists=False):
@@ -262,7 +262,7 @@ def save_single_functions_html(filename,
 
             headerECDF = ' Runtime distributions (ECDFs) over all targets'
             f.write("<H2> %s </H2>\n" % headerECDF)
-            f.write(addImage('pprldmany-single-functions/pprldmany.%s' % (extension), True))
+            f.write(addImage('pprldmany-single-functions/pprldmany.%s' % extension, True, 380))
 
         elif htmlPage is HtmlPage.TWO:
 
