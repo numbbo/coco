@@ -74,9 +74,9 @@ def save_figure(filename, algorithm=None, fig_format=()):
         except IOError:
             warnings.warn('%s is not writeable.' % (filename + '.' + format))
 
-pprldmany_per_func_header = 'Runtime distributions (ECDFs) per function'
+pprldmany_per_func_header = 'Runtime distributions (ECDFs) per function, all dimensions'
 pprldmany_per_func_dim_header = 'Runtime distributions (ECDFs) per function and dimension'
-pprldmany_per_group_dim_header = 'Runtime distributions (ECDFs) per group and dimension'
+pprldmany_per_group_dim_header = 'Runtime distributions (ECDFs) per function, all of a group'
 
 html_header = """<HTML>
 <HEAD>
@@ -250,11 +250,11 @@ def save_single_functions_html(filename,
         bestAlgExists = testbedsettings.current_testbed.reference_algorithm_filename != ''
 
         if htmlPage is HtmlPage.ONE:
-            f.write('<H3><a href="ppfigdim.html">Average runtime versus '
+            f.write('<H3><a href="ppfigdim.html">Runtime scaling with '
                     'dimension for selected targets</a></H3>\n')
-            f.write('<H3><a href="pptable.html">Average runtime for selected '
+            f.write('<H3><a href="pptable.html">Runtime tables for selected '
                     'targets</a></H3>\n')
-            f.write('<H3><a href="pprldistr.html">Runtime for selected '
+            f.write('<H3><a href="pprldistr.html">Runtime distribution for selected '
                     'targets and f-distributions</a></H3>\n')
             if bestAlgExists:
                 f.write('<H3><a href="pplogloss.html">Runtime loss ratios'
@@ -267,9 +267,9 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.TWO:
 
             f.write(
-                '<H3><a href="%s.html">Average runtime with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
+                '<H3><a href="%s.html">Runtime scaling with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
             f.write('<H3><a href="%s.html">Scatter plots</a></H3>\n' % genericsettings.ppscatter_file_name)
-            f.write('<H3><a href="%s.html">Runtime for selected '
+            f.write('<H3><a href="%s.html">Runtime disribution for selected '
                     'targets and f-distributions</a></H3>\n' % genericsettings.pprldistr2_file_name)
             f.write(
                 '<H3><a href="%s.html">Average runtime for selected targets</a></H3>\n'
