@@ -75,7 +75,7 @@ def save_figure(filename, algorithm=None, fig_format=()):
             warnings.warn('%s is not writeable.' % (filename + '.' + format))
 
 pprldmany_per_func_header = 'Runtime distributions (ECDFs) per function, all dimensions'
-pprldmany_per_func_dim_header = 'Runtime distributions (ECDFs) per function and dimension'
+pprldmany_per_func_dim_header = 'Runtime distributions (ECDFs) per function'
 pprldmany_per_group_dim_header = 'Runtime distributions (ECDFs) per function, all of a group'
 
 html_header = """<HTML>
@@ -272,15 +272,15 @@ def save_single_functions_html(filename,
             f.write('<H3><a href="%s.html">Runtime disribution for selected '
                     'targets and f-distributions</a></H3>\n' % genericsettings.pprldistr2_file_name)
             f.write(
-                '<H3><a href="%s.html">Average runtime for selected targets</a></H3>\n'
+                '<H3><a href="%s.html">Tables for selected targets</a></H3>\n'
                 % genericsettings.pptable2_file_name)
 
         elif htmlPage is HtmlPage.MANY:
 
             f.write(
-                '<H3><a href="%s.html">Average runtime with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
+                '<H3><a href="%s.html">Scaling with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
             f.write(
-                '<H3><a href="%s.html">Average runtime for selected targets</a></H3>\n'
+                '<H3><a href="%s.html">Tables for selected targets</a></H3>\n'
                 % genericsettings.pptables_file_name)
 
         elif htmlPage is HtmlPage.PPSCATTER:
