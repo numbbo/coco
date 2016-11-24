@@ -250,9 +250,9 @@ def save_single_functions_html(filename,
         bestAlgExists = testbedsettings.current_testbed.reference_algorithm_filename != ''
 
         if htmlPage is HtmlPage.ONE:
-            f.write('<H3><a href="ppfigdim.html">Runtime scaling with '
+            f.write('<H3><a href="ppfigdim.html">Scaling with '
                     'dimension for selected targets</a></H3>\n')
-            f.write('<H3><a href="pptable.html">Runtime tables for selected '
+            f.write('<H3><a href="pptable.html">Tables for selected '
                     'targets</a></H3>\n')
             f.write('<H3><a href="pprldistr.html">Runtime distribution for selected '
                     'targets and f-distributions</a></H3>\n')
@@ -267,7 +267,7 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.TWO:
 
             f.write(
-                '<H3><a href="%s.html">Runtime scaling with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
+                '<H3><a href="%s.html">Scaling with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
             f.write('<H3><a href="%s.html">Scatter plots</a></H3>\n' % genericsettings.ppscatter_file_name)
             f.write('<H3><a href="%s.html">Runtime disribution for selected '
                     'targets and f-distributions</a></H3>\n' % genericsettings.pprldistr2_file_name)
