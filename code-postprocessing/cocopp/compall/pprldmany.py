@@ -835,7 +835,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         if len(dictFunc) == 1 or plotType == PlotType.DIM:
             fileName = genericsettings.pprldmany_file_name
 
-            header = ppfig.pprldmany_per_func_header if plotType == PlotType.DIM else ppfig.pprldmany_per_func_dim_header
+            header = ppfig.pprldmany_per_func_header if plotType == PlotType.DIM else \
+                ppfig.pprldmany_per_func_dim_header
+
             ppfig.save_single_functions_html(
                 os.path.join(outputdir, fileName),
                 '',  # algorithms names are clearly visible in the figure

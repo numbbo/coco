@@ -93,7 +93,7 @@ html_header = """<HTML>
 """
 
 
-def addImage(imageName, addLink, height=135):
+def addImage(imageName, addLink, height=160):
     if addLink:
         return '<a href="file:%s"><IMG SRC="%s" height="%dem"></a>' % (imageName, imageName, height)
     else:
@@ -126,14 +126,8 @@ def save_index_html_file(filename):
 
         f.write(html_header % ('Post processing results', 'Post processing results', text))
 
-        f.write('<H2>Single algorithm data</H2>\n')
-
         currentDir = os.path.dirname(os.path.realpath(filename))
         indent = '&nbsp;&nbsp;'
-        singleAlgFile = 'templateBBOBarticle.html'
-        for root, _dirs, files in os.walk(currentDir):
-            for elem in _dirs:
-                f.write(add_link(currentDir, elem, singleAlgFile, elem, indent))
 
         comparisonLinks = ''
         comparisonLinks += add_link(currentDir, None, 'templateBBOBcmp.html',
@@ -143,6 +137,13 @@ def save_index_html_file(filename):
         if comparisonLinks:
             f.write('<H2>Comparison data</H2>\n')
             f.write(comparisonLinks)
+
+        f.write('<H2>Single algorithm data</H2>\n')
+
+        singleAlgFile = 'templateBBOBarticle.html'
+        for root, _dirs, files in os.walk(currentDir):
+            for elem in _dirs:
+                f.write(add_link(currentDir, elem, singleAlgFile, elem, indent))
 
         f.write("\n</BODY>\n</HTML>")
 
@@ -238,7 +239,7 @@ def save_single_functions_html(filename,
             functionGroups = OrderedDict([])
 
         function_group = "nzall" if genericsettings.isNoisy else "noiselessall"
-        if not htmlPage in (HtmlPage.PPRLDMANY_BY_GROUP, HtmlPage.PPLOGLOSS):
+        if htmlPage not in (HtmlPage.PPRLDMANY_BY_GROUP, HtmlPage.PPLOGLOSS):
             tempFunctionGroups = OrderedDict([(function_group, 'All functions')])
             tempFunctionGroups.update(functionGroups)
             functionGroups = tempFunctionGroups
@@ -323,7 +324,6 @@ def save_single_functions_html(filename,
             if addLinkForNextDim:
                 f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
             for typeKey, typeValue in functionGroups.iteritems():
-                f.write('<p><b>%s</b></p>' % typeValue)
                 f.write(addImage('%s%s_%s.%s' % (name, add_to_names, typeKey, extension), True))
             if addLinkForNextDim:
                 f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
