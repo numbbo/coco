@@ -314,7 +314,7 @@ def save_single_functions_html(filename,
             if addLinkForNextDim:
                 f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
             for fg in functionGroups:
-                f.write(addImage('%s_%s%s.%s' % (name, fg, add_to_names, extension), True))
+                f.write(addImage('%s_%s%s.%s' % (name, fg, add_to_names, extension), True, 200))
             if addLinkForNextDim:
                 f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
 
