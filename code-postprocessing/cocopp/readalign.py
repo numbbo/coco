@@ -348,14 +348,14 @@ def alignData(data, isBiobjective):
     idxF = idxFBi if isBiobjective else idxFSingle
 
     res = []
-    currentValue = data.getInitialValue()
+    current_value= data.getInitialValue()
     # set_trace()
     if data.isFinished():
-        res.append(data.align(currentValue))
+        res.append(data.align(current_value))
 
-    while not data.isFinished() and currentValue:
-        res.append(data.align(currentValue))
-        currentValue = data.newCurrentValue()
+    while not data.isFinished() and current_value is not None:
+        res.append(data.align(current_value))
+        current_value = data.newCurrentValue()
 
     return (numpy.vstack(res), numpy.array(list(i.nextLine[idxEvals] for i in data)),
             numpy.array(list(i.nextLine[idxF] for i in data)))
@@ -473,10 +473,12 @@ def split(dataFiles, idx_to_load=None, dim=None):
                             warnings.warn('%s is not a valid number!' % data[id])
                         data[id] = numpy.nan
 
-            content.append(numpy.array(data))
+            if data:
+                content.append(numpy.array(data))
             # Check that it always have the same length?
+
         if content:
-            if idx_to_load and idx_to_load[idx]:
+            if (idx_to_load is None) or (idx_to_load and idx_to_load[idx]):
                 dataSets.append(numpy.vstack(content))
             elif genericsettings.verbose:
                     print('skipped instance...')

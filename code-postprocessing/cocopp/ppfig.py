@@ -74,9 +74,9 @@ def save_figure(filename, algorithm=None, fig_format=()):
         except IOError:
             warnings.warn('%s is not writeable.' % (filename + '.' + format))
 
-pprldmany_per_func_header = 'Runtime distributions (ECDFs) per function'
-pprldmany_per_func_dim_header = 'Runtime distributions (ECDFs) per function and dimension'
-pprldmany_per_group_dim_header = 'Runtime distributions (ECDFs) per group and dimension'
+pprldmany_per_func_header = 'Runtime distributions (ECDFs) per function, all dimensions'
+pprldmany_per_func_dim_header = 'Runtime distributions (ECDFs) per function'
+pprldmany_per_group_dim_header = 'Runtime distributions (ECDFs) per function, all of a group'
 
 html_header = """<HTML>
 <HEAD>
@@ -93,11 +93,11 @@ html_header = """<HTML>
 """
 
 
-def addImage(imageName, addLink):
+def addImage(imageName, addLink, height=160):
     if addLink:
-        return '<a href="file:%s"><IMG SRC="%s"></a>' % (2 * (imageName,))
+        return '<a href="file:%s"><IMG SRC="%s" height="%dem"></a>' % (imageName, imageName, height)
     else:
-        return '<IMG SRC="%s">' % imageName
+        return '<IMG SRC="%s" height="%dem">' % (imageName, height)
 
 
 def add_link(currentDir, folder, fileName, label, indent='', ignoreFileExists=False):
@@ -126,14 +126,8 @@ def save_index_html_file(filename):
 
         f.write(html_header % ('Post processing results', 'Post processing results', text))
 
-        f.write('<H2>Single algorithm data</H2>\n')
-
         currentDir = os.path.dirname(os.path.realpath(filename))
         indent = '&nbsp;&nbsp;'
-        singleAlgFile = 'templateBBOBarticle.html'
-        for root, _dirs, files in os.walk(currentDir):
-            for elem in _dirs:
-                f.write(add_link(currentDir, elem, singleAlgFile, elem, indent))
 
         comparisonLinks = ''
         comparisonLinks += add_link(currentDir, None, 'templateBBOBcmp.html',
@@ -143,6 +137,13 @@ def save_index_html_file(filename):
         if comparisonLinks:
             f.write('<H2>Comparison data</H2>\n')
             f.write(comparisonLinks)
+
+        f.write('<H2>Single algorithm data</H2>\n')
+
+        singleAlgFile = 'templateBBOBarticle.html'
+        for root, _dirs, files in os.walk(currentDir):
+            for elem in _dirs:
+                f.write(add_link(currentDir, elem, singleAlgFile, elem, indent))
 
         f.write("\n</BODY>\n</HTML>")
 
@@ -238,7 +239,7 @@ def save_single_functions_html(filename,
             functionGroups = OrderedDict([])
 
         function_group = "nzall" if genericsettings.isNoisy else "noiselessall"
-        if not htmlPage in (HtmlPage.PPRLDMANY_BY_GROUP, HtmlPage.PPLOGLOSS):
+        if htmlPage not in (HtmlPage.PPRLDMANY_BY_GROUP, HtmlPage.PPLOGLOSS):
             tempFunctionGroups = OrderedDict([(function_group, 'All functions')])
             tempFunctionGroups.update(functionGroups)
             functionGroups = tempFunctionGroups
@@ -250,11 +251,11 @@ def save_single_functions_html(filename,
         bestAlgExists = testbedsettings.current_testbed.reference_algorithm_filename != ''
 
         if htmlPage is HtmlPage.ONE:
-            f.write('<H3><a href="ppfigdim.html">Average runtime versus '
+            f.write('<H3><a href="ppfigdim.html">Scaling with '
                     'dimension for selected targets</a></H3>\n')
-            f.write('<H3><a href="pptable.html">Average runtime for selected '
+            f.write('<H3><a href="pptable.html">Tables for selected '
                     'targets</a></H3>\n')
-            f.write('<H3><a href="pprldistr.html">Runtime for selected '
+            f.write('<H3><a href="pprldistr.html">Runtime distribution for selected '
                     'targets and f-distributions</a></H3>\n')
             if bestAlgExists:
                 f.write('<H3><a href="pplogloss.html">Runtime loss ratios'
@@ -262,25 +263,25 @@ def save_single_functions_html(filename,
 
             headerECDF = ' Runtime distributions (ECDFs) over all targets'
             f.write("<H2> %s </H2>\n" % headerECDF)
-            f.write(addImage('pprldmany-single-functions/pprldmany.%s' % (extension), True))
+            f.write(addImage('pprldmany-single-functions/pprldmany.%s' % extension, True, 380))
 
         elif htmlPage is HtmlPage.TWO:
 
             f.write(
-                '<H3><a href="%s.html">Average runtime with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
+                '<H3><a href="%s.html">Scaling with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
             f.write('<H3><a href="%s.html">Scatter plots</a></H3>\n' % genericsettings.ppscatter_file_name)
-            f.write('<H3><a href="%s.html">Runtime for selected '
+            f.write('<H3><a href="%s.html">Runtime disribution for selected '
                     'targets and f-distributions</a></H3>\n' % genericsettings.pprldistr2_file_name)
             f.write(
-                '<H3><a href="%s.html">Average runtime for selected targets</a></H3>\n'
+                '<H3><a href="%s.html">Tables for selected targets</a></H3>\n'
                 % genericsettings.pptable2_file_name)
 
         elif htmlPage is HtmlPage.MANY:
 
             f.write(
-                '<H3><a href="%s.html">Average runtime with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
+                '<H3><a href="%s.html">Scaling with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
             f.write(
-                '<H3><a href="%s.html">Average runtime for selected targets</a></H3>\n'
+                '<H3><a href="%s.html">Tables for selected targets</a></H3>\n'
                 % genericsettings.pptables_file_name)
 
         elif htmlPage is HtmlPage.PPSCATTER:
@@ -302,34 +303,30 @@ def save_single_functions_html(filename,
             currentHeader = header
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
-                f.write('<A HREF="%s">\n' % (name + next_html_page_suffix + '.html'))
+                f.write('<p><A HREF="%s">Next dimension</A><p>\n' % (name + next_html_page_suffix + '.html'))
             for ifun in range(first_function_number, last_function_number + 1):
-                f.write(addImage('%s_f%03d%s.%s' % (name, ifun, add_to_names, extension), not addLinkForNextDim))
+                f.write(addImage('%s_f%03d%s.%s' % (name, ifun, add_to_names, extension), True))
             if addLinkForNextDim:
-                f.write('"\n</A>\n')
+                f.write('<p><A HREF="%s">Next dimension</A><p>\n' % (name + next_html_page_suffix + '.html'))
         elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP:
             currentHeader = pprldmany_per_group_dim_header
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
-                f.write('<A HREF="%s">\n' % (name + next_html_page_suffix + '.html'))
-
+                f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
             for fg in functionGroups:
-                f.write(addImage('%s_%s%s.%s' % (name, fg, add_to_names, extension), not addLinkForNextDim))
+                f.write(addImage('%s_%s%s.%s' % (name, fg, add_to_names, extension), True, 200))
             if addLinkForNextDim:
-                f.write('"\n</A>\n')
+                f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
 
         elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP_MANY:
             currentHeader = pprldmany_per_group_dim_header
             f.write("\n<H2> %s </H2>\n" % currentHeader)
             if addLinkForNextDim:
-                f.write('<A HREF="%s">\n' % (name + next_html_page_suffix + '.html'))
-
+                f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
             for typeKey, typeValue in functionGroups.iteritems():
-                f.write('<p><b>%s</b></p>' % typeValue)
-                f.write(addImage('%s%s_%s.%s' % (name, add_to_names, typeKey, extension), not addLinkForNextDim))
-
+                f.write(addImage('%s%s_%s.%s' % (name, add_to_names, typeKey, extension), True))
             if addLinkForNextDim:
-                f.write('"\n</A>\n')
+                f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
 
             f.write(captionStringFormat % '\n##bbobECDFslegend##')
 
