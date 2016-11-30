@@ -1,6 +1,6 @@
-C Implementation
-================
-TODO, give a pointer?
+C Implementation of Functions and a Suite
+=========================================
+See [here](http://numbbo.github.io/coco-doc/C/#new-suites).
 
 Setup Python
 ============
