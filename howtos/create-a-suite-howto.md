@@ -16,3 +16,7 @@ The created data files (currently with 2, 10, and 20 solutions per problem) must
 moved to `code-experiments/test/regression-test/data`. That's all there is to it. 
 The suite will become part of the regression test if it is listed in `known_suite_names`
 (see above).
+
+Adapt the Post-Processing
+=========================
+TODO or give a link. 
