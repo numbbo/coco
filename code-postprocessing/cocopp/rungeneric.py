@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Process data to be included in a latex template.
+"""
+Process data to be included in a latex template. Called via
 
-Synopsis:
-    ``python path_to_folder/cocopp/rungeneric.py [OPTIONS] FOLDERS``
+python -m cocopp [OPTIONS] DATAFOLDER1 DATAFOLDER2 ...
 
-Help:
-    ``python path_to_folder/cocopp/rungeneric.py -h``
+For a detailed help, simply type
+
+python -m cocopp
 
 """
 

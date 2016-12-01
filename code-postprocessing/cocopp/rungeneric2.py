@@ -4,10 +4,10 @@
 """Routines for the comparison of 2 algorithms.
 
 Synopsis:
-    ``python path_to_folder/cocopp/rungeneric2.py [OPTIONS] FOLDER_NAME1 FOLDER_NAME2...``
+    ``python -m cocopp.rungeneric2 [OPTIONS] FOLDER_NAME1 FOLDER_NAME2...``
 
 Help:
-    ``python path_to_folder/cocopp/rungeneric2.py -h``
+    ``python -m cocopp.rungeneric2 --help``
 
 """
 
@@ -20,15 +20,6 @@ import warnings
 import getopt
 import numpy
 import matplotlib
-
-if __name__ == "__main__":
-    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
-    filepath = os.path.split(sys.argv[0])[0]
-    # Add the path to cocopp/.. folder
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-    import cocopp
-    res = cocopp.rungeneric2.main(sys.argv[1:])
-    sys.exit(res)
 
 from . import genericsettings, ppfig, toolsdivers, rungenericmany
 from .toolsdivers import print_done
@@ -132,7 +123,7 @@ def main(argv=None):
 
     * Calling the rungeneric2.py interface from the command line::
 
-        $ python cocopp/rungeneric2.py -v Alg0-baseline Alg1-of-interest
+        $ python -m cocopp.rungeneric2 -v Alg0-baseline Alg1-of-interest
 
       will post-process the data from folders :file:`Alg0-baseline` and
       :file:`Alg1-of-interest`, the former containing data for the
@@ -141,10 +132,11 @@ def main(argv=None):
       default output folder. The ``-v`` option adds verbosity.
 
     * From the python interpreter (requires that the path to this
-      package is in python search path)::
+      package is in python search path; most simply achieved by running
+      `python do.py install-postprocessing`)::
 
-        >> import cocopp as bb
-        >> bb.rungeneric2.main('-o outputfolder PSO DEPSO'.split())
+        >> import cocopp as pp
+        >> pp.rungeneric2.main('-o outputfolder PSO DEPSO'.split())
 
     This will execute the post-processing on the data found in folder
     :file:`PSO` and :file:`DEPSO`. The ``-o`` option changes the output

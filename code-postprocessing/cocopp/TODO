@@ -1,4 +1,4 @@
-bbob_pproc package random thoughts:
+cocopp package random thoughts:
 04/2012: maxfevals should occur in Figure 1 also when comparing algorithms (compall/ppfigs.py)
 04/2012: the tables in many algorithm papers should not have a targets line for each function. 
    To accomplish this, the argument function_targets_line in compall/pptables.main needs to 
@@ -83,7 +83,7 @@ Error catching:
 
 Feature missing:
 *Check that the given target function values are dictionaries?
-*is the raw data provided compatible with bbob_pproc? -> simply try and run the main of bbob_pproc?
+*is the raw data provided compatible with cocopp? -> simply try and run the main of cocopp?
 *Java application on the web
 *template-independent stuff...
 *in the RLD figures, if some final values are 0 there is the chance that the

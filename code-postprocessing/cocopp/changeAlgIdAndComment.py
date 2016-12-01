@@ -55,12 +55,12 @@ def main(argv=None):
     * Changing algorithm name and comments for given output folder from the
        command line::
 
-        $ python cocopp/changeAlgIdAndComment.py outfolder "CMA-ES" "CMA_with_lambda_100"
+        >> python -m cocopp.changeAlgIdAndComment outfolder "CMA-ES" "CMA_with_lambda_100"
 
     * Changing algorithm name and comments for given output folder
        interactively::
 
-        $ python cocopp/changeAlgIdAndComment.py outputfolder
+        >> python -m cocopp.changeAlgIdAndComment outputfolder
 
     """
 

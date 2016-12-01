@@ -1,15 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Process data and generates some comparison results.
-
-   Synopsis:
-      python path_to_folder/cocopp/runcompall.py [OPTIONS] FOLDER_NAME...
-
-   Help:
-      python path_to_folder/cocopp/runcompall.py -h
-
-"""
+"""Process data and generates some comparison results."""
 
 from __future__ import absolute_import
 

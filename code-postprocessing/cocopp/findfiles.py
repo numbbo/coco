@@ -6,7 +6,7 @@
 This module can be called from the shell, it will recursively look for
 :file:`info` and :file:`pickle` files in the current working directory::
 
-  $ python pathtococo/cocopp/findfiles.py
+  >> python -m cocopp.findfiles
   Searching in ...
   Found ... file(s)!
 
@@ -14,7 +14,6 @@ This module can be called from the shell, it will recursively look for
 from __future__ import absolute_import
 import os, sys
 import warnings
-#import zipfile
 import tarfile
 import ntpath
 

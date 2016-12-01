@@ -340,10 +340,6 @@ def main(args):
         sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
         import cocopp as bb
         print(dir(bb))
-        #bb=imp.load_module("cocopp",*imp.find_module("cocopp"))
-        #pproc=imp.load_module("pproc",*imp.find_module("pproc"))
-        #print(pproc)
-        #doctest.testmod(bb.pproc,verbose=True)
         for s in dir(bb):
             if(inspect.ismodule(eval("bb."+s)) and s[:2]!="__"):
                 print("bb."+s)
