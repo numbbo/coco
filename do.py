@@ -43,6 +43,7 @@ matlab_files = ['cocoCall.m', 'cocoEvaluateFunction.m', 'cocoObserver.m',
                 'cocoSetLogLevel.m', 'cocoSuite.m', 'cocoSuiteFree.m',
                 'cocoSuiteGetNextProblem.m', 'cocoSuiteGetProblem.m']
 
+verbosity = False
 
 ################################################################################
 ## C
@@ -228,6 +229,18 @@ def install_postprocessing():
     # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/cocopp/latex-templates')
     python('code-postprocessing', ['setup.py', 'install', '--user'], verbose=verbosity)
 
+def test_suites(args):
+    """regression test on suites via Python"""
+    if not args:
+        args = ['2']
+    test_python(  # this is a list of [folder, args] pairs
+        [['code-experiments/test/regression-test',
+            ['test_suites.py', arg]] for arg in args
+         ] + [
+         ['code-experiments/build/python',
+            ['coco_test.py', 'bbob2009_testcases.txt', 'bbob2009_testcases2.txt']
+         ]
+        ])
 
 def _prep_python():
     global release
@@ -295,9 +308,11 @@ os.path.join('code-experiments', 'build', 'python',
         shutil.rmtree(python_temp_home)
 
 
-def test_python():
+def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']],)):
     _prep_python()
-    python('code-experiments/build/python', ['setup.py', 'check', '--metadata', '--strict'], verbose=verbosity)
+    python('code-experiments/build/python',
+           ['setup.py', 'check', '--metadata', '--strict'],
+           verbose=verbosity)
     ## Now install into a temporary location, run test and cleanup
     python_temp_home = tempfile.mkdtemp(prefix="coco")
     python_temp_lib = os.path.join(python_temp_home, "lib", "python")
@@ -309,9 +324,13 @@ def test_python():
         os.makedirs(python_temp_lib)
         os.environ['PYTHONPATH'] = python_temp_lib
         os.environ['USE_CYTHON'] = 'true'
-        python('code-experiments/build/python', ['setup.py', 'install', '--home', python_temp_home], verbose=verbosity)
-        python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases.txt'], verbose=verbosity)
-        python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases2.txt'], verbose=verbosity)
+        python('code-experiments/build/python',
+               ['setup.py', 'install', '--home', python_temp_home],
+               verbose=verbosity)
+        for folder, more_args in args:
+            python(folder, more_args, verbose=verbosity)
+        # python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases.txt'], verbose=verbosity)
+        # python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases2.txt'], verbose=verbosity)
         os.environ.pop('USE_CYTHON')
         os.environ.pop('PYTHONPATH')
     except subprocess.CalledProcessError:
@@ -728,9 +747,6 @@ def test():
     test_python()
 
 
-verbosity = False
-
-
 def verbose(args):
     global verbosity
     verbosity = True
@@ -873,6 +889,7 @@ def main(args):
     elif cmd == 'test-octave': test_octave()
     elif cmd == 'test-postprocessing': test_postprocessing()
     elif cmd == 'test-postprocessing-all': test_postprocessing(True)
+    elif cmd == 'test-suites': test_suites(args[1:])
     elif cmd == 'verify-postprocessing': verify_postprocessing()
     elif cmd == 'leak-check': leak_check()
     elif cmd == 'install-preprocessing': install_preprocessing()
