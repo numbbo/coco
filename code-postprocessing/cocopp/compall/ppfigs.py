@@ -415,6 +415,8 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
     
     funInfos = ppfigparam.read_fun_infos()    
 
+    algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
+
     dictFunc = pproc.dictAlgByFun(dictAlg)
     if sortedAlgs is None:
         sortedAlgs = sorted(dictAlg.keys())
@@ -568,7 +570,7 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
                  infotext, fontsize=14, horizontalalignment="left",
                  verticalalignment="bottom")
 
-        save_figure(filename, sortedAlgs[0])
+        save_figure(filename, dictAlg[algorithms_with_data[0]][0].algId)
 
         plt.close()
 
@@ -634,7 +636,7 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
             if f in functions_with_legend:
                 toolsdivers.legend()
 
-        save_figure(filename, sortedAlgs[0], fig_format=genericsettings.getFigFormats())
+        save_figure(filename, dictAlg[algorithms_with_data[0]][0].algId, fig_format=genericsettings.getFigFormats())
 
         plt.close()
 

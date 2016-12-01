@@ -831,7 +831,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     a.set_xticklabels(tmp)
 
     if save_figure:
-        ppfig.save_figure(figureName, dictAlg[dictAlg.keys()[0]][0].algId)
+        ppfig.save_figure(figureName, dictAlg[algorithms_with_data[0]][0].algId)
         if len(dictFunc) == 1 or plotType == PlotType.DIM:
             fileName = genericsettings.pprldmany_file_name
 

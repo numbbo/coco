@@ -76,7 +76,7 @@ def save_figure(filename, algorithm=None, fig_format=()):
 
 pprldmany_per_func_header = 'Runtime distributions (ECDFs) per function, all dimensions'
 pprldmany_per_func_dim_header = 'Runtime distributions (ECDFs) per function'
-pprldmany_per_group_dim_header = 'Runtime distributions (ECDFs) per function, all of a group'
+pprldmany_per_group_dim_header = 'Runtime distributions (ECDFs) summary and function groups'
 
 html_header = """<HTML>
 <HEAD>
