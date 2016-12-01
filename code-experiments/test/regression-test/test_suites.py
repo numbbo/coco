@@ -57,7 +57,7 @@ if __name__ == "__main__":
     try:
         ndata = int(sys.argv[1])
     except IndexError:
-        ndata = 10
+        ndata = 2
     except ValueError:
         print(__doc__)
     try:
