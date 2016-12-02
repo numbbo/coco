@@ -148,67 +148,62 @@ def save_index_html_file(filename):
         f.write("\n</BODY>\n</HTML>")
 
 
-def getHomeLink(htmlPage):
-    homeLink = '<H3><a href="%s%s.html">Home</a></H3>'
-    if htmlPage is HtmlPage.ONE:
-        return homeLink % ('../', genericsettings.index_html_file_name)
-    elif htmlPage is HtmlPage.TWO or htmlPage is HtmlPage.MANY:
-        return homeLink % ('', genericsettings.index_html_file_name)
+def getHomeLink(html_page):
+    home_link = '<H3><a href="%s%s.html">Home</a></H3>'
+    if html_page is HtmlPage.ONE:
+        return home_link % ('../', genericsettings.index_html_file_name)
+    elif html_page is HtmlPage.TWO or html_page is HtmlPage.MANY:
+        return home_link % ('', genericsettings.index_html_file_name)
 
     return ''
 
 
-def getConvLink(htmlPage, currentDir):
-    if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        return add_link(currentDir, None, genericsettings.ppconv_file_name + '.html',
+def getConvLink(html_page, current_dir):
+    if html_page in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
+        return add_link(current_dir, None, genericsettings.ppconv_file_name + '.html',
                         'Convergence plots', ignoreFileExists=genericsettings.isConv)
 
     return ''
 
 
-def getRldLink(htmlPage, current_dir):
+def getRldLink(html_page, current_dir):
     links = ''
     folder = 'pprldmany-single-functions'
 
-    ignoreFileExists = genericsettings.isRldOnSingleFcts
-    if htmlPage in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        if htmlPage == HtmlPage.ONE:
-            fileName = '%s.html' % genericsettings.pprldmany_file_name
-            links += add_link(current_dir, folder, fileName,
+    ignore_file_exists = genericsettings.isRldOnSingleFcts
+    if html_page in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
+        if html_page == HtmlPage.ONE:
+            file_name = '%s.html' % genericsettings.pprldmany_file_name
+            links += add_link(current_dir, folder, file_name,
                               pprldmany_per_func_header,
-                              ignoreFileExists=ignoreFileExists)
+                              ignoreFileExists=ignore_file_exists)
 
-        if (htmlPage in (HtmlPage.TWO, HtmlPage.MANY) or
+        if (html_page in (HtmlPage.TWO, HtmlPage.MANY) or
                 not isinstance(testbedsettings.current_testbed,
                                testbedsettings.GECCOBiObjBBOBTestbed)):
-            path = os.path.join(os.path.realpath(current_dir), folder)
-            fileName = get_first_html_file(path, genericsettings.pprldmany_file_name)
-            if fileName:
-                links += add_link(current_dir, folder, fileName,
-                                  pprldmany_per_func_dim_header,
-                                  ignoreFileExists=ignoreFileExists)
+            file_name = '%s.html' % genericsettings.pprldmany_file_name
+            links += add_link(current_dir, folder, file_name,
+                              pprldmany_per_func_dim_header,
+                              ignoreFileExists=ignore_file_exists)
 
-        if htmlPage == HtmlPage.ONE:
-            path = os.path.join(os.path.realpath(current_dir), folder)
-            fileName = get_first_html_file(path, genericsettings.pprldmany_group_file_name)
-            if fileName:
-                links += add_link(current_dir, folder, fileName,
-                                  pprldmany_per_group_dim_header,
-                                  ignoreFileExists=ignoreFileExists)
+        if html_page == HtmlPage.ONE:
+            file_name = '%s.html' % genericsettings.pprldmany_group_file_name
+            links += add_link(current_dir, folder, file_name,
+                              pprldmany_per_group_dim_header,
+                              ignoreFileExists=ignore_file_exists)
 
-        if htmlPage == HtmlPage.MANY:
-            fileName = get_first_html_file(current_dir, genericsettings.pprldmany_file_name)
-            if fileName:
-                links += add_link(current_dir, '', fileName,
-                                  pprldmany_per_group_dim_header,
-                                  ignoreFileExists=ignoreFileExists)
+        if html_page == HtmlPage.MANY:
+            file_name = '%s.html' % genericsettings.pprldmany_file_name
+            links += add_link(current_dir, '', file_name,
+                              pprldmany_per_group_dim_header,
+                              ignoreFileExists=ignore_file_exists)
 
     return links
 
 
-def getParentLink(htmlPage, parentFileName):
-    if parentFileName and htmlPage not in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        return '<H3><a href="%s.html">Overview page</a></H3>' % parentFileName
+def getParentLink(html_page, parent_file_name):
+    if parent_file_name and html_page not in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
+        return '<H3><a href="%s.html">Overview page</a></H3>' % parent_file_name
 
     return ''
 
@@ -217,7 +212,7 @@ def save_single_functions_html(filename,
                                algname='',
                                extension='svg',
                                add_to_names='',
-                               next_html_page_suffix=None,
+                               dimensions=None,
                                htmlPage=HtmlPage.NON_SPECIFIED,
                                functionGroups=None,
                                parentFileName=None,  # used only with HtmlPage.NON_SPECIFIED
@@ -247,7 +242,6 @@ def save_single_functions_html(filename,
         first_function_number = testbedsettings.current_testbed.first_function_number
         last_function_number = testbedsettings.current_testbed.last_function_number
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
-        addLinkForNextDim = next_html_page_suffix is not None and next_html_page_suffix != add_to_names
         bestAlgExists = testbedsettings.current_testbed.reference_algorithm_filename != ''
 
         if htmlPage is HtmlPage.ONE:
@@ -285,54 +279,52 @@ def save_single_functions_html(filename,
                 % genericsettings.pptables_file_name)
 
         elif htmlPage is HtmlPage.PPSCATTER:
-            currentHeader = 'Scatter plots per function'
-            f.write("\n<H2> %s </H2>\n" % currentHeader)
+            current_header = 'Scatter plots per function'
+            f.write("\n<H2> %s </H2>\n" % current_header)
             for ifun in range(first_function_number, last_function_number + 1):
                 f.write(addImage('ppscatter_f%03d%s.%s' % (ifun, add_to_names, extension), True))
 
             f.write(captionStringFormat % '##bbobppscatterlegend##')
 
         elif htmlPage is HtmlPage.PPFIGS:
-            currentHeader = 'Scaling of aRT with dimension'
-            f.write("\n<H2> %s </H2>\n" % currentHeader)
+            current_header = 'Scaling of aRT with dimension'
+            f.write("\n<H2> %s </H2>\n" % current_header)
             for ifun in range(first_function_number, last_function_number + 1):
                 f.write(addImage('ppfigs_f%03d%s.%s' % (ifun, add_to_names, extension), True))
             f.write(captionStringFormat % '##bbobppfigslegend##')
 
         elif htmlPage is HtmlPage.NON_SPECIFIED:
-            currentHeader = header
-            f.write("\n<H2> %s </H2>\n" % currentHeader)
-            if addLinkForNextDim:
-                f.write('<p><A HREF="%s">Next dimension</A><p>\n' % (name + next_html_page_suffix + '.html'))
-            for ifun in range(first_function_number, last_function_number + 1):
-                f.write(addImage('%s_f%03d%s.%s' % (name, ifun, add_to_names, extension), True))
-            if addLinkForNextDim:
-                f.write('<p><A HREF="%s">Next dimension</A><p>\n' % (name + next_html_page_suffix + '.html'))
+            current_header = header
+            f.write("\n<H2> %s </H2>\n" % current_header)
+            if dimensions is not None:
+                for index, dimension in enumerate(dimensions):
+                    f.write(write_dimension_links(dimension, dimensions, index))
+                    for ifun in range(first_function_number, last_function_number + 1):
+                        f.write(addImage('%s_f%03d_%02dD.%s' % (name, ifun, dimension, extension), True))
+            else:
+                for ifun in range(first_function_number, last_function_number + 1):
+                    f.write(addImage('%s_f%03d%s.%s' % (name, ifun, add_to_names, extension), True))
         elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP:
-            currentHeader = pprldmany_per_group_dim_header
-            f.write("\n<H2> %s </H2>\n" % currentHeader)
-            if addLinkForNextDim:
-                f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
-            for fg in functionGroups:
-                f.write(addImage('%s_%s%s.%s' % (name, fg, add_to_names, extension), True, 200))
-            if addLinkForNextDim:
-                f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
+            current_header = pprldmany_per_group_dim_header
+            f.write("\n<H2> %s </H2>\n" % current_header)
+            for index, dimension in enumerate(dimensions):
+                f.write(write_dimension_links(dimension, dimensions, index))
+                for fg in functionGroups:
+                    f.write(addImage('%s_%s_%02dD.%s' % (name, fg, dimension, extension), True, 200))
 
         elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP_MANY:
-            currentHeader = pprldmany_per_group_dim_header
-            f.write("\n<H2> %s </H2>\n" % currentHeader)
-            if addLinkForNextDim:
-                f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
-            for typeKey, typeValue in functionGroups.iteritems():
-                f.write(addImage('%s%s_%s.%s' % (name, add_to_names, typeKey, extension), True))
-            if addLinkForNextDim:
-                f.write('<p><A HREF="%s">Next dimension</A></p>\n' % (name + next_html_page_suffix + '.html'))
+            current_header = pprldmany_per_group_dim_header
+            f.write("\n<H2> %s </H2>\n" % current_header)
+            for index, dimension in enumerate(dimensions):
+                f.write(write_dimension_links(dimension, dimensions, index))
+                for typeKey, typeValue in functionGroups.iteritems():
+                    f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
 
             f.write(captionStringFormat % '\n##bbobECDFslegend##')
 
         elif htmlPage is HtmlPage.PPTABLE:
-            currentHeader = 'aRT in number of function evaluations'
-            f.write("<H2> %s </H2>\n" % currentHeader)
+            current_header = 'aRT in number of function evaluations'
+            f.write("<H2> %s </H2>\n" % current_header)
             f.write("\n<!--pptableHtml-->\n")
             key = 'bbobpptablecaption' + testbedsettings.current_testbed.scenario
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
@@ -384,8 +376,8 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.PPLOGLOSS:
             dimensions = genericsettings.rldDimsOfInterest
             if bestAlgExists:
-                currentHeader = 'aRT loss ratios'
-                f.write("<H2> %s </H2>\n" % currentHeader)
+                current_header = 'aRT loss ratios'
+                f.write("<H2> %s </H2>\n" % current_header)
 
                 dimensionList = '-D, '.join(str(x) for x in dimensions) + '-D'
                 index = dimensionList.rfind(",")
@@ -413,7 +405,19 @@ def save_single_functions_html(filename,
         if caption:
             f.write(captionStringFormat % caption)
 
-        f.write("\n</BODY>\n</HTML>")
+        f.write("\n<BR/><BR/><BR/><BR/><BR/>\n</BODY>\n</HTML>")
+
+
+def write_dimension_links(dimension, dimensions, index):
+    links = '<p><A NAME="%d"></A>' % dimension
+    if index > 0:
+        links += '<A HREF="#%d">Previous dimension</A> | ' % dimensions[index - 1]
+    links += '<b>Dimension = %d</b>' % dimension
+    if index < len(dimensions) - 1:
+        links += ' | <A HREF="#%d">Next dimension</A>' % dimensions[index + 1]
+    links += '</p>\n'
+
+    return links
 
 
 def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key):

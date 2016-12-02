@@ -493,15 +493,21 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
             dims = sorted(dictDim)
             for i, d in enumerate(dims):
                 entries = dictDim[d]
-                next_dim = dims[i + 1] if i + 1 < len(dims) else dims[0]
                 main(entries,
                      order=sorted_algs,
                      outputdir=single_fct_output_dir,
                      info='f%03d_%02dD' % (fg, d),
                      parentHtmlFileName=parent_html_file_name,
-                     add_to_html_file_name='_%02dD' % d,
-                     next_html_page_suffix='_%02dD' % next_dim,
                      settings=settings)
+
+            ppfig.save_single_functions_html(
+                os.path.join(single_fct_output_dir, genericsettings.pprldmany_file_name),
+                '',  # algorithms names are clearly visible in the figure
+                dimensions=dims,
+                htmlPage=ppfig.HtmlPage.NON_SPECIFIED,
+                parentFileName='../%s' % parent_html_file_name if parent_html_file_name else None,
+                header=ppfig.pprldmany_per_func_dim_header
+            )
 
     if is_single_algorithm:
         functionGroups = dict_alg[dict_alg.keys()[0]].getFuncGroups()
@@ -521,20 +527,18 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
                      plotType=PlotType.FUNC,
                      settings=settings)
 
-            ppfig.save_single_functions_html(
-                os.path.join(single_fct_output_dir, genericsettings.pprldmany_group_file_name),
-                '',
-                add_to_names='_%02dD' % d,
-                next_html_page_suffix='_%02dD' % next_dim,
-                htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP,
-                functionGroups=functionGroups,
-                parentFileName='../%s' % parent_html_file_name if parent_html_file_name else None
-            )
+        ppfig.save_single_functions_html(
+            os.path.join(single_fct_output_dir, genericsettings.pprldmany_group_file_name),
+            '',
+            dimensions=dims,
+            htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP,
+            functionGroups=functionGroups,
+            parentFileName='../%s' % parent_html_file_name if parent_html_file_name else None
+        )
 
 
 def main(dictAlg, order=None, outputdir='.', info='default',
-         dimension=None, parentHtmlFileName=None, plotType=PlotType.ALG,
-         add_to_html_file_name='', next_html_page_suffix=None, settings = genericsettings):
+         dimension=None, parentHtmlFileName=None, plotType=PlotType.ALG, settings = genericsettings):
     """Generates a figure showing the performance of algorithms.
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
@@ -728,10 +732,10 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     labels, handles = plotLegend(lines, x_limit)
     if True:  # isLateXLeg:
         if info:
-            fileName = os.path.join(outputdir, '%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
+            file_name = os.path.join(outputdir, '%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
         else:
-            fileName = os.path.join(outputdir, '%s.tex' % (genericsettings.pprldmany_file_name))
-        with open(fileName, 'w') as f:
+            file_name = os.path.join(outputdir, '%s.tex' % (genericsettings.pprldmany_file_name))
+        with open(file_name, 'w') as f:
             f.write(r'\providecommand{\nperfprof}{7}')
             algtocommand = {}  # latex commands
             for i, alg in enumerate(order):
@@ -763,7 +767,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 f.write('}}\n')
             # f.write(footleg)
             if genericsettings.verbose:
-                print 'Wrote right-hand legend in %s' % fileName
+                print 'Wrote right-hand legend in %s' % file_name
 
     if info:
         figureName = os.path.join(outputdir, '%s_%s' % (genericsettings.pprldmany_file_name, info))
@@ -832,17 +836,15 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     if save_figure:
         ppfig.save_figure(figureName, dictAlg[algorithms_with_data[0]][0].algId)
-        if len(dictFunc) == 1 or plotType == PlotType.DIM:
-            fileName = genericsettings.pprldmany_file_name
+        if plotType == PlotType.DIM:
+            file_name = genericsettings.pprldmany_file_name
 
             header = ppfig.pprldmany_per_func_header if plotType == PlotType.DIM else \
                 ppfig.pprldmany_per_func_dim_header
 
             ppfig.save_single_functions_html(
-                os.path.join(outputdir, fileName),
+                os.path.join(outputdir, file_name),
                 '',  # algorithms names are clearly visible in the figure
-                add_to_names=add_to_html_file_name,
-                next_html_page_suffix=next_html_page_suffix,
                 htmlPage=ppfig.HtmlPage.NON_SPECIFIED,
                 parentFileName='../%s' % parentHtmlFileName if parentHtmlFileName else None,
                 header=header)

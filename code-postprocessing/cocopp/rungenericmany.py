@@ -55,30 +55,27 @@ def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings):
     for gr, tmpdictAlg in alg_dict.iteritems():
         dictDim = pproc.dictAlgByDim(tmpdictAlg)
         dims = sorted(dictDim)
+
+        ppfig.save_single_functions_html(
+            os.path.join(output_dir, genericsettings.pprldmany_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            dimensions=dims,
+            htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP_MANY,
+            functionGroups=function_groups,
+            parentFileName=genericsettings.many_algorithm_file_name
+        )
+
         for i, d in enumerate(dims):
             entries = dictDim[d]
-            next_dim = dims[i+1] if i + 1 < len(dims) else dims[0]
-
-            ppfig.save_single_functions_html(
-                os.path.join(output_dir, genericsettings.pprldmany_file_name),
-                '',  # algorithms names are clearly visible in the figure
-                add_to_names='_%02dD' % d,
-                next_html_page_suffix='_%02dD' % next_dim,
-                htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP_MANY,
-                functionGroups=function_groups,
-                parentFileName=genericsettings.many_algorithm_file_name
-            )
 
             pprldmany.main(entries,  # pass expensive flag here?
                            order=order,
                            outputdir=output_dir,
                            info=('%02dD_%s' % (d, gr)),
-                           add_to_html_file_name='_%02dD' % d,
-                           next_html_page_suffix='_%02dD' % next_dim,
                            settings=settings
                            )
 
-            file_name = os.path.join(output_dir, '%s_%02dD.html' % (genericsettings.pprldmany_file_name, d))
+            file_name = os.path.join(output_dir, '%s.html' % genericsettings.pprldmany_file_name)
             replace_in_file(file_name, '##bbobECDFslegend##', ppfigs.ecdfs_figure_caption(True, d))
 
 
@@ -397,7 +394,6 @@ def main(argv=None):
                         dims = sorted(dictDim)
                         for i, d in enumerate(dims):
                             entries = dictDim[d]
-                            next_dim = dims[i + 1] if i + 1 < len(dims) else dims[0]
                             single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
                                                      'pprldmany-single-functions'
                                                      # + os.sep + ('f%03d' % fg)
@@ -408,10 +404,15 @@ def main(argv=None):
                                            order=sortedAlgs,
                                            outputdir=single_fct_output_dir,
                                            info=('f%03d_%02dD' % (fg, d)),
-                                           add_to_html_file_name='_%02dD' % d,
-                                           next_html_page_suffix='_%02dD' % next_dim,
                                            settings=inset
                                            )
+
+                        ppfig.save_single_functions_html(
+                            os.path.join(single_fct_output_dir, genericsettings.pprldmany_file_name),
+                            '',  # algorithms names are clearly visible in the figure
+                            dimensions=dims,
+                            htmlPage=ppfig.HtmlPage.NON_SPECIFIED,
+                            header=ppfig.pprldmany_per_func_dim_header)
             print_done()
 
         if genericsettings.isTab:

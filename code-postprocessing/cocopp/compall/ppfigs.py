@@ -123,7 +123,7 @@ def prepare_ecdfs_figure_caption():
                 r"of objective function evaluations divided by dimension " +
                 r"(FEvals/DIM) for $BBOBPPFIGSFTARGET$ " +
                 r"targets with target precision in BBOBPPFIGSTARGETRANGE " +
-                r"for all functions and subgroups in #1-D. "
+                r"for all functions and subgroups. "
                 )
     ecdfs_figure_caption_rlbased = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
