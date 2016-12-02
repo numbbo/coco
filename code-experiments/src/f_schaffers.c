@@ -34,6 +34,9 @@ static double f_schaffers_raw(const double *x, const size_t number_of_variables)
   result = 0.0;
   for (i = 0; i < number_of_variables - 1; ++i) {
     const double tmp = x[i] * x[i] + x[i + 1] * x[i + 1];
+    if (coco_is_inf(tmp) && coco_is_nan(sin(50.0 * pow(tmp, 0.1))))  /* sin(inf) -> nan */
+      /* the second condition is necessary to pass the integration tests under Windows and Linux */
+      return tmp;
     result += pow(tmp, 0.25) * (1.0 + pow(sin(50.0 * pow(tmp, 0.1)), 2.0));
   }
   result = pow(result / ((double) (long) number_of_variables - 1.0), 2.0);
