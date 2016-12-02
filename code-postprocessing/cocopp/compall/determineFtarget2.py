@@ -26,9 +26,6 @@ last_target_value_replacement = None  # 1e-5 + 0e-9       # replace with min of 
 final_target_value_append_threshold = 1e-5 # append another value if last value is above threshold, None for do nothing
 final_target_value_appended = minimal_target_value         # None for nothing  
 
-# add path to cocopp
-#filepath = '/home/fst/coco/BBOB/code/python/cocopp/'
-#sys.path.append(os.path.join(filepath, os.path.pardir))
 if __name__ == "__main__":
     # append path without trailing '/cocopp', using os.sep fails in mingw32
     #sys.path.append(filepath.replace('\\', '/').rsplit('/', 1)[0])

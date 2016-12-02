@@ -4,9 +4,9 @@
 """Process data to be included in a generic template.
 
 Synopsis:
-    ``python path_to_folder/cocopp/rungenericmany.py [OPTIONS] FOLDER``
+    ``python -m cocopp.rungenericmany [OPTIONS] FOLDER``
 Help:
-    ``python path_to_folder/cocopp/rungenericmany.py -h``
+    ``python -m cocopp.rungenericmany -h``
 
 """
 
@@ -146,7 +146,7 @@ def main(argv=None):
 
     * Calling the rungenericmany.py interface from the command line::
 
-        $ python cocopp/rungenericmany.py -v AMALGAM BFGS BIPOP-CMA-ES
+        $ python -m cocopp.rungenericmany -v AMALGAM BFGS BIPOP-CMA-ES
 
 
     * Loading this package and calling the main from the command line

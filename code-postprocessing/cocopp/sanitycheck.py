@@ -4,10 +4,10 @@
 """Module for checking data sets.
 
 Synopsis:
-    ``python path_to_folder/cocopp/sanitycheck.py [OPTIONS] FOLDER``
+    ``python -m cocopp.sanitycheck [OPTIONS] FOLDER``
 
 Help:
-    ``python path_to_folder/cocopp/sanitycheck.py -h``
+    ``python -m cocopp.sanitycheck -h``
 
 """
 

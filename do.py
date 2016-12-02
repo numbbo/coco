@@ -233,13 +233,13 @@ def test_suites(args):
     """regression test on suites via Python"""
     if not args:
         args = ['2']
-    test_python([  # this is a list of [[folder, args], kwargs] pairs
-        [('code-experiments/test/regression-test',
-          ['test_suites.py', arg]),
-            dict(verbose=verbosity)] for arg in args] + [
-        [('code-experiments/build/python',
-          ['coco_test.py', 'bbob2009_testcases.txt', 'bbob2009_testcases2.txt']),
-            dict(verbose=verbosity)],
+    test_python(  # this is a list of [folder, args] pairs
+        [['code-experiments/test/regression-test',
+            ['test_suites.py', arg]] for arg in args
+         ] + [
+         ['code-experiments/build/python',
+            ['coco_test.py', 'bbob2009_testcases.txt', 'bbob2009_testcases2.txt']
+         ]
         ])
 
 def _prep_python():
@@ -308,8 +308,7 @@ os.path.join('code-experiments', 'build', 'python',
         shutil.rmtree(python_temp_home)
 
 
-def test_python(args=([('code-experiments/build/python', ['coco_test.py', 'None']),
-                       dict(verbose=False)],)):
+def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']],)):
     _prep_python()
     python('code-experiments/build/python',
            ['setup.py', 'check', '--metadata', '--strict'],
@@ -328,8 +327,8 @@ def test_python(args=([('code-experiments/build/python', ['coco_test.py', 'None'
         python('code-experiments/build/python',
                ['setup.py', 'install', '--home', python_temp_home],
                verbose=verbosity)
-        for arg, kwarg in args:
-            python(*arg, **kwarg)
+        for folder, more_args in args:
+            python(folder, more_args, verbose=verbosity)
         # python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases.txt'], verbose=verbosity)
         # python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases2.txt'], verbose=verbosity)
         os.environ.pop('USE_CYTHON')

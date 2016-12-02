@@ -11,11 +11,6 @@ from .. import genericsettings
 
 # this file/module is seemingly unused
 
-''' TODO:
-'''
-# add path to cocopp
-#filepath = '/home/fst/coco/BBOB/code/python/cocopp/'
-#sys.path.append(os.path.join(filepath, os.path.pardir))
 if __name__ == "__main__":
     # append path without trailing '/cocopp', using os.sep fails in mingw32
     #sys.path.append(filepath.replace('\\', '/').rsplit('/', 1)[0])

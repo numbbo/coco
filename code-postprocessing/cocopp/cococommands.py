@@ -16,13 +16,13 @@ Examples:
 
 * Start by importing :py:mod:`cocopp`::
 
-    >>> import cocopp as bb # load cocopp
+    >>> import cocopp as pp # load COCO postprocessing
     >>> import os
     >>> import urllib
     >>> import tarfile
     >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
     >>> os.chdir(path)
-    >>> bb.genericsettings.verbose = False # ensure to make below doctests work 
+    >>> pp.genericsettings.verbose = False # ensure to make below doctests work 
 
 * Load a data set, assign to variable :py:data:`ds`::
 
@@ -34,14 +34,14 @@ Examples:
     ...   archivefile = tarfile.open(filename)
     ...   archivefile.extractall()
     ...   os.chdir(path)
-    >>> ds = bb.load(infoFile)
+    >>> ds = pp.load(infoFile)
       Data consistent according to test in consistency_check() in pproc.DataSet
 
 * Get some information on a :py:class:`DataSetList` instance::
 
     >>> print ds # doctest:+ELLIPSIS
     [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
-    >>> bb.info(ds)
+    >>> pp.info(ds)
     6 data set(s)
     Algorithm(s): BIPOP-CMA-ES
     1 Function with ID 2
