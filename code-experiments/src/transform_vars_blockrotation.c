@@ -51,6 +51,7 @@ static void transform_vars_blockrotation_free(void *thing) {
   coco_free_memory(data->block_sizes);
   coco_free_memory(data->x);
   coco_free_memory(data->block_size_map);
+  coco_free_memory(data->first_non_zero_map);
 }
 
 
@@ -62,7 +63,7 @@ static coco_problem_t *transform_vars_blockrotation(coco_problem_t *inner_proble
   coco_problem_t *problem;
   transform_vars_blockrotation_t *data;
   size_t entries_in_M, idx_blocksize, next_bs_change, current_blocksize;
-  int i;
+  size_t i;
   entries_in_M = 0;
   assert(number_of_variables > 0);/*tmp*/
   for (i = 0; i < nb_blocks; i++) {
@@ -83,11 +84,14 @@ static coco_problem_t *transform_vars_blockrotation(coco_problem_t *inner_proble
       idx_blocksize++;
       next_bs_change += block_sizes[idx_blocksize];
     }
-    current_blocksize=block_sizes[idx_blocksize];
+    current_blocksize = block_sizes[idx_blocksize];
     data->block_size_map[i] = current_blocksize;
     data->first_non_zero_map[i] = next_bs_change - current_blocksize;/* next_bs_change serves also as a cumsum for blocksizes*/
   }
-  
+  if (coco_problem_best_parameter_not_zero(inner_problem)) {
+    coco_debug("transform_vars_blockrotation(): 'best_parameter' not updated, set to NAN");
+    coco_vector_set_to_nan(inner_problem->best_parameter, inner_problem->number_of_variables);
+  }
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_blockrotation_free, "transform_vars_blockrotation");
   problem->evaluate_function = transform_vars_blockrotation_evaluate;
   return problem;
