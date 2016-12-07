@@ -75,11 +75,11 @@ Getting Started <a name="Getting-Started"></a>
 
   - either by clicking the [Download ZIP button](https://github.com/numbbo/coco/archive/master.zip) 
     and unzip the `zip` file, 
-  - or (preferred) by typing `git clone https://github.com/numbbo/coco.git`. This way 
+  - or by typing `git clone https://github.com/numbbo/coco.git`. This way 
     allows to remain up-to-date easily (but needs `git` to be installed). After 
     cloning, `git pull` keeps the code up-to-date with the latest release. 
 
-  **CAVEAT: this code is still under heavy development**. The record of official releases can 
+  The record of official releases can 
   be found [here](https://github.com/numbbo/coco/releases). The latest release corresponds 
   to the [master branch](https://github.com/numbbo/coco/tree/master) as linked above. 
 
@@ -108,7 +108,7 @@ Getting Started <a name="Getting-Started"></a>
 4. **Copy** the folder `code-experiments/build/YOUR-FAVORITE-LANGUAGE` and
   its content to another location. In Python it is sufficient to copy the 
   file `example_experiment.py`. Run the example experiment (it already is
-  compiled, in case). As the details vary, see the respective read-me's 
+  compiled). As the details vary, see the respective read-me's 
   and/or example experiment files:
 
   - `C` [read me](./code-experiments/build/c/README.md) 
@@ -160,7 +160,19 @@ Getting Started <a name="Getting-Started"></a>
 7. Once your algorithm runs well, **increase the budget** in your experiment
   script, if necessary implement randomized independent restarts, and follow 
   the above steps successively until you are happy.
-
+  
+8. The experiments can be **parallelized** with any re-distribution of single
+  problem instances to batches (see
+  [`example_experiment.py`](./code-experiments/build/python/example_experiment.py#L235) 
+  for an example). Each batch must write in a different target folder (this
+  should happen automatically). Results of each batch must be kept under their
+  separate folder as is. These folders then must be moved/copied into a single
+  folder which becomes the input folder to the post-processing. (The
+  post-processing searches in all subfolders and subsub... for `.info` files
+  to begin with. The folder structure of a single sub-experiment must not be
+  changed, as the `.info` file relies on it to find the data files.)
+  
+  
 If you detect bugs or other issues, please let us know by opening an issue in
 our issue tracker at https://github.com/numbbo/coco/issues.
 
