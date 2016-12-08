@@ -14,8 +14,11 @@ import cocoex
 def _is_equal(x, y):
     """return scalar of vector"""
     x, y = np.asarray(x), np.asarray(y)
-    return (np.abs(x - y) < 1e-11) + (y * (1 - 1e-11) < x) * (x < y * (1 + 1e-11)) > 0
-
+    ax, ay = np.abs(x), np.abs(y)
+    return ((np.abs(x - y) < 1e-9) +
+            (x * y > 0) * (np.abs(x - y) / (ay + ay) < 1e-9) +
+            (ax > 1e21) * (ay > 1e21) *
+            (np.abs(np.log10(ax/ay)) / (np.log10(ax) + np.log10(ay)) < 0.05) > 0)
 
 def is_equal(x, y):
     try:
