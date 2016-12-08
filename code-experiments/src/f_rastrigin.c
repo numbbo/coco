@@ -37,6 +37,8 @@ static double f_rastrigin_raw(const double *x, const size_t number_of_variables)
     sum1 += cos(coco_two_pi * x[i]);
     sum2 += x[i] * x[i];
   }
+  if (coco_is_inf(sum2)) /* cos(inf) -> nan */
+    return sum2;
   result = 10.0 * ((double) (long) number_of_variables - sum1) + sum2;
 
   return result;

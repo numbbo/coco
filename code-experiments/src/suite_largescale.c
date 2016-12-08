@@ -34,10 +34,25 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 static coco_suite_t *suite_largescale_initialize(void) {
   
   coco_suite_t *suite;
-  const size_t dimensions[] = { 20, 40, 80, 160, 320, 640, 1280, 2560, 5120};
-  suite = coco_suite_allocate("bbob-largescale", 24, 9, dimensions, "instances:1-15");
+  const size_t dimensions[] = { 20, 40, 80, 160, 320, 640};
+  suite = coco_suite_allocate("bbob-largescale", 24, 6, dimensions, "instances:1-15");
   return suite;
 }
+
+/**
+ * @brief Sets the instances associated with years for the bbob large-scale suite.
+ */
+static const char *suite_largescale_get_instances_by_year(const int year) {
+   if (year == 2016) {
+    return "1-15";
+  }
+  else {
+    coco_error("suite_largescale_get_instances_by_year(): year %d not defined for suite_largescale", year);
+    return NULL;
+  }
+}
+
+
 
 /**
  * @brief Creates and returns a large-scale problem without needing the actual large-scale suite.
@@ -91,8 +106,6 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_bent_cigar_generalized_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                             problem_id_template, problem_name_template);
   } else if (function == 13) {
-    /*problem = f_sharp_ridge_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
-                                                  problem_id_template, problem_name_template);*/
     problem = f_sharp_ridge_generalized_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                                                 problem_id_template, problem_name_template);
   } else if (function == 14) {

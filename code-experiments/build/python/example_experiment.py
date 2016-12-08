@@ -28,7 +28,7 @@ Usage from a python shell:
 >>> ee.main(5, 1+9, 2, 300)  # doctest: +ELLIPSIS
 Benchmarking solver...
 
-runs the second of 300 batches with budget 5 * dimension and at most 9 restarts.
+runs the 2nd of 300 batches with budget 5 * dimension and at most 9 restarts.
 
 Calling `example_experiment` without parameters prints this
 help and the available suite names.
@@ -238,9 +238,11 @@ def batch_loop(solver, suite, observer, budget,
     `coco_optimize(solver, problem, budget * problem.dimension, max_runs)`
     for each eligible problem.
 
-    A problem is eligible if
-    `problem_index + current_batch - 1` modulo `number_of_batches`
-    equals to zero.
+    A problem is eligible if ``problem_index + current_batch - 1``
+    modulo ``number_of_batches`` equals ``0``.
+
+    This distribution into batches is likely to lead to similar
+    runtimes for the batches, which is usually desirable.
     """
     addressed_problems = []
     short_info = ShortInfo()
@@ -345,7 +347,7 @@ current_batch = 1      # 1..number_of_batches
 ##############################################################################
 SOLVER = random_search
 # SOLVER = my_solver # SOLVER = fmin_slsqp # SOLVER = cma.fmin
-suite_instance = ""  # "year:2016"  # incommented as it seems not to work with bbob-largescale
+suite_instance = "year:2016"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
 observer_options = ObserverOptions({  # is (inherited from) a dictionary
                     'algorithm_info': "A SIMPLE RANDOM SEARCH ALGORITHM", # CHANGE/INCOMMENT THIS!
