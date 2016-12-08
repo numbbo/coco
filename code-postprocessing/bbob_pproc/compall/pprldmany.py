@@ -830,12 +830,11 @@ def main(dictAlg, isBiobjective, order=None, outputdir='.', info='default',
             num_of_instances.append(len((dictAlgperFunc[alg])[0].instancenumbers))
         else:
             warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
-    # issue a warning if number of instances is inconsistant, otherwise
+    # issue a warning if number of instances is inconsistant, but always
     # display only the present number of instances, i.e. remove copies
     if len(set(num_of_instances)) > 1:
         warnings.warn('Number of instances inconsistent over all algorithms: %s instances found.' % str(num_of_instances))
-    else:
-        num_of_instances = set(num_of_instances)
+    num_of_instances = set(num_of_instances)
     for n in num_of_instances:
         text += '%d, ' % n
             
