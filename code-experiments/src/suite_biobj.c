@@ -36,6 +36,13 @@ static const size_t suite_biobj_instances[][3] = {
     { 10, 21, 22 }
 };
 
+/* { 11, 23, 24 },
+   { 12, 25, 26 },
+   { 13, 27, 28 },
+   { 14, 29, 30 },
+   { 15, 31, 34 },
+ */
+
 /**
  * @brief The bbob-biobj suite data type.
  */
@@ -70,7 +77,7 @@ static coco_suite_t *suite_biobj_initialize(void) {
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "year: 2016");
+  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "year: 2017");
 
   return suite;
 }
@@ -81,6 +88,9 @@ static coco_suite_t *suite_biobj_initialize(void) {
 static const char *suite_biobj_get_instances_by_year(const int year) {
 
   if (year == 2016) {
+    return "1-10";
+  }
+  else if (year == 2017) {
     return "1-10";
   }
   else {
