@@ -410,10 +410,14 @@ def save_single_functions_html(filename,
 
 def write_dimension_links(dimension, dimensions, index):
     links = '<p><A NAME="%d"></A>' % dimension
-    if index > 0:
+    if index == 0:
+        links += '<A HREF="#%d">Last dimension</A> | ' % dimensions[-1]
+    else:
         links += '<A HREF="#%d">Previous dimension</A> | ' % dimensions[index - 1]
     links += '<b>Dimension = %d</b>' % dimension
-    if index < len(dimensions) - 1:
+    if index == len(dimensions) - 1:
+        links += ' | <A HREF="#%d">First dimension</A>' % dimensions[0]
+    else:
         links += ' | <A HREF="#%d">Next dimension</A>' % dimensions[index + 1]
     links += '</p>\n'
 
