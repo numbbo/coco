@@ -12,10 +12,16 @@ import cocoex
 
 
 def _is_equal(x, y):
-    """return scalar of vector"""
+    """return scalar or vector, where `x` and `y` can be a scalar
+    or list/array_type
+    """
     x, y = np.asarray(x), np.asarray(y)
-    return (np.abs(x - y) < 1e-11) + (y * (1 - 1e-11) < x) * (x < y * (1 + 1e-11)) > 0
-
+    ax, ay = np.abs(x), np.abs(y)
+    lgx, lgy = np.log10(ax), np.log10(ay)
+    return ((np.abs(x - y) < 1e-9) +  # "+" means in effect "or"
+            (x * y > 0) * (np.abs(x - y) / (ax + ay) < 1e-9) +  # min(ax, ay) would be better?
+            (ax > 1e21) * (ay > 1e21) *  # because coco.h defines INFINITY possibly as 1e22
+            (np.abs(lgx - lgy) / (lgx + lgy) < 0.03) > 0)
 
 def is_equal(x, y):
     try:
@@ -28,7 +34,13 @@ def is_equal(x, y):
 
 
 def regression_test_a_suite(suite_name, filename):
-    """filename contains previously generated test data to compare against
+    """filename contains previously generated test data to compare against.
+    
+    Details: on a Windows machine we see differences like
+    f17: 3.648247252180286e+57 vs 3.46559033612e+57: log-err = 0.0002
+    f17 f17: [2.885437508322743e+22, 1322751113639934.8] vs [2.05085412e+22, 1.32275111e+15] or
+    f14 f17: [31585031.800419718, 6.480639092419489e+28] vs [3.15850318e+07, 1.69518822e+28]: log-err = 0.01
+    f16: -0.13227493309325666 vs -0.132274933067: rel-err = 9.9e-11
     """
     verbose = 1
     xfc_dict = literal_eval(open(filename).read())
