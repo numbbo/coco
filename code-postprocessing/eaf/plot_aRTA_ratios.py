@@ -15,7 +15,7 @@ from cocoex import Suite
 
 verbose = 1
 
-from cocopp.eaf import generate_aRTA_plot
+import generate_aRTA_plot
 
 
 ###########################################
@@ -26,14 +26,14 @@ functions = (1,)
 inputarchivefolder_2 = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
 inputarchivefolder_1 = 'C:/Users/dimo/Desktop/coco-master-git/gamultiobj/gamultiobj_on_bbob-biobj/archive/'
 
-inputarchivefolder_1 = './RS-5/'
-inputarchivefolder_2 = './MO-DIRECT-hv-rank/'
+#inputarchivefolder_1 = './RS-5/'
+#inputarchivefolder_2 = './MO-DIRECT-hv-rank/'
 
-inputarchivefolder_1 = './RS-5/'
-inputarchivefolder_2 = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
+#inputarchivefolder_1 = './RS-5/'
+#inputarchivefolder_2 = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
 
-inputarchivefolder_1 = './RS-5/'
-inputarchivefolder_2 = 'C:/Users/dimo/Desktop/coco-master-git/gamultiobj/gamultiobj_on_bbob-biobj/archive/'
+#inputarchivefolder_1 = './RS-5/'
+#inputarchivefolder_2 = 'C:/Users/dimo/Desktop/coco-master-git/gamultiobj/gamultiobj_on_bbob-biobj/archive/'
 
 
 outputfolder = 'plots/'
@@ -47,6 +47,7 @@ suite_name = "bbob-biobj"
 suite_instance = "year:2016"
 suite_options = "dimensions: 2,3,5,10,20,40"
 suite = Suite(suite_name, suite_instance, suite_options)
+
 
 for problem_index, problem in enumerate(suite):
     

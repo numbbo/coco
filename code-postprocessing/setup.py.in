@@ -12,7 +12,7 @@ _name = 'cocopp'
 setup(
     name = _name,
     version = "$COCO_VERSION",
-    packages = [_name, _name + '.comp2', _name + '.compall', _name + '.eaf'],
+    packages = [_name, _name + '.comp2', _name + '.compall'],
     package_dir = {_name: 'cocopp'},
     package_data={_name: ['*enchmarkshortinfos.txt',
                           '*enchmarkinfos.txt',
