@@ -16,7 +16,7 @@ from cocoex import Suite
 import time
 verbose = 1
 
-from cocopp.eaf import generate_aRTA_plot
+import generate_aRTA_plot
 
 
 ###########################################
