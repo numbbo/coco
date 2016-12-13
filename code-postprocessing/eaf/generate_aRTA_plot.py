@@ -21,6 +21,10 @@
 """
 
 from __future__ import absolute_import, division, print_function, unicode_literals
+import matplotlib
+# Force matplotlib to not use any Xwindows backend.
+matplotlib.use('Agg')
+
 from matplotlib import patches
 import matplotlib.pyplot as plt
 import matplotlib
@@ -28,6 +32,7 @@ import numpy as np  # "pip install numpy" installs numpy
 import os
 import sys
 from itertools import product
+import time
 
 from cocopp.ppfig import save_figure
 from cocopp.eaf import bbobbenchmarks as bm
@@ -482,5 +487,8 @@ def sample_down(B, decimals):
     
     
 if __name__ == "__main__":
+    print('launching doctest on generate_aRTA_plot.py...')    
+    t0 = time.time()
     import doctest
     doctest.testmod()
+    print('** doctest finished in ', time.time() - t0, ' seconds')

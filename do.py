@@ -680,6 +680,8 @@ ee.main()  # doctest: +ELLIPSIS
             shutil.rmtree('code-experiments/build/python/exdata/')
     else:
         python('code-postprocessing/cocopp', ['__main__.py'], verbose=verbosity)
+    # also run the doctests in eaf/generate_aRTA_plot.py:
+    python('code-postprocessing/eaf', ['generate_aRTA_plot.py'], verbose=verbosity)
     # python('code-postprocessing', ['-m', 'cocopp'])
     if 11 < 3:  # provisorial test fo biobj data
         run_c()
