@@ -49,7 +49,7 @@ def save_figure(filename, algorithm=None, fig_format=()):
     """
     coco_version = pkg_resources.require('cocopp')[0].version
     reference_values = testbedsettings.get_reference_values(algorithm)
-    label = coco_version if reference_values is None else "v%s, hv-hash=%s" % (coco_version, reference_values)
+    label = "v%s" % (coco_version) if reference_values is None else "v%s, hv-hash=%s" % (coco_version, reference_values)
     
     plt.text(0.5, 0.01, label,
              horizontalalignment="center",
