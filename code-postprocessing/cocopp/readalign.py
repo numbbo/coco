@@ -215,7 +215,7 @@ class HMultiReader(MultiReader):
         # We iterate until we find a better value or to the end of the lines.
         for i in self:
             while i.nextLine[self.idx] > currentValue and not i.isFinished:
-                i.next();
+                i.next()
 
         return not any(i.nextLine[self.idx] <= currentValue for i in self)
 
@@ -405,8 +405,9 @@ def split(dataFiles, idx_to_load=None, dim=None):
        instances are considered.
     """
 
-    dataSets = []
+    data_sets = []
     algorithms = []
+    success_ratio = []
     reference_values = {}
     for fil in dataFiles:
         with openfile(fil) as f:
@@ -415,16 +416,17 @@ def split(dataFiles, idx_to_load=None, dim=None):
             lines = f.readlines()
 
         content = []
-        idx = 0 # instance index for checking in idx_to_load
+        idx = 0  # instance index for checking in idx_to_load
         current_instance = 0
         current_reference_value = 0
+        is_best_algorithm_data = False
 
         # Save values in array content. Check for nan and inf.
         for line in lines:
             if line.startswith('%'):
                 if content:
                     if (idx_to_load is None) or (idx_to_load and idx_to_load[idx]):
-                        dataSets.append(numpy.vstack(content))
+                        data_sets.append(numpy.vstack(content))
                     elif genericsettings.verbose:
                             print('skipped instance...')
                     # Use only the reference values from instances 1 to 5.
@@ -434,6 +436,7 @@ def split(dataFiles, idx_to_load=None, dim=None):
                     content = []
                     current_instance = 0
                     current_reference_value = 0
+                    is_best_algorithm_data = False
                     idx += 1
 
                 # Get the current instance and reference value.
@@ -445,33 +448,44 @@ def split(dataFiles, idx_to_load=None, dim=None):
                             current_instance = int(value.strip())
                         elif key.strip() == 'reference value':
                             current_reference_value = float(value.strip())
+                        elif key.strip() == 'algorithm type':
+                            is_best_algorithm_data = 'best' == value.strip()
 
                 continue
 
             # else remove end-of-line sign
             # and split into single strings
             data = line.strip('\n').split()
+
+            # remove additional data for best algorithm
+            if is_best_algorithm_data:
+                index = len(data) - 3
+                if index <= 0:
+                    warnings.warn('Invalid best algorithm data!')
+                else:
+                    algorithms.append(data[index])
+                    successful_runs = int(data[index + 1])
+                    all_runs = int(data[index + 2])
+                    success_ratio.append([successful_runs, all_runs])
+                    data = data[:-3]  # remove the three processed items from data
+
             if dim and len(data) != dim + 5:
                 warnings.warn('Incomplete line %s in  ' % line +
                               'data file %s: ' % fil)
                 continue
-            for id in xrange(len(data)):
-                if data[id] in ('Inf', 'inf'):
-                    data[id] = numpy.inf
-                elif data[id] in ('-Inf', '-inf'):
-                    data[id] = -numpy.inf
-                elif data[id] in ('NaN', 'nan'):
-                    data[id] = numpy.nan
+            for index in xrange(len(data)):
+                if data[index] in ('Inf', 'inf'):
+                    data[index] = numpy.inf
+                elif data[index] in ('-Inf', '-inf'):
+                    data[index] = -numpy.inf
+                elif data[index] in ('NaN', 'nan'):
+                    data[index] = numpy.nan
                 else:
                     try:
-                        data[id] = float(data[id])
+                        data[index] = float(data[index])
                     except ValueError:
-                        # If the last value is not a number then it's the best algorithm name.
-                        if id == len(data) - 1:
-                            algorithms.append(data[id])
-                        else:
-                            warnings.warn('%s is not a valid number!' % data[id])
-                        data[id] = numpy.nan
+                        warnings.warn('%s is not a valid number!' % data[index])
+                        data[index] = numpy.nan
 
             if data:
                 content.append(numpy.array(data))
@@ -479,7 +493,7 @@ def split(dataFiles, idx_to_load=None, dim=None):
 
         if content:
             if (idx_to_load is None) or (idx_to_load and idx_to_load[idx]):
-                dataSets.append(numpy.vstack(content))
+                data_sets.append(numpy.vstack(content))
             elif genericsettings.verbose:
                     print('skipped instance...')
 
@@ -487,10 +501,10 @@ def split(dataFiles, idx_to_load=None, dim=None):
             if current_instance in (1, 2, 3, 4, 5):
                 reference_values[current_instance] = current_reference_value
 
-    if len(algorithms) < len(dataSets):
+    if len(algorithms) < len(data_sets):
         algorithms = []
 
-    return dataSets, algorithms, reference_values
+    return data_sets, algorithms, reference_values, success_ratio
 
 
 def is_close(a, b, rel_tol=1e-09, abs_tol=0.0):

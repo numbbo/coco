@@ -297,7 +297,6 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
         if bestalgentries:
             refalgentry = bestalgentries[df]
             refalgert = refalgentry.detERT(targetsOfInterest)
-            refalgevals = (refalgentry.detEvals((targetf,))[0][0])
 
         # Process the data
         # The following variables will be lists of elements each corresponding
@@ -490,13 +489,9 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                                curlineHtml]
 
             # write the success ratio for the reference alg
-            tmp2 = numpy.sum(numpy.isnan(refalgevals) == False)  # count the nb of success
-            curline.append('%d' % (tmp2))
-            if tmp2 > 0:
-                curline.append('/%d' % len(refalgevals))
-                replaceValue = '%d/%d' % (tmp2, len(refalgevals))
-            else:
-                replaceValue = '%d' % tmp2
+            successful_runs, all_runs = refalgentry.get_success_ratio(targetf)
+            curline.append('%d/%d' % (successful_runs, all_runs))
+            replaceValue = '%d/%d' % (successful_runs, all_runs)
             curlineHtml = [item.replace('REPLACEF', replaceValue) for item in curlineHtml]
 
         else:  # if not bestalgentries
