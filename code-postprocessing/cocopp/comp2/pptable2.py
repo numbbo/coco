@@ -179,7 +179,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
     
     for d in dimsOfInterest: # TODO set as input arguments
         table = [header]
-        tableHtml = headerHtml
+        tableHtml = headerHtml[:]
         extraeol = [r'\hline']
         try:
             dictFunc0 = dictDim0[d].dictByFunc()

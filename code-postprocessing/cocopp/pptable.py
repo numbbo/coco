@@ -151,7 +151,7 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
 
     for d in dimsOfInterest:
         table = [header]
-        tableHtml = headerHtml
+        tableHtml = headerHtml[:]
         extraeol = [r'\hline']
         try:
             dictFunc = dictDim[d].dictByFunc()
