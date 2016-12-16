@@ -66,7 +66,7 @@ def get_table_caption():
         algorithm of BBOB-2009. """
                            if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
                            else "") + r"""Best results are printed in bold.
-        """)
+        """ + r"""\cocoversion""")
 
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet

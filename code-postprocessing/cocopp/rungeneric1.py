@@ -37,7 +37,7 @@ import warnings, getopt, numpy as np
 from . import genericsettings, testbedsettings, ppfig, pptable, pprldistr, ppfigdim, pplogloss, findfiles
 from .pproc import DataSetList, store_reference_values
 from .ppfig import Usage
-from .toolsdivers import print_done, prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
+from .toolsdivers import print_done, prepend_to_file, strip_pathname1, str_to_latex
 from . import ppconverrorbars
 from .compall import pprldmany, ppfigs
 
@@ -461,7 +461,7 @@ def main(argv=None):
                         ['\\providecommand{\\bbobpprldistrlegend}[1]{',
                          pprldistr.caption_single(),  # depends on the config setting, should depend on maxfevals
                          '}'])
-        html_file = os.path.join(outputdir, 'pprldistr.html')
+        # html_file = os.path.join(outputdir, 'pprldistr.html') # remove this line???
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{',
                          ppfigdim.scaling_figure_caption(),

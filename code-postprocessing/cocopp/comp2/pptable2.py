@@ -134,6 +134,8 @@ def get_table_caption():
                              text_middle_fixedtarget +
                              text_all)
 
+    table_caption = table_caption + r"""\cocoversion"""
+
     return table_caption
 
 

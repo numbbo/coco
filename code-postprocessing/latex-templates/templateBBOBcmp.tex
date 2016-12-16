@@ -75,7 +75,7 @@
 \usepackage{xstring} % for string operations
 \usepackage{wasysym} % Table legend with symbols input from post-processing
 \usepackage{MnSymbol} % Table legend with symbols input from post-processing
-%\usepackage[hidelinks]{hyperref} % make COCO papers clickable
+\usepackage[colorlinks=true, linkcolor=blue]{hyperref} % make COCO papers clickable
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -89,7 +89,7 @@
 %\newcommand{\algorithmBshort}{algB}  % second argument in the post-processing
 
 % location of pictures files
-\newcommand{\bbobdatapath}{ppdata/}
+\newcommand{\bbobdatapath}{ppdata} % change default output folder of COCO if desired
 \input{\bbobdatapath cocopp_commands.tex}
 \graphicspath{{\bbobdatapath}}
 
@@ -112,8 +112,8 @@
 
 %
 % --- Author Metadata here ---
-\conferenceinfo{GECCO'13,} {July 6-10, 2013, Amsterdam, The Netherlands.}
-\CopyrightYear{2013}
+\conferenceinfo{GECCO'17,} {July 15-19, 2017, Berlin, Germany.}
+\CopyrightYear{2017}
 \crdata{TBA}
 \clubpenalty=10000
 \widowpenalty = 10000

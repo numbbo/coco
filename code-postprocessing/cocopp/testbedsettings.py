@@ -71,11 +71,20 @@ def copy_reference_values(old_algorithm_id, new_algorithm_id):
 
 
 def get_reference_values(algorithm):
+    """ Returns the hash value of the hypervolume reference values
+        for the specified algorithm (if available, i.e. if the algorithm
+        has been run on the `bbob-biobj` testbed).
+        If algorithm=None, all hash values are returned as a set
+        (i.e. with no duplicates) if more than one hash is available
+        or as a string if all hashes are the same.
+    """
 
     global reference_values
 
     if reference_values and algorithm in reference_values:
         return reference_values[algorithm]
+    if reference_values and algorithm is None:
+        return set(reference_values.values()) if len(set(reference_values.values())) > 1 else reference_values.values()[0]
 
     return None
 

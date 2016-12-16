@@ -77,7 +77,7 @@ def get_table_caption():
         the rank-sum test) compared to !!THE-REF-ALG!!, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k > 1$ is following the
         $\downarrow$ symbol, with Bonferroni correction by the number of
-        functions.
+        functions.\cocoversion
         """
         
     if testbedsettings.current_testbed.name in testbedsettings.suite_to_testbed:
@@ -445,7 +445,7 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
                 
         with open(filename, 'w') as outfile:
             for line in lines:
-                outfile.write(line)     
+                outfile.write(line)
 
         if genericsettings.verbose:
             print "Table written in %s" % outputfile

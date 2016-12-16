@@ -52,7 +52,7 @@
 \usepackage{graphicx}
 \usepackage{rotating}
 \usepackage[dvipsnames]{xcolor}  % color is sufficient
-%\usepackage[hidelinks]{hyperref} % make COCO papers clickable
+\usepackage[colorlinks=true, linkcolor=blue]{hyperref} % make COCO papers clickable
 
 
 \pdfpagewidth=8.5in
@@ -79,7 +79,7 @@
 %%%%%%%%% TO BE EDITED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % rungeneric.py writes data into a subfolder of ppdata
-\newcommand{\bbobdatapath}{ppdata/} % default output folder of rungeneric.py
+\newcommand{\bbobdatapath}{ppdata} % change default output folder of COCO if desired
 \input{\bbobdatapath cocopp_commands.tex} % provide default of algname and algfolder
 % \renewcommand{\algname}{MYNAME}  % name of algorithm as it should appear in the text
 % \renewcommand{\algfolder}{ABC/} % subfolder of \bbobdatapath for processed algorithm
@@ -103,8 +103,8 @@
 \begin{document}
 %
 % --- Author Metadata here ---
-\conferenceinfo{GECCO'13,} {July 6-10, 2013, Amsterdam, The Netherlands.}
-\CopyrightYear{2013}
+\conferenceinfo{GECCO'17,} {July 15-19, 2017, Berlin, Germany.}
+\CopyrightYear{2017}
 \crdata{TBA}
 \clubpenalty=10000
 \widowpenalty = 10000
@@ -116,7 +116,7 @@ Testbed
 }
 \subtitle{Draft version
 \titlenote{Submission deadline: March 28th.}}
-%Camera-ready paper due April 17th.}}
+%Camera-ready paper due April 16th.}}
 
 %
 % You need the command \numberofauthors to handle the 'placement
