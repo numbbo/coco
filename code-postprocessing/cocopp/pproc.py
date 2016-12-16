@@ -630,6 +630,7 @@ class DataSet(object):
         readmaxevals
         reference_values
         splitByTrials
+        success_ratio
         target
         testbed_name
         >>> all(ds.evals[:, 0] == ds.target)  # first column of ds.evals is the "target" f-value
@@ -799,6 +800,7 @@ class DataSet(object):
         self.dataFiles = []
         self.instancenumbers = []
         self.algs = []
+        self.success_ratio = []
         self.reference_values = {}
         self.evals = []  # to be removed if evals becomes a property, see below
         """``evals`` are the central data. Each line ``evals[i]`` has a
@@ -882,7 +884,7 @@ class DataSet(object):
         # put into variable dataFiles the files where to look for data
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
-        datasets, algorithms, reference_values = split(dataFiles, idx_to_load=idx_of_instances_to_load)
+        datasets, algorithms, reference_values, success_ratio = split(dataFiles, idx_to_load=idx_of_instances_to_load)
         data = HMultiReader(datasets, self.isBiobjective())
         if genericsettings.verbose:
             print("Processing %s: %d/%d trials found." % (dataFiles, len(data), len(self.instancenumbers)))
@@ -892,8 +894,11 @@ class DataSet(object):
             self.evals = adata
             self.reference_values = reference_values
             if len(algorithms) > 0:
-                algorithms = align_algorithms(algorithms, [item[1] for item in adata])
+                algorithms = align_list(algorithms, [item[1] for item in adata])
             self.algs = algorithms
+            if len(success_ratio) > 0:
+                success_ratio = align_list(success_ratio, [item[1] for item in adata])
+            self.success_ratio = success_ratio
             try:
                 for i in range(len(maxevals)):
                     self.maxevals[i] = max(maxevals[i], self.maxevals[i])
@@ -908,7 +913,7 @@ class DataSet(object):
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
             raise Usage("Missing tdat files in '{0}'. Please rerun the experiments." % filepath)
 
-        datasets, algorithms, reference_values = split(dataFiles, idx_to_load=idx_of_instances_to_load)
+        datasets, algorithms, reference_values, success_ratio = split(dataFiles, idx_to_load=idx_of_instances_to_load)
         data = VMultiReader(datasets, self.isBiobjective())
         if genericsettings.verbose:
             print("Processing %s: %d/%d trials found."
@@ -2381,12 +2386,12 @@ def parseinfo(s):
     return res
 
 
-def align_algorithms(algorithms, evals):
+def align_list(list_to_process, evals):
     for i, item in enumerate(evals):
         if i + 1 < len(evals) and evals[i] == evals[i + 1]:
-            algorithms.insert(i, algorithms[i])
+            list_to_process.insert(i, list_to_process[i])
 
-    return algorithms
+    return list_to_process
 
 def set_unique_algId(ds_list, ds_list_reference, taken_ids=None):
     """on return, elements in ``ds_list`` do not have an ``algId``
