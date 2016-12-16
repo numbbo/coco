@@ -552,7 +552,7 @@ class DataSet(object):
         ...   os.chdir(path)
         >>> dslist = bb.load(infoFile)
           Data consistent according to test in consistency_check() in pproc.DataSet
-        >>> print(dslist  # doctest:+ELLIPSIS
+        >>> print(dslist)  # doctest:+ELLIPSIS
         [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
         >>> type(dslist)
         <class 'cocopp.pproc.DataSetList'>

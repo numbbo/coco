@@ -539,6 +539,7 @@ def main(dsList, _valuesOfInterest, outputdir):
         os.path.join(outputdir, 'pptable'),
         htmlPage = ppfig.HtmlPage.PPTABLE,
         parentFileName=genericsettings.single_algorithm_file_name)
+    toolsdivers.replace_in_file(os.path.join(outputdir, 'pptable.html'), '??COCOVERSION??', '<br />Data produced with COCO %s' % (toolsdivers.get_version_label(None)))
 
     ppfig.save_single_functions_html(
         os.path.join(outputdir, 'pprldistr'),

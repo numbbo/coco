@@ -77,7 +77,7 @@ def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings):
 
             file_name = os.path.join(output_dir, '%s.html' % genericsettings.pprldmany_file_name)
             replace_in_file(file_name, '##bbobECDFslegend##', ppfigs.ecdfs_figure_caption(True, d))
-            replace_in_file(htmlFile, '??COCOVERSION??', '<br />Data produced with COCO %s' % (get_version_label(None)))
+            replace_in_file(file_name, '??COCOVERSION??', '<br />Data produced with COCO %s' % (get_version_label(None)))
 
 
 def main(argv=None):
