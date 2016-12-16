@@ -256,8 +256,8 @@ def main(argv=None):
             if genericsettings.verbose:
                 print('Folder %s was created.' % (outputdir))
 
-		latex_commands_filename = os.path.join(outputdir,
-                                                 'cocopp_commands.tex')
+        latex_commands_filename = os.path.join(outputdir,
+                                               'cocopp_commands.tex')
 
         truncate_latex_command_file(latex_commands_filename)
 
