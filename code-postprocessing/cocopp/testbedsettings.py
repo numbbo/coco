@@ -283,7 +283,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         scenario = scenario_biobjfixed,
         reference_algorithm_filename = 'refalgs/best2016-bbob-biobj-v2.0.tar.gz', # TODO produce correct best2016 algo and delete this line
         reference_algorithm_displayname = 'best 2016', # TODO: should be read in from data set in reference_algorithm_filename
-        instancesOfInterest = None, # None: consider all instances        
+        instancesOfInterest = None, # None: consider all instances
         # expensive optimization settings:
         pptable_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
         pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting

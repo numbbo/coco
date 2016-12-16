@@ -268,7 +268,7 @@ def main(argv=None):
         return 2
 
     if 1 < 3:
-        print("\nPost-processing (>2): will generate output " +
+        print("\nPost-processing (3+): will generate output " +
               "data in folder %s" % outputdir)
         print("  this might take several minutes.")
 
