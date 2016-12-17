@@ -35,7 +35,7 @@ from itertools import product
 import time
 
 from cocopp.ppfig import save_figure
-from cocopp.eaf import bbobbenchmarks as bm
+import bbobbenchmarks as bm
 
 
 decimals=2 # precision for downsampling

@@ -71,11 +71,20 @@ def copy_reference_values(old_algorithm_id, new_algorithm_id):
 
 
 def get_reference_values(algorithm):
+    """ Returns the hash value of the hypervolume reference values
+        for the specified algorithm (if available, i.e. if the algorithm
+        has been run on the `bbob-biobj` testbed).
+        If algorithm=None, all hash values are returned as a set
+        (i.e. with no duplicates) if more than one hash is available
+        or as a string if all hashes are the same.
+    """
 
     global reference_values
 
     if reference_values and algorithm in reference_values:
         return reference_values[algorithm]
+    if reference_values and algorithm is None:
+        return set(reference_values.values()) if len(set(reference_values.values())) > 1 else reference_values.values()[0]
 
     return None
 
@@ -274,7 +283,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         scenario = scenario_biobjfixed,
         reference_algorithm_filename = 'refalgs/best2016-bbob-biobj-v2.0.tar.gz', # TODO produce correct best2016 algo and delete this line
         reference_algorithm_displayname = 'best 2016', # TODO: should be read in from data set in reference_algorithm_filename
-        instancesOfInterest = None, # None: consider all instances        
+        instancesOfInterest = None, # None: consider all instances
         # expensive optimization settings:
         pptable_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
         pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting

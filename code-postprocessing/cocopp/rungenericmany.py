@@ -39,7 +39,7 @@ from .compall import pprldmany, pptables, ppfigs
 from . import ppconverrorbars
 
 import matplotlib.pyplot as plt
-from .toolsdivers import print_done
+from .toolsdivers import print_done, get_version_label
 
 __all__ = ['main']
 
@@ -77,6 +77,7 @@ def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings):
 
             file_name = os.path.join(output_dir, '%s.html' % genericsettings.pprldmany_file_name)
             replace_in_file(file_name, '##bbobECDFslegend##', ppfigs.ecdfs_figure_caption(True, d))
+            replace_in_file(file_name, '??COCOVERSION??', '<br />Data produced with COCO %s' % (get_version_label(None)))
 
 
 def main(argv=None):
@@ -267,7 +268,7 @@ def main(argv=None):
         return 2
 
     if 1 < 3:
-        print("\nPost-processing: will generate output " +
+        print("\nPost-processing (3+): will generate output " +
               "data in folder %s" % outputdir)
         print("  this might take several minutes.")
 

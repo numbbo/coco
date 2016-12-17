@@ -229,7 +229,7 @@ def main(argv=None):
             warnings.simplefilter('module')
             warnings.simplefilter('ignore')
 
-        print("\nPost-processing will generate comparison " +
+        print("\nPost-processing (2): will generate comparison " +
               "data in folder %s" % outputdir)
         print("  this might take several minutes.")
 
@@ -622,6 +622,7 @@ def main(argv=None):
             htmlFileName = os.path.join(outputdir, genericsettings.pptable2_file_name + '.html')
             key = '##bbobpptablestwolegend%s##' % (testbedsettings.current_testbed.scenario)
             replace_in_file(htmlFileName, '##bbobpptablestwolegend##', htmldesc.getValue(key))
+            replace_in_file(htmlFileName, '??COCOVERSION??', '<br />Data produced with COCO %s' % (toolsdivers.get_version_label(None)))
 
             replace_in_file(htmlFileName, 'algorithmAshort', algName0[0:3])
             replace_in_file(htmlFileName, 'algorithmBshort', algName1[0:3])

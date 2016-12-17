@@ -6,13 +6,13 @@
 """
 from __future__ import absolute_import
 
-import os, sys, time
+import os, time
 import numpy as np
-import warnings
 from matplotlib import pyplot as plt
 from subprocess import CalledProcessError, STDOUT
+import pkg_resources
 
-from . import genericsettings
+from . import genericsettings, testbedsettings
 
 def print_done(message='  done'):
     """prints a message with time stamp"""
@@ -254,4 +254,24 @@ def git(args):
         # print('Failed to execute "%s"' % str(full_command))
         raise
     return output
-      
+
+def get_version_label(algorithmID=None):
+    """ Returns a string with the COCO version of the installed postprocessing,
+        potentially adding the hash of the hypervolume reference values from
+        the actual experiments (in the `bbob-biobj` setting).
+        If algorithmID==None, the set of different hypervolume reference values
+        from all algorithms, read in by the postprocessing, are returned in
+        the string. If more than one reference value is present in the data,
+        the string displays also a warning.
+    """
+    coco_version = pkg_resources.require('cocopp')[0].version
+    reference_values = testbedsettings.get_reference_values(algorithmID)
+    
+    if reference_values and type(reference_values) is set:        
+        label = "v%s, hv-hashes inconsistent:" % (coco_version)
+        for r in reference_values:
+            label = label + " %s and" % (r)
+        label = label[:-3] + "found!"
+    else:
+        label = "v%s" % (coco_version) if reference_values is None else "v%s, hv-hash=%s" % (coco_version, reference_values)      
+    return label
