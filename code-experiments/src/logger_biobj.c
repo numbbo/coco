@@ -358,7 +358,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
                 next_item->indicator_contribution[i] = (node_item->normalized_y[0] - next_item->normalized_y[0])
                     * (1 - next_item->normalized_y[1]);
-                assert(next_item->indicator_contribution[i] > 0);
+                assert(next_item->indicator_contribution[i] >= 0);
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -377,7 +377,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
                 node_item->indicator_contribution[i] = (previous_item->normalized_y[0] - node_item->normalized_y[0])
                     * (1 - node_item->normalized_y[1]);
-                assert(node_item->indicator_contribution[i] > 0);
+                assert(node_item->indicator_contribution[i] >= 0);
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -397,7 +397,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
             if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
               node_item->indicator_contribution[i] = (1 - node_item->normalized_y[0])
                   * (1 - node_item->normalized_y[1]);
-              assert(node_item->indicator_contribution[i] > 0);
+              assert(node_item->indicator_contribution[i] >= 0);
             } else {
               coco_error(
                   "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
