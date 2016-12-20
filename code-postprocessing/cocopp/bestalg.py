@@ -582,6 +582,9 @@ def create_data_files(output_dir, result):
         instance_data = "%d:%d|%10.15e" % (0, average_max_evals, average_final_fun_values)
 
         test_suite = getattr(value, 'suite', None)
+        if test_suite is None:
+            test_suite = testbedsettings.get_suite_from_testbed(result[result.keys()[0]].testbed)
+
         if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
             if not info_lines:
                 header = "algorithm = '%s', indicator = 'hyp'" % value.algId
