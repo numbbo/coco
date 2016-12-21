@@ -76,8 +76,8 @@
 %%%%%%%%% TO BE EDITED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % rungeneric.py writes data into a subfolder of ppdata
-\newcommand{\bbobdatapath}{ppdata/} % default output folder of rungeneric.py
-\input{\bbobdatapath bbob_pproc_commands.tex} % provide default of algname and algfolder
+\newcommand{\bbobdatapath}{ppdata/} % change default output folder of COCO if desired
+\input{\bbobdatapath cocopp_commands.tex} % provide default of algname and algfolder
 % \renewcommand{\algname}{MY-ALGORITHM-NAME}  % name of algorithm as it should appear in the text
 % \renewcommand{\algfolder}{FOLDER/} % subfolder of \bbobdatapath for processed algorithm
 % Find all \change commands in the text below and update the information according to your data
@@ -91,6 +91,7 @@
 \newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
 \newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
 \newcommand{\Df}{\ensuremath{\Delta f}}
+\newcommand{\DI}{\ensuremath{\Delta I_{\mathrm{HV}}^{\mathrm{COCO}}}}
 \newcommand{\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
 \newcommand{\hvref}{\ensuremath{HV_\mathrm{ref}}}
 \newcommand{\fopt}{\hvref}
@@ -108,8 +109,8 @@
 \begin{document}
 %
 % --- Author Metadata here ---
-\conferenceinfo{GECCO'16,} {July 20-24, 2016, Denver, CO, USA.}
-\CopyrightYear{2016}
+\conferenceinfo{GECCO'17,} {July 15-19, 2017, Berlin, Germany.}
+\CopyrightYear{2017}
 \crdata{TBA}
 \clubpenalty=10000
 \widowpenalty = 10000
@@ -119,8 +120,8 @@
 % \titlenote{If needed}
 }
 \subtitle{Draft version
-\titlenote{Submission deadline: April 3rd.}}
-% Camera-ready paper due by May 4th.
+\titlenote{Submission deadline: March 28th.}}
+% Camera-ready paper due by April 16th.
 
 %
 % You need the command \numberofauthors to handle the 'placement
@@ -242,7 +243,7 @@ to be written
 \section{CPU Timing}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % note that the following text is just a proposal and can/should be changed to your needs:
-In order to evaluate the CPU timing of the algorithm, we have run the \change{\algname} with restarts on the entire bbob-biobj test suite \cite{biobj2016func} for $2 D$ function evaluations. The \change{C/Java/Matlab/Octave/Python} code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores. The time per function evaluation for dimensions 2, 3, 5, 10, 20\change{, 40} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
+In order to evaluate the CPU timing of the algorithm, we have run the \change{\algname} with restarts on the entire bbob-biobj test suite \cite{biobj2016func} for $2 D$ function evaluations according to \cite{hansen2016exp}. The \change{C/Java/Matlab/Octave/Python} code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores \change{and (compile) options xxx}. The time per function evaluation for dimensions 2, 3, 5, 10, 20\change{, 40} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -407,17 +408,19 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{sidewaystable*}
+\begin{table*}
+\vspace*{-1.2cm}
 \centering {\tiny
 \parbox{0.499\textwidth}{\centering
-   {\small 5-D}\\
+   %{\small 5-D}\\
    \input{\bbobdatapath\algfolder pptable_05D_noiselessall}}%
 \parbox{0.499\textwidth}{\centering
-   {\small 20-D}\\
+   %{\small 20-D}\\
    \input{\bbobdatapath\algfolder pptable_20D_noiselessall}}}%
+	\vspace*{-0.4cm}
 \caption[Table of aRTs]{\label{tab:aRTs}\bbobpptablecaption{} 
 }
-\end{sidewaystable*}
+\end{table*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{Discussion}  % and/or conclusions etc

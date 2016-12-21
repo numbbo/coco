@@ -52,7 +52,7 @@
 \usepackage{graphicx}
 \usepackage{rotating}
 \usepackage[dvipsnames]{xcolor}  % color is sufficient
-%\usepackage[hidelinks]{hyperref} % make COCO papers clickable
+\usepackage[colorlinks=true, linkcolor=blue]{hyperref} % make COCO papers clickable
 
 
 \pdfpagewidth=8.5in
@@ -79,8 +79,8 @@
 %%%%%%%%% TO BE EDITED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % rungeneric.py writes data into a subfolder of ppdata
-\newcommand{\bbobdatapath}{ppdata/} % default output folder of rungeneric.py
-\input{\bbobdatapath bbob_pproc_commands.tex} % provide default of algname and algfolder
+\newcommand{\bbobdatapath}{ppdata/} % change default output folder of COCO if desired
+\input{\bbobdatapath cocopp_commands.tex} % provide default of algname and algfolder
 % \renewcommand{\algname}{MYNAME}  % name of algorithm as it should appear in the text
 % \renewcommand{\algfolder}{ABC/} % subfolder of \bbobdatapath for processed algorithm
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -103,8 +103,8 @@
 \begin{document}
 %
 % --- Author Metadata here ---
-\conferenceinfo{GECCO'13,} {July 6-10, 2013, Amsterdam, The Netherlands.}
-\CopyrightYear{2013}
+\conferenceinfo{GECCO'17,} {July 15-19, 2017, Berlin, Germany.}
+\CopyrightYear{2017}
 \crdata{TBA}
 \clubpenalty=10000
 \widowpenalty = 10000
@@ -116,7 +116,7 @@ Testbed
 }
 \subtitle{Draft version
 \titlenote{Submission deadline: March 28th.}}
-%Camera-ready paper due April 17th.}}
+%Camera-ready paper due April 16th.}}
 
 %
 % You need the command \numberofauthors to handle the 'placement
@@ -239,7 +239,7 @@ to be written
 \section{CPU Timing}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % note that the following text is just a proposal and can/should be changed to your needs:
-In order to evaluate the CPU timing of the algorithm, we have run the \change{MY-ALGORITHM-NAME} on the  \change{bbob test suite \cite{hansen2009fun}} with restarts for a maximum budget equal to \change{$400 (D + 2)$} function evaluations. The code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores. The time per function evaluation for dimensions 2, 3, 5, 10, 20\change{, 40} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
+In order to evaluate the CPU timing of the algorithm, we have run the \change{MY-ALGORITHM-NAME} on the  \change{bbob test suite \cite{hansen2009fun}} with restarts for a maximum budget equal to \change{$400 (D + 2)$} function evaluations according to \cite{hansen2016exp}. The \change{C/Java/Python/Matlab/Octave} code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores \change{and (compile) options xxx}. The time per function evaluation for dimensions 2, 3, 5, 10, 20\change{, 40} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
