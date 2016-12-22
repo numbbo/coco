@@ -24,6 +24,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import matplotlib
 # Force matplotlib to not use any Xwindows backend.
 matplotlib.use('Agg')
+matplotlib.use('TkAgg')
 
 from matplotlib import patches
 import matplotlib.pyplot as plt
@@ -44,7 +45,7 @@ precision = 1e-3 # smallest displayed value in logscale
 maxbudget = '1e6 * dim'  # largest budget for normalization of aRT-->sampling conversion
 minbudget = '1'          # smallest budget for normalization of aRT-->sampling conversion
 cropbudget = maxbudget   # objective vectors produced after cropbudget not taken into account
-n = 100 # number of grid points per objective
+n = 200 # number of grid points per objective
 grayscale = False
 
 biobjinst = {1: [2, 4],
@@ -75,7 +76,8 @@ def generate_aRTA_plot(f_id, dim, f1_id, f2_id,
     
     [gridpoints, aRTs, A] = get_all_aRT_values_in_objective_space(f_id,
                                 dim, f1_id, f2_id, inputfolder=inputfolder,
-                                downsample=downsample, with_grid=with_grid)
+                                downsample=downsample, with_grid=with_grid,
+                                logscale=logscale)
 
     fig = plt.figure(1)
     ax = fig.add_subplot(111)
@@ -185,7 +187,7 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
                         # objective space
                         blen = len(B)
                         if downsample:
-                            B = sample_down(B, decimals)
+                            B = sample_down(B, n, logscale=logscale)
                         print("instance data points downsampled from %d to %d" % (blen, len(B)))
                         
                         A[instance] = B
@@ -216,7 +218,7 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
             if instance not in A and not instance == -1:
                 blen = len(B)
                 if downsample:
-                    B = sample_down(B, decimals)
+                    B = sample_down(B, n, logscale=logscale)
                 A[instance] = B
                 print("instance data points downsampled from %d to %d" % (blen, len(B)))
 
@@ -245,7 +247,6 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
                 gridpoints.append([a[1], a[2]]) # extract only objective vector
         gridpoints = np.array(gridpoints)
 
-
     aRTs = compute_aRT(gridpoints, A)
 
     # sort gridpoints (and of course colors) wrt. their aRT:
@@ -273,12 +274,14 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
     
     [gridpoints, aRTs_1, A] = get_all_aRT_values_in_objective_space(f_id,
                                     dim, f1_id, f2_id, inputfolder=inputfolder_1,
-                                    downsample=downsample, with_grid=True)
+                                    downsample=downsample, with_grid=True,
+                                    logscale=logscale)
     print('Computing aRT values for %s done.' % inputfolder_1)
 
     [gridpoints_2, aRTs_2, A] = get_all_aRT_values_in_objective_space(f_id,
                                     dim, f1_id, f2_id, inputfolder=inputfolder_2,
-                                    downsample=downsample, with_grid=True)
+                                    downsample=downsample, with_grid=True,
+                                    logscale=logscale)
     print('Computing aRT values for %s done.' % inputfolder_2)
 
     # resort gridpoints from lower left to top right in order to not loose
@@ -333,7 +336,6 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
                      maxplot-(gridpoints[i])[1],
                      alpha=1.0,
                      color='green'))
-                print('green')
             if not np.isfinite(aRTs_1) and np.isfinite(aRTs_2):
                 ax.add_artist(patches.Rectangle(
                     ((gridpoints[i])[0], (gridpoints[i])[1]),
@@ -341,7 +343,6 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
                      maxplot-(gridpoints[i])[1],
                      alpha=1.0,
                      color='magenta'))
-                print('magenta')
             continue # no finite aRT for >= 1 algo
         ax.add_artist(patches.Rectangle(
                 ((gridpoints[i])[0], (gridpoints[i])[1]),
@@ -385,7 +386,6 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
 
     plt.close()
 
-    
     
 def compute_aRT(points, A):
     """
@@ -443,7 +443,50 @@ def weakly_dominates(a,b):
     
     return (a[0] <= b[0]) and (a[1] <= b[1])
     
-def sample_down(B, decimals):
+def sample_down(B, n, logscale=True):
+    """
+        Samples down the data by only keeping one solution from B in each
+        grid box (nxn grid within [0,maxplot] or [precision, maxplot] in the
+        logscale case).
+        
+        The points, given in B (as [feval, f_1, f_2] vectors) are expected
+        to be normalized such that ideal and nadir are [0,0] and [1,1]
+        respectively.
+        
+    """
+    
+    C = np.array(B)
+    C = C[C[:, 2].argsort(kind='mergesort')][::-1] # sort in descending order wrt second objective
+    C = C[C[:, 1].argsort(kind='mergesort')][::-1] # now in descending order wrt first objective
+
+    if logscale:
+        # downsampling according to
+        # np.logspace(np.log10(precision), np.log10(maxplot), num=n, endpoint=True, base=10.0)
+        X = np.ceil((np.log10(C)-np.log10(precision))*(n-1)/(np.log10(maxplot)-np.log10(precision)))/((n-1)/(np.log10(maxplot)-np.log10(precision)))
+    else:
+        X = np.ceil(C*(n-1)/maxplot)/((n-1)/maxplot)
+
+    # sort wrt second objective first
+    idx_1 = X[:, 2].argsort(kind='mergesort')
+    X = X[idx_1]
+    # now wrt first objective to finally get a stable sort
+    idx_2 = X[:, 1].argsort(kind='mergesort')
+    X = X[idx_2]
+    xflag = np.array([False] * len(X), dtype=bool)
+    xflag[0] = True # always take the first point
+    for i in range(1, len(X)):
+        if not (X[i, 1] == X[i-1, 1] and
+                X[i, 2] == X[i-1, 2]):
+            xflag[i] = True
+    X = ((C[idx_1])[idx_2])[xflag]
+    B = X[X[:, 0].argsort(kind='mergesort')] # sort again wrt. #FEs
+
+
+    return B
+
+    
+    
+def DEPRECATED_sample_down(B, decimals):
     """ Samples down the solutions in B, given as (#funevals, f_1, f_2)
         entries in a list or an np.array such that only one of the solutions
         with the same objective vector is kept when they are rounded to the
