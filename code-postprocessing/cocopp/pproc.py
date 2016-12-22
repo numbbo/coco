@@ -2301,7 +2301,8 @@ class DataSetList(list):
         reference_values_hash = None
         for dataSet in self:
             # if reference values exist
-            if dataSet.reference_values:
+            if dataSet.reference_values and \
+                            dataSet.dim in testbedsettings.current_testbed.reference_values_hash_dimensions:
                 key = '%d_%d' % (dataSet.funcId, dataSet.dim)
                 all_reference_values[key] = dataSet.reference_values
 
