@@ -412,8 +412,9 @@ def main(argv=None):
                                                genericsettings.single_algorithm_file_name,
                                                settings=inset)
                 print_done()
-            
-        if genericsettings.isLogLoss:
+        if genericsettings.isLogLoss and testbedsettings.current_testbed.reference_algorithm_filename:
+          # Wassim: if no ref alg, no logloss
+          # Wassim: isLogLoss should be set automatically or taken from the testbed settings instead
             print("aRT loss ratio figures and tables...")
             for ng, sliceNoise in dsList.dictByNoise().iteritems():
                 if ng == 'noiselessall':
@@ -451,12 +452,16 @@ def main(argv=None):
                                     functionGroups = dsList.getFuncGroups())
 
         latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'cocopp_commands.tex')
-        prepend_to_file(latex_commands_file,
+        if genericsettings.isLogLoss and testbedsettings.current_testbed.reference_algorithm_filename:
+        # Wassim: if no ref alg, no logloss
+        # Wassim: isLogLoss should be set automatically or taken from the testbed settings instead
+          prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglosstablecaption}[1]{',
                          pplogloss.table_caption(), '}'])
-        prepend_to_file(latex_commands_file,
+          prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglossfigurecaption}[1]{',
                          pplogloss.figure_caption(), '}'])
+
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobpprldistrlegend}[1]{',
                          pprldistr.caption_single(),  # depends on the config setting, should depend on maxfevals
@@ -466,7 +471,11 @@ def main(argv=None):
                         ['\\providecommand{\\bbobppfigdimlegend}[1]{',
                          ppfigdim.scaling_figure_caption(),
                          '}'])
-        prepend_to_file(latex_commands_file,
+
+        if genericsettings.isLogLoss and testbedsettings.current_testbed.reference_algorithm_filename:
+          # Wassim: if no ref alg, no logloss
+          # Wassim: isLogLoss should be set automatically or taken from the testbed settings instead
+          prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobpptablecaption}[1]{',
                          pptable.get_table_caption(),
                          '}'])

@@ -340,6 +340,8 @@ class LargeScaleTestbed(GECCOBBOBTestbed):
     self.tabDimsOfInterest = [80, 320]
     self.rldDimsOfInterest = [80, 320]
     self.htmlDimsOfInterest = [80, 320]
-    self.best_algorithm_filename = 'bestalgentries2016LS.pickle'  #'' #Wassim: TODO: upadate pptable.py caption to no longer mention bestAlg (for now)
-    self.best_algorithm_year = 2016
+    self.best_algorithm_filename = ''
+    self.best_algorithm_year = None
+    self.reference_algorithm_filename = ''
+    self.reference_algorithm_displayname = ''
 
