@@ -51,6 +51,15 @@ def get_testbed_from_suite(suite_name):
                          'Add it to suite_to_testbed dictionary in testbedsettings.py to process this data.'
                          % suite_name)
 
+
+def get_suite_from_testbed(testbed_name):
+
+    index = suite_to_testbed.values().index(testbed_name)
+    if index >= 0:
+        return suite_to_testbed.keys()[index]
+
+    return None
+
 reference_values = {}
 
 
@@ -58,7 +67,7 @@ def update_reference_values(algorithm, reference_value):
 
     global reference_values
 
-    if reference_values and reference_values[reference_values.keys()[0]] <> reference_value:
+    if reference_values and reference_values[reference_values.keys()[0]] != reference_value:
         warnings.warn(" Reference values for the algorithm '%s' are different from the algorithm '%s'"
                       % (algorithm, reference_values.keys()[0]))
 
@@ -173,6 +182,7 @@ class GECCOBBOBTestbed(Testbed):
         functions_with_legend = (1, 24, 101, 130),
         first_function_number = 1,
         last_function_number = 24,
+        reference_values_hash_dimensions = [],
         pptable_ftarget = 1e-8,  # value for determining the success ratio in all tables
         pptable_targetsOfInterest = pptable_targetsOfInterest,
         pptable2_targetsOfInterest = (1e+1, 1e-1, 1e-3, 1e-5, 1e-7),  # used for pptable2
@@ -279,6 +289,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         functions_with_legend = (1, 30, 31, 55),
         first_function_number = 1,
         last_function_number = 55,
+        reference_values_hash_dimensions = [2, 3, 5, 10, 20],
         pptable_ftarget = 1e-5,  # value for determining the success ratio in all tables
         pptable_targetsOfInterest = (1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5),
         pptable2_targetsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5),  # used for pptable2
@@ -286,7 +297,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         scenario = scenario_biobjfixed,
         reference_algorithm_filename = 'refalgs/best2016-bbob-biobj-v2.0.tar.gz', # TODO produce correct best2016 algo and delete this line
         reference_algorithm_displayname = 'best 2016', # TODO: should be read in from data set in reference_algorithm_filename
-        instancesOfInterest = None, # None: consider all instances        
+        instancesOfInterest = None, # None: consider all instances
         # expensive optimization settings:
         pptable_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
         pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting

@@ -11,7 +11,7 @@ import numpy
 from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings
 from ..pptex import writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from ..toolsstats import significancetest, significance_all_best_vs_other
-from ..toolsdivers import str_to_latex, strip_pathname1
+from ..toolsdivers import str_to_latex, strip_pathname1, replace_in_file, get_version_label
 
 """
 See Section Comparison Tables in
@@ -687,6 +687,9 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                 with open(filename, 'w') as outfile:
                     for line in lines:
                         outfile.write(line)
+                
+                replace_in_file(filename, '??COCOVERSION??', '<br />Data produced with COCO %s' % (get_version_label(None)))
+
 
             if genericsettings.verbose:
                 print 'Wrote table in %s' % filename
