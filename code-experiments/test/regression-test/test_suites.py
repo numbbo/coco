@@ -16,11 +16,12 @@ def _is_equal(x, y):
     or list/array_type
     """
     x, y = np.asarray(x), np.asarray(y)
+    same_sign = x * y > 0
     ax, ay = np.abs(x), np.abs(y)
     lgx, lgy = np.log10(ax), np.log10(ay)
     return ((np.abs(x - y) < 1e-9) +  # "+" means in effect "or"
-            (x * y > 0) * (np.abs(x - y) / (ax + ay) < 1e-9) +  # min(ax, ay) would be better?
-            (ax > 1e21) * (ay > 1e21) *  # because coco.h defines INFINITY possibly as 1e22
+            same_sign * (np.abs(x - y) / (ax + ay) < 1e-9) +  # min(ax, ay) would be better?
+            same_sign * (ax > 1e21) * (ay > 1e21) *  # because coco.h defines INFINITY possibly as 1e22
             (np.abs(lgx - lgy) / (lgx + lgy) < 0.03) > 0)
 
 def is_equal(x, y):
