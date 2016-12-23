@@ -38,6 +38,8 @@ def regression_test_a_suite(suite_name, filename):
     """filename contains previously generated test data to compare against.
     
     Details: on a Windows machine we see differences like
+    f12 instance 58 in 2D (177, (1447.3149385050367, -830.3270488085931))
+        1.7499057709942032e+141 vs 6.09043250958e+67 (original): log-err = 0.351...
     f17: 3.648247252180286e+57 vs 3.46559033612e+57: log-err = 0.0002
     f17 f17: [2.885437508322743e+22, 1322751113639934.8] vs [2.05085412e+22, 1.32275111e+15] or
     f14 f17: [31585031.800419718, 6.480639092419489e+28] vs [3.15850318e+07, 1.69518822e+28]: log-err = 0.01
