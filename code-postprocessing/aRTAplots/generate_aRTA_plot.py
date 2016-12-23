@@ -159,8 +159,9 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
     
     If `downsample == True`, the input data will be reduced by taking into
     account only one input point per objective space cell where the cells
-    are given by cutting the objective vectors to the given precision of
-    `10^{-decimals}`. For later plotting of the input points, the
+    correspond to the objective vectors of the above mentioned grid.
+    In any case, all points outside [0,maxplot] (and [precision, maxplot] in 
+    the locscale case) are removed. For later plotting of the input points, the
     already downsampled input points are also returned as a third argument
     (in a dictionary, giving for each entry the data points associated to
     the corresponding instance/run).
@@ -211,9 +212,11 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
                         # normalize objective vector:
                         newline[1] = (newline[1]-ideals[instance][0])/(nadirs[instance][0]-ideals[instance][0])
                         newline[2] = (newline[2]-ideals[instance][1])/(nadirs[instance][1]-ideals[instance][1])
-
-                        B.append(newline)
-                    
+                        # assume that all points are >0 for both objectives
+                        # and remove all above `maxplot`:
+                        if newline[1] <= maxplot and newline[2] <= maxplot:
+                            B.append(newline)
+                            
             # store data of final instance:
             if instance not in A and not instance == -1:
                 blen = len(B)
@@ -247,7 +250,11 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
                 gridpoints.append([a[1], a[2]]) # extract only objective vector
         gridpoints = np.array(gridpoints)
 
+    print("start computing aRTs")
+
     aRTs = compute_aRT(gridpoints, A)
+
+    print("finish computing aRTs")
 
     # sort gridpoints (and of course colors) wrt. their aRT:
     idx = aRTs.argsort(kind='mergesort')
@@ -403,9 +410,8 @@ def compute_aRT(points, A):
     array([ 9.])
     
     """
-    sum_runtimes_successful = np.zeros(len(points))
+    sum_runtimes = np.zeros(len(points))
     num_runtimes_successful = np.zeros(len(points))
-    sum_runtimes_unsuccessful = np.zeros(len(points))
     
     for key in A:
         points_finished = [False] * len(points)
@@ -418,21 +424,20 @@ def compute_aRT(points, A):
                         runtime_to_attain_points[i] = a[0]
                         points_finished[i] = True
                     else:
-                        max_runtimes[i] = a[0]                        
-            if min(points_finished): # all grid points dominated
-                break
+                        max_runtimes[i] = a[0]
+                        
         for i in range(len(points)):
             if runtime_to_attain_points[i] is np.nan:
-                sum_runtimes_unsuccessful[i] = sum_runtimes_unsuccessful[i] + max_runtimes[i]
+                sum_runtimes[i] = sum_runtimes[i] + max_runtimes[i]
             else:
-                sum_runtimes_successful[i] = sum_runtimes_successful[i] + runtime_to_attain_points[i]
+                sum_runtimes[i] = sum_runtimes[i] + runtime_to_attain_points[i]
                 num_runtimes_successful[i] = num_runtimes_successful[i] + 1                
                 
         
     aRT = np.zeros(len(points))
     for i in range(len(points)):
         if num_runtimes_successful[i] > 0:
-            aRT[i] = (sum_runtimes_unsuccessful[i] + sum_runtimes_successful[i])/num_runtimes_successful[i]
+            aRT[i] = sum_runtimes[i]/num_runtimes_successful[i]
         else:
             aRT[i] = np.nan
     
