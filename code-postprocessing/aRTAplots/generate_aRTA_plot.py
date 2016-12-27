@@ -45,7 +45,7 @@ precision = 1e-3 # smallest displayed value in logscale
 maxbudget = '1e6 * dim'  # largest budget for normalization of aRT-->sampling conversion
 minbudget = '1'          # smallest budget for normalization of aRT-->sampling conversion
 cropbudget = maxbudget   # objective vectors produced after cropbudget not taken into account
-n = 200 # number of grid points per objective
+n = 50 # number of grid points per objective
 grayscale = False
 
 biobjinst = {1: [2, 4],
@@ -133,6 +133,8 @@ def generate_aRTA_plot(f_id, dim, f1_id, f2_id,
         if not os.path.exists(outputfolder):
             os.makedirs(outputfolder)
         filename = outputfolder + "aRTA-f%02d-d%02d" % (f_id, dim)
+        if with_grid:
+            filename = filename + "-%dx%dgrid" % (n,n)
         if logscale:
             filename = filename + "-log"
         save_figure(filename)
@@ -250,11 +252,7 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
                 gridpoints.append([a[1], a[2]]) # extract only objective vector
         gridpoints = np.array(gridpoints)
 
-    print("start computing aRTs")
-
     aRTs = compute_aRT(gridpoints, A)
-
-    print("finish computing aRTs")
 
     # sort gridpoints (and of course colors) wrt. their aRT:
     idx = aRTs.argsort(kind='mergesort')
@@ -327,7 +325,7 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
     if grayscale:
         aRTA_colormap = matplotlib.cm.gray_r
     else:
-        aRTA_colormap = matplotlib.cm.RdBu
+        aRTA_colormap = matplotlib.cm.spring # matplotlib.cm.RdBu
 
 
     # Add a single point outside of the axis range with the same cmap and norm
@@ -342,28 +340,30 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
                      maxplot-(gridpoints[i])[0],
                      maxplot-(gridpoints[i])[1],
                      alpha=1.0,
-                     color='green'))
+                     color='magenta'))
             if not np.isfinite(aRTs_1) and np.isfinite(aRTs_2):
                 ax.add_artist(patches.Rectangle(
                     ((gridpoints[i])[0], (gridpoints[i])[1]),
                      maxplot-(gridpoints[i])[0],
                      maxplot-(gridpoints[i])[1],
                      alpha=1.0,
-                     color='magenta'))
+                     color='orange'))
             continue # no finite aRT for >= 1 algo
-        ax.add_artist(patches.Rectangle(
+        if not aRT_ratios[i] == 0:
+            ax.add_artist(patches.Rectangle(
                 ((gridpoints[i])[0], (gridpoints[i])[1]),
                  maxplot-(gridpoints[i])[0],
                  maxplot-(gridpoints[i])[1],
                  alpha=1.0,
                  color=aRTA_colormap(norm(aRT_ratios[i]))))
+                
     
     cb = plt.colorbar(ticks=[-10, -5, 0, 5, 10])  # mainly to set correct tick values
     cb.ax.set_yticklabels(['10', '5', '0', '5', '10'])
-    cb.set_label("<-- in favor of Algo B      aRTA ratio      in favor of Algo A -->")
+    cb.set_label("<-- in favor of alg. B      aRTA ratio      in favor of alg. A -->")
     
     # beautify:
-    ax.set_title("aRTA ratio function plot for bbob-biobj function $f_{%d}$ (%d-D)" % (f_id, dim))
+    ax.set_title("         aRTA ratio function plot for bbob-biobj function $f_{%d}$ (%d-D)" % (f_id, dim))
     [line.set_zorder(3) for line in ax.lines]
     if logscale:                
         ax.set_xlabel(r'log10($f_1 - f_1^\mathsf{opt}$) (normalized)', fontsize=16)
@@ -384,7 +384,7 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
     if tofile:
         if not os.path.exists(outputfolder):
             os.makedirs(outputfolder)
-        filename = outputfolder + "aRT-ratios-objSpace-f%02d-d%02d" % (f_id, dim)
+        filename = outputfolder + "aRT-ratios-f%02d-d%02d-%dx%dgrid" % (f_id, dim, n, n)
         if logscale:
             filename = filename + "-log"
         save_figure(filename)
