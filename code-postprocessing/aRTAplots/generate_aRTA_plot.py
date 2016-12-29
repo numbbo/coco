@@ -45,7 +45,7 @@ precision = 1e-3 # smallest displayed value in logscale
 maxbudget = '1e6 * dim'  # largest budget for normalization of aRT-->sampling conversion
 minbudget = '1'          # smallest budget for normalization of aRT-->sampling conversion
 cropbudget = maxbudget   # objective vectors produced after cropbudget not taken into account
-n = 50 # number of grid points per objective
+n = 200 # number of grid points per objective
 grayscale = False
 
 biobjinst = {1: [2, 4],
@@ -173,12 +173,18 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
     
     # obtain the data of the algorithm run to display:
     filename = "bbob-biobj_f%02d_d%02d_nondom_all.adat" % (f_id, dim)
+    #filename = "bbob-biobj_f%02d_d%02d_nondom_instance1.adat" % (f_id, dim)
     try:
         A = {}
         instance = -1
         B = []
         nadirs = {}
         ideals = {}
+        if downsample:
+            print('reading in data and downsampling them to %dx%d grid...' % (n, n))
+        else:
+            print('reading in data...')
+        
         with open(inputfolder + filename) as f:
             for line in f:
                 if "function eval_number" in line:
@@ -235,6 +241,7 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
         e = sys.exc_info()[0]
         print("   Error: %s" % e)
 
+
     
     # construct grid in normalized objective (sub-)space [precision, maxplot]:
     if with_grid:
@@ -244,13 +251,21 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
         else:
             gridpoints = maxplot * np.array(list(product(range(n),range(n))))/(n-1)
     else:
-        raise NotImplementedError # there is currently a bug in the code!!!
-        
-        gridpoints = []
+        raise NotImplementedError # for the moment, the plotting is not
+                                  # memory-efficient enough to handle even
+                                  # small data sets
+        ticks = []
         for key in A:
             for a in A[key]:
-                gridpoints.append([a[1], a[2]]) # extract only objective vector
-        gridpoints = np.array(gridpoints)
+                if a[1] not in ticks:
+                    ticks.append(a[1])
+                if a[2] not in ticks:
+                    ticks.append(a[2])
+        ticks.sort()
+        print("producing set of potential %dx%d (irregular) grid points where aRTA plot can change" % (len(ticks), len(ticks)))
+        gridpoints = np.array(list(product(ticks, ticks)))
+        
+
 
     aRTs = compute_aRT(gridpoints, A)
 
@@ -259,7 +274,6 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
     aRTs = aRTs[idx]
     gridpoints = gridpoints[idx]
 
-    
     return gridpoints, aRTs, A
     
 
@@ -410,6 +424,8 @@ def compute_aRT(points, A):
     array([ 9.])
     
     """
+    
+    
     sum_runtimes = np.zeros(len(points))
     num_runtimes_successful = np.zeros(len(points))
     
@@ -432,15 +448,15 @@ def compute_aRT(points, A):
             else:
                 sum_runtimes[i] = sum_runtimes[i] + runtime_to_attain_points[i]
                 num_runtimes_successful[i] = num_runtimes_successful[i] + 1                
-                
-        
-    aRT = np.zeros(len(points))
+
+    aRT = np.zeros(len(points), dtype=float)
+
     for i in range(len(points)):
         if num_runtimes_successful[i] > 0:
             aRT[i] = sum_runtimes[i]/num_runtimes_successful[i]
         else:
             aRT[i] = np.nan
-    
+
     return aRT
     
 def weakly_dominates(a,b):
