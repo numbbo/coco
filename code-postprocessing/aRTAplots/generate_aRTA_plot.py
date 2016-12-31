@@ -189,6 +189,8 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
             for line in f:
                 if "function eval_number" in line:
                     continue
+                elif "evaluations =" in line:
+                    continue
                 elif "instance" in line:
                     # store first data of previous instance:
                     if instance not in A and not instance == -1:
@@ -216,6 +218,7 @@ def get_all_aRT_values_in_objective_space(f_id, dim, f1_id, f2_id,
                 else:
                     splitline = line.split()
                     newline = np.array(splitline[:3], dtype=np.float)
+                                        
                     if newline[0] <= eval(cropbudget):
                         # normalize objective vector:
                         newline[1] = (newline[1]-ideals[instance][0])/(nadirs[instance][0]-ideals[instance][0])
@@ -495,13 +498,19 @@ def sample_down(B, n, logscale=True):
     X = X[idx_2]
     xflag = np.array([False] * len(X), dtype=bool)
     xflag[0] = True # always take the first point
+    bestincell = 1
     for i in range(1, len(X)):
         if not (X[i, 1] == X[i-1, 1] and
                 X[i, 2] == X[i-1, 2]):
             xflag[i] = True
+            bestincell = i
+        else:
+            if X[i, 0] < X[bestincell, 0]:
+                xflag[bestincell] = False
+                xflag[i] = True
+                bestincell = i
     X = ((C[idx_1])[idx_2])[xflag]
     B = X[X[:, 0].argsort(kind='mergesort')] # sort again wrt. #FEs
-
 
     return B
 
