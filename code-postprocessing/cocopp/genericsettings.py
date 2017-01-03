@@ -264,7 +264,7 @@ def getFigFormats():
         fig_formats = ('pdf', 'svg') if generate_svg_files else ('pdf',)
     else:
         fig_formats = ('eps', 'pdf', 'svg') if generate_svg_files else ('eps', 'pdf')
-    # fig_formats = ('eps', 'pdf', 'pdf', 'png', 'svg')
+    # fig_formats = ('eps', 'pdf', 'png', 'svg')
 
     return fig_formats
 
