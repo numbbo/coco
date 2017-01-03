@@ -412,38 +412,36 @@ def main(argv=None):
                                                genericsettings.single_algorithm_file_name,
                                                settings=inset)
                 print_done()
-        if genericsettings.isLogLoss and testbedsettings.current_testbed.reference_algorithm_filename:
-          # Wassim: if no ref alg, no logloss
-          # Wassim: isLogLoss should be set automatically or taken from the testbed settings instead
-            print("aRT loss ratio figures and tables...")
-            for ng, sliceNoise in dsList.dictByNoise().iteritems():
-                if ng == 'noiselessall':
-                    testbed = 'noiseless'
-                elif ng == 'nzall':
-                    testbed = 'noisy'
-                txt = ("Please input crafting effort value "
-                       + "for %s testbed:\n  CrE = " % testbed)
-                CrE = genericsettings.inputCrE
-                while CrE is None:
-                    try:
-                        CrE = float(raw_input(txt))
-                    except (SyntaxError, NameError, ValueError):
-                        print("Float value required.")
-                dictDim = sliceNoise.dictByDim()
-                for d in inset.rldDimsOfInterest:
-                    try:
-                        sliceDim = dictDim[d]
-                    except KeyError:
-                        continue
-                    info = '%s' % ng
-                    pplogloss.main(sliceDim, CrE, True, outputdir, info)
-                    pplogloss.generateTable(sliceDim, CrE, outputdir, info)
-                    for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
-                        info = '%s' % fGroup
-                        pplogloss.main(sliceFuncGroup, CrE, True,
-                                       outputdir, info)
-                    pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
-            print_done()
+
+        print("aRT loss ratio figures and tables...")
+        for ng, sliceNoise in dsList.dictByNoise().iteritems():
+            if ng == 'noiselessall':
+                testbed = 'noiseless'
+            elif ng == 'nzall':
+                testbed = 'noisy'
+            txt = ("Please input crafting effort value "
+                   + "for %s testbed:\n  CrE = " % testbed)
+            CrE = genericsettings.inputCrE
+            while CrE is None:
+                try:
+                    CrE = float(raw_input(txt))
+                except (SyntaxError, NameError, ValueError):
+                    print("Float value required.")
+            dictDim = sliceNoise.dictByDim()
+            for d in inset.rldDimsOfInterest:
+                try:
+                    sliceDim = dictDim[d]
+                except KeyError:
+                    continue
+                info = '%s' % ng
+                pplogloss.main(sliceDim, CrE, True, outputdir, info)
+                pplogloss.generateTable(sliceDim, CrE, outputdir, info)
+                for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
+                    info = '%s' % fGroup
+                    pplogloss.main(sliceFuncGroup, CrE, True,
+                                   outputdir, info)
+                pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
+        print_done()
 
         dictFunc = dsList.dictByFunc()
         ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
@@ -452,13 +450,10 @@ def main(argv=None):
                                     functionGroups = dsList.getFuncGroups())
 
         latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'cocopp_commands.tex')
-        if genericsettings.isLogLoss and testbedsettings.current_testbed.reference_algorithm_filename:
-        # Wassim: if no ref alg, no logloss
-        # Wassim: isLogLoss should be set automatically or taken from the testbed settings instead
-          prepend_to_file(latex_commands_file,
+        prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglosstablecaption}[1]{',
                          pplogloss.table_caption(), '}'])
-          prepend_to_file(latex_commands_file,
+        prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglossfigurecaption}[1]{',
                          pplogloss.figure_caption(), '}'])
 
@@ -472,10 +467,7 @@ def main(argv=None):
                          ppfigdim.scaling_figure_caption(),
                          '}'])
 
-        if genericsettings.isLogLoss and testbedsettings.current_testbed.reference_algorithm_filename:
-          # Wassim: if no ref alg, no logloss
-          # Wassim: isLogLoss should be set automatically or taken from the testbed settings instead
-          prepend_to_file(latex_commands_file,
+        prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobpptablecaption}[1]{',
                          pptable.get_table_caption(),
                          '}'])
