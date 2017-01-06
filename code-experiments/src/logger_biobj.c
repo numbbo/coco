@@ -25,6 +25,9 @@
  * objective space. The non-normalized ROI is a rectangle with the ideal and nadir points as its two
  * opposite vertices, while the normalized ROI is the square [0, 1]^2. If not specifically mentioned, the
  * normalized ROI is assumed.
+ *
+ * @note This logger can handle both the original bbob-biobj test suite with 55 and the extended
+ * bbob-biobj-ext test suite with 96 functions.
  */
 
 #include <stdio.h>

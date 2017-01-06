@@ -95,7 +95,7 @@ int main(void) {
   printf("Running the example experiment... (might take time, be patient)\n");
   fflush(stdout);
 
-  example_experiment("bbob-biobj", "bbob-biobj", random_generator);
+  example_experiment("bbob-biobj-ext", "bbob-biobj", random_generator);
 
   /* Uncomment the line below to run the same example experiment on the bbob suite
   example_experiment("bbob", "bbob", random_generator); */
@@ -134,7 +134,7 @@ void example_experiment(const char *suite_name,
                    "algorithm_info: \"A simple random search algorithm\"", suite_name);
 
   /* Initialize the suite and observer */
-  suite = coco_suite(suite_name, "year: 2016", "dimensions: 2,3,5,10,20,40");
+  suite = coco_suite(suite_name, "year: 2017", "dimensions: 2,3,5,10,20");
   observer = coco_observer(observer_name, observer_options);
   coco_free_memory(observer_options);
 
