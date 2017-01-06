@@ -340,9 +340,9 @@ def generate_aRTA_ratio_plot(f_id, dim, f1_id, f2_id,
 
     norm = matplotlib.colors.Normalize(vmin=-10.,vmax=10., clip=False)
     if grayscale:
-        aRTA_colormap = matplotlib.cm.gray_r
+        aRTA_colormap = matplotlib.cm.gray
     else:
-        aRTA_colormap = matplotlib.cm.spring # matplotlib.cm.RdBu
+        aRTA_colormap = matplotlib.cm.RdBu # matplotlib.cm.spring
 
 
     # Add a single point outside of the axis range with the same cmap and norm

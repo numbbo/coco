@@ -27,7 +27,7 @@ inputarchivefolder_2 = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_nore
 inputarchivefolder_1 = 'C:/Users/dimo/Desktop/coco-master-git/gamultiobj/gamultiobj_on_bbob-biobj/archive/'
 
 #inputarchivefolder_1 = './RS-5/'
-#inputarchivefolder_2 = './MO-DIRECT-hv-rank/'
+#inputarchivefolder_2 = 'F:/BBOB-2016/submittedData/Cheryl/hv-rank/archive/'
 
 #inputarchivefolder_1 = './RS-5/'
 #inputarchivefolder_2 = 'C:/Users/dimo/Desktop/coco-master-git/SMSEMOA_pmsbx_norestart_on_bbob-biobj/SMSEMOA_on_bbob-biobj-001/archive/'
