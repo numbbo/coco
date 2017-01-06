@@ -373,6 +373,67 @@ static coco_problem_t *suite_biobj_ext_get_problem(coco_suite_t *suite,
   return problem;
 }
 
+
+/**
+ * @brief  Performs a few checks and returns whether the two problem
+ * instances given should break the search for new instances in
+ * suite_biobj_ext_get_new_instance(...).
+ */
+static int check_consistency_of_instances(const size_t dimension, 
+                                          size_t function1,
+                                          size_t instance1,
+                                          size_t function2,
+                                          size_t instance2) {
+  coco_problem_t *problem = NULL;
+  coco_problem_t *problem1, *problem2;
+  int break_search = 0;
+  double norm;
+  double *smallest_values_of_interest, *largest_values_of_interest;
+  const double apart_enough = 1e-4;
+  
+  problem1 = coco_get_bbob_problem(function1, dimension, instance1);
+  problem2 = coco_get_bbob_problem(function2, dimension, instance2);
+
+  /* Set smallest and largest values of interest to some value (not important which, it just needs to be a
+   * vector of doubles of the right dimension) */
+  smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
+  largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
+  problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
+          largest_values_of_interest);
+  coco_free_memory(smallest_values_of_interest);
+  coco_free_memory(largest_values_of_interest);
+
+  /* Check whether the ideal and nadir points are too close in the objective space */
+  norm = mo_get_norm(problem->best_value, problem->nadir_value, 2);
+  if (norm < 1e-1) { /* TODO How to set this value in a sensible manner? */
+    coco_debug(
+        "suite_biobj_ext_get_new_instance(): The ideal and nadir points of %s are too close in the objective space",
+        problem->problem_id);
+    coco_debug("norm = %e, ideal = %e\t%e, nadir = %e\t%e", norm, problem->best_value[0],
+        problem->best_value[1], problem->nadir_value[0], problem->nadir_value[1]);
+    break_search = 1;
+  }
+
+  /* Check whether the extreme optimal points are too close in the decision space */
+  norm = mo_get_norm(problem1->best_parameter, problem2->best_parameter, problem->number_of_variables);
+  if (norm < apart_enough) {
+    coco_debug(
+        "suite_biobj_ext_get_new_instance(): The extreme points of %s are too close in the decision space",
+        problem->problem_id);
+    coco_debug("norm = %e", norm);
+    break_search = 1;
+  }
+
+  /* Clean up */
+  if (problem) {
+    coco_problem_stacked_free(problem);
+    problem = NULL;
+  }
+
+  return break_search;
+
+}
+  
 /**
  * @brief Computes the instance number of the second problem/objective so that the resulting bi-objective
  * problem has more than a single optimal solution.
@@ -394,13 +455,10 @@ static size_t suite_biobj_ext_get_new_instance(coco_suite_t *suite,
   size_t instance2 = 0;
   size_t num_tries = 0;
   const size_t max_tries = 1000;
-  const double apart_enough = 1e-4;
   int appropriate_instance_found = 0, break_search, warning_produced = 0;
-  coco_problem_t *problem1, *problem2, *problem = NULL;
   size_t d, f1, f2, i;
   size_t function1, function2, dimension;
-  double norm;
-  double *smallest_values_of_interest, *largest_values_of_interest;
+  const size_t reduced_bbob_functions[] = { 1, 2, 6, 8, 13, 14, 15, 17, 20, 21 };
   
   suite_biobj_ext_t *data;
   assert(suite->data);
@@ -415,15 +473,13 @@ static size_t suite_biobj_ext_get_new_instance(coco_suite_t *suite,
      * extreme optimal points in the decisions space are apart enough for all problems (all dimensions
      * and function combinations); therefore iterate over all dimensions and function combinations  */
      
-    /* TODO: for now the check on all functions (f,f) with f in {f1, f2, f6, f8, f13, f14, f15, f17, f20, f21}
-       is missing */
     for (f1 = 0; (f1 < num_bbob_functions-1) && !break_search; f1++) {
       function1 = bbob_functions[f1];
       for (f2 = f1+1; (f2 < num_bbob_functions) && !break_search; f2++) {
         function2 = bbob_functions[f2];
         for (d = 0; (d < suite->number_of_dimensions) && !break_search; d++) {
           dimension = suite->dimensions[d];
-
+          
           if (dimension == 0) {
             if (!warning_produced)
               coco_warning("suite_biobj_ext_get_new_instance(): remove filtering of dimensions to get generally acceptable instances!");
@@ -431,50 +487,27 @@ static size_t suite_biobj_ext_get_new_instance(coco_suite_t *suite,
             continue;
           }
           
-          problem1 = coco_get_bbob_problem(function1, dimension, instance1);
-          problem2 = coco_get_bbob_problem(function2, dimension, instance2);
-          if (problem) {
-            coco_problem_stacked_free(problem);
-            problem = NULL;
-          }
-
-          /* Set smallest and largest values of interest to some value (not important which, it just needs to be a
-           * vector of doubles of the right dimension) */
-          smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
-          largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
-          problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
-          		largest_values_of_interest);
-          coco_free_memory(smallest_values_of_interest);
-          coco_free_memory(largest_values_of_interest);
-
-          /* Check whether the ideal and nadir points are too close in the objective space */
-          norm = mo_get_norm(problem->best_value, problem->nadir_value, 2);
-          if (norm < 1e-1) { /* TODO How to set this value in a sensible manner? */
-            coco_debug(
-                "suite_biobj_ext_get_new_instance(): The ideal and nadir points of %s are too close in the objective space",
-                problem->problem_id);
-            coco_debug("norm = %e, ideal = %e\t%e, nadir = %e\t%e", norm, problem->best_value[0],
-                problem->best_value[1], problem->nadir_value[0], problem->nadir_value[1]);
-            break_search = 1;
-          }
-
-          /* Check whether the extreme optimal points are too close in the decision space */
-          norm = mo_get_norm(problem1->best_parameter, problem2->best_parameter, problem->number_of_variables);
-          if (norm < apart_enough) {
-            coco_debug(
-                "suite_biobj_ext_get_new_instance(): The extreme points of %s are too close in the decision space",
-                problem->problem_id);
-            coco_debug("norm = %e", norm);
-            break_search = 1;
-          }
+          break_search = check_consistency_of_instances(dimension, function1, instance1, function2, instance2);
         }
       }
     }
     
-    /* Clean up */
-    if (problem) {
-      coco_problem_stacked_free(problem);
-      problem = NULL;
+    /* Finally, check all functions (f,f) with f in {f1, f2, f6, f8, f13, f14, f15, f17, f20, f21}: */
+    for (f1 = 0; (f1 < 10) && !break_search; f1++) {
+      function1 = reduced_bbob_functions[f1];
+      function2 = reduced_bbob_functions[f1];
+      for (d = 0; (d < suite->number_of_dimensions) && !break_search; d++) {
+        dimension = suite->dimensions[d];
+        
+        if (dimension == 0) {
+            if (!warning_produced)
+              coco_warning("suite_biobj_ext_get_new_instance(): remove filtering of dimensions to get generally acceptable instances!");
+            warning_produced = 1;
+            continue;
+          }
+          
+        break_search = check_consistency_of_instances(dimension, function1, instance1, function2, instance2);
+      }
     }
 
     if (break_search) {
