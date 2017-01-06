@@ -49,6 +49,7 @@ header = """
 \\newcommand{\\ftarget}{\ensuremath{f_\mathrm{t}}}
 \\newcommand{\\CrE}{\ensuremath{\mathrm{CrE}}}
 \\newcommand{\\change}[1]{{\color{red} #1}}
+\\newcommand{\\cocoversion}{??COCOVERSION??}
 
 \\begin{document}
 

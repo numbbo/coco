@@ -27,8 +27,8 @@ def replace(text):
     return text
     
     
-    
-def get_reference_algorithm_text():
+def get_reference_algorithm_text(best_algorithm_mandatory=True):
+    text = ''
     testbed = testbedsettings.current_testbed
     if testbed.reference_algorithm_filename:
         if (testbed.name == testbedsettings.testbed_name_single or
@@ -51,7 +51,7 @@ def get_reference_algorithm_text():
                     text = "the reference algorithm"
         else:
             raise NotImplementedError('reference algorithm not supported for this testbed')
-    else:
+    elif best_algorithm_mandatory:
         raise NotImplementedError('no reference algorithm indicated in testbedsettings.py')
 
     return text
@@ -63,9 +63,9 @@ replace_dict = {
         '!!DF!!': lambda: r"""\Df""" if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi) else r"""\DI""",
         '!!FOPT!!': lambda: r"""\fopt""" if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi) else r"""\hvref""",
         '!!DIVIDED-BY-DIMENSION!!': lambda: r"""divided by dimension and """ if ynormalize_by_dimension else "",
-        '!!LIGHT-THICK-LINE!!': lambda: r"""The light thick line with diamonds indicates """ + get_reference_algorithm_text() + r""" for the most difficult target. """ if testbedsettings.current_testbed.reference_algorithm_filename else "",
+        '!!LIGHT-THICK-LINE!!': lambda: r"""The light thick line with diamonds indicates """ + get_reference_algorithm_text(False) + r""" for the most difficult target. """ if testbedsettings.current_testbed.reference_algorithm_filename else "",
         '!!F!!': lambda: r"""I_{\mathrm HV}^{\mathrm COCO}""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi else "f",
-        '!!THE-REF-ALG!!': get_reference_algorithm_text,
+        '!!THE-REF-ALG!!': lambda: get_reference_algorithm_text(False),
         '!!HARDEST-TARGET-LATEX!!': lambda: testbedsettings.current_testbed.hardesttargetlatex,
         '!!DIM!!': lambda: r"""\DIM""",
         '!!SINGLE-RUNLENGTH-FACTORS!!': lambda: '$' + 'D, '.join([str(i) for i in genericsettings.single_runlength_factors[:6]]) + 'D,\dots$',

@@ -124,6 +124,8 @@ class BestAlgSet(DataSet):
         dictFinalFunVals = {}
         tmpdictAlg = {}
         best_algorithms = []
+        self.success_ratio = []
+
         for alg, i in dict_alg.iteritems():
             if len(i) == 0:
                 warnings.warn('Algorithm %s was not tested on f%d %d-D.'
@@ -138,6 +140,7 @@ class BestAlgSet(DataSet):
             dictMaxEvals[alg] = i[0].maxevals
             dictFinalFunVals[alg] = i[0].finalfunvals
             best_algorithms = i[0].algs
+            self.success_ratio = i[0].success_ratio
 
         dict_alg = tmpdictAlg
 
@@ -210,6 +213,7 @@ class BestAlgSet(DataSet):
         if pr > 0:
             self.precision = pr
         self.algs = best_algorithms if best_algorithms else resalgs
+        self.best_algorithm_data = resalgs
         self.algId = algId
         if len(sortedAlgs) > 1:
             self.comment = 'Combination of ' + ', '.join(sortedAlgs)
@@ -329,17 +333,37 @@ class BestAlgSet(DataSet):
         """
         res = []
         res2 = []
+        res3 = []
         for f in targets:
             tmp = np.array([np.nan] * len(self.bestfinalfunvals))
             tmp2 = None
+            tmp3 = None
             for i, line in enumerate(self.evals):
+                if len(self.success_ratio) > 0:
+                    tmp3 = [0, self.success_ratio[i][1]]
                 if line[0] <= f:
                     tmp = line[1:]
-                    tmp2 = self.algs[i]
+                    tmp2 = self.best_algorithm_data[i]
+                    if len(self.success_ratio) > 0:
+                        tmp3 = self.success_ratio[i]
                     break
             res.append(tmp)
             res2.append(tmp2)
-        return res, res2
+            if tmp3 is not None:
+                res3.append(tmp3)
+        return res, res2, res3
+
+    def get_success_ratio(self, target):
+        det_evaluations = self.detEvals([target, ])
+        success_ratios = det_evaluations[2]
+        if len(success_ratios) > 0:
+            successful_runs = success_ratios[0][0]
+            all_runs = success_ratios[0][1]
+        else:
+            successful_runs = np.sum(np.isnan(det_evaluations[0][0]) == False)  # count the nb of success
+            all_runs = len(det_evaluations[0][0])
+
+        return successful_runs, all_runs
 
 
 # FUNCTION DEFINITIONS
@@ -558,6 +582,9 @@ def create_data_files(output_dir, result):
         instance_data = "%d:%d|%10.15e" % (0, average_max_evals, average_final_fun_values)
 
         test_suite = getattr(value, 'suite', None)
+        if test_suite is None:
+            test_suite = testbedsettings.get_suite_from_testbed(result[result.keys()[0]].testbed)
+
         if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
             if not info_lines:
                 header = "algorithm = '%s', indicator = 'hyp'" % value.algId
@@ -580,11 +607,14 @@ def create_data_files(output_dir, result):
             info_lines.append("%s, %s" % (filename_template % (key[1], key[0], 'dat'), instance_data))
 
         lines = []
-        lines.append("%% Artificial instance")
+        lines.append("% Artificial instance")
+        lines.append("% algorithm type = best")
         i = 0
         for key_target, value_target in sorted(dict_evaluation.iteritems()):
+            successful_runs, all_runs = result[(key[0], key[1])].get_success_ratio(value_target)
             alg_for_target = os.path.basename(value.algs[i])
-            lines.append("%d %10.15e %10.15e %s" % (key_target, value_target, value_target, alg_for_target))
+            lines.append("%d %10.15e %10.15e %s %d %d" %
+                         (key_target, value_target, value_target, alg_for_target, successful_runs, all_runs))
             i += 1
 
         filename = os.path.join(output_dir, filename_template % (key[1], key[0], 'dat'))

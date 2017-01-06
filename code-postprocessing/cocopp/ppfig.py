@@ -12,10 +12,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 import shutil
 # from pdb import set_trace
-import pkg_resources
 
 # absolute_import => . refers to where ppfig resides in the package:
-from . import genericsettings, testbedsettings, toolsstats, htmldesc
+from . import genericsettings, testbedsettings, toolsstats, htmldesc, toolsdivers
 
 bbox_inches_choices = {  # do we also need pad_inches = 0?
     'svg': 'tight',
@@ -47,9 +46,8 @@ def save_figure(filename, algorithm=None, fig_format=()):
     ``('pdf', 'svg')``
 
     """
-    coco_version = pkg_resources.require('cocopp')[0].version
-    reference_values = testbedsettings.get_reference_values(algorithm)
-    label = coco_version if reference_values is None else "%s, %s" % (coco_version, reference_values)
+    label = toolsdivers.get_version_label(algorithm)
+    
     plt.text(0.5, 0.01, label,
              horizontalalignment="center",
              verticalalignment="bottom",
@@ -406,14 +404,20 @@ def save_single_functions_html(filename,
             f.write(captionStringFormat % caption)
 
         f.write("\n<BR/><BR/><BR/><BR/><BR/>\n</BODY>\n</HTML>")
+        
+        toolsdivers.replace_in_file(filename + add_to_names + '.html', '??COCOVERSION??', '<br />Data produced with COCO %s' % (toolsdivers.get_version_label(None)))
 
 
 def write_dimension_links(dimension, dimensions, index):
     links = '<p><A NAME="%d"></A>' % dimension
-    if index > 0:
+    if index == 0:
+        links += '<A HREF="#%d">Last dimension</A> | ' % dimensions[-1]
+    else:
         links += '<A HREF="#%d">Previous dimension</A> | ' % dimensions[index - 1]
     links += '<b>Dimension = %d</b>' % dimension
-    if index < len(dimensions) - 1:
+    if index == len(dimensions) - 1:
+        links += ' | <A HREF="#%d">First dimension</A>' % dimensions[0]
+    else:
         links += ' | <A HREF="#%d">Next dimension</A>' % dimensions[index + 1]
     links += '</p>\n'
 

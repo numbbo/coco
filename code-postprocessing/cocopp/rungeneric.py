@@ -42,7 +42,7 @@ if __name__ == "__main__":
         res = cocopp.rungeneric.main(sys.argv[1:])
         sys.exit(res)
 
-from . import genericsettings, rungeneric1, rungeneric2, rungenericmany, ppfig
+from . import genericsettings, rungeneric1, rungeneric2, rungenericmany, ppfig, toolsdivers
 from .toolsdivers import truncate_latex_command_file, print_done
 from .ppfig import Usage
 
@@ -247,17 +247,19 @@ def main(argv=None):
             warnings.filterwarnings('module', '.*', UserWarning, '.*')
             #warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
 
-        print("\nPost-processing: will generate output " +
-               "data in folder %s" % outputdir)
-        print("  this might take several minutes.")
+#        print("\nPost-processing: will generate output " +
+#               "data in folder %s" % outputdir)
+#        print("  this might take several minutes.")
 
         if not os.path.exists(outputdir):
             os.makedirs(outputdir)
             if genericsettings.verbose:
                 print('Folder %s was created.' % (outputdir))
 
-        truncate_latex_command_file(os.path.join(outputdir,
-                                                 'cocopp_commands.tex'))
+        latex_commands_filename = os.path.join(outputdir,
+                                               'cocopp_commands.tex')
+
+        truncate_latex_command_file(latex_commands_filename)
 
         for i in range(len(args)):  # prepend common path inputdir to all names
             args[i] = os.path.join(inputdir, args[i])
@@ -273,6 +275,11 @@ def main(argv=None):
         elif len(args) > 2:
             rungenericmany.main(genopts + ["-o", outputdir] + args)
 
+
+        toolsdivers.prepend_to_file(latex_commands_filename,
+                ['\\providecommand{\\cocoversion}{\\hspace{\\textwidth}\\scriptsize\\sffamily{}\\color{Gray}Data produced with COCO %s}' % (toolsdivers.get_version_label(None))]
+                )
+            
         open(os.path.join(outputdir,
                           'cocopp_commands.tex'), 'a').close()
 

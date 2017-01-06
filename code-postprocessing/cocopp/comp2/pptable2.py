@@ -134,6 +134,8 @@ def get_table_caption():
                              text_middle_fixedtarget +
                              text_all)
 
+    table_caption = table_caption + r"""\cocoversion"""
+
     return table_caption
 
 
@@ -179,7 +181,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
     
     for d in dimsOfInterest: # TODO set as input arguments
         table = [header]
-        tableHtml = headerHtml
+        tableHtml = headerHtml[:]
         extraeol = [r'\hline']
         try:
             dictFunc0 = dictDim0[d].dictByFunc()
@@ -223,8 +225,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
             if bestalgentries:            
                 bestalgentry = bestalgentries[(d, f)]
                 bestalgdata = bestalgentry.detERT(targets)
-                bestalgevals, bestalgalgs = bestalgentry.detEvals(targets)
-    
+
                 if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                     # write ftarget:fevals
                     for i in xrange(len(bestalgdata[:-1])):
@@ -253,15 +254,11 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                                    % writeFEvalsMaxPrec(bestalgdata[-1], 2))
                     curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
     
-                tmp = bestalgentry.detEvals([targetf])[0][0]
-                tmp2 = numpy.sum(numpy.isnan(tmp) == False)
-                curline.append('%d' % (tmp2))
-                if tmp2 > 0:
-                    curline.append('/%d' % len(tmp))
-                    curlineHtml.append('<td>%d/%d</td>\n' % (tmp2, len(tmp)))
-                else:
-                    curlineHtml.append('<td>%d</td>\n' % (tmp2))
-            
+                # write the success ratio for the reference alg
+                successful_runs, all_runs = bestalgentry.get_success_ratio(targetf)
+                curline.append('%d/%d' % (successful_runs, all_runs))
+                curlineHtml.append('<td>%d/%d</td>\n' % (successful_runs, all_runs))
+
             else: # if not bestalgentries
                 curline.append(r'\multicolumn{%d}{@{}c@{}|}{}' % (2 * (len(targetsOfInterest.labels()) + 1)))
                 curlineHtml.append('<td colspan="%d" />\n' % (len(targetsOfInterest.labels()) + 1))

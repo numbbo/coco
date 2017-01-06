@@ -77,7 +77,7 @@ def get_table_caption():
         the rank-sum test) compared to !!THE-REF-ALG!!, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k > 1$ is following the
         $\downarrow$ symbol, with Bonferroni correction by the number of
-        functions.
+        functions.\cocoversion
         """
         
     if testbedsettings.current_testbed.name in testbedsettings.suite_to_testbed:
@@ -151,7 +151,7 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
 
     for d in dimsOfInterest:
         table = [header]
-        tableHtml = headerHtml
+        tableHtml = headerHtml[:]
         extraeol = [r'\hline']
         try:
             dictFunc = dictDim[d].dictByFunc()
@@ -174,7 +174,6 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
             if bestalgentries:            
                 bestalgentry = bestalgentries[(d, f)]
                 bestalgdata = bestalgentry.detERT(targetsOfInterest((f,d)))
-                bestalgevals, bestalgalgs = bestalgentry.detEvals(targetsOfInterest((f,d)))
                 if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                     #write ftarget:fevals
                     for i in xrange(len(bestalgdata[:-1])):
@@ -205,17 +204,10 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
                                    % writeFEvalsMaxPrec(bestalgdata[-1], 2))
                     curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
     
-
-
                 # write the success ratio for the reference alg
-                tmp = bestalgentry.detEvals([targetf])[0][0]
-                tmp2 = np.sum(np.isnan(tmp) == False) # count the nb of success
-                curline.append('%d' % (tmp2))
-                if tmp2 > 0:
-                    curline.append('/%d' % len(tmp))
-                    curlineHtml.append('<td>%d/%d</td>\n' % (tmp2, len(tmp)))
-                else:
-                    curlineHtml.append('<td>%d</td>\n' % (tmp2))
+                successful_runs, all_runs = bestalgentry.get_success_ratio(targetf)
+                curline.append('%d/%d' % (successful_runs, all_runs))
+                curlineHtml.append('<td>%d/%d</td>\n' % (successful_runs, all_runs))
 
                 curlineHtml = [i.replace('$\infty$', '&infin;') for i in curlineHtml]
                 table.append(curline[:])
@@ -445,7 +437,7 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
                 
         with open(filename, 'w') as outfile:
             for line in lines:
-                outfile.write(line)     
+                outfile.write(line)
 
         if genericsettings.verbose:
             print "Table written in %s" % outputfile

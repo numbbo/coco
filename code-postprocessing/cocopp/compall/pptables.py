@@ -11,7 +11,7 @@ import numpy
 from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings
 from ..pptex import writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from ..toolsstats import significancetest, significance_all_best_vs_other
-from ..toolsdivers import str_to_latex, strip_pathname1
+from ..toolsdivers import str_to_latex, strip_pathname1, replace_in_file, get_version_label
 
 """
 See Section Comparison Tables in
@@ -66,7 +66,7 @@ def get_table_caption():
         algorithm of BBOB-2009. """
                            if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
                            else "") + r"""Best results are printed in bold.
-        """)
+        """ + r"""\cocoversion""")
 
     if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
         # NOTE: no runlength-based targets supported yet
@@ -297,7 +297,6 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
         if bestalgentries:
             refalgentry = bestalgentries[df]
             refalgert = refalgentry.detERT(targetsOfInterest)
-            refalgevals = (refalgentry.detEvals((targetf,))[0][0])
 
         # Process the data
         # The following variables will be lists of elements each corresponding
@@ -490,13 +489,9 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                                curlineHtml]
 
             # write the success ratio for the reference alg
-            tmp2 = numpy.sum(numpy.isnan(refalgevals) == False)  # count the nb of success
-            curline.append('%d' % (tmp2))
-            if tmp2 > 0:
-                curline.append('/%d' % len(refalgevals))
-                replaceValue = '%d/%d' % (tmp2, len(refalgevals))
-            else:
-                replaceValue = '%d' % tmp2
+            successful_runs, all_runs = refalgentry.get_success_ratio(targetf)
+            curline.append('%d/%d' % (successful_runs, all_runs))
+            replaceValue = '%d/%d' % (successful_runs, all_runs)
             curlineHtml = [item.replace('REPLACEF', replaceValue) for item in curlineHtml]
 
         else:  # if not bestalgentries
@@ -692,6 +687,9 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                 with open(filename, 'w') as outfile:
                     for line in lines:
                         outfile.write(line)
+                
+                replace_in_file(filename, '??COCOVERSION??', '<br />Data produced with COCO %s' % (get_version_label(None)))
+
 
             if genericsettings.verbose:
                 print 'Wrote table in %s' % filename
