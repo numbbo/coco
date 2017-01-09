@@ -364,8 +364,10 @@ def main(argv=None):
             print("Generating LaTeX tables...")
             dictNoise = dsList.dictByNoise()
             for noise, sliceNoise in dictNoise.iteritems():
-                pptable.main(sliceNoise, inset.tabDimsOfInterest,
-                             outputdir, noise)
+                pptable.main(sliceNoise, testbedsettings.current_testbed.tabDimsOfInterest,
+                           outputdir, noise)
+                # pptable.main(sliceNoise, inset.tabDimsOfInterest,
+                #             outputdir, noise)
             print_done()
 
         if genericsettings.isRLDistr:

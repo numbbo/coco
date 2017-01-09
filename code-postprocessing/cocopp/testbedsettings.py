@@ -220,7 +220,10 @@ class GECCOBBOBTestbed(Testbed):
         self.pptable_targetsOfInterest = targetValues(self.pptable_targetsOfInterest)
         self.pptable2_targetsOfInterest = targetValues(self.pptable2_targetsOfInterest)
         self.pptablemany_targetsOfInterest = targetValues(self.pptablemany_targetsOfInterest)
-            
+
+        # Wassim: should probably be set in a mother class for "regular" dims
+        self.tabDimsOfInterest = (5,20)
+
         if 11 < 3:
             # override settings if needed...
             self.reference_algorithm_filename = 'bestalgentries2009.pickle.gz'
@@ -318,7 +321,9 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptable_targetsOfInterest = targetValues(self.pptable_targetsOfInterest)
         self.pptable2_targetsOfInterest = targetValues(self.pptable2_targetsOfInterest)
         self.pptablemany_targetsOfInterest = targetValues(self.pptablemany_targetsOfInterest)
-            
+
+        # Wassim: should probably be set in a mother class for "regular" dims
+        self.tabDimsOfInterest = (5,20)
         if 11 < 3:
             # override settings if needed...
             self.reference_algorithm_filename = 'refalgs/best2016-bbob-biobj-v2.0.tar.gz'

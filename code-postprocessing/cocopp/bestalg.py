@@ -110,7 +110,11 @@ class BestAlgSet(DataSet):
         for i in dict_alg.values():
             d |= set(j.dim for j in i)
             f |= set(j.funcId for j in i)
-            if len(i) > 0 and hasattr(i[0], 'precision'):
+            tmp_bool = True
+            for j in i:
+              if not hasattr(j, 'precision'):
+                tmp_bool = False
+            if len(i) > 0 and tmp_bool: #hasattr(i[0], 'precision'):
                 pr = max(pr, max(j.precision for j in i))
 
         if len(f) > 1 or len(d) > 1:
