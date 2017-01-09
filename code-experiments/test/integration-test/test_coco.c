@@ -13,6 +13,13 @@ static int about_equal(const double a, const double b) {
    *
    * Example: a = +EPS and b = -EPS then the relative error is 2 but
    * in fact the two numbers are both for all practical purposes 0.
+   *
+   * With test_coco bbob2009_testcases.txt in code-experiments/test/integration-test
+   * we observe numbers like:
+   *
+   * expected=8.54680000e+01 observed=8.54680013e+01 problem_id=bbob_f001_i01_d02,
+   *
+   * Only 7 digits are the same and the absolution error is about 1e-6. 
    */
   if (a == b)
     return 1;
