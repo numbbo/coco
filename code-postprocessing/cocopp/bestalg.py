@@ -513,7 +513,7 @@ def deprecated_customgenerate(args=algs2009):
     print('done with writing pickle...')
 
 
-def custom_generate(args=algs2009, algId='bestCustomAlg'):
+def custom_generate(args=algs2009, algId='bestCustomAlg', suite=None):
     """Generates best algorithm data set from a given set of algorithms.
 
     It will create a folder named as algId in the current working directory
@@ -538,7 +538,7 @@ def custom_generate(args=algs2009, algId='bestCustomAlg'):
 
     result = generate(dictAlg, algId, dsList[0].instancenumbers)
 
-    create_data_files(output_dir, result)
+    create_data_files(output_dir, result, suite)
 
     tar = tarfile.open(output_dir + ".tar.gz", "w:gz")
     tar.add(output_dir)
@@ -549,7 +549,7 @@ def custom_generate(args=algs2009, algId='bestCustomAlg'):
     print(dsList[0].instancenumbers)
 
 
-def create_data_files(output_dir, result):
+def create_data_files(output_dir, result, suite):
 
     info_filename = 'bbob-bestalg'
     filename_template = info_filename + '_f%02d_d%02d.%s'
@@ -583,7 +583,7 @@ def create_data_files(output_dir, result):
 
         test_suite = getattr(value, 'suite', None)
         if test_suite is None:
-            test_suite = testbedsettings.get_suite_from_testbed(result[result.keys()[0]].testbed)
+            test_suite = suite
 
         if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
             if not info_lines:
