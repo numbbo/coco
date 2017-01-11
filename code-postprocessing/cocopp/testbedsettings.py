@@ -48,15 +48,6 @@ def get_testbed_from_suite(suite_name):
                          'Add it to suite_to_testbed dictionary in testbedsettings.py to process this data.'
                          % suite_name)
 
-
-def get_suite_from_testbed(testbed_name):
-
-    index = suite_to_testbed.values().index(testbed_name)
-    if index >= 0:
-        return suite_to_testbed.keys()[index]
-
-    return None
-
 reference_values = {}
 
 
