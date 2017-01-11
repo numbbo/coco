@@ -1,12 +1,14 @@
 /**
  * @file suite_biobj_ext.c
- * @brief Implementation of the extended biobjective bbob-biobj-ext suite containing 96 functions and 6 dimensions.
+ * @brief Implementation of the extended biobjective bbob-biobj-ext suite containing 92 functions and 6 dimensions.
  *
  * The bbob-biobj-ext suite is created by combining two single-objective problems from the bbob suite.
- * The first 55 functions are the same as in the original bbob-biobj test suite to which 41 functions are added.
+ * The first 55 functions are the same as in the original bbob-biobj test suite to which 37 functions are added.
  * Those additional functions are constructed by combining all not yet contained in-group combinations (i,j) of
  * single-objective bbob functions i and j such that i<j (i.e. in particular not all combinations (i,i) are
- * included in this bbob-biobj-ext suite), see http://numbbo.github.io/coco-doc/bbob-biobj/functions/ for details.
+ * included in this bbob-biobj-ext suite), with the exception of the Weierstrass function (f16) for which
+ * the optimum is not unique and thus a nadir point is difficult to compute, see
+ * http://numbbo.github.io/coco-doc/bbob-biobj/functions/ for details.
  *
  * @note Because some bi-objective problems constructed from two single-objective ones have a single optimal
  * value, some care must be taken when selecting the instances. The already verified instances are stored in
@@ -15,7 +17,7 @@
  * manually added to suite_biobj_ext_instances, otherwise they will be computed each time the suite constructor
  * is invoked with these instances.
  *
- * @note This file is based on the original suite_bbob_biobj.c and extends it by 41 functions in 6 dimensions.
+ * @note This file is based on the original suite_bbob_biobj.c and extends it by 37 functions in 6 dimensions.
  */
 
 #include "coco.h"
@@ -84,7 +86,7 @@ static coco_suite_t *suite_biobj_ext_initialize(void) {
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-biobj-ext", 55+41, 6, dimensions, "year: 2017");
+  suite = coco_suite_allocate("bbob-biobj-ext", 55+37, 6, dimensions, "year: 2017");
 
   return suite;
 }
@@ -234,56 +236,44 @@ static coco_problem_t *suite_biobj_ext_get_problem(coco_suite_t *suite,
         function2_idx = 13;
     } else if (function_idx == 78) {
         function1_idx = 14;
-        function2_idx = 15;
+        function2_idx = 17;
     } else if (function_idx == 79) {
         function1_idx = 14;
-        function2_idx = 17;
+        function2_idx = 18;
     } else if (function_idx == 80) {
-        function1_idx = 14;
-        function2_idx = 18;
+        function1_idx = 16;
+        function2_idx = 17;
     } else if (function_idx == 81) {
-        function1_idx = 15;
-        function2_idx = 16;
+        function1_idx = 16;
+        function2_idx = 18;
     } else if (function_idx == 82) {
-        function1_idx = 15;
-        function2_idx = 17;
-    } else if (function_idx == 83) {
-        function1_idx = 15;
-        function2_idx = 18;
-    } else if (function_idx == 84) {
-        function1_idx = 16;
-        function2_idx = 17;
-    } else if (function_idx == 85) {
-        function1_idx = 16;
-        function2_idx = 18;
-    } else if (function_idx == 86) {
         function1_idx = 17;
         function2_idx = 18;
+    } else if (function_idx == 83) {
+        function1_idx = 19;
+        function2_idx = 21;
+    } else if (function_idx == 84) {
+        function1_idx = 19;
+        function2_idx = 22;
+    } else if (function_idx == 85) {
+        function1_idx = 19;
+        function2_idx = 23;
+    } else if (function_idx == 86) {
+        function1_idx = 20;
+        function2_idx = 21;
     } else if (function_idx == 87) {
-        function1_idx = 19;
-        function2_idx = 21;
+        function1_idx = 20;
+        function2_idx = 22;
     } else if (function_idx == 88) {
-        function1_idx = 19;
-        function2_idx = 22;
+        function1_idx = 20;
+        function2_idx = 23;
     } else if (function_idx == 89) {
-        function1_idx = 19;
-        function2_idx = 23;
+        function1_idx = 21;
+        function2_idx = 22;
     } else if (function_idx == 90) {
-        function1_idx = 20;
-        function2_idx = 21;
+        function1_idx = 21;
+        function2_idx = 23;
     } else if (function_idx == 91) {
-        function1_idx = 20;
-        function2_idx = 22;
-    } else if (function_idx == 92) {
-        function1_idx = 20;
-        function2_idx = 23;
-    } else if (function_idx == 93) {
-        function1_idx = 21;
-        function2_idx = 22;
-    } else if (function_idx == 94) {
-        function1_idx = 21;
-        function2_idx = 23;
-    } else if (function_idx == 95) {
         function1_idx = 22;
         function2_idx = 23;
     } 
@@ -352,9 +342,9 @@ static coco_problem_t *suite_biobj_ext_get_problem(coco_suite_t *suite,
     problem1 = coco_get_bbob_problem(all_bbob_functions[function1_idx], dimension, instance1);
     problem2 = coco_get_bbob_problem(all_bbob_functions[function2_idx], dimension, instance2);
   }
-
+  
   problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest, largest_values_of_interest);
-
+    
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
   problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
