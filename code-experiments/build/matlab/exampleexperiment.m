@@ -1,9 +1,6 @@
 %
 % This script runs random search for BUDGET_MULTIPLIER*DIM function
-% evaluations on the biobjective 'bbob-biobj' suite.
-%
-% An example experiment on the single-objective 'bbob' suite can be started
-% by renaming the suite_name below.
+% evaluations on a COCO suite and can serve also as a timing experiment.
 %
 % This example experiment allows also for easy implementation of independent
 % restarts by simply increasing NUM_OF_INDEPENDENT_RESTARTS. To make this
@@ -25,15 +22,30 @@ NUM_OF_INDEPENDENT_RESTARTS = 1e9; % max. number of independent algorithm
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Prepare Experiment    %
 %%%%%%%%%%%%%%%%%%%%%%%%%
-suite_name = 'bbob-biobj'; % works for 'bbob' as well
-observer_name = suite_name;
+
+% choose a test suite and a matching logger, for
+% example one of the following:
+%
+%   available test suite name     matching logger 
+%  -----------------------------------------------
+%   bbob                          bbob
+%   bbob-biobj                    bbob-biobj
+%   bbob-biobj-ext                bbob-biobj
+%   bbob-largescale               bbob
+%
+suite_name = 'bbob-biobj-ext';
+observer_name = 'bbob-biobj';
 observer_options = strcat('result_folder: RS_on_', ...
     suite_name, ...
     [' algorithm_name: RS '...
     ' algorithm_info: A_simple_random_search ']);
 
-% dimension 40 is optional:
-suite = cocoSuite(suite_name, 'year: 2016', 'dimensions: 2,3,5,10,20,40');
+% initialize suite and observer with default options,
+% to change the default, see 
+% http://numbbo.github.io/coco-doc/C/#suite-parameters and
+% http://numbbo.github.io/coco-doc/C/#observer-parameters
+% for details.
+suite = cocoSuite(suite_name, '', '');
 observer = cocoObserver(observer_name, observer_options);
 
 % set log level depending on how much output you want to see, e.g. 'warning'
