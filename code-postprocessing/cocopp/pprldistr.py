@@ -160,7 +160,8 @@ def caption_single():
 
     if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
                                                 testbedsettings.default_testbed_single_noisy,
-                                                testbedsettings.testbed_name_bi]:
+                                                testbedsettings.testbed_name_bi,
+                                                testbedsettings.testbed_name_bi_ext]:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_part_one + caption_left_rlbased_targets + caption_right
         else:
@@ -228,10 +229,17 @@ def caption_two():
                            + symbAlgorithmB
                            + caption_two_rlbased_targets_part3)
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext:
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_two_fixed.replace('\\fopt', '\\hvref')
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
+                                                  testbedsettings.testbed_name_single_noisy]:
+        if genericsettings.runlength_based_targets:
+            figure_caption = caption_two_rlbased
+        else:
+            figure_caption = caption_two_fixed
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+        figure_caption = caption_two_fixed.replace('\\fopt', '\\hvref')
         if genericsettings.runlength_based_targets:
             figure_caption = caption_two_rlbased
         else:

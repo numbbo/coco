@@ -1818,7 +1818,7 @@ class DataSetList(list):
         sorted = {}
         
         for i in self:
-            if i.funcId in range(1, 56):
+            if i.funcId in range(1, 93):
                 sorted.setdefault('noiselessall', DataSetList()).append(i)
             elif i.funcId in range(101, 131):
                 sorted.setdefault('nzall', DataSetList()).append(i)
