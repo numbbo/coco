@@ -142,7 +142,7 @@ def prepare_ecdfs_figure_caption():
         figure_caption = ecdfs_figure_caption_standard + refalgtext
     elif testbed.name in [testbedsettings.testbed_name_single,
                           testbedsettings.testbed_name_single_noisy,
-                          testbed.name == testbedsettings.testbed_name_bi]:
+                          testbedsettings.testbed_name_bi]:
         if genericsettings.runlength_based_targets:
             figure_caption = ecdfs_figure_caption_rlbased + refalgtext
         else:
