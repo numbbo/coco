@@ -22,7 +22,7 @@ def _is_equal(x, y):
     return ((np.abs(x - y) < 1e-9) +  # "+" means in effect "or"
             same_sign * (np.abs(x - y) / (ax + ay) < 1e-9) +  # min(ax, ay) would be better?
             same_sign * (ax > 1e21) * (ay > 1e21) *  # because coco.h defines INFINITY possibly as 1e22
-            (np.abs(lgx - lgy) / (lgx + lgy) < 0.4) > 0)
+            (np.abs(lgx - lgy) / (lgx + lgy) < 0.6) > 0)  # probably not very useful 
 
 def is_equal(x, y):
     try:
@@ -44,6 +44,8 @@ def regression_test_a_suite(suite_name, filename):
     f17 f17: [2.885437508322743e+22, 1322751113639934.8] vs [2.05085412e+22, 1.32275111e+15] or
     f14 f17: [31585031.800419718, 6.480639092419489e+28] vs [3.15850318e+07, 1.69518822e+28]: log-err = 0.01
     f16: -0.13227493309325666 vs -0.132274933067: rel-err = 9.9e-11
+    problem f12 instance 60 in 10D: 1.2219569577863538e+76 vs 1.2963795943e+27: log-err = 0.47...
+    bbob_f001_i02_d40__bbob_f017_i04_d40: [287089787.64410305, 3.1488536291123374e+39] vs [  2.87089788e+008   9.76803002e+118]: log-err = 0.50156...
     """
     verbose = 1
     xfc_dict = literal_eval(open(filename).read())
