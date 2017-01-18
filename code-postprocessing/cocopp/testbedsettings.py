@@ -7,7 +7,11 @@ from . import genericsettings
 scenario_rlbased = 'rlbased'
 scenario_fixed = 'fixed'
 scenario_biobjfixed = 'biobjfixed'
-all_scenarios = [scenario_rlbased, scenario_fixed, scenario_biobjfixed]
+scenario_biobjrlbased = 'biobjrlbased'
+scenario_biobjextfixed = 'biobjextfixed'
+all_scenarios = [scenario_rlbased, scenario_fixed,
+                 scenario_biobjfixed, scenario_biobjrlbased,
+                 scenario_biobjextfixed]
 
 testbed_name_single = 'bbob'
 testbed_name_single_noisy = 'bbob-noisy'
@@ -330,11 +334,12 @@ class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
         shortinfo_filename = shortinfo_filename,
         name = testbed_name_bi_ext,
         short_names = get_short_names(shortinfo_filename),
-        functions_with_legend = (1, 30, 31, 55),
+        functions_with_legend = (1, 30, 31, 60, 61, 92),
         first_function_number = 1,
         last_function_number = 92,
-        reference_algorithm_filename = None, # TODO produce correct best2017 algo and delete this line
-        reference_algorithm_displayname = None, # TODO: should be read in from data set in reference_algorithm_filename
+        scenario = scenario_biobjextfixed,
+        reference_algorithm_filename = '', # TODO produce correct best2017 algo and delete this line
+        reference_algorithm_displayname = '', # TODO: should be read in from data set in reference_algorithm_filename
         instancesOfInterest = None, # None: consider all instances
     ) 
 
