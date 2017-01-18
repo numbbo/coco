@@ -79,6 +79,12 @@ def main(latex_commands_for_html):
         elif scenario == testbedsettings.scenario_biobjfixed:
             genericsettings.runlength_based_targets = False
             config.config(testbedsettings.default_testbed_bi)
+        elif scenario == testbedsettings.scenario_biobjrlbased:
+            genericsettings.runlength_based_targets = True
+            config.config(testbedsettings.default_testbed_bi)
+        elif scenario == testbedsettings.scenario_biobjextfixed:
+            genericsettings.runlength_based_targets = False
+            config.config(testbedsettings.default_testbed_bi_ext)
         else:
             warnings.warn("Scenario not supported yet in HTML")
 

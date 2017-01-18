@@ -8,6 +8,7 @@
     values, depending on the current settings (genericsettings, testbedsettings,
     ...).
 """
+import warnings
 from . import genericsettings
 from . import testbedsettings
 
@@ -56,23 +57,39 @@ def get_reference_algorithm_text(best_algorithm_mandatory=True):
 
     return text
     
+def get_light_brown_line_text(testbedname):
+    if (testbedname == testbedsettings.testbed_name_bi):
+        return r"""Shown are aggregations over functions where the single
+            objectives are in the same BBOB function class, as indicated on the
+            left side and the aggregation over all 55 functions in the last row."""
+    elif (testbedname == testbedsettings.testbed_name_bi_ext):
+        return r"""Shown are aggregations over functions where the single
+            objectives are in the same BBOB function class, as indicated on the
+            left side and the aggregation over all 92 functions in the last row."""
+    elif (testbedname in [testbedsettings.testbed_name_single, testbedsettings.testbed_name_single_noisy]):
+        return r"""Light brown lines in the background show ECDFs for the most difficult target of all
+            algorithms benchmarked during BBOB-2009.""" 
+    else:
+        warnings.warn("Current testbed not supported for this caption text.")
+        
+    
 # please try to avoid underscores in the labels to not break the HTML code:
 replace_dict = {
         '!!NOTCHED-BOXES!!': lambda: r"""Notched boxes: interquartile range with median of simulated runs; """ 
             if genericsettings.scaling_figures_with_boxes else "",
-        '!!DF!!': lambda: r"""\Df""" if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi) else r"""\DI""",
-        '!!FOPT!!': lambda: r"""\fopt""" if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi) else r"""\hvref""",
+        '!!DF!!': lambda: r"""\Df""" if not (testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi,
+                                                                                      testbedsettings.testbed_name_bi_ext]) else r"""\DI""",
+        '!!FOPT!!': lambda: r"""\fopt""" if not (testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi,
+                                                                                          testbedsettings.testbed_name_bi_ext]) else r"""\hvref""",
         '!!DIVIDED-BY-DIMENSION!!': lambda: r"""divided by dimension and """ if ynormalize_by_dimension else "",
         '!!LIGHT-THICK-LINE!!': lambda: r"""The light thick line with diamonds indicates """ + get_reference_algorithm_text(False) + r""" for the most difficult target. """ if testbedsettings.current_testbed.reference_algorithm_filename else "",
-        '!!F!!': lambda: r"""I_{\mathrm HV}^{\mathrm COCO}""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi else "f",
+        '!!F!!': lambda: r"""I_{\mathrm HV}^{\mathrm COCO}""" if (testbedsettings.current_testbed.name 
+                                                                    in [testbedsettings.testbed_name_bi,
+                                                                        testbedsettings.testbed_name_bi_ext]) else "f",
         '!!THE-REF-ALG!!': lambda: get_reference_algorithm_text(False),
         '!!HARDEST-TARGET-LATEX!!': lambda: testbedsettings.current_testbed.hardesttargetlatex,
         '!!DIM!!': lambda: r"""\DIM""",
         '!!SINGLE-RUNLENGTH-FACTORS!!': lambda: '$' + 'D, '.join([str(i) for i in genericsettings.single_runlength_factors[:6]]) + 'D,\dots$',
-        '!!LIGHT-BROWN-LINES!!': lambda: r"""Light brown lines in the background show ECDFs for the most difficult target of all
-            algorithms benchmarked during BBOB-2009.""" if testbedsettings.current_testbed.name != testbedsettings.testbed_name_bi
-            else r"""Shown are aggregations over functions where the single
-            objectives are in the same BBOB function class, as indicated on the
-            left side and the aggregation over all 55 functions in the last row.""" 
+        '!!LIGHT-BROWN-LINES!!': lambda: get_light_brown_line_text(testbedsettings.current_testbed.name)
          }
 

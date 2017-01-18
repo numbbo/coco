@@ -97,20 +97,18 @@ def figure_caption(for_html = False):
     else:
         caption = prepare_figure_caption()
 
-    caption = caption.replace('NBTARGETS', str(len(targets)))
+    caption = caption.replace('!!NBTARGETS!!', str(len(targets)))
 
     if genericsettings.runlength_based_targets:
-        caption = caption.replace('NBLOW', toolsdivers.number_to_latex(targets.label(0)) +
+        caption = caption.replace('!!NBLOW!!', toolsdivers.number_to_latex(targets.label(0)) +
                                            r'\times\DIM' if targets.times_dimension else '')
-        caption = caption.replace('NBUP', toolsdivers.number_to_latex(targets.label(-1)) +
+        caption = caption.replace('!!NBUP!!', toolsdivers.number_to_latex(targets.label(-1)) +
                                            r'\times\DIM' if targets.times_dimension else '')
-        caption = caption.replace('REFERENCE_ALGORITHM', targets.reference_algorithm)
-        caption = caption.replace('REFERENCEALGORITHM', targets.reference_algorithm)
     else:
-        caption = caption.replace('NBLOW', toolsdivers.number_to_latex(targets.label(0)))
-        caption = caption.replace('NBUP', toolsdivers.number_to_latex(targets.label(-1)))
+        caption = caption.replace('!!NBLOW!!', toolsdivers.number_to_latex(targets.label(0)))
+        caption = caption.replace('!!NBUP!!', toolsdivers.number_to_latex(targets.label(-1)))
 
-    return caption
+    return captions.replace(caption)
 
 
 def beautify():
