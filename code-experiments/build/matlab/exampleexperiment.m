@@ -26,15 +26,13 @@ NUM_OF_INDEPENDENT_RESTARTS = 1e9; % max. number of independent algorithm
 % choose a test suite and a matching logger, for
 % example one of the following:
 %
-%   available test suite name     matching logger 
-%  -----------------------------------------------
-%   bbob                          bbob
-%   bbob-biobj                    bbob-biobj
-%   bbob-biobj-ext                bbob-biobj
-%   bbob-largescale               bbob
+% bbob              24 unconstrained noiseless single-objective functions
+% bbob-biobj        55 unconstrained noiseless bi-objective functions
+% bbob-biobj-ext    92 unconstrained noiseless bi-objective functions
+% bbob-largescale   24 unconstrained noiseless single-objective functions in large dimensions
 %
-suite_name = 'bbob-biobj-ext';
-observer_name = 'bbob-biobj';
+suite_name = 'bbob';
+observer_name = 'bbob';
 observer_options = strcat('result_folder: RS_on_', ...
     suite_name, ...
     [' algorithm_name: RS '...

@@ -97,19 +97,16 @@ int main(void) {
 
   /** 
    * Start the actual experiments on a test suite and use a matching logger, for
-   * example one of the following:
-   *
-   *   available test suite name     matching logger 
-   *  -----------------------------------------------
-   *   bbob                          bbob
-   *   bbob-biobj                    bbob-biobj
-   *   bbob-biobj-ext                bbob-biobj
-   *   bbob-largescale               bbob
+   * example one of the following: 
+   *   bbob                 24 unconstrained noiseless single-objective functions
+   *   bbob-biobj           55 unconstrained noiseless bi-objective functions
+   *   bbob-biobj-ext       92 unconstrained noiseless bi-objective functions
+   *   bbob-largescale      24 unconstrained noiseless single-objective functions in large dimension
    *
    * Adapt to your need. Note that the experiment is run according
    * to the settings, defined in example_experiment(...) below.
    */
-  example_experiment("bbob-biobj-ext", "bbob-biobj", random_generator);
+  example_experiment("bbob", "bbob", random_generator);
 
   printf("Done!\n");
   fflush(stdout);
