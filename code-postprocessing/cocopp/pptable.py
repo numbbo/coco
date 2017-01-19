@@ -429,20 +429,15 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
 
         filename = os.path.join(outputdir, 'pptable.html')
         lines = []
-        try:
-          with open(filename) as infile:
-              for line in infile:
-                  if '<!--pptableHtml-->' in line:
-                      lines.append(res)
-                  lines.append(line)
-                
-          with open(filename, 'w') as outfile:
-              for line in lines:
-                  outfile.write(line)
-        except IOError:
-          print("#"*19)
-          print("WARNING: code-block ignored. File:", __file__)
-          print("#"*19)
+        with open(filename) as infile:
+            for line in infile:
+                if '<!--pptableHtml-->' in line:
+                    lines.append(res)
+                lines.append(line)
+
+        with open(filename, 'w') as outfile:
+            for line in lines:
+                outfile.write(line)
 
         if genericsettings.verbose:
             print "Table written in %s" % outputfile

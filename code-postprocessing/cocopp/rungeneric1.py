@@ -370,7 +370,7 @@ def main(argv=None):
             dictNoise = dsList.dictByNoise()
             for noise, sliceNoise in dictNoise.iteritems():
                 pptable.main(sliceNoise, testbedsettings.current_testbed.tabDimsOfInterest,
-                           outputdir, noise)
+                           algoutputdir, noise)
                 # pptable.main(sliceNoise, inset.tabDimsOfInterest,
                 #             outputdir, noise)
             print_done()
