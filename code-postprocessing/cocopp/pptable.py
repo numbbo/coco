@@ -79,28 +79,28 @@ def get_table_caption():
         $\downarrow$ symbol, with Bonferroni correction by the number of
         functions.\cocoversion
         """
+    table_caption_no_reference_algorithm = r"""%
+        Average runtime (\aRT) to reach given targets, measured
+        in number of function evaluations. For each function, the \aRT\ 
+        and, in braces as dispersion measure, the half difference between 10 and 
+        90\%-tile of (bootstrapped) runtimes is shown for the different
+        target !!DF!!-values as shown in the top row. 
+        \#succ is the number of trials that reached the last target 
+        $!!FOPT!! + !!HARDEST-TARGET-LATEX!!$.
+        The median number of conducted function evaluations is additionally given in 
+        \textit{italics}, if the target in the last column was never reached. 
+        """        
         
-    if testbedsettings.current_testbed.name in testbedsettings.suite_to_testbed:
+    if testbedsettings.current_testbed.name in ['bbob', 'bbob-noisy', 'bbob-biobj']:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_start + table_caption_rlbased + table_caption_rest
         else:
             table_caption = table_caption_start + table_caption_fixedtargets + table_caption_rest
+    elif testbedsettings.current_testbed.name == 'bbob-biobj-ext':
+        # all testbeds without provided reference algorithm
+        table_caption = table_caption_no_reference_algorithm
     else:
         warnings.warn("Current settings do not support pptable caption.")
-        # what follows is the old table caption for the bbob-biobj case before
-        # a reference algortihm was available and that could be re-used for
-        # other new test suites where this is the case:
-        table_caption_no_reference_algorithm = r"""%
-                Average runtime (\aRT) to reach given targets, measured
-                in number of function evaluations. For each function, the \aRT\ 
-                and, in braces as dispersion measure, the half difference between 10 and 
-                90\%-tile of (bootstrapped) runtimes is shown for the different
-                target !!DF!!-values as shown in the top row. 
-                \#succ is the number of trials that reached the last target 
-                $!!FOPT!! + !!HARDEST-TARGET-LATEX!!$.
-                The median number of conducted function evaluations is additionally given in 
-                \textit{italics}, if the target in the last column was never reached. 
-                """
 
     return captions.replace(table_caption)
         
@@ -429,15 +429,20 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
 
         filename = os.path.join(outputdir, 'pptable.html')
         lines = []
-        with open(filename) as infile:
-            for line in infile:
-                if '<!--pptableHtml-->' in line:
-                    lines.append(res)
-                lines.append(line)
+        try:
+          with open(filename) as infile:
+              for line in infile:
+                  if '<!--pptableHtml-->' in line:
+                      lines.append(res)
+                  lines.append(line)
                 
-        with open(filename, 'w') as outfile:
-            for line in lines:
-                outfile.write(line)
+          with open(filename, 'w') as outfile:
+              for line in lines:
+                  outfile.write(line)
+        except IOError:
+          print("#"*19)
+          print("WARNING: code-block ignored. File:", __file__)
+          print("#"*19)
 
         if genericsettings.verbose:
             print "Table written in %s" % outputfile

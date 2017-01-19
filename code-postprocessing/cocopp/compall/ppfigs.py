@@ -57,10 +57,12 @@ def prepare_scaling_figure_caption():
     scaling_figure_caption_fixed = scaling_figure_caption_start_fixed + scaling_figure_caption_end
     scaling_figure_caption_rlbased = scaling_figure_caption_start_rlbased + scaling_figure_caption_end
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext:
         # NOTE: no runlength-based targets supported yet
         figure_caption = scaling_figure_caption_fixed
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
+                                                  testbedsettings.testbed_name_single_noisy,
+                                                  testbedsettings.testbed_name_bi]:
         if genericsettings.runlength_based_targets:
             figure_caption = scaling_figure_caption_rlbased
         else:
@@ -135,10 +137,12 @@ def prepare_ecdfs_figure_caption():
                 r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. "
                 )
 
-    if testbed.name == testbedsettings.testbed_name_bi:
+    if testbed.name == testbedsettings.testbed_name_bi_ext:
         # NOTE: no runlength-based targets supported yet
-        figure_caption = ecdfs_figure_caption_standard + refalgtext
-    elif testbed.name == testbedsettings.testbed_name_single:
+        figure_caption = ecdfs_figure_caption_standard
+    elif testbed.name in [testbedsettings.testbed_name_single,
+                          testbedsettings.testbed_name_single_noisy,
+                          testbedsettings.testbed_name_bi]:
         if genericsettings.runlength_based_targets:
             figure_caption = ecdfs_figure_caption_rlbased + refalgtext
         else:

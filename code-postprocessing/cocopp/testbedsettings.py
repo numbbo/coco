@@ -7,17 +7,23 @@ from . import genericsettings
 scenario_rlbased = 'rlbased'
 scenario_fixed = 'fixed'
 scenario_biobjfixed = 'biobjfixed'
+scenario_biobjrlbased = 'biobjrlbased'
+scenario_biobjextfixed = 'biobjextfixed'
 scenario_largescalefixed = 'largescalefixed'
-all_scenarios = [scenario_rlbased, scenario_fixed, scenario_biobjfixed, scenario_largescalefixed]
+all_scenarios = [scenario_rlbased, scenario_fixed,
+                 scenario_biobjfixed, scenario_biobjrlbased,
+                 scenario_biobjextfixed,scenario_largescalefixed]
 
 testbed_name_single = 'bbob'
 testbed_name_single_noisy = 'bbob-noisy'
 testbed_name_bi = 'bbob-biobj'
+testbed_name_bi_ext = 'bbob-biobj-ext'
 
 default_testbed_single = 'GECCOBBOBTestbed'
 default_testbed_single_noisy = 'GECCOBBOBNoisyTestbed'
 default_testbed_bi = 'GECCOBiObjBBOBTestbed'
 default_testbed_largescale = 'LargeScaleTestbed'
+default_testbed_bi_ext = 'GECCOBiObjExtBBOBTestbed'
 
 current_testbed = None
 
@@ -25,7 +31,8 @@ suite_to_testbed = {
     'bbob' : default_testbed_single,
     'bbob-noisy' : default_testbed_single_noisy,
     'bbob-biobj' : default_testbed_bi,
-    'bbob-largescale' : default_testbed_largescale
+    'bbob-largescale' : default_testbed_largescale,
+    'bbob-biobj-ext' : default_testbed_bi_ext
 }
 
 
@@ -50,15 +57,6 @@ def get_testbed_from_suite(suite_name):
         raise ValueError('Mapping from suite name to testbed class for suite %s does not exist. '
                          'Add it to suite_to_testbed dictionary in testbedsettings.py to process this data.'
                          % suite_name)
-
-
-def get_suite_from_testbed(testbed_name):
-
-    index = suite_to_testbed.values().index(testbed_name)
-    if index >= 0:
-        return suite_to_testbed.keys()[index]
-
-    return None
 
 reference_values = {}
 
@@ -226,8 +224,8 @@ class GECCOBBOBTestbed(Testbed):
 
         if 11 < 3:
             # override settings if needed...
-            self.reference_algorithm_filename = 'bestalgentries2009.pickle.gz'
-            self.reference_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in reference_algorithm_filename
+            #self.reference_algorithm_filename = 'bestalgentries2009.pickle.gz'
+            #self.reference_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in reference_algorithm_filename
             #self.reference_algorithm_filename = 'data/RANDOMSEARCH'
             #self.reference_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in reference_algorithm_filename
             self.short_names = get_short_names(self.shortinfo_filename)
@@ -266,7 +264,7 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
 
 
 class GECCOBiObjBBOBTestbed(Testbed):
-    """Testbed used in the GECCO biobjective BBOB workshop 2016 to display
+    """Testbed used in the BBOB workshops to display
        data sets run on the `bbob-biobj` test suite.
     """
 
@@ -300,7 +298,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         scenario = scenario_biobjfixed,
         reference_algorithm_filename = 'refalgs/best2016-bbob-biobj-v2.0.tar.gz', # TODO produce correct best2016 algo and delete this line
         reference_algorithm_displayname = 'best 2016', # TODO: should be read in from data set in reference_algorithm_filename
-        instancesOfInterest = None, # None: consider all instances
+        instancesOfInterest = None,# None, # None: consider all instances
         # expensive optimization settings:
         pptable_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
         pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
@@ -326,11 +324,10 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.tabDimsOfInterest = (5,20)
         if 11 < 3:
             # override settings if needed...
-            self.reference_algorithm_filename = 'refalgs/best2016-bbob-biobj-v2.0.tar.gz'
+            self.reference_algorithm_filename = 'refalgs/best2016-bbob-biobj-NEW.tar.gz'
             self.reference_algorithm_displayname = 'best 2016'  # TODO: should be read in from data set in reference_algorithm_filename
-            self.short_names = get_short_names(self.shortinfo_filename)
+            #self.short_names = get_short_names(self.shortinfo_filename)
             self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
-
 
 class LargeScaleTestbed(GECCOBBOBTestbed):
   """First large scale Testbed
@@ -349,4 +346,39 @@ class LargeScaleTestbed(GECCOBBOBTestbed):
     self.best_algorithm_year = None
     self.reference_algorithm_filename = ''
     self.reference_algorithm_displayname = ''
+
+
+class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
+    """Biobjective testbed to display data sets run on the `bbob-biobj-ext`
+       test suite.
+    """
+
+    shortinfo_filename = 'bbob-biobj-benchmarkshortinfos.txt'
+    
+    settings = dict(
+        info_filename = 'bbob-biobj-benchmarkinfos.txt',
+        shortinfo_filename = shortinfo_filename,
+        name = testbed_name_bi_ext,
+        short_names = get_short_names(shortinfo_filename),
+        functions_with_legend = (1, 30, 31, 60, 61, 92),
+        first_function_number = 1,
+        last_function_number = 92,
+        scenario = scenario_biobjextfixed,
+        reference_algorithm_filename = '', # TODO produce correct best2017 algo and delete this line
+        reference_algorithm_displayname = '', # TODO: should be read in from data set in reference_algorithm_filename
+        instancesOfInterest = None, # None: consider all instances
+    ) 
+
+    def __init__(self, targetValues):        
+        super(GECCOBiObjExtBBOBTestbed, self).__init__(targetValues)
+        
+        for key, val in GECCOBiObjExtBBOBTestbed.settings.items():
+            setattr(self, key, val)
+            
+        if 11 < 3:
+            # override settings if needed...
+            self.reference_algorithm_filename = 'refalgs/best2017-bbob-biobj-ext.tar.gz'
+            self.reference_algorithm_displayname = 'best 2017'  # TODO: should be read in from data set in reference_algorithm_filename
+            self.short_names = get_short_names(self.shortinfo_filename)
+            self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 

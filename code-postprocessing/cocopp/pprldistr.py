@@ -160,7 +160,8 @@ def caption_single():
 
     if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
                                                 testbedsettings.default_testbed_single_noisy,
-                                                testbedsettings.testbed_name_bi]:
+                                                testbedsettings.testbed_name_bi,
+                                                testbedsettings.testbed_name_bi_ext]:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_part_one + caption_left_rlbased_targets + caption_right
         else:
@@ -183,14 +184,15 @@ def caption_two():
     symbAlgorithmB = r'{%s%s}' % (color_to_latex('k'),
                                   marker_to_latex(styles[1]['marker']))
     caption_two_fixed_targets_part1 = r"""%
-        to reach a target value $\fopt+\Df$ with $\Df=10^{k}$, where
+        to reach a target value $!!FOPT!!+!!DF!!$ with $!!DF!!=10^{k}$, where
         $k$ is given by the first value in the legend, for
         \algorithmA\ ("""
     caption_two_fixed_targets_part2 = r""") and \algorithmB\ ("""
     caption_two_fixed_targets_part3 = r""")%
         . """ + (r"""Light beige lines show the ECDF of FEvals for target value
-        $\Df=10^{-8}$ of all algorithms benchmarked during
-        BBOB-2009. """ if testbedsettings.current_testbed.name != testbedsettings.testbed_name_bi
+        $!!DF!!=!!HARDEST-TARGET-LATEX!!$ of all algorithms benchmarked during
+        BBOB-2009. """ if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
+                                                                   testbedsettings.testbed_name_single_noisy]
         else "") + r"""Right sub-columns:
         ECDF of FEval ratios of \algorithmA\ divided by \algorithmB for target
         function values $10^k$ with $k$ given in the legend; all
@@ -199,12 +201,12 @@ def caption_two():
         legend also indicates, after the colon, the number of functions that were
         solved in at least one trial (\algorithmA\ first)."""
     caption_two_rlbased_targets_part1 = r"""%
-        to fall below $\fopt+\Df$ for
+        to fall below $!!FOPT!!+!!DF!!$ for
         \algorithmA\ ("""
     caption_two_rlbased_targets_part2 = r""") and \algorithmB\ ("""
     caption_two_rlbased_targets_part3 = r"""%
-        ) where \Df\ is the target just not reached by the GECCO-BBOB-2009 best
-        algorithm within a budget of $k\times\DIM$ evaluations, with $k$ being the
+        ) where $!!DF!!$ is the target just not reached by !!THE-REF-ALG!! 
+        within a budget of $k\times\DIM$ evaluations, with $k$ being the
         value in the legend. 
         Right sub-columns:
         ECDF of FEval ratios of \algorithmA\ divided by \algorithmB\ for
@@ -228,16 +230,20 @@ def caption_two():
                            + symbAlgorithmB
                            + caption_two_rlbased_targets_part3)
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext:
         # NOTE: no runlength-based targets supported yet
-        figure_caption = caption_two_fixed.replace('\\fopt', '\\hvref')
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+        figure_caption = caption_two_fixed
+    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
+                                                  testbedsettings.testbed_name_single_noisy,
+                                                  testbedsettings.testbed_name_bi]:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_two_rlbased
         else:
             figure_caption = caption_two_fixed
     else:
         warnings.warn("Current settings do not support pprldistr caption.")
+
+    figure_caption = captions.replace(figure_caption)
 
     return figure_caption
 

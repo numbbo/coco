@@ -260,10 +260,10 @@ def main(argv=None):
 
         #get directory name if outputdir is a archive file
         algfolder = findfiles.get_output_directory_subfolder(args[0])
-        outputdir = os.path.join(outputdir, algfolder)
+        algoutputdir = os.path.join(outputdir, algfolder)
         
         print("\nPost-processing (1): will generate output " + 
-               "data in folder %s" % outputdir)
+               "data in folder %s" % algoutputdir)
         print("  this might take several minutes.")
 
         filelist = list()
@@ -326,6 +326,11 @@ def main(argv=None):
                 os.makedirs(outputdir)
                 if genericsettings.verbose:
                     print('Folder %s was created.' % (outputdir))
+            if not os.path.exists(algoutputdir):
+                os.makedirs(algoutputdir)
+                if genericsettings.verbose:
+                    print('Folder %s was created.' % (algoutputdir))
+
 
         if genericsettings.isPickled:
             dsList.pickle()
@@ -333,7 +338,7 @@ def main(argv=None):
         if genericsettings.isConv:
             print("Generating convergence plots...")
             ppconverrorbars.main(dictAlg,
-                                 outputdir, 
+                                 algoutputdir, 
                                  genericsettings.single_algorithm_file_name)
             print_done()
 
@@ -348,7 +353,7 @@ def main(argv=None):
             plt.rc("legend", **inset.rclegendlarger)
             plt.rc('pdf', fonttype = 42)
 
-            ppfigdim.main(dsList, values_of_interest, outputdir)
+            ppfigdim.main(dsList, values_of_interest, algoutputdir)
 
             plt.rcdefaults()
             print_done()
@@ -389,15 +394,15 @@ def main(argv=None):
 
                 # If there is only one noise type then we don't need the all graphs.
                 if len(dictNoise) > 1:
-                    pprldistr.main(sliceDim, True, outputdir, 'all')
+                    pprldistr.main(sliceDim, True, algoutputdir, 'all')
                     
                 for noise, sliceNoise in dictNoise.iteritems():
-                    pprldistr.main(sliceNoise, True, outputdir, '%s' % noise)
+                    pprldistr.main(sliceNoise, True, algoutputdir, '%s' % noise)
 
                 dictFG = sliceDim.dictByFuncGroup()
                 for fGroup, sliceFuncGroup in dictFG.items():
                     pprldistr.main(sliceFuncGroup, True,
-                                   outputdir,
+                                   algoutputdir,
                                    '%s' % fGroup)
 
                 pprldistr.fmax = None  # Resetting the max final value
@@ -410,48 +415,49 @@ def main(argv=None):
                 pprldmany.all_single_functions(dictAlg, 
                                                True,
                                                None,
-                                               outputdir,
+                                               algoutputdir,
                                                genericsettings.single_algorithm_file_name,
                                                settings=inset)
                 print_done()
-
-        print("aRT loss ratio figures and tables...")
-        for ng, sliceNoise in dsList.dictByNoise().iteritems():
-            if ng == 'noiselessall':
-                testbed = 'noiseless'
-            elif ng == 'nzall':
-                testbed = 'noisy'
-            txt = ("Please input crafting effort value "
-                   + "for %s testbed:\n  CrE = " % testbed)
-            CrE = genericsettings.inputCrE
-            while CrE is None:
-                try:
-                    CrE = float(raw_input(txt))
-                except (SyntaxError, NameError, ValueError):
-                    print("Float value required.")
-            dictDim = sliceNoise.dictByDim()
-            for d in inset.rldDimsOfInterest:
-                try:
-                    sliceDim = dictDim[d]
-                except KeyError:
-                    continue
-                info = '%s' % ng
-                pplogloss.main(sliceDim, CrE, True, outputdir, info)
-                pplogloss.generateTable(sliceDim, CrE, outputdir, info)
-                for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
-                    info = '%s' % fGroup
-                    pplogloss.main(sliceFuncGroup, CrE, True,
-                                   outputdir, info)
-                pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
-        print_done()
+            
+        if genericsettings.isLogLoss:
+            print("aRT loss ratio figures and tables...")
+            for ng, sliceNoise in dsList.dictByNoise().iteritems():
+                if ng == 'noiselessall':
+                    testbed = 'noiseless'
+                elif ng == 'nzall':
+                    testbed = 'noisy'
+                txt = ("Please input crafting effort value "
+                       + "for %s testbed:\n  CrE = " % testbed)
+                CrE = genericsettings.inputCrE
+                while CrE is None:
+                    try:
+                        CrE = float(raw_input(txt))
+                    except (SyntaxError, NameError, ValueError):
+                        print("Float value required.")
+                dictDim = sliceNoise.dictByDim()
+                for d in inset.rldDimsOfInterest:
+                    try:
+                        sliceDim = dictDim[d]
+                    except KeyError:
+                        continue
+                    info = '%s' % ng
+                    pplogloss.main(sliceDim, CrE, True, algoutputdir, info)
+                    pplogloss.generateTable(sliceDim, CrE, algoutputdir, info)
+                    for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
+                        info = '%s' % fGroup
+                        pplogloss.main(sliceFuncGroup, CrE, True,
+                                       algoutputdir, info)
+                    pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
+            print_done()
 
         dictFunc = dsList.dictByFunc()
-        ppfig.save_single_functions_html(os.path.join(outputdir, genericsettings.single_algorithm_file_name),
+        ppfig.save_single_functions_html(os.path.join(algoutputdir, genericsettings.single_algorithm_file_name),
                                     dictFunc[dictFunc.keys()[0]][0].algId,
                                     htmlPage = ppfig.HtmlPage.ONE,
                                     functionGroups = dsList.getFuncGroups())
 
-        latex_commands_file = os.path.join(outputdir.split(os.sep)[0], 'cocopp_commands.tex')
+        latex_commands_file = os.path.join(outputdir, 'cocopp_commands.tex')
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglosstablecaption}[1]{',
                          pplogloss.table_caption(), '}'])
