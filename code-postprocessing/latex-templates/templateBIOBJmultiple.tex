@@ -69,15 +69,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Definitions
 
-% Algorithm names as they appear in the tables, uncomment if necessary
-%\newcommand{\algAtables}{\algaperfprof}  % first argument in the post-processing
-% \newcommand{\algBtables}{\algbperfprof}  % first argument in the post-processing
-% \newcommand{\algCtables}{\algcperfprof}  % first argument in the post-processing
-% \newcommand{\algDtables}{\algdperfprof}  % second argument in the post-processing
+% Algorithm names as they appear in the tables, uncomment and adapt if necessary
+% \newcommand{\algAtables}{ALGO1}  % first argument in the post-processing
+% \newcommand{\algBtables}{ALGO2}  % second argument in the post-processing
+% \newcommand{\algCtables}{ALGO3}  % third argument in the post-processing
+% \newcommand{\algDtables}{ALGO4}  % forth argument in the post-processing
 % ...
 % location of pictures files
-\newcommand{\bbobdatapath}{ppdata/}
-\input{\bbobdatapath bbob_pproc_commands.tex}
+\newcommand{\bbobdatapath}{ppdata/} % change default output folder of COCO if desired
+\input{\bbobdatapath cocopp_commands.tex}
 \graphicspath{{\bbobdatapath}}
 
 
@@ -89,7 +89,7 @@
 \newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
 \newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
 \newcommand{\Df}{\ensuremath{\Delta f}}
-\newcommand{\DI}{\ensuremath{\Delta I}}
+\newcommand{\DI}{\ensuremath{\Delta I_{\mathrm{HV}}^{\mathrm{COCO}}}}
 \newcommand{\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
 \newcommand{\fopt}{\ensuremath{f_\mathrm{opt}}}
 \newcommand{\ftarget}{\ensuremath{f_\mathrm{t}}}
@@ -120,7 +120,7 @@
 
 %
 % --- Author Metadata here ---
-\conferenceinfo{GECCO'17,} {July 1-2, 2017, Berlin, Germany.}
+\conferenceinfo{GECCO'17,} {July 15-19, 2017, Berlin, Germany.}
 \CopyrightYear{2017}
 \crdata{TBA}
 \clubpenalty=10000
@@ -253,7 +253,7 @@ to be written
 \section{CPU Timing}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % note that the following text is just a proposal and can/should be changed to your needs:
-In order to evaluate the CPU timing of the algorithm, we have run the \change{\algorithmA} with restarts on the entire bbob-biobj test suite \cite{biobj2016func} for $2 D$ function evaluations. The \change{C/Java/Matlab/Octave/Python} code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores. The time per function evaluation for dimensions 2, 3, 5, 10, 20\change{, 40} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
+In order to evaluate the CPU timing of the algorithm, we have run the \change{\algorithmA} with restarts on the entire bbob-biobj test suite \cite{biobj2016func} for $2 D$ function evaluations according to \cite{hansen2016exp}. The \change{C/Java/Matlab/Octave/Python} code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores \change{and (compile) options xxx}. The time per function evaluation for dimensions 2, 3, 5, 10, 20\change{, 40} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
 
 \change{repeat the above for any algorithm tested}
 

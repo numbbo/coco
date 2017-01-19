@@ -61,6 +61,7 @@ def default_observers(update={}):
 _default_observers = {
     'bbob': 'bbob',
     'bbob-biobj': 'bbob-biobj',
+    'bbob-biobj-ext': 'bbob-biobj',
     'bbob-constrained': 'bbob',
     'bbob-largescale': 'bbob',  # todo: needs to be confirmed
     }
@@ -88,6 +89,9 @@ def default_observer_options(budget_=None, suite_name_=None):
 class ObserverOptions(dict):
     """a `dict` with observer options which can be passed to
     the (C-based) `Observer` via the `as_string` property.
+    
+    See http://numbbo.github.io/coco-doc/C/#observer-parameters
+    for details on the available (C-based) options.
 
     Details: When the `Observer` class in future accepts a dictionary
     also, this class becomes superfluous and could be replaced by a method
@@ -338,8 +342,8 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
 # ===============================================
 ######################### CHANGE HERE ########################################
 # CAVEAT: this might be modified from input args
-suite_name = "bbob-biobj"
 suite_name = "bbob"  # always overwritten when called from system shell
+                     # see available choices via cocoex.known_suite_names
 budget = 2  # maxfevals = budget x dimension ### INCREASE budget WHEN THE DATA CHAIN IS STABLE ###
 max_runs = 1e9  # number of (almost) independent trials per problem instance
 number_of_batches = 1  # allows to run everything in several batches
@@ -347,8 +351,9 @@ current_batch = 1      # 1..number_of_batches
 ##############################################################################
 SOLVER = random_search
 # SOLVER = my_solver # SOLVER = fmin_slsqp # SOLVER = cma.fmin
-suite_instance = "year:2016"
+suite_instance = "" # "year:2016"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
+# for more suite options, see http://numbbo.github.io/coco-doc/C/#suite-parameters
 observer_options = ObserverOptions({  # is (inherited from) a dictionary
                     'algorithm_info': "A SIMPLE RANDOM SEARCH ALGORITHM", # CHANGE/INCOMMENT THIS!
                     # 'algorithm_name': "",  # default already provided from SOLVER name

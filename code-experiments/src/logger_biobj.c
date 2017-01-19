@@ -25,6 +25,9 @@
  * objective space. The non-normalized ROI is a rectangle with the ideal and nadir points as its two
  * opposite vertices, while the normalized ROI is the square [0, 1]^2. If not specifically mentioned, the
  * normalized ROI is assumed.
+ *
+ * @note This logger can handle both the original bbob-biobj test suite with 55 and the extended
+ * bbob-biobj-ext test suite with 96 functions.
  */
 
 #include <stdio.h>
@@ -500,14 +503,9 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   if (!info_file_exists) {
     /* Output algorithm name */
     assert(problem->suite);
-    /* TODO: Use this once suite can be read by the postprocessing
     fprintf(indicator->info_file,
         "suite = '%s', algorithm = '%s', indicator = '%s', folder = '%s', coco_version = '%s'\n%% %s",
         problem->suite->suite_name, observer->algorithm_name, indicator_name, problem->problem_type,
-        coco_version, observer->algorithm_info);*/
-    fprintf(indicator->info_file,
-        "algorithm = '%s', indicator = '%s', folder = '%s', coco_version = '%s'\n%% %s",
-        observer->algorithm_name, indicator_name, problem->problem_type,
         coco_version, observer->algorithm_info);
     if (logger->log_nondom_mode == LOG_NONDOM_READ)
       fprintf(indicator->info_file, " (reconstructed)");
