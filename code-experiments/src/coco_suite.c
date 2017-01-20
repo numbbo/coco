@@ -17,6 +17,7 @@
 
 #include "suite_bbob.c"
 #include "suite_biobj.c"
+#include "suite_biobj_ext.c"
 #include "suite_toy.c"
 #include "suite_largescale.c"
 
@@ -38,6 +39,8 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_bbob_initialize();
   } else if (strcmp(suite_name, "bbob-biobj") == 0) {
     suite = suite_biobj_initialize();
+  } else if (strcmp(suite_name, "bbob-biobj-ext") == 0) {
+    suite = suite_biobj_ext_initialize();
   } else if (strcmp(suite_name, "bbob-largescale") == 0) {
     suite = suite_largescale_initialize();
   }
@@ -61,6 +64,8 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
     year_string = suite_bbob_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-biobj") == 0) {
     year_string = suite_biobj_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "bbob-biobj-ext") == 0) {
+    year_string = suite_biobj_ext_get_instances_by_year(year);
   } else {
     coco_error("coco_suite_get_instances_by_year(): suite '%s' has no years defined", suite->suite_name);
     return NULL;
@@ -95,6 +100,8 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     problem = suite_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-biobj") == 0) {
     problem = suite_biobj_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "bbob-biobj-ext") == 0) {
+    problem = suite_biobj_ext_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-largescale") == 0) {
     problem = suite_largescale_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else {
@@ -102,8 +109,61 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     return NULL;
   }
 
+  coco_problem_set_suite(problem, suite);
+
   return problem;
 }
+
+/**
+ * @note: While a suite can contain multiple problems with equal function, dimension and instance, this
+ * function always returns the first problem in the suite with the given function, dimension and instance
+ * values. If the given values don't correspond to a problem, the function returns NULL.
+ */
+coco_problem_t *coco_suite_get_problem_by_function_dimension_instance(coco_suite_t *suite,
+                                                                      const size_t function,
+                                                                      const size_t dimension,
+                                                                      const size_t instance) {
+
+  size_t i;
+  int function_idx, dimension_idx, instance_idx;
+  int found;
+
+  found = 0;
+  for (i = 0; i < suite->number_of_functions; i++) {
+    if (suite->functions[i] == function) {
+      function_idx = (int) i;
+      found = 1;
+      break;
+    }
+  }
+  if (!found)
+    return NULL;
+
+  found = 0;
+  for (i = 0; i < suite->number_of_dimensions; i++) {
+    if (suite->dimensions[i] == dimension) {
+      dimension_idx = (int) i;
+      found = 1;
+      break;
+    }
+  }
+  if (!found)
+    return NULL;
+
+  found = 0;
+  for (i = 0; i < suite->number_of_instances; i++) {
+    if (suite->instances[i] == instance) {
+      instance_idx = (int) i;
+      found = 1;
+      break;
+    }
+  }
+  if (!found)
+    return NULL;
+
+  return coco_suite_get_problem_from_indices(suite, (size_t) function_idx, (size_t) dimension_idx, (size_t) instance_idx);
+}
+
 
 /**
  * @brief Allocates the space for a coco_suite_t instance.
@@ -758,12 +818,13 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
         coco_info_partial("done\n");
       else
         coco_info_partial("\n");
-      coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string, suite->dimensions[dimension_idx], suite->functions[function_idx]);
+      coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string,
+      		(unsigned long) suite->dimensions[dimension_idx], (unsigned long) suite->functions[function_idx]);
       coco_free_memory(time_string);
     }
     else if ((long) function_idx != previous_function_idx){
       /* A new function started */
-      coco_info_partial("f%02lu", suite->functions[function_idx]);
+      coco_info_partial("f%02lu", (unsigned long) suite->functions[function_idx]);
     }
     /* One dot for each instance */
     coco_info_partial(".", suite->instances[instance_idx]);

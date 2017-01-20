@@ -59,12 +59,19 @@ public class ExampleExperiment {
 
 		System.out.println("Running the example experiment... (might take time, be patient)");
 		System.out.flush();
-		
-		/* Call the example experiment */
-		exampleExperiment("bbob-biobj", "bbob-biobj", randomGenerator);
-
-		/* Uncomment the line below to run the same example experiment on the bbob suite
-	  	exampleExperiment("bbob", "bbob", randomGenerator); */
+		     
+		/* Start the actual experiments on a test suite and use a matching logger, for
+         * example one of the following:
+         *
+         *   bbob                 24 unconstrained noiseless single-objective functions
+         *   bbob-biobj           55 unconstrained noiseless bi-objective functions
+         *   bbob-biobj-ext       92 unconstrained noiseless bi-objective functions
+         *   bbob-largescale      24 unconstrained noiseless single-objective functions in large dimension
+         *
+         * Adapt to your need. Note that the experiment is run according
+         * to the settings, defined in exampleExperiment(...) below.
+         */
+		exampleExperiment("bbob", "bbob", randomGenerator);
 
 		System.out.println("Done!");
 		System.out.flush();
@@ -73,12 +80,12 @@ public class ExampleExperiment {
 	}
 	
 	/**
-	 * A simple example of benchmarking random search on a suite with instances from 2016.
-	 *
-	 * @param suiteName Name of the suite (use "bbob" for the single-objective and "bbob-biobj" for the
-	 * bi-objective suite).
-	 * @param observerName Name of the observer (use "bbob" for the single-objective and "bbob-biobj" for the
-	 * bi-objective observer).
+	 * A simple example of benchmarking random search on a given suite with default instances
+     * that can serve also as a timing experiment.
+     *
+     * @param suiteName Name of the suite (e.g. "bbob" or "bbob-biobj").
+     * @param observerName Name of the observer matching with the chosen suite (e.g. "bbob-biobj" 
+     * when using the "bbob-biobj-ext" suite).
 	 * @param randomGenerator The random number generator.
 	 */
 	public static void exampleExperiment(String suiteName, String observerName, Random randomGenerator) {
@@ -90,11 +97,17 @@ public class ExampleExperiment {
 					+ "algorithm_name: RS "
 					+ "algorithm_info: \"A simple random search algorithm\"";
 
-			/* Initialize the suite and observer */
-			Suite suite = new Suite(suiteName, "year: 2016", "dimensions: 2,3,5,10,20,40");
+			/* Initialize the suite and observer.
+             * For more details on how to change the default options, see
+             * http://numbbo.github.io/coco-doc/C/#suite-parameters and
+             * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
+			Suite suite = new Suite(suiteName, "", "");
 			Observer observer = new Observer(observerName, observerOptions);
 			Benchmark benchmark = new Benchmark(suite, observer);
 
+			/* Initialize timing */
+			Timing timing = new Timing();
+			
 			/* Iterate over all problems in the suite */
 			while ((PROBLEM = benchmark.getNextProblem()) != null) {
 
@@ -128,10 +141,15 @@ public class ExampleExperiment {
 						System.out.println("ERROR: Something unexpected happened - function evaluations were decreased!");
 				}
 
+				/* Keep track of time */
+				timing.timeProblem(PROBLEM);
 			}
-			
+
+			/* Output the timing data */
+			timing.output();
+
 			benchmark.finalizeBenchmark();
-			
+
 		} catch (Exception e) {
 			System.err.println(e.toString());
 		}

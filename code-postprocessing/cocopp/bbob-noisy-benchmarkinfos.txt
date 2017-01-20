@@ -1,0 +1,35 @@
+% MODERATE NOISE
+101 Sphere with moderate Gauss noise
+102 Sphere with moderate uniform noise
+103 Sphere with moderate seldom Cauchy noise
+104 Rosenbrock non-rotated with moderate Gauss noise
+105 Rosenbrock non-rotated with moderate uniform noise
+106 Rosenbrock non-rotated with moderate seldom Cauchy noise
+
+% SEVERE NOISE
+107 Sphere with Gauss noise
+108 Sphere with uniform noise
+109 Sphere with seldom Cauchy noise
+110 Rosenbrock non-rotated with Gauss noise
+111 Rosenbrock non-rotated with uniform noise
+112 Rosenbrock non-rotated with seldom Cauchy noise
+113 Step-ellipsoid with Gauss noise, condition 100
+114 Step-ellipsoid with uniform noise, condition 100
+115 Step-ellipsoid with seldom Cauchy noise, condition 100
+116 Ellipsoid with Gauss noise, monotone x-transformation, condition 1e4
+117 Ellipsoid with uniform noise, monotone x-transformation, condition 1e4
+118 Ellipsoid with seldom Cauchy noise, monotone x-transformation, condition 1e4
+119 Sum of different powers with Gauss noise
+120 Sum of different powers with uniform noise
+121 Sum of different powers with seldom Cauchy noise
+
+% SEVERE NOISE HIGHLY MULTI-MODAL
+122 Schaffer F7 with Gauss noise and  asymmetric x-transformation, condition 10
+123 Schaffer F7 with uniform noise and asymmetric x-transformation, condition 10
+124 Schaffer F7 with seldom Cauchy noise and asymmetric x-transformation, condition 10
+125 F8F2 composition of 2-D Griewank-Rosenbrock with Gauss noise
+126 F8F2 composition of 2-D Griewank-Rosenbrock with uniform noise
+127 F8F2 composition of 2-D Griewank-Rosenbrock seldom Cauchy noise
+128 Gallagher 101 Gaussian peaks with Gauss noise
+129 Gallagher 101 Gaussian peaks with uniform noise
+130 Gallagher 101 Gaussian peaks with seldom Cauchy noise

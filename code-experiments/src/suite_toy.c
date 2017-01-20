@@ -66,7 +66,7 @@ static coco_problem_t *suite_toy_get_problem(coco_suite_t *suite,
   } else if (function == 6) {
     problem = f_rosenbrock_allocate(dimension);
   } else {
-    coco_error("suite_toy_get_problem(): function %lu does not exist in this suite", function);
+    coco_error("suite_toy_get_problem(): function %lu does not exist in this suite", (unsigned long) function);
     return NULL; /* Never reached */
   }
 

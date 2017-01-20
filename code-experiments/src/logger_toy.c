@@ -58,8 +58,8 @@ static void logger_toy_evaluate(coco_problem_t *problem, const double *x, double
 
   /* Output the solution when a new target that has been hit */
   if (coco_observer_targets_trigger(logger->targets, y[0])) {
-    fprintf(logger->log_file, "%lu\t%.*e\t%.*e", logger->number_of_evaluations, logger->precision_f, y[0],
-        logger->precision_f, logger->targets->value);
+    fprintf(logger->log_file, "%lu\t%.*e\t%.*e", (unsigned long) logger->number_of_evaluations,
+    		logger->precision_f, y[0], logger->precision_f, logger->targets->value);
     for (i = 0; i < problem->number_of_variables; i++) {
       fprintf(logger->log_file, "\t%.*e", logger->precision_x, x[i]);
     }
@@ -95,11 +95,13 @@ static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *inn
   problem->evaluate_function = logger_toy_evaluate;
 
   /* Output initial information */
+  assert(coco_problem_get_suite(inner_problem));
   fprintf(logger_toy->log_file, "\n");
-  fprintf(logger_toy->log_file, "%% problem_id = %s, problem_name = %s\n", coco_problem_get_id(inner_problem),
-      coco_problem_get_name(inner_problem));
+  fprintf(logger_toy->log_file, "suite = '%s', problem_id = '%s', problem_name = '%s', coco_version = '%s'\n",
+          coco_problem_get_suite(inner_problem)->suite_name, coco_problem_get_id(inner_problem),
+          coco_problem_get_name(inner_problem), coco_version);
   fprintf(logger_toy->log_file, "%% evaluation number | function value | target hit | %lu variables \n",
-      inner_problem->number_of_variables);
+  		(unsigned long) inner_problem->number_of_variables);
 
   return problem;
 }

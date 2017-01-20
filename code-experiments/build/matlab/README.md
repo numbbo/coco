@@ -11,7 +11,7 @@ the following is lacking:
 - Matlab is installed (version >=2008a) and in the path. Alternatively, you can also use the
   open source platform Octave (version >=4.0.0).
 
-- Python is not installed in the right version (>=2.6). We recommend using the Anaconda package
+- Python is installed in the right version (>=2.6). We recommend using the Anaconda package
   (https://www.continuum.io) for installing python.
   
 - A C compiler, like `gcc`, which is invoked by `mex`. For details handling non-supported versions,
@@ -26,8 +26,8 @@ See _Getting Started_ [here](../../../README.md#Getting-Started) for the first s
 
 - Copy (and rename) the folder `code-experiments/build/matlab` to a place (and name)
   of your choice. Modify the [`exampleexperiment.m`](./code-experiments/build/matlab/exampleexperiment.m`) 
-  file to include the solver of your choice (instead of random
-  search in `my_optimizer`).
+  file to include the solver of your choice (instead of random search in `my_optimizer`).
+  Do not forget to also choose the right benchmarking suite and the corresponding observer.
 
 - Execute the modified file either from a system shell like 
   ```

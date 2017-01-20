@@ -2,22 +2,35 @@
 """Raw pre-processing routines for loading data from archive files and files with best hypervolume values.
 """
 from __future__ import division, print_function, unicode_literals
+
 import os
 import os.path
 import re
+import six
 from time import gmtime, strftime
+from itertools import groupby
+from operator import itemgetter
 
-from .archive_exceptions import PreprocessingWarning
+from .archive_exceptions import PreprocessingWarning, PreprocessingException
 
 
-def get_file_name_list(path):
-    """Returns the list of files contained in any sub-folder in the given path.
-       :param path: path to the directory
+def get_file_name_list(paths, ending=None):
+    """Returns the list of files contained in any sub-folder in the given paths (can be a single path or a list of
+       paths).
+       :param paths: paths to the directory (a string or a list of strings)
+       :param ending: if given, restrict to files with the given ending
     """
     file_name_list = []
-    for dir_path, dir_names, file_names in os.walk(path):
-        for file_name in file_names:
-            file_name_list.append(os.path.join(dir_path, file_name))
+    if isinstance(paths, six.string_types):
+        paths = [paths]
+    for path in paths:
+        for dir_path, dir_names, file_names in os.walk(path):
+            dir_names.sort()
+            file_names.sort()
+            for file_name in file_names:
+                if (ending and file_name.endswith(ending)) or not ending:
+                    file_name_list.append(os.path.join(dir_path, file_name))
+
     return file_name_list
 
 
@@ -27,6 +40,14 @@ def create_path(path):
     """
     if not os.path.exists(path):
         os.makedirs(path)
+
+
+def remove_empty_file(file_name):
+    """Removes the file with the given name if it is empty.
+    :param file_name: name of the file
+    """
+    if os.path.isfile(file_name) and os.path.getsize(file_name) == 0:
+        os.remove(file_name)
 
 
 def get_key_value(string, key):
@@ -45,20 +66,52 @@ def get_key_value(string, key):
     return None
 
 
-def parse_archive_file_name(file_name):
-    """Retrieves information from the given archive file name and returns it in the following form:
-       suite_name, function, dimension
-       :param file_name: archive file name in form [suite-name]_f[function]_d[dimension]_*.*
+def parse_problem_instance_file_name(file_name):
+    """Retrieves information from the given problem instance file name and returns it in the following form:
+       suite_name, function, instance, dimension
+       :param file_name: problem instance file name in form [suite-name]_f[function]_i[instance]_d[dimension]_*.*
     """
     split = os.path.basename(file_name).split('_')
-    if (len(split) < 3) or (split[1][0] != 'f') or (split[2][0] != 'd'):
+    if (len(split) < 4) or (split[1][0] != 'f') or (split[2][0] != 'i') or (split[3][0] != 'd'):
         raise PreprocessingWarning('File name \'{}\' not in expected format '
-                                   '\'[suite-name]_f[function]_d[dimension]_*.*\''.format(file_name))
+                                   '\'[suite-name]_f[function]_i[instance]_d[dimension]_*.*\''.format(file_name))
 
     suite_name = split[0]
     function = int(split[1][1:])
-    dimension = int(split[2][1:])
-    return suite_name, function, dimension
+    instance = int(split[2][1:])
+    dimension = int(split[3][1:])
+    return suite_name, function, instance, dimension
+
+
+def parse_archive_file_name(file_name):
+    """Retrieves information from the given archive file name and returns it in the following form:
+       suite_name, function, instance, dimension
+       :param file_name: archive file name in either form
+       [suite-name]_f[function]_d[dimension]_*.* or
+       [suite-name]_f[function]_i[instance]_d[dimension]_*.*
+       If the former, instance is set to None.
+    """
+    message = 'File name \'{}\' not in expected format \'[suite-name]_f[function]_d[dimension]_*.*\' or' \
+              '\'[suite-name]_f[function]_i[instance]_d[dimension]_*.*\''.format(file_name)
+
+    split = os.path.basename(file_name).split('_')
+
+    if (len(split) < 3) or (split[1][0] != 'f'):
+        raise PreprocessingWarning(message)
+
+    suite_name = split[0]
+    function = int(split[1][1:])
+    instance = None
+
+    if (len(split) >= 3) and (split[2][0] == 'd'):
+        dimension = int(split[2][1:])
+    elif (len(split) >= 4) and (split[2][0] == 'i') and (split[3][0] == 'd'):
+        instance = int(split[2][1:])
+        dimension = int(split[3][1:])
+    else:
+        raise PreprocessingWarning(message)
+
+    return suite_name, function, instance, dimension
 
 
 def parse_old_arhive_file_name(file_name):
@@ -102,7 +155,7 @@ def parse_old_arhive_file_name(file_name):
     except ValueError:
         dimension = None
 
-    return function, dimension, instance
+    return function, instance, dimension
 
 
 def get_instances(file_name):
@@ -124,25 +177,35 @@ def get_instances(file_name):
     return result
 
 
-def get_archive_file_info(file_name):
-    """Returns information on the problem instances contained in the given archive file in the form of the following
-       list of lists:
-       file_name, suite_name, function, dimension, instance1
-       file_name, suite_name, function, dimension, instance2
+def get_archive_file_info(file_name, functions, instances, dimensions):
+    """Returns information on the problem instances contained in the given archive file that also correspond to the
+       given functions, instances and dimensions in the form of the following list of lists:
+       file_name, suite_name, function, instance1, dimension
+       file_name, suite_name, function, instance2, dimension
        ...
-       Suite_name, function and dimension are retrieved from the file name, 
-       while instance numbers are read from the file.
+       The suite_name, function and dimension are always retrieved from the file name, while instances are retrieved
+       from the file name, if the file name is in form [suite-name]_f[function]_i[instance]_d[dimension]_*.*, and
+       read from the file otherwise.
        :param file_name: archive file name
+       :param functions: functions to be considered
+       :param instances: instances to be considered
+       :param dimensions: dimensions to be considered
     """
     try:
-        (suite_name, function, dimension) = parse_archive_file_name(file_name)
-        instances = get_instances(file_name)
+        (suite_name, function, instance, dimension) = parse_archive_file_name(file_name)
+        if (function not in functions) or (dimension not in dimensions):
+            return None
+        if not instance:
+            instance_list = get_instances(file_name)
+        else:
+            instance_list = [instance]
     except PreprocessingWarning as warning:
         raise PreprocessingWarning('Skipping file {}\n{}'.format(file_name, warning))
 
     result = []
-    for instance in instances:
-        result.append((file_name, suite_name, function, dimension, instance))
+    for instance in instance_list:
+        if instance in instances:
+            result.append((file_name, suite_name, function, instance, dimension))
     return result
 
 
@@ -176,7 +239,57 @@ def write_best_values(dic, file_name):
     :param dic: dictionary containing problem names and their best known hypervolume values
     """
     with open(file_name, 'a') as f:
-        f.write(strftime('\n/* Best values on %d.%m.%Y %H:%M:%S */\n', gmtime()))
+        f.write(strftime('/* Best values on %d.%m.%Y %H:%M:%S */\n', gmtime()))
         for key, value in sorted(dic.items()):
             f.write('  \"{} {:.15f}\",\n'.format(key, value))
         f.close()
+
+
+def parse_range(input_string=""):
+    """Parses the input string containing integers and integer ranges, such as:
+       1, 2-4, 5, 10
+       Returns a list of integers:
+       [1, 2, 3, 4, 5, 10]
+       :param input_string: input string with integers and integer ranges (if empty, the result is an empty list)
+    """
+    if not input_string:
+        return None
+
+    selection = set()
+    # Tokens are comma separated values
+    tokens = [x.strip() for x in input_string.split(',')]
+    for i in tokens:
+        try:
+            # Typically tokens are plain old integers
+            selection.add(int(i))
+        except ValueError:
+            # If not, then it might be a range
+            try:
+                token = [int(k.strip()) for k in i.split('-')]
+                if len(token) > 1:
+                    token.sort()
+                    # Try to build a valid range
+                    first = token[0]
+                    last = token[len(token)-1]
+                    for x in range(first, last+1):
+                        selection.add(x)
+            except:
+                raise PreprocessingException('Range {} not in correct format'.format(input_string))
+    return list(selection)
+
+
+def get_range(input_set):
+    """Parses the input set containing integers, such as:
+       (1, 2, 10, 3, 4, 5)
+       Returns the shortest string of sorted integers and integer ranges:
+       1, 2-5, 10
+       :param input_set: input set with integers (if empty, the result is an empty string)
+    """
+    result = []
+    for k, g in groupby(enumerate(sorted(input_set)), lambda (i, x): i - x):
+        i_list = map(itemgetter(1), g)
+        if len(i_list) > 1:
+            result.append('{}-{}'.format(i_list[0], i_list[-1]))
+        else:
+            result.append('{}'.format(i_list[0]))
+    return ','.join(result)

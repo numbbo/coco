@@ -33,7 +33,12 @@ static const size_t suite_biobj_instances[][3] = {
     { 7, 15, 16 },
     { 8, 17, 18 },
     { 9, 19, 21 },
-    { 10, 21, 22 }
+    { 10, 21, 22 },
+    { 11, 23, 24 },
+    { 12, 25, 26 },
+    { 13, 27, 28 },
+    { 14, 29, 30 },
+    { 15, 31, 34 }
 };
 
 /**
@@ -70,7 +75,7 @@ static coco_suite_t *suite_biobj_initialize(void) {
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "year: 2016");
+  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "year: 2017");
 
   return suite;
 }
@@ -82,6 +87,9 @@ static const char *suite_biobj_get_instances_by_year(const int year) {
 
   if (year == 2016) {
     return "1-10";
+  }
+  else if (year == 2017) {
+    return "1-15";
   }
   else {
     coco_error("suite_biobj_get_instances_by_year(): year %d not defined for suite_biobj", year);
@@ -129,6 +137,9 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   size_t i, j;
   const size_t num_existing_instances = sizeof(suite_biobj_instances) / sizeof(suite_biobj_instances[0]);
   int instance_found = 0;
+
+  double *smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
+  double *largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
 
   /* A "magic" formula to compute the BBOB function index from the bi-objective function index */
   function1_idx = num_bbob_functions
@@ -194,7 +205,7 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   problem1 = coco_get_bbob_problem(bbob_functions[function1_idx], dimension, instance1);
   problem2 = coco_get_bbob_problem(bbob_functions[function2_idx], dimension, instance2);
 
-  problem = coco_problem_stacked_allocate(problem1, problem2);
+  problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest, largest_values_of_interest);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
@@ -202,10 +213,14 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
 
   /* Use the standard stacked problem_id as problem_name and construct a new suite-specific problem_id */
   coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "bbob-biobj_f%02d_i%02ld_d%02d", function, instance, dimension);
+  coco_problem_set_id(problem, "bbob-biobj_f%02lu_i%02lu_d%02lu", (unsigned long) function,
+  		(unsigned long) instance, (unsigned long) dimension);
 
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem1->problem_type, problem2->problem_type);
+
+  coco_free_memory(smallest_values_of_interest);
+  coco_free_memory(largest_values_of_interest);
 
   return problem;
 }
@@ -235,6 +250,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
   size_t d, f1, f2, i;
   size_t function1, function2, dimension;
   double norm;
+  double *smallest_values_of_interest, *largest_values_of_interest;
 
   suite_biobj_t *data;
   assert(suite->data);
@@ -268,7 +284,15 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
             coco_problem_stacked_free(problem);
             problem = NULL;
           }
-          problem = coco_problem_stacked_allocate(problem1, problem2);
+
+          /* Set smallest and largest values of interest to some value (not important which, it just needs to be a
+           * vector of doubles of the right dimension) */
+          smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
+          largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
+          problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
+          		largest_values_of_interest);
+          coco_free_memory(smallest_values_of_interest);
+          coco_free_memory(largest_values_of_interest);
 
           /* Check whether the ideal and nadir points are too close in the objective space */
           norm = mo_get_norm(problem->best_value, problem->nadir_value, 2);
@@ -285,7 +309,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
           norm = mo_get_norm(problem1->best_parameter, problem2->best_parameter, problem->number_of_variables);
           if (norm < apart_enough) {
             coco_debug(
-                "suite_biobj_get_new_instance(): The extremal optimal points of %s are too close in the decision space",
+                "suite_biobj_get_new_instance(): The extreme points of %s are too close in the decision space",
                 problem->problem_id);
             coco_debug("norm = %e", norm);
             break_search = 1;
@@ -305,8 +329,8 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
     } else {
       /* An appropriate instance was found */
       appropriate_instance_found = 1;
-      coco_info("suite_biobj_set_new_instance(): Instance %lu created from instances %lu and %lu", instance,
-          instance1, instance2);
+      coco_info("suite_biobj_set_new_instance(): Instance %lu created from instances %lu and %lu",
+      		(unsigned long) instance, (unsigned long) instance1, (unsigned long) instance2);
 
       /* Save the instance to new_instances */
       for (i = 0; i < data->max_new_instances; i++) {
@@ -321,7 +345,8 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
   }
 
   if (!appropriate_instance_found) {
-    coco_error("suite_biobj_get_new_instance(): Could not find suitable instance %lu in $lu tries", instance, num_tries);
+    coco_error("suite_biobj_get_new_instance(): Could not find suitable instance %lu in %lu tries",
+    		(unsigned long) instance, (unsigned long) num_tries);
     return 0; /* Never reached */
   }
 
