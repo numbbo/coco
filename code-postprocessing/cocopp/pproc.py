@@ -843,11 +843,13 @@ class DataSet(object):
                     
                     # We might take only a subset of the given instances,
                     # given in testbedsettings.current_testbed.instancesOfInterest:
-                    if (testbedsettings.current_testbed.instancesOfInterest and
-                        ast.literal_eval(elem) not in testbedsettings.current_testbed.instancesOfInterest):
+                    if testbedsettings.current_testbed.instancesOfInterest:
+                        instance = ast.literal_eval(elem)
 
-                        idx_of_instances_to_load.append(False)
-                        continue
+                        # If this is the best algorithm then the instance number is 0.
+                        if instance > 0 and instance not in testbedsettings.current_testbed.instancesOfInterest:
+                            idx_of_instances_to_load.append(False)
+                            continue
 
                     # if elem does not have ':' it means the run was not
                     # finalized properly.
@@ -866,10 +868,14 @@ class DataSet(object):
                     itrial, info = elem.split(':', 1)
                     # We might take only a subset of the given instances,
                     # given in testbedsettings.current_testbed.instancesOfInterest:
-                    if (testbedsettings.current_testbed.instancesOfInterest and
-                            ast.literal_eval(itrial) not in testbedsettings.current_testbed.instancesOfInterest):
-                        idx_of_instances_to_load.append(False)
-                        continue
+                    if testbedsettings.current_testbed.instancesOfInterest:
+                        instance = ast.literal_eval(itrial)
+
+                        # If this is the best algorithm then the instance number is 0.
+                        if instance > 0 and instance not in testbedsettings.current_testbed.instancesOfInterest:
+                            idx_of_instances_to_load.append(False)
+                            continue
+
                     self.instancenumbers.append(ast.literal_eval(itrial))
                     idx_of_instances_to_load.append(True)
                     self.isFinalized.append(True)
