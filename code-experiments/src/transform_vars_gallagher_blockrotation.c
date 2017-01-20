@@ -32,7 +32,6 @@ static void transform_vars_gallagher_blockrotation_free(void *thing) {
  * @brief Data type in problem->versatile_data of f_gallagher.c
  */
 typedef struct {
-  double *x;
   double *rotated_x;
   size_t number_of_peaks;
   coco_problem_t **sub_problems;
@@ -46,9 +45,6 @@ typedef struct {
 static void f_gallagher_versatile_data_free(coco_problem_t *problem) {
   size_t i;
   f_gallagher_versatile_data_t *versatile_data = (f_gallagher_versatile_data_t *) problem->versatile_data;
-  if (versatile_data->x != NULL) {
-    coco_free_memory(versatile_data->rotated_x);
-  }
   if (versatile_data->rotated_x != NULL) {
     coco_free_memory(versatile_data->rotated_x);
   }
