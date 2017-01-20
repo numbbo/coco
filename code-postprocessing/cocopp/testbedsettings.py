@@ -9,9 +9,10 @@ scenario_fixed = 'fixed'
 scenario_biobjfixed = 'biobjfixed'
 scenario_biobjrlbased = 'biobjrlbased'
 scenario_biobjextfixed = 'biobjextfixed'
+scenario_largescalefixed = 'largescalefixed'
 all_scenarios = [scenario_rlbased, scenario_fixed,
                  scenario_biobjfixed, scenario_biobjrlbased,
-                 scenario_biobjextfixed]
+                 scenario_biobjextfixed,scenario_largescalefixed]
 
 testbed_name_single = 'bbob'
 testbed_name_single_noisy = 'bbob-noisy'
@@ -21,6 +22,7 @@ testbed_name_bi_ext = 'bbob-biobj-ext'
 default_testbed_single = 'GECCOBBOBTestbed'
 default_testbed_single_noisy = 'GECCOBBOBNoisyTestbed'
 default_testbed_bi = 'GECCOBiObjBBOBTestbed'
+default_testbed_largescale = 'LargeScaleTestbed'
 default_testbed_bi_ext = 'GECCOBiObjExtBBOBTestbed'
 
 current_testbed = None
@@ -29,6 +31,7 @@ suite_to_testbed = {
     'bbob' : default_testbed_single,
     'bbob-noisy' : default_testbed_single_noisy,
     'bbob-biobj' : default_testbed_bi,
+    'bbob-largescale' : default_testbed_largescale,
     'bbob-biobj-ext' : default_testbed_bi_ext
 }
 
@@ -215,7 +218,10 @@ class GECCOBBOBTestbed(Testbed):
         self.pptable_targetsOfInterest = targetValues(self.pptable_targetsOfInterest)
         self.pptable2_targetsOfInterest = targetValues(self.pptable2_targetsOfInterest)
         self.pptablemany_targetsOfInterest = targetValues(self.pptablemany_targetsOfInterest)
-            
+
+        # Wassim: should probably be set in a mother class for "regular" dims
+        self.tabDimsOfInterest = (5,20)
+
         if 11 < 3:
             # override settings if needed...
             #self.reference_algorithm_filename = 'bestalgentries2009.pickle.gz'
@@ -313,13 +319,33 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptable_targetsOfInterest = targetValues(self.pptable_targetsOfInterest)
         self.pptable2_targetsOfInterest = targetValues(self.pptable2_targetsOfInterest)
         self.pptablemany_targetsOfInterest = targetValues(self.pptablemany_targetsOfInterest)
-            
+
+        # Wassim: should probably be set in a mother class for "regular" dims
+        self.tabDimsOfInterest = (5,20)
         if 11 < 3:
             # override settings if needed...
             self.reference_algorithm_filename = 'refalgs/best2016-bbob-biobj-NEW.tar.gz'
             self.reference_algorithm_displayname = 'best 2016'  # TODO: should be read in from data set in reference_algorithm_filename
             #self.short_names = get_short_names(self.shortinfo_filename)
             self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+
+class LargeScaleTestbed(GECCOBBOBTestbed):
+  """First large scale Testbed
+    """
+  
+  def __init__(self, targetValues):
+    super(LargeScaleTestbed, self).__init__(targetValues)
+    self.first_dimension = 20
+    self.scenario = scenario_largescalefixed
+    # Wassim: added the following
+    self.dimensions_to_display = [20, 40, 80, 160, 320, 640]
+    self.tabDimsOfInterest = [80, 320]
+    self.rldDimsOfInterest = [80, 320]
+    self.htmlDimsOfInterest = [80, 320]
+    self.best_algorithm_filename = ''
+    self.best_algorithm_year = None
+    self.reference_algorithm_filename = ''
+    self.reference_algorithm_displayname = ''
 
 
 class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):

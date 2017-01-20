@@ -434,7 +434,7 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
                 if '<!--pptableHtml-->' in line:
                     lines.append(res)
                 lines.append(line)
-                
+
         with open(filename, 'w') as outfile:
             for line in lines:
                 outfile.write(line)

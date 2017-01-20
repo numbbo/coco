@@ -143,7 +143,7 @@ static double **ls_copy_block_matrix(const double *const *B, const size_t dimens
   idx_blocksize = 0;
   current_blocksize = block_sizes[idx_blocksize];
   next_bs_change = block_sizes[idx_blocksize];
-  assert(nb_blocks != 0); /*tmp*//*to silence warning*/
+  assert(nb_blocks != 0); /*tmp*/ /*to silence warning*/
   for (i = 0; i < dimension; i++) {
     if (i >= next_bs_change) {
       idx_blocksize++;
@@ -190,7 +190,7 @@ static void ls_compute_random_permutation(size_t *P, long seed, size_t n) {
 /*
  * returns a uniformly distributed integer between lower_bound and upper_bound using seed.
  */
-long ls_rand_int(long lower_bound, long upper_bound, coco_random_state_t *rng){
+static long ls_rand_int(long lower_bound, long upper_bound, coco_random_state_t *rng){
   long range;
   range = upper_bound - lower_bound + 1;
   return ((long)(coco_random_uniform(rng) * (double) range)) + lower_bound;
@@ -251,7 +251,7 @@ static void ls_compute_truncated_uniform_swap_permutation(size_t *P, long seed, 
       /* generate random permutation instead */
       ls_compute_random_permutation(P, seed, n);
     }
-    
+
   }
   coco_random_free(rng);
 }
@@ -261,7 +261,7 @@ static void ls_compute_truncated_uniform_swap_permutation(size_t *P, long seed, 
 /*
  * duplicates a size_t vector
  */
-size_t *coco_duplicate_size_t_vector(const size_t *src, const size_t number_of_elements) {
+static size_t *coco_duplicate_size_t_vector(const size_t *src, const size_t number_of_elements) {
   size_t i;
   size_t *dst;
   
@@ -280,11 +280,11 @@ size_t *coco_duplicate_size_t_vector(const size_t *src, const size_t number_of_e
  * returns the list of block_sizes and sets nb_blocks to its correct value
  * TODO: update with chosen parameter setting
  */
-size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
+static size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
   size_t *block_sizes;
   size_t block_size;
   int i;
-  
+
   block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension / 4, 100));
   *nb_blocks = dimension / block_size + ((dimension % block_size) > 0);
   block_sizes = coco_allocate_vector_size_t(*nb_blocks);
@@ -298,16 +298,14 @@ size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
 
 /*
  * return the swap_range corresponding to the problem
- * TODO: update with chosen parameter setting
  */
-size_t ls_get_swap_range(size_t dimension){
+static size_t ls_get_swap_range(size_t dimension){
   return dimension / 3;
 }
 
 
 /*
  * return the number of swaps corresponding to the problem
- * TODO: update with chosen parameter setting
  */
 size_t ls_get_nb_swaps(size_t dimension){
   return dimension;

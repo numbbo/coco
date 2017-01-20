@@ -106,7 +106,7 @@ int main(void) {
    * Adapt to your need. Note that the experiment is run according
    * to the settings, defined in example_experiment(...) below.
    */
-  example_experiment("bbob", "bbob", random_generator);
+  example_experiment("bbob-biobj-ext", "bbob-biobj-ext", random_generator);
 
   printf("Done!\n");
   fflush(stdout);

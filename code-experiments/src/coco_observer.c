@@ -512,7 +512,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
    * - data */
   if (0 == strcmp(observer_name, "toy")) {
     observer_toy(observer, observer_options, &additional_option_keys);
-  } else if (0 == strcmp(observer_name, "bbob")) {
+  } else if (0 == strcmp(observer_name, "bbob") || 0 == strcmp(observer_name, "bbob-largescale")) {
     observer_bbob(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob-biobj")) {
     observer_biobj(observer, observer_options, &additional_option_keys);
