@@ -220,7 +220,9 @@ class GECCOBBOBTestbed(Testbed):
         self.pptablemany_targetsOfInterest = targetValues(self.pptablemany_targetsOfInterest)
 
         # Wassim: should probably be set in a mother class for "regular" dims
-        self.tabDimsOfInterest = (5,20)
+        self.tabDimsOfInterest = (5, 20)
+        self.rldDimsOfInterest = (5, 20)
+        self.htmlDimsOfInterest = (5, 20)
 
         if 11 < 3:
             # override settings if needed...
@@ -321,7 +323,9 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pptablemany_targetsOfInterest = targetValues(self.pptablemany_targetsOfInterest)
 
         # Wassim: should probably be set in a mother class for "regular" dims
-        self.tabDimsOfInterest = (5,20)
+        self.tabDimsOfInterest = (5, 20)
+        self.rldDimsOfInterest = (5, 20)
+        self.htmlDimsOfInterest = (5, 20)
         if 11 < 3:
             # override settings if needed...
             self.reference_algorithm_filename = 'refalgs/best2016-bbob-biobj-NEW.tar.gz'
@@ -338,10 +342,10 @@ class LargeScaleTestbed(GECCOBBOBTestbed):
     self.first_dimension = 20
     self.scenario = scenario_largescalefixed
     # Wassim: added the following
-    self.dimensions_to_display = [20, 40, 80, 160, 320, 640]
-    self.tabDimsOfInterest = [80, 320]
-    self.rldDimsOfInterest = [80, 320]
-    self.htmlDimsOfInterest = [80, 320]
+    self.dimensions_to_display = (20, 40, 80, 160, 320, 640)
+    self.tabDimsOfInterest = (80, 320)
+    self.rldDimsOfInterest = (80, 320)
+    self.htmlDimsOfInterest = (80, 320)
     self.best_algorithm_filename = ''
     self.best_algorithm_year = None
     self.reference_algorithm_filename = ''

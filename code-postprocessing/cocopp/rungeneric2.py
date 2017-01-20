@@ -422,7 +422,8 @@ def main(argv=None):
 
             # ECDFs of aRT ratios
             for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
-                if dim in inset.rldDimsOfInterest:
+                if dim in testbedsettings.current_testbed.rldDimsOfInterest:
+                    # inset.rldDimsOfInterest:
                     # ECDF for all functions altogether
                     try:
                         pprldistr2.main(dictDim0[dim], dictDim1[dim], dim,
@@ -491,7 +492,8 @@ def main(argv=None):
                 pprldistr.fmax = None  # Resetting the max final value
                 pprldistr.evalfmax = None  # Resetting the max #fevalsfactor
                 # ECDFs of all functions altogether
-                if dim in inset.rldDimsOfInterest:
+                if dim in testbedsettings.current_testbed.rldDimsOfInterest:
+                    # inset.rldDimsOfInterest:
                     try:
                         pprldistr.comp(dictDim1[dim], dictDim0[dim],
                                        testbedsettings.current_testbed.rldValsOfInterest,
