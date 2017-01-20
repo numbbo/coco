@@ -1127,7 +1127,7 @@ class DataSet(object):
         res = (self.__class__ is other.__class__ and
                self.funcId == other.funcId and
                self.dim == other.dim and
-               (self.isBiobjective() or self.precision == other.precision) and
+               (self.isBiobjective() or other.isBiobjective() or self.precision == other.precision) and
                self.algId == other.algId and
                self.comment == other.comment)
         if hasattr(self, '_extra_attr'): # Backward compatibility

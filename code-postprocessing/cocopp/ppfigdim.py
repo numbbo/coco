@@ -170,6 +170,13 @@ def beautify(axesLabel=True):
 
     # Ticks on axes
     # axisHandle.invert_xaxis()
+
+    # Wassim: if different dims to display are defined, use them, instead, use the ones in genericsettings
+    # Wassim: Ideally, all tesbeds should inherit from a mother class where these default values are instead of using genericsettings
+    try:
+      dimensions = testbedsettings.current_testbed.dimensions_to_display
+    except AttributeError:
+      dimensions = genericsettings.dimensions_to_display
     dimticklist = dimensions 
     dimannlist = dimensions 
     # TODO: All these should depend on one given input (xlim, ylim)
@@ -469,8 +476,7 @@ def plot_previous_algorithms(func, target=None):  # lambda x: [1e-8]):
     testbedsettings.current_testbed using the
     last, most difficult target in ``target``."""
     
-    testbed = testbedsettings.current_testbed    
-    
+    testbed = testbedsettings.current_testbed
     if not target:
         target = testbed.ppfigdim_target_values
         

@@ -159,6 +159,8 @@ struct coco_problem_s {
   size_t suite_dep_instance;           /**< @brief Suite-depending instance */
 
   void *data;                          /**< @brief Pointer to a data instance @see coco_problem_transformed_data_t */
+  
+  void *versatile_data;                /* Wassim: *< @brief pointer to eventual additional data that need to be accessed all along the transforamtions*/
 };
 
 /**
