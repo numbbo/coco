@@ -20,6 +20,7 @@ typedef struct {
   double *x;
   size_t *block_sizes; /**< @brief the list of block-sizes*/
   size_t nb_blocks; /**< @brief the number of blocks in the matrix */
+  size_t nb_rows; /**< @brief number of rows, needed to free the matrix correctly */
   size_t *block_size_map; /**< @brief maps a row to the block-size of the block to which it belong, keep until better way is found */
   size_t *first_non_zero_map; /**< @brief maps a row to the index of its first non zero element */
 } transform_vars_blockrotation_t;
@@ -47,9 +48,10 @@ static void transform_vars_blockrotation_evaluate(coco_problem_t *problem, const
 
 static void transform_vars_blockrotation_free(void *thing) {
   transform_vars_blockrotation_t *data = (transform_vars_blockrotation_t *) thing;
-  coco_free_memory(data->B);
-  coco_free_memory(data->block_sizes);
+  /* coco_free_memory(data->B); */
+  coco_free_block_matrix(data->B, data->nb_rows);
   coco_free_memory(data->x);
+  coco_free_memory(data->block_sizes);
   coco_free_memory(data->block_size_map);
   coco_free_memory(data->first_non_zero_map);
 }
@@ -74,6 +76,7 @@ static coco_problem_t *transform_vars_blockrotation(coco_problem_t *inner_proble
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->block_sizes = coco_duplicate_size_t_vector(block_sizes, nb_blocks);
   data->nb_blocks = nb_blocks;
+  data->nb_rows = number_of_variables;
   data->block_size_map = coco_allocate_vector_size_t(number_of_variables);
   data->first_non_zero_map = coco_allocate_vector_size_t(number_of_variables);
   
