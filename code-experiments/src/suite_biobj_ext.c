@@ -93,7 +93,10 @@ static coco_suite_t *suite_biobj_ext_initialize(void) {
  */
 static const char *suite_biobj_ext_get_instances_by_year(const int year) {
 
-  if (year == 2017) {
+  if (year == 0000) { /* default/test case */
+    return "1-10";
+  }
+  else if (year == 2017) {
     return "1-15";
   }
   else {

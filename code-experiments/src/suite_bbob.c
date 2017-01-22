@@ -67,7 +67,7 @@ static const char *suite_bbob_get_instances_by_year(const int year) {
   else if (year == 2015) {
     return "1-5,41-50";
   }
-  else if (year == 2016) {
+  else if ((year == 2016) || (year == 0000)) { /* test case */
     return "1-5,51-60";
   }
   else if (year == 2017) {
