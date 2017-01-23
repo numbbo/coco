@@ -545,5 +545,5 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - Experimental setup before 2016: http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
  - Old framework software documentation: http://coco.lri.fr/downloads/download15.03/bbobdocsoftware.pdf
 
-^1: see #837 for a pending erratum
+^1: see [#837](https://github.com/numbbo/coco/issues/837) and [#1266](https://github.com/numbbo/coco/issues/1266) for two pending errata
 
