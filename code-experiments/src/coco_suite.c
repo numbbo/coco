@@ -553,11 +553,14 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
 }
 
 /**
- * Currently, four suites are supported:
+ * Currently, five suites are supported:
  * - "bbob" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective
  * functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
+ * - "bbob-biobj-ext" as an extension of "bbob-biobj" contains 92
+ * <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective functions</a> in 6 dimensions 
+ * (2, 3, 5, 10, 20, 40)
  * - "bbob-largescale" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 large dimensions (40, 80, 160, 320, 640, 1280)
  * - "toy" contains 6 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
@@ -568,7 +571,7 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * and the suite is not filtered by default).
  *
  * @param suite_name A string containing the name of the suite. Currently supported suite names are "bbob",
- * "bbob-biobj", "bbob-largescale" and "toy".
+ * "bbob-biobj", "bbob-biobj-ext", "bbob-largescale" and "toy".
  * @param suite_instance A string used for defining the suite instances. Two ways are supported:
  * - "year: YEAR", where YEAR is the year of the BBOB workshop, includes the instances (to be) used in that
  * year's workshop;
