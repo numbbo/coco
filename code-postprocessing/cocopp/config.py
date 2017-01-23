@@ -116,7 +116,7 @@ def config(testbed_name=None):
                                                  reference_data=reference_data,
                                                  force_different_targets_factor=10**-0.2)
             # pptables:
-            testbed.pptables_targetsOfInterest = pproc.RunlengthBasedTargetValues(
+            testbed.pptablemany_targetsOfInterest = pproc.RunlengthBasedTargetValues(
                                                  testbed.pptables_target_runlengths,
                                                  reference_data=reference_data,
                                                  force_different_targets_factor=10**-0.2)
