@@ -550,3 +550,267 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
 
 
 
+/* 
+ New, old style, Gallagher function for the large-scale suite with significantly faster CPU time.
+ However, it does not separate the raw function implementation from the transformed problem (rotations are applied inside the raw function).
+ */
+
+
+/**
+ * @brief Data type for the Gallagher problem.
+ */
+typedef struct {
+  long rseed;
+  double *xopt;
+  double **B, **x_local, **arr_scales;
+  size_t *block_sizes;
+  size_t nb_blocks;
+  size_t nb_rows;
+  size_t *block_size_map;
+  size_t *first_non_zero_map;
+  size_t number_of_peaks;
+  double *peak_values;
+  coco_problem_free_function_t old_free_problem;
+} f_largescale_gallagher_data_t;
+
+/**
+ * @brief Implements the raw Gallagher function.
+ */
+static double f_gallagher_largescale_raw(const double *x, const size_t number_of_variables, f_largescale_gallagher_data_t *data) {
+  size_t i, j; /* Loop over dim */
+  double *tmx;
+  double a = 0.1;
+  double tmp2, f = 0., f_add, tmp, f_pen = 0., f_true = 0.;
+  double fac;
+  double result;
+  size_t current_blocksize, first_non_zero_ind;
+  
+  if (coco_vector_contains_nan(x, number_of_variables))
+  return NAN;
+  
+  fac = -0.5 / (double) number_of_variables;
+  
+  /* Boundary handling */
+  for (i = 0; i < number_of_variables; ++i) {
+    tmp = fabs(x[i]) - 5.;
+    if (tmp > 0.) {
+      f_pen += tmp * tmp;
+    }
+  }
+  f_add = f_pen;
+  /* Transformation in search space, apply the block-rotation */
+  /* TODO: this should rather be done in f_gallagher */
+  tmx = coco_allocate_vector(number_of_variables);
+  for (i = 0; i < number_of_variables; i++) {
+    tmx[i] = 0;
+    current_blocksize = data->block_size_map[i];
+    first_non_zero_ind = data->first_non_zero_map[i];
+    for (j = first_non_zero_ind; j < first_non_zero_ind + current_blocksize; ++j) {
+      tmx[i] += data->B[i][j - first_non_zero_ind] * x[j];;
+    }
+  }
+
+  /* Computation core*/
+  for (i = 0; i < data->number_of_peaks; ++i) {
+    tmp2 = 0.;
+    for (j = 0; j < number_of_variables; ++j) {
+      tmp = (tmx[j] - data->x_local[j][i]);
+      tmp2 += data->arr_scales[i][j] * tmp * tmp;
+    }
+    tmp2 = data->peak_values[i] * exp(fac * tmp2);
+    f = coco_double_max(f, tmp2);
+  }
+  
+  f = 10. - f;
+  if (f > 0) {
+    f_true = log(f) / a;
+    f_true = pow(exp(f_true + 0.49 * (sin(f_true) + sin(0.79 * f_true))), a);
+  } else if (f < 0) {
+    f_true = log(-f) / a;
+    f_true = -pow(exp(f_true + 0.49 * (sin(0.55 * f_true) + sin(0.31 * f_true))), a);
+  } else
+  f_true = f;
+  
+  f_true *= f_true;
+  f_true += f_add;
+  result = f_true;
+  coco_free_memory(tmx);
+
+  return result;
+}
+
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
+static void f_gallagher_largescale_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+
+  y[0] = f_gallagher_largescale_raw(x, problem->number_of_variables, (f_largescale_gallagher_data_t *) problem->data);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
+}
+
+/**
+ * @brief Frees the Gallagher data object.
+ */
+static void f_gallagher_largescale_free(coco_problem_t *problem) {
+  f_largescale_gallagher_data_t *data;
+  data = (f_largescale_gallagher_data_t *) problem->data;
+  coco_free_memory(data->xopt);
+  coco_free_memory(data->peak_values);
+  coco_free_block_matrix(data->B, data->nb_rows);
+  coco_free_memory(data->block_sizes);
+  coco_free_memory(data->block_size_map);
+  coco_free_memory(data->first_non_zero_map);
+  bbob2009_free_matrix(data->x_local, problem->number_of_variables);
+  bbob2009_free_matrix(data->arr_scales, data->number_of_peaks);
+  problem->problem_free_function = NULL;
+  coco_problem_free(problem);
+}
+
+/**
+ * @brief Creates the BBOB Gallagher problem.
+ *
+ * @note There is no separate basic allocate function.
+ */
+static coco_problem_t *f_gallagher_largescale_bbob_problem_allocate(const size_t function,
+                                                         const size_t dimension,
+                                                         const size_t instance,
+                                                         const long rseed,
+                                                         const size_t number_of_peaks,
+                                                         const char *problem_id_template,
+                                                         const char *problem_name_template) {
+  f_largescale_gallagher_data_t *data;
+  /* problem_name and best_parameter will be overwritten below */
+  coco_problem_t *problem = coco_problem_allocate_from_scalars("Gallagher function",
+                                                               f_gallagher_largescale_evaluate, f_gallagher_largescale_free, dimension, -5.0, 5.0, 0.0);
+  
+  const size_t peaks_21 = 21;
+  const size_t peaks_101 = 101;
+
+  double fopt;
+  size_t i, j, k;
+  double maxcondition = 1000.;
+  /* maxcondition1 satisfies the old code and the doc but seems wrong in that it is, with very high
+   * probability, not the largest condition level!!! */
+  double maxcondition1 = 1000.;
+  double *arrCondition;
+  double fitvalues[2] = { 1.1, 9.1 };
+  /* Parameters for generating local optima. In the old code, they are different in f21 and f22 */
+  double b, c;
+  /* Random permutation */
+  f_gallagher_permutation_t *rperm;
+  double *random_numbers;
+  size_t current_blocksize, first_non_zero_ind, idx_blocksize, next_bs_change;
+  data = (f_largescale_gallagher_data_t *) coco_allocate_memory(sizeof(*data));
+  /* Allocate temporary storage and space for the rotation matrices */
+  data->number_of_peaks = number_of_peaks;
+  data->xopt = coco_allocate_vector(dimension);
+  /* set the block-rotation related fields*/
+  data->nb_rows = dimension;
+  data->block_sizes = coco_get_block_sizes(&(data->nb_blocks), dimension, "bbob-largescale");
+  data->block_size_map = coco_allocate_vector_size_t(dimension);
+  data->first_non_zero_map = coco_allocate_vector_size_t(dimension);
+  idx_blocksize = 0;
+  next_bs_change = data->block_sizes[idx_blocksize];
+  for (i = 0; i < dimension; i++) {
+    if (i >= next_bs_change) {
+      idx_blocksize++;
+      next_bs_change += data->block_sizes[idx_blocksize];
+    }
+    current_blocksize = data->block_sizes[idx_blocksize];
+    data->block_size_map[i] = current_blocksize;
+    data->first_non_zero_map[i] = next_bs_change - current_blocksize;
+  }
+  data->B = coco_allocate_blockmatrix(dimension, data->block_sizes, data->nb_blocks);
+  /*B_copy = (const double *const *)B;*/
+  coco_compute_blockrotation(data->B, rseed + 1000000, dimension, data->block_sizes, data->nb_blocks);
+  data->x_local = bbob2009_allocate_matrix(dimension, number_of_peaks);
+  data->arr_scales = bbob2009_allocate_matrix(number_of_peaks, dimension);
+  
+  if (number_of_peaks == peaks_101) {
+    maxcondition1 = sqrt(maxcondition1);
+    b = 10.;
+    c = 5.;
+  } else if (number_of_peaks == peaks_21) {
+    b = 9.8;
+    c = 4.9;
+  } else {
+    coco_error("f_gallagher_bbob_problem_allocate(): '%lu' is a non-supported number of peaks",
+               (unsigned long) number_of_peaks);
+  }
+  data->rseed = rseed;
+
+  /* Initialize all the data of the inner problem */
+  random_numbers = coco_allocate_vector(number_of_peaks * dimension); /* This is large enough for all cases below */
+  bbob2009_unif(random_numbers, number_of_peaks - 1, data->rseed);
+  rperm = (f_gallagher_permutation_t *) coco_allocate_memory(sizeof(*rperm) * (number_of_peaks - 1));
+  for (i = 0; i < number_of_peaks - 1; ++i) {
+    rperm[i].value = random_numbers[i];
+    rperm[i].index = i;
+  }
+  qsort(rperm, number_of_peaks - 1, sizeof(*rperm), f_gallagher_compare_doubles);
+  
+  /* Random permutation */
+  arrCondition = coco_allocate_vector(number_of_peaks);
+  arrCondition[0] = maxcondition1;
+  data->peak_values = coco_allocate_vector(number_of_peaks);
+  data->peak_values[0] = 10;
+  for (i = 1; i < number_of_peaks; ++i) {
+    arrCondition[i] = pow(maxcondition, (double) (rperm[i - 1].index) / ((double) (number_of_peaks - 2)));
+    data->peak_values[i] = (double) (i - 1) / (double) (number_of_peaks - 2) * (fitvalues[1] - fitvalues[0])
+    + fitvalues[0];
+  }
+  coco_free_memory(rperm);
+  
+  rperm = (f_gallagher_permutation_t *) coco_allocate_memory(sizeof(*rperm) * dimension);
+  for (i = 0; i < number_of_peaks; ++i) {
+    bbob2009_unif(random_numbers, dimension, data->rseed + (long) (1000 * i));
+    for (j = 0; j < dimension; ++j) {
+      rperm[j].value = random_numbers[j];
+      rperm[j].index = j;
+    }
+    qsort(rperm, dimension, sizeof(*rperm), f_gallagher_compare_doubles);
+    for (j = 0; j < dimension; ++j) {
+      data->arr_scales[i][j] = pow(arrCondition[i],
+                                   ((double) rperm[j].index) / ((double) (dimension - 1)) - 0.5);
+    }
+  }
+  coco_free_memory(rperm);
+  
+  bbob2009_unif(random_numbers, dimension * number_of_peaks, data->rseed);
+  /* apply the block-diagonal rotation to the local optima*/
+  for (i = 0; i < dimension; ++i) {
+    data->xopt[i] = 0.8 * (b * random_numbers[i] - c);
+    problem->best_parameter[i] = 0.8 * (b * random_numbers[i] - c);
+    current_blocksize = data->block_size_map[i];
+    first_non_zero_ind = data->first_non_zero_map[i];
+    for (j = 0; j < number_of_peaks; ++j) {
+      data->x_local[i][j] = 0.;
+      for (k = first_non_zero_ind; k < first_non_zero_ind + current_blocksize; ++k) {
+        data->x_local[i][j] += data->B[i][k - first_non_zero_ind] * (b * random_numbers[j * dimension + k] - c);
+      }
+      if (j == 0) {
+        data->x_local[i][j] *= 0.8;
+      }
+    }
+  }
+  coco_free_memory(arrCondition);
+  coco_free_memory(random_numbers);
+  
+  problem->data = data;
+  
+  /* Compute best solution */
+  f_gallagher_largescale_evaluate(problem, problem->best_parameter, problem->best_value);
+
+  fopt = bbob2009_compute_fopt(function, instance);
+  problem = transform_obj_shift(problem, fopt);
+  
+  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_type(problem, "large_scale_block_rotated");
+
+  return problem;
+}
+
+
+

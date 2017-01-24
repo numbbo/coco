@@ -130,11 +130,16 @@ static coco_problem_t *coco_get_largescale_problem(const size_t function,
     problem = f_schwefel_generalized_bbob_problem_allocate(function, dimension, instance, rseed,
                                                problem_id_template, problem_name_template);
   } else if (function == 21) {
-    problem = f_gallagher_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed, 101,
+    /*problem = f_gallagher_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed, 101,
                                                 problem_id_template, problem_name_template);
+    */
+    problem = f_gallagher_largescale_bbob_problem_allocate(function, dimension, instance, rseed, 101,
+                                                           problem_id_template, problem_name_template);
   } else if (function == 22) {
-    problem = f_gallagher_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed, 21,
-                                                problem_id_template, problem_name_template);
+    /*problem = f_gallagher_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed, 21,
+                                                problem_id_template, problem_name_template);*/
+    problem = f_gallagher_largescale_bbob_problem_allocate(function, dimension, instance, rseed, 101,
+                                                           problem_id_template, problem_name_template);
   } else if (function == 23) {
     problem = f_katsuura_permblockdiag_bbob_problem_allocate(function, dimension, instance, rseed,
                                                problem_id_template, problem_name_template);
