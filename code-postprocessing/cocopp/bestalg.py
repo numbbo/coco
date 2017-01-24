@@ -609,13 +609,13 @@ def create_data_files(output_dir, result, suite):
         lines = []
         lines.append("% Artificial instance")
         lines.append("% algorithm type = best")
-        i = 0
+        target_list = value.target.tolist()
         for key_target, value_target in sorted(dict_evaluation.iteritems()):
             successful_runs, all_runs = result[(key[0], key[1])].get_success_ratio(value_target)
-            alg_for_target = os.path.basename(value.algs[i])
+            target_index = target_list.index(value_target)
+            alg_for_target = os.path.basename(value.algs[target_index])
             lines.append("%d %10.15e %10.15e %s %d %d" %
                          (key_target, value_target, value_target, alg_for_target, successful_runs, all_runs))
-            i += 1
 
         filename = os.path.join(output_dir, filename_template % (key[1], key[0], 'dat'))
         write_to_file(filename, lines)
