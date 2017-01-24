@@ -64,24 +64,28 @@ static long coco_random_unif_int(long lower_bound, long upper_bound, coco_random
  * for now so dynamic is implemented (simple since no need for tracking indices
  * if swap_range is the largest possible size_t value ( (size_t) -1 ), a random uniform permutation is generated
  */
-static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed, size_t n, size_t nb_swaps, size_t swap_range) {
+static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed, size_t dimension, size_t nb_swaps, size_t swap_range) {
   long i, idx_swap;
   size_t lower_bound, upper_bound, first_swap_var, second_swap_var, tmp;
   size_t *idx_order;
   coco_random_state_t *rng = coco_random_new((uint32_t) seed);
   
-  perm_random_data = coco_allocate_vector(n);
-  idx_order = coco_allocate_vector_size_t(n);
-  for (i = 0; i < n; i++){
+  perm_random_data = coco_allocate_vector(dimension);
+  idx_order = coco_allocate_vector_size_t(dimension);
+  for (i = 0; i < dimension; i++){
     P[i] = (size_t) i;
     idx_order[i] = (size_t) i;
     perm_random_data[i] = coco_random_uniform(rng);
+  }
+  if (dimension <= 40) {/* provisional solution to have the large-scale suite backward compatible with the bbob suite. Should probably take the value from the bbob suite itself.*/
+    coco_random_free(rng);
+    return; /* return the identity permutation*/
   }
   
   if (swap_range > 0) {
     /*sort the random data in random_data and arange idx_order accordingly*/
     /*did not use coco_compute_random_permutation to only use the seed once*/
-    qsort(idx_order, n, sizeof(size_t), f_compare_doubles_for_random_permutation);
+    qsort(idx_order, dimension, sizeof(size_t), f_compare_doubles_for_random_permutation);
     for (idx_swap = 0; idx_swap < nb_swaps; idx_swap++) {
       first_swap_var = idx_order[idx_swap];
       if (first_swap_var < swap_range) {
@@ -90,8 +94,8 @@ static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed
       else{
         lower_bound = first_swap_var - swap_range;
       }
-      if (first_swap_var + swap_range > n - 1) {
-        upper_bound = n - 1;
+      if (first_swap_var + swap_range > dimension - 1) {
+        upper_bound = dimension - 1;
       }
       else{
         upper_bound = first_swap_var + swap_range;
@@ -109,10 +113,11 @@ static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed
   } else {
     if ( swap_range == (size_t) -1) {
       /* generate random permutation instead */
-      coco_compute_random_permutation(P, seed, n);
+      coco_compute_random_permutation(P, seed, dimension);
     }
     
   }
+  coco_free_memory(idx_order);
   coco_random_free(rng);
 }
 
