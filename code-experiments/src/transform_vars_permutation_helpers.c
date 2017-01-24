@@ -79,6 +79,7 @@ static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed
   }
   if (dimension <= 40) {/* provisional solution to have the large-scale suite backward compatible with the bbob suite. Should probably take the value from the bbob suite itself.*/
     coco_random_free(rng);
+    coco_free_memory(idx_order);
     return; /* return the identity permutation*/
   }
   
