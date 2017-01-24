@@ -565,21 +565,20 @@ def create_data_files(output_dir, result, suite):
             target = value.target[index]
             dict_evaluation[np.round(evaluation_value)] = target
 
-        sum_max_evals = 0
-        count_max_evals = 0
-        for alg_max_evals in value.maxevals.values():
-            sum_max_evals += sum(alg_max_evals)
-            count_max_evals += len(alg_max_evals)
-        average_max_evals = int(sum_max_evals / count_max_evals)
+        lines = list()
+        lines.append("% Artificial instance")
+        lines.append("% algorithm type = best")
+        target_list = value.target.tolist()
+        for key_target, value_target in sorted(dict_evaluation.iteritems()):
+            successful_runs, all_runs = result[(key[0], key[1])].get_success_ratio(value_target)
+            target_index = target_list.index(value_target)
+            alg_for_target = os.path.basename(value.algs[target_index])
+            lines.append("%d %10.15e %10.15e %s %d %d" %
+                         (key_target, value_target, value_target, alg_for_target, successful_runs, all_runs))
+            last_evaluation = key_target
+            last_value = value_target
 
-        sum_final_fun_values = 0
-        count_final_fun_values = 0
-        for alg_final_fun_values in value.finalfunvals.values():
-            sum_final_fun_values += sum(alg_final_fun_values)
-            count_final_fun_values += len(alg_final_fun_values)
-        average_final_fun_values = sum_final_fun_values / count_final_fun_values
-
-        instance_data = "%d:%d|%10.15e" % (0, average_max_evals, average_final_fun_values)
+        instance_data = "%d:%d|%10.15e" % (0, last_evaluation, last_value)
 
         test_suite = getattr(value, 'suite', None)
         if test_suite is None:
@@ -606,16 +605,6 @@ def create_data_files(output_dir, result, suite):
             info_lines.append("%% %s" % value.comment)
             info_lines.append("%s, %s" % (filename_template % (key[1], key[0], 'dat'), instance_data))
 
-        lines = []
-        lines.append("% Artificial instance")
-        lines.append("% algorithm type = best")
-        target_list = value.target.tolist()
-        for key_target, value_target in sorted(dict_evaluation.iteritems()):
-            successful_runs, all_runs = result[(key[0], key[1])].get_success_ratio(value_target)
-            target_index = target_list.index(value_target)
-            alg_for_target = os.path.basename(value.algs[target_index])
-            lines.append("%d %10.15e %10.15e %s %d %d" %
-                         (key_target, value_target, value_target, alg_for_target, successful_runs, all_runs))
 
         filename = os.path.join(output_dir, filename_template % (key[1], key[0], 'dat'))
         write_to_file(filename, lines)
