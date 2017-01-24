@@ -266,6 +266,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
     # TODO: method is long, terrible to read, split if possible
 
     testbed = testbedsettings.current_testbed
+    targetsOfInterest = testbed.pptablemany_targetsOfInterest
 
     bestalgentries = bestalg.load_reference_algorithm(testbed.reference_algorithm_filename)
 
@@ -288,16 +289,16 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
     for df in sorted(dictData):
         # Generate one table per df
         # first update targets for each dimension-function pair if needed:
-        targetsOfInterest = testbed.pptablemany_targetsOfInterest((df[1], df[0]))
+        targets = targetsOfInterest((df[1], df[0]))
         if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
-            targetf = targetsOfInterest[-1]
+            targetf = targets[-1]
         else:
             targetf = testbed.pptable_ftarget
 
         # reference algorithm
         if bestalgentries:
             refalgentry = bestalgentries[df]
-            refalgert = refalgentry.detERT(targetsOfInterest)
+            refalgert = refalgentry.detERT(targets)
 
         # Process the data
         # The following variables will be lists of elements each corresponding
@@ -330,7 +331,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
 
             algnames.append(sortedAlgs[n])
 
-            evals = entry.detEvals(targetsOfInterest)
+            evals = entry.detEvals(targets)
             # tmpdata = []
             tmpdisp = []
             tmpert = []
@@ -357,7 +358,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
             # algmedfinalfunvals.append(numpy.median(entry.finalfunvals))
 
             if bestalgentries:
-                algtestres.append(significancetest(refalgentry, entry, targetsOfInterest))
+                algtestres.append(significancetest(refalgentry, entry, targets))
 
             # determine success probability for Df = 1e-8
             e = entry.detEvals((targetf,))[0]
@@ -382,7 +383,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
 
         # significance test of best given algorithm against all others
         best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
-        significance_versus_others = significance_all_best_vs_other(algentries, targetsOfInterest, best_alg_idx)[0]
+        significance_versus_others = significance_all_best_vs_other(algentries, targets, best_alg_idx)[0]
 
         # Create the table
         table = []
@@ -507,7 +508,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
         tableHtml.append('<tbody>\n')
         extraeol.append('')
 
-        header = r'\providecommand{\ntables}{%d}' % len(testbed.pptablemany_targetsOfInterest)
+        header = r'\providecommand{\ntables}{%d}' % len(targetsOfInterest)
         for i, alg in enumerate(algnames):
             tableHtml.append('<tr>\n')
             # algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
@@ -551,7 +552,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                         if not numpy.isinf(refalgert[j]):
                             tmpevals = algevals[i][j].copy()
                             tmpevals[numpy.isnan(tmpevals)] = algentries[i].maxevals[numpy.isnan(tmpevals)]
-                            bestevals = refalgentry.detEvals(targetsOfInterest)
+                            bestevals = refalgentry.detEvals(targets)
                             bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
                             bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
                             tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]

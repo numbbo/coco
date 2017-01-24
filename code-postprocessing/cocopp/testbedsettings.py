@@ -300,7 +300,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         scenario = scenario_biobjfixed,
         reference_algorithm_filename = 'refalgs/best2016-bbob-biobj-v2.0.tar.gz', # TODO produce correct best2016 algo and delete this line
         reference_algorithm_displayname = 'best 2016', # TODO: should be read in from data set in reference_algorithm_filename
-        instancesOfInterest = None,# None, # None: consider all instances
+        instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}, # None, # None: consider all instances
         # expensive optimization settings:
         pptable_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
         pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
@@ -370,7 +370,7 @@ class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
         scenario = scenario_biobjextfixed,
         reference_algorithm_filename = '', # TODO produce correct best2017 algo and delete this line
         reference_algorithm_displayname = '', # TODO: should be read in from data set in reference_algorithm_filename
-        instancesOfInterest = None, # None: consider all instances
+        instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}, # None: consider all instances
     ) 
 
     def __init__(self, targetValues):        
