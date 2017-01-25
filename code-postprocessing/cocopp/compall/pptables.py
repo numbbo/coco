@@ -415,7 +415,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                 else:
                     curline = [r'$\Delta f_\mathrm{opt}$']
                 counter = 1
-                for t in targetsOfInterest:
+                for t in targets:
                     curline.append(r'\multicolumn{2}{@{\,}l@{\,}}{%s}'
                                    % writeFEvals2(t, precision=1, isscientific=True))
                     counter += 1
@@ -441,7 +441,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
             else:
                 curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']
             counter = 1
-            for t in targetsOfInterest:
+            for t in targets:
                 curlineHtml.append(
                     '<td>%s<br>REPLACE%d</td>\n' % (writeFEvals2(t, precision=1, isscientific=True), counter))
                 counter += 1
