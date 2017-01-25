@@ -12,7 +12,7 @@ scenario_biobjextfixed = 'biobjextfixed'
 scenario_largescalefixed = 'largescalefixed'
 all_scenarios = [scenario_rlbased, scenario_fixed,
                  scenario_biobjfixed, scenario_biobjrlbased,
-                 scenario_biobjextfixed,scenario_largescalefixed]
+                 scenario_biobjextfixed, scenario_largescalefixed]
 
 testbed_name_single = 'bbob'
 testbed_name_single_noisy = 'bbob-noisy'
