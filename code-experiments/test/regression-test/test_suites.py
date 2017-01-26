@@ -88,7 +88,7 @@ if __name__ == "__main__":
                 os.path.join("data",
                              "regression_test_%ddata_for_suite_" % ndata + name + ".py"))
     
-    if 11 < 3: # test whether last dimensions of `bbob` and first of `bbob-largescale` match
+    if 1 < 3: # test whether last dimensions of `bbob` and first of `bbob-largescale` match
         regression_test_a_suite("bbob-largescale",
                 os.path.join("data",
                              "regression_test_%d-bbobdata_for_bbob-largescalesuite_" % ndata + ".py"))
