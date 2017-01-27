@@ -17,7 +17,7 @@ example in `C++`) are more than welcome.
 For more information, 
 - read our [benchmarking guidelines introduction](http://numbbo.github.io/coco-doc/)
 - read the [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
-- see the [`bbob-biobj` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation and the [specificities of the performance assessment for the bi-objective testbed](http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment).
+- see the [`bbob-biobj` and `bbob-biobj-ext` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation and the [specificities of the performance assessment for the bi-objective testbeds](http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment).
 - consult the [BBOB workshops series](http://numbbo.github.io/workshops),
 - consider to [register here](http://numbbo.github.io/register) for news, 
 - see the [previous COCO home page here](http://coco.gforge.inria.fr/) and 
@@ -42,10 +42,10 @@ Under Windows, two alternative compile toolchains can be used:
 
 For using `git` under Windows (optional), we recommend installing [TortoiseGit](https://tortoisegit.org/).
 
-### Language Specifics  <a name="Language-Specifics"></a>
+### Programming Language Specifics  <a name="Language-Specifics"></a>
 _Additional_ requirements for running an algorithm in a specific language.
 
-* **C**: make, such as GNU make ([GNU make for Windows](http://gnuwin32.sourceforge.net/packages/make.htm)). 
+* **C**: `make`, such as GNU make ([GNU make for Windows](http://gnuwin32.sourceforge.net/packages/make.htm)). 
 * **Java**: `gcc` and any Java Development Kit (JDK), such that `javac` and `javah` are accessible 
   (i.e. in the system path). 
 * **MATLAB**: at least MATLAB 2008, for details, see [here](./code-experiments/build/matlab/README.md)
@@ -53,7 +53,7 @@ _Additional_ requirements for running an algorithm in a specific language.
   containing VC9, available [here](https://www.microsoft.com/en-us/download/details.aspx?id=44266). 
   These are necessary to build the C extensions for the Python `cocoex` module for Windows. 
   The package contains 32-bit and 64-bit compilers and the Windows SDK headers.
-* **Pyhon on Linux**: `python-dev` must be installed to compile/install the `cocoex` module.
+* **Python on Linux**: `python-dev` must be installed to compile/install the `cocoex` module.
 * **Octave**: Octave 4.0.0 or later. On operating systems other than Windows, earlier versions might work.
   Under Linux the package `liboctave-dev` might be necessary. 
 
@@ -75,11 +75,11 @@ Getting Started <a name="Getting-Started"></a>
 
   - either by clicking the [Download ZIP button](https://github.com/numbbo/coco/archive/master.zip) 
     and unzip the `zip` file, 
-  - or (preferred) by typing `git clone https://github.com/numbbo/coco.git`. This way 
+  - or by typing `git clone https://github.com/numbbo/coco.git`. This way 
     allows to remain up-to-date easily (but needs `git` to be installed). After 
     cloning, `git pull` keeps the code up-to-date with the latest release. 
 
-  **CAVEAT: this code is still under heavy development**. The record of official releases can 
+  The record of official releases can 
   be found [here](https://github.com/numbbo/coco/releases). The latest release corresponds 
   to the [master branch](https://github.com/numbbo/coco/tree/master) as linked above. 
 
@@ -108,7 +108,7 @@ Getting Started <a name="Getting-Started"></a>
 4. **Copy** the folder `code-experiments/build/YOUR-FAVORITE-LANGUAGE` and
   its content to another location. In Python it is sufficient to copy the 
   file `example_experiment.py`. Run the example experiment (it already is
-  compiled, in case). As the details vary, see the respective read-me's 
+  compiled). As the details vary, see the respective read-me's 
   and/or example experiment files:
 
   - `C` [read me](./code-experiments/build/c/README.md) 
@@ -118,7 +118,7 @@ Getting Started <a name="Getting-Started"></a>
   - `Matlab/Octave` [read me](./code-experiments/build/matlab/README.md)
     and [example experiment](./code-experiments/build/matlab/exampleexperiment.m) 
   - `Python` [read me](./code-experiments/build/python/README.md)
-    and [example experiment`](./code-experiments/build/python/example_experiment.py)
+    and [example experiment](./code-experiments/build/python/example_experiment.py)
 
   If the example experiment runs, **connect** your favorite algorithm
   to Coco: replace the call to the random search optimizer in the
@@ -129,41 +129,49 @@ Getting Started <a name="Getting-Started"></a>
   Another entry point for your own experiments can be the `code-experiments/examples`
   folder. 
 
-5. Now you can **run** your favorite algorithm on the `bbob-biobj` (for
-  multi-objective algorithms) or on the `bbob` suite (for single-objective
-  algorithms). Output is automatically generated in the specified data 
-  `result_folder`.
+5. Now you can **run** your favorite algorithm on the `bbob` suite (for 
+  single-objective algorithms) or on the `bbob-biobj` and `bbob-biobj-ext`
+  suites (for multi-objective algorithms). Output is automatically generated in the 
+  specified data `result_folder`. By now, more suites might be available, see below. 
 
   <a name="Getting-Started-pp"></a>
 6.  **Postprocess** the data from the results folder by typing
 
     ```
-    python -m bbob_pproc [-o OUTPUT_FOLDERNAME] YOURDATAFOLDER [MORE_DATAFOLDERS]
+    python -m cocopp [-o OUTPUT_FOLDERNAME] YOURDATAFOLDER [MORE_DATAFOLDERS]
     ```
 
-  The name `bbob_pproc` will become `cocopp` in future. Any subfolder in the
-  folder arguments will be searched for logged data. That is, experiments from
-  different batches can be in different folders collected under a single "root" 
-  `YOURDATAFOLDER` folder. We can also compare more than one algorithm by specifying
-  several data result folders generated by different algorithms.
+  Any subfolder in the folder arguments will be searched for logged data. That is, 
+  experiments from different batches can be in different folders collected under a 
+  single "root"  `YOURDATAFOLDER` folder. We can also compare more than one algorithm 
+  by specifying several data result folders generated by different algorithms.
   
   A folder, `ppdata` by default, will be generated, which contains all output from 
-  the post-processing, including a `ppdata.html` file, useful as main entry point to 
-  explore the result with a browser. Data might be overwritten, 
-  it is therefore useful to change the output folder name with the `-o OUTPUT_FOLDERNAME` 
+  the post-processing, including an `index.html` file, useful as main entry point to 
+  explore the result with a browser. Data might be overwritten, it is therefore 
+  useful to change the output folder name with the `-o OUTPUT_FOLDERNAME` 
   option.
 
-  For the single-objective `bbob` suite, a summary pdf can be produced via 
-  LaTeX. The corresponding templates in ACM format can be found in the
-  `code-postprocessing/latex-templates` folder. LaTeX templates for the
-  multi-objective `bbob-biobj` suite will follow in a later release. A basic
-  html output is also available in the result folder of the postprocessing
-  (file `templateBBOBarticle.html`).
+  A summary pdf can be produced via LaTeX. The corresponding templates can be found 
+  in the `code-postprocessing/latex-templates` folder.  Basic html output is also 
+  available in the result folder of the postprocessing (file `templateBBOBarticle.html`).
 
 7. Once your algorithm runs well, **increase the budget** in your experiment
   script, if necessary implement randomized independent restarts, and follow 
   the above steps successively until you are happy.
-
+  
+8. The experiments can be **parallelized** with any re-distribution of single
+  problem instances to batches (see
+  [`example_experiment.py`](./code-experiments/build/python/example_experiment.py#L235) 
+  for an example). Each batch must write in a different target folder (this
+  should happen automatically). Results of each batch must be kept under their
+  separate folder as is. These folders then must be moved/copied into a single
+  folder which becomes the input folder to the post-processing. (The
+  post-processing searches in all subfolders and subsub... for `.info` files
+  to begin with. The folder structure of a single sub-experiment must not be
+  changed, as the `.info` file relies on it to find the data files.)
+  
+  
 If you detect bugs or other issues, please let us know by opening an issue in
 our issue tracker at https://github.com/numbbo/coco/issues.
 
@@ -188,11 +196,9 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 * documentation and examples might not be too meaningful for the time being,
   even though code-experiments/documentation/onion.py describes a (heavily) used
   design pattern (namely: inheritance) in a comparatively understandable way
-  (though the implementation in C naturally looks somewhat different). In the
-  future, documentation will be contained mainly in the docs/ subfolder with the
-  source code extracted automatically into pdfs in this folder and to web pages
-  under the numbbo.github.io/ domain, see also
-  [here](https://github.com/numbbo/coco#links-and-documentation-).
+  (though the implementation in C naturally looks somewhat different). Section 
+  [Links and Documentation](https://github.com/numbbo/coco#links-and-documentation-)
+  provides a list of pointers.
 
 * the code-experiments/src folder is where most of the important/interesting
   things happen. Many files provide comparatively decent documentation at the
@@ -211,12 +217,15 @@ our issue tracker at https://github.com/numbbo/coco/issues.
     problem inheriting thereby all properties of a coco problem)
   - most other files implement more or less what they say, e.g. the actual
     benchmark functions, transformations, benchmark suites, etc.
-  - currently, three benchmark suites and corresponding logging facilities are
+  - currently, four benchmark suites and corresponding logging facilities are
     implemented:
     * `bbob`: standard single-objective BBOB benchmark suite with 24 noiseless,
       scalable test functions
     * `bbob-biobj`: a bi-objective benchmark suite, combining 10 selected
       functions from the bbob suite, resulting in 55 noiseless functions
+    * `bbob-biobj-ext`: an extended version of the bi-objective `bbob-biobj`
+       benchmark suite, adding `bbob` function combinations from the same
+       `bbob` function groups, resulting in 92 noiseless functions overall
     * `toy`: a simple, probably easier-to-understand example for reading and testing
 
 * code-experiments/tools are a few meta-tools, mainly the amalgamate.py to merge all
@@ -224,7 +233,7 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 
 * code-experiments/test contains unit- and integration-tests, mainly for internal use
 
-* code-postprocessing/bbob_pproc contains the postprocessing code, written in
+* code-postprocessing/cocopp contains the postprocessing code, written in
   python, with which algorithm data sets can be read in and the performance of
   the algorithms can be displayed in terms of data profiles, aRT vs. dimension
   plots, or simple tables.
@@ -465,8 +474,8 @@ Details
   for the end-user.
 
 - We continuously test the code through the open source automation server
-  Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and one 32-bit
-  Windows 7 machine with cygwin.
+  Jenkins on one ubuntu 12.04 machine, one OSX 10.9 machine, and two 32-bit
+  Windows 7 machines (one with and one without cygwin).
 
 Citation
 --------
@@ -494,15 +503,47 @@ Links and Documentation <a name="Links"></a>
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
   by registering at http://coco.gforge.inria.fr/register
 * Read about the basic principles behind the Coco platform at http://numbbo.github.io/coco-doc/.
-* Please refer to http://numbbo.github.io/coco-doc/experimental-setup/ for more details on the
-  experimental set-up for black-box optimization benchmarking.
+* For details on the experimental set-up to carry out the benchmarking
+  please refer to http://numbbo.github.io/coco-doc/experimental-setup/.
 * More detailed documentation of the existing benchmark suites can be found here:
-  - for the **`BBOB`** problem suite at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
+  - for the **`bbob`** problem suite at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
-  - for the **`bbob-biobj`** problem suite at http://numbbo.github.io/coco-doc/bbob-biobj/functions
+  - for the **`bbob-biobj`** and **`bbob-biobj-ext`** problem suites
+    at http://numbbo.github.io/coco-doc/bbob-biobj/functions
 * Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
   http://numbbo.github.io/coco-doc/C
+* More detailed documentation on how the performance assessement is done can 
+  be found at http://numbbo.github.io/coco-doc/perf-assessment/.
 * Downloading this repository 
-  - via the above "Download ZIP" button or 
+  - via the above green "Clone or Download" button or 
   - by typing `git clone https://github.com/numbbo/coco.git` or 
   - via https://github.com/numbbo/coco/archive/master.zip in your browser
+  
+Comprehensive List of Documentations <a name="Documentations"></a>
+--------------------------------------------
+* General introduction: http://numbbo.github.io/coco-doc
+* Experimental setup: http://numbbo.github.io/coco-doc/experimental-setup/
+* Testbeds
+  - bbob: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf ^1
+  - bbob-biobj: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
+  - bbob-biobj-ext: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
+  - bbob-noisy (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
+  - bbob-constrained (in progress): http://numbbo.github.io/coco-doc/bbob-constrained/functions/
+  - bbob-largescale (in progress): http://numbbo.github.io/coco-doc/bbob-largescale/functions/
+
+* Performance assessment: http://numbbo.github.io/coco-doc/perf-assessment/
+* Performance assessment for biobjective testbeds: http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/
+
+* APIs
+  - ``C`` experiments code: http://numbbo.github.io/coco-doc/C
+  - Python experiments code `cocoex`: http://coco.gforge.inria.fr/apidocs-cocoex/cocoex.html
+  - Python `example_experiment.py`: http://coco.gforge.inria.fr/apidocs-example_experiment/example_experiment.html
+  - Postprocessing code: http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html
+
+* Somewhat outdated documents:
+  - Full description of the platform: http://coco.lri.fr/COCOdoc/
+  - Experimental setup before 2016: http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
+ - Old framework software documentation: http://coco.lri.fr/downloads/download15.03/bbobdocsoftware.pdf
+
+^1: see [#837](https://github.com/numbbo/coco/issues/837) and [#1266](https://github.com/numbbo/coco/issues/1266) for two pending errata
+

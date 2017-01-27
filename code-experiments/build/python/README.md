@@ -27,7 +27,8 @@ See _Getting Started_ [here](../../../README.md#Getting-Started) for the first s
 
 - Copy (and rename) `example_experiment.py` to a place (and name) of
   your choice. Modify this file to include the solver of your choice (instead of
-  `random_search`) to the benchmarking framework.
+  `random_search`) to the benchmarking framework. Do not forget to also choose
+  the right benchmarking suite and the corresponding observer.
 
 - Execute the modified file either from a system shell like 
   ```
