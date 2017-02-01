@@ -47,7 +47,7 @@ def prepare_html(texFile):
     if sys.platform == "win32":
       tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth\\tth.exe')
     elif sys.platform in ["darwin", "linux2"]:
-      # assumes the tth pacakge is compiled in a folder tth
+      # assumes the tth pacakge is compiled in a folder tth_C
       tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth_C/tth')
     else:
         raise Exception("Unknown OS")
