@@ -68,7 +68,11 @@ def get_light_brown_line_text(testbedname):
             left side and the aggregation over all 92 functions in the last row."""
     elif (testbedname in [testbedsettings.testbed_name_single, testbedsettings.testbed_name_single_noisy]):
         return r"""Light brown lines in the background show ECDFs for the most difficult target of all
-            algorithms benchmarked during BBOB-2009.""" 
+            algorithms benchmarked during BBOB-2009."""
+    elif testbedname == testbedsettings.testbed_name_largescale:
+        # Wassim: TODO: should be generalized to take into account the display name of the reference algorithm if any
+        return r"""
+          """
     else:
         warnings.warn("Current testbed not supported for this caption text.")
         

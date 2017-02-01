@@ -145,7 +145,8 @@ def prepare_ecdfs_figure_caption():
         figure_caption = ecdfs_figure_caption_standard
     elif testbed.name in [testbedsettings.testbed_name_single,
                           testbedsettings.testbed_name_single_noisy,
-                          testbedsettings.testbed_name_bi]:
+                          testbedsettings.testbed_name_bi,
+                          testbedsettings.testbed_name_largescale]:
         if genericsettings.runlength_based_targets:
             figure_caption = ecdfs_figure_caption_rlbased + refalgtext
         else:

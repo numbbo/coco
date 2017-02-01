@@ -64,15 +64,17 @@ def get_table_caption():
         than 1, with Bonferroni correction of #2. """ +
                           (r"""A $\downarrow$ indicates the same tested against the best
         algorithm of BBOB-2009. """
-                           if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
+                           if not (testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi, testbedsettings.testbed_name_bi_ext, testbedsettings.testbed_name_largescale])
                            else "") + r"""Best results are printed in bold.
         """ + r"""\cocoversion""")
 
     if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi,
-                                                testbedsettings.testbed_name_bi_ext]:
+                                                testbedsettings.testbed_name_bi_ext,
+                                                testbedsettings.testbed_name_largescale]:
+        # Wassim: TODO: the large-scale suite is, for now, put here. The case where there is no reference algorithm should be treated for the tables too
         # NOTE: no runlength-based targets supported yet
         table_caption = table_caption_one_bi + table_caption_rest
-    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single, testbedsettings.testbed_name_largescale]:
+    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single]:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:

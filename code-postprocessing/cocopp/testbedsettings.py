@@ -18,7 +18,7 @@ testbed_name_single = 'bbob'
 testbed_name_single_noisy = 'bbob-noisy'
 testbed_name_bi = 'bbob-biobj'
 testbed_name_bi_ext = 'bbob-biobj-ext'
-testbed_name_largescale= 'bbob-largescale'
+testbed_name_largescale = 'bbob-largescale'
 
 default_testbed_single = 'GECCOBBOBTestbed'
 default_testbed_single_noisy = 'GECCOBBOBNoisyTestbed'
@@ -335,22 +335,71 @@ class GECCOBiObjBBOBTestbed(Testbed):
             self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 
 class LargeScaleTestbed(GECCOBBOBTestbed):
-  """First large scale Testbed
+    """First large scale Testbed.
     """
-  
-  def __init__(self, targetValues):
-    super(LargeScaleTestbed, self).__init__(targetValues)
-    self.first_dimension = 20
-    self.scenario = scenario_largescalefixed
-    # Wassim: added the following
-    self.dimensions_to_display = (20, 40, 80, 160, 320, 640)
-    self.tabDimsOfInterest = (80, 320)
-    self.rldDimsOfInterest = (80, 320)
-    self.htmlDimsOfInterest = (80, 320)
-    self.best_algorithm_filename = ''
-    self.best_algorithm_year = None
-    self.reference_algorithm_filename = ''
-    self.reference_algorithm_displayname = ''
+
+
+    shortinfo_filename = 'bbob-benchmarkshortinfos.txt'
+    pptable_target_runlengths = [0.5, 1.2, 3, 10, 50] # used in config for expensive setting
+    pptable_targetsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7) # for pptable and pptablemany
+
+    # Wassim: there should be a more elegant way of defining this via inheritance
+    settings = dict(
+        info_filename = 'bbob-benchmarkinfos.txt',
+        shortinfo_filename = shortinfo_filename,
+        name = testbed_name_largescale,
+        short_names = get_short_names(shortinfo_filename),
+        hardesttargetlatex = '10^{-8}',  # used for ppfigs, pptable, pptable2, and pptables
+        ppfigs_ftarget = 1e-8,  # to set target runlength in expensive setting, use genericsettings.target_runlength
+        ppfig2_ftarget = 1e-8,
+        ppfigdim_target_values = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
+        pprldistr_target_values = (10., 1e-1, 1e-4, 1e-8),
+        pprldmany_target_values = 10 ** np.arange(2, -8.2, -0.2),
+        pprldmany_target_range_latex = '$10^{[-8..2]}$',
+        ppscatter_target_values = np.logspace(-8, 2, 21),  # 21 was 46
+        rldValsOfInterest = (10, 1e-1, 1e-4, 1e-8),  # possibly changed in config
+        ppfvdistr_min_target = 1e-8,
+        functions_with_legend = (1, 24, 101, 130),
+        first_function_number = 1,
+        last_function_number = 24,
+        reference_values_hash_dimensions = [],
+        pptable_ftarget = 1e-8,  # value for determining the success ratio in all tables
+        pptable_targetsOfInterest = pptable_targetsOfInterest,
+        pptable2_targetsOfInterest = (1e+1, 1e-1, 1e-3, 1e-5, 1e-7),  # used for pptable2
+        pptablemany_targetsOfInterest = pptable_targetsOfInterest,
+        scenario = scenario_fixed,
+        reference_algorithm_filename = '',
+        reference_algorithm_displayname = '',  # TODO: should be read in from data set in reference_algorithm_filename
+        #.reference_algorithm_filename = 'data/RANDOMSEARCH'
+        #.reference_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in reference_algorithm_filename
+        # expensive optimization settings:
+        pptable_target_runlengths = pptable_target_runlengths, 
+        pptable2_target_runlengths = pptable_target_runlengths,
+        pptables_target_runlengths = pptable_target_runlengths,
+        instancesOfInterest = None # None: consider all instances
+        #.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
+        #                   10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 1,
+        #                   21: 1, 22: 1, 23: 1, 24: 1, 25: 1, 26: 1, 27: 1, 28: 1, 29: 1, 30: 1,
+        #                   31: 1, 32: 1, 33: 1, 34: 1, 35: 1, 36: 1, 37: 1, 38: 1, 39: 1, 40: 1,
+        #                   41: 1, 42: 1, 43: 1, 44: 1, 45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1,
+        #                   51: 1, 52: 1, 53: 1, 54: 1, 55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1} # consider only 2009-2016 instances
+        #.instancesOfInterest = {1: 1, 2: 1}
+    )
+
+    def __init__(self, targetValues):
+        super(LargeScaleTestbed, self).__init__(targetValues)
+        self.name = testbed_name_largescale
+        self.first_dimension = 20
+        self.scenario = scenario_largescalefixed
+        # Wassim: added the following
+        self.dimensions_to_display = (20, 40, 80, 160, 320, 640)
+        self.tabDimsOfInterest = (80, 320)
+        self.rldDimsOfInterest = (80, 320)
+        self.htmlDimsOfInterest = (80, 320)
+        self.best_algorithm_filename = ''
+        self.best_algorithm_year = None
+        self.reference_algorithm_filename = ''
+        self.reference_algorithm_displayname = ''
 
 
 class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):

@@ -803,8 +803,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction of 184. A &#8595; indicates the same tested against the best
-        algorithm of BBOB-2009. Best results are printed in bold.
+        than 1, with Bonferroni correction of 184. Best results are printed in bold.
         ??COCOVERSION??
 
 <div class="p"><!----></div>
@@ -875,11 +874,9 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
          function evaluations
          (from right to left cycling cyan-magenta-black...) and final &#8710;f-value (red),
          where &#8710;fand <span style="font-family:helvetica">Df</span> denote the difference to the optimal function value. 
-         Light brown lines in the background show ECDFs for the most difficult target of all
-            algorithms benchmarked during BBOB-2009.
 
 <div class="p"><!----></div>
-##bbobpprldistrlegendtwolargescalefixed##
+          ##bbobpprldistrlegendtwolargescalefixed##
 
         Empirical cumulative distributions (ECDF)
         of run lengths and speed-up ratios in 5-D (left) and 20-D (right).
@@ -888,10 +885,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         (FEvals/D)         to reach a target value f<sub><span class="roman">opt</span></sub>+&#8710;f with &#8710;f
 =10<sup>k</sup>, where
         k is given by the first value in the legend, for
-        algorithmA&nbsp;(<span style="color:#000000">&#176;</span>) and algorithmB&nbsp;(<span style="color:#000000">&#9830;</span>)        . Light beige lines show the ECDF of FEvals for target value
-        &#8710;f
-=10<sup>&#8722;8</sup> of all algorithms benchmarked during
-        BBOB-2009. Right sub-columns:
+        algorithmA&nbsp;(<span style="color:#000000">&#176;</span>) and algorithmB&nbsp;(<span style="color:#000000">&#9830;</span>)        . Right sub-columns:
         ECDF of FEval ratios of algorithmA&nbsp;divided by algorithmB for target
         function values 10<sup>k</sup> with k given in the legend; all
         trial pairs for each function. Pairs where both trials failed are disregarded,
@@ -957,21 +951,19 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendlargescalefixed##
 
-        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
-        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
-        different dimensions.
-        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
-        10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
-                target, the corresponding best <span class="roman">aRT</span>&nbsp;        in the first row. The different target &#8710;f-values are shown in the top row.
-        #succ is the number of trials that reached the (final) target
-        f<sub><span class="roman">opt</span></sub>+ 10<sup>&#8722;8</sup>.
+        Average runtime (<span class="roman">aRT</span>) to reach given targets, measured
+        in number of function evaluations, in different dimensions. For each function, the <span class="roman">aRT</span>&nbsp;
+        and, in braces as dispersion measure, the half difference between 10 and 
+        90%-tile of (bootstrapped) runtimes is shown for the different
+        target &#8710;I-values as shown in the top row. 
+        #succ is the number of trials that reached the last target
+        I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;8</sup>.
                 The median number of conducted function evaluations is additionally given in 
         <i>italics</i>, if the target in the last column was never reached. 
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction of 48. A &#8595; indicates the same tested against the best
-        algorithm of BBOB-2009. Best results are printed in bold.
+        than 1, with Bonferroni correction of 48. Best results are printed in bold.
         ??COCOVERSION??
 
 <div class="p"><!----></div>
@@ -1022,5 +1014,5 @@ Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of
 T<sub><span class="small">E</span></sub>X
 by <a href="http://hutchinson.belmont.ma.us/tth/">
 T<sub><span class="small">T</span></sub>H</a>,
-version 4.08.<br />On  1 Feb 2017, 12:36.</small>
+version 4.08.<br />On  2 Feb 2017, 00:43.</small>
 </html>
