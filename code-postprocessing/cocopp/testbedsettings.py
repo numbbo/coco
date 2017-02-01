@@ -18,6 +18,7 @@ testbed_name_single = 'bbob'
 testbed_name_single_noisy = 'bbob-noisy'
 testbed_name_bi = 'bbob-biobj'
 testbed_name_bi_ext = 'bbob-biobj-ext'
+testbed_name_largescale= 'bbob-largescale'
 
 default_testbed_single = 'GECCOBBOBTestbed'
 default_testbed_single_noisy = 'GECCOBBOBNoisyTestbed'

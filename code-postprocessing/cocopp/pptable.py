@@ -91,7 +91,7 @@ def get_table_caption():
         \textit{italics}, if the target in the last column was never reached. 
         """        
         
-    if testbedsettings.current_testbed.name in ['bbob', 'bbob-noisy', 'bbob-biobj']:
+    if testbedsettings.current_testbed.name in ['bbob', 'bbob-noisy', 'bbob-biobj', 'bbob-largescale']:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_start + table_caption_rlbased + table_caption_rest
         else:

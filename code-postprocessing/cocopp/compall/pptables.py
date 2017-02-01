@@ -72,7 +72,7 @@ def get_table_caption():
                                                 testbedsettings.testbed_name_bi_ext]:
         # NOTE: no runlength-based targets supported yet
         table_caption = table_caption_one_bi + table_caption_rest
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single, testbedsettings.testbed_name_largescale]:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:

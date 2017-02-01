@@ -62,7 +62,8 @@ def prepare_scaling_figure_caption():
         figure_caption = scaling_figure_caption_fixed
     elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
                                                   testbedsettings.testbed_name_single_noisy,
-                                                  testbedsettings.testbed_name_bi]:
+                                                  testbedsettings.testbed_name_bi,
+                                                  testbedsettings.testbed_name_largescale]:
         if genericsettings.runlength_based_targets:
             figure_caption = scaling_figure_caption_rlbased
         else:
@@ -119,6 +120,8 @@ def prepare_ecdfs_figure_caption():
                 and isinstance(testbed, testbedsettings.GECCOBiObjBBOBTestbed)
                 ):
             refalgtext = bestalgtext.format("best 2016", "BBOB 2016")
+    else: # no reference algorithm
+        refalgtext = ""
 
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +

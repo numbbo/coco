@@ -44,7 +44,14 @@ def prepare_html(texFile):
     
     print('pdflatex done')
     
-    tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth\\tth.exe')
+    if sys.platform == "win32":
+      tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth\\tth.exe')
+    elif sys.platform in ["darwin", "linux2"]:
+      # assumes the tth pacakge is compiled in a folder tth
+      tthFile = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'tth_C/tth')
+    else:
+        raise Exception("Unknown OS")
+
     args = "%s %s" % (tthFile, texFile)
     subprocess.call(args.split(), stdout=FNULL, stderr=FNULL, shell=False)    
 
