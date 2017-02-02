@@ -373,7 +373,7 @@ class LargeScaleTestbed(GECCOBBOBTestbed):
         #.reference_algorithm_filename = 'data/RANDOMSEARCH'
         #.reference_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in reference_algorithm_filename
         # expensive optimization settings:
-        pptable_target_runlengths = pptable_target_runlengths, 
+        pptable_target_runlengths = pptable_target_runlengths,
         pptable2_target_runlengths = pptable_target_runlengths,
         pptables_target_runlengths = pptable_target_runlengths,
         instancesOfInterest = None # None: consider all instances
