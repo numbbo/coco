@@ -592,6 +592,8 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
             
             alg_definitions.append((', ' if i > 0 else '') + '%s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
             alg_definitions_html += (', ' if i > 0 else '') + '%s: %s' % (symb_html, toolsdivers.str_to_latex(toolsdivers.strip_pathname1(sortedAlgs[i])))
+        toolsdivers.prepend_to_file(latex_commands_filename,
+                [providecolorsforlatex()]) # needed since the latest change in ACM template
         toolsdivers.prepend_to_file(latex_commands_filename, 
                 [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
                  #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
@@ -644,3 +646,29 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
 
         plt.close()
 
+def providecolorsforlatex():
+    """ Provides the dvipsnames colors in pure LaTeX.
+    
+    Used when the xcolor option of the same name is not available, e.g.
+    within the new ACM LaTeX templates.
+    
+    """
+    return r"""% define some COCO/dvipsnames colors because
+% ACM style does not allow to use them directly
+\definecolor{NavyBlue}{HTML}{000080}
+\definecolor{Magenta}{HTML}{FF00FF}
+\definecolor{Orange}{HTML}{FFA500}
+\definecolor{CornflowerBlue}{HTML}{6495ED}
+\definecolor{YellowGreen}{HTML}{9ACD32}
+\definecolor{Gray}{HTML}{BEBEBE}
+\definecolor{Yellow}{HTML}{FFFF00}
+\definecolor{GreenYellow}{HTML}{ADFF2F}
+\definecolor{ForestGreen}{HTML}{228B22}
+\definecolor{Lavender}{HTML}{FFC0CB}
+\definecolor{SkyBlue}{HTML}{87CEEB}
+\definecolor{NavyBlue}{HTML}{000080}
+\definecolor{Goldenrod}{HTML}{DDF700}
+\definecolor{VioletRed}{HTML}{D02090}
+\definecolor{CornflowerBlue}{HTML}{6495ED}
+\definecolor{LimeGreen}{HTML}{32CD32}
+"""
