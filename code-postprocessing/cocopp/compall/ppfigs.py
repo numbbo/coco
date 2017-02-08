@@ -9,6 +9,7 @@ import warnings
 from pdb import set_trace
 from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings, htmldesc, ppfigparam
 from .. import testbedsettings
+from .. import captions
 from ..ppfig import save_figure
 from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 
@@ -34,14 +35,14 @@ legend = False
 def prepare_scaling_figure_caption():
 
     scaling_figure_caption_start_fixed = (r"""Average running time (\aRT\ in number of $f$-evaluations
-                    as $\log_{10}$ value), divided by dimension for target function value $BBOBPPFIGSFTARGET$
+                    as $\log_{10}$ value), divided by dimension for target function value $!!PPFIGS_FTARGET!!$
                     versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. """
                                           )
 
     scaling_figure_caption_start_rlbased = (r"""Average running time (\aRT\ in number of $f$-evaluations
                         as $\log_{10}$ value) divided by dimension versus dimension. The target function value
-                        is chosen such that the REFERENCE_ALGORITHM artificial algorithm just failed to achieve
-                        an \aRT\ of $BBOBPPFIGSFTARGET\times\DIM$. """
+                        is chosen such that !!THE-REF-ALG!! just failed to achieve
+                        an \aRT\ of $!!PPFIGS_FTARGET!!\times\DIM$. """
                                             )
 
     scaling_figure_caption_end = (
@@ -72,7 +73,6 @@ def prepare_scaling_figure_caption():
 
     return figure_caption
 
-
 def scaling_figure_caption(for_html = False):
 
     if for_html:
@@ -81,20 +81,7 @@ def scaling_figure_caption(for_html = False):
     else:
         figure_caption = prepare_scaling_figure_caption()
 
-    target = testbedsettings.current_testbed.ppfigs_ftarget
-    target = pproc.TargetValues.cast([target] if numpy.isscalar(target) else target)
-    assert len(target) == 1
-
-    if genericsettings.runlength_based_targets:
-        figure_caption = figure_caption.replace('REFERENCE_ALGORITHM',
-                                                target.reference_algorithm)
-        figure_caption = figure_caption.replace('REFERENCEALGORITHM',
-                                                target.reference_algorithm)
-
-    figure_caption = figure_caption.replace('BBOBPPFIGSFTARGET',
-                                            toolsdivers.number_to_latex(target.label(0)))
-
-    return figure_caption
+    return captions.replace(figure_caption)
 
 
 def prepare_ecdfs_figure_caption():
@@ -123,16 +110,16 @@ def prepare_ecdfs_figure_caption():
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
-                r"(FEvals/DIM) for $BBOBPPFIGSFTARGET$ " +
-                r"targets with target precision in BBOBPPFIGSTARGETRANGE " +
+                r"(FEvals/DIM) for $!!NUM-OF-TARGETS-IN-ECDF!!$ " +
+                r"targets with target precision in !!TARGET-RANGES-IN-ECDF!! " +
                 r"for all functions and subgroups. "
                 )
     ecdfs_figure_caption_rlbased = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
                 r"(FEvals/DIM) for all functions and subgroups in #1-D." +
-                r" The targets are chosen from BBOBPPFIGSTARGETRANGE " +
-                r"such that the REFERENCE_ALGORITHM artificial algorithm just " +
+                r" The targets are chosen from !!TARGET-RANGES-IN-ECDF!! " +
+                r"such that !!THE-REF-ALG!! just " +
                 r"not reached them within a given budget of $k$ $\times$ DIM, " +
                 r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. "
                 )
@@ -150,7 +137,7 @@ def prepare_ecdfs_figure_caption():
     else:
         warnings.warn("Current settings do not support ppfigdim caption.")
 
-    return figure_caption
+    return captions.replace(figure_caption)
 
 
 def ecdfs_figure_caption(for_html = False, dimension = 0):
@@ -159,57 +146,55 @@ def ecdfs_figure_caption(for_html = False, dimension = 0):
         key = '##bbobECDFslegend%s##' % testbedsettings.current_testbed.scenario
         caption = htmldesc.getValue(key)
     else:
-        caption = prepare_ecdfs_figure_caption()
-
-    target = testbedsettings.current_testbed.ppfigs_ftarget
-    target = pproc.TargetValues.cast([target] if numpy.isscalar(target) else target)
-    assert len(target) == 1
-
-    caption = caption.replace('BBOBPPFIGSTARGETRANGE',
-                              str(testbedsettings.current_testbed.pprldmany_target_range_latex))
-    caption = caption.replace('DIMVALUE', str(dimension))
-
-    if genericsettings.runlength_based_targets:
-        caption = caption.replace('REFERENCE_ALGORITHM', target.reference_algorithm)
-        caption = caption.replace('REFERENCEALGORITHM', target.reference_algorithm)
-    else:
-        caption = caption.replace('BBOBPPFIGSFTARGET',
-                                  str(len(testbedsettings.current_testbed.pprldmany_target_values)))
+        caption = prepare_ecdfs_figure_caption()   
 
     return caption
 
 
 def get_ecdfs_single_fcts_caption():
-    ''' Returns figure caption for single function ECDF plots.
-    
-        Note: for the moment, only the bbob-biobj test suite case is supported.    
-    '''
-    s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
-         of objective function evaluations divided by dimension (FEvals/DIM) for the $""" +
-            str(len(testbedsettings.current_testbed.pprldmany_target_values)) +
-            r"$ targets " + 
-            str(testbedsettings.current_testbed.pprldmany_target_range_latex) +
-            r" for functions $f_1$ to $f_{16}$ and all dimensions. "
-            )
-    return s
+    ''' Returns figure caption for single function ECDF plots. '''
+
+    if genericsettings.runlength_based_targets:
+        s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
+             of objective function evaluations divided by dimension (FEvals/DIM) for  
+             targets in !!TARGET-RANGES-IN-ECDF!! that have just not
+             been reached by !!THE-REF-ALG!!
+             in a given budget of $k$ $\times$ DIM, with $!!NUM-OF-TARGETS-IN-ECDF!!$ 
+             different values of $k$ chosen equidistant in the interval $\{0.5, \dots, 50\}$.
+             Shown are functions $f_{#1}$ to $f_{#2}$ and all dimensions. """)
+    else:
+        s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
+             of objective function evaluations divided by dimension (FEvals/DIM) for the 
+             $!!NUM-OF-TARGETS-IN-ECDF!!$ targets !!TARGET-RANGES-IN-ECDF!!
+             for functions $f_{#1}$ to $f_{#2}$ and all dimensions. """
+             )
+
+    return captions.replace(s)
 
 def get_ecdfs_all_groups_caption():
     ''' Returns figure caption for ECDF plots aggregating over function groups. '''
     
-    testbed = testbedsettings.current_testbed
-    
-    s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
-         runtimes, measured in number of objective function evaluations,
-         divided by dimension (FEvals/DIM) for the $""" +
-         str(len(testbedsettings.current_testbed.pprldmany_target_values)) +
-         r"$ targets " + 
-         str(testbedsettings.current_testbed.pprldmany_target_range_latex) +
-         r" for all function groups and all dimensions. The aggregation" +
-         r" over all " +
-         str(testbed.last_function_number - testbed.first_function_number + 1) +
-         r" functions is shown in the last plot."
-        )
-    return s
+    if genericsettings.runlength_based_targets:
+        s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
+             runtimes, measured in number of objective function evaluations 
+             divided by dimension (FEvals/DIM) for all function groups and all 
+             dimensions and for those targets in
+             !!TARGET-RANGES-IN-ECDF!! that have just not been reached by 
+             !!THE-REF-ALG!! in a given budget of $k$ $\times$ DIM, with 
+             $!!NUM-OF-TARGETS-IN-ECDF!!$ different values of $k$ chosen 
+             equidistant in logscale within the interval $\{0.5, \dots, 50\}$.             
+             The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
+             functions is shown in the last plot."""
+             )
+    else:
+        s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
+             runtimes, measured in number of objective function evaluations,
+             divided by dimension (FEvals/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
+             targets !!TARGET-RANGES-IN-ECDF!! for all function groups and all 
+             dimensions. The aggregation over all !!TOTAL-NUM-OF-FUNCTIONS!! 
+             functions is shown in the last plot."""
+             )
+    return captions.replace(s)
     
 def plotLegend(handles, maxval=None):
     """Display right-side legend.

@@ -9,8 +9,10 @@
     ...).
 """
 import warnings
+import numpy as np
 from . import genericsettings
 from . import testbedsettings
+from . import pproc, toolsdivers
 
 # certain settings, only needed for the captions for now are grouped here:
 ynormalize_by_dimension = True
@@ -90,6 +92,18 @@ replace_dict = {
         '!!HARDEST-TARGET-LATEX!!': lambda: testbedsettings.current_testbed.hardesttargetlatex,
         '!!DIM!!': lambda: r"""\DIM""",
         '!!SINGLE-RUNLENGTH-FACTORS!!': lambda: '$' + 'D, '.join([str(i) for i in genericsettings.single_runlength_factors[:6]]) + 'D,\dots$',
-        '!!LIGHT-BROWN-LINES!!': lambda: get_light_brown_line_text(testbedsettings.current_testbed.name)
+        '!!LIGHT-BROWN-LINES!!': lambda: get_light_brown_line_text(testbedsettings.current_testbed.name),
+        '!!PPFIGS-FTARGET!!': lambda: get_ppfigs_ftarget(),
+        '!!NUM-OF-TARGETS-IN-ECDF!!': lambda: str(len(testbedsettings.current_testbed.pprldmany_target_values)),
+        '!!TARGET-RANGES-IN-ECDF!!': lambda: str(testbedsettings.current_testbed.pprldmany_target_range_latex),
+        '!!TOTAL-NUM-OF-FUNCTIONS!!': lambda: str(testbedsettings.current_testbed.last_function_number - testbedsettings.current_testbed.first_function_number + 1)
          }
 
+
+
+def get_ppfigs_ftarget():
+    target = testbedsettings.current_testbed.ppfigs_ftarget
+    target = pproc.TargetValues.cast([target] if np.isscalar(target) else target)
+    assert len(target) == 1
+
+    return toolsdivers.number_to_latex(target.label(0))

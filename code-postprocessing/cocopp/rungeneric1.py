@@ -476,7 +476,7 @@ def main(argv=None):
                          pptable.get_table_caption(),
                          '}'])
         prepend_to_file(latex_commands_file,
-                        ['\\providecommand{\\bbobecdfcaptionsinglefcts}{',
+                        ['\\providecommand{\\bbobecdfcaptionsinglefcts}[2]{',
                          ppfigs.get_ecdfs_single_fcts_caption(),
                          '}'])
         prepend_to_file(latex_commands_file,
