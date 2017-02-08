@@ -55,13 +55,17 @@ def regression_test_a_suite(suite_name, filename):
         sys.stdout.flush()
         t0 = time.clock()
     suite = cocoex.Suite(suite_name, "year: 0000", "") # choose "default" year for test
+    cpt = 0
     for key in xfc_dict:
         f, x = suite[key[0]], key[1]
         try:
             assert is_equal(f(x), xfc_dict[key][0])
         except AssertionError:
-            print(f.name, key, xfc_dict[key], f(x))
-            raise
+            pass
+            cpt += 1
+            error_text = str((f.name, key, xfc_dict[key], f(x)))
+            #print(f.name, key, xfc_dict[key], f(x))
+            #raise
         if f.number_of_constraints > 0:
             try:
                 assert is_equal(f.constraint(x), xfc_dict[key][1])
@@ -70,6 +74,11 @@ def regression_test_a_suite(suite_name, filename):
                 raise
     if verbose:
         print("done in %.1fs" % (time.clock() - t0))
+        if cpt > 0:
+          print("%d / %d failures" % (cpt, len(xfc_dict)))
+    if cpt > 0:
+        print(error_text)
+        raise
 
 if __name__ == "__main__":
     try:
@@ -91,4 +100,4 @@ if __name__ == "__main__":
     if 1 < 3: # test whether last dimensions of `bbob` and first of `bbob-largescale` match
         regression_test_a_suite("bbob-largescale",
                 os.path.join("data",
-                             "regression_test_%d-bbobdata_for_bbob-largescalesuite_" % ndata + ".py"))
+                             "regression_test_%d-bbobdata_for_bbob-largescalesuite" % ndata + ".py"))

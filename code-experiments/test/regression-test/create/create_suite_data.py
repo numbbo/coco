@@ -29,7 +29,7 @@ def solution_array(dimension, number=10):
         np.random.randn(number, dimension).T).T
 
 
-def generate_test_data_for_suite(suite_name, filename, solution_array=solution_array):
+def generate_test_data_for_suite(suite_name, filename, solution_array=solution_array, bbob_data_for_ls = False):
     """write regression test data into file.
 
     Argument `solution_array(dimension)` is a function which returns a
@@ -41,6 +41,7 @@ def generate_test_data_for_suite(suite_name, filename, solution_array=solution_a
     xfc_dict = {}
     for i, f in enumerate(suite):
         for x in solution_array(f.dimension):
+          if not bbob_data_for_ls or f.dimension >= 20: # Wassim: non-definitive
             res = (f(x) if f.number_of_objectives == 1 else list(f(x)),
                    list(f.constraint(x) if f.number_of_constraints > 0 else []))
             if is_finite(res):
