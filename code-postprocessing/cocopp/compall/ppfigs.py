@@ -35,14 +35,14 @@ legend = False
 def prepare_scaling_figure_caption():
 
     scaling_figure_caption_start_fixed = (r"""Average running time (\aRT\ in number of $f$-evaluations
-                    as $\log_{10}$ value), divided by dimension for target function value $!!PPFIGS_FTARGET!!$
+                    as $\log_{10}$ value), divided by dimension for target function value $!!PPFIGS-FTARGET!!$
                     versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. """
                                           )
 
     scaling_figure_caption_start_rlbased = (r"""Average running time (\aRT\ in number of $f$-evaluations
                         as $\log_{10}$ value) divided by dimension versus dimension. The target function value
                         is chosen such that !!THE-REF-ALG!! just failed to achieve
-                        an \aRT\ of $!!PPFIGS_FTARGET!!\times\DIM$. """
+                        an \aRT\ of $!!PPFIGS-FTARGET!!\times\DIM$. """
                                             )
 
     scaling_figure_caption_end = (
@@ -112,16 +112,18 @@ def prepare_ecdfs_figure_caption():
                 r"of objective function evaluations divided by dimension " +
                 r"(FEvals/DIM) for $!!NUM-OF-TARGETS-IN-ECDF!!$ " +
                 r"targets with target precision in !!TARGET-RANGES-IN-ECDF!! " +
-                r"for all functions and subgroups. "
+                r"for all functions and subgroups in #1-D. "
                 )
     ecdfs_figure_caption_rlbased = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
                 r"of objective function evaluations divided by dimension " +
-                r"(FEvals/DIM) for all functions and subgroups in #1-D." +
-                r" The targets are chosen from !!TARGET-RANGES-IN-ECDF!! " +
+                r"(FEvals/DIM) for all functions and subgroups in #1-D. " +
+                r"The targets are chosen from !!TARGET-RANGES-IN-ECDF!! " +
                 r"such that !!THE-REF-ALG!! just " +
                 r"not reached them within a given budget of $k$ $\times$ DIM, " +
-                r"with $k\in \{0.5, 1.2, 3, 10, 50\}$. "
+                r"with $!!NUM-OF-TARGETS-IN-ECDF!!$ different values of $k$ " +
+                r"chosen equidistant in logscale within the interval " +
+                r"$\{0.5, \dots, 50\}$. "
                 )
 
     if testbed.name == testbedsettings.testbed_name_bi_ext:
@@ -160,7 +162,7 @@ def get_ecdfs_single_fcts_caption():
              targets in !!TARGET-RANGES-IN-ECDF!! that have just not
              been reached by !!THE-REF-ALG!!
              in a given budget of $k$ $\times$ DIM, with $!!NUM-OF-TARGETS-IN-ECDF!!$ 
-             different values of $k$ chosen equidistant in the interval $\{0.5, \dots, 50\}$.
+             different values of $k$ chosen equidistant in logscale within the interval $\{0.5, \dots, 50\}$.
              Shown are functions $f_{#1}$ to $f_{#2}$ and all dimensions. """)
     else:
         s = (r"""Empirical cumulative distribution of simulated (bootstrapped) runtimes in number
@@ -195,7 +197,29 @@ def get_ecdfs_all_groups_caption():
              functions is shown in the last plot."""
              )
     return captions.replace(s)
+
+def get_ecdfs_single_functions_single_dim_caption():
+    ''' Returns figure caption for single function ECDF plots
+        showing the results of 2+ algorithms in a single dimension. '''
     
+    if genericsettings.runlength_based_targets:
+        s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
+             runtimes, measured in number of objective function evaluations 
+             divided by dimension (FEvals/DIM) in 
+             dimension #1 and for those targets in
+             !!TARGET-RANGES-IN-ECDF!! that have just not been reached by 
+             !!THE-REF-ALG!! in a given budget of $k$ $\times$ DIM, with 
+             $!!NUM-OF-TARGETS-IN-ECDF!!$ different values of $k$ chosen 
+             equidistant in logscale within the interval $\{0.5, \dots, 50\}$."""
+             )
+    else:
+        s = (r"""Empirical cumulative distribution of simulated (bootstrapped)
+             runtimes, measured in number of objective function evaluations,
+             divided by dimension (FEvals/DIM) for the $!!NUM-OF-TARGETS-IN-ECDF!!$ 
+             targets !!TARGET-RANGES-IN-ECDF!! in dimension #1."""
+             )
+    return captions.replace(s)
+
 def plotLegend(handles, maxval=None):
     """Display right-side legend.
     

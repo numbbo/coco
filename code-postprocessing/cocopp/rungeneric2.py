@@ -21,7 +21,7 @@ import getopt
 import numpy
 import matplotlib
 
-from . import genericsettings, ppfig, toolsdivers, rungenericmany
+from . import genericsettings, testbedsettings, ppfig, toolsdivers, rungenericmany
 from .toolsdivers import print_done
 from .compall import pptables
 
@@ -486,42 +486,44 @@ def main(argv=None):
             )
             print_done()
 
-            print("ECDF runlength graphs...")
-            for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
-                pprldistr.fmax = None  # Resetting the max final value
-                pprldistr.evalfmax = None  # Resetting the max #fevalsfactor
-                # ECDFs of all functions altogether
-                if dim in inset.rldDimsOfInterest:
-                    try:
-                        pprldistr.comp(dictDim1[dim], dictDim0[dim],
-                                       testbedsettings.current_testbed.rldValsOfInterest,
-                                       # TODO: let rldVals... possibly be RL-based targets
-                                       True,
-                                       outputdir, 'all')
-                    except KeyError:
-                        warnings.warn('Could not find some data in %d-D.'
-                                      % (dim))
-                        continue
-
-                    # ECDFs per function groups
-                    dictFG0 = dictDim0[dim].dictByFuncGroup()
-                    dictFG1 = dictDim1[dim].dictByFuncGroup()
-
-                    for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
-                        pprldistr.comp(dictFG1[fGroup], dictFG0[fGroup],
-                                       testbedsettings.current_testbed.rldValsOfInterest, True,
-                                       outputdir,
-                                       '%s' % fGroup)
-
-                    # ECDFs per noise groups
-                    dictFN0 = dictDim0[dim].dictByNoise()
-                    dictFN1 = dictDim1[dim].dictByNoise()
-                    for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
-                        pprldistr.comp(dictFN1[fGroup], dictFN0[fGroup],
-                                       testbedsettings.current_testbed.rldValsOfInterest, True,
-                                       outputdir,
-                                       '%s' % fGroup)
-            print_done()
+            if testbedsettings.current_testbed not in [testbedsettings.GECCOBiObjBBOBTestbed,
+                                                       testbedsettings.GECCOBiObjExtBBOBTestbed]:
+                print("ECDF runlength graphs...")
+                for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
+                    pprldistr.fmax = None  # Resetting the max final value
+                    pprldistr.evalfmax = None  # Resetting the max #fevalsfactor
+                    # ECDFs of all functions altogether
+                    if dim in inset.rldDimsOfInterest:
+                        try:
+                            pprldistr.comp(dictDim1[dim], dictDim0[dim],
+                                           testbedsettings.current_testbed.rldValsOfInterest,
+                                           # TODO: let rldVals... possibly be RL-based targets
+                                           True,
+                                           outputdir, 'all')
+                        except KeyError:
+                            warnings.warn('Could not find some data in %d-D.'
+                                          % (dim))
+                            continue
+    
+                        # ECDFs per function groups
+                        dictFG0 = dictDim0[dim].dictByFuncGroup()
+                        dictFG1 = dictDim1[dim].dictByFuncGroup()
+    
+                        for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
+                            pprldistr.comp(dictFG1[fGroup], dictFG0[fGroup],
+                                           testbedsettings.current_testbed.rldValsOfInterest, True,
+                                           outputdir,
+                                           '%s' % fGroup)
+    
+                        # ECDFs per noise groups
+                        dictFN0 = dictDim0[dim].dictByNoise()
+                        dictFN1 = dictDim1[dim].dictByNoise()
+                        for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
+                            pprldistr.comp(dictFN1[fGroup], dictFN0[fGroup],
+                                           testbedsettings.current_testbed.rldValsOfInterest, True,
+                                           outputdir,
+                                           '%s' % fGroup)
+                print_done() # of "ECDF runlength graphs..."
 
             # copy-paste from above, here for each function instead of function groups
             if genericsettings.isRldOnSingleFcts:

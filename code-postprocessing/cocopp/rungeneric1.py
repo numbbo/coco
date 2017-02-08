@@ -480,7 +480,7 @@ def main(argv=None):
                          ppfigs.get_ecdfs_single_fcts_caption(),
                          '}'])
         prepend_to_file(latex_commands_file,
-                        ['\\providecommand{\\bbobecdfcaptionallgroups}{',
+                        ['\\providecommand{\\bbobecdfcaptionallgroups}[1]{',
                          ppfigs.get_ecdfs_all_groups_caption(),
                          '}'])
         prepend_to_file(latex_commands_file,

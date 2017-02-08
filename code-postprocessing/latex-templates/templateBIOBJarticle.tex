@@ -4,7 +4,7 @@
 \usepackage{graphicx}
 \usepackage{rotating}
 \definecolor{Gray}{gray}{0.6}
-
+\usepackage{xspace}
 
 % Copyright
 %\setcopyright{none}
@@ -57,17 +57,19 @@
 \newcommand{\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
 \newcommand{\ftarget}{\ensuremath{f_\mathrm{t}}}
 \newcommand{\CrE}{\ensuremath{\mathrm{CrE}}}
-\newcommand{\hvref}{\ensuremath{HV_\mathrm{ref}}}
+\newcommand{\hvref}{\ensuremath{I_\mathrm{ref}}}
 \newcommand{\fopt}{\hvref}
 \newcommand{\change}[1]{{\color{red} #1}}
 \newcommand{\TODO}[1]{{\color{orange} !!! #1 !!!}}
+\newcommand{\bbobbiobj}{{\ttfamily bbob-biobj}\xspace}
 
 %%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
 
-\title{Black-Box Optimization Benchmarking Template for the Bi-Objective BBOB Test Suite}
+\title{Black-Box Optimization Benchmarking Template for the Bi-Objective \bbobbiobj Test Suite}
+\renewcommand{\shorttitle}{Template for Benchmarking Single Algorithms on the \bbobbiobj Testbed}
 \titlenote{Submission deadline: March 31st.}
 %Camera-ready paper due April 24th.}}
 \subtitle{Draft version}

@@ -8,7 +8,7 @@ import os, sys
 from pdb import set_trace
 import warnings
 import numpy
-from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings
+from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings, captions
 from ..pptex import writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from ..toolsstats import significancetest, significance_all_best_vs_other
 from ..toolsdivers import str_to_latex, strip_pathname1, replace_in_file, get_version_label
@@ -29,31 +29,31 @@ def get_table_caption():
     """
 
     table_caption_one = r"""%
-        Average running time (\aRT\ in number of function 
-        evaluations) divided by the respective best \aRT\ measured during BBOB-2009 in
+        Average runtime (\aRT\ in number of function 
+        evaluations) divided by the respective !!BEST-ART!! in
         #1.
         The \aRT\ and in braces, as dispersion measure, the half difference between 
         10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
         """
-    table_caption_two1 = r"""%
-        target, the corresponding best \aRT\
-        in the first row. The different target \Df-values are shown in the top row.
-        \#succ is the number of trials that reached the (final) target
-        $\fopt + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
-        """
-    table_caption_two2 = r"""%
-        run-length based target, the corresponding best \aRT\
-        (preceded by the target \Df-value in \textit{italics}) in the first row. 
-        \#succ is the number of trials that reached the target value of the last column.
-        """
-    table_caption_one_bi = r"""%
+    table_caption_one_noreference = r"""%
         Average runtime (\aRT) to reach given targets, measured
         in number of function evaluations, in #1. For each function, the \aRT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
-        target \DI-values as shown in the top row. 
+        target !!DI!!-values as shown in the top row. 
         \#succ is the number of trials that reached the last target
-        $\hvref + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
+        $!!FOPT!! + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
+        """
+    table_caption_two1 = r"""%
+        target, the corresponding reference \aRT\
+        in the first row. The different target !!DF!!-values are shown in the top row.
+        \#succ is the number of trials that reached the (final) target
+        $!!FOPT!! + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
+        """
+    table_caption_two2 = r"""%
+        run-length based target, the corresponding reference \aRT\
+        (preceded by the target !!DF!!-value in \textit{italics}) in the first row. 
+        \#succ is the number of trials that reached the target value of the last column.
         """
     table_caption_rest = (r"""%
         The median number of conducted function evaluations is additionally given in 
@@ -62,17 +62,17 @@ def get_table_caption():
         the rank-sum test) when compared to all other algorithms of the table, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
         than 1, with Bonferroni correction of #2. """ +
-                          (r"""A $\downarrow$ indicates the same tested against the best
-        algorithm of BBOB-2009. """
-                           if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
-                           else "") + r"""Best results are printed in bold.
+        (r"""A $\downarrow$ indicates the same tested against !!THE-REF-ALG!!. """
+        if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext)
+        else "") + r"""Best results are printed in bold.
         """ + r"""\cocoversion""")
 
-    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi,
-                                                testbedsettings.testbed_name_bi_ext]:
+    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext]:
         # NOTE: no runlength-based targets supported yet
-        table_caption = table_caption_one_bi + table_caption_rest
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+        table_caption = table_caption_one_noreference + table_caption_rest
+    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
+                                                  testbedsettings.testbed_name_single_noisy,
+                                                  testbedsettings.testbed_name_bi]:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:
@@ -80,7 +80,7 @@ def get_table_caption():
     else:
         warnings.warn("Current settings do not support pptables caption.")
 
-    return table_caption
+    return captions.replace(table_caption)
 
 
 with_table_heading = False  # in case the page is long enough
