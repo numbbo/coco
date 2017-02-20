@@ -256,7 +256,8 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
     
                 # write the success ratio for the reference alg
                 successful_runs, all_runs = bestalgentry.get_success_ratio(targetf)
-                curline.append('%d/%d' % (successful_runs, all_runs))
+                curline.append('%d' % successful_runs)
+                curline.append('/%d' % all_runs)
                 curlineHtml.append('<td>%d/%d</td>\n' % (successful_runs, all_runs))
 
             else: # if not bestalgentries
