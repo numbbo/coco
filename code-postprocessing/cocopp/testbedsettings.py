@@ -227,8 +227,8 @@ class GECCOBBOBTestbed(Testbed):
 
         if 11 < 3:
             # override settings if needed...
-            #self.reference_algorithm_filename = 'bestalgentries2009.pickle.gz'
-            #self.reference_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in reference_algorithm_filename
+            #self.reference_algorithm_filename = 'best09-16-bbob.tar.gz'
+            #self.reference_algorithm_displayname = 'best 2009--16'  # TODO: should be read in from data set in reference_algorithm_filename
             #self.reference_algorithm_filename = 'data/RANDOMSEARCH'
             #self.reference_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in reference_algorithm_filename
             self.short_names = get_short_names(self.shortinfo_filename)
@@ -250,7 +250,7 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
         functions_with_legend = (101, 130),
         first_function_number = 101,
         last_function_number = 130,
-        reference_algorithm_filename = 'best2009-bbob-noisy.tar.gz',
+        reference_algorithm_filename = 'refalgs/best2009-bbob-noisy.tar.gz',
         reference_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in reference_algorithm_filename
     )
     
@@ -262,8 +262,8 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
             setattr(self, key, val)
         if 11 < 3:
             # override settings if needed...
-            self.reference_algorithm_filename = 'best2009-bbob-noisy.tar.gz'
-            self.reference_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in reference_algorithm_filename
+            self.reference_algorithm_filename = 'best09-16-bbob-noisy.tar.gz'
+            self.reference_algorithm_displayname = 'best 2009--16'  # TODO: should be read in from data set in reference_algorithm_filename
 
 
 class GECCOBiObjBBOBTestbed(Testbed):
@@ -299,7 +299,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         pptable2_targetsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5),  # used for pptable2
         pptablemany_targetsOfInterest = (1, 1e-1, 1e-2, 1e-3),  # used for pptables
         scenario = scenario_biobjfixed,
-        reference_algorithm_filename = 'refalgs/best2016-bbob-biobj-v2.0.tar.gz', # TODO produce correct best2016 algo and delete this line
+        reference_algorithm_filename = 'refalgs/best2016-bbob-biobj.tar.gz', # TODO produce correct best2016 algo and delete this line
         reference_algorithm_displayname = 'best 2016', # TODO: should be read in from data set in reference_algorithm_filename
         instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}, # None, # None: consider all instances
         # expensive optimization settings:
@@ -329,8 +329,8 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.htmlDimsOfInterest = (5, 20)
         if 11 < 3:
             # override settings if needed...
-            self.reference_algorithm_filename = 'refalgs/best2016-bbob-biobj-NEW.tar.gz'
-            self.reference_algorithm_displayname = 'best 2016'  # TODO: should be read in from data set in reference_algorithm_filename
+            #self.reference_algorithm_filename = 'refalgs/best2016-bbob-biobj-NEW.tar.gz'
+            #self.reference_algorithm_displayname = 'best 2016'  # TODO: should be read in from data set in reference_algorithm_filename
             #self.short_names = get_short_names(self.shortinfo_filename)
             self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 
