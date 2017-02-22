@@ -492,7 +492,8 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
 
             # write the success ratio for the reference alg
             successful_runs, all_runs = refalgentry.get_success_ratio(targetf)
-            curline.append('%d/%d' % (successful_runs, all_runs))
+            curline.append('%d' % successful_runs)
+            curline.append('/%d' % all_runs)
             replaceValue = '%d/%d' % (successful_runs, all_runs)
             curlineHtml = [item.replace('REPLACEF', replaceValue) for item in curlineHtml]
 

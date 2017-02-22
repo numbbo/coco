@@ -241,7 +241,7 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
         functions_with_legend = (101, 130),
         first_function_number = 101,
         last_function_number = 130,
-        reference_algorithm_filename = 'best2009-bbob-noisy.tar.gz',
+        reference_algorithm_filename = 'refalgs/best2009-bbob-noisy.tar.gz',
         reference_algorithm_displayname = 'best 2009'  # TODO: should be read in from data set in reference_algorithm_filename
     )
     
