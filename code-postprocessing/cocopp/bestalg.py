@@ -601,7 +601,7 @@ def create_data_files(output_dir, result, suite):
             header = "funcId = %d, DIM = %d, Precision = %10.15e, algId = '%s'" \
                      % (key[1], key[0], value.precision, value.algId)
             if test_suite is not None:
-                header += " suite = '%s'" % test_suite
+                header += ", suite = '%s'" % test_suite
             info_lines.append(header)
             info_lines.append("%% %s" % value.comment)
             info_lines.append("%s, %s" % (filename_template % (key[1], key[0], 'dat'), instance_data))
