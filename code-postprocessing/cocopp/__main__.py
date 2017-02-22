@@ -63,7 +63,7 @@ def copy_latex_templates():
     shutil.copy(join_path(templateFolder, 'templateBBOBmany.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'templateBIOBJarticle.tex'), currentFolder)
     shutil.copy(join_path(templateFolder, 'templateBIOBJmultiple.tex'), currentFolder)
-    shutil.copy(join_path(templateFolder, 'sig-alternate.cls'), currentFolder)
+    shutil.copy(join_path(templateFolder, 'acmart.cls'), currentFolder)
     shutil.copy(join_path(templateFolder, 'comment.sty'), currentFolder)
     shutil.copy(join_path(templateFolder, 'acmcopyright.sty'), currentFolder)
     shutil.copy(join_path(templateFolder, 'bbob.bib'), currentFolder)

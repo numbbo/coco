@@ -45,6 +45,7 @@ if __name__ == "__main__":
 from . import genericsettings, rungeneric1, rungeneric2, rungenericmany, ppfig, toolsdivers
 from .toolsdivers import truncate_latex_command_file, print_done
 from .ppfig import Usage
+from .compall import ppfigs
 
 __all__ = ['main']
 
@@ -279,6 +280,9 @@ def main(argv=None):
         toolsdivers.prepend_to_file(latex_commands_filename,
                 ['\\providecommand{\\cocoversion}{\\hspace{\\textwidth}\\scriptsize\\sffamily{}\\color{Gray}Data produced with COCO %s}' % (toolsdivers.get_version_label(None))]
                 )
+        toolsdivers.prepend_to_file(latex_commands_filename,
+                ['\\providecommand{\\bbobecdfcaptionsinglefunctionssingledim}[1]{',
+                 ppfigs.get_ecdfs_single_functions_single_dim_caption(), '}'])
             
         open(os.path.join(outputdir,
                           'cocopp_commands.tex'), 'a').close()

@@ -9,8 +9,10 @@
     ...).
 """
 import warnings
+import numpy as np
 from . import genericsettings
 from . import testbedsettings
+from . import pproc, toolsdivers
 
 # certain settings, only needed for the captions for now are grouped here:
 ynormalize_by_dimension = True
@@ -56,6 +58,35 @@ def get_reference_algorithm_text(best_algorithm_mandatory=True):
         raise NotImplementedError('no reference algorithm indicated in testbedsettings.py')
 
     return text
+
+def get_best_art_text():
+    text = ''
+    testbed = testbedsettings.current_testbed
+    if testbed.reference_algorithm_filename:
+        if (testbed.name == testbedsettings.testbed_name_single or
+                testbed.name == testbedsettings.default_testbed_single_noisy
+                or testbed.name == testbedsettings.testbed_name_bi):
+            if testbed.reference_algorithm_displayname:
+                if "best 2009" in testbed.reference_algorithm_displayname:
+                    text = "best \\aRT\ measured during BBOB-2009"
+                elif "best 2010" in testbed.reference_algorithm_displayname:
+                    text = "best \\aRT\ measured during BBOB-2010"
+                elif "best 2012" in testbed.reference_algorithm_displayname:
+                    text = "best \\aRT\ measured during BBOB-2012"
+                elif "best 2013" in testbed.reference_algorithm_displayname:
+                    text = "best \\aRT\ measured during BBOB-2013"
+                elif "best 2016" in testbed.reference_algorithm_displayname:
+                    text = "best \\aRT\ measured during BBOB-2016"
+                elif "best 2009-16" in testbed.reference_algorithm_displayname:
+                    text = "best \\aRT\ measured during BBOB-2009-16"
+                else:
+                    text = "the \\aRT\ of the reference algorithm"
+        else:
+            raise NotImplementedError('reference algorithm not supported for this testbed')
+    else:
+        raise NotImplementedError('no reference algorithm indicated in testbedsettings.py')
+
+    return text
     
 def get_light_brown_line_text(testbedname):
     if (testbedname == testbedsettings.testbed_name_bi):
@@ -90,6 +121,19 @@ replace_dict = {
         '!!HARDEST-TARGET-LATEX!!': lambda: testbedsettings.current_testbed.hardesttargetlatex,
         '!!DIM!!': lambda: r"""\DIM""",
         '!!SINGLE-RUNLENGTH-FACTORS!!': lambda: '$' + 'D, '.join([str(i) for i in genericsettings.single_runlength_factors[:6]]) + 'D,\dots$',
-        '!!LIGHT-BROWN-LINES!!': lambda: get_light_brown_line_text(testbedsettings.current_testbed.name)
+        '!!LIGHT-BROWN-LINES!!': lambda: get_light_brown_line_text(testbedsettings.current_testbed.name),
+        '!!PPFIGS-FTARGET!!': lambda: get_ppfigs_ftarget(),
+        '!!NUM-OF-TARGETS-IN-ECDF!!': lambda: str(len(testbedsettings.current_testbed.pprldmany_target_values)),
+        '!!TARGET-RANGES-IN-ECDF!!': lambda: str(testbedsettings.current_testbed.pprldmany_target_range_latex),
+        '!!TOTAL-NUM-OF-FUNCTIONS!!': lambda: str(testbedsettings.current_testbed.last_function_number - testbedsettings.current_testbed.first_function_number + 1),
+        '!!BEST-ART!!': lambda: get_best_art_text()
          }
 
+
+
+def get_ppfigs_ftarget():
+    target = testbedsettings.current_testbed.ppfigs_ftarget
+    target = pproc.TargetValues.cast([target] if np.isscalar(target) else target)
+    assert len(target) == 1
+
+    return toolsdivers.number_to_latex(target.label(0))

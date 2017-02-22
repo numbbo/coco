@@ -110,8 +110,8 @@ def scaling_figure_caption():
         within the given budget $k\times\DIM$, where $k$ is shown in the
         legend. Numbers above \aRT-symbols (if appearing) indicate the number
         of trials reaching the respective target. !!LIGHT-THICK-LINE!! Slanted
-        grid lines indicate a scaling with $\cal O$$(\DIM)$ compared to
-        $\cal O$$(1)$ when using the respective reference algorithm.
+        grid lines indicate a scaling with $\mathcal O$$(\DIM)$ compared to
+        $\mathcal O$$(1)$ when using the respective reference algorithm.
         """
 
     if genericsettings.runlength_based_targets:

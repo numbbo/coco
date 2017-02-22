@@ -14,7 +14,7 @@ from __future__ import absolute_import
 
 import os, warnings
 import numpy
-from .. import genericsettings, testbedsettings, bestalg, toolsstats, pproc
+from .. import genericsettings, testbedsettings, bestalg, toolsstats, pproc, captions
 from ..pptex import tableLaTeX, writeFEvals2, writeFEvalsMaxPrec, writeLabels
 from ..toolsstats import significancetest
 
@@ -31,42 +31,34 @@ def get_table_caption():
     
     testbed = testbedsettings.current_testbed    
         
-    text_intro_best_alg = r"""%
+    text_intro_ref_alg = r"""%
         Average running time (\aRT\ in number of function evaluations) divided
-        by the respective best \aRT\ measured during {} in dimensions 5 (left)
+        by the respective !!BEST-ART!! in dimensions 5 (left)
         and 20 (right).
         The \aRT\ and in braces, as dispersion measure, the half difference
         between 10 and 90\%-tile of bootstrapped run lengths appear for each
         algorithm and 
-        """        
-    text_intro_ref_alg = r"""%
-        Average running time (\aRT\ in number of function evaluations) divided 
-        by the respective \aRT\ of the reference algorithm {} in dimensions 5
-        (left) and 20 (right).
-        The \aRT\ and in braces, as dispersion measure, the half difference
-        between 10 and 90\%-tile of bootstrapped run lengths appear for each
-        algorithm and 
         """    
-    text_intro_no_best_alg = r"""%
+    text_intro_no_ref_alg = r"""%
         Average runtime (\aRT) to reach given targets, measured
         in number of function evaluations in dimensions 5 (left) and 20 (right).
         For each function, the \aRT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
-        target \Df-values as shown in the top row. 
+        target !!DF!!-values as shown in the top row. 
         \#succ is the number of trials that reached the last target    
-        $\hvref + """ + testbed.hardesttargetlatex + r"""$.
+        $!!FOPT!! + """ + testbed.hardesttargetlatex + r"""$.
         """    
     
     text_middle_fixedtarget = r"""%
-        target, the corresponding best \aRT\
-        in the first row. The different target \Df-values are shown in the top row. 
+        target, the corresponding reference \aRT\
+        in the first row. The different target !!DF!!-values are shown in the top row. 
         \#succ is the number of trials that reached the (final) target
-        $\fopt + """ + testbed.hardesttargetlatex + r"""$.
+        $!!FOPT!! + """ + testbed.hardesttargetlatex + r"""$.
         """
     text_middle_runlengthbased = r"""%
-        run-length based target, the corresponding best \aRT\
-        (preceded by the target \Df-value in \textit{italics}) in the first row. 
+        run-length based target, the corresponding reference \aRT\
+        (preceded by the target !!DF!!-value in \textit{italics}) in the first row. 
         \#succ is the number of trials that reached the target value of the last column.
         """
         
@@ -78,65 +70,32 @@ def get_table_caption():
         with $p=0.05$ or $p=10^{-k}$ where $k\in\{2,3,4,\dots\}$ is the number
         following the $\star$ symbol, with Bonferroni correction of #1."""
         
-    text_end_best_alg = r"""%
-        A $\downarrow$ indicates the same tested against
-        the best algorithm of {}."""
     text_end_ref_alg = r"""%
         A $\downarrow$ indicates the same tested against
-        algorithm {}."""
+        !!THE-REF-ALG!!."""
         
     
-    if testbed.reference_algorithm_displayname:
-        if (testbed.name == testbedsettings.testbed_name_single or
-                testbed.name == testbedsettings.default_testbed_single_noisy):
-            if "best 2009" in testbed.reference_algorithm_displayname:
-                text_intro = text_intro_best_alg.format("BBOB 2009")
-                text_end = text_end_best_alg.format("BBOB 2009")
-            elif "best 2010" in testbed.reference_algorithm_displayname:
-                text_intro = text_intro_best_alg.format("BBOB 2010")
-                text_end = text_end_best_alg.format("BBOB 2010")
-            elif "best 2012" in testbed.reference_algorithm_displayname:
-                text_intro = text_intro_best_alg.format("BBOB 2012")
-                text_end = text_end_best_alg.format("BBOB 2012")
-            elif "best 2009-2016" in testbed.reference_algorithm_displayname:
-                text_intro = text_intro_best_alg.format("BBOB 2009--16")
-                text_end = text_end_best_alg.format("BBOB 2009--16")
-            else:
-                text_intro = text_intro_ref_alg.format(
-                                testbed.reference_algorithm_displayname)
-                text_end = text_end_ref_alg.format(
-                                testbed.reference_algorithm_displayname)
-        elif testbed.name == testbedsettings.testbed_name_bi:
-            if "best 2016" in testbed.reference_algorithm_displayname:
-                text_intro = text_intro_best_alg.format("BBOB 2016")
-                text_end = text_end_best_alg.format("BBOB 2016")
-            else:
-                text_intro = text_intro_ref_alg.format(
-                                testbed.reference_algorithm_displayname)
-                text_end = text_end_ref_alg.format(
-                                testbed.reference_algorithm_displayname)  
-        
+    if testbed.reference_algorithm_displayname:    
         if genericsettings.runlength_based_targets:
-            table_caption = (text_intro + text_middle_runlengthbased +
-                             text_all + text_end)
+            table_caption = (text_intro_ref_alg + text_middle_runlengthbased +
+                             text_all + text_end_ref_alg)
         else:
-            table_caption = (text_intro + text_middle_fixedtarget +
-                             text_all + text_end)
+            table_caption = (text_intro_ref_alg + text_middle_fixedtarget +
+                             text_all + text_end_ref_alg)
     
-        
     else: # no best or reference algorithm given
         if genericsettings.runlength_based_targets:
-            table_caption = (text_intro_no_best_alg +
+            table_caption = (text_intro_no_ref_alg +
                              text_middle_runlengthbased +
                              text_all)
         else:
-            table_caption = (text_intro_no_best_alg +
+            table_caption = (text_intro_no_ref_alg +
                              text_middle_fixedtarget +
                              text_all)
 
-    table_caption = table_caption + r"""\cocoversion"""
+    table_caption = table_caption + r""" \cocoversion"""
 
-    return table_caption
+    return captions.replace(table_caption)
 
 
 def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
