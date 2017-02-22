@@ -267,9 +267,10 @@ def build_python():
     # os.environ.pop('USE_CYTHON')
 
 
-def run_python(test=True):
+def run_python(test=False):
     """ Builds and installs the Python module `cocoex` and runs the
-    `example_experiment.py` as a simple test case. """
+    `example_experiment.py` as a simple test case. If `test` is True,
+    it runs, in addition, the tests in `coco_test.py`."""
     build_python()
     try:
         if test:
@@ -816,8 +817,9 @@ Available commands for users:
   run-matlab              - Build and run example experiment in MATLAB
   run-matlab-sms          - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
   run-octave              - Build and run example experiment in Octave
-  run-python              - Build and install COCO module and run tests and the
-                            example experiment in Python, "no-tests" omits tests
+  run-python              - Build and install COCO module and then run the
+                            example experiment in Python. The optional parameter
+                            "and-test" also runs the tests of `coco_test.py`
 
 Available commands for developers:
 
@@ -877,7 +879,7 @@ def main(args):
     elif cmd == 'run-matlab-sms': run_matlab_sms()
     elif cmd == 'run-octave': run_octave()
     elif cmd == 'run-python':
-        run_python(False) if len(args) > 1 and args[1] == 'no-tests' else run_python()
+        run_python(True) if len(args) > 1 and args[1] == 'and-test' else run_python()
     elif cmd == 'silent': silent(args[1:])
     elif cmd == 'verbose': verbose(args[1:])
     elif cmd == 'test-c': test_c()
