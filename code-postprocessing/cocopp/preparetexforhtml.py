@@ -149,7 +149,7 @@ def main(latex_commands_for_html):
         # 3. ppfigdim
         f.write(prepare_item('bbobppfigdimlegend' + scenario))
         # 4. pptable
-        f.write(prepare_item('bbobpptablecaption' + scenario))
+        f.write(prepare_item('bbobpptablecaption' + scenario, param='different dimensions'))
         # 5. pptable2
         f.write(prepare_item('bbobpptablestwolegend' + scenario, param='48'))
 

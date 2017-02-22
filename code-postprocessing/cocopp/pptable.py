@@ -56,7 +56,7 @@ def get_table_caption():
         
     table_caption_start = r"""%
         Average running time (\aRT\ in number of function 
-        evaluations) divided by the best \aRT\ of !!THE-REF-ALG!!. The \aRT\ 
+        evaluations) divided by the best \aRT\ of !!THE-REF-ALG!! in #1. The \aRT\ 
         and in braces, as dispersion measure, the half difference between 90 and 
         10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
         the best \aRT\
@@ -105,7 +105,7 @@ def get_table_caption():
     return captions.replace(table_caption)
         
 
-def main(dsList, dimsOfInterest, outputdir, info=''):
+def main(dsList, dimsOfInterest, outputdir):
     """Generate a table of ratio aRT/aRTbest vs target precision.
     
     1 table per dimension will be generated.
@@ -124,11 +124,6 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
 
     targetf = testbed.pptable_ftarget
     targetsOfInterest = testbed.pptable_targetsOfInterest
-
-    if info:
-        info = '_' + info
-        # insert a separator between the default file name and the additional
-        # information string.
 
     bestalgentries = bestalg.load_reference_algorithm(testbed.reference_algorithm_filename)
     
@@ -150,9 +145,7 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
     headerHtml.append('<td>#succ</td>\n</tr>\n</thead>\n')
 
     for d in dimsOfInterest:
-        table = [header]
         tableHtml = headerHtml[:]
-        extraeol = [r'\hline']
         try:
             dictFunc = dictDim[d].dictByFunc()
         except KeyError:
@@ -162,6 +155,9 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
 
         tableHtml.append('<tbody>\n')
         for f in sorted(funcs):
+            table = [header]
+            extraeol = [r'\hline']
+
             tableHtml.append('<tr>\n')
             curline = [r'${\bf f_{%d}}$' % f]
             curlineHtml = ['<th><b>f<sub>%d</sub></b></th>\n' % f]
@@ -412,18 +408,18 @@ def main(dsList, dimsOfInterest, outputdir, info=''):
             tableHtml.append('</tr>\n')
             extraeol.append(r'\hline')
         
-        extraeol[-1] = ''
+            extraeol[-1] = ''
 
-        outputfile = os.path.join(outputdir, 'pptable_%02dD%s.tex' % (d, info))
-        if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
-            spec = r'@{}c@{}|' + '*{%d}{@{ }r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
-        else:
-            spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
-        #res = r'\providecommand{\algshort}{%s}' % alg1 + '\n'
-        res = tableLaTeX(table, spec=spec, extraeol=extraeol)
-        f = open(outputfile, 'w')
-        f.write(res)
-        f.close()
+            outputfile = os.path.join(outputdir, 'pptable_f%03d_%02dD.tex' % (f, d))
+            if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
+                spec = r'@{}c@{}|' + '*{%d}{@{ }r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
+            else:
+                spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
+            #res = r'\providecommand{\algshort}{%s}' % alg1 + '\n'
+            res = tableLaTeX(table, spec=spec, extraeol=extraeol)
+            f = open(outputfile, 'w')
+            f.write(res)
+            f.close()
 
         res = ("").join(str(item) for item in tableHtml)
         res = '<p><b>%d-D</b></p>\n<table>\n%s</table>\n' % (d, res)

@@ -238,22 +238,143 @@ Tables~\ref{tab:aRTs}. The experiments were performed with COCO \cite{hansen2016
  
 % Table showing the average runtime (aRT in number of function
 % evaluations) divided by the best aRT measured during BBOB-2009 (given in the
-% first row of each cell) for functions $f_1$--$f_{24}$.
+% first row of each cell) for functions $f_1$--$f_{24} for dimension 5$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{table*}
-\centering {\tiny
-\parbox{0.499\textwidth}{\centering
-   {\small 5-D}\\
-   \input{\bbobdatapath\algfolder pptable_05D_noiselessall}}%
-\parbox{0.499\textwidth}{\centering
-   {\small 20-D}\\
-   \input{\bbobdatapath\algfolder pptable_20D_noiselessall}}}%
-\caption[Table of aRTs]{\label{tab:aRTs}\bbobpptablecaption{} 
+\begin{table*}\tiny
+%\hfill5-D\hfill~\\[1ex]
+{\normalsize \color{red}
+\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
+}
+\mbox{\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\input{\bbobdatapath\algfolder pptable_f001_05D} 
+
+\input{\bbobdatapath\algfolder pptable_f002_05D}
+
+\input{\bbobdatapath\algfolder pptable_f003_05D}
+
+\input{\bbobdatapath\algfolder pptable_f004_05D}
+
+\input{\bbobdatapath\algfolder pptable_f005_05D}
+
+\input{\bbobdatapath\algfolder pptable_f006_05D}
+
+\input{\bbobdatapath\algfolder pptable_f007_05D}
+
+\input{\bbobdatapath\algfolder pptable_f008_05D}
+
+\input{\bbobdatapath\algfolder pptable_f009_05D}
+
+\input{\bbobdatapath\algfolder pptable_f010_05D}
+
+\input{\bbobdatapath\algfolder pptable_f011_05D}
+
+\input{\bbobdatapath\algfolder pptable_f012_05D}
+
+\end{minipage}
+\hspace{0.002\textwidth}
+\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\input{\bbobdatapath\algfolder pptable_f013_05D}
+
+\input{\bbobdatapath\algfolder pptable_f014_05D}
+
+\input{\bbobdatapath\algfolder pptable_f015_05D}
+
+\input{\bbobdatapath\algfolder pptable_f016_05D}
+
+\input{\bbobdatapath\algfolder pptable_f017_05D}
+
+\input{\bbobdatapath\algfolder pptable_f018_05D}
+
+\input{\bbobdatapath\algfolder pptable_f019_05D}
+
+\input{\bbobdatapath\algfolder pptable_f020_05D}
+
+\input{\bbobdatapath\algfolder pptable_f021_05D}
+
+\input{\bbobdatapath\algfolder pptable_f022_05D}
+
+\input{\bbobdatapath\algfolder pptable_f023_05D}
+
+\input{\bbobdatapath\algfolder pptable_f024_05D}
+\end{minipage}}
+
+\caption[Table of aRTs]{\label{tab:aRTs5}\bbobpptablecaption{dimension $5$}
 }
 \end{table*}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Table showing the average runtime (aRT in number of function
+% evaluations) divided by the best aRT measured during BBOB-2009 (given in the
+% first row of each cell) for functions $f_1$--$f_{24} for dimension 20$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}\tiny
+%\hfill20-D\hfill~\\[1ex]
+\mbox{\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\input{\bbobdatapath\algfolder pptable_f001_20D} 
+
+\input{\bbobdatapath\algfolder pptable_f002_20D}
+
+\input{\bbobdatapath\algfolder pptable_f003_20D}
+
+\input{\bbobdatapath\algfolder pptable_f004_20D}
+
+\input{\bbobdatapath\algfolder pptable_f005_20D}
+
+\input{\bbobdatapath\algfolder pptable_f006_20D}
+
+\input{\bbobdatapath\algfolder pptable_f007_20D}
+
+\input{\bbobdatapath\algfolder pptable_f008_20D}
+
+\input{\bbobdatapath\algfolder pptable_f009_20D}
+
+\input{\bbobdatapath\algfolder pptable_f010_20D}
+
+\input{\bbobdatapath\algfolder pptable_f011_20D}
+
+\input{\bbobdatapath\algfolder pptable_f012_20D}
+\end{minipage}
+\hspace{0.002\textwidth}
+\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\input{\bbobdatapath\algfolder pptable_f013_20D}
+
+\input{\bbobdatapath\algfolder pptable_f014_20D}
+
+\input{\bbobdatapath\algfolder pptable_f015_20D}
+
+\input{\bbobdatapath\algfolder pptable_f016_20D}
+
+\input{\bbobdatapath\algfolder pptable_f017_20D}
+
+\input{\bbobdatapath\algfolder pptable_f018_20D}
+
+\input{\bbobdatapath\algfolder pptable_f019_20D}
+
+\input{\bbobdatapath\algfolder pptable_f020_20D}
+
+\input{\bbobdatapath\algfolder pptable_f021_20D}
+
+\input{\bbobdatapath\algfolder pptable_f022_20D}
+
+\input{\bbobdatapath\algfolder pptable_f023_20D}
+
+\input{\bbobdatapath\algfolder pptable_f024_20D}
+\end{minipage}}
+ 
+\caption[Table of aRTs]{\label{tab:aRTs20}\bbobpptablecaption{dimension $20$}
+}
+\end{table*}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
