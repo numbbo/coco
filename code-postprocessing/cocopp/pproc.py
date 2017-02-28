@@ -233,11 +233,11 @@ class RunlengthBasedTargetValues(TargetValues):
         
         :param run_lengths: sequence of values. 
         :param reference_data: 
-            can be a string indicating the filename of a best algorithm
+            can be a string indicating the filename of a reference algorithm
             data set such as ``"refalgs/best2009-bbob.tar.gz"`` or a dictionary
             of best data sets (e.g. from ``bestalg.generate(...)``)
             or a list of algorithm folder/data names (not thoroughly
-            tested). If chosen as ``testbedsettings``, the best algorithm
+            tested). If chosen as ``testbedsettings``, the reference algorithm
             specified in testbedsettings.py will be used.
         :param smallest_target:
         :param times_dimension:
@@ -258,7 +258,7 @@ class RunlengthBasedTargetValues(TargetValues):
         DataSet, computed by bestalg module or portfolio module.
 
             dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args)
-            ref_data = bestalg.generate(dictAlg)
+            ref_data = refalg.generate(dictAlg)
             targets = RunlengthBasedTargetValues([1, 2, 4, 8], ref_data)
 
         """
@@ -280,11 +280,8 @@ class RunlengthBasedTargetValues(TargetValues):
         """lazy initialization to prevent slow import"""
         if self.initialized:
             return self
-        #if self.reference_data == 'bestAlgorithm': # bestalg data are loaded
-        if self.reference_data == 'testbedsettings': # bestalg data are loaded according to testbedsettings
-            #self.reference_algorithm = self.reference_data
+        if self.reference_data == 'testbedsettings': # refalg data are loaded according to testbedsettings
             self.reference_algorithm = testbedsettings.current_testbed.reference_algorithm_filename
-            #self._short_info = 'reference budgets from ' + self.reference_data
             self._short_info = 'reference budgets from ' + self.reference_algorithm
 
             from . import bestalg
@@ -309,7 +306,7 @@ class RunlengthBasedTargetValues(TargetValues):
         else:
             # assert len(byalg) == 1
             # we assume here that self.reference_data is a dictionary
-            # of best data sets
+            # of reference data sets
             self.reference_algorithm = self.reference_data[self.reference_data.keys()[0]].algId
         self.initialized = True
         return self
@@ -324,7 +321,7 @@ class RunlengthBasedTargetValues(TargetValues):
         ``if discretize`` all targets are in [10**i/5 for i in N], in case
         achieved via rounding on the log-scale.
         
-        Details: f_target = arg min_f { ERT_best(f) > max(1, target_budget * dimension**times_dimension_flag) }, 
+        Details: f_target = arg min_f { ERT_ref(f) > max(1, target_budget * dimension**times_dimension_flag) }, 
         where f are the values of the ``DataSet`` ``target`` attribute. The next difficult target is chosen
         not smaller as target / 10**0.2. 
         
@@ -344,7 +341,7 @@ class RunlengthBasedTargetValues(TargetValues):
 
         if not self.reference_data:
             raise ValueError('When running with the runlegth based target values ' \
-                              'the reference data (i.e. best algorithm) must exist.')
+                              'the reference data (e.g. a best algorithm) must exist.')
 
         ds = self.reference_data[dim_fun]
         if 11 < 3:   
@@ -2312,7 +2309,7 @@ class DataSetList(list):
                 key = '%d_%d' % (dataSet.funcId, dataSet.dim)
                 all_reference_values[key] = dataSet.reference_values
 
-            # If this is the best algorithm then the reference values hash may exist.
+            # If this is the reference algorithm then the reference values hash may exist.
             if reference_values_hash is None:
                 reference_values_hash = getattr(dataSet, 'reference_values_hash', None)
 

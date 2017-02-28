@@ -268,7 +268,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
     testbed = testbedsettings.current_testbed
     targetsOfInterest = testbed.pptablemany_targetsOfInterest
 
-    bestalgentries = bestalg.load_reference_algorithm(testbed.reference_algorithm_filename)
+    refalgentries = bestalg.load_reference_algorithm(testbed.reference_algorithm_filename)
 
     # Sort data per dimension and function
     dictData = {}
@@ -296,8 +296,8 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
             targetf = testbed.pptable_ftarget
 
         # reference algorithm
-        if bestalgentries:
-            refalgentry = bestalgentries[df]
+        if refalgentries:
+            refalgentry = refalgentries[df]
             refalgert = refalgentry.detERT(targets)
 
         # Process the data
@@ -357,7 +357,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
             # algmedmaxevals.append(numpy.median(entry.maxevals)/df[0])
             # algmedfinalfunvals.append(numpy.median(entry.finalfunvals))
 
-            if bestalgentries:
+            if refalgentries:
                 algtestres.append(significancetest(refalgentry, entry, targets))
 
             # determine success probability for Df = 1e-8
@@ -377,7 +377,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
         for i, erts in enumerate(algerts):
             tmp = []
             for j, ert in enumerate(erts):  # algi targetj
-                tmp.append(i in tmptop[j] or (bestalgentries and nalgs > 7 and algerts[i][j] <= 3. * refalgert[j]))
+                tmp.append(i in tmptop[j] or (refalgentries and nalgs > 7 and algerts[i][j] <= 3. * refalgert[j]))
             isBoldArray.append(tmp)
             algfinaldata.append((algmedfinalfunvals[i], algmedmaxevals[i]))
 
@@ -450,12 +450,12 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
         extraeol.append(r'\hline')
         #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
         
-        # line with function name and potential aRT values of bestalg
+        # line with function name and potential aRT values of reference algorithm
         curline = [r'\textbf{f%d}' % df[1]]
         replaceValue = '<b>f%d</b>' % df[1]
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
         
-        if bestalgentries:
+        if refalgentries:
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
                 counter = 1
@@ -497,7 +497,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
             replaceValue = '%d/%d' % (successful_runs, all_runs)
             curlineHtml = [item.replace('REPLACEF', replaceValue) for item in curlineHtml]
 
-        else:  # if not bestalgentries
+        else:  # if not refalgentries
             curline.append(r'\multicolumn{%d}{@{}c@{}|}{} & ' % (2 * (len(targetsOfInterest))))
             for counter in range(1, len(targetsOfInterest) + 1):
                 curlineHtml = [item.replace('REPLACE%d' % counter, '&nbsp;') for item in curlineHtml]
@@ -520,11 +520,11 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
             curline = [commandname + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
             curlineHtml = ['<th>%s</th>\n' % str_to_latex(strip_pathname1(alg))]
 
-            zipToEnumerate = zip(algerts[i], algdisp[i], isBoldArray[i], algtestres[i]) if bestalgentries else zip(
+            zipToEnumerate = zip(algerts[i], algdisp[i], isBoldArray[i], algtestres[i]) if refalgentries else zip(
                 algerts[i], algdisp[i], isBoldArray[i])
 
             for j, tmp in enumerate(zipToEnumerate):  # j is target index
-                if bestalgentries:
+                if refalgentries:
                     ert, dispersion, isBold, testres = tmp
                 else:
                     ert, dispersion, isBold = tmp
@@ -533,7 +533,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                 if j == len(algerts[i]) - 1:
                     alignment = '@{\,}l@{\,}|'
 
-                data = ert / refalgert[j] if bestalgentries else ert
+                data = ert / refalgert[j] if refalgentries else ert
                 # write star for significance against all other algorithms
                 str_significance_subsup = ''
                 str_significance_subsup_html = ''
@@ -546,7 +546,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                     str_significance_subsup_html = '<sup>%s%s</sup>' % (
                     significance_vs_others_symbol_html, str(int(logp)) if logp > 1 else '')
 
-                if bestalgentries:
+                if refalgentries:
                     # moved out of the above else: this was a bug!?
                     z, p = testres
                     if (nbtests * p) < 0.05 and data < 1. and z < 0.:
@@ -554,8 +554,8 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                             tmpevals = algevals[i][j].copy()
                             tmpevals[numpy.isnan(tmpevals)] = algentries[i].maxevals[numpy.isnan(tmpevals)]
                             bestevals = refalgentry.detEvals(targets)
-                            bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
-                            bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
+                            bestevals, refalgalg = (bestevals[0][0], bestevals[1][0])
+                            bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[refalgalg][numpy.isnan(bestevals)]
                             tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
                             bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
 
@@ -577,7 +577,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                     curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
                     curlineHtml.append('<td>&nbsp;</td>')
                 else:
-                    if bestalgentries and numpy.isinf(refalgert[j]):
+                    if refalgentries and numpy.isinf(refalgert[j]):
                         tableentry = r'\textbf{%s}' % writeFEvalsMaxPrec(algerts[i][j], 2)
                         tableentryHtml = '<b>%s</b>' % writeFEvalsMaxPrec(algerts[i][j], 2)
                         if dispersion and numpy.isfinite(dispersion):
@@ -612,7 +612,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                                 tmp = r'\textbf{%s}' % tmp
 
                         if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion / refalgert[j] if bestalgentries else dispersion
+                            tmpdisp = dispersion / refalgert[j] if refalgentries else dispersion
                             if tmpdisp >= maxfloatrepr or tmpdisp < 0.005:  # TODO: hack
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                             else:
@@ -642,7 +642,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                             tmp2html = []
                             tmp2html.extend(tmp2)
                         if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion / refalgert[j] if bestalgentries else dispersion
+                            tmpdisp = dispersion / refalgert[j] if refalgentries else dispersion
                             if tmpdisp >= maxfloatrepr or tmpdisp < 0.01:
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                             else:

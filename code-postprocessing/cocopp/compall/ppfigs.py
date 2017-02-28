@@ -506,21 +506,21 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
             #             verticalalignment='bottom',
             #             horizontalalignment='center')
 
-        bestalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
+        refalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
 
-        if bestalgentries:        
-            bestalgdata = []
-            dimbestalg = list(df[0] for df in bestalgentries if df[1] == f)
-            dimbestalg.sort()
-            dimbestalg2 = []
-            for d in dimbestalg:
-                entry = bestalgentries[(d, f)]
+        if refalgentries:        
+            refalgdata = []
+            dimrefalg = list(df[0] for df in refalgentries if df[1] == f)
+            dimrefalg.sort()
+            dimrefalg2 = []
+            for d in dimrefalg:
+                entry = refalgentries[(d, f)]
                 tmp = entry.detERT(target((f, d)))[0]
                 if numpy.isfinite(tmp):
-                    bestalgdata.append(float(tmp)/d)
-                    dimbestalg2.append(d)
+                    refalgdata.append(float(tmp)/d)
+                    dimrefalg2.append(d)
     
-            tmp = plt.plot(dimbestalg2, bestalgdata, color=refcolor, linewidth=10,
+            tmp = plt.plot(dimrefalg2, refalgdata, color=refcolor, linewidth=10,
                            marker='d', markersize=25, markeredgecolor=refcolor, zorder=-1
                            #label='best 2009', 
                            )
