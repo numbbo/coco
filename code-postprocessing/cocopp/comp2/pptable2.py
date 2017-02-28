@@ -120,7 +120,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
     if info:
         info = '_' + info
 
-    bestalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
+    refalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
     
     header = []
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
@@ -181,45 +181,45 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                     if _tt is None:
                         raise ValueError
                     
-            if bestalgentries:            
-                bestalgentry = bestalgentries[(d, f)]
-                bestalgdata = bestalgentry.detERT(targets)
+            if refalgentries:            
+                refalgentry = refalgentries[(d, f)]
+                refalgdata = refalgentry.detERT(targets)
 
                 if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                     # write ftarget:fevals
-                    for i in xrange(len(bestalgdata[:-1])):
+                    for i in xrange(len(refalgdata[:-1])):
                         temp = "%.1e" % targetsOfInterest((f, d))[i]
                         if temp[-2]=="0":
                             temp = temp[:-2]+temp[-1]
                         curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
-                                       % (temp, writeFEvalsMaxPrec(bestalgdata[i], 2)))
+                                       % (temp, writeFEvalsMaxPrec(refalgdata[i], 2)))
                         curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
-                                           % (temp, writeFEvalsMaxPrec(bestalgdata[i], 2)))
+                                           % (temp, writeFEvalsMaxPrec(refalgdata[i], 2)))
                     temp = "%.1e" % targetsOfInterest((f, d))[-1]
                     if temp[-2]=="0":
                         temp = temp[:-2]+temp[-1]
                     curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
-                                   % (temp, writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
+                                   % (temp, writeFEvalsMaxPrec(refalgdata[-1], 2))) 
                     curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
-                                       % (temp, writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
+                                       % (temp, writeFEvalsMaxPrec(refalgdata[-1], 2))) 
                 else:            
                     # write #fevals of the reference alg
-                    for i in bestalgdata[:-1]:
+                    for i in refalgdata[:-1]:
                         curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
                                        % writeFEvalsMaxPrec(i, 2))
                         curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(i, 2))
     
                     curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
-                                   % writeFEvalsMaxPrec(bestalgdata[-1], 2))
-                    curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
+                                   % writeFEvalsMaxPrec(refalgdata[-1], 2))
+                    curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(refalgdata[-1], 2))
     
                 # write the success ratio for the reference alg
-                successful_runs, all_runs = bestalgentry.get_success_ratio(targetf)
+                successful_runs, all_runs = refalgentry.get_success_ratio(targetf)
                 curline.append('%d' % successful_runs)
                 curline.append('/%d' % all_runs)
                 curlineHtml.append('<td>%d/%d</td>\n' % (successful_runs, all_runs))
 
-            else: # if not bestalgentries
+            else: # if not refalgentries
                 curline.append(r'\multicolumn{%d}{@{}c@{}|}{}' % (2 * (len(targetsOfInterest.labels()) + 1)))
                 curlineHtml.append('<td colspan="%d" />\n' % (len(targetsOfInterest.labels()) + 1))
                 
@@ -234,9 +234,9 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
             
             testres0vs1 = significancetest(entries[0], entries[1], targets)
             
-            if bestalgentries:
-                testresbestvs1 = significancetest(bestalgentry, entries[1], targets)
-                testresbestvs0 = significancetest(bestalgentry, entries[0], targets)
+            if refalgentries:
+                testresbestvs1 = significancetest(refalgentry, entries[1], targets)
+                testresbestvs0 = significancetest(refalgentry, entries[0], targets)
 
             for nb, entry in enumerate(entries):
                 tableHtml.append('<tr>\n')
@@ -285,11 +285,11 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                     if i == len(data) - 1: # last element
                         alignment = 'c|'
 
-                    if bestalgentries and numpy.isinf(bestalgdata[i]): # if the 2009 best did not solve the problem
+                    if refalgentries and numpy.isinf(refalgdata[i]): # if the 2009 best did not solve the problem
 
                         tmp = writeFEvalsMaxPrec(float(dati), 2)
                         if not numpy.isinf(dati):
-                            if bestalgentries:                        
+                            if refalgentries:                        
                                 tmpHtml = '<i>%s</i>' % (tmp)
                                 tmp = r'\textit{%s}' % (tmp)
                             else:
@@ -309,7 +309,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                         tableentryHtml = ('%s' % tmpHtml)
                     else:
                         # Formatting
-                        tmp = float(dati)/bestalgdata[i] if bestalgentries else float(dati)
+                        tmp = float(dati)/refalgdata[i] if refalgentries else float(dati)
                         assert not numpy.isnan(tmp)
                         isscientific = False
                         if tmp >= 1000:
@@ -329,9 +329,9 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                             elif 11 < 3 and significance0vs1 < 0:  # cave: negative significance has no meaning anymore
                                 tableentry = r'\textit{%s}' % tableentry
                                 tableentryHtml = '<i>%s</i>' % tableentryHtml
-                            if bestalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
-                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
-                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
+                            if refalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/refalgdata[i]):
+                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
+                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
 
@@ -342,9 +342,9 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                             elif 11 < 3 and significance0vs1 < 0:
                                 tableentry = r'\textit{%s}' % tableentry
                                 tableentryHtml = '<i>%s</i>' % tableentryHtml
-                            if bestalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
-                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
-                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
+                            if refalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/refalgdata[i]):
+                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
+                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
                         else:
@@ -360,21 +360,21 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                             tableentryHtml = '.'.join(tmpHtml)
                             if len(tmp) == 1:
                                 tableentry += '&'
-                            if bestalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
-                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
-                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
+                            if refalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/refalgdata[i]):
+                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
+                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
 
                     superscript = ''
                     superscriptHtml = ''
 
-                    if bestalgentries:
+                    if refalgentries:
                         if nb == 0:
                             z, p = testresbestvs0[i]
                         else:
                             z, p = testresbestvs1[i]
     
                         #The conditions are now that aRT < aRT_best
-                        if ((nbtests * p) < 0.05 and dati - bestalgdata[i] < 0.
+                        if ((nbtests * p) < 0.05 and dati - refalgdata[i] < 0.
                             and z < 0.):
                             nbstars = -numpy.ceil(numpy.log10(nbtests * p))
                             #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
@@ -412,10 +412,10 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                     curline.append(tableentry)
 
                     #curline.append(tableentry)
-                    #if dispersion[i] is None or numpy.isinf(bestalgdata[i]):
+                    #if dispersion[i] is None or numpy.isinf(refalgdata[i]):
                         #curline.append('')
                     #else:
-                        #tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
+                        #tmp = writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 2)
                         #curline.append('(%s)' % tmp)
 
                 tmp = entry.evals[entry.evals[:, 0] <= targetf, 1:]

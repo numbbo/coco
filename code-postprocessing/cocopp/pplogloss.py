@@ -31,10 +31,10 @@ aRT loss ratio of an algorithm A for comparison to a reference/best algorithm.
 This works only as comparison to a set of algorithms that reach at least the
 same target values. Let f=f_A(EVALS) be the smallest target value such that the
 average running time of algorithm A was smaller than or equal to EVALS.
-Let aRT_A=EVALS, if aRT_best(next difficult f) < EVALS and
+Let aRT_A=EVALS, if aRT_ref(next difficult f) < EVALS and
 aRT_A=aRT_A(f_A(EVALS)) otherwise (we have aRT_A(f_A(EVALS)) <= EVALS).
 The aRT loss ratio for algorithm A is defined as:
-    Loss_A = stat_fcts(exp(CrE_A) * aRT_A / aRT_best(f))
+    Loss_A = stat_fcts(exp(CrE_A) * aRT_A / aRT_ref(f))
 
     + where f is a function of EVALS and stat_fcts is the desired statistics
       over the values from all functions (or a subgroup of functions), for
@@ -63,20 +63,20 @@ The aRT loss ratio for algorithm A is defined as:
       template. Respective tables could be side-by-side the graphs.
     + Example for how to read the graph: a loss ratio of 4 for aRT=20D means,
       that the function value reached with aRT=20D could be reached with the
-      respective best algorithm in aRT_best=5D function evaluations on average.
-      Therefore, given a budget of 20*D function evaluations, the best
+      respective reference algorithm in aRT_ref=5D function evaluations on average.
+      Therefore, given a budget of 20*D function evaluations, the reference
       algorithm could have further improved the function value using the
       remaining 15*D ($75\%=1-1/4$) function evaluations.
 
 Details: if aRT_A = aRT_A(f_A(EVALS)) always, the x-axis of plots between
-different algorithms becomes incomparable. Also could aRT_A < aRT_best,
-even though aRT_best reaches a better f-value for the given EVALS.
+different algorithms becomes incomparable. Also could aRT_A < aRT_ref,
+even though aRT_ref reaches a better f-value for the given EVALS.
 
 """
 
 """OLD STUFF:
 aRT loss ratio: average running time, aRT (measured in number
-      of function evaluations), divided by the best aRT seen in BBOB-best2009 for
+      of function evaluations), divided by the reference aRT seen in BBOB-best2009 for
       the respectively same function and target function value, plotted versus
       number of function evaluations for the functions $f_1$--$f_{24}$ in
       dimension $D=XXX$, corrected by the parameter-crafting-effort
@@ -207,45 +207,45 @@ def generateData(dsList, evals, CrE_A):
     #if D == 3:
        #set_trace()
 
-    bestalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
+    refalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
 
     for fun, tmpdsList in dsList.dictByFunc().iteritems():
         assert len(tmpdsList) == 1
         entry = tmpdsList[0]
 
-        bestalgentry = bestalgentries[(D, fun)]
+        refalgentry = refalgentries[(D, fun)]
 
         #aRT_A
         f_A = detf(entry, evals)
 
-        aRT_best = detERT(bestalgentry, f_A)
+        aRT_ref = detERT(refalgentry, f_A)
         aRT_A = detERT(entry, f_A)
-        nextbestf = []
+        nextreff = []
         for i in f_A:
             if i == 0.:
-                nextbestf.append(0.)
+                nextreff.append(0.)
             else:
-                tmp = bestalgentry.target[bestalgentry.target < i]
+                tmp = refalgentry.target[refalgentry.target < i]
                 try:
-                    nextbestf.append(tmp[0])
+                    nextreff.append(tmp[0])
                 except IndexError:
-                    nextbestf.append(i * 10.**(-0.2)) # TODO: this is a hack
+                    nextreff.append(i * 10.**(-0.2)) # TODO: this is a hack
 
-        aRT_best_nextbestf = detERT(bestalgentry, nextbestf)
+        aRT_ref_nextreff = detERT(refalgentry, nextreff)
 
         for i in range(len(aRT_A)):
-            # nextbestf[i] >= f_thresh: this is tested because if it is not true
-            # aRT_best_nextbestf[i] is supposed to be infinite.
-            if nextbestf[i] >= f_thresh and aRT_best_nextbestf[i] < evals[i]: # is different from the specification...
+            # nextreff[i] >= f_thresh: this is tested because if it is not true
+            # aRT_ref_nextreff[i] is supposed to be infinite.
+            if nextreff[i] >= f_thresh and aRT_ref_nextreff[i] < evals[i]: # is different from the specification...
                 aRT_A[i] = evals[i]
 
         # For test purpose:
         #if fun % 10 == 0:
         #    aRT_A[-2] = 1.
-        #    aRT_best[-2] = np.inf
+        #    aRT_ref[-2] = np.inf
         aRT_A = np.array(aRT_A)
-        aRT_best = np.array(aRT_best)
-        loss_A = np.exp(CrE_A) * aRT_A / aRT_best
+        aRT_ref = np.array(aRT_ref)
+        loss_A = np.exp(CrE_A) * aRT_A / aRT_ref
         assert (np.isnan(loss_A) == False).all()
         #set_trace()
         #if np.isnan(loss_A).any() or np.isinf(loss_A).any() or (loss_A == 0.).any():
@@ -530,7 +530,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default'):
 
     """
 
-    # If there is no best algorithm.
+    # If there is no reference algorithm.
     if not bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename):
         return
 
@@ -800,7 +800,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
     #plt.rc("font", size=20)
     #plt.rc("legend", fontsize=20)
 
-    # If there is no best algorithm.
+    # If there is no reference algorithm.
     if not bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename):
         return
 
