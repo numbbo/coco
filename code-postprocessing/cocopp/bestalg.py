@@ -175,7 +175,9 @@ class BestAlgSet(DataSet):
                     currentbestalg = sortedAlgs[j]
             reserts.append(currentbestert)
             resalgs.append(currentbestalg)
-            instance_numbers.append(set(dict_alg[currentbestalg].instancenumbers))
+            sorted_instance_numbers = list(set(dict_alg[currentbestalg].instancenumbers))
+            sorted_instance_numbers.sort()
+            instance_numbers.append(sorted_instance_numbers)
 
         dictiter = {}
         dictcurLine = {}
