@@ -93,6 +93,7 @@ def run_doctests():
     testmod(interface)
     testmod(example_experiment)
 
+
 def _clean_up(folder, start_matches, protected):
     """permanently remove entries in `folder` which begin with any of
     `start_matches`, where `""` matches any string, and which are not in
@@ -120,6 +121,8 @@ def main(args):
     print('doctests done.\nRunning example_experiment:'), sys.stdout.flush()
     example_experiment.main()
     for arg in args if args else default_testcases:
+        if arg is None or arg == 'None':
+            break
         process_testfile(arg) if args or os.path.isfile(arg) else None
     _clean_up('exdata', ['random_search_on_bbob', 'doctest', 'default'], list_before)
 

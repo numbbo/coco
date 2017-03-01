@@ -17,6 +17,7 @@
 
 #include "suite_bbob.c"
 #include "suite_biobj.c"
+#include "suite_biobj_ext.c"
 #include "suite_toy.c"
 #include "suite_largescale.c"
 
@@ -38,6 +39,8 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_bbob_initialize();
   } else if (strcmp(suite_name, "bbob-biobj") == 0) {
     suite = suite_biobj_initialize();
+  } else if (strcmp(suite_name, "bbob-biobj-ext") == 0) {
+    suite = suite_biobj_ext_initialize();
   } else if (strcmp(suite_name, "bbob-largescale") == 0) {
     suite = suite_largescale_initialize();
   }
@@ -61,6 +64,8 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
     year_string = suite_bbob_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-biobj") == 0) {
     year_string = suite_biobj_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "bbob-biobj-ext") == 0) {
+    year_string = suite_biobj_ext_get_instances_by_year(year);
   } else {
     coco_error("coco_suite_get_instances_by_year(): suite '%s' has no years defined", suite->suite_name);
     return NULL;
@@ -95,6 +100,8 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     problem = suite_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-biobj") == 0) {
     problem = suite_biobj_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "bbob-biobj-ext") == 0) {
+    problem = suite_biobj_ext_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-largescale") == 0) {
     problem = suite_largescale_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else {
@@ -546,11 +553,14 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
 }
 
 /**
- * Currently, four suites are supported:
+ * Currently, five suites are supported:
  * - "bbob" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective
  * functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
+ * - "bbob-biobj-ext" as an extension of "bbob-biobj" contains 92
+ * <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective functions</a> in 6 dimensions 
+ * (2, 3, 5, 10, 20, 40)
  * - "bbob-largescale" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 large dimensions (40, 80, 160, 320, 640, 1280)
  * - "toy" contains 6 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
@@ -561,7 +571,7 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * and the suite is not filtered by default).
  *
  * @param suite_name A string containing the name of the suite. Currently supported suite names are "bbob",
- * "bbob-biobj", "bbob-largescale" and "toy".
+ * "bbob-biobj", "bbob-biobj-ext", "bbob-largescale" and "toy".
  * @param suite_instance A string used for defining the suite instances. Two ways are supported:
  * - "year: YEAR", where YEAR is the year of the BBOB workshop, includes the instances (to be) used in that
  * year's workshop;

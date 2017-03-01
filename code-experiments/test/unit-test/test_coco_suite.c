@@ -32,7 +32,7 @@ static void test_coco_suite_encode_problem_index_with_wrapping(void **state) {
   size_t index;
   size_t function_idx = 13, dimension_idx = 0, instance_idx = 10;
 
-  suite = coco_suite("bbob", NULL, NULL);
+  suite = coco_suite("bbob", "year: 0000", NULL);
 
   expect_value(__wrap_coco_suite_encode_problem_index, function_idx, 13);
   expect_value(__wrap_coco_suite_encode_problem_index, dimension_idx, 0);
@@ -54,7 +54,7 @@ static void test_coco_suite_encode_problem_index_with_wrapping(void **state) {
  */
 static void test_coco_suite_get_problem(void **state) {
 
-  coco_suite_t *suite = coco_suite("bbob-biobj", NULL, "dimensions: 5");
+  coco_suite_t *suite = coco_suite("bbob-biobj", "year: 0000", "dimensions: 5");
   coco_problem_t *problem;
 
   problem = coco_suite_get_problem(suite, 0);
@@ -77,7 +77,7 @@ static void test_coco_suite_encode_problem_index(void **state) {
   coco_suite_t *suite;
   size_t index;
 
-  suite = coco_suite("bbob", NULL, NULL);
+  suite = coco_suite("bbob", "year: 0000", NULL);
   index = coco_suite_encode_problem_index(suite, 13, 0, 10);
   assert_true(index == 205);
   coco_suite_free(suite);
