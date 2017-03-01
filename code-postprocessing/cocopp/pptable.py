@@ -142,7 +142,7 @@ def main(dsList, dimsOfInterest, outputdir):
             header.append(r'\multicolumn{2}{c}{1e%+d}' % (int(np.log10(i))))
             headerHtml.append('<td>1e%+d</td>\n' % (int(np.log10(i))))
                       
-    header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}')
+    header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}\\')
     headerHtml.append('<td>#succ</td>\n</tr>\n</thead>\n')
 
     for d in dimsOfInterest:
@@ -156,8 +156,8 @@ def main(dsList, dimsOfInterest, outputdir):
 
         tableHtml.append('<tbody>\n')
         for f in sorted(funcs):
-            table = [header]
-            extraeol = [r'\hline']
+            table = []
+            extraeol = []
 
             tableHtml.append('<tr>\n')
             curline = [r'${\bf f_{%d}}$' % f]
@@ -410,16 +410,23 @@ def main(dsList, dimsOfInterest, outputdir):
         
             extraeol[-1] = ''
 
-            outputfile = os.path.join(outputdir, 'pptable_f%03d_%02dD.tex' % (f, d))
+            output_file = os.path.join(outputdir, 'pptable_f%03d_%02dD.tex' % (f, d))
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 spec = r'@{}c@{}|' + '*{%d}{@{ }r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
             else:
                 spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
             #res = r'\providecommand{\algshort}{%s}' % alg1 + '\n'
             res = tableLaTeX(table, spec=spec, extraeol=extraeol)
-            f = open(outputfile, 'w')
+            f = open(output_file, 'w')
             f.write(res)
             f.close()
+
+        extraeol = [r'\hline']
+        output_file = os.path.join(outputdir, 'pptable_header_%02dD.tex' % d)
+        res = tableLaTeX([header], spec=spec, extraeol=extraeol)
+        f = open(output_file, 'w')
+        f.write(res)
+        f.close()
 
         res = ("").join(str(item) for item in tableHtml)
         res = '<p><b>%d-D</b></p>\n<table>\n%s</table>\n' % (d, res)
@@ -437,4 +444,4 @@ def main(dsList, dimsOfInterest, outputdir):
                 outfile.write(line)
 
         if genericsettings.verbose:
-            print "Table written in %s" % outputfile
+            print "Table written in %s" % output_file
