@@ -63,7 +63,7 @@ def prepare_scaling_figure_caption():
         figure_caption = scaling_figure_caption_fixed
     elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
                                                   testbedsettings.testbed_name_single_noisy,
-                                                  testbedsettings.testbed_name_bi]:
+                                                  testbedsettings.testbed_name_bi,
                                                   testbedsettings.testbed_name_cons]:
         if genericsettings.runlength_based_targets:
             figure_caption = scaling_figure_caption_rlbased
