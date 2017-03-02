@@ -1,0 +1,857 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN"
+           "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<meta name="GENERATOR" content="TtH 4.08">
+ <style type="text/css"> div.p { margin-top: 7pt;}</style>
+ <style type="text/css"><!--
+ td div.comp { margin-top: -0.6ex; margin-bottom: -1ex;}
+ td div.comb { margin-top: -0.6ex; margin-bottom: -.6ex;}
+ td div.hrcomp { line-height: 0.9; margin-top: -0.8ex; margin-bottom: -1ex;}
+ td div.norm {line-height:normal;}
+ span.roman {font-family: serif; font-style: normal; font-weight: normal;} 
+ span.overacc2 {position: relative;  left: .8em; top: -1.2ex;}
+ span.overacc1 {position: relative;  left: .6em; top: -1.2ex;} --></style>
+ <style type="text/css"><!--
+ .tiny {font-size:30%;}
+ .scriptsize {font-size:xx-small;}
+ .footnotesize {font-size:x-small;}
+ .smaller {font-size:smaller;}
+ .small {font-size:small;}
+ .normalsize {font-size:medium;}
+ .large {font-size:large;}
+ .larger {font-size:x-large;}
+ .largerstill {font-size:xx-large;}
+ .huge {font-size:300%;}
+ --></style>
+
+ 
+<title>No Title</title>
+
+##bbobECDFslegendrlbased##
+
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for all functions and subgroups in DIMVALUE-D. The targets are chosen from 10<sup>[&#8722;8..2]</sup> such that the best algorithm from BBOB 2009 just not reached them within a given budget of k &times; DIM, with 31 different values of k chosen equidistant in logscale within the interval {0.5, ..., 50}. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
+
+<div class="p"><!----></div>
+##bbobppfigslegendrlbased##
+
+Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluations
+                        as log<sub>10</sub> value) divided by dimension versus dimension. The target function value
+                        is chosen such that !!THE-REF-ALG!! just failed to achieve
+                        an <span class="roman">aRT</span>&nbsp;of !!PPFIGS&#8722;FTARGET!!&times;<span class="roman">DIM</span>. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of function evaluations from the longest trial divided by dimension. Black stars indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+
+<div class="p"><!----></div>
+##bbobpprldistrlegendrlbased##
+
+         Empirical cumulative distribution functions (ECDF), plotting the fraction of
+         trials with an outcome not larger than the respective value on the x-axis.
+                  Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension D,
+         to fall below f<sub><span class="roman">opt</span></sub>+&#8710;f where &#8710;f is the
+         target just not reached by the best algorithm from BBOB 2009 within a budget of
+         k&times;<span class="roman">DIM</span> evaluations, where k is the first value in the legend.          Legends indicate for each target the number of functions that were solved in at
+         least one trial within the displayed budget.
+         Right subplots: ECDF of the best achieved &#8710;f
+         for running times of 0.5D, 1.2D, 3D, 10D, 100D, 1000D,...
+         function evaluations
+         (from right to left cycling cyan-magenta-black...) and final &#8710;f-value (red),
+         where &#8710;fand <span style="font-family:helvetica">Df</span> denote the difference to the optimal function value. 
+         Light brown lines in the background show ECDFs for the most difficult target of all
+            algorithms benchmarked during BBOB-2009.
+
+<div class="p"><!----></div>
+##bbobpprldistrlegendtworlbased##
+
+        Empirical cumulative distributions (ECDF)
+        of run lengths and speed-up ratios in 5-D (left) and 20-D (right).
+        Left sub-columns: ECDF of
+        the number of function evaluations divided by dimension D
+        (FEvals/D)         to fall below f<sub><span class="roman">opt</span></sub>+&#8710;f for
+        algorithmA&nbsp;(<span style="color:#000000">&#176;</span>) and algorithmB&nbsp;(<span style="color:#000000">&#9830;</span>        ) where &#8710;f is the target just not reached by the best algorithm from BBOB 2009 
+        within a budget of k&times;<span class="roman">DIM</span> evaluations, with k being the
+        value in the legend. 
+        Right sub-columns:
+        ECDF of FEval ratios of algorithmA&nbsp;divided by algorithmB&nbsp;for
+        run-length-based targets; all trial pairs for each function. Pairs where
+        both trials failed are disregarded, pairs where one trial failed are visible
+        in the limits being  &gt; 0 or  &lt; 1. The legends indicate the target budget of
+        k&times;<span class="roman">DIM</span> evaluations and, after the colon, the number of functions that
+        were solved in at least one trial (algorithmA&nbsp;first).
+
+<div class="p"><!----></div>
+##bbobppfigdimlegendrlbased##
+
+        Scaling of runtime with dimension to reach certain target values &#8710;f.
+        Lines: average runtime (<span class="roman">aRT</span>);
+        Cross (+): median runtime of successful runs to reach the most difficult
+        target that was reached at least once (but not always);
+        Cross (<span style="color:#FF0000">&times;</span>): maximum number of
+        f-evaluations in any trial. Notched boxes: interquartile range with median of simulated runs; 
+        All values are divided by dimension and  
+        plotted as log<sub>10</sub> values versus dimension.                 Shown is the <span class="roman">aRT</span>&nbsp;for targets just not reached by the best algorithm from BBOB 2009
+        within the given budget k&times;<span class="roman">DIM</span>, where k is shown in the
+        legend. Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number
+        of trials reaching the respective target. The light thick line with diamonds indicates the best algorithm from BBOB 2009 for the most difficult target.  Slanted
+        grid lines indicate a scaling with <i>O</i>(<span class="roman">DIM</span>) compared to
+        <i>O</i>(1) when using the respective reference algorithm.
+
+<div class="p"><!----></div>
+##bbobpptablecaptionrlbased##
+
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the <span class="roman">aRT</span>&nbsp;of the best algorithm from BBOB 2009 in different dimensions. The <span class="roman">aRT</span>&nbsp;
+        and in braces, as dispersion measure, the half difference between 90 and 
+        10%-tile of bootstrapped run lengths appear in the second row of each cell,  
+        the best <span class="roman">aRT</span>&nbsp;                in the first. The different target &#8710;f-values are shown in the top row. 
+        #succ is the number of trials that reached the (final) target f<sub><span class="roman">opt</span></sub>
++ 10<sup>&#8722;8</sup>.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
+        <b>Bold</b> entries are statistically significantly better (according to
+        the rank-sum test) compared to the best algorithm from BBOB 2009, with
+        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k  &gt;  1 is following the
+        &#8595; symbol, with Bonferroni correction by the number of
+        functions.??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobpptablestwolegendrlbased##
+
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function evaluations) divided
+        by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in dimensions 5 (left)
+        and 20 (right).
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference
+        between 10 and 90%-tile of bootstrapped run lengths appear for each
+        algorithm and 
+                run-length based target, the corresponding reference <span class="roman">aRT</span>&nbsp;        (preceded by the target &#8710;f-value in <i>italics</i>) in the first row. 
+        #succ is the number of trials that reached the target value of the last column.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the last target was never reached. 
+        1:algorithmAshort&nbsp;is algorithmA&nbsp;and 2:algorithmBshort&nbsp;is algorithmB.
+        Bold entries are statistically significantly better compared to the other algorithm,
+        with p=0.05 or p=10<sup>&#8722;k</sup> where k &#8712; {2,3,4,...} is the number
+        following the &#8727; symbol, with Bonferroni correction of 48.        A &#8595; indicates the same tested against
+        the best algorithm from BBOB 2009. ??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobpptablesmanylegendrlbased##
+
+        Average runtime (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
+        different dimensions.
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
+        10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
+                run-length based target, the corresponding reference <span class="roman">aRT</span>&nbsp;        (preceded by the target &#8710;f-value in <i>italics</i>) in the first row. 
+        #succ is the number of trials that reached the target value of the last column.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
+        Entries, succeeded by a star, are statistically significantly better (according to
+        the rank-sum test) when compared to all other algorithms of the table, with
+        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
+        than 1, with Bonferroni correction of 48. A &#8595; indicates the same tested against the best algorithm from BBOB 2009. Best results are printed in bold.
+        ??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobppscatterlegendrlbased##
+
+Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
+        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS!! runlength-based target
+        values for budgets between !!NBLOW!! and !!NBUP!! evaluations.
+        Each runlength-based target !!F!!-value is chosen such that the <span class="roman">aRT</span>s of 
+        !!THE-REF-ALG!! for the given and a slightly easier
+        target bracket the reference budget. Markers on the upper or right edge indicate that the respective target
+        value was never reached. Markers represent dimension:
+        2:<span style="color:#00FFFF">+</span>,
+        3:\triangledown,
+        5:<span style="color:#0000FF">&#8727;</span>,
+        10:&#176;,
+        20:<span style="color:#FF0000"><span style="font-size:x-small"><sup>[<u>&#175;</u>]</sup></span></span>,
+        40:<span style="color:#FF00FF">\Diamond</span>. 
+
+<div class="p"><!----></div>
+##bbobloglosstablecaptionrlbased##
+
+        <span class="roman">aRT</span>&nbsp;loss ratio versus the budget in number of f-evaluations
+        divided by dimension.
+        For each given budget <span class="roman">FEvals</span>, the target value f<sub><span class="roman">t</span></sub>&nbsp;is computed
+        as the best target f-value reached within the
+        budget by the given algorithm.
+        Shown is then the <span class="roman">aRT</span>&nbsp;to reach f<sub><span class="roman">t</span></sub>&nbsp;for the given algorithm
+        or the budget, if the best algorithm from BBOB 2009
+        reached a better target within the budget,
+        divided by the <span class="roman">aRT</span>&nbsp;of the best algorithm from BBOB 2009 to reach f<sub><span class="roman">t</span></sub>.
+        Line: geometric mean. Box-Whisker error bar: 25-75%-ile with median
+        (box), 10-90%-ile (caps), and minimum and maximum <span class="roman">aRT</span>&nbsp;loss ratio
+        (points). The vertical line gives the maximal number of function evaluations
+        in a single trial in this function subset. See also
+        the following figure for results on each function subgroup.??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobloglossfigurecaptionrlbased##
+
+        <span class="roman">aRT</span>&nbsp;loss ratios (see the previous figure for details).
+
+<div class="p"><!----></div>
+        Each cross (<span style="color:#0000FF">+</span>) represents a single function, the line
+        is the geometric mean.
+
+<div class="p"><!----></div>
+##bbobECDFslegendfixed##
+
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 51 targets with target precision in 10<sup>[&#8722;8..2]</sup> for all functions and subgroups in DIMVALUE-D. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
+
+<div class="p"><!----></div>
+##bbobppfigslegendfixed##
+
+Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluations
+                    as log<sub>10</sub> value), divided by dimension for target function value !!PPFIGS&#8722;FTARGET!!
+                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>24</sub>. Light symbols give the maximum number of function evaluations from the longest trial divided by dimension. Black stars indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+
+<div class="p"><!----></div>
+##bbobpprldistrlegendfixed##
+
+         Empirical cumulative distribution functions (ECDF), plotting the fraction of
+         trials with an outcome not larger than the respective value on the x-axis.
+                  Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension D,
+         to fall below f<sub><span class="roman">opt</span></sub>+&#8710;f with &#8710;f
+=10<sup>k</sup>, where k is the first value in the legend.
+         The thick red line represents the most difficult target value f<sub><span class="roman">opt</span></sub>+ 10<sup>&#8722;8</sup>.          Legends indicate for each target the number of functions that were solved in at
+         least one trial within the displayed budget.
+         Right subplots: ECDF of the best achieved &#8710;f
+         for running times of 0.5D, 1.2D, 3D, 10D, 100D, 1000D,...
+         function evaluations
+         (from right to left cycling cyan-magenta-black...) and final &#8710;f-value (red),
+         where &#8710;fand <span style="font-family:helvetica">Df</span> denote the difference to the optimal function value. 
+         Light brown lines in the background show ECDFs for the most difficult target of all
+            algorithms benchmarked during BBOB-2009.
+
+<div class="p"><!----></div>
+##bbobpprldistrlegendtwofixed##
+
+        Empirical cumulative distributions (ECDF)
+        of run lengths and speed-up ratios in 5-D (left) and 20-D (right).
+        Left sub-columns: ECDF of
+        the number of function evaluations divided by dimension D
+        (FEvals/D)         to reach a target value f<sub><span class="roman">opt</span></sub>+&#8710;f with &#8710;f
+=10<sup>k</sup>, where
+        k is given by the first value in the legend, for
+        algorithmA&nbsp;(<span style="color:#000000">&#176;</span>) and algorithmB&nbsp;(<span style="color:#000000">&#9830;</span>)        . Light beige lines show the ECDF of FEvals for target value
+        &#8710;f
+=10<sup>&#8722;8</sup> of all algorithms benchmarked during
+        BBOB-2009. Right sub-columns:
+        ECDF of FEval ratios of algorithmA&nbsp;divided by algorithmB for target
+        function values 10<sup>k</sup> with k given in the legend; all
+        trial pairs for each function. Pairs where both trials failed are disregarded,
+        pairs where one trial failed are visible in the limits being  &gt; 0 or  &lt; 1. The
+        legend also indicates, after the colon, the number of functions that were
+        solved in at least one trial (algorithmA&nbsp;first).
+
+<div class="p"><!----></div>
+##bbobppfigdimlegendfixed##
+
+        Scaling of runtime with dimension to reach certain target values &#8710;f.
+        Lines: average runtime (<span class="roman">aRT</span>);
+        Cross (+): median runtime of successful runs to reach the most difficult
+        target that was reached at least once (but not always);
+        Cross (<span style="color:#FF0000">&times;</span>): maximum number of
+        f-evaluations in any trial. Notched boxes: interquartile range with median of simulated runs; 
+        All values are divided by dimension and  
+        plotted as log<sub>10</sub> values versus dimension.                 Shown is the <span class="roman">aRT</span>&nbsp;for fixed values of &#8710;f
+= 10<sup>k</sup> with k given
+        in the legend.
+        Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number of trials
+        reaching the respective target. The light thick line with diamonds indicates the best algorithm from BBOB 2009 for the most difficult target.  Horizontal lines mean linear scaling, slanted
+        grid lines depict quadratic scaling.
+
+<div class="p"><!----></div>
+##bbobpptablecaptionfixed##
+
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the <span class="roman">aRT</span>&nbsp;of the best algorithm from BBOB 2009 in different dimensions. The <span class="roman">aRT</span>&nbsp;
+        and in braces, as dispersion measure, the half difference between 90 and 
+        10%-tile of bootstrapped run lengths appear in the second row of each cell,  
+        the best <span class="roman">aRT</span>&nbsp;                (preceded by the target &#8710;f-value in <i>italics</i>) in the first. 
+        #succ is the number of trials that reached the target value of the last column.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
+        <b>Bold</b> entries are statistically significantly better (according to
+        the rank-sum test) compared to the best algorithm from BBOB 2009, with
+        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k  &gt;  1 is following the
+        &#8595; symbol, with Bonferroni correction by the number of
+        functions.??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobpptablestwolegendfixed##
+
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function evaluations) divided
+        by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in dimensions 5 (left)
+        and 20 (right).
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference
+        between 10 and 90%-tile of bootstrapped run lengths appear for each
+        algorithm and 
+                target, the corresponding reference <span class="roman">aRT</span>&nbsp;        in the first row. The different target &#8710;f-values are shown in the top row. 
+        #succ is the number of trials that reached the (final) target
+        f<sub><span class="roman">opt</span></sub>+ 10<sup>&#8722;8</sup>.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the last target was never reached. 
+        1:algorithmAshort&nbsp;is algorithmA&nbsp;and 2:algorithmBshort&nbsp;is algorithmB.
+        Bold entries are statistically significantly better compared to the other algorithm,
+        with p=0.05 or p=10<sup>&#8722;k</sup> where k &#8712; {2,3,4,...} is the number
+        following the &#8727; symbol, with Bonferroni correction of 48.        A &#8595; indicates the same tested against
+        the best algorithm from BBOB 2009. ??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobpptablesmanylegendfixed##
+
+        Average runtime (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2009 in
+        different dimensions.
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
+        10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
+                target, the corresponding reference <span class="roman">aRT</span>&nbsp;        in the first row. The different target &#8710;f-values are shown in the top row.
+        #succ is the number of trials that reached the (final) target
+        f<sub><span class="roman">opt</span></sub>+ 10<sup>&#8722;8</sup>.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
+        Entries, succeeded by a star, are statistically significantly better (according to
+        the rank-sum test) when compared to all other algorithms of the table, with
+        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
+        than 1, with Bonferroni correction of 48. A &#8595; indicates the same tested against the best algorithm from BBOB 2009. Best results are printed in bold.
+        ??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobppscatterlegendfixed##
+
+Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
+        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS!! target values
+        !!DF!!  &#8712; [!!NBLOW!!, !!NBUP!!] in each dimension on functions f<sub>1</sub> - f<sub>24</sub>. Markers on the upper or right edge indicate that the respective target
+        value was never reached. Markers represent dimension:
+        2:<span style="color:#00FFFF">+</span>,
+        3:\triangledown,
+        5:<span style="color:#0000FF">&#8727;</span>,
+        10:&#176;,
+        20:<span style="color:#FF0000"><span style="font-size:x-small"><sup>[<u>&#175;</u>]</sup></span></span>,
+        40:<span style="color:#FF00FF">\Diamond</span>. 
+
+<div class="p"><!----></div>
+##bbobloglosstablecaptionfixed##
+
+        <span class="roman">aRT</span>&nbsp;loss ratio versus the budget in number of f-evaluations
+        divided by dimension.
+        For each given budget <span class="roman">FEvals</span>, the target value f<sub><span class="roman">t</span></sub>&nbsp;is computed
+        as the best target f-value reached within the
+        budget by the given algorithm.
+        Shown is then the <span class="roman">aRT</span>&nbsp;to reach f<sub><span class="roman">t</span></sub>&nbsp;for the given algorithm
+        or the budget, if the best algorithm from BBOB 2009
+        reached a better target within the budget,
+        divided by the <span class="roman">aRT</span>&nbsp;of the best algorithm from BBOB 2009 to reach f<sub><span class="roman">t</span></sub>.
+        Line: geometric mean. Box-Whisker error bar: 25-75%-ile with median
+        (box), 10-90%-ile (caps), and minimum and maximum <span class="roman">aRT</span>&nbsp;loss ratio
+        (points). The vertical line gives the maximal number of function evaluations
+        in a single trial in this function subset. See also
+        the following figure for results on each function subgroup.??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobloglossfigurecaptionfixed##
+
+        <span class="roman">aRT</span>&nbsp;loss ratios (see the previous figure for details).
+
+<div class="p"><!----></div>
+        Each cross (<span style="color:#0000FF">+</span>) represents a single function, the line
+        is the geometric mean.
+
+<div class="p"><!----></div>
+##bbobECDFslegendbiobjfixed##
+
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 58 targets with target precision in {&#8722;10<sup>&#8722;4</sup>, &#8722;10<sup>&#8722;4.2</sup>,  &#8722;10<sup>&#8722;4.4</sup>, &#8722;10<sup>&#8722;4.6</sup>, &#8722;10<sup>&#8722;4.8</sup>, &#8722;10<sup>&#8722;5</sup>, 0, 10<sup>&#8722;5</sup>, 10<sup>&#8722;4.9</sup>, 10<sup>&#8722;4.8</sup>, ..., 10<sup>&#8722;0.1</sup>, 10<sup>0</sup>} for all functions and subgroups in DIMVALUE-D. The "best 2016" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2016 for each selected target.
+
+<div class="p"><!----></div>
+##bbobppfigslegendbiobjfixed##
+
+Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluations
+                    as log<sub>10</sub> value), divided by dimension for target function value !!PPFIGS&#8722;FTARGET!!
+                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>55</sub>. Light symbols give the maximum number of function evaluations from the longest trial divided by dimension. Black stars indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+
+<div class="p"><!----></div>
+##bbobpprldistrlegendbiobjfixed##
+
+         Empirical cumulative distribution functions (ECDF), plotting the fraction of
+         trials with an outcome not larger than the respective value on the x-axis.
+                  Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension D,
+         to fall below I<sup><span class="roman">ref</span></sup>+&#8710;I with &#8710;I
+=10<sup>k</sup>, where k is the first value in the legend.
+         The thick red line represents the most difficult target value I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;5</sup>.          Legends indicate for each target the number of functions that were solved in at
+         least one trial within the displayed budget.
+         Right subplots: ECDF of the best achieved &#8710;I
+         for running times of 0.5D, 1.2D, 3D, 10D, 100D, 1000D,...
+         function evaluations
+         (from right to left cycling cyan-magenta-black...) and final &#8710;I-value (red),
+         where &#8710;Iand <span style="font-family:helvetica">Df</span> denote the difference to the optimal function value. 
+         Shown are aggregations over functions where the single
+            objectives are in the same BBOB function class, as indicated on the
+            left side and the aggregation over all 55 functions in the last row.
+
+<div class="p"><!----></div>
+##bbobpprldistrlegendtwobiobjfixed##
+
+        Empirical cumulative distributions (ECDF)
+        of run lengths and speed-up ratios in 5-D (left) and 20-D (right).
+        Left sub-columns: ECDF of
+        the number of function evaluations divided by dimension D
+        (FEvals/D)         to reach a target value I<sup><span class="roman">ref</span></sup>+&#8710;I with &#8710;I
+=10<sup>k</sup>, where
+        k is given by the first value in the legend, for
+        algorithmA&nbsp;(<span style="color:#000000">&#176;</span>) and algorithmB&nbsp;(<span style="color:#000000">&#9830;</span>)        . Right sub-columns:
+        ECDF of FEval ratios of algorithmA&nbsp;divided by algorithmB for target
+        function values 10<sup>k</sup> with k given in the legend; all
+        trial pairs for each function. Pairs where both trials failed are disregarded,
+        pairs where one trial failed are visible in the limits being  &gt; 0 or  &lt; 1. The
+        legend also indicates, after the colon, the number of functions that were
+        solved in at least one trial (algorithmA&nbsp;first).
+
+<div class="p"><!----></div>
+##bbobppfigdimlegendbiobjfixed##
+
+        Scaling of runtime with dimension to reach certain target values &#8710;I.
+        Lines: average runtime (<span class="roman">aRT</span>);
+        Cross (+): median runtime of successful runs to reach the most difficult
+        target that was reached at least once (but not always);
+        Cross (<span style="color:#FF0000">&times;</span>): maximum number of
+        f-evaluations in any trial. Notched boxes: interquartile range with median of simulated runs; 
+        All values are divided by dimension and  
+        plotted as log<sub>10</sub> values versus dimension.                 Shown is the <span class="roman">aRT</span>&nbsp;for fixed values of &#8710;I
+= 10<sup>k</sup> with k given
+        in the legend.
+        Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number of trials
+        reaching the respective target. The light thick line with diamonds indicates the best algorithm from BBOB 2016 for the most difficult target.  Horizontal lines mean linear scaling, slanted
+        grid lines depict quadratic scaling.
+
+<div class="p"><!----></div>
+##bbobpptablecaptionbiobjfixed##
+
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the <span class="roman">aRT</span>&nbsp;of the best algorithm from BBOB 2016 in different dimensions. The <span class="roman">aRT</span>&nbsp;
+        and in braces, as dispersion measure, the half difference between 90 and 
+        10%-tile of bootstrapped run lengths appear in the second row of each cell,  
+        the best <span class="roman">aRT</span>&nbsp;                (preceded by the target &#8710;I-value in <i>italics</i>) in the first. 
+        #succ is the number of trials that reached the target value of the last column.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
+        <b>Bold</b> entries are statistically significantly better (according to
+        the rank-sum test) compared to the best algorithm from BBOB 2016, with
+        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k  &gt;  1 is following the
+        &#8595; symbol, with Bonferroni correction by the number of
+        functions.??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobpptablestwolegendbiobjfixed##
+
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function evaluations) divided
+        by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2016 in dimensions 5 (left)
+        and 20 (right).
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference
+        between 10 and 90%-tile of bootstrapped run lengths appear for each
+        algorithm and 
+                target, the corresponding reference <span class="roman">aRT</span>&nbsp;        in the first row. The different target &#8710;I-values are shown in the top row. 
+        #succ is the number of trials that reached the (final) target
+        I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;5</sup>.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the last target was never reached. 
+        1:algorithmAshort&nbsp;is algorithmA&nbsp;and 2:algorithmBshort&nbsp;is algorithmB.
+        Bold entries are statistically significantly better compared to the other algorithm,
+        with p=0.05 or p=10<sup>&#8722;k</sup> where k &#8712; {2,3,4,...} is the number
+        following the &#8727; symbol, with Bonferroni correction of 48.        A &#8595; indicates the same tested against
+        the best algorithm from BBOB 2016. ??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobpptablesmanylegendbiobjfixed##
+
+        Average runtime (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2016 in
+        different dimensions.
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
+        10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
+                target, the corresponding reference <span class="roman">aRT</span>&nbsp;        in the first row. The different target &#8710;I-values are shown in the top row.
+        #succ is the number of trials that reached the (final) target
+        I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;5</sup>.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
+        Entries, succeeded by a star, are statistically significantly better (according to
+        the rank-sum test) when compared to all other algorithms of the table, with
+        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
+        than 1, with Bonferroni correction of 110. A &#8595; indicates the same tested against the best algorithm from BBOB 2016. Best results are printed in bold.
+        ??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobppscatterlegendbiobjfixed##
+
+Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
+        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS!! target values
+        !!DF!!  &#8712; [!!NBLOW!!, !!NBUP!!] in each dimension on functions f<sub>1</sub> - f<sub>55</sub>. Markers on the upper or right edge indicate that the respective target
+        value was never reached. Markers represent dimension:
+        2:<span style="color:#00FFFF">+</span>,
+        3:\triangledown,
+        5:<span style="color:#0000FF">&#8727;</span>,
+        10:&#176;,
+        20:<span style="color:#FF0000"><span style="font-size:x-small"><sup>[<u>&#175;</u>]</sup></span></span>,
+        40:<span style="color:#FF00FF">\Diamond</span>. 
+
+<div class="p"><!----></div>
+##bbobloglosstablecaptionbiobjfixed##
+
+        <span class="roman">aRT</span>&nbsp;loss ratio versus the budget in number of f-evaluations
+        divided by dimension.
+        For each given budget <span class="roman">FEvals</span>, the target value f<sub><span class="roman">t</span></sub>&nbsp;is computed
+        as the best target I<sub><span class="roman">H</span>V</sub><sup><span class="roman">C</span>OCO</sup>-value reached within the
+        budget by the given algorithm.
+        Shown is then the <span class="roman">aRT</span>&nbsp;to reach f<sub><span class="roman">t</span></sub>&nbsp;for the given algorithm
+        or the budget, if the best algorithm from BBOB 2016
+        reached a better target within the budget,
+        divided by the <span class="roman">aRT</span>&nbsp;of the best algorithm from BBOB 2016 to reach f<sub><span class="roman">t</span></sub>.
+        Line: geometric mean. Box-Whisker error bar: 25-75%-ile with median
+        (box), 10-90%-ile (caps), and minimum and maximum <span class="roman">aRT</span>&nbsp;loss ratio
+        (points). The vertical line gives the maximal number of function evaluations
+        in a single trial in this function subset. See also
+        the following figure for results on each function subgroup.??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobloglossfigurecaptionbiobjfixed##
+
+        <span class="roman">aRT</span>&nbsp;loss ratios (see the previous figure for details).
+
+<div class="p"><!----></div>
+        Each cross (<span style="color:#0000FF">+</span>) represents a single function, the line
+        is the geometric mean.
+
+<div class="p"><!----></div>
+##bbobECDFslegendbiobjrlbased##
+
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for all functions and subgroups in DIMVALUE-D. The targets are chosen from {&#8722;10<sup>&#8722;4</sup>, &#8722;10<sup>&#8722;4.2</sup>,  &#8722;10<sup>&#8722;4.4</sup>, &#8722;10<sup>&#8722;4.6</sup>, &#8722;10<sup>&#8722;4.8</sup>, &#8722;10<sup>&#8722;5</sup>, 0, 10<sup>&#8722;5</sup>, 10<sup>&#8722;4.9</sup>, 10<sup>&#8722;4.8</sup>, ..., 10<sup>&#8722;0.1</sup>, 10<sup>0</sup>} such that the best algorithm from BBOB 2016 just not reached them within a given budget of k &times; DIM, with 31 different values of k chosen equidistant in logscale within the interval {0.5, ..., 50}. The "best 2016" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2016 for each selected target.
+
+<div class="p"><!----></div>
+##bbobppfigslegendbiobjrlbased##
+
+Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluations
+                        as log<sub>10</sub> value) divided by dimension versus dimension. The target function value
+                        is chosen such that !!THE-REF-ALG!! just failed to achieve
+                        an <span class="roman">aRT</span>&nbsp;of !!PPFIGS&#8722;FTARGET!!&times;<span class="roman">DIM</span>. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>55</sub>. Light symbols give the maximum number of function evaluations from the longest trial divided by dimension. Black stars indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+
+<div class="p"><!----></div>
+##bbobpprldistrlegendbiobjrlbased##
+
+         Empirical cumulative distribution functions (ECDF), plotting the fraction of
+         trials with an outcome not larger than the respective value on the x-axis.
+                  Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension D,
+         to fall below I<sup><span class="roman">ref</span></sup>+&#8710;I where &#8710;I is the
+         target just not reached by the best algorithm from BBOB 2016 within a budget of
+         k&times;<span class="roman">DIM</span> evaluations, where k is the first value in the legend.          Legends indicate for each target the number of functions that were solved in at
+         least one trial within the displayed budget.
+         Right subplots: ECDF of the best achieved &#8710;I
+         for running times of 0.5D, 1.2D, 3D, 10D, 100D, 1000D,...
+         function evaluations
+         (from right to left cycling cyan-magenta-black...) and final &#8710;I-value (red),
+         where &#8710;Iand <span style="font-family:helvetica">Df</span> denote the difference to the optimal function value. 
+         Shown are aggregations over functions where the single
+            objectives are in the same BBOB function class, as indicated on the
+            left side and the aggregation over all 55 functions in the last row.
+
+<div class="p"><!----></div>
+##bbobpprldistrlegendtwobiobjrlbased##
+
+        Empirical cumulative distributions (ECDF)
+        of run lengths and speed-up ratios in 5-D (left) and 20-D (right).
+        Left sub-columns: ECDF of
+        the number of function evaluations divided by dimension D
+        (FEvals/D)         to fall below I<sup><span class="roman">ref</span></sup>+&#8710;I for
+        algorithmA&nbsp;(<span style="color:#000000">&#176;</span>) and algorithmB&nbsp;(<span style="color:#000000">&#9830;</span>        ) where &#8710;I is the target just not reached by the best algorithm from BBOB 2016 
+        within a budget of k&times;<span class="roman">DIM</span> evaluations, with k being the
+        value in the legend. 
+        Right sub-columns:
+        ECDF of FEval ratios of algorithmA&nbsp;divided by algorithmB&nbsp;for
+        run-length-based targets; all trial pairs for each function. Pairs where
+        both trials failed are disregarded, pairs where one trial failed are visible
+        in the limits being  &gt; 0 or  &lt; 1. The legends indicate the target budget of
+        k&times;<span class="roman">DIM</span> evaluations and, after the colon, the number of functions that
+        were solved in at least one trial (algorithmA&nbsp;first).
+
+<div class="p"><!----></div>
+##bbobppfigdimlegendbiobjrlbased##
+
+        Scaling of runtime with dimension to reach certain target values &#8710;I.
+        Lines: average runtime (<span class="roman">aRT</span>);
+        Cross (+): median runtime of successful runs to reach the most difficult
+        target that was reached at least once (but not always);
+        Cross (<span style="color:#FF0000">&times;</span>): maximum number of
+        f-evaluations in any trial. Notched boxes: interquartile range with median of simulated runs; 
+        All values are divided by dimension and  
+        plotted as log<sub>10</sub> values versus dimension.                 Shown is the <span class="roman">aRT</span>&nbsp;for targets just not reached by the best algorithm from BBOB 2016
+        within the given budget k&times;<span class="roman">DIM</span>, where k is shown in the
+        legend. Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number
+        of trials reaching the respective target. The light thick line with diamonds indicates the best algorithm from BBOB 2016 for the most difficult target.  Slanted
+        grid lines indicate a scaling with <i>O</i>(<span class="roman">DIM</span>) compared to
+        <i>O</i>(1) when using the respective reference algorithm.
+
+<div class="p"><!----></div>
+##bbobpptablecaptionbiobjrlbased##
+
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the <span class="roman">aRT</span>&nbsp;of the best algorithm from BBOB 2016 in different dimensions. The <span class="roman">aRT</span>&nbsp;
+        and in braces, as dispersion measure, the half difference between 90 and 
+        10%-tile of bootstrapped run lengths appear in the second row of each cell,  
+        the best <span class="roman">aRT</span>&nbsp;                in the first. The different target &#8710;I-values are shown in the top row. 
+        #succ is the number of trials that reached the (final) target I<sup><span class="roman">ref</span></sup>
++ 10<sup>&#8722;5</sup>.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
+        <b>Bold</b> entries are statistically significantly better (according to
+        the rank-sum test) compared to the best algorithm from BBOB 2016, with
+        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k  &gt;  1 is following the
+        &#8595; symbol, with Bonferroni correction by the number of
+        functions.??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobpptablestwolegendbiobjrlbased##
+
+        Average running time (<span class="roman">aRT</span>&nbsp;in number of function evaluations) divided
+        by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2016 in dimensions 5 (left)
+        and 20 (right).
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference
+        between 10 and 90%-tile of bootstrapped run lengths appear for each
+        algorithm and 
+                run-length based target, the corresponding reference <span class="roman">aRT</span>&nbsp;        (preceded by the target &#8710;I-value in <i>italics</i>) in the first row. 
+        #succ is the number of trials that reached the target value of the last column.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the last target was never reached. 
+        1:algorithmAshort&nbsp;is algorithmA&nbsp;and 2:algorithmBshort&nbsp;is algorithmB.
+        Bold entries are statistically significantly better compared to the other algorithm,
+        with p=0.05 or p=10<sup>&#8722;k</sup> where k &#8712; {2,3,4,...} is the number
+        following the &#8727; symbol, with Bonferroni correction of 48.        A &#8595; indicates the same tested against
+        the best algorithm from BBOB 2016. ??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobpptablesmanylegendbiobjrlbased##
+
+        Average runtime (<span class="roman">aRT</span>&nbsp;in number of function 
+        evaluations) divided by the respective best <span class="roman">aRT</span>&nbsp;measured during BBOB-2016 in
+        different dimensions.
+        The <span class="roman">aRT</span>&nbsp;and in braces, as dispersion measure, the half difference between 
+        10 and 90%-tile of bootstrapped run lengths appear for each algorithm and 
+                run-length based target, the corresponding reference <span class="roman">aRT</span>&nbsp;        (preceded by the target &#8710;I-value in <i>italics</i>) in the first row. 
+        #succ is the number of trials that reached the target value of the last column.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
+        Entries, succeeded by a star, are statistically significantly better (according to
+        the rank-sum test) when compared to all other algorithms of the table, with
+        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
+        than 1, with Bonferroni correction of 110. A &#8595; indicates the same tested against the best algorithm from BBOB 2016. Best results are printed in bold.
+        ??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobppscatterlegendbiobjrlbased##
+
+Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
+        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS!! runlength-based target
+        values for budgets between !!NBLOW!! and !!NBUP!! evaluations.
+        Each runlength-based target !!F!!-value is chosen such that the <span class="roman">aRT</span>s of 
+        !!THE-REF-ALG!! for the given and a slightly easier
+        target bracket the reference budget. Markers on the upper or right edge indicate that the respective target
+        value was never reached. Markers represent dimension:
+        2:<span style="color:#00FFFF">+</span>,
+        3:\triangledown,
+        5:<span style="color:#0000FF">&#8727;</span>,
+        10:&#176;,
+        20:<span style="color:#FF0000"><span style="font-size:x-small"><sup>[<u>&#175;</u>]</sup></span></span>,
+        40:<span style="color:#FF00FF">\Diamond</span>. 
+
+<div class="p"><!----></div>
+##bbobloglosstablecaptionbiobjrlbased##
+
+        <span class="roman">aRT</span>&nbsp;loss ratio versus the budget in number of f-evaluations
+        divided by dimension.
+        For each given budget <span class="roman">FEvals</span>, the target value f<sub><span class="roman">t</span></sub>&nbsp;is computed
+        as the best target I<sub><span class="roman">H</span>V</sub><sup><span class="roman">C</span>OCO</sup>-value reached within the
+        budget by the given algorithm.
+        Shown is then the <span class="roman">aRT</span>&nbsp;to reach f<sub><span class="roman">t</span></sub>&nbsp;for the given algorithm
+        or the budget, if the best algorithm from BBOB 2016
+        reached a better target within the budget,
+        divided by the <span class="roman">aRT</span>&nbsp;of the best algorithm from BBOB 2016 to reach f<sub><span class="roman">t</span></sub>.
+        Line: geometric mean. Box-Whisker error bar: 25-75%-ile with median
+        (box), 10-90%-ile (caps), and minimum and maximum <span class="roman">aRT</span>&nbsp;loss ratio
+        (points). The vertical line gives the maximal number of function evaluations
+        in a single trial in this function subset. See also
+        the following figure for results on each function subgroup.??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobloglossfigurecaptionbiobjrlbased##
+
+        <span class="roman">aRT</span>&nbsp;loss ratios (see the previous figure for details).
+
+<div class="p"><!----></div>
+        Each cross (<span style="color:#0000FF">+</span>) represents a single function, the line
+        is the geometric mean.
+
+<div class="p"><!----></div>
+##bbobECDFslegendbiobjextfixed##
+
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 58 targets with target precision in {&#8722;10<sup>&#8722;4</sup>, &#8722;10<sup>&#8722;4.2</sup>,  &#8722;10<sup>&#8722;4.4</sup>, &#8722;10<sup>&#8722;4.6</sup>, &#8722;10<sup>&#8722;4.8</sup>, &#8722;10<sup>&#8722;5</sup>, 0, 10<sup>&#8722;5</sup>, 10<sup>&#8722;4.9</sup>, 10<sup>&#8722;4.8</sup>, ..., 10<sup>&#8722;0.1</sup>, 10<sup>0</sup>} for all functions and subgroups in DIMVALUE-D. 
+
+<div class="p"><!----></div>
+##bbobppfigslegendbiobjextfixed##
+
+Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluations
+                    as log<sub>10</sub> value), divided by dimension for target function value !!PPFIGS&#8722;FTARGET!!
+                    versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. Different symbols correspond to different algorithms given in the legend of f<sub>1</sub> and f<sub>92</sub>. Light symbols give the maximum number of function evaluations from the longest trial divided by dimension. Black stars indicate a statistically better result compared to all other algorithms with p &lt; 0.01 and Bonferroni correction number of dimensions (six).  
+
+<div class="p"><!----></div>
+##bbobpprldistrlegendbiobjextfixed##
+
+         Empirical cumulative distribution functions (ECDF), plotting the fraction of
+         trials with an outcome not larger than the respective value on the x-axis.
+                  Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension D,
+         to fall below I<sup><span class="roman">ref</span></sup>+&#8710;I with &#8710;I
+=10<sup>k</sup>, where k is the first value in the legend.
+         The thick red line represents the most difficult target value I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;5</sup>.          Legends indicate for each target the number of functions that were solved in at
+         least one trial within the displayed budget.
+         Right subplots: ECDF of the best achieved &#8710;I
+         for running times of 0.5D, 1.2D, 3D, 10D, 100D, 1000D,...
+         function evaluations
+         (from right to left cycling cyan-magenta-black...) and final &#8710;I-value (red),
+         where &#8710;Iand <span style="font-family:helvetica">Df</span> denote the difference to the optimal function value. 
+         Shown are aggregations over functions where the single
+            objectives are in the same BBOB function class, as indicated on the
+            left side and the aggregation over all 92 functions in the last row.
+
+<div class="p"><!----></div>
+##bbobpprldistrlegendtwobiobjextfixed##
+
+        Empirical cumulative distributions (ECDF)
+        of run lengths and speed-up ratios in 5-D (left) and 20-D (right).
+        Left sub-columns: ECDF of
+        the number of function evaluations divided by dimension D
+        (FEvals/D)         to reach a target value I<sup><span class="roman">ref</span></sup>+&#8710;I with &#8710;I
+=10<sup>k</sup>, where
+        k is given by the first value in the legend, for
+        algorithmA&nbsp;(<span style="color:#000000">&#176;</span>) and algorithmB&nbsp;(<span style="color:#000000">&#9830;</span>)        . Right sub-columns:
+        ECDF of FEval ratios of algorithmA&nbsp;divided by algorithmB for target
+        function values 10<sup>k</sup> with k given in the legend; all
+        trial pairs for each function. Pairs where both trials failed are disregarded,
+        pairs where one trial failed are visible in the limits being  &gt; 0 or  &lt; 1. The
+        legend also indicates, after the colon, the number of functions that were
+        solved in at least one trial (algorithmA&nbsp;first).
+
+<div class="p"><!----></div>
+##bbobppfigdimlegendbiobjextfixed##
+
+        Scaling of runtime with dimension to reach certain target values &#8710;I.
+        Lines: average runtime (<span class="roman">aRT</span>);
+        Cross (+): median runtime of successful runs to reach the most difficult
+        target that was reached at least once (but not always);
+        Cross (<span style="color:#FF0000">&times;</span>): maximum number of
+        f-evaluations in any trial. Notched boxes: interquartile range with median of simulated runs; 
+        All values are divided by dimension and  
+        plotted as log<sub>10</sub> values versus dimension.                 Shown is the <span class="roman">aRT</span>&nbsp;for fixed values of &#8710;I
+= 10<sup>k</sup> with k given
+        in the legend.
+        Numbers above <span class="roman">aRT</span>-symbols (if appearing) indicate the number of trials
+        reaching the respective target.  Horizontal lines mean linear scaling, slanted
+        grid lines depict quadratic scaling.
+
+<div class="p"><!----></div>
+##bbobpptablecaptionbiobjextfixed##
+
+        Average runtime (<span class="roman">aRT</span>) to reach given targets, measured
+        in number of function evaluations. For each function, the <span class="roman">aRT</span>&nbsp;
+        and, in braces as dispersion measure, the half difference between 10 and 
+        90%-tile of (bootstrapped) runtimes is shown for the different
+        target &#8710;I-values as shown in the top row. 
+        #succ is the number of trials that reached the last target 
+        I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;5</sup>.
+        The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
+
+<div class="p"><!----></div>
+##bbobpptablestwolegendbiobjextfixed##
+
+        Average runtime (<span class="roman">aRT</span>) to reach given targets, measured
+        in number of function evaluations in dimensions 5 (left) and 20 (right).
+        For each function, the <span class="roman">aRT</span>&nbsp;
+        and, in braces as dispersion measure, the half difference between 10 and 
+        90%-tile of (bootstrapped) runtimes is shown for the different
+        target &#8710;I-values as shown in the top row. 
+        #succ is the number of trials that reached the last target    
+        I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;5</sup>.
+                target, the corresponding reference <span class="roman">aRT</span>&nbsp;        in the first row. The different target &#8710;I-values are shown in the top row. 
+        #succ is the number of trials that reached the (final) target
+        I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;5</sup>.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the last target was never reached. 
+        1:algorithmAshort&nbsp;is algorithmA&nbsp;and 2:algorithmBshort&nbsp;is algorithmB.
+        Bold entries are statistically significantly better compared to the other algorithm,
+        with p=0.05 or p=10<sup>&#8722;k</sup> where k &#8712; {2,3,4,...} is the number
+        following the &#8727; symbol, with Bonferroni correction of 48. ??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobpptablesmanylegendbiobjextfixed##
+
+        Average runtime (<span class="roman">aRT</span>) to reach given targets, measured
+        in number of function evaluations, in different dimensions. For each function, the <span class="roman">aRT</span>&nbsp;
+        and, in braces as dispersion measure, the half difference between 10 and 
+        90%-tile of (bootstrapped) runtimes is shown for the different
+        target !!DI!!-values as shown in the top row. 
+        #succ is the number of trials that reached the last target
+        I<sup><span class="roman">ref</span></sup>+ 10<sup>&#8722;5</sup>.
+                The median number of conducted function evaluations is additionally given in 
+        <i>italics</i>, if the target in the last column was never reached. 
+        Entries, succeeded by a star, are statistically significantly better (according to
+        the rank-sum test) when compared to all other algorithms of the table, with
+        p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
+        than 1, with Bonferroni correction of 184. Best results are printed in bold.
+        ??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobppscatterlegendbiobjextfixed##
+
+Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
+        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS!! target values
+        !!DF!!  &#8712; [!!NBLOW!!, !!NBUP!!] in each dimension on functions f<sub>1</sub> - f<sub>92</sub>. Markers on the upper or right edge indicate that the respective target
+        value was never reached. Markers represent dimension:
+        2:<span style="color:#00FFFF">+</span>,
+        3:\triangledown,
+        5:<span style="color:#0000FF">&#8727;</span>,
+        10:&#176;,
+        20:<span style="color:#FF0000"><span style="font-size:x-small"><sup>[<u>&#175;</u>]</sup></span></span>,
+        40:<span style="color:#FF00FF">\Diamond</span>. 
+
+<div class="p"><!----></div>
+##bbobloglosstablecaptionbiobjextfixed##
+
+        <span class="roman">aRT</span>&nbsp;loss ratio versus the budget in number of f-evaluations
+        divided by dimension.
+        For each given budget <span class="roman">FEvals</span>, the target value f<sub><span class="roman">t</span></sub>&nbsp;is computed
+        as the best target I<sub><span class="roman">H</span>V</sub><sup><span class="roman">C</span>OCO</sup>-value reached within the
+        budget by the given algorithm.
+        Shown is then the <span class="roman">aRT</span>&nbsp;to reach f<sub><span class="roman">t</span></sub>&nbsp;for the given algorithm
+        or the budget, if 
+        reached a better target within the budget,
+        divided by the <span class="roman">aRT</span>&nbsp;of  to reach f<sub><span class="roman">t</span></sub>.
+        Line: geometric mean. Box-Whisker error bar: 25-75%-ile with median
+        (box), 10-90%-ile (caps), and minimum and maximum <span class="roman">aRT</span>&nbsp;loss ratio
+        (points). The vertical line gives the maximal number of function evaluations
+        in a single trial in this function subset. See also
+        the following figure for results on each function subgroup.??COCOVERSION??
+
+<div class="p"><!----></div>
+##bbobloglossfigurecaptionbiobjextfixed##
+
+        <span class="roman">aRT</span>&nbsp;loss ratios (see the previous figure for details).
+
+<div class="p"><!----></div>
+        Each cross (<span style="color:#0000FF">+</span>) represents a single function, the line
+        is the geometric mean.
+
+<div class="p"><!----></div>
+###
+
+<br /><br /><hr /><small>File translated from
+T<sub><span class="small">E</span></sub>X
+by <a href="http://hutchinson.belmont.ma.us/tth/">
+T<sub><span class="small">T</span></sub>H</a>,
+version 4.08.<br />On 28 Feb 2017, 14:55.</small>
+</html>

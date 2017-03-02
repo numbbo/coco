@@ -43,6 +43,7 @@ matlab_files = ['cocoCall.m', 'cocoEvaluateFunction.m', 'cocoObserver.m',
                 'cocoSetLogLevel.m', 'cocoSuite.m', 'cocoSuiteFree.m',
                 'cocoSuiteGetNextProblem.m', 'cocoSuiteGetProblem.m']
 
+verbosity = False
 
 ################################################################################
 ## C
@@ -226,9 +227,21 @@ def install_postprocessing():
     expand_file(join('code-postprocessing', 'setup.py.in'),
                 join('code-postprocessing', 'setup.py'),
                 {'COCO_VERSION': git_version(pep440=True)})
-    # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/bbob_pproc/latex-templates')
+    # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/cocopp/latex-templates')
     python('code-postprocessing', ['setup.py', 'install', '--user'], verbose=verbosity)
 
+def test_suites(args):
+    """regression test on suites via Python"""
+    if not args:
+        args = ['2']
+    test_python(  # this is a list of [folder, args] pairs
+        [['code-experiments/test/regression-test',
+            ['test_suites.py', arg]] for arg in args
+         ] + [
+         ['code-experiments/build/python',
+            ['coco_test.py', 'bbob2009_testcases.txt', 'bbob2009_testcases2.txt']
+         ]
+        ])
 
 def _prep_python():
     global release
@@ -251,19 +264,20 @@ def build_python():
     # os.environ['USE_CYTHON'] = 'true'
     # python('code-experiments/build/python', ['setup.py', 'sdist'])
     # python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'])
-    run(join('code-experiments', 'build', 'python'), ['python', 'setup.py', 'install', '--user'])
+    python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'])
     # os.environ.pop('USE_CYTHON')
 
 
-def run_python(test=True):
+def run_python(test=False):
     """ Builds and installs the Python module `cocoex` and runs the
-    `example_experiment.py` as a simple test case. """
+    `example_experiment.py` as a simple test case. If `test` is True,
+    it runs, in addition, the tests in `coco_test.py`."""
     build_python()
     try:
         if test:
             run(os.path.join('code-experiments', 'build', 'python'), ['python', 'coco_test.py'])
-        run(os.path.join('code-experiments', 'build', 'python'),
-            ['python', 'example_experiment.py'])
+        python(os.path.join('code-experiments', 'build', 'python'),
+            ['example_experiment.py'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -296,9 +310,11 @@ os.path.join('code-experiments', 'build', 'python',
         shutil.rmtree(python_temp_home)
 
 
-def test_python():
+def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']],)):
     _prep_python()
-    python('code-experiments/build/python', ['setup.py', 'check', '--metadata', '--strict'], verbose=verbosity)
+    python('code-experiments/build/python',
+           ['setup.py', 'check', '--metadata', '--strict'],
+           verbose=verbosity)
     ## Now install into a temporary location, run test and cleanup
     python_temp_home = tempfile.mkdtemp(prefix="coco")
     python_temp_lib = os.path.join(python_temp_home, "lib", "python")
@@ -310,9 +326,13 @@ def test_python():
         os.makedirs(python_temp_lib)
         os.environ['PYTHONPATH'] = python_temp_lib
         os.environ['USE_CYTHON'] = 'true'
-        python('code-experiments/build/python', ['setup.py', 'install', '--home', python_temp_home], verbose=verbosity)
-        python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases.txt'], verbose=verbosity)
-        python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases2.txt'], verbose=verbosity)
+        python('code-experiments/build/python',
+               ['setup.py', 'install', '--home', python_temp_home],
+               verbose=verbosity)
+        for folder, more_args in args:
+            python(folder, more_args, verbose=verbosity)
+        # python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases.txt'], verbose=verbosity)
+        # python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases2.txt'], verbose=verbosity)
         os.environ.pop('USE_CYTHON')
         os.environ.pop('PYTHONPATH')
     except subprocess.CalledProcessError:
@@ -637,20 +657,44 @@ def test_java():
 def test_postprocessing(allTests=False):
     install_postprocessing()
     if allTests:
-        python('code-postprocessing/bbob_pproc', ['__main__.py', 'all'], verbose=verbosity)
+        try:
+            # run example experiment to have a recent data set to postprocess:
+            build_python()
+            python('code-experiments/build/python/', ['-c', '''  
+try:
+    import example_experiment as ee
+except Exception as e:
+    print(e)
+ee.SOLVER = ee.random_search  # which is default anyway
+ee.suite_name = "bbob-biobj"
+ee.observer_options['result_folder'] = "RS-bi"  # use a short path for Jenkins
+ee.main()  # doctest: +ELLIPSIS
+ee.suite_name = "bbob"
+ee.observer_options['result_folder'] = "RS-bb"
+ee.main()  # doctest: +ELLIPSIS
+            '''], verbose=verbosity)
+            # now run all tests
+            python('code-postprocessing/cocopp', ['__main__.py', 'all'], verbose=verbosity)
+        except subprocess.CalledProcessError:
+            sys.exit(-1)
+        finally:
+            # always remove folder of previously run experiments:
+            shutil.rmtree('code-experiments/build/python/exdata/')
     else:
-        python('code-postprocessing/bbob_pproc', ['__main__.py'], verbose=verbosity)
-    # python('code-postprocessing', ['-m', 'bbob_pproc'])
+        python('code-postprocessing/cocopp', ['__main__.py'], verbose=verbosity)
+    # also run the doctests in aRTAplots/generate_aRTA_plot.py:
+    python('code-postprocessing/aRTAplots', ['generate_aRTA_plot.py'], verbose=verbosity)
+    # python('code-postprocessing', ['-m', 'cocopp'])
     if 11 < 3:  # provisorial test fo biobj data
         run_c()
-        python('code-experiments/build/c', ['-m', 'bbob_pproc',
+        python('code-experiments/build/c', ['-m', 'cocopp',
                                             'RS_on_bbob-biobj'], verbose=verbosity)
 
 
 def verify_postprocessing():
     install_postprocessing()
     # This is not affected by the verbosity value. Verbose should always be True.
-    python('code-postprocessing/bbob_pproc', ['preparehtml.py', '-v'], verbose=True)
+    python('code-postprocessing/cocopp', ['preparehtml.py', '-v'], verbose=True)
 
 
 ################################################################################
@@ -705,9 +749,6 @@ def test():
     test_c()
     test_java()
     test_python()
-
-
-verbosity = False
 
 
 def verbose(args):
@@ -777,8 +818,9 @@ Available commands for users:
   run-matlab              - Build and run example experiment in MATLAB
   run-matlab-sms          - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
   run-octave              - Build and run example experiment in Octave
-  run-python              - Build and install COCO module and run tests and the
-                            example experiment in Python, "no-tests" omits tests
+  run-python              - Build and install COCO module and then run the
+                            example experiment in Python. The optional parameter
+                            "and-test" also runs the tests of `coco_test.py`
 
 Available commands for developers:
 
@@ -838,7 +880,7 @@ def main(args):
     elif cmd == 'run-matlab-sms': run_matlab_sms()
     elif cmd == 'run-octave': run_octave()
     elif cmd == 'run-python':
-        run_python(False) if len(args) > 1 and args[1] == 'no-tests' else run_python()
+        run_python(True) if len(args) > 1 and args[1] == 'and-test' else run_python()
     elif cmd == 'silent': silent(args[1:])
     elif cmd == 'verbose': verbose(args[1:])
     elif cmd == 'test-c': test_c()
@@ -852,6 +894,7 @@ def main(args):
     elif cmd == 'test-octave': test_octave()
     elif cmd == 'test-postprocessing': test_postprocessing()
     elif cmd == 'test-postprocessing-all': test_postprocessing(True)
+    elif cmd == 'test-suites': test_suites(args[1:])
     elif cmd == 'verify-postprocessing': verify_postprocessing()
     elif cmd == 'leak-check': leak_check()
     elif cmd == 'install-preprocessing': install_preprocessing()

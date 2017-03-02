@@ -31,6 +31,7 @@ See [here](../../../README.md#Getting-Started) for the first steps. Then
 
 - Copy the files `example_experiment.c`, `coco.c`, `coco.h` and `Makefile` to a folder
   of your choice. Modify the `example_experiment.c` file to include the solver of your
-  choice (instead of  `random_search`).
+  choice (instead of  `random_search`). Do not forget to also choose the right
+  benchmarking suite and the corresponding observer.
 
 - Invoke `make` to compile and run your experiment.

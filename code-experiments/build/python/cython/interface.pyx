@@ -7,8 +7,8 @@ cimport numpy as np
 
 from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
 
-known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-constrained"]
-_known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-constrained", b"bbob-largescale"]
+known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-biobj-ext", b"bbob-constrained"]
+_known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-biobj-ext", b"bbob-constrained", b"bbob-largescale"]
 
 # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
 # __all__ = ['Problem', 'Benchmark']
@@ -68,7 +68,7 @@ cdef bytes _bstring(s):
     elif isinstance(s, unicode):
         return s.encode('ascii')
     else:
-        raise TypeError()
+        raise TypeError("expect a string, got %s" % str(type(s)))
 
 cdef coco_observer_t* _current_observer
 
@@ -561,6 +561,11 @@ cdef class Observer:
     cdef _state
 
     def __cinit__(self, name, options):
+        if isinstance(options, dict):
+            s = str(options).replace(',', ' ')
+            for c in ["u'", 'u"', "'", '"', "{", "}"]:
+                s = s.replace(c, '')
+            options = s
         self._name = _bstring(name)
         self._options = _bstring(options if options is not None else "")
         self._observer = coco_observer(self._name, self._options)

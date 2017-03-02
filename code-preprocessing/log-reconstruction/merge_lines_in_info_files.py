@@ -22,8 +22,8 @@ import numpy as np  # "pip install numpy" installs numpy
 import sys
 import shutil
 
-import bbob_pproc
-from bbob_pproc import findfiles
+import cocopp
+from cocopp import findfiles
 
 
 def merge_lines_in(filename, inputfolder, outputfolder):

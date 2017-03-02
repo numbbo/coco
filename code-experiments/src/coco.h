@@ -35,6 +35,7 @@ typedef unsigned __int64 uint64_t;
 #ifndef INFINITY
 /** @brief Definition of INFINITY to be used only if undefined by the included headers */
 #define INFINITY 1e22
+/* why not using 1e99? */
 #endif
 #ifndef isinf
 /** @brief Definition of isinf to be used only if undefined by the included headers */
