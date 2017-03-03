@@ -16,6 +16,7 @@ def log_reconstruct(input_path, output_path, algorithm_name, algorithm_info, fun
        Takes into account only the given functions, instances and dimensions. If any .info, .dat and .tdat files of
        the same names already exist in the output_path, the new data is appended to them.
     """
+    ext_suite_name = 'bbob-biobj-ext'
     suite_name = 'bbob-biobj'
 
     print('Reading archive information...')
@@ -29,7 +30,7 @@ def log_reconstruct(input_path, output_path, algorithm_name, algorithm_info, fun
     print('Initializing the suite and observer...')
     suite_instance = 'instances: {}'.format(instance_string)
     suite_options = 'dimensions: {} function_indices: {}'.format(dimension_string, function_string)
-    suite = Suite(suite_name, suite_instance, suite_options)
+    suite = Suite(ext_suite_name, suite_instance, suite_options)
     observer_options = 'result_folder: {} algorithm_name: {} algorithm_info: "{}" log_nondominated: read'. \
         format(output_path, algorithm_name, algorithm_info)
     observer = Observer(suite_name, observer_options)
