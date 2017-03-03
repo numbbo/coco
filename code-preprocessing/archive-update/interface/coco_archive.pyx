@@ -46,8 +46,13 @@ cdef class Archive:
     cdef up_to_date
     
     def __cinit__(self, suite_name, function, instance, dimension):
-            
-        self._suite_name = _bstring(suite_name)
+
+        # A "dirty" hack to take care of the fact that the bbob-biobj-ext suite produces archives named "bbob-biobj_..."
+        if suite_name == 'bbob-biobj' and function in range(56, 93):
+            self._suite_name = _bstring('bbob-biobj-ext')
+        else:
+            self._suite_name = _bstring(suite_name)
+
         self._function = function
         self._instance = instance
         self._dimension = dimension
