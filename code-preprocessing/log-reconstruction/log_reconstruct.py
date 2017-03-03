@@ -16,6 +16,7 @@ def log_reconstruct(input_path, output_path, algorithm_name, algorithm_info, fun
        Takes into account only the given functions, instances and dimensions. If any .info, .dat and .tdat files of
        the same names already exist in the output_path, the new data is appended to them.
     """
+    ext_suite_name = 'bbob-biobj-ext'
     suite_name = 'bbob-biobj'
 
     print('Reading archive information...')
@@ -29,7 +30,7 @@ def log_reconstruct(input_path, output_path, algorithm_name, algorithm_info, fun
     print('Initializing the suite and observer...')
     suite_instance = 'instances: {}'.format(instance_string)
     suite_options = 'dimensions: {} function_indices: {}'.format(dimension_string, function_string)
-    suite = Suite(suite_name, suite_instance, suite_options)
+    suite = Suite(ext_suite_name, suite_instance, suite_options)
     observer_options = 'result_folder: {} algorithm_name: {} algorithm_info: "{}" log_nondominated: read'. \
         format(output_path, algorithm_name, algorithm_info)
     observer = Observer(suite_name, observer_options)
@@ -106,9 +107,9 @@ if __name__ == '__main__':
     """
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--functions', type=parse_range, default=range(1, 56),
+    parser.add_argument('-f', '--functions', type=parse_range, default=range(1, 93),
                         help='function numbers to be included in the processing of archives')
-    parser.add_argument('-i', '--instances', type=parse_range, default=range(1, 11),
+    parser.add_argument('-i', '--instances', type=parse_range, default=range(1, 16),
                         help='instance numbers to be included in the processing of archives')
     parser.add_argument('-d', '--dimensions', type=parse_range, default=[2, 3, 5, 10, 20, 40],
                         help='dimensions to be included in the processing of archives')
