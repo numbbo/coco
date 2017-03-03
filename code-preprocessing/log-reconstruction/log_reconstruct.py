@@ -106,9 +106,9 @@ if __name__ == '__main__':
     """
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--functions', type=parse_range, default=range(1, 56),
+    parser.add_argument('-f', '--functions', type=parse_range, default=range(1, 93),
                         help='function numbers to be included in the processing of archives')
-    parser.add_argument('-i', '--instances', type=parse_range, default=range(1, 11),
+    parser.add_argument('-i', '--instances', type=parse_range, default=range(1, 16),
                         help='instance numbers to be included in the processing of archives')
     parser.add_argument('-d', '--dimensions', type=parse_range, default=[2, 3, 5, 10, 20, 40],
                         help='dimensions to be included in the processing of archives')
