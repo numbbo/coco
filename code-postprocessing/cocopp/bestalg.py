@@ -343,12 +343,12 @@ class BestAlgSet(DataSet):
             tmp2 = None
             tmp3 = None
             for i, line in enumerate(self.evals):
-                if len(self.success_ratio) > 0:
+                if len(self.success_ratio) > i:
                     tmp3 = [0, self.success_ratio[i][1]]
                 if line[0] <= f:
                     tmp = line[1:]
                     tmp2 = self.best_algorithm_data[i]
-                    if len(self.success_ratio) > 0:
+                    if len(self.success_ratio) > i:
                         tmp3 = self.success_ratio[i]
                     break
             res.append(tmp)
