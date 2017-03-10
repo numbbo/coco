@@ -92,7 +92,7 @@ class BestAlgSet(DataSet):
 
     """
 
-    def __init__(self, dict_alg, instance_numbers, algId='Virtual Best Algorithm'):
+    def __init__(self, dict_alg, algId='Virtual Best Algorithm'):
         """Instantiate one best algorithm data set with name algId.
 
         :keyword dict_alg: dictionary of datasets, keys are algorithm
@@ -154,6 +154,7 @@ class BestAlgSet(DataSet):
 
         resalgs = []
         reserts = []
+        instance_numbers = []
         # For each function value
         for i in res:
             # Find best algorithm
@@ -174,6 +175,9 @@ class BestAlgSet(DataSet):
                     currentbestalg = sortedAlgs[j]
             reserts.append(currentbestert)
             resalgs.append(currentbestalg)
+            sorted_instance_numbers = list(set(dict_alg[currentbestalg].instancenumbers))
+            sorted_instance_numbers.sort()
+            instance_numbers.append(sorted_instance_numbers)
 
         dictiter = {}
         dictcurLine = {}
@@ -213,6 +217,7 @@ class BestAlgSet(DataSet):
         if pr > 0:
             self.precision = pr
         self.algs = best_algorithms if best_algorithms else resalgs
+        self.instances = instance_numbers
         self.best_algorithm_data = resalgs
         self.algId = algId
         if len(sortedAlgs) > 1:
@@ -220,7 +225,6 @@ class BestAlgSet(DataSet):
         else:
             self.comment = dict_alg[sortedAlgs[0]].comment
         self.comment += '; coco_version: ' + pkg_resources.require('cocopp')[0].version
-        self.comment += '; instance_numbers: ' + ','.join(str(i) for i in instance_numbers)
         self.ert = np.array(reserts)
         self.target = res[:, 0]
         self.testbed = dict_alg[sortedAlgs[0]].testbed_name # TODO: not nice
@@ -339,12 +343,12 @@ class BestAlgSet(DataSet):
             tmp2 = None
             tmp3 = None
             for i, line in enumerate(self.evals):
-                if len(self.success_ratio) > 0:
+                if len(self.success_ratio) > i:
                     tmp3 = [0, self.success_ratio[i][1]]
                 if line[0] <= f:
                     tmp = line[1:]
                     tmp2 = self.best_algorithm_data[i]
-                    if len(self.success_ratio) > 0:
+                    if len(self.success_ratio) > i:
                         tmp3 = self.success_ratio[i]
                     break
             res.append(tmp)
@@ -433,7 +437,7 @@ def load_reference_algorithm(best_algo_filename, force=False, relative_load=True
     else:
         algList = [os.path.join(best_alg_file_path, best_algo_filename)]
         dsList, sortedAlgs, dictAlg = pproc.processInputArgs(algList)
-        bestAlgorithmEntries = generate(dictAlg, dsList[0].algId, dsList[0].instancenumbers)
+        bestAlgorithmEntries = generate(dictAlg, dsList[0].algId)
         # set reference_algorithm_displayname in testbedsetting if not present:
         if testbedsettings.current_testbed:
             if testbedsettings.current_testbed.reference_algorithm_displayname is None:
@@ -449,7 +453,7 @@ def usage():
     print(__doc__)  # same as: sys.modules[__name__].__doc__, was: main.__doc__
 
 
-def generate(dict_alg, algId, instance_numbers):
+def generate(dict_alg, algId):
     """Generates dictionary of best algorithm data set.
     """
 
@@ -457,7 +461,7 @@ def generate(dict_alg, algId, instance_numbers):
     res = {}
     for f, i in pproc.dictAlgByFun(dict_alg).iteritems():
         for d, j in pproc.dictAlgByDim(i).iteritems():
-            tmp = BestAlgSet(j, instance_numbers, algId)
+            tmp = BestAlgSet(j, algId)
             res[(d, f)] = tmp
     return res
 
@@ -504,7 +508,7 @@ def deprecated_customgenerate(args=algs2009):
         if genericsettings.verbose:
             print('Folder %s was created.' % outputdir)
 
-    res = generate(dictAlg, outputdir, dsList[0].instancenumbers)
+    res = generate(dictAlg, outputdir)
     picklefilename = os.path.join(outputdir, 'bestalg.pickle')
     fid = gzip.open(picklefilename + ".gz", 'w')
     pickle.dump(res, fid)
@@ -536,7 +540,7 @@ def custom_generate(args=algs2009, algId='bestCustomAlg', suite=None):
         if genericsettings.verbose:
             print('Folder %s was created.' % output_dir)
 
-    result = generate(dictAlg, algId, dsList[0].instancenumbers)
+    result = generate(dictAlg, algId)
 
     create_data_files(output_dir, result, suite)
 
@@ -554,6 +558,7 @@ def create_data_files(output_dir, result, suite):
     info_filename = 'bbob-bestalg'
     filename_template = info_filename + '_f%02d_d%02d.%s'
     info_lines = []
+    all_instances_used = []
     for key, value in sorted(result.iteritems()):
 
         # TODO: throw an error
@@ -569,47 +574,54 @@ def create_data_files(output_dir, result, suite):
         lines.append("% Artificial instance")
         lines.append("% algorithm type = best")
         target_list = value.target.tolist()
+        instances_used = []
         for key_target, value_target in sorted(dict_evaluation.iteritems()):
             successful_runs, all_runs = result[(key[0], key[1])].get_success_ratio(value_target)
             target_index = target_list.index(value_target)
             alg_for_target = os.path.basename(value.algs[target_index])
+            instances_used.append(value.instances[target_index])
             lines.append("%d %10.15e %10.15e %s %d %d" %
                          (key_target, value_target, value_target, alg_for_target, successful_runs, all_runs))
             last_evaluation = key_target
             last_value = value_target
 
         instance_data = "%d:%d|%10.15e" % (0, last_evaluation, last_value)
+        all_instances_used.extend(instances_used)
+        instances_list = get_used_instance_list(instances_used)
 
         test_suite = getattr(value, 'suite', None)
         if test_suite is None:
             test_suite = suite
 
+        algorithm_id = value.algId
         if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
-            if not info_lines:
-                header = "algorithm = '%s', indicator = 'hyp'" % value.algId
-                if test_suite is not None:
-                    header += ", suite = '%s'" % test_suite
-                reference_values = testbedsettings.get_first_reference_values()
-                if reference_values is not None:
-                    header += ", reference_values_hash = '%s'" % reference_values
-                info_lines.append(header)
-                info_lines.append("%% %s" % value.comment)
             info_lines.append("function = %d, dim = %d, %s, %s"
                               % (key[1], key[0], filename_template % (key[1], key[0], 'dat'), instance_data))
         else:
             header = "funcId = %d, DIM = %d, Precision = %10.15e, algId = '%s'" \
-                     % (key[1], key[0], value.precision, value.algId)
+                     % (key[1], key[0], value.precision, algorithm_id)
             if test_suite is not None:
-                header += " suite = '%s'" % test_suite
+                header += ", suite = '%s'" % test_suite
             info_lines.append(header)
-            info_lines.append("%% %s" % value.comment)
+            info_lines.append("%% %s; instance_numbers: %s" % (value.comment, instances_list))
             info_lines.append("%s, %s" % (filename_template % (key[1], key[0], 'dat'), instance_data))
-
 
         filename = os.path.join(output_dir, filename_template % (key[1], key[0], 'dat'))
         write_to_file(filename, lines)
         filename = os.path.join(output_dir, filename_template % (key[1], key[0], 'tdat'))
         write_to_file(filename, lines)
+
+    if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
+        header = "algorithm = '%s', indicator = 'hyp'" % algorithm_id
+        if test_suite is not None:
+            header += ", suite = '%s'" % test_suite
+        reference_values = testbedsettings.get_first_reference_values()
+        if reference_values is not None:
+            header += ", reference_values_hash = '%s'" % reference_values
+        info_lines.insert(0, header)
+
+        instances_list = get_used_instance_list(all_instances_used)
+        info_lines.insert(1, "%% %s; instance_numbers: %s" % (value.comment, instances_list))
 
     filename = os.path.join(output_dir, '%s.info' % info_filename)
     write_to_file(filename, info_lines)
@@ -732,9 +744,10 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
     selectedAlgsPerProblem = {}
     for f, i in pproc.dictAlgByFun(dictAlg).iteritems():
         for d, j in pproc.dictAlgByDim(i).iteritems():
-            selectedAlgsPerProblemDF = []
-            best = BestAlgSet(j, dsList[0].instancenumbers)
 
+            best = BestAlgSet(j)
+
+            selectedAlgsPerProblemDF = []
             for i in range(0, len(best.target)):
                 t = best.target[i]
                 # if ((t <= target_ub) and (t >= target_lb)):
@@ -796,3 +809,23 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
     print(" done.")
 
     return selectedalgsperdimension
+
+
+def get_used_instance_list(instance_number_list):
+
+    different_instances = []
+    for instance_numbers in instance_number_list:
+        if list(set(instance_numbers)) not in different_instances:
+            different_instances.append(list(set(instance_numbers)))
+
+    if len(different_instances) == 0:
+        return None
+    elif len(different_instances) == 1:
+        return ','.join(str(i) for i in different_instances[0])
+    else:
+        instance_summary = []
+        for instance_list in different_instances:
+            instance_summary.append(','.join(str(i) for i in instance_list))
+        return '[' + '],['.join(str(i) for i in instance_summary) + ']'
+
+

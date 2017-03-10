@@ -21,8 +21,9 @@ function evaluations divided by the dimension.
 
 Horizontal lines indicate linear scaling with the dimension, additional
 grid lines show quadratic and cubic scaling.
-The thick light line with diamond markers shows the single best results
-from BBOB-2009 for df = 1e-8.
+The thick light line with diamond markers shows the results of the
+specified reference algorithm for df = 1e-8 or a runlength-based
+target (if in the expensive/runlength-based targets setting).
 
 **Example**
 
@@ -110,8 +111,8 @@ def scaling_figure_caption():
         within the given budget $k\times\DIM$, where $k$ is shown in the
         legend. Numbers above \aRT-symbols (if appearing) indicate the number
         of trials reaching the respective target. !!LIGHT-THICK-LINE!! Slanted
-        grid lines indicate a scaling with $\cal O$$(\DIM)$ compared to
-        $\cal O$$(1)$ when using the respective reference algorithm.
+        grid lines indicate a scaling with $\mathcal O$$(\DIM)$ compared to
+        $\mathcal O$$(1)$ when using the respective reference algorithm.
         """
 
     if genericsettings.runlength_based_targets:
@@ -476,24 +477,24 @@ def plot_previous_algorithms(func, target=None):  # lambda x: [1e-8]):
         
     target = pproc.TargetValues.cast(target)
 
-    bestalgentries = bestalg.load_reference_algorithm(testbed.reference_algorithm_filename)
+    refalgentries = bestalg.load_reference_algorithm(testbed.reference_algorithm_filename)
     
-    if not bestalgentries:
+    if not refalgentries:
         return None
 
-    bestalgdata = []
+    refalgdata = []
     for d in dimensions:
         try:
-            entry = bestalgentries[(d, func)]
+            entry = refalgentries[(d, func)]
             tmp = entry.detERT([target((func, d))[-1]])[0]
             if not np.isinf(tmp):
-                bestalgdata.append(tmp / d)
+                refalgdata.append(tmp / d)
             else:
-                bestalgdata.append(np.inf)
-        except KeyError: # dimension not in bestalg
-            bestalgdata.append(np.inf)  # None/nan give a runtime warning
+                refalgdata.append(np.inf)
+        except KeyError: # dimension not in refalg
+            refalgdata.append(np.inf)  # None/nan give a runtime warning
         
-    res = plt.plot(dimensions, bestalgdata, color=refcolor, linewidth=10,
+    res = plt.plot(dimensions, refalgdata, color=refcolor, linewidth=10,
                    marker='d', markersize=25, markeredgecolor='k',
                    zorder= -2)
     return res

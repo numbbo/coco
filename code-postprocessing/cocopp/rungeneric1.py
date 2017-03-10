@@ -369,8 +369,7 @@ def main(argv=None):
             print("Generating LaTeX tables...")
             dictNoise = dsList.dictByNoise()
             for noise, sliceNoise in dictNoise.iteritems():
-                pptable.main(sliceNoise, inset.tabDimsOfInterest,
-                             algoutputdir, noise)
+                pptable.main(sliceNoise, inset.tabDimsOfInterest, algoutputdir)
             print_done()
 
         if genericsettings.isRLDistr:
@@ -476,11 +475,11 @@ def main(argv=None):
                          pptable.get_table_caption(),
                          '}'])
         prepend_to_file(latex_commands_file,
-                        ['\\providecommand{\\bbobecdfcaptionsinglefcts}{',
+                        ['\\providecommand{\\bbobecdfcaptionsinglefcts}[2]{',
                          ppfigs.get_ecdfs_single_fcts_caption(),
                          '}'])
         prepend_to_file(latex_commands_file,
-                        ['\\providecommand{\\bbobecdfcaptionallgroups}{',
+                        ['\\providecommand{\\bbobecdfcaptionallgroups}[1]{',
                          ppfigs.get_ecdfs_all_groups_caption(),
                          '}'])
         prepend_to_file(latex_commands_file,

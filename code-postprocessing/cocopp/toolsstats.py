@@ -575,25 +575,25 @@ def significancetest(entry0, entry1, targets):
     bootstraps = False  # future extension
     res = []
     evals = []
-    bestalgs = []
-    isBestAlg = False
+    refalgs = []
+    isRefAlg = False
     # one of the entry is an instance of BestAlgDataSet
     for entry in (entry0, entry1):
         tmp = entry.detEvals(targets)
         if not entry.__dict__.has_key('funvals') and not entry.__dict__.has_key('indicator'):  # this looks like a terrible hack
-            isBestAlg = True
+            isRefAlg = True
             # for i, j in enumerate(tmp[0]):
                 # if np.isnan(j).all():
                     # tmp[0][i] = np.array([np.nan]*len(entry.bestfinalfunvals))
             # Make sure that the length of elements of tmp[0] is the same as
             # that of the associated function values
             evals.append(tmp[0])
-            bestalgs.append(tmp[1])
+            refalgs.append(tmp[1])
         else:
             evals.append(tmp)
-            bestalgs.append(None)
+            refalgs.append(None)
             
-    if not isBestAlg:
+    if not isRefAlg:
         erts = [None, None]
         erts[0] = entry0.detERT(targets)
         erts[1] = entry1.detERT(targets)
@@ -613,11 +613,11 @@ def significancetest(entry0, entry1, targets):
         # if there is at least one unsuccessful run
         if (np.isnan(evals[0][i]).any() or np.isnan(evals[1][i]).any()):
             fvalues = []
-            if isBestAlg:
+            if isRefAlg:
                 for j, entry in enumerate((entry0, entry1)):
-                    # if best alg entry
+                    # if reference algorithm entry
                     if isinstance(entry.finalfunvals, dict):
-                        alg = bestalgs[j][i]
+                        alg = refalgs[j][i]
                         if alg is None:
                             tmpfvalues = entry.bestfinalfunvals
                         else:
@@ -680,7 +680,7 @@ def significancetest(entry0, entry1, targets):
             curdata.append(tmp)
 
         z_and_p = ranksumtest(curdata[0], curdata[1])
-        if isBestAlg:
+        if isRefAlg:
             z_and_p = list(z_and_p)  # no idea what that is for
             z_and_p[1] /= 2.  # one-tailed p-value instead of two-tailed
         else:  # possibly correct 

@@ -85,8 +85,6 @@ def config(testbed_name=None):
 
             testbed.ppfigdim_target_values = pproc.RunlengthBasedTargetValues(
                                              genericsettings.target_runlengths_in_scaling_figs,
-                                             # [10**i for i in [2.0, 1.5, 1.0, 0.5, 0.1, -0.3]],
-                                             # [10**i for i in [1.7, 1, 0.3, -0.3]]
                                              reference_data=reference_data,
                                              force_different_targets_factor=10**-0.2)
 

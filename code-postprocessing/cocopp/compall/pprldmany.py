@@ -656,21 +656,21 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             displaybest = plotType == PlotType.ALG
             if displaybest:
                 # set_trace()
-                bestalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
+                refalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
 
-                if not bestalgentries:
+                if not refalgentries:
                     displaybest = False
                 else:
-                    bestalgentry = bestalgentries[(dim, f)]
-                    bestalgevals = bestalgentry.detEvals(target_values((f, dim)))
-                    # print bestalgevals
-                    for j in range(len(bestalgevals[0])):
-                        if bestalgevals[1][j]:
-                            evals = bestalgevals[0][j]
+                    refalgentry = refalgentries[(dim, f)]
+                    refalgevals = refalgentry.detEvals(target_values((f, dim)))
+                    # print refalgevals
+                    for j in range(len(refalgevals[0])):
+                        if refalgevals[1][j]:
+                            evals = refalgevals[0][j]
                             # set_trace()
-                            assert dim == bestalgentry.dim
+                            assert dim == refalgentry.dim
                             runlengthsucc = evals[np.isnan(evals) == False] / divisor
-                            runlengthunsucc = bestalgentry.maxevals[bestalgevals[1][j]][np.isnan(evals)] / divisor
+                            runlengthunsucc = refalgentry.maxevals[refalgevals[1][j]][np.isnan(evals)] / divisor
                             x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
                                                   percentiles=[50],
                                                   samplesize=perfprofsamplesize)[1]
@@ -746,9 +746,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 algtocommand[algname_to_label(alg)] = tmp
             if displaybest:
                 tmp = r'\algzeroperfprof'
-                bestalgname = testbedsettings.current_testbed.reference_algorithm_displayname
-                f.write(r'\providecommand{%s}{%s}' % (tmp, bestalgname))
-                algtocommand[algname_to_label(bestalgname)] = tmp
+                refalgname = testbedsettings.current_testbed.reference_algorithm_displayname
+                f.write(r'\providecommand{%s}{%s}' % (tmp, refalgname))
+                algtocommand[algname_to_label(refalgname)] = tmp
 
             commandnames = []
             for label in labels:

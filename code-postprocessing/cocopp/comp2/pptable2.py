@@ -14,7 +14,7 @@ from __future__ import absolute_import
 
 import os, warnings
 import numpy
-from .. import genericsettings, testbedsettings, bestalg, toolsstats, pproc
+from .. import genericsettings, testbedsettings, bestalg, toolsstats, pproc, captions
 from ..pptex import tableLaTeX, writeFEvals2, writeFEvalsMaxPrec, writeLabels
 from ..toolsstats import significancetest
 
@@ -31,42 +31,34 @@ def get_table_caption():
     
     testbed = testbedsettings.current_testbed    
         
-    text_intro_best_alg = r"""%
+    text_intro_ref_alg = r"""%
         Average running time (\aRT\ in number of function evaluations) divided
-        by the respective best \aRT\ measured during {} in dimensions 5 (left)
+        by the respective !!BEST-ART!! in dimensions 5 (left)
         and 20 (right).
         The \aRT\ and in braces, as dispersion measure, the half difference
         between 10 and 90\%-tile of bootstrapped run lengths appear for each
         algorithm and 
-        """        
-    text_intro_ref_alg = r"""%
-        Average running time (\aRT\ in number of function evaluations) divided 
-        by the respective \aRT\ of the reference algorithm {} in dimensions 5
-        (left) and 20 (right).
-        The \aRT\ and in braces, as dispersion measure, the half difference
-        between 10 and 90\%-tile of bootstrapped run lengths appear for each
-        algorithm and 
         """    
-    text_intro_no_best_alg = r"""%
+    text_intro_no_ref_alg = r"""%
         Average runtime (\aRT) to reach given targets, measured
         in number of function evaluations in dimensions 5 (left) and 20 (right).
         For each function, the \aRT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
-        target \Df-values as shown in the top row. 
+        target !!DF!!-values as shown in the top row. 
         \#succ is the number of trials that reached the last target    
-        $\hvref + """ + testbed.hardesttargetlatex + r"""$.
+        $!!FOPT!! + """ + testbed.hardesttargetlatex + r"""$.
         """    
     
     text_middle_fixedtarget = r"""%
-        target, the corresponding best \aRT\
-        in the first row. The different target \Df-values are shown in the top row. 
+        target, the corresponding reference \aRT\
+        in the first row. The different target !!DF!!-values are shown in the top row. 
         \#succ is the number of trials that reached the (final) target
-        $\fopt + """ + testbed.hardesttargetlatex + r"""$.
+        $!!FOPT!! + """ + testbed.hardesttargetlatex + r"""$.
         """
     text_middle_runlengthbased = r"""%
-        run-length based target, the corresponding best \aRT\
-        (preceded by the target \Df-value in \textit{italics}) in the first row. 
+        run-length based target, the corresponding reference \aRT\
+        (preceded by the target !!DF!!-value in \textit{italics}) in the first row. 
         \#succ is the number of trials that reached the target value of the last column.
         """
         
@@ -78,65 +70,32 @@ def get_table_caption():
         with $p=0.05$ or $p=10^{-k}$ where $k\in\{2,3,4,\dots\}$ is the number
         following the $\star$ symbol, with Bonferroni correction of #1."""
         
-    text_end_best_alg = r"""%
-        A $\downarrow$ indicates the same tested against
-        the best algorithm of {}."""
     text_end_ref_alg = r"""%
         A $\downarrow$ indicates the same tested against
-        algorithm {}."""
+        !!THE-REF-ALG!!."""
         
     
-    if testbed.reference_algorithm_displayname:
-        if (testbed.name == testbedsettings.testbed_name_single or
-                testbed.name == testbedsettings.default_testbed_single_noisy):
-            if "best 2009" in testbed.reference_algorithm_displayname:
-                text_intro = text_intro_best_alg.format("BBOB 2009")
-                text_end = text_end_best_alg.format("BBOB 2009")
-            elif "best 2010" in testbed.reference_algorithm_displayname:
-                text_intro = text_intro_best_alg.format("BBOB 2010")
-                text_end = text_end_best_alg.format("BBOB 2010")
-            elif "best 2012" in testbed.reference_algorithm_displayname:
-                text_intro = text_intro_best_alg.format("BBOB 2012")
-                text_end = text_end_best_alg.format("BBOB 2012")
-            elif "best 2009-2016" in testbed.reference_algorithm_displayname:
-                text_intro = text_intro_best_alg.format("BBOB 2009--16")
-                text_end = text_end_best_alg.format("BBOB 2009--16")
-            else:
-                text_intro = text_intro_ref_alg.format(
-                                testbed.reference_algorithm_displayname)
-                text_end = text_end_ref_alg.format(
-                                testbed.reference_algorithm_displayname)
-        elif testbed.name == testbedsettings.testbed_name_bi:
-            if "best 2016" in testbed.reference_algorithm_displayname:
-                text_intro = text_intro_best_alg.format("BBOB 2016")
-                text_end = text_end_best_alg.format("BBOB 2016")
-            else:
-                text_intro = text_intro_ref_alg.format(
-                                testbed.reference_algorithm_displayname)
-                text_end = text_end_ref_alg.format(
-                                testbed.reference_algorithm_displayname)  
-        
+    if testbed.reference_algorithm_displayname:    
         if genericsettings.runlength_based_targets:
-            table_caption = (text_intro + text_middle_runlengthbased +
-                             text_all + text_end)
+            table_caption = (text_intro_ref_alg + text_middle_runlengthbased +
+                             text_all + text_end_ref_alg)
         else:
-            table_caption = (text_intro + text_middle_fixedtarget +
-                             text_all + text_end)
+            table_caption = (text_intro_ref_alg + text_middle_fixedtarget +
+                             text_all + text_end_ref_alg)
     
-        
     else: # no best or reference algorithm given
         if genericsettings.runlength_based_targets:
-            table_caption = (text_intro_no_best_alg +
+            table_caption = (text_intro_no_ref_alg +
                              text_middle_runlengthbased +
                              text_all)
         else:
-            table_caption = (text_intro_no_best_alg +
+            table_caption = (text_intro_no_ref_alg +
                              text_middle_fixedtarget +
                              text_all)
 
-    table_caption = table_caption + r"""\cocoversion"""
+    table_caption = table_caption + r""" \cocoversion"""
 
-    return table_caption
+    return captions.replace(table_caption)
 
 
 def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
@@ -161,7 +120,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
     if info:
         info = '_' + info
 
-    bestalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
+    refalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
     
     header = []
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
@@ -222,44 +181,45 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                     if _tt is None:
                         raise ValueError
                     
-            if bestalgentries:            
-                bestalgentry = bestalgentries[(d, f)]
-                bestalgdata = bestalgentry.detERT(targets)
+            if refalgentries:            
+                refalgentry = refalgentries[(d, f)]
+                refalgdata = refalgentry.detERT(targets)
 
                 if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                     # write ftarget:fevals
-                    for i in xrange(len(bestalgdata[:-1])):
+                    for i in xrange(len(refalgdata[:-1])):
                         temp = "%.1e" % targetsOfInterest((f, d))[i]
                         if temp[-2]=="0":
                             temp = temp[:-2]+temp[-1]
                         curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
-                                       % (temp, writeFEvalsMaxPrec(bestalgdata[i], 2)))
+                                       % (temp, writeFEvalsMaxPrec(refalgdata[i], 2)))
                         curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
-                                           % (temp, writeFEvalsMaxPrec(bestalgdata[i], 2)))
+                                           % (temp, writeFEvalsMaxPrec(refalgdata[i], 2)))
                     temp = "%.1e" % targetsOfInterest((f, d))[-1]
                     if temp[-2]=="0":
                         temp = temp[:-2]+temp[-1]
                     curline.append(r'\multicolumn{2}{@{}c@{}|}{\textit{%s}:%s }'
-                                   % (temp, writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
+                                   % (temp, writeFEvalsMaxPrec(refalgdata[-1], 2))) 
                     curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
-                                       % (temp, writeFEvalsMaxPrec(bestalgdata[-1], 2))) 
+                                       % (temp, writeFEvalsMaxPrec(refalgdata[-1], 2))) 
                 else:            
                     # write #fevals of the reference alg
-                    for i in bestalgdata[:-1]:
+                    for i in refalgdata[:-1]:
                         curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
                                        % writeFEvalsMaxPrec(i, 2))
                         curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(i, 2))
     
                     curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
-                                   % writeFEvalsMaxPrec(bestalgdata[-1], 2))
-                    curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(bestalgdata[-1], 2))
+                                   % writeFEvalsMaxPrec(refalgdata[-1], 2))
+                    curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(refalgdata[-1], 2))
     
                 # write the success ratio for the reference alg
-                successful_runs, all_runs = bestalgentry.get_success_ratio(targetf)
-                curline.append('%d/%d' % (successful_runs, all_runs))
+                successful_runs, all_runs = refalgentry.get_success_ratio(targetf)
+                curline.append('%d' % successful_runs)
+                curline.append('/%d' % all_runs)
                 curlineHtml.append('<td>%d/%d</td>\n' % (successful_runs, all_runs))
 
-            else: # if not bestalgentries
+            else: # if not refalgentries
                 curline.append(r'\multicolumn{%d}{@{}c@{}|}{}' % (2 * (len(targetsOfInterest.labels()) + 1)))
                 curlineHtml.append('<td colspan="%d" />\n' % (len(targetsOfInterest.labels()) + 1))
                 
@@ -274,9 +234,9 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
             
             testres0vs1 = significancetest(entries[0], entries[1], targets)
             
-            if bestalgentries:
-                testresbestvs1 = significancetest(bestalgentry, entries[1], targets)
-                testresbestvs0 = significancetest(bestalgentry, entries[0], targets)
+            if refalgentries:
+                testresbestvs1 = significancetest(refalgentry, entries[1], targets)
+                testresbestvs0 = significancetest(refalgentry, entries[0], targets)
 
             for nb, entry in enumerate(entries):
                 tableHtml.append('<tr>\n')
@@ -325,11 +285,11 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                     if i == len(data) - 1: # last element
                         alignment = 'c|'
 
-                    if bestalgentries and numpy.isinf(bestalgdata[i]): # if the 2009 best did not solve the problem
+                    if refalgentries and numpy.isinf(refalgdata[i]): # if the 2009 best did not solve the problem
 
                         tmp = writeFEvalsMaxPrec(float(dati), 2)
                         if not numpy.isinf(dati):
-                            if bestalgentries:                        
+                            if refalgentries:                        
                                 tmpHtml = '<i>%s</i>' % (tmp)
                                 tmp = r'\textit{%s}' % (tmp)
                             else:
@@ -349,7 +309,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                         tableentryHtml = ('%s' % tmpHtml)
                     else:
                         # Formatting
-                        tmp = float(dati)/bestalgdata[i] if bestalgentries else float(dati)
+                        tmp = float(dati)/refalgdata[i] if refalgentries else float(dati)
                         assert not numpy.isnan(tmp)
                         isscientific = False
                         if tmp >= 1000:
@@ -369,9 +329,9 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                             elif 11 < 3 and significance0vs1 < 0:  # cave: negative significance has no meaning anymore
                                 tableentry = r'\textit{%s}' % tableentry
                                 tableentryHtml = '<i>%s</i>' % tableentryHtml
-                            if bestalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
-                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
-                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
+                            if refalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/refalgdata[i]):
+                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
+                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
 
@@ -382,9 +342,9 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                             elif 11 < 3 and significance0vs1 < 0:
                                 tableentry = r'\textit{%s}' % tableentry
                                 tableentryHtml = '<i>%s</i>' % tableentryHtml
-                            if bestalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
-                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
-                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
+                            if refalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/refalgdata[i]):
+                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
+                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
                         else:
@@ -400,21 +360,21 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                             tableentryHtml = '.'.join(tmpHtml)
                             if len(tmp) == 1:
                                 tableentry += '&'
-                            if bestalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/bestalgdata[i]):
-                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
-                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 1)
+                            if refalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/refalgdata[i]):
+                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
+                                tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
 
                     superscript = ''
                     superscriptHtml = ''
 
-                    if bestalgentries:
+                    if refalgentries:
                         if nb == 0:
                             z, p = testresbestvs0[i]
                         else:
                             z, p = testresbestvs1[i]
     
                         #The conditions are now that aRT < aRT_best
-                        if ((nbtests * p) < 0.05 and dati - bestalgdata[i] < 0.
+                        if ((nbtests * p) < 0.05 and dati - refalgdata[i] < 0.
                             and z < 0.):
                             nbstars = -numpy.ceil(numpy.log10(nbtests * p))
                             #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
@@ -452,10 +412,10 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                     curline.append(tableentry)
 
                     #curline.append(tableentry)
-                    #if dispersion[i] is None or numpy.isinf(bestalgdata[i]):
+                    #if dispersion[i] is None or numpy.isinf(refalgdata[i]):
                         #curline.append('')
                     #else:
-                        #tmp = writeFEvalsMaxPrec(dispersion[i]/bestalgdata[i], 2)
+                        #tmp = writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 2)
                         #curline.append('(%s)' % tmp)
 
                 tmp = entry.evals[entry.evals[:, 0] <= targetf, 1:]

@@ -240,7 +240,7 @@ def save_single_functions_html(filename,
         first_function_number = testbedsettings.current_testbed.first_function_number
         last_function_number = testbedsettings.current_testbed.last_function_number
         captionStringFormat = '<p/>\n%s\n<p/><p/>'
-        bestAlgExists = testbedsettings.current_testbed.reference_algorithm_filename != ''
+        refAlgExists = testbedsettings.current_testbed.reference_algorithm_filename != ''
 
         if htmlPage is HtmlPage.ONE:
             f.write('<H3><a href="ppfigdim.html">Scaling with '
@@ -249,7 +249,7 @@ def save_single_functions_html(filename,
                     'targets</a></H3>\n')
             f.write('<H3><a href="pprldistr.html">Runtime distribution for selected '
                     'targets and f-distributions</a></H3>\n')
-            if bestAlgExists:
+            if refAlgExists:
                 f.write('<H3><a href="pplogloss.html">Runtime loss ratios'
                         '</a></H3>\n')
 
@@ -328,10 +328,10 @@ def save_single_functions_html(filename,
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPTABLE2:
-            write_tables(f, captionStringFormat, bestAlgExists, 'pptable2Html', 'bbobpptablestwolegend')
+            write_tables(f, captionStringFormat, refAlgExists, 'pptable2Html', 'bbobpptablestwolegend')
 
         elif htmlPage is HtmlPage.PPTABLES:
-            write_tables(f, captionStringFormat, bestAlgExists, 'pptablesHtml', 'bbobpptablesmanylegend')
+            write_tables(f, captionStringFormat, refAlgExists, 'pptablesHtml', 'bbobpptablesmanylegend')
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
@@ -373,7 +373,7 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
             dimensions = genericsettings.rldDimsOfInterest
-            if bestAlgExists:
+            if refAlgExists:
                 current_header = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % current_header)
 

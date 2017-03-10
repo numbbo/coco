@@ -160,12 +160,14 @@ def caption_single():
 
     if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
                                                 testbedsettings.default_testbed_single_noisy,
-                                                testbedsettings.testbed_name_bi,
-                                                testbedsettings.testbed_name_bi_ext]:
+                                                testbedsettings.testbed_name_bi]:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_part_one + caption_left_rlbased_targets + caption_right
         else:
             figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
+    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext:
+        # no best algorithm defined yet:
+        figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
     else:
         warnings.warn("Current settings do not support pprldistr caption.")
 

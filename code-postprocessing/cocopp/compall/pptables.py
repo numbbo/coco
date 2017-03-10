@@ -8,7 +8,7 @@ import os, sys
 from pdb import set_trace
 import warnings
 import numpy
-from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings
+from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings, captions
 from ..pptex import writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from ..toolsstats import significancetest, significance_all_best_vs_other
 from ..toolsdivers import str_to_latex, strip_pathname1, replace_in_file, get_version_label
@@ -29,31 +29,31 @@ def get_table_caption():
     """
 
     table_caption_one = r"""%
-        Average running time (\aRT\ in number of function 
-        evaluations) divided by the respective best \aRT\ measured during BBOB-2009 in
+        Average runtime (\aRT\ in number of function 
+        evaluations) divided by the respective !!BEST-ART!! in
         #1.
         The \aRT\ and in braces, as dispersion measure, the half difference between 
         10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
         """
-    table_caption_two1 = r"""%
-        target, the corresponding best \aRT\
-        in the first row. The different target \Df-values are shown in the top row.
-        \#succ is the number of trials that reached the (final) target
-        $\fopt + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
-        """
-    table_caption_two2 = r"""%
-        run-length based target, the corresponding best \aRT\
-        (preceded by the target \Df-value in \textit{italics}) in the first row. 
-        \#succ is the number of trials that reached the target value of the last column.
-        """
-    table_caption_one_bi = r"""%
+    table_caption_one_noreference = r"""%
         Average runtime (\aRT) to reach given targets, measured
         in number of function evaluations, in #1. For each function, the \aRT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
-        target \DI-values as shown in the top row. 
+        target !!DI!!-values as shown in the top row. 
         \#succ is the number of trials that reached the last target
-        $\hvref + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
+        $!!FOPT!! + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
+        """
+    table_caption_two1 = r"""%
+        target, the corresponding reference \aRT\
+        in the first row. The different target !!DF!!-values are shown in the top row.
+        \#succ is the number of trials that reached the (final) target
+        $!!FOPT!! + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
+        """
+    table_caption_two2 = r"""%
+        run-length based target, the corresponding reference \aRT\
+        (preceded by the target !!DF!!-value in \textit{italics}) in the first row. 
+        \#succ is the number of trials that reached the target value of the last column.
         """
     table_caption_rest = (r"""%
         The median number of conducted function evaluations is additionally given in 
@@ -62,17 +62,17 @@ def get_table_caption():
         the rank-sum test) when compared to all other algorithms of the table, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
         than 1, with Bonferroni correction of #2. """ +
-                          (r"""A $\downarrow$ indicates the same tested against the best
-        algorithm of BBOB-2009. """
-                           if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi)
-                           else "") + r"""Best results are printed in bold.
+        (r"""A $\downarrow$ indicates the same tested against !!THE-REF-ALG!!. """
+        if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext)
+        else "") + r"""Best results are printed in bold.
         """ + r"""\cocoversion""")
 
-    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi,
-                                                testbedsettings.testbed_name_bi_ext]:
+    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext]:
         # NOTE: no runlength-based targets supported yet
-        table_caption = table_caption_one_bi + table_caption_rest
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
+        table_caption = table_caption_one_noreference + table_caption_rest
+    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
+                                                  testbedsettings.testbed_name_single_noisy,
+                                                  testbedsettings.testbed_name_bi]:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:
@@ -80,7 +80,7 @@ def get_table_caption():
     else:
         warnings.warn("Current settings do not support pptables caption.")
 
-    return table_caption
+    return captions.replace(table_caption)
 
 
 with_table_heading = False  # in case the page is long enough
@@ -268,7 +268,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
     testbed = testbedsettings.current_testbed
     targetsOfInterest = testbed.pptablemany_targetsOfInterest
 
-    bestalgentries = bestalg.load_reference_algorithm(testbed.reference_algorithm_filename)
+    refalgentries = bestalg.load_reference_algorithm(testbed.reference_algorithm_filename)
 
     # Sort data per dimension and function
     dictData = {}
@@ -296,8 +296,8 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
             targetf = testbed.pptable_ftarget
 
         # reference algorithm
-        if bestalgentries:
-            refalgentry = bestalgentries[df]
+        if refalgentries:
+            refalgentry = refalgentries[df]
             refalgert = refalgentry.detERT(targets)
 
         # Process the data
@@ -357,7 +357,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
             # algmedmaxevals.append(numpy.median(entry.maxevals)/df[0])
             # algmedfinalfunvals.append(numpy.median(entry.finalfunvals))
 
-            if bestalgentries:
+            if refalgentries:
                 algtestres.append(significancetest(refalgentry, entry, targets))
 
             # determine success probability for Df = 1e-8
@@ -377,7 +377,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
         for i, erts in enumerate(algerts):
             tmp = []
             for j, ert in enumerate(erts):  # algi targetj
-                tmp.append(i in tmptop[j] or (bestalgentries and nalgs > 7 and algerts[i][j] <= 3. * refalgert[j]))
+                tmp.append(i in tmptop[j] or (refalgentries and nalgs > 7 and algerts[i][j] <= 3. * refalgert[j]))
             isBoldArray.append(tmp)
             algfinaldata.append((algmedfinalfunvals[i], algmedmaxevals[i]))
 
@@ -450,12 +450,12 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
         extraeol.append(r'\hline')
         #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
         
-        # line with function name and potential aRT values of bestalg
+        # line with function name and potential aRT values of reference algorithm
         curline = [r'\textbf{f%d}' % df[1]]
         replaceValue = '<b>f%d</b>' % df[1]
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
         
-        if bestalgentries:
+        if refalgentries:
             if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
                 counter = 1
@@ -492,11 +492,12 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
 
             # write the success ratio for the reference alg
             successful_runs, all_runs = refalgentry.get_success_ratio(targetf)
-            curline.append('%d/%d' % (successful_runs, all_runs))
+            curline.append('%d' % successful_runs)
+            curline.append('/%d' % all_runs)
             replaceValue = '%d/%d' % (successful_runs, all_runs)
             curlineHtml = [item.replace('REPLACEF', replaceValue) for item in curlineHtml]
 
-        else:  # if not bestalgentries
+        else:  # if not refalgentries
             curline.append(r'\multicolumn{%d}{@{}c@{}|}{} & ' % (2 * (len(targetsOfInterest))))
             for counter in range(1, len(targetsOfInterest) + 1):
                 curlineHtml = [item.replace('REPLACE%d' % counter, '&nbsp;') for item in curlineHtml]
@@ -519,11 +520,11 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
             curline = [commandname + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
             curlineHtml = ['<th>%s</th>\n' % str_to_latex(strip_pathname1(alg))]
 
-            zipToEnumerate = zip(algerts[i], algdisp[i], isBoldArray[i], algtestres[i]) if bestalgentries else zip(
+            zipToEnumerate = zip(algerts[i], algdisp[i], isBoldArray[i], algtestres[i]) if refalgentries else zip(
                 algerts[i], algdisp[i], isBoldArray[i])
 
             for j, tmp in enumerate(zipToEnumerate):  # j is target index
-                if bestalgentries:
+                if refalgentries:
                     ert, dispersion, isBold, testres = tmp
                 else:
                     ert, dispersion, isBold = tmp
@@ -532,7 +533,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                 if j == len(algerts[i]) - 1:
                     alignment = '@{\,}l@{\,}|'
 
-                data = ert / refalgert[j] if bestalgentries else ert
+                data = ert / refalgert[j] if refalgentries else ert
                 # write star for significance against all other algorithms
                 str_significance_subsup = ''
                 str_significance_subsup_html = ''
@@ -545,7 +546,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                     str_significance_subsup_html = '<sup>%s%s</sup>' % (
                     significance_vs_others_symbol_html, str(int(logp)) if logp > 1 else '')
 
-                if bestalgentries:
+                if refalgentries:
                     # moved out of the above else: this was a bug!?
                     z, p = testres
                     if (nbtests * p) < 0.05 and data < 1. and z < 0.:
@@ -553,8 +554,8 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                             tmpevals = algevals[i][j].copy()
                             tmpevals[numpy.isnan(tmpevals)] = algentries[i].maxevals[numpy.isnan(tmpevals)]
                             bestevals = refalgentry.detEvals(targets)
-                            bestevals, bestalgalg = (bestevals[0][0], bestevals[1][0])
-                            bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[bestalgalg][numpy.isnan(bestevals)]
+                            bestevals, refalgalg = (bestevals[0][0], bestevals[1][0])
+                            bestevals[numpy.isnan(bestevals)] = refalgentry.maxevals[refalgalg][numpy.isnan(bestevals)]
                             tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
                             bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
 
@@ -576,7 +577,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                     curline.append(r'\multicolumn{2}{%s}{.}' % alignment)
                     curlineHtml.append('<td>&nbsp;</td>')
                 else:
-                    if bestalgentries and numpy.isinf(refalgert[j]):
+                    if refalgentries and numpy.isinf(refalgert[j]):
                         tableentry = r'\textbf{%s}' % writeFEvalsMaxPrec(algerts[i][j], 2)
                         tableentryHtml = '<b>%s</b>' % writeFEvalsMaxPrec(algerts[i][j], 2)
                         if dispersion and numpy.isfinite(dispersion):
@@ -611,7 +612,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                                 tmp = r'\textbf{%s}' % tmp
 
                         if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion / refalgert[j] if bestalgentries else dispersion
+                            tmpdisp = dispersion / refalgert[j] if refalgentries else dispersion
                             if tmpdisp >= maxfloatrepr or tmpdisp < 0.005:  # TODO: hack
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                             else:
@@ -641,7 +642,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                             tmp2html = []
                             tmp2html.extend(tmp2)
                         if not numpy.isnan(dispersion):
-                            tmpdisp = dispersion / refalgert[j] if bestalgentries else dispersion
+                            tmpdisp = dispersion / refalgert[j] if refalgentries else dispersion
                             if tmpdisp >= maxfloatrepr or tmpdisp < 0.01:
                                 tmpdisp = writeFEvalsMaxPrec(tmpdisp, precdispersion, maxfloatrepr=tmpdisp)
                             else:
