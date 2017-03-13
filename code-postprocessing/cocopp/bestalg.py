@@ -815,8 +815,8 @@ def get_used_instance_list(instance_number_list):
 
     different_instances = []
     for instance_numbers in instance_number_list:
-        if list(set(instance_numbers)) not in different_instances:
-            different_instances.append(list(set(instance_numbers)))
+        if instance_numbers not in different_instances:
+            different_instances.append(instance_numbers)
 
     if len(different_instances) == 0:
         return None
