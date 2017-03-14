@@ -30,6 +30,7 @@ from . import genericsettings, bestalg, toolsstats, pproc
 from . import testbedsettings
 from .pptex import tableLaTeX, writeFEvals2, writeFEvalsMaxPrec
 from .toolsstats import significancetest
+from .toolsdivers import prepend_to_file
 from . import captions
 
 from pdb import set_trace
@@ -106,7 +107,7 @@ def get_table_caption():
     return captions.replace(table_caption)
         
 
-def main(dsList, dimsOfInterest, outputdir):
+def main(dsList, dimsOfInterest, outputdir, latex_commands_file):
     """Generate a table of ratio aRT/aRTref vs target precision.
     
     1 table per dimension will be generated.
@@ -142,7 +143,7 @@ def main(dsList, dimsOfInterest, outputdir):
             header.append(r'\multicolumn{2}{c}{1e%+d}' % (int(np.log10(i))))
             headerHtml.append('<td>1e%+d</td>\n' % (int(np.log10(i))))
                       
-    header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}\\')
+    header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}')
     headerHtml.append('<td>#succ</td>\n</tr>\n</thead>\n')
 
     for d in dimsOfInterest:
@@ -416,17 +417,10 @@ def main(dsList, dimsOfInterest, outputdir):
             else:
                 spec = r'@{}c@{}|' + '*{%d}{@{}r@{}@{}l@{}}' % len(targetsOfInterest) + '|@{}r@{}@{}l@{}'
             #res = r'\providecommand{\algshort}{%s}' % alg1 + '\n'
-            res = tableLaTeX(table, spec=spec, extraeol=extraeol)
+            res = tableLaTeX(table, spec=spec, extra_eol=extraeol, add_begin_tabular=False, add_end_tabular=False)
             f = open(output_file, 'w')
             f.write(res)
             f.close()
-
-        extraeol = [r'\hline']
-        output_file = os.path.join(outputdir, 'pptable_header_%02dD.tex' % d)
-        res = tableLaTeX([header], spec=spec, extraeol=extraeol)
-        f = open(output_file, 'w')
-        f.write(res)
-        f.close()
 
         res = ("").join(str(item) for item in tableHtml)
         res = '<p><b>%d-D</b></p>\n<table>\n%s</table>\n' % (d, res)
@@ -445,3 +439,13 @@ def main(dsList, dimsOfInterest, outputdir):
 
         if genericsettings.verbose:
             print "Table written in %s" % output_file
+
+
+    if len(dimsOfInterest) > 0:
+        extraeol = [r'\hline']
+        res = tableLaTeX([header], spec=spec, extra_eol=extraeol, add_end_tabular=False)
+        prepend_to_file(latex_commands_file, ['\\providecommand{\\pptableheader}{', res, '}'])
+
+        res = tableLaTeX([], spec=spec, add_begin_tabular=False)
+        prepend_to_file(latex_commands_file, ['\\providecommand{\\pptablefooter}{', res, '}'])
+

@@ -359,32 +359,39 @@ def writeFEvalsMaxPrec(entry, SIG, maxfloatrepr=1e5):
 
     return res
 
-def tableLaTeX(table, spec, extraeol=()):
+
+def tableLaTeX(table, spec, extra_eol=(), add_begin_tabular=True, add_end_tabular=True):
     """Generates a tabular from a sequence of sequence of strings.
 
     :param seq table: sequence of sequence of strings
     :param string spec: string for table specification, see
                         http://en.wikibooks.org/wiki/LaTeX/Tables#The_tabular_environment 
-    :param seq extraeol: sequence of string the same length as the table
+    :param seq extra_eol: sequence of string the same length as the table
                          (same number of lines) which are added at the
                          end of each line.
+    :param bool add_begin_tabular: bool value that specifies if begin tabular is added.
+    :param bool add_end_tabular: bool value that specifies if end tabular is added.
     :returns: sequence of strings of a LaTeX tabular.
 
     """
 
-    if not extraeol:
-        extraeol = len(table) * ['']
+    if not extra_eol:
+        extra_eol = len(table) * ['']
 
-    # TODO: check that spec and extraeol have the right format? 
+    # TODO: check that spec and extra_eol have the right format?
 
-    res = [r'\begin{tabular}{%s}' % spec]
+    res = [r'\begin{tabular}{%s}' % spec] if add_begin_tabular else []
     for i, line in enumerate(table[:-1]):
-        curline = ' & '.join(line) + r'\\' + extraeol[i]
-#        curline = ' & '.join(line) + r'\\\hline' + extraeol[i]
-        res.append(curline)
-    res.append(' & '.join(table[-1]) + extraeol[-1])
+        current_line = ' & '.join(line) + r'\\' + extra_eol[i]
+        res.append(current_line)
+    if len(table) > 0:
+        if add_end_tabular:
+            res.append(' & '.join(table[-1]) + extra_eol[-1])
+        else:
+            res.append(' & '.join(table[-1]) + r'\\' + extra_eol[-1])
 
-    res.append(r'\end{tabular}')
+    if add_end_tabular:
+        res.append(r'\end{tabular}')
     res = '\n'.join(res)
     return res
 

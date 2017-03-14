@@ -331,6 +331,7 @@ def main(argv=None):
                 if genericsettings.verbose:
                     print('Folder %s was created.' % (algoutputdir))
 
+        latex_commands_file = os.path.join(outputdir, 'cocopp_commands.tex')
 
         if genericsettings.isPickled:
             dsList.pickle()
@@ -369,7 +370,7 @@ def main(argv=None):
             print("Generating LaTeX tables...")
             dictNoise = dsList.dictByNoise()
             for noise, sliceNoise in dictNoise.iteritems():
-                pptable.main(sliceNoise, inset.tabDimsOfInterest, algoutputdir)
+                pptable.main(sliceNoise, inset.tabDimsOfInterest, algoutputdir, latex_commands_file)
             print_done()
 
         if genericsettings.isRLDistr:
@@ -454,7 +455,6 @@ def main(argv=None):
                                     htmlPage = ppfig.HtmlPage.ONE,
                                     functionGroups = dsList.getFuncGroups())
 
-        latex_commands_file = os.path.join(outputdir, 'cocopp_commands.tex')
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglosstablecaption}[1]{',
                          pplogloss.table_caption(), '}'])
