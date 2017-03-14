@@ -445,7 +445,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
         
         #res += tableLaTeXStar(table, width=r'0.45\textwidth', spec=spec,
                               #extraeol=extraeol)
-        res += tableLaTeX(table, spec=spec, extraeol=extraeol)
+        res += tableLaTeX(table, spec=spec, extra_eol=extraeol)
         f = open(outputfile, 'w')
         f.write(res)
         f.close()
