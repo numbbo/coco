@@ -35,7 +35,7 @@ if __name__ == "__main__":
 import warnings, getopt, numpy as np
 
 from . import genericsettings, testbedsettings, ppfig, pptable, pprldistr, ppfigdim, pplogloss, findfiles
-from .pproc import DataSetList, store_reference_values
+from .pproc import DataSetList, store_reference_values, dictAlgByDim
 from .ppfig import Usage
 from .toolsdivers import print_done, prepend_to_file, strip_pathname1, str_to_latex
 from . import ppconverrorbars
@@ -369,8 +369,10 @@ def main(argv=None):
         if genericsettings.isTab:
             print("Generating LaTeX tables...")
             dictNoise = dsList.dictByNoise()
+            dict_dim_list = dictAlgByDim(dictAlg)
+            dims = sorted(dict_dim_list)
             for noise, sliceNoise in dictNoise.iteritems():
-                pptable.main(sliceNoise, inset.tabDimsOfInterest, algoutputdir, latex_commands_file)
+                pptable.main(sliceNoise, dims, algoutputdir, latex_commands_file)
             print_done()
 
         if genericsettings.isRLDistr:

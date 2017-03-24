@@ -566,6 +566,9 @@ def main(argv=None):
             print("Generating old tables (pptable2.py)...")
             dictNG0 = dsList0.dictByNoise()
             dictNG1 = dsList1.dictByNoise()
+            dict_dim_list1 = pproc.dictAlgByDim(dictNG0)
+            dict_dim_list2 = pproc.dictAlgByDim(dictNG1)
+            dims = sorted(list(set(dict_dim_list1) & set(dict_dim_list2)))
 
             for nGroup in set(dictNG0.keys()) & set(dictNG1.keys()):
                 # split table in as many as necessary
@@ -596,9 +599,7 @@ def main(argv=None):
                         group0.append(tmp0)
                         group1.append(tmp1)
                     for i, g in enumerate(zip(group0, group1)):
-                        pptable2.main(g[0], g[1], inset.tabDimsOfInterest,
-                                      outputdir,
-                                      '%s%d' % (nGroup, i))
+                        pptable2.main(g[0], g[1], dims, outputdir, '%s%d' % (nGroup, i))
                 else:
                     if 11 < 3:  # future handling:
                         dictFunc0 = dsList0.dictByFunc()
@@ -610,10 +611,7 @@ def main(argv=None):
                     #                                      testbedsettings.tabDimsOfInterest, outputdir,
                     #                                      '%s' % (testbedsettings.testbedshortname))
                     else:
-                        pptable2.main(dictNG0[nGroup], dictNG1[nGroup],
-                                      inset.tabDimsOfInterest,
-                                      outputdir,
-                                      '%s' % (nGroup))
+                        pptable2.main(dictNG0[nGroup], dictNG1[nGroup], dims, outputdir, '%s' % (nGroup))
 
             prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
                             ['\\providecommand{\\bbobpptablestwolegend}[1]{',

@@ -107,7 +107,7 @@ def get_table_caption():
     return captions.replace(table_caption)
         
 
-def main(dsList, dimsOfInterest, outputdir, latex_commands_file):
+def main(dsList, dims_of_interest, outputdir, latex_commands_file):
     """Generate a table of ratio aRT/aRTref vs target precision.
     
     1 table per dimension will be generated.
@@ -146,7 +146,7 @@ def main(dsList, dimsOfInterest, outputdir, latex_commands_file):
     header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}')
     headerHtml.append('<td>#succ</td>\n</tr>\n</thead>\n')
 
-    for d in dimsOfInterest:
+    for d in dims_of_interest:
         tableHtml = headerHtml[:]
         try:
             dictFunc = dictDim[d].dictByFunc()
@@ -441,7 +441,7 @@ def main(dsList, dimsOfInterest, outputdir, latex_commands_file):
             print "Table written in %s" % output_file
 
 
-    if len(dimsOfInterest) > 0:
+    if len(dims_of_interest) > 0:
         extraeol = [r'\hline']
         res = tableLaTeX([header], spec=spec, extra_eol=extraeol, add_end_tabular=False)
         prepend_to_file(latex_commands_file, ['\\providecommand{\\pptableheader}{', res, '}'])
