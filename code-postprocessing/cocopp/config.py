@@ -23,7 +23,8 @@ from . import testbedsettings as tbs
 from .comp2 import ppfig2, ppscatter
 from .compall import pprldmany
 
-def target_values(is_expensive, dict_max_fun_evals={}, runlength_limit=1e3):
+
+def target_values(is_expensive):
     """manage target values setting in "expensive" optimization scenario.
 
     """
@@ -44,12 +45,12 @@ def config(testbed_name=None):
     if testbed_name:
         tbs.load_current_testbed(testbed_name, pproc.TargetValues)
 
-    genericsettings.simulated_runlength_bootstrap_sample_size = (10 + 990 / (1 + 10 * max(0, genericsettings.in_a_hurry)))
+    genericsettings.simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max(0, genericsettings.in_a_hurry))
 
     if tbs.current_testbed and tbs.current_testbed.name not in tbs.suite_to_testbed:
         if ((genericsettings.isExpensive in (True, 1) or
                 genericsettings.runlength_based_targets in (True, 1)) and
-				tbs.current_testbed.reference_algorithm_filename == ''):
+                tbs.current_testbed.reference_algorithm_filename == ''):
             warnings.warn('Expensive setting not yet supported with ' +
                           tbs.current_testbed.name +
                           ' testbed; using non-expensive setting instead.')
@@ -70,7 +71,6 @@ def config(testbed_name=None):
         if 1 < 3:  # not yet functional, captions need to be adjusted and the bug reported by Ilya sorted out
             # pprldmany.caption = ... captions are still hard coded in LaTeX
             pprldmany.x_limit = genericsettings.maxevals_fix_display  # always fixed
-
 
         if tbs.current_testbed:
 
@@ -123,7 +123,8 @@ def config(testbed_name=None):
                                                                       reference_data=reference_data)
 
         # pprldistr:
-        pprldistr.runlen_xlimits_max = genericsettings.maxevals_fix_display / 2 if genericsettings.maxevals_fix_display else None # can be None
+        pprldistr.runlen_xlimits_max = \
+            genericsettings.maxevals_fix_display / 2 if genericsettings.maxevals_fix_display else None  # can be None
         pprldistr.runlen_xlimits_min = 10**-0.3  # can be None
         # ppfigdim:
         ppfigdim.xlim_max = genericsettings.maxevals_fix_display
@@ -141,13 +142,13 @@ def config(testbed_name=None):
         ppscatter.markersize = 16
 
     else:
-        pass # here the default values of the modules apply
+        pass  # here the default values of the modules apply
         # pprlmany.x_limit = ...should depend on noisy/noiseless
     if 11 < 3:  # for testing purpose
         if tbs.current_testbed:
             # TODO: this case needs to be tested yet: the current problem is that no noisy data are in this folder
-            tbs.current_testbed.pprldmany_target_values = pproc.RunlengthBasedTargetValues(10**np.arange(1, 4, 0.2), 'RANDOMSEARCH')
-
+            tbs.current_testbed.pprldmany_target_values = \
+                pproc.RunlengthBasedTargetValues(10**np.arange(1, 4, 0.2), 'RANDOMSEARCH')
 
     pprldmany.fontsize = 20.0  # should depend on the number of data lines down to 10.0 ?
 
@@ -155,6 +156,6 @@ def config(testbed_name=None):
 
     ppfig2.linewidth = 4
  
+
 def main():
     config()
-
