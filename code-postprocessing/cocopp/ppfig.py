@@ -323,7 +323,9 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.PPTABLE:
             current_header = 'aRT in number of function evaluations'
             f.write("<H2> %s </H2>\n" % current_header)
-            f.write("\n<!--pptableHtml-->\n")
+            for index, dimension in enumerate(dimensions):
+                f.write(write_dimension_links(dimension, dimensions, index))
+                f.write("\n<!--pptableHtml_%d-->\n" % dimension)
             key = 'bbobpptablecaption' + testbedsettings.current_testbed.scenario
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 

@@ -423,13 +423,14 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
             f.close()
 
         res = ("").join(str(item) for item in tableHtml)
-        res = '<p><b>%d-D</b></p>\n<table>\n%s</table>\n' % (d, res)
+        res = '<table>\n%s</table>\n' % res
 
         filename = os.path.join(outputdir, 'pptable.html')
         lines = []
+        html_string = '<!--pptableHtml_%d-->' % d
         with open(filename) as infile:
             for line in infile:
-                if '<!--pptableHtml-->' in line:
+                if html_string in line:
                     lines.append(res)
                 lines.append(line)
                 

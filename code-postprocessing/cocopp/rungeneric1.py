@@ -37,7 +37,7 @@ import warnings, getopt, numpy as np
 from . import genericsettings, testbedsettings, ppfig, pptable, pprldistr, ppfigdim, pplogloss, findfiles
 from .pproc import DataSetList, store_reference_values, dictAlgByDim
 from .ppfig import Usage
-from .toolsdivers import print_done, prepend_to_file, strip_pathname1, str_to_latex
+from .toolsdivers import print_done, prepend_to_file, strip_pathname1, str_to_latex, get_version_label, replace_in_file
 from . import ppconverrorbars
 from .compall import pprldmany, ppfigs
 
@@ -371,6 +371,15 @@ def main(argv=None):
             dictNoise = dsList.dictByNoise()
             dict_dim_list = dictAlgByDim(dictAlg)
             dims = sorted(dict_dim_list)
+
+            ppfig.save_single_functions_html(
+                os.path.join(algoutputdir, 'pptable'),
+                dimensions=dims,
+                htmlPage=ppfig.HtmlPage.PPTABLE,
+                parentFileName=genericsettings.single_algorithm_file_name)
+            replace_in_file(os.path.join(algoutputdir, 'pptable.html'), '??COCOVERSION??',
+                            '<br />Data produced with COCO %s' % (get_version_label(None)))
+
             for noise, sliceNoise in dictNoise.iteritems():
                 pptable.main(sliceNoise, dims, algoutputdir, latex_commands_file)
             print_done()
