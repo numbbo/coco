@@ -451,13 +451,14 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
         f.close()
         
         res = ("").join(str(item) for item in tableHtml)
-        res = '<p><b>%d-D</b></p>\n<table>\n%s</table>\n' % (d, res)
+        res = '<table>\n%s</table>\n' % res
 
         filename = os.path.join(outputdir, genericsettings.pptable2_file_name + '.html')
         lines = []
+        html_string = '<!--pptable2Html_%d-->' % d
         with open(filename) as infile:
             for line in infile:
-                if '<!--pptable2Html-->' in line:
+                if html_string in line:
                     lines.append(res)
                 lines.append(line)
                 

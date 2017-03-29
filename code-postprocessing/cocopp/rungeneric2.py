@@ -375,9 +375,13 @@ def main(argv=None):
             parentFileName=genericsettings.two_algorithm_file_name
         )
 
+        dictDim0 = dsList0.dictByDim()
+        dictDim1 = dsList1.dictByDim()
+
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.pptable2_file_name),
             algname=algorithm_name,
+            dimensions=sorted(list(set(dictDim0.keys()) & set(dictDim1.keys()))),
             htmlPage=ppfig.HtmlPage.PPTABLE2,
             functionGroups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.two_algorithm_file_name
@@ -386,6 +390,7 @@ def main(argv=None):
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.pptables_file_name),
             '',  # algorithms names are clearly visible in the figure
+            dimensions=sorted(list(set(dictDim0.keys()) & set(dictDim1.keys()))),
             htmlPage=ppfig.HtmlPage.PPTABLES,
             functionGroups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.many_algorithm_file_name
@@ -417,8 +422,6 @@ def main(argv=None):
                               'non-noisy testbeds have been found. Their ' +
                               'results will be mixed in the "all functions" ' +
                               'ECDF figures.')
-            dictDim0 = dsList0.dictByDim()
-            dictDim1 = dsList1.dictByDim()
 
             # ECDFs of aRT ratios
             for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
