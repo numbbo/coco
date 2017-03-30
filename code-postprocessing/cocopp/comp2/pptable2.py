@@ -33,15 +33,14 @@ def get_table_caption():
         
     text_intro_ref_alg = r"""%
         Average running time (\aRT\ in number of function evaluations) divided
-        by the respective !!BEST-ART!! in dimensions 5 (left)
-        and 20 (right).
+        by the respective !!BEST-ART!! in #1.
         The \aRT\ and in braces, as dispersion measure, the half difference
         between 10 and 90\%-tile of bootstrapped run lengths appear for each
         algorithm and 
         """    
     text_intro_no_ref_alg = r"""%
         Average runtime (\aRT) to reach given targets, measured
-        in number of function evaluations in dimensions 5 (left) and 20 (right).
+        in number of function evaluations in #1.
         For each function, the \aRT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
@@ -68,7 +67,7 @@ def get_table_caption():
         1:\algorithmAshort\ is \algorithmA\ and 2:\algorithmBshort\ is \algorithmB.
         Bold entries are statistically significantly better compared to the other algorithm,
         with $p=0.05$ or $p=10^{-k}$ where $k\in\{2,3,4,\dots\}$ is the number
-        following the $\star$ symbol, with Bonferroni correction of #1."""
+        following the $\star$ symbol, with Bonferroni correction of #2."""
         
     text_end_ref_alg = r"""%
         A $\downarrow$ indicates the same tested against

@@ -617,7 +617,7 @@ def main(argv=None):
                         pptable2.main(dictNG0[nGroup], dictNG1[nGroup], dims, outputdir, '%s' % (nGroup))
 
             prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
-                            ['\\providecommand{\\bbobpptablestwolegend}[1]{',
+                            ['\\providecommand{\\bbobpptablestwolegend}[2]{',
                              pptable2.get_table_caption(),
                              '}'
                              ])
