@@ -284,8 +284,6 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
 
     funInfos = ppfigparam.read_fun_infos()
 
-    firstFunction = True
-
     for df in sorted(dictData):
         # Generate one table per df
         # first update targets for each dimension-function pair if needed:
@@ -674,16 +672,14 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
 
             res = ("").join(str(item) for item in tableHtml)
             res = '\n<table class=\"sortable\" style=\"width:800px \">\n%s</table>\n<p/>\n' % res
-            if firstFunction:
-                res = '<br><p><b>%d-D</b></p>' % df[0] + res
-                firstFunction = False
 
             if True:
                 filename = os.path.join(outputdir, genericsettings.pptables_file_name + '.html')
                 lines = []
+                html_string = '<!--pptablesHtml_%d-->' % df[0]
                 with open(filename) as infile:
                     for line in infile:
-                        if '<!--' + 'pptablesHtml' + '-->' in line:
+                        if html_string in line:
                             lines.append(res)
                         lines.append(line)
 

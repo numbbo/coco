@@ -323,15 +323,17 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.PPTABLE:
             current_header = 'aRT in number of function evaluations'
             f.write("<H2> %s </H2>\n" % current_header)
-            f.write("\n<!--pptableHtml-->\n")
+            for index, dimension in enumerate(dimensions):
+                f.write(write_dimension_links(dimension, dimensions, index))
+                f.write("\n<!--pptableHtml_%d-->\n" % dimension)
             key = 'bbobpptablecaption' + testbedsettings.current_testbed.scenario
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPTABLE2:
-            write_tables(f, captionStringFormat, refAlgExists, 'pptable2Html', 'bbobpptablestwolegend')
+            write_tables(f, captionStringFormat, refAlgExists, 'pptable2Html', 'bbobpptablestwolegend', dimensions)
 
         elif htmlPage is HtmlPage.PPTABLES:
-            write_tables(f, captionStringFormat, refAlgExists, 'pptablesHtml', 'bbobpptablesmanylegend')
+            write_tables(f, captionStringFormat, refAlgExists, 'pptablesHtml', 'bbobpptablesmanylegend', dimensions)
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
@@ -424,13 +426,15 @@ def write_dimension_links(dimension, dimensions, index):
     return links
 
 
-def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key):
+def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key, dimensions):
     currentHeader = 'Table showing the aRT in number of function evaluations'
     if best_alg_exists:
         currentHeader += ' divided by the best aRT measured during BBOB-2009'
 
     f.write("\n<H2> %s </H2>\n" % currentHeader)
-    f.write("\n<!--%s-->\n" % html_key)
+    for index, dimension in enumerate(dimensions):
+        f.write(write_dimension_links(dimension, dimensions, index))
+        f.write("\n<!--%s_%d-->\n" % (html_key, dimension))
     key = legend_key + testbedsettings.current_testbed.scenario
     f.write(caption_string_format % htmldesc.getValue('##' + key + '##'))
 
