@@ -837,16 +837,12 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         ppfig.save_figure(figureName, dictAlg[algorithms_with_data[0]][0].algId)
         if plotType == PlotType.DIM:
             file_name = genericsettings.pprldmany_file_name
-
-            header = ppfig.pprldmany_per_func_header if plotType == PlotType.DIM else \
-                ppfig.pprldmany_per_func_dim_header
-
             ppfig.save_single_functions_html(
                 os.path.join(outputdir, file_name),
                 '',  # algorithms names are clearly visible in the figure
                 htmlPage=ppfig.HtmlPage.NON_SPECIFIED,
                 parentFileName='../%s' % parentHtmlFileName if parentHtmlFileName else None,
-                header=header)
+                header=ppfig.pprldmany_per_func_dim_header)
 
     if close_figure:
         plt.close()
