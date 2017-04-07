@@ -180,7 +180,7 @@ def getRldLink(html_page, current_dir):
                               pprldmany_per_group_dim_header,
                               ignoreFileExists=ignore_file_exists)
 
-        if html_page == HtmlPage.MANY:
+        if html_page in (HtmlPage.TWO, HtmlPage.MANY):
             file_name = '%s.html' % genericsettings.pprldmany_file_name
             links += add_link(current_dir, '', file_name,
                               pprldmany_per_group_dim_header,
