@@ -72,7 +72,6 @@ def save_figure(filename, algorithm=None, fig_format=()):
         except IOError:
             warnings.warn('%s is not writeable.' % (filename + '.' + format))
 
-pprldmany_per_func_header = 'Runtime distributions (ECDFs) per function, all dimensions'
 pprldmany_per_func_dim_header = 'Runtime distributions (ECDFs) per function'
 pprldmany_per_group_dim_header = 'Runtime distributions (ECDFs) summary and function groups'
 
@@ -170,19 +169,10 @@ def getRldLink(html_page, current_dir):
 
     ignore_file_exists = genericsettings.isRldOnSingleFcts
     if html_page in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        if html_page == HtmlPage.ONE:
-            file_name = '%s.html' % genericsettings.pprldmany_file_name
-            links += add_link(current_dir, folder, file_name,
-                              pprldmany_per_func_header,
-                              ignoreFileExists=ignore_file_exists)
-
-        if (html_page in (HtmlPage.TWO, HtmlPage.MANY) or
-                not isinstance(testbedsettings.current_testbed,
-                               testbedsettings.GECCOBiObjBBOBTestbed)):
-            file_name = '%s.html' % genericsettings.pprldmany_file_name
-            links += add_link(current_dir, folder, file_name,
-                              pprldmany_per_func_dim_header,
-                              ignoreFileExists=ignore_file_exists)
+        file_name = '%s.html' % genericsettings.pprldmany_file_name
+        links += add_link(current_dir, folder, file_name,
+                          pprldmany_per_func_dim_header,
+                          ignoreFileExists=ignore_file_exists)
 
         if html_page == HtmlPage.ONE:
             file_name = '%s.html' % genericsettings.pprldmany_group_file_name
@@ -190,7 +180,7 @@ def getRldLink(html_page, current_dir):
                               pprldmany_per_group_dim_header,
                               ignoreFileExists=ignore_file_exists)
 
-        if html_page == HtmlPage.MANY:
+        if html_page in (HtmlPage.TWO, HtmlPage.MANY):
             file_name = '%s.html' % genericsettings.pprldmany_file_name
             links += add_link(current_dir, '', file_name,
                               pprldmany_per_group_dim_header,
@@ -262,7 +252,7 @@ def save_single_functions_html(filename,
             f.write(
                 '<H3><a href="%s.html">Scaling with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
             f.write('<H3><a href="%s.html">Scatter plots</a></H3>\n' % genericsettings.ppscatter_file_name)
-            f.write('<H3><a href="%s.html">Runtime disribution for selected '
+            f.write('<H3><a href="%s.html">Runtime distribution for selected '
                     'targets and f-distributions</a></H3>\n' % genericsettings.pprldistr2_file_name)
             f.write(
                 '<H3><a href="%s.html">Tables for selected targets</a></H3>\n'
