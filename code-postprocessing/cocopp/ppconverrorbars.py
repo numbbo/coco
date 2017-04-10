@@ -21,7 +21,7 @@ if __name__ == "__main__":
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
 from . import genericsettings, pproc
-from .ppfig import save_figure, save_single_functions_html
+from .ppfig import save_figure, save_single_functions_html, convergence_plots_header
 from .toolsstats import prctile
 
 import matplotlib.pyplot as plt
@@ -111,7 +111,8 @@ def main(dictAlg, outputdir='.', parentHtmlFileName=None):
         algname = str(dictFun[l].keys()[0])
     save_single_functions_html(os.path.join(outputdir, 'ppconv'),
                                algname,
-                               parentFileName=parentHtmlFileName)  # first try
+                               parentFileName=parentHtmlFileName,
+                               header=convergence_plots_header)  # first try
 
 
 if __name__ == "__main__":

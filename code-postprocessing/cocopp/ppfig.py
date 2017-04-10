@@ -74,6 +74,7 @@ def save_figure(filename, algorithm=None, fig_format=()):
 
 pprldmany_per_func_dim_header = 'Runtime distributions (ECDFs) per function'
 pprldmany_per_group_dim_header = 'Runtime distributions (ECDFs) summary and function groups'
+convergence_plots_header = 'Convergence plots'
 
 html_header = """<HTML>
 <HEAD>
@@ -158,7 +159,7 @@ def getHomeLink(html_page):
 def getConvLink(html_page, current_dir):
     if html_page in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         return add_link(current_dir, None, genericsettings.ppconv_file_name + '.html',
-                        'Convergence plots', ignoreFileExists=genericsettings.isConv)
+                        convergence_plots_header, ignoreFileExists=genericsettings.isConv)
 
     return ''
 
