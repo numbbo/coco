@@ -352,7 +352,8 @@ def main(argv=None):
         if genericsettings.isConv:
             ppconverrorbars.main(dictAlg,
                                  outputdir,
-                                 genericsettings.many_algorithm_file_name)
+                                 genericsettings.many_algorithm_file_name,
+                                 '')
         print_done()
 
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
