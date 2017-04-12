@@ -20,7 +20,7 @@ if __name__ == "__main__":
     import matplotlib
     matplotlib.use('Agg') # To avoid window popup and use without X forwarding
 
-from . import genericsettings, pproc
+from . import genericsettings, pproc, testbedsettings
 from .ppfig import save_figure, save_single_functions_html, convergence_plots_header
 from .toolsstats import prctile
 
@@ -102,6 +102,11 @@ def main(dictAlg, outputdir='.', parentHtmlFileName=None, algorithm_name=None):
                     if 1 < 3 or not warned:
                         print('Warning: floating point error when plotting errorbars, ignored')
                     warned = True
+
+            text = '%s - f%s' % (testbedsettings.current_testbed.name, l)
+            plt.text(0.01, 0.98, text, horizontalalignment="left",
+                     verticalalignment="top", transform=plt.gca().transAxes, size='small')
+
             beautify()
             save_figure(os.path.join(outputdir, figurename.replace(' ', '')),
                         genericsettings.getFigFormats())
