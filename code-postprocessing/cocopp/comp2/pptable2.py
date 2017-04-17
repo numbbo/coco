@@ -302,7 +302,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
 
                         if dispersion[i] and numpy.isfinite(dispersion[i]):
                             evalsMaxPrec = writeFEvalsMaxPrec(dispersion[i], 1)
-                            tmp += r'${\scriptscriptstyle (%s)}$' % evalsMaxPrec
+                            tmp += r'(%s)' % evalsMaxPrec
                             tmpHtml += ' (%s)' % evalsMaxPrec
                         tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}' % (alignment, tmp))
                         tableentryHtml = ('%s' % tmpHtml)
@@ -329,7 +329,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                                 tableentry = r'\textit{%s}' % tableentry
                                 tableentryHtml = '<i>%s</i>' % tableentryHtml
                             if refalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/refalgdata[i]):
-                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
+                                tableentry += r'(%s)' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
                                 tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
@@ -342,7 +342,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                                 tableentry = r'\textit{%s}' % tableentry
                                 tableentryHtml = '<i>%s</i>' % tableentryHtml
                             if refalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/refalgdata[i]):
-                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
+                                tableentry += r'(%s)' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
                                 tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
                             tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                           % (alignment, tableentry))
@@ -360,7 +360,7 @@ def main(dsList0, dsList1, dimsOfInterest, outputdir, info=''):
                             if len(tmp) == 1:
                                 tableentry += '&'
                             if refalgentries and dispersion[i] and numpy.isfinite(dispersion[i]/refalgdata[i]):
-                                tableentry += r'${\scriptscriptstyle (%s)}$' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
+                                tableentry += r'(%s)' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
                                 tableentryHtml += ' (%s)' % writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
 
                     superscript = ''

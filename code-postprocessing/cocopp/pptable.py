@@ -198,7 +198,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                         curline.append(r'\multicolumn{2}{@{}c@{}}{%s \quad}'
                                        % writeFEvalsMaxPrec(i, 2))
                         curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(i, 2))
-                    curline.append(r'\multicolumn{2}{@{}c@{}|}{%s}'
+                    curline.append(r'\multicolumn{2}{@{}c|@{}}{%s}'
                                    % writeFEvalsMaxPrec(refalgdata[-1], 2))
                     curlineHtml.append('<td>%s</td>\n' % writeFEvalsMaxPrec(refalgdata[-1], 2))
     
@@ -365,7 +365,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                         tmp = writeFEvalsMaxPrec(dispersion[i]/refalgdata[i], 1)
                     else:
                         tmp = writeFEvalsMaxPrec(dispersion[i], 1)
-                    s = r'${\scriptscriptstyle(%s)}$' % tmp
+                    s = r'(%s)' % tmp
                     if tableentry.endswith('}'):
                         tableentry = tableentry[:-1] + s + r'}'
                     else:
