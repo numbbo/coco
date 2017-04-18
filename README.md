@@ -452,6 +452,12 @@ but only tells that a certain file could not be read. Please try to shorten the
 folder names in such a case.
 
 
+#### Font issues in PDFs
+We have occasionally observed some font issues in the pdfs, produced by the postprocessing
+of COCO (see also issue [#1335](https://github.com/numbbo/coco/issues/1335)). Changing to 
+another `matplotlib` version solved the issue at least temporarily.
+
+
 Details
 -------
 - The C code features an object oriented implementation, where the
