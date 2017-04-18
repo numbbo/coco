@@ -224,12 +224,11 @@ class BestAlgSet(DataSet):
             self.comment = 'Combination of ' + ', '.join(sortedAlgs)
         else:
             self.comment = dict_alg[sortedAlgs[0]].comment
-        self.comment += '; coco_version: ' + pkg_resources.require('cocopp')[0].version
         self.ert = np.array(reserts)
         self.target = res[:, 0]
         self.testbed = dict_alg[sortedAlgs[0]].testbed_name # TODO: not nice
         self.suite = getattr(dict_alg[sortedAlgs[0]], 'suite', None)
-
+        self.used_algorithms = sortedAlgs
         bestfinalfunvals = np.array([np.inf])
         for alg in sortedAlgs:
             if np.median(dict_alg[alg].finalfunvals) < np.median(bestfinalfunvals):
@@ -559,6 +558,7 @@ def create_data_files(output_dir, result, suite):
     filename_template = info_filename + '_f%02d_d%02d.%s'
     info_lines = []
     all_instances_used = []
+    algorithms_used = []
     for key, value in sorted(result.iteritems()):
 
         # TODO: throw an error
@@ -611,6 +611,10 @@ def create_data_files(output_dir, result, suite):
         filename = os.path.join(output_dir, filename_template % (key[1], key[0], 'tdat'))
         write_to_file(filename, lines)
 
+        for algorithm in value.used_algorithms:
+            if algorithm not in algorithms_used:
+                algorithms_used.append(algorithm)
+
     if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
         header = "algorithm = '%s', indicator = 'hyp'" % algorithm_id
         if test_suite is not None:
@@ -621,7 +625,13 @@ def create_data_files(output_dir, result, suite):
         info_lines.insert(0, header)
 
         instances_list = get_used_instance_list(all_instances_used)
-        info_lines.insert(1, "%% %s; instance_numbers: %s" % (value.comment, instances_list))
+        if len(algorithms_used) > 1:
+            comment = 'Combination of ' + ', '.join(algorithms_used)
+        else:
+            comment = value.comment
+        comment += '; coco_version: ' + pkg_resources.require('cocopp')[0].version
+
+        info_lines.insert(1, "%% %s; instance_numbers: %s" % (comment, instances_list))
 
     filename = os.path.join(output_dir, '%s.info' % info_filename)
     write_to_file(filename, info_lines)
