@@ -223,7 +223,7 @@ class BestAlgSet(DataSet):
         if len(sortedAlgs) > 1:
             self.comment = 'Combination of ' + ', '.join(sortedAlgs)
         else:
-            self.comment = dict_alg[sortedAlgs[0]].comment
+            self.comment = dict_alg[sortedAlgs[0]].comment.lstrip('%% ')
         self.ert = np.array(reserts)
         self.target = res[:, 0]
         self.testbed = dict_alg[sortedAlgs[0]].testbed_name # TODO: not nice
