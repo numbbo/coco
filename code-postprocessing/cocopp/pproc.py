@@ -1736,6 +1736,7 @@ class DataSetList(list):
                     i.evals = alignArrayData(HArrayMultiReader([i.evals, o.evals], self.isBiobjective()))
                     i.maxevals = numpy.r_[i.maxevals, o.maxevals]
                     i.computeERTfromEvals()
+                    i.reference_values.update(o.reference_values)
                     if getattr(i, 'pickleFile', False):
                         i.modsFromPickleVersion = True
 
