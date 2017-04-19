@@ -223,13 +223,12 @@ class BestAlgSet(DataSet):
         if len(sortedAlgs) > 1:
             self.comment = 'Combination of ' + ', '.join(sortedAlgs)
         else:
-            self.comment = dict_alg[sortedAlgs[0]].comment
-        self.comment += '; coco_version: ' + pkg_resources.require('cocopp')[0].version
+            self.comment = dict_alg[sortedAlgs[0]].comment.lstrip('%% ')
         self.ert = np.array(reserts)
         self.target = res[:, 0]
         self.testbed = dict_alg[sortedAlgs[0]].testbed_name # TODO: not nice
         self.suite = getattr(dict_alg[sortedAlgs[0]], 'suite', None)
-
+        self.used_algorithms = sortedAlgs
         bestfinalfunvals = np.array([np.inf])
         for alg in sortedAlgs:
             if np.median(dict_alg[alg].finalfunvals) < np.median(bestfinalfunvals):
@@ -343,12 +342,12 @@ class BestAlgSet(DataSet):
             tmp2 = None
             tmp3 = None
             for i, line in enumerate(self.evals):
-                if len(self.success_ratio) > 0:
+                if len(self.success_ratio) > i:
                     tmp3 = [0, self.success_ratio[i][1]]
                 if line[0] <= f:
                     tmp = line[1:]
                     tmp2 = self.best_algorithm_data[i]
-                    if len(self.success_ratio) > 0:
+                    if len(self.success_ratio) > i:
                         tmp3 = self.success_ratio[i]
                     break
             res.append(tmp)
@@ -533,6 +532,7 @@ def custom_generate(args=algs2009, algId='bestCustomAlg', suite=None):
     output_dir = algId
 
     genericsettings.verbose = True
+    testbedsettings.reset_reference_values()
     dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args)
 
     if not os.path.exists(output_dir):
@@ -559,6 +559,7 @@ def create_data_files(output_dir, result, suite):
     filename_template = info_filename + '_f%02d_d%02d.%s'
     info_lines = []
     all_instances_used = []
+    algorithms_used = []
     for key, value in sorted(result.iteritems()):
 
         # TODO: throw an error
@@ -611,6 +612,10 @@ def create_data_files(output_dir, result, suite):
         filename = os.path.join(output_dir, filename_template % (key[1], key[0], 'tdat'))
         write_to_file(filename, lines)
 
+        for algorithm in value.used_algorithms:
+            if algorithm not in algorithms_used:
+                algorithms_used.append(algorithm)
+
     if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
         header = "algorithm = '%s', indicator = 'hyp'" % algorithm_id
         if test_suite is not None:
@@ -621,7 +626,13 @@ def create_data_files(output_dir, result, suite):
         info_lines.insert(0, header)
 
         instances_list = get_used_instance_list(all_instances_used)
-        info_lines.insert(1, "%% %s; instance_numbers: %s" % (value.comment, instances_list))
+        if len(algorithms_used) > 1:
+            comment = 'Combination of ' + ', '.join(algorithms_used)
+        else:
+            comment = value.comment
+        comment += '; coco_version: ' + pkg_resources.require('cocopp')[0].version
+
+        info_lines.insert(1, "%% %s; instance_numbers: %s" % (comment, instances_list))
 
     filename = os.path.join(output_dir, '%s.info' % info_filename)
     write_to_file(filename, info_lines)
@@ -815,8 +826,8 @@ def get_used_instance_list(instance_number_list):
 
     different_instances = []
     for instance_numbers in instance_number_list:
-        if list(set(instance_numbers)) not in different_instances:
-            different_instances.append(list(set(instance_numbers)))
+        if instance_numbers not in different_instances:
+            different_instances.append(instance_numbers)
 
     if len(different_instances) == 0:
         return None

@@ -276,6 +276,7 @@ class RunlengthBasedTargetValues(TargetValues):
         self.target_discretization_factor = 10**0.2  # in accordance with default recordings
         self.reference_algorithm = ''
         self.initialized = False
+
     def initialize(self):
         """lazy initialization to prevent slow import"""
         if self.initialized:
@@ -310,8 +311,10 @@ class RunlengthBasedTargetValues(TargetValues):
             self.reference_algorithm = self.reference_data[self.reference_data.keys()[0]].algId
         self.initialized = True
         return self
+
     def __len__(self):
         return len(self.run_lengths)  
+
     def __call__(self, fun_dim=None, discretize=None):
         """Get all target values for the respective function and dimension  
         and reference aRT values (passed during initialization). `fun_dim`
@@ -1733,6 +1736,7 @@ class DataSetList(list):
                     i.evals = alignArrayData(HArrayMultiReader([i.evals, o.evals], self.isBiobjective()))
                     i.maxevals = numpy.r_[i.maxevals, o.maxevals]
                     i.computeERTfromEvals()
+                    i.reference_values.update(o.reference_values)
                     if getattr(i, 'pickleFile', False):
                         i.modsFromPickleVersion = True
 
@@ -2521,9 +2525,9 @@ def processInputArgs(args):
     return dsList, sortedAlgs, dictAlg
     
 
-def store_reference_values(dsList):
+def store_reference_values(ds_list):
 
-    dict_alg = dsList.dictByAlg()
+    dict_alg = ds_list.dictByAlg()
     for key, value in dict_alg.iteritems():
         testbedsettings.update_reference_values(key[0], value.get_reference_values_hash())
 

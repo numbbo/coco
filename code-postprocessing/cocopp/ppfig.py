@@ -72,9 +72,9 @@ def save_figure(filename, algorithm=None, fig_format=()):
         except IOError:
             warnings.warn('%s is not writeable.' % (filename + '.' + format))
 
-pprldmany_per_func_header = 'Runtime distributions (ECDFs) per function, all dimensions'
 pprldmany_per_func_dim_header = 'Runtime distributions (ECDFs) per function'
 pprldmany_per_group_dim_header = 'Runtime distributions (ECDFs) summary and function groups'
+convergence_plots_header = 'Convergence plots'
 
 html_header = """<HTML>
 <HEAD>
@@ -159,7 +159,7 @@ def getHomeLink(html_page):
 def getConvLink(html_page, current_dir):
     if html_page in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         return add_link(current_dir, None, genericsettings.ppconv_file_name + '.html',
-                        'Convergence plots', ignoreFileExists=genericsettings.isConv)
+                        convergence_plots_header, ignoreFileExists=genericsettings.isConv)
 
     return ''
 
@@ -170,19 +170,10 @@ def getRldLink(html_page, current_dir):
 
     ignore_file_exists = genericsettings.isRldOnSingleFcts
     if html_page in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
-        if html_page == HtmlPage.ONE:
-            file_name = '%s.html' % genericsettings.pprldmany_file_name
-            links += add_link(current_dir, folder, file_name,
-                              pprldmany_per_func_header,
-                              ignoreFileExists=ignore_file_exists)
-
-        if (html_page in (HtmlPage.TWO, HtmlPage.MANY) or
-                not isinstance(testbedsettings.current_testbed,
-                               testbedsettings.GECCOBiObjBBOBTestbed)):
-            file_name = '%s.html' % genericsettings.pprldmany_file_name
-            links += add_link(current_dir, folder, file_name,
-                              pprldmany_per_func_dim_header,
-                              ignoreFileExists=ignore_file_exists)
+        file_name = '%s.html' % genericsettings.pprldmany_file_name
+        links += add_link(current_dir, folder, file_name,
+                          pprldmany_per_func_dim_header,
+                          ignoreFileExists=ignore_file_exists)
 
         if html_page == HtmlPage.ONE:
             file_name = '%s.html' % genericsettings.pprldmany_group_file_name
@@ -190,7 +181,7 @@ def getRldLink(html_page, current_dir):
                               pprldmany_per_group_dim_header,
                               ignoreFileExists=ignore_file_exists)
 
-        if html_page == HtmlPage.MANY:
+        if html_page in (HtmlPage.TWO, HtmlPage.MANY):
             file_name = '%s.html' % genericsettings.pprldmany_file_name
             links += add_link(current_dir, '', file_name,
                               pprldmany_per_group_dim_header,
@@ -262,7 +253,7 @@ def save_single_functions_html(filename,
             f.write(
                 '<H3><a href="%s.html">Scaling with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
             f.write('<H3><a href="%s.html">Scatter plots</a></H3>\n' % genericsettings.ppscatter_file_name)
-            f.write('<H3><a href="%s.html">Runtime disribution for selected '
+            f.write('<H3><a href="%s.html">Runtime distribution for selected '
                     'targets and f-distributions</a></H3>\n' % genericsettings.pprldistr2_file_name)
             f.write(
                 '<H3><a href="%s.html">Tables for selected targets</a></H3>\n'
@@ -323,15 +314,17 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.PPTABLE:
             current_header = 'aRT in number of function evaluations'
             f.write("<H2> %s </H2>\n" % current_header)
-            f.write("\n<!--pptableHtml-->\n")
+            for index, dimension in enumerate(dimensions):
+                f.write(write_dimension_links(dimension, dimensions, index))
+                f.write("\n<!--pptableHtml_%d-->\n" % dimension)
             key = 'bbobpptablecaption' + testbedsettings.current_testbed.scenario
             f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPTABLE2:
-            write_tables(f, captionStringFormat, refAlgExists, 'pptable2Html', 'bbobpptablestwolegend')
+            write_tables(f, captionStringFormat, refAlgExists, 'pptable2Html', 'bbobpptablestwolegend', dimensions)
 
         elif htmlPage is HtmlPage.PPTABLES:
-            write_tables(f, captionStringFormat, refAlgExists, 'pptablesHtml', 'bbobpptablesmanylegend')
+            write_tables(f, captionStringFormat, refAlgExists, 'pptablesHtml', 'bbobpptablesmanylegend', dimensions)
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
@@ -424,13 +417,15 @@ def write_dimension_links(dimension, dimensions, index):
     return links
 
 
-def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key):
+def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key, dimensions):
     currentHeader = 'Table showing the aRT in number of function evaluations'
     if best_alg_exists:
         currentHeader += ' divided by the best aRT measured during BBOB-2009'
 
     f.write("\n<H2> %s </H2>\n" % currentHeader)
-    f.write("\n<!--%s-->\n" % html_key)
+    for index, dimension in enumerate(dimensions):
+        f.write(write_dimension_links(dimension, dimensions, index))
+        f.write("\n<!--%s_%d-->\n" % (html_key, dimension))
     key = legend_key + testbedsettings.current_testbed.scenario
     f.write(caption_string_format % htmldesc.getValue('##' + key + '##'))
 
@@ -482,9 +477,9 @@ def marker_positions(xdata, ydata, nbperdecade, maxnb,
     if tfy is None:
         tfy = lambda x: x  # identity
 
-    xdatarange = np.log10(max([max(xdata), ax_limits[0], ax_limits[1]]) + 0.5) - \
-                 np.log10(
-                     min([min(xdata), ax_limits[0], ax_limits[1]]) + 0.5)  # np.log10(xdata[-1]) - np.log10(xdata[0])
+    xdatarange = np.log10(max([max(xdata), ax_limits[0], ax_limits[1]]) + 0.501) - \
+                 np.log10(max([0,  # addresses ax_limits[0] < 0, assumes above max >= 0
+                     min([min(xdata), ax_limits[0], ax_limits[1]])]) + 0.5)  # np.log10(xdata[-1]) - np.log10(xdata[0])
     ydatarange = tfy(max([max(ydata), ax_limits[2], ax_limits[3]]) + 0.5) - \
                  tfy(min([min(ydata), ax_limits[2], ax_limits[3]]) + 0.5)  # tfy(ydata[-1]) - tfy(ydata[0])
     nbmarkers = np.min([maxnb, nbperdecade +

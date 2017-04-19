@@ -120,7 +120,7 @@ def main(latex_commands_for_html):
         pptable2Legend = pptable2Legend.replace('\\algorithmB', 'algorithmB')
         pptable2Legend = pptable2Legend.replace('\\algorithmAshort', 'algorithmAshort')
         pptable2Legend = pptable2Legend.replace('\\algorithmBshort', 'algorithmBshort')
-        f.writelines(prepare_providecommand('bbobpptablestwolegend', scenario, pptable2Legend))
+        f.writelines(prepare_providecommand_two('bbobpptablestwolegend', scenario, pptable2Legend))
 
         # 6. pptables
         f.writelines(prepare_providecommand_two('bbobpptablesmanylegend', scenario, pptables.get_table_caption()))
@@ -154,7 +154,7 @@ def main(latex_commands_for_html):
         # 4. pptable
         f.write(prepare_item('bbobpptablecaption' + scenario, param='different dimensions'))
         # 5. pptable2
-        f.write(prepare_item('bbobpptablestwolegend' + scenario, param='48'))
+        f.write(prepare_item_two('bbobpptablestwolegend' + scenario, paramOne='different dimensions', paramTwo='48'))
 
         # 6. pptables
         command_name = 'bbobpptablesmanylegend' + scenario
@@ -176,8 +176,10 @@ def main(latex_commands_for_html):
 def prepare_providecommand(command, scenario, captiontext):
     return ['\\providecommand{\\', command, scenario, '}[1]{\n', captiontext, '\n}\n']
 
+
 def prepare_providecommand_two(command, scenario, captiontext):
     return ['\\providecommand{\\', command, scenario, '}[2]{\n', captiontext, '\n}\n']
+
 
 def prepare_item(name, command_name='', param=''):
     if not command_name:

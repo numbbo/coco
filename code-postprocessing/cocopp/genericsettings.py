@@ -110,6 +110,15 @@ line_styles = [  # used by ppfigs and pprlmany
     {'marker': '4', 'markersize': 23, 'linestyle': '--', 'color': '#32cd32'},  # 'LimeGreen'
     {'marker': '3', 'markersize': 23, 'linestyle': '--', 'color': '#9acd32'},  # 'YellowGreen'
     {'marker': 'D', 'markersize': 23, 'linestyle': '--', 'color': '#adff2f'},  # 'GreenYellow'
+    {'marker': 'd', 'markersize': 31, 'linestyle': ':', 'color': '#000080'},  # 'NavyBlue'
+    {'marker': '*', 'markersize': 26, 'linestyle': ':', 'color': '#ff00ff'},  # 'Magenta'
+    {'marker': 'v', 'markersize': 33, 'linestyle': ':', 'color': '#ffa500'},  # 'Orange'
+    {'marker': 'h', 'markersize': 28, 'linestyle': ':', 'color': '#6495ed'},  # 'CornflowerBlue'
+    {'marker': '^', 'markersize': 30, 'linestyle': ':', 'color': 'r'},  # 'Red'
+    {'marker': 'p', 'markersize': 25, 'linestyle': ':', 'color': '#9acd32'},  # 'YellowGreen'
+    {'marker': 'H', 'markersize': 24, 'linestyle': ':', 'color': 'c'},
+    {'marker': '3', 'markersize': 23, 'linestyle': ':', 'color': '#bebebe'},  # 'Gray'
+
 ]
 line_styles_old = [  # used by ppfigs and pprlmany
     {'marker': 'o', 'markersize': 25, 'linestyle': '-', 'color': 'b'},

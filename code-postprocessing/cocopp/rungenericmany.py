@@ -336,21 +336,24 @@ def main(argv=None):
             parentFileName=genericsettings.many_algorithm_file_name
         )
 
+        dimensions = sorted(pproc.dictAlgByDim(dictAlg))
+
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.pptables_file_name),
             '',  # algorithms names are clearly visible in the figure
+            dimensions=dimensions,
             htmlPage=ppfig.HtmlPage.PPTABLES,
             functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
             parentFileName=genericsettings.many_algorithm_file_name
         )
-
 
         # convergence plots
         print("Generating convergence plots...")
         if genericsettings.isConv:
             ppconverrorbars.main(dictAlg,
                                  outputdir,
-                                 genericsettings.many_algorithm_file_name)
+                                 genericsettings.many_algorithm_file_name,
+                                 '')
         print_done()
 
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
