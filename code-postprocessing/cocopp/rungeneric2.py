@@ -544,7 +544,8 @@ def main(argv=None):
             print("Convergence plots...")
             ppconverrorbars.main(dictAlg,
                                  outputdir,
-                                 genericsettings.two_algorithm_file_name)
+                                 genericsettings.two_algorithm_file_name,
+                                 algorithm_name)
             print_done()
 
         htmlFileName = os.path.join(outputdir, genericsettings.ppscatter_file_name + '.html')
