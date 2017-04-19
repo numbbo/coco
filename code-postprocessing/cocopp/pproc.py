@@ -2505,8 +2505,6 @@ def processInputArgs(args):
 
 def store_reference_values(ds_list):
 
-    testbedsettings.reset_reference_values()
-
     dict_alg = ds_list.dictByAlg()
     for key, value in dict_alg.iteritems():
         testbedsettings.update_reference_values(key[0], value.get_reference_values_hash())
