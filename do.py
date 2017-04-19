@@ -726,11 +726,9 @@ ee.main()  # doctest: +ELLIPSIS
 ee.suite_name = "bbob"
 ee.observer_options['result_folder'] = "RS-bb"
 ee.main()  # doctest: +ELLIPSIS
-            '''], verbose=_verbosity)
 ee.suite_name = "bbob-constrained"
 ee.observer_options['result_folder'] = "RS-co"
 ee.main()  # doctest: +ELLIPSIS
-
             '''], verbose=_verbosity)
             # now run all tests
             python('code-postprocessing/cocopp', ['__main__.py', 'all'], verbose=_verbosity)
