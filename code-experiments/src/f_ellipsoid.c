@@ -210,7 +210,6 @@ static coco_problem_t *f_ellipsoid_cons_bbob_problem_allocate(const size_t funct
                                                          const long rseed,
                                                          const char *problem_id_template,
                                                          const char *problem_name_template) {
-  size_t i;
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
 

@@ -12,7 +12,6 @@
 
 #include "coco.h"
 #include "coco_internal.h"
-
 /**
  * @brief Data type for the linear constraints.
  */
@@ -204,6 +203,7 @@ static coco_problem_t *c_linear_shuffle(coco_problem_t *problem_c,
   coco_problem_t *iter_problem;
   coco_problem_stacked_data_t *stacked_data;
   linear_constraint_data_t *constraint_data;
+  coco_random_state_t *random_generator;
   double aux;
   size_t i, exchanged;
   
@@ -225,7 +225,7 @@ static coco_problem_t *c_linear_shuffle(coco_problem_t *problem_c,
    * 2. 'random' ranges from M to (N+0.9999), but, since 'exchanged'
    *    is of type size_t, the fraction is discarded.
    */
-  coco_random_state_t *random_generator = coco_random_new(1); /* TODO: choose problem-dependent seed */
+  random_generator = coco_random_new(1); /* TODO: choose problem-dependent seed */
   exchanged = 2 + coco_random_uniform(random_generator) * (problem_c->number_of_constraints - 1); /*(rand() / (RAND_MAX + 1.0)) * (problem_c->number_of_constraints - 2 + 1);*/
   
   /* Run through the stack until the chosen constraint is found */
@@ -276,6 +276,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
   
   double *gradient_linear_constraint = NULL;
   coco_problem_t *problem = NULL;
+  coco_random_state_t *random_generator;
   long seed_cons_i;
   double exp2, factor2;
   
@@ -283,7 +284,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
   
   seed_cons_i = (long)(function + 10000 * instance 
                                 + 50000 * constraint_number);
-  coco_random_state_t *random_generator = coco_random_new((uint32_t) seed_cons_i);
+  random_generator = coco_random_new((uint32_t) seed_cons_i);
   
   /* The constraints gradients are scaled with random numbers
    * 10**U[0,1] and 10**U_i[0,2], where U[a, b] is uniform in [a,b] 
@@ -375,6 +376,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   coco_problem_t *problem_c = NULL;
   coco_problem_t *problem_c2 = NULL;
   linear_constraint_data_t *data_c1 = NULL;
+  coco_random_state_t *random_generator;
   double *gradient_c1 = NULL;
   long seed_cons;
   double exp1, factor1;
@@ -393,7 +395,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   
   /* Calculate the first random factor 10**U[0,1]. */
   seed_cons = (long)(function + 10000 * instance);
-  coco_random_state_t *random_generator = coco_random_new((uint32_t) seed_cons);
+  random_generator = coco_random_new((uint32_t) seed_cons);
   exp1 = coco_random_uniform(random_generator);
   factor1 = pow(10.0, exp1);
   
