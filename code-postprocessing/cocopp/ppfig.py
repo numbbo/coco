@@ -477,9 +477,9 @@ def marker_positions(xdata, ydata, nbperdecade, maxnb,
     if tfy is None:
         tfy = lambda x: x  # identity
 
-    xdatarange = np.log10(max([max(xdata), ax_limits[0], ax_limits[1]]) + 0.5) - \
-                 np.log10(
-                     min([min(xdata), ax_limits[0], ax_limits[1]]) + 0.5)  # np.log10(xdata[-1]) - np.log10(xdata[0])
+    xdatarange = np.log10(max([max(xdata), ax_limits[0], ax_limits[1]]) + 0.501) - \
+                 np.log10(max([0,  # addresses ax_limits[0] < 0, assumes above max >= 0
+                     min([min(xdata), ax_limits[0], ax_limits[1]])]) + 0.5)  # np.log10(xdata[-1]) - np.log10(xdata[0])
     ydatarange = tfy(max([max(ydata), ax_limits[2], ax_limits[3]]) + 0.5) - \
                  tfy(min([min(ydata), ax_limits[2], ax_limits[3]]) + 0.5)  # tfy(ydata[-1]) - tfy(ydata[0])
     nbmarkers = np.min([maxnb, nbperdecade +
