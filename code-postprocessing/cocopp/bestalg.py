@@ -532,6 +532,7 @@ def custom_generate(args=algs2009, algId='bestCustomAlg', suite=None):
     output_dir = algId
 
     genericsettings.verbose = True
+    testbedsettings.reset_reference_values()
     dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args)
 
     if not os.path.exists(output_dir):
