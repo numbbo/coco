@@ -1,19 +1,20 @@
 #!/usr/bin/env python
-## -*- mode: python -*- 
+## -*- mode: python -*-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
 import sys
 import os
+from os.path import join
 import shutil
 import tempfile
 import subprocess
+from subprocess import STDOUT
 import platform
 import time
-from subprocess import STDOUT
 import glob
-from os.path import join
+
 
 ## Change to the root directory of repository and add our tools/
 ## subdirectory to system wide search path for modules.
@@ -25,13 +26,13 @@ from cocoutils import make, run, python, check_output
 from cocoutils import copy_file, expand_file, write_file
 from cocoutils import git_version, git_revision
 
-core_files = ['code-experiments/src/coco_random.c',
+CORE_FILES = ['code-experiments/src/coco_random.c',
               'code-experiments/src/coco_suite.c',
               'code-experiments/src/coco_observer.c',
               'code-experiments/src/coco_archive.c'
-              ]
+             ]
 
-matlab_files = ['cocoCall.m', 'cocoEvaluateFunction.m', 'cocoObserver.m',
+MATLAB_FILES = ['cocoCall.m', 'cocoEvaluateFunction.m', 'cocoObserver.m',
                 'cocoObserverFree.m', 'cocoProblemAddObserver.m',
                 'cocoProblemFinalTargetHit.m', 'cocoProblemFree.m',
                 'cocoProblemGetDimension.m', 'cocoProblemGetEvaluations.m',
@@ -43,35 +44,38 @@ matlab_files = ['cocoCall.m', 'cocoEvaluateFunction.m', 'cocoObserver.m',
                 'cocoSetLogLevel.m', 'cocoSuite.m', 'cocoSuiteFree.m',
                 'cocoSuiteGetNextProblem.m', 'cocoSuiteGetProblem.m']
 
-verbosity = False
+_verbosity = False
 
 ################################################################################
 ## C
 def build_c():
     """ Builds the C source code """
-    global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'], 'code-experiments/build/c/coco.c', release,
+    global RELEASE
+    amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
+               'code-experiments/build/c/coco.c', RELEASE,
                {"COCO_VERSION": git_version(pep440=True)})
     expand_file('code-experiments/src/coco.h', 'code-experiments/build/c/coco.h',
                 {"COCO_VERSION": git_version(pep440=True)})
-    copy_file('code-experiments/build/c/coco.c', 'code-experiments/examples/bbob2009-c-cmaes/coco.c')
-    expand_file('code-experiments/build/c/coco.h', 'code-experiments/examples/bbob2009-c-cmaes/coco.h',
+    copy_file('code-experiments/build/c/coco.c',
+              'code-experiments/examples/bbob2009-c-cmaes/coco.c')
+    expand_file('code-experiments/build/c/coco.h',
+                'code-experiments/examples/bbob2009-c-cmaes/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
     write_file(git_revision(), "code-experiments/build/c/REVISION")
     write_file(git_version(), "code-experiments/build/c/VERSION")
     if 11 < 3:
-        python('code-experiments/build/c', ['make.py', 'clean'], verbose=verbosity)
-        python('code-experiments/build/c', ['make.py', 'all'], verbose=verbosity)
+        python('code-experiments/build/c', ['make.py', 'clean'], verbose=_verbosity)
+        python('code-experiments/build/c', ['make.py', 'all'], verbose=_verbosity)
     else:
-        make("code-experiments/build/c", "clean", verbose=verbosity)
-        make("code-experiments/build/c", "all", verbose=verbosity)
+        make("code-experiments/build/c", "clean", verbose=_verbosity)
+        make("code-experiments/build/c", "all", verbose=_verbosity)
 
 
 def run_c():
     """ Builds and runs the example experiment in C """
     build_c()
     try:
-        run('code-experiments/build/c', ['./example_experiment'], verbose=verbosity)
+        run('code-experiments/build/c', ['./example_experiment'], verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -116,41 +120,41 @@ def test_c_example():
 
 def build_c_unit_tests():
     """ Builds unit tests in C """
-    libraryPath = '';
-    fileName = ''
-    if ('win32' in sys.platform):
-        fileName = 'cmocka.dll'
+    library_path = ''
+    file_name = ''
+    if 'win32' in sys.platform:
+        file_name = 'cmocka.dll'
         if '64' in platform.machine():
-            libraryPath = 'code-experiments/test/unit-test/lib/win64'
+            library_path = 'code-experiments/test/unit-test/lib/win64'
         elif ('32' in platform.machine()) or ('x86' in platform.machine()):
             if 'cygwin' in os.environ['PATH']:
-                libraryPath = 'code-experiments/test/unit-test/lib/win32_cygwin'
+                library_path = 'code-experiments/test/unit-test/lib/win32_cygwin'
             else:
-                libraryPath = 'code-experiments/test/unit-test/lib/win32_mingw'
-    elif ('linux' in sys.platform):
-        fileName = 'libcmocka.so'
+                library_path = 'code-experiments/test/unit-test/lib/win32_mingw'
+    elif 'linux' in sys.platform:
+        file_name = 'libcmocka.so'
         if 'Ubuntu' in platform.linux_distribution():
-            libraryPath = 'code-experiments/test/unit-test/lib/linux_ubuntu'
+            library_path = 'code-experiments/test/unit-test/lib/linux_ubuntu'
         elif 'Fedora' in platform.linux_distribution():
-            libraryPath = 'code-experiments/test/unit-test/lib/linux_fedora'
-    elif ('darwin' in sys.platform):  # Mac
-        libraryPath = 'code-experiments/test/unit-test/lib/macosx'
-        fileName = 'libcmocka.dylib'
+            library_path = 'code-experiments/test/unit-test/lib/linux_fedora'
+    elif 'darwin' in sys.platform:  # Mac
+        library_path = 'code-experiments/test/unit-test/lib/macosx'
+        file_name = 'libcmocka.dylib'
 
-    if (len(libraryPath) > 0):
-        copy_file(os.path.join(libraryPath, fileName),
-                  os.path.join('code-experiments/test/unit-test', fileName))
+    if len(library_path) > 0:
+        copy_file(os.path.join(library_path, file_name),
+                  os.path.join('code-experiments/test/unit-test', file_name))
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/unit-test/coco.c')
     expand_file('code-experiments/src/coco.h', 'code-experiments/test/unit-test/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
-    make("code-experiments/test/unit-test", "clean", verbose=verbosity)
-    make("code-experiments/test/unit-test", "all", verbose=verbosity)
+    make("code-experiments/test/unit-test", "clean", verbose=_verbosity)
+    make("code-experiments/test/unit-test", "all", verbose=_verbosity)
 
 
 def run_c_unit_tests():
     """ Runs unit tests in C """
     try:
-        run('code-experiments/test/unit-test', ['./unit_test'], verbose=verbosity)
+        run('code-experiments/test/unit-test', ['./unit_test'], verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -164,17 +168,21 @@ def build_c_integration_tests():
               'code-experiments/test/integration-test/bbob2009_testcases.txt')
     copy_file('code-experiments/src/bbob2009_testcases2.txt',
               'code-experiments/test/integration-test/bbob2009_testcases2.txt')
-    make("code-experiments/test/integration-test", "clean", verbose=verbosity)
-    make("code-experiments/test/integration-test", "all", verbose=verbosity)
+    make("code-experiments/test/integration-test", "clean", verbose=_verbosity)
+    make("code-experiments/test/integration-test", "all", verbose=_verbosity)
 
 
 def run_c_integration_tests():
     """ Runs integration tests in C """
     try:
-        run('code-experiments/test/integration-test', ['./test_coco', 'bbob2009_testcases.txt'], verbose=verbosity)
-        run('code-experiments/test/integration-test', ['./test_coco', 'bbob2009_testcases2.txt'], verbose=verbosity)
-        run('code-experiments/test/integration-test', ['./test_instance_extraction'], verbose=verbosity)
-        run('code-experiments/test/integration-test', ['./test_biobj'], verbose=verbosity)
+        run('code-experiments/test/integration-test',
+            ['./test_coco', 'bbob2009_testcases.txt'], verbose=_verbosity)
+        run('code-experiments/test/integration-test',
+            ['./test_coco', 'bbob2009_testcases2.txt'], verbose=_verbosity)
+        run('code-experiments/test/integration-test',
+            ['./test_instance_extraction'], verbose=_verbosity)
+        run('code-experiments/test/integration-test',
+            ['./test_biobj'], verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -190,16 +198,18 @@ def build_c_example_tests():
                 {'COCO_VERSION': git_version(pep440=True)})
     copy_file('code-experiments/build/c/example_experiment.c',
               'code-experiments/test/example-test/example_experiment.c')
-    copy_file('code-experiments/build/c/Makefile.in', 'code-experiments/test/example-test/Makefile.in')
-    copy_file('code-experiments/build/c/Makefile_win_gcc.in', 'code-experiments/test/example-test/Makefile_win_gcc.in')
-    make("code-experiments/test/example-test", "clean", verbose=verbosity)
-    make("code-experiments/test/example-test", "all", verbose=verbosity)
+    copy_file('code-experiments/build/c/Makefile.in',
+              'code-experiments/test/example-test/Makefile.in')
+    copy_file('code-experiments/build/c/Makefile_win_gcc.in',
+              'code-experiments/test/example-test/Makefile_win_gcc.in')
+    make("code-experiments/test/example-test", "clean", verbose=_verbosity)
+    make("code-experiments/test/example-test", "all", verbose=_verbosity)
 
 
 def run_c_example_tests():
     """ Runs an example experiment test in C """
     try:
-        run('code-experiments/test/example-test', ['./example_experiment'], verbose=verbosity)
+        run('code-experiments/test/example-test', ['./example_experiment'], verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -212,22 +222,23 @@ def leak_check():
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
                     './test_coco', 'bbob2009_testcases.txt']
-    run('code-experiments/test/integration-test', valgrind_cmd, verbose=verbosity)
+    run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
                     './test_biobj', 'leak_check']
-    run('code-experiments/test/integration-test', valgrind_cmd, verbose=verbosity)
+    run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
 
 
 ################################################################################
 ## Python 2
 def install_postprocessing():
-    global release
+    ''' Installs the COCO postprocessing as python module. '''
+    global RELEASE
     expand_file(join('code-postprocessing', 'setup.py.in'),
                 join('code-postprocessing', 'setup.py'),
                 {'COCO_VERSION': git_version(pep440=True)})
     # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/cocopp/latex-templates')
-    python('code-postprocessing', ['setup.py', 'install', '--user'], verbose=verbosity)
+    python('code-postprocessing', ['setup.py', 'install', '--user'], verbose=_verbosity)
 
 def test_suites(args):
     """regression test on suites via Python"""
@@ -235,23 +246,29 @@ def test_suites(args):
         args = ['2']
     test_python(  # this is a list of [folder, args] pairs
         [['code-experiments/test/regression-test',
-            ['test_suites.py', arg]] for arg in args
-         ] + [
-         ['code-experiments/build/python',
-            ['coco_test.py', 'bbob2009_testcases.txt', 'bbob2009_testcases2.txt']
-         ]
+          ['test_suites.py', arg]] for arg in args
+        ] + [
+            ['code-experiments/build/python',
+             ['coco_test.py', 'bbob2009_testcases.txt', 'bbob2009_testcases2.txt']
+            ]
         ])
 
 def _prep_python():
-    global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'], 'code-experiments/build/python/cython/coco.c',
-               release, {"COCO_VERSION": git_version(pep440=True)})
-    expand_file('code-experiments/src/coco.h', 'code-experiments/build/python/cython/coco.h',
+    global RELEASE
+    amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
+               'code-experiments/build/python/cython/coco.c',
+               RELEASE, {"COCO_VERSION": git_version(pep440=True)})
+    expand_file('code-experiments/src/coco.h',
+                'code-experiments/build/python/cython/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
-    copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/build/python/bbob2009_testcases.txt')
-    copy_file('code-experiments/src/bbob2009_testcases2.txt', 'code-experiments/build/python/bbob2009_testcases2.txt')
-    copy_file('code-experiments/build/python/README.md', 'code-experiments/build/python/README.txt')
-    expand_file('code-experiments/build/python/setup.py.in', 'code-experiments/build/python/setup.py',
+    copy_file('code-experiments/src/bbob2009_testcases.txt',
+              'code-experiments/build/python/bbob2009_testcases.txt')
+    copy_file('code-experiments/src/bbob2009_testcases2.txt',
+              'code-experiments/build/python/bbob2009_testcases2.txt')
+    copy_file('code-experiments/build/python/README.md',
+              'code-experiments/build/python/README.txt')
+    expand_file('code-experiments/build/python/setup.py.in',
+                'code-experiments/build/python/setup.py',
                 {'COCO_VERSION': git_version(pep440=True)})  # hg_version()})
     # if 'darwin' in sys.platform:  # a hack to force cythoning
     #     run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
@@ -276,18 +293,19 @@ def run_python(test=False):
         if test:
             run(os.path.join('code-experiments', 'build', 'python'), ['python', 'coco_test.py'])
         python(os.path.join('code-experiments', 'build', 'python'),
-            ['example_experiment.py'])
+               ['example_experiment.py'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
 
 def run_sandbox_python(directory, script_filename=
-os.path.join('code-experiments', 'build', 'python',
-             'example_experiment.py')):
+                       os.path.join('code-experiments', 'build', 'python',
+                                    'example_experiment.py')):
     """run a python script after building and installing `cocoex` in a new
     environment."""
     _prep_python()
-    python('code-experiments/build/python', ['setup.py', 'check', '--metadata', '--strict'], verbose=verbosity)
+    python('code-experiments/build/python',
+           ['setup.py', 'check', '--metadata', '--strict'], verbose=_verbosity)
     ## Now install into a temporary location, run test and cleanup
     python_temp_home = tempfile.mkdtemp(prefix="coco")
     python_temp_lib = os.path.join(python_temp_home, "lib", "python")
@@ -299,7 +317,8 @@ os.path.join('code-experiments', 'build', 'python',
         os.makedirs(python_temp_lib)
         os.environ['PYTHONPATH'] = python_temp_lib
         os.environ['USE_CYTHON'] = 'true'
-        python('code-experiments/build/python', ['setup.py', 'install', '--home', python_temp_home], verbose=verbosity)
+        python('code-experiments/build/python',
+               ['setup.py', 'install', '--home', python_temp_home], verbose=_verbosity)
         python(directory, [script_filename])
         os.environ.pop('USE_CYTHON')
         os.environ.pop('PYTHONPATH')
@@ -313,7 +332,7 @@ def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']
     _prep_python()
     python('code-experiments/build/python',
            ['setup.py', 'check', '--metadata', '--strict'],
-           verbose=verbosity)
+           verbose=_verbosity)
     ## Now install into a temporary location, run test and cleanup
     python_temp_home = tempfile.mkdtemp(prefix="coco")
     python_temp_lib = os.path.join(python_temp_home, "lib", "python")
@@ -327,11 +346,13 @@ def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']
         os.environ['USE_CYTHON'] = 'true'
         python('code-experiments/build/python',
                ['setup.py', 'install', '--home', python_temp_home],
-               verbose=verbosity)
+               verbose=_verbosity)
         for folder, more_args in args:
-            python(folder, more_args, verbose=verbosity)
-        # python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases.txt'], verbose=verbosity)
-        # python('code-experiments/build/python', ['coco_test.py', 'bbob2009_testcases2.txt'], verbose=verbosity)
+            python(folder, more_args, verbose=_verbosity)
+        # python('code-experiments/build/python',
+        #        ['coco_test.py', 'bbob2009_testcases.txt'], verbose=_verbosity)
+        # python('code-experiments/build/python',
+        #        ['coco_test.py', 'bbob2009_testcases2.txt'], verbose=_verbosity)
         os.environ.pop('USE_CYTHON')
         os.environ.pop('PYTHONPATH')
     except subprocess.CalledProcessError:
@@ -373,14 +394,18 @@ def test_python3():
 def build_matlab():
     """Builds MATLAB example in build/matlab/ but not the one in examples/."""
 
-    global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_matlab.c'], 'code-experiments/build/matlab/coco.c',
-               release, {"COCO_VERSION": git_version(pep440=True)})
-    expand_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h',
+    global RELEASE
+    amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_matlab.c'],
+               'code-experiments/build/matlab/coco.c',
+               RELEASE, {"COCO_VERSION": git_version(pep440=True)})
+    expand_file('code-experiments/src/coco.h',
+                'code-experiments/build/matlab/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
-    run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'], verbose=verbosity)
+    run('code-experiments/build/matlab',
+        ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'],
+        verbose=_verbosity)
 
 
 def run_matlab():
@@ -393,8 +418,9 @@ def run_matlab():
     build_matlab()
     wait_for_compilation_to_finish('./code-experiments/build/matlab/cocoCall')
     # run after compilation finished
-    run('code-experiments/build/matlab', ['matlab', '-nodisplay', '-nosplash', '-r', 'exampleexperiment, exit'],
-        verbose=verbosity)
+    run('code-experiments/build/matlab',
+        ['matlab', '-nodisplay', '-nosplash', '-r', 'exampleexperiment, exit'],
+        verbose=_verbosity)
 
 
 def is_compiled(filenameprefix):
@@ -412,12 +438,12 @@ def is_compiled(filenameprefix):
 
 def wait_for_compilation_to_finish(filenameprefix):
     """Waits until filenameprefix.c is compiled into a mex file.
-    
+
     Needed because under Windows, a MATLAB call is typically non-blocking
     and thus, the experiments would be started before the compilation is over.
     """
 
-    print('Wait for compilation to finish', end=''),
+    print('Wait for compilation to finish', end='')
     while not is_compiled(filenameprefix):
         time.sleep(2)
         print('.', end='')
@@ -426,16 +452,15 @@ def wait_for_compilation_to_finish(filenameprefix):
 
 def build_matlab_sms():
     """Builds the SMS-EMOA in MATLAB """
-    global release
-    join = os.path.join
+    global RELEASE
     destination_folder = 'code-experiments/examples/bbob-biobj-matlab-smsemoa'
     # amalgamate and copy files
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_matlab.c'],
-               join(destination_folder, 'coco.c'), release,
+    amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_matlab.c'],
+               join(destination_folder, 'coco.c'), RELEASE,
                {"COCO_VERSION": git_version(pep440=True)})
     expand_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'),
                 {'COCO_VERSION': git_version(pep440=True)})
-    for f in matlab_files:
+    for f in MATLAB_FILES:
         copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
@@ -455,7 +480,8 @@ def run_matlab_sms():
     wait_for_compilation_to_finish('./code-experiments/examples/bbob-biobj-matlab-smsemoa/paretofront')
     # run after compilation finished
     run('code-experiments/examples/bbob-biobj-matlab-smsemoa',
-        ['matlab', '-nodisplay', '-nosplash', '-r', 'run_smsemoa_on_bbob_biobj, exit'], verbose=verbosity)
+        ['matlab', '-nodisplay', '-nosplash', '-r', 'run_smsemoa_on_bbob_biobj, exit'],
+        verbose=_verbosity)
 
 
 ################################################################################
@@ -463,9 +489,9 @@ def run_matlab_sms():
 def build_octave():
     """Builds example in build/matlab/ with GNU Octave."""
 
-    global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
-               'code-experiments/build/matlab/coco.c', release,
+    global RELEASE
+    amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
+               'code-experiments/build/matlab/coco.c', RELEASE,
                {"COCO_VERSION": git_version(pep440=True)})
     expand_file('code-experiments/src/coco.h', 'code-experiments/build/matlab/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
@@ -473,11 +499,13 @@ def build_octave():
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
 
     # make sure that under Windows, run_octave has been run at least once
-    # before to provide the necessary octave_coco.bat file     
-    if ('win32' in sys.platform):
-        run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'setup.m'], verbose=verbosity)
+    # before to provide the necessary octave_coco.bat file
+    if 'win32' in sys.platform:
+        run('code-experiments/build/matlab',
+            ['octave_coco.bat', '--no-gui', 'setup.m'], verbose=_verbosity)
     else:
-        run('code-experiments/build/matlab', ['octave', '--no-gui', 'setup.m'], verbose=verbosity)
+        run('code-experiments/build/matlab',
+            ['octave', '--no-gui', 'setup.m'], verbose=_verbosity)
 
 
 def run_octave():
@@ -487,9 +515,9 @@ def run_octave():
         os.remove(filename)
 
     # Copy octave-coco.bat to the Octave folder under Windows to allow
-    # calling Octave from command line without messing up the system.    
+    # calling Octave from command line without messing up the system.
     # Note that 'win32' stands for both Windows 32-bit and 64-bit.
-    if ('win32' in sys.platform):
+    if 'win32' in sys.platform:
         print('SEARCH\tfor Octave folder from C:\\ (can take some time)')
         lookfor = 'octave.bat'
         for root, dirs, files in os.walk('C:\\'):
@@ -499,75 +527,89 @@ def run_octave():
 
     # amalgamate, copy, and build
     build_octave()
-    if ('win32' in sys.platform):
-        run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'exampleexperiment.m'], verbose=verbosity)
+    if 'win32' in sys.platform:
+        run('code-experiments/build/matlab',
+            ['octave_coco.bat', '--no-gui', 'exampleexperiment.m'], verbose=_verbosity)
     else:
-        run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'], verbose=verbosity)
+        run('code-experiments/build/matlab',
+            ['octave', '--no-gui', 'exampleexperiment.m'], verbose=_verbosity)
 
 
 def test_octave():
     """ Builds and runs the test in Octave, which is equal to the example experiment """
     build_octave()
     try:
-        if ('win32' in sys.platform):
-            run('code-experiments/build/matlab', ['octave_coco.bat', '--no-gui', 'exampleexperiment.m'],
-                verbose=verbosity)
+        if 'win32' in sys.platform:
+            run('code-experiments/build/matlab',
+                ['octave_coco.bat', '--no-gui', 'exampleexperiment.m'],
+                verbose=_verbosity)
         else:
-            run('code-experiments/build/matlab', ['octave', '--no-gui', 'exampleexperiment.m'], verbose=verbosity)
+            run('code-experiments/build/matlab',
+                ['octave', '--no-gui', 'exampleexperiment.m'], verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
 
 def build_octave_sms():
     """Builds the SMS-EMOA in Octave """
-    global release
-    join = os.path.join
+    global RELEASE
     destination_folder = 'code-experiments/examples/bbob-biobj-matlab-smsemoa'
     # amalgamate and copy files
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
-               join(destination_folder, 'coco.c'), release,
+    amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
+               join(destination_folder, 'coco.c'), RELEASE,
                {"COCO_VERSION": git_version(pep440=True)})
     expand_file('code-experiments/src/coco.h', join(destination_folder, 'coco.h'),
                 {'COCO_VERSION': git_version(pep440=True)})
-    for f in matlab_files:
+    for f in MATLAB_FILES:
         copy_file(join('code-experiments/build/matlab/', f), join(destination_folder, f))
     write_file(git_revision(), join(destination_folder, "REVISION"))
     write_file(git_version(), join(destination_folder, "VERSION"))
     copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
     # compile
-    if ('win32' in sys.platform):
+    if 'win32' in sys.platform:
         run(destination_folder, ['octave_coco.bat', '--no-gui', 'setup.m'])
     else:
         run(destination_folder, ['octave', '--no-gui', 'setup.m'])
 
 
-def run_matlab_sms():
-    """ Builds and runs the SMS-EMOA in MATLAB """
+def run_octave_sms():
+    """ Builds and runs the SMS-EMOA in Octave
+
+        Note: does not work yet with all Windows/Octave versions.
+    """
+
     print('CLEAN\tmex files from code-experiments/examples/bbob-biobj-matlab-smsemoa/')
+    destination_folder = 'code-experiments/examples/bbob-biobj-matlab-smsemoa'
     # remove the mex files for a clean compilation first
-    for filename in glob.glob('code-experiments/examples/bbob-biobj-matlab-smsemoa/*.mex*'):
+    for filename in glob.glob(join(destination_folder, '*.mex*')):
         os.remove(filename)
     # amalgamate, copy, and build
-    build_matlab_sms()
-    wait_for_compilation_to_finish('./code-experiments/examples/bbob-biobj-matlab-smsemoa/paretofront')
+    build_octave_sms()
+    wait_for_compilation_to_finish(join(destination_folder, 'paretofront'))
     # run after compilation finished
-    run('code-experiments/examples/bbob-biobj-matlab-smsemoa',
-        ['matlab', '-nodisplay', '-nosplash', '-r', 'run_smsemoa_on_bbob_biobj, exit'], verbose=verbosity)
-
+    if 'win32' in sys.platform:
+        run(destination_folder,
+            ['octave_coco.bat', '-nogui', 'run_smsemoa_on_bbob_biobj.m'],
+            verbose=_verbosity)
+    else:
+        run(destination_folder,
+            ['octave', '-nogui', 'run_smsemoa_on_bbob_biobj.m'],
+            verbose=_verbosity)
 
 ################################################################################
 ## Java
 def build_java():
     """ Builds the example experiment in Java """
-    global release
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'], 'code-experiments/build/java/coco.c', release,
+    global RELEASE
+    amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
+               'code-experiments/build/java/coco.c', RELEASE,
                {"COCO_VERSION": git_version(pep440=True)})
     expand_file('code-experiments/src/coco.h', 'code-experiments/build/java/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
     write_file(git_revision(), "code-experiments/build/java/REVISION")
     write_file(git_version(), "code-experiments/build/java/VERSION")
-    run('code-experiments/build/java', ['javac', 'CocoJNI.java'], verbose=verbosity)
-    run('code-experiments/build/java', ['javah', 'CocoJNI'], verbose=verbosity)
+    run('code-experiments/build/java', ['javac', 'CocoJNI.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javah', 'CocoJNI'], verbose=_verbosity)
 
     # Finds the path to the headers jni.h and jni_md.h (platform-dependent)
     # and compiles the CocoJNI library (compiler-dependent). So far, only
@@ -582,16 +624,16 @@ def build_java():
         jdkpath1 = jdkpath.split("bin")[0] + 'include'
         jdkpath2 = jdkpath1 + '\\win32'
 
-        if ('64' in platform.machine()):
+        if '64' in platform.machine():
             run('code-experiments/build/java', ['x86_64-w64-mingw32-gcc', '-I', jdkpath1, '-I',
                                                 jdkpath2, '-shared', '-o', 'CocoJNI.dll',
-                                                'CocoJNI.c'], verbose=verbosity)
+                                                'CocoJNI.c'], verbose=_verbosity)
 
             # 2. Windows with Cygwin (both 32-bit)
-        elif ('32' in platform.machine()) or ('x86' in platform.machine()):
+        elif '32' in platform.machine() or 'x86' in platform.machine():
             run('code-experiments/build/java', ['i686-w64-mingw32-gcc', '-Wl,--kill-at', '-I',
                                                 jdkpath1, '-I', jdkpath2, '-shared', '-o',
-                                                'CocoJNI.dll', 'CocoJNI.c'], verbose=verbosity)
+                                                'CocoJNI.dll', 'CocoJNI.c'], verbose=_verbosity)
 
     # 3. Windows without Cygwin
     elif ('win32' in sys.platform) and ('cygwin' not in os.environ['PATH']):
@@ -599,45 +641,55 @@ def build_java():
                                env=os.environ, universal_newlines=True)
         jdkpath1 = jdkpath.split("bin")[0] + 'include'
         jdkpath2 = jdkpath1 + '\\win32'
-        run('code-experiments/build/java', ['gcc', '-Wl,--kill-at', '-I', jdkpath1, '-I', jdkpath2,
-                                            '-shared', '-o', 'CocoJNI.dll', 'CocoJNI.c'], verbose=verbosity)
+        run('code-experiments/build/java',
+            ['gcc', '-Wl,--kill-at', '-I', jdkpath1, '-I', jdkpath2,
+             '-shared', '-o', 'CocoJNI.dll', 'CocoJNI.c'],
+            verbose=_verbosity)
 
     # 4. Linux
-    elif ('linux' in sys.platform):
+    elif 'linux' in sys.platform:
         jdkpath = check_output(['locate', 'jni.h'], stderr=STDOUT,
                                env=os.environ, universal_newlines=True)
         jdkpath1 = jdkpath.split("jni.h")[0]
         jdkpath2 = jdkpath1 + '/linux'
-        run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-c',
-                                            'CocoJNI.c'], verbose=verbosity)
-        run('code-experiments/build/java', ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-o',
-                                            'libCocoJNI.so', '-fPIC', '-shared', 'CocoJNI.c'], verbose=verbosity)
+        run('code-experiments/build/java',
+            ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-c', 'CocoJNI.c'],
+            verbose=_verbosity)
+        run('code-experiments/build/java',
+            ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-o',
+             'libCocoJNI.so', '-fPIC', '-shared', 'CocoJNI.c'],
+            verbose=_verbosity)
 
     # 5. Mac
-    elif ('darwin' in sys.platform):
+    elif 'darwin' in sys.platform:
         jdkversion = check_output(['javac', '-version'], stderr=STDOUT,
                                   env=os.environ, universal_newlines=True)
         jdkversion = jdkversion.split()[1]
         jdkpath = '/System/Library/Frameworks/JavaVM.framework/Headers'
-        jdkpath1 = '/Library/Java/JavaVirtualMachines/jdk' + jdkversion + '.jdk/Contents/Home/include'
+        jdkpath1 = ('/Library/Java/JavaVirtualMachines/jdk' +
+                    jdkversion + '.jdk/Contents/Home/include')
         jdkpath2 = jdkpath1 + '/darwin'
-        run('code-experiments/build/java', ['gcc', '-I', jdkpath, '-I', jdkpath1, '-I', jdkpath2, '-c', 'CocoJNI.c'],
-            verbose=verbosity)
-        run('code-experiments/build/java', ['gcc', '-dynamiclib', '-o', 'libCocoJNI.jnilib',
-                                            'CocoJNI.o'], verbose=verbosity)
+        run('code-experiments/build/java',
+            ['gcc', '-I', jdkpath, '-I', jdkpath1, '-I', jdkpath2, '-c', 'CocoJNI.c'],
+            verbose=_verbosity)
+        run('code-experiments/build/java',
+            ['gcc', '-dynamiclib', '-o', 'libCocoJNI.jnilib', 'CocoJNI.o'],
+            verbose=_verbosity)
 
-    run('code-experiments/build/java', ['javac', 'Problem.java'], verbose=verbosity)
-    run('code-experiments/build/java', ['javac', 'Benchmark.java'], verbose=verbosity)
-    run('code-experiments/build/java', ['javac', 'Observer.java'], verbose=verbosity)
-    run('code-experiments/build/java', ['javac', 'Suite.java'], verbose=verbosity)
-    run('code-experiments/build/java', ['javac', 'ExampleExperiment.java'], verbose=verbosity)
+    run('code-experiments/build/java', ['javac', 'Problem.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', 'Benchmark.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', 'Observer.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', 'Suite.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', 'ExampleExperiment.java'], verbose=_verbosity)
 
 
 def run_java():
     """ Builds and runs the example experiment in Java """
     build_java()
     try:
-        run('code-experiments/build/java', ['java', '-Djava.library.path=.', 'ExampleExperiment'], verbose=verbosity)
+        run('code-experiments/build/java',
+            ['java', '-Djava.library.path=.', 'ExampleExperiment'],
+            verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -646,20 +698,22 @@ def test_java():
     """ Builds and runs the test in Java, which is equal to the example experiment """
     build_java()
     try:
-        run('code-experiments/build/java', ['java', '-Djava.library.path=.', 'ExampleExperiment'], verbose=verbosity)
+        run('code-experiments/build/java',
+            ['java', '-Djava.library.path=.', 'ExampleExperiment'],
+            verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
 
 ################################################################################
 ## Post processing
-def test_postprocessing(allTests=False):
+def test_postprocessing(all_tests=False):
     install_postprocessing()
-    if allTests:
+    if all_tests:
         try:
             # run example experiment to have a recent data set to postprocess:
             build_python()
-            python('code-experiments/build/python/', ['-c', '''  
+            python('code-experiments/build/python/', ['-c', '''
 try:
     import example_experiment as ee
 except Exception as e:
@@ -671,51 +725,52 @@ ee.main()  # doctest: +ELLIPSIS
 ee.suite_name = "bbob"
 ee.observer_options['result_folder'] = "RS-bb"
 ee.main()  # doctest: +ELLIPSIS
-            '''], verbose=verbosity)
+            '''], verbose=_verbosity)
             # now run all tests
-            python('code-postprocessing/cocopp', ['__main__.py', 'all'], verbose=verbosity)
+            python('code-postprocessing/cocopp', ['__main__.py', 'all'], verbose=_verbosity)
         except subprocess.CalledProcessError:
             sys.exit(-1)
         finally:
             # always remove folder of previously run experiments:
             shutil.rmtree('code-experiments/build/python/exdata/')
     else:
-        python('code-postprocessing/cocopp', ['__main__.py'], verbose=verbosity)
+        python('code-postprocessing/cocopp', ['__main__.py'], verbose=_verbosity)
     # also run the doctests in aRTAplots/generate_aRTA_plot.py:
-    python('code-postprocessing/aRTAplots', ['generate_aRTA_plot.py'], verbose=verbosity)
+    python('code-postprocessing/aRTAplots', ['generate_aRTA_plot.py'], verbose=_verbosity)
     # python('code-postprocessing', ['-m', 'cocopp'])
     if 11 < 3:  # provisorial test fo biobj data
         run_c()
         python('code-experiments/build/c', ['-m', 'cocopp',
-                                            'RS_on_bbob-biobj'], verbose=verbosity)
+                                            'RS_on_bbob-biobj'], verbose=_verbosity)
 
 
 def verify_postprocessing():
     install_postprocessing()
-    # This is not affected by the verbosity value. Verbose should always be True.
+    # This is not affected by the _verbosity value. Verbose should always be True.
     python('code-postprocessing/cocopp', ['preparehtml.py', '-v'], verbose=True)
 
 
 ################################################################################
 ## Pre-processing
 def install_preprocessing():
-    global release
+    global RELEASE
     expand_file(join('code-preprocessing/archive-update', 'setup.py.in'),
                 join('code-preprocessing/archive-update', 'setup.py'),
                 {'COCO_VERSION': git_version(pep440=True)})
     build_python()
-    amalgamate(core_files + ['code-experiments/src/coco_runtime_c.c'],
-               'code-preprocessing/archive-update/interface/coco.c', release,
+    amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
+               'code-preprocessing/archive-update/interface/coco.c', RELEASE,
                {"COCO_VERSION": git_version(pep440=True)})
     expand_file('code-experiments/src/coco.h', 'code-preprocessing/archive-update/interface/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
-    python('code-preprocessing/archive-update', ['setup.py', 'install', '--user'], verbose=verbosity)
+    python('code-preprocessing/archive-update',
+           ['setup.py', 'install', '--user'], verbose=_verbosity)
 
 
 def test_preprocessing():
     install_preprocessing()
-    python('code-preprocessing/archive-update', ['-m', 'pytest'], verbose=verbosity)
-    python('code-preprocessing/log-reconstruction', ['-m', 'pytest'], verbose=verbosity)
+    python('code-preprocessing/archive-update', ['-m', 'pytest'], verbose=_verbosity)
+    python('code-preprocessing/log-reconstruction', ['-m', 'pytest'], verbose=_verbosity)
 
 ################################################################################
 ## Global
@@ -751,10 +806,10 @@ def test():
 
 
 def verbose(args):
-    global verbosity
-    verbosity = True
+    global _verbosity
+    _verbosity = True
     main(args)
-    verbosity = False
+    _verbosity = False
 
 
 def silent(args):
@@ -878,6 +933,7 @@ def main(args):
     elif cmd == 'run-matlab': run_matlab()
     elif cmd == 'run-matlab-sms': run_matlab_sms()
     elif cmd == 'run-octave': run_octave()
+    elif cmd == 'run-octave-sms': run_octave_sms()
     elif cmd == 'run-python':
         run_python(True) if len(args) > 1 and args[1] == 'and-test' else run_python()
     elif cmd == 'silent': silent(args[1:])
@@ -902,5 +958,5 @@ def main(args):
 
 
 if __name__ == '__main__':
-    release = os.getenv('COCO_RELEASE', 'false') == 'true'
+    RELEASE = os.getenv('COCO_RELEASE', 'false') == 'true'
     main(sys.argv[1:])

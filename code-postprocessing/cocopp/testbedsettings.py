@@ -58,6 +58,12 @@ def get_testbed_from_suite(suite_name):
 reference_values = {}
 
 
+def reset_reference_values():
+
+    global reference_values
+    reference_values = {}
+
+
 def update_reference_values(algorithm, reference_value):
 
     global reference_values

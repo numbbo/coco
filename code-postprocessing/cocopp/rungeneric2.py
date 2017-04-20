@@ -375,9 +375,13 @@ def main(argv=None):
             parentFileName=genericsettings.two_algorithm_file_name
         )
 
+        dictDim0 = dsList0.dictByDim()
+        dictDim1 = dsList1.dictByDim()
+
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.pptable2_file_name),
             algname=algorithm_name,
+            dimensions=sorted(list(set(dictDim0.keys()) & set(dictDim1.keys()))),
             htmlPage=ppfig.HtmlPage.PPTABLE2,
             functionGroups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.two_algorithm_file_name
@@ -386,6 +390,7 @@ def main(argv=None):
         ppfig.save_single_functions_html(
             os.path.join(outputdir, genericsettings.pptables_file_name),
             '',  # algorithms names are clearly visible in the figure
+            dimensions=sorted(list(set(dictDim0.keys()) & set(dictDim1.keys()))),
             htmlPage=ppfig.HtmlPage.PPTABLES,
             functionGroups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.many_algorithm_file_name
@@ -417,8 +422,6 @@ def main(argv=None):
                               'non-noisy testbeds have been found. Their ' +
                               'results will be mixed in the "all functions" ' +
                               'ECDF figures.')
-            dictDim0 = dsList0.dictByDim()
-            dictDim1 = dsList1.dictByDim()
 
             # ECDFs of aRT ratios
             for dim in set(dictDim0.keys()) & set(dictDim1.keys()):
@@ -541,7 +544,8 @@ def main(argv=None):
             print("Convergence plots...")
             ppconverrorbars.main(dictAlg,
                                  outputdir,
-                                 genericsettings.two_algorithm_file_name)
+                                 genericsettings.two_algorithm_file_name,
+                                 algorithm_name)
             print_done()
 
         htmlFileName = os.path.join(outputdir, genericsettings.ppscatter_file_name + '.html')
@@ -566,6 +570,9 @@ def main(argv=None):
             print("Generating old tables (pptable2.py)...")
             dictNG0 = dsList0.dictByNoise()
             dictNG1 = dsList1.dictByNoise()
+            dict_dim_list1 = pproc.dictAlgByDim(dictNG0)
+            dict_dim_list2 = pproc.dictAlgByDim(dictNG1)
+            dims = sorted(list(set(dict_dim_list1) & set(dict_dim_list2)))
 
             for nGroup in set(dictNG0.keys()) & set(dictNG1.keys()):
                 # split table in as many as necessary
@@ -596,9 +603,7 @@ def main(argv=None):
                         group0.append(tmp0)
                         group1.append(tmp1)
                     for i, g in enumerate(zip(group0, group1)):
-                        pptable2.main(g[0], g[1], inset.tabDimsOfInterest,
-                                      outputdir,
-                                      '%s%d' % (nGroup, i))
+                        pptable2.main(g[0], g[1], dims, outputdir, '%s%d' % (nGroup, i))
                 else:
                     if 11 < 3:  # future handling:
                         dictFunc0 = dsList0.dictByFunc()
@@ -610,13 +615,10 @@ def main(argv=None):
                     #                                      testbedsettings.tabDimsOfInterest, outputdir,
                     #                                      '%s' % (testbedsettings.testbedshortname))
                     else:
-                        pptable2.main(dictNG0[nGroup], dictNG1[nGroup],
-                                      inset.tabDimsOfInterest,
-                                      outputdir,
-                                      '%s' % (nGroup))
+                        pptable2.main(dictNG0[nGroup], dictNG1[nGroup], dims, outputdir, '%s' % (nGroup))
 
             prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
-                            ['\\providecommand{\\bbobpptablestwolegend}[1]{',
+                            ['\\providecommand{\\bbobpptablestwolegend}[2]{',
                              pptable2.get_table_caption(),
                              '}'
                              ])
