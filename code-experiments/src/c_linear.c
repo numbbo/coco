@@ -249,7 +249,7 @@ static coco_problem_t *c_linear_shuffle(coco_problem_t *problem_c,
     constraint_data->gradient[i] = data_c1->gradient[i];
     data_c1->gradient[i] = aux;
   }
-  
+  coco_random_free(random_generator);
   return problem_c;
 }
 
