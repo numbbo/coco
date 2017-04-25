@@ -228,6 +228,10 @@ def leak_check():
                     '--leak-check=full', '--show-reachable=yes',
                     './test_biobj', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
+    valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
+                    '--leak-check=full', '--show-reachable=yes',
+                    './test_bbob-constrained', 'leak_check']
+    run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
 
 
 ################################################################################
