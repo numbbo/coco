@@ -445,6 +445,8 @@ effect. In this case it has been successful to remove all previously installed v
 see [here](https://github.com/numbbo/coco/issues/586) for a few more details. 
 
 
+### General
+
 #### Too long paths for postprocessing
 It can happen that the postprocessing fails due to too long paths to the algorithm data.
 Unfortunately, the error you get in this case does not indicate directly to the problem
@@ -456,6 +458,15 @@ folder names in such a case.
 We have occasionally observed some font issues in the pdfs, produced by the postprocessing
 of COCO (see also issue [#1335](https://github.com/numbbo/coco/issues/1335)). Changing to 
 another `matplotlib` version solved the issue at least temporarily.
+
+#### BibTeX under Mac
+Under the Mac operating system, `bibtex` seems to be messed up a bit with respect to
+absolute and relative paths which causes problems with the test of the postprocessing
+via `python do.py test-postprocessing`. Note that there is typically nothing to fix if 
+you compile the LaTeX templates "by hand" or via your LaTeX IDE. But to make the  
+`python do.py test-postprocessing` work, you will have to add a line with
+`openout_any = a` to your `texmf.cnf` file in the local TeX path. Type 
+`kpsewhich texmf.cnf` to find out where this file actually is.
 
 
 Details

@@ -28,6 +28,7 @@ setup(
                           '../latex-templates/*.cls',
                           '../latex-templates/*.sty',
                           '../latex-templates/*.bib',
+                          '../latex-templates/*.bst',
                           'data/IPOP-CMA-ES.tgz',
                           'data/MCS.tgz'
                           ]},
