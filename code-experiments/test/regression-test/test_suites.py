@@ -20,7 +20,7 @@ def _is_equal(x, y):
     ax, ay = np.abs(x), np.abs(y)
     lgx, lgy = np.log10(ax), np.log10(ay)
     return ((np.abs(x - y) < 1e-9) +  # "+" means in effect "or"
-            same_sign * (np.abs(x - y) / (ax + ay) < 1e-9) +  # min(ax, ay) would be better?
+            same_sign * (np.abs(x - y) / (ax + ay) < 2e-9) +  # min(ax, ay) would be better?
             same_sign * (ax > 1e21) * (ay > 1e21)  # *  # because coco.h defines INFINITY possibly as 1e22
            ) # (np.abs(lgx - lgy) / (lgx + lgy) < 0.7) > 0)  # probably not very useful 
 
