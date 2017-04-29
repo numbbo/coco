@@ -43,6 +43,7 @@ if __name__ == "__main__":
         sys.exit(res)
 
 from . import genericsettings, rungeneric1, rungeneric2, rungenericmany, ppfig, toolsdivers
+from . import testbedsettings
 from .toolsdivers import truncate_latex_command_file, print_done
 from .ppfig import Usage
 from .compall import ppfigs

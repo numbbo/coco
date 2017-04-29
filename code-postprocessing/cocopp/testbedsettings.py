@@ -7,8 +7,10 @@ from . import genericsettings
 scenario_rlbased = 'rlbased'
 scenario_fixed = 'fixed'
 scenario_biobjfixed = 'biobjfixed'
+
 scenario_biobjrlbased = 'biobjrlbased'
 scenario_biobjextfixed = 'biobjextfixed'
+scenario_constrainedfixed = 'constrainedfixed'
 all_scenarios = [scenario_rlbased, scenario_fixed,
                  scenario_biobjfixed, scenario_biobjrlbased,
                  scenario_biobjextfixed]
@@ -17,11 +19,13 @@ testbed_name_single = 'bbob'
 testbed_name_single_noisy = 'bbob-noisy'
 testbed_name_bi = 'bbob-biobj'
 testbed_name_bi_ext = 'bbob-biobj-ext'
+testbed_name_cons = 'bbob-constrained'
 
 default_testbed_single = 'GECCOBBOBTestbed'
 default_testbed_single_noisy = 'GECCOBBOBNoisyTestbed'
 default_testbed_bi = 'GECCOBiObjBBOBTestbed'
 default_testbed_bi_ext = 'GECCOBiObjExtBBOBTestbed'
+default_testbed_cons = 'CONSBBOBTestbed'
 
 current_testbed = None
 
@@ -29,7 +33,8 @@ suite_to_testbed = {
     'bbob' : default_testbed_single,
     'bbob-noisy' : default_testbed_single_noisy,
     'bbob-biobj' : default_testbed_bi,
-    'bbob-biobj-ext' : default_testbed_bi_ext
+    'bbob-biobj-ext' : default_testbed_bi_ext,
+    'bbob-constrained' : default_testbed_cons
 }
 
 
@@ -231,6 +236,25 @@ class GECCOBBOBTestbed(Testbed):
             self.short_names = get_short_names(self.shortinfo_filename)
             self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 
+
+class CONSBBOBTestbed(GECCOBBOBTestbed):
+    """Testbed for constrained problems.
+    """
+
+    def __init__(self, target_values):
+        super(CONSBBOBTestbed, self).__init__(target_values)
+
+        # Until we clean the code which uses this name we need to use it also here.
+        self.info_filename = 'CONSBBOBbenchmarkinfos.txt'
+        self.shortinfo_filename = 'consbenchmarkshortinfos.txt'
+        self.name = testbed_name_cons
+        self.functions_with_legend = (101, 130)
+        self.first_function_number = 1
+        self.last_function_number = 48
+        self.best_algorithm_filename = ''
+        self.short_names = get_short_names(self.shortinfo_filename)
+        self.scenario = scenario_constrainedfixed
+        
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
     """The noisy testbed used in the GECCO BBOB workshops 2009, 2010, 2012,

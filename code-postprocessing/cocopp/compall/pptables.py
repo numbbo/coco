@@ -67,7 +67,8 @@ def get_table_caption():
         else "") + r"""Best results are printed in bold.
         """ + r"""\cocoversion""")
 
-    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext]:
+    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
+                                                testbedsettings.testbed_name_cons]:
         # NOTE: no runlength-based targets supported yet
         table_caption = table_caption_one_noreference + table_caption_rest
     elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,

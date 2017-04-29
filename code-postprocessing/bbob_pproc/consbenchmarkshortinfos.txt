@@ -1,0 +1,48 @@
+1 Sphere and 1 linear cons.
+2 Sphere and 2 linear cons.
+3 Sphere and 10 linear cons.
+4 Sphere and dim/2 linear cons.
+5 Sphere and dim-1 linear cons.
+6 Sphere and dim+1 linear cons.
+7 Ellipsoid separable and 1 linear cons.
+8 Ellipsoid separable and 2 linear cons.
+9 Ellipsoid separable and 10 linear cons.
+10 Ellipsoid separable and dim/2 linear cons.
+11 Ellipsoid separable and dim-1 linear cons.
+12 Ellipsoid separable and dim+1 linear cons.
+13 Linear slope and 1 linear cons.
+14 Linear slope and 2 linear cons.
+15 Linear slope and 10 linear cons.
+16 Linear slope and dim/2 linear cons.
+17 Linear slope and dim-1 linear cons.
+18 Linear slope and dim+1 linear cons.
+19 Ellipsoid and 1 linear cons.
+20 Ellipsoid and 2 linear cons.
+21 Ellipsoid and 10 linear cons.
+22 Ellipsoid and dim/2 linear cons.
+23 Ellipsoid and dim-1 linear cons.
+24 Ellipsoid and dim+1 linear cons.
+25 Discus and 1 linear cons.
+26 Discus and 2 linear cons.
+27 Discus and 10 linear cons.
+28 Discus and dim/2 linear cons.
+29 Discus and dim-1 linear cons.
+30 Discus and dim+1 linear cons.
+31 Bent cigar and 1 linear cons.
+32 Bent cigar and 2 linear cons.
+33 Bent cigar and 10 linear cons.
+34 Bent cigar and dim/2 linear cons.
+35 Bent cigar and dim-1 linear cons.
+36 Bent cigar and dim+1 linear cons.
+37 Sum of different powers and 1 linear cons.
+38 Sum of different powers and 2 linear cons.
+39 Sum of different powers and 10 linear cons.
+40 Sum of different powers and dim/2 linear cons.
+41 Sum of different powers and dim-1 linear cons.
+42 Sum of different powers
+43 Rastrigin and 1 linear cons.
+44 Rastrigin and 2 linear cons.
+45 Rastrigin and 10 linear cons.
+46 Rastrigin and dim/2 linear cons.
+47 Rastrigin and dim-1 linear cons.
+48 Rastrigin and dim+1 linear cons.

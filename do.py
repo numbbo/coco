@@ -183,6 +183,7 @@ def run_c_integration_tests():
             ['./test_instance_extraction'], verbose=_verbosity)
         run('code-experiments/test/integration-test',
             ['./test_biobj'], verbose=_verbosity)
+        run('code-experiments/test/integration-test', ['./test_bbob-constrained'], verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -226,6 +227,10 @@ def leak_check():
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
                     './test_biobj', 'leak_check']
+    run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
+    valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
+                    '--leak-check=full', '--show-reachable=yes',
+                    './test_bbob-constrained', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
 
 
@@ -724,6 +729,9 @@ ee.observer_options['result_folder'] = "RS-bi"  # use a short path for Jenkins
 ee.main()  # doctest: +ELLIPSIS
 ee.suite_name = "bbob"
 ee.observer_options['result_folder'] = "RS-bb"
+ee.main()  # doctest: +ELLIPSIS
+ee.suite_name = "bbob-constrained"
+ee.observer_options['result_folder'] = "RS-co"
 ee.main()  # doctest: +ELLIPSIS
             '''], verbose=_verbosity)
             # now run all tests

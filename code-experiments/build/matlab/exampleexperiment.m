@@ -84,12 +84,14 @@ while true
     % restart functionality: do at most NUM_OF_INDEPENDENT_RESTARTS+1
     % independent runs until budget is used:
     i = -1; % count number of independent restarts
-    while BUDGET_MULTIPLIER*dimension > cocoProblemGetEvaluations(problem)
+    while (BUDGET_MULTIPLIER*dimension > (cocoProblemGetEvaluations(problem) + ...
+                                          cocoProblemGetEvaluationsConstraints(problem)))
         i = i+1;
         if (i > 0)
             fprintf('INFO: algorithm restarted\n');
         end
-        doneEvalsBefore = cocoProblemGetEvaluations(problem);
+        doneEvalsBefore = cocoProblemGetEvaluations(problem) + ...
+                          cocoProblemGetEvaluationsConstraints(problem);
         
         % start algorithm with remaining number of function evaluations:
         my_optimizer(problem,...
@@ -98,7 +100,8 @@ while true
             BUDGET_MULTIPLIER*dimension - doneEvalsBefore);
         
         % check whether things went wrong or whether experiment is over:
-        doneEvalsAfter = cocoProblemGetEvaluations(problem);
+        doneEvalsAfter = cocoProblemGetEvaluations(problem) + ...
+                         cocoProblemGetEvaluationsConstraints(problem);
         if cocoProblemFinalTargetHit(problem) == 1 ||...
                 doneEvalsAfter >= BUDGET_MULTIPLIER * dimension
             break;

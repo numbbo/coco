@@ -22,10 +22,10 @@ static double f_linear_slope_raw(const double *x,
   static const double alpha = 100.0;
   size_t i;
   double result = 0.0;
-
+  
   if (coco_vector_contains_nan(x, number_of_variables))
-  	return NAN;
-
+    return NAN;
+    
   for (i = 0; i < number_of_variables; ++i) {
     double base, exponent, si;
 
@@ -57,6 +57,29 @@ static void f_linear_slope_evaluate(coco_problem_t *problem, const double *x, do
 }
 
 /**
+ * @brief Evaluates the gradient of the linear slope function.
+ */
+static void f_linear_slope_evaluate_gradient(coco_problem_t *problem, 
+                                             const double *x, 
+                                             double *y) {
+
+  static const double alpha = 100.0;
+  double base, exponent, si;
+  size_t i;
+
+  for (i = 0; i < problem->number_of_variables; ++i) {
+    base = sqrt(alpha);
+    exponent = (double) (long) i / ((double) (long) problem->number_of_variables - 1);
+    if (problem->best_parameter[i] > 0.0) {
+      si = pow(base, exponent);
+    } else {
+      si = -pow(base, exponent);
+    }
+    y[i] = -si;
+  }
+}
+
+/**
  * @brief Allocates the basic linear slope problem.
  */
 static coco_problem_t *f_linear_slope_allocate(const size_t number_of_variables, const double *best_parameter) {
@@ -65,6 +88,7 @@ static coco_problem_t *f_linear_slope_allocate(const size_t number_of_variables,
   /* best_parameter will be overwritten below */
   coco_problem_t *problem = coco_problem_allocate_from_scalars("linear slope function",
       f_linear_slope_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
+  problem->evaluate_gradient = f_linear_slope_evaluate_gradient;
   coco_problem_set_id(problem, "%s_d%02lu", "linear_slope", number_of_variables);
 
   /* Compute best solution */
@@ -76,6 +100,7 @@ static coco_problem_t *f_linear_slope_allocate(const size_t number_of_variables,
     }
   }
   f_linear_slope_evaluate(problem, problem->best_parameter, problem->best_value);
+  
   return problem;
 }
 
