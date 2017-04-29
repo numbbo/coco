@@ -10,8 +10,6 @@ Scale up figures for two algorithms can be done with compall/ppfigs.py
 from __future__ import absolute_import
 
 import os
-import sys
-import warnings
 import matplotlib.pyplot as plt
 from pdb import set_trace
 try:
@@ -229,7 +227,7 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     nbstars = 0
     # sign of z-value and data must agree
     if ((nbtests * p) < 0.05 and (z * signdata) > 0):
-        nbstars = np.min([5, -np.ceil(np.log10(nbtests * p + 1e-99))])
+        nbstars = int(np.min([5, -np.ceil(np.log10(nbtests * p + 1e-99))]))
     if nbstars > 0:
         xstars = annotcoord[0] * np.power(incrstars, np.arange(1., 1. + nbstars))
         # the additional slicing [0:int(nbstars)] is due to
@@ -238,17 +236,17 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
         ystars = [annotcoord[1]] * nbstars
 
         try:
-            h = plt.plot(xstars, ystars, marker='*', ls='', color='w',
-                         markersize=5*linewidth, markeredgecolor='k',
-                         markerfacecolor='None',
-                         zorder=20, markeredgewidth = 0.4 * linewidth,
-                         transform=trans, clip_on=False)
+            plt.plot(xstars, ystars, marker='*', ls='', color='w',
+                     markersize=5*linewidth, markeredgecolor='k',
+                     markerfacecolor='None',
+                     zorder=20, markeredgewidth = 0.4 * linewidth,
+                     transform=trans, clip_on=False)
         except KeyError:
             #Version problem
-            h = plt.plot(xstars, ystars, marker='+', ls='', color='w',
-                         markersize=2.5*linewidth, markeredgecolor='k',
-                         zorder=20, markeredgewidth = 0.2 * linewidth,
-                         transform=trans, clip_on=False)
+            plt.plot(xstars, ystars, marker='+', ls='', color='w',
+                     markersize=2.5*linewidth, markeredgecolor='k',
+                     zorder=20, markeredgewidth = 0.2 * linewidth,
+                     transform=trans, clip_on=False)
 
 def main(dsList0, dsList1, minfvalue=1e-8, outputdir=''):
     """Returns aRT1/aRT0 comparison figure."""
