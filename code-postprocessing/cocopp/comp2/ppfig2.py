@@ -165,14 +165,9 @@ def beautify(xmin=None):
 def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
     """Display some annotations associated to the graphs generated."""
 
-    isEarlyStop = False
     ha = 'left'
     va = 'center'
     lastfvalue = min(entry0.evals[-1][0], entry1.evals[-1][0])
-    if minfvalue < lastfvalue:
-        isEarlyStop = True
-        #ha = 'center'
-        #va = 'top'
 
     if not minfvalue or minfvalue < lastfvalue:
         minfvalue = lastfvalue
@@ -270,9 +265,6 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir=''):
 
         filename = os.path.join(outputdir,'ppfig2_f%03d' % (func))
 
-        dims = sorted(set.intersection(set(dictDim0), set(dictDim1)))
-
-        handles = []
         dataperdim = {}
         fvalueswitch = {}
         nbtests = 0
