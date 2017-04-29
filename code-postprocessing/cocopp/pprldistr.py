@@ -139,12 +139,16 @@ def caption_single():
          Empirical cumulative distribution functions (ECDF), plotting the fraction of
          trials with an outcome not larger than the respective value on the $x$-axis.
          #1"""
-    caption_left_fixed_targets = (r"""%
-         Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension $D$,
+    caption_left_fixed_targets = r"""%
+         Left subplots: ECDF of the number of function evaluations """ + (
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons
+         else r"""(FEvals)""") + (r""" divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ with $!!DF!!=10^{k}$, where $k$ is the first value in the legend.
          The thick red line represents the most difficult target value $!!FOPT!!+ !!HARDEST-TARGET-LATEX!!$. """)
     caption_left_rlbased_targets = r"""%
-         Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$,
+         Left subplots: ECDF of number of function evaluations """ + (
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons
+         else r"""(FEvals)""") + r""" divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ where !!DF!!{} is the
          target just not reached by !!THE-REF-ALG!! within a budget of
          $k\times!!DIM!!$ evaluations, where $k$ is the first value in the legend. """
@@ -165,7 +169,8 @@ def caption_single():
             figure_caption = caption_part_one + caption_left_rlbased_targets + caption_right
         else:
             figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext:
+    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
+                                                  testbedsettings.testbed_name_cons]:
         # no best algorithm defined yet:
         figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
     else:
@@ -232,7 +237,8 @@ def caption_two():
                            + symbAlgorithmB
                            + caption_two_rlbased_targets_part3)
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext:
+    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
+                                                testbedsettings.testbed_name_cons]:
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_two_fixed
     elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
@@ -300,7 +306,10 @@ def beautifyRLD(xlimit_max=None):
     """
     a = plt.gca()
     a.set_xscale('log')
-    a.set_xlabel('log10 of FEvals / DIM')
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        a.set_xlabel('log10 of (f+g)-evals / dimension')
+    else:
+        a.set_xlabel('log10 of FEvals / DIM')
     a.set_ylabel('proportion of trials')
     logxticks()
     if xlimit_max:
@@ -633,7 +642,10 @@ def beautify():
     plt.subplot(121)
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-    axisHandle.set_xlabel('log10 of FEvals / DIM')
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        axisHandle.set_xlabel('log10 of (f+g)-evals / dimension')
+    else:
+        axisHandle.set_xlabel('log10 of FEvals / DIM')
     axisHandle.set_ylabel('proportion of trials')
     # Grid options
     logxticks()
