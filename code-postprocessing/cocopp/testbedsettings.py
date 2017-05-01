@@ -13,7 +13,7 @@ scenario_biobjextfixed = 'biobjextfixed'
 scenario_constrainedfixed = 'constrainedfixed'
 all_scenarios = [scenario_rlbased, scenario_fixed,
                  scenario_biobjfixed, scenario_biobjrlbased,
-                 scenario_biobjextfixed]
+                 scenario_biobjextfixed, scenario_constrainedfixed]
 
 testbed_name_single = 'bbob'
 testbed_name_single_noisy = 'bbob-noisy'
@@ -238,22 +238,35 @@ class GECCOBBOBTestbed(Testbed):
 
 
 class CONSBBOBTestbed(GECCOBBOBTestbed):
-    """Testbed for constrained problems.
+    """BBOB Testbed for constrained problems.
     """
+
+    shortinfo_filename = 'bbob-constrained-benchmarkshortinfos.txt'
+
+    settings = dict(
+        info_filename = 'bbob-constrained-benchmarkinfos.txt',
+        shortinfo_filename = shortinfo_filename,
+        short_names = get_short_names(shortinfo_filename),
+        name = testbed_name_cons,
+        functions_with_legend = (1, 48),
+        first_function_number = 1,
+        last_function_number = 48,
+        reference_algorithm_filename = '',
+        reference_algorithm_displayname = '',  # TODO: should be read in from data set in reference_algorithm_filename
+        scenario = scenario_constrainedfixed
+    )
 
     def __init__(self, target_values):
         super(CONSBBOBTestbed, self).__init__(target_values)
 
-        # Until we clean the code which uses this name we need to use it also here.
-        self.info_filename = 'CONSBBOBbenchmarkinfos.txt'
-        self.shortinfo_filename = 'consbenchmarkshortinfos.txt'
-        self.name = testbed_name_cons
-        self.functions_with_legend = (101, 130)
-        self.first_function_number = 1
-        self.last_function_number = 48
-        self.best_algorithm_filename = ''
-        self.short_names = get_short_names(self.shortinfo_filename)
-        self.scenario = scenario_constrainedfixed
+        for key, val in CONSBBOBTestbed.settings.items():
+            setattr(self, key, val)
+        if 11 < 3:
+            # override settings if needed...
+            self.reference_algorithm_filename = 'best2018-bbob-constrained.tar.gz' # TODO: implement
+            self.reference_algorithm_displayname = 'best 2018'  # TODO: should be read in from data set in reference_algorithm_filename
+
+
         
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
