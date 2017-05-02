@@ -452,7 +452,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) 
     logger->best_fvalue = y[0];
     is_feasible = 1;
   }
-  else if (y[0] < logger->best_fvalue && is_feasible) {
+  else if ((logger->number_of_evaluations == 1) || (y[0] < logger->best_fvalue && is_feasible)){
     logger->best_fvalue = y[0];
     for (i = 0; i < problem->number_of_variables; i++)
       logger->best_solution[i] = x[i];

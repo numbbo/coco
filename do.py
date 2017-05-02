@@ -745,12 +745,7 @@ ee.main()  # doctest: +ELLIPSIS
         python('code-postprocessing/cocopp', ['__main__.py'], verbose=_verbosity)
     # also run the doctests in aRTAplots/generate_aRTA_plot.py:
     python('code-postprocessing/aRTAplots', ['generate_aRTA_plot.py'], verbose=_verbosity)
-    # python('code-postprocessing', ['-m', 'cocopp'])
-    if 11 < 3:  # provisorial test fo biobj data
-        run_c()
-        python('code-experiments/build/c', ['-m', 'cocopp',
-                                            'RS_on_bbob-biobj'], verbose=_verbosity)
-
+    
 
 def verify_postprocessing():
     install_postprocessing()
