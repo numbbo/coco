@@ -31,7 +31,7 @@
 static size_t bbob_current_dim = 0;
 static size_t bbob_current_funId = 0;
 static size_t bbob_infoFile_firstInstance = 0;
-char bbob_infoFile_firstInstance_char[3];
+char *bbob_infoFile_firstInstance_char;
 /* a possible solution: have a list of dims that are already in the file, if the ones we're about to log
  * is != bbob_current_dim and the funId is currend_funId, create a new .info file with as suffix the
  * number of the first instance */
@@ -198,7 +198,7 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
   /* to add the instance number TODO: this should be done outside to avoid redoing this for the .*dat files */
   char used_dataFile_path[COCO_PATH_MAX] = { 0 };
   int errnum, newLine; /* newLine is at 1 if we need a new line in the info file */
-  char function_id_char[3]; /* TODO: consider adding them to logger */
+  char *function_id_char; /* TODO: consider adding them to logger */
   char file_name[COCO_PATH_MAX] = { 0 };
   char file_path[COCO_PATH_MAX] = { 0 };
   FILE **target_file;
@@ -207,8 +207,8 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
   if (bbob_infoFile_firstInstance == 0) {
     bbob_infoFile_firstInstance = logger->instance_id;
   }
-  sprintf(function_id_char, "%lu", (unsigned long) logger->function_id);
-  sprintf(bbob_infoFile_firstInstance_char, "%lu", (unsigned long) bbob_infoFile_firstInstance);
+  function_id_char = coco_strdupf("%lu", (unsigned long) logger->function_id);
+  bbob_infoFile_firstInstance_char = coco_strdupf("%lu", (unsigned long) bbob_infoFile_firstInstance);
   target_file = &(logger->index_file);
   tmp_file = NULL; /* to check whether the file already exists. Don't want to use target_file */
   strncpy(file_name, indexFile_prefix, COCO_PATH_MAX - strlen(file_name) - 1);
@@ -248,7 +248,8 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
             newLine = 0;
             file_path[strlen(file_path) - strlen(bbob_infoFile_firstInstance_char) - 7] = 0; /* truncate the instance part */
             bbob_infoFile_firstInstance = logger->instance_id;
-            sprintf(bbob_infoFile_firstInstance_char, "%lu", (unsigned long) bbob_infoFile_firstInstance);
+            coco_free_memory(bbob_infoFile_firstInstance_char);
+            bbob_infoFile_firstInstance_char = coco_strdupf("%lu", (unsigned long) bbob_infoFile_firstInstance);
             strncat(file_path, "_i", COCO_PATH_MAX - strlen(file_name) - 1);
             strncat(file_path, bbob_infoFile_firstInstance_char, COCO_PATH_MAX - strlen(file_name) - 1);
             strncat(file_path, ".info", COCO_PATH_MAX - strlen(file_name) - 1);
@@ -292,6 +293,7 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
       bbob_current_funId = logger->function_id;
     }
   }
+  coco_free_memory(function_id_char);
 }
 
 /**
@@ -311,15 +313,12 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   
   str_length_funId = coco_double_to_size_t(bbob2009_fmax(1, ceil(log10((double) coco_problem_get_suite_dep_function(inner_problem)))));
   str_length_dim = coco_double_to_size_t(bbob2009_fmax(1, ceil(log10((double) inner_problem->number_of_variables))));
-  tmpc_funId = coco_allocate_string(str_length_funId + 1);
-  tmpc_dim = coco_allocate_string(str_length_dim + 1);
-
   assert(logger != NULL);
   assert(inner_problem != NULL);
   assert(inner_problem->problem_id != NULL);
 
-  sprintf(tmpc_funId, "%lu", (unsigned long) coco_problem_get_suite_dep_function(inner_problem));
-  sprintf(tmpc_dim, "%lu", (unsigned long) inner_problem->number_of_variables);
+  tmpc_funId = coco_strdupf("%lu", (unsigned long) coco_problem_get_suite_dep_function(inner_problem));
+  tmpc_dim = coco_strdupf("%lu", (unsigned long) inner_problem->number_of_variables);
 
   /* prepare paths and names */
   strncpy(dataFile_path, "data_f", COCO_PATH_MAX);
@@ -366,6 +365,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   logger->is_initialized = 1;
   coco_free_memory(tmpc_dim);
   coco_free_memory(tmpc_funId);
+  coco_free_memory(bbob_infoFile_firstInstance_char);
 }
 
 /**
