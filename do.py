@@ -902,6 +902,7 @@ Available commands for developers:
   test-octave             - Build and run example experiment in Octave
   test-postprocessing     - Runs some of the post-processing tests
   test-postprocessing-all - Runs all of the post-processing tests [needs access to the internet]
+  test-suites             - Runs regression test on all benchmark suites
   verify-postprocessing   - Checks if the generated html is up-to-date
   leak-check              - Check for memory leaks in C
   
