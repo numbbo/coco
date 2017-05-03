@@ -308,7 +308,7 @@ also report back a missing name to https://github.com/numbbo/coco/issues
           might just silently die, which is e.g. a known issue of the "bbob"
           observer.
 
-        See also `ids`.
+        See also `ids`, `get_problem_by_function_dimension_instance`.
         """
         if not self.initialized:
             raise ValueError("Suite has been finalized/free'ed")
