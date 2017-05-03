@@ -10,13 +10,13 @@ The post-processing tool takes as input data from experiments and
 generates outputs that will be used in the generation of the LateX-
 formatted article summarizing the experiments.
 
-The main method of this package is :py:func:`cocopp.rungeneric.main`
-This method allows to use the post-processing through a command-line
-interface.
+The main method of this package is `cocopp.main` (currently aliased to
+`cocopp.rungeneric.main`). This method allows to use the post-processing
+through a command-line interface.
 
 To obtain more information on the use of this package from the python
-interpreter, assuming this package has been imported as ``bb``, type:
-``help(bb.cococommands)``
+interpreter, type ``help(cocopp.cococommands)``, however remark that
+this info might not be entirely up-to-date.
 
 """
 
