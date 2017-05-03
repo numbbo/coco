@@ -889,7 +889,11 @@ cdef class Problem:
             objective = "%s-objective" % ('single'
                     if self.number_of_objectives == 1 
                     else str(self.number_of_objectives))
-            return "%s %s problem (%s)" % (self.id, objective,  
+            constraints = "" if self.number_of_constraints == 0 else (
+                "with %d constraint%s " % (self.number_of_constraints,
+                                           "s" if self.number_of_constraints > 1 else "")
+                )
+            return "%s %s problem %s(%s)" % (self.id, objective, constraints,
                 self.name.replace(self.name.split()[0], 
                                   self.name.split()[0] + "(%d)" 
                                   % (self.index if self.index is not None else -2)))
