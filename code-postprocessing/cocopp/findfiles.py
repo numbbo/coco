@@ -73,7 +73,7 @@ def get_directory(directory, extractFiles):
                     or (os.path.getmtime(dirname) < os.path.getmtime(directory))):
                 tarFile = tarfile.TarFile.open(directory)
                 longestFileLength = max(len(i) for i in tarFile.getnames())
-                if ('win32' in sys.platform) and + len(dirname) + longestFileLength > 259:
+                if ('win32' in sys.platform) and len(dirname) + longestFileLength > 259:
                     raise IOError(2, 'Some of the files cannot be extracted ' +
                                   'from "%s". The path is too long.' % directory)
 
