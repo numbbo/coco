@@ -882,24 +882,35 @@ cdef class Problem:
 
     @property
     def info(self):
+        """human readible info, alias for ``str(self)``.
+
+        The format of this info string is not guarantied and may change
+        in future.
+
+        See also: ``repr(self)``
+        """
         return str(self)
 
     def __str__(self):
         if self.problem is not NULL:
-            objective = "%s-objective" % ('single'
-                    if self.number_of_objectives == 1 
-                    else str(self.number_of_objectives))
+            dimensional = "%d-dimensional" % self.dimension
+            objective = "%s-objective" % {
+                    1: 'single',
+                    2: 'bi'}.get(self.number_of_objectives,
+                                 str(self.number_of_objectives))
             constraints = "" if self.number_of_constraints == 0 else (
-                "with %d constraint%s " % (self.number_of_constraints,
+                " with %d constraint%s" % (self.number_of_constraints,
                                            "s" if self.number_of_constraints > 1 else "")
                 )
-            return "%s %s problem %s(%s)" % (self.id, objective, constraints,
-                self.name.replace(self.name.split()[0], 
-                                  self.name.split()[0] + "(%d)" 
-                                  % (self.index if self.index is not None else -2)))
+            return '%s: a %s %s problem%s (problem %d of suite "%s" with name "%s")' % (
+                    self.id, dimensional, objective, constraints, self.index,
+                    self.suite, self.name)
+                    # self.name.replace(self.name.split()[0], 
+                    #               self.name.split()[0] + "(%d)"
+                    #               % (self.index if self.index is not None else -2)))
         else:
             return "finalized/invalid problem"
-    
+
     def __repr__(self):
         if self.problem is not NULL:
             return "<%s(), id=%r>" % (
