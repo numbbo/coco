@@ -63,28 +63,28 @@ def main(dictAlg, outputdir='.', parentHtmlFileName=None, algorithm_name=None):
     """
     global warned  # bind variable warned into this scope
     dictFun = pproc.dictAlgByFun(dictAlg)
-    for l in dictFun:  # l appears to be the function id!?
-        for i in dictFun[l]: # please, what is i??? appears to be the algorithm-key
+    for function_id in dictFun:
+        for i in dictFun[function_id]: # please, what is i??? appears to be the algorithm-key
             plt.figure()
             if 1 < 3:  # no algorithm name in filename, as everywhere else
-                figurename = "ppconv_" + "f%03d" % l
+                figurename = "ppconv_" + "f%03d" % function_id
             else:  # previous version with algorithm name, but this is not very practical later
                 if type(i) in (list, tuple):
-                    figurename = "ppconv_plot_" + i[0] + "_f" + str(l)
+                    figurename = "ppconv_plot_" + i[0] + "_f" + str(function_id)
                 else:
                     try:
-                        figurename = "ppconv_plot_" + dictFun[l][i].algId + "_f" + str(l)
+                        figurename = "ppconv_plot_" + dictFun[function_id][i].algId + "_f" + str(function_id)
                     except AttributeError:  # this is a (rather desperate)
                                             # bug-fix attempt that works for
                                             # the unit test
-                        figurename = "ppconv_plot_" + dictFun[l][i][0].algId + "_f" + str(l)
+                        figurename = "ppconv_plot_" + dictFun[function_id][i][0].algId + "_f" + str(function_id)
             plt.xlabel('number of function evaluations / dimension')
             plt.ylabel('Median of fitness')
             plt.grid()
             ax = plt.gca()
             ax.set_yscale("log")
             ax.set_xscale("log")
-            for j in dictFun[l][i]: # please, what is j??? a dataset
+            for j in dictFun[function_id][i]: # please, what is j??? a dataset
                 dimList_b = []
                 dimList_f = []
                 dimList_b.append(j.funvals[:, 0])
@@ -103,9 +103,13 @@ def main(dictAlg, outputdir='.', parentHtmlFileName=None, algorithm_name=None):
                         print('Warning: floating point error when plotting errorbars, ignored')
                     warned = True
 
-            text = '%s - f%s' % (testbedsettings.current_testbed.name, l)
+            text = '%s - f%s' % (testbedsettings.current_testbed.name, function_id)
+
+            # add number of instances
+            text += '\n%s instances' % (dictFun[function_id][i][0]).nbRuns()
+
             plt.text(0.01, 0.98, text, horizontalalignment="left",
-                     verticalalignment="top", transform=plt.gca().transAxes, size='small')
+                     verticalalignment="top", transform=plt.gca().transAxes)
 
             beautify()
             save_figure(os.path.join(outputdir, figurename.replace(' ', '')),
@@ -114,9 +118,9 @@ def main(dictAlg, outputdir='.', parentHtmlFileName=None, algorithm_name=None):
 
     if algorithm_name is None:
         try:
-            algorithm_name = str(dictFun[l].keys()[0][0])
+            algorithm_name = str(dictFun[function_id].keys()[0][0])
         except KeyError:
-            algorithm_name = str(dictFun[l].keys()[0])
+            algorithm_name = str(dictFun[function_id].keys()[0])
     save_single_functions_html(os.path.join(outputdir, 'ppconv'),
                                algname=algorithm_name,
                                parentFileName=parentHtmlFileName,
