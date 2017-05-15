@@ -29,7 +29,7 @@ Examples:
     >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
     >>> if not os.path.exists(infoFile):
     ...   os.chdir(os.path.join(path, 'data'))
-    ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
+    ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
     ...   filename, headers = urllib.urlretrieve(dataurl)
     ...   archivefile = tarfile.open(filename)
     ...   archivefile.extractall()

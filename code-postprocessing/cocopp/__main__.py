@@ -103,23 +103,23 @@ def prepare_data(run_all_tests):
     # Retrieving the algorithms
     # retrieve_algorithm(dataPath, '2010', 'IPOP-ACTCMA-ES_ros_noiseless.tar.gz')
     # [outcommented and replaced by BIPOP until 2010 data is in new format]
-    retrieve_algorithm(dataPath, '2009', 'BFGS_ros_noiseless.tgz')
+    retrieve_algorithm(dataPath, 'bbob/2009', 'BFGS_ros_noiseless.tgz')
     retrieve_algorithm(dataPath, 'bbob-biobj/2016', 'RS-4.tgz')
 
     if run_all_tests:
-        retrieve_algorithm(dataPath, '2009', 'BIPOP-CMA-ES_hansen_noiseless.tgz')
-        retrieve_algorithm(dataPath, '2009', 'MCS_huyer_noiseless.tgz')
-        retrieve_algorithm(dataPath, '2009', 'NEWUOA_ros_noiseless.tgz')
-        retrieve_algorithm(dataPath, '2009', 'RANDOMSEARCH_auger_noiseless.tgz')
-        retrieve_algorithm(dataPath, '2013', 'SMAC-BBOB_hutter_noiseless.tgz')
-        retrieve_algorithm(dataPath, '2013', 'lmm-CMA-ES_auger_noiseless.tgz')
-        retrieve_algorithm(dataPath, '2009', 'DE-PSO_garcia-nieto_noiseless.tgz')
-        retrieve_algorithm(dataPath, '2009', 'VNS_garcia-martinez_noiseless.tgz')
+        retrieve_algorithm(dataPath, 'bbob/2009', 'BIPOP-CMA-ES_hansen_noiseless.tgz')
+        retrieve_algorithm(dataPath, 'bbob/2009', 'MCS_huyer_noiseless.tgz')
+        retrieve_algorithm(dataPath, 'bbob/2009', 'NEWUOA_ros_noiseless.tgz')
+        retrieve_algorithm(dataPath, 'bbob/2009', 'RANDOMSEARCH_auger_noiseless.tgz')
+        retrieve_algorithm(dataPath, 'bbob/2013', 'SMAC-BBOB_hutter_noiseless.tgz')
+        retrieve_algorithm(dataPath, 'bbob/2013', 'lmm-CMA-ES_auger_noiseless.tgz')
+        retrieve_algorithm(dataPath, 'bbob/2009', 'DE-PSO_garcia-nieto_noiseless.tgz')
+        retrieve_algorithm(dataPath, 'bbob/2009', 'VNS_garcia-martinez_noiseless.tgz')
         retrieve_algorithm(dataPath, 'bbob-biobj/2016', 'RS-4.tgz')
         retrieve_algorithm(dataPath, 'bbob-biobj/2016', 'RS-100.tgz')
         retrieve_algorithm(dataPath, 'test', 'N-II.tgz') # diff. location and name due to Jenkins settings with too long paths
-        retrieve_algorithm(dataPath, '2009', 'BFGS_ros_noisy.tgz')
-        retrieve_algorithm(dataPath, '2009', 'MCS_huyer_noisy.tgz')        
+        retrieve_algorithm(dataPath, 'bbob-noisy/2009', 'BFGS_ros_noisy.tgz')
+        retrieve_algorithm(dataPath, 'bbob-noisy/2009', 'MCS_huyer_noisy.tgz')        
 
     return dataPath
 

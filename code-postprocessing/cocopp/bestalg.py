@@ -486,7 +486,7 @@ def deprecated_customgenerate(args=algs2009):
     >>> if not os.path.exists(infoFile):
     ...     import urllib
     ...     import tarfile
-    ...     dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/ALPS_hornby_noiseless.tgz'
+    ...     dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/ALPS_hornby_noiseless.tgz'
     ...     filename, headers = urllib.urlretrieve(dataurl)
     ...     archivefile = tarfile.open(filename)
     ...     archivefile.extractall()
@@ -666,13 +666,13 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
         >>> infoFile = 'data/BIPOP-CMA-ES.tgz'
         >>> if not os.path.exists(infoFile):
         ...   os.chdir(os.path.join(path, 'data'))
-        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
+        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
         ...   filename, headers = urllib.urlretrieve(dataurl, 'BIPOP-CMA-ES.tgz')
         >>> os.chdir(path)
         >>> infoFile = 'data/MCS.tgz'
         >>> if not os.path.exists(infoFile):
         ...   os.chdir(os.path.join(path, 'data'))
-        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/MCS_huyer_noiseless.tgz'
+        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/MCS_huyer_noiseless.tgz'
         ...   filename, headers = urllib.urlretrieve(dataurl, 'MCS.tgz')
         >>> os.chdir(path)
         >>> bestalg.getAllContributingAlgorithmsToBest(('data/BIPOP-CMA-ES.tgz', 'data/MCS.tgz')) # doctest:+ELLIPSIS
