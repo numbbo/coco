@@ -12,7 +12,7 @@ more off; % to get immediate output in Octave
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Experiment Parameters %
 %%%%%%%%%%%%%%%%%%%%%%%%%
-BUDGET_MULTIPLIER = 2; % algorithm runs for BUDGET_MULTIPLIER*dimension funevals
+BUDGET_MULTIPLIER = 100; % algorithm runs for BUDGET_MULTIPLIER*dimension funevals
 NUM_OF_INDEPENDENT_RESTARTS = 1e9; % max. number of independent algorithm
 % restarts; if >0, make sure that the
 % algorithm is not always doing the same thing
@@ -31,7 +31,7 @@ NUM_OF_INDEPENDENT_RESTARTS = 1e9; % max. number of independent algorithm
 % bbob-biobj-ext    92 unconstrained noiseless bi-objective functions
 % bbob-largescale   24 unconstrained noiseless single-objective functions in large dimensions
 %
-suite_name = 'bbob';
+suite_name = 'bbob-constrained';
 observer_name = 'bbob';
 observer_options = strcat('result_folder: RS_on_', ...
     suite_name, ...
