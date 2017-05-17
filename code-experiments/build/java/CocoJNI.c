@@ -523,8 +523,8 @@ JNIEXPORT jlong JNICALL Java_CocoJNI_cocoProblemGetEvaluationsConstraints
     
   /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
   if (interface_cls == NULL) {
-      jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
-      (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoProblemGetEvaluationsConstraints\n");
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoProblemGetEvaluationsConstraints\n");
   }
     
   problem = (coco_problem_t *) jproblem_pointer;
