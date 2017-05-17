@@ -35,7 +35,7 @@ public class ExampleExperiment {
 	 */
 	public interface Function {
 		double[] evaluate(double[] x);
-        double[] evaluateConstraint(double[] x);
+		double[] evaluateConstraint(double[] x);
     }
 
 	/**
@@ -45,8 +45,8 @@ public class ExampleExperiment {
     	public double[] evaluate(double[] x) {
     		return PROBLEM.evaluateFunction(x);
     	}
-        public double[] evaluateConstraint(double[] x) {
-            return PROBLEM.evaluateConstraint(x);
+	public double[] evaluateConstraint(double[] x) {
+		return PROBLEM.evaluateConstraint(x);
         }
     };
 
@@ -131,7 +131,7 @@ public class ExampleExperiment {
 					myRandomSearch(evaluateFunction,
 							       dimension,
 							       PROBLEM.getNumberOfObjectives(),
-                                   PROBLEM.getNumberOfConstraints(),
+						       	       PROBLEM.getNumberOfConstraints(),
 							       PROBLEM.getSmallestValuesOfInterest(),
 							       PROBLEM.getLargestValuesOfInterest(),
 							       evaluationsRemaining,
@@ -175,7 +175,7 @@ public class ExampleExperiment {
 
 		double[] x = new double[dimension];
 		double[] y = new double[numberOfObjectives];
-        double[] z = new double[numberOfConstraints];
+		double[] z = new double[numberOfConstraints];
 		double range;
 		
 		for (int i = 0; i < maxBudget; i++) {
@@ -189,8 +189,8 @@ public class ExampleExperiment {
 		    /* Call the evaluate function to evaluate x on the current problem (this is where all the COCO logging
 		     * is performed) */
 			y = f.evaluate(x);
-            if (numberOfConstraints > 0)
-                z = f.evaluateConstraint(x);
+			if (numberOfConstraints > 0)
+				z = f.evaluateConstraint(x);
 		}
 		
 	}
