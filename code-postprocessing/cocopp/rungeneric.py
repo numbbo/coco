@@ -20,6 +20,11 @@ import sys
 import getopt
 import warnings
 import matplotlib
+from . import genericsettings, rungeneric1, rungeneric2, rungenericmany, ppfig, toolsdivers #, __main__
+from .toolsdivers import truncate_latex_command_file, print_done
+from .ppfig import Usage
+from .compall import ppfigs
+
 matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
 # numpy.seterr(all='raise')
@@ -31,7 +36,7 @@ if __name__ == "__main__":
         #  u'WebAgg', u'nbAgg', u'agg', u'cairo', u'emf', u'gdk', u'pdf',
         #  u'pgf', u'ps', u'svg', u'template']
         matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
-        matplotlib.rc('pdf', fonttype = 42)
+        matplotlib.rc('pdf', fonttype=42)
         # add ".." to the Python search path, import the module to which
         # this script belongs to and call the main of this script from imported
         # module. Like this all relative imports will work smoothly.
@@ -42,22 +47,18 @@ if __name__ == "__main__":
         res = cocopp.rungeneric.main(sys.argv[1:])
         sys.exit(res)
 
-from . import genericsettings, rungeneric1, rungeneric2, rungenericmany, ppfig, toolsdivers
-from . import testbedsettings
-from .toolsdivers import truncate_latex_command_file, print_done
-from .ppfig import Usage
-from .compall import ppfigs
 
 __all__ = ['main']
 
-def _splitshortoptlist(shortoptlist):
+
+def _split_short_opt_list(short_opt_list):
     """Split short options list used by getopt.
 
     Returns a set of the options.
 
     """
     res = set()
-    tmp = shortoptlist[:]
+    tmp = short_opt_list[:]
     # split into logical elements: one-letter that could be followed by colon
     while tmp:
         if len(tmp) > 1 and tmp[1] is ':':
@@ -69,8 +70,10 @@ def _splitshortoptlist(shortoptlist):
 
     return res
 
+
 def usage():
     print(main.__doc__)
+
 
 def main(argv=None):
     r"""Main routine for post-processing data from COCO.
@@ -95,6 +98,9 @@ def main(argv=None):
     * call either sub-routines :py:func:`cocopp.rungeneric2.main`
       (2 input arguments) or :py:func:`cocopp.rungenericmany.main`
       (more than 2) for the input arguments altogether.
+    * alternatively call sub-routine :py:func:`cocopp.__main__.main` if option
+      flag --test is used. In this case it will run through the
+      post-processing tests.
 
     The output figures and tables written by default to the output folder
     :file:`ppdata` are used in the provided LaTeX templates:
@@ -160,6 +166,10 @@ def main(argv=None):
 
             do not generate the svg figures which are used in html files
 
+        -- test
+
+            call the __main__.py and run the tests
+
     Exceptions raised:
 
     *Usage* -- Gives back a usage message.
@@ -205,9 +215,9 @@ def main(argv=None):
 
         inputdir = '.'
 
-        #Process options
+        # Process options
         shortoptlist = list("-" + i.rstrip(":")
-                            for i in _splitshortoptlist(genericsettings.shortoptlist))
+                            for i in _split_short_opt_list(genericsettings.shortoptlist))
         shortoptlist.remove("-o")
         longoptlist = list("--" + i.rstrip("=") for i in genericsettings.longoptlist)
 
@@ -225,29 +235,28 @@ def main(argv=None):
                     print('in_a_hurry like ', genericsettings.in_a_hurry, ' (should finally be set to zero)')
             elif o in ("--input-path", ):
                 inputdir = a
-            elif o in ("--no-svg"):
+            elif o in "--no-svg":
                 genericsettings.generate_svg_files = False
             else:
-                isAssigned = False
+                is_assigned = False
                 if o in longoptlist or o in shortoptlist:
                     genopts.append(o)
                     # Append o and then a separately otherwise the list of
                     # command line arguments might be incorrect
                     if a:
                         genopts.append(a)
-                    isAssigned = True
+                    is_assigned = True
                 if o in ("-v", "--verbose"):
                     genericsettings.verbose = True
-                    isAssigned = True
+                    is_assigned = True
                 if o == '--omit-single':
-                    isAssigned = True
-                if not isAssigned:
+                    is_assigned = True
+                if not is_assigned:
                     assert False, "unhandled option"
 
-
-        if (not genericsettings.verbose):
+        if not genericsettings.verbose:
             warnings.filterwarnings('module', '.*', UserWarning, '.*')
-            #warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
+            # warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
 
 #        print("\nPost-processing: will generate output " +
 #               "data in folder %s" % outputdir)
@@ -256,10 +265,9 @@ def main(argv=None):
         if not os.path.exists(outputdir):
             os.makedirs(outputdir)
             if genericsettings.verbose:
-                print('Folder %s was created.' % (outputdir))
+                print('Folder %s was created.' % outputdir)
 
-        latex_commands_filename = os.path.join(outputdir,
-                                               'cocopp_commands.tex')
+        latex_commands_filename = os.path.join(outputdir, 'cocopp_commands.tex')
 
         truncate_latex_command_file(latex_commands_filename)
 
@@ -269,21 +277,21 @@ def main(argv=None):
         for i, alg in enumerate(args):
             # remove '../' from algorithm output folder
             if len(args) == 1 or '--omit-single' not in dict(opts):
-                rungeneric1.main(genopts
-                                 + ["-o", outputdir, alg])
+                rungeneric1.main(genopts + ["-o", outputdir, alg])
 
         if len(args) == 2:
             rungeneric2.main(genopts + ["-o", outputdir] + args)
         elif len(args) > 2:
             rungenericmany.main(genopts + ["-o", outputdir] + args)
 
-
         toolsdivers.prepend_to_file(latex_commands_filename,
-                ['\\providecommand{\\cocoversion}{\\hspace{\\textwidth}\\scriptsize\\sffamily{}\\color{Gray}Data produced with COCO %s}' % (toolsdivers.get_version_label(None))]
-                )
+                                    ['\\providecommand{\\cocoversion}{\\hspace{\\textwidth}\\scriptsize\\sffamily{}' +
+                                     '\\color{Gray}Data produced with COCO %s}' % (toolsdivers.get_version_label(None))]
+                                    )
         toolsdivers.prepend_to_file(latex_commands_filename,
-                ['\\providecommand{\\bbobecdfcaptionsinglefunctionssingledim}[1]{',
-                 ppfigs.get_ecdfs_single_functions_single_dim_caption(), '}'])
+                                    ['\\providecommand{\\bbobecdfcaptionsinglefunctionssingledim}[1]{',
+                                     ppfigs.get_ecdfs_single_functions_single_dim_caption(), '}']
+                                    )
             
         open(os.path.join(outputdir,
                           'cocopp_commands.tex'), 'a').close()
@@ -293,7 +301,7 @@ def main(argv=None):
         ppfig.save_index_html_file(os.path.join(outputdir, 'ppdata'))
         print_done()
 
-    #TODO prevent loading the data every time...
+    # TODO prevent loading the data every time...
         
     except Usage, err:
         print(err.msg, file=sys.stderr)
