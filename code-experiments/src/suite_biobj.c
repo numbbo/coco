@@ -388,7 +388,7 @@ static double suite_biobj_get_best_value(const char *indicator_name, const char 
 
   if (strcmp(indicator_name, "hyp") == 0) {
 
-    curr_key = coco_allocate_string(COCO_PATH_MAX);
+    curr_key = coco_allocate_string(COCO_PATH_MAX + 2);
     count = sizeof(suite_biobj_best_values_hyp) / sizeof(char *);
     for (i = 0; i < count; i++) {
       sscanf(suite_biobj_best_values_hyp[i], "%s %lf", curr_key, &best_value);

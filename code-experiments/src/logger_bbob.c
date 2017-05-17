@@ -146,8 +146,8 @@ static void logger_bbob_open_dataFile(FILE **target_file,
                                       const char *path,
                                       const char *dataFile_path,
                                       const char *file_extension) {
-  char file_path[COCO_PATH_MAX] = { 0 };
-  char relative_filePath[COCO_PATH_MAX] = { 0 };
+  char file_path[COCO_PATH_MAX + 2] = { 0 };
+  char relative_filePath[COCO_PATH_MAX + 2] = { 0 };
   int errnum;
   strncpy(relative_filePath, dataFile_path,
   COCO_PATH_MAX - strlen(relative_filePath) - 1);
@@ -168,8 +168,8 @@ static void logger_bbob_open_dataFile(FILE **target_file,
                                       const char *path,
                                       const char *dataFile_path,
                                       const char *file_extension) {
-  char file_path[COCO_PATH_MAX] = { 0 };
-  char relative_filePath[COCO_PATH_MAX] = { 0 };
+  char file_path[COCO_PATH_MAX + 2] = { 0 };
+  char relative_filePath[COCO_PATH_MAX + 2] = { 0 };
   int errnum;
   strncpy(relative_filePath, dataFile_path,
   COCO_PATH_MAX - strlen(relative_filePath) - 1);
@@ -196,11 +196,11 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
                                       const char *dataFile_path,
                                       const char *suite_name) {
   /* to add the instance number TODO: this should be done outside to avoid redoing this for the .*dat files */
-  char used_dataFile_path[COCO_PATH_MAX] = { 0 };
+  char used_dataFile_path[COCO_PATH_MAX + 2] = { 0 };
   int errnum, newLine; /* newLine is at 1 if we need a new line in the info file */
   char *function_id_char; /* TODO: consider adding them to logger */
-  char file_name[COCO_PATH_MAX] = { 0 };
-  char file_path[COCO_PATH_MAX] = { 0 };
+  char file_name[COCO_PATH_MAX + 2] = { 0 };
+  char file_path[COCO_PATH_MAX + 2] = { 0 };
   FILE **target_file;
   FILE *tmp_file;
   strncpy(used_dataFile_path, dataFile_path, COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
@@ -304,8 +304,8 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   /*
    Creates/opens the data and index files
    */
-  char dataFile_path[COCO_PATH_MAX] = { 0 }; /* relative path to the .dat file from where the .info file is */
-  char folder_path[COCO_PATH_MAX] = { 0 };
+  char dataFile_path[COCO_PATH_MAX + 2] = { 0 }; /* relative path to the .dat file from where the .info file is */
+  char folder_path[COCO_PATH_MAX + 2] = { 0 };
   char *tmpc_funId; /* serves to extract the function id as a char *. There should be a better way of doing this! */
   char *tmpc_dim; /* serves to extract the dimension as a char *. There should be a better way of doing this! */
   char indexFile_prefix[10] = "bbobexp"; /* TODO (minor): make the prefix bbobexp a parameter that the user can modify */
