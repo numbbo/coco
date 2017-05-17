@@ -41,7 +41,7 @@ public class CocoJNI {
 	public static native String cocoProblemGetName(long problemPointer);
 	
 	public static native long cocoProblemGetEvaluations(long problemPointer);
-    public static native long cocoProblemGetEvaluationsConstraints(long problemPointer);
+	public static native long cocoProblemGetEvaluationsConstraints(long problemPointer);
 	public static native long cocoProblemGetIndex(long problemPointer); 
 	
 	public static native int cocoProblemIsFinalTargetHit(long problemPointer);
