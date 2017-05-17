@@ -659,7 +659,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
 
   /* Apply filter if any given by the suite_options */
   if ((suite_options) && (strlen(suite_options) > 0)) {
-    option_string = coco_allocate_string(COCO_PATH_MAX);
+    option_string = coco_allocate_string(COCO_PATH_MAX + 2);
     if (coco_options_read_values(suite_options, "function_indices", option_string) > 0) {
       indices = coco_string_parse_ranges(option_string, 1, suite->number_of_functions, "function_indices", COCO_MAX_INSTANCES);
       if (indices != NULL) {
@@ -669,7 +669,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
     }
     coco_free_memory(option_string);
 
-    option_string = coco_allocate_string(COCO_PATH_MAX);
+    option_string = coco_allocate_string(COCO_PATH_MAX + 2);
     if (coco_options_read_values(suite_options, "instance_indices", option_string) > 0) {
       indices = coco_string_parse_ranges(option_string, 1, suite->number_of_instances, "instance_indices", COCO_MAX_INSTANCES);
       if (indices != NULL) {
@@ -693,7 +693,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
       }
     }
 
-    option_string = coco_allocate_string(COCO_PATH_MAX);
+    option_string = coco_allocate_string(COCO_PATH_MAX + 2);
     if ((dim_idx_found >= 0) && (parce_dim_idx == 1)
         && (coco_options_read_values(suite_options, "dimension_indices", option_string) > 0)) {
       indices = coco_string_parse_ranges(option_string, 1, suite->number_of_dimensions, "dimension_indices",
@@ -705,7 +705,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
     }
     coco_free_memory(option_string);
 
-    option_string = coco_allocate_string(COCO_PATH_MAX);
+    option_string = coco_allocate_string(COCO_PATH_MAX + 2);
     if ((dim_found >= 0) && (parce_dim == 1)
         && (coco_options_read_values(suite_options, "dimensions", option_string) > 0)) {
       ptr = option_string;

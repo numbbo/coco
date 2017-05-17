@@ -64,7 +64,7 @@ static void logger_biobj_free(void *logger);
 static void observer_biobj(coco_observer_t *observer, const char *options, coco_option_keys_t **option_keys) {
 
   observer_biobj_data_t *observer_biobj;
-  char string_value[COCO_PATH_MAX];
+  char string_value[COCO_PATH_MAX + 2];
 
   /* Sets the valid keys for bbob-biobj observer options
    * IMPORTANT: This list should be up-to-date with the code and the documentation */
