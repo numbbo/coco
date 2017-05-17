@@ -35,6 +35,7 @@ public class ExampleExperiment {
 	 */
 	public interface Function {
 		double[] evaluate(double[] x);
+        double[] evaluateConstraint(double[] x);
     }
 
 	/**
@@ -44,6 +45,9 @@ public class ExampleExperiment {
     	public double[] evaluate(double[] x) {
     		return PROBLEM.evaluateFunction(x);
     	}
+        public double[] evaluateConstraint(double[] x) {
+            return PROBLEM.evaluateConstraint(x);
+        }
     };
 
 	/**
@@ -71,7 +75,7 @@ public class ExampleExperiment {
          * Adapt to your need. Note that the experiment is run according
          * to the settings, defined in exampleExperiment(...) below.
          */
-		exampleExperiment("bbob", "bbob", randomGenerator);
+		exampleExperiment("bbob-constrained", "bbob", randomGenerator); /* was: exampleExperiment("bbob", "bbob", randomGenerator) */
 
 		System.out.println("Done!");
 		System.out.flush();
@@ -116,7 +120,7 @@ public class ExampleExperiment {
 				/* Run the algorithm at least once */
 				for (int run = 1; run <= 1 + INDEPENDENT_RESTARTS; run++) {
 
-					long evaluationsDone = PROBLEM.getEvaluations();
+					long evaluationsDone = PROBLEM.getEvaluations() + PROBLEM.getEvaluationsConstraints();
 					long evaluationsRemaining = (long) (dimension * BUDGET_MULTIPLIER) - evaluationsDone;
 
 					/* Break the loop if the target was hit or there are no more remaining evaluations */
@@ -127,6 +131,7 @@ public class ExampleExperiment {
 					myRandomSearch(evaluateFunction,
 							       dimension,
 							       PROBLEM.getNumberOfObjectives(),
+                                   PROBLEM.getNumberOfConstraints(),
 							       PROBLEM.getSmallestValuesOfInterest(),
 							       PROBLEM.getLargestValuesOfInterest(),
 							       evaluationsRemaining,
@@ -161,7 +166,8 @@ public class ExampleExperiment {
 	 */
 	public static void myRandomSearch(Function f, 
 			                          int dimension, 
-			                          int numberOfObjectives, 
+			                          int numberOfObjectives,
+                                      int numberOfConstraints,
 			                          double[] lowerBounds,
 			                          double[] upperBounds, 
 			                          long maxBudget, 
@@ -169,6 +175,7 @@ public class ExampleExperiment {
 
 		double[] x = new double[dimension];
 		double[] y = new double[numberOfObjectives];
+        double[] z = new double[numberOfConstraints];
 		double range;
 		
 		for (int i = 0; i < maxBudget; i++) {
@@ -182,6 +189,8 @@ public class ExampleExperiment {
 		    /* Call the evaluate function to evaluate x on the current problem (this is where all the COCO logging
 		     * is performed) */
 			y = f.evaluate(x);
+            if (numberOfConstraints > 0)
+                z = f.evaluateConstraint(x);
 		}
 		
 	}
