@@ -735,14 +735,14 @@ ee.observer_options['result_folder'] = "RS-co"
 ee.main()  # doctest: +ELLIPSIS
             '''], verbose=_verbosity)
             # now run all tests
-            python('code-postprocessing/cocopp', ['__main__.py', 'all'], verbose=_verbosity)
+            python('code-postprocessing/cocopp', ['test.py', 'all'], verbose=_verbosity)
         except subprocess.CalledProcessError:
             sys.exit(-1)
         finally:
             # always remove folder of previously run experiments:
             shutil.rmtree('code-experiments/build/python/exdata/')
     else:
-        python('code-postprocessing/cocopp', ['__main__.py'], verbose=_verbosity)
+        python('code-postprocessing/cocopp', ['test.py'], verbose=_verbosity)
     # also run the doctests in aRTAplots/generate_aRTA_plot.py:
     python('code-postprocessing/aRTAplots', ['generate_aRTA_plot.py'], verbose=_verbosity)
     
