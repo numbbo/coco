@@ -468,6 +468,22 @@ you compile the LaTeX templates "by hand" or via your LaTeX IDE. But to make the
 `openout_any = a` to your `texmf.cnf` file in the local TeX path. Type 
 `kpsewhich texmf.cnf` to find out where this file actually is.
 
+#### Postprocessing not installable
+If for some reason, your python installation is corrupted and running
+`python do.py install-postprocessing` crashes with an error message like
+```
+[...]
+    safe = scan_module(egg_dir, base, name, stubs) and safe
+  File "C:\Users\dimo\Anaconda2\lib\site-packages\setuptools\command\bdist_egg.py", line 392, in sca
+n_module
+    code = marshal.load(f)
+EOFError: EOF read where object expected
+[...]
+```
+try adding `zip_safe=False` to the `setup.py.in` file in the `code-postprocessing`
+folder. More details can be found in the issue [#1373](https://github.com/numbbo/coco/issues/1373).
+
+
 
 Details
 -------
