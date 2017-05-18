@@ -456,7 +456,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   indicator->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, problem->number_of_variables);
 
   /* Prepare the info file */
-  path_name = coco_allocate_string(COCO_PATH_MAX + 2);
+  path_name = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_create_directory(path_name);
   file_name = coco_strdupf("%s_%s.info", problem->problem_type, indicator_name);
@@ -471,7 +471,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   coco_free_memory(path_name);
 
   /* Prepare the tdat file */
-  path_name = coco_allocate_string(COCO_PATH_MAX + 2);
+  path_name = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
   coco_create_directory(path_name);
@@ -487,7 +487,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   coco_free_memory(path_name);
 
   /* Prepare the dat file */
-  path_name = coco_allocate_string(COCO_PATH_MAX + 2);
+  path_name = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
   coco_create_directory(path_name);
@@ -887,7 +887,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
       (logger_biobj->log_nondom_mode == LOG_NONDOM_FINAL)) {
 
     /* Create the path to the file */
-    path_name = coco_allocate_string(COCO_PATH_MAX + 2);
+    path_name = coco_allocate_string(COCO_PATH_MAX + 1);
     memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
     coco_join_path(path_name, COCO_PATH_MAX, nondom_folder_name, NULL);
     coco_create_directory(path_name);
