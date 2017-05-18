@@ -436,8 +436,8 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     return NULL;
   }
 
-  result_folder = coco_allocate_string(COCO_PATH_MAX + 2);
-  algorithm_name = coco_allocate_string(COCO_PATH_MAX + 2);
+  result_folder = coco_allocate_string(COCO_PATH_MAX + 1);
+  algorithm_name = coco_allocate_string(COCO_PATH_MAX + 1);
   algorithm_info = coco_allocate_string(5 * COCO_PATH_MAX);
   /* Read result_folder, algorithm_name and algorithm_info from the observer_options and use
    * them to initialize the observer */
@@ -445,7 +445,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     strcpy(result_folder, "default");
   }
   /* Create the result_folder inside the "exdata" folder */
-  path = coco_allocate_string(COCO_PATH_MAX + 2);
+  path = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(path, outer_folder_name, strlen(outer_folder_name) + 1);
   coco_join_path(path, COCO_PATH_MAX, result_folder, NULL);
   coco_create_unique_directory(&path);
