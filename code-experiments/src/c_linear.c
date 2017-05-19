@@ -339,6 +339,12 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
   if(feasible_direction)
     problem = c_guarantee_feasible_point(problem, feasible_direction);
   
+  /* asma: should be:
+   
+   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+   
+   */
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "linear");

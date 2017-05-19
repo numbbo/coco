@@ -725,7 +725,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   /* Create the constraints. Use the feasible direction above
    * to build the first constraint. 
    */
-  problem_c = c_linear_cons_bbob_problem_allocate(function, 
+  problem_c = c_linear_cons_bbob_problem_allocate(function,
       dimension, instance, number_of_linear_constraints,
       problem_id_template, problem_name_template, feasible_direction);
       

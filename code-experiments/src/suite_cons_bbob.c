@@ -168,7 +168,7 @@ static coco_problem_t *suite_cons_bbob_get_problem(coco_suite_t *suite,
   /* Use the standard stacked problem_id as problem_name and 
    * construct a new suite-specific problem_id 
    */
-  coco_problem_set_name(problem, problem->problem_id);
+  //coco_problem_set_name(problem, problem->problem_id);
   coco_problem_set_id(problem, "bbob-constrained_f%02lu_i%02lu_d%02lu", 
   (unsigned long)function, (unsigned long)instance, (unsigned long)dimension);
   
