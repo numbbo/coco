@@ -421,7 +421,19 @@ static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) 
      */
     coco_evaluate_function(inner_problem, inner_problem->initial_solution, 
         &initial_solution_fvalue);
-      
+    
+    if (logger->number_of_evaluations_constraints > 0) {
+
+      /* Write provided feasible point in case first evaluated point
+       * does not correspond to evaluation counter 1.
+       */
+      if (coco_observer_targets_trigger(logger->targets, initial_solution_fvalue - logger->optimal_fvalue)) {
+        logger_bbob_write_data(logger->fdata_file, 
+            1, initial_solution_fvalue, initial_solution_fvalue, 
+            logger->optimal_fvalue, inner_problem->initial_solution, problem->number_of_variables);
+      }
+    }
+  
     if (!is_feasible) {
 		 
       /* If x is infeasible, log the initial solution provided by Coco instead */
