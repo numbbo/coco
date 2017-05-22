@@ -29,7 +29,7 @@ static double f_sharp_ridge_raw(const double *x, const size_t number_of_variable
   	return NAN;
 
   result = 0.0;
-  for (i = ceil(vars_40); i < number_of_variables; ++i) {
+  for (i = coco_double_to_size_t(ceil(vars_40)); i < number_of_variables; ++i) {
     result += x[i] * x[i];
   }
   result = alpha * sqrt(result / vars_40);
