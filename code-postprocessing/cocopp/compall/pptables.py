@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Routines for the generation of TeX tables."""
+""""Routines for the generation of TeX tables."""
+
 from __future__ import absolute_import
 
 import os, sys
@@ -13,19 +14,12 @@ from ..pptex import writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from ..toolsstats import significancetest, significance_all_best_vs_other
 from ..toolsdivers import str_to_latex, strip_pathname1, replace_in_file, get_version_label, prepend_to_file
 
-"""
-See Section Comparison Tables in
-http://tao.lri.fr/tiki-index.php?page=BBOC+Data+presentation
-
-"""
-
 
 def get_table_caption():
-    """ Sets table caption, based on the testbedsettings.current_testbed
-        and genericsettings.runlength_based_targets.
-        
-        TODO: \hvref and \fopt should be defined via the current_testbed, 
-        preferably with a single latex command. 
+    """Sets table caption.
+    
+       Based on the testbedsettings.current_testbed
+       and genericsettings.runlength_based_targets.
     """
 
     table_caption_one = r"""%

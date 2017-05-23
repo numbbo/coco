@@ -67,6 +67,7 @@ static void f_linear_slope_evaluate_gradient(coco_problem_t *problem,
   double base, exponent, si;
   size_t i;
 
+  (void)x; /* silence (C89) compiliers */
   for (i = 0; i < problem->number_of_variables; ++i) {
     base = sqrt(alpha);
     exponent = (double) (long) i / ((double) (long) problem->number_of_variables - 1);

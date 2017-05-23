@@ -167,6 +167,7 @@ static coco_problem_t *f_rastrigin_cons_bbob_problem_allocate(const size_t funct
   coco_problem_t *problem = NULL;
   size_t i;
 
+  (void)rseed;  /* silence (C89) compilers */
   xshift = coco_allocate_vector(dimension);
   fopt = bbob2009_compute_fopt(function, instance);
   

@@ -226,7 +226,7 @@ static coco_problem_t *c_linear_shuffle(coco_problem_t *problem_c,
    *    is of type size_t, the fraction is discarded.
    */
   random_generator = coco_random_new(1); /* TODO: choose problem-dependent seed */
-  exchanged = 2 + coco_random_uniform(random_generator) * (problem_c->number_of_constraints - 1); /*(rand() / (RAND_MAX + 1.0)) * (problem_c->number_of_constraints - 2 + 1);*/
+  exchanged = coco_double_to_size_t(2 + coco_random_uniform(random_generator) * (problem_c->number_of_constraints - 1)); /*(rand() / (RAND_MAX + 1.0)) * (problem_c->number_of_constraints - 2 + 1);*/
   
   /* Run through the stack until the chosen constraint is found */
   for (i = problem_c->number_of_constraints; i > exchanged; --i) {
