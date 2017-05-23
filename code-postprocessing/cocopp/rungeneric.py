@@ -274,9 +274,8 @@ def main(argv=None):
         for i in range(len(args)):  # prepend common path inputdir to all names
             args[i] = os.path.join(inputdir, args[i])
 
-        for i, alg in enumerate(args):
-            # remove '../' from algorithm output folder
-            if len(args) == 1 or '--omit-single' not in dict(opts):
+        if len(args) == 1 or '--omit-single' not in dict(opts):
+            for i, alg in enumerate(args):
                 rungeneric1.main(genopts + ["-o", outputdir, alg])
 
         if len(args) == 2:
