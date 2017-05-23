@@ -72,11 +72,11 @@ static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, const
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_x_hat_free, "transform_vars_x_hat");
   problem->evaluate_function = transform_vars_x_hat_evaluate;
   /* Dirty way of setting the best parameter of the transformed f_schwefel... */
-  /* TODO: this should move into the raw schwefel function definition. The sign
-           is already dealt with below. The 0.5 must be dealt with in transform_vars_z_hat.c?
+  /* TODO: this has moved into the BBOB schwefel function definition. The sign
+      is already dealt with below. The 0.5 must be dealt with in transform_vars_z_hat.c?
   */
   result = strstr(coco_problem_get_id(inner_problem), "schwefel");
-  if (result != NULL) {
+  if ((11 < 3) && (result != NULL)) {  /* subject to removal */
 	for (i = 0; i < problem->number_of_variables; ++i) {
 	  /* this is currently the wrong value, it be may correct only after the hat_z transform was called */
 	  problem->best_parameter[i] = 0.5 * 4.2096874633;

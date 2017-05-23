@@ -123,9 +123,14 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
   problem = transform_obj_shift(problem, fopt);
   problem = transform_vars_scale(problem, 100);
   problem = transform_vars_shift(problem, tmp1, 0);
+  /* the following affine transformation can (and should) probably
+     be replaced with transform_vars_conditioning. Then, the below
+     re-setting of best_parameter is also not necessary anymore. */
   problem = transform_vars_affine(problem, M, b, dimension);
   problem = transform_vars_shift(problem, tmp2, 0);
   problem = transform_vars_z_hat(problem, xopt);
+  for (i = 0; i < problem->number_of_variables; ++i)
+    problem->best_parameter[i] = 4.2096874633;
   problem = transform_vars_scale(problem, 2);
   problem = transform_vars_x_hat(problem, rseed);
 
