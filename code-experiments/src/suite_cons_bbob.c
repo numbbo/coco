@@ -54,7 +54,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const size_t function,
   coco_problem_t *problem = NULL;
   
   double *feasible_direction = coco_allocate_vector(dimension);  
-  const double *xopt = coco_allocate_vector(dimension);  
+  double *xopt = coco_allocate_vector(dimension);  
   
   const char *problem_id_template = "bbob-constrained_f%03lu_i%02lu_d%02lu";
   const char *problem_name_template = "BBOB-constrained suite problem f%lu instance %lu in %luD";
