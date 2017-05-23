@@ -65,6 +65,8 @@ static coco_problem_t *transform_vars_z_hat(coco_problem_t *inner_problem, const
   problem->evaluate_function = transform_vars_z_hat_evaluate;
   /* TODO: implement best_parameter transformation if needed in the case of not zero:
      see also issue #814.
+  The correct update of best_parameter seems not too difficult but it would break
+  the current implementation of the Schwefel function. 
    coco_warning("transform_vars_z_hat(): 'best_parameter' not updated"); */
   return problem;
 }
