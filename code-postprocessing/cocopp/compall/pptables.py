@@ -11,7 +11,7 @@ import numpy
 from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings, captions
 from ..pptex import writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from ..toolsstats import significancetest, significance_all_best_vs_other
-from ..toolsdivers import str_to_latex, strip_pathname1, replace_in_file, get_version_label
+from ..toolsdivers import str_to_latex, strip_pathname1, replace_in_file, get_version_label, prepend_to_file
 
 """
 See Section Comparison Tables in
@@ -249,7 +249,7 @@ def getTopIndicesOfColumns(table, maxRank=None):
 
 
 # TODO: function_headings argument need to be tested, default should be changed according to templates
-def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1, 13, 101]
+def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True, latex_commands_file=''):  # [1, 13, 101]
     """Generate one table per func with results of multiple algorithms."""
     """Difference with the first version:
 
@@ -285,6 +285,8 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
 
     funInfos = ppfigparam.read_fun_infos()
 
+    tables_header = []
+    additional_commands = []
     for df in sorted(dictData):
         # Generate one table per df
         # first update targets for each dimension-function pair if needed:
@@ -424,7 +426,7 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                 curline.append(r'\multicolumn{2}{|@{}l@{}}{\begin{rotate}{30}\#succ\end{rotate}}')
             else:
                 curline.append(r'\multicolumn{2}{|@{}l@{}}{\#succ}')
-            table.append(curline)
+            tables_header = curline[:]
 
         # do the same for the HTML output, but all the time:
         curlineHtml = []
@@ -508,15 +510,16 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
         tableHtml.append('<tbody>\n')
         extraeol.append('')
 
-        header = r'\providecommand{\ntables}{%d}' % len(targetsOfInterest)
+        additional_commands = ['\\providecommand{\\ntables}{%d}' % len(targetsOfInterest)]
         for i, alg in enumerate(algnames):
             tableHtml.append('<tr>\n')
             # algname, entries, irs, line, line2, succ, runs, testres1alg in zip(algnames,
             # data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
-            commandname = r'\alg%stables' % numtotext(i)
-            #            header += r'\providecommand{%s}{{%s}{}}' % (commandname, str_to_latex(strip_pathname(alg)))
-            header += r'\providecommand{%s}{\StrLeft{%s}{\ntables}}' % (commandname, str_to_latex(strip_pathname1(alg)))
-            curline = [commandname + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
+            command_name = r'\alg%stables' % numtotext(i)
+            #            header += r'\providecommand{%s}{{%s}{}}' % (command_name, str_to_latex(strip_pathname(alg)))
+            additional_commands.append('\\providecommand{%s}{\\StrLeft{%s}{\\ntables}}' %
+                                       (command_name, str_to_latex(strip_pathname1(alg))))
+            curline = [command_name + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
             curlineHtml = ['<th>%s</th>\n' % str_to_latex(strip_pathname1(alg))]
 
             zipToEnumerate = zip(algerts[i], algdisp[i], isBoldArray[i], algtestres[i]) if refalgentries else zip(
@@ -664,11 +667,12 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
             extraeol.append('')
 
         # Write table
-        res = tableXLaTeX(table, spec=spec, extraeol=extraeol)
+        res = tableXLaTeX(table, spec=spec, extra_eol=extraeol, add_begin_tabular=False, add_end_tabular=False)
         try:
             filename = os.path.join(outputdir, 'pptables_f%03d_%02dD.tex' % (df[1], df[0]))
             f = open(filename, 'w')
-            f.write(header + '\n')
+            if with_table_heading:
+                f.write(header + '\n')
             f.write(res)
 
             res = ("").join(str(item) for item in tableHtml)
@@ -690,7 +694,6 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
                 
                 replace_in_file(filename, '??COCOVERSION??', '<br />Data produced with COCO %s' % (get_version_label(None)))
 
-
             if genericsettings.verbose:
                 print 'Wrote table in %s' % filename
         except:
@@ -698,3 +701,14 @@ def main(dictAlg, sortedAlgs, outputdir='.', function_targets_line=True):  # [1,
         else:
             f.close()
             # TODO: return status
+
+    if len(additional_commands) > 0:
+        for command in additional_commands:
+            prepend_to_file(latex_commands_file, [command])
+    if len(tables_header) > 0:
+        extraeol = [r'\hline']
+        res = tableXLaTeX([tables_header], spec=spec, extra_eol=extraeol, add_end_tabular=False)
+        prepend_to_file(latex_commands_file, ['\\providecommand{\\pptablesheader}{', res, '}'])
+
+        res = tableXLaTeX([], spec=spec, add_begin_tabular=False)
+        prepend_to_file(latex_commands_file, ['\\providecommand{\\pptablesfooter}{', res, '}'])

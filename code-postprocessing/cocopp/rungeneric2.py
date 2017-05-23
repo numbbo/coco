@@ -300,6 +300,8 @@ def main(argv=None):
         config.config(dsList[0].testbed_name)
 
         ######################### Post-processing #############################
+        latex_commands_file = os.path.join(outputdir, 'cocopp_commands.tex')
+
         if (genericsettings.isFig or genericsettings.isRLDistr
             or genericsettings.isTab or genericsettings.isScatter):
             if not os.path.exists(outputdir):
@@ -313,7 +315,7 @@ def main(argv=None):
             for i, alg in enumerate(args):
                 lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' +
                              str_to_latex(strip_pathname1(alg)) + '}')
-            prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
+            prepend_to_file(latex_commands_file,
                             lines, 1000, 'bbob_proc_commands.tex truncated, '
                             + 'consider removing the file before the text run'
                             )
@@ -456,7 +458,7 @@ def main(argv=None):
                                         outputdir,
                                         '%02dD_%s' % (dim, fGroup))
 
-            prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
+            prepend_to_file(latex_commands_file,
                             ['\\providecommand{\\bbobpprldistrlegendtwo}[1]{',
                              pprldistr.caption_two(),  # depends on the config
                              # setting, should depend
@@ -553,7 +555,7 @@ def main(argv=None):
         if genericsettings.isScatter:
             print("Scatter plots...")
             ppscatter.main(dsList1, dsList0, outputdir, inset)
-            prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
+            prepend_to_file(latex_commands_file,
                             ['\\providecommand{\\bbobppscatterlegend}[1]{',
                              ppscatter.figure_caption(),
                              '}'
@@ -617,7 +619,7 @@ def main(argv=None):
                     else:
                         pptable2.main(dictNG0[nGroup], dictNG1[nGroup], dims, outputdir, '%s' % (nGroup))
 
-            prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
+            prepend_to_file(latex_commands_file,
                             ['\\providecommand{\\bbobpptablestwolegend}[2]{',
                              pptable2.get_table_caption(),
                              '}'
@@ -642,7 +644,7 @@ def main(argv=None):
             # The following is copied from rungenericmany.py to comply
             # with the bi-objective many-algorithm LaTeX template
             print("Generating new tables (pptables.py)...")
-            prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
+            prepend_to_file(latex_commands_file,
                             ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
                              pptables.get_table_caption() + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
@@ -654,7 +656,8 @@ def main(argv=None):
                         sortedAlgs,
                         outputdir,
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==
-                                         testbedsettings.testbed_name_bi) else True))
+                                         testbedsettings.testbed_name_bi) else True),
+                        latex_commands_file)
             print_done()
 
         if genericsettings.isScaleUp:

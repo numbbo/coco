@@ -441,7 +441,6 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
         if genericsettings.verbose:
             print "Table written in %s" % output_file
 
-
     if len(dims_of_interest) > 0:
         extraeol = [r'\hline']
         res = tableLaTeX([header], spec=spec, extra_eol=extraeol, add_end_tabular=False)
@@ -449,4 +448,3 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
 
         res = tableLaTeX([], spec=spec, add_begin_tabular=False)
         prepend_to_file(latex_commands_file, ['\\providecommand{\\pptablefooter}{', res, '}'])
-
