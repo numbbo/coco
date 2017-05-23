@@ -37,7 +37,7 @@ static void transform_vars_x_hat_evaluate(coco_problem_t *problem, const double 
     bbob2009_unif(data->x, problem->number_of_variables, data->seed);
 
     for (i = 0; i < problem->number_of_variables; ++i) {
-      if (data->x[i] - 0.5 < 0.0) {
+      if (data->x[i] < 0.5) {
         data->x[i] = -x[i];
       } else {
         data->x[i] = x[i];
@@ -74,17 +74,25 @@ static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, const
   /* Dirty way of setting the best parameter of the transformed f_schwefel... */
   bbob2009_unif(data->x, problem->number_of_variables, data->seed);
   result = strstr(coco_problem_get_id(inner_problem), "schwefel");
+  /* TODO: this should move into the raw schwefel function definition. The sign
+           is already dealt with below. The 0.5 must be dealt with in transform_vars_z_hat.c?
+  */
 	if (result != NULL) {
 		for (i = 0; i < problem->number_of_variables; ++i) {
-			if (data->x[i] - 0.5 < 0.0) {
+			if (data->x[i] < 0.5) {  /* with probability 1/2 */
 				problem->best_parameter[i] = -0.5 * 4.2096874633;
 			} else {
 				problem->best_parameter[i] = 0.5 * 4.2096874633;
 			}
 		}
 	} else if (coco_problem_best_parameter_not_zero(inner_problem)) {
+	  for (i = 0; i < problem->number_of_variables; ++i)
+		if (data->x[i] < 0.5)  /* with probability 1/2 */
+		  problem->best_parameter[i] *= -1;
+		/*
 		coco_warning("transform_vars_x_hat(): 'best_parameter' not updated, set to NAN");
 		coco_vector_set_to_nan(inner_problem->best_parameter, inner_problem->number_of_variables);
+		*/
 	}
 	return problem;
 }
