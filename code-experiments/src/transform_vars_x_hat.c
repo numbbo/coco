@@ -75,10 +75,6 @@ static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, const
 	for (i = 0; i < problem->number_of_variables; ++i)
 	  if (data->x[i] < 0.5)  /* with probability 1/2 */
 		problem->best_parameter[i] *= -1;
-	/*
-	coco_warning("transform_vars_x_hat(): 'best_parameter' not updated, set to NAN");
-	coco_vector_set_to_nan(inner_problem->best_parameter, inner_problem->number_of_variables);
-	*/
   }
   return problem;
 }

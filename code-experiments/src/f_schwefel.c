@@ -81,7 +81,7 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
                                                         const char *problem_name_template) {
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
-  size_t i, j;
+  size_t i;
 
   const double condition = 10.;
 
@@ -107,7 +107,7 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
   /* problem = transform_vars_affine(problem, M, b, dimension); */
   problem = transform_vars_conditioning(problem, condition);
   problem = transform_vars_shift(problem, tmp2, 0);
-  problem = transform_vars_z_hat(problem, xopt);
+  problem = transform_vars_z_hat(problem, xopt); /* only for the correct xopt the best_parameter is not changed */
   problem = transform_vars_scale(problem, 2);
   problem = transform_vars_x_hat(problem, rseed);
 
