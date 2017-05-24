@@ -768,8 +768,17 @@ cdef class Problem:
                                           <double *>np.PyArray_DATA(self.x_initial))
         return np.array(self.x_initial, copy=True)
     @property
-    def list_of_observers(self):
+    def observers(self):
+        """list of observers wrapped around this problem"""
         return self._list_of_observers
+    @property
+    def is_observed(self):
+        """problem ``p`` is observed ``p.is_observed`` times.
+
+        See also: the list of observers in property `observers`.
+        """
+        return len(self._list_of_observers)
+
     property number_of_variables:  # this is cython syntax, not known in Python
         # this is a class definition which is instantiated automatically!?
         """Number of variables this problem instance expects as input."""
