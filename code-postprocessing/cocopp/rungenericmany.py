@@ -277,13 +277,14 @@ def main(argv=None):
             if genericsettings.verbose:
                 print('Folder %s was created.' % outputdir)
 
+        latex_commands_file = os.path.join(outputdir, 'cocopp_commands.tex')
+
         # prepend the algorithm name command to the tex-command file
         lines = []
         for i, alg in enumerate(args):
             lines.append('\\providecommand{\\algorithm' + pptex.numtotext(i) +
                          '}{' + str_to_latex(strip_pathname1(alg)) + '}')
-        prepend_to_file(os.path.join(outputdir,
-                                     'cocopp_commands.tex'), lines, 5000,
+        prepend_to_file(latex_commands_file, lines, 5000,
                         'bbob_proc_commands.tex truncated, consider removing '
                         + 'the file before the text run'
                         )
@@ -421,7 +422,7 @@ def main(argv=None):
 
         if genericsettings.isTab:
             print("Generating comparison tables...")
-            prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
+            prepend_to_file(latex_commands_file,
                             ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
                              pptables.get_table_caption() + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
@@ -433,7 +434,8 @@ def main(argv=None):
                         sortedAlgs,
                         outputdir,
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==
-                                         testbedsettings.testbed_name_bi) else True))
+                                         testbedsettings.testbed_name_bi) else True),
+                        latex_commands_file)
             print_done()
 
         ppfig.save_single_functions_html(

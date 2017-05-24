@@ -309,10 +309,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   char *tmpc_funId; /* serves to extract the function id as a char *. There should be a better way of doing this! */
   char *tmpc_dim; /* serves to extract the dimension as a char *. There should be a better way of doing this! */
   char indexFile_prefix[10] = "bbobexp"; /* TODO (minor): make the prefix bbobexp a parameter that the user can modify */
-  size_t str_length_funId, str_length_dim;
   
-  str_length_funId = coco_double_to_size_t(bbob2009_fmax(1, ceil(log10((double) coco_problem_get_suite_dep_function(inner_problem)))));
-  str_length_dim = coco_double_to_size_t(bbob2009_fmax(1, ceil(log10((double) inner_problem->number_of_variables))));
   assert(logger != NULL);
   assert(inner_problem != NULL);
   assert(inner_problem->problem_id != NULL);
@@ -427,11 +424,14 @@ static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) 
       /* Write provided feasible point in case first evaluated point
        * does not correspond to evaluation counter 1.
        */
-      if (coco_observer_targets_trigger(logger->targets, initial_solution_fvalue - logger->optimal_fvalue)) {
-        logger_bbob_write_data(logger->fdata_file, 
-            1, initial_solution_fvalue, initial_solution_fvalue, 
-            logger->optimal_fvalue, inner_problem->initial_solution, problem->number_of_variables);
-      }
+      logger_bbob_write_data(logger->fdata_file, 
+          1, initial_solution_fvalue, initial_solution_fvalue, 
+          logger->optimal_fvalue, inner_problem->initial_solution, problem->number_of_variables);
+      coco_observer_targets_trigger(logger->targets, initial_solution_fvalue - logger->optimal_fvalue);
+      logger_bbob_write_data(logger->tdata_file, 
+          1, initial_solution_fvalue, initial_solution_fvalue,
+          logger->optimal_fvalue, inner_problem->initial_solution, problem->number_of_variables);
+      coco_observer_evaluations_trigger(logger->evaluations, 1);
     }
   
     if (!is_feasible) {

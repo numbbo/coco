@@ -324,7 +324,7 @@ static coco_problem_t *suite_biobj_ext_get_problem(coco_suite_t *suite,
           data->new_instances[i][j] = 0;
         }
       }
-      suite->data_free_function = suite_biobj_free;
+      suite->data_free_function = suite_biobj_ext_free;
       suite->data = data;
     }
 
