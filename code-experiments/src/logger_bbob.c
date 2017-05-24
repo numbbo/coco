@@ -424,11 +424,14 @@ static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) 
       /* Write provided feasible point in case first evaluated point
        * does not correspond to evaluation counter 1.
        */
-      if (coco_observer_targets_trigger(logger->targets, initial_solution_fvalue - logger->optimal_fvalue)) {
-        logger_bbob_write_data(logger->fdata_file, 
-            1, initial_solution_fvalue, initial_solution_fvalue, 
-            logger->optimal_fvalue, inner_problem->initial_solution, problem->number_of_variables);
-      }
+      logger_bbob_write_data(logger->fdata_file, 
+          1, initial_solution_fvalue, initial_solution_fvalue, 
+          logger->optimal_fvalue, inner_problem->initial_solution, problem->number_of_variables);
+      coco_observer_targets_trigger(logger->targets, initial_solution_fvalue - logger->optimal_fvalue);
+      logger_bbob_write_data(logger->tdata_file, 
+          1, initial_solution_fvalue, initial_solution_fvalue,
+          logger->optimal_fvalue, inner_problem->initial_solution, problem->number_of_variables);
+      coco_observer_evaluations_trigger(logger->evaluations, 1);
     }
   
     if (!is_feasible) {
