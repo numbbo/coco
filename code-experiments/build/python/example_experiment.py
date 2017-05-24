@@ -226,9 +226,9 @@ def random_search(fun, lbounds, ubounds, budget):
         chunk = int(min([budget, max_chunk_size]))
         # about five times faster than "for k in range(budget):..."
         X = lbounds + (ubounds - lbounds) * np.random.rand(chunk, dim)
-        F = [fun(x) for x in X]
         if fun.number_of_constraints > 0:
-            C = [fun.constraint(x) for x in X] 
+            C = [fun.constraint(x) for x in X]
+        F = [fun(x) for x in X]
         if fun.number_of_objectives == 1:
             index = np.argmin(F)
             if f_min is None or F[index] < f_min:
