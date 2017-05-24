@@ -462,9 +462,9 @@ def main(argv=None):
 
         dictFunc = dsList.dictByFunc()
         ppfig.save_single_functions_html(os.path.join(algoutputdir, genericsettings.single_algorithm_file_name),
-                                    dictFunc[dictFunc.keys()[0]][0].algId,
-                                    htmlPage = ppfig.HtmlPage.ONE,
-                                    functionGroups = dsList.getFuncGroups())
+                                         dictFunc[dictFunc.keys()[0]][0].algId,
+                                         htmlPage = ppfig.HtmlPage.ONE,
+                                         function_groups= dsList.getFuncGroups())
 
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglosstablecaption}[1]{',

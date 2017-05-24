@@ -538,7 +538,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
             '',
             dimensions=dims,
             htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP,
-            functionGroups=functionGroups,
+            function_groups=functionGroups,
             parentFileName='../%s' % parent_html_file_name if parent_html_file_name else None
         )
 
