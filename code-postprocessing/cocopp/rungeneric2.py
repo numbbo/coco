@@ -357,7 +357,7 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.ppfigs_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.PPFIGS,
-            functionGroups=dsList0.getFuncGroups(),
+            function_groups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.two_algorithm_file_name
         )
 
@@ -365,7 +365,7 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.ppscatter_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.PPSCATTER,
-            functionGroups=dsList0.getFuncGroups(),
+            function_groups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.two_algorithm_file_name
         )
 
@@ -373,7 +373,7 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.pprldistr2_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.PPRLDISTR2,
-            functionGroups=dsList0.getFuncGroups(),
+            function_groups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.two_algorithm_file_name
         )
 
@@ -385,7 +385,7 @@ def main(argv=None):
             algname=algorithm_name,
             dimensions=sorted(list(set(dictDim0.keys()) & set(dictDim1.keys()))),
             htmlPage=ppfig.HtmlPage.PPTABLE2,
-            functionGroups=dsList0.getFuncGroups(),
+            function_groups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.two_algorithm_file_name
         )
 
@@ -394,7 +394,7 @@ def main(argv=None):
             '',  # algorithms names are clearly visible in the figure
             dimensions=sorted(list(set(dictDim0.keys()) & set(dictDim1.keys()))),
             htmlPage=ppfig.HtmlPage.PPTABLES,
-            functionGroups=dsList0.getFuncGroups(),
+            function_groups=dsList0.getFuncGroups(),
             parentFileName=genericsettings.many_algorithm_file_name
         )
 
@@ -681,7 +681,7 @@ def main(argv=None):
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.TWO,
 
-            functionGroups=dsList0.getFuncGroups())
+            function_groups=dsList0.getFuncGroups())
 
         if (genericsettings.isFig or genericsettings.isRLDistr
             or genericsettings.isTab or genericsettings.isScatter

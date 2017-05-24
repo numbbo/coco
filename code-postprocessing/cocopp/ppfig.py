@@ -18,8 +18,8 @@ from . import genericsettings, testbedsettings, toolsstats, htmldesc, toolsdiver
 
 bbox_inches_choices = {  # do we also need pad_inches = 0?
     'svg': 'tight',
-    #'png': 'tight', # uncomment for bbob-biobj figures
-    #'pdf': 'tight', # uncomment for bbob-biobj figures
+    # 'png': 'tight', # uncomment for bbob-biobj figures
+    # 'pdf': 'tight', # uncomment for bbob-biobj figures
 }
 
 
@@ -91,11 +91,11 @@ html_header = """<HTML>
 """
 
 
-def addImage(imageName, addLink, height=160):
-    if addLink:
-        return '<a href="file:%s"><IMG SRC="%s" height="%dem"></a>' % (imageName, imageName, height)
+def add_image(image_name, add_link_to_image, height=160):
+    if add_link_to_image:
+        return '<a href="file:%s"><IMG SRC="%s" height="%dem"></a>' % (image_name, image_name, height)
     else:
-        return '<IMG SRC="%s" height="%dem">' % (imageName, height)
+        return '<IMG SRC="%s" height="%dem">' % (image_name, height)
 
 
 def add_link(currentDir, folder, fileName, label, indent='', ignoreFileExists=False):
@@ -124,29 +124,27 @@ def save_index_html_file(filename):
 
         f.write(html_header % ('Post processing results', 'Post processing results', text))
 
-        currentDir = os.path.dirname(os.path.realpath(filename))
+        current_dir = os.path.dirname(os.path.realpath(filename))
         indent = '&nbsp;&nbsp;'
 
-        comparisonLinks = ''
-        comparisonLinks += add_link(currentDir, None, 'templateBBOBcmp.html',
-                                    'Two algorithm comparison', indent)
-        comparisonLinks += add_link(currentDir, None, 'templateBBOBmany.html',
-                                    'Many algorithm comparison', indent)
-        if comparisonLinks:
+        comparison_links = ''
+        comparison_links += add_link(current_dir, None, 'templateBBOBcmp.html', 'Two algorithm comparison', indent)
+        comparison_links += add_link(current_dir, None, 'templateBBOBmany.html', 'Many algorithm comparison', indent)
+        if comparison_links:
             f.write('<H2>Comparison data</H2>\n')
-            f.write(comparisonLinks)
+            f.write(comparison_links)
 
         f.write('<H2>Single algorithm data</H2>\n')
 
-        singleAlgFile = 'templateBBOBarticle.html'
-        for root, _dirs, files in os.walk(currentDir):
+        single_algorithm_file = 'templateBBOBarticle.html'
+        for root, _dirs, files in os.walk(current_dir):
             for elem in _dirs:
-                f.write(add_link(currentDir, elem, singleAlgFile, elem, indent))
+                f.write(add_link(current_dir, elem, single_algorithm_file, elem, indent))
 
         f.write("\n</BODY>\n</HTML>")
 
 
-def getHomeLink(html_page):
+def get_home_link(html_page):
     home_link = '<H3><a href="%s%s.html">Home</a></H3>'
     if html_page is HtmlPage.ONE:
         return home_link % ('../', genericsettings.index_html_file_name)
@@ -156,7 +154,7 @@ def getHomeLink(html_page):
     return ''
 
 
-def getConvLink(html_page, current_dir):
+def get_convergence_link(html_page, current_dir):
     if html_page in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         return add_link(current_dir, None, genericsettings.ppconv_file_name + '.html',
                         convergence_plots_header, ignoreFileExists=genericsettings.isConv)
@@ -190,7 +188,7 @@ def getRldLink(html_page, current_dir):
     return links
 
 
-def getParentLink(html_page, parent_file_name):
+def get_parent_link(html_page, parent_file_name):
     if parent_file_name and html_page not in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         return '<H3><a href="%s.html">Overview page</a></H3>' % parent_file_name
 
@@ -203,35 +201,35 @@ def save_single_functions_html(filename,
                                add_to_names='',
                                dimensions=None,
                                htmlPage=HtmlPage.NON_SPECIFIED,
-                               functionGroups=None,
+                               function_groups=None,
                                parentFileName=None,  # used only with HtmlPage.NON_SPECIFIED
                                header=None,  # used only with HtmlPage.NON_SPECIFIED
                                caption=None):  # used only with HtmlPage.NON_SPECIFIED
 
     name = filename.split(os.sep)[-1]
-    currentDir = os.path.dirname(os.path.realpath(filename))
+    current_dir = os.path.dirname(os.path.realpath(filename))
     with open(filename + add_to_names + '.html', 'w') as f:
         header_title = algname + ' ' + name + add_to_names
-        links = getHomeLink(htmlPage)
-        links += getConvLink(htmlPage, currentDir)
-        links += getRldLink(htmlPage, currentDir)
-        links += getParentLink(htmlPage, parentFileName)
+        links = get_home_link(htmlPage)
+        links += get_convergence_link(htmlPage, current_dir)
+        links += getRldLink(htmlPage, current_dir)
+        links += get_parent_link(htmlPage, parentFileName)
 
         f.write(html_header % (header_title.strip().replace(' ', ', '), algname, links))
 
-        if functionGroups is None:
-            functionGroups = OrderedDict([])
+        if function_groups is None:
+            function_groups = OrderedDict([])
 
         function_group = "nzall" if genericsettings.isNoisy else "noiselessall"
         if htmlPage not in (HtmlPage.PPRLDMANY_BY_GROUP, HtmlPage.PPLOGLOSS):
-            tempFunctionGroups = OrderedDict([(function_group, 'All functions')])
-            tempFunctionGroups.update(functionGroups)
-            functionGroups = tempFunctionGroups
+            temp_function_groups = OrderedDict([(function_group, 'All functions')])
+            temp_function_groups.update(function_groups)
+            function_groups = temp_function_groups
 
         first_function_number = testbedsettings.current_testbed.first_function_number
         last_function_number = testbedsettings.current_testbed.last_function_number
-        captionStringFormat = '<p/>\n%s\n<p/><p/>'
-        refAlgExists = testbedsettings.current_testbed.reference_algorithm_filename != ''
+        caption_string_format = '<p/>\n%s\n<p/><p/>'
+        reference_algorithm_exists = testbedsettings.current_testbed.reference_algorithm_filename != ''
 
         if htmlPage is HtmlPage.ONE:
             f.write('<H3><a href="ppfigdim.html">Scaling with '
@@ -240,13 +238,13 @@ def save_single_functions_html(filename,
                     'targets</a></H3>\n')
             f.write('<H3><a href="pprldistr.html">Runtime distribution for selected '
                     'targets and f-distributions</a></H3>\n')
-            if refAlgExists:
+            if reference_algorithm_exists:
                 f.write('<H3><a href="pplogloss.html">Runtime loss ratios'
                         '</a></H3>\n')
 
-            headerECDF = ' Runtime distributions (ECDFs) over all targets'
-            f.write("<H2> %s </H2>\n" % headerECDF)
-            f.write(addImage('pprldmany-single-functions/pprldmany.%s' % extension, True, 380))
+            header_ecdf = ' Runtime distributions (ECDFs) over all targets'
+            f.write("<H2> %s </H2>\n" % header_ecdf)
+            f.write(add_image('pprldmany-single-functions/pprldmany.%s' % extension, True, 380))
 
         elif htmlPage is HtmlPage.TWO:
 
@@ -257,7 +255,7 @@ def save_single_functions_html(filename,
                     'targets and f-distributions</a></H3>\n' % genericsettings.pprldistr2_file_name)
             f.write(
                 '<H3><a href="%s.html">Tables for selected targets</a></H3>\n'
-                % genericsettings.pptable2_file_name)
+                % genericsettings.pptables_file_name)
 
         elif htmlPage is HtmlPage.MANY:
 
@@ -270,17 +268,17 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.PPSCATTER:
             current_header = 'Scatter plots per function'
             f.write("\n<H2> %s </H2>\n" % current_header)
-            for ifun in range(first_function_number, last_function_number + 1):
-                f.write(addImage('ppscatter_f%03d%s.%s' % (ifun, add_to_names, extension), True))
+            for function_number in range(first_function_number, last_function_number + 1):
+                f.write(add_image('ppscatter_f%03d%s.%s' % (function_number, add_to_names, extension), True))
 
-            f.write(captionStringFormat % '##bbobppscatterlegend##')
+            f.write(caption_string_format % '##bbobppscatterlegend##')
 
         elif htmlPage is HtmlPage.PPFIGS:
             current_header = 'Scaling of aRT with dimension'
             f.write("\n<H2> %s </H2>\n" % current_header)
-            for ifun in range(first_function_number, last_function_number + 1):
-                f.write(addImage('ppfigs_f%03d%s.%s' % (ifun, add_to_names, extension), True))
-            f.write(captionStringFormat % '##bbobppfigslegend##')
+            for function_number in range(first_function_number, last_function_number + 1):
+                f.write(add_image('ppfigs_f%03d%s.%s' % (function_number, add_to_names, extension), True))
+            f.write(caption_string_format % '##bbobppfigslegend##')
 
         elif htmlPage is HtmlPage.NON_SPECIFIED:
             current_header = header
@@ -288,28 +286,28 @@ def save_single_functions_html(filename,
             if dimensions is not None:
                 for index, dimension in enumerate(dimensions):
                     f.write(write_dimension_links(dimension, dimensions, index))
-                    for ifun in range(first_function_number, last_function_number + 1):
-                        f.write(addImage('%s_f%03d_%02dD.%s' % (name, ifun, dimension, extension), True))
+                    for function_number in range(first_function_number, last_function_number + 1):
+                        f.write(add_image('%s_f%03d_%02dD.%s' % (name, function_number, dimension, extension), True))
             else:
-                for ifun in range(first_function_number, last_function_number + 1):
-                    f.write(addImage('%s_f%03d%s.%s' % (name, ifun, add_to_names, extension), True))
+                for function_number in range(first_function_number, last_function_number + 1):
+                    f.write(add_image('%s_f%03d%s.%s' % (name, function_number, add_to_names, extension), True))
         elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP:
             current_header = pprldmany_per_group_dim_header
             f.write("\n<H2> %s </H2>\n" % current_header)
             for index, dimension in enumerate(dimensions):
                 f.write(write_dimension_links(dimension, dimensions, index))
-                for fg in functionGroups:
-                    f.write(addImage('%s_%s_%02dD.%s' % (name, fg, dimension, extension), True, 200))
+                for fg in function_groups:
+                    f.write(add_image('%s_%s_%02dD.%s' % (name, fg, dimension, extension), True, 200))
 
         elif htmlPage is HtmlPage.PPRLDMANY_BY_GROUP_MANY:
             current_header = pprldmany_per_group_dim_header
             f.write("\n<H2> %s </H2>\n" % current_header)
             for index, dimension in enumerate(dimensions):
                 f.write(write_dimension_links(dimension, dimensions, index))
-                for typeKey, typeValue in functionGroups.iteritems():
-                    f.write(addImage('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
+                for typeKey, typeValue in function_groups.iteritems():
+                    f.write(add_image('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
 
-            f.write(captionStringFormat % '\n##bbobECDFslegend##')
+            f.write(caption_string_format % '\n##bbobECDFslegend##')
 
         elif htmlPage is HtmlPage.PPTABLE:
             current_header = 'aRT in number of function evaluations'
@@ -318,83 +316,83 @@ def save_single_functions_html(filename,
                 f.write(write_dimension_links(dimension, dimensions, index))
                 f.write("\n<!--pptableHtml_%d-->\n" % dimension)
             key = 'bbobpptablecaption' + testbedsettings.current_testbed.scenario
-            f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
+            f.write(caption_string_format % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPTABLE2:
-            write_tables(f, captionStringFormat, refAlgExists, 'pptable2Html', 'bbobpptablestwolegend', dimensions)
+            write_tables(f, caption_string_format, reference_algorithm_exists, 'pptable2Html', 'bbobpptablestwolegend', dimensions)
 
         elif htmlPage is HtmlPage.PPTABLES:
-            write_tables(f, captionStringFormat, refAlgExists, 'pptablesHtml', 'bbobpptablesmanylegend', dimensions)
+            write_tables(f, caption_string_format, reference_algorithm_exists, 'pptablesHtml', 'bbobpptablesmanylegend', dimensions)
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
             dimensions = genericsettings.rldDimsOfInterest
 
-            headerECDF = ' Empirical cumulative distribution functions (ECDF)'
-            f.write("<H2> %s </H2>\n" % headerECDF)
+            header_ecdf = ' Empirical cumulative distribution functions (ECDF)'
+            f.write("<H2> %s </H2>\n" % header_ecdf)
             for dimension in dimensions:
-                for typeKey, typeValue in functionGroups.iteritems():
+                for typeKey, typeValue in function_groups.iteritems():
                     f.write('<p><b>%s in %d-D</b></p>' % (typeValue, dimension))
                     f.write('<div>')
                     for name in names:
-                        f.write(addImage('%s_%02dD_%s.%s' % (name, dimension,
-                                                             typeKey, extension), True))
+                        f.write(add_image('%s_%02dD_%s.%s' % (name, dimension,
+                                                              typeKey, extension), True))
                     f.write('</div>')
 
             key = 'bbobpprldistrlegend' + testbedsettings.current_testbed.scenario
-            f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
+            f.write(caption_string_format % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPRLDISTR2:
             names = ['pprldistr', 'pplogabs']
             dimensions = genericsettings.rldDimsOfInterest
 
-            headerECDF = 'Empirical cumulative distribution functions ' \
+            header_ecdf = 'Empirical cumulative distribution functions ' \
                          '(ECDFs) per function group'
-            f.write("\n<H2> %s </H2>\n" % headerECDF)
+            f.write("\n<H2> %s </H2>\n" % header_ecdf)
             for dimension in dimensions:
-                for typeKey, typeValue in functionGroups.iteritems():
+                for typeKey, typeValue in function_groups.iteritems():
                     f.write('<p><b>%s in %d-D</b></p>' % (typeValue, dimension))
                     f.write('<div>')
                     for name in names:
-                        f.write(addImage('%s_%02dD_%s.%s'
-                                         % (name, dimension, typeKey, extension),
-                                         True))
+                        f.write(add_image('%s_%02dD_%s.%s'
+                                          % (name, dimension, typeKey, extension),
+                                          True))
                     f.write('</div>')
 
             key = 'bbobpprldistrlegendtwo' + testbedsettings.current_testbed.scenario
-            f.write(captionStringFormat % htmldesc.getValue('##' + key + '##'))
+            f.write(caption_string_format % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
             dimensions = genericsettings.rldDimsOfInterest
-            if refAlgExists:
+            if reference_algorithm_exists:
                 current_header = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % current_header)
 
-                dimensionList = '-D, '.join(str(x) for x in dimensions) + '-D'
-                index = dimensionList.rfind(",")
-                dimensionList = dimensionList[:index] + ' and' + dimensionList[index + 1:]
+                dimension_list = '-D, '.join(str(x) for x in dimensions) + '-D'
+                index = dimension_list.rfind(",")
+                dimension_list = dimension_list[:index] + ' and' + dimension_list[index + 1:]
 
-                f.write('<p><b>%s in %s</b></p>' % ('All functions', dimensionList))
+                f.write('<p><b>%s in %s</b></p>' % ('All functions', dimension_list))
                 f.write('<div>')
                 for dimension in dimensions:
-                    f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, function_group, extension), True))
+                    f.write(add_image('pplogloss_%02dD_%s.%s' % (dimension, function_group, extension), True))
                 f.write('</div>')
 
                 f.write("\n<!--tables-->\n")
                 scenario = testbedsettings.current_testbed.scenario
-                f.write(captionStringFormat % htmldesc.getValue('##bbobloglosstablecaption' + scenario + '##'))
+                f.write(caption_string_format % htmldesc.getValue('##bbobloglosstablecaption' + scenario + '##'))
 
-                for typeKey, typeValue in functionGroups.iteritems():
-                    f.write('<p><b>%s in %s</b></p>' % (typeValue, dimensionList))
+                for typeKey, typeValue in function_groups.iteritems():
+                    f.write('<p><b>%s in %s</b></p>' % (typeValue, dimension_list))
                     f.write('<div>')
                     for dimension in dimensions:
-                        f.write(addImage('pplogloss_%02dD_%s.%s' % (dimension, typeKey, extension), True))
+                        f.write(add_image('pplogloss_%02dD_%s.%s' % (dimension, typeKey, extension), True))
                     f.write('</div>')
 
-                f.write(captionStringFormat % htmldesc.getValue('##bbobloglossfigurecaption' + scenario + '##'))
+                f.write(caption_string_format % htmldesc.getValue('##bbobloglossfigurecaption' + scenario + '##'))
 
         if caption:
-            f.write(captionStringFormat % caption)
+            f.write(caption_string_format % caption)
 
         f.write("\n<BR/><BR/><BR/><BR/><BR/>\n</BODY>\n</HTML>")
         
@@ -418,11 +416,11 @@ def write_dimension_links(dimension, dimensions, index):
 
 
 def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key, dimensions):
-    currentHeader = 'Table showing the aRT in number of function evaluations'
+    current_header = 'Table showing the aRT in number of function evaluations'
     if best_alg_exists:
-        currentHeader += ' divided by the best aRT measured during BBOB-2009'
+        current_header += ' divided by the best aRT measured during BBOB-2009'
 
-    f.write("\n<H2> %s </H2>\n" % currentHeader)
+    f.write("\n<H2> %s </H2>\n" % current_header)
     for index, dimension in enumerate(dimensions):
         f.write(write_dimension_links(dimension, dimensions, index))
         f.write("\n<!--%s_%d-->\n" % (html_key, dimension))
@@ -430,13 +428,13 @@ def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key
     f.write(caption_string_format % htmldesc.getValue('##' + key + '##'))
 
 
-def copy_js_files(outputdir):
+def copy_js_files(output_dir):
     """Copies js files to output directory."""
 
     js_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'js')
-    for file in os.listdir(js_folder):
-        if file.endswith(".js"):
-            shutil.copy(os.path.join(js_folder, file), outputdir)
+    for file_in_folder in os.listdir(js_folder):
+        if file_in_folder.endswith(".js"):
+            shutil.copy(os.path.join(js_folder, file_in_folder), output_dir)
 
 
 def discretize_limits(limits, smaller_steps_limit=3.1):

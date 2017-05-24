@@ -33,8 +33,6 @@ from .toolsstats import significancetest
 from .toolsdivers import prepend_to_file
 from . import captions
 
-from pdb import set_trace
-
 # def tablespec(targets):
 # 
 #     i = 0
@@ -93,6 +91,7 @@ def get_table_caption():
         \textit{italics}, if the target in the last column was never reached. 
         """        
         
+    table_caption = None
     if testbedsettings.current_testbed.name in ['bbob', 'bbob-noisy', 'bbob-biobj']:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_start + table_caption_rlbased + table_caption_rest
@@ -131,23 +130,23 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
     
     if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
         header = [r'\#FEs/D']
-        headerHtml = ['<thead>\n<tr>\n<th>#FEs/D</th>\n']
+        header_html = ['<thead>\n<tr>\n<th>#FEs/D</th>\n']
         for i in targetsOfInterest.labels():
             header.append(r'\multicolumn{2}{c}{%s}' % i)
-            headerHtml.append('<td>%s</td>\n' % i)
+            header_html.append('<td>%s</td>\n' % i)
 
     else:
         header = [r'$\Delta f$']
-        headerHtml = ['<thead>\n<tr>\n<th>&#916; f</th>\n']
+        header_html = ['<thead>\n<tr>\n<th>&#916; f</th>\n']
         for i in targetsOfInterest.target_values:
             header.append(r'\multicolumn{2}{c}{1e%+d}' % (int(np.log10(i))))
-            headerHtml.append('<td>1e%+d</td>\n' % (int(np.log10(i))))
+            header_html.append('<td>1e%+d</td>\n' % (int(np.log10(i))))
                       
     header.append(r'\multicolumn{2}{|@{}r@{}}{\#succ}')
-    headerHtml.append('<td>#succ</td>\n</tr>\n</thead>\n')
+    header_html.append('<td>#succ</td>\n</tr>\n</thead>\n')
 
     for d in dims_of_interest:
-        tableHtml = headerHtml[:]
+        tableHtml = header_html[:]
         try:
             dictFunc = dictDim[d].dictByFunc()
         except KeyError:
@@ -234,8 +233,8 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                 #set_trace()
                 # TODO: what is the difference between data and ertdata? 
                 data.append(toolsstats.sp(tmp, issuccessful=succ)[0])
-                #if not any(succ):
-                    #set_trace()
+                # if not any(succ):
+                #   set_trace()
                 if any(succ):
                     tmp2 = toolsstats.drawSP(tmp[succ], tmp[succ==False],
                                 (10, 50, 90), genericsettings.simulated_runlength_bootstrap_sample_size)[0]
@@ -262,14 +261,12 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
     
                     #The conditions for significance are now that aRT < aRT_ref and
                     # all(sorted(FEvals_ref) > sorted(FEvals_current)).
-                    if ((nbtests * p) < 0.05 and ert - refalgdata[i] < 0.
-                        and z < 0.
-                        and (np.isinf(refalgdata[i])
-                             or all(evals < refevals))):
+                    if ((nbtests * p) < 0.05 and ert - refalgdata[i] < 0. and
+                                z < 0. and (np.isinf(refalgdata[i]) or all(evals < refevals))):
                         nbstars = -np.ceil(np.log10(nbtests * p))
-                isBold = False
+                is_bold = False
                 if nbstars > 0:
-                    isBold = True
+                    is_bold = True
 
                 if refalgentries and np.isinf(refalgdata[i]): # if the reference algorithm did not solve the problem
                     tmp = writeFEvalsMaxPrec(float(ert), 2)
@@ -280,7 +277,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                         else:
                             tmpHtml = tmp
                             
-                        if isBold:
+                        if is_bold:
                             tmp = r'\textbf{%s}' % tmp
                             tmpHtml = '<b>%s</b>' % tmpHtml
                     else:
@@ -296,11 +293,9 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                     tableentryHtml = writeFEvalsMaxPrec(tmp, 2)
 
                     if np.isinf(tmp) and i == len(data)-1:
-                        tableentry = (tableentry
-                                      + r'\textit{%s}' % writeFEvals2(np.median(entry.maxevals), 2))
-                        tableentryHtml = (tableentryHtml
-                                      + ' <i>%s</i>' % writeFEvals2(np.median(entry.maxevals), 2))
-                        if isBold:
+                        tableentry = (tableentry + r'\textit{%s}' % writeFEvals2(np.median(entry.maxevals), 2))
+                        tableentryHtml = (tableentryHtml + ' <i>%s</i>' % writeFEvals2(np.median(entry.maxevals), 2))
+                        if is_bold:
                             tableentry = r'\textbf{%s}' % tableentry
                             tableentryHtml = '<b>%s</b>' % tableentryHtml
                         elif 11 < 3: # and significance0vs1 < 0:
@@ -309,7 +304,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                         tableentry = (r'\multicolumn{2}{@{}%s@{}}{%s}'
                                       % (alignment, tableentry))
                     elif tableentry.find('e') > -1 or (np.isinf(tmp) and i != len(data) - 1):
-                        if isBold:
+                        if is_bold:
                             tableentry = r'\textbf{%s}' % tableentry
                             tableentryHtml = '<b>%s</b>' % tableentryHtml
                         elif 11 < 3: # and significance0vs1 < 0:
@@ -320,7 +315,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                     else:
                         tmp = tableentry.split('.', 1)
                         tmpHtml = tableentryHtml.split('.', 1)
-                        if isBold:
+                        if is_bold:
                             tmp = list(r'\textbf{%s}' % i for i in tmp)
                             tmpHtml = list('<b>%s</b>' % i for i in tmpHtml)
                         elif 11 < 3: # and significance0vs1 < 0:
@@ -335,7 +330,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                 superscriptHtml = ''
 
                 if nbstars > 0:
-                    #tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
+                    # tmp = '\hspace{-.5ex}'.join(nbstars * [r'\star'])
                     if z > 0:
                         superscript = r'\uparrow' #* nbstars
                         superscriptHtml = '&uarr;'

@@ -61,7 +61,7 @@ def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings):
             '',  # algorithms names are clearly visible in the figure
             dimensions=dims,
             htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP_MANY,
-            functionGroups=function_groups,
+            function_groups=function_groups,
             parentFileName=genericsettings.many_algorithm_file_name
         )
 
@@ -333,7 +333,7 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.ppfigs_file_name),
             '',  # algorithms names are clearly visible in the figure
             htmlPage=ppfig.HtmlPage.PPFIGS,
-            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
+            function_groups=dictAlg[sortedAlgs[0]].getFuncGroups(),
             parentFileName=genericsettings.many_algorithm_file_name
         )
 
@@ -344,7 +344,7 @@ def main(argv=None):
             '',  # algorithms names are clearly visible in the figure
             dimensions=dimensions,
             htmlPage=ppfig.HtmlPage.PPTABLES,
-            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
+            function_groups=dictAlg[sortedAlgs[0]].getFuncGroups(),
             parentFileName=genericsettings.many_algorithm_file_name
         )
 
@@ -442,7 +442,7 @@ def main(argv=None):
             os.path.join(outputdir, genericsettings.many_algorithm_file_name),
             '',  # algorithms names are clearly visible in the figure
             htmlPage=ppfig.HtmlPage.MANY,
-            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups()
+            function_groups=dictAlg[sortedAlgs[0]].getFuncGroups()
         )
 
         if genericsettings.isFig:
