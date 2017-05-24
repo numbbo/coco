@@ -4,8 +4,8 @@
 % used with fmincon
 % The function cons evaluates the constraint functions of problem
 % at x and returns:
-% c: vector of inequality constraint values
-% ceq: vector of equality constraint values
+%   c: vector of inequality constraint values
+%   ceq: vector of equality constraint values
 % Only inequality constraints in bbob-constrained testbed
 %
 

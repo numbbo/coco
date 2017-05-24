@@ -4,7 +4,7 @@
 %
 % This example experiment allows also for easy implementation of independent
 % restarts by simply increasing NUM_OF_INDEPENDENT_RESTARTS. To make this
-% effective, the algorithm should have at least one more stopping criterium
+% effective, the algorithm should have at least one more stopping criterion
 % than just a maximal budget.
 %
 more off; % to get immediate output in Octave
@@ -30,8 +30,9 @@ NUM_OF_INDEPENDENT_RESTARTS = 1e9; % max. number of independent algorithm
 % bbob-biobj        55 unconstrained noiseless bi-objective functions
 % bbob-biobj-ext    92 unconstrained noiseless bi-objective functions
 % bbob-largescale   24 unconstrained noiseless single-objective functions in large dimensions
+% bbob-constrained  48 constrained noiseless single-objective functions
 %
-suite_name = 'bbob-constrained';
+suite_name = 'bbob';
 observer_name = 'bbob';
 observer_options = strcat('result_folder: RS_on_', ...
     suite_name, ...

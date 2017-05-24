@@ -71,6 +71,7 @@ public class ExampleExperiment {
          *   bbob-biobj           55 unconstrained noiseless bi-objective functions
          *   bbob-biobj-ext       92 unconstrained noiseless bi-objective functions
          *   bbob-largescale      24 unconstrained noiseless single-objective functions in large dimension
+         *   bbob-constrained     48 constrained noiseless single-objective functions
          *
          * Adapt to your need. Note that the experiment is run according
          * to the settings, defined in exampleExperiment(...) below.
@@ -87,7 +88,7 @@ public class ExampleExperiment {
 	 * A simple example of benchmarking random search on a given suite with default instances
      * that can serve also as a timing experiment.
      *
-     * @param suiteName Name of the suite (e.g. "bbob", "bbob-constrained", or "bbob-biobj").
+     * @param suiteName Name of the suite (e.g. "bbob", "bbob-biobj", or "bbob-constrained").
      * @param observerName Name of the observer matching with the chosen suite (e.g. "bbob-biobj" 
      * when using the "bbob-biobj-ext" suite).
 	 * @param randomGenerator The random number generator.
