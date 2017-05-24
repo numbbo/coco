@@ -190,7 +190,7 @@ public class ExampleExperiment {
 		     * is performed) */
 			if (numberOfConstraints > 0)
 				z = f.evaluateConstraint(x);
-            y = f.evaluate(x);
+			y = f.evaluate(x);
 		}
 		
 	}
