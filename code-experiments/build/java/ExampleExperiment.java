@@ -75,7 +75,7 @@ public class ExampleExperiment {
          * Adapt to your need. Note that the experiment is run according
          * to the settings, defined in exampleExperiment(...) below.
          */
-		exampleExperiment("bbob-constrained", "bbob", randomGenerator); /* was: exampleExperiment("bbob", "bbob", randomGenerator) */
+		exampleExperiment("bbob", "bbob", randomGenerator);
 
 		System.out.println("Done!");
 		System.out.flush();
@@ -87,7 +87,7 @@ public class ExampleExperiment {
 	 * A simple example of benchmarking random search on a given suite with default instances
      * that can serve also as a timing experiment.
      *
-     * @param suiteName Name of the suite (e.g. "bbob" or "bbob-biobj").
+     * @param suiteName Name of the suite (e.g. "bbob", "bbob-constrained", or "bbob-biobj").
      * @param observerName Name of the observer matching with the chosen suite (e.g. "bbob-biobj" 
      * when using the "bbob-biobj-ext" suite).
 	 * @param randomGenerator The random number generator.
@@ -131,7 +131,7 @@ public class ExampleExperiment {
 					myRandomSearch(evaluateFunction,
 							       dimension,
 							       PROBLEM.getNumberOfObjectives(),
-						       	       PROBLEM.getNumberOfConstraints(),
+							       PROBLEM.getNumberOfConstraints(),
 							       PROBLEM.getSmallestValuesOfInterest(),
 							       PROBLEM.getLargestValuesOfInterest(),
 							       evaluationsRemaining,
@@ -188,9 +188,9 @@ public class ExampleExperiment {
 
 		    /* Call the evaluate function to evaluate x on the current problem (this is where all the COCO logging
 		     * is performed) */
-			y = f.evaluate(x);
 			if (numberOfConstraints > 0)
 				z = f.evaluateConstraint(x);
+            y = f.evaluate(x);
 		}
 		
 	}
