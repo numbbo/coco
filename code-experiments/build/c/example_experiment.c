@@ -177,11 +177,12 @@ void example_experiment(const char *suite_name,
     for (run = 1; run <= 1 + INDEPENDENT_RESTARTS; run++) {
 
       size_t evaluations_done;
+      long evaluations_remaining;
       
       evaluations_done = coco_problem_get_evaluations(PROBLEM) + 
             coco_problem_get_evaluations_constraints(PROBLEM);
 
-      long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - (long) evaluations_done;
+      evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - (long) evaluations_done;
 
       /* Break the loop if the target was hit or there are no more remaining evaluations */
       if ((coco_problem_final_target_hit(PROBLEM) && 
