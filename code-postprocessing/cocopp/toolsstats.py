@@ -215,6 +215,10 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
        successful one is chosen. In case of no successful run an
        exception is raised.
 
+    This implementation is depreciated and replaced by `simulated_evals`.
+
+    See also: `simulated_evals`.
+
     """
     # TODO: for efficiency reasons a special treatment in the case, 
     #   where all runs are successful and all_sampled_values_sorted is not needed
@@ -272,6 +276,93 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
 
     return (prctile(arrStats, percentiles, issorted=True),
             arrStats)
+
+
+def randint_derandomized(low, high=None, size=None):
+    """an array of derandomized random integers.
+
+    Each "random" integer is guarantied to appear exactly
+    once in each chunk of `size` = `high-low`.
+
+    The value range is [low, high-1] or [0, low-1] if ``high is None``.
+    By default, ``size == high-low``, that is, a permutation is returned.
+
+    >>> import numpy as np
+    >>> np.random.seed(1)
+    >>> list(randint_derandomized(0, 4, 6))
+    [3, 2, 0, 1, 0, 2]
+
+    """
+    return np.asarray(list(randint_derandomized_generator(low, high, size)))
+
+def randint_derandomized_generator(low, high=None, size=None):
+    """the generator for `randint_derandomized`"""
+    if high is None:
+        low, high = 0, low
+    if size is None:
+        size = high
+    delivered = 0
+    while delivered < size:
+        for i in np.random.permutation(high - low):
+            if delivered >= size:
+                break
+            delivered += 1
+            yield i + low
+
+def simulated_evals(evals, nfails,
+            samplesize=genericsettings.simulated_runlength_bootstrap_sample_size,
+            randint=randint_derandomized):
+    """Return `samplesize` "simulated" run lengths (#evaluations), sorted.
+
+    Input:
+      - *evals* -- array of evaluations
+      - *nfail* -- only the last `nfail` evaluations come from
+                    unsuccessful runs
+      - *randint* -- random integer index of the first simulated run
+
+    Return:
+       all_sampled_runlengths_sorted
+
+    Example:
+
+    >>> import numpy as np
+    >>> from cocopp.toolsstats import simulated_evals
+    >>> np.random.seed(4)
+    >>> evals_succ = [1]  # only one evaluation in the successful trial
+    >>> evals_unsucc = [2, 4, 2, 6, 100]
+    >>> simulated_evals(np.hstack([evals_succ, evals_unsucc]),
+    ...                 len(evals_unsucc), 13)
+    [1, 1, 3, 5, 5, 9, 11, 23, 107, 113, 215, 423, 439]
+
+    Details:
+       A single successful running length is computed by adding
+       uniformly randomly chosen running lengths until the first time a
+       successful one is chosen. In case of no successful run an
+       exception is raised.
+
+    """
+    if len(evals) == 0 or nfails >= len(evals):
+        raise ValueError("""without any successful run, simulated
+    runlengths are undefined from these data. A reasonable lower bound
+    for a single measurement from these data is %d""" %
+                         int(sum(evals)))
+    samplesize = int(samplesize)
+    evals = np.asarray(evals)
+
+    indices = randint(0, len(evals), samplesize)
+    sums = evals[indices]
+    if nfails == 0:
+        return sorted(sums)
+    failing = np.where(indices >= len(evals) - nfails)[0]
+    assert len(evals) - nfails > 0  # prevent infinite loop
+    while len(failing):
+        indices = np.random.randint(0, len(evals), len(failing))
+        sums[failing] += evals[indices]
+        # keep failing indices
+        failing = [failing[i] for i in xrange(len(failing))
+                               if indices[i] >= len(evals) - nfails]
+    return sorted(sums)
+
 
 def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     """Generates the empirical bootstrap distribution from a sample.
