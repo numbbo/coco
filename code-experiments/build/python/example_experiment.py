@@ -53,11 +53,15 @@ except: pass
 try: range = xrange  # let range always be an iterator
 except NameError: pass
 
-def default_observers(update={}):
-    """return a map from suite names to default observer names"""
+def default_observers(update=None):
+    """return a map from suite names to default observer names.
+
+    This function can also be used to update this map using
+    a `dict` or a `list` of key-value pairs.
+    """
     # this is a function only to make the doc available and
     # because @property doesn't work on module level
-    _default_observers.update(update)
+    _default_observers.update(update or {})
     return _default_observers
 _default_observers = {
     'bbob': 'bbob',
