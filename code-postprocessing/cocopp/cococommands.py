@@ -35,7 +35,7 @@ Examples:
     ...   archivefile.extractall()
     ...   os.chdir(path)
     >>> ds = pp.load(infoFile)
-      Data consistent according to test in consistency_check() in pproc.DataSet
+      Data consistent according to consistency_check() in pproc.DataSet
 
 * Get some information on a :py:class:`DataSetList` instance::
 
