@@ -46,30 +46,14 @@ class ECDFDataList(list):
             else:
                 i += 1
         return self
+    def complement(self, missing=np.nan):
+        """Add deleted entries with sample size or ``nb * [missing]``.
 
-    def complete(self, missing=np.nan):
-        """Obsolete, as `None` entries are removed on construction.
-
-        Replace `None` entries with sample size or ``nb * [missing]``
+        But where to get nb from?
         """
-        if missing is None and max(self.samplesizes) <= 0:
-            return
-        for i in range(len(self)):
-            if self[i] is None:
-               self[i] = self.samplesize * [missing]
-            assert len(self[i])
-
-            # old code which maintains samplesize entry, to be removed
-            if 11 < 3:
-                if self[i] and missing is not None:
-                    self[i] = self[i] * [missing]
-                else:  # fallback, should work only with uniform data
-                    if not self.is_uniform:
-                        raise ValueError("""non-uniform data cannot be
-                        completed""")
-                    self[i] = self.samplesize * ([missing]
-                                                 if missing is not None
-                                                 else 1)
+        s = max(self.samplesizes)
+        for i in range(self.nremoved):
+            self.append(s * [missing])
         return self
     @property
     def missing_fraction(self):
@@ -90,16 +74,6 @@ class ECDFDataList(list):
         return `True` if samplesizes are all the same"""
         s = set(self.samplesizes).difference([0])
         return len(s) <= 1
-
-    @property
-    def samplesize(self):
-        """"obsolete, the" sample size"""
-        s = set(self.samplesizes).difference([0])
-        if len(s) != 1:
-            raise ValueError("""more than one sample size found %s""" %
-                             str(s))
-        return s.pop()
-
     @property
     def samplesizes(self):
         return [len(d) if hasattr(d, '__len__') else d or 0
