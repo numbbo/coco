@@ -92,6 +92,13 @@ def cocofy(filename):
 
 # CLASS DEFINITIONS
 
+def as_TargetValues(targets):
+    if isinstance(targets, TargetValues):
+        return targets
+    if isinstance(targets, list):
+        return TargetValues(targets)
+    raise NotImplementedError("""type %s not recognized""" %
+                              str(type(targets)))
 class TargetValues(object):
     """store and retrieve a list of target function values::
 
@@ -1101,27 +1108,85 @@ class DataSet(object):
         self.ert = numpy.array(self.ert)
         self.target = numpy.array(self.target)
 
-    def evals_with_restarts(self, targets, sample_size_per_instance, sorted_runtimes=False):
-        """return runtimes (evals) where simulated restarts are used for unsuccessful runs.
+    def evals_simulated(self,
+            targets,
+            min_samplesize=genericsettings.simulated_runlength_bootstrap_sample_size,
+            forced_samplesize=None,
+            randint=toolsstats.randint_derandomized):
+        """Return a len(targets) list of "simulated" run lengths ECDF data
+        for each target.
 
-        The number of returned evals is ``self.nbRuns() * sample_size_per_instance``.
+        Each entry contains an array of sorted #evaluations, property
+        `missing_fraction` the fraction of unsuccessful (non-contributing)
+        data.
+        Simulated restarts are used for unsuccessful runs. Using
+        `detEvals` or `evals_simulated` should become largely
+        interchangeable.
 
-        TODO: the return value is inconsistent between the code and the comment!
+        To get a bootstrap sample for estimating dispersion use
+        ``min_samplesize=0, randint=np.random.randint``.
 
-        TODO: attaching a count to each point would help to reduce the data size (and
-        probably the plotting spead) significantly.
+        For an ECDF, a `None` entry represents `samplesize` `inf` (or
+        `nan`) values.
 
+        Details:
+
+        - For targets where all runs were successful, samplesize=nbRuns()
+          is sufficient and preferable if `randint` is derandomized.
+        - A single successful running length is computed by adding
+          uniformly randomly chosen running lengths until the first time a
+          successful one is chosen. In case of no successful run the
+          result is `None`.
+
+        TODO:
+
+        TODO: if `samplesize` >> `nbRuns` and nsuccesses is large,
+        the data representation becomes somewhat inefficient.
+
+        TODO: it may be useful to make the samplesize dependent on the
+        number of successes and supply the multipliers
+        max(samplesizes) / samplesizes.
         """
-        raise NotImplementedError()
-        data_rows = self.detEvals(targets)
-        for d in data_rows:
-            evals, counts = toolsstats.runtimes_with_restarts(d, sample_size_per_instance)
-            # this should become a runtimes class with a counts and an evals attribute
-            raise NotImplementedError()
-        if sorted_runtimes:
-            raise NotImplementedError()
-        return res
-    
+        try: targets = targets([self.funcId, self.dim])
+        except TypeError: pass
+        samplesize = np.max([self.nbRuns(), int(min_samplesize)])
+        if forced_samplesize is not None:
+            samplesize = forced_samplesize
+        res = []  # res[i] is a list of samplesize evals or None
+        for evals in self.detEvals(targets):  # list of evals
+            # prepare evals array
+            indices = np.isfinite(evals)
+            if not sum(indices):
+                res += [None]
+                continue
+            nindices = ~indices
+            assert sum(indices) + sum(nindices) == len(evals)
+            evals[nindices] = self.maxevals[nindices]  # replace nan
+            # let the first nsucc data in evals be those from successful runs
+            evals = np.hstack([evals[indices], evals[nindices]])
+            assert sum(np.isfinite(evals)) == len(evals)
+            nsucc = sum(indices)
+
+            # do the job
+            indices = randint(0, len(evals), samplesize)
+            sums = evals[indices]
+            if nsucc == len(evals):
+                res += [sorted(sums)]
+                continue
+            failing = np.where(indices >= nsucc)[0]
+            assert nsucc > 0  # prevent infinite loop
+            while len(failing):
+                indices = np.random.randint(0, len(evals), len(failing))
+                sums[failing] += evals[indices]
+                # keep failing indices
+                failing = [failing[i] for i in xrange(len(failing))
+                            if indices[i] >= nsucc]
+            res += [sorted(sums)]
+
+        assert set([len(evals) if evals is not None else samplesize
+                for evals in res]) == set([samplesize])
+        return toolsstats.ECDFDataList(res)
+
     def __eq__(self, other):
         """Compare indexEntry instances."""
         res = (self.__class__ is other.__class__ and
@@ -1485,7 +1550,8 @@ class DataSet(object):
             evalsrows[target] = self.evals[idata, 1:].copy() if copy else self.evals[idata, 1:]
             
         if do_assertion:
-            assert all([all((np.isnan(evalsrows[target]) + (evalsrows[target] == self._detEvals2(targets)[i]))) for i, target in enumerate(targets)])
+            assert all([all((np.isnan(evalsrows[target]) + (evalsrows[target] == self._detEvals2(targets)[i])))
+                        for i, target in enumerate(targets)])
     
         return [evalsrows[t] for t in targets]
         
@@ -2129,8 +2195,9 @@ class DataSetList(list):
 
             funcs_processed.sort()
             funcs_solved.sort()
-            assert map(int, np.__version__.split('.')) > [1, 4, 0]
-            # if this fails, replacing nan with inf might work for sorting
+            assert (map(int, np.__version__.split('.')) > [1, 4, 0], """
+    for older versions of numpy, replacing `nan` with `inf` might work
+    for sorting here""")
             rld_data = np.hstack(rld_data)
             if reference_data_set_list is not None:
                 ref_scores = np.hstack(ref_scores)

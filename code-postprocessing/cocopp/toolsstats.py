@@ -9,6 +9,120 @@ import numpy as np
 from . import genericsettings
 from pdb import set_trace
 
+def _has_len(thing):
+    try: len(thing)
+    except TypeError: return False
+    return True
+
+class ECDFDataList(list):
+    """a list of ECDF data, `None` for no successes.
+
+    Conceptually, each entry in the list has the same overall vertical
+    weight in the ECDF. Hence, the number of samples should not matter,
+    but should be corrected for when merging the data.
+
+    Currently, we assume the same number of samples in all list entries,
+    or `None`. This should preferably change.
+
+    Proposition (rejected): Use "15 * [nan]" instead of 15 to indicate
+    "missing" data? This is annoying to test, as len(a_string) works
+    just fine.
+
+    TODO: we may run into trouble if no data are given.
+    """
+    def __init__(self, list_=None):
+        list.__init__(self, list_ or [])
+        self.nremoved = 0
+        self.clean()
+        if max(self.samplesizes) <= 0:
+            warnings.warn("""no data for ECDFDataList.__init__""")
+    def clean(self):
+        """remove empty entries and increase `nmissing` counter"""
+        i = 0
+        while i < len(self):
+            if not _has_len(self[i]) or not len(self[i]):
+                self.pop(i)
+                self.nremoved += 1
+            else:
+                i += 1
+        return self
+
+    def complete(self, missing=np.nan):
+        """Obsolete, as `None` entries are removed on construction.
+
+        Replace `None` entries with sample size or ``nb * [missing]``
+        """
+        if missing is None and max(self.samplesizes) <= 0:
+            return
+        for i in range(len(self)):
+            if self[i] is None:
+               self[i] = self.samplesize * [missing]
+            assert len(self[i])
+
+            # old code which maintains samplesize entry, to be removed
+            if 11 < 3:
+                if self[i] and missing is not None:
+                    self[i] = self[i] * [missing]
+                else:  # fallback, should work only with uniform data
+                    if not self.is_uniform:
+                        raise ValueError("""non-uniform data cannot be
+                        completed""")
+                    self[i] = self.samplesize * ([missing]
+                                                 if missing is not None
+                                                 else 1)
+        return self
+    @property
+    def missing_fraction(self):
+        """fraction of missing (deleted) entries"""
+        return self.fraction_missing
+    @property
+    def fraction_missing(self):
+        """fraction of missing (deleted) entries"""
+        return 1.0 * self.nremoved / (len(self) + self.nremoved)
+    @property
+    def fraction_represented(self):
+        """fraction of represented entries, limit of the respective ECDF
+        """
+        return 1 - self.fraction_missing
+    @property
+    def is_uniform(self):
+        """rather obsolete!?
+        return `True` if samplesizes are all the same"""
+        s = set(self.samplesizes).difference([0])
+        return len(s) <= 1
+
+    @property
+    def samplesize(self):
+        """"obsolete, the" sample size"""
+        s = set(self.samplesizes).difference([0])
+        if len(s) != 1:
+            raise ValueError("""more than one sample size found %s""" %
+                             str(s))
+        return s.pop()
+
+    @property
+    def samplesizes(self):
+        return [len(d) if hasattr(d, '__len__') else d or 0
+                for d in self]
+    @property
+    def flat(self):
+        """return merged data as a flat list.
+
+        `np.concatenate` or `np.hstack` should do the trick as well, as
+        long as all data have the same sample size.
+
+         TODO: this may/could account for different samplesizes and
+         possibly apply weights.
+
+        """
+        self.complete()
+        # https://mathieularose.com/how-not-to-flatten-a-list-of-lists-in-python/
+        # https://stackoverflow.com/questions/952914/making-a-flat-list-out-of-list-of-lists-in-python
+        res = [d for i in range(len(self))  # 2nd quickest version,
+                 for d in (self[i] if _has_len(self[i]) else self[i] * [np.nan])]
+        assert len(np.isfinite(res)) == len(res), """
+    there shouldn't be any `np.nan` in the result %s """ % str(res)
+        return np.sort(res)
 
 def fix_data_number(data, ndata=15,
                        last_elements_randomized=True, warn=False):
@@ -26,6 +140,9 @@ def fix_data_number(data, ndata=15,
     >>> assert len(fix_data_number(data, 4)) == 4
     >>> assert len(fix_data_number(data, 14)) == 14
     >>> assert fix_data_number(data, 14)[2] == data[2]
+
+    See also ``data[randint_derandomized(0, len(data), ndata)]``, which
+    should do pretty much the same.
 
     """
     if len(data) == ndata:
@@ -312,7 +429,9 @@ def randint_derandomized_generator(low, high=None, size=None):
 def simulated_evals(evals, nfails,
             samplesize=genericsettings.simulated_runlength_bootstrap_sample_size,
             randint=randint_derandomized):
-    """Return `samplesize` "simulated" run lengths (#evaluations), sorted.
+    """Obsolete: see `DataSet.evals_simulated` instead.
+
+    Return `samplesize` "simulated" run lengths (#evaluations), sorted.
 
     Input:
       - *evals* -- array of evaluations
