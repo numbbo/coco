@@ -2118,7 +2118,8 @@ class DataSetList(list):
                                  reference_data_set_list=None,
                                  reference_scoring_function=lambda x: toolsstats.prctile(x, [5])[0],
                                  data_per_target=15,
-                                 flatten_output_dict=True):
+                                 flatten_output_dict=True,
+                                 simulated_restarts=False):
         """return a dictionary with an entry for each algorithm (or
         the dictionary value for only one algorithm if
         ``flatten_output_dict is True``) and
@@ -2157,11 +2158,39 @@ class DataSetList(list):
                     continue
                 assert dimension == ds.dim
                 funcs_processed.append(ds.funcId)
-                evals = ds.detEvals(target_values((ds.funcId, ds.dim)))
-                if data_per_target is not None:
-                    evals = [np.sort(toolsstats.fix_data_number(d, data_per_target))
-                                for d in evals]
-                    # make sure to get 15 numbers for each target
+                # TODO: this could also be simulated restarts, that is,
+                # evals_simulated instead of detEvals
+                if simulated_restarts:
+                    if 1 < 3:  # produce an accurate graph with not too small number of samples
+                        n = (data_per_target or 0) + 2 * ds.nbRuns() + genericsettings.simulated_runlength_bootstrap_sample_size
+                        evals = ds.evals_simulated(target_values((ds.funcId, ds.dim)),
+                                                   forced_samplesize=n)
+                    else:  # produce the bootstrap graph for dispersion estimate
+                        n = ds.nbRuns()
+                        evals = ds.evals_simulated(target_values((ds.funcId, ds.dim)),
+                                                   forced_samplesize=n,
+                                                   randint=np.random.randint)
+                    for i in range(evals.nremoved):  # add fully unsuccessful sample data
+                        evals.append(n * [np.nan])
+                        evals.nremoved -= 1
+                    if data_per_target is not None:
+                        index = np.array(0.5 + np.linspace(0, n - 1, data_per_target, endpoint=True),
+                                         dtype=int)
+                        evals = [d[index] for d in evals]
+
+                elif 1 < 3:
+                    # TODO: this assumes that data_per_target is not smaller than nbRuns
+                    evals = ds.detEvals(target_values((ds.funcId, ds.dim)))
+                    if data_per_target is not None:
+                        evals = [np.sort(toolsstats.fix_data_number(d, data_per_target))
+                                    for d in evals]
+                        # make sure to get 15 numbers for each target
+                else:  # same as above
+                    evals = ds.detEvals(target_values((ds.funcId, ds.dim)))
+                    if data_per_target is not None:
+                        evals = [np.sort(d[toolsstats.randint_derandomized(0, len(d), data_per_target)])
+                                 for d in evals]
+
                 if reference_data_set_list is not None:
                     if ds.funcId not in reference_scores:
                         if reference_scoring_function is None:

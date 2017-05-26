@@ -142,7 +142,7 @@ def fix_data_number(data, ndata=15,
     >>> assert fix_data_number(data, 14)[2] == data[2]
 
     See also ``data[randint_derandomized(0, len(data), ndata)]``, which
-    should do pretty much the same.
+    should do pretty much the same, a little more randomized.
 
     """
     if len(data) == ndata:
