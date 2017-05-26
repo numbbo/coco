@@ -1177,7 +1177,7 @@ class DataSet(object):
             for val in toolsstats.prctile(evals[i], (0, 15, 50, 85, 100)):
                 val = float(val)
                 line += ' %7d' % int(np.round(val / self.dim)) if not np.isnan(val) else '     .  '
-            line += ' |' + ('%9.1f' % (ert[i] / self.dim) if np.isfinite(ert[i]) else '    inf  ') 
+            line += ' |' + ('%9.1f' % (ert[i] / self.dim) if np.isfinite(ert[i]) else '    nan  ') 
             # line += '  %4.2f' % (nsucc[i] / float(Nruns)) if nsucc[i] < Nruns else '  1.0 '
             line += '  %2d' % nsucc[i]
             sinfo += '\n' + line
