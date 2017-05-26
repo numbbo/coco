@@ -2129,7 +2129,7 @@ class DataSetList(list):
 
             funcs_processed.sort()
             funcs_solved.sort()
-            assert np.__version__ >= '1.4.0'
+            assert map(int, np.__version__.split('.')) > [1, 4, 0]
             # if this fails, replacing nan with inf might work for sorting
             rld_data = np.hstack(rld_data)
             if reference_data_set_list is not None:
