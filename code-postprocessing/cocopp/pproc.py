@@ -88,7 +88,7 @@ def cocofy(filename):
     for line in fileinput.input(filename, inplace=1):
 #       if "bbob" in line:
         sys.stdout.write(line.replace("bbob_pproc","cocopp"))
-    fileinput.close
+    fileinput.close()
 
 # CLASS DEFINITIONS
 
