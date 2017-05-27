@@ -34,7 +34,7 @@ class ECDFDataList(list):
         list.__init__(self, list_ or [])
         self.nremoved = 0
         self.clean()
-        if max(self.samplesizes) <= 0:
+        if len(self) and max(self.samplesizes) <= 0:
             warnings.warn("""no data for ECDFDataList.__init__""")
     def clean(self):
         """remove empty entries and increase `nmissing` counter"""
@@ -46,14 +46,16 @@ class ECDFDataList(list):
             else:
                 i += 1
         return self
-    def complement(self, missing=np.nan):
-        """Add deleted entries with sample size or ``nb * [missing]``.
-
-        But where to get nb from?
-        """
-        s = max(self.samplesizes)
+    def complement_missing(self, samplesize=None, missing=np.nan):
+        """Add deleted entries as ``samplesize * [missing]``.
+s        """
+        if samplesize is None:
+            if not self.is_uniform:
+                raise ValueError("""different samplesizes %s""" %
+                                 str(self.samplesizes))
+            samplesize = max(self.samplesizes)
         for i in range(self.nremoved):
-            self.append(s * [missing])
+            self.append(samplesize * [missing])
         return self
     @property
     def missing_fraction(self):
@@ -89,13 +91,12 @@ class ECDFDataList(list):
          possibly apply weights.
 
         """
-        self.complete()
         # https://mathieularose.com/how-not-to-flatten-a-list-of-lists-in-python/
         # https://stackoverflow.com/questions/952914/making-a-flat-list-out-of-list-of-lists-in-python
         res = [d for i in range(len(self))  # 2nd quickest version,
-                 for d in (self[i] if _has_len(self[i]) else self[i] * [np.nan])]
-        assert len(np.isfinite(res)) == len(res), """
-    there shouldn't be any `np.nan` in the result %s """ % str(res)
+                 for d in (self[i] if _has_len(self[i])
+                           else self[i] * [np.nan])  # should never be effective
+               ]
         return np.sort(res)
 
 def fix_data_number(data, ndata=15,
@@ -535,7 +536,7 @@ def prctile(x, arrprctiles, issorted=False, ignore_nan=True):
         prctiles
 
     .. note::
-        treats np.Inf and -np.Inf and np.NaN, the latter are
+        treats np.Inf and -np.Inf, np.NaN and None, the latter are
         simply disregarded
 
     """
