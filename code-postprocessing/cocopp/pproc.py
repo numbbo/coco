@@ -1532,7 +1532,7 @@ class DataSet(object):
         # targets, sorted along targets
         return list(res[i][1] for i in targets)
 
-    def detEvals(self, targets, copy=True):
+    def detEvals(self, targets, copy=True, bootstrap=False):
         """returns len(targets) data rows self.evals[idata, 1:] each row with 
         the closest but not larger target such that self.evals[idata, 0] <= target, 
         and self.evals[idata-1, 0] > target or in the "limit" cases the
@@ -1557,6 +1557,10 @@ class DataSet(object):
             assert all([all((np.isnan(evalsrows[target]) + (evalsrows[target] == self._detEvals2(targets)[i])))
                         for i, target in enumerate(targets)])
 
+        if bootstrap:
+            return [np.asarray(evalsrows[t])[np.random.randint(0,
+                                len(evalsrows[t]), len(evalsrows[t]))]
+                    for t in targets]
         return [evalsrows[t] for t in targets]
         
     def _detEvals2(self, targets):
