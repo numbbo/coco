@@ -92,13 +92,17 @@ def cocofy(filename):
 
 # CLASS DEFINITIONS
 
-def as_TargetValues(targets):
-    if isinstance(targets, TargetValues):
-        return targets
-    if isinstance(targets, list):
-        return TargetValues(targets)
-    raise NotImplementedError("""type %s not recognized""" %
-                              str(type(targets)))
+def as_TargetValues(target_values):
+    if isinstance(target_values, TargetValues):
+        return target_values
+    if isinstance(target_values, list):
+        return TargetValues(target_values)
+    try:
+        isinstance(target_values((1, 20)), list)
+        return target_values
+    except:
+        raise NotImplementedError("""type %s not recognized""" %
+                                  str(type(target_values)))
 class TargetValues(object):
     """store and retrieve a list of target function values::
 
@@ -1552,7 +1556,7 @@ class DataSet(object):
         if do_assertion:
             assert all([all((np.isnan(evalsrows[target]) + (evalsrows[target] == self._detEvals2(targets)[i])))
                         for i, target in enumerate(targets)])
-    
+
         return [evalsrows[t] for t in targets]
         
     def _detEvals2(self, targets):
@@ -2310,6 +2314,8 @@ class DataSetList(list):
 
         Detail: currently, the minimal observed evaluation is computed
         instance-wise and the ``number`` "easiest" instances are returned.
+        That is, if `number` is the number of instances, the best eval
+        for each instance is returned.
         Also the smallest ``number`` evaluations regardless of instance
         are computed, but not returned.
 
@@ -2356,6 +2362,10 @@ class DataSetList(list):
         """return a list of the respective best data lines over all data
         sets in ``self`` for each ``target in target_values`` and an
         array of the computed scores (ERT ``if scoring_function == 'ERT'``).
+
+        A data line is the set of evaluations from all (usually 15) runs
+        for a given target value. The score determines which data line is
+        "best".
 
         If ``scoring_function is None``, the best is determined with method
         ``detERT``. Using ``scoring_function=lambda x:
