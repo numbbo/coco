@@ -380,6 +380,7 @@ def randint_derandomized(low, high=None, size=None):
     By default, ``size == high-low``, that is, a permutation is returned.
 
     >>> import numpy as np
+    >>> from cocopp.toolsstats import randint_derandomized
     >>> np.random.seed(1)
     >>> list(randint_derandomized(0, 4, 6))
     [3, 2, 0, 1, 0, 2]
