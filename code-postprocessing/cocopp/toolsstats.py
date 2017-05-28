@@ -101,7 +101,11 @@ s        """
 
 def fix_data_number(data, ndata=15,
                        last_elements_randomized=True, warn=False):
-    """return copy of data vector modified to length ``ndata``
+    """Obsolete and subject to removal. Use instead
+    ``np.asarray(data)[randint_derandomized(0, len(data), ndata)]`` or
+    ``[data[i] for i in randint_derandomized(0, len(data), ndata)]``.
+
+    return copy of data vector modified to length ``ndata``
     or ``data`` itself.
 
     Assures ``len(data) == ndata``.
@@ -371,13 +375,15 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
 
 
 def randint_derandomized(low, high=None, size=None):
-    """an array of derandomized random integers.
+    """return a `numpy` array of derandomized random integers.
 
-    Each "random" integer is guarantied to appear exactly
-    once in each chunk of `size` = `high-low`.
+    The interface is the same as for `numpy.randint`, however the
+    default value for `size` is ``high-low`` and each "random" integer
+    is guarantied to appear exactly once in each chunk of size
+    ``high-low``. (That is, by default a permutation is returned.)
 
-    The value range is [low, high-1] or [0, low-1] if ``high is None``.
-    By default, ``size == high-low``, that is, a permutation is returned.
+    As for `numpy.randint`, the value range is [low, high-1] or [0, low-1]
+    if ``high is None``.
 
     >>> import numpy as np
     >>> from cocopp.toolsstats import randint_derandomized
@@ -385,10 +391,16 @@ def randint_derandomized(low, high=None, size=None):
     >>> list(randint_derandomized(0, 4, 6))
     [3, 2, 0, 1, 0, 2]
 
-    """
-    return np.asarray(list(randint_derandomized_generator(low, high, size)))
+    A typical usecase is indexing of ``data`` like::
 
-def randint_derandomized_generator(low, high=None, size=None):
+        [data[i] for i in randint_derandomized(0, len(data), ndata)]
+        # or almost equivalently
+        np.asarray(data)[randint_derandomized(0, len(data), ndata)]
+
+    """
+    return np.asarray(list(_randint_derandomized_generator(low, high, size)))
+
+def _randint_derandomized_generator(low, high=None, size=None):
     """the generator for `randint_derandomized`"""
     if high is None:
         low, high = 0, low
@@ -396,16 +408,16 @@ def randint_derandomized_generator(low, high=None, size=None):
         size = high
     delivered = 0
     while delivered < size:
-        for i in np.random.permutation(high - low):
+        for randi in np.random.permutation(high - low):
+            delivered += 1
+            yield low + randi
             if delivered >= size:
                 break
-            delivered += 1
-            yield i + low
 
 def simulated_evals(evals, nfails,
             samplesize=genericsettings.simulated_runlength_bootstrap_sample_size,
             randint=randint_derandomized):
-    """Obsolete: see `DataSet.evals_simulated` instead.
+    """Obsolete: see `DataSet.evals_with_simulated_restarts` instead.
 
     Return `samplesize` "simulated" run lengths (#evaluations), sorted.
 
