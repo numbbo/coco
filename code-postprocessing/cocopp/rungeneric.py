@@ -280,8 +280,14 @@ def main(argv=None):
 
         if len(args) == 2:
             rungeneric2.main(genopts + ["-o", outputdir] + args)
+            toolsdivers.prepend_to_file(latex_commands_filename,
+                                        ['\\providecommand{\\numofalgs}{2}']
+                                        )
         elif len(args) > 2:
             rungenericmany.main(genopts + ["-o", outputdir] + args)
+            toolsdivers.prepend_to_file(latex_commands_filename,
+                                        ['\\providecommand{\\numofalgs}{3+}']
+                                        )
 
         toolsdivers.prepend_to_file(latex_commands_filename,
                                     ['\\providecommand{\\cocoversion}{\\hspace{\\textwidth}\\scriptsize\\sffamily{}' +
