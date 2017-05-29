@@ -545,14 +545,14 @@ def main(dsList, _valuesOfInterest, outputdir):
     ppfig.save_single_functions_html(
         os.path.join(outputdir, 'pprldistr'),
         htmlPage = ppfig.HtmlPage.PPRLDISTR,
-        functionGroups = dsList.getFuncGroups(),
+        function_groups= dsList.getFuncGroups(),
         parentFileName=genericsettings.single_algorithm_file_name)
 
     if not testbedsettings.current_testbed.reference_algorithm_filename == '':
         ppfig.save_single_functions_html(
             os.path.join(outputdir, 'pplogloss'),
             htmlPage = ppfig.HtmlPage.PPLOGLOSS,
-            functionGroups = dsList.getFuncGroups(),
+            function_groups= dsList.getFuncGroups(),
             parentFileName=genericsettings.single_algorithm_file_name)
 
     ppfig.copy_js_files(outputdir)

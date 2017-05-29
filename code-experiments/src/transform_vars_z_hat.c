@@ -80,8 +80,10 @@ static coco_problem_t *transform_vars_z_hat(coco_problem_t *inner_problem, const
   COCO INFO: ..., d=2, running: f18.Assertion failed: (about_equal_value(hypervolume, 8.1699208579037619e-05)), function test_coco_archive_extreme_solutions, file ./test_coco_archive.c, line 123.
 
   */
-  if (strstr(coco_problem_get_id(inner_problem), "schwefel") == NULL)
-    coco_warning("transform_vars_z_hat applied without to change the best_parameter. This may lead to a bug later on. ");
+  if (strstr(coco_problem_get_id(inner_problem), "schwefel") == NULL) {
+    coco_warning("transform_vars_z_hat(): 'best_parameter' not updated, set to NAN.");
+    coco_vector_set_to_nan(problem->best_parameter, problem->number_of_variables);
+  }
 
   return problem;
 }

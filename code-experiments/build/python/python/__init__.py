@@ -433,9 +433,17 @@ class Problem(_interface.Problem):
         """return feasible initial solution"""
         return super(Problem, self).initial_solution()
     @property
-    def list_of_observers(self):
+    def observers(self):
+        """list of observers wrapped around this problem"""
         return super(Problem, self).list_of_observers
-    
+    @property
+    def is_observed(self):
+        """problem ``p`` is observed ``p.is_observed`` times.
+
+        See also: the list of observers in property `observers`.
+        """
+        return super(Problem, self).is_observed
+
     @property
     def number_of_variables(self):  # this is cython syntax, not known in Python
         # this is a class definition which is instantiated automatically!?

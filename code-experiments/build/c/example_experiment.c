@@ -18,12 +18,12 @@
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.
  * Increase the budget multiplier value gradually to see how it affects the runtime.
  */
-static const size_t BUDGET_MULTIPLIER = 2;
+static const int BUDGET_MULTIPLIER = 2;
 
 /**
  * The maximal number of independent restarts allowed for an algorithm that restarts itself.
  */
-static const size_t INDEPENDENT_RESTARTS = 1e5;
+static const long INDEPENDENT_RESTARTS = 1e5;
 
 /**
  * The random seed. Change if needed.
@@ -176,12 +176,9 @@ void example_experiment(const char *suite_name,
     /* Run the algorithm at least once */
     for (run = 1; run <= 1 + INDEPENDENT_RESTARTS; run++) {
 
-      size_t evaluations_done;
-      
-      evaluations_done = coco_problem_get_evaluations(PROBLEM) + 
-            coco_problem_get_evaluations_constraints(PROBLEM);
-
-      long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - (long) evaluations_done;
+      long evaluations_done = (long) (coco_problem_get_evaluations(PROBLEM) + 
+            coco_problem_get_evaluations_constraints(PROBLEM));
+      long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - evaluations_done;
 
       /* Break the loop if the target was hit or there are no more remaining evaluations */
       if ((coco_problem_final_target_hit(PROBLEM) && 

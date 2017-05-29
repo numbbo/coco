@@ -88,7 +88,7 @@ def cocofy(filename):
     for line in fileinput.input(filename, inplace=1):
 #       if "bbob" in line:
         sys.stdout.write(line.replace("bbob_pproc","cocopp"))
-    fileinput.close
+    fileinput.close()
 
 # CLASS DEFINITIONS
 
@@ -551,7 +551,7 @@ class DataSet(object):
         ...   archivefile.extractall()
         ...   os.chdir(path)
         >>> dslist = bb.load(infoFile)
-          Data consistent according to test in consistency_check() in pproc.DataSet
+          Data consistent according to consistency_check() in pproc.DataSet
         >>> print(dslist)  # doctest:+ELLIPSIS
         [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
         >>> type(dslist)
@@ -693,7 +693,7 @@ class DataSet(object):
         ...   archivefile.extractall()
         ...   os.chdir(path)
         >>> dslist = bb.load(infoFile)
-          Data consistent according to test in consistency_check() in pproc.DataSet
+          Data consistent according to consistency_check() in pproc.DataSet
         >>> dslist[2].instancenumbers
         [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5]
         >>> dslist[2].evals[-1]
@@ -707,7 +707,7 @@ class DataSet(object):
         >>> bb.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = [1, 3]
         >>> bb.config.config('GECCOBBOBTestbed') # make sure that settings are used
         >>> dslist2 = bb.load(infoFile)
-          Data consistent according to test in consistency_check() in pproc.DataSet
+          Data consistent according to consistency_check() in pproc.DataSet
         >>> dslist2[2].instancenumbers
         [1, 1, 1, 3, 3, 3]
         >>> dslist2[2].evals[-1]
@@ -1177,7 +1177,7 @@ class DataSet(object):
             for val in toolsstats.prctile(evals[i], (0, 15, 50, 85, 100)):
                 val = float(val)
                 line += ' %7d' % int(np.round(val / self.dim)) if not np.isnan(val) else '     .  '
-            line += ' |' + ('%9.1f' % (ert[i] / self.dim) if np.isfinite(ert[i]) else '    inf  ') 
+            line += ' |' + ('%9.1f' % (ert[i] / self.dim) if np.isfinite(ert[i]) else '    nan  ') 
             # line += '  %4.2f' % (nsucc[i] / float(Nruns)) if nsucc[i] < Nruns else '  1.0 '
             line += '  %2d' % nsucc[i]
             sinfo += '\n' + line
@@ -1650,7 +1650,7 @@ class DataSetList(list):
         for ds in self:
             data_consistent = data_consistent and ds.consistency_check()
         if len(self) and data_consistent:
-            print("  Data consistent according to test in consistency_check() in pproc.DataSet")
+            print("  Data consistent according to consistency_check() in pproc.DataSet")
             
     def processIndexFile(self, indexFile):
         """Reads in an index (.info?) file information on the different runs."""
@@ -2129,7 +2129,7 @@ class DataSetList(list):
 
             funcs_processed.sort()
             funcs_solved.sort()
-            assert np.__version__ >= '1.4.0'
+            assert map(int, np.__version__.split('.')) > [1, 4, 0]
             # if this fails, replacing nan with inf might work for sorting
             rld_data = np.hstack(rld_data)
             if reference_data_set_list is not None:
