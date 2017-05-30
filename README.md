@@ -98,6 +98,7 @@ Getting Started <a name="Getting-Started"></a>
   for Octave). `python do.py` lists all available commands. 
   
 3. On the computer where experiment data shall be post-processed, run
+
   ```
     python do.py install-postprocessing
   ```
@@ -137,9 +138,9 @@ Getting Started <a name="Getting-Started"></a>
   <a name="Getting-Started-pp"></a>
 6.  **Postprocess** the data from the results folder by typing
 
-    ```
+  ```
     python -m cocopp [-o OUTPUT_FOLDERNAME] YOURDATAFOLDER [MORE_DATAFOLDERS]
-    ```
+  ```
 
   Any subfolder in the folder arguments will be searched for logged data. That is, 
   experiments from different batches can be in different folders collected under a 
