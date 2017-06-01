@@ -76,7 +76,7 @@ public class ExampleExperiment {
          * Adapt to your need. Note that the experiment is run according
          * to the settings, defined in exampleExperiment(...) below.
          */
-		exampleExperiment("bbob-constrained", "bbob-constrained", randomGenerator);
+		exampleExperiment("bbob", "bbob", randomGenerator);
 
 		System.out.println("Done!");
 		System.out.flush();
