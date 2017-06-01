@@ -28,7 +28,7 @@ JNIEXPORT void JNICALL Java_CocoJNI_cocoSetLogLevel
   /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
   if (interface_cls == NULL) {
     jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
-    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoGetObserver\n");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoSetLogLevel\n");
   }
 
   log_level = (*jenv)->GetStringUTFChars(jenv, jlog_level, NULL);
