@@ -740,7 +740,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         if info:
             file_name = os.path.join(outputdir, '%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
         else:
-            file_name = os.path.join(outputdir, '%s.tex' % (genericsettings.pprldmany_file_name))
+            file_name = os.path.join(outputdir, '%s.tex' % genericsettings.pprldmany_file_name)
         with open(file_name, 'w') as f:
             f.write(r'\providecommand{\nperfprof}{7}')
             algtocommand = {}  # latex commands
@@ -778,7 +778,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     if info:
         figureName = os.path.join(outputdir, '%s_%s' % (genericsettings.pprldmany_file_name, info))
     else:
-        figureName = os.path.join(outputdir, '%s' % (genericsettings.pprldmany_file_name))
+        figureName = os.path.join(outputdir, '%s' % genericsettings.pprldmany_file_name)
     # beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
     beautify()
 

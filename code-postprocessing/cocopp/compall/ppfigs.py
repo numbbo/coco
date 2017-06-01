@@ -409,7 +409,8 @@ def generateData(dataSet, target):
     res[3] = numpy.max(dataSet.maxevals)
     return res
 
-def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
+
+def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata', latex_commands_file=''):
     """From a DataSetList, returns figures showing the scaling: aRT/dim vs dim.
     
     One function and one target per figure.
@@ -423,8 +424,7 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
     # target becomes a TargetValues "list" with one element
     target = testbedsettings.current_testbed.ppfigs_ftarget
     target = pproc.TargetValues.cast([target] if numpy.isscalar(target) else target)
-    latex_commands_filename = os.path.join(outputdir, 'cocopp_commands.tex')
-    assert isinstance(target, pproc.TargetValues) 
+    assert isinstance(target, pproc.TargetValues)
     if len(target) != 1:
         raise ValueError('only a single target can be managed in ppfigs, ' + str(len(target)) + ' targets were given')
     
@@ -433,15 +433,15 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
 
     dictFunc = pproc.dictAlgByFun(dictAlg)
-    if sortedAlgs is None:
-        sortedAlgs = sorted(dictAlg.keys())
-    if not os.path.isdir(outputdir):
-        os.mkdir(outputdir)
+    if sorted_algorithms is None:
+        sorted_algorithms = sorted(dictAlg.keys())
+    if not os.path.isdir(output_dir):
+        os.mkdir(output_dir)
     for f in dictFunc:
-        filename = os.path.join(outputdir,'ppfigs_f%03d' % (f))
+        filename = os.path.join(output_dir, 'ppfigs_f%03d' % (f))
         handles = []
-        fix_styles(len(sortedAlgs), styles)  # 
-        for i, alg in enumerate(sortedAlgs):
+        fix_styles(len(sorted_algorithms), styles)  #
+        for i, alg in enumerate(sorted_algorithms):
             dictDim = dictFunc[f][alg].dictByDim()  # this does not look like the most obvious solution
 
             #Collect data
@@ -533,8 +533,8 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
             dims = sorted(pproc.dictAlgByDim(dictFunc[f]))
             for i, dim in enumerate(dims):
                 datasets = pproc.dictAlgByDim(dictFunc[f])[dim]
-                assert all([len(datasets[ialg]) == 1 for ialg in sortedAlgs if datasets[ialg]])
-                dsetlist =  [datasets[ialg][0] for ialg in sortedAlgs if datasets[ialg]]
+                assert all([len(datasets[ialg]) == 1 for ialg in sorted_algorithms if datasets[ialg]])
+                dsetlist =  [datasets[ialg][0] for ialg in sorted_algorithms if datasets[ialg]]
                 if len(dsetlist) > 1:
                     arzp, arialg = toolsstats.significance_all_best_vs_other(dsetlist, target((f, dim)))
                     if arzp[0][1] * len(dims) < show_significance:
@@ -554,7 +554,7 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
         if legend:
             plotLegend(handles)
         elif 1 < 3:
-            if f in functions_with_legend and len(sortedAlgs) < 6: # 6 elements at most in the boxed legend
+            if f in functions_with_legend and len(sorted_algorithms) < 6: # 6 elements at most in the boxed legend
                 isLegend = True
 
         beautify(legend=isLegend, rightlegend=legend)
@@ -589,30 +589,29 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
 
         plt.close()
 
-    
-    htmlFile = os.path.join(outputdir, htmlFilePrefix + '.html')
+    htmlFile = os.path.join(output_dir, html_file_prefix + '.html')
     # generate commands in tex file:
     try:
         abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
         alg_definitions = []
         alg_definitions_html = ''
-        for i in range(len(sortedAlgs)):
+        for i in range(len(sorted_algorithms)):
             symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),
                                 marker_to_latex(styles[i]['marker']))
             symb_html = '<span style="color:%s;">%s</span>' % (styles[i]['color'], marker_to_html(styles[i]['marker']))
             
             alg_definitions.append((', ' if i > 0 else '') + '%s: %s' % (symb, '\\algorithm' + abc[i % len(abc)]))
-            alg_definitions_html += (', ' if i > 0 else '') + '%s: %s' % (symb_html, toolsdivers.str_to_latex(toolsdivers.strip_pathname1(sortedAlgs[i])))
-        toolsdivers.prepend_to_file(latex_commands_filename,
+            alg_definitions_html += (', ' if i > 0 else '') + '%s: %s' % (symb_html, toolsdivers.str_to_latex(toolsdivers.strip_pathname1(sorted_algorithms[i])))
+        toolsdivers.prepend_to_file(latex_commands_file,
                 [providecolorsforlatex()]) # needed since the latest change in ACM template
-        toolsdivers.prepend_to_file(latex_commands_filename, 
+        toolsdivers.prepend_to_file(latex_commands_file,
                 [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
                  #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
                 '\\providecommand{\\bbobppfigslegend}[1]{',
                 scaling_figure_caption(),
                 'Legend: '] + alg_definitions + ['}']
                 )
-        toolsdivers.prepend_to_file(latex_commands_filename, 
+        toolsdivers.prepend_to_file(latex_commands_file,
                 ['\\providecommand{\\bbobECDFslegend}[1]{',
                 ecdfs_figure_caption(), '}']
                 )
@@ -623,16 +622,16 @@ def main(dictAlg, htmlFilePrefix, sortedAlgs=None, outputdir='ppdata'):
             print 'Wrote commands and legend to %s' % filename
 
         # this is obsolete (however check templates)
-        filename = os.path.join(outputdir,'ppfigs.tex') 
+        filename = os.path.join(output_dir, 'ppfigs.tex')
         f = open(filename, 'w')
         f.write('% Do not modify this file: calls to post-processing software'
                 + ' will overwrite any modification.\n')
         f.write('Legend: ')
         
-        for i in range(0, len(sortedAlgs)):
+        for i in range(0, len(sorted_algorithms)):
             symb = r'{%s%s}' % (color_to_latex(styles[i]['color']),
                                 marker_to_latex(styles[i]['marker']))
-            f.write((', ' if i > 0 else '') + '%s:%s' % (symb, writeLabels(sortedAlgs[i])))
+            f.write((', ' if i > 0 else '') + '%s:%s' % (symb, writeLabels(sorted_algorithms[i])))
         f.close()    
         if genericsettings.verbose:
             print '(obsolete) Wrote legend in %s' % filename
