@@ -258,8 +258,8 @@ def main(argv=None):
             warnings.simplefilter('module')
             # warnings.simplefilter('ignore')            
 
-        #get directory name if outputdir is a archive file
-        algfolder = findfiles.get_output_directory_subfolder(args[0])
+        # Gets directory name if outputdir is a archive file.
+        algfolder = findfiles.get_output_directory_sub_folder(args[0])
         algoutputdir = os.path.join(outputdir, algfolder)
         
         print("\nPost-processing (1): will generate output " + 
