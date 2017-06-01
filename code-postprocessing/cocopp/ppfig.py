@@ -131,7 +131,7 @@ def save_index_html_file(filename):
         many_algorithm_file = '%s.html' % genericsettings.many_algorithm_file_name
         for root, _dirs, files in os.walk(current_dir):
             for elem in _dirs:
-                f.write(add_link(current_dir, elem, many_algorithm_file, elem, indent))
+                comparison_links += add_link(current_dir, elem, many_algorithm_file, elem, indent)
 
         if comparison_links:
             f.write('<H2>Comparison data</H2>\n')
