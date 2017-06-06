@@ -15,11 +15,11 @@ def _has_len(thing):
     return True
 
 class ECDFDataList(list):
-    """a list of ECDF data, `None` for no successes.
+    """a list of ECDF data, `None` indicates an entry with no "successes".
 
     Conceptually, each entry in the list has the same overall vertical
     weight in the ECDF. Hence, the number of samples should not matter,
-    but should be corrected for when merging the data.
+    but should be corrected for when merging the data (not implemented).
 
     Currently, we assume the same number of samples in all list entries,
     or `None`. This should preferably change.
@@ -30,25 +30,41 @@ class ECDFDataList(list):
 
     TODO: we may run into trouble if no data are given.
     """
-    def __init__(self, list_=None):
+    def __init__(self, list_=None, complement=np.nan):
         list.__init__(self, list_ or [])
         self.nremoved = 0
-        self.clean()
+        self.clean(complement)
         if len(self) and max(self.samplesizes) <= 0:
             warnings.warn("""no data for ECDFDataList.__init__""")
-    def clean(self):
-        """remove empty entries and increase `nmissing` counter"""
+    def clean(self, complement=False):
+        """remove empty entries and increase `nmissing` counter.
+
+        If `complement`, "empty" entries become
+        ``samplesize * [complement]``, e.g. ``15 * [np.nan]``.
+
+        Details: the order of ecdf data in the list is retained.
+        """
+        if complement:
+            if not self.is_uniform:
+                raise ValueError("""different samplesizes %s""" %
+                                 str(self.samplesizes))
+            samplesize = max(self.samplesizes)
         i = 0
         while i < len(self):
             if not _has_len(self[i]) or not len(self[i]):
-                self.pop(i)
-                self.nremoved += 1
+                if complement:
+                    self[i] = samplesize * [complement]
+                    i += 1
+                else:
+                    self.pop(i)
+                    self.nremoved += 1
             else:
                 i += 1
         return self
     def complement_missing(self, samplesize=None, missing=np.nan):
-        """Add deleted entries as ``samplesize * [missing]``.
-s        """
+        """Add deleted entries as ``samplesize * [missing]`` to the end
+        of the list
+        """
         if samplesize is None:
             if not self.is_uniform:
                 raise ValueError("""different samplesizes %s""" %
@@ -72,8 +88,7 @@ s        """
         return 1 - self.fraction_missing
     @property
     def is_uniform(self):
-        """rather obsolete!?
-        return `True` if samplesizes are all the same"""
+        """return `True` if samplesizes are all the same"""
         s = set(self.samplesizes).difference([0])
         return len(s) <= 1
     @property
@@ -93,6 +108,8 @@ s        """
         """
         # https://mathieularose.com/how-not-to-flatten-a-list-of-lists-in-python/
         # https://stackoverflow.com/questions/952914/making-a-flat-list-out-of-list-of-lists-in-python
+        if not self.is_uniform:
+            warnings.warn("""non-uniform ecdf list found. may not""")
         res = [d for i in range(len(self))  # 2nd quickest version,
                  for d in (self[i] if _has_len(self[i])
                            else self[i] * [np.nan])  # should never be effective
