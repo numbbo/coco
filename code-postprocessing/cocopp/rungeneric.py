@@ -166,9 +166,6 @@ def main(argv=None):
 
             do not generate the svg figures which are used in html files
 
-        -- test
-
-            call the __main__.py and run the tests
 
     Exceptions raised:
 
