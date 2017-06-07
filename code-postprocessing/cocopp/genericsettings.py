@@ -231,7 +231,7 @@ pprldistr2_file_name = 'pprldistr2'
 
 latex_commands_for_html = 'latex_commands_for_html'
 
-extraction_folder_prefix = '_extracted_'
+extraction_folder_prefix = '.extracted_'
 
 # default settings for rungeneric, rungeneric1, rungeneric2, and rungenericmany
 inputCrE = 0.
