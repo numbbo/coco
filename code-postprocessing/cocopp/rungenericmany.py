@@ -335,7 +335,7 @@ def main(argv=None):
         plt.rc("legend", **inset.rclegend)
         plt.rc('pdf', fonttype=42)
 
-        ppfig.copy_js_files(outputdir)
+        ppfig.copy_js_files(many_algorithms_output)
 
         ppfig.save_single_functions_html(
             os.path.join(many_algorithms_output, genericsettings.ppfigs_file_name),
