@@ -446,7 +446,7 @@ effect. In this case it has been successful to remove all previously installed v
 see [here](https://github.com/numbbo/coco/issues/586) for a few more details. 
 
 
-### General
+### Post-Processing
 
 #### Too long paths for postprocessing
 It can happen that the postprocessing fails due to too long paths to the algorithm data.
@@ -484,6 +484,12 @@ EOFError: EOF read where object expected
 try adding `zip_safe=False` to the `setup.py.in` file in the `code-postprocessing`
 folder. More details can be found in the issue [#1373](https://github.com/numbbo/coco/issues/1373).
 
+#### Algorithm appears twice in the figures
+Earlier versions of `cocopp` have written extracted data to a folder named `_extracted_...`. 
+If the post-processing is invoked with a `*` argument, these folders become an argument and 
+are displayed (most likely additionally to the original algorithm data folder). Solution: 
+remove the `_extracted_...` folders _and_ use the latest version of the post-processing
+module `cocopp` (since release 2.1.1).
 
 
 Details
