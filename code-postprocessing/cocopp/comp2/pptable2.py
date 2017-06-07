@@ -63,8 +63,7 @@ def get_table_caption():
         
     text_all = r"""%
         The median number of conducted function evaluations is additionally given in 
-        \textit{italics}, if the last target was never reached. 
-        1:\algorithmAshort\ is \algorithmA\ and 2:\algorithmBshort\ is \algorithmB.
+        \textit{italics}, if the last target was never reached.
         Bold entries are statistically significantly better compared to the other algorithm,
         with $p=0.05$ or $p=10^{-k}$ where $k\in\{2,3,4,\dots\}$ is the number
         following the $\star$ symbol, with Bonferroni correction of #2."""

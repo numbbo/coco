@@ -4,6 +4,12 @@
  *
  * x |-> Mx + b <br>
  * The matrix M is stored in row-major format.
+ *
+ * Currently the best parameter is not transformed. It would be simple to transform
+ * the best parameter from 0 to -b, if necessary. It would also be simple to transform
+ * the best parameter if M is orthogonal. If linear transformations are based on the
+ * composition from an SVD, this solves the best parameter setting problem,
+ * see https://github.com/numbbo/coco/issues/814#issuecomment-303724400
  */
 
 #include <assert.h>
@@ -180,7 +186,7 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
   problem->evaluate_gradient = transform_vars_affine_evaluate_gradient;
   
   if (coco_problem_best_parameter_not_zero(inner_problem)) {
-    coco_debug("transform_vars_affine(): 'best_parameter' not updated, set to NAN");
+    coco_debug("transform_vars_affine(): 'best_parameter' not updated, set to NAN (see https://github.com/numbbo/coco/issues/814)");
     coco_vector_set_to_nan(inner_problem->best_parameter, inner_problem->number_of_variables);
   }
   

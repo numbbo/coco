@@ -30,7 +30,7 @@ if __name__ == "__main__":
     res = cocopp.rungenericmany.main(sys.argv[1:])
     sys.exit(res)
 
-from . import genericsettings, ppfig, testbedsettings
+from . import genericsettings, ppfig, testbedsettings, findfiles
 from . import pproc, pptex
 from .pproc import DataSetList, processInputArgs
 from .ppfig import Usage
@@ -48,7 +48,7 @@ def usage():
     print(main.__doc__)
 
 
-def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings):
+def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings, parent_file_name):
     """ Generates ecdf graphs, aggregated over groups as
         indicated via algdict
     """
@@ -62,7 +62,7 @@ def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings):
             dimensions=dims,
             htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP_MANY,
             function_groups=function_groups,
-            parentFileName=genericsettings.many_algorithm_file_name
+            parentFileName=parent_file_name
         )
 
         for i, d in enumerate(dims):
@@ -294,6 +294,14 @@ def main(argv=None):
         if not dsList:
             sys.exit()
 
+        algorithm_folder = findfiles.get_output_directory_sub_folder(sortedAlgs)
+        prepend_to_file(latex_commands_file, ['\\providecommand{\\algsfolder}{' + algorithm_folder + '/}'])
+        many_algorithms_output = os.path.join(outputdir, algorithm_folder)
+        if not os.path.exists(many_algorithms_output):
+            os.makedirs(many_algorithms_output)
+            if genericsettings.verbose:
+                print('Folder %s was created.' % many_algorithms_output)
+
         for i in dictAlg:
             if genericsettings.isNoisy and not genericsettings.isNoiseFree:
                 dictAlg[i] = dictAlg[i].dictByNoise().get('nzall', DataSetList())
@@ -327,10 +335,10 @@ def main(argv=None):
         plt.rc("legend", **inset.rclegend)
         plt.rc('pdf', fonttype=42)
 
-        ppfig.copy_js_files(outputdir)
+        ppfig.copy_js_files(many_algorithms_output)
 
         ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.ppfigs_file_name),
+            os.path.join(many_algorithms_output, genericsettings.ppfigs_file_name),
             '',  # algorithms names are clearly visible in the figure
             htmlPage=ppfig.HtmlPage.PPFIGS,
             function_groups=dictAlg[sortedAlgs[0]].getFuncGroups(),
@@ -340,7 +348,7 @@ def main(argv=None):
         dimensions = sorted(pproc.dictAlgByDim(dictAlg))
 
         ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.pptables_file_name),
+            os.path.join(many_algorithms_output, genericsettings.pptables_file_name),
             '',  # algorithms names are clearly visible in the figure
             dimensions=dimensions,
             htmlPage=ppfig.HtmlPage.PPTABLES,
@@ -352,7 +360,7 @@ def main(argv=None):
         print("Generating convergence plots...")
         if genericsettings.isConv:
             ppconverrorbars.main(dictAlg,
-                                 outputdir,
+                                 many_algorithms_output,
                                  genericsettings.many_algorithm_file_name,
                                  '')
         print_done()
@@ -365,20 +373,20 @@ def main(argv=None):
             print("ECDF graphs per noise group...")
             grouped_ecdf_graphs(pproc.dictAlgByNoi(dictAlg),
                                 sortedAlgs,
-                                outputdir,
+                                many_algorithms_output,
                                 dictAlg[sortedAlgs[0]].getFuncGroups(),
-                                inset
-                                )
+                                inset,
+                                genericsettings.many_algorithm_file_name)
             print_done()
 
             # ECDFs per function groups
             print("ECDF graphs per function group...")
             grouped_ecdf_graphs(pproc.dictAlgByFuncGroup(dictAlg),
                                 sortedAlgs,
-                                outputdir,
+                                many_algorithms_output,
                                 dictAlg[sortedAlgs[0]].getFuncGroups(),
-                                inset
-                                )
+                                inset,
+                                genericsettings.many_algorithm_file_name)
             print_done()
 
             # copy-paste from above, here for each function instead of function groups:
@@ -389,7 +397,7 @@ def main(argv=None):
                     pprldmany.all_single_functions(dictAlg,
                                                    False,
                                                    sortedAlgs,
-                                                   outputdir,
+                                                   many_algorithms_output,
                                                    genericsettings.many_algorithm_file_name,
                                                    settings=inset)
                 else:  # subject to removal
@@ -399,7 +407,7 @@ def main(argv=None):
                         dims = sorted(dictDim)
                         for i, d in enumerate(dims):
                             entries = dictDim[d]
-                            single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
+                            single_fct_output_dir = (many_algorithms_output.rstrip(os.sep) + os.sep +
                                                      'pprldmany-single-functions'
                                                      # + os.sep + ('f%03d' % fg)
                                                      )
@@ -432,14 +440,14 @@ def main(argv=None):
                     pptables.main(
                         tmpdictdim,
                         sortedAlgs,
-                        outputdir,
+                        many_algorithms_output,
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==
                                          testbedsettings.testbed_name_bi) else True),
                         latex_commands_file)
             print_done()
 
         ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.many_algorithm_file_name),
+            os.path.join(many_algorithms_output, genericsettings.many_algorithm_file_name),
             '',  # algorithms names are clearly visible in the figure
             htmlPage=ppfig.HtmlPage.MANY,
             function_groups=dictAlg[sortedAlgs[0]].getFuncGroups()
@@ -457,7 +465,8 @@ def main(argv=None):
             ppfigs.main(dictAlg,
                         genericsettings.ppfigs_file_name,
                         sortedAlgs,
-                        outputdir)
+                        many_algorithms_output,
+                        latex_commands_file)
             plt.rcdefaults()
             print_done()
 

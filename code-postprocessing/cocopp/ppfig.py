@@ -93,20 +93,20 @@ html_header = """<HTML>
 
 def add_image(image_name, add_link_to_image, height=160):
     if add_link_to_image:
-        return '<a href="file:%s"><IMG SRC="%s" height="%dem"></a>' % (image_name, image_name, height)
+        return '<a href="%s"><IMG SRC="%s" height="%dem"></a>' % (image_name, image_name, height)
     else:
         return '<IMG SRC="%s" height="%dem">' % (image_name, height)
 
 
-def add_link(currentDir, folder, fileName, label, indent='', ignoreFileExists=False):
+def add_link(current_dir, folder, file_name, label, indent='', ignore_file_exists=False):
     if folder:
-        path = os.path.join(os.path.realpath(currentDir), folder, fileName)
-        href = '%s/%s' % (folder, fileName)
+        path = os.path.join(os.path.realpath(current_dir), folder, file_name)
+        href = '%s/%s' % (folder, file_name)
     else:
-        path = os.path.join(os.path.realpath(currentDir), fileName)
-        href = fileName
+        path = os.path.join(os.path.realpath(current_dir), file_name)
+        href = file_name
 
-    if ignoreFileExists or os.path.isfile(path):
+    if ignore_file_exists or os.path.isfile(path):
         return '<H3>%s<a href="%s">%s</a></H3>\n' % (indent, href, label)
 
     return ''
@@ -128,15 +128,17 @@ def save_index_html_file(filename):
         indent = '&nbsp;&nbsp;'
 
         comparison_links = ''
-        comparison_links += add_link(current_dir, None, 'templateBBOBcmp.html', 'Two algorithm comparison', indent)
-        comparison_links += add_link(current_dir, None, 'templateBBOBmany.html', 'Many algorithm comparison', indent)
+        many_algorithm_file = '%s.html' % genericsettings.many_algorithm_file_name
+        for root, _dirs, files in os.walk(current_dir):
+            for elem in _dirs:
+                comparison_links += add_link(current_dir, elem, many_algorithm_file, elem, indent)
+
         if comparison_links:
             f.write('<H2>Comparison data</H2>\n')
             f.write(comparison_links)
 
         f.write('<H2>Single algorithm data</H2>\n')
-
-        single_algorithm_file = 'templateBBOBarticle.html'
+        single_algorithm_file = '%s.html' % genericsettings.single_algorithm_file_name
         for root, _dirs, files in os.walk(current_dir):
             for elem in _dirs:
                 f.write(add_link(current_dir, elem, single_algorithm_file, elem, indent))
@@ -146,10 +148,8 @@ def save_index_html_file(filename):
 
 def get_home_link(html_page):
     home_link = '<H3><a href="%s%s.html">Home</a></H3>'
-    if html_page is HtmlPage.ONE:
+    if html_page in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         return home_link % ('../', genericsettings.index_html_file_name)
-    elif html_page is HtmlPage.TWO or html_page is HtmlPage.MANY:
-        return home_link % ('', genericsettings.index_html_file_name)
 
     return ''
 
@@ -157,7 +157,7 @@ def get_home_link(html_page):
 def get_convergence_link(html_page, current_dir):
     if html_page in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
         return add_link(current_dir, None, genericsettings.ppconv_file_name + '.html',
-                        convergence_plots_header, ignoreFileExists=genericsettings.isConv)
+                        convergence_plots_header, ignore_file_exists=genericsettings.isConv)
 
     return ''
 
@@ -171,19 +171,19 @@ def getRldLink(html_page, current_dir):
         file_name = '%s.html' % genericsettings.pprldmany_file_name
         links += add_link(current_dir, folder, file_name,
                           pprldmany_per_func_dim_header,
-                          ignoreFileExists=ignore_file_exists)
+                          ignore_file_exists=ignore_file_exists)
 
         if html_page == HtmlPage.ONE:
             file_name = '%s.html' % genericsettings.pprldmany_group_file_name
             links += add_link(current_dir, folder, file_name,
                               pprldmany_per_group_dim_header,
-                              ignoreFileExists=ignore_file_exists)
+                              ignore_file_exists=ignore_file_exists)
 
         if html_page in (HtmlPage.TWO, HtmlPage.MANY):
             file_name = '%s.html' % genericsettings.pprldmany_file_name
             links += add_link(current_dir, '', file_name,
                               pprldmany_per_group_dim_header,
-                              ignoreFileExists=ignore_file_exists)
+                              ignore_file_exists=ignore_file_exists)
 
     return links
 

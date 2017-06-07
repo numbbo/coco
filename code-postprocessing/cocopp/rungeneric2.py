@@ -21,7 +21,7 @@ import getopt
 import numpy
 import matplotlib
 
-from . import genericsettings, testbedsettings, ppfig, toolsdivers, rungenericmany
+from . import genericsettings, ppfig, toolsdivers, rungenericmany, findfiles
 from .toolsdivers import print_done
 from .compall import pptables
 
@@ -302,12 +302,19 @@ def main(argv=None):
         ######################### Post-processing #############################
         latex_commands_file = os.path.join(outputdir, 'cocopp_commands.tex')
 
-        if (genericsettings.isFig or genericsettings.isRLDistr
-            or genericsettings.isTab or genericsettings.isScatter):
+        algorithm_folder = findfiles.get_output_directory_sub_folder(sortedAlgs)
+        prepend_to_file(latex_commands_file, ['\\providecommand{\\algsfolder}{' + algorithm_folder + '/}'])
+        two_algorithms_output = os.path.join(outputdir, algorithm_folder)
+
+        if genericsettings.isFig or genericsettings.isRLDistr or genericsettings.isTab or genericsettings.isScatter:
             if not os.path.exists(outputdir):
                 os.mkdir(outputdir)
                 if genericsettings.verbose:
-                    print('Folder %s was created.' % (outputdir))
+                    print('Folder %s was created.' % outputdir)
+            if not os.path.exists(two_algorithms_output):
+                os.mkdir(two_algorithms_output)
+                if genericsettings.verbose:
+                    print('Folder %s was created.' % two_algorithms_output)
 
             # prepend the algorithm name command to the tex-command file
             abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -354,43 +361,43 @@ def main(argv=None):
 
         algorithm_name = "%s vs %s" % (algName1, algName0)
         ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.ppfigs_file_name),
+            os.path.join(two_algorithms_output, genericsettings.ppfigs_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.PPFIGS,
             function_groups=dsList0.getFuncGroups(),
-            parentFileName=genericsettings.two_algorithm_file_name
+            parentFileName=genericsettings.many_algorithm_file_name
         )
 
         ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.ppscatter_file_name),
+            os.path.join(two_algorithms_output, genericsettings.ppscatter_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.PPSCATTER,
             function_groups=dsList0.getFuncGroups(),
-            parentFileName=genericsettings.two_algorithm_file_name
+            parentFileName=genericsettings.many_algorithm_file_name
         )
 
         ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.pprldistr2_file_name),
+            os.path.join(two_algorithms_output, genericsettings.pprldistr2_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.PPRLDISTR2,
             function_groups=dsList0.getFuncGroups(),
-            parentFileName=genericsettings.two_algorithm_file_name
+            parentFileName=genericsettings.many_algorithm_file_name
         )
 
         dictDim0 = dsList0.dictByDim()
         dictDim1 = dsList1.dictByDim()
 
         ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.pptable2_file_name),
+            os.path.join(two_algorithms_output, genericsettings.pptable2_file_name),
             algname=algorithm_name,
             dimensions=sorted(list(set(dictDim0.keys()) & set(dictDim1.keys()))),
             htmlPage=ppfig.HtmlPage.PPTABLE2,
             function_groups=dsList0.getFuncGroups(),
-            parentFileName=genericsettings.two_algorithm_file_name
+            parentFileName=genericsettings.many_algorithm_file_name
         )
 
         ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.pptables_file_name),
+            os.path.join(two_algorithms_output, genericsettings.pptables_file_name),
             '',  # algorithms names are clearly visible in the figure
             dimensions=sorted(list(set(dictDim0.keys()) & set(dictDim1.keys()))),
             htmlPage=ppfig.HtmlPage.PPTABLES,
@@ -407,7 +414,7 @@ def main(argv=None):
             plt.rc("legend", **inset.rclegendlarger)
             plt.rc('pdf', fonttype=42)
             ppfig2.main(dsList0, dsList1, testbedsettings.current_testbed.ppfig2_ftarget,
-                        outputdir)
+                        two_algorithms_output)
             print_done()
 
         plt.rc("axes", **inset.rcaxes)
@@ -432,7 +439,7 @@ def main(argv=None):
                     try:
                         pprldistr2.main(dictDim0[dim], dictDim1[dim], dim,
                                         testbedsettings.current_testbed.rldValsOfInterest,
-                                        outputdir,
+                                        two_algorithms_output,
                                         '%02dD_all' % dim)
                     except KeyError:
                         warnings.warn('Could not find some data in %d-D.' % dim)
@@ -445,7 +452,7 @@ def main(argv=None):
                     for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                         pprldistr2.main(dictFG1[fGroup], dictFG0[fGroup], dim,
                                         testbedsettings.current_testbed.rldValsOfInterest,
-                                        outputdir,
+                                        two_algorithms_output,
                                         '%02dD_%s' % (dim, fGroup))
 
                     # ECDFs per noise groups
@@ -455,7 +462,7 @@ def main(argv=None):
                     for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                         pprldistr2.main(dictFN1[fGroup], dictFN0[fGroup], dim,
                                         testbedsettings.current_testbed.rldValsOfInterest,
-                                        outputdir,
+                                        two_algorithms_output,
                                         '%02dD_%s' % (dim, fGroup))
 
             prepend_to_file(latex_commands_file,
@@ -473,10 +480,10 @@ def main(argv=None):
             rungenericmany.grouped_ecdf_graphs(
                 pproc.dictAlgByNoi(dictAlg),
                 sortedAlgs,
-                outputdir,
+                two_algorithms_output,
                 dictAlg[sortedAlgs[0]].getFuncGroups(),
-                inset
-            )
+                inset,
+                genericsettings.many_algorithm_file_name)
             print_done()
 
             # ECDFs per function groups, code copied from rungenericmany.py
@@ -485,10 +492,10 @@ def main(argv=None):
             rungenericmany.grouped_ecdf_graphs(
                 pproc.dictAlgByFuncGroup(dictAlg),
                 sortedAlgs,
-                outputdir,
+                two_algorithms_output,
                 dictAlg[sortedAlgs[0]].getFuncGroups(),
-                inset
-            )
+                inset,
+                genericsettings.many_algorithm_file_name)
             print_done()
 
             if testbedsettings.current_testbed not in [testbedsettings.GECCOBiObjBBOBTestbed,
@@ -504,7 +511,7 @@ def main(argv=None):
                                            testbedsettings.current_testbed.rldValsOfInterest,
                                            # TODO: let rldVals... possibly be RL-based targets
                                            True,
-                                           outputdir, 'all')
+                                           two_algorithms_output, 'all')
                         except KeyError:
                             warnings.warn('Could not find some data in %d-D.'
                                           % (dim))
@@ -517,7 +524,7 @@ def main(argv=None):
                         for fGroup in set(dictFG0.keys()) & set(dictFG1.keys()):
                             pprldistr.comp(dictFG1[fGroup], dictFG0[fGroup],
                                            testbedsettings.current_testbed.rldValsOfInterest, True,
-                                           outputdir,
+                                           two_algorithms_output,
                                            '%s' % fGroup)
     
                         # ECDFs per noise groups
@@ -526,7 +533,7 @@ def main(argv=None):
                         for fGroup in set(dictFN0.keys()) & set(dictFN1.keys()):
                             pprldistr.comp(dictFN1[fGroup], dictFN0[fGroup],
                                            testbedsettings.current_testbed.rldValsOfInterest, True,
-                                           outputdir,
+                                           two_algorithms_output,
                                            '%s' % fGroup)
                 print_done() # of "ECDF runlength graphs..."
 
@@ -537,24 +544,24 @@ def main(argv=None):
                 pprldmany.all_single_functions(dictAlg,
                                                False,
                                                sortedAlgs,
-                                               outputdir,
-                                               genericsettings.two_algorithm_file_name,
+                                               two_algorithms_output,
+                                               genericsettings.many_algorithm_file_name,
                                                settings=inset)
                 print_done()
 
         if genericsettings.isConv:
             print("Convergence plots...")
             ppconverrorbars.main(dictAlg,
-                                 outputdir,
-                                 genericsettings.two_algorithm_file_name,
+                                 two_algorithms_output,
+                                 genericsettings.many_algorithm_file_name,
                                  algorithm_name)
             print_done()
 
-        htmlFileName = os.path.join(outputdir, genericsettings.ppscatter_file_name + '.html')
+        htmlFileName = os.path.join(two_algorithms_output, genericsettings.ppscatter_file_name + '.html')
 
         if genericsettings.isScatter:
             print("Scatter plots...")
-            ppscatter.main(dsList1, dsList0, outputdir, inset)
+            ppscatter.main(dsList1, dsList0, two_algorithms_output, inset)
             prepend_to_file(latex_commands_file,
                             ['\\providecommand{\\bbobppscatterlegend}[1]{',
                              ppscatter.figure_caption(),
@@ -605,7 +612,7 @@ def main(argv=None):
                         group0.append(tmp0)
                         group1.append(tmp1)
                     for i, g in enumerate(zip(group0, group1)):
-                        pptable2.main(g[0], g[1], dims, outputdir, '%s%d' % (nGroup, i))
+                        pptable2.main(g[0], g[1], dims, two_algorithms_output, '%s%d' % (nGroup, i))
                 else:
                     if 11 < 3:  # future handling:
                         dictFunc0 = dsList0.dictByFunc()
@@ -614,10 +621,10 @@ def main(argv=None):
                         funcs.sort()
                     # nbgroups = int(numpy.ceil(len(funcs)/testbedsettings.numberOfFunctions))
                     #                        pptable2.main(dsList0, dsList1,
-                    #                                      testbedsettings.tabDimsOfInterest, outputdir,
+                    #                                      testbedsettings.tabDimsOfInterest, two_algorithms_output,
                     #                                      '%s' % (testbedsettings.testbedshortname))
                     else:
-                        pptable2.main(dictNG0[nGroup], dictNG1[nGroup], dims, outputdir, '%s' % (nGroup))
+                        pptable2.main(dictNG0[nGroup], dictNG1[nGroup], dims, two_algorithms_output, '%s' % (nGroup))
 
             prepend_to_file(latex_commands_file,
                             ['\\providecommand{\\bbobpptablestwolegend}[2]{',
@@ -625,7 +632,7 @@ def main(argv=None):
                              '}'
                              ])
 
-            htmlFileName = os.path.join(outputdir, genericsettings.pptable2_file_name + '.html')
+            htmlFileName = os.path.join(two_algorithms_output, genericsettings.pptable2_file_name + '.html')
             key = '##bbobpptablestwolegend%s##' % (testbedsettings.current_testbed.scenario)
             replace_in_file(htmlFileName, '##bbobpptablestwolegend##', htmldesc.getValue(key))
             replace_in_file(htmlFileName, '??COCOVERSION??', '<br />Data produced with COCO %s' % (toolsdivers.get_version_label(None)))
@@ -636,7 +643,7 @@ def main(argv=None):
             for htmlFileName in (genericsettings.pprldistr2_file_name,
                                  genericsettings.pptable2_file_name):
                 for i, alg in enumerate(args):
-                    replace_in_file(os.path.join(outputdir, htmlFileName + '.html'),
+                    replace_in_file(os.path.join(two_algorithms_output, htmlFileName + '.html'),
                                     'algorithm' + abc[i], str_to_latex(strip_pathname1(alg)))
 
             print_done()
@@ -654,7 +661,7 @@ def main(argv=None):
                     pptables.main(
                         tmpdictdim,
                         sortedAlgs,
-                        outputdir,
+                        two_algorithms_output,
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==
                                          testbedsettings.testbed_name_bi) else True),
                         latex_commands_file)
@@ -672,12 +679,13 @@ def main(argv=None):
             ppfigs.main(dictAlg,
                         genericsettings.ppfigs_file_name,
                         sortedAlgs,
-                        outputdir)
+                        two_algorithms_output,
+                        latex_commands_file)
             plt.rcdefaults()
             print_done()
 
         ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.two_algorithm_file_name),
+            os.path.join(two_algorithms_output, genericsettings.many_algorithm_file_name),
             algname=algorithm_name,
             htmlPage=ppfig.HtmlPage.TWO,
 

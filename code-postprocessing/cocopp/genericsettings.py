@@ -218,8 +218,7 @@ rcfont = {"size": 20}
 rclegend = {"fontsize": 20}
 
 single_algorithm_file_name = 'templateBBOBarticle'
-two_algorithm_file_name = 'templateBBOBcmp'
-many_algorithm_file_name = 'templateBBOBmany'
+many_algorithm_file_name = 'comparison_data'
 index_html_file_name = 'index'
 ppconv_file_name = 'ppconv'
 pprldmany_file_name = 'pprldmany'
@@ -232,7 +231,7 @@ pprldistr2_file_name = 'pprldistr2'
 
 latex_commands_for_html = 'latex_commands_for_html'
 
-extraction_folder_prefix = '_extracted_'
+extraction_folder_prefix = '.extracted_'
 
 # default settings for rungeneric, rungeneric1, rungeneric2, and rungenericmany
 inputCrE = 0.
