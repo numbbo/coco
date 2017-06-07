@@ -93,7 +93,7 @@ html_header = """<HTML>
 
 def add_image(image_name, add_link_to_image, height=160):
     if add_link_to_image:
-        return '<a href="file:%s"><IMG SRC="%s" height="%dem"></a>' % (image_name, image_name, height)
+        return '<a href="%s"><IMG SRC="%s" height="%dem"></a>' % (image_name, image_name, height)
     else:
         return '<IMG SRC="%s" height="%dem">' % (image_name, height)
 
