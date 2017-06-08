@@ -14,7 +14,7 @@ import warnings
 from . import genericsettings, pplogloss, ppfigdim, pptable, pprldistr, config
 from . import testbedsettings
 from .compall import pptables, ppfigs
-from .comp2 import ppscatter, pptable2
+from .comp2 import ppscatter
 
 # Add the path to cocopp
 if __name__ == "__main__":
@@ -115,23 +115,16 @@ def main(latex_commands_for_html):
         # 4. pptable
         f.writelines(prepare_providecommand('bbobpptablecaption', scenario, pptable.get_table_caption()))
 
-        # 5. pptable2
-        pptable2Legend = (pptable2.get_table_caption()).replace('\\algorithmA', 'algorithmA')
-        pptable2Legend = pptable2Legend.replace('\\algorithmB', 'algorithmB')
-        pptable2Legend = pptable2Legend.replace('\\algorithmAshort', 'algorithmAshort')
-        pptable2Legend = pptable2Legend.replace('\\algorithmBshort', 'algorithmBshort')
-        f.writelines(prepare_providecommand_two('bbobpptablestwolegend', scenario, pptable2Legend))
-
-        # 6. pptables
+        # 5. pptables
         f.writelines(prepare_providecommand_two('bbobpptablesmanylegend', scenario, pptables.get_table_caption()))
 
-        # 7. ppscatter
+        # 6. ppscatter
         ppscatterLegend = ppscatter.prepare_figure_caption().replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
         ppscatterLegend = ppscatterLegend.replace('\\algorithmA', 'algorithmA')
         ppscatterLegend = ppscatterLegend.replace('\\algorithmB', 'algorithmB')
         f.writelines(prepare_providecommand('bbobppscatterlegend', scenario, ppscatterLegend))
 
-        # 8. pplogloss
+        # 7. pplogloss
         f.writelines(prepare_providecommand('bbobloglosstablecaption', scenario,
                                             pplogloss.table_caption().replace('Figure~\\ref{fig:aRTlogloss}',
                                                                               'the following figure')))
@@ -153,19 +146,17 @@ def main(latex_commands_for_html):
         f.write(prepare_item('bbobppfigdimlegend' + scenario))
         # 4. pptable
         f.write(prepare_item('bbobpptablecaption' + scenario, param='different dimensions'))
-        # 5. pptable2
-        f.write(prepare_item_two('bbobpptablestwolegend' + scenario, paramOne='different dimensions', paramTwo='48'))
 
-        # 6. pptables
+        # 5. pptables
         command_name = 'bbobpptablesmanylegend' + scenario
         bonferroni = str(2 * (testbed.last_function_number - testbed.first_function_number + 1))
         f.write(prepare_item_two(command_name, command_name, 'different dimensions', bonferroni))
 
-        # 7. ppscatter
+        # 6. ppscatter
         param = '$f_{%d}$ - $f_{%d}$' % (testbed.first_function_number, testbed.last_function_number)
         f.write(prepare_item('bbobppscatterlegend' + scenario, param=param))
 
-        # 8. pplogloss
+        # 7. pplogloss
         f.write(prepare_item('bbobloglosstablecaption' + scenario))
         f.write(prepare_item('bbobloglossfigurecaption' + scenario))
 
