@@ -11,13 +11,6 @@ from .. import genericsettings
 
 # this file/module is seemingly unused
 
-if __name__ == "__main__":
-    # append path without trailing '/cocopp', using os.sep fails in mingw32
-    #sys.path.append(filepath.replace('\\', '/').rsplit('/', 1)[0])
-    (filepath, filename) = os.path.split(sys.argv[0])
-    # Test system independent method:
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-
 try:
     from . import pproc
 except:

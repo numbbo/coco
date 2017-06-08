@@ -18,10 +18,7 @@ from .comp2 import ppscatter
 
 # Add the path to cocopp
 if __name__ == "__main__":
-    (filepath, filename) = os.path.split(sys.argv[0])
-    sys.path.append(os.path.join(filepath, os.path.pardir))
     import matplotlib
-
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
 # Initialization

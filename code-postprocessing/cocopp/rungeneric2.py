@@ -29,9 +29,6 @@ from .compall import pptables
 if __name__ == "__main__":
     # matplotlib.use('pdf')
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
-    filepath = os.path.split(sys.argv[0])[0]
-    # Add the path to cocopp/.. folder
-    sys.path.append(os.path.join(filepath, os.path.pardir))
 
     import cocopp
     res = cocopp.rungeneric2.main(sys.argv[1:])

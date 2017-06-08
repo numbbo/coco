@@ -854,10 +854,3 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         plt.close()
 
         # TODO: should return status or sthg
-
-
-if __name__ == "__main__":
-    # should become a test case
-    import sys
-
-    sys.path.append('.')

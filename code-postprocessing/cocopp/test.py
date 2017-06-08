@@ -325,7 +325,6 @@ def main(arguments):
 
 
 """
-        sys.path.append(os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
         import cocopp as bb
         print(dir(bb))
         for s in dir(bb):
@@ -337,6 +336,4 @@ def main(arguments):
 
 if __name__ == "__main__":
     args = sys.argv[1:] if len(sys.argv) else []
-    path = os.path.split(sys.argv[0])[0]
-    sys.path.append(os.path.join(path, os.path.pardir))  # needed in do.py
     main(args)
