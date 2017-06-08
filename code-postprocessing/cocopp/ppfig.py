@@ -318,9 +318,6 @@ def save_single_functions_html(filename,
             key = 'bbobpptablecaption' + testbedsettings.current_testbed.scenario
             f.write(caption_string_format % htmldesc.getValue('##' + key + '##'))
 
-        elif htmlPage is HtmlPage.PPTABLE2:
-            write_tables(f, caption_string_format, reference_algorithm_exists, 'pptable2Html', 'bbobpptablestwolegend', dimensions)
-
         elif htmlPage is HtmlPage.PPTABLES:
             write_tables(f, caption_string_format, reference_algorithm_exists, 'pptablesHtml', 'bbobpptablesmanylegend', dimensions)
 

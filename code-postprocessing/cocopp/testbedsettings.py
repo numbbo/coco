@@ -175,7 +175,7 @@ class GECCOBBOBTestbed(Testbed):
         shortinfo_filename = shortinfo_filename,
         name = testbed_name_single,
         short_names = get_short_names(shortinfo_filename),
-        hardesttargetlatex = '10^{-8}',  # used for ppfigs, pptable, pptable2, and pptables
+        hardesttargetlatex = '10^{-8}',  # used for ppfigs, pptable and pptables
         ppfigs_ftarget = 1e-8,  # to set target runlength in expensive setting, use genericsettings.target_runlength
         ppfig2_ftarget = 1e-8,
         ppfigdim_target_values = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
@@ -191,7 +191,6 @@ class GECCOBBOBTestbed(Testbed):
         reference_values_hash_dimensions = [],
         pptable_ftarget = 1e-8,  # value for determining the success ratio in all tables
         pptable_targetsOfInterest = pptable_targetsOfInterest,
-        pptable2_targetsOfInterest = (1e+1, 1e-1, 1e-3, 1e-5, 1e-7),  # used for pptable2
         pptablemany_targetsOfInterest = pptable_targetsOfInterest,
         scenario = scenario_fixed,
         reference_algorithm_filename = 'refalgs/best2009-bbob.tar.gz',
@@ -200,7 +199,6 @@ class GECCOBBOBTestbed(Testbed):
         #.reference_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in reference_algorithm_filename
         # expensive optimization settings:
         pptable_target_runlengths = pptable_target_runlengths,  
-        pptable2_target_runlengths = pptable_target_runlengths,
         pptables_target_runlengths = pptable_target_runlengths,
         instancesOfInterest = None # None: consider all instances
         #.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
@@ -224,7 +222,6 @@ class GECCOBBOBTestbed(Testbed):
         self.pprldmany_target_values = targetValues(self.pprldmany_target_values)
         self.ppscatter_target_values = targetValues(self.ppscatter_target_values)
         self.pptable_targetsOfInterest = targetValues(self.pptable_targetsOfInterest)
-        self.pptable2_targetsOfInterest = targetValues(self.pptable2_targetsOfInterest)
         self.pptablemany_targetsOfInterest = targetValues(self.pptablemany_targetsOfInterest)
             
         if 11 < 3:
@@ -314,7 +311,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         shortinfo_filename = shortinfo_filename,
         name = testbed_name_bi,
         short_names = get_short_names(shortinfo_filename),
-        hardesttargetlatex = '10^{-5}',  # used for ppfigs, pptable, pptable2, and pptables
+        hardesttargetlatex = '10^{-5}',  # used for ppfigs, pptable and pptables
         ppfigs_ftarget = 1e-5,  # to set target runlength in expensive setting, use genericsettings.target_runlength
         ppfig2_ftarget = 1e-5,
         ppfigdim_target_values = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5),
@@ -330,7 +327,6 @@ class GECCOBiObjBBOBTestbed(Testbed):
         reference_values_hash_dimensions = [2, 3, 5, 10, 20],
         pptable_ftarget = 1e-5,  # value for determining the success ratio in all tables
         pptable_targetsOfInterest = (1, 1e-1, 1e-2, 1e-3, 1e-4, 1e-5),
-        pptable2_targetsOfInterest = (1e-1, 1e-2, 1e-3, 1e-4, 1e-5),  # used for pptable2
         pptablemany_targetsOfInterest = (1, 1e-1, 1e-2, 1e-3),  # used for pptables
         scenario = scenario_biobjfixed,
         reference_algorithm_filename = 'refalgs/best2016-bbob-biobj.tar.gz', # TODO produce correct best2016 algo and delete this line
@@ -338,7 +334,6 @@ class GECCOBiObjBBOBTestbed(Testbed):
         instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}, # None, # None: consider all instances
         # expensive optimization settings:
         pptable_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
-        pptable2_target_runlengths = [0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
         pptables_target_runlengths = [2, 10, 50]  # used in config for expensive setting
     ) 
 
@@ -354,7 +349,6 @@ class GECCOBiObjBBOBTestbed(Testbed):
         self.pprldmany_target_values = targetValues(self.pprldmany_target_values)
         self.ppscatter_target_values = targetValues(self.ppscatter_target_values)
         self.pptable_targetsOfInterest = targetValues(self.pptable_targetsOfInterest)
-        self.pptable2_targetsOfInterest = targetValues(self.pptable2_targetsOfInterest)
         self.pptablemany_targetsOfInterest = targetValues(self.pptablemany_targetsOfInterest)
             
         if 11 < 3:

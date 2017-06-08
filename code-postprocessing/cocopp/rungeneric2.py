@@ -18,7 +18,6 @@ import os
 import sys
 import warnings
 import getopt
-import numpy
 import matplotlib
 
 from . import genericsettings, ppfig, toolsdivers, rungenericmany, findfiles
@@ -46,7 +45,7 @@ from . import htmldesc
 from .pproc import DataSetList, processInputArgs
 from .ppfig import Usage
 from .toolsdivers import prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
-from .comp2 import ppfig2, pprldistr2, pptable2, ppscatter
+from .comp2 import ppfig2, pprldistr2, ppscatter
 from .compall import ppfigs, pprldmany
 from . import ppconverrorbars
 import matplotlib.pyplot as plt
@@ -388,15 +387,6 @@ def main(argv=None):
         dictDim1 = dsList1.dictByDim()
 
         ppfig.save_single_functions_html(
-            os.path.join(two_algorithms_output, genericsettings.pptable2_file_name),
-            algname=algorithm_name,
-            dimensions=sorted(list(set(dictDim0.keys()) & set(dictDim1.keys()))),
-            htmlPage=ppfig.HtmlPage.PPTABLE2,
-            function_groups=dsList0.getFuncGroups(),
-            parentFileName=genericsettings.many_algorithm_file_name
-        )
-
-        ppfig.save_single_functions_html(
             os.path.join(two_algorithms_output, genericsettings.pptables_file_name),
             '',  # algorithms names are clearly visible in the figure
             dimensions=sorted(list(set(dictDim0.keys()) & set(dictDim1.keys()))),
@@ -576,78 +566,6 @@ def main(argv=None):
             print_done()
 
         if genericsettings.isTab:
-            print("Generating old tables (pptable2.py)...")
-            dictNG0 = dsList0.dictByNoise()
-            dictNG1 = dsList1.dictByNoise()
-            dict_dim_list1 = pproc.dictAlgByDim(dictNG0)
-            dict_dim_list2 = pproc.dictAlgByDim(dictNG1)
-            dims = sorted(list(set(dict_dim_list1) & set(dict_dim_list2)))
-
-            for nGroup in set(dictNG0.keys()) & set(dictNG1.keys()):
-                # split table in as many as necessary
-                dictFunc0 = dictNG0[nGroup].dictByFunc()
-                dictFunc1 = dictNG1[nGroup].dictByFunc()
-                funcs = list(set(dictFunc0.keys()) & set(dictFunc1.keys()))
-                if len(funcs) > 24:
-                    funcs.sort()
-                    nbgroups = int(numpy.ceil(len(funcs) / 24.))
-
-                    def split_seq(seq, nbgroups):
-                        newseq = []
-                        splitsize = 1.0 / nbgroups * len(seq)
-                        for i in range(nbgroups):
-                            newseq.append(seq[int(round(i * splitsize)):int(round((i + 1) * splitsize))])
-                        return newseq
-
-                    groups = split_seq(funcs, nbgroups)
-                    # merge
-                    group0 = []
-                    group1 = []
-                    for i, g in enumerate(groups):
-                        tmp0 = DataSetList()
-                        tmp1 = DataSetList()
-                        for f in g:
-                            tmp0.extend(dictFunc0[f])
-                            tmp1.extend(dictFunc1[f])
-                        group0.append(tmp0)
-                        group1.append(tmp1)
-                    for i, g in enumerate(zip(group0, group1)):
-                        pptable2.main(g[0], g[1], dims, two_algorithms_output, '%s%d' % (nGroup, i))
-                else:
-                    if 11 < 3:  # future handling:
-                        dictFunc0 = dsList0.dictByFunc()
-                        dictFunc1 = dsList1.dictByFunc()
-                        funcs = list(set(dictFunc0.keys()) & set(dictFunc1.keys()))
-                        funcs.sort()
-                    # nbgroups = int(numpy.ceil(len(funcs)/testbedsettings.numberOfFunctions))
-                    #                        pptable2.main(dsList0, dsList1,
-                    #                                      testbedsettings.tabDimsOfInterest, two_algorithms_output,
-                    #                                      '%s' % (testbedsettings.testbedshortname))
-                    else:
-                        pptable2.main(dictNG0[nGroup], dictNG1[nGroup], dims, two_algorithms_output, '%s' % (nGroup))
-
-            prepend_to_file(latex_commands_file,
-                            ['\\providecommand{\\bbobpptablestwolegend}[2]{',
-                             pptable2.get_table_caption(),
-                             '}'
-                             ])
-
-            htmlFileName = os.path.join(two_algorithms_output, genericsettings.pptable2_file_name + '.html')
-            key = '##bbobpptablestwolegend%s##' % (testbedsettings.current_testbed.scenario)
-            replace_in_file(htmlFileName, '##bbobpptablestwolegend##', htmldesc.getValue(key))
-            replace_in_file(htmlFileName, '??COCOVERSION??', '<br />Data produced with COCO %s' % (toolsdivers.get_version_label(None)))
-
-            replace_in_file(htmlFileName, 'algorithmAshort', algName0[0:3])
-            replace_in_file(htmlFileName, 'algorithmBshort', algName1[0:3])
-
-            for htmlFileName in (genericsettings.pprldistr2_file_name,
-                                 genericsettings.pptable2_file_name):
-                for i, alg in enumerate(args):
-                    replace_in_file(os.path.join(two_algorithms_output, htmlFileName + '.html'),
-                                    'algorithm' + abc[i], str_to_latex(strip_pathname1(alg)))
-
-            print_done()
-
             # The following is copied from rungenericmany.py to comply
             # with the bi-objective many-algorithm LaTeX template
             print("Generating new tables (pptables.py)...")
