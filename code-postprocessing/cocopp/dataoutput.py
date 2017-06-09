@@ -37,11 +37,6 @@ from .ppfig import Usage
 
 from pdb import set_trace
 
-if __name__ == "__main__":
-    (filepath, filename) = os.path.split(sys.argv[0])
-    #Test system independent method:
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-
 __all__ = ['main']
 
 

@@ -40,8 +40,6 @@ if __name__ == "__main__":
         # add ".." to the Python search path, import the module to which
         # this script belongs to and call the main of this script from imported
         # module. Like this all relative imports will work smoothly.
-        (filepath, filename) = os.path.split(sys.argv[0])
-        sys.path.append(os.path.join(filepath, os.path.pardir))
 
         import cocopp
         res = cocopp.rungeneric.main(sys.argv[1:])

@@ -22,12 +22,6 @@ import pickle
 import ast
 from pdb import set_trace
 
-# Add the path to cocopp
-if __name__ == "__main__":
-    # os.path.split is system independent
-    (filepath, filename) = os.path.split(sys.argv[0])
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-
 from . import findfiles
 from .pproc import parseinfo
 from .readalign import split

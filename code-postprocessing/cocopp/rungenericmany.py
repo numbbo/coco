@@ -22,9 +22,6 @@ import matplotlib
 if __name__ == "__main__":
     matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
     # matplotlib.use('pdf')
-    filepath = os.path.split(sys.argv[0])[0]
-    # Add the path to cocopp/.. folder
-    sys.path.append(os.path.join(filepath, os.path.pardir))
 
     import cocopp
     res = cocopp.rungenericmany.main(sys.argv[1:])
