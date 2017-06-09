@@ -78,7 +78,11 @@ latex_color_map = {
              '#228b22': 'ForestGreen',
              '#32cd32': 'LimeGreen',
              '#9acd32': 'YellowGreen',
-             '#adff2f': 'GreenYellow'}
+             '#adff2f': 'GreenYellow',
+             '#1f77b4': 'Blue',
+             '#ff7f0e': 'Orange',
+             '#2ca02c': 'Green',
+             '#9467bd': 'Purple'}
 
 
 

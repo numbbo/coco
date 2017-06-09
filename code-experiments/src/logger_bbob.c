@@ -376,7 +376,8 @@ static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) 
   size_t i;
 
   is_feasible = 1;
-  feasibility_threshold = 1.0e-05;
+  /* keep consistent with threshold in coco_problem.c when changing! */
+  feasibility_threshold = 1.0e-05; /* consider to set here and in coco_problem.c to 0.0 */
 
   if (!logger->is_initialized) {
     logger_bbob_initialize(logger, inner_problem);

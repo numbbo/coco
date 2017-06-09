@@ -29,6 +29,9 @@
 void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y) {
   /* implements a safer version of problem->evaluate(problem, x, y) */
   size_t i, j;
+  size_t is_feasible;
+  double *z;
+  
   assert(problem != NULL);
   assert(problem->evaluate_function != NULL);
   
@@ -53,8 +56,18 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
 
   /* A little bit of bookkeeping */
   if (y[0] < problem->best_observed_fvalue[0]) {
-    problem->best_observed_fvalue[0] = y[0];
-    problem->best_observed_evaluation[0] = problem->evaluations;
+    is_feasible = 1;
+    if (coco_problem_get_number_of_constraints(problem) > 0) {
+      z = coco_allocate_vector(coco_problem_get_number_of_constraints(problem));
+      /* same feasibility threshold as in logger_bbob.c did not work,
+         hence using exact feasibility: */
+      is_feasible = coco_is_feasible(problem, x, z, 1.0e-5);
+      coco_free_memory(z);
+    }
+    if (is_feasible) {
+      problem->best_observed_fvalue[0] = y[0];
+      problem->best_observed_evaluation[0] = problem->evaluations;    
+    }
   }
 
 }
@@ -795,7 +808,7 @@ static void coco_problem_stacked_evaluate_function(coco_problem_t *problem, cons
    */
   if (problem->number_of_constraints > 0) {
     cons_values = coco_allocate_vector(problem->number_of_constraints);
-    is_feasible = coco_is_feasible(problem, x, cons_values, 0.0);
+    is_feasible = coco_is_feasible(problem, x, cons_values, 1.0e-05);
     coco_free_memory(cons_values);   
     if (is_feasible)
       assert(y[0] + 1e-13 >= problem->best_value[0]);
