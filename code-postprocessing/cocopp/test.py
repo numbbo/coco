@@ -27,12 +27,12 @@ def join_path(a, *p):
 def copy_latex_templates():
     current_folder = os.path.dirname(os.path.realpath(__file__))
     template_folder = os.path.abspath(join_path(current_folder, '..', 'latex-templates'))
-    # template_folder = os.path.abspath('latex-templates')
     shutil.copy(join_path(template_folder, 'templateBBOBarticle.tex'), current_folder)
     shutil.copy(join_path(template_folder, 'templateBBOBcmp.tex'), current_folder)
     shutil.copy(join_path(template_folder, 'templateBBOBmany.tex'), current_folder)
     shutil.copy(join_path(template_folder, 'templateBIOBJarticle.tex'), current_folder)
     shutil.copy(join_path(template_folder, 'templateBIOBJmultiple.tex'), current_folder)
+    shutil.copy(join_path(template_folder, 'templateNOISYarticle.tex'), current_folder)
 
     # Copy auxiliary files to the current working folder
     cwd = os.getcwd()
@@ -258,8 +258,7 @@ def main(arguments):
                            join_path(data_path, 'BFGS_ros_noisy.tgz'))
         print('**  subtest 9 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bbob-noisy algorithms.'
-        # TODO: include noisy LaTeX templates into github repository and add test:
-        # run_latex_template("templateBBOBnoisy.tex")
+        run_latex_template("templateNOISYarticle.tex")
         delete_files()
 
         # testing data from recent runs, prepared in do.py:
