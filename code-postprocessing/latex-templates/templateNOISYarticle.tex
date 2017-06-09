@@ -51,8 +51,7 @@
 % \newcommand{\algDtables}{ALGO4}  % forth argument in the post-processing
 % ...
 % location of pictures files
-%\newcommand{\bbobdatapath}{ppdata/} % change default output folder of COCO if desired
-\newcommand{\bbobdatapath}{ppdatanoisy-1alg/} % change default output folder of COCO if desired
+\newcommand{\bbobdatapath}{ppdata/} % change default output folder of COCO if desired
 
 
 
@@ -73,7 +72,7 @@
 
 \ifthenelse{\equal{\numberofalgorithms}{one}}{
    \graphicspath{{\bbobdatapath\algfolder}}}{
-	 \graphicspath{{\bbobdatapath}}
+	 \graphicspath{{\bbobdatapath\algsfolder}}
 }
 
 \ifthenelse{\isundefined{\algorithmA}}{\newcommand{\algorithmA}{\algname}}{}
@@ -551,36 +550,36 @@ unsuccessful trial under consideration.
 \begin{figure*}
 \centering
 \begin{tabular}{@{}c@{}c@{}c@{}c@{}c@{}}
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f101}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f104}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f107}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f110}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f113}\\
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f102}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f105}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f108}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f111}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f114}\\
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f103}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f106}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f109}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f112}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f115}\\
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f116}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f119}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f122}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f125}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f128}\\
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f117}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f120}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f123}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f126}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f129}\\
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f118}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f121}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f124}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f127}&
-\includegraphics[width=0.2\textwidth, trim=20mm 7mm 15mm 3mm, clip]{ppfigs_f130}
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f101}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f104}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f107}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f110}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f113}\\
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f102}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f105}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f108}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f111}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f114}\\
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f103}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f106}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f109}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f112}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f115}\\
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f116}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f119}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f122}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f125}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f128}\\
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f117}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f120}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f123}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f126}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f129}\\
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f118}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f121}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f124}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f127}&
+\includegraphics[width=0.2\textwidth, trim=12mm 2mm 12mm 2mm, clip]{ppfigs_f130}
 \end{tabular}
 \caption[Average running time (\aRT) divided by dimension
 versus dimension in log-log presentation]{\label{fig:scaling}%
@@ -600,17 +599,17 @@ versus dimension in log-log presentation]{\label{fig:scaling}%
    \begin{tabular}{@{}c@{}c@{}c@{}}
       \,\, & 5-D & 20-D\\
 			\rot{\Large\sffamily \,\,\,\,\,\,\,\,\,\,all functions}\hspace{1em} &
-			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 12mm, clip]{pprldmany_05D_nzall} &
-			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 12mm, clip]{pprldmany_20D_nzall}\\[1em]
+			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 0mm, clip]{pprldmany_05D_nzall} &
+			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 0mm, clip]{pprldmany_20D_nzall}\\[1em]
 			\rot{\Large\sffamily \,\,\,\,\,moderate noise}\hspace{1em} &
-			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 12mm, clip]{pprldmany_05D_nzmod} &
-			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 12mm, clip]{pprldmany_20D_nzmod}\\[1em]
+			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 0mm, clip]{pprldmany_05D_nzmod} &
+			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 0mm, clip]{pprldmany_20D_nzmod}\\[1em]
 			\rot{\Large\sffamily \,\,\,\,\,\,\,\,\,\,\,severe noise}\hspace{1em} &
-			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 12mm, clip]{pprldmany_05D_nzsev} &
-			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 12mm, clip]{pprldmany_20D_nzsev}\\[1em]
+			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 0mm, clip]{pprldmany_05D_nzsev} &
+			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 0mm, clip]{pprldmany_20D_nzsev}\\[1em]
 			\rot{\Large\sffamily \!\!severe noise multimod.}\hspace{1em} &
-			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 12mm, clip]{pprldmany_05D_nzsmm} &
-			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 12mm, clip]{pprldmany_20D_nzsmm}
+			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 0mm, clip]{pprldmany_05D_nzsmm} &
+			   \includegraphics[height=0.25\textwidth, trim=0mm 0mm 0mm 0mm, clip]{pprldmany_20D_nzsmm}
     \end{tabular}
 \caption{\label{fig:ECDFs} \bbobECDFslegend{$5$- and $20$}}
 \end{figure*}
@@ -676,43 +675,47 @@ versus dimension in log-log presentation]{\label{fig:scaling}%
 \ifthenelse{\isundefined{\algorithmD}}{}{more than 3 algorithms: please split the tables below by hand until everything fits to the page limits}
 }
 
-\mbox{\begin{minipage}[t]{0.49\textwidth}\tiny
+\mbox{\begin{minipage}[t]{0.499\textwidth}\tiny
 \centering
-\input{\bbobdatapath pptables_f101_05D} 
-\input{\bbobdatapath pptables_f102_05D}
-\input{\bbobdatapath pptables_f103_05D}
-\input{\bbobdatapath pptables_f104_05D}
-\input{\bbobdatapath pptables_f105_05D}
-\input{\bbobdatapath pptables_f106_05D}
-\input{\bbobdatapath pptables_f107_05D}
-\input{\bbobdatapath pptables_f108_05D}
-\input{\bbobdatapath pptables_f109_05D}
-\input{\bbobdatapath pptables_f110_05D}
-\input{\bbobdatapath pptables_f111_05D}
-\input{\bbobdatapath pptables_f112_05D}
-\input{\bbobdatapath pptables_f113_05D}
-\input{\bbobdatapath pptables_f114_05D}
-\input{\bbobdatapath pptables_f115_05D}
-\end{minipage}
-\begin{minipage}[t]{0.49\textwidth}\tiny
-\centering
-\input{\bbobdatapath pptables_f116_05D}
-\input{\bbobdatapath pptables_f117_05D}
-\input{\bbobdatapath pptables_f118_05D}
-\input{\bbobdatapath pptables_f119_05D}
-\input{\bbobdatapath pptables_f120_05D}
-\input{\bbobdatapath pptables_f121_05D}
-\input{\bbobdatapath pptables_f122_05D}
-\input{\bbobdatapath pptables_f123_05D}
-\input{\bbobdatapath pptables_f124_05D}
-\input{\bbobdatapath pptables_f125_05D}
-\input{\bbobdatapath pptables_f126_05D}
-\input{\bbobdatapath pptables_f127_05D}
-\input{\bbobdatapath pptables_f128_05D}
-\input{\bbobdatapath pptables_f129_05D}
-\input{\bbobdatapath pptables_f130_05D}
-\end{minipage}}
+\pptablesheader
 
+\input{\bbobdatapath\algsfolder pptables_f101_05D} 
+\input{\bbobdatapath\algsfolder pptables_f102_05D}
+\input{\bbobdatapath\algsfolder pptables_f103_05D}
+\input{\bbobdatapath\algsfolder pptables_f104_05D}
+\input{\bbobdatapath\algsfolder pptables_f105_05D}
+\input{\bbobdatapath\algsfolder pptables_f106_05D}
+\input{\bbobdatapath\algsfolder pptables_f107_05D}
+\input{\bbobdatapath\algsfolder pptables_f108_05D}
+\input{\bbobdatapath\algsfolder pptables_f109_05D}
+\input{\bbobdatapath\algsfolder pptables_f110_05D}
+\input{\bbobdatapath\algsfolder pptables_f111_05D}
+\input{\bbobdatapath\algsfolder pptables_f112_05D}
+\input{\bbobdatapath\algsfolder pptables_f113_05D}
+\input{\bbobdatapath\algsfolder pptables_f114_05D}
+\input{\bbobdatapath\algsfolder pptables_f115_05D}
+\end{tabularx}
+\end{minipage}
+\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f116_05D}
+\input{\bbobdatapath\algsfolder pptables_f117_05D}
+\input{\bbobdatapath\algsfolder pptables_f118_05D}
+\input{\bbobdatapath\algsfolder pptables_f119_05D}
+\input{\bbobdatapath\algsfolder pptables_f120_05D}
+\input{\bbobdatapath\algsfolder pptables_f121_05D}
+\input{\bbobdatapath\algsfolder pptables_f122_05D}
+\input{\bbobdatapath\algsfolder pptables_f123_05D}
+\input{\bbobdatapath\algsfolder pptables_f124_05D}
+\input{\bbobdatapath\algsfolder pptables_f125_05D}
+\input{\bbobdatapath\algsfolder pptables_f126_05D}
+\input{\bbobdatapath\algsfolder pptables_f127_05D}
+\input{\bbobdatapath\algsfolder pptables_f128_05D}
+\input{\bbobdatapath\algsfolder pptables_f129_05D}
+\input{\bbobdatapath\algsfolder pptables_f130_05D}
+\end{tabularx}
+\end{minipage}}
  \caption{\label{tab:ERTs5}
 \bbobpptablesmanylegend{dimension $5$}{30}
 }
@@ -732,42 +735,45 @@ versus dimension in log-log presentation]{\label{fig:scaling}%
 {\normalsize \color{red}
 \ifthenelse{\isundefined{\algorithmD}}{}{more than 3 algorithms: please split the tables below by hand until everything fits to the page limits}
 }
-
 \mbox{\begin{minipage}[t]{0.49\textwidth}\tiny
 \centering
-\input{\bbobdatapath pptables_f101_20D} 
-\input{\bbobdatapath pptables_f102_20D}
-\input{\bbobdatapath pptables_f103_20D}
-\input{\bbobdatapath pptables_f104_20D}
-\input{\bbobdatapath pptables_f105_20D}
-\input{\bbobdatapath pptables_f106_20D}
-\input{\bbobdatapath pptables_f107_20D}
-\input{\bbobdatapath pptables_f108_20D}
-\input{\bbobdatapath pptables_f109_20D}
-\input{\bbobdatapath pptables_f110_20D}
-\input{\bbobdatapath pptables_f111_20D}
-\input{\bbobdatapath pptables_f112_20D}
-\input{\bbobdatapath pptables_f113_20D}
-\input{\bbobdatapath pptables_f114_20D}
-\input{\bbobdatapath pptables_f115_20D}
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f101_20D} 
+\input{\bbobdatapath\algsfolder pptables_f102_20D}
+\input{\bbobdatapath\algsfolder pptables_f103_20D}
+\input{\bbobdatapath\algsfolder pptables_f104_20D}
+\input{\bbobdatapath\algsfolder pptables_f105_20D}
+\input{\bbobdatapath\algsfolder pptables_f106_20D}
+\input{\bbobdatapath\algsfolder pptables_f107_20D}
+\input{\bbobdatapath\algsfolder pptables_f108_20D}
+\input{\bbobdatapath\algsfolder pptables_f109_20D}
+\input{\bbobdatapath\algsfolder pptables_f110_20D}
+\input{\bbobdatapath\algsfolder pptables_f111_20D}
+\input{\bbobdatapath\algsfolder pptables_f112_20D}
+\input{\bbobdatapath\algsfolder pptables_f113_20D}
+\input{\bbobdatapath\algsfolder pptables_f114_20D}
+\input{\bbobdatapath\algsfolder pptables_f115_20D}
+\end{tabularx}
 \end{minipage}
 \begin{minipage}[t]{0.49\textwidth}\tiny
 \centering
-\input{\bbobdatapath pptables_f116_20D}
-\input{\bbobdatapath pptables_f117_20D}
-\input{\bbobdatapath pptables_f118_20D}
-\input{\bbobdatapath pptables_f119_20D}
-\input{\bbobdatapath pptables_f120_20D}
-\input{\bbobdatapath pptables_f121_20D}
-\input{\bbobdatapath pptables_f122_20D}
-\input{\bbobdatapath pptables_f123_20D}
-\input{\bbobdatapath pptables_f124_20D}
-\input{\bbobdatapath pptables_f125_20D}
-\input{\bbobdatapath pptables_f126_20D}
-\input{\bbobdatapath pptables_f127_20D}
-\input{\bbobdatapath pptables_f128_20D}
-\input{\bbobdatapath pptables_f129_20D}
-\input{\bbobdatapath pptables_f130_20D}
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f116_20D}
+\input{\bbobdatapath\algsfolder pptables_f117_20D}
+\input{\bbobdatapath\algsfolder pptables_f118_20D}
+\input{\bbobdatapath\algsfolder pptables_f119_20D}
+\input{\bbobdatapath\algsfolder pptables_f120_20D}
+\input{\bbobdatapath\algsfolder pptables_f121_20D}
+\input{\bbobdatapath\algsfolder pptables_f122_20D}
+\input{\bbobdatapath\algsfolder pptables_f123_20D}
+\input{\bbobdatapath\algsfolder pptables_f124_20D}
+\input{\bbobdatapath\algsfolder pptables_f125_20D}
+\input{\bbobdatapath\algsfolder pptables_f126_20D}
+\input{\bbobdatapath\algsfolder pptables_f127_20D}
+\input{\bbobdatapath\algsfolder pptables_f128_20D}
+\input{\bbobdatapath\algsfolder pptables_f129_20D}
+\input{\bbobdatapath\algsfolder pptables_f130_20D}
+\end{tabularx}
 \end{minipage}}
  \caption{\label{tab:ERTs20}
  \bbobpptablesmanylegend{dimension $20$}{30}
