@@ -874,7 +874,7 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1,
   assert(coco_problem_get_dimension(problem1) == coco_problem_get_dimension(problem2));
 
   problem = coco_problem_allocate(number_of_variables, number_of_objectives, number_of_constraints);
-
+  
   s = coco_strconcat(coco_problem_get_id(problem1), "__");
   problem->problem_id = coco_strconcat(s, coco_problem_get_id(problem2));
   coco_free_memory(s);

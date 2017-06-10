@@ -3,8 +3,8 @@ n = length(lower_bounds);
 delta = upper_bounds - lower_bounds;
 for i= 1:budget
     x = lower_bounds + rand(1,n) .* delta;
-    cocoEvaluateFunction(problem, x);
     if cocoProblemGetNumberOfConstraints(problem) > 0
-        cocoEvaluateConstraint(problem, x)
+        cocoEvaluateConstraint(problem, x);
     end
+    cocoEvaluateFunction(problem, x);
 end
