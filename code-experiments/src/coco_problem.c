@@ -125,27 +125,25 @@ int coco_is_feasible(coco_problem_t *problem,
                      double threshold) {
   
   size_t i;
-  int is_feasible = 1;
   
   /* Return 0 if the decision vector contains any INFINITY or NaN values */
-  for (i = 0; i < coco_problem_get_dimension(problem); i++) {
-    if (coco_is_inf(x[i]) || 
-        coco_vector_contains_nan(x, coco_problem_get_dimension(problem)))
+  if (!coco_vector_isfinite(x, coco_problem_get_dimension(problem)))
+    return 0;
+
+  if (coco_problem_get_number_of_constraints(problem) <= 0)
+    return 1;
+  
+  assert(problem != NULL);
+  assert(problem->evaluate_constraint != NULL);
+  problem->evaluate_constraint(problem, x, cons_values);
+  /* coco_evaluate_constraint(problem, x, cons_values) increments problem->evaluations_constraints counter */
+  
+  for(i = 0; i < coco_problem_get_number_of_constraints(problem); ++i) {
+    if (cons_values[i] > threshold)
       return 0;
   }
-  
-  coco_evaluate_constraint(problem, x, cons_values);
-  /* decrement the counter incremented in coco_evaluate_constraint() */
-  problem->evaluations_constraints--; 
-  
-  for(i = 0; i < problem->number_of_constraints; ++i) {
-    if (cons_values[i] > threshold) {
-      is_feasible = 0;
-      break;
-    }
-  }
     
-  return is_feasible;
+  return 1;
 }
 
 /**
