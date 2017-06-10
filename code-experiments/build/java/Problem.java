@@ -108,6 +108,10 @@ public class Problem {
 		return CocoJNI.cocoProblemGetEvaluations(pointer);
 	}
 	
+	public long getEvaluationsConstraints() {
+		return CocoJNI.cocoProblemGetEvaluationsConstraints(pointer);
+	}
+	
 	public long getIndex() {
 		return this.index;
 	}

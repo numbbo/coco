@@ -520,6 +520,8 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     observer_biobj(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob-largescale")) {
     observer_bbob(observer, observer_options, &additional_option_keys);
+  } else if (0 == strcmp(observer_name, "bbob-constrained")) {
+    observer_bbob(observer, observer_options, &additional_option_keys);
   } else {
     coco_warning("Unknown observer!");
     return NULL;
