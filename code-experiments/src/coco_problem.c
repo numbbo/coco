@@ -29,7 +29,7 @@
 void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y) {
   /* implements a safer version of problem->evaluate(problem, x, y) */
   size_t i, j;
-  size_t is_feasible;
+  int is_feasible;
   double *z;
   
   assert(problem != NULL);
