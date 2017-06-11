@@ -301,18 +301,13 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
 void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y);
 
 /**
- * @brief Returns 1 if c(x) = 0, and 0 otherwise.
- */
-int coco_is_feasible(coco_problem_t *problem, const double *x, double *cons_values, double threshold);
-
-/**
  * @brief Evaluates the gradient of the function at x and stores it
  *        at y.
  */
 void coco_evaluate_gradient(coco_problem_t *problem, const double *x, double *y);
 
 /**
- * @brief Recommends a solution as the current best guesses to the problem.
+ * @brief Recommends a solution as the current best guesses to the problem. Not implemented yet.
  */
 void coco_recommend_solution(coco_problem_t *problem, const double *x);
 

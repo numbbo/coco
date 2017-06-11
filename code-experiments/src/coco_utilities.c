@@ -913,6 +913,46 @@ static int coco_vector_isfinite(const double *x, const size_t dim) {
 	return 1;
 }
 
+/**
+ * @brief Returns 1 if the point x is feasible, and 0 otherwise.
+ *
+ * Any point x containing NaN or inf values is considered infeasible.
+ *
+ * This function is (and should be) used internally only, and does not
+ * increase the counter of constraint function evaluations.
+ *
+ * @param problem The given COCO problem.
+ * @param x Decision vector.
+ * @param cons_values Vector of contraints values resulting from evaluation.
+ * @param threshold Feasibility threshold, generally zero.
+ */
+static int coco_is_feasible(coco_problem_t *problem,
+                     const double *x,
+                     double *cons_values,
+                     double threshold) {
+
+  size_t i;
+
+  /* Return 0 if the decision vector contains any INFINITY or NaN values */
+  if (!coco_vector_isfinite(x, coco_problem_get_dimension(problem)))
+    return 0;
+
+  if (coco_problem_get_number_of_constraints(problem) <= 0)
+    return 1;
+
+  assert(problem != NULL);
+  assert(problem->evaluate_constraint != NULL);
+  problem->evaluate_constraint(problem, x, cons_values);
+  /* coco_evaluate_constraint(problem, x, cons_values) increments problem->evaluations_constraints counter */
+
+  for(i = 0; i < coco_problem_get_number_of_constraints(problem); ++i) {
+    if (cons_values[i] > threshold)
+      return 0;
+  }
+
+  return 1;
+}
+
 /**@}*/
 
 /***********************************************************************************************************/
