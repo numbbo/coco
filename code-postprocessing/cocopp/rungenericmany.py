@@ -77,6 +77,9 @@ def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings, 
             replace_in_file(file_name, '??COCOVERSION??', '<br />Data produced with COCO %s' % (get_version_label(None)))
 
 
+def get_background_algorithms(dict_alg):
+    genericsettings.background_algorithms.append(dict_alg.keys()[0])
+
 def main(argv=None):
     r"""Main routine for post-processing the data of multiple algorithms.
 
@@ -287,6 +290,8 @@ def main(argv=None):
                         )
 
         dsList, sortedAlgs, dictAlg = processInputArgs(args)
+
+        get_background_algorithms(dictAlg)
 
         if not dsList:
             sys.exit()

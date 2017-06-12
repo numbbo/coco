@@ -732,6 +732,12 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             # args['ls'] = '-'
             # args['zorder'] = -1
         # plotdata calls pprldistr.plotECDF which calls ppfig.plotUnifLog... which does the work
+
+        if alg in genericsettings.background_algorithms:
+            args['marker'] = ''
+            args['label'] = ''
+            args['color'] = genericsettings.background_algorithm_color
+
         lines.append(plotdata(np.array(data), x_limit, maxevals,
                               CrE=CrEperAlg[alg], **args))
 

@@ -267,6 +267,8 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
 
     refalgentries = bestalg.load_reference_algorithm(testbed.reference_algorithm_filename)
 
+    sorted_algs = [key for key in sorted_algs[:] if key not in genericsettings.background_algorithms]
+
     # Sort data per dimension and function
     dict_data = {}
     dsListperAlg = list(dict_alg[i] for i in sorted_algs)
