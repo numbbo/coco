@@ -232,6 +232,8 @@ latex_commands_for_html = 'latex_commands_for_html'
 
 extraction_folder_prefix = '.extracted_'
 
+background_algorithm_color = 'wheat'
+
 # default settings for rungeneric, rungeneric1, rungeneric2, and rungenericmany
 inputCrE = 0.
 isFig = True
@@ -245,6 +247,8 @@ inputsettings = 'color'
 isExpensive = False
 isRldOnSingleFcts = True
 isRLDistr = True
+background_algorithms = []
+
 ##
 isLogLoss = True  # only affects rungeneric1
 isPickled = False  # only affects rungeneric1
