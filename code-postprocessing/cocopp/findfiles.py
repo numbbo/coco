@@ -118,6 +118,3 @@ def get_output_directory_sub_folder(args):
         raise ValueError(args)
 
     return directory
-
-if __name__ == '__main__':
-    main()

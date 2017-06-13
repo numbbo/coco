@@ -8,7 +8,7 @@ import sys
 
 try:
     from . import rungeneric
-
+    from . import genericsettings
     is_module = True
 except:
     is_module = False
@@ -27,4 +27,6 @@ if __name__ == "__main__":
     args = sys.argv[1:] if len(sys.argv) else []
     if not is_module:
         raise ValueError('try calling "python -m ..." instead of "python ..."')
-    rungeneric.main(args)
+    res = rungeneric.main(args)
+    if genericsettings.test:
+        print(res)

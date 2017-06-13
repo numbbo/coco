@@ -22,13 +22,6 @@ import os, sys
 from pdb import set_trace
 import matplotlib
 
-if __name__ == "__main__":
-    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
-
-    import cocopp
-    res = cocopp.rungeneric1.main(sys.argv[1:])
-    sys.exit(res)
-
 import warnings, getopt, numpy as np
 
 from . import genericsettings, testbedsettings, ppfig, pptable, pprldistr, ppfigdim, pplogloss, findfiles
@@ -499,11 +492,3 @@ def main(argv=None):
             print("Output data written to folder %s" % outputdir)
 
         plt.rcdefaults()
-
-
-if __name__ == "__main__":
-    res = main()
-    if genericsettings.test: 
-        print(res)
-    sys.exit(res)
-

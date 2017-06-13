@@ -19,14 +19,6 @@ import getopt
 import warnings
 import matplotlib
 
-if __name__ == "__main__":
-    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
-    # matplotlib.use('pdf')
-
-    import cocopp
-    res = cocopp.rungenericmany.main(sys.argv[1:])
-    sys.exit(res)
-
 from . import genericsettings, ppfig, testbedsettings, findfiles
 from . import pproc, pptex
 from .pproc import DataSetList, processInputArgs
@@ -473,7 +465,3 @@ def main(argv=None):
             print_done()
 
         plt.rcdefaults()
-
-
-if __name__ == "__main__":
-    sys.exit(main())

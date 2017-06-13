@@ -7,11 +7,6 @@ import os
 import sys
 import subprocess
 
-# Add the path to cocopp
-if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
-
 try:
     from . import preparetexforhtml, genericsettings
 except:
@@ -80,6 +75,8 @@ def validate_html():
             break
 
 if __name__ == '__main__':
+    import matplotlib
+    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
     args = sys.argv[1:] if len(sys.argv) else []
     main(args)

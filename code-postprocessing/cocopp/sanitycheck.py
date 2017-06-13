@@ -20,7 +20,6 @@ import warnings
 import getopt
 import pickle
 import ast
-from pdb import set_trace
 
 from . import findfiles
 from .pproc import parseinfo
@@ -133,18 +132,22 @@ def checkinfofile(filename, verbose=True):
                         print ('File %s, entry l%d-%d is ok.' %
                                (filename, i-2, i))
 
+
 def is_correct_instances(trials, verbose=True):
     """Check instances and number of repetitions."""
 
     tmp = dict((j, trials.count(j)) for j in set(trials))
-    return (tmp == correct_instances2010 or tmp == correct_instances2009)
+    return tmp == correct_instances2010 or tmp == correct_instances2009
+
 
 def somestatistics():
     """Do some statistics over the data."""
     pass
 
+
 def usage():
     print main.__doc__
+
 
 def main(argv=None):
     """Main routine for COCO data checking procedure.
@@ -208,6 +211,3 @@ def main(argv=None):
         print >>sys.stderr, err.msg
         #print >>sys.stderr, "for help use -h or --help"
         return 2
-
-if __name__ == "__main__":
-    sys.exit(main())
