@@ -26,19 +26,10 @@ from .compall import pptables
 
 # genericsettings.summarized_target_function_values[0] might be another option
 
-if __name__ == "__main__":
-    # matplotlib.use('pdf')
-    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
-
-    import cocopp
-    res = cocopp.rungeneric2.main(sys.argv[1:])
-    sys.exit(res)
-
 from . import pproc
 from . import config
 from . import testbedsettings
 from . import pprldistr
-from . import htmldesc
 from .pproc import DataSetList, processInputArgs
 from .ppfig import Usage
 from .toolsdivers import prepend_to_file, replace_in_file, strip_pathname1, str_to_latex
@@ -617,7 +608,3 @@ def main(argv=None):
         print(err.msg, file=sys.stderr)
         print("For help use -h or --help", file=sys.stderr)
         return 2
-
-
-if __name__ == "__main__":
-    sys.exit(main())

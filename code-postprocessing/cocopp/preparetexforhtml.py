@@ -16,11 +16,6 @@ from . import testbedsettings
 from .compall import pptables, ppfigs
 from .comp2 import ppscatter
 
-# Add the path to cocopp
-if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
-
 # Initialization
 
 header = """

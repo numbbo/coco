@@ -27,25 +27,6 @@ from .compall import ppfigs
 
 matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
-# numpy.seterr(all='raise')
-if __name__ == "__main__":
-    if 11 < 3:
-        print(matplotlib.rcsetup.all_backends)
-        # [u'GTK', u'GTKAgg', u'GTKCairo', u'MacOSX', u'Qt4Agg', u'Qt5Agg',
-        #  u'TkAgg', u'WX', u'WXAgg', u'CocoaAgg', u'GTK3Cairo', u'GTK3Agg',
-        #  u'WebAgg', u'nbAgg', u'agg', u'cairo', u'emf', u'gdk', u'pdf',
-        #  u'pgf', u'ps', u'svg', u'template']
-        matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
-        matplotlib.rc('pdf', fonttype=42)
-        # add ".." to the Python search path, import the module to which
-        # this script belongs to and call the main of this script from imported
-        # module. Like this all relative imports will work smoothly.
-
-        import cocopp
-        res = cocopp.rungeneric.main(sys.argv[1:])
-        sys.exit(res)
-
-
 __all__ = ['main']
 
 
@@ -305,10 +286,3 @@ def main(argv=None):
         print(err.msg, file=sys.stderr)
         print("For help use -h or --help", file=sys.stderr)
         return 2
-
-
-if __name__ == "__main__":
-    res = main()
-    if genericsettings.test:
-        print(res)
-    # sys.exit(res)

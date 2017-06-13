@@ -5,16 +5,11 @@
 
 from __future__ import absolute_import
 
-import os, sys
+import os
+import sys
 import numpy
-from pdb import set_trace
+
 from . import toolsdivers
-
-# Add the path to cocopp
-if __name__ == "__main__":
-    import matplotlib
-    matplotlib.use('Agg') # To avoid window popup and use without X forwarding
-
 from . import genericsettings, pproc, testbedsettings
 from .ppfig import save_figure, save_single_functions_html, convergence_plots_header
 from .toolsstats import prctile
@@ -24,7 +19,7 @@ import matplotlib.pyplot as plt
 final_target = 1e-8  # comes from the original experimental setup
 warned = False  # print just one warning and set to True
 
-#FUNCTION DEFINITIONS
+# FUNCTION DEFINITIONS
 
 
 def rearrange(blist, flist):
@@ -120,7 +115,3 @@ def main(dictAlg, outputdir='.', parentHtmlFileName=None, algorithm_name=None):
                                algname=algorithm_name,
                                parentFileName=parentHtmlFileName,
                                header=convergence_plots_header)  # first try
-
-
-if __name__ == "__main__":
-    sys.exit(main())
