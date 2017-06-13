@@ -61,6 +61,10 @@ def main(argv=None):
 
         python -m cocopp [data_folder [more_data_folders]]
 
+    or::
+
+        python -c "import cocopp; cocopp.main('data_folder [more_data_folders]')"
+
     For this call to work, the path to this package must be in python
     search path, that is,
 
@@ -165,11 +169,11 @@ def main(argv=None):
         >> import cocopp as pp
         >> pp.main('-o outputfolder folder1 folder2')
 
-      This will execute the post-processing on the data found in
-      :file:`folder1` and :file:`folder2`. The ``-o`` option changes the
-      output folder from the default :file:`ppdata` to
-      :file:`outputfolder`. The arguments can also be presented as
-      a list of strings.
+    This will execute the post-processing on the data found in
+    :file:`folder1` and :file:`folder2` and return the respective
+    `DataSetList`. The ``-o`` option changes the output folder from the
+    default :file:`ppdata` to :file:`outputfolder`. The arguments can
+    also be presented as a list of strings.
 
     """
 
@@ -252,15 +256,15 @@ def main(argv=None):
 
         if len(args) == 1 or '--omit-single' not in dict(opts):
             for i, alg in enumerate(args):
-                rungeneric1.main(genopts + ["-o", outputdir, alg])
+                dsld = rungeneric1.main(genopts + ["-o", outputdir, alg])
 
         if len(args) == 2:
-            rungeneric2.main(genopts + ["-o", outputdir] + args)
+            dsld = rungeneric2.main(genopts + ["-o", outputdir] + args)
             toolsdivers.prepend_to_file(latex_commands_filename,
                                         ['\\providecommand{\\numofalgs}{2}']
                                         )
         elif len(args) > 2:
-            rungenericmany.main(genopts + ["-o", outputdir] + args)
+            dsld = rungenericmany.main(genopts + ["-o", outputdir] + args)
             toolsdivers.prepend_to_file(latex_commands_filename,
                                         ['\\providecommand{\\numofalgs}{3+}']
                                         )
@@ -279,6 +283,8 @@ def main(argv=None):
 
         ppfig.save_index_html_file(os.path.join(outputdir, genericsettings.index_html_file_name))
         print_done()
+
+        return dsld
 
     # TODO prevent loading the data every time...
         
