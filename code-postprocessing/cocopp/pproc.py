@@ -92,7 +92,7 @@ def cocofy(filename):
 
 # CLASS DEFINITIONS
 
-def as_TargetValues(target_values):
+def asTargetValues(target_values):
     if isinstance(target_values, TargetValues):
         return target_values
     if isinstance(target_values, list):
@@ -2180,7 +2180,7 @@ class DataSetList(list):
             restarts.
 
         """
-        target_values = as_TargetValues(target_values)
+        target_values = asTargetValues(target_values)
         dsl_dict = self.dictByDim()[dimension].dictByAlg()
         # selected dimension and go by algorithm
         rld_dict = {}  # result for each algorithm
