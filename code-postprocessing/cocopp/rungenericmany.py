@@ -282,8 +282,7 @@ def main(argv=None):
                         )
 
         dsList, sortedAlgs, dictAlg = processInputArgs(args)
-
-        get_background_algorithms(dictAlg)
+        # get_background_algorithms(dictAlg)
 
         if not dsList:
             sys.exit()
@@ -349,15 +348,6 @@ def main(argv=None):
             function_groups=dictAlg[sortedAlgs[0]].getFuncGroups(),
             parentFileName=genericsettings.many_algorithm_file_name
         )
-
-        # convergence plots
-        print("Generating convergence plots...")
-        if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg,
-                                 many_algorithms_output,
-                                 genericsettings.many_algorithm_file_name,
-                                 '')
-        print_done()
 
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if genericsettings.isRLDistr:
