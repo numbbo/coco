@@ -18,7 +18,6 @@ import os
 import sys
 import warnings
 import getopt
-import matplotlib
 
 from . import genericsettings, ppfig, toolsdivers, rungenericmany, findfiles
 from .toolsdivers import print_done
@@ -293,6 +292,7 @@ def main(argv=None):
         prepend_to_file(latex_commands_file, ['\\providecommand{\\algsfolder}{' + algorithm_folder + '/}'])
         two_algorithms_output = os.path.join(outputdir, algorithm_folder)
 
+        abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         if genericsettings.isFig or genericsettings.isRLDistr or genericsettings.isTab or genericsettings.isScatter:
             if not os.path.exists(outputdir):
                 os.mkdir(outputdir)
@@ -304,7 +304,6 @@ def main(argv=None):
                     print('Folder %s was created.' % two_algorithms_output)
 
             # prepend the algorithm name command to the tex-command file
-            abc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
             lines = []
             for i, alg in enumerate(args):
                 lines.append('\\providecommand{\\algorithm' + abc[i] + '}{' +
@@ -323,6 +322,8 @@ def main(argv=None):
         if symdiff:
             tmpdict = {}
             for i, noisegrp in enumerate(symdiff):
+                tmp = None
+                tmp2 = None
                 if noisegrp == 'nzall':
                     tmp = 'noisy'
                 elif noisegrp == 'noiselessall':
@@ -333,7 +334,8 @@ def main(argv=None):
                 elif dictFN1.has_key(noisegrp):
                     tmp2 = sortedAlgs[1]
 
-                tmpdict.setdefault(tmp2, []).append(tmp)
+                if tmp and tmp2:
+                    tmpdict.setdefault(tmp2, []).append(tmp)
 
             txt = []
             for i, j in tmpdict.iteritems():
@@ -527,15 +529,7 @@ def main(argv=None):
                                                settings=inset)
                 print_done()
 
-        if genericsettings.isConv:
-            print("Convergence plots...")
-            ppconverrorbars.main(dictAlg,
-                                 two_algorithms_output,
-                                 genericsettings.many_algorithm_file_name,
-                                 algorithm_name)
-            print_done()
-
-        htmlFileName = os.path.join(two_algorithms_output, genericsettings.ppscatter_file_name + '.html')
+        html_file_name = os.path.join(two_algorithms_output, genericsettings.ppscatter_file_name + '.html')
 
         if genericsettings.isScatter:
             print("Scatter plots...")
@@ -546,10 +540,9 @@ def main(argv=None):
                              '}'
                              ])
 
-            replace_in_file(htmlFileName, '##bbobppscatterlegend##', ppscatter.figure_caption(True))
+            replace_in_file(html_file_name, '##bbobppscatterlegend##', ppscatter.figure_caption(True))
             for i, alg in enumerate(args):
-                replace_in_file(htmlFileName, 'algorithm'
-                                + abc[i], str_to_latex(strip_pathname1(alg)))
+                replace_in_file(html_file_name, 'algorithm' + abc[i], str_to_latex(strip_pathname1(alg)))
 
             print_done()
 
