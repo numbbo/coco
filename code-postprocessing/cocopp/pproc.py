@@ -1116,39 +1116,34 @@ class DataSet(object):
             targets,
             min_samplesize=genericsettings.simulated_runlength_bootstrap_sample_size,
             forced_samplesize=None,
-            randint=toolsstats.randint_derandomized):
-        """Return a len(targets) list of "simulated" run lengths ECDF data,
-        ``samplesize`` for each target.
+            randintfirst=toolsstats.randint_derandomized,
+            randintrest=toolsstats.randint_derandomized,
+            bootstrap=False):
+        """Return a len(targets) list of ``samplesize`` "simulated" run
+        lengths (#evaluations, sorted).
 
         ``np.sort(np.concatenate(return_value))`` provides the combined
         sorted ECDF data over all targets which may be plotted with
-        `pyplot.step`.
+        `pyplot.step` (missing the last step).
 
-        Each entry contains an array of sorted #evaluations, property
-        `missing_fraction` the fraction of unsuccessful (non-contributing)
-        data.
+        Unsuccessful data are represented as `np.nan`.
 
         Simulated restarts are used for unsuccessful runs. The usage of
         `detEvals` or `evals_with_simulated_restarts` should be largely
         interchangeable, while the latter has a "success" rate of either
         0 or 1.
 
-        To get a bootstrap sample for estimating dispersion use
+        TODO: change this: To get a bootstrap sample for estimating dispersion use
         ``min_samplesize=0, randint=np.random.randint``.
-
-        For an ECDF, a `None` entry represents `samplesize` `inf` (or
-        `nan`) values.
 
         Details:
 
         - For targets where all runs were successful, samplesize=nbRuns()
-          is sufficient and preferable if `randint` is derandomized.
+          is sufficient (and preferable) if `randint` is derandomized.
         - A single successful running length is computed by adding
           uniformly randomly chosen running lengths until the first time a
           successful one is chosen. In case of no successful run the
           result is `None`.
-
-        TODO:
 
         TODO: if `samplesize` >> `nbRuns` and nsuccesses is large,
         the data representation becomes somewhat inefficient.
@@ -1159,14 +1154,13 @@ class DataSet(object):
         """
         try: targets = targets([self.funcId, self.dim])
         except TypeError: pass
-        samplesize = np.max([self.nbRuns(), int(min_samplesize)])
-        if forced_samplesize is not None:
-            samplesize = forced_samplesize
-        res = []  # res[i] is a list of samplesize evals or None
-        for evals in self.detEvals(targets):  # list of evals
+        samplesize = (forced_samplesize
+                      or np.max([self.nbRuns(), int(min_samplesize)]))
+        res = []  # res[i] is a list of samplesize evals
+        for evals in self.detEvals(targets, bootstrap=bootstrap):
             # prepare evals array
             indices = np.isfinite(evals)
-            if not sum(indices):
+            if not sum(indices):  # no successes
                 res += [samplesize * [np.nan]]  # TODO: this is "many" data with little information
                 continue
             nindices = ~indices
@@ -1178,15 +1172,15 @@ class DataSet(object):
             nsucc = sum(indices)
 
             # do the job
-            indices = randint(0, len(evals), samplesize)
+            indices = randintfirst(0, len(evals), samplesize)
             sums = evals[indices]
             if nsucc == len(evals):
                 res += [sorted(sums)]
                 continue
             failing = np.where(indices >= nsucc)[0]
             assert nsucc > 0  # prevent infinite loop
-            while len(failing):
-                indices = np.random.randint(0, len(evals), len(failing))
+            while len(failing):  # add "restarts"
+                indices = randintrest(0, len(evals), len(failing))
                 sums[failing] += evals[indices]
                 # keep failing indices
                 failing = [failing[i] for i in xrange(len(failing))
@@ -1195,7 +1189,7 @@ class DataSet(object):
 
         assert set([len(evals) if evals is not None else samplesize
                 for evals in res]) == set([samplesize])
-        return toolsstats.ECDFDataList(res)
+        return res
 
     def __eq__(self, other):
         """Compare indexEntry instances."""
@@ -2209,26 +2203,31 @@ class DataSetList(list):
                                         for d in evals]
                 else:
                     if isinstance(simulated_restarts, dict):
-                        evals = ds.evals_with_simulated_restarts(target_values((ds.funcId, ds.dim)),
-                                                   **simulated_restarts)
-                    elif bootstrap:  # produce the bootstrap graph for dispersion estimate
+                        evals = ds.evals_with_simulated_restarts(
+                                    target_values((ds.funcId, ds.dim)),
+                                    bootstrap=bootstrap,
+                                    **simulated_restarts)
+                    elif 11 < 3 and bootstrap:  # TODO: to be removed, produce the bootstrap graph for dispersion estimate
                         n = ds.nbRuns()
                         evals = ds.evals_with_simulated_restarts(target_values((ds.funcId, ds.dim)),
                                                    forced_samplesize=n,
                                                    randint=np.random.randint)
-                    else:  # default: produce an accurate graph with not too small number of samples
+                    else:  # manage number of samples
+                        # TODO: shouldn't number of samples be set to data_per_target?
                         if simulated_restarts is not True and simulated_restarts > 0:
                             n = simulated_restarts
                         else:
                             n = (data_per_target or 0) + 2 * ds.nbRuns() + genericsettings.simulated_runlength_bootstrap_sample_size
-                        evals = ds.evals_with_simulated_restarts(target_values((ds.funcId, ds.dim)),
-                                                   forced_samplesize=n)
+                        evals = ds.evals_with_simulated_restarts(
+                                    target_values((ds.funcId, ds.dim)),
+                                    bootstrap=bootstrap,
+                                    forced_samplesize=n)
                     if data_per_target is not None:
                         index = np.array(0.5 + np.linspace(0, n - 1, data_per_target, endpoint=True),
                                          dtype=int)
                         for i in range(len(evals)):
                             evals[i] = np.asarray(evals[i])[index]
-                    evals.complement_missing(data_per_target)  # add fully unsuccessful sample data
+                    # evals.complement_missing(data_per_target)  # add fully unsuccessful sample data
 
                 if reference_data_set_list is not None:
                     if ds.funcId not in reference_scores:

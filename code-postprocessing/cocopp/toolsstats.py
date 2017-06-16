@@ -37,7 +37,7 @@ class ECDFDataList(list):
         if len(self) and max(self.samplesizes) <= 0:
             warnings.warn("""no data for ECDFDataList.__init__""")
     def clean(self, complement=False):
-        """remove empty entries and increase `nmissing` counter.
+        """remove empty entries and increase `nremoved` counter.
 
         If `complement`, "empty" entries become
         ``samplesize * [complement]``, e.g. ``15 * [np.nan]``.
