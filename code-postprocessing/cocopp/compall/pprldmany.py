@@ -706,40 +706,39 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             return ' '.join([str(name) for name in algname])
         return str(algname)
 
-    for i, alg in enumerate(order):
-        try:
-            data = dictData[alg]
-            maxevals = dictMaxEvals[alg]
-        except KeyError:
-            continue
+    plotting_style_list = ppfig.get_plotting_styles(order)
+    for plotting_style in plotting_style_list:
+        for i, alg in enumerate(plotting_style.algorithm_list):
+            try:
+                data = dictData[alg]
+                maxevals = dictMaxEvals[alg]
+            except KeyError:
+                continue
 
-        args = styles[i % len(styles)]
-        args = args.copy()
-        args['linewidth'] = 1.5
-        args['markersize'] = 12.
-        args['markeredgewidth'] = 1.5
-        args['markerfacecolor'] = 'None'
-        args['markeredgecolor'] = args['color']
-        args['label'] = algname_to_label(alg)
-        if plotType == PlotType.DIM:
-            args['marker'] = genericsettings.dim_related_markers[i]
-            args['markeredgecolor'] = genericsettings.dim_related_colors[i]
-            args['color'] = genericsettings.dim_related_colors[i]
+            args = styles[i % len(styles)]
+            args = args.copy()
+            args['linewidth'] = 1.5
+            args['markersize'] = 12.
+            args['markeredgewidth'] = 1.5
+            args['markerfacecolor'] = 'None'
+            args['markeredgecolor'] = args['color']
+            args['label'] = algname_to_label(alg)
+            if plotType == PlotType.DIM:
+                args['marker'] = genericsettings.dim_related_markers[i]
+                args['markeredgecolor'] = genericsettings.dim_related_colors[i]
+                args['color'] = genericsettings.dim_related_colors[i]
 
-            # args['markevery'] = perfprofsamplesize # option available in latest version of matplotlib
-            # elif len(show_algorithms) > 0:
-            # args['color'] = 'wheat'
-            # args['ls'] = '-'
-            # args['zorder'] = -1
-        # plotdata calls pprldistr.plotECDF which calls ppfig.plotUnifLog... which does the work
+                # args['markevery'] = perfprofsamplesize # option available in latest version of matplotlib
+                # elif len(show_algorithms) > 0:
+                # args['color'] = 'wheat'
+                # args['ls'] = '-'
+                # args['zorder'] = -1
+            # plotdata calls pprldistr.plotECDF which calls ppfig.plotUnifLog... which does the work
 
-        if alg in genericsettings.background_algorithms:
-            args['marker'] = ''
-            args['label'] = ''
-            args['color'] = genericsettings.background_algorithm_color
+            args.update(plotting_style.pprldmany_styles)
 
-        lines.append(plotdata(np.array(data), x_limit, maxevals,
-                              CrE=CrEperAlg[alg], **args))
+            lines.append(plotdata(np.array(data), x_limit, maxevals,
+                                  CrE=CrEperAlg[alg], **args))
 
     labels, handles = plotLegend(lines, x_limit)
     if True:  # isLateXLeg:

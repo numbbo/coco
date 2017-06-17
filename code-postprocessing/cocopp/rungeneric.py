@@ -249,6 +249,7 @@ def main(argv=None):
 
         for i in range(len(args)):  # prepend common path inputdir to all names
             args[i] = os.path.join(inputdir, args[i])
+        update_background_algorithms(inputdir)
 
         if len(args) == 1 or '--omit-single' not in dict(opts):
             for i, alg in enumerate(args):
@@ -286,3 +287,8 @@ def main(argv=None):
         print(err.msg, file=sys.stderr)
         print("For help use -h or --help", file=sys.stderr)
         return 2
+
+
+def update_background_algorithms(input_dir):
+    genericsettings.background_algorithms = [os.path.join(input_dir, item)
+                                             for item in genericsettings.background_algorithms]
