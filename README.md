@@ -239,6 +239,9 @@ our issue tracker at https://github.com/numbbo/coco/issues.
   the algorithms can be displayed in terms of data profiles, aRT vs. dimension
   plots, or simple tables.
 
+* code-postprocessing/helper-scripts contains additional, independent python scripts 
+  that are not part of the cocopp module but that might use it.
+  
 * code-postprocessing/latex-templates contains LaTeX templates for displaying
   algorithm performances in publisher-conform PDFs for the GECCO
   conference.

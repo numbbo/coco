@@ -451,3 +451,5 @@ def main(argv=None):
             print_done()
 
         plt.rcdefaults()
+
+        return dsList.dictByAlg()

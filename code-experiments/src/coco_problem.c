@@ -60,7 +60,7 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
     if (coco_problem_get_number_of_constraints(problem) > 0) {
       z = coco_allocate_vector(coco_problem_get_number_of_constraints(problem));
       /* Important: use the same feasibility threshold as in logger_bbob.c here */
-      is_feasible = coco_is_feasible(problem, x, z, 1.0e-5);
+      is_feasible = coco_is_feasible(problem, x, z, 1.0e-05);
       coco_free_memory(z);
     }
     if (is_feasible) {

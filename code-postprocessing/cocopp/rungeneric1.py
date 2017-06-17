@@ -492,3 +492,5 @@ def main(argv=None):
             print("Output data written to folder %s" % outputdir)
 
         plt.rcdefaults()
+
+        return dsList.dictByAlg()

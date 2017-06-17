@@ -601,3 +601,5 @@ def main(argv=None):
         print(err.msg, file=sys.stderr)
         print("For help use -h or --help", file=sys.stderr)
         return 2
+
+    return dsList.dictByAlg()
