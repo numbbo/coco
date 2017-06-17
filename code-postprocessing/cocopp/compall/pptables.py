@@ -10,7 +10,7 @@ import sys
 import warnings
 import numpy
 
-from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings, captions
+from .. import genericsettings, bestalg, toolsstats, pproc, ppfigparam, testbedsettings, captions, ppfig
 from ..pptex import writeFEvals2, writeFEvalsMaxPrec, tableXLaTeX, numtotext
 from ..toolsstats import significancetest, significance_all_best_vs_other
 from ..toolsdivers import str_to_latex, strip_pathname1, replace_in_file, get_version_label, prepend_to_file
@@ -267,7 +267,8 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
 
     refalgentries = bestalg.load_reference_algorithm(testbed.reference_algorithm_filename)
 
-    sorted_algs = [key for key in sorted_algs[:] if key not in genericsettings.background_algorithms]
+    plotting_style_list = ppfig.get_plotting_styles(sorted_algs, True)
+    sorted_algs = plotting_style_list[0].algorithm_list
 
     # Sort data per dimension and function
     dict_data = {}

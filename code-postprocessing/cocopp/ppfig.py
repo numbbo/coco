@@ -781,3 +781,29 @@ def get_sorted_html_files(current_dir, prefix):
         pair_list.append([previousFile, firstFile])
 
     return pair_list
+
+
+class PlottingStyle(object):
+
+    def __init__(self, pprldmany_styles, ppfigs_styles, algorithm_list, in_background):
+        self.pprldmany_styles = pprldmany_styles
+        self.ppfigs_styles = ppfigs_styles
+        self.algorithm_list = algorithm_list
+        self.in_background = in_background
+
+
+def get_plotting_styles(algorithms, only_foreground=False):
+
+    plotting_styles = []
+
+    if not only_foreground:
+        background_algorithms = [key for key in genericsettings.background_algorithms if key in algorithms]
+        if len(background_algorithms) > 0:
+            ppfigs_styles = {'marker': '',  'color': genericsettings.background_algorithm_color}
+            pprldmany_styles = {'marker': '', 'label': '', 'color': genericsettings.background_algorithm_color}
+            plotting_styles.append(PlottingStyle(pprldmany_styles, ppfigs_styles, background_algorithms, True))
+
+    foreground_algorithms = [key for key in algorithms if key not in genericsettings.background_algorithms]
+    plotting_styles.append(PlottingStyle({}, {}, foreground_algorithms, False))
+
+    return plotting_styles

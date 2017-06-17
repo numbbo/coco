@@ -7,24 +7,28 @@ import matplotlib.pyplot as plt
 import numpy
 import warnings
 from pdb import set_trace
-from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings, htmldesc, ppfigparam
+from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings, htmldesc, ppfigparam, ppfig
 from .. import testbedsettings
 from .. import captions
-from ..ppfig import save_figure
+from ..ppfig import save_figure, get_plotting_styles
 from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 
 show_significance = 0.01  # for zero nothing is shown
 
-styles = genericsettings.line_styles
-def fix_styles(number, styles=styles):
+
+def fix_styles(plotting_styles, line_styles):
     """a short hack to fix length of styles"""
-    m = len(styles) 
-    while len(styles) < number:
-        styles.append(styles[len(styles) % m])
-    for i in xrange(len(styles)):
-        styles[i].update({'linewidth': 5 - min([2, i/3.0]),  # thinner lines over thicker lines
-                          'markeredgewidth': 6 - min([2, i / 2.0]),
-                          'markerfacecolor': 'None'})
+    m = len(line_styles)
+    while len(line_styles) < len(plotting_styles.algorithm_list):
+        line_styles.append(line_styles[len(line_styles) % m])
+    for i in xrange(len(line_styles)):
+        if plotting_styles.in_background:
+            line_styles[i].update(plotting_styles.ppfigs_styles)
+        else:
+            line_styles[i].update({'linewidth': 5 - min([2, i / 3.0]),  # thinner lines over thicker lines
+                                   'markeredgewidth': 6 - min([2, i / 2.0]),
+                                   'markerfacecolor': 'None'})
+
 refcolor = 'wheat'
 
 show_algorithms = []
@@ -430,83 +434,94 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
     
     funInfos = ppfigparam.read_fun_infos()    
 
-    algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
-
     dictFunc = pproc.dictAlgByFun(dictAlg)
     if sorted_algorithms is None:
         sorted_algorithms = sorted(dictAlg.keys())
+
+    plotting_style_list = get_plotting_styles(sorted_algorithms)
+    styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
+    default_styles = [d.copy() for d in genericsettings.line_styles]
     if not os.path.isdir(output_dir):
         os.mkdir(output_dir)
     for f in dictFunc:
         filename = os.path.join(output_dir, 'ppfigs_f%03d' % (f))
         handles = []
-        fix_styles(len(sorted_algorithms), styles)  #
-        for i, alg in enumerate(sorted_algorithms):
-            dictDim = dictFunc[f][alg].dictByDim()  # this does not look like the most obvious solution
+        for plotting_style in plotting_style_list:
+            algorithm_list = plotting_style.algorithm_list
+            line_styles = [d.copy() for d in default_styles]
+            fix_styles(plotting_style, line_styles)  #
+            for i, alg in enumerate(algorithm_list):
+                dictDim = dictFunc[f][alg].dictByDim()  # this does not look like the most obvious solution
 
-            #Collect data
-            dimert = []
-            ert = []
-            dimnbsucc = []
-            ynbsucc = []
-            nbsucc = []
-            dimmaxevals = []
-            maxevals = []
-            dimmedian = []
-            medianfes = []
-            for dim in sorted(dictDim):
-                assert len(dictDim[dim]) == 1
-                entry = dictDim[dim][0]
-                data = generateData(entry, target((f, dim))[0]) # TODO: here we might want a different target for each function
-                if 1 < 3 or data[2] == 0: # No success
-                    dimmaxevals.append(dim)
-                    maxevals.append(float(data[3])/dim)
-                if data[2] > 0:
-                    dimmedian.append(dim)
-                    medianfes.append(data[4]/dim)
-                    dimert.append(dim)
-                    ert.append(float(data[0])/dim)
-                    if data[1] < 1.:
-                        dimnbsucc.append(dim)
-                        ynbsucc.append(float(data[0])/dim)
-                        nbsucc.append('%d' % data[2])
+                #Collect data
+                dimert = []
+                ert = []
+                dimnbsucc = []
+                ynbsucc = []
+                nbsucc = []
+                dimmaxevals = []
+                maxevals = []
+                dimmedian = []
+                medianfes = []
+                for dim in sorted(dictDim):
+                    assert len(dictDim[dim]) == 1
+                    entry = dictDim[dim][0]
+                    data = generateData(entry, target((f, dim))[0]) # TODO: here we might want a different target for each function
+                    if 1 < 3 or data[2] == 0: # No success
+                        dimmaxevals.append(dim)
+                        maxevals.append(float(data[3])/dim)
+                    if data[2] > 0:
+                        dimmedian.append(dim)
+                        medianfes.append(data[4]/dim)
+                        dimert.append(dim)
+                        ert.append(float(data[0])/dim)
+                        if data[1] < 1.:
+                            dimnbsucc.append(dim)
+                            ynbsucc.append(float(data[0])/dim)
+                            nbsucc.append('%d' % data[2])
 
-            # Draw lines
-            if 1 < 3:  # new version
-                # omit the line if a point in between is missing
-                for idim in range(len(dimert)):
-                    # plot line only if next dim < 2.1*dim (a hack)
-                    if idim < len(dimert) - 1 and dimert[idim + 1] < 2.1 * dimert[idim]:
-                        tmp = plt.plot(dimert[idim:idim+2], ert[idim:idim+2], **styles[i]) #label=alg, )
-                    else:  # plot remaining single points (some twice)
-                        tmp = plt.plot(dimert[idim], ert[idim], **styles[i]) #label=alg, )
+                # Draw lines
+                if 1 < 3:  # new version
+                    # omit the line if a point in between is missing
+                    for idim in range(len(dimert)):
+                        # plot line only if next dim < 2.1*dim (a hack)
+                        if idim < len(dimert) - 1 and dimert[idim + 1] < 2.1 * dimert[idim]:
+                            tmp = plt.plot(dimert[idim:idim+2], ert[idim:idim+2], **line_styles[i]) #label=alg, )
+                        else:  # plot remaining single points (some twice)
+                            tmp = plt.plot(dimert[idim], ert[idim], **line_styles[i]) #label=alg, )
+                        plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
+                else:  # to be removed
+                    tmp = plt.plot(dimert, ert, **line_styles[i]) #label=alg, )
                     plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
-            else:  # to be removed
-                tmp = plt.plot(dimert, ert, **styles[i]) #label=alg, )
-                plt.setp(tmp[0], markeredgecolor=plt.getp(tmp[0], 'color'))
 
-            # For legend
-            # tmp = plt.plot([], [], label=alg.replace('..' + os.sep, '').strip(os.sep), **styles[i])
-            algorithmName = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(alg))
-            tmp = plt.plot([], [], label = algorithmName, **styles[i])
-            plt.setp(tmp[0], markersize=12.,
-                     markeredgecolor=plt.getp(tmp[0], 'color'))
+                # For legend
+                # tmp = plt.plot([], [], label=alg.replace('..' + os.sep, '').strip(os.sep), **line_styles[i])
+                algorithm_name = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(alg))
+                if plotting_style.in_background:
+                    algorithm_name = '_' + algorithm_name
+                tmp = plt.plot([], [], label=algorithm_name, **line_styles[i])
+                plt.setp(tmp[0], markersize=12.,
+                         markeredgecolor=plt.getp(tmp[0], 'color'))
 
-            if dimmaxevals:
-                tmp = plt.plot(dimmaxevals, maxevals, **styles[i])
-                plt.setp(tmp[0], markersize=20, #label=alg,
-                         markeredgecolor=plt.getp(tmp[0], 'color'),
-                         markeredgewidth=1, 
-                         markerfacecolor='None', linestyle='None')
-                
-            handles.append(tmp)
-            #tmp2 = plt.plot(dimmedian, medianfes, ls='', marker='+',
-            #               markersize=30, markeredgewidth=5,
-            #               markeredgecolor=plt.getp(tmp, 'color'))[0]
-            #for i, n in enumerate(nbsucc):
-            #    plt.text(dimnbsucc[i], numpy.array(ynbsucc[i])*1.85, n,
-            #             verticalalignment='bottom',
-            #             horizontalalignment='center')
+                if dimmaxevals:
+                    tmp = plt.plot(dimmaxevals, maxevals, **line_styles[i])
+                    plt.setp(tmp[0], markersize=20, #label=alg,
+                             markeredgecolor=plt.getp(tmp[0], 'color'),
+                             markeredgewidth=1,
+                             markerfacecolor='None', linestyle='None')
+
+                #tmp2 = plt.plot(dimmedian, medianfes, ls='', marker='+',
+                #               markersize=30, markeredgewidth=5,
+                #               markeredgecolor=plt.getp(tmp, 'color'))[0]
+                #for i, n in enumerate(nbsucc):
+                #    plt.text(dimnbsucc[i], numpy.array(ynbsucc[i])*1.85, n,
+                #             verticalalignment='bottom',
+                #             horizontalalignment='center')
+
+                if not plotting_style.in_background:
+                    handles.append(tmp)
+                    sorted_algorithms = plotting_style.algorithm_list
+                    styles = line_styles
 
         refalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
 
