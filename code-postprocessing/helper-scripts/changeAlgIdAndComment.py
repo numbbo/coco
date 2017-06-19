@@ -9,15 +9,16 @@ from os import remove
 
 """Modify meta information in raw experimental data.
 
-While comparing algorithms with the bbob_proc package, it is sometimes
-needed to change the algorithm name (given as algId in the :file`.info`
-files) or the algorithm comments after a run is already finished (for
-example because two output folders contain results for two different
-algorithms but with the same name). This script allows to change these
-within a specified output folder.
+While comparing algorithms with the cocopp package, it is sometimes
+needed to change the algorithm name (given as `algId` or `algorithm` 
+in the :file`.info` files) or the algorithm comments after a run is
+already finished (for example because two output folders contain results
+for two different algorithms but with the same name). This script allows
+to change these within a specified output folder.
 
 written: db 28/01/2010
          db 26/06/2013 corrected documentation
+         db 19/06/2017 updated docstrings, allow bbob-biobj(-ext) data sets
 
 """
 
@@ -33,7 +34,7 @@ def usage():
 def main(argv=None):
     """Main routine.
 
-    This script allows to change algorithm name (algId) and algorithm
+    This script allows to change algorithm name (algId/algorithm) and algorithm
     comment after a run finished, i.e., after an output folder has been
     created.
 
@@ -55,12 +56,12 @@ def main(argv=None):
     * Changing algorithm name and comments for given output folder from the
        command line::
 
-        >> python -m cocopp.changeAlgIdAndComment outfolder "CMA-ES" "CMA_with_lambda_100"
+        >> python changeAlgIdAndComment.py outfolder "CMA-ES" "CMA_with_lambda_100"
 
     * Changing algorithm name and comments for given output folder
        interactively::
 
-        >> python -m cocopp.changeAlgIdAndComment outputfolder
+        >> python changeAlgIdAndComment.py outputfolder
 
     """
 
@@ -131,18 +132,16 @@ def main(argv=None):
                 # make sure that everything is copied:
                 newline = line
                 # check if something needs to be changed:
-                if line.find('algId') >= 0:
-                    s = line.split()
-                    n = 0 # compute position of 'algId'
-                    for word in s:
-                        n = n+1
-                        if word == 'algId':
-                            break
-
-                    # replace algId:
-                    s = s[0:n+1]
-                    s.append("'" + algId + "'\n")
-                    newline = " ".join(s)
+                if line.find('algId') >= 0 or line.find('algorithm') >= 0:
+                    s = line.split(', ')
+                    for i, word in enumerate(s):
+                        if word.find('algId') >= 0:
+                            # replace algId:
+                            s[i] = "algId = '" + algId + "'"
+                        elif word.find('algorithm') >= 0:
+                            # replace algId:
+                            s[i] = "algorithm = '" + algId + "'"
+                    newline = ", ".join(s)
                 else:
                     s = line.split()
                     if s[0] == '%':
