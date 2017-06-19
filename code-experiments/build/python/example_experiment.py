@@ -275,7 +275,7 @@ def batch_loop(solver, suite, observer, budget,
         if verbose:
             print_flush("!" if runs > 2 else ":" if runs > 1 else ".")
         short_info.add_evals(problem.evaluations + problem.evaluations_constraints, runs)
-        problem.free()
+        problem.free()  # not necessary as `enumerate` tears the problem down
         addressed_problems += [problem.id]
     print(short_info.function_done() + short_info.dimension_done())
     short_info.print_timings()
@@ -337,22 +337,23 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
             solver(fun, x0, lambda x: -fun.constraint(x), maxfun = remaining_evals)
 ############################ ADD HERE ########################################
         # ### IMPLEMENT HERE THE CALL TO ANOTHER SOLVER/OPTIMIZER ###
-        # elif True:
+        # elif solver.__name__ == ...:
         #     CALL MY SOLVER, interfaces vary
 ##############################################################################
         else:
-            raise ValueError("no entry for solver %s" % str(solver.__name__))
+            solver(fun, x0)
 
         if fun.evaluations + fun.evaluations_constraints >= max_evals or \
            fun.final_target_hit:
             break
         # quit if fun.evaluations did not increase
-        if fun.evaluations + fun.evaluations_constraints <= max_evals - remaining_evals:
-            if max_evals - fun.evaluations - fun.evaluations_constraints > fun.dimension + 1:
-                print("WARNING: %d evaluations remaining" %
-                      remaining_evals)
-            if fun.evaluations + fun.evaluations_constraints < max_evals - remaining_evals:
+        still_remaining = max_evals - fun.evaluations - fun.evaluations_constraints
+        if still_remaining >= remaining_evals:  # break loop if no evaluations were done
+            if still_remaining > remaining_evals:
                 raise RuntimeError("function evaluations decreased")
+            if still_remaining >= fun.dimension + 2:
+                print("WARNING: %d evaluations of budget %d remaining" %
+                      (still_remaining, max_evals))
             break
     return restarts + 1
 
@@ -368,6 +369,7 @@ max_runs = 1e9  # number of (almost) independent trials per problem instance
 number_of_batches = 1  # allows to run everything in several batches
 current_batch = 1      # 1..number_of_batches
 ##############################################################################
+# By default we call SOLVER(fun, x0), but the INTERFACE CAN BE ADAPTED TO EACH SOLVER ABOVE
 SOLVER = random_search
 # SOLVER = my_solver # SOLVER = fmin_slsqp # SOLVER = cma.fmin
 suite_instance = "" # "year:2016"
