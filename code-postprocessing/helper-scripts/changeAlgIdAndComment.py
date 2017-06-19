@@ -10,15 +10,15 @@ from os import remove
 """Modify meta information in raw experimental data.
 
 While comparing algorithms with the cocopp package, it is sometimes
-needed to change the algorithm name (given as algId in the :file`.info`
-files) or the algorithm comments after a run is already finished (for
-example because two output folders contain results for two different
-algorithms but with the same name). This script allows to change these
-within a specified output folder.
+needed to change the algorithm name (given as `algId` or `algorithm` 
+in the :file`.info` files) or the algorithm comments after a run is
+already finished (for example because two output folders contain results
+for two different algorithms but with the same name). This script allows
+to change these within a specified output folder.
 
 written: db 28/01/2010
          db 26/06/2013 corrected documentation
-         db 19/06/2017 updated docstrings
+         db 19/06/2017 updated docstrings, allow bbob-biobj(-ext) data sets
 
 """
 
@@ -132,18 +132,16 @@ def main(argv=None):
                 # make sure that everything is copied:
                 newline = line
                 # check if something needs to be changed:
-                if line.find('algId') >= 0:
-                    s = line.split()
-                    n = 0 # compute position of 'algId'
-                    for word in s:
-                        n = n+1
-                        if word == 'algId':
-                            break
-
-                    # replace algId:
-                    s = s[0:n+1]
-                    s.append("'" + algId + "'\n")
-                    newline = " ".join(s)
+                if line.find('algId') >= 0 or line.find('algorithm') >= 0:
+                    s = line.split(', ')
+                    for i, word in enumerate(s):
+                        if word.find('algId') >= 0:
+                            # replace algId:
+                            s[i] = "algId = '" + algId + "'"
+                        elif word.find('algorithm') >= 0:
+                            # replace algId:
+                            s[i] = "algorithm = '" + algId + "'"
+                    newline = ", ".join(s)
                 else:
                     s = line.split()
                     if s[0] == '%':
