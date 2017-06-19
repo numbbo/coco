@@ -9,7 +9,7 @@ from os import remove
 
 """Modify meta information in raw experimental data.
 
-While comparing algorithms with the bbob_proc package, it is sometimes
+While comparing algorithms with the cocopp package, it is sometimes
 needed to change the algorithm name (given as algId in the :file`.info`
 files) or the algorithm comments after a run is already finished (for
 example because two output folders contain results for two different
@@ -18,6 +18,7 @@ within a specified output folder.
 
 written: db 28/01/2010
          db 26/06/2013 corrected documentation
+         db 19/06/2017 updated docstrings
 
 """
 
@@ -33,7 +34,7 @@ def usage():
 def main(argv=None):
     """Main routine.
 
-    This script allows to change algorithm name (algId) and algorithm
+    This script allows to change algorithm name (algId/algorithm) and algorithm
     comment after a run finished, i.e., after an output folder has been
     created.
 
@@ -55,12 +56,12 @@ def main(argv=None):
     * Changing algorithm name and comments for given output folder from the
        command line::
 
-        >> python -m cocopp.changeAlgIdAndComment outfolder "CMA-ES" "CMA_with_lambda_100"
+        >> python changeAlgIdAndComment.py outfolder "CMA-ES" "CMA_with_lambda_100"
 
     * Changing algorithm name and comments for given output folder
        interactively::
 
-        >> python -m cocopp.changeAlgIdAndComment outputfolder
+        >> python changeAlgIdAndComment.py outputfolder
 
     """
 
