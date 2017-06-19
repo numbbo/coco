@@ -376,6 +376,13 @@ class Observer(_Observer):
     @property
     def state(self):
         return super(Observer, self).state
+    @property
+    def result_folder(self):
+        """name of the output folder.
+
+        This name may not be the same as input option `result_folder`.
+        """
+        return super(Observer, self).result_folder
 
 # this definition is copy-edited from interface, solely to pass docstrings to pydoctor
 class Problem(_interface.Problem):
