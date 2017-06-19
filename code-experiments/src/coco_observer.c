@@ -618,3 +618,24 @@ coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_obser
 
   return problem_unobserved;
 }
+
+/**
+ * Get the result folder name, which is a unique folder name constructed
+ * from the result_folder option. 
+ * 
+ * @param observer The COCO observer, whose logger may be wrapping a problem.
+ *
+ * @returns The result folder name, where the logger writes its output. 
+ */
+const char *coco_observer_get_result_folder(const coco_observer_t *observer) {
+  if (observer == NULL) {
+    coco_warning("coco_observer_get_result_folder: no observer to get result_folder from");
+    return "";
+  }
+  else if (observer->is_active == 0) {
+    coco_warning("coco_observer_get_result_folder: observer is not active, returning empty string");
+    return "";
+  }
+  return observer->result_folder;
+}
+
