@@ -602,4 +602,4 @@ def main(argv=None):
         print("For help use -h or --help", file=sys.stderr)
         return 2
 
-    return dsList.dictByAlg()
+    return DataSetList(dsList).dictByAlg()

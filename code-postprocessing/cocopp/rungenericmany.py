@@ -452,4 +452,4 @@ def main(argv=None):
 
         plt.rcdefaults()
 
-        return dsList.dictByAlg()
+        return DataSetList(dsList).dictByAlg()
