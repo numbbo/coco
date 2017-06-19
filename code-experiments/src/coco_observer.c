@@ -562,7 +562,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
  * @param problem The given COCO problem.
  * @param observer The COCO observer, whose logger will wrap the problem.
  *
- * @returns The observed problem in the form of a new COCO problem instance or the same problem if the
+ * @return The observed problem in the form of a new COCO problem instance or the same problem if the
  * observer is NULL.
  */
 coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer_t *observer) {
@@ -586,7 +586,7 @@ coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer
  * @param problem The observed COCO problem.
  * @param observer The COCO observer, whose logger was wrapping the problem.
  *
- * @returns The unobserved problem as a pointer to the inner problem or the same problem if the problem
+ * @return The unobserved problem as a pointer to the inner problem or the same problem if the problem
  * was not observed.
  */
 coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_observer_t *observer) {
@@ -621,11 +621,11 @@ coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_obser
 
 /**
  * Get the result folder name, which is a unique folder name constructed
- * from the result_folder option. 
- * 
+ * from the result_folder option.
+ *
  * @param observer The COCO observer, whose logger may be wrapping a problem.
  *
- * @returns The result folder name, where the logger writes its output. 
+ * @return The result folder name, where the logger writes its output.
  */
 const char *coco_observer_get_result_folder(const coco_observer_t *observer) {
   if (observer == NULL) {
