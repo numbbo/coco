@@ -43,19 +43,20 @@ def copy_latex_templates():
     shutil.copy(join_path(template_folder, 'bbob.bib'), cwd)
 
 
-def run_latex_template(filename):
+def run_latex_template(filename, all_tests):
     file_path = os.path.abspath(join_path(os.path.dirname(__file__), filename))
     arguments = ['pdflatex', file_path]
     DEVNULL = open(os.devnull, 'wb')
     result = subprocess.call(arguments, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
     assert not result, 'Test failed: error while generating pdf from %s.' % filename
 
-    file_path = os.path.splitext(file_path)[0]
-    arguments = ['bibtex', file_path]
-    DEVNULL = open(os.devnull, 'wb')
-    output_file = open("bibtex.log", "w")
-    result = subprocess.call(arguments, stdin=DEVNULL, stdout=output_file, stderr=DEVNULL)
-    assert not result, 'Test failed: error while running bibtex on %s.' % os.path.splitext(filename)[0]
+    if all_tests:
+        file_path = os.path.splitext(file_path)[0]
+        arguments = ['bibtex', file_path]
+        DEVNULL = open(os.devnull, 'wb')
+        output_file = open("bibtex.log", "w")
+        result = subprocess.call(arguments, stdin=DEVNULL, stdout=output_file, stderr=DEVNULL)
+        assert not result, 'Test failed: error while running bibtex on %s.' % os.path.splitext(filename)[0]
 
 
 def retrieve_algorithm(data_path, folder_name, algorithm_name, file_name=None):
@@ -177,7 +178,7 @@ def main(arguments):
     result = os.system(python + command + '--conv' + join_path(data_path, 'BFGS_ros_noiseless.tgz'))
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
-    run_latex_template("templateBBOBarticle.tex")
+    run_latex_template("templateBBOBarticle.tex", run_all_tests)
     delete_files()
 
     t0 = time.time()
@@ -185,7 +186,7 @@ def main(arguments):
     result = os.system(python + command + join_path(data_path, 'RS-4.tgz'))
     print('**  subtest 2 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
-    run_latex_template("templateBIOBJarticle.tex")
+    run_latex_template("templateBIOBJarticle.tex", run_all_tests)
     delete_files()
 
     if run_all_tests:
@@ -199,7 +200,7 @@ def main(arguments):
                            join_path(data_path, 'BFGS_ros_noiseless.tgz'))
         print('**  subtest 3 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on many algorithms.'
-        run_latex_template("templateBBOBmany.tex")
+        run_latex_template("templateBBOBmany.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
@@ -208,7 +209,7 @@ def main(arguments):
                            join_path(data_path, 'lmm-CMA-ES_auger_noiseless.tgz'))
         print('**  subtest 4 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two algorithms with option --conv.'
-        run_latex_template("templateBBOBcmp.tex")
+        run_latex_template("templateBBOBcmp.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
@@ -217,7 +218,7 @@ def main(arguments):
                            join_path(data_path, 'VNS_garcia-martinez_noiseless.tgz'))
         print('**  subtest 5 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two algorithms with option --omit-single.'
-        run_latex_template("templateBBOBcmp.tex")
+        run_latex_template("templateBBOBcmp.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
@@ -225,7 +226,7 @@ def main(arguments):
                            join_path(data_path, 'VNS_garcia-martinez_noiseless.tgz'))
         print('**  subtest 6 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on one algorithm with option --expensive.'
-        run_latex_template("templateBBOBarticle.tex")
+        run_latex_template("templateBBOBarticle.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
@@ -234,7 +235,7 @@ def main(arguments):
                            join_path(data_path, 'RS-100.tgz'))
         print('**  subtest 7 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bbob-biobj algorithms.'
-        run_latex_template("templateBIOBJmultiple.tex")
+        run_latex_template("templateBIOBJmultiple.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
@@ -248,7 +249,7 @@ def main(arguments):
                            join_path(data_path, 'RS-100.tgz'))
         print('**  subtest 8 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on three bbob-biobj algorithms.'
-        run_latex_template("templateBIOBJmultiple.tex")
+        run_latex_template("templateBIOBJmultiple.tex", run_all_tests)
         delete_files()
 
         # testing data from bbob-noisy suite:
@@ -258,7 +259,7 @@ def main(arguments):
                            join_path(data_path, 'BFGS_ros_noisy.tgz'))
         print('**  subtest 9 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bbob-noisy algorithms.'
-        run_latex_template("templateNOISYarticle.tex")
+        run_latex_template("templateNOISYarticle.tex", run_all_tests)
         delete_files()
 
         # testing data from recent runs, prepared in do.py:
