@@ -45,7 +45,7 @@ if 'linux' in sys.platform:
 
 setup(
     name = 'cocoex',
-    version = "$COCO_VERSION",
+    version = "$COCO_VERSION",  # replaced when setup.py.in becomes setup.py
     packages = ['cocoex'],
     package_dir = {'cocoex': 'python'},
     cmdclass=cmdclass,
@@ -53,8 +53,8 @@ setup(
     ext_modules = extensions,
     url = 'https://github.com/numbbo/coco/',
     license = 'BSD',
-    maintainer = 'Olaf Mersmann',
-    maintainer_email = 'olafm@p-value.net',
+    maintainer = ['Dimo Brockhoff', 'Nikolaus Hansen', 'Tea Tusar'],
+    maintainer_email = '_-_dimo.brockhoff_-_@_-_inria.fr',
     # author = ['Anne Auger', 'Bernd Bischl', 'Dimo Brockhoff',
     #            'Nikolaus Hansen', 'Olaf Mersmann', 'Petr Posik',
     #            'Mike Preuss',  'Rodolphe le Riche', 'Guenter Rudolph',
