@@ -248,6 +248,7 @@ isRLDistr = True
 
 background_algorithm_color = '#bebebe'
 background_algorithms = []
+foreground_algorithms = []
 """a list of data files/folders as those specified in cocopp.main"""
 
 ##

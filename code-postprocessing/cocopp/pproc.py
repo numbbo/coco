@@ -2445,7 +2445,8 @@ def set_unique_algId(ds_list, ds_list_reference, taken_ids=None):
                 i += 1
             ds.algId = algId + ' ' + str(i)
 
-def processInputArgs(args):
+
+def processInputArgs(args, process_background_algorithms=False):
     """Process command line arguments.
 
     Returns several instances of :py:class:`DataSetList`, and a list of 
@@ -2458,6 +2459,7 @@ def processInputArgs(args):
     kept in different locations for efficiency reasons.
 
     :keyword list args: string arguments for folder names
+    :keyword bool process_background_algorithms: option to process also background algorithms
 
     :returns (all_datasets, pathnames, datasetlists_by_alg):
       all_datasets
@@ -2471,29 +2473,37 @@ def processInputArgs(args):
         a dictionary which associates each algorithm via its input path
         name to a DataSetList
 
-
-
-
     """
     dsList = list()
     sortedAlgs = list()
     dictAlg = {}
     current_hash = None
+    process_arguments(args, current_hash, dictAlg, dsList, sortedAlgs)
+    if process_background_algorithms:
+        genericsettings.foreground_algorithms.extend(sortedAlgs)
+        process_arguments(genericsettings.background_algorithms, current_hash, dictAlg, dsList, sortedAlgs)
+
+    store_reference_values(DataSetList(dsList))
+
+    return dsList, sortedAlgs, dictAlg
+
+
+def process_arguments(args, current_hash, dictAlg, dsList, sortedAlgs):
     for i in args:
         i = i.strip()
-        if i == '': # might cure an lf+cr problem when using cywin under Windows
+        if i == '':  # might cure an lf+cr problem when using cywin under Windows
             continue
         if findfiles.is_recognized_repository_filetype(i):
             filelist = findfiles.main(i)
-            #Do here any sorting or filtering necessary.
-            #filelist = list(i for i in filelist if i.count('ppdata_f005'))
+            # Do here any sorting or filtering necessary.
+            # filelist = list(i for i in filelist if i.count('ppdata_f005'))
             tmpDsList = DataSetList(filelist)
             for ds in tmpDsList:
                 ds._data_folder = i
-            #Nota: findfiles will find all info AND pickle files in folder i.
-            #No problem should arise if the info and pickle files have
-            #redundant information. Only, the process could be more efficient
-            #if pickle files were in a whole other location.
+            # Nota: findfiles will find all info AND pickle files in folder i.
+            # No problem should arise if the info and pickle files have
+            # redundant information. Only, the process could be more efficient
+            # if pickle files were in a whole other location.
 
             alg = i.rstrip(os.path.sep)
             if current_hash is not None and current_hash <> tmpDsList.get_reference_values_hash():
@@ -2502,8 +2512,8 @@ def processInputArgs(args):
             set_unique_algId(tmpDsList, dsList)
             dsList.extend(tmpDsList)
             current_hash = tmpDsList.get_reference_values_hash()
-            #alg = os.path.split(i.rstrip(os.sep))[1]  # trailing slash or backslash
-            #if alg == '':
+            # alg = os.path.split(i.rstrip(os.sep))[1]  # trailing slash or backslash
+            # if alg == '':
             #    alg = os.path.split(os.path.split(i)[0])[1]
             print('  using:', alg)
 
@@ -2512,7 +2522,7 @@ def processInputArgs(args):
                 sortedAlgs.append(alg)
                 dictAlg[alg] = tmpDsList
         elif os.path.isfile(i):
-            # TODO: a zipped tar file should be unzipped here, see findfiles.py 
+            # TODO: a zipped tar file should be unzipped here, see findfiles.py
             txt = 'The post-processing cannot operate on the single file ' + str(i)
             warnings.warn(txt)
             continue
@@ -2520,10 +2530,6 @@ def processInputArgs(args):
             txt = "Input folder '" + str(i) + "' could not be found."
             raise Exception(txt)
 
-    store_reference_values(DataSetList(dsList))
-
-    return dsList, sortedAlgs, dictAlg
-    
 
 def store_reference_values(ds_list):
 

@@ -278,12 +278,12 @@ def main(argv=None):
                         + 'the file before the text run'
                         )
 
-        dsList, sortedAlgs, dictAlg = processInputArgs(args)
+        dsList, sortedAlgs, dictAlg = processInputArgs(args, True)
 
         if not dsList:
             sys.exit()
 
-        algorithm_folder = findfiles.get_output_directory_sub_folder(sortedAlgs)
+        algorithm_folder = findfiles.get_output_directory_sub_folder(genericsettings.foreground_algorithms)
         prepend_to_file(latex_commands_file, ['\\providecommand{\\algsfolder}{' + algorithm_folder + '/}'])
         many_algorithms_output = os.path.join(outputdir, algorithm_folder)
         if not os.path.exists(many_algorithms_output):
