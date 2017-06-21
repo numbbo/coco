@@ -259,7 +259,7 @@ def main(argv=None):
             for i, alg in enumerate(args):
                 dsld = rungeneric1.main(genopts + ["-o", outputdir, alg])
 
-        if len(args) >= 1 or len(genericsettings.background_algorithms) > 0:
+        if len(args) > 2 or len(genericsettings.background_algorithms) > 0:
             dsld = rungenericmany.main(genopts + ["-o", outputdir] + args)
             toolsdivers.prepend_to_file(latex_commands_filename,
                                         ['\\providecommand{\\numofalgs}{3+}']
