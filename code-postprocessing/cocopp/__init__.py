@@ -24,6 +24,9 @@ from __future__ import absolute_import
 
 import matplotlib  # just to make sure the following is actually done first
 matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
+del matplotlib
+
+from numpy.random import seed as set_seed
 
 from .cococommands import *
 
@@ -39,3 +42,5 @@ __all__ = ['comp2', 'compall', 'eaf', 'main', 'ppfigdim', 'pplogloss',
            'pptex', 'toolsstats']
 
 __version__ = pkg_resources.require('cocopp')[0].version
+
+del absolute_import, pkg_resources

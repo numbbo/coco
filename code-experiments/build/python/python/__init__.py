@@ -425,6 +425,8 @@ class Problem(_interface.Problem):
         around the problem. For the observer to be finalized, the problem
         must be free'd (implictly or explicitly).
 
+        Return the observed problem `self`.
+
         Details: `observer` can be `None`, in which case nothing is done.
 
         See also: class `Observer`
