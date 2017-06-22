@@ -2093,7 +2093,6 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_12upper_bounds___get__(str
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_11evaluations___get__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_23evaluations_constraints___get__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_16final_target_hit___get__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_20final_target_fvalue1___get__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_21best_observed_fvalue1___get__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_6cocoex_9interface_7Problem_14free(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self, PyObject *__pyx_v_force); /* proto */
 static void __pyx_pf_6cocoex_9interface_7Problem_16__dealloc__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self); /* proto */
@@ -10892,7 +10891,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_16final_target_hit___get__
  *         """
  *         assert(self.problem)             # <<<<<<<<<<<<<<
  *         return coco_problem_final_target_hit(self.problem)
- *     @property
+ *     #@property
  */
   #ifndef CYTHON_WITHOUT_ASSERTIONS
   if (unlikely(!Py_OptimizeFlag)) {
@@ -10907,8 +10906,8 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_16final_target_hit___get__
  *         """
  *         assert(self.problem)
  *         return coco_problem_final_target_hit(self.problem)             # <<<<<<<<<<<<<<
- *     @property
- *     def final_target_fvalue1(self):
+ *     #@property
+ *     #def final_target_fvalue1(self):
  */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_1 = __Pyx_PyInt_From_int(coco_problem_final_target_hit(__pyx_v_self->problem)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 824, __pyx_L1_error)
@@ -10936,84 +10935,8 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_16final_target_hit___get__
   return __pyx_r;
 }
 
-/* "cython/interface.pyx":826
- *         return coco_problem_final_target_hit(self.problem)
- *     @property
- *     def final_target_fvalue1(self):             # <<<<<<<<<<<<<<
- *         assert(self.problem)
- *         return coco_problem_get_final_target_fvalue1(self.problem)
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_20final_target_fvalue1_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_6cocoex_9interface_7Problem_20final_target_fvalue1_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_6cocoex_9interface_7Problem_20final_target_fvalue1___get__(((struct __pyx_obj_6cocoex_9interface_Problem *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_6cocoex_9interface_7Problem_20final_target_fvalue1___get__(struct __pyx_obj_6cocoex_9interface_Problem *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "cython/interface.pyx":827
- *     @property
- *     def final_target_fvalue1(self):
- *         assert(self.problem)             # <<<<<<<<<<<<<<
- *         return coco_problem_get_final_target_fvalue1(self.problem)
- *     @property
- */
-  #ifndef CYTHON_WITHOUT_ASSERTIONS
-  if (unlikely(!Py_OptimizeFlag)) {
-    if (unlikely(!(__pyx_v_self->problem != 0))) {
-      PyErr_SetNone(PyExc_AssertionError);
-      __PYX_ERR(0, 827, __pyx_L1_error)
-    }
-  }
-  #endif
-
-  /* "cython/interface.pyx":828
- *     def final_target_fvalue1(self):
- *         assert(self.problem)
- *         return coco_problem_get_final_target_fvalue1(self.problem)             # <<<<<<<<<<<<<<
- *     @property
- *     def best_observed_fvalue1(self):
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(coco_problem_get_final_target_fvalue1(__pyx_v_self->problem)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 828, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  /* "cython/interface.pyx":826
- *         return coco_problem_final_target_hit(self.problem)
- *     @property
- *     def final_target_fvalue1(self):             # <<<<<<<<<<<<<<
- *         assert(self.problem)
- *         return coco_problem_get_final_target_fvalue1(self.problem)
- */
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("cocoex.interface.Problem.final_target_fvalue1.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
 /* "cython/interface.pyx":830
- *         return coco_problem_get_final_target_fvalue1(self.problem)
+ *     #    return coco_problem_get_final_target_fvalue1(self.problem)
  *     @property
  *     def best_observed_fvalue1(self):             # <<<<<<<<<<<<<<
  *         assert(self.problem)
@@ -11070,7 +10993,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_21best_observed_fvalue1___
   goto __pyx_L0;
 
   /* "cython/interface.pyx":830
- *         return coco_problem_get_final_target_fvalue1(self.problem)
+ *     #    return coco_problem_get_final_target_fvalue1(self.problem)
  *     @property
  *     def best_observed_fvalue1(self):             # <<<<<<<<<<<<<<
  *         assert(self.problem)
@@ -16342,10 +16265,6 @@ static PyObject *__pyx_getprop_6cocoex_9interface_7Problem_final_target_hit(PyOb
   return __pyx_pw_6cocoex_9interface_7Problem_16final_target_hit_1__get__(o);
 }
 
-static PyObject *__pyx_getprop_6cocoex_9interface_7Problem_final_target_fvalue1(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_6cocoex_9interface_7Problem_20final_target_fvalue1_1__get__(o);
-}
-
 static PyObject *__pyx_getprop_6cocoex_9interface_7Problem_best_observed_fvalue1(PyObject *o, CYTHON_UNUSED void *x) {
   return __pyx_pw_6cocoex_9interface_7Problem_21best_observed_fvalue1_1__get__(o);
 }
@@ -16422,7 +16341,6 @@ static struct PyGetSetDef __pyx_getsets_6cocoex_9interface_Problem[] = {
   {(char *)"evaluations", __pyx_getprop_6cocoex_9interface_7Problem_evaluations, 0, (char *)0, 0},
   {(char *)"evaluations_constraints", __pyx_getprop_6cocoex_9interface_7Problem_evaluations_constraints, 0, (char *)0, 0},
   {(char *)"final_target_hit", __pyx_getprop_6cocoex_9interface_7Problem_final_target_hit, 0, (char *)"return 1 if the final target is known and has been hit, 0 otherwise\n        ", 0},
-  {(char *)"final_target_fvalue1", __pyx_getprop_6cocoex_9interface_7Problem_final_target_fvalue1, 0, (char *)0, 0},
   {(char *)"best_observed_fvalue1", __pyx_getprop_6cocoex_9interface_7Problem_best_observed_fvalue1, 0, (char *)0, 0},
   {(char *)"id", __pyx_getprop_6cocoex_9interface_7Problem_id, 0, (char *)"id as string without spaces or weird characters", 0},
   {(char *)"name", __pyx_getprop_6cocoex_9interface_7Problem_name, 0, (char *)0, 0},
