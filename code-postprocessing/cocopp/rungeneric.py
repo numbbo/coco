@@ -125,10 +125,11 @@ def main(argv=None):
             changes the default output directory (:file:`ppdata`) to
             :file:`OUTPUTDIR`.
 
-        --omit-single
+        --include-single
 
-            omit calling :py:func:`cocopp.rungeneric1.main`, if
-            more than one data path argument is provided.
+            calls the postprocessing and in particular
+            :py:func:`cocopp.rungeneric1.main` on each of the
+            single input arguments separately.
 
         --no-rld-single-fcts
 
@@ -185,7 +186,7 @@ def main(argv=None):
         try:
             opts, args = getopt.getopt(argv, genericsettings.shortoptlist,
                                        genericsettings.longoptlist +
-                                       ['omit-single', 'in-a-hurry=', 'input-path='])
+                                       ['include-single', 'in-a-hurry=', 'input-path='])
         except getopt.error, msg:
             raise Usage(msg)
 
@@ -229,7 +230,7 @@ def main(argv=None):
                 if o in ("-v", "--verbose"):
                     genericsettings.verbose = True
                     is_assigned = True
-                if o == '--omit-single':
+                if o == '--include-single':
                     is_assigned = True
                 if not is_assigned:
                     assert False, "unhandled option"
@@ -255,7 +256,7 @@ def main(argv=None):
             args[i] = os.path.join(inputdir, args[i])
         update_background_algorithms(inputdir)
 
-        if len(args) == 1 or '--omit-single' not in dict(opts):
+        if len(args) == 1 or '--include-single' in dict(opts):
             for i, alg in enumerate(args):
                 dsld = rungeneric1.main(genopts + ["-o", outputdir, alg])
 
