@@ -213,11 +213,11 @@ def main(arguments):
         delete_files()
 
         t0 = time.time()
-        result = os.system(python + command + ' --omit-single ' +
+        result = os.system(python + command + ' --include-single' +
                            join_path(data_path, 'DE-PSO_garcia-nieto_noiseless.tgz') +
                            join_path(data_path, 'VNS_garcia-martinez_noiseless.tgz'))
         print('**  subtest 5 finished in ', time.time() - t0, ' seconds')
-        assert result == 0, 'Test failed: rungeneric on two algorithms with option --omit-single.'
+        assert result == 0, 'Test failed: rungeneric on two algorithms with option --include-single.'
         run_latex_template("templateBBOBcmp.tex", run_all_tests)
         delete_files()
 
@@ -230,7 +230,7 @@ def main(arguments):
         delete_files()
 
         t0 = time.time()
-        result = os.system(python + command + ' --omit-single ' +
+        result = os.system(python + command +
                            join_path(data_path, 'RS-4.tgz') +
                            join_path(data_path, 'RS-100.tgz'))
         print('**  subtest 7 finished in ', time.time() - t0, ' seconds')
@@ -243,7 +243,7 @@ def main(arguments):
         # but with a shorter file name from the biobj-test folder
         # to avoid problems with too long path names on the windows
         # Jenkins slave
-        result = os.system(python + command + ' --omit-single ' +
+        result = os.system(python + command +
                            join_path(data_path, 'N-II.tgz') +
                            join_path(data_path, 'RS-4.tgz') +
                            join_path(data_path, 'RS-100.tgz'))
@@ -254,7 +254,7 @@ def main(arguments):
 
         # testing data from bbob-noisy suite:
         t0 = time.time()
-        result = os.system(python + command + ' --omit-single ' +
+        result = os.system(python + command +
                            join_path(data_path, 'MCS_huyer_noisy.tgz') +
                            join_path(data_path, 'BFGS_ros_noisy.tgz'))
         print('**  subtest 9 finished in ', time.time() - t0, ' seconds')
