@@ -283,7 +283,7 @@ def main(argv=None):
         if not dsList:
             sys.exit()
 
-        algorithm_folder = findfiles.get_output_directory_sub_folder(genericsettings.foreground_algorithms)
+        algorithm_folder = findfiles.get_output_directory_sub_folder(genericsettings.foreground_algorithm_list)
         prepend_to_file(latex_commands_file, ['\\providecommand{\\algsfolder}{' + algorithm_folder + '/}'])
         many_algorithms_output = os.path.join(outputdir, algorithm_folder)
         if not os.path.exists(many_algorithms_output):

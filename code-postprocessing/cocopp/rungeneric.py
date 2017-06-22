@@ -259,7 +259,7 @@ def main(argv=None):
             for i, alg in enumerate(args):
                 dsld = rungeneric1.main(genopts + ["-o", outputdir, alg])
 
-        if len(args) > 2 or len(genericsettings.background_algorithms) > 0:
+        if len(args) > 2 or len(genericsettings.background) > 0:
             dsld = rungenericmany.main(genopts + ["-o", outputdir] + args)
             toolsdivers.prepend_to_file(latex_commands_filename,
                                         ['\\providecommand{\\numofalgs}{3+}']
@@ -296,5 +296,5 @@ def main(argv=None):
 
 
 def update_background_algorithms(input_dir):
-    genericsettings.background_algorithms = [os.path.join(input_dir, item)
-                                             for item in genericsettings.background_algorithms]
+    for key, value in genericsettings.background.items():
+        genericsettings.background[key] = [os.path.join(input_dir, item) for item in value]
