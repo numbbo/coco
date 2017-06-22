@@ -2624,8 +2624,9 @@ def processInputArgs(args, process_background_algorithms=False):
     current_hash = None
     process_arguments(args, current_hash, dictAlg, dsList, sortedAlgs)
     if process_background_algorithms:
-        genericsettings.foreground_algorithms.extend(sortedAlgs)
-        process_arguments(genericsettings.background_algorithms, current_hash, dictAlg, dsList, sortedAlgs)
+        genericsettings.foreground_algorithm_list.extend(sortedAlgs)
+        for value in genericsettings.background.values():
+            process_arguments(value, current_hash, dictAlg, dsList, sortedAlgs)
 
     store_reference_values(DataSetList(dsList))
 

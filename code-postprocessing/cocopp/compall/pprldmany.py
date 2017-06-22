@@ -294,23 +294,24 @@ def plotLegend(handles, maxval):
     ys = {}
     lh = 0
 
-    def get_label_length(labelList):
+    def get_label_length(label_list):
         """ Finds the minimal length of the names used in the label so that 
         all the names are different. Always at least 9 character are displayed.
         """
 
         numberOfCharacters = 7
-        firstPart = [i[:numberOfCharacters] for i in labelList]
-        maxLength = max(len(i) for i in labelList)
+        firstPart = [i[:numberOfCharacters] for i in label_list]
+        maxLength = max(len(i) for i in label_list)
         while (len(firstPart) > len(set(firstPart)) and numberOfCharacters <= maxLength):
             numberOfCharacters += 1
-            firstPart = [i[:numberOfCharacters] for i in labelList]
+            firstPart = [i[:numberOfCharacters] for i in label_list]
 
         return min(numberOfCharacters + 2, maxLength)
 
-    labelList = [toolsdivers.strip_pathname1(plt.getp(h[-1], 'label')) for h in handles]
-    numberOfCharacters = get_label_length(labelList)
-    for h in handles:
+    handles_with_legend = [h for h in handles if not plt.getp(h[-1], 'label').startswith('_line')]
+    label_list = [toolsdivers.strip_pathname1(plt.getp(h[-1], 'label')) for h in handles_with_legend]
+    numberOfCharacters = get_label_length(label_list)
+    for h in handles_with_legend:
         x2 = []
         y2 = []
         for i in h:

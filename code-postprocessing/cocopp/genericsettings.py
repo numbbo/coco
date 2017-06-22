@@ -247,9 +247,9 @@ isExpensive = False
 isRldOnSingleFcts = True
 isRLDistr = True
 
-background_algorithm_color = '#bebebe'
-background_algorithms = []
-foreground_algorithms = []
+# usage: background = {(color, linestyle): [alg1, alg2, ...], }
+background = {}
+foreground_algorithm_list = []
 """a list of data files/folders as those specified in cocopp.main"""
 
 ##
