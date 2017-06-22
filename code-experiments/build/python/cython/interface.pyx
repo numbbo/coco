@@ -57,7 +57,7 @@ cdef extern from "coco.h":
     const char *coco_problem_get_name(const coco_problem_t *problem)
     const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *problem)
     const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem)
-    double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem)
+    # double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem)
     double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
@@ -822,10 +822,10 @@ cdef class Problem:
         """
         assert(self.problem)
         return coco_problem_final_target_hit(self.problem)
-    @property
-    def final_target_fvalue1(self):
-        assert(self.problem)
-        return coco_problem_get_final_target_fvalue1(self.problem)
+    #@property
+    #def final_target_fvalue1(self):
+    #    assert(self.problem)
+    #    return coco_problem_get_final_target_fvalue1(self.problem)
     @property
     def best_observed_fvalue1(self):
         assert(self.problem)
