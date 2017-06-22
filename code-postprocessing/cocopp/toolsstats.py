@@ -227,6 +227,8 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
        exception is raised.
 
     This implementation is depreciated and replaced by `simulated_evals`.
+    The latter is also depreciated, see
+    `DataSet.evals_with_simulated_restarts` instead.
 
     See also: `simulated_evals`.
 

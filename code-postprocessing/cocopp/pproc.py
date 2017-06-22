@@ -1114,8 +1114,7 @@ class DataSet(object):
 
     def evals_with_simulated_restarts(self,
             targets,
-            min_samplesize=genericsettings.simulated_runlength_bootstrap_sample_size,
-            forced_samplesize=None,
+            samplesize=genericsettings.simulated_runlength_bootstrap_sample_size,
             randintfirst=toolsstats.randint_derandomized,
             randintrest=toolsstats.randint_derandomized,
             bootstrap=False):
@@ -1154,8 +1153,6 @@ class DataSet(object):
         """
         try: targets = targets([self.funcId, self.dim])
         except TypeError: pass
-        samplesize = (forced_samplesize
-                      or np.max([self.nbRuns(), int(min_samplesize)]))
         res = []  # res[i] is a list of samplesize evals
         for evals in self.detEvals(targets, bootstrap=bootstrap):
             # prepare evals array
@@ -2210,7 +2207,7 @@ class DataSetList(list):
                     elif 11 < 3 and bootstrap:  # TODO: to be removed, produce the bootstrap graph for dispersion estimate
                         n = ds.nbRuns()
                         evals = ds.evals_with_simulated_restarts(target_values((ds.funcId, ds.dim)),
-                                                   forced_samplesize=n,
+                                                   samplesize=n,
                                                    randint=np.random.randint)
                     else:  # manage number of samples
                         # TODO: shouldn't number of samples be set to data_per_target?
@@ -2221,7 +2218,7 @@ class DataSetList(list):
                         evals = ds.evals_with_simulated_restarts(
                                     target_values((ds.funcId, ds.dim)),
                                     bootstrap=bootstrap,
-                                    forced_samplesize=n)
+                                    samplesize=n)
                     if data_per_target is not None:
                         index = np.array(0.5 + np.linspace(0, n - 1, data_per_target, endpoint=True),
                                          dtype=int)
