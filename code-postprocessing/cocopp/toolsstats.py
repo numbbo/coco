@@ -9,10 +9,18 @@ import numpy as np
 from . import genericsettings
 from pdb import set_trace
 
+def _has_len(thing):
+    try: len(thing)
+    except TypeError: return False
+    return True
 
 def fix_data_number(data, ndata=15,
                        last_elements_randomized=True, warn=False):
-    """return copy of data vector modified to length ``ndata``
+    """Obsolete and subject to removal. Use instead
+    ``np.asarray(data)[randint_derandomized(0, len(data), ndata)]`` or
+    ``[data[i] for i in randint_derandomized(0, len(data), ndata)]``.
+
+    return copy of data vector modified to length ``ndata``
     or ``data`` itself.
 
     Assures ``len(data) == ndata``.
@@ -26,6 +34,9 @@ def fix_data_number(data, ndata=15,
     >>> assert len(fix_data_number(data, 4)) == 4
     >>> assert len(fix_data_number(data, 14)) == 14
     >>> assert fix_data_number(data, 14)[2] == data[2]
+
+    See also ``data[randint_derandomized(0, len(data), ndata)]``, which
+    should do pretty much the same, a little more randomized.
 
     """
     if len(data) == ndata:
@@ -215,6 +226,12 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
        successful one is chosen. In case of no successful run an
        exception is raised.
 
+    This implementation is depreciated and replaced by `simulated_evals`.
+    The latter is also depreciated, see
+    `DataSet.evals_with_simulated_restarts` instead.
+
+    See also: `simulated_evals`.
+
     """
     # TODO: for efficiency reasons a special treatment in the case, 
     #   where all runs are successful and all_sampled_values_sorted is not needed
@@ -272,6 +289,104 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
 
     return (prctile(arrStats, percentiles, issorted=True),
             arrStats)
+
+
+def randint_derandomized(low, high=None, size=None):
+    """return a `numpy` array of derandomized random integers.
+
+    The interface is the same as for `numpy.randint`, however the
+    default value for `size` is ``high-low`` and each "random" integer
+    is guarantied to appear exactly once in each chunk of size
+    ``high-low``. (That is, by default a permutation is returned.)
+
+    As for `numpy.randint`, the value range is [low, high-1] or [0, low-1]
+    if ``high is None``.
+
+    >>> import numpy as np
+    >>> from cocopp.toolsstats import randint_derandomized
+    >>> np.random.seed(1)
+    >>> list(randint_derandomized(0, 4, 6))
+    [3, 2, 0, 1, 0, 2]
+
+    A typical usecase is indexing of ``data`` like::
+
+        [data[i] for i in randint_derandomized(0, len(data), ndata)]
+        # or almost equivalently
+        np.asarray(data)[randint_derandomized(0, len(data), ndata)]
+
+    """
+    return np.asarray(list(_randint_derandomized_generator(low, high, size)))
+
+def _randint_derandomized_generator(low, high=None, size=None):
+    """the generator for `randint_derandomized`"""
+    if high is None:
+        low, high = 0, low
+    if size is None:
+        size = high
+    delivered = 0
+    while delivered < size:
+        for randi in np.random.permutation(high - low):
+            delivered += 1
+            yield low + randi
+            if delivered >= size:
+                break
+
+def simulated_evals(evals, nfails,
+            samplesize=genericsettings.simulated_runlength_bootstrap_sample_size,
+            randint=randint_derandomized):
+    """Obsolete: see `DataSet.evals_with_simulated_restarts` instead.
+
+    Return `samplesize` "simulated" run lengths (#evaluations), sorted.
+
+    Input:
+      - *evals* -- array of evaluations
+      - *nfail* -- only the last `nfail` evaluations come from
+                    unsuccessful runs
+      - *randint* -- random integer index of the first simulated run
+
+    Return:
+       all_sampled_runlengths_sorted
+
+    Example:
+
+    >>> import numpy as np
+    >>> from cocopp.toolsstats import simulated_evals
+    >>> np.random.seed(4)
+    >>> evals_succ = [1]  # only one evaluation in the successful trial
+    >>> evals_unsucc = [2, 4, 2, 6, 100]
+    >>> simulated_evals(np.hstack([evals_succ, evals_unsucc]),
+    ...                 len(evals_unsucc), 13)
+    [1, 1, 3, 5, 5, 9, 11, 23, 107, 113, 215, 423, 439]
+
+    Details:
+       A single successful running length is computed by adding
+       uniformly randomly chosen running lengths until the first time a
+       successful one is chosen. In case of no successful run an
+       exception is raised.
+
+    """
+    if len(evals) == 0 or nfails >= len(evals):
+        raise ValueError("""without any successful run, simulated
+    runlengths are undefined from these data. A reasonable lower bound
+    for a single measurement from these data is %d""" %
+                         int(sum(evals)))
+    samplesize = int(samplesize)
+    evals = np.asarray(evals)
+
+    indices = randint(0, len(evals), samplesize)
+    sums = evals[indices]
+    if nfails == 0:
+        return sorted(sums)
+    failing = np.where(indices >= len(evals) - nfails)[0]
+    assert len(evals) - nfails > 0  # prevent infinite loop
+    while len(failing):
+        indices = np.random.randint(0, len(evals), len(failing))
+        sums[failing] += evals[indices]
+        # keep failing indices
+        failing = [failing[i] for i in xrange(len(failing))
+                               if indices[i] >= len(evals) - nfails]
+    return sorted(sums)
+
 
 def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     """Generates the empirical bootstrap distribution from a sample.
@@ -351,7 +466,7 @@ def prctile(x, arrprctiles, issorted=False, ignore_nan=True):
         prctiles
 
     .. note::
-        treats np.Inf and -np.Inf and np.NaN, the latter are
+        treats np.Inf and -np.Inf, np.NaN and None, the latter are
         simply disregarded
 
     """

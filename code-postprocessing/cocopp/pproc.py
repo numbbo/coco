@@ -92,6 +92,17 @@ def cocofy(filename):
 
 # CLASS DEFINITIONS
 
+def asTargetValues(target_values):
+    if isinstance(target_values, TargetValues):
+        return target_values
+    if isinstance(target_values, list):
+        return TargetValues(target_values)
+    try:
+        isinstance(target_values((1, 20)), list)
+        return target_values
+    except:
+        raise NotImplementedError("""type %s not recognized""" %
+                                  str(type(target_values)))
 class TargetValues(object):
     """store and retrieve a list of target function values::
 
@@ -607,7 +618,7 @@ class DataSet(object):
         ert
         evals
         evals_
-        evals_with_restarts
+        evals_with_simulated_restarts
         finalfunvals
         funcId
         funvals
@@ -1101,27 +1112,82 @@ class DataSet(object):
         self.ert = numpy.array(self.ert)
         self.target = numpy.array(self.target)
 
-    def evals_with_restarts(self, targets, sample_size_per_instance, sorted_runtimes=False):
-        """return runtimes (evals) where simulated restarts are used for unsuccessful runs.
+    def evals_with_simulated_restarts(self,
+            targets,
+            samplesize=genericsettings.simulated_runlength_bootstrap_sample_size,
+            randintfirst=toolsstats.randint_derandomized,
+            randintrest=toolsstats.randint_derandomized,
+            bootstrap=False):
+        """Return a len(targets) list of ``samplesize`` "simulated" run
+        lengths (#evaluations, sorted).
 
-        The number of returned evals is ``self.nbRuns() * sample_size_per_instance``.
+        ``np.sort(np.concatenate(return_value))`` provides the combined
+        sorted ECDF data over all targets which may be plotted with
+        `pyplot.step` (missing the last step).
 
-        TODO: the return value is inconsistent between the code and the comment!
+        Unsuccessful data are represented as `np.nan`.
 
-        TODO: attaching a count to each point would help to reduce the data size (and
-        probably the plotting spead) significantly.
+        Simulated restarts are used for unsuccessful runs. The usage of
+        `detEvals` or `evals_with_simulated_restarts` should be largely
+        interchangeable, while the latter has a "success" rate of either
+        0 or 1.
 
+        TODO: change this: To get a bootstrap sample for estimating dispersion use
+        ``min_samplesize=0, randint=np.random.randint``.
+
+        Details:
+
+        - For targets where all runs were successful, samplesize=nbRuns()
+          is sufficient (and preferable) if `randint` is derandomized.
+        - A single successful running length is computed by adding
+          uniformly randomly chosen running lengths until the first time a
+          successful one is chosen. In case of no successful run the
+          result is `None`.
+
+        TODO: if `samplesize` >> `nbRuns` and nsuccesses is large,
+        the data representation becomes somewhat inefficient.
+
+        TODO: it may be useful to make the samplesize dependent on the
+        number of successes and supply the multipliers
+        max(samplesizes) / samplesizes.
         """
-        raise NotImplementedError()
-        data_rows = self.detEvals(targets)
-        for d in data_rows:
-            evals, counts = toolsstats.runtimes_with_restarts(d, sample_size_per_instance)
-            # this should become a runtimes class with a counts and an evals attribute
-            raise NotImplementedError()
-        if sorted_runtimes:
-            raise NotImplementedError()
+        try: targets = targets([self.funcId, self.dim])
+        except TypeError: pass
+        res = []  # res[i] is a list of samplesize evals
+        for evals in self.detEvals(targets, bootstrap=bootstrap):
+            # prepare evals array
+            indices = np.isfinite(evals)
+            if not sum(indices):  # no successes
+                res += [samplesize * [np.nan]]  # TODO: this is "many" data with little information
+                continue
+            nindices = ~indices
+            assert sum(indices) + sum(nindices) == len(evals)
+            evals[nindices] = self.maxevals[nindices]  # replace nan
+            # let the first nsucc data in evals be those from successful runs
+            evals = np.hstack([evals[indices], evals[nindices]])
+            assert sum(np.isfinite(evals)) == len(evals)
+            nsucc = sum(indices)
+
+            # do the job
+            indices = randintfirst(0, len(evals), samplesize)
+            sums = evals[indices]
+            if nsucc == len(evals):
+                res += [sorted(sums)]
+                continue
+            failing = np.where(indices >= nsucc)[0]
+            assert nsucc > 0  # prevent infinite loop
+            while len(failing):  # add "restarts"
+                indices = randintrest(0, len(evals), len(failing))
+                sums[failing] += evals[indices]
+                # keep failing indices
+                failing = [failing[i] for i in xrange(len(failing))
+                            if indices[i] >= nsucc]
+            res += [sorted(sums)]
+
+        assert set([len(evals) if evals is not None else samplesize
+                for evals in res]) == set([samplesize])
         return res
-    
+
     def __eq__(self, other):
         """Compare indexEntry instances."""
         res = (self.__class__ is other.__class__ and
@@ -1463,7 +1529,7 @@ class DataSet(object):
         # targets, sorted along targets
         return list(res[i][1] for i in targets)
 
-    def detEvals(self, targets, copy=True):
+    def detEvals(self, targets, copy=True, bootstrap=False):
         """returns len(targets) data rows self.evals[idata, 1:] each row with 
         the closest but not larger target such that self.evals[idata, 0] <= target, 
         and self.evals[idata-1, 0] > target or in the "limit" cases the
@@ -1485,8 +1551,13 @@ class DataSet(object):
             evalsrows[target] = self.evals[idata, 1:].copy() if copy else self.evals[idata, 1:]
             
         if do_assertion:
-            assert all([all((np.isnan(evalsrows[target]) + (evalsrows[target] == self._detEvals2(targets)[i]))) for i, target in enumerate(targets)])
-    
+            assert all([all((np.isnan(evalsrows[target]) + (evalsrows[target] == self._detEvals2(targets)[i])))
+                        for i, target in enumerate(targets)])
+
+        if bootstrap:
+            return [np.asarray(evalsrows[t])[np.random.randint(0,
+                                len(evalsrows[t]), len(evalsrows[t]))]
+                    for t in targets]
         return [evalsrows[t] for t in targets]
         
     def _detEvals2(self, targets):
@@ -1521,7 +1592,8 @@ class DataSet(object):
         """plot data of `funvals` attribute, versatile
 
         TODO: seems outdated on 19/8/2016
-              ("isfinite" instead of "np.isfinite" and not called from anywhere)
+              (using "isfinite" instead of "np.isfinite" and not called
+              from anywhere)
         """
         kwargs.setdefault('clip_on', False)
         for funvals in self.funvals.T[1:]:  # loop over the rows of the transposed array
@@ -1554,7 +1626,6 @@ class DataSet(object):
                 plt.xlabel('target $\Delta f$ value')
                 plt.ylabel('number of function evaluations')
         return plt.gca()
-
 
 class DataSetList(list):
     """List of instances of :py:class:`DataSet`.
@@ -2048,34 +2119,59 @@ class DataSetList(list):
 
 
     def run_length_distributions(self, dimension, target_values,
-                                 fun_list=None,
+                                 fun_list=None,  # all functions
                                  reference_data_set_list=None,
-                                 reference_scoring_function=lambda x: toolsstats.prctile(x, [5])[0],
+                                 reference_scoring_function=lambda x:
+                                        toolsstats.prctile(x, [5])[0],
                                  data_per_target=15,
-                                 flatten_output_dict=True):
-        """return a dictionary with an entry for each algorithm (or
-        the dictionary value for only one algorithm if
-        ``flatten_output_dict is True``) and
-        the left envelope rld-array. For each algorithm the entry contains
-        a sorted rld-array of evaluations to reach the targets on all
-        functions in ``func_list`` or all available functions, the
-        list of solved functions, the list of processed functions. If
-        the sorted rld-array is normalized by the reference score (after
-        sorting), the last entry is the original rld.
+                                 flatten_output_dict=True,
+                                 simulated_restarts=False,
+                                 bootstrap=False):
+        """return a dictionary with an entry for each algorithm, or for
+        only one algorithm the dictionary value if
+        ``flatten_output_dict is True``, and the left envelope
+        rld-array.
+
+        For each algorithm the entry contains a sorted rld-array of
+        evaluations to reach the targets on all functions in
+        ``func_list`` or all functions in `self`, the list of solved
+        functions, the list of processed functions. If the sorted
+        rld-array is normalized by the reference score (after sorting),
+        the last entry is the original rld.
+
+        Example::
+
+            %pylab
+            dsl = cocopp.load(...)  # a single algorithm
+            rld = dsl.run_length_distributions(10, [1e-1, 1e-3, 1e-5])
+            step(rld[0][0], np.linspace(0, 1, len(rld[0][0]),
+                 endpoint=True)
 
         TODO: change interface to return always rld_original and optional
-        the scores to compare with. Example::
-
-            rld = dsl.run_length_distributions(...)
-            semilogy([x if np.isfinite(x) else np.inf
-                      for x in rld[0][0] / rld[0][-1]])
+        the scores to compare with such that we need to compute
+        ``rld[0][0] / rld[0][-1]`` to get the current output?
 
         If ``reference_data_set_list is not None`` evaluations
         are normalized by the reference data, however
         the data remain to be sorted without normalization.
-        TODO:
+
+        :param simulated_restarts: use simulated trials instead of
+            "raw" evaluations from calling `DataSet.detEvals`.
+            `simulated_restarts` may be a `bool`, or a kwargs `dict`
+            passed like ``**simulated_restarts`` to the method
+            `DataSet.evals_with_simulated_restarts`, or it may indicate
+            the number of simulated trials. By default, the first trial
+            is chosen without replacement. That means, if the number of
+            simulated trials equals to ``nbRuns()``, the result is the
+            same as from `DataSet.detEvals`, bar the ordering of the
+            data. If `bootstrap` is active, the number is set to
+            ``nbRuns()`` and the first trial is chosen *with* replacement.
+        :param bootstrap: ``if bootstrap``, the number of evaluations is
+            bootstrapped within the instances/trials or via simulated
+            restarts.
 
         """
+        target_values = asTargetValues(target_values)
         dsl_dict = self.dictByDim()[dimension].dictByAlg()
         # selected dimension and go by algorithm
         rld_dict = {}  # result for each algorithm
@@ -2086,16 +2182,50 @@ class DataSetList(list):
             ref_scores = []  # to compute rld_data / ref_scores element-wise
             funcs_processed = []
             funcs_solved = []
-            for ds in dsl_dict[alg]:  # ds is a DataSet, i.e. typically 15 trials
+            for ds in dsl_dict[alg]:  # ds is a DataSet containing typically 15 trials
                 if fun_list and ds.funcId not in fun_list:
                     continue
                 assert dimension == ds.dim
                 funcs_processed.append(ds.funcId)
-                evals = ds.detEvals(target_values((ds.funcId, ds.dim)))
-                if data_per_target is not None:
-                    evals = [np.sort(toolsstats.fix_data_number(d, data_per_target))
-                                for d in evals]
-                    # make sure to get 15 numbers for each target
+                if not simulated_restarts:
+                    evals = ds.detEvals(target_values((ds.funcId, ds.dim)),
+                                        bootstrap=bootstrap)
+                    if data_per_target is not None:
+                        # make sure to get 15 numbers for each target
+                        if 1 < 3:
+                            evals = [np.sort(np.asarray(d)[toolsstats.randint_derandomized(0, len(d), data_per_target)])
+                                         for d in evals]
+                        else:  # this assumes that data_per_target is not smaller than nbRuns
+                            evals = [np.sort(toolsstats.fix_data_number(d, data_per_target))
+                                        for d in evals]
+                else:
+                    if isinstance(simulated_restarts, dict):
+                        evals = ds.evals_with_simulated_restarts(
+                                    target_values((ds.funcId, ds.dim)),
+                                    bootstrap=bootstrap,
+                                    **simulated_restarts)
+                    elif 11 < 3 and bootstrap:  # TODO: to be removed, produce the bootstrap graph for dispersion estimate
+                        n = ds.nbRuns()
+                        evals = ds.evals_with_simulated_restarts(target_values((ds.funcId, ds.dim)),
+                                                   samplesize=n,
+                                                   randint=np.random.randint)
+                    else:  # manage number of samples
+                        # TODO: shouldn't number of samples be set to data_per_target?
+                        if simulated_restarts is not True and simulated_restarts > 0:
+                            n = simulated_restarts
+                        else:
+                            n = (data_per_target or 0) + 2 * ds.nbRuns() + genericsettings.simulated_runlength_bootstrap_sample_size
+                        evals = ds.evals_with_simulated_restarts(
+                                    target_values((ds.funcId, ds.dim)),
+                                    bootstrap=bootstrap,
+                                    samplesize=n)
+                    if data_per_target is not None:
+                        index = np.array(0.5 + np.linspace(0, n - 1, data_per_target, endpoint=True),
+                                         dtype=int)
+                        for i in range(len(evals)):
+                            evals[i] = np.asarray(evals[i])[index]
+                    # evals.complement_missing(data_per_target)  # add fully unsuccessful sample data
+
                 if reference_data_set_list is not None:
                     if ds.funcId not in reference_scores:
                         if reference_scoring_function is None:
@@ -2119,9 +2249,11 @@ class DataSetList(list):
                                          copy=False)
                         for i, line in enumerate(reference_scores[ds.funcId]):
                             reference_scores[ds.funcId][i] = \
-                                np.sort(toolsstats.fix_data_number(line, data_per_target))
+                                np.sort(np.asarray(line)[toolsstats.randint_derandomized(0, len(line), data_per_target)])
+                                # np.sort(toolsstats.fix_data_number(line, data_per_target))
                     ref_scores.append(np.hstack(reference_scores[ds.funcId]))
                     # 'needs to be checked', qqq
+
                 evals = np.hstack(evals)  # "stack" len(targets) * 15 values
                 if any(np.isfinite(evals)):
                     funcs_solved.append(ds.funcId)
@@ -2129,17 +2261,23 @@ class DataSetList(list):
 
             funcs_processed.sort()
             funcs_solved.sort()
-            assert map(int, np.__version__.split('.')) > [1, 4, 0]
-            # if this fails, replacing nan with inf might work for sorting
+            assert map(int, np.__version__.split('.')) > [1, 4, 0], \
+    """for older versions of numpy, replacing `nan` with `inf` might work
+    for sorting here"""
             rld_data = np.hstack(rld_data)
             if reference_data_set_list is not None:
                 ref_scores = np.hstack(ref_scores)
                 idx = np.argsort(rld_data)
-                rld_original = rld_data[idx]
-                rld_data = rld_original / ref_scores[idx]
+                if 11 < 3:  # original version to return normalized data
+                    rld_original = rld_data[idx]
+                    rld_data = rld_original / ref_scores[idx]
+                else:
+                    rld_data = rld_data[idx]
+                    ref_scores = ref_scores[idx]
+                    print("""interface of return values changed! Also: left_envelope is now computed w.r.t. original data""")
             else:
                 rld_data.sort()  # returns None
-            # nan are at the end now (since numpy 1.4.0)
+                # nan are at the end now (since numpy 1.4.0)
 
             # check consistency
             if len(funcs_processed) > len(set(funcs_processed)):
@@ -2151,7 +2289,7 @@ class DataSetList(list):
                     + " and computations disregarded " + str(ds.algId))
                 continue
 
-            left_envelope = np.fmin(left_envelope, rld_data)
+            left_envelope = np.fmin(left_envelope, rld_data)  # TODO: needs to be rld_data / ref_scores after interface change
             # fails if number of computed data are different
             rld_dict[alg] = [rld_data,
                              sorted(funcs_solved),
@@ -2205,6 +2343,8 @@ class DataSetList(list):
 
         Detail: currently, the minimal observed evaluation is computed
         instance-wise and the ``number`` "easiest" instances are returned.
+        That is, if `number` is the number of instances, the best eval
+        for each instance is returned.
         Also the smallest ``number`` evaluations regardless of instance
         are computed, but not returned.
 
@@ -2251,6 +2391,10 @@ class DataSetList(list):
         """return a list of the respective best data lines over all data
         sets in ``self`` for each ``target in target_values`` and an
         array of the computed scores (ERT ``if scoring_function == 'ERT'``).
+
+        A data line is the set of evaluations from all (usually 15) runs
+        for a given target value. The score determines which data line is
+        "best".
 
         If ``scoring_function is None``, the best is determined with method
         ``detERT``. Using ``scoring_function=lambda x:
