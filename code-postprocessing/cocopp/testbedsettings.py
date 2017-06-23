@@ -21,6 +21,10 @@ testbed_name_bi = 'bbob-biobj'
 testbed_name_bi_ext = 'bbob-biobj-ext'
 testbed_name_cons = 'bbob-constrained'
 
+default_suite_single = 'bbob'
+default_suite_single_noisy = 'bbob-noisy'
+default_suite_bi = 'bbob-biobj'
+
 default_testbed_single = 'GECCOBBOBTestbed'
 default_testbed_single_noisy = 'GECCOBBOBNoisyTestbed'
 default_testbed_bi = 'GECCOBiObjBBOBTestbed'
@@ -30,9 +34,9 @@ default_testbed_cons = 'CONSBBOBTestbed'
 current_testbed = None
 
 suite_to_testbed = {
-    'bbob' : default_testbed_single,
-    'bbob-noisy' : default_testbed_single_noisy,
-    'bbob-biobj' : default_testbed_bi,
+    default_suite_single : default_testbed_single,
+    default_suite_single_noisy : default_testbed_single_noisy,
+    default_suite_bi : default_testbed_bi,
     'bbob-biobj-ext' : default_testbed_bi_ext,
     'bbob-constrained' : default_testbed_cons
 }

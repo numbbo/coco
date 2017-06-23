@@ -623,6 +623,7 @@ class DataSet(object):
         funcId
         funvals
         generateRLData
+        get_suite
         get_testbed_name
         indexFiles
         info
@@ -755,28 +756,31 @@ class DataSet(object):
         return hasattr(self, 'indicator')
 
     def get_testbed_name(self):
-        testbed = None
+        suite = self.get_suite()
+        return testbedsettings.get_testbed_from_suite(suite)
+
+    def get_suite(self):
+        suite = None
         if hasattr(self, 'suite'):
             suite = getattr(self, 'suite')
-            testbed = testbedsettings.get_testbed_from_suite(suite)
 
-        if not testbed:
+        if not suite:
             if self.isBiobjective():
-                testbed = testbedsettings.default_testbed_bi
+                suite = testbedsettings.default_suite_bi
             else:
                 # detect by hand whether we are in the noisy or the
                 # noiseless case (TODO: is there a better way?)
                 if self.funcId > 100:
                     genericsettings.isNoisy = True
                     genericsettings.isNoiseless = False
-                    testbed = testbedsettings.default_testbed_single_noisy
+                    suite = testbedsettings.default_suite_single_noisy
                 else:
                     genericsettings.isNoisy = False
                     genericsettings.isNoiseless = True
-                    testbed = testbedsettings.default_testbed_single
+                    suite = testbedsettings.default_suite_single
 
-        return testbed
-    
+        return suite
+
     def __init__(self, header, comment, data, indexfile):
         """Instantiate a DataSet.
 
