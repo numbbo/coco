@@ -623,6 +623,7 @@ class DataSet(object):
         funcId
         funvals
         generateRLData
+        get_suite
         get_testbed_name
         indexFiles
         info
