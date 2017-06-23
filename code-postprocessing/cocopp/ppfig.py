@@ -209,13 +209,13 @@ def save_single_functions_html(filename,
     name = filename.split(os.sep)[-1]
     current_dir = os.path.dirname(os.path.realpath(filename))
     with open(filename + add_to_names + '.html', 'w') as f:
-        header_title = algname + ' ' + name + add_to_names
+        header_title = algname + ', ' + name + add_to_names
         links = get_home_link(htmlPage)
         links += get_convergence_link(htmlPage, current_dir)
         links += getRldLink(htmlPage, current_dir)
         links += get_parent_link(htmlPage, parentFileName)
 
-        f.write(html_header % (header_title.strip().replace(' ', ', '), algname, links))
+        f.write(html_header % (header_title.strip(), algname, links))
 
         if function_groups is None:
             function_groups = OrderedDict([])
@@ -245,6 +245,7 @@ def save_single_functions_html(filename,
             header_ecdf = ' Runtime distributions (ECDFs) over all targets'
             f.write("<H2> %s </H2>\n" % header_ecdf)
             f.write(add_image('pprldmany-single-functions/pprldmany.%s' % extension, True, 380))
+            save_index_html_file(os.path.join(current_dir, '..', genericsettings.index_html_file_name))
 
         elif htmlPage is HtmlPage.TWO:
 
@@ -256,6 +257,7 @@ def save_single_functions_html(filename,
             f.write(
                 '<H3><a href="%s.html">Tables for selected targets</a></H3>\n'
                 % genericsettings.pptables_file_name)
+            save_index_html_file(os.path.join(current_dir, '..', genericsettings.index_html_file_name))
 
         elif htmlPage is HtmlPage.MANY:
 
