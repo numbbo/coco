@@ -451,8 +451,10 @@ def main(argv=None):
             print_done()
 
         dictFunc = dsList.dictByFunc()
+        page_title = 'Benchmarking Results for Algorithm %s on the %s Suite' % \
+                     (dictFunc[dictFunc.keys()[0]][0].algId, dictFunc[dictFunc.keys()[0]][0].get_suite())
         ppfig.save_single_functions_html(os.path.join(algoutputdir, genericsettings.single_algorithm_file_name),
-                                         dictFunc[dictFunc.keys()[0]][0].algId,
+                                         page_title,
                                          htmlPage = ppfig.HtmlPage.ONE,
                                          function_groups= dsList.getFuncGroups())
 
