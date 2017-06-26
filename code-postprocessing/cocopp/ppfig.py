@@ -215,7 +215,7 @@ def save_single_functions_html(filename,
         links += getRldLink(htmlPage, current_dir)
         links += get_parent_link(htmlPage, parentFileName)
 
-        f.write(html_header % (header_title.strip(), algname, links))
+        f.write(html_header % (header_title.lstrip(',').strip(), algname, links))
 
         if function_groups is None:
             function_groups = OrderedDict([])
