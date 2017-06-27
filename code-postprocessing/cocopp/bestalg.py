@@ -694,8 +694,6 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
 
     countsperalgorithm = {}
     for (d, f) in bestalgentries:
-        print('dimension: %d, function: %d' % (d, f))
-        print(f)
         setofalgs = set(bestalgentries[d, f].algs)
         # pre-processing data to only look at targets >= target_lb:
         correctedbestalgentries = []
@@ -703,7 +701,6 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
             if ((bestalgentries[d, f].target[i] >= target_lb) and
                     (bestalgentries[d, f].target[i] <= target_ub)):
                 correctedbestalgentries.append(bestalgentries[d, f].algs[i])
-        print(len(correctedbestalgentries))
         # now count how often algorithm a is best for the extracted targets
         for a in setofalgs:
             # use setdefault to initialize with zero if a entry not existant:

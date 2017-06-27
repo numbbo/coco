@@ -223,13 +223,6 @@ class GECCOBBOBTestbed(Testbed):
     ) 
 
     def __init__(self, targetValues):
-        
-        for key, val in GECCOBBOBTestbed.settings.items():
-            setattr(self, key, val)
-
-        # set targets according to targetValues class (possibly all changed
-        # in config:
-        self.instantiate_attributes(targetValues)
 
         if 11 < 3:
             # override settings if needed...
@@ -237,15 +230,29 @@ class GECCOBBOBTestbed(Testbed):
             # self.reference_algorithm_displayname = 'best 2009--16'  # TODO: should be read in from data set in reference_algorithm_filename
             # self.reference_algorithm_filename = 'data/RANDOMSEARCH'
             # self.reference_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in reference_algorithm_filename
-            self.short_names = get_short_names(self.shortinfo_filename)
-            self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+            self.settings.short_names = get_short_names(self.shortinfo_filename)
+            self.settings.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+
+        for key, val in GECCOBBOBTestbed.settings.items():
+            setattr(self, key, val)
+
+        # set targets according to targetValues class (possibly all changed
+        # in config:
+        self.instantiate_attributes(targetValues)
+
 
 
 class CONSBBOBTestbed(GECCOBBOBTestbed):
     """BBOB Testbed for constrained problems.
     """
 
+    min_target = 1e-6
+    min_target_latex = '-6'
+    min_target_exponent = -6.2
+    min_target_scatter = -6
+
     shortinfo_filename = 'bbob-constrained-benchmarkshortinfos.txt'
+    pptable_targetsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, min_target)  # for pptable and pptablemany
 
     settings = dict(
         info_filename='bbob-constrained-benchmarkinfos.txt',
@@ -257,18 +264,38 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         last_function_number=48,
         reference_algorithm_filename='',
         reference_algorithm_displayname='',  # TODO: should be read in from data set in reference_algorithm_filename
-        scenario=scenario_constrainedfixed
+        scenario=scenario_constrainedfixed,
+        # what follows is all related to the smallest displayed target
+        hardesttargetlatex = '10^{' + min_target_latex + '}',  # used for ppfigs, pptable and pptables
+        ppfigs_ftarget = min_target,  # to set target runlength in expensive setting, use genericsettings.target_runlength
+        ppfig2_ftarget = min_target,
+        ppfigdim_target_values = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, min_target),
+        pprldistr_target_values = (10., 1e-1, 1e-4, min_target),
+        pprldmany_target_values = 10 ** np.arange(2, min_target_exponent, -0.2),
+        pprldmany_target_range_latex = '$10^{[' + min_target_latex + '..2]}$',
+        ppscatter_target_values = np.logspace(min_target_scatter, 2, 21),
+        rldValsOfInterest=(10, 1e-1, 1e-4, min_target),  # possibly changed in config
+        pptable_ftarget = min_target,  # value for determining the success ratio in all tables
+        pptable_targetsOfInterest = pptable_targetsOfInterest,
+        pptablemany_targetsOfInterest = pptable_targetsOfInterest,
+        ppfvdistr_min_target = min_target
     )
 
+
     def __init__(self, target_values):
+
+        if 11 < 3:
+            # override settings further if needed...
+            self.settings.reference_algorithm_filename = 'best2018-bbob-constrained.tar.gz'  # TODO: implement
+            self.settings.reference_algorithm_displayname = 'best 2018'  # TODO: should be read in from data set in reference_algorithm_filename
+
         super(CONSBBOBTestbed, self).__init__(target_values)
 
         for key, val in CONSBBOBTestbed.settings.items():
             setattr(self, key, val)
-        if 11 < 3:
-            # override settings if needed...
-            self.reference_algorithm_filename = 'best2018-bbob-constrained.tar.gz' # TODO: implement
-            self.reference_algorithm_displayname = 'best 2018'  # TODO: should be read in from data set in reference_algorithm_filename
+            if 'target_values' in key or 'targetsOfInterest' in key:
+                self.instantiate_attributes(target_values, [key])
+
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
@@ -293,12 +320,17 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
     def __init__(self, target_values):
         super(GECCOBBOBNoisyTestbed, self).__init__(target_values)
 
-        for key, val in GECCOBBOBNoisyTestbed.settings.items():
-            setattr(self, key, val)
         if 11 < 3:
             # override settings if needed...
-            self.reference_algorithm_filename = 'best09-16-bbob-noisy.tar.gz'
-            self.reference_algorithm_displayname = 'best 2009--16'  # TODO: should be read in from data set in reference_algorithm_filename
+            self.settings.reference_algorithm_filename = 'best09-16-bbob-noisy.tar.gz'
+            self.settings.reference_algorithm_displayname = 'best 2009--16'  # TODO: should be read in from data set in reference_algorithm_filename
+
+        for key, val in GECCOBBOBNoisyTestbed.settings.items():
+            setattr(self, key, val)
+            if 'target_values' in key or 'targetsOfInterest' in key:
+                self.instantiate_attributes(target_values, [key])
+
+
 
 
 class GECCOBiObjBBOBTestbed(Testbed):
@@ -382,13 +414,18 @@ class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
 
     def __init__(self, targetValues):        
         super(GECCOBiObjExtBBOBTestbed, self).__init__(targetValues)
-        
-        for key, val in GECCOBiObjExtBBOBTestbed.settings.items():
-            setattr(self, key, val)
-            
+
         if 11 < 3:
             # override settings if needed...
-            self.reference_algorithm_filename = 'refalgs/best2017-bbob-biobj-ext.tar.gz'
-            self.reference_algorithm_displayname = 'best 2017'  # TODO: should be read in from data set in reference_algorithm_filename
-            self.short_names = get_short_names(self.shortinfo_filename)
-            self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+            self.settings.reference_algorithm_filename = 'refalgs/best2017-bbob-biobj-ext.tar.gz'
+            self.settings.reference_algorithm_displayname = 'best 2017'  # TODO: should be read in from data set in reference_algorithm_filename
+            self.settings.short_names = get_short_names(self.shortinfo_filename)
+            self.settings.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+
+        for key, val in GECCOBiObjExtBBOBTestbed.settings.items():
+            setattr(self, key, val)
+            if 'target_values' in key or 'targetsOfInterest' in key:
+                self.instantiate_attributes(targetValues, [key])
+
+
+
