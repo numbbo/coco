@@ -132,7 +132,7 @@ def main(argv=None):
                 # make sure that everything is copied:
                 newline = line
                 # check if something needs to be changed:
-                if line.find('algId') >= 0 or line.find('algorithm') >= 0:
+                if line.find('algId =') >= 0 or line.find('algorithm =') >= 0:
                     s = line.split(', ')
                     for i, word in enumerate(s):
                         if word.find('algId') >= 0:
@@ -141,7 +141,11 @@ def main(argv=None):
                         elif word.find('algorithm') >= 0:
                             # replace algId:
                             s[i] = "algorithm = '" + algId + "'"
-                    newline = ", ".join(s)
+                    if len(s) == i+1:
+                        # algId or algorithm last entry in this line
+                        newline = ", ".join(s) + "\n"
+                    else:
+                        newline = ", ".join(s)
                 else:
                     s = line.split()
                     if s[0] == '%':
