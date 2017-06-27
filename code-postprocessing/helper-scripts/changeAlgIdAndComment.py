@@ -138,14 +138,17 @@ def main(argv=None):
                         if word.find('algId') >= 0:
                             # replace algId:
                             s[i] = "algId = '" + algId + "'"
+                            if len(s) == i+1:
+                                # algId or algorithm last entry in this line
+                                s[i] = s[i] + "\n"
                         elif word.find('algorithm') >= 0:
                             # replace algId:
                             s[i] = "algorithm = '" + algId + "'"
-                    if len(s) == i+1:
-                        # algId or algorithm last entry in this line
-                        newline = ", ".join(s) + "\n"
-                    else:
-                        newline = ", ".join(s)
+                            if len(s) == i+1:
+                                # algId or algorithm last entry in this line
+                                s[i] = s[i] + "\n"
+                    newline = ", ".join(s)
+
                 else:
                     s = line.split()
                     if s[0] == '%':
