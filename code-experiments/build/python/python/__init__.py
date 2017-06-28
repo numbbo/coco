@@ -79,7 +79,7 @@ class Suite(_Suite):
     >>> observer = Observer("bbob",
     ...              "result_folder: %s_on_%s" % (solver.__name__, "bbob2009"))
     >>> for fun in suite:
-    ...     if fun.dimension > 10:
+    ...     if fun.dimension >= 10:
     ...         break
     ...     print('Current problem index = %d' % fun.index)
     ...     fun.observe_with(observer)
