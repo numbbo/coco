@@ -89,9 +89,6 @@ def main(argv=None):
             graphs figures, run length distribution figures or the
             comparison tables scatter plot figures only. Any combination
             of these options results in no output.
-        --conv
-            if this option is chosen, additionally convergence
-            plots for each function and algorithm are generated.
         --no-rld-single-fcts
             do not generate runlength distribution figures for each
             single function.
@@ -179,8 +176,6 @@ def main(argv=None):
                 genericsettings.isNoiseFree = True
             elif o == "--settings":
                 genericsettings.inputsettings = a
-            elif o == "--conv":
-                genericsettings.isConv = True
             elif o == "--no-rld-single-fcts":
                 genericsettings.isRldOnSingleFcts = False
             elif o == "--runlength-based":

@@ -204,11 +204,11 @@ def main(arguments):
         delete_files()
 
         t0 = time.time()
-        result = os.system(python + command + '--conv' +
+        result = os.system(python + command +
                            join_path(data_path, 'SMAC-BBOB_hutter_noiseless.tgz') +
                            join_path(data_path, 'lmm-CMA-ES_auger_noiseless.tgz'))
         print('**  subtest 4 finished in ', time.time() - t0, ' seconds')
-        assert result == 0, 'Test failed: rungeneric on two algorithms with option --conv.'
+        assert result == 0, 'Test failed: rungeneric on two algorithms.'
         run_latex_template("templateBBOBcmp.tex", run_all_tests)
         delete_files()
 
