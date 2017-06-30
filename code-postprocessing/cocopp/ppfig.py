@@ -148,14 +148,14 @@ def save_index_html_file(filename):
 
 def get_home_link(html_page):
     home_link = '<H3><a href="%s%s.html">Home</a></H3>'
-    if html_page in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
+    if html_page in (HtmlPage.ONE, HtmlPage.MANY):
         return home_link % ('../', genericsettings.index_html_file_name)
 
     return ''
 
 
 def get_convergence_link(html_page, current_dir):
-    if html_page in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
+    if html_page == HtmlPage.ONE:
         return add_link(current_dir, None, genericsettings.ppconv_file_name + '.html',
                         convergence_plots_header, ignore_file_exists=genericsettings.isConv)
 
@@ -167,7 +167,7 @@ def getRldLink(html_page, current_dir):
     folder = 'pprldmany-single-functions'
 
     ignore_file_exists = genericsettings.isRldOnSingleFcts
-    if html_page in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
+    if html_page in (HtmlPage.ONE, HtmlPage.MANY):
         file_name = '%s.html' % genericsettings.pprldmany_file_name
         links += add_link(current_dir, folder, file_name,
                           pprldmany_per_func_dim_header,
@@ -179,7 +179,7 @@ def getRldLink(html_page, current_dir):
                               pprldmany_per_group_dim_header,
                               ignore_file_exists=ignore_file_exists)
 
-        if html_page in (HtmlPage.TWO, HtmlPage.MANY):
+        if html_page == HtmlPage.MANY:
             file_name = '%s.html' % genericsettings.pprldmany_file_name
             links += add_link(current_dir, '', file_name,
                               pprldmany_per_group_dim_header,
@@ -189,7 +189,7 @@ def getRldLink(html_page, current_dir):
 
 
 def get_parent_link(html_page, parent_file_name):
-    if parent_file_name and html_page not in (HtmlPage.ONE, HtmlPage.TWO, HtmlPage.MANY):
+    if parent_file_name and html_page not in (HtmlPage.ONE, HtmlPage.MANY):
         return '<H3><a href="%s.html">Overview page</a></H3>' % parent_file_name
 
     return ''
@@ -266,6 +266,9 @@ def save_single_functions_html(filename,
             f.write(
                 '<H3><a href="%s.html">Tables for selected targets</a></H3>\n'
                 % genericsettings.pptables_file_name)
+            f.write(add_link(current_dir, None, genericsettings.ppscatter_file_name + '.html', 'Scatter plots'))
+            f.write(add_link(current_dir, None, genericsettings.pprldistr2_file_name + '.html',
+                    'Runtime distribution for selected targets and f-distributions'))
 
         elif htmlPage is HtmlPage.PPSCATTER:
             current_header = 'Scatter plots per function'

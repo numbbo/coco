@@ -17,15 +17,14 @@ import os
 import sys
 import getopt
 import warnings
-import matplotlib
 
 from . import genericsettings, ppfig, testbedsettings, findfiles
-from . import pproc, pptex
+from . import pproc, pptex, pprldistr
 from .pproc import DataSetList, processInputArgs
 from .ppfig import Usage
 from .toolsdivers import prepend_to_file, strip_pathname1, str_to_latex, replace_in_file
 from .compall import pprldmany, pptables, ppfigs
-from . import ppconverrorbars
+from .comp2 import pprldistr2, ppscatter
 
 import matplotlib.pyplot as plt
 from .toolsdivers import print_done, get_version_label
@@ -115,9 +114,6 @@ def main(argv=None):
             comparison TeX tables, the run lengths distributions or the
             figures of aRT/dim vs dim only. A combination of any two or
             more of these options results in no output.
-        --conv
-            if this option is chosen, additionally convergence
-            plots for each function and algorithm are generated.
         --no-rld-single-fcts
             do not generate runlength distribution figures for each
             single function.
@@ -196,18 +192,19 @@ def main(argv=None):
             elif o == "--tab-only":
                 genericsettings.isRLDistr = False
                 genericsettings.isFig = False
+                genericsettings.isScatter = False
             elif o == "--no-rld-single-fcts":
                 genericsettings.isRldOnSingleFcts = False
             elif o == "--rld-only":
                 genericsettings.isTab = False
                 genericsettings.isFig = False
+                genericsettings.isScatter = False
             elif o == "--fig-only":
                 genericsettings.isRLDistr = False
                 genericsettings.isTab = False
+                genericsettings.isScatter = False
             elif o == "--settings":
                 genericsettings.inputsettings = a
-            elif o == "--conv":
-                genericsettings.isConv = True
             elif o == "--runlength-based":
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
@@ -257,7 +254,7 @@ def main(argv=None):
         return 2
 
     if 1 < 3:
-        print("\nPost-processing (3+): will generate output " +
+        print("\nPost-processing (2+): will generate output " +
               "data in folder %s" % outputdir)
         print("  this might take several minutes.")
 
@@ -349,6 +346,114 @@ def main(argv=None):
         if genericsettings.isRLDistr:
             config.config(dsList[0].testbed_name)
 
+            if len(genericsettings.foreground_algorithm_list) == 2:
+                print("ECDF runlength ratio graphs...")
+
+                ds_list0 = dictAlg[sortedAlgs[0]]
+                dict_fun0 = ds_list0.dictByNoise()
+                ds_list1 = dictAlg[sortedAlgs[1]]
+                dict_fun1 = ds_list1.dictByNoise()
+
+                if len(dict_fun0) > 1 or len(dict_fun1) > 1:
+                    warnings.warn('Data for functions from both the noisy and ' +
+                                  'non-noisy testbeds have been found. Their ' +
+                                  'results will be mixed in the "all functions" ' +
+                                  'ECDF figures.')
+
+                algorithm_name0 = str_to_latex(strip_pathname1(sortedAlgs[0]))
+                algorithm_name1 = str_to_latex(strip_pathname1(sortedAlgs[1]))
+
+                algorithm_name = "%s vs %s" % (algorithm_name1, algorithm_name0)
+                ppfig.save_single_functions_html(
+                    os.path.join(many_algorithms_output, genericsettings.pprldistr2_file_name),
+                    algname=algorithm_name,
+                    htmlPage=ppfig.HtmlPage.PPRLDISTR2,
+                    function_groups=ds_list0.getFuncGroups(),
+                    parentFileName=genericsettings.many_algorithm_file_name
+                )
+
+                # ECDFs of aRT ratios
+                dic_dim0 = ds_list0.dictByDim()
+                dic_dim1 = ds_list1.dictByDim()
+                for dim in set(dic_dim0.keys()) & set(dic_dim1.keys()):
+                    if dim in inset.rldDimsOfInterest:
+                        # ECDF for all functions altogether
+                        try:
+                            pprldistr2.main(dic_dim0[dim], dic_dim1[dim], dim,
+                                            testbedsettings.current_testbed.rldValsOfInterest,
+                                            many_algorithms_output,
+                                            '%02dD_all' % dim)
+                        except KeyError:
+                            warnings.warn('Could not find some data in %d-D.' % dim)
+                            continue
+
+                        # ECDFs per function groups
+                        dict_fun_group0 = dic_dim0[dim].dictByFuncGroup()
+                        dict_fun_group1 = dic_dim1[dim].dictByFuncGroup()
+
+                        for fGroup in set(dict_fun_group0.keys()) & set(dict_fun_group1.keys()):
+                            pprldistr2.main(dict_fun_group1[fGroup], dict_fun_group0[fGroup], dim,
+                                            testbedsettings.current_testbed.rldValsOfInterest,
+                                            many_algorithms_output,
+                                            '%02dD_%s' % (dim, fGroup))
+
+                        # ECDFs per noise groups
+                        dict_fun0 = dic_dim0[dim].dictByNoise()
+                        dict_fun1 = dic_dim1[dim].dictByNoise()
+
+                        for fGroup in set(dict_fun0.keys()) & set(dict_fun1.keys()):
+                            pprldistr2.main(dict_fun1[fGroup], dict_fun0[fGroup], dim,
+                                            testbedsettings.current_testbed.rldValsOfInterest,
+                                            many_algorithms_output,
+                                            '%02dD_%s' % (dim, fGroup))
+
+                prepend_to_file(latex_commands_file,
+                                ['\\providecommand{\\bbobpprldistrlegendtwo}[1]{',
+                                 pprldistr.caption_two(),  # depends on the config
+                                 # setting, should depend
+                                 # on maxfevals
+                                 '}'
+                                 ])
+                print_done()
+
+                if testbedsettings.current_testbed not in [testbedsettings.GECCOBiObjBBOBTestbed,
+                                                           testbedsettings.GECCOBiObjExtBBOBTestbed]:
+                    print("ECDF runlength graphs...")
+                    for dim in set(dic_dim0.keys()) & set(dic_dim1.keys()):
+                        pprldistr.fmax = None  # Resetting the max final value
+                        pprldistr.evalfmax = None  # Resetting the max #fevalsfactor
+                        # ECDFs of all functions altogether
+                        if dim in inset.rldDimsOfInterest:
+                            try:
+                                pprldistr.comp(dic_dim1[dim], dic_dim0[dim],
+                                               testbedsettings.current_testbed.rldValsOfInterest,
+                                               # TODO: let rldVals... possibly be RL-based targets
+                                               True,
+                                               many_algorithms_output, 'all')
+                            except KeyError:
+                                warnings.warn('Could not find some data in %d-D.' % dim)
+                                continue
+
+                            # ECDFs per function groups
+                            dict_fun_group0 = dic_dim0[dim].dictByFuncGroup()
+                            dict_fun_group1 = dic_dim1[dim].dictByFuncGroup()
+
+                            for fGroup in set(dict_fun_group0.keys()) & set(dict_fun_group1.keys()):
+                                pprldistr.comp(dict_fun_group1[fGroup], dict_fun_group0[fGroup],
+                                               testbedsettings.current_testbed.rldValsOfInterest, True,
+                                               many_algorithms_output,
+                                               '%s' % fGroup)
+
+                            # ECDFs per noise groups
+                            dict_fun0 = dic_dim0[dim].dictByNoise()
+                            dict_fun1 = dic_dim1[dim].dictByNoise()
+                            for fGroup in set(dict_fun0.keys()) & set(dict_fun1.keys()):
+                                pprldistr.comp(dict_fun1[fGroup], dict_fun0[fGroup],
+                                               testbedsettings.current_testbed.rldValsOfInterest, True,
+                                               many_algorithms_output,
+                                               '%s' % fGroup)
+                    print_done()  # of "ECDF runlength graphs..."
+
             # ECDFs per noise groups
             print("ECDF graphs per noise group...")
             grouped_ecdf_graphs(pproc.dictAlgByNoi(dictAlg),
@@ -424,6 +529,38 @@ def main(argv=None):
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==
                                          testbedsettings.testbed_name_bi) else True),
                         latex_commands_file)
+            print_done()
+
+        if genericsettings.isScatter and len(genericsettings.foreground_algorithm_list) == 2:
+            print("Scatter plots...")
+
+            ds_list0 = dictAlg[sortedAlgs[0]]
+            algorithm_name0 = str_to_latex(strip_pathname1(sortedAlgs[0]))
+            ds_list1 = dictAlg[sortedAlgs[1]]
+            algorithm_name1 = str_to_latex(strip_pathname1(sortedAlgs[1]))
+
+            algorithm_name = "%s vs %s" % (algorithm_name1, algorithm_name0)
+            ppfig.save_single_functions_html(
+                os.path.join(many_algorithms_output, genericsettings.ppscatter_file_name),
+                algname=algorithm_name,
+                htmlPage=ppfig.HtmlPage.PPSCATTER,
+                function_groups=ds_list0.getFuncGroups(),
+                parentFileName=genericsettings.many_algorithm_file_name
+            )
+
+            html_file_name = os.path.join(many_algorithms_output, genericsettings.ppscatter_file_name + '.html')
+
+            ppscatter.main(ds_list1, ds_list0, many_algorithms_output, inset)
+            prepend_to_file(latex_commands_file,
+                            ['\\providecommand{\\bbobppscatterlegend}[1]{',
+                             ppscatter.figure_caption(),
+                             '}'
+                             ])
+
+            replace_in_file(html_file_name, '##bbobppscatterlegend##', ppscatter.figure_caption(True))
+            for i, alg in enumerate(args):
+                replace_in_file(html_file_name, 'algorithm' + pptex.numtotext(i), str_to_latex(strip_pathname1(alg)))
+
             print_done()
 
         ppfig.save_single_functions_html(
