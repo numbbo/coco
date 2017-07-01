@@ -1095,7 +1095,9 @@ class DataSet(object):
                 and (instancedict != genericsettings.instancesOfInterest2013)
                 and (instancedict != genericsettings.instancesOfInterest2015)
                 and (instancedict != genericsettings.instancesOfInterest2016)
-                and (instancedict != genericsettings.instancesOfInterestBiobj2016)):
+                and (instancedict != genericsettings.instancesOfInterest2017)
+                and (instancedict != genericsettings.instancesOfInterestBiobj2016)
+                and (instancedict != genericsettings.instancesOfInterestBiobj2017)):
             is_consistent = False
             warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, 2015 or 2016')
         return is_consistent

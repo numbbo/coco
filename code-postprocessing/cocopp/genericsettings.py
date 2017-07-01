@@ -69,14 +69,20 @@ instancesOfInterest2015 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 41: 1, 42: 1, 43: 1, 44
                            45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1}  # 2015 instances
 instancesOfInterest2016 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 51: 1, 52: 1, 53: 1, 54: 1,
                            55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1}  # 2016 instances
+instancesOfInterest2017 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 61: 1, 62: 1, 63: 1, 64: 1,
+                           65: 1, 66: 1, 67: 1, 68: 1, 69: 1, 70: 1}  # 2016 instances
 instancesOfInterestBiobj2016 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}  # bi-objective 2016 instances
+instancesOfInterestBiobj2017 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
+                                10: 1, 11: 1, 12: 1, 13: 1, 14:1, 15:1}  # bi-objective 2017 instances
 instancesOfInterest = [instancesOfInterest2009,
                        instancesOfInterest2010,
                        instancesOfInterest2012,
                        instancesOfInterest2013,
                        instancesOfInterest2015,
                        instancesOfInterest2016,
-                       instancesOfInterestBiobj2016]
+                       instancesOfInterest2017,
+                       instancesOfInterestBiobj2016,
+                       instancesOfInterestBiobj2017]
 
 line_styles = [  # used by ppfigs and pprlmany  
     {'marker': 'o', 'markersize': 31, 'linestyle': '-', 'color': '#000080'},  # 'NavyBlue'
@@ -206,7 +212,7 @@ if 11 < 3:  # in case using my own linestyles
         {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'}
     ]
 
-minmax_algorithm_fontsize = [10, 15]  # depending on the number of algorithms
+minmax_algorithm_fontsize = [9, 14]  # depending on the number of algorithms
 
 rcaxeslarger = {"labelsize": 24, "titlesize": 28.8}
 rcticklarger = {"labelsize": 24}
