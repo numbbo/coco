@@ -370,7 +370,8 @@ also report back a missing name to https://github.com/numbbo/coco/issues
 
     def free(self):
         """free underlying C structures"""
-        self.__dealloc__()
+        if self.suite:  # for some reason __dealloc__ cannot be called here
+            coco_suite_free(self.suite)
         self.suite = NULL
         self.initialized = False  # not (yet) visible from outside
     def __dealloc__(self):
