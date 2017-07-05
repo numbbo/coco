@@ -129,10 +129,10 @@ def run(directory, args, verbose=False):
 def python(directory, args, env=None, verbose=False):
     print("PYTHON\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
-    if os.environ.get('PYTHON') is not None:
+    if env is not None:
         ## Use the Python interpreter specified in the PYTHON
         ## environment variable.
-        full_command = [os.environ['PYTHON']]
+        full_command = [env]
     else:
         ## No interpreter specified. Use the Python interpreter that
         ## is used to execute this script.

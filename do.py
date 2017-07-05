@@ -279,13 +279,13 @@ def _prep_python():
     #     run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
 
 
-def build_python():
+def build_python(env=None):
     _prep_python()
     ## Force distutils to use Cython
     # os.environ['USE_CYTHON'] = 'true'
     # python('code-experiments/build/python', ['setup.py', 'sdist'])
     # python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'])
-    python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'])
+    python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'], env=env)
     # os.environ.pop('USE_CYTHON')
 
 
@@ -333,10 +333,11 @@ def run_sandbox_python(directory, script_filename=
         shutil.rmtree(python_temp_home)
 
 
-def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']],)):
+def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']],), env=None):
     _prep_python()
     python('code-experiments/build/python',
            ['setup.py', 'check', '--metadata', '--strict'],
+           env=env,
            verbose=_verbosity)
     ## Now install into a temporary location, run test and cleanup
     python_temp_home = tempfile.mkdtemp(prefix="coco")
@@ -351,9 +352,10 @@ def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']
         os.environ['USE_CYTHON'] = 'true'
         python('code-experiments/build/python',
                ['setup.py', 'install', '--home', python_temp_home],
+               env=env,
                verbose=_verbosity)
         for folder, more_args in args:
-            python(folder, more_args, verbose=_verbosity)
+            python(folder, more_args, env=env, verbose=_verbosity)
         # python('code-experiments/build/python',
         #        ['coco_test.py', 'bbob2009_testcases.txt'], verbose=_verbosity)
         # python('code-experiments/build/python',
@@ -369,29 +371,21 @@ def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']
 ################################################################################
 ## Python 2
 def build_python2():
-    os.environ['PYTHON'] = 'python2.7'
-    build_python()
-    os.environ.pop('PYTHON')
+    build_python(env='python2.7')
 
 
 def test_python2():
-    os.environ['PYTHON'] = 'python2.7'
-    test_python()
-    os.environ.pop('PYTHON')
+    test_python(env='python2.7')
 
 
 ################################################################################
 ## Python 3
 def build_python3():
-    os.environ['PYTHON'] = 'python3'
-    build_python()
-    os.environ.pop('PYTHON')
+    build_python(env='python3')
 
 
 def test_python3():
-    os.environ['PYTHON'] = 'python3'
-    test_python()
-    os.environ.pop('PYTHON')
+    test_python(env='python3')
 
 
 ################################################################################
