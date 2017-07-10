@@ -296,7 +296,7 @@ def run_python(test=False):
     build_python()
     try:
         if test:
-            run(os.path.join('code-experiments', 'build', 'python'), ['python', 'coco_test.py'])
+            python(os.path.join('code-experiments', 'build', 'python'), ['coco_test.py'])
         python(os.path.join('code-experiments', 'build', 'python'),
                ['example_experiment.py'])
     except subprocess.CalledProcessError:
