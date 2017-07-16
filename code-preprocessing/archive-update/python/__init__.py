@@ -5,4 +5,7 @@ from .archive_load_data import get_file_name_list, create_path, remove_empty_fil
 from .archive_load_data import parse_problem_instance_file_name, parse_archive_file_name, parse_old_arhive_file_name
 from .archive_load_data import get_instances, get_archive_file_info, read_best_values, write_best_values, parse_range
 
-del absolute_import, division, print_function, unicode_literals
+import pkg_resources
+__version__ = pkg_resources.require('cocoprep')[0].version
+
+del absolute_import, division, print_function, unicode_literals, pkg_resources
