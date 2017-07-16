@@ -72,7 +72,7 @@ def merge_archives(input_path, output_path, functions, instances, dimensions, cr
         if problem_instance_info is None:
             break
 
-        old_level = log_level('info')
+        old_level = log_level('warning')
 
         # Create an archive for this problem instance
         archive = Archive(problem_instance_info.suite_name, problem_instance_info.function,
