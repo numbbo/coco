@@ -458,7 +458,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             if isinstance(targets_of_interest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
                 counter = 1
-                for i in xrange(len(refalgert[:-1])):
+                for i in range(len(refalgert[:-1])):
                     temp = "%.1e" % targets_of_interest((df[1], df[0]))[i]
                     if temp[-2] == "0":
                         temp = temp[:-2] + temp[-1]
@@ -621,7 +621,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                             tmpHtml += ' (%s)' % tmpdisp
                         curline.append(r'\multicolumn{2}{%s}{%s%s}' % (alignment, tmp, str_significance_subsup))
                         if (numpy.isinf(sortKey)):
-                            sortKey = sys.maxint
+                            sortKey = sys.maxsize
                         curlineHtml.append('<td sorttable_customkey=\"%f\">%s%s</td>' % (
                         sortKey, tmpHtml, str_significance_subsup_html))
                     else:

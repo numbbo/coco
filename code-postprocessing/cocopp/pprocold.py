@@ -284,7 +284,7 @@ def split(dataFiles, dim=None):
                 warnings.warn('Incomplete line %s in  ' % (line) +
                               'data file %s: ' % (dataFiles))
                 continue
-            for id in xrange(len(data)):
+            for id in range(len(data)):
                 if data[id] in ('Inf', 'inf'):
                     data[id] = numpy.inf
                 elif data[id] in ('-Inf', '-inf'):

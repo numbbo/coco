@@ -240,7 +240,7 @@ def unif(N, inseed):
 
     rgrand = 32 * [0.]
     aktseed = inseed
-    for i in xrange(39, -1, -1):
+    for i in range(39, -1, -1):
         tmp = floor(aktseed/127773.)
         aktseed = 16807. * (aktseed - tmp * 127773.) - 2836. * tmp
         if aktseed < 0:
@@ -251,7 +251,7 @@ def unif(N, inseed):
 
     # sample numbers
     r = int(N) * [0.]
-    for i in xrange(int(N)):
+    for i in range(int(N)):
         tmp = floor(aktseed/127773.)
         aktseed = 16807. * (aktseed - tmp * 127773.) - 2836. * tmp
         if aktseed < 0:

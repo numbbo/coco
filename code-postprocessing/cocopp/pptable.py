@@ -173,7 +173,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                 refalgdata = refalgentry.detERT(targetsOfInterest((f,d)))
                 if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                     #write ftarget:fevals
-                    for i in xrange(len(refalgdata[:-1])):
+                    for i in range(len(refalgdata[:-1])):
                         temp = "%.1e" % targetsOfInterest((f,d))[i]
                         if temp[-2] == "0":
                             temp = temp[:-2] + temp[-1]

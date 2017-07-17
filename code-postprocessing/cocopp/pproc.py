@@ -68,7 +68,7 @@ def _DataSet_complement_data(self, step=10**0.2, final_target=1e-8):
     i = 0
     newdat = []
     self.evals = np.array(self.evals, copy=False)
-    for i in xrange(len(self.evals) - 1):
+    for i in range(len(self.evals) - 1):
         newdat.append(self.evals[i])
         target = self.evals[i][0] / step
         while target >= final_target and target > self.evals[i+1][0] and target / self.evals[i+1][0] - 1 > 1e-9:
@@ -383,7 +383,7 @@ class RunlengthBasedTargetValues(TargetValues):
                 print(fun_dim, ds.ert[0], 'ert[0] != 1 in TargetValues.__call__')
             try: 
                 # check whether there are gaps between the targets 
-                assert all(toolsdivers.equals_approximately(10**0.2, ds.target[i] / ds.target[i+1]) for i in xrange(end-1))
+                assert all(toolsdivers.equals_approximately(10**0.2, ds.target[i] / ds.target[i+1]) for i in range(end-1))
                 # if this fails, we need to insert the missing target values 
             except AssertionError:
                 if 1 < 3:
@@ -1188,7 +1188,7 @@ class DataSet(object):
                 indices = randintrest(0, len(evals), len(failing))
                 sums[failing] += evals[indices]
                 # keep failing indices
-                failing = [failing[i] for i in xrange(len(failing))
+                failing = [failing[i] for i in range(len(failing))
                             if indices[i] >= nsucc]
             res += [sorted(sums)]
 
@@ -2080,7 +2080,7 @@ class DataSetList(list):
             sys.stdout.write('\n')
 
             maxevals = []
-            for i in xrange(len(dimensions)):
+            for i in range(len(dimensions)):
                 maxeval = []
                 for d in dictDim[dimensions[i]]:
                     maxeval = int(max((d.mMaxEvals(), maxeval)))
@@ -2362,13 +2362,13 @@ class DataSetList(list):
         except TypeError:
             target_values = target_values
         best_lines = len(target_values) * [[]]  # caveat: this is (can be?) the same instance of []
-        best_dicts = [{} for i in xrange(len(target_values))]
+        best_dicts = [{} for i in range(len(target_values))]
         for ds in self:
             if ds.funcId != fct or ds.dim != dim:
                 continue
             current_lines = ds.detEvals(target_values)
             assert len(current_lines) == len(best_lines) == len(target_values)
-            for i in xrange(len(current_lines)):
+            for i in range(len(current_lines)):
                 for j, instance in enumerate(ds.instancenumbers):
                     previous_val = best_dicts[i].setdefault(instance, np.inf)
                     best_dicts[i][instance] = min((previous_val, current_lines[i][j]))
@@ -2378,7 +2378,7 @@ class DataSetList(list):
                                                     len(best_lines[i])))]
         # construct another best line instance-wise
         best_instances_lines = []
-        for i in xrange(len(best_dicts)):
+        for i in range(len(best_dicts)):
             vals = best_dicts[i].values()
             best_instances_lines.append(
                 np.sort(vals)[:np.min((number, len(vals)))])

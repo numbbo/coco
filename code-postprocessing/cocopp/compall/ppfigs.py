@@ -21,7 +21,7 @@ def fix_styles(plotting_styles, line_styles):
     m = len(line_styles)
     while len(line_styles) < len(plotting_styles.algorithm_list):
         line_styles.append(line_styles[len(line_styles) % m])
-    for i in xrange(len(line_styles)):
+    for i in range(len(line_styles)):
         if plotting_styles.in_background:
             line_styles[i].update(plotting_styles.ppfigs_styles)
         else:
@@ -353,7 +353,7 @@ def beautify(legend=False, rightlegend=False):
 
     # quadratic slanted "grid"
     if 1 < 3:
-        for i in xrange(-2, 7, 1 if ymax < 1e5 else 2):
+        for i in range(-2, 7, 1 if ymax < 1e5 else 2):
             plt.plot((0.2, 20000), (10**i, 10**(i + 5)), 'k:',
                      linewidth=0.5)  # grid should be on top
     else:  # to be removed
