@@ -18,8 +18,8 @@ for datapath in datapaths:
 
     for alg in Algs:
         curAlg = Algs[alg].dictByFunc()
-        algname = curAlg[curAlg.keys()[0]][0].algId
-        if not data.has_key(algname):
+        algname = curAlg[list(curAlg.keys())[0]][0].algId
+        if not algname in data:
             data[algname] = {}
         for func in curAlg:
             data[algname][func] = {}

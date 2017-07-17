@@ -4,7 +4,7 @@
 """Various tools. 
 
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import os, time
 import numpy as np
@@ -16,7 +16,7 @@ from . import genericsettings, testbedsettings
 
 def print_done(message='  done'):
     """prints a message with time stamp"""
-    print message, '(' + time.asctime() + ').'
+    print(message, '(' + time.asctime() + ').')
 
 def equals_approximately(a, b, eps=1e-12):
     if a < 0:
@@ -43,7 +43,7 @@ def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
     for i, line in enumerate(lines_to_append):
         f.write(line)
         if i > maxlines:
-            print warn_message
+            print(warn_message)
             break
     f.close()
         
@@ -54,7 +54,7 @@ def replace_in_file(filename, old_text, new_text):
     try:
         lines = list(open(filename, 'r'))
     except IOError:
-        print 'File %s does not exist.' % filename
+        print('File %s does not exist.' % filename)
     
     if lines:    
         f = open(filename, 'w')
@@ -116,7 +116,7 @@ def num2str(val, significant_digits=2, force_rounding=False,
     ``remove_trailing_zeros`` removes zeros, if and only if the value is exactly. 
      
     >>> from cocopp import toolsdivers as td
-    >>> print [td.num2str(val) for val in [12345, 1234.5, 123.45, 12.345, 1.2345, .12345, .012345, .0012345]]
+    >>> print([td.num2str(val) for val in [12345, 1234.5, 123.45, 12.345, 1.2345, .12345, .012345, .0012345]])
     ['12345', '1234', '123', '12', '1.2', '0.12', '0.012', '1.2e-3']
     
     """
@@ -144,7 +144,7 @@ def num2str(val, significant_digits=2, force_rounding=False,
         while idx1 < len(s) and s[idx1] in ('-', '0', '.'):
             idx1 += 1  # find index of first significant number
         idx2 = idx1 + significant_digits + (s.find('.') > idx1)
-        # print val, val_rounded, s, len(s), idx1, idx2
+        # print(val, val_rounded, s, len(s), idx1, idx2)
         # pad some zeros in the end, in case
         if val != val_rounded:
             if len(s) < idx2:
@@ -172,7 +172,7 @@ def num2str(val, significant_digits=2, force_rounding=False,
         s = s[:-1]
     s_exp = ('-' if is_negative else '') + s 
     
-    # print s_float, s_exp
+    # print(s_float, s_exp)
     
     # now return the better (most of the time the shorter) representation
     if (len(s_exp) < len(s_float) or 
