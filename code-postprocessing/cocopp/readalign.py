@@ -17,7 +17,7 @@ the experimental data.
 
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import os, sys
 import numpy
@@ -26,6 +26,7 @@ import warnings
 from . import genericsettings
 
 from pdb import set_trace
+from six import string_types, advance_iterator
 
 # GLOBAL VARIABLES
 idxEvals = 0  # index of the column where to find the evaluations
@@ -110,13 +111,13 @@ class MultiReader(list):
 
         def __init__(self, data, isHArray=False):
             if len(data) == 0:
-                raise ValueError, 'Empty data array.'
+                raise ValueError('Empty data array.')
             self.data = numpy.array(data)
             self.it = self.data.__iter__()
             self.isNearlyFinished = False
             self.isFinished = False
             self.currentLine = None
-            self.nextLine = self.it.next()
+            self.nextLine = advance_iterator(self.it)
             if isHArray:
                 self.idxEvals = range(1, numpy.shape(data)[1])
             else:
@@ -130,7 +131,7 @@ class MultiReader(list):
                     self.currentLine = self.nextLine.copy()
                     # Update nextLine
                     try:
-                        self.nextLine = self.it.next()
+                        self.nextLine = advance_iterator(self.it)
                     except StopIteration:
                         self.isNearlyFinished = True
                 else:
@@ -249,7 +250,7 @@ class HMultiReader(MultiReader):
 
         # This should not happen
         if not fvalues:
-            raise ValueError, 'Value %g is not reached.'
+            raise ValueError('Value %g is not reached.')
 
         if max(fvalues) <= 0.:
             if currentValue > 0.:
@@ -473,7 +474,7 @@ def split(dataFiles, idx_to_load=None, dim=None):
                 warnings.warn('Incomplete line %s in  ' % line +
                               'data file %s: ' % fil)
                 continue
-            for index in xrange(len(data)):
+            for index in range(len(data)):
                 if data[index] in ('Inf', 'inf'):
                     data[index] = numpy.inf
                 elif data[index] in ('-Inf', '-inf'):

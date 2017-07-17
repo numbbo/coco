@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """Creates aRTs and convergence figures for multiple algorithms."""
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import os
 import matplotlib.pyplot as plt
 import numpy
@@ -634,7 +634,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
 
         if genericsettings.verbose:
-            print 'Wrote commands and legend to %s' % filename
+            print('Wrote commands and legend to %s' % filename)
 
         # this is obsolete (however check templates)
         filename = os.path.join(output_dir, 'ppfigs.tex')
@@ -649,7 +649,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
             f.write((', ' if i > 0 else '') + '%s:%s' % (symb, writeLabels(sorted_algorithms[i])))
         f.close()    
         if genericsettings.verbose:
-            print '(obsolete) Wrote legend in %s' % filename
+            print('(obsolete) Wrote legend in %s' % filename)
     except IOError:
         raise
 

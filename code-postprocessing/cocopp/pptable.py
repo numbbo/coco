@@ -21,7 +21,7 @@ p = 0.05 or p = 1e-k where k > 1 is the number following the
 functions.
 
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import os
 import warnings
@@ -434,7 +434,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                 outfile.write(line)
 
         if genericsettings.verbose:
-            print "Table written in %s" % output_file
+            print("Table written in %s" % output_file)
 
     if len(dims_of_interest) > 0:
         extraeol = [r'\hline']

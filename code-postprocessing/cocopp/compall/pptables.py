@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""""Routines for the generation of TeX tables."""
-
-from __future__ import absolute_import
+"""Routines for the generation of TeX tables."""
+from __future__ import absolute_import, print_function
 
 import os
 import sys
@@ -321,7 +320,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             # should be strictly 1. TODO: find a way to warn
             # TODO: do this checking before... why wasn't it triggered by ppperprof?
             if len(entries) > 1:
-                print entries
+                print(entries)
                 txt = ("There is more than a single entry associated with "
                        "folder %s on %d-D f%d." % (sorted_algs[n], df[0], df[1]))
                 raise Exception(txt)
@@ -694,7 +693,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 replace_in_file(filename, '??COCOVERSION??', '<br />Data produced with COCO %s' % (get_version_label(None)))
 
             if genericsettings.verbose:
-                print 'Wrote table in %s' % filename
+                print('Wrote table in %s' % filename)
         except:
             raise
         else:

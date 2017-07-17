@@ -154,7 +154,7 @@ def main(argv=None):
         if 11 < 3:
             try:
                 opts, args = getopt.getopt(argv, genericsettings.shortoptlist, genericsettings.longoptlist)
-            except getopt.error, msg:
+            except getopt.error as msg:
                 raise Usage(msg)
 
         if not (args) and not '--help' in argv and not '-h' in argv:
@@ -370,7 +370,7 @@ def main(argv=None):
             replace_in_file(os.path.join(algoutputdir, 'pptable.html'), '??COCOVERSION??',
                             '<br />Data produced with COCO %s' % (get_version_label(None)))
 
-            for noise, sliceNoise in dictNoise.iteritems():
+            for noise, sliceNoise in dictNoise.items():
                 pptable.main(sliceNoise, dims, algoutputdir, latex_commands_file)
             print_done()
 
@@ -395,7 +395,7 @@ def main(argv=None):
                 if len(dictNoise) > 1:
                     pprldistr.main(sliceDim, True, algoutputdir, 'all')
                     
-                for noise, sliceNoise in dictNoise.iteritems():
+                for noise, sliceNoise in dictNoise.items():
                     pprldistr.main(sliceNoise, True, algoutputdir, '%s' % noise)
 
                 dictFG = sliceDim.dictByFuncGroup()
@@ -421,7 +421,7 @@ def main(argv=None):
             
         if genericsettings.isLogLoss:
             print("aRT loss ratio figures and tables...")
-            for ng, sliceNoise in dsList.dictByNoise().iteritems():
+            for ng, sliceNoise in dsList.dictByNoise().items():
                 if ng == 'noiselessall':
                     testbed = 'noiseless'
                 elif ng == 'nzall':
@@ -443,7 +443,7 @@ def main(argv=None):
                     info = '%s' % ng
                     pplogloss.main(sliceDim, CrE, True, algoutputdir, info)
                     pplogloss.generateTable(sliceDim, CrE, algoutputdir, info)
-                    for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().iteritems():
+                    for fGroup, sliceFuncGroup in sliceDim.dictByFuncGroup().items():
                         info = '%s' % fGroup
                         pplogloss.main(sliceFuncGroup, CrE, True,
                                        algoutputdir, info)
@@ -452,7 +452,7 @@ def main(argv=None):
 
         dictFunc = dsList.dictByFunc()
         page_title = 'Benchmarking Results for Algorithm %s on the %s Suite' % \
-                     (dictFunc[dictFunc.keys()[0]][0].algId, dictFunc[dictFunc.keys()[0]][0].get_suite())
+                     (dictFunc[list(dictFunc.keys())[0]][0].algId, dictFunc[list(dictFunc.keys())[0]][0].get_suite())
         ppfig.save_single_functions_html(os.path.join(algoutputdir, genericsettings.single_algorithm_file_name),
                                          page_title,
                                          htmlPage = ppfig.HtmlPage.ONE,

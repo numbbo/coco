@@ -9,7 +9,7 @@ reference (best) aRT value (or the inverse)
 
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import os
 from pdb import set_trace
@@ -21,6 +21,7 @@ except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from matplotlib import mlab as mlab
+from six import advance_iterator
 
 from . import toolsstats, bestalg, testbedsettings, genericsettings, captions
 from .pptex import writeFEvals2
@@ -209,7 +210,7 @@ def generateData(dsList, evals, CrE_A):
 
     refalgentries = bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename)
 
-    for fun, tmpdsList in dsList.dictByFunc().iteritems():
+    for fun, tmpdsList in dsList.dictByFunc().items():
         assert len(tmpdsList) == 1
         entry = tmpdsList[0]
 
@@ -317,7 +318,7 @@ def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
             else:
                 x = [x[:, i] for i in xrange(nc)]
         else:
-            raise ValueError, "input x can have no more than 2 dimensions"
+            raise ValueError("input x can have no more than 2 dimensions")
     if not hasattr(x[0], '__len__'):
         x = [x]
     col = len(x)
@@ -536,7 +537,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default'):
 
     #Set variables
     prcOfInterest = [0, 10, 25, 50, 75, 90]
-    for d, dsdim in dsList.dictByDim().iteritems():
+    for d, dsdim in dsList.dictByDim().items():
         maxevals = []
         funcs = []
         mFE = []
@@ -619,7 +620,7 @@ def generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
             else:
                 ar = ("%1.1e" % j).split('e')
                 tmp.append(ar[0] + 'e' + str(int(ar[1])))
-            # print tmp[-1]
+            # print(tmp[-1])
         res.append(" & ".join(tmp))
 
     # add last line: runlength distribution for which 1e-8 was not reached.
@@ -628,10 +629,10 @@ def generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
     for i in dsList:
         it = reversed(i.evals)
         curline = None
-        nextline = it.next()
+        nextline = advance_iterator(it)
         while nextline[0] <= f_thresh:
             curline = nextline[1:]
-            nextline = it.next()
+            nextline = advance_iterator(it)
         if curline is None:
             tmpdata.extend(i.maxevals)
         else:
@@ -654,7 +655,7 @@ def generateSingleTableTex(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
     f.write(res)
     f.close()
     if genericsettings.verbose:
-        print "Wrote aRT loss ratio table in %s." % filename
+        print("Wrote aRT loss ratio table in %s." % filename)
 
 def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
                             outputdir='.', info='default'):
@@ -695,10 +696,10 @@ def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
     for i in dsList:
         it = reversed(i.evals)
         curline = None
-        nextline = it.next()
+        nextline = advance_iterator(it)
         while nextline[0] <= f_thresh:
             curline = nextline[1:]
-            nextline = it.next()
+            nextline = advance_iterator(it)
         if curline is None:
             tmpdata.extend(i.maxevals)
         else:
@@ -776,7 +777,7 @@ def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
             outfile.write(line)
 
     if genericsettings.verbose:
-        print "Wrote aRT loss ratio table in %s." % filename
+        print("Wrote aRT loss ratio table in %s." % filename)
 
 def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
                    info='default'):
@@ -810,7 +811,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
         evalf = None
 
     # do not aggregate over dimensions
-    for d, dsdim in dsList.dictByDim().iteritems():
+    for d, dsdim in dsList.dictByDim().items():
         maxevals = max(max(i.ert[np.isinf(i.ert) == False]) for i in dsdim)
         EVALS = [2.*d]
         EVALS.extend(10.**(np.arange(1, np.ceil(1e-9 + np.log10(maxevals * 1./d))))*d)

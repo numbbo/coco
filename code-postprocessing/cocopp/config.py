@@ -17,7 +17,7 @@ used by other modules, but does not modify settings of other modules.
 
 import warnings
 import numpy as np
-import ppfigdim
+from . import ppfigdim
 from . import genericsettings, pproc, pprldistr
 from . import testbedsettings as tbs
 from .comp2 import ppfig2, ppscatter

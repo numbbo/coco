@@ -137,7 +137,7 @@ def main(argv=None):
         try:
             opts, args = getopt.getopt(argv, genericsettings.shortoptlist,
                                        genericsettings.longoptlist)
-        except getopt.error, msg:
+        except getopt.error as msg:
             raise Usage(msg)
 
         if not args:
@@ -324,16 +324,16 @@ def main(argv=None):
                 elif noisegrp == 'noiselessall':
                     tmp = 'noiseless'
 
-                if dictFN0.has_key(noisegrp):
+                if noisegrp in dictFN0:
                     tmp2 = sortedAlgs[0]
-                elif dictFN1.has_key(noisegrp):
+                elif noisegrp in dictFN1:
                     tmp2 = sortedAlgs[1]
 
                 if tmp and tmp2:
                     tmpdict.setdefault(tmp2, []).append(tmp)
 
             txt = []
-            for i, j in tmpdict.iteritems():
+            for i, j in tmpdict.items():
                 txt.append('Only input folder %s lists %s data.'
                            % (i, ' and '.join(j)))
             raise Usage('Data Mismatch: \n  ' + ' '.join(txt) + '\nTry using --noise-free or --noisy flags.')
@@ -549,9 +549,9 @@ def main(argv=None):
                             ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
                              pptables.get_table_caption() + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
-            for ng, tmpdictng in dictNoi.iteritems():
+            for ng, tmpdictng in dictNoi.items():
                 dictDim = pproc.dictAlgByDim(tmpdictng)
-                for d, tmpdictdim in sorted(dictDim.iteritems()):
+                for d, tmpdictdim in sorted(dictDim.items()):
                     pptables.main(
                         tmpdictdim,
                         sortedAlgs,
@@ -592,7 +592,7 @@ def main(argv=None):
 
         plt.rcdefaults()
 
-    except Usage, err:
+    except Usage as err:
         print(err.msg, file=sys.stderr)
         print("For help use -h or --help", file=sys.stderr)
         return 2

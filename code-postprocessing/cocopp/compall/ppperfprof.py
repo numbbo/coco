@@ -210,7 +210,7 @@ def main(dictAlg, dsref=None, order=None, targets=defaulttargets, outputdir='',
     :param list order: sorted list of keys to dictAlg for plotting order
 
     """
-    for d, dictalgdim in dictAlg.dictAlgByDim().iteritems():
+    for d, dictalgdim in dictAlg.dictAlgByDim().items():
         plotmultiple(dictalgdim, dsref, targets)
         figureName = os.path.join(outputdir, 'ppperfprof_%02dD_%s' % (d, info))
         save_figure(figureName, verbose=verbose)

@@ -451,7 +451,7 @@ class BBOBFunction(AbstractTestFunction):
         self.dim = None
         self.lastshape = None
         self.param = param
-        for i, v in kwargs.iteritems():
+        for i, v in kwargs.items():
             setattr(self, i, v)
         self._xopt = None
 
@@ -2141,4 +2141,3 @@ def get_param(ifun):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()  # run all doctests in this module
-    
