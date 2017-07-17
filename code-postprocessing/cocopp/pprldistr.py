@@ -40,9 +40,9 @@ CAVEAT: the naming conventions in this module mix up ART (an estimate
 of the expected running length) and run lengths.
 
 """
-from __future__ import absolute_import
-
+from __future__ import absolute_import, print_function
 import os
+import sys
 import warnings # I don't know what I am doing here
 import pickle, gzip
 import matplotlib.pyplot as plt
@@ -111,11 +111,13 @@ def load_previous_data(filename=previous_data_filename, force=False):
     try:
         # cocofy(previous_data_filename)
         f = gzip.open(previous_data_filename, 'r')
+        if sys.version_info > (3, 0):
+            return pickle.load(f, encoding='latin1')
         return pickle.load(f)
-    except IOError, (errno, strerror):
-        print "I/O error(%s): %s" % (errno, strerror)
+    except IOError as e:
+        print("I/O error(%s): %s" % (e.errno, e.strerror))
         previous_algorithm_data_found = False
-        print 'Could not find file: ', previous_data_filename
+        print('Could not find file: ', previous_data_filename)
     else:
         f.close()
     return None
@@ -125,10 +127,12 @@ def load_previous_RLBdata(filename=previous_RLBdata_filename):
         return previous_RLBdata_dict
     try:
         f = gzip.open(previous_RLBdata_filename, 'r')
+        if sys.version_info > (3, 0):
+            return pickle.load(f, encoding='latin1')
         return pickle.load(f)
-    except IOError, (errno, strerror):
-        print "I/O error(%s): %s" % (errno, strerror)
-        print 'Could not find file: ', previous_RLBdata_filename
+    except IOError as e:
+        print("I/O error(%s): %s" % (e.errno, e.strerror))
+        print('Could not find file: ', previous_RLBdata_filename)
     else:
         f.close()
     return None
@@ -400,8 +404,8 @@ def _plotRLDistr_old(dsList, target, **plotArgs):
         try:
             target = target[i.funcId] # TODO: this can only work for a single function, generally looks like a bug
             if not genericsettings.test:
-                print 'target:', target
-                print 'function:', i.funcId
+                print('target:', target)
+                print('function:', i.funcId)
                 raise Exception('please check this, it looks like a bug')
         except TypeError:
             target = target
@@ -810,7 +814,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
     testbed = testbedsettings.current_testbed
     targets = testbed.pprldistr_target_values # convenience abbreviation
 
-    for d, dictdim in dsList.dictByDim().iteritems():
+    for d, dictdim in dsList.dictByDim().items():
         maxEvalsFactor = max(i.mMaxEvals() / d for i in dictdim)
         if isStoringXMax:
             global evalfmax
