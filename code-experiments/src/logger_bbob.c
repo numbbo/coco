@@ -372,7 +372,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) 
   logger_bbob_data_t *logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
   coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);
   double *cons_values, initial_solution_fvalue;
-  int is_feasible, is_truly_feasible;
+  int is_feasible;
   size_t i;
 
   is_feasible = 1;
