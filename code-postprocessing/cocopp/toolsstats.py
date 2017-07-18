@@ -383,7 +383,7 @@ def simulated_evals(evals, nfails,
         indices = np.random.randint(0, len(evals), len(failing))
         sums[failing] += evals[indices]
         # keep failing indices
-        failing = [failing[i] for i in xrange(len(failing))
+        failing = [failing[i] for i in range(len(failing))
                                if indices[i] >= len(evals) - nfails]
     return sorted(sums)
 

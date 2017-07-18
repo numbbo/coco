@@ -370,7 +370,7 @@ class LoggingFunction(object):
             print('Input argument datapath is an invalid datapath.', file=sys.stderr)
             raise
         except OSError as e:
-            if err == errno.EEXIST:
+            if e.err == errno.EEXIST:
                 pass
             else:
                 print(e.errno, e.strerror)
