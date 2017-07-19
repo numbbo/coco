@@ -28,6 +28,7 @@ import warnings
 import json
 import hashlib
 import functools
+import collections
 from pdb import set_trace
 from six import string_types, advance_iterator
 import numpy, numpy as np
@@ -574,17 +575,14 @@ class DataSet(object):
         >>> ds = dslist[3]  # a single data set of type DataSet
         >>> ds
         DataSet(BIPOP-CMA-ES on f2 10-D)
-        >>> for d in dir(ds): print(d)  # dir(ds) shows attributes and methods of ds
+        >>> for d in dir(ds): print(d)  # doctest:+ELLIPSIS
         _DataSet__parseHeader
         __class__
         __delattr__
         __dict__
-        __doc__
-        __eq__
-        __format__
+        ...
         __getattribute__
-        __hash__
-        __init__
+        ...
         __module__
         __ne__
         __new__
@@ -678,7 +676,7 @@ class DataSet(object):
           1.0e-08 |     568     594     611     628     635 |    609.6  15
 
         >>> import numpy as np
-        >>> idx = range(0, 50, 10) + [-1]
+        >>> idx = list(range(0, 50, 10)) + [-1]
         >>> np.array([idx, ds.target[idx], ds.ert[idx]]).T  # aRT average runtime for some targets
         array([[  0.00000000e+00,   3.98107171e+07,   1.00000000e+00],
                [  1.00000000e+01,   3.98107171e+05,   6.12666667e+01],
@@ -2057,23 +2055,20 @@ class DataSetList(list):
         if len(self) > 0:
             print('%d data set(s)' % (len(self)))
             dictAlg = self.dictByAlg()
-            algs = dictAlg.keys()
-            algs.sort()
+            algs = sorted(dictAlg.keys())
             sys.stdout.write('Algorithm(s): %s' % (algs[0][0]))
             for i in range(1, len(algs)):
                 sys.stdout.write(', %s' % (algs[0][0]))
             sys.stdout.write('\n')
 
             dictFun = self.dictByFunc()
-            functions = dictFun.keys()
-            functions.sort()
+            functions = sorted(dictFun.keys())
             nbfuns = len(set(functions))
             splural = 's' if nbfuns > 1 else ''
             print('%d Function%s with ID%s %s' % (nbfuns, splural, splural, consecutiveNumbers(functions)))
 
             dictDim = self.dictByDim()
-            dimensions = dictDim.keys()
-            dimensions.sort()
+            dimensions = sorted(dictDim.keys())
             sys.stdout.write('Dimension(s): %d' % (dimensions[0]))
             for i in range(1, len(dimensions)):
                 sys.stdout.write(', %d' % (dimensions[i]))
