@@ -30,9 +30,8 @@ Requirements  <a name="Requirements"></a>
   - Python >=2.6 with `setuptools` installed
   - optional: `git`
 2. For a machine running the post-processing
-  - Python 2.6 or 2.7 with `setuptools`, `numpy` (preferably >=1.7) and `matplotlib` (preferably >=2.0) installed. 
+  - Python >=2.6 with `setuptools`, `numpy` (preferably >=1.7), `matplotlib` (preferably >=2.0), and `six` installed.
     We recommend to install the [Anaconda Python 2.7 library](https://www.continuum.io/downloads). 
-    Python 3 is not yet supported with the post-processing part of NumBBO/CoCO!
 
 ### Windows Specifics
 Under Windows, two alternative compile toolchains can be used: 
