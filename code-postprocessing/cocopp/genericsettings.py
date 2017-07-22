@@ -96,7 +96,7 @@ line_styles = [  # used by ppfigs and pprlmany
     #          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'}, # 'Black' is too close to NavyBlue
     #          {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': '#d02090'}, # square, 'VioletRed' seems too close to red
     {'marker': 'p', 'markersize': 24, 'linestyle': '-', 'color': 'c'},
-    {'marker': 'H', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
+    #{'marker': 'H', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
     # {'marker': 'o', 'markersize': 23, 'linestyle': '-', 'color': '#ffff00'}, # 'Yellow'
     {'marker': '3', 'markersize': 23, 'linestyle': '-', 'color': '#adff2f'},  # 'GreenYellow'
     {'marker': '1', 'markersize': 23, 'linestyle': '-', 'color': '#228b22'},  # 'ForestGreen'
@@ -255,7 +255,7 @@ isRLDistr = True
 
 # usage: background = {(color, linestyle): [alg1, alg2, ...], }
 # for example:
-# background = {('#bebebe', '-'): ['data/BFGS_ros_noiseless.tgz'], ('#f88017', ':'): ['data/NEWUOA_ros_noiseless.tgz', 'data/RANDOMSEARCH_auger_noiseless.tgz']}
+# background = {('#d8d8d8', '-'): ['data/BFGS_ros_noiseless.tgz'], ('#f88017', ':'): ['data/NEWUOA_ros_noiseless.tgz', 'data/RANDOMSEARCH_auger_noiseless.tgz']}
 background = {}
 
 foreground_algorithm_list = []
