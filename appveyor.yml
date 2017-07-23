@@ -1,0 +1,22 @@
+build: false
+
+environment:
+  matrix:
+    - PYTHON_VERSION: 2.7
+      MINICONDA: C:\Miniconda
+    - PYTHON_VERSION: 3.6
+      MINICONDA: C:\Miniconda36
+
+init:
+  - cmd: "ECHO %PYTHON_VERSION% %MINICONDA%"
+  - cmd: "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%"
+
+install:
+  - cmd: conda install -y matplotlib numpy scipy setuptools six
+  - cmd: python do.py run-python
+  - cmd: python do.py install-postprocessing
+
+test_script:
+  - cmd: cd code-experiments\build\python
+  - cmd: python example_experiment.py bbob
+  - cmd: python -m cocopp -o .\postproc .\exdata\random_search_on_bbob_budget0002xD
