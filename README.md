@@ -32,12 +32,13 @@ Requirements  <a name="Requirements"></a>
   - Python >=2.6 with `setuptools` installed
   - optional: `git`
 2. For a machine running the post-processing
-  - Python >=2.6 with `setuptools`, `numpy` (preferably >=1.7), `matplotlib` (preferably >=2.0), and `six` installed.
+  - Python >=2.6 with `setuptools`, `numpy`, `scipy`, `matplotlib`, and `six` installed.
     We recommend to install the [Anaconda Python 2.7 library](https://www.continuum.io/downloads). 
 
 For Ubuntu 16.04+, all the requirements can be installed using the following command:
 ```
-apt-get install -y build-essential python-dev python-numpy python-matplotlib python-six python-setuptools
+apt-get install build-essential python-dev python-numpy python-matplotlib \
+                python-scipy python-six python-setuptools
 ```
 
 ### Windows Specifics
