@@ -471,7 +471,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, double *x, double *y) 
       logger->best_solution[i] = x[i];
   }
 
-  /* Add a line in the .dat file for each logging target reached. */
+  /* Add a line in the .dat file for each logging target reached. */ /* asma: replace + by , to have an additional column and check the header */
   if (is_feasible) {
     if (coco_observer_targets_trigger(logger->targets, y[0] - logger->optimal_fvalue)) {
       logger_bbob_write_data(logger->fdata_file, 
