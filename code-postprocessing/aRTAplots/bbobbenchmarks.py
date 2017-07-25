@@ -240,7 +240,7 @@ def unif(N, inseed):
 
     rgrand = 32 * [0.]
     aktseed = inseed
-    for i in xrange(39, -1, -1):
+    for i in range(39, -1, -1):
         tmp = floor(aktseed/127773.)
         aktseed = 16807. * (aktseed - tmp * 127773.) - 2836. * tmp
         if aktseed < 0:
@@ -251,7 +251,7 @@ def unif(N, inseed):
 
     # sample numbers
     r = int(N) * [0.]
-    for i in xrange(int(N)):
+    for i in range(int(N)):
         tmp = floor(aktseed/127773.)
         aktseed = 16807. * (aktseed - tmp * 127773.) - 2836. * tmp
         if aktseed < 0:
@@ -451,7 +451,7 @@ class BBOBFunction(AbstractTestFunction):
         self.dim = None
         self.lastshape = None
         self.param = param
-        for i, v in kwargs.iteritems():
+        for i, v in kwargs.items():
             setattr(self, i, v)
         self._xopt = None
 
@@ -2141,4 +2141,3 @@ def get_param(ifun):
 if __name__ == "__main__":
     import doctest
     doctest.testmod()  # run all doctests in this module
-    

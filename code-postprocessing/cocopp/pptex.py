@@ -113,7 +113,7 @@ class WrongInputSizeError(Error):
 def color_to_latex(color):
     try:
         res = '\color{%s}' % latex_color_map[color]
-    except KeyError, err:
+    except KeyError as err:
         try:
             float(color)
             res = '\color[gray]{%s}' % color

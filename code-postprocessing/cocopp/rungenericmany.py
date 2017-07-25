@@ -40,7 +40,7 @@ def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings, 
     """ Generates ecdf graphs, aggregated over groups as
         indicated via algdict
     """
-    for gr, tmpdictAlg in alg_dict.iteritems():
+    for gr, tmpdictAlg in alg_dict.items():
         dictDim = pproc.dictAlgByDim(tmpdictAlg)
         dims = sorted(dictDim)
 
@@ -167,7 +167,7 @@ def main(argv=None):
         try:
             opts, args = getopt.getopt(argv, genericsettings.shortoptlist,
                                        genericsettings.longoptlist)
-        except getopt.error, msg:
+        except getopt.error as msg:
             raise Usage(msg)
 
         if not args:
@@ -248,7 +248,7 @@ def main(argv=None):
 
         config.target_values(genericsettings.isExpensive)
 
-    except Usage, err:
+    except Usage as err:
         print(err.msg, file=sys.stderr)
         print("for help use -h or --help", file=sys.stderr)
         return 2
@@ -487,7 +487,7 @@ def main(argv=None):
                                                    settings=inset)
                 else:  # subject to removal
                     dictFG = pproc.dictAlgByFun(dictAlg)
-                    for fg, tmpdictAlg in dictFG.iteritems():
+                    for fg, tmpdictAlg in dictFG.items():
                         dictDim = pproc.dictAlgByDim(tmpdictAlg)
                         dims = sorted(dictDim)
                         for i, d in enumerate(dims):
@@ -519,9 +519,9 @@ def main(argv=None):
                             ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
                              pptables.get_table_caption() + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
-            for ng, tmpdictng in dictNoi.iteritems():
+            for ng, tmpdictng in dictNoi.items():
                 dictDim = pproc.dictAlgByDim(tmpdictng)
-                for d, tmpdictdim in sorted(dictDim.iteritems()):
+                for d, tmpdictdim in sorted(dictDim.items()):
                     pptables.main(
                         tmpdictdim,
                         sortedAlgs,

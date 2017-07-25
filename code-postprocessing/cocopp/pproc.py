@@ -27,7 +27,10 @@ import pickle, gzip  # gzip is for future functionality: we probably never want 
 import warnings
 import json
 import hashlib
+import functools
+import collections
 from pdb import set_trace
+from six import string_types, advance_iterator
 import numpy, numpy as np
 import matplotlib.pyplot as plt
 from collections import OrderedDict
@@ -66,7 +69,7 @@ def _DataSet_complement_data(self, step=10**0.2, final_target=1e-8):
     i = 0
     newdat = []
     self.evals = np.array(self.evals, copy=False)
-    for i in xrange(len(self.evals) - 1):
+    for i in range(len(self.evals) - 1):
         newdat.append(self.evals[i])
         target = self.evals[i][0] / step
         while target >= final_target and target > self.evals[i+1][0] and target / self.evals[i+1][0] - 1 > 1e-9:
@@ -309,17 +312,17 @@ class RunlengthBasedTargetValues(TargetValues):
                 dsd[(ds.funcId, ds.dim)] = ds
             self.reference_data = dsd
         elif isinstance(self.reference_data, list):
-            if not isinstance(self.reference_data[0], basestring):
+            if not isinstance(self.reference_data[0], string_types):
                 raise ValueError("RunlengthBasedTargetValues() expected a string, dict, or list of strings as second argument,"
                 + (" got a list of %s" % str(type(self.reference_data[0]))))
             # dsList, sortedAlgs, dictAlg = processInputArgs(self.reference_data)
             self.reference_data = processInputArgs(self.reference_data)[2]
-            self.reference_algorithm = self.reference_data[self.reference_data.keys()[0]].algId
+            self.reference_algorithm = self.reference_data[list(self.reference_data.keys())[0]].algId
         else:
             # assert len(byalg) == 1
             # we assume here that self.reference_data is a dictionary
             # of reference data sets
-            self.reference_algorithm = self.reference_data[self.reference_data.keys()[0]].algId
+            self.reference_algorithm = self.reference_data[list(self.reference_data.keys())[0]].algId
         self.initialized = True
         return self
 
@@ -381,7 +384,7 @@ class RunlengthBasedTargetValues(TargetValues):
                 print(fun_dim, ds.ert[0], 'ert[0] != 1 in TargetValues.__call__')
             try: 
                 # check whether there are gaps between the targets 
-                assert all(toolsdivers.equals_approximately(10**0.2, ds.target[i] / ds.target[i+1]) for i in xrange(end-1))
+                assert all(toolsdivers.equals_approximately(10**0.2, ds.target[i] / ds.target[i+1]) for i in range(end-1))
                 # if this fails, we need to insert the missing target values 
             except AssertionError:
                 if 1 < 3:
@@ -572,17 +575,14 @@ class DataSet(object):
         >>> ds = dslist[3]  # a single data set of type DataSet
         >>> ds
         DataSet(BIPOP-CMA-ES on f2 10-D)
-        >>> for d in dir(ds): print(d)  # dir(ds) shows attributes and methods of ds
+        >>> for d in dir(ds): print(d)  # doctest:+ELLIPSIS
         _DataSet__parseHeader
         __class__
         __delattr__
         __dict__
-        __doc__
-        __eq__
-        __format__
+        ...
         __getattribute__
-        __hash__
-        __init__
+        ...
         __module__
         __ne__
         __new__
@@ -676,7 +676,7 @@ class DataSet(object):
           1.0e-08 |     568     594     611     628     635 |    609.6  15
 
         >>> import numpy as np
-        >>> idx = range(0, 50, 10) + [-1]
+        >>> idx = list(range(0, 50, 10)) + [-1]
         >>> np.array([idx, ds.target[idx], ds.ert[idx]]).T  # aRT average runtime for some targets
         array([[  0.00000000e+00,   3.98107171e+07,   1.00000000e+00],
                [  1.00000000e+01,   3.98107171e+05,   6.12666667e+01],
@@ -953,7 +953,7 @@ class DataSet(object):
             #TODO: take for maxevals the max for each trial, for finalfunvals the min...
     
             #extensions = {'.dat':(HMultiReader, 'evals'), '.tdat':(VMultiReader, 'funvals')}
-            #for ext, info in extensions.iteritems(): # ext is defined as global
+            #for ext, info in extensions.items(): # ext is defined as global
                 ## put into variable dataFiles the files where to look for data
                 ## basically append 
                 #dataFiles = list(i.rsplit('.', 1)[0] + ext for i in self.dataFiles)
@@ -1186,7 +1186,7 @@ class DataSet(object):
                 indices = randintrest(0, len(evals), len(failing))
                 sums[failing] += evals[indices]
                 # keep failing indices
-                failing = [failing[i] for i in xrange(len(failing))
+                failing = [failing[i] for i in range(len(failing))
                             if indices[i] >= nsucc]
             res += [sorted(sums)]
 
@@ -1353,8 +1353,8 @@ class DataSet(object):
                 f.close()
                 if genericsettings.verbose:
                     print('Saved pickle in %s.' %(self.pickleFile))
-            except IOError, (errno, strerror):
-                print("I/O error(%s): %s" % (errno, strerror))
+            except IOError as e:
+                print("I/O error(%s): %s" % (e.errno, e.strerror))
             except pickle.PicklingError:
                 print("Could not pickle %s" %(self))
                 
@@ -1402,7 +1402,7 @@ class DataSet(object):
         evals = {}
         funvals = {}
 
-        for instanceid, idx in dictinstance.iteritems():
+        for instanceid, idx in dictinstance.items():
             evals[instanceid] = self.evals[:,
                                            numpy.ix_(list(i + 1 for i in idx))]
             funvals[instanceid] = self.funvals[:,
@@ -1435,7 +1435,7 @@ class DataSet(object):
         it = reversed(self.evals)
         prevline = numpy.array([-numpy.inf] + [numpy.nan] * self.nbRuns())
         try:
-            line = it.next()
+            line = advance_iterator(it)
         except StopIteration:
             # evals is an empty array
             return res #list()
@@ -1444,7 +1444,7 @@ class DataSet(object):
             while line[0] <= t:
                 prevline = line
                 try:
-                    line = it.next()
+                    line = advance_iterator(it)
                 except StopIteration:
                     break
             res[t] = prevline.copy()
@@ -1517,7 +1517,7 @@ class DataSet(object):
 
         prevline = numpy.array([-numpy.inf, numpy.inf])
         try:
-            line = it.next()
+            line = advance_iterator(it)
         except StopIteration:
             # evals is an empty array
             return list()
@@ -1526,7 +1526,7 @@ class DataSet(object):
             while line[0] <= t:
                 prevline = line
                 try:
-                    line = it.next()
+                    line = advance_iterator(it)
                 except StopIteration:
                     break
             res[t] = prevline.copy() # is copy necessary? Yes. 
@@ -1578,7 +1578,7 @@ class DataSet(object):
         it = reversed(self.evals)
         prevline = numpy.array([-numpy.inf] + [numpy.nan] * self.nbRuns())
         try:
-            line = it.next()
+            line = advance_iterator(it)
         except StopIteration:
             # evals is an empty array
             return tmp #list()
@@ -1587,7 +1587,7 @@ class DataSet(object):
             while line[0] <= t:
                 prevline = line
                 try:
-                    line = it.next()
+                    line = advance_iterator(it)
                 except StopIteration:
                     break
             tmp[t] = prevline.copy()
@@ -1664,7 +1664,7 @@ class DataSetList(list):
             super(DataSetList, self).__init__()
             return
 
-        if isinstance(args, basestring):
+        if isinstance(args, string_types):
             args = [args]
 
         if len(args) and (isinstance(args[0], DataSet) or
@@ -1681,7 +1681,7 @@ class DataSetList(list):
                   '``check_data_type=False``')
         fnames = []
         for name in args:
-            if isinstance(name, basestring) and findfiles.is_recognized_repository_filetype(name):
+            if isinstance(name, string_types) and findfiles.is_recognized_repository_filetype(name):
                 fnames.extend(findfiles.main(name))
             else:
                 fnames.append(name)
@@ -1712,8 +1712,8 @@ class DataSetList(list):
                     # if not hasattr(entry, 'detAverageEvals')
                     self.append(entry)
                     #set_trace()
-                except IOError, (errno, strerror):
-                    print("I/O error(%s): %s" % (errno, strerror))
+                except IOError as e:
+                    print("I/O error(%s): %s" % (e.errno, e.strerror))
             else:
                 s = ('File or folder ' + name + ' not found. ' +
                               'Expecting as input argument either .info ' +
@@ -1744,11 +1744,11 @@ class DataSetList(list):
             while True:
                 try:
                     if 'indicator' not in header:
-                        header = f.next()
+                        header = advance_iterator(f)
                         while not header.strip(): # remove blank lines
-                            header = f.next()
+                            header = advance_iterator(f)
                             nbLine += 1
-                        comment = f.next()
+                        comment = advance_iterator(f)
                         if not comment.startswith('%'):
                             warnings.warn('Entry in file %s at line %d is faulty: '
                                           % (indexFile, nbLine) +
@@ -1756,7 +1756,7 @@ class DataSetList(list):
                             nbLine += 2
                             continue
 
-                    data = f.next()  # this is the filename of the data file!?
+                    data = advance_iterator(f)  # this is the filename of the data file!?
                     data_file_names.append(data)
                     nbLine += 3
                     #TODO: check that something is not wrong with the 3 lines.
@@ -1776,9 +1776,9 @@ class DataSetList(list):
                         warnings.warn("    data file " + data_file_names[i])
                 warnings.warn("  This is likely to produce spurious results.")
 
-        except IOError, (errno, strerror):
+        except IOError as e:
             print('Could not load "%s".' % indexFile)
-            print('I/O error(%s): %s' % (errno, strerror))
+            print('I/O error(%s): %s' % (e.errno, e.strerror))
 
     def append(self, o, check_data_type=False):
         """Redefines the append method to check for unicity."""
@@ -2055,30 +2055,27 @@ class DataSetList(list):
         if len(self) > 0:
             print('%d data set(s)' % (len(self)))
             dictAlg = self.dictByAlg()
-            algs = dictAlg.keys()
-            algs.sort()
+            algs = sorted(dictAlg.keys())
             sys.stdout.write('Algorithm(s): %s' % (algs[0][0]))
             for i in range(1, len(algs)):
                 sys.stdout.write(', %s' % (algs[0][0]))
             sys.stdout.write('\n')
 
             dictFun = self.dictByFunc()
-            functions = dictFun.keys()
-            functions.sort()
+            functions = sorted(dictFun.keys())
             nbfuns = len(set(functions))
             splural = 's' if nbfuns > 1 else ''
             print('%d Function%s with ID%s %s' % (nbfuns, splural, splural, consecutiveNumbers(functions)))
 
             dictDim = self.dictByDim()
-            dimensions = dictDim.keys()
-            dimensions.sort()
+            dimensions = sorted(dictDim.keys())
             sys.stdout.write('Dimension(s): %d' % (dimensions[0]))
             for i in range(1, len(dimensions)):
                 sys.stdout.write(', %d' % (dimensions[i]))
             sys.stdout.write('\n')
 
             maxevals = []
-            for i in xrange(len(dimensions)):
+            for i in range(len(dimensions)):
                 maxeval = []
                 for d in dictDim[dimensions[i]]:
                     maxeval = int(max((d.mMaxEvals(), maxeval)))
@@ -2115,7 +2112,7 @@ class DataSetList(list):
                 return 1 if getattr(a, key2) > getattr(b, key2) else -1                
             else:
                 return 1 if getattr(a, key1) > getattr(b, key1) else -1
-        sorted_self = list(sorted(self, cmp=cmp_fun))
+        sorted_self = list(sorted(self, key=functools.cmp_to_key(cmp_fun)))
         for i, ds in enumerate(sorted_self):
             self[i] = ds
         return self
@@ -2360,13 +2357,13 @@ class DataSetList(list):
         except TypeError:
             target_values = target_values
         best_lines = len(target_values) * [[]]  # caveat: this is (can be?) the same instance of []
-        best_dicts = [{} for i in xrange(len(target_values))]
+        best_dicts = [{} for i in range(len(target_values))]
         for ds in self:
             if ds.funcId != fct or ds.dim != dim:
                 continue
             current_lines = ds.detEvals(target_values)
             assert len(current_lines) == len(best_lines) == len(target_values)
-            for i in xrange(len(current_lines)):
+            for i in range(len(current_lines)):
                 for j, instance in enumerate(ds.instancenumbers):
                     previous_val = best_dicts[i].setdefault(instance, np.inf)
                     best_dicts[i][instance] = min((previous_val, current_lines[i][j]))
@@ -2376,7 +2373,7 @@ class DataSetList(list):
                                                     len(best_lines[i])))]
         # construct another best line instance-wise
         best_instances_lines = []
-        for i in xrange(len(best_dicts)):
+        for i in range(len(best_dicts)):
             vals = best_dicts[i].values()
             best_instances_lines.append(
                 np.sort(vals)[:np.min((number, len(vals)))])
@@ -2522,10 +2519,10 @@ def parseinfoold(s):
     res = []
     while True:
         try:
-            elem = it.next()
+            elem = advance_iterator(it)
             tmp = p.match(elem)
             while not tmp:
-                elem = it.next() + elem
+                elem = advance_iterator(it) + elem
                 # add up elements of list_kv until we have a whole key = value
 
             elem0, elem1 = tmp.groups()
@@ -2657,7 +2654,7 @@ def process_arguments(args, current_hash, dictAlg, dsList, sortedAlgs):
             # if pickle files were in a whole other location.
 
             alg = i.rstrip(os.path.sep)
-            if current_hash is not None and current_hash <> tmpDsList.get_reference_values_hash():
+            if current_hash is not None and current_hash != tmpDsList.get_reference_values_hash():
                 warnings.warn(" Reference values for the algorithm '%s' are different!" % alg)
 
             set_unique_algId(tmpDsList, dsList)
@@ -2685,7 +2682,7 @@ def process_arguments(args, current_hash, dictAlg, dsList, sortedAlgs):
 def store_reference_values(ds_list):
 
     dict_alg = ds_list.dictByAlg()
-    for key, value in dict_alg.iteritems():
+    for key, value in dict_alg.items():
         testbedsettings.update_reference_values(key[0], value.get_reference_values_hash())
 
 
@@ -2714,7 +2711,7 @@ def dictAlgByDim(dictAlg):
     # get the set of problem dimensions
     dims = set()
     tmpdictAlg = {} # will store DataSet by alg and dim
-    for alg, dsList in dictAlg.iteritems():
+    for alg, dsList in dictAlg.items():
         tmp = dsList.dictByDim()
         tmpdictAlg[alg] = tmp
         dims |= set(tmp.keys())
@@ -2729,7 +2726,7 @@ def dictAlgByDim(dictAlg):
                        % (alg, d))
                 warnings.warn(txt)
 
-            if res.setdefault(d, {}).has_key(alg):
+            if alg in res.setdefault(d, {}):
                 txt = ('Duplicate data for algorithm %s in %d-D.'
                        % (alg, d))
                 warnings.warn(txt)
@@ -2737,7 +2734,7 @@ def dictAlgByDim(dictAlg):
             res.setdefault(d, {}).setdefault(alg, tmp)
             # Only the first data for a given algorithm in a given dimension
 
-    #for alg, dsList in dictAlg.iteritems():
+    #for alg, dsList in dictAlg.items():
         #for i in dsList:
             #res.setdefault(i.dim, {}).setdefault(alg, DataSetList()).append(i)
 
@@ -2759,14 +2756,14 @@ def dictAlgByDim2(dictAlg, remove_empty=False):
     """
     res = {}
 
-    for alg, dsList in dictAlg.iteritems():
+    for alg, dsList in dictAlg.items():
         for i in dsList:
             res.setdefault(i.dim, {}).setdefault(alg, DataSetList()).append(i)
 
     if remove_empty:
         raise NotImplementedError
-        for dim, ds_dict in res.iteritems():
-            for alg, ds_dict2 in ds_dict.iteritems():
+        for dim, ds_dict in res.items():
+            for alg, ds_dict2 in ds_dict.items():
                 if not len(ds_dict2):
                     pass
             if not len(ds_dict):
@@ -2787,7 +2784,7 @@ def dictAlgByFun(dictAlg):
     res = {}
     funcs = set()
     tmpdictAlg = {}
-    for alg, dsList in dictAlg.iteritems():
+    for alg, dsList in dictAlg.items():
         tmp = dsList.dictByFunc()
         tmpdictAlg[alg] = tmp
         funcs |= set(tmp.keys())
@@ -2802,7 +2799,7 @@ def dictAlgByFun(dictAlg):
                        % (alg, f)) # This message is misleading.
                 warnings.warn(txt)
 
-            if res.setdefault(f, {}).has_key(alg):
+            if alg in res.setdefault(f, {}):
                 txt = ('Duplicate data for algorithm %s on function %d-D.'
                        % (alg, f))
                 warnings.warn(txt)
@@ -2826,7 +2823,7 @@ def dictAlgByNoi(dictAlg):
     res = {}
     ng = set()
     tmpdictAlg = {}
-    for alg, dsList in dictAlg.iteritems():
+    for alg, dsList in dictAlg.items():
         tmp = dsList.dictByNoise()
         tmpdictAlg[alg] = tmp
         ng |= set(tmp.keys())
@@ -2847,7 +2844,7 @@ def dictAlgByNoi(dictAlg):
                        % (alg, stmp))
                 warnings.warn(txt)
 
-            if res.setdefault(n, {}).has_key(alg):
+            if alg in res.setdefault(n, {}):
                 txt = ('Duplicate data for algorithm %s on %s functions.'
                        % (alg, stmp))
                 warnings.warn(txt)
@@ -2870,7 +2867,7 @@ def dictAlgByFuncGroup(dictAlg):
     res = {}
     fg = set()
     tmpdictAlg = {}
-    for alg, dsList in dictAlg.iteritems():
+    for alg, dsList in dictAlg.items():
         tmp = dsList.dictByFuncGroup()
         tmpdictAlg[alg] = tmp
         fg |= set(tmp.keys())  # | is bitwise OR
@@ -2885,7 +2882,7 @@ def dictAlgByFuncGroup(dictAlg):
                        % (alg, g))
                 warnings.warn(txt)
 
-            if res.setdefault(g, {}).has_key(alg):
+            if alg in res.setdefault(g, {}):
                 txt = ('Duplicate data for algorithm %s on %s functions.'
                        % (alg, g))
                 warnings.warn(txt)

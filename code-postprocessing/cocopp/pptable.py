@@ -21,7 +21,7 @@ p = 0.05 or p = 1e-k where k > 1 is the number following the
 functions.
 
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import os
 import warnings
@@ -173,7 +173,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                 refalgdata = refalgentry.detERT(targetsOfInterest((f,d)))
                 if isinstance(targetsOfInterest, pproc.RunlengthBasedTargetValues):
                     #write ftarget:fevals
-                    for i in xrange(len(refalgdata[:-1])):
+                    for i in range(len(refalgdata[:-1])):
                         temp = "%.1e" % targetsOfInterest((f,d))[i]
                         if temp[-2] == "0":
                             temp = temp[:-2] + temp[-1]
@@ -434,7 +434,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                 outfile.write(line)
 
         if genericsettings.verbose:
-            print "Table written in %s" % output_file
+            print("Table written in %s" % output_file)
 
     if len(dims_of_interest) > 0:
         extraeol = [r'\hline']

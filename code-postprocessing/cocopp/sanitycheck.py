@@ -122,7 +122,7 @@ def checkinfofile(filename, verbose=True):
 
             # Checking by groups of 3 lines (1 index entry)
             if tmp == 2:
-                miss_attr = list(i for i in crit_attr if not info.has_key(i))
+                miss_attr = list(i for i in crit_attr if not i in info)
                 if miss_attr:
                     msg = ('File %s, entry l%d-%d is missing the following'
                            'keys: %s.' % (filename, i-2, i, ', '.join(miss_attr)))
