@@ -225,17 +225,19 @@ class GECCOBBOBTestbed(Testbed):
 
     def __init__(self, targetValues):
 
-        if 11 < 3:
+        if 1 < 3:
             # override settings if needed...
             # self.reference_algorithm_filename = 'best09-16-bbob.tar.gz'
             # self.reference_algorithm_displayname = 'best 2009--16'  # TODO: should be read in from data set in reference_algorithm_filename
             # self.reference_algorithm_filename = 'data/RANDOMSEARCH'
             # self.reference_algorithm_displayname = "RANDOMSEARCH"  # TODO: should be read in from data set in reference_algorithm_filename
-            self.settings.short_names = get_short_names(self.shortinfo_filename)
-            self.settings.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+            #self.settings.short_names = get_short_names(self.shortinfo_filename)
+            self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 
         for key, val in GECCOBBOBTestbed.settings.items():
             setattr(self, key, val)
+
+        #self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 
         # set targets according to targetValues class (possibly all changed
         # in config:
