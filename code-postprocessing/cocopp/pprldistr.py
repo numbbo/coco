@@ -814,7 +814,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
     testbed = testbedsettings.current_testbed
     targets = testbed.pprldistr_target_values # convenience abbreviation
 
-    for d, dictdim in dsList.dictByDim().items():
+    for d, dictdim in sorted(dsList.dictByDim().items()):
         maxEvalsFactor = max(i.mMaxEvals() / d for i in dictdim)
         if isStoringXMax:
             global evalfmax
