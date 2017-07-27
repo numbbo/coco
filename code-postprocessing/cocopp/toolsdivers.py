@@ -34,7 +34,9 @@ def less(a, b):
 def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
     """"prepend lines the tex-command filename """
     try:
-        lines_to_append = list(open(filename, 'r'))
+        f = open(filename, 'r')
+        lines_to_append = list(f)
+        f.close()
     except IOError:
         lines_to_append = []
     f = open(filename, 'w')
@@ -52,7 +54,9 @@ def replace_in_file(filename, old_text, new_text):
 
     lines = []    
     try:
-        lines = list(open(filename, 'r'))
+        f = open(filename, 'r')
+        lines = list(f)
+        f.close()
     except IOError:
         print('File %s does not exist.' % filename)
     

@@ -1162,6 +1162,7 @@ class DataSet(object):
         res = []  # res[i] is a list of samplesize evals
         for evals in self.detEvals(targets, bootstrap=bootstrap):
             # prepare evals array
+            evals.sort()
             indices = np.isfinite(evals)
             if not sum(indices):  # no successes
                 res += [samplesize * [np.nan]]  # TODO: this is "many" data with little information

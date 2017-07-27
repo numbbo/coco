@@ -475,7 +475,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
              settings=settings)
 
         dictFG = pp.dictAlgByFuncGroup(dict_alg)
-        for fg, entries in dictFG.items():
+        for fg, entries in sorted(dictFG.items()):
             main(entries,
                  order=sorted_algs,
                  outputdir=single_fct_output_dir,
@@ -485,7 +485,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
                  settings=settings)
 
     dictFG = pp.dictAlgByFun(dict_alg)
-    for fg, tempDictAlg in dictFG.items():
+    for fg, tempDictAlg in sorted(dictFG.items()):
 
         if is_single_algorithm:
             main(tempDictAlg,
@@ -525,7 +525,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
             tempDictAlg = dictDim[d]
             next_dim = dims[i+1] if i + 1 < len(dims) else dims[0]
             dictFG = pp.dictAlgByFuncGroup(tempDictAlg)
-            for fg, entries in dictFG.items():
+            for fg, entries in sorted(dictFG.items()):
                 main(entries,
                      order=sorted_algs,
                      outputdir=single_fct_output_dir,
@@ -569,6 +569,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     tmp = pp.dictAlgByDim(dictAlg)
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
+    algorithms_with_data.sort()
 
     if len(algorithms_with_data) > 1 and len(tmp) != 1 and dimension is None:
         raise ValueError('We never integrate over dimension for than one algorithm.')
@@ -624,13 +625,13 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
         dictDim = dictDimList[dim]
         dictFunc = pp.dictAlgByFun(dictDim)
-        for f, dictAlgperFunc in dictFunc.items():
+        for f, dictAlgperFunc in sorted(dictFunc.items()):
             # print(target_values((f, dim)))
             for j, t in enumerate(target_values((f, dim))):
                 # for j, t in enumerate(testbedsettings.current_testbed.ecdf_target_values(1e2, f)):
                 # funcsolved[j].add(f)
 
-                for alg in algorithms_with_data:
+                for alg in sorted(algorithms_with_data):
                     x = [np.inf] * perfprofsamplesize
                     runlengthunsucc = []
                     try:
@@ -708,8 +709,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         return str(algname)
 
     plotting_style_list = ppfig.get_plotting_styles(order)
-    for plotting_style in plotting_style_list:
-        for i, alg in enumerate(plotting_style.algorithm_list):
+    for plotting_style in sorted(plotting_style_list):
+        for i, alg in sorted(enumerate(sorted(plotting_style.algorithm_list))):
             try:
                 data = dictData[alg]
                 maxevals = dictMaxEvals[alg]

@@ -399,7 +399,7 @@ def main(argv=None):
                     pprldistr.main(sliceNoise, True, algoutputdir, '%s' % noise)
 
                 dictFG = sliceDim.dictByFuncGroup()
-                for fGroup, sliceFuncGroup in dictFG.items():
+                for fGroup, sliceFuncGroup in sorted(dictFG.items()):
                     pprldistr.main(sliceFuncGroup, True,
                                    algoutputdir,
                                    '%s' % fGroup)
