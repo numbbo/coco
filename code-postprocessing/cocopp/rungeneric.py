@@ -187,7 +187,7 @@ def main(argv=None):
             opts, args = getopt.getopt(argv, genericsettings.shortoptlist,
                                        genericsettings.longoptlist +
                                        ['include-single', 'in-a-hurry=', 'input-path='])
-        except getopt.error, msg:
+        except getopt.error as msg:
             raise Usage(msg)
 
         if not args:
@@ -285,7 +285,7 @@ def main(argv=None):
 
     # TODO prevent loading the data every time...
         
-    except Usage, err:
+    except Usage as err:
         print(err.msg, file=sys.stderr)
         print("For help use -h or --help", file=sys.stderr)
         return 2

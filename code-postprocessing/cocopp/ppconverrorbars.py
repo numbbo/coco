@@ -108,9 +108,9 @@ def main(dictAlg, outputdir='.', parentHtmlFileName=None, algorithm_name=None):
 
     if algorithm_name is None:
         try:
-            algorithm_name = str(dictFun[function_id].keys()[0][0])
+            algorithm_name = str(list(dictFun[function_id].keys())[0][0])
         except KeyError:
-            algorithm_name = str(dictFun[function_id].keys()[0])
+            algorithm_name = str(list(dictFun[function_id].keys())[0])
     save_single_functions_html(os.path.join(outputdir, 'ppconv'),
                                algname=algorithm_name,
                                parentFileName=parentHtmlFileName,

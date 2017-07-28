@@ -122,7 +122,7 @@ class VMultiReader(MultiReader):
 
     def getInitialValue(self):
         for i in self:
-            i.next()
+            advance_iterator(i)
         res = self.currentValues()
         return min(res)
 
@@ -138,7 +138,7 @@ class VMultiReader(MultiReader):
             while not i.isFinished:
                 if i.nextLine[self.idx] > currentValue:
                     break
-                i.next()
+                advance_iterator(i)
         return numpy.insert(self.currentLine(), 0, currentValue)
 
 
@@ -160,7 +160,7 @@ class HMultiReader(MultiReader):
 
     def getInitialValue(self):
         for i in self:
-            i.next()
+            advance_iterator(i)
         fvalues = self.currentValues()
         self.idxCurrentF = numpy.ceil(numpy.log10(max(fvalues)) * nbPtsF)
         # Returns the smallest 10^i/nbPtsF value larger than max(Fvalues)
@@ -176,7 +176,7 @@ class HMultiReader(MultiReader):
             while not i.isFinished:
                 if i.currentLine[self.idx] <= currentValue:
                     break
-                i.next()
+                advance_iterator(i)
             if i.currentLine[self.idx] <= currentValue:
                 fvalues.append(i.currentLine[self.idx])
 
@@ -284,7 +284,7 @@ def split(dataFiles, dim=None):
                 warnings.warn('Incomplete line %s in  ' % (line) +
                               'data file %s: ' % (dataFiles))
                 continue
-            for id in xrange(len(data)):
+            for id in range(len(data)):
                 if data[id] in ('Inf', 'inf'):
                     data[id] = numpy.inf
                 elif data[id] in ('-Inf', '-inf'):

@@ -28,6 +28,7 @@ import warnings
 import numpy as np
 import tarfile
 import pkg_resources
+from six import advance_iterator
 
 from . import readalign, pproc
 from .toolsdivers import print_done
@@ -126,7 +127,7 @@ class BestAlgSet(DataSet):
         best_algorithms = []
         self.success_ratio = []
 
-        for alg, i in dict_alg.iteritems():
+        for alg, i in dict_alg.items():
             if len(i) == 0:
                 warnings.warn('Algorithm %s was not tested on f%d %d-D.'
                               % (alg, f, d))
@@ -144,7 +145,7 @@ class BestAlgSet(DataSet):
 
         dict_alg = tmpdictAlg
 
-        sortedAlgs = dict_alg.keys()
+        sortedAlgs = list(dict_alg.keys())
         # algorithms will be sorted along sortedAlgs which is now a fixed list
 
         # Align aRT
@@ -189,7 +190,7 @@ class BestAlgSet(DataSet):
             curLine = dictcurLine.setdefault(alg, np.array([np.inf, 0]))
             while curLine[0] > funval:
                 try:
-                    curLine = it.next()
+                    curLine = advance_iterator(it)
                 except StopIteration:
                     break
             dictcurLine[alg] = curLine.copy()
@@ -284,8 +285,8 @@ class BestAlgSet(DataSet):
                 f.close()
                 if genericsettings.verbose:
                     print('Saved pickle in %s.' % self.pickleFile)
-            except IOError, (errno, strerror):
-                print("I/O error(%s): %s" % (errno, strerror))
+            except IOError as e:
+                print("I/O error(%s): %s" % (e.errno, e.strerror))
             except pickle.PicklingError:
                 print("Could not pickle %s" % self)
                 # else: #What?
@@ -458,8 +459,8 @@ def generate(dict_alg, algId):
 
     # dsList, sortedAlgs, dictAlg = processInputArgs(args)
     res = {}
-    for f, i in pproc.dictAlgByFun(dict_alg).iteritems():
-        for d, j in pproc.dictAlgByDim(i).iteritems():
+    for f, i in pproc.dictAlgByFun(dict_alg).items():
+        for d, j in pproc.dictAlgByDim(i).items():
             tmp = BestAlgSet(j, algId)
             res[(d, f)] = tmp
     return res
@@ -560,7 +561,7 @@ def create_data_files(output_dir, result, suite):
     info_lines = []
     all_instances_used = []
     algorithms_used = []
-    for key, value in sorted(result.iteritems()):
+    for key, value in sorted(result.items()):
 
         # TODO: throw an error
         # if not len(value.target) == len(value.ert):
@@ -576,7 +577,7 @@ def create_data_files(output_dir, result, suite):
         lines.append("% algorithm type = best")
         target_list = value.target.tolist()
         instances_used = []
-        for key_target, value_target in sorted(dict_evaluation.iteritems()):
+        for key_target, value_target in sorted(dict_evaluation.items()):
             successful_runs, all_runs = result[(key[0], key[1])].get_success_ratio(value_target)
             target_index = target_list.index(value_target)
             alg_for_target = os.path.basename(value.algs[target_index])
@@ -595,7 +596,7 @@ def create_data_files(output_dir, result, suite):
             test_suite = suite
 
         algorithm_id = value.algId
-        if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
+        if result[list(result.keys())[0]].testbed == testbedsettings.default_testbed_bi:
             info_lines.append("function = %d, dim = %d, %s, %s"
                               % (key[1], key[0], filename_template % (key[1], key[0], 'dat'), instance_data))
         else:
@@ -616,7 +617,7 @@ def create_data_files(output_dir, result, suite):
             if algorithm not in algorithms_used:
                 algorithms_used.append(algorithm)
 
-    if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
+    if result[list(result.keys())[0]].testbed == testbedsettings.default_testbed_bi:
         header = "algorithm = '%s', indicator = 'hyp'" % algorithm_id
         if test_suite is not None:
             header += ", suite = '%s'" % test_suite
@@ -709,7 +710,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
 
     selectedalgsperdimension = {}
     for (d, a) in sorted(countsperalgorithm):
-        if not selectedalgsperdimension.has_key(d):
+        if not d in selectedalgsperdimension:
             selectedalgsperdimension[d] = []
         selectedalgsperdimension[d].append((countsperalgorithm[(d, a)], a))
 
@@ -750,8 +751,8 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
     print('This may take a while (depending on the number of algorithms)')
 
     selectedAlgsPerProblem = {}
-    for f, i in pproc.dictAlgByFun(dictAlg).iteritems():
-        for d, j in pproc.dictAlgByDim(i).iteritems():
+    for f, i in pproc.dictAlgByFun(dictAlg).items():
+        for d, j in pproc.dictAlgByDim(i).items():
 
             best = BestAlgSet(j)
 
@@ -771,7 +772,7 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
                     secondbest_included = False
                     for astring in j:
                         currdictalg = dictAlg[astring].dictByDim()
-                        if currdictalg.has_key(d):
+                        if d in currdictalg:
                             curralgdata = currdictalg[d][f - 1]
                             currERT = curralgdata.detERT([t])[0]
                             if (astring != best.algs[i]):
@@ -804,7 +805,7 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
 
     selectedalgsperdimension = {}
     for (d, a) in sorted(countsperalgorithm):
-        if not selectedalgsperdimension.has_key(d):
+        if not d in selectedalgsperdimension:
             selectedalgsperdimension[d] = []
         selectedalgsperdimension[d].append((countsperalgorithm[(d, a)], a))
 

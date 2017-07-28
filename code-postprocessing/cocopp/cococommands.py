@@ -39,7 +39,7 @@ Examples:
 
 * Get some information on a :py:class:`DataSetList` instance::
 
-    >>> print ds # doctest:+ELLIPSIS
+    >>> print(ds) # doctest:+ELLIPSIS
     [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
     >>> pp.info(ds)
     6 data set(s)

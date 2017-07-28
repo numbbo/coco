@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 """Creates aRTs and convergence figures for multiple algorithms."""
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import os
 import matplotlib.pyplot as plt
 import numpy
@@ -21,7 +21,7 @@ def fix_styles(plotting_styles, line_styles):
     m = len(line_styles)
     while len(line_styles) < len(plotting_styles.algorithm_list):
         line_styles.append(line_styles[len(line_styles) % m])
-    for i in xrange(len(line_styles)):
+    for i in range(len(line_styles)):
         if plotting_styles.in_background:
             line_styles[i].update(plotting_styles.ppfigs_styles)
         else:
@@ -353,7 +353,7 @@ def beautify(legend=False, rightlegend=False):
 
     # quadratic slanted "grid"
     if 1 < 3:
-        for i in xrange(-2, 7, 1 if ymax < 1e5 else 2):
+        for i in range(-2, 7, 1 if ymax < 1e5 else 2):
             plt.plot((0.2, 20000), (10**i, 10**(i + 5)), 'k:',
                      linewidth=0.5)  # grid should be on top
     else:  # to be removed
@@ -634,7 +634,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
 
         if genericsettings.verbose:
-            print 'Wrote commands and legend to %s' % filename
+            print('Wrote commands and legend to %s' % filename)
 
         # this is obsolete (however check templates)
         filename = os.path.join(output_dir, 'ppfigs.tex')
@@ -649,7 +649,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
             f.write((', ' if i > 0 else '') + '%s:%s' % (symb, writeLabels(sorted_algorithms[i])))
         f.close()    
         if genericsettings.verbose:
-            print '(obsolete) Wrote legend in %s' % filename
+            print('(obsolete) Wrote legend in %s' % filename)
     except IOError:
         raise
 

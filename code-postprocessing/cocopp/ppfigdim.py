@@ -58,6 +58,7 @@ import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
+from six import advance_iterator
 
 from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam, htmldesc, toolsdivers
 from . import testbedsettings
@@ -161,11 +162,11 @@ def beautify(axesLabel=True):
     else:
         # TODO: none of this is visible in svg format!
         axisHandle.yaxis.grid(True, which='major')
-        # for i in xrange(0, 11):
+        # for i in range(0, 11):
         #     plt.plot((0.2, 20000), 2 * [10**i], 'k:', linewidth=0.5)
 
     # quadratic slanted "grid"
-    for i in xrange(-2, 7, 1 if ymax < 1e5 else 2):
+    for i in range(-2, 7, 1 if ymax < 1e5 else 2):
         plt.plot((0.2, 20000), (10**i, 10**(i + 5)), 'k:', linewidth=0.5)
         # TODO: this should be done before the real lines are plotted?
 
@@ -181,7 +182,7 @@ def beautify(axesLabel=True):
     axisHandle.set_xticks(dimticklist)
     axisHandle.set_xticklabels([str(n) for n in dimannlist])
     logyend = 11  # int(1 + np.log10(plt.ylim()[1]))
-    axisHandle.set_yticks([10.**i for i in xrange(0, logyend)])
+    axisHandle.set_yticks([10.**i for i in range(0, logyend)])
     axisHandle.set_yticklabels(range(0, logyend))
     if 11 < 3:
         tmp = axisHandle.get_yticks()
@@ -192,7 +193,7 @@ def beautify(axesLabel=True):
     if 11 < 3:
         # ticklabels = 10**np.arange(int(np.log10(plt.ylim()[0])), int(np.log10(1 + plt.ylim()[1])))
         ticks = []
-        for i in xrange(int(np.log10(plt.ylim()[0])), int(np.log10(1 + plt.ylim()[1]))):
+        for i in range(int(np.log10(plt.ylim()[0])), int(np.log10(1 + plt.ylim()[1]))):
             ticks += [10 ** i, 2 * 10 ** i, 5 * 10 ** i]
         axisHandle.set_yticks(ticks)
         # axisHandle.set_yticklabels(ticklabels)
@@ -229,13 +230,13 @@ def generateData(dataSet, targetFuncValue):
     """
 
     it = iter(reversed(dataSet.evals))
-    i = it.next()
+    i = advance_iterator(it)
     prev = np.array([np.nan] * len(i))
 
     while i[0] <= targetFuncValue:
         prev = i
         try:
-            i = it.next()
+            i = advance_iterator(it)
         except StopIteration:
             break
 
@@ -445,7 +446,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
             plt.ylim(ylim)
         # median
         if mediandata:
-            # for i, tm in mediandata.iteritems():
+            # for i, tm in mediandata.items():
             for i in displaynumber:  # display median where success prob is smaller than one
                 tm = mediandata[i]
                 plt.plot((i,), (tm[1] / i**ynormalize_by_dimension,), 
@@ -458,7 +459,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
         # therefore the displaynumber displayed below correspond to the
         # last target (must be the hardest)
         if displaynumber:  # displayed only for the smallest valuesOfInterest
-            for _k, j in displaynumber.iteritems():
+            for _k, j in displaynumber.items():
                 # the 1.5 factor is a shift up for the digits 
                 plt.text(j[0], 1.5 * j[1] / j[0]**ynormalize_by_dimension, 
                          "%.0f" % j[2], axes=a,
