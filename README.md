@@ -1,6 +1,8 @@
 numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
+[![CircleCI](https://circleci.com/gh/numbbo/coco/tree/master.svg?style=shield)](https://circleci.com/gh/numbbo/coco/tree/master)
+
 [This code](https://github.com/numbbo/coco) reimplements the original Comparing Continous Optimizer platform, 
 now rewritten fully in `ANSI C` with other languages calling the `C` code. As the name suggests,
 the code provides a platform to benchmark and compare continuous optimizers, AKA non-linear 
@@ -30,9 +32,14 @@ Requirements  <a name="Requirements"></a>
   - Python >=2.6 with `setuptools` installed
   - optional: `git`
 2. For a machine running the post-processing
-  - Python 2.6 or 2.7 with `setuptools`, `numpy` (preferably >=1.7) and `matplotlib` (preferably >=2.0) installed. 
+  - Python >=2.6 with `setuptools`, `numpy`, `scipy`, `matplotlib`, and `six` installed.
     We recommend to install the [Anaconda Python 2.7 library](https://www.continuum.io/downloads). 
-    Python 3 is not yet supported with the post-processing part of NumBBO/CoCO!
+
+For Ubuntu 16.04+, all the requirements can be installed using the following command:
+```
+apt-get install build-essential python-dev python-numpy python-matplotlib \
+                python-scipy python-six python-setuptools
+```
 
 ### Windows Specifics
 Under Windows, two alternative compile toolchains can be used: 

@@ -1,0 +1,81 @@
+version: 2
+
+references:
+
+  test_ubuntu_python3: &test_ubuntu_python3
+    run:
+      name: Run tests on Ubuntu with Python 3.
+      command: |
+        # install dependencies
+        apt-get update -qy
+        apt-get install -y build-essential python3-dev python3-numpy python3-matplotlib \
+                           python3-six python3-setuptools python3-scipy
+        # install coco
+        python3 do.py run-python
+        python3 do.py install-postprocessing
+        # run the example
+        cd code-experiments/build/python
+        python3 example_experiment.py bbob
+        # postprocess the results
+        python3 -m cocopp -o ./postproc ./exdata/*
+
+  test_ubuntu_python2: &test_ubuntu_python2
+    run:
+      name: Run tests on Ubuntu with Python 2.
+      command: |
+        # install dependencies
+        apt-get update -qy
+        apt-get install -y build-essential python-dev python-numpy python-matplotlib \
+                           python-six python-setuptools python-scipy
+        # install coco
+        python do.py run-python
+        python do.py install-postprocessing
+        # run the example
+        cd code-experiments/build/python
+        python example_experiment.py bbob
+        # postprocess the results
+        python -m cocopp -o ./postproc ./exdata/*
+
+jobs:
+
+  test_ubuntu_latest_python3:
+    docker:
+      - image: ubuntu:latest
+    working_directory: ~/coco
+    steps:
+      - checkout
+      - *test_ubuntu_python3
+
+  test_ubuntu_rolling_python3:
+    docker:
+      - image: ubuntu:rolling
+    working_directory: ~/coco
+    steps:
+      - checkout
+      - *test_ubuntu_python3
+
+  test_ubuntu_latest_python2:
+    docker:
+      - image: ubuntu:latest
+    working_directory: ~/coco
+    steps:
+      - checkout
+      - *test_ubuntu_python2
+
+  test_ubuntu_rolling_python2:
+    docker:
+      - image: ubuntu:rolling
+    working_directory: ~/coco
+    steps:
+      - checkout
+      - *test_ubuntu_python2
+
+workflows:
+
+  version: 2
+  test-matrix:
+    jobs:
+      - test_ubuntu_latest_python3
+      - test_ubuntu_rolling_python3
+      - test_ubuntu_latest_python2
+      - test_ubuntu_rolling_python2
