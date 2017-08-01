@@ -429,7 +429,6 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     N = len(data)
     adata = np.array(data)  # more efficient indexing
     adata.sort()
-    print(adata)
     succ = None
     # there is a third argument to func which is the array of success
     if len(args) > 1:
