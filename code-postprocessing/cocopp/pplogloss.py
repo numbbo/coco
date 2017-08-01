@@ -811,7 +811,7 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
         evalf = None
 
     # do not aggregate over dimensions
-    for d, dsdim in dsList.dictByDim().items():
+    for d, dsdim in sorted(dsList.dictByDim().items()):
         maxevals = max(max(i.ert[np.isinf(i.ert) == False]) for i in dsdim)
         EVALS = [2.*d]
         EVALS.extend(10.**(np.arange(1, np.ceil(1e-9 + np.log10(maxevals * 1./d))))*d)

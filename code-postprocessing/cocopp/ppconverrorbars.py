@@ -53,8 +53,8 @@ def main(dictAlg, outputdir='.', parentHtmlFileName=None, algorithm_name=None):
     """
     global warned  # bind variable warned into this scope
     dictFun = pproc.dictAlgByFun(dictAlg)
-    for function_id in dictFun:
-        for i in dictFun[function_id]: # please, what is i??? appears to be the algorithm-key
+    for function_id in sorted(dictFun):
+        for i in sorted(dictFun[function_id]): # please, what is i??? appears to be the algorithm-key
             plt.figure()
             if 1 < 3:  # no algorithm name in filename, as everywhere else
                 figurename = "ppconv_" + "f%03d" % function_id

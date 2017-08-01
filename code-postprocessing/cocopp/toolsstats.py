@@ -153,6 +153,7 @@ def sp(data, maxvalue=np.Inf, issuccessful=None, allowinf=True):
                         if not np.isnan(data[i])]
     dat = [d for d in data if not np.isnan(d)]
     N = len(dat)
+    dat.sort()
 
     if N == 0:
         return(np.nan, np.nan, np.nan)
@@ -266,7 +267,9 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
 
     arrStats = []
     sdata = np.array(runlengths_succ)  # more efficient indexing
+    sdata.sort()
     udata = np.array(runlengths_unsucc)  # more efficient indexing
+    udata.sort()
     Nu = len(udata)
     Ns = len(sdata)
     # data = np.r_[udata, sdata]
@@ -372,6 +375,7 @@ def simulated_evals(evals, nfails,
                          int(sum(evals)))
     samplesize = int(samplesize)
     evals = np.asarray(evals)
+    evals.sort()
 
     indices = randint(0, len(evals), samplesize)
     sums = evals[indices]
@@ -424,6 +428,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     arrStats = []
     N = len(data)
     adata = np.array(data)  # more efficient indexing
+    adata.sort()
     succ = None
     # there is a third argument to func which is the array of success
     if len(args) > 1:

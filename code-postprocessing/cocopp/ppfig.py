@@ -691,7 +691,7 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
         res = {}
         for i in dsList:
             dictinstance = i.createDictInstance()
-            for j, idx in list(dictinstance.items()):
+            for j, idx in sorted(list(dictinstance.items())):
                 tmp = StrippedUpDS()
                 idxs = list(k + 1 for k in idx)
                 idxs.insert(0, 0)
@@ -805,6 +805,7 @@ def get_plotting_styles(algorithms, only_foreground=False):
     if not only_foreground:
         for key, value in genericsettings.background.items():
             background_algorithms = [algorithm for algorithm in algorithms if algorithm in value]
+            background_algorithms.sort()
             if len(background_algorithms) > 0:
                 ppfigs_styles = {'marker': '',
                                  'color': key[0],
@@ -818,6 +819,7 @@ def get_plotting_styles(algorithms, only_foreground=False):
                 plotting_styles.append(PlottingStyle(pprldmany_styles, ppfigs_styles, background_algorithms, True))
 
     foreground_algorithms = [key for key in algorithms if key in genericsettings.foreground_algorithm_list]
+    foreground_algorithms.sort()
     plotting_styles.append(PlottingStyle({},
                                          {},
                                          foreground_algorithms if len(foreground_algorithms) > 0 else algorithms,
