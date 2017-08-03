@@ -451,8 +451,12 @@ def main(argv=None):
             print_done()
 
         dictFunc = dsList.dictByFunc()
-        page_title = 'Benchmarking Results for Algorithm %s on the %s Suite' % \
-                     (dictFunc[list(dictFunc.keys())[0]][0].algId, dictFunc[list(dictFunc.keys())[0]][0].get_suite())
+        if dictFunc[list(dictFunc.keys())[0]][0].algId not in ("", "ALG"):
+            algorithm_string = " for Algorithm %s" % dictFunc[list(dictFunc.keys())[0]][0].algId
+        else:
+            algorithm_string = ""
+        page_title = 'Benchmarking Results%s on the %s Suite' % \
+                     (algorithm_string, dictFunc[list(dictFunc.keys())[0]][0].get_suite())
         ppfig.save_single_functions_html(os.path.join(algoutputdir, genericsettings.single_algorithm_file_name),
                                          page_title,
                                          htmlPage = ppfig.HtmlPage.ONE,
