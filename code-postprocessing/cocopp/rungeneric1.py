@@ -455,7 +455,7 @@ def main(argv=None):
             algorithm_string = " for Algorithm %s" % dictFunc[list(dictFunc.keys())[0]][0].algId
         else:
             algorithm_string = ""
-        page_title = 'Benchmarking Results%s on the %s Suite' % \
+        page_title = 'Results%s on the <TT>%s</TT> Benchmark Suite' % \
                      (algorithm_string, dictFunc[list(dictFunc.keys())[0]][0].get_suite())
         ppfig.save_single_functions_html(os.path.join(algoutputdir, genericsettings.single_algorithm_file_name),
                                          page_title,

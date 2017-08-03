@@ -123,7 +123,7 @@ def save_index_html_file(filename):
                    'correctly updated once the post-processing for the ' \
                    'algorithms is rerun.' % (index_file, index_file)
 
-        f.write(html_header % tuple(2 * ['COCO post-processing results'] + [text]))
+        f.write(html_header % tuple(2 * ['COCO Post-Processing Results'] + [text]))
 
         current_dir = os.path.dirname(os.path.realpath(filename))
         indent = '&nbsp;&nbsp;'
