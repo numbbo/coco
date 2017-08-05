@@ -286,8 +286,8 @@ def get_range(input_set):
        :param input_set: input set with integers (if empty, the result is an empty string)
     """
     result = []
-    for k, g in groupby(enumerate(sorted(input_set)), lambda (i, x): i - x):
-        i_list = map(itemgetter(1), g)
+    for k, g in groupby(enumerate(sorted(input_set)), lambda x: x[0] - x[1]):
+        i_list = list(map(itemgetter(1), g))
         if len(i_list) > 1:
             result.append('{}-{}'.format(i_list[0], i_list[-1]))
         else:
