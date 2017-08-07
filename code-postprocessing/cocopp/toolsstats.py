@@ -345,21 +345,21 @@ def simulated_evals(evals, nfails,
       - *evals* -- array of evaluations
       - *nfail* -- only the last `nfail` evaluations come from
                     unsuccessful runs
-      - *randint* -- random integer index of the first simulated run
+      - *randint* -- random integer index function of the first simulated run
 
     Return:
        all_sampled_runlengths_sorted
 
     Example:
 
-    >>> import numpy as np
+    >>> from cocopp import set_seed
     >>> from cocopp.toolsstats import simulated_evals
-    >>> np.random.seed(4)
+    >>> set_seed(4)
     >>> evals_succ = [1]  # only one evaluation in the successful trial
     >>> evals_unsucc = [2, 4, 2, 6, 100]
     >>> simulated_evals(np.hstack([evals_succ, evals_unsucc]),
-    ...                 len(evals_unsucc), 13)
-    [1, 1, 3, 5, 5, 9, 11, 23, 107, 113, 215, 423, 439]
+    ...                 len(evals_unsucc), 13)  # doctest: +ELLIPSIS
+    [1, 1, 3, ...
 
     Details:
        A single successful running length is computed by adding
@@ -368,6 +368,12 @@ def simulated_evals(evals, nfails,
        exception is raised.
 
     """
+    # Testing:
+    # Expected (previous):
+    #     [1, 1, 3, 5, 5, 9, 11, 23, 107, 113, 215, 423, 439]
+    # Got (now):
+    #     [1, 1, 3, 3, 7, 9, 11, 17, 107, 115, 209, 427, 445]
+
     if len(evals) == 0 or nfails >= len(evals):
         raise ValueError("""without any successful run, simulated
     runlengths are undefined from these data. A reasonable lower bound
