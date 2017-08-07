@@ -126,7 +126,7 @@ def run(directory, args, verbose=False):
     finally:
         os.chdir(oldwd)
 
-def python(directory, args, env=None, verbose=False):
+def python(directory, args, env=None, verbose=False, custom_exception_handler=None):
     print("PYTHON\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
     if env is not None:
@@ -144,9 +144,14 @@ def python(directory, args, env=None, verbose=False):
                               universal_newlines=True)
         # print(output)
     except CalledProcessError as e:
-        print("ERROR: return value=%i" % e.returncode)
-        print(e.output)
-        raise
+        if custom_exception_handler is None:
+            print("ERROR: return value=%i" % e.returncode)
+            print(e.output)
+            raise
+        else:
+            exception_handled = custom_exception_handler(e)
+            if not exception_handled:
+                raise
     finally:
         os.chdir(oldwd)
 

@@ -236,6 +236,37 @@ def leak_check():
 
 ################################################################################
 ## Python 2
+def install_error(e):
+    exception_message = e.output.splitlines()
+    formatted_message = ["|" + " " * 77 + "|"]
+    for line in exception_message:
+        while len(line) > 75:
+            formatted_message.append("| " + line[:75] + " |")
+            line = line[75:]
+        formatted_message.append("| " + line.ljust(75) + " |")
+    print("""
+An exception occurred while trying to install packages.
+
+A common reason for this error is insufficient access rights
+to the installation directory. The original exception message
+is as follows:
+
+/----------------------------< EXCEPTION MESSAGE >----------------------------\\
+{0}
+\\-----------------------------------------------------------------------------/
+
+To fix an access rights issue, you may try the following:
+
+- Gain write access to the installation directory by changing
+  access permissions or gaining administrative access
+
+- Run the same command with an additional argument to install
+  to a different directory, as described in the help text. Run
+  do.py without a command to view the help text.
+
+""".format("\n".join(formatted_message)))
+    return True
+
 def install_postprocessing(package_install_option = []):
     ''' Installs the COCO postprocessing as python module. '''
     global RELEASE
@@ -243,7 +274,8 @@ def install_postprocessing(package_install_option = []):
                 join('code-postprocessing', 'setup.py'),
                 {'COCO_VERSION': git_version(pep440=True)})
     # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/cocopp/latex-templates')
-    python('code-postprocessing', ['setup.py', 'install'] + package_install_option, verbose=_verbosity)
+    python('code-postprocessing', ['setup.py', 'install'] + package_install_option, verbose=_verbosity,
+           custom_exception_handler=install_error)
 
 def test_suites(args):
     """regression test on suites via Python"""
@@ -285,7 +317,8 @@ def build_python(env=None, package_install_option = []):
     # os.environ['USE_CYTHON'] = 'true'
     # python('code-experiments/build/python', ['setup.py', 'sdist'])
     # python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'])
-    python(join('code-experiments', 'build', 'python'), ['setup.py', 'install'] + package_install_option, env=env)
+    python(join('code-experiments', 'build', 'python'), ['setup.py', 'install'] + package_install_option,
+                env=env, custom_exception_handler=install_error)
     # os.environ.pop('USE_CYTHON')
 
 
@@ -323,7 +356,8 @@ def run_sandbox_python(directory, script_filename=
         os.environ['PYTHONPATH'] = python_temp_lib
         os.environ['USE_CYTHON'] = 'true'
         python('code-experiments/build/python',
-               ['setup.py', 'install', '--home', python_temp_home], verbose=_verbosity)
+               ['setup.py', 'install', '--home', python_temp_home],
+               verbose=_verbosity, custom_exception_handler=install_error)
         python(directory, [script_filename])
         os.environ.pop('USE_CYTHON')
         os.environ.pop('PYTHONPATH')
@@ -337,8 +371,7 @@ def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']
     _prep_python()
     python('code-experiments/build/python',
            ['setup.py', 'check', '--metadata', '--strict'],
-           env=env,
-           verbose=_verbosity)
+           env=env, verbose=_verbosity)
     ## Now install into a temporary location, run test and cleanup
     python_temp_home = tempfile.mkdtemp(prefix="coco")
     python_temp_lib = os.path.join(python_temp_home, "lib", "python")
@@ -351,9 +384,8 @@ def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']
         os.environ['PYTHONPATH'] = python_temp_lib
         os.environ['USE_CYTHON'] = 'true'
         python('code-experiments/build/python',
-               ['setup.py', 'install', '--home', python_temp_home],
-               env=env,
-               verbose=_verbosity)
+               ['setup.py', 'install', '--home', python_temp_home], env=env,
+               verbose=_verbosity, custom_exception_handler=install_error)
         for folder, more_args in args:
             python(folder, more_args, env=env, verbose=_verbosity)
         # python('code-experiments/build/python',
@@ -761,7 +793,8 @@ def install_preprocessing(package_install_option = []):
     expand_file('code-experiments/src/coco.h', 'code-preprocessing/archive-update/interface/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
     python('code-preprocessing/archive-update',
-           ['setup.py', 'install'] + package_install_option, verbose=_verbosity)
+           ['setup.py', 'install'] + package_install_option,
+           verbose=_verbosity, custom_exception_handler=install_error)
 
 
 def test_preprocessing(package_install_option = []):
@@ -875,39 +908,47 @@ Available commands for users:
 
 Available commands for developers:
 
-  build*                  - Build C, Java and Python modules
-  run*                    - Run example experiments in C, Java and Python
-  silent cmd ...          - Calls "do.py cmd ..." and remains silent if no error occurs
+  build                   - Build C, Java and Python modules (see NOTE below)
+  run                     - Run example experiments in C, Java and Python (see
+                            NOTE below)
+  silent cmd ...          - Calls "do.py cmd ..." and remains silent if no
+                            error occurs
   verbose cmd ...         - Calls "do.py cmd ..." and shows more output
-  test*                   - Test C, Java and Python modules
+  test                    - Test C, Java and Python modules (see NOTE below)
 
   run-sandbox-python      - Run a Python script with installed COCO module
-                            Takes a single argument (name of Python script file)
+                            Takes a single argument(name of Python script file)
 
-  test-c                  - Build and run unit tests, integration tests 
-                            and an example experiment test in C 
+  test-c                  - Build and run unit tests, integration tests
+                            and an example experiment test in C
   test-c-unit             - Build and run unit tests in C
   test-c-integration      - Build and run integration tests in C
-  test-c-example          - Build and run an example experiment test in C 
+  test-c-example          - Build and run an example experiment test in C
   test-java               - Build and run a test in Java
   test-python             - Build and run minimal test of Python module
   test-python2            - Build and run minimal test of Python 2 module
   test-python3            - Build and run minimal test of Python 3 module
   test-octave             - Build and run example experiment in Octave
-  test-postprocessing*    - Runs some of the post-processing tests
-  test-postprocessing-all*- Runs all of the post-processing tests [needs access to the internet]
+  test-postprocessing     - Runs some of the post-processing tests (see NOTE
+                            below)
+  test-postprocessing-all - Runs all of the post-processing tests [needs access
+                            to the internet] (see NOTE below)
   test-suites             - Runs regression test on all benchmark suites
-  verify-postprocessing*  - Checks if the generated html is up-to-date
+  verify-postprocessing   - Checks if the generated html is up-to-date (see
+                            NOTE below)
   leak-check              - Check for memory leaks in C
   
-  install-preprocessing*  - Install preprocessing (user-locally)
-  test-preprocessing*     - Runs preprocessing tests [needs access to the internet]
+  install-preprocessing   - Install preprocessing (user-locally) (see NOTE
+                            below)
+  test-preprocessing      - Runs preprocessing tests [needs access to the
+                            internet] (see NOTE below)
   
-The commands marked with an asterisk (*) install Python packages to the global site packages
-directory by default. This behavior can be modified by providing one of the following arguments.
+NOTE: These commands install Python packages to the global site packages by
+      by default. This behavior can be modified by providing one of the
+      following arguments.
   
-  install-user            - Installs packages into subdirectories of the user directory
-  install-home=<dir>      - Installs packages into subdirectories of the specified home directory
+       install-user       - Installs under the user directory
+       install-home=<dir> - Installs under the specified home directory
 
 To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
