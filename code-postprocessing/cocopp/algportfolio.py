@@ -207,7 +207,7 @@ def build(dictAlg, sortedAlg=None):
                 tmp.append(k[0])
             try:
                 tmpres.append(DataSet(tmp))
-            except Usage err:
+            except Usage as err:
                 print(err.msg, file=sys.stderr)
     res = pp.DataSetList()
     res.extend(tmpres)
