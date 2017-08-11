@@ -26,6 +26,8 @@ else:
     # might be around one day
     from urllib import urlretrieve
 
+test_bibtex = False
+
 def join_path(a, *p):
     joined_path = os.path.join(a, *p)
     return joined_path
@@ -57,13 +59,13 @@ def run_latex_template(filename, all_tests):
     result = subprocess.call(arguments, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
     assert not result, 'Test failed: error while generating pdf from %s.' % filename
 
-    if all_tests:
+    if all_tests and test_bibtex:
         file_path = os.path.splitext(file_path)[0]
         arguments = ['bibtex', file_path]
         DEVNULL = open(os.devnull, 'wb')
         output_file = open("bibtex.log", "w")
         result = subprocess.call(arguments, stdin=DEVNULL, stdout=output_file, stderr=DEVNULL)
-        assert not result, 'Test failed: error while running bibtex on %s.' % os.path.splitext(filename)[0]
+        assert not result, 'Test failed: error while running bibtex on %s resuling in %s' % (os.path.splitext(filename)[0], str(result))
 
 
 def retrieve_algorithm(data_path, folder_name, algorithm_name, file_name=None):
