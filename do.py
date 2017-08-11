@@ -258,7 +258,8 @@ is as follows:
 To fix an access rights issue, you may try the following:
 
 - Gain write access to the installation directory by changing
-  access permissions or gaining administrative access
+  access permissions or gaining administrative access. On UNIX
+  based systems, running python with sudo may help.
 
 - Run the same command with an additional argument to install
   to a different directory, as described in the help text. Run
@@ -892,19 +893,21 @@ Available commands for users:
   build-matlab            - Build Matlab module
   build-matlab-sms        - Build SMS-EMOA example in Matlab
   build-octave            - Build Matlab module in Octave
-  build-python*           - Build Python modules
-  build-python2*          - Build Python 2 modules
-  build-python3*          - Build Python 3 modules
-  install-postprocessing* - Install postprocessing (user-locally)
+  build-python            - Build Python modules (see NOTE below)
+  build-python2           - Build Python 2 modules (see NOTE below)
+  build-python3           - Build Python 3 modules (see NOTE below)
+  install-postprocessing  - Install postprocessing (see NOTE below)
 
   run-c                   - Build and run example experiment in C
   run-java                - Build and run example experiment in Java
   run-matlab              - Build and run example experiment in MATLAB
-  run-matlab-sms          - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
+  run-matlab-sms          - Build and run SMS-EMOA on bbob-biobj suite in
+                            MATLAB
   run-octave              - Build and run example experiment in Octave
-  run-python*             - Build and install COCO module and then run the
-                            example experiment in Python. The optional parameter
-                            "and-test" also runs the tests of `coco_test.py`
+  run-python              - Build and install COCO module and then run the
+                            example experiment in Python. The optional
+                            parameter "and-test" also runs the tests of
+                            `coco_test.py` (see NOTE below)
 
 Available commands for developers:
 
