@@ -257,13 +257,13 @@ is as follows:
 
 To fix an access rights issue, you may try the following:
 
-- Gain write access to the installation directory by changing
-  access permissions or gaining administrative access. On UNIX
-  based systems, running python with sudo may help.
+- Run the same command with "install-user" as additional argument.
+  To get further help run do.py without a specific command.
 
-- Run the same command with an additional argument to install
-  to a different directory, as described in the help text. Run
-  do.py without a command to view the help text.
+- On *nix systems or MacOS, run the same command with a preceded "sudo ".
+
+- Gain write access to the installation directory by changing
+  access permissions or gaining administrative access.
 
 """.format("\n".join(formatted_message)))
     return True
