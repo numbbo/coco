@@ -199,7 +199,7 @@ def make(directory, target, verbose=False):
     oldwd = os.getcwd()
     try:
         os.chdir(directory)
-        print("CHDIR " + os.getcwd())
+        print("CHDIR\t" + os.getcwd())
         # prepare makefile(s)
         if ((('win32' in sys.platform) or ('win64' in sys.platform)) and
             ('cygwin' not in os.environ['PATH'])):
