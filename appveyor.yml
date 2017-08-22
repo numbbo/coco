@@ -31,4 +31,5 @@ test_script:
   - cmd: python do.py test-python
   - cmd: python do.py test-java
   - cmd: python do.py test-preprocessing
-  - cmd: python do.py test-postprocessing-all
+  - cmd: python do.py test-postprocessing
+  # - cmd: python do.py test-postprocessing-all
