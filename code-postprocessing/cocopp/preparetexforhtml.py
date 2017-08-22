@@ -24,7 +24,7 @@ header = """
 
 % Packages
 \\usepackage{graphicx}
-\usepackage[usenames,dvipsnames]{xcolor}
+\\usepackage[usenames,dvipsnames]{xcolor}
 \\usepackage{MnSymbol}
 
 % pre-defined commands
