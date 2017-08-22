@@ -82,7 +82,7 @@ class MultiReader(list):
         """Single data array reader class."""
         def __init__(self, data):
             if len(data) == 0:
-                raise ValueError, 'Empty data array.'
+                raise ValueError('Empty data array.')
             self.data = numpy.array(data)
             self.it = self.data.__iter__()
             self.isFinished = False
@@ -182,7 +182,7 @@ class HMultiReader(MultiReader):
 
         #This should not happen
         if not fvalues:
-            raise ValueError, 'Value %g is not reached.'
+            raise ValueError('Value %g is not reached.')
 
         self.idxCurrentF = min(self.idxCurrentF,
                                numpy.ceil(numpy.log10(max(fvalues)) * nbPtsF))
@@ -263,7 +263,7 @@ def split(dataFiles, dim=None):
             file = open(fil,'r')               # read in the file
             lines = file.readlines()
         except IOError:
-            print 'Could not find %s.' % fil
+            print('Could not find %s.' % fil)
             continue
 
         content = []
