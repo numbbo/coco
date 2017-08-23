@@ -184,6 +184,16 @@ class ArchiveInfo:
         self.current_instance += 1
         return self.problem_instances[self.current_instance - 1]
 
+    def is_suite_bbob_biobj_ext(self):
+        """Returns true if the function numbers in the archive correspond to the extended biobjective suite
+        (bbob-biobj-ext) and false otherwise.
+        """
+        function_set = set()
+        for problem_instance in self.problem_instances:
+            function_set.add(problem_instance.function)
+        extended_functions = range(55, 93)
+        return bool(function_set.intersection(extended_functions))
+
     def get_function_string(self):
         """Returns all the contained functions in a string form (using ranges where possible).
         """
