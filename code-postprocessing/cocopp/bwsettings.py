@@ -14,8 +14,7 @@ from . import ppfigdim, pprldistr, pplogloss, genericsettings
 from .comp2 import ppscatter, ppfig2, pprldistr2
 from .compall import pprldmany, ppfigs
 
-
-print "Using black and white settings."
+print("Using black and white settings.")
 
 instancesOfInterest = genericsettings.instancesOfInterest
 
