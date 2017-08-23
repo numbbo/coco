@@ -41,7 +41,7 @@ references:
       name: Run Python 2 coco tests on Ubuntu.
       command: |
         apt-get install -y git cython
-        python do.py test-python
+        python do.py test-python2
 
   test_ubuntu_python3: &test_ubuntu_python3
     run:
