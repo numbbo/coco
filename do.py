@@ -312,14 +312,14 @@ def _prep_python():
     #     run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
 
 
-def build_python(env=None, package_install_option = []):
+def build_python(package_install_option = []):
     _prep_python()
     ## Force distutils to use Cython
     # os.environ['USE_CYTHON'] = 'true'
     # python('code-experiments/build/python', ['setup.py', 'sdist'])
     # python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'])
     python(join('code-experiments', 'build', 'python'), ['setup.py', 'install'] + package_install_option,
-                env=env, custom_exception_handler=install_error)
+           custom_exception_handler=install_error)
     # os.environ.pop('USE_CYTHON')
 
 
@@ -327,7 +327,7 @@ def run_python(test=False, package_install_option = []):
     """ Builds and installs the Python module `cocoex` and runs the
     `example_experiment.py` as a simple test case. If `test` is True,
     it runs, in addition, the tests in `coco_test.py`."""
-    build_python(package_install_option = package_install_option)
+    build_python(package_install_option=package_install_option)
     try:
         if test:
             python(os.path.join('code-experiments', 'build', 'python'), ['coco_test.py'])
@@ -368,11 +368,11 @@ def run_sandbox_python(directory, script_filename=
         shutil.rmtree(python_temp_home)
 
 
-def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']],), env=None):
+def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']],)):
     _prep_python()
     python('code-experiments/build/python',
            ['setup.py', 'check', '--metadata', '--strict'],
-           env=env, verbose=_verbosity)
+           verbose=_verbosity)
     ## Now install into a temporary location, run test and cleanup
     python_temp_home = tempfile.mkdtemp(prefix="coco")
     python_temp_lib = os.path.join(python_temp_home, "lib", "python")
@@ -385,10 +385,10 @@ def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']
         os.environ['PYTHONPATH'] = python_temp_lib
         os.environ['USE_CYTHON'] = 'true'
         python('code-experiments/build/python',
-               ['setup.py', 'install', '--home', python_temp_home], env=env,
+               ['setup.py', 'install', '--home', python_temp_home],
                verbose=_verbosity, custom_exception_handler=install_error)
         for folder, more_args in args:
-            python(folder, more_args, env=env, verbose=_verbosity)
+            python(folder, more_args, verbose=_verbosity)
         # python('code-experiments/build/python',
         #        ['coco_test.py', 'bbob2009_testcases.txt'], verbose=_verbosity)
         # python('code-experiments/build/python',
@@ -399,26 +399,6 @@ def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']
         sys.exit(-1)
     finally:
         shutil.rmtree(python_temp_home)
-
-
-################################################################################
-## Python 2
-def build_python2(package_install_option = []):
-    build_python(env='python2.7', package_install_option = package_install_option)
-
-
-def test_python2():
-    test_python(env='python2.7')
-
-
-################################################################################
-## Python 3
-def build_python3(package_install_option = []):
-    build_python(env='python3', package_install_option = package_install_option)
-
-
-def test_python3():
-    test_python(env='python3')
 
 
 ################################################################################
@@ -740,11 +720,11 @@ def test_java():
 ################################################################################
 ## Post processing
 def test_postprocessing(all_tests=False, package_install_option = []):
-    install_postprocessing(package_install_option = package_install_option)
+    install_postprocessing(package_install_option=package_install_option)
     if all_tests:
         try:
             # run example experiment to have a recent data set to postprocess:
-            build_python(package_install_option = package_install_option)
+            build_python(package_install_option=package_install_option)
             python('code-experiments/build/python/', ['-c', '''
 try:
     import example_experiment as ee
@@ -775,7 +755,7 @@ ee.main()  # doctest: +ELLIPSIS
     
 
 def verify_postprocessing(package_install_option = []):
-    install_postprocessing(package_install_option = package_install_option)
+    install_postprocessing(package_install_option=package_install_option)
     # This is not affected by the _verbosity value. Verbose should always be True.
     python('code-postprocessing/cocopp', ['preparehtml.py', '-v'], verbose=True)
 
@@ -787,7 +767,7 @@ def install_preprocessing(package_install_option = []):
     expand_file(join('code-preprocessing/archive-update', 'setup.py.in'),
                 join('code-preprocessing/archive-update', 'setup.py'),
                 {'COCO_VERSION': git_version(pep440=True)})
-    build_python(package_install_option = package_install_option)
+    build_python(package_install_option=package_install_option)
     amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
                'code-preprocessing/archive-update/interface/coco.c', RELEASE,
                {"COCO_VERSION": git_version(pep440=True)})
@@ -799,7 +779,7 @@ def install_preprocessing(package_install_option = []):
 
 
 def test_preprocessing(package_install_option = []):
-    install_preprocessing(package_install_option = package_install_option)
+    install_preprocessing(package_install_option=package_install_option)
     python('code-preprocessing/archive-update', ['-m', 'pytest'], verbose=_verbosity)
     python('code-preprocessing/log-reconstruction', ['-m', 'pytest'], verbose=_verbosity)
 
@@ -809,7 +789,7 @@ def build(package_install_option = []):
     builders = [
         build_c,
         # build_matlab,
-        build_python(package_install_option = package_install_option),
+        build_python(package_install_option=package_install_option),
         build_java,
     ]
     for builder in builders:
@@ -827,13 +807,13 @@ def build(package_install_option = []):
 def run_all(package_install_option = []):
     run_c()
     run_java()
-    run_python(package_install_option = package_install_option)
+    run_python(package_install_option=package_install_option)
 
 
 def test(package_install_option = []):
     test_c()
     test_java()
-    test_python(package_install_option = package_install_option)
+    test_python(package_install_option=package_install_option)
 
 
 def verbose(args):
@@ -894,8 +874,6 @@ Available commands for users:
   build-matlab-sms        - Build SMS-EMOA example in Matlab
   build-octave            - Build Matlab module in Octave
   build-python            - Build Python modules (see NOTE below)
-  build-python2           - Build Python 2 modules (see NOTE below)
-  build-python3           - Build Python 3 modules (see NOTE below)
   install-postprocessing  - Install postprocessing (see NOTE below)
 
   run-c                   - Build and run example experiment in C
@@ -929,8 +907,6 @@ Available commands for developers:
   test-c-example          - Build and run an example experiment test in C
   test-java               - Build and run a test in Java
   test-python             - Build and run minimal test of Python module
-  test-python2            - Build and run minimal test of Python 2 module
-  test-python3            - Build and run minimal test of Python 3 module
   test-octave             - Build and run example experiment in Octave
   test-postprocessing     - Runs some of the post-processing tests (see NOTE
                             below)
@@ -975,26 +951,24 @@ def main(args):
     # as long as our tests brake otherwise, '--user' remains default:
     if not package_install_option:
             package_install_option = ['--user']
-    if cmd == 'build': build(package_install_option = package_install_option)
-    elif cmd == 'run': run_all(package_install_option = package_install_option)
-    elif cmd == 'test': test(package_install_option = package_install_option)
+    if cmd == 'build': build(package_install_option=package_install_option)
+    elif cmd == 'run': run_all(package_install_option=package_install_option)
+    elif cmd == 'test': test(package_install_option=package_install_option)
     elif cmd == 'build-c': build_c()
     elif cmd == 'build-java': build_java()
     elif cmd == 'build-matlab': build_matlab()
     elif cmd == 'build-matlab-sms': build_matlab_sms()
     elif cmd == 'build-octave': build_octave()
     elif cmd == 'build-octave-sms': build_octave_sms()
-    elif cmd == 'build-python': build_python(package_install_option = package_install_option)
-    elif cmd == 'build-python2': build_python2(package_install_option = package_install_option)
-    elif cmd == 'build-python3': build_python3(package_install_option = package_install_option)
-    elif cmd == 'install-postprocessing': install_postprocessing(package_install_option = package_install_option)
+    elif cmd == 'build-python': build_python(package_install_option=package_install_option)
+    elif cmd == 'install-postprocessing': install_postprocessing(package_install_option=package_install_option)
     elif cmd == 'run-c': run_c()
     elif cmd == 'run-java': run_java()
     elif cmd == 'run-matlab': run_matlab()
     elif cmd == 'run-matlab-sms': run_matlab_sms()
     elif cmd == 'run-octave': run_octave()
     elif cmd == 'run-octave-sms': run_octave_sms()
-    elif cmd == 'run-python': run_python(also_test_python, package_install_option = package_install_option)
+    elif cmd == 'run-python': run_python(also_test_python, package_install_option=package_install_option)
     elif cmd == 'silent': silent(args[1:])
     elif cmd == 'verbose': verbose(args[1:])
     elif cmd == 'test-c': test_c()
@@ -1003,16 +977,14 @@ def main(args):
     elif cmd == 'test-c-example': test_c_example()
     elif cmd == 'test-java': test_java()
     elif cmd == 'test-python': test_python()
-    elif cmd == 'test-python2': test_python2()
-    elif cmd == 'test-python3': test_python3()
     elif cmd == 'test-octave': test_octave()
-    elif cmd == 'test-postprocessing': test_postprocessing(all_tests = False, package_install_option = package_install_option)
-    elif cmd == 'test-postprocessing-all': test_postprocessing(all_tests = True, package_install_option = package_install_option)
+    elif cmd == 'test-postprocessing': test_postprocessing(all_tests=False, package_install_option=package_install_option)
+    elif cmd == 'test-postprocessing-all': test_postprocessing(all_tests=True, package_install_option=package_install_option)
     elif cmd == 'test-suites': test_suites(args[1:])
-    elif cmd == 'verify-postprocessing': verify_postprocessing(package_install_option = package_install_option)
+    elif cmd == 'verify-postprocessing': verify_postprocessing(package_install_option=package_install_option)
     elif cmd == 'leak-check': leak_check()
-    elif cmd == 'install-preprocessing': install_preprocessing(package_install_option = package_install_option)
-    elif cmd == 'test-preprocessing': test_preprocessing(package_install_option = package_install_option)
+    elif cmd == 'install-preprocessing': install_preprocessing(package_install_option=package_install_option)
+    elif cmd == 'test-preprocessing': test_preprocessing(package_install_option=package_install_option)
     else: help()
 
 
