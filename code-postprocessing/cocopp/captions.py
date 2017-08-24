@@ -18,15 +18,31 @@ from . import pproc, toolsdivers
 ynormalize_by_dimension = True
 
 
-def replace(text):
-    """Replaces all !!KEYWORDS!! in the text as specified in replace_dict."""
+def replace(text, html=False):
+    """Replaces all !!KEYWORDS!! in the text as specified in replace_dict.
     
+       If html==True, some translation is done before and after the
+       actual replacement in order to deal with HTML-specific codings.
+    """
+
+    #if html:
+    text = text.replace(r'&#8722;', '-')
+    text = text.replace(r'&#9830;', '\Diamond')
+    text = text.replace(r'&#11041;', '\varhexagon')
+    text = text.replace(r'&#9661;', '\triangledown')
+
     for key in replace_dict:
         if key in text:
             text = text.replace(key, replace_dict[key]())
-    
-    # TODO: give a warning if in the resulting text, still some `!!` occur
-    
+
+    if '!!' in text:
+        warnings.warn("Still '!!' occur in caption of ppscatter after replacement.")
+
+    if html:
+        text = text.replace('-', '&#8722;')
+        text = text.replace('\Diamond', '&#9830;')
+        text = text.replace('\varhexagon', '&#11041;')
+
     return text
     
     
@@ -130,7 +146,8 @@ replace_dict = {
         '!!NUM-OF-TARGETS-IN-ECDF!!': lambda: str(len(testbedsettings.current_testbed.pprldmany_target_values)),
         '!!TARGET-RANGES-IN-ECDF!!': lambda: str(testbedsettings.current_testbed.pprldmany_target_range_latex),
         '!!TOTAL-NUM-OF-FUNCTIONS!!': lambda: str(testbedsettings.current_testbed.last_function_number - testbedsettings.current_testbed.first_function_number + 1),
-        '!!BEST-ART!!': lambda: get_best_art_text()
+        '!!BEST-ART!!': lambda: get_best_art_text(),
+        '!!NBTARGETS-SCATTER!!': lambda: str(len(testbedsettings.current_testbed.ppscatter_target_values))
          }
 
 

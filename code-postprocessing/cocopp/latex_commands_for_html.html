@@ -29,7 +29,7 @@
 
 ##bbobECDFslegendrlbased##
 
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for all functions and subgroups in DIMVALUE-D. The targets are chosen from 10<sup>[&#8722;8..2]</sup> such that the best algorithm from BBOB 2009 just not reached them within a given budget of k &times; DIM, with 31 different values of k chosen equidistant in logscale within the interval {0.5, ..., 50}. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for all functions and subgroups in -D. The targets are chosen from !!TARGET-RANGES-IN-ECDF!! such that !!THE-REF-ALG!! just not reached them within a given budget of k &times; DIM, with !!NUM&#8722;OF&#8722;TARGETS&#8722;IN&#8722;ECDF!! different values of k chosen equidistant in logscale within the interval {0.5, ..., 50}. As reference algorithm, !!THE-REF-ALG!! is shown as light thick line with diamond markers.
 
 <div class="p"><!----></div>
 ##bbobppfigslegendrlbased##
@@ -109,7 +109,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         the rank-sum test) compared to the best algorithm from BBOB 2009, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k  &gt;  1 is following the
         &#8595; symbol, with Bonferroni correction by the number of
-        functions.??COCOVERSION??
+        functions (24).??COCOVERSION??
 
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendrlbased##
@@ -126,14 +126,14 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction of 48. A &#8595; indicates the same tested against the best algorithm from BBOB 2009. Best results are printed in bold.
+        than 1, with Bonferroni correction by the number of functions (24). A &#8595; indicates the same tested against the best algorithm from BBOB 2009. Best results are printed in bold.
         ??COCOVERSION??
 
 <div class="p"><!----></div>
 ##bbobppscatterlegendrlbased##
 
 Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
-        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS!! runlength-based target
+        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS&#8722;SCATTER!! runlength-based target
         values for budgets between !!NBLOW!! and !!NBUP!! evaluations.
         Each runlength-based target !!F!!-value is chosen such that the <span class="roman">aRT</span>s of 
         !!THE-REF-ALG!! for the given and a slightly easier
@@ -176,7 +176,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of
 <div class="p"><!----></div>
 ##bbobECDFslegendfixed##
 
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 51 targets with target precision in 10<sup>[&#8722;8..2]</sup> for all functions and subgroups in DIMVALUE-D. The "best 2009" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2009 for each selected target.
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for !!NUM&#8722;OF&#8722;TARGETS&#8722;IN&#8722;ECDF!! targets with target precision in !!TARGET-RANGES-IN-ECDF!! for all functions and subgroups in -D. As reference algorithm, !!THE-REF-ALG!! is shown as light thick line with diamond markers.
 
 <div class="p"><!----></div>
 ##bbobppfigslegendfixed##
@@ -256,7 +256,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         the rank-sum test) compared to the best algorithm from BBOB 2009, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k  &gt;  1 is following the
         &#8595; symbol, with Bonferroni correction by the number of
-        functions.??COCOVERSION??
+        functions (24).??COCOVERSION??
 
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendfixed##
@@ -274,14 +274,14 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction of 48. A &#8595; indicates the same tested against the best algorithm from BBOB 2009. Best results are printed in bold.
+        than 1, with Bonferroni correction by the number of functions (24). A &#8595; indicates the same tested against the best algorithm from BBOB 2009. Best results are printed in bold.
         ??COCOVERSION??
 
 <div class="p"><!----></div>
 ##bbobppscatterlegendfixed##
 
 Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
-        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS!! target values
+        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS&#8722;SCATTER!! target values
         !!DF!!  &#8712; [!!NBLOW!!, !!NBUP!!] in each dimension on functions f<sub>1</sub> - f<sub>24</sub>. Markers on the upper or right edge indicate that the respective target
         value was never reached. Markers represent dimension:
         2:<span style="color:#00FFFF">+</span>,
@@ -321,7 +321,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of
 <div class="p"><!----></div>
 ##bbobECDFslegendbiobjfixed##
 
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 58 targets with target precision in {&#8722;10<sup>&#8722;4</sup>, &#8722;10<sup>&#8722;4.2</sup>,  &#8722;10<sup>&#8722;4.4</sup>, &#8722;10<sup>&#8722;4.6</sup>, &#8722;10<sup>&#8722;4.8</sup>, &#8722;10<sup>&#8722;5</sup>, 0, 10<sup>&#8722;5</sup>, 10<sup>&#8722;4.9</sup>, 10<sup>&#8722;4.8</sup>, ..., 10<sup>&#8722;0.1</sup>, 10<sup>0</sup>} for all functions and subgroups in DIMVALUE-D. The "best 2016" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2016 for each selected target.
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for !!NUM&#8722;OF&#8722;TARGETS&#8722;IN&#8722;ECDF!! targets with target precision in !!TARGET-RANGES-IN-ECDF!! for all functions and subgroups in -D. As reference algorithm, !!THE-REF-ALG!! is shown as light thick line with diamond markers.
 
 <div class="p"><!----></div>
 ##bbobppfigslegendbiobjfixed##
@@ -399,7 +399,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         the rank-sum test) compared to the best algorithm from BBOB 2016, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k  &gt;  1 is following the
         &#8595; symbol, with Bonferroni correction by the number of
-        functions.??COCOVERSION??
+        functions (55).??COCOVERSION??
 
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendbiobjfixed##
@@ -417,14 +417,14 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction of 110. A &#8595; indicates the same tested against the best algorithm from BBOB 2016. Best results are printed in bold.
+        than 1, with Bonferroni correction by the number of functions (55). A &#8595; indicates the same tested against the best algorithm from BBOB 2016. Best results are printed in bold.
         ??COCOVERSION??
 
 <div class="p"><!----></div>
 ##bbobppscatterlegendbiobjfixed##
 
 Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
-        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS!! target values
+        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS&#8722;SCATTER!! target values
         !!DF!!  &#8712; [!!NBLOW!!, !!NBUP!!] in each dimension on functions f<sub>1</sub> - f<sub>55</sub>. Markers on the upper or right edge indicate that the respective target
         value was never reached. Markers represent dimension:
         2:<span style="color:#00FFFF">+</span>,
@@ -464,7 +464,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of
 <div class="p"><!----></div>
 ##bbobECDFslegendbiobjrlbased##
 
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for all functions and subgroups in DIMVALUE-D. The targets are chosen from {&#8722;10<sup>&#8722;4</sup>, &#8722;10<sup>&#8722;4.2</sup>,  &#8722;10<sup>&#8722;4.4</sup>, &#8722;10<sup>&#8722;4.6</sup>, &#8722;10<sup>&#8722;4.8</sup>, &#8722;10<sup>&#8722;5</sup>, 0, 10<sup>&#8722;5</sup>, 10<sup>&#8722;4.9</sup>, 10<sup>&#8722;4.8</sup>, ..., 10<sup>&#8722;0.1</sup>, 10<sup>0</sup>} such that the best algorithm from BBOB 2016 just not reached them within a given budget of k &times; DIM, with 31 different values of k chosen equidistant in logscale within the interval {0.5, ..., 50}. The "best 2016" line corresponds to the best <span class="roman">aRT</span>&nbsp;observed during BBOB 2016 for each selected target.
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for all functions and subgroups in -D. The targets are chosen from !!TARGET-RANGES-IN-ECDF!! such that !!THE-REF-ALG!! just not reached them within a given budget of k &times; DIM, with !!NUM&#8722;OF&#8722;TARGETS&#8722;IN&#8722;ECDF!! different values of k chosen equidistant in logscale within the interval {0.5, ..., 50}. As reference algorithm, !!THE-REF-ALG!! is shown as light thick line with diamond markers.
 
 <div class="p"><!----></div>
 ##bbobppfigslegendbiobjrlbased##
@@ -545,7 +545,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         the rank-sum test) compared to the best algorithm from BBOB 2016, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k  &gt;  1 is following the
         &#8595; symbol, with Bonferroni correction by the number of
-        functions.??COCOVERSION??
+        functions (55).??COCOVERSION??
 
 <div class="p"><!----></div>
 ##bbobpptablesmanylegendbiobjrlbased##
@@ -562,14 +562,14 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction of 110. A &#8595; indicates the same tested against the best algorithm from BBOB 2016. Best results are printed in bold.
+        than 1, with Bonferroni correction by the number of functions (55). A &#8595; indicates the same tested against the best algorithm from BBOB 2016. Best results are printed in bold.
         ??COCOVERSION??
 
 <div class="p"><!----></div>
 ##bbobppscatterlegendbiobjrlbased##
 
 Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
-        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS!! runlength-based target
+        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS&#8722;SCATTER!! runlength-based target
         values for budgets between !!NBLOW!! and !!NBUP!! evaluations.
         Each runlength-based target !!F!!-value is chosen such that the <span class="roman">aRT</span>s of 
         !!THE-REF-ALG!! for the given and a slightly easier
@@ -612,7 +612,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of
 <div class="p"><!----></div>
 ##bbobECDFslegendbiobjextfixed##
 
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 58 targets with target precision in {&#8722;10<sup>&#8722;4</sup>, &#8722;10<sup>&#8722;4.2</sup>,  &#8722;10<sup>&#8722;4.4</sup>, &#8722;10<sup>&#8722;4.6</sup>, &#8722;10<sup>&#8722;4.8</sup>, &#8722;10<sup>&#8722;5</sup>, 0, 10<sup>&#8722;5</sup>, 10<sup>&#8722;4.9</sup>, 10<sup>&#8722;4.8</sup>, ..., 10<sup>&#8722;0.1</sup>, 10<sup>0</sup>} for all functions and subgroups in DIMVALUE-D. 
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for !!NUM&#8722;OF&#8722;TARGETS&#8722;IN&#8722;ECDF!! targets with target precision in !!TARGET-RANGES-IN-ECDF!! for all functions and subgroups in -D. 
 
 <div class="p"><!----></div>
 ##bbobppfigslegendbiobjextfixed##
@@ -703,14 +703,14 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction of 184. Best results are printed in bold.
+        than 1, with Bonferroni correction by the number of functions (92). Best results are printed in bold.
         ??COCOVERSION??
 
 <div class="p"><!----></div>
 ##bbobppscatterlegendbiobjextfixed##
 
 Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
-        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS!! target values
+        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS&#8722;SCATTER!! target values
         !!DF!!  &#8712; [!!NBLOW!!, !!NBUP!!] in each dimension on functions f<sub>1</sub> - f<sub>92</sub>. Markers on the upper or right edge indicate that the respective target
         value was never reached. Markers represent dimension:
         2:<span style="color:#00FFFF">+</span>,
@@ -750,7 +750,7 @@ Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of
 <div class="p"><!----></div>
 ##bbobECDFslegendconstrainedfixed##
 
-Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for 41 targets with target precision in 10<sup>[&#8722;6..2]</sup> for all functions and subgroups in DIMVALUE-D. 
+Bootstrapped empirical cumulative distribution of the number of objective function evaluations divided by dimension (FEvals/DIM) for !!NUM&#8722;OF&#8722;TARGETS&#8722;IN&#8722;ECDF!! targets with target precision in !!TARGET-RANGES-IN-ECDF!! for all functions and subgroups in -D. 
 
 <div class="p"><!----></div>
 ##bbobppfigslegendconstrainedfixed##
@@ -841,14 +841,14 @@ Average running time (<span class="roman">aRT</span>&nbsp;in number of f-evaluat
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         p = 0.05 or p = 10<sup>&#8722;k</sup> when the number k following the star is larger
-        than 1, with Bonferroni correction of 96. A &#8595; indicates the same tested against . Best results are printed in bold.
+        than 1, with Bonferroni correction by the number of functions (48). A &#8595; indicates the same tested against . Best results are printed in bold.
         ??COCOVERSION??
 
 <div class="p"><!----></div>
 ##bbobppscatterlegendconstrainedfixed##
 
 Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of number of function evaluations)
-        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS!! target values
+        of algorithmA&nbsp;(y-axis) versus algorithmB&nbsp;(x-axis) for !!NBTARGETS&#8722;SCATTER!! target values
         !!DF!!  &#8712; [!!NBLOW!!, !!NBUP!!] in each dimension on functions f<sub>1</sub> - f<sub>48</sub>. Markers on the upper or right edge indicate that the respective target
         value was never reached. Markers represent dimension:
         2:<span style="color:#00FFFF">+</span>,
@@ -892,5 +892,5 @@ Average running time (<span class="roman">aRT</span>&nbsp;in log<sub>10</sub> of
 T<sub><span class="small">E</span></sub>X
 by <a href="http://hutchinson.belmont.ma.us/tth/">
 T<sub><span class="small">T</span></sub>H</a>,
-version 4.08.<br />On 27 Jun 2017, 11:22.</small>
+version 4.08.<br />On 24 Aug 2017, 16:35.</small>
 </html>
