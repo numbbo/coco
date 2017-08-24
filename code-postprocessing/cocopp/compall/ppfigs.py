@@ -25,14 +25,16 @@ def fix_styles(plotting_styles, line_styles):
         if plotting_styles.in_background:
             line_styles[i].update(plotting_styles.ppfigs_styles)
         else:
-            line_styles[i].update({'linewidth': 5 - min([2, i / 3.0]),  # thinner lines over thicker lines
-                                   'markeredgewidth': 6 - min([2, i / 2.0]),
+            line_styles[i].update({'linewidth': 4 - min([2, i / 3.0]),  # thinner lines over thicker lines
+                                   'markeredgewidth': 3 - min([2, i / 2.0]),
+                                   'markersize': int(line_styles[i]['markersize'] / 2),
                                    'markerfacecolor': 'None'})
 
 refcolor = 'wheat'
 
 show_algorithms = []
-fontsize = 10.0
+fontsize = 14.0
+legend_max_text_len = 11
 legend = False
 
 
@@ -388,7 +390,8 @@ def beautify(legend=False, rightlegend=False):
     axisHandle.set_yticklabels(tmp2)
 
     if legend:
-        toolsdivers.legend(loc=0, numpoints=1)
+        toolsdivers.legend(loc=0, numpoints=1,
+                           fontsize=2.5*fontsize/len(plt.gca().get_legend_handles_labels()[1])**0.5)
 
 def generateData(dataSet, target):
     """Returns an array of results to be plotted.
@@ -499,7 +502,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                 algorithm_name = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(alg))
                 if plotting_style.in_background:
                     algorithm_name = '_' + algorithm_name
-                tmp = plt.plot([], [], label=algorithm_name, **line_styles[i])
+                tmp = plt.plot([], [], label=algorithm_name[:legend_max_text_len], **line_styles[i])
                 plt.setp(tmp[0], markersize=12.,
                          markeredgecolor=plt.getp(tmp[0], 'color'))
 
@@ -558,7 +561,11 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                             xstar.append(dim)
                             ystar.append(ert/dim)
 
-            plt.plot(xstar, ystar, 'k*', markerfacecolor=None, markeredgewidth=2, markersize=0.5*styles[0]['markersize'])
+            plt.plot(xstar, ystar, '*',
+                     markerfacecolor='k',
+                     markeredgecolor='r',
+                     markeredgewidth=0.7,
+                     markersize=0.9*styles[0]['markersize'])
         
         fontSize = genericsettings.getFontSize(funInfos.values())
         if f in funInfos.keys():
@@ -568,8 +575,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
         isLegend = False
         if legend:
             plotLegend(handles)
-        elif 1 < 3:
-            if f in functions_with_legend and len(sorted_algorithms) < 6: # 6 elements at most in the boxed legend
+        elif f in functions_with_legend and len(sorted_algorithms) < 1e6: # 6 elements at most in the boxed legend
                 isLegend = True
 
         beautify(legend=isLegend, rightlegend=legend)
@@ -597,7 +603,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
         infotext += ' instances\n'
         infotext += 'target ' + target.label_name() + ': ' + target.label(0)
         plt.text(plt.xlim()[0], plt.ylim()[0],
-                 infotext, fontsize=14, horizontalalignment="left",
+                 infotext, fontsize=fontsize, horizontalalignment="left",
                  verticalalignment="bottom")
 
         save_figure(filename, dictAlg[algorithms_with_data[0]][0].algId)
