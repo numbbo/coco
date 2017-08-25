@@ -571,10 +571,10 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                             ystar.append(ert/dim)
 
             plt.plot(xstar, ystar, '*',
-                     markerfacecolor='k',
-                     markeredgecolor='r',
+                     markerfacecolor='k',  # visible over light colors
+                     markeredgecolor='red',  # visible over dark colors
                      markeredgewidth=0.7,
-                     markersize=0.9*styles[0]['markersize'])
+                     markersize=styles[0]['markersize'])
         
         fontSize = genericsettings.getFontSize(funInfos.values())
         if f in funInfos.keys():
