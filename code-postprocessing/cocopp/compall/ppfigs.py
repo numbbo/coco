@@ -15,6 +15,23 @@ from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 
 show_significance = 0.01  # for zero nothing is shown
 
+refcolor = 'wheat'
+
+show_algorithms = []
+fontsize = 14.0
+legend_text_max_len = 14
+legend = False
+
+def legend_fontsize_scaler(number_of_entries=None):
+    """return a fontsize scaling factor depending on the number of entries
+    in the legend.
+
+    Works currently well with fontsize 14, where a legend with up to ~30
+    entries will still fit into the figure.
+    """
+    if not number_of_entries:
+        number_of_entries = len(plt.gca().get_legend_handles_labels()[1])
+    return 2.55 / (number_of_entries + 1.5)**0.5
 
 def fix_styles(plotting_styles, line_styles):
     """a short hack to fix length of styles"""
@@ -29,14 +46,6 @@ def fix_styles(plotting_styles, line_styles):
                                    'markeredgewidth': 3 - min([2, i / 2.0]),
                                    'markersize': int(line_styles[i]['markersize'] / 2),
                                    'markerfacecolor': 'None'})
-
-refcolor = 'wheat'
-
-show_algorithms = []
-fontsize = 14.0
-legend_max_text_len = 11
-legend = False
-
 
 def prepare_scaling_figure_caption():
 
@@ -391,7 +400,7 @@ def beautify(legend=False, rightlegend=False):
 
     if legend:
         toolsdivers.legend(loc=0, numpoints=1,
-                           fontsize=2.5*fontsize/len(plt.gca().get_legend_handles_labels()[1])**0.5)
+                           fontsize=fontsize * legend_fontsize_scaler())
 
 def generateData(dataSet, target):
     """Returns an array of results to be plotted.
@@ -502,7 +511,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                 algorithm_name = toolsdivers.str_to_latex(toolsdivers.strip_pathname1(alg))
                 if plotting_style.in_background:
                     algorithm_name = '_' + algorithm_name
-                tmp = plt.plot([], [], label=algorithm_name[:legend_max_text_len], **line_styles[i])
+                tmp = plt.plot([], [], label=algorithm_name[:legend_text_max_len], **line_styles[i])
                 plt.setp(tmp[0], markersize=12.,
                          markeredgecolor=plt.getp(tmp[0], 'color'))
 
