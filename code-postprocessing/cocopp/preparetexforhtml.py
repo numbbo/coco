@@ -92,7 +92,7 @@ def main(latex_commands_for_html):
 
         # 2. pprldistr
         f.writelines(prepare_providecommand('bbobpprldistrlegend', scenario,
-                                            pprldistr.caption_single().replace('TO_BE_REPLACED', 'TOBEREPLACED')))
+                                            pprldistr.caption_single()))
         pprldistrtwo = (pprldistr.caption_two()).replace('\\algorithmA', 'algorithmA')
         pprldistrtwo = pprldistrtwo.replace('\\algorithmB', 'algorithmB')
         f.writelines(prepare_providecommand('bbobpprldistrlegendtwo', scenario, pprldistrtwo))

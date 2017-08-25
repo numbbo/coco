@@ -25,23 +25,21 @@ def replace(text, html=False):
        actual replacement in order to deal with HTML-specific codings.
     """
 
-    #if html:
-    text = text.replace(r'&#8722;', '-')
-    text = text.replace(r'&#9830;', '\Diamond')
-    text = text.replace(r'&#11041;', '\varhexagon')
-    text = text.replace(r'&#9661;', '\triangledown')
+    if html:
+        text = text.replace(r'&#8722;', '-')
 
     for key in replace_dict:
         if key in text:
             text = text.replace(key, replace_dict[key]())
 
     if '!!' in text:
-        warnings.warn("Still '!!' occur in caption of ppscatter after replacement.")
+        warnings.warn("Still, '!!' occurs in caption after replacement: " + text)
 
     if html:
-        text = text.replace('-', '&#8722;')
-        text = text.replace('\Diamond', '&#9830;')
-        text = text.replace('\varhexagon', '&#11041;')
+        text = text.replace('-D', 'different dimensions') # for caption in pprldmany.html
+        text = text.replace('-', r'&#8722;')
+        text = text.replace('\\triangledown', '<span style="color:#008D00">&#9661;</span>') # to color and display correctly in ppscatter.py
+        text = text.replace('\\Diamond', '&#9671;')
 
     return text
     
