@@ -66,6 +66,7 @@ perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  
 nbperdecade = 1
 median_max_evals_marker_format = ['x', 24, 3]
 label_fontsize = 17
+title_fontsize = 20
 styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
 
 refcolor = 'wheat'
@@ -797,7 +798,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                                  functionGroups[dictKey],
                                  dimList[0])
     else:
-        text = '%s - %s' % (testbedsettings.current_testbed.name,
+        text = '%s %s' % (testbedsettings.current_testbed.name,
                             ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f'))
         if not (plotType == PlotType.DIM):
             text += ', %d-D' % dimList[0]
@@ -805,12 +806,12 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     text += '\n'
     targetstrings = target_values.labels()
     if isinstance(target_values, pp.RunlengthBasedTargetValues):
-        text += (str(len(targetstrings)) + ' target RLs/dim: ' +
+        text += (str(len(targetstrings)) + ' targets RLs/dim: ' +
                  targetstrings[0] + '..' +
                  targetstrings[len(targetstrings)-1] + '\n')
-        text += '   from ' + testbedsettings.current_testbed.reference_algorithm_filename
+        text += '  from ' + testbedsettings.current_testbed.reference_algorithm_filename[:18]
     else:
-        text += (str(len(targetstrings)) + ' targets in ' +
+        text += (str(len(targetstrings)) + ' targets: ' +
                  targetstrings[0] + '..' +
                  targetstrings[len(targetstrings)-1])        
     # add number of instances 
@@ -832,11 +833,15 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     text = text.rstrip(', ')
     text += ' instances'
 
-    plt.text(0.01, 0.98, text, horizontalalignment="left",
-             verticalalignment="top", transform=plt.gca().transAxes, size='small')
+    plt.text(0.01, 0.99, text,
+             horizontalalignment="left",
+             verticalalignment="top",
+             transform=plt.gca().transAxes,
+             fontsize=0.6*label_fontsize)
     if len(dictFunc) == 1:
         plt.title(' '.join((str(list(dictFunc.keys())[0]),
-                            testbedsettings.current_testbed.short_names[list(dictFunc.keys())[0]])))
+                            testbedsettings.current_testbed.short_names[list(dictFunc.keys())[0]])),
+                  fontsize=title_fontsize)
     a = plt.gca()
 
     plt.xlim(xmin=1e-0, xmax=x_limit ** annotation_space_end_relative)
