@@ -17,20 +17,27 @@ from six import string_types, advance_iterator
 # absolute_import => . refers to where ppfig resides in the package:
 from . import genericsettings, testbedsettings, toolsstats, htmldesc, toolsdivers
 
-def bbox_inches():
-    """return a "smart" tight bounding box
+def adjust_bbox_figure():
+    """change figure bbox by pretending there were no points drawn beyond
+    xlim[0],
+
+    to enable a tight bounding box for saving later on. The tight
+    saving later on still respects ticks and labels.
+
+    There might (should!?) be a better way to do this, if I would only
+    know how.
     """
     fig = plt.gcf()
     try:
-        # tight bbox size which "only accounts axes title, axis labels,
-        # and axis ticklabels" (https://matplotlib.org/api/figure_api.html)
-        # caveat: not all fig.canvas have a get_renderer method
-        tight_bbox = fig.get_tightbbox(fig.canvas.get_renderer())
-        x0, y0, w, h = tight_bbox.bounds
-        tight_bbox.set_points([[x0, y0], [x0 + 1.06 * w, y0 + h]])
+        bbox = fig.get_tightbbox(fig.canvas.get_renderer())
+        bbox = bbox._bbox  # bbox itself is transformed and does not have a set_points method
+        x0, y0, w, h = bbox.bounds
+        bbox.set_points([[plt.xlim()[0], y0], [x0, y0 + h]])
+        # fig.set_clip_box(bbox)
+        # fig.set_clip_on(True)
     except:
-        tight_bbox = 'tight'
-    return tight_bbox  # do we also need to set pad_inches = 0?
+        print(plt.gca().title.get_text())
+        raise
 
 
 # CLASS DEFINITIONS
@@ -73,10 +80,21 @@ def save_figure(filename, algorithm=None, fig_format=()):
 
     for format in fig_format:
         try:
+            try:  # just in case we are working with an old version
+                adjust_bbox_figure()  # tighten bounding box of drawings
+                # y1=0.92 extends the figure to the right
+                plt.tight_layout(pad=0.15, rect=(0, 0, 0.92, 1))  
+            except Exception as e:
+                warnings.warn(
+                    'Figure tightening failed (matplotlib version %s)'
+                    ' with Exception: "%s"' %
+                    (plt.matplotlib.__version__, str(e)))
             plt.savefig(filename + '.' + format,
                         dpi=60 if genericsettings.in_a_hurry else 300,
                         format=format,
-                        bbox_inches=bbox_inches()
+                        # bbox_inches='tight',  # this does not work
+                        # pad_inches=?  # default is 0.1?
+                        # bbox_inches=bbox_inches()
                         )
             if genericsettings.verbose:
                 print('Wrote figure in %s.' % (filename + '.' + format))
@@ -476,7 +494,7 @@ def discretize_limits(limits, smaller_steps_limit=3.1):
 
 
 def marker_positions(xdata, ydata, nbperdecade, maxnb,
-                     ax_limits=None, y_transformation=None):
+                     ax_limits=None, y_transformation=None, xmin=1.1):
     """return randomized marker positions
 
     replacement for downsample, could be improved by becoming independent
@@ -506,8 +524,9 @@ def marker_positions(xdata, ydata, nbperdecade, maxnb,
         for xact in np.arange(0, 1, 1. / nbmarkers):
             pos = xoff + xact + (1. / nbmarkers) * (0.3 + 0.4 * np.random.rand())
             idx = np.abs(cum - pos).argmin()  # index of closest value
-            xpos.append(xdata[idx])
-            ypos.append(ydata[idx])
+            if xdata[idx] > xmin:
+                xpos.append(xdata[idx])
+                ypos.append(ydata[idx])
     xpos.append(xdata[-1])
     ypos.append(ydata[-1])
     return xpos, ypos
