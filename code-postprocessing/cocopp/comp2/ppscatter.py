@@ -386,7 +386,7 @@ def main(dsList0, dsList1, outputdir, settings):
 
         fontSize = genericsettings.getFontSize(funInfos.values())
         if f in funInfos.keys():        
-            plt.ylabel(funInfos[f], fontsize=fontSize)
+            plt.title(funInfos[f], fontsize=0.75*fontSize)
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
         save_figure(filename, dsList0[0].algId)
