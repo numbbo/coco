@@ -24,18 +24,11 @@ from .comp2 import ppfig2, ppscatter
 from .compall import pprldmany
 
 
-def target_values(is_expensive):
+def config_target_values_setting(is_expensive, is_runlength_based):
     """manage target values setting in "expensive" optimization scenario.
-
     """
-
-    if is_expensive:
-        genericsettings.runlength_based_targets = True
-        genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive
-    else:
-        genericsettings.runlength_based_targets = False
-        genericsettings.maxevals_fix_display = None
-
+    genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive if is_expensive else None
+    genericsettings.runlength_based_targets = is_runlength_based or is_expensive
 
 def config(testbed_name=None):
     """called from a high level, e.g. rungeneric, to configure the lower level
@@ -58,13 +51,16 @@ def config(testbed_name=None):
             genericsettings.runlength_based_targets = False
 
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets
-    if genericsettings.runlength_based_targets in (True, 1):
+    if genericsettings.runlength_based_targets in (True, 1) and not tbs.current_testbed:
+        # this message may be removed at some point
+        print('  runlength-based targets are on, but there is no testbed available (yet)')
+    if genericsettings.runlength_based_targets in (True, 1) and tbs.current_testbed:
         
         print('Reference algorithm based target values, using ' +
               tbs.current_testbed.reference_algorithm_filename +
-              ': now for each function, the target ' + 
-              'values differ, but the "level of difficulty" ' +
-              'is "the same". ')
+              ':\n  now for each function, the target '
+              'values differ, but the "level of difficulty" '
+              'is "the same".')
 
         reference_data = 'testbedsettings'
         # pprldmany:
