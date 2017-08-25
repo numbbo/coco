@@ -31,6 +31,10 @@ def replace(text, html=False):
     for key in replace_dict:
         if key in text:
             text = text.replace(key, replace_dict[key]())
+    if html:
+        for key in replace_dict_html:
+            if key in text:
+                text = text.replace(key, replace_dict_html[key]())
 
     if '!!' in text:
         warnings.warn("Still, '!!' occurs in caption after replacement: " + text)
@@ -148,6 +152,10 @@ replace_dict = {
         '!!NBTARGETS-SCATTER!!': lambda: str(len(testbedsettings.current_testbed.ppscatter_target_values))
          }
 
+replace_dict_html = {
+        '\\Df': lambda: str(r"""&Delta;f"""),
+        '\\DI': lambda: str(r"""&Delta;I""")
+        }
 
 
 def get_ppfigs_ftarget():
