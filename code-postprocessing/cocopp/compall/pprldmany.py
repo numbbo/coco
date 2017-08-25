@@ -65,7 +65,7 @@ save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
 median_max_evals_marker_format = ['x', 24, 3]
-label_fontsize = 18
+label_fontsize = 17
 styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
 
 refcolor = 'wheat'
@@ -180,15 +180,15 @@ def beautify():
     global divide_by_dimension
     if divide_by_dimension:
         if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
-            plt.xlabel('log10 of # (f+g)-evals / dimension', fontsize=label_fontsize)
+            plt.xlabel('log10(# (f+g)-evals / dimension)', fontsize=label_fontsize)
         else:
-            plt.xlabel('log10 of (# f-evals / dimension)', fontsize=label_fontsize)
+            plt.xlabel('log10(# f-evals / dimension)', fontsize=label_fontsize)
     else:
         if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
             plt.xlabel('log10 of # (f+g)-evals', fontsize=label_fontsize)
         else:
             plt.xlabel('log10 of # f-evals', fontsize=label_fontsize)
-    plt.ylabel('Proportion of function+target pairs', fontsize=label_fontsize)
+    plt.ylabel('Fraction of function,target pairs', fontsize=label_fontsize)
     ppfig.logxticks()
     pprldistr.beautifyECDF()
 
