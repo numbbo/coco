@@ -578,7 +578,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
         
         fontSize = genericsettings.getFontSize(funInfos.values())
         if f in funInfos.keys():
-            plt.gca().set_title(funInfos[f], fontsize=fontSize)
+            plt.gca().set_title(funInfos[f], fontsize=0.9*fontSize)
 
         functions_with_legend = testbedsettings.current_testbed.functions_with_legend
         isLegend = False
