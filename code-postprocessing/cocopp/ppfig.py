@@ -17,11 +17,20 @@ from six import string_types, advance_iterator
 # absolute_import => . refers to where ppfig resides in the package:
 from . import genericsettings, testbedsettings, toolsstats, htmldesc, toolsdivers
 
-bbox_inches_choices = {  # do we also need pad_inches = 0?
-    'svg': 'tight',
-    # 'png': 'tight', # uncomment for bbob-biobj figures
-    # 'pdf': 'tight', # uncomment for bbob-biobj figures
-}
+def bbox_inches():
+    """return a "smart" tight bounding box
+    """
+    fig = plt.gcf()
+    try:
+        # tight bbox size which "only accounts axes title, axis labels,
+        # and axis ticklabels" (https://matplotlib.org/api/figure_api.html)
+        # caveat: not all fig.canvas have a get_renderer method
+        tight_bbox = fig.get_tightbbox(fig.canvas.get_renderer())
+        x0, y0, w, h = tight_bbox.bounds
+        tight_bbox.set_points([[x0, y0], [x0 + 1.06 * w, y0 + h]])
+    except:
+        tight_bbox = 'tight'
+    return tight_bbox  # do we also need to set pad_inches = 0?
 
 
 # CLASS DEFINITIONS
@@ -61,12 +70,13 @@ def save_figure(filename, algorithm=None, fig_format=()):
 
     if isinstance(fig_format, string_types):
         fig_format = (fig_format,)
+
     for format in fig_format:
         try:
             plt.savefig(filename + '.' + format,
                         dpi=60 if genericsettings.in_a_hurry else 300,
                         format=format,
-                        bbox_inches=bbox_inches_choices.get(format, None)
+                        bbox_inches=bbox_inches()
                         )
             if genericsettings.verbose:
                 print('Wrote figure in %s.' % (filename + '.' + format))
