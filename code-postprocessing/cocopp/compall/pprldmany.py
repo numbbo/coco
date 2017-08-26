@@ -186,9 +186,9 @@ def beautify():
             plt.xlabel('log10(# f-evals / dimension)', fontsize=label_fontsize)
     else:
         if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
-            plt.xlabel('log10 of # (f+g)-evals', fontsize=label_fontsize)
+            plt.xlabel('log10(# (f+g)-evals)', fontsize=label_fontsize)
         else:
-            plt.xlabel('log10 of # f-evals', fontsize=label_fontsize)
+            plt.xlabel('log10(# f-evals)', fontsize=label_fontsize)
     plt.ylabel('Fraction of function,target pairs', fontsize=label_fontsize)
     ppfig.logxticks()
     pprldistr.beautifyECDF()
@@ -374,7 +374,8 @@ def plotLegend(handles, maxval):
                                  toolsdivers.str_to_latex(
                                      toolsdivers.strip_pathname1(plt.getp(h, 'label'))[:numberOfCharacters]),
                                  horizontalalignment="left",
-                                 verticalalignment="center", size=fontsize))
+                                 verticalalignment="center",
+                                 fontsize=fontsize))
                     reslabels.append(plt.getp(h, 'label'))
                     # set_trace()
                     i += 1
@@ -809,7 +810,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         text += (str(len(targetstrings)) + ' targets RLs/dim: ' +
                  targetstrings[0] + '..' +
                  targetstrings[len(targetstrings)-1] + '\n')
-        text += '  from ' + testbedsettings.current_testbed.reference_algorithm_filename[:18]
+        text += '  from ' + testbedsettings.current_testbed.reference_algorithm_filename
     else:
         text += (str(len(targetstrings)) + ' targets: ' +
                  targetstrings[0] + '..' +
@@ -852,7 +853,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     a.set_xticklabels(tmp)
 
     if save_figure:
-        ppfig.save_figure(figureName, dictAlg[algorithms_with_data[0]][0].algId)
+        ppfig.save_figure(figureName,
+                          dictAlg[algorithms_with_data[0]][0].algId,
+                          layout_rect=(0, 0, 0.88, 1))
         if plotType == PlotType.DIM:
             file_name = genericsettings.pprldmany_file_name
             ppfig.save_single_functions_html(

@@ -17,28 +17,6 @@ from six import string_types, advance_iterator
 # absolute_import => . refers to where ppfig resides in the package:
 from . import genericsettings, testbedsettings, toolsstats, htmldesc, toolsdivers
 
-def adjust_bbox_figure():
-    """change figure bbox by pretending there were no points drawn beyond
-    xlim[0],
-
-    to enable a tight bounding box for saving later on. The tight
-    saving later on still respects ticks and labels.
-
-    There might (should!?) be a better way to do this, if I would only
-    know how.
-    """
-    fig = plt.gcf()
-    try:
-        bbox = fig.get_tightbbox(fig.canvas.get_renderer())
-        bbox = bbox._bbox  # bbox itself is transformed and does not have a set_points method
-        x0, y0, w, h = bbox.bounds
-        bbox.set_points([[plt.xlim()[0], y0], [x0, y0 + h]])
-        # fig.set_clip_box(bbox)
-        # fig.set_clip_on(True)
-    except:
-        print(plt.gca().title.get_text())
-        raise
-
 
 # CLASS DEFINITIONS
 class Usage(Exception):
@@ -56,12 +34,17 @@ HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP', 'PP
                 'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS')
 
 
-def save_figure(filename, algorithm=None, fig_format=()):
+def save_figure(filename, algorithm=None, fig_format=(),
+                layout_rect=(0, 0, 0.99, 1), bbox_inches=None):
     """Save figure into an image file.
 
     `figFormat` can be a string or a list of strings, like
     ``('pdf', 'svg')``
+    
+    If `layout_rect`, the `pylab.tight_layout` method is invoked.
 
+    'tight' `bbox_inches` lead possibly to (slightly) different figure
+    sizes, which may be undesirable.
     """
     label = toolsdivers.get_version_label(algorithm)
     
@@ -80,21 +63,27 @@ def save_figure(filename, algorithm=None, fig_format=()):
 
     for format in fig_format:
         try:
-            try:  # just in case we are working with an old version
-                adjust_bbox_figure()  # tighten bounding box of drawings
-                # y1=0.92 extends the figure to the right
-                plt.tight_layout(pad=0.15, rect=(0, 0, 0.92, 1))  
-            except Exception as e:
-                warnings.warn(
-                    'Figure tightening failed (matplotlib version %s)'
-                    ' with Exception: "%s"' %
-                    (plt.matplotlib.__version__, str(e)))
+            if layout_rect:
+                try:
+                    # possible alternative:
+                    # bbox = gcf().get_tightbbox(gcf().canvas.get_renderer())
+                    # bbox._bbox.set_points([[plt.xlim()[0], None], [None, None]])
+                    #
+                    # y1=layout_rect[2]=0.88 extends the figure to the
+                    # right, i.e., 0.88 is where the tight right figure
+                    #  border is placed whereas everything is plotted
+                    # further up to 1
+                    plt.tight_layout(pad=0.15, rect=layout_rect)
+                except Exception as e:
+                    warnings.warn(
+                        'Figure tightening failed (matplotlib version %s)'
+                        ' with Exception: "%s"' %
+                        (plt.matplotlib.__version__, str(e)))
             plt.savefig(filename + '.' + format,
                         dpi=60 if genericsettings.in_a_hurry else 300,
                         format=format,
-                        # bbox_inches='tight',  # this does not work
-                        # pad_inches=?  # default is 0.1?
-                        # bbox_inches=bbox_inches()
+                        bbox_inches=bbox_inches,
+                        # pad_inches=0,  # default is 0.1?, 0 leads to cut label text
                         )
             if genericsettings.verbose:
                 print('Wrote figure in %s.' % (filename + '.' + format))

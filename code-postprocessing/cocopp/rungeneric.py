@@ -279,7 +279,8 @@ def main(argv=None):
                           'cocopp_commands.tex'), 'a').close()
 
         ppfig.save_index_html_file(os.path.join(outputdir, genericsettings.index_html_file_name))
-        print_done()
+
+        print_done('All done')
 
         return dsld
 
