@@ -11,7 +11,7 @@ import warnings
 import numpy as np
 from matplotlib import pyplot as plt
 import shutil
-from six import string_types, advance_iterator
+from six import advance_iterator
 # from pdb import set_trace
 
 # absolute_import => . refers to where ppfig resides in the package:
@@ -34,51 +34,49 @@ HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP', 'PP
                 'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS')
 
 
-def save_figure(filename, algorithm=None, fig_format=(),
+def save_figure(filename, algorithm=None, format=None,
                 layout_rect=(0, 0, 0.99, 1), bbox_inches=None):
     """Save figure into an image file.
 
-    `figFormat` can be a string or a list of strings, like
-    ``('pdf', 'svg')``
+    `format` is a `str` denoting a file type known to `pylab.savefig`, like 
+    "svg", or `None` in which case the defaults from `genericsettings` are
+    applied.
     
     If `layout_rect`, the `pylab.tight_layout` method is invoked.
 
     'tight' `bbox_inches` lead possibly to (slightly) different figure
-    sizes, which may be undesirable.
+    sizes in each case, which is undesirable.
     """
+    if not format:
+        fig_formats = genericsettings.figure_file_formats
+    else:
+        fig_formats = (format, )
+
     label = toolsdivers.get_version_label(algorithm)
-    
     plt.text(0.5, 0.01, label,
              horizontalalignment="center",
              verticalalignment="bottom",
              fontsize=10,
              color='0.5',
              transform=plt.gca().transAxes)
-
-    if not fig_format:
-        fig_format = genericsettings.getFigFormats()
-
-    if isinstance(fig_format, string_types):
-        fig_format = (fig_format,)
-
-    for format in fig_format:
+    for format in fig_formats:
+        if layout_rect:
+            try:
+                # possible alternative:
+                # bbox = gcf().get_tightbbox(gcf().canvas.get_renderer())
+                # bbox._bbox.set_points([[plt.xlim()[0], None], [None, None]])
+                #
+                # layout_rect[2]=0.88 extends the figure to the
+                # right, i.e., 0.88 is where the "tight" right figure
+                # border is placed whereas everything is plotted
+                # further up to plotted figure border at 1
+                plt.tight_layout(pad=0.15, rect=layout_rect)
+            except Exception as e:
+                warnings.warn(
+                    'Figure tightening failed (matplotlib version %s)'
+                    ' with Exception: "%s"' %
+                    (plt.matplotlib.__version__, str(e)))
         try:
-            if layout_rect:
-                try:
-                    # possible alternative:
-                    # bbox = gcf().get_tightbbox(gcf().canvas.get_renderer())
-                    # bbox._bbox.set_points([[plt.xlim()[0], None], [None, None]])
-                    #
-                    # y1=layout_rect[2]=0.88 extends the figure to the
-                    # right, i.e., 0.88 is where the tight right figure
-                    #  border is placed whereas everything is plotted
-                    # further up to 1
-                    plt.tight_layout(pad=0.15, rect=layout_rect)
-                except Exception as e:
-                    warnings.warn(
-                        'Figure tightening failed (matplotlib version %s)'
-                        ' with Exception: "%s"' %
-                        (plt.matplotlib.__version__, str(e)))
             plt.savefig(filename + '.' + format,
                         dpi=60 if genericsettings.in_a_hurry else 300,
                         format=format,

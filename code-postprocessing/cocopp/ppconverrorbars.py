@@ -102,8 +102,7 @@ def main(dictAlg, outputdir='.', parentHtmlFileName=None, algorithm_name=None):
                      verticalalignment="top", transform=plt.gca().transAxes)
 
             beautify()
-            save_figure(os.path.join(outputdir, figurename.replace(' ', '')),
-                        genericsettings.getFigFormats())
+            save_figure(os.path.join(outputdir, figurename.replace(' ', '')))
             plt.close()
 
     if algorithm_name is None:

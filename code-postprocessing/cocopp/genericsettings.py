@@ -22,7 +22,7 @@ in_a_hurry = 1000  # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = False  # may be overwritten by expensive setting
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
-generate_svg_files = True  # generate the svg figures
+figure_file_formats = ['svg', 'pdf']
 scaling_figures_with_boxes = True
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
@@ -280,17 +280,6 @@ longoptlist = ["help", "output-dir=", "noisy", "noise-free",
 
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
 # and "sca-only" only affects rungeneric2
-
-
-def getFigFormats():
-    if in_a_hurry:
-        fig_formats = ('pdf', 'svg') if generate_svg_files else ('pdf',)
-    else:
-        fig_formats = ('eps', 'pdf', 'svg') if generate_svg_files else ('eps', 'pdf')
-    # fig_formats = ('eps', 'pdf', 'png', 'svg')
-
-    return fig_formats
-
 
 def getFontSize(nameList):
     maxFuncLength = max(len(i) for i in nameList)
