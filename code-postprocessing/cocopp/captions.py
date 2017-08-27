@@ -25,6 +25,9 @@ def replace(text, html=False):
        actual replacement in order to deal with HTML-specific codings.
     """
 
+    global tohtml # used for NBUP and NBLOW replacement
+    tohtml= html
+
     if html:
         text = text.replace(r'&#8722;', '-')
 
@@ -44,6 +47,7 @@ def replace(text, html=False):
         text = text.replace('-', r'&#8722;')
         text = text.replace('\\triangledown', '<span style="color:#008D00">&#9661;</span>') # to color and display correctly in ppscatter.py
         text = text.replace('\\Diamond', '&#9671;')
+
 
     return text
     
@@ -149,13 +153,52 @@ replace_dict = {
         '!!TARGET-RANGES-IN-ECDF!!': lambda: str(testbedsettings.current_testbed.pprldmany_target_range_latex),
         '!!TOTAL-NUM-OF-FUNCTIONS!!': lambda: str(testbedsettings.current_testbed.last_function_number - testbedsettings.current_testbed.first_function_number + 1),
         '!!BEST-ART!!': lambda: get_best_art_text(),
-        '!!NBTARGETS-SCATTER!!': lambda: str(len(testbedsettings.current_testbed.ppscatter_target_values))
-         }
+        '!!NBTARGETS-SCATTER!!': lambda: str(len(testbedsettings.current_testbed.ppscatter_target_values)),
+        '!!NBLOW!!': lambda: get_nblow(),
+        '!!NBUP!!': lambda: get_nbup()
+}
 
 replace_dict_html = {
         '\\Df': lambda: str(r"""&Delta;f"""),
         '\\DI': lambda: str(r"""&Delta;I""")
         }
+
+tohtml = False
+
+def get_nblow():
+    global tohtml
+    targets = testbedsettings.current_testbed.ppscatter_target_values
+    if genericsettings.runlength_based_targets:
+        if tohtml:
+            text = (toolsdivers.number_to_html(targets.label(0)) +
+                        r'&times; DIM' if targets.times_dimension else '')
+        else:
+            text = (toolsdivers.number_to_latex(targets.label(0)) +
+                        r'\times DIM' if targets.times_dimension else '')
+        return text
+    else:
+        if tohtml:
+            return toolsdivers.number_to_html(targets.label(0))
+        else:
+            return toolsdivers.number_to_latex(targets.label(0))
+
+
+def get_nbup():
+    global tohtml
+    targets = testbedsettings.current_testbed.ppscatter_target_values
+    if genericsettings.runlength_based_targets:
+        if tohtml:
+            text = (toolsdivers.number_to_html(targets.label(-1)) +
+                        r'&times; DIM' if targets.times_dimension else '')
+        else:
+            text = (toolsdivers.number_to_latex(targets.label(-1)) +
+                        r'\times DIM' if targets.times_dimension else '')
+        return text
+    else:
+        if tohtml:
+            return toolsdivers.number_to_html(targets.label(-1))
+        else:
+            return toolsdivers.number_to_latex(targets.label(-1))
 
 
 def get_ppfigs_ftarget():

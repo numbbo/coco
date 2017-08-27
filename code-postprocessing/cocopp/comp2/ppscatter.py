@@ -97,16 +97,6 @@ def figure_caption(for_html = False):
     else:
         caption = prepare_figure_caption()
 
-    if genericsettings.runlength_based_targets:
-        caption = caption.replace('!!NBLOW!!', toolsdivers.number_to_latex(targets.label(0)) +
-                                           r'\times\DIM' if targets.times_dimension else '')
-        caption = caption.replace('!!NBUP!!', toolsdivers.number_to_latex(targets.label(-1)) +
-                                           r'\times\DIM' if targets.times_dimension else '')
-    else:
-        caption = caption.replace('!!NBLOW!!', toolsdivers.number_to_latex(targets.label(0)))
-        caption = caption.replace('!!NBUP!!', toolsdivers.number_to_latex(targets.label(-1)))
-
-
     return captions.replace(caption, html=for_html)
 
 
