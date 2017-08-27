@@ -277,7 +277,8 @@ def main(argv=None):
             testbedsettings.copy_reference_values(i.algId, alg1name)
             i.algId = alg1name
 
-        config.target_values(genericsettings.isExpensive)
+        config.config_target_values_setting(genericsettings.isExpensive,
+                                            genericsettings.runlength_based_targets)
         config.config(dsList[0].testbed_name)
 
         ######################### Post-processing #############################

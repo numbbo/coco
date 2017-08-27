@@ -112,10 +112,14 @@ def beautify():
     maxbnd = max(xmax, ymax)
     maxbnd = maxbnd ** (1 + 11.*offset/(numpy.log10(float(maxbnd)/minbnd)))
     plt.plot([minbnd, maxbnd], [minbnd, maxbnd], ls='-', color='k')
-    plt.plot([10*minbnd, 10*maxbnd], [minbnd, maxbnd], ls=':', color='k')
-    plt.plot([100*minbnd, 100*maxbnd], [minbnd, maxbnd], ls=':', color='k')
-    plt.plot([minbnd, maxbnd], [10*minbnd, 10*maxbnd], ls=':', color='k')
-    plt.plot([minbnd, maxbnd], [100*minbnd, 100*maxbnd], ls=':', color='k')
+    for grid_line_pos in [
+            [[10*minbnd, 10*maxbnd], [minbnd, maxbnd]],
+            [[100*minbnd, 100*maxbnd], [minbnd, maxbnd]],
+            [[minbnd, maxbnd], [10*minbnd, 10*maxbnd]],
+            [[minbnd, maxbnd], [100*minbnd, 100*maxbnd]]
+        ]:
+        plt.plot(grid_line_pos[0], grid_line_pos[1],
+                 ls='-', lw=1, color='lightgray')
 
     plt.xlim(minbnd, maxbnd)
     plt.ylim(minbnd, maxbnd)
@@ -317,7 +321,7 @@ def main(dsList0, dsList1, outputdir, settings):
                     targetlabels[len(targetlabels)-1] + '\n')
             text += '   from ' + testbedsettings.current_testbed.reference_algorithm_filename
         else:
-            text = (str(len(targetlabels)) + ' targets in ' +
+            text = (str(len(targetlabels)) + ' targets: ' +
                     targetlabels[0] + '..' +
                     targetlabels[len(targetlabels)-1])
         # add number of instances 
@@ -346,7 +350,8 @@ def main(dsList0, dsList1, outputdir, settings):
             text = text.rstrip(', ')
             text += ' instances'
         plt.text(0.01, 0.98, text, horizontalalignment="left",
-                 verticalalignment="top", transform=plt.gca().transAxes, size='small')
+                 verticalalignment="top", transform=plt.gca().transAxes,
+                 size=0.6*17)
 
         beautify()
 
@@ -378,7 +383,7 @@ def main(dsList0, dsList1, outputdir, settings):
             plt.title(funInfos[f], fontsize=0.75*fontSize)
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
-        save_figure(filename, dsList0[0].algId)
+        save_figure(filename, dsList0[0].algId, bbox_inches='tight')
         plt.close()
 
     #plt.rcdefaults()

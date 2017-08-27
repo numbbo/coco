@@ -246,7 +246,8 @@ def main(argv=None):
             warnings.filterwarnings('module', '.*', Warning, '.*')  # same warning just once
             #warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
 
-        config.target_values(genericsettings.isExpensive)
+        config.config_target_values_setting(genericsettings.isExpensive,
+                                            genericsettings.runlength_based_targets)
 
     except Usage as err:
         print(err.msg, file=sys.stderr)
@@ -296,7 +297,8 @@ def main(argv=None):
 
         # set target values
         from . import config
-        config.target_values(genericsettings.isExpensive)
+        config.config_target_values_setting(genericsettings.isExpensive,
+                                            genericsettings.runlength_based_targets)
         config.config(dsList[0].testbed_name)
 
         for i in dsList:
