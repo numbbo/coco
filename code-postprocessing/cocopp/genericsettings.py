@@ -10,12 +10,8 @@ For setting variables dynamically see config.py, where some
 of the variables here and some 
 
 """
-import numpy as np
 
 test = False  # debug/test flag, set to False for committing the final version
-if 1 < 3 and test:
-    np.seterr(all='raise')
-np.seterr(under='ignore')  # ignore underflow
 
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000  # [0, 1000] lower resolution, no eps, saves 30% time
@@ -285,5 +281,3 @@ def getFontSize(nameList):
     maxFuncLength = max(len(i) for i in nameList)
     fontSize = 24 - max(0, 2 * ((maxFuncLength - 35) / 5))
     return fontSize
-
-
