@@ -289,7 +289,11 @@ def main(argv=None):
         # print changed genericsettings attributes
         mess = ''
         def as_str(s):
-            return '"%s"' % s if s is str(s) else str(s)
+            put_quotes = True if s is str(s) else False
+            s = str(s)
+            if len(s) > 25:
+                s = s[:22] + '...'
+            return '"%s"' % s if put_quotes else s
         for key in stored_settings.__dict__:
             if key.startswith('__'):
                 continue

@@ -667,7 +667,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
             if f in functions_with_legend:
                 toolsdivers.legend()
 
-        save_figure(filename, dictAlg[algorithms_with_data[0]][0].algId, fig_format=genericsettings.getFigFormats())
+        save_figure(filename, dictAlg[algorithms_with_data[0]][0].algId)
 
         plt.close()
 
