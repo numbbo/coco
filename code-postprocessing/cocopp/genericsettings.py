@@ -1,13 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""This module contains some variables settings for COCO.
+"""This module contains some global variables settings for COCO.
 
-These variables are used for producing figures and tables 
-in rungeneric1, -2, and -many.
+These variables may be modified (in particular in rungeneric1, -2, and
+-many) and are used for producing figures and tables.
 
-For setting variables dynamically see config.py, where some 
-of the variables here and some 
+For setting variables dynamically or changing other module settings
+here see `config.py`.
 
 """
 
