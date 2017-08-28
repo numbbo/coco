@@ -60,11 +60,11 @@ offset = 0. #0.02 offset provides a way to move away the box boundaries to displ
 def prepare_figure_caption():
 
     caption_start_fixed = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations)
-        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS!!$ target values
+        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS-SCATTER!!$ target values
         $!!DF!! \in [!!NBLOW!!, !!NBUP!!]$ in each dimension on functions #1. """
 
     caption_start_rlbased = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations)
-        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS!!$ runlength-based target
+        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS-SCATTER!!$ runlength-based target
         values for budgets between $!!NBLOW!!$ and $!!NBUP!!$ evaluations.
         Each runlength-based target $!!F!!$-value is chosen such that the \aRT{}s of 
         !!THE-REF-ALG!! for the given and a slightly easier
@@ -97,18 +97,7 @@ def figure_caption(for_html = False):
     else:
         caption = prepare_figure_caption()
 
-    caption = caption.replace('!!NBTARGETS!!', str(len(targets)))
-
-    if genericsettings.runlength_based_targets:
-        caption = caption.replace('!!NBLOW!!', toolsdivers.number_to_latex(targets.label(0)) +
-                                           r'\times\DIM' if targets.times_dimension else '')
-        caption = caption.replace('!!NBUP!!', toolsdivers.number_to_latex(targets.label(-1)) +
-                                           r'\times\DIM' if targets.times_dimension else '')
-    else:
-        caption = caption.replace('!!NBLOW!!', toolsdivers.number_to_latex(targets.label(0)))
-        caption = caption.replace('!!NBUP!!', toolsdivers.number_to_latex(targets.label(-1)))
-
-    return captions.replace(caption)
+    return captions.replace(caption, html=for_html)
 
 
 def beautify():

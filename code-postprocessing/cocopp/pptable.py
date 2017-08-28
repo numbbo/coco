@@ -77,7 +77,7 @@ def get_table_caption():
         the rank-sum test) compared to !!THE-REF-ALG!!, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k > 1$ is following the
         $\downarrow$ symbol, with Bonferroni correction by the number of
-        functions.\cocoversion
+        functions (!!TOTAL-NUM-OF-FUNCTIONS!!).\cocoversion
         """
     table_caption_no_reference_algorithm = r"""%
         Average runtime (\aRT) to reach given targets, measured

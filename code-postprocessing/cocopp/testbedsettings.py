@@ -198,7 +198,7 @@ class GECCOBBOBTestbed(Testbed):
         ppscatter_target_values=np.logspace(-8, 2, 21),  # 21 was 46
         rldValsOfInterest=(10, 1e-1, 1e-4, 1e-8),  # possibly changed in config
         ppfvdistr_min_target=1e-8,
-        functions_with_legend=(1, 24, 101, 130),
+        functions_with_legend=(1, 24),
         first_function_number=1,
         last_function_number=24,
         reference_values_hash_dimensions=[],
