@@ -1,16 +1,17 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""This module is an attempt for a global configuration file for various parameters.
+"""This module is an attempt for a global configuration file for various
+parameters.
 
-The import of this module, :py:mod:`config`, changes default settings (attributes)
+The import of this module changes default settings (attributes)
 of other modules. This works, because each module has only one instance.
 
 Before this module is imported somewhere, modules use their default settings.
 
 This file could be dynamically modified and reloaded.
 
-See also genericsettings.py which is a central place to define settings
+See also `genericsettings`s which is a central place to define settings
 used by other modules, but does not modify settings of other modules.
 
 """
