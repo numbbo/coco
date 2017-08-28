@@ -102,6 +102,7 @@ def prepare_data(run_all_tests):
         retrieve_algorithm(data_path, 'bbob-biobj/2016', 'RS-100.tgz')
         # diff. location and name due to Jenkins settings with too long paths
         retrieve_algorithm(data_path, 'test', 'N-II.tgz')
+        retrieve_algorithm(data_path, 'test', 'RS-4.zip')
         retrieve_algorithm(data_path, 'bbob-noisy/2009', 'BFGS_ros_noisy.tgz')
         retrieve_algorithm(data_path, 'bbob-noisy/2009', 'MCS_huyer_noisy.tgz')
 
@@ -294,6 +295,13 @@ def main(arguments):
         print('**  subtest 12 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-constrained`.'
         delete_files(all_files=True)
+
+        t0 = time.time()
+        result = os.system(python + command +
+                           join_path(data_path, 'RS-4.zip'))
+        print('**  subtest 13 finished in ', time.time() - t0, ' seconds')
+        assert result == 0, 'Test failed: rungeneric on RS-4.zip.'
+        delete_files()
 
     print('launching doctest (it might be necessary to close a few pop up windows to finish)')
     t0 = time.time()
