@@ -23,7 +23,7 @@ except ImportError:
 from matplotlib import mlab as mlab
 from six import advance_iterator
 
-from . import toolsstats, bestalg, testbedsettings, genericsettings, captions
+from . import toolsstats, toolsdivers, bestalg, testbedsettings, genericsettings, captions
 from .pptex import writeFEvals2
 from .ppfig import save_figure, consecutiveNumbers
 
@@ -775,6 +775,9 @@ def generateSingleTableHtml(dsList, funcs, mFE, d, prcOfInterest, EVALS, data,
     with open(filename, 'w') as outfile:
         for line in lines:
             outfile.write(line)
+
+    toolsdivers.replace_in_file(os.path.join(outputdir, 'pplogloss.html'), '??COCOVERSION??',
+                    '<br />Data produced with COCO %s' % (toolsdivers.get_version_label(None)))
 
     if genericsettings.verbose:
         print("Wrote aRT loss ratio table in %s." % filename)

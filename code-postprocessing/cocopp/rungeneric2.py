@@ -277,7 +277,8 @@ def main(argv=None):
             testbedsettings.copy_reference_values(i.algId, alg1name)
             i.algId = alg1name
 
-        config.target_values(genericsettings.isExpensive)
+        config.config_target_values_setting(genericsettings.isExpensive,
+                                            genericsettings.runlength_based_targets)
         config.config(dsList[0].testbed_name)
 
         ######################### Post-processing #############################
@@ -535,7 +536,7 @@ def main(argv=None):
                              '}'
                              ])
 
-            replace_in_file(html_file_name, '##bbobppscatterlegend##', ppscatter.figure_caption(True))
+            replace_in_file(html_file_name, '##bbobppscatterlegend##', ppscatter.figure_caption(for_html=True))
             for i, alg in enumerate(args):
                 replace_in_file(html_file_name, 'algorithm' + abc[i], str_to_latex(strip_pathname1(alg)))
 
@@ -546,7 +547,7 @@ def main(argv=None):
             # with the bi-objective many-algorithm LaTeX template
             print("Generating new tables (pptables.py)...")
             prepend_to_file(latex_commands_file,
-                            ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
+                            ['\providecommand{\\bbobpptablesmanylegend}[1]{' +
                              pptables.get_table_caption() + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictng in dictNoi.items():

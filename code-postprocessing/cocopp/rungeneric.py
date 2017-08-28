@@ -18,12 +18,14 @@ from __future__ import print_function
 import os
 import sys
 import getopt
+import imp  # import default genericsettings
 import warnings
 import matplotlib
 from . import genericsettings, rungeneric1, rungeneric2, rungenericmany, ppfig, toolsdivers #, __main__
 from .toolsdivers import truncate_latex_command_file, print_done
 from .ppfig import Usage
 from .compall import ppfigs
+from . import __path__  # import path for genericsettings
 
 matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
@@ -182,6 +184,10 @@ def main(argv=None):
         argv = sys.argv[1:]
     if not isinstance(argv, list) and str(argv) == argv:  # get rid of .split in python shell
         argv = argv.split()
+
+    stored_settings = imp.load_module('_genericsettings',
+                                      *imp.find_module('genericsettings',
+                                                       __path__))
     try:
         try:
             opts, args = getopt.getopt(argv, genericsettings.shortoptlist,
@@ -279,7 +285,27 @@ def main(argv=None):
                           'cocopp_commands.tex'), 'a').close()
 
         ppfig.save_index_html_file(os.path.join(outputdir, genericsettings.index_html_file_name))
-        print_done()
+
+        # print changed genericsettings attributes
+        mess = ''
+        def as_str(s):
+            put_quotes = True if s is str(s) else False
+            s = str(s)
+            if len(s) > 25:
+                s = s[:22] + '...'
+            return '"%s"' % s if put_quotes else s
+        for key in stored_settings.__dict__:
+            if key.startswith('__'):
+                continue
+            v1, v2 = getattr(stored_settings, key), getattr(genericsettings, key)
+            if v1 != v2 and not str(v1).startswith('<function '):
+                mess = mess + '    %s: from %s to %s\n' % (
+                    key, as_str(v1), as_str(v2))
+        if mess:
+            print('Changed settings in `genericsettings` (compared to default):')
+            print(mess, end='')
+
+        print_done('ALL done')
 
         return dsld
 

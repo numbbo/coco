@@ -1,28 +1,24 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""This module contains some variables settings for COCO.
+"""This module contains some global variables settings for COCO.
 
-These variables are used for producing figures and tables 
-in rungeneric1, -2, and -many.
+These variables may be modified (in particular in rungeneric1, -2, and
+-many) and are used for producing figures and tables.
 
-For setting variables dynamically see config.py, where some 
-of the variables here and some 
+For setting variables dynamically or changing other module settings
+here see `config.py`.
 
 """
-import numpy as np
 
 test = False  # debug/test flag, set to False for committing the final version
-if 1 < 3 and test:
-    np.seterr(all='raise')
-np.seterr(under='ignore')  # ignore underflow
 
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000  # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
-runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
+runlength_based_targets = False  # may be overwritten by expensive setting
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
-generate_svg_files = True  # generate the svg figures
+figure_file_formats = ['svg', 'pdf']
 scaling_figures_with_boxes = True
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
@@ -212,7 +208,7 @@ if 11 < 3:  # in case using my own linestyles
         {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'}
     ]
 
-minmax_algorithm_fontsize = [9, 14]  # depending on the number of algorithms
+minmax_algorithm_fontsize = [9, 17]  # depending on the number of algorithms
 
 rcaxeslarger = {"labelsize": 24, "titlesize": 28.8}
 rcticklarger = {"labelsize": 24}
@@ -281,20 +277,7 @@ longoptlist = ["help", "output-dir=", "noisy", "noise-free",
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
 # and "sca-only" only affects rungeneric2
 
-
-def getFigFormats():
-    if in_a_hurry:
-        fig_formats = ('pdf', 'svg') if generate_svg_files else ('pdf',)
-    else:
-        fig_formats = ('eps', 'pdf', 'svg') if generate_svg_files else ('eps', 'pdf')
-    # fig_formats = ('eps', 'pdf', 'png', 'svg')
-
-    return fig_formats
-
-
 def getFontSize(nameList):
     maxFuncLength = max(len(i) for i in nameList)
     fontSize = 24 - max(0, 2 * ((maxFuncLength - 35) / 5))
     return fontSize
-
-

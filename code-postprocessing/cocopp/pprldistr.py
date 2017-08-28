@@ -262,7 +262,7 @@ def caption_two():
 def beautifyECDF():
     """Generic formatting of ECDF figures."""
     plt.ylim(-0.0, 1.01) # was plt.ylim(-0.01, 1.01)
-    plt.yticks(np.arange(0., 1.001, 0.2)) # , ('0.0', '', '0.5', '', '1.0'))
+    plt.yticks(np.arange(0., 1.001, 0.2), fontsize=16)
     plt.grid(True)
     xmin, xmax = plt.xlim()
     # plt.xlim(xmin=xmin*0.90)  # why this?

@@ -34,7 +34,7 @@ archivefile.extractall()
 
 # Display some information
 ds = bb.load('BIPOP-CMA-ES/bbobexp_f2.info')
-print ds
+print(ds)
 
 # Collect and unarchive data (3.4MB)
 dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
@@ -55,7 +55,7 @@ ds = bb.load(glob.glob('BIPOP-CMA-ES/ppdata_f002_*.pickle'))
 ds = bb.load('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_20.pickle')
 bb.info(ds) # display information on DataSetList ds
 d = ds[0] # store the first element of ds in d for convenience
-print d.funvals
+print(d.funvals)
 budgets = d.funvals[:, 0] # stores first column in budgets
 funvals = d.funvals[:, 1:] # stores all other columns in funvals
 
@@ -79,7 +79,7 @@ archivefile = tarfile.open(filename)
 archivefile.extractall()
 
 ds1 = bb.load('BBOB2009pythondata/NEWUOA/ppdata_f002_20.pickle')
-print ds1
+print(ds1)
 d1 = ds1[0]
 budgets1 = d1.funvals[:, 0]
 funvals1 = d1.funvals[:, 1:]

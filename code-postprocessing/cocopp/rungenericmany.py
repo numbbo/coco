@@ -246,7 +246,8 @@ def main(argv=None):
             warnings.filterwarnings('module', '.*', Warning, '.*')  # same warning just once
             #warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
 
-        config.target_values(genericsettings.isExpensive)
+        config.config_target_values_setting(genericsettings.isExpensive,
+                                            genericsettings.runlength_based_targets)
 
     except Usage as err:
         print(err.msg, file=sys.stderr)
@@ -296,7 +297,8 @@ def main(argv=None):
 
         # set target values
         from . import config
-        config.target_values(genericsettings.isExpensive)
+        config.config_target_values_setting(genericsettings.isExpensive,
+                                            genericsettings.runlength_based_targets)
         config.config(dsList[0].testbed_name)
 
         for i in dsList:
@@ -516,7 +518,7 @@ def main(argv=None):
         if genericsettings.isTab:
             print("Generating comparison tables...")
             prepend_to_file(latex_commands_file,
-                            ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
+                            ['\providecommand{\\bbobpptablesmanylegend}[1]{' +
                              pptables.get_table_caption() + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
             for ng, tmpdictng in dictNoi.items():
@@ -557,7 +559,7 @@ def main(argv=None):
                              '}'
                              ])
 
-            replace_in_file(html_file_name, '##bbobppscatterlegend##', ppscatter.figure_caption(True))
+            replace_in_file(html_file_name, '##bbobppscatterlegend##', ppscatter.figure_caption(for_html=True))
             for i, alg in enumerate(args):
                 replace_in_file(html_file_name, 'algorithm' + pptex.numtotext(i), str_to_latex(strip_pathname1(alg)))
 

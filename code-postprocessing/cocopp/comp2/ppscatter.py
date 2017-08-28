@@ -60,11 +60,11 @@ offset = 0. #0.02 offset provides a way to move away the box boundaries to displ
 def prepare_figure_caption():
 
     caption_start_fixed = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations)
-        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS!!$ target values
+        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS-SCATTER!!$ target values
         $!!DF!! \in [!!NBLOW!!, !!NBUP!!]$ in each dimension on functions #1. """
 
     caption_start_rlbased = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations)
-        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS!!$ runlength-based target
+        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS-SCATTER!!$ runlength-based target
         values for budgets between $!!NBLOW!!$ and $!!NBUP!!$ evaluations.
         Each runlength-based target $!!F!!$-value is chosen such that the \aRT{}s of 
         !!THE-REF-ALG!! for the given and a slightly easier
@@ -97,18 +97,7 @@ def figure_caption(for_html = False):
     else:
         caption = prepare_figure_caption()
 
-    caption = caption.replace('!!NBTARGETS!!', str(len(targets)))
-
-    if genericsettings.runlength_based_targets:
-        caption = caption.replace('!!NBLOW!!', toolsdivers.number_to_latex(targets.label(0)) +
-                                           r'\times\DIM' if targets.times_dimension else '')
-        caption = caption.replace('!!NBUP!!', toolsdivers.number_to_latex(targets.label(-1)) +
-                                           r'\times\DIM' if targets.times_dimension else '')
-    else:
-        caption = caption.replace('!!NBLOW!!', toolsdivers.number_to_latex(targets.label(0)))
-        caption = caption.replace('!!NBUP!!', toolsdivers.number_to_latex(targets.label(-1)))
-
-    return captions.replace(caption)
+    return captions.replace(caption, html=for_html)
 
 
 def beautify():
@@ -123,10 +112,14 @@ def beautify():
     maxbnd = max(xmax, ymax)
     maxbnd = maxbnd ** (1 + 11.*offset/(numpy.log10(float(maxbnd)/minbnd)))
     plt.plot([minbnd, maxbnd], [minbnd, maxbnd], ls='-', color='k')
-    plt.plot([10*minbnd, 10*maxbnd], [minbnd, maxbnd], ls=':', color='k')
-    plt.plot([100*minbnd, 100*maxbnd], [minbnd, maxbnd], ls=':', color='k')
-    plt.plot([minbnd, maxbnd], [10*minbnd, 10*maxbnd], ls=':', color='k')
-    plt.plot([minbnd, maxbnd], [100*minbnd, 100*maxbnd], ls=':', color='k')
+    for grid_line_pos in [
+            [[10*minbnd, 10*maxbnd], [minbnd, maxbnd]],
+            [[100*minbnd, 100*maxbnd], [minbnd, maxbnd]],
+            [[minbnd, maxbnd], [10*minbnd, 10*maxbnd]],
+            [[minbnd, maxbnd], [100*minbnd, 100*maxbnd]]
+        ]:
+        plt.plot(grid_line_pos[0], grid_line_pos[1],
+                 ls='-', lw=1, color='lightgray')
 
     plt.xlim(minbnd, maxbnd)
     plt.ylim(minbnd, maxbnd)
@@ -328,7 +321,7 @@ def main(dsList0, dsList1, outputdir, settings):
                     targetlabels[len(targetlabels)-1] + '\n')
             text += '   from ' + testbedsettings.current_testbed.reference_algorithm_filename
         else:
-            text = (str(len(targetlabels)) + ' targets in ' +
+            text = (str(len(targetlabels)) + ' targets: ' +
                     targetlabels[0] + '..' +
                     targetlabels[len(targetlabels)-1])
         # add number of instances 
@@ -357,7 +350,8 @@ def main(dsList0, dsList1, outputdir, settings):
             text = text.rstrip(', ')
             text += ' instances'
         plt.text(0.01, 0.98, text, horizontalalignment="left",
-                 verticalalignment="top", transform=plt.gca().transAxes, size='small')
+                 verticalalignment="top", transform=plt.gca().transAxes,
+                 size=0.6*17)
 
         beautify()
 
@@ -386,10 +380,10 @@ def main(dsList0, dsList1, outputdir, settings):
 
         fontSize = genericsettings.getFontSize(funInfos.values())
         if f in funInfos.keys():        
-            plt.ylabel(funInfos[f], fontsize=fontSize)
+            plt.title(funInfos[f], fontsize=0.75*fontSize)
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
-        save_figure(filename, dsList0[0].algId)
+        save_figure(filename, dsList0[0].algId, bbox_inches='tight')
         plt.close()
 
     #plt.rcdefaults()

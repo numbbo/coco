@@ -222,12 +222,13 @@ def main(argv=None):
                 assert False, "unhandled option"
 
         # from cocopp import bbob2010 as inset # input settings
+        from . import genericsettings as inset  # input settings
         if genericsettings.inputsettings == "color":
             from . import genericsettings as inset  # input settings
         elif genericsettings.inputsettings == "grayscale":
-            from . import grayscalesettings as inset  # input settings
+            warnings.warn("grayscalesettings disregarded")
         elif genericsettings.inputsettings == "black-white":
-            from . import bwsettings as inset  # input settings
+            warnings.warn("black-white bwsettings disregarded")
         else:
             txt = ('Settings: %s is not an appropriate ' % genericsettings.inputsettings
                    + 'argument for input flag "--settings".')
@@ -285,7 +286,8 @@ def main(argv=None):
             dict_max_fun_evals[ds.dim] = np.max((dict_max_fun_evals.setdefault(ds.dim, 0), float(np.max(ds.maxevals))))
         
         from . import config
-        config.target_values(genericsettings.isExpensive)
+        config.config_target_values_setting(genericsettings.isExpensive,
+                                            genericsettings.runlength_based_targets)
         config.config(dsList[0].testbed_name)
         if genericsettings.verbose:
             for i in dsList:                

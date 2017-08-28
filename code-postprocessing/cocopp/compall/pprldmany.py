@@ -65,7 +65,8 @@ save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
 median_max_evals_marker_format = ['x', 24, 3]
-label_fontsize = 18
+label_fontsize = 17
+title_fontsize = 20
 styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
 
 refcolor = 'wheat'
@@ -180,15 +181,15 @@ def beautify():
     global divide_by_dimension
     if divide_by_dimension:
         if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
-            plt.xlabel('log10 of # (f+g)-evals / dimension', fontsize=label_fontsize)
+            plt.xlabel('log10(# (f+g)-evals / dimension)', fontsize=label_fontsize)
         else:
-            plt.xlabel('log10 of (# f-evals / dimension)', fontsize=label_fontsize)
+            plt.xlabel('log10(# f-evals / dimension)', fontsize=label_fontsize)
     else:
         if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
-            plt.xlabel('log10 of # (f+g)-evals', fontsize=label_fontsize)
+            plt.xlabel('log10(# (f+g)-evals)', fontsize=label_fontsize)
         else:
-            plt.xlabel('log10 of # f-evals', fontsize=label_fontsize)
-    plt.ylabel('Proportion of function+target pairs', fontsize=label_fontsize)
+            plt.xlabel('log10(# f-evals)', fontsize=label_fontsize)
+    plt.ylabel('Fraction of function,target pairs', fontsize=label_fontsize)
     ppfig.logxticks()
     pprldistr.beautifyECDF()
 
@@ -373,7 +374,8 @@ def plotLegend(handles, maxval):
                                  toolsdivers.str_to_latex(
                                      toolsdivers.strip_pathname1(plt.getp(h, 'label'))[:numberOfCharacters]),
                                  horizontalalignment="left",
-                                 verticalalignment="center", size=fontsize))
+                                 verticalalignment="center",
+                                 fontsize=fontsize))
                     reslabels.append(plt.getp(h, 'label'))
                     # set_trace()
                     i += 1
@@ -797,7 +799,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                                  functionGroups[dictKey],
                                  dimList[0])
     else:
-        text = '%s - %s' % (testbedsettings.current_testbed.name,
+        text = '%s %s' % (testbedsettings.current_testbed.name,
                             ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f'))
         if not (plotType == PlotType.DIM):
             text += ', %d-D' % dimList[0]
@@ -805,12 +807,12 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     text += '\n'
     targetstrings = target_values.labels()
     if isinstance(target_values, pp.RunlengthBasedTargetValues):
-        text += (str(len(targetstrings)) + ' target RLs/dim: ' +
+        text += (str(len(targetstrings)) + ' targets RLs/dim: ' +
                  targetstrings[0] + '..' +
                  targetstrings[len(targetstrings)-1] + '\n')
-        text += '   from ' + testbedsettings.current_testbed.reference_algorithm_filename
+        text += '  from ' + testbedsettings.current_testbed.reference_algorithm_filename
     else:
-        text += (str(len(targetstrings)) + ' targets in ' +
+        text += (str(len(targetstrings)) + ' targets: ' +
                  targetstrings[0] + '..' +
                  targetstrings[len(targetstrings)-1])        
     # add number of instances 
@@ -832,11 +834,15 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     text = text.rstrip(', ')
     text += ' instances'
 
-    plt.text(0.01, 0.98, text, horizontalalignment="left",
-             verticalalignment="top", transform=plt.gca().transAxes, size='small')
+    plt.text(0.01, 0.99, text,
+             horizontalalignment="left",
+             verticalalignment="top",
+             transform=plt.gca().transAxes,
+             fontsize=0.6*label_fontsize)
     if len(dictFunc) == 1:
         plt.title(' '.join((str(list(dictFunc.keys())[0]),
-                            testbedsettings.current_testbed.short_names[list(dictFunc.keys())[0]])))
+                            testbedsettings.current_testbed.short_names[list(dictFunc.keys())[0]])),
+                  fontsize=title_fontsize)
     a = plt.gca()
 
     plt.xlim(xmin=1e-0, xmax=x_limit ** annotation_space_end_relative)
@@ -847,7 +853,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     a.set_xticklabels(tmp)
 
     if save_figure:
-        ppfig.save_figure(figureName, dictAlg[algorithms_with_data[0]][0].algId)
+        ppfig.save_figure(figureName,
+                          dictAlg[algorithms_with_data[0]][0].algId,
+                          layout_rect=(0, 0, 0.88, 1))
         if plotType == PlotType.DIM:
             file_name = genericsettings.pprldmany_file_name
             ppfig.save_single_functions_html(

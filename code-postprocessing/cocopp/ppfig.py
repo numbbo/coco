@@ -11,17 +11,11 @@ import warnings
 import numpy as np
 from matplotlib import pyplot as plt
 import shutil
-from six import string_types, advance_iterator
+from six import advance_iterator
 # from pdb import set_trace
 
 # absolute_import => . refers to where ppfig resides in the package:
 from . import genericsettings, testbedsettings, toolsstats, htmldesc, toolsdivers
-
-bbox_inches_choices = {  # do we also need pad_inches = 0?
-    'svg': 'tight',
-    # 'png': 'tight', # uncomment for bbob-biobj figures
-    # 'pdf': 'tight', # uncomment for bbob-biobj figures
-}
 
 
 # CLASS DEFINITIONS
@@ -40,33 +34,54 @@ HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP', 'PP
                 'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS')
 
 
-def save_figure(filename, algorithm=None, fig_format=()):
+def save_figure(filename, algorithm=None, format=None,
+                layout_rect=(0, 0, 0.99, 1), bbox_inches=None):
     """Save figure into an image file.
 
-    `figFormat` can be a string or a list of strings, like
-    ``('pdf', 'svg')``
-
-    """
-    label = toolsdivers.get_version_label(algorithm)
+    `format` is a `str` denoting a file type known to `pylab.savefig`, like 
+    "svg", or `None` in which case the defaults from `genericsettings` are
+    applied.
     
+    If `layout_rect`, the `pylab.tight_layout` method is invoked.
+
+    'tight' `bbox_inches` lead possibly to (slightly) different figure
+    sizes in each case, which is undesirable.
+    """
+    if not format:
+        fig_formats = genericsettings.figure_file_formats
+    else:
+        fig_formats = (format, )
+
+    label = toolsdivers.get_version_label(algorithm)
     plt.text(0.5, 0.01, label,
              horizontalalignment="center",
              verticalalignment="bottom",
              fontsize=10,
              color='0.5',
              transform=plt.gca().transAxes)
-
-    if not fig_format:
-        fig_format = genericsettings.getFigFormats()
-
-    if isinstance(fig_format, string_types):
-        fig_format = (fig_format,)
-    for format in fig_format:
+    for format in fig_formats:
+        if layout_rect:
+            try:
+                # possible alternative:
+                # bbox = gcf().get_tightbbox(gcf().canvas.get_renderer())
+                # bbox._bbox.set_points([[plt.xlim()[0], None], [None, None]])
+                #
+                # layout_rect[2]=0.88 extends the figure to the
+                # right, i.e., 0.88 is where the "tight" right figure
+                # border is placed whereas everything is plotted
+                # further up to plotted figure border at 1
+                plt.tight_layout(pad=0.15, rect=layout_rect)
+            except Exception as e:
+                warnings.warn(
+                    'Figure tightening failed (matplotlib version %s)'
+                    ' with Exception: "%s"' %
+                    (plt.matplotlib.__version__, str(e)))
         try:
             plt.savefig(filename + '.' + format,
                         dpi=60 if genericsettings.in_a_hurry else 300,
                         format=format,
-                        bbox_inches=bbox_inches_choices.get(format, None)
+                        bbox_inches=bbox_inches,
+                        # pad_inches=0,  # default is 0.1?, 0 leads to cut label text
                         )
             if genericsettings.verbose:
                 print('Wrote figure in %s.' % (filename + '.' + format))
@@ -466,7 +481,7 @@ def discretize_limits(limits, smaller_steps_limit=3.1):
 
 
 def marker_positions(xdata, ydata, nbperdecade, maxnb,
-                     ax_limits=None, y_transformation=None):
+                     ax_limits=None, y_transformation=None, xmin=1.1):
     """return randomized marker positions
 
     replacement for downsample, could be improved by becoming independent
@@ -496,8 +511,9 @@ def marker_positions(xdata, ydata, nbperdecade, maxnb,
         for xact in np.arange(0, 1, 1. / nbmarkers):
             pos = xoff + xact + (1. / nbmarkers) * (0.3 + 0.4 * np.random.rand())
             idx = np.abs(cum - pos).argmin()  # index of closest value
-            xpos.append(xdata[idx])
-            ypos.append(ydata[idx])
+            if xdata[idx] > xmin:
+                xpos.append(xdata[idx])
+                ypos.append(ydata[idx])
     xpos.append(xdata[-1])
     ypos.append(ydata[-1])
     return xpos, ypos
