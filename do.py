@@ -972,9 +972,6 @@ def main(args):
             package_install_option = ['--user']
         elif arg[:13] == 'install-home=':
             package_install_option = ['--home=' + arg[13:]]
-    # as long as our tests brake otherwise, '--user' remains default:
-    if not package_install_option:
-            package_install_option = ['--user']
     if cmd == 'build': build(package_install_option = package_install_option)
     elif cmd == 'run': run_all(package_install_option = package_install_option)
     elif cmd == 'test': test(package_install_option = package_install_option)
