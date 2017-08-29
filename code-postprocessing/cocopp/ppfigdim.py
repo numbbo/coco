@@ -559,7 +559,7 @@ def main(dsList, _valuesOfInterest, outputdir):
     ppfig.copy_js_files(outputdir)
     
     funInfos = ppfigparam.read_fun_infos()    
-    fontSize = genericsettings.getFontSize(funInfos.values())
+    fontSize = ppfig.getFontSize(funInfos.values())
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
         beautify(axesLabel=False)

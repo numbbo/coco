@@ -17,7 +17,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from . import toolsstats, testbedsettings, genericsettings, toolsdivers
-from .ppfig import save_figure
+from .ppfig import save_figure, getFontSize
 
 __all__ = ['beautify', 'plot', 'read_fun_infos', 'main']
 
@@ -244,7 +244,7 @@ def main(dsList, _targets=(10., 1., 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
         if func in testbedsettings.current_testbed.functions_with_legend:
             toolsdivers.legend(loc="best")
         
-        fontSize = genericsettings.getFontSize(funInfos.values())
+        fontSize = getFontSize(funInfos.values())
         if func in funInfos.keys():
             a.set_title(funInfos[func], fontsize=fontSize)
 

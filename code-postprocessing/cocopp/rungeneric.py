@@ -267,6 +267,11 @@ def main(argv=None):
                 dsld = rungeneric1.main(genopts + ["-o", outputdir, alg])
 
         if len(args) >= 2 or len(genericsettings.background) > 0:
+            # Reset foreground algorithm list if cocopp.main() is called.
+            # Otherwise the list accumulates arguments passed to cocopp.main().
+            # Arguments are still accumulated if rungeneric.main() is bypassed
+            # and rungenericmany.main() or lower-level functions are called.
+            genericsettings.foreground_algorithm_list = []
             dsld = rungenericmany.main(genopts + ["-o", outputdir] + args)
             toolsdivers.prepend_to_file(latex_commands_filename,
                                         ['\\providecommand{\\numofalgs}{2+}']
