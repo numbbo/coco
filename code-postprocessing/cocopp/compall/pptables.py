@@ -34,7 +34,7 @@ def get_table_caption():
         in number of function evaluations, in #1. For each function, the \aRT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
-        target !!DI!!-values as shown in the top row. 
+        target !!DF!!-values as shown in the top row. 
         \#succ is the number of trials that reached the last target
         $!!FOPT!! + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
         """
@@ -55,7 +55,7 @@ def get_table_caption():
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
-        than 1, with Bonferroni correction of #2. """ +
+        than 1, with Bonferroni correction by the number of functions (!!TOTAL-NUM-OF-FUNCTIONS!!). """ +
                           (r"""A $\downarrow$ indicates the same tested against !!THE-REF-ALG!!. """
                            if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext)
                            else "") + r"""Best results are printed in bold.

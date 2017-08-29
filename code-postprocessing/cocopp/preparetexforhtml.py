@@ -86,15 +86,13 @@ def main(latex_commands_for_html):
         # prepare LaTeX captions first
         # 1. ppfigs
         f.writelines(prepare_providecommand('bbobECDFslegend', scenario,
-                                            ppfigs.prepare_ecdfs_figure_caption()
-                                            .replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')))
+                                            ppfigs.prepare_ecdfs_figure_caption()))
         f.writelines(prepare_providecommand('bbobppfigslegend', scenario,
-                                            ppfigs.prepare_scaling_figure_caption()
-                                            .replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')))
+                                            ppfigs.prepare_scaling_figure_caption()))
 
         # 2. pprldistr
         f.writelines(prepare_providecommand('bbobpprldistrlegend', scenario,
-                                            pprldistr.caption_single().replace('TO_BE_REPLACED', 'TOBEREPLACED')))
+                                            pprldistr.caption_single()))
         pprldistrtwo = (pprldistr.caption_two()).replace('\\algorithmA', 'algorithmA')
         pprldistrtwo = pprldistrtwo.replace('\\algorithmB', 'algorithmB')
         f.writelines(prepare_providecommand('bbobpprldistrlegendtwo', scenario, pprldistrtwo))
@@ -108,10 +106,10 @@ def main(latex_commands_for_html):
         f.writelines(prepare_providecommand('bbobpptablecaption', scenario, pptable.get_table_caption()))
 
         # 5. pptables
-        f.writelines(prepare_providecommand_two('bbobpptablesmanylegend', scenario, pptables.get_table_caption()))
+        f.writelines(prepare_providecommand('bbobpptablesmanylegend', scenario, pptables.get_table_caption()))
 
         # 6. ppscatter
-        ppscatterLegend = ppscatter.prepare_figure_caption().replace('REFERENCE_ALGORITHM', 'REFERENCEALGORITHM')
+        ppscatterLegend = ppscatter.prepare_figure_caption()
         ppscatterLegend = ppscatterLegend.replace('\\algorithmA', 'algorithmA')
         ppscatterLegend = ppscatterLegend.replace('\\algorithmB', 'algorithmB')
         f.writelines(prepare_providecommand('bbobppscatterlegend', scenario, ppscatterLegend))
@@ -127,10 +125,9 @@ def main(latex_commands_for_html):
         # prepare tags for later HTML preparation
         testbed = testbedsettings.current_testbed
         # 1. ppfigs
-        f.write(prepare_item('bbobECDFslegend' + scenario, '', 'DIMVALUE'))
-        param = '$f_{%d}$ and $f_{%d}$' % (testbed.first_function_number, testbed.last_function_number)
+        f.write(prepare_item('bbobECDFslegend' + scenario))
+        param = '$f_{%d}$ and $f_{%d}$' % (min(testbed.functions_with_legend), max(testbed.functions_with_legend))
         f.write(prepare_item('bbobppfigslegend' + scenario, param=param))
-
         # 2. pprldistr
         f.write(prepare_item('bbobpprldistrlegend' + scenario))
         f.write(prepare_item('bbobpprldistrlegendtwo' + scenario))
@@ -138,11 +135,8 @@ def main(latex_commands_for_html):
         f.write(prepare_item('bbobppfigdimlegend' + scenario))
         # 4. pptable
         f.write(prepare_item('bbobpptablecaption' + scenario, param='different dimensions'))
-
         # 5. pptables
-        command_name = 'bbobpptablesmanylegend' + scenario
-        bonferroni = str(2 * (testbed.last_function_number - testbed.first_function_number + 1))
-        f.write(prepare_item_two(command_name, command_name, 'different dimensions', bonferroni))
+        f.write(prepare_item('bbobpptablesmanylegend' + scenario, param='different dimensions'))
 
         # 6. ppscatter
         param = '$f_{%d}$ - $f_{%d}$' % (testbed.first_function_number, testbed.last_function_number)

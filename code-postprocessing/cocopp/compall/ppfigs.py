@@ -97,31 +97,16 @@ def scaling_figure_caption(for_html = False):
     else:
         figure_caption = prepare_scaling_figure_caption()
 
-    return captions.replace(figure_caption)
+    return captions.replace(figure_caption, html=for_html)
 
 
 def prepare_ecdfs_figure_caption():
     testbed = testbedsettings.current_testbed
-    bestalgtext = (
-                r"The ``{}'' line " +
-                r"corresponds to the best \aRT\ observed during {} " +
-                r"for each selected target."
-                )
     refalgtext = (
-                  r"As reference algorithm, ``%s`` "  % (testbed.reference_algorithm_displayname) +
+                  r"As reference algorithm, !!THE-REF-ALG!! " +
                   r"is shown as light " +
                   r"thick line with diamond markers."
                  )
-
-    if testbed.reference_algorithm_displayname:
-        if "best 2009" in testbed.reference_algorithm_displayname:
-            refalgtext = bestalgtext.format("best 2009", "BBOB 2009")
-        if "best 2009-16" in testbed.reference_algorithm_displayname:
-            refalgtext = bestalgtext.format("best 2009-16", "all BBOB workshops from 2009 till 2016")
-        if ("best 2016" in testbed.reference_algorithm_displayname
-                and isinstance(testbed, testbedsettings.GECCOBiObjBBOBTestbed)
-                ):
-            refalgtext = bestalgtext.format("best 2016", "BBOB 2016")
 
     ecdfs_figure_caption_standard = (
                 r"Bootstrapped empirical cumulative distribution of the number " +
@@ -156,7 +141,7 @@ def prepare_ecdfs_figure_caption():
     else:
         warnings.warn("Current settings do not support ppfigdim caption.")
 
-    return captions.replace(figure_caption)
+    return figure_caption
 
 
 def ecdfs_figure_caption(for_html = False, dimension = 0):
@@ -167,7 +152,7 @@ def ecdfs_figure_caption(for_html = False, dimension = 0):
     else:
         caption = prepare_ecdfs_figure_caption()   
 
-    return caption
+    return captions.replace(caption, html=for_html)
 
 
 def get_ecdfs_single_fcts_caption():
