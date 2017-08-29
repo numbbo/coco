@@ -174,6 +174,7 @@ def main(argv=None):
             usage()
             sys.exit()
 
+        is_scatter = genericsettings.isScatter
         # Process options
         outputdir = genericsettings.outputdir
         for o, a in opts:
@@ -192,17 +193,17 @@ def main(argv=None):
             elif o == "--tab-only":
                 genericsettings.isRLDistr = False
                 genericsettings.isFig = False
-                genericsettings.isScatter = False
+                is_scatter = False
             elif o == "--no-rld-single-fcts":
                 genericsettings.isRldOnSingleFcts = False
             elif o == "--rld-only":
                 genericsettings.isTab = False
                 genericsettings.isFig = False
-                genericsettings.isScatter = False
+                is_scatter = False
             elif o == "--fig-only":
                 genericsettings.isRLDistr = False
                 genericsettings.isTab = False
-                genericsettings.isScatter = False
+                is_scatter = False
             elif o == "--settings":
                 genericsettings.inputsettings = a
             elif o == "--runlength-based":
@@ -533,7 +534,7 @@ def main(argv=None):
                         latex_commands_file)
             print_done()
 
-        if genericsettings.isScatter and len(genericsettings.foreground_algorithm_list) == 2:
+        if is_scatter and len(genericsettings.foreground_algorithm_list) == 2:
             print("Scatter plots...")
 
             ds_list0 = dictAlg[sortedAlgs[0]]
