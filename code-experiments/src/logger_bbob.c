@@ -482,18 +482,6 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
 		return;
   }
 
-	printf("z_objvalue = %e\n", z_objvalue);
-	printf("y[0] = %e\n", y[0]);
-	printf("is_feasible = %d\n", is_feasible);
-	for (i = 0; i < problem->number_of_variables; i++) {
-          printf("%e,", z[i]);
-  }
-	printf("\n");
-	for (i = 0; i < problem->number_of_variables; i++) {
-          printf("%e,", x[i]);
-  }
-	printf("\n---\n");
-
   /* Add a line in the .dat file for each logging target reached. */
   if (is_feasible) {
     if (coco_observer_targets_trigger(logger->targets, z_objvalue - logger->optimal_fvalue)) {
