@@ -41,7 +41,7 @@ except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from .. import genericsettings, htmldesc, ppfigparam, testbedsettings
-from ..ppfig import save_figure
+from ..ppfig import save_figure, getFontSize
 from .. import toolsdivers
 from .. import pproc
 from .. import captions
@@ -378,7 +378,7 @@ def main(dsList0, dsList1, outputdir, settings):
             #plt.axvline(entry0.mMaxEvals(), ls='--', color=colors[i])
             #plt.axhline(entry1.mMaxEvals(), ls='--', color=colors[i])
 
-        fontSize = genericsettings.getFontSize(funInfos.values())
+        fontSize = getFontSize(funInfos.values())
         if f in funInfos.keys():        
             plt.title(funInfos[f], fontsize=0.75*fontSize)
 
