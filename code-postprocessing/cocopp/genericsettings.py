@@ -276,8 +276,3 @@ longoptlist = ["help", "output-dir=", "noisy", "noise-free",
 
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
 # and "sca-only" only affects rungeneric2
-
-def getFontSize(nameList):
-    maxFuncLength = max(len(i) for i in nameList)
-    fontSize = 24 - max(0, 2 * ((maxFuncLength - 35) / 5))
-    return fontSize

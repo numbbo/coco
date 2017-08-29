@@ -10,7 +10,7 @@ from pdb import set_trace
 from .. import toolsdivers, toolsstats, bestalg, pproc, genericsettings, htmldesc, ppfigparam, ppfig
 from .. import testbedsettings
 from .. import captions
-from ..ppfig import save_figure, get_plotting_styles
+from ..ppfig import save_figure, get_plotting_styles, getFontSize
 from ..pptex import color_to_latex, marker_to_latex, marker_to_html, writeLabels
 
 show_significance = 0.01  # for zero nothing is shown
@@ -561,7 +561,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                      markeredgewidth=0.7,
                      markersize=styles[0]['markersize'])
         
-        fontSize = genericsettings.getFontSize(funInfos.values())
+        fontSize = getFontSize(funInfos.values())
         if f in funInfos.keys():
             plt.gca().set_title(funInfos[f], fontsize=0.9*fontSize)
 

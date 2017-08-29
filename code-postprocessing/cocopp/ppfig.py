@@ -842,3 +842,8 @@ def get_plotting_styles(algorithms, only_foreground=False):
                                          False))
 
     return plotting_styles
+
+def getFontSize(nameList):
+    maxFuncLength = max(len(i) for i in nameList)
+    fontSize = 24 - max(0, 2 * ((maxFuncLength - 35) / 5))
+    return fontSize
