@@ -31,6 +31,26 @@ def less(a, b):
     np.seterr(**current_err_setting)
     return res
 
+def diff_attr(m1, m2, exclude=('_', )):
+    """return `list` of ``[name, val1, val2]`` triplets for
+    attributes with different values.
+
+    Attributes whose names start with any string from the
+    `exclude` list are skipped. Furthermore, only attributes
+    present in both `m1` and `m2` are compared.
+
+    This function was introduced to compare the `genericsettings`
+    module with its state directly after import. It should be
+    applicable any other two class instances as well.
+
+    Details: to "find" the attributes, `m1.__dict__` is iterated over. 
+    """
+    return [[key, getattr(m1, key), getattr(m2, key)]
+            for key in m1.__dict__
+                if hasattr(m2, key) and
+                    not any(key.startswith(s) for s in exclude)
+                    and getattr(m1, key) != getattr(m2, key)]
+
 def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
     """"prepend lines the tex-command filename """
     try:

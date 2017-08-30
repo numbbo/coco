@@ -253,9 +253,7 @@ def main(argv=None):
         algfolder = findfiles.get_output_directory_sub_folder(args[0])
         algoutputdir = os.path.join(outputdir, algfolder)
         
-        print("\nPost-processing (1): will generate output " + 
-               "data in folder %s" % algoutputdir)
-        print("  this might take several minutes.")
+        print("\nPost-processing (1)")
 
         filelist = list()
         for i in args:
@@ -273,6 +271,9 @@ def main(argv=None):
         if not dsList:
             raise Usage("Nothing to do: post-processing stopped. For more information check the messages above.")
 
+        print("  Will generate output data in folder %s" % algoutputdir)
+        print("    this might take several minutes.")
+        
         if genericsettings.isNoisy and not genericsettings.isNoiseFree:
             dsList = dsList.dictByNoise().get('nzall', DataSetList())
         if genericsettings.isNoiseFree and not genericsettings.isNoisy:

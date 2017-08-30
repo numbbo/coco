@@ -16,6 +16,7 @@ used by other modules, but does not modify settings of other modules.
 
 """
 
+import imp  # import default genericsettings
 import warnings
 import numpy as np
 from . import ppfigdim
@@ -23,10 +24,16 @@ from . import genericsettings as settings, pproc, pprldistr
 from . import testbedsettings as tbs
 from .comp2 import ppfig2, ppscatter
 from .compall import pprldmany
+from . import __path__  # import path for default genericsettings
 
 if settings.test:
     np.seterr(all='raise')
 np.seterr(under='ignore')  # ignore underflow
+
+settings.default_settings = imp.load_module('_coco_default_settings',
+                                      *imp.find_module('genericsettings',
+                                                       __path__))
+
 
 def config_target_values_setting(is_expensive, is_runlength_based):
     """manage target values setting in "expensive" optimization scenario.

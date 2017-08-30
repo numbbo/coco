@@ -114,15 +114,13 @@ int main(void) {
    *   bbob                 24 unconstrained noiseless single-objective functions
    *   bbob-biobj           55 unconstrained noiseless bi-objective functions
    *   bbob-biobj-ext       92 unconstrained noiseless bi-objective functions
+   *   bbob-constrained     48 constrained noiseless single-objective functions
    *   bbob-largescale      24 unconstrained noiseless single-objective functions in large dimension
    *
    * Adapt to your need. Note that the experiment is run according
    * to the settings, defined in example_experiment(...) below.
    */
   example_experiment("bbob", "bbob", random_generator);
-
-  /* Uncomment the line below to run the same example experiment on the bbob suite */
-  /* example_experiment("bbob", "bbob", random_generator); */
 
   printf("Done!\n");
   fflush(stdout);
