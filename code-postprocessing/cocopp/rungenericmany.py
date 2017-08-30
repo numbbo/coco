@@ -256,6 +256,7 @@ def main(argv=None):
         return 2
 
     if 1 < 3:
+        print("\nPost-processing (2+)");
         if not os.path.exists(outputdir):
             os.makedirs(outputdir)
             if genericsettings.verbose:
@@ -282,9 +283,8 @@ def main(argv=None):
         prepend_to_file(latex_commands_file, ['\\providecommand{\\algsfolder}{' + algorithm_folder + '/}'])
         many_algorithms_output = os.path.join(outputdir, algorithm_folder)
 
-        print("\nPost-processing (2+): will generate output " +
-              "data in folder %s" % many_algorithms_output)
-        print("  this might take several minutes.")
+        print("  Will generate output data in folder %s" % many_algorithms_output)
+        print("    this might take several minutes.")
 
         if not os.path.exists(many_algorithms_output):
             os.makedirs(many_algorithms_output)
