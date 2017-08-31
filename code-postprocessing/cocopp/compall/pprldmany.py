@@ -711,8 +711,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         return str(algname)
 
     plotting_style_list = ppfig.get_plotting_styles(order)
-    for plotting_style in sorted(plotting_style_list):
-        for i, alg in sorted(enumerate(sorted(plotting_style.algorithm_list))):
+    for plotting_style in plotting_style_list:
+        for i, alg in enumerate(plotting_style.algorithm_list):
             try:
                 data = dictData[alg]
                 maxevals = dictMaxEvals[alg]
