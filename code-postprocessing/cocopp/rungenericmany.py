@@ -174,9 +174,13 @@ def main(argv=None):
             usage()
             sys.exit()
 
-        is_scatter = genericsettings.isScatter
         # Process options
         outputdir = genericsettings.outputdir
+        prepare_scatter = genericsettings.isScatter
+        prepare_RLDistr = genericsettings.isRLDistr
+        prepare_figures = genericsettings.isFig
+        prepare_tables = genericsettings.isTab
+
         for o, a in opts:
             if o in ("-v", "--verbose"):
                 genericsettings.verbose = True
@@ -193,21 +197,21 @@ def main(argv=None):
             elif o == "--no-rld-single-fcts":
                 genericsettings.isRldOnSingleFcts = False
             elif o == "--tab-only":
-                genericsettings.isRLDistr = False
-                genericsettings.isFig = False
-                is_scatter = False
+                prepare_RLDistr = False
+                prepare_figures = False
+                prepare_scatter = False
             elif o == "--rld-only":
-                genericsettings.isTab = False
-                genericsettings.isFig = False
-                is_scatter = False
+                prepare_tables = False
+                prepare_figures = False
+                prepare_scatter = False
             elif o == "--fig-only":
-                genericsettings.isRLDistr = False
-                genericsettings.isTab = False
-                is_scatter = False
+                prepare_RLDistr = False
+                prepare_tables = False
+                prepare_scatter = False
             elif o == "--sca-only":
-                genericsettings.isFig = False
-                genericsettings.isRLDistr = False
-                genericsettings.isTab = False
+                prepare_figures = False
+                prepare_RLDistr = False
+                prepare_tables = False
             elif o == "--settings":
                 genericsettings.inputsettings = a
             elif o == "--runlength-based":
@@ -349,7 +353,7 @@ def main(argv=None):
         )
 
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
-        if genericsettings.isRLDistr:
+        if prepare_RLDistr:
             config.config(dsList[0].testbed_name)
 
             if len(genericsettings.foreground_algorithm_list) == 2:
@@ -519,7 +523,7 @@ def main(argv=None):
                             header=ppfig.pprldmany_per_func_dim_header)
             print_done()
 
-        if genericsettings.isTab:
+        if prepare_tables:
             print("Generating comparison tables...")
             prepend_to_file(latex_commands_file,
                             ['\providecommand{\\bbobpptablesmanylegend}[1]{' +
@@ -537,7 +541,7 @@ def main(argv=None):
                         latex_commands_file)
             print_done()
 
-        if is_scatter and len(genericsettings.foreground_algorithm_list) == 2:
+        if prepare_scatter and len(genericsettings.foreground_algorithm_list) == 2:
             print("Scatter plots...")
 
             ds_list0 = dictAlg[sortedAlgs[0]]
@@ -576,7 +580,7 @@ def main(argv=None):
             function_groups=dictAlg[sortedAlgs[0]].getFuncGroups()
         )
 
-        if genericsettings.isFig:
+        if prepare_figures:
             print("Scaling figures...")
             plt.rc("axes", labelsize=20, titlesize=24)
             plt.rc("xtick", labelsize=20)
