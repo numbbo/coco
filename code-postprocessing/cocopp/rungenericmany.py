@@ -190,12 +190,12 @@ def main(argv=None):
             elif o == "--noise-free":
                 genericsettings.isNoiseFree = True
             # The next 3 are for testing purpose
+            elif o == "--no-rld-single-fcts":
+                genericsettings.isRldOnSingleFcts = False
             elif o == "--tab-only":
                 genericsettings.isRLDistr = False
                 genericsettings.isFig = False
                 is_scatter = False
-            elif o == "--no-rld-single-fcts":
-                genericsettings.isRldOnSingleFcts = False
             elif o == "--rld-only":
                 genericsettings.isTab = False
                 genericsettings.isFig = False
@@ -204,6 +204,10 @@ def main(argv=None):
                 genericsettings.isRLDistr = False
                 genericsettings.isTab = False
                 is_scatter = False
+            elif o == "--sca-only":
+                genericsettings.isFig = False
+                genericsettings.isRLDistr = False
+                genericsettings.isTab = False
             elif o == "--settings":
                 genericsettings.inputsettings = a
             elif o == "--runlength-based":
@@ -212,8 +216,6 @@ def main(argv=None):
                 genericsettings.isExpensive = True  # comprises runlength-based
             elif o == "--no-svg":
                 genericsettings.generate_svg_files = False
-            elif o == "--sca-only":
-                warnings.warn("option --sca-only will have no effect with rungenericmany.py")
             elif o == "--los-only":
                 warnings.warn("option --los-only will have no effect with rungenericmany.py")
             elif o == "--crafting-effort=":

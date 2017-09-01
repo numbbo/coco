@@ -235,7 +235,7 @@ latex_commands_for_html = 'latex_commands_for_html'
 
 extraction_folder_prefix = '.extracted_'
 
-# default settings for rungeneric, rungeneric1, rungeneric2, and rungenericmany
+# default settings for rungeneric, rungeneric1 and rungenericmany
 inputCrE = 0.
 isFig = True
 isTab = True
@@ -261,8 +261,7 @@ foreground_algorithm_list = []
 isLogLoss = True  # only affects rungeneric1
 isPickled = False  # only affects rungeneric1
 ##    
-isScatter = True  # only affects rungeneric2
-isScaleUp = True  # only affects rungeneric2, only set here and not altered by any command line argument for now
+isScatter = True  # only affects rungenericmany
 
 # Used by getopt:
 shortoptlist = "hvpo:"
@@ -275,4 +274,4 @@ longoptlist = ["help", "output-dir=", "noisy", "noise-free",
 
 
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
-# and "sca-only" only affects rungeneric2
+# and "sca-only" only affects rungenericmany

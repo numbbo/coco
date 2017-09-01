@@ -36,7 +36,7 @@ import pkg_resources
 
 __all__ = ['comp2', 'compall', 'eaf', 'main', 'ppfigdim', 'pplogloss',
            'pprldistr', 'pproc', 'ppsingle', 'pptable', 'rungeneric',
-           'rungeneric1', 'rungeneric2', 'rungenericmany', 'algportfolio',
+           'rungeneric1', 'rungenericmany', 'algportfolio',
            'pptex', 'toolsstats']
 
 __version__ = pkg_resources.require('cocopp')[0].version
