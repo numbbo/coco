@@ -17,6 +17,7 @@ import sys
 import warnings
 import tarfile
 import ntpath
+import zipfile
 
 from . import genericsettings
 
@@ -24,7 +25,10 @@ from . import genericsettings
 
 
 def is_recognized_repository_filetype(filename):
-    return os.path.isdir(filename.strip()) or filename.find('.tar') > 0 or filename.find('.tgz') > 0
+    return (os.path.isdir(filename.strip())
+            or filename.find('.tar') > 0
+            or filename.find('.tgz') > 0
+            or filename.find('.zip') > 0)
 
 
 def main(directory='.'):
@@ -68,27 +72,46 @@ def get_directory(directory, extract_files):
     #       (root,elem) = os.path.split(elem)
     #       filelist = IndexFile(root,elem,archive)
     if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
-        head, tail = ntpath.split(directory[:directory.find('.t')])
-        dir_name = head + os.sep + genericsettings.extraction_folder_prefix + tail
-        # extract only if extracted folder does not exist yet or if it was
-        # extracted earlier than last change of archive:
-        if extract_files:
-            if (not os.path.exists(dir_name)) or (os.path.getmtime(dir_name) < os.path.getmtime(directory)):
-                tar_file = tarfile.TarFile.open(directory)
-                longest_file_length = max(len(i) for i in tar_file.getnames())
-                if ('win32' in sys.platform) and len(dir_name) + longest_file_length > 259:
-                    raise IOError(2, 'Some of the files cannot be extracted ' +
-                                  'from "%s". The path is too long.' % directory)
+        if '.zip' in directory:
+            head, tail = ntpath.split(directory[:directory.find('.z')])
+            dir_name = head + os.sep + genericsettings.extraction_folder_prefix + tail
+            # extract only if extracted folder does not exist yet or if it was
+            # extracted earlier than last change of archive:
+            if extract_files:
+                if (not os.path.exists(dir_name)) or (os.path.getmtime(dir_name) < os.path.getmtime(directory)):
+                    with zipfile.ZipFile(directory, "r") as zip_ref:
+                        # check first on Windows systems if paths are not too long
+                        if ('win32' in sys.platform):
+                            longest_file_length = max(len(i) for i in zipfile.ZipFile.namelist(zip_ref))
+                            if len(dir_name) + longest_file_length > 259:
+                                raise IOError(2, 'Some of the files cannot be extracted ' +
+                                              'from "%s". The path is too long.' % directory)
+                        zip_ref.extractall(dir_name)
 
-                tar_file.extractall(dir_name)
-                # TarFile.open handles tar.gz/tgz
-                print('    archive extracted to folder', dir_name, '...')
-        directory = dir_name
-        # archive = tarfile.TarFile(directory)
-        # for elem in archivefile.namelist():
-        #    ~ if elem.endswith('.info'):
-        #        ~ (root,elem) = os.path.split(elem)
-        #        ~ filelist = IndexFile(root,elem,archive)
+                    print('    archive extracted to folder', dir_name, '...')
+            directory = dir_name
+        else: # i.e. either directory or .tar or zipped .tar
+            head, tail = ntpath.split(directory[:directory.find('.t')])
+            dir_name = head + os.sep + genericsettings.extraction_folder_prefix + tail
+            # extract only if extracted folder does not exist yet or if it was
+            # extracted earlier than last change of archive:
+            if extract_files:
+                if (not os.path.exists(dir_name)) or (os.path.getmtime(dir_name) < os.path.getmtime(directory)):
+                    tar_file = tarfile.TarFile.open(directory)
+                    longest_file_length = max(len(i) for i in tar_file.getnames())
+                    if ('win32' in sys.platform) and len(dir_name) + longest_file_length > 259:
+                        raise IOError(2, 'Some of the files cannot be extracted ' +
+                                      'from "%s". The path is too long.' % directory)
+
+                    tar_file.extractall(dir_name)
+                    # TarFile.open handles tar.gz/tgz
+                    print('    archive extracted to folder', dir_name, '...')
+            directory = dir_name
+            # archive = tarfile.TarFile(directory)
+            # for elem in archivefile.namelist():
+            #    ~ if elem.endswith('.info'):
+            #        ~ (root,elem) = os.path.split(elem)
+            #        ~ filelist = IndexFile(root,elem,archive)
 
     return directory
 
