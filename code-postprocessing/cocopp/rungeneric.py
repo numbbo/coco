@@ -78,9 +78,8 @@ def main(argv=None):
     * call sub-routine :py:func:`cocopp.rungeneric1.main` for each
       input argument; each input argument will be used as output
       sub-folder relative to the main output folder,
-    * call either sub-routines :py:func:`cocopp.rungeneric2.main`
-      (2 input arguments) or :py:func:`cocopp.rungenericmany.main`
-      (more than 2) for the input arguments altogether.
+    * call sub-routine :py:func:`cocopp.rungenericmany.main`
+      (2 or more input arguments) for the input arguments altogether.
     * alternatively call sub-routine :py:func:`cocopp.__main__.main` if option
       flag --test is used. In this case it will run through the
       post-processing tests.
