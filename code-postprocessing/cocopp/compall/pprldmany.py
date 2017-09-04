@@ -574,7 +574,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     algorithms_with_data.sort()
 
     if len(algorithms_with_data) > 1 and len(tmp) != 1 and dimension is None:
-        raise ValueError('We never integrate over dimension for than one algorithm.')
+        raise ValueError('We never integrate over dimension for more than one algorithm.')
     if dimension is not None:
         if dimension not in tmp.keys():
             raise ValueError('dimension %d not in dictAlg dimensions %s'
