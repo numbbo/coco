@@ -563,12 +563,14 @@ def consecutiveNumbers(data, prefix=''):
 
     Example::
       >>> import os
+      >>> returnpath = os.getcwd()  # needed for no effect on other doctests
       >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname('__file__'))))
       >>> import cocopp as bb
       >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9])
       '0-2, 4, 5, 7-9'
       >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9], 'f')
       'f0-f2, f4, f5, f7-f9'
+      >>> os.chdir(returnpath)  # no effect on path from this doctest
 
     Range of consecutive numbers is at least 3 (therefore [4, 5] is
     represented as "4, 5").
