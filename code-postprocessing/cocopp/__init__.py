@@ -29,6 +29,7 @@ del matplotlib
 from numpy.random import seed as set_seed
 
 from .cococommands import *
+from . import config
 
 from .rungeneric import main as main
 

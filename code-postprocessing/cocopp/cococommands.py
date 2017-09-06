@@ -20,6 +20,7 @@ Examples:
     >>> import os
     >>> import urllib
     >>> import tarfile
+    >>> returnpath = os.getcwd()  # needed for no effect on other doctests
     >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
     >>> os.chdir(path)
     >>> pp.genericsettings.verbose = False # ensure to make below doctests work 
@@ -47,6 +48,7 @@ Examples:
     1 Function with ID 2
     Dimension(s): 2, 3, 5, 10, 20, 40
     Max evals: [762, 1537, 2428, 6346, 20678, 75010]
+    >>> os.chdir(returnpath)  # no effect on path from this doctest
 
 """
 

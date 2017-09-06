@@ -300,7 +300,7 @@ class RunlengthBasedTargetValues(TargetValues):
             self._short_info = 'reference budgets from ' + self.reference_algorithm
 
             from . import bestalg
-            self.reference_data = bestalg.load_reference_algorithm(self.reference_algorithm, force=True)
+            self.reference_data = bestalg.load_reference_algorithm(self.reference_algorithm, force=True, relative_load=False)
             # TODO: remove targets smaller than 1e-8
         elif type(self.reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work
             self._short_info = 'reference budgets from ' + self.reference_data
@@ -552,6 +552,7 @@ class DataSet(object):
         >>> import os
         >>> import urllib
         >>> import tarfile
+        >>> returnpath = os.getcwd() # needed for no effect to other doctests
         >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
         >>> os.chdir(path)
         >>> import cocopp as bb
@@ -729,6 +730,8 @@ class DataSet(object):
         >>> # set things back to cause no troubles elsewhere:
         >>> bb.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = None
         >>> bb.config.config('GECCOBBOBTestbed') # make sure that settings are used
+        
+        >>> os.chdir(returnpath) # return to folder before doctest
 
     """
 
