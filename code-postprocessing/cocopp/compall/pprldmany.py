@@ -574,7 +574,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     algorithms_with_data.sort()
 
     if len(algorithms_with_data) > 1 and len(tmp) != 1 and dimension is None:
-        raise ValueError('We never integrate over dimension for than one algorithm.')
+        raise ValueError('We never integrate over dimension for more than one algorithm.')
     if dimension is not None:
         if dimension not in tmp.keys():
             raise ValueError('dimension %d not in dictAlg dimensions %s'
@@ -711,8 +711,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         return str(algname)
 
     plotting_style_list = ppfig.get_plotting_styles(order)
-    for plotting_style in sorted(plotting_style_list):
-        for i, alg in sorted(enumerate(sorted(plotting_style.algorithm_list))):
+    for plotting_style in plotting_style_list:
+        for i, alg in enumerate(plotting_style.algorithm_list):
             try:
                 data = dictData[alg]
                 maxevals = dictMaxEvals[alg]

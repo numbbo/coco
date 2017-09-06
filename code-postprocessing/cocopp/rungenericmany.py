@@ -174,9 +174,13 @@ def main(argv=None):
             usage()
             sys.exit()
 
-        is_scatter = genericsettings.isScatter
         # Process options
         outputdir = genericsettings.outputdir
+        prepare_scatter = genericsettings.isScatter
+        prepare_RLDistr = genericsettings.isRLDistr
+        prepare_figures = genericsettings.isFig
+        prepare_tables = genericsettings.isTab
+
         for o, a in opts:
             if o in ("-v", "--verbose"):
                 genericsettings.verbose = True
@@ -190,20 +194,24 @@ def main(argv=None):
             elif o == "--noise-free":
                 genericsettings.isNoiseFree = True
             # The next 3 are for testing purpose
-            elif o == "--tab-only":
-                genericsettings.isRLDistr = False
-                genericsettings.isFig = False
-                is_scatter = False
             elif o == "--no-rld-single-fcts":
                 genericsettings.isRldOnSingleFcts = False
+            elif o == "--tab-only":
+                prepare_RLDistr = False
+                prepare_figures = False
+                prepare_scatter = False
             elif o == "--rld-only":
-                genericsettings.isTab = False
-                genericsettings.isFig = False
-                is_scatter = False
+                prepare_tables = False
+                prepare_figures = False
+                prepare_scatter = False
             elif o == "--fig-only":
-                genericsettings.isRLDistr = False
-                genericsettings.isTab = False
-                is_scatter = False
+                prepare_RLDistr = False
+                prepare_tables = False
+                prepare_scatter = False
+            elif o == "--sca-only":
+                prepare_figures = False
+                prepare_RLDistr = False
+                prepare_tables = False
             elif o == "--settings":
                 genericsettings.inputsettings = a
             elif o == "--runlength-based":
@@ -212,8 +220,6 @@ def main(argv=None):
                 genericsettings.isExpensive = True  # comprises runlength-based
             elif o == "--no-svg":
                 genericsettings.generate_svg_files = False
-            elif o == "--sca-only":
-                warnings.warn("option --sca-only will have no effect with rungenericmany.py")
             elif o == "--los-only":
                 warnings.warn("option --los-only will have no effect with rungenericmany.py")
             elif o == "--crafting-effort=":
@@ -256,10 +262,7 @@ def main(argv=None):
         return 2
 
     if 1 < 3:
-        print("\nPost-processing (2+): will generate output " +
-              "data in folder %s" % outputdir)
-        print("  this might take several minutes.")
-
+        print("\nPost-processing (2+)");
         if not os.path.exists(outputdir):
             os.makedirs(outputdir)
             if genericsettings.verbose:
@@ -285,6 +288,10 @@ def main(argv=None):
         algorithm_folder = findfiles.get_output_directory_sub_folder(genericsettings.foreground_algorithm_list)
         prepend_to_file(latex_commands_file, ['\\providecommand{\\algsfolder}{' + algorithm_folder + '/}'])
         many_algorithms_output = os.path.join(outputdir, algorithm_folder)
+
+        print("  Will generate output data in folder %s" % many_algorithms_output)
+        print("    this might take several minutes.")
+
         if not os.path.exists(many_algorithms_output):
             os.makedirs(many_algorithms_output)
             if genericsettings.verbose:
@@ -346,7 +353,7 @@ def main(argv=None):
         )
 
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
-        if genericsettings.isRLDistr:
+        if prepare_RLDistr:
             config.config(dsList[0].testbed_name)
 
             if len(genericsettings.foreground_algorithm_list) == 2:
@@ -516,7 +523,7 @@ def main(argv=None):
                             header=ppfig.pprldmany_per_func_dim_header)
             print_done()
 
-        if genericsettings.isTab:
+        if prepare_tables:
             print("Generating comparison tables...")
             prepend_to_file(latex_commands_file,
                             ['\providecommand{\\bbobpptablesmanylegend}[1]{' +
@@ -534,7 +541,7 @@ def main(argv=None):
                         latex_commands_file)
             print_done()
 
-        if is_scatter and len(genericsettings.foreground_algorithm_list) == 2:
+        if prepare_scatter and len(genericsettings.foreground_algorithm_list) == 2:
             print("Scatter plots...")
 
             ds_list0 = dictAlg[sortedAlgs[0]]
@@ -573,7 +580,7 @@ def main(argv=None):
             function_groups=dictAlg[sortedAlgs[0]].getFuncGroups()
         )
 
-        if genericsettings.isFig:
+        if prepare_figures:
             print("Scaling figures...")
             plt.rc("axes", labelsize=20, titlesize=24)
             plt.rc("xtick", labelsize=20)

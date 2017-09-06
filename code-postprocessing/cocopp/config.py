@@ -84,7 +84,7 @@ def config(testbed_name=None):
             testbed = tbs.current_testbed
 
             testbed.scenario = tbs.scenario_rlbased
-            # settings (to be used in rungeneric2 while calling pprldistr.comp(...)):
+            # settings (to be used in rungenericmany while calling pprldistr.comp(...)):
             testbed.rldValsOfInterest = pproc.RunlengthBasedTargetValues(
                                         settings.target_runlengths_in_single_rldistr,
                                         reference_data=reference_data,

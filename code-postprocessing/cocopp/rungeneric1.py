@@ -168,6 +168,11 @@ def main(argv=None):
 
         # Process options
         outputdir = genericsettings.outputdir
+        prepare_RLDistr = genericsettings.isRLDistr
+        prepare_figures = genericsettings.isFig
+        prepare_tables = genericsettings.isTab
+        prepare_log_loss = genericsettings.isLogLoss
+
         for o, a in opts:
             if o in ("-v", "--verbose"):
                 genericsettings.verbose = True
@@ -184,21 +189,21 @@ def main(argv=None):
                 genericsettings.isNoiseFree = True
             # The next 4 are for testing purpose
             elif o == "--tab-only":
-                genericsettings.isFig = False
-                genericsettings.isRLDistr = False
-                genericsettings.isLogLoss = False
+                prepare_figures = False
+                prepare_RLDistr = False
+                prepare_log_loss = False
             elif o == "--fig-only":
-                genericsettings.isTab = False
-                genericsettings.isRLDistr = False
-                genericsettings.isLogLoss = False
+                prepare_tables = False
+                prepare_RLDistr = False
+                prepare_log_loss = False
             elif o == "--rld-only":
-                genericsettings.isTab = False
-                genericsettings.isFig = False
-                genericsettings.isLogLoss = False
+                prepare_tables = False
+                prepare_figures = False
+                prepare_log_loss = False
             elif o == "--los-only":
-                genericsettings.isTab = False
-                genericsettings.isFig = False
-                genericsettings.isRLDistr = False
+                prepare_tables = False
+                prepare_figures = False
+                prepare_RLDistr = False
             elif o == "--crafting-effort":
                 try:
                     genericsettings.inputCrE = float(a)
@@ -253,9 +258,7 @@ def main(argv=None):
         algfolder = findfiles.get_output_directory_sub_folder(args[0])
         algoutputdir = os.path.join(outputdir, algfolder)
         
-        print("\nPost-processing (1): will generate output " + 
-               "data in folder %s" % algoutputdir)
-        print("  this might take several minutes.")
+        print("\nPost-processing (1)")
 
         filelist = list()
         for i in args:
@@ -273,6 +276,9 @@ def main(argv=None):
         if not dsList:
             raise Usage("Nothing to do: post-processing stopped. For more information check the messages above.")
 
+        print("  Will generate output data in folder %s" % algoutputdir)
+        print("    this might take several minutes.")
+        
         if genericsettings.isNoisy and not genericsettings.isNoiseFree:
             dsList = dsList.dictByNoise().get('nzall', DataSetList())
         if genericsettings.isNoiseFree and not genericsettings.isNoisy:
@@ -313,7 +319,7 @@ def main(argv=None):
             # DataSet associated. If there are more than one, the first one only
             # will be considered... which is probably not what one would expect.
 
-        if genericsettings.isFig or genericsettings.isTab or genericsettings.isRLDistr or genericsettings.isLogLoss:
+        if prepare_figures or prepare_tables or prepare_RLDistr or prepare_log_loss:
             if not os.path.exists(outputdir):
                 os.makedirs(outputdir)
                 if genericsettings.verbose:
@@ -336,7 +342,7 @@ def main(argv=None):
             print_done()
 
         values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
-        if genericsettings.isFig:
+        if prepare_figures:
             print("Scaling figures...")
             # aRT/dim vs dim.
             plt.rc("axes", **inset.rcaxeslarger)
@@ -358,7 +364,7 @@ def main(argv=None):
         plt.rc("legend", **inset.rclegend)
         plt.rc('pdf', fonttype = 42)
 
-        if genericsettings.isTab:
+        if prepare_tables:
             print("Generating LaTeX tables...")
             dictNoise = dsList.dictByNoise()
             dict_dim_list = dictAlgByDim(dictAlg)
@@ -376,7 +382,7 @@ def main(argv=None):
                 pptable.main(sliceNoise, dims, algoutputdir, latex_commands_file)
             print_done()
 
-        if genericsettings.isRLDistr:
+        if prepare_RLDistr:
             print("ECDF graphs...")
             dictNoise = dsList.dictByNoise()
             if len(dictNoise) > 1:
@@ -421,7 +427,7 @@ def main(argv=None):
                                                settings=inset)
                 print_done()
             
-        if genericsettings.isLogLoss:
+        if prepare_log_loss:
             print("aRT loss ratio figures and tables...")
             for ng, sliceNoise in dsList.dictByNoise().items():
                 if ng == 'noiselessall':
@@ -496,7 +502,7 @@ def main(argv=None):
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\algname}{' + 
                          (str_to_latex(strip_pathname1(args[0])) if len(args) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
-        if genericsettings.isFig or genericsettings.isTab or genericsettings.isRLDistr or genericsettings.isLogLoss:
+        if prepare_figures or prepare_tables or prepare_RLDistr or prepare_log_loss:
             print("Output data written to folder %s" % outputdir)
 
         plt.rcdefaults()

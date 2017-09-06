@@ -481,6 +481,7 @@ def deprecated_customgenerate(args=algs2009):
 
     >>> from cocopp import bestalg
     >>> import os
+    >>> returnpath = os.getcwd()  # needed for no effect on other doctests 
     >>> path = os.path.abspath(os.path.dirname('__file__'))
     >>> os.chdir(os.path.join(path, 'data'))
     >>> infoFile = 'ALPS/bbobexp_f2.info'
@@ -494,7 +495,7 @@ def deprecated_customgenerate(args=algs2009):
     >>> os.chdir(os.path.join(path, 'data'))
     >>> bestalg.custom_generate(('ALPS', ''), 'refAlgFromALPS') # doctest: +ELLIPSIS
     Searching in...
-    >>> os.chdir(path)
+    >>> os.chdir(returnpath)
 
     """
 
@@ -662,6 +663,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
         >>> from cocopp import bestalg
         >>> import os
         >>> import urllib
+        >>> returnpath = os.getcwd()  # needed for no effect on other doctests
         >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
         >>> os.chdir(path)
         >>> infoFile = 'data/BIPOP-CMA-ES.tgz'
@@ -678,6 +680,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
         >>> os.chdir(path)
         >>> bestalg.getAllContributingAlgorithmsToBest(('data/BIPOP-CMA-ES.tgz', 'data/MCS.tgz')) # doctest:+ELLIPSIS
         Generating best algorithm data...
+        >>> os.chdir(returnpath)
 
     """
 
