@@ -38,7 +38,7 @@ functions.
 
    # plot the run lengths distribution functions
    plt.figure()
-   for algname, ds in dsets.iteritems():
+   for algname, ds in dsets.items():
       dataset = ds.dictByDimFunc()[10][13]  # DataSet dimension 10 on F13
       bb.compall.pprldmany.plot(dataset, label=algname)
    bb.compall.pprldmany.beautify()
@@ -49,7 +49,7 @@ functions.
 
 # TODO: generalize behaviour for data sets that have different instances...
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import sys
 from pdb import set_trace
@@ -195,8 +195,8 @@ def build(dictAlg, sortedAlg=None):
     if not sortedAlg:
         sortedAlg = dictAlg.keys()
     tmpres = []
-    for f, i in pp.dictAlgByFun(dictAlg).iteritems():
-        for d, j in pp.dictAlgByDim(i).iteritems():
+    for f, i in pp.dictAlgByFun(dictAlg).items():
+        for d, j in pp.dictAlgByDim(i).items():
             tmp = []
             if sortedAlg:
                 tmplist = list(j[k] for k in sortedAlg)
@@ -207,8 +207,8 @@ def build(dictAlg, sortedAlg=None):
                 tmp.append(k[0])
             try:
                 tmpres.append(DataSet(tmp))
-            except Usage, err:
-                print >>sys.stderr, err.msg
+            except Usage as err:
+                print(err.msg, file=sys.stderr)
     res = pp.DataSetList()
     res.extend(tmpres)
     return res

@@ -118,10 +118,10 @@ static size_t nb_of_linear_constraints(const size_t function,
   
   if (p == 1) return 1;
   else if (p == 2) return 2;
-  else if (p == 3) return 10;
-  else if (p == 4) return dimension/2;
-  else if (p == 5) return dimension - 1;
-  else return dimension + 1;
+  else if (p == 3) return 6;
+  else if (p == 4) return 6 + dimension/2;
+  else if (p == 5) return 6 + dimension;
+  else return 6 + 3*dimension;
   
 }
 

@@ -18,6 +18,15 @@ import matplotlib  # just to make sure the following is actually done first
 
 matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
+if sys.version_info[0] >= 3:
+    from urllib.request import urlretrieve
+else:
+    # Not Python 3 - today, it is most likely to be Python 2
+    # But note that this might need an update when Python 4
+    # might be around one day
+    from urllib import urlretrieve
+
+test_bibtex = False
 
 def join_path(a, *p):
     joined_path = os.path.join(a, *p)
@@ -50,20 +59,20 @@ def run_latex_template(filename, all_tests):
     result = subprocess.call(arguments, stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
     assert not result, 'Test failed: error while generating pdf from %s.' % filename
 
-    if all_tests:
+    if all_tests and test_bibtex:
         file_path = os.path.splitext(file_path)[0]
         arguments = ['bibtex', file_path]
         DEVNULL = open(os.devnull, 'wb')
         output_file = open("bibtex.log", "w")
         result = subprocess.call(arguments, stdin=DEVNULL, stdout=output_file, stderr=DEVNULL)
-        assert not result, 'Test failed: error while running bibtex on %s.' % os.path.splitext(filename)[0]
+        assert not result, 'Test failed: error while running bibtex on %s resuling in %s' % (os.path.splitext(filename)[0], str(result))
 
 
 def retrieve_algorithm(data_path, folder_name, algorithm_name, file_name=None):
     algorithm_file = join_path(data_path, file_name if file_name else algorithm_name)
     if not os.path.exists(algorithm_file):
         data_url = 'http://coco.gforge.inria.fr/data-archive/%s/%s' % (folder_name, algorithm_name)
-        urllib.urlretrieve(data_url, algorithm_file)
+        urlretrieve(data_url, algorithm_file)
 
 
 def prepare_data(run_all_tests):

@@ -39,7 +39,7 @@ function evaluations of unsuccessful runs divided by dimension.
 
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import os
 import warnings
@@ -123,9 +123,9 @@ MC = ('Monte Carlo',)
 third = ('POEMS', 'VNS (Garcia)', 'DE-PSO', 'EDA-PSO', 'PSO_Bounds', 'PSO', 'AMaLGaM IDEA', 'iAMaLGaM IDEA',
          'MA-LS-Chain', 'DASA', 'BayEDAcG')
 
-funi = [1, 2] + range(5, 15)  # 2 is paired Ellipsoid
-funilipschitz = [1] + [5, 6] + range(8, 13) + [14]  # + [13]  #13=sharp ridge, 7=step-ellipsoid
-fmulti = [3, 4] + range(15, 25)  # 3 = paired Rastrigin
+funi = [1, 2] + list(range(5, 15))  # 2 is paired Ellipsoid
+funilipschitz = [1] + [5, 6] + list(range(8, 13)) + [14]  # + [13]  #13=sharp ridge, 7=step-ellipsoid
+fmulti = [3, 4] + list(range(15, 25))  # 3 = paired Rastrigin
 funisep = [1, 2, 5]
 
 # input parameter settings
@@ -475,7 +475,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
              settings=settings)
 
         dictFG = pp.dictAlgByFuncGroup(dict_alg)
-        for fg, entries in dictFG.iteritems():
+        for fg, entries in sorted(dictFG.items()):
             main(entries,
                  order=sorted_algs,
                  outputdir=single_fct_output_dir,
@@ -485,7 +485,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
                  settings=settings)
 
     dictFG = pp.dictAlgByFun(dict_alg)
-    for fg, tempDictAlg in dictFG.iteritems():
+    for fg, tempDictAlg in sorted(dictFG.items()):
 
         if is_single_algorithm:
             main(tempDictAlg,
@@ -517,7 +517,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
             )
 
     if is_single_algorithm:
-        functionGroups = dict_alg[dict_alg.keys()[0]].getFuncGroups()
+        functionGroups = dict_alg[list(dict_alg.keys())[0]].getFuncGroups()
 
         dictDim = pp.dictAlgByDim(dict_alg)
         dims = sorted(dictDim)
@@ -525,7 +525,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
             tempDictAlg = dictDim[d]
             next_dim = dims[i+1] if i + 1 < len(dims) else dims[0]
             dictFG = pp.dictAlgByFuncGroup(tempDictAlg)
-            for fg, entries in dictFG.iteritems():
+            for fg, entries in sorted(dictFG.items()):
                 main(entries,
                      order=sorted_algs,
                      outputdir=single_fct_output_dir,
@@ -569,6 +569,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     tmp = pp.dictAlgByDim(dictAlg)
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
+    algorithms_with_data.sort()
 
     if len(algorithms_with_data) > 1 and len(tmp) != 1 and dimension is None:
         raise ValueError('We never integrate over dimension for than one algorithm.')
@@ -577,7 +578,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             raise ValueError('dimension %d not in dictAlg dimensions %s'
                              % (dimension, str(tmp.keys())))
         tmp = {dimension: tmp[dimension]}
-    dimList = tmp.keys()
+    dimList = list(tmp.keys())
 
     # The sort order will be defined inside this function.    
     if plotType == PlotType.DIM:
@@ -591,9 +592,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         if 1 < 3 and dictAlg[alg][0].algId == 'GLOBAL':
             tmp = dictAlg[alg].dictByNoise()
             assert len(tmp.keys()) == 1
-            if tmp.keys()[0] == 'noiselessall':
+            if list(tmp.keys())[0] == 'noiselessall':
                 CrE = 0.5117
-            elif tmp.keys()[0] == 'nzall':
+            elif list(tmp.keys())[0] == 'nzall':
                 CrE = 0.6572
         if plotType == PlotType.DIM:
             for dim in dimList:
@@ -601,13 +602,13 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 CrEperAlg[keyValue] = CrE
         elif plotType == PlotType.FUNC:
             tmp = pp.dictAlgByFun(dictAlg)
-            for f, dictAlgperFunc in tmp.iteritems():
+            for f, dictAlgperFunc in tmp.items():
                 keyValue = 'f%d' % (f)
                 CrEperAlg[keyValue] = CrE
         else:
             CrEperAlg[alg] = CrE
         if CrE != 0.0:
-            print 'Crafting effort for', alg, 'is', CrE
+            print('Crafting effort for', alg, 'is', CrE)
 
     dictData = {}  # list of (ert per function) per algorithm
     dictMaxEvals = {}  # list of (maxevals per function) per algorithm
@@ -624,13 +625,13 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
         dictDim = dictDimList[dim]
         dictFunc = pp.dictAlgByFun(dictDim)
-        for f, dictAlgperFunc in dictFunc.iteritems():
-            # print target_values((f, dim))
+        for f, dictAlgperFunc in sorted(dictFunc.items()):
+            # print(target_values((f, dim)))
             for j, t in enumerate(target_values((f, dim))):
                 # for j, t in enumerate(testbedsettings.current_testbed.ecdf_target_values(1e2, f)):
                 # funcsolved[j].add(f)
 
-                for alg in algorithms_with_data:
+                for alg in sorted(algorithms_with_data):
                     x = [np.inf] * perfprofsamplesize
                     runlengthunsucc = []
                     try:
@@ -670,7 +671,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 else:
                     refalgentry = refalgentries[(dim, f)]
                     refalgevals = refalgentry.detEvals(target_values((f, dim)))
-                    # print refalgevals
+                    # print(refalgevals)
                     for j in range(len(refalgevals[0])):
                         if refalgevals[1][j]:
                             evals = refalgevals[0][j]
@@ -708,8 +709,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         return str(algname)
 
     plotting_style_list = ppfig.get_plotting_styles(order)
-    for plotting_style in plotting_style_list:
-        for i, alg in enumerate(plotting_style.algorithm_list):
+    for plotting_style in sorted(plotting_style_list):
+        for i, alg in sorted(enumerate(sorted(plotting_style.algorithm_list))):
             try:
                 data = dictData[alg]
                 maxevals = dictMaxEvals[alg]
@@ -779,7 +780,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 f.write('}}\n')
             # f.write(footleg)
             if genericsettings.verbose:
-                print 'Wrote right-hand legend in %s' % file_name
+                print('Wrote right-hand legend in %s' % file_name)
 
     if info:
         figureName = os.path.join(outputdir, '%s_%s' % (genericsettings.pprldmany_file_name, info))
@@ -790,8 +791,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     if plotType == PlotType.FUNC:
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
-        dictKey = dictFG.keys()[0]
-        functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
+        dictKey = list(dictFG.keys())[0]
+        functionGroups = dictAlg[list(dictAlg.keys())[0]].getFuncGroups()
         text = '%s\n%s, %d-D' % (testbedsettings.current_testbed.name,
                                  functionGroups[dictKey],
                                  dimList[0])
@@ -834,8 +835,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     plt.text(0.01, 0.98, text, horizontalalignment="left",
              verticalalignment="top", transform=plt.gca().transAxes, size='small')
     if len(dictFunc) == 1:
-        plt.title(' '.join((str(dictFunc.keys()[0]),
-                            testbedsettings.current_testbed.short_names[dictFunc.keys()[0]])))
+        plt.title(' '.join((str(list(dictFunc.keys())[0]),
+                            testbedsettings.current_testbed.short_names[list(dictFunc.keys())[0]])))
     a = plt.gca()
 
     plt.xlim(xmin=1e-0, xmax=x_limit ** annotation_space_end_relative)

@@ -11,6 +11,7 @@ import warnings
 import numpy as np
 from matplotlib import pyplot as plt
 import shutil
+from six import string_types, advance_iterator
 # from pdb import set_trace
 
 # absolute_import => . refers to where ppfig resides in the package:
@@ -58,7 +59,7 @@ def save_figure(filename, algorithm=None, fig_format=()):
     if not fig_format:
         fig_format = genericsettings.getFigFormats()
 
-    if isinstance(fig_format, basestring):
+    if isinstance(fig_format, string_types):
         fig_format = (fig_format,)
     for format in fig_format:
         try:
@@ -122,7 +123,7 @@ def save_index_html_file(filename):
                    'correctly updated once the post-processing for the ' \
                    'algorithms is rerun.' % (index_file, index_file)
 
-        f.write(html_header % ('Post processing results', 'Post processing results', text))
+        f.write(html_header % tuple(2 * ['COCO Post-Processing Results'] + [text]))
 
         current_dir = os.path.dirname(os.path.realpath(filename))
         indent = '&nbsp;&nbsp;'
@@ -309,7 +310,7 @@ def save_single_functions_html(filename,
             f.write("\n<H2> %s </H2>\n" % current_header)
             for index, dimension in enumerate(dimensions):
                 f.write(write_dimension_links(dimension, dimensions, index))
-                for typeKey, typeValue in function_groups.iteritems():
+                for typeKey, typeValue in function_groups.items():
                     f.write(add_image('%s_%02dD_%s.%s' % (name, dimension, typeKey, extension), True))
 
             f.write(caption_string_format % '\n##bbobECDFslegend##')
@@ -333,7 +334,7 @@ def save_single_functions_html(filename,
             header_ecdf = ' Empirical cumulative distribution functions (ECDF)'
             f.write("<H2> %s </H2>\n" % header_ecdf)
             for dimension in dimensions:
-                for typeKey, typeValue in function_groups.iteritems():
+                for typeKey, typeValue in function_groups.items():
                     f.write('<p><b>%s in %d-D</b></p>' % (typeValue, dimension))
                     f.write('<div>')
                     for name in names:
@@ -352,7 +353,7 @@ def save_single_functions_html(filename,
                          '(ECDFs) per function group'
             f.write("\n<H2> %s </H2>\n" % header_ecdf)
             for dimension in dimensions:
-                for typeKey, typeValue in function_groups.iteritems():
+                for typeKey, typeValue in function_groups.items():
                     f.write('<p><b>%s in %d-D</b></p>' % (typeValue, dimension))
                     f.write('<div>')
                     for name in names:
@@ -384,7 +385,7 @@ def save_single_functions_html(filename,
                 scenario = testbedsettings.current_testbed.scenario
                 f.write(caption_string_format % htmldesc.getValue('##bbobloglosstablecaption' + scenario + '##'))
 
-                for typeKey, typeValue in function_groups.iteritems():
+                for typeKey, typeValue in function_groups.items():
                     f.write('<p><b>%s in %s</b></p>' % (typeValue, dimension_list))
                     f.write('<div>')
                     for dimension in dimensions:
@@ -578,7 +579,7 @@ def groupByRange(data):
     Ref: http://docs.python.org/release/3.0.1/library/itertools.html
     """
     res = []
-    for _k, g in groupby(enumerate(data), lambda (i, x): i - x):
+    for _k, g in groupby(enumerate(data), lambda x: x[0] - x[1]):
         res.append(list(i for i in map(itemgetter(1), g)))
 
     return res
@@ -638,13 +639,13 @@ def generateData(dataSet, targetFuncValue):
     finally the median on successful runs.
     """
     it = iter(reversed(dataSet.evals))
-    i = it.next()
+    i = advance_iterator(it)
     prev = np.array([np.nan] * len(i))
 
     while i[0] <= targetFuncValue:
         prev = i
         try:
-            i = it.next()
+            i = advance_iterator(it)
         except StopIteration:
             break
 
@@ -690,7 +691,7 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
         res = {}
         for i in dsList:
             dictinstance = i.createDictInstance()
-            for j, idx in dictinstance.iteritems():
+            for j, idx in sorted(list(dictinstance.items())):
                 tmp = StrippedUpDS()
                 idxs = list(k + 1 for k in idx)
                 idxs.insert(0, 0)
@@ -804,6 +805,7 @@ def get_plotting_styles(algorithms, only_foreground=False):
     if not only_foreground:
         for key, value in genericsettings.background.items():
             background_algorithms = [algorithm for algorithm in algorithms if algorithm in value]
+            background_algorithms.sort()
             if len(background_algorithms) > 0:
                 ppfigs_styles = {'marker': '',
                                  'color': key[0],
@@ -817,6 +819,7 @@ def get_plotting_styles(algorithms, only_foreground=False):
                 plotting_styles.append(PlottingStyle(pprldmany_styles, ppfigs_styles, background_algorithms, True))
 
     foreground_algorithms = [key for key in algorithms if key in genericsettings.foreground_algorithm_list]
+    foreground_algorithms.sort()
     plotting_styles.append(PlottingStyle({},
                                          {},
                                          foreground_algorithms if len(foreground_algorithms) > 0 else algorithms,

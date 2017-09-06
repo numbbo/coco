@@ -33,10 +33,10 @@ def do(dirnames):
                         os.rename(f, dst)
                     except OSError:
                         # Either dst is a folder or the OS is Windows and dst exists
-                        print "%s cannot be moved to %s.\n" % (f, dst)
+                        print("%s cannot be moved to %s.\n" % (f, dst))
 
 if 1 < 3 and __name__ == "__main__":
     # Input: folders where to apply above method do
     if len(sys.argv) < 2: 
-        print 'Need at least one directory argument, where pictures are going to be organized into folders'
+        print('Need at least one directory argument, where pictures are going to be organized into folders')
     do(sys.argv[1:])

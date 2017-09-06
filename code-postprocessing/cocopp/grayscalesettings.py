@@ -8,6 +8,7 @@ This module modifies module-defined variables so
 
 """
 
+from __future__ import print_function
 from . import ppfigdim, pprldistr, pplogloss, genericsettings
 from .comp2 import ppscatter, ppfig2, pprldistr2
 from .compall import pprldmany, ppfigs
@@ -26,7 +27,7 @@ def convtograyscale(rgb):
 
     return (rgb[0]*.3 + rgb[1]*.59 + rgb[2]*.11)
 
-print "Using grayscale settings."
+print("Using grayscale settings.")
 
 instancesOfInterest = genericsettings.instancesOfInterest
 

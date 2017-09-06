@@ -9,7 +9,7 @@ import cocopp as bb
 import numpy as np
 data = {}
 for datapath in datapaths:
-    print "loading data from", datapath
+    print("loading data from", datapath)
     data2009 = bb.load(datapath)
     Algs = data2009.dictByAlg()
     target_runlengths_in_table = [0.5, 1.2, 3, 10, 50]
@@ -18,8 +18,8 @@ for datapath in datapaths:
 
     for alg in Algs:
         curAlg = Algs[alg].dictByFunc()
-        algname = curAlg[curAlg.keys()[0]][0].algId
-        if not data.has_key(algname):
+        algname = curAlg[list(curAlg.keys())[0]][0].algId
+        if not algname in data:
             data[algname] = {}
         for func in curAlg:
             data[algname][func] = {}
@@ -33,7 +33,7 @@ for datapath in datapaths:
                 data[algname][func][dim][0].append(y)
                 x = y[np.isnan(y) == False]
                 bb.pprldistr.plotECDF(x[np.isfinite(x)] / float(dim), len(y))
-        print algname, "done"
+        print(algname, "done")
 with open(savepath, "w") as f:
     pickle.dump(data, f)
 """

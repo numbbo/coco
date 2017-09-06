@@ -11,7 +11,7 @@ This module can be called from the shell, it will recursively look for
   Found ... file(s)!
 
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import os
 import sys
 import warnings
@@ -44,14 +44,14 @@ def main(directory='.'):
     # Search through the directory directory and all its subfolders.
     for root, _dirs, files in os.walk(directory):
         if genericsettings.verbose:
-            print 'Searching in %s ...' % root
+            print('Searching in %s ...' % root)
 
         for elem in files:
             if elem.endswith('.info') or elem.endswith('.pickle') or elem.endswith('.pickle.gz'):
                 file_list.append(os.path.join(root, elem))
 
     if genericsettings.verbose:
-        print 'Found %d file(s).' % (len(file_list))
+        print('Found %d file(s).' % (len(file_list)))
     if not file_list:
         warnings.warn('Could not find any file of interest in %s!' % root)
     return file_list
@@ -82,7 +82,7 @@ def get_directory(directory, extract_files):
 
                 tar_file.extractall(dir_name)
                 # TarFile.open handles tar.gz/tgz
-                print '    archive extracted to folder', dir_name, '...'
+                print('    archive extracted to folder', dir_name, '...')
         directory = dir_name
         # archive = tarfile.TarFile(directory)
         # for elem in archivefile.namelist():

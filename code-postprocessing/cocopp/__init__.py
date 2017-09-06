@@ -32,8 +32,6 @@ from .cococommands import *
 
 from .rungeneric import main as main
 
-from .__main__ import main as _main  # depreciated
-
 import pkg_resources
 
 __all__ = ['comp2', 'compall', 'eaf', 'main', 'ppfigdim', 'pplogloss',
