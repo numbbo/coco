@@ -126,12 +126,15 @@ def beautify():
     #a.set_aspect(1./a.get_data_ratio())
     a.set_aspect('equal')
     plt.grid(True)
-    tmp = a.get_yticks()
-    tmp2 = []
-    for i in tmp:
-        tmp2.append('%d' % round(numpy.log10(i)))
-    a.set_yticklabels(tmp2)
-    a.set_xticklabels(tmp2)
+
+    tick_locs = [n for n in a.get_xticks() if n > minbnd and n < maxbnd]
+    tick_labels = ['%d' % round(np.log10(n)) if n < 1e10  # assure 1 digit for uniform figure sizes
+                   else '' for n in tick_locs]
+    a.set_xticks(tick_locs)
+    a.set_yticks(tick_locs)
+    a.set_xticklabels(tick_labels)
+    a.set_yticklabels(tick_labels)
+
     #for line in a.get_xticklines():# + a.get_yticklines():
     #    plt.setp(line, color='b', marker='o', markersize=10)
     #set_trace()
@@ -219,7 +222,7 @@ def main(dsList0, dsList1, outputdir, settings):
                     plt.plot(xdata[idx], ydata[idx], ls='',
                              markersize=markersize,
                              marker=markers[i], markerfacecolor='None',
-                             markeredgecolor=colors[i], markeredgewidth=3, 
+                             markeredgecolor=colors[i], markeredgewidth=3,
                              clip_on=False)
                 except KeyError:
                     plt.plot(xdata[idx], ydata[idx], ls='', markersize=markersize,
@@ -324,7 +327,7 @@ def main(dsList0, dsList1, outputdir, settings):
             text = (str(len(targetlabels)) + ' targets: ' +
                     targetlabels[0] + '..' +
                     targetlabels[len(targetlabels)-1])
-        # add number of instances 
+        # add number of instances
         text += '\n'
         num_of_instances_alg0 = []
         num_of_instances_alg1 = []
