@@ -59,6 +59,7 @@ def merge_archives(input_path, output_path, functions, instances, dimensions, cr
        :param functions: functions to be included in the merging
        :param instances: instances to be included in the merging
        :param dimensions: dimensions to be included in the merging
+       :param crop_variables: whether output archives should contain information on solution variables
     """
     result = {}
 
