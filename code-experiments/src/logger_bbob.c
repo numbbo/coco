@@ -101,6 +101,8 @@ static const char *bbob_constrained_file_header_str = "%% f evaluations | "
     "x1 | "
     "x2...\n";
 
+static const char *logger_name = "bbob";
+
 /**
  * adds a formated line to a data file
  */
@@ -294,9 +296,9 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
           data_format = coco_strdup("bbob");
       }
       fprintf(*target_file,
-          "suite = '%s', funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', coco_version = '%s', data_format = '%s'\n",
+          "suite = '%s', funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', coco_version = '%s', logger = '%s', data_format = '%s'\n",
           suite_name, (int) strtol(function_id, NULL, 10), (unsigned long) logger->number_of_variables,
-          pow(10, -8), logger->observer->algorithm_name, coco_version, data_format);
+          pow(10, -8), logger->observer->algorithm_name, coco_version, logger_name, data_format);
         
       coco_free_memory(data_format);
       fprintf(*target_file, "%%\n");
