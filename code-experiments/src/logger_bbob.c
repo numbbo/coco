@@ -212,6 +212,7 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
   char file_path[COCO_PATH_MAX + 2] = { 0 };
   FILE **target_file;
   FILE *tmp_file;
+  char *data_format;
   strncpy(used_dataFile_path, dataFile_path, COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
   if (bbob_infoFile_firstInstance == 0) {
     bbob_infoFile_firstInstance = logger->instance_id;
@@ -287,12 +288,17 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
         }
         fclose(tmp_file);
       }
-      
+      if (logger->constrained_problem) {
+          data_format = coco_strdup("bbob-constrained");
+      } else {
+          data_format = coco_strdup("bbob");
+      }
       fprintf(*target_file,
-          "suite = '%s', funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', coco_version = '%s'\n",
+          "suite = '%s', funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', coco_version = '%s', data_format = '%s'\n",
           suite_name, (int) strtol(function_id, NULL, 10), (unsigned long) logger->number_of_variables,
-          pow(10, -8), logger->observer->algorithm_name, coco_version);
-
+          pow(10, -8), logger->observer->algorithm_name, coco_version, data_format);
+        
+      coco_free_memory(data_format);
       fprintf(*target_file, "%%\n");
       strncat(used_dataFile_path, "_i", COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
       strncat(used_dataFile_path, bbob_infoFile_firstInstance_char,
@@ -545,7 +551,7 @@ static void logger_bbob_free(void *stuff) {
      */
     if (!logger->written_last_eval) {
 		if (!logger->constrained_problem) {
-		  logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, 0, /* asma: 0 or logger->number_of_evaluations_constraints? */
+		  logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, 0,
 		      logger->last_fvalue, logger->best_fvalue, logger->optimal_fvalue, 
 		      logger->best_solution, logger->number_of_variables, 0);
 		}
