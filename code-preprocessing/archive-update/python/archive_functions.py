@@ -11,14 +11,14 @@ class ProblemInstanceInfo:
        with archived solutions for this problem instance.
     """
 
-    def __init__(self, _file_name, suite_name, function, instance, dimension):
+    def __init__(self, _file_name, single_instance, suite_name, _function, instance, dimension):
         """Instantiates a ProblemInstanceInfo object.
         """
         self.suite_name = suite_name
-        self.function = function
+        self.function = _function
         self.instance = instance
         self.dimension = dimension
-        self.file_names = [_file_name]
+        self.file_info = [{'file_name': _file_name, 'single_instance': single_instance}]
 
         self.current_file_initialized = False
         self.current_position = 0
@@ -27,17 +27,17 @@ class ProblemInstanceInfo:
     def __str__(self):
         return "{}_f{:02d}_i{:02d}_d{:02d}".format(self.suite_name, self.function, self.instance, self.dimension)
 
-    def equals(self, suite_name, function, instance, dimension):
+    def equals(self, suite_name, _function, instance, dimension):
         """Returns true if this self has the same suite_name, function, instance and dimension as the given ones and
            false otherwise.
            :param suite_name: suite name
-           :param function: function number
+           :param _function: function number
            :param instance: instance number
            :param dimension: dimension
         """
         if self.suite_name != suite_name:
             return False
-        if self.function != function:
+        if self.function != _function:
             return False
         if self.instance != instance:
             return False
@@ -46,22 +46,31 @@ class ProblemInstanceInfo:
         return True
 
     def fill_archive(self, archive):
-        """Reads the solutions from the files and feeds them to the given archive.
+        """Reads the solutions from the files and feeds them to the given archive. If a file contains a single
+        instance, all comments are skipped. If a file contains multiple instances, only the solutions up to the next
+        instance are read. If the file contains no solutions for the given problem instance, an exception is raised.
            :param archive: archive to be filled with solutions
         """
-        for f_name in self.file_names:
-            #print(f_name)
+        for f_info in self.file_info:
+            f_name = f_info.get('file_name')
+            single_instance = f_info.get('single_instance')
             with open(f_name, 'r') as f:
 
-                instance_found = False
+                instance_found = single_instance
+                solution_found = False
 
                 for line in f:
-                    if not line.strip() or (line[0] == '%' and 'instance' not in line):
-                        # Ignore empty lines
+                    if not line.strip() or (single_instance and line[0] == '%'):
+                        # Ignore empty lines and all comments if the file contains a single instance
                         continue
 
-                    elif line[0] == '%' and 'instance' in line:
+                    elif line[0] == '%' and 'instance' not in line:
+                        # If a file has multiple instances, ignore all comments not containing instance information
+                        continue
+
+                    elif not single_instance and line[0] == '%' and 'instance' in line:
                         if instance_found:
+                            # If a file has multiple instances, stop when you encounter another instance
                             break
                         else:
                             value = get_key_value(line[1:], 'instance')
@@ -73,6 +82,7 @@ class ProblemInstanceInfo:
                             # Solution found, feed it to the archive
                             try:
                                 archive.add_solution(float(line.split()[1]), float(line.split()[2]), line)
+                                solution_found = True
                             except IndexError:
                                 print('Problem in file {}, line {}, skipping line'.format(f_name, line))
                                 continue
@@ -81,6 +91,9 @@ class ProblemInstanceInfo:
                 if not instance_found:
                     raise PreprocessingException('File \'{}\' does not contain \'instance = {}\''.format(f_name,
                                                                                                          self.instance))
+                if not solution_found:
+                    raise PreprocessingException('File \'{}\' contains no solutions for \'instance = {}\''.format(
+                        f_name, self.instance))
 
     # noinspection PyTypeChecker
     def write_archive_solutions(self, output_path, archive, crop_variables):
@@ -158,21 +171,22 @@ class ArchiveInfo:
                 result += str(problem_instance) + '\n'
         return result
 
-    def _add_entry(self, _file_name, suite_name, function, instance, dimension):
+    def _add_entry(self, _file_name, single_instance, suite_name, _function, instance, dimension):
         """Adds a new ProblemInstanceInfo instance with the given suite_name, function, instance, dimension to the list
            of problem instances if an instance with these exact values does not exist yet. If it already exists, the
-           current file_name is added to its list of file names.
+           current file_name and single_instance entries are added to its list of file information dictionaries.
         """
 
         found = False
         for problem_instance in self.problem_instances:
-            if problem_instance.equals(suite_name, function, instance, dimension):
-                problem_instance.file_names.append(_file_name)
+            if problem_instance.equals(suite_name, _function, instance, dimension):
+                problem_instance.file_info.append({'file_name': _file_name, 'single_instance': single_instance})
                 found = True
                 break
 
         if not found:
-            self.problem_instances.append(ProblemInstanceInfo(_file_name, suite_name, function, instance, dimension))
+            self.problem_instances.append(ProblemInstanceInfo(_file_name, single_instance, suite_name, _function,
+                                                              instance, dimension))
 
     def get_next_problem_instance_info(self):
         """Returns the current ProblemInstanceInfo and increases the counter. If there are no more instances left,
@@ -223,7 +237,6 @@ class ArchiveInfo:
         """
         file_name_set = set()
         for problem_instance in self.problem_instances:
-            for file_name in problem_instance.file_names:
-                file_name_set.add(file_name)
+            for file_info in problem_instance.file_info:
+                file_name_set.add(file_info['file_name'])
         return sorted(file_name_set)
-
