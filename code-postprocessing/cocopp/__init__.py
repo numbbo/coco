@@ -35,10 +35,8 @@ from .rungeneric import main as main
 
 import pkg_resources
 
-__all__ = ['comp2', 'compall', 'eaf', 'main', 'ppfigdim', 'pplogloss',
-           'pprldistr', 'pproc', 'ppsingle', 'pptable', 'rungeneric',
-           'rungeneric1', 'rungenericmany', 'algportfolio',
-           'pptex', 'toolsstats']
+__all__ = [# 'main',  # import nothing with "from cocopp import *"
+           ]
 
 __version__ = pkg_resources.require('cocopp')[0].version
 
