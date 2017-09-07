@@ -121,7 +121,7 @@ static void logger_bbob_write_data(FILE *target_file,
   if (constrained_problem) {
     fprintf(target_file, "%lu %lu %+10.9e %+10.9e %+10.9e %+10.9e", (unsigned long) number_of_f_evaluations,
     		(unsigned long) number_of_cons_evaluations, fvalue - best_value, best_fvalue - best_value,
-            fvalue, best_fvalue);
+    		fvalue, best_fvalue);
   } else {
     fprintf(target_file, "%lu %+10.9e %+10.9e %+10.9e %+10.9e", (unsigned long) number_of_f_evaluations,
     		fvalue - best_value, best_fvalue - best_value, fvalue, best_fvalue);
@@ -501,7 +501,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
 		return;
   }
 
-  /* Add a line in the .dat file for each logging target reached. */ /* asma: replace + by , to have an additional column and check the header */
+  /* Add a line in the .dat file for each logging target reached. */
   if (is_feasible) {
     if (coco_observer_targets_trigger(logger->targets, z_objvalue - logger->optimal_fvalue)) {
       logger_bbob_write_data(logger->fdata_file,
