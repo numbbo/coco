@@ -24,7 +24,7 @@ Usage from a python shell:
 >>> import example_experiment as ee
 >>> ee.suite_name = "bbob-biobj"
 >>> ee.SOLVER = ee.random_search  # which is default anyway
->>> ee.observer_options['algorithm_info'] = "default of example_experiment.py"
+>>> ee.observer_options['algorithm_info'] = '"default of example_experiment.py"'
 >>> ee.main(5, 1+9, 2, 300)  # doctest: +ELLIPSIS
 Benchmarking solver...
 
@@ -80,7 +80,7 @@ def default_observer_options(budget_=None, suite_name_=None):
         suite_name_ = suite_name
     opts = {}
     try:
-        opts.update({'result_folder': '%s_on_%s_budget%04dxD'
+        opts.update({'result_folder': '"%s_on_%s_budget%04dxD"'
                     % (SOLVER.__name__, suite_name_, budget_)})
     except: pass
     try:
@@ -127,7 +127,7 @@ class ObserverOptions(dict):
         which calls the underlying C interface
         """
         s = str(self).replace(',', ' ')
-        for c in ["u'", 'u"', "'", '"', "{", "}"]:
+        for c in ["u'", "'", "{", "}"]:
             s = s.replace(c, '')
         return s
 
@@ -229,7 +229,7 @@ def random_search(fun, lbounds, ubounds, budget):
     dim, x_min, f_min = len(lbounds), None, None
     max_chunk_size = 1 + 4e4 / dim
     while budget > 0:
-        chunk = int(min([budget, max_chunk_size]))
+        chunk = int(max([1, min([budget, max_chunk_size])]))
         # about five times faster than "for k in range(budget):..."
         X = lbounds + (ubounds - lbounds) * np.random.rand(chunk, dim)
         if fun.number_of_constraints > 0:
@@ -376,9 +376,9 @@ suite_instance = "" # "year:2016"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired
 # for more suite options, see http://numbbo.github.io/coco-doc/C/#suite-parameters
 observer_options = ObserverOptions({  # is (inherited from) a dictionary
-                    'algorithm_info': "A SIMPLE RANDOM SEARCH ALGORITHM", # CHANGE/INCOMMENT THIS!
-                    # 'algorithm_name': "",  # default already provided from SOLVER name
-                    # 'result_folder': "",  # default already provided from several global vars
+                    'algorithm_info': '"A SIMPLE RANDOM SEARCH ALGORITHM"', # CHANGE/INCOMMENT THIS!
+                    # 'algorithm_name': '',  # default already provided from SOLVER name
+                    # 'result_folder': '',  # default already provided from several global vars
                    })
 ######################### END CHANGE HERE ####################################
 
@@ -416,7 +416,7 @@ if __name__ == '__main__':
     if len(sys.argv) < 2 or sys.argv[1] in ["--help", "-h"]:
             print(__doc__)
             print("Recognized suite names: " + str(cocoex.known_suite_names))
-            exit(0)
+            sys.exit(0)
     suite_name = sys.argv[1]
     if len(sys.argv) > 2:
         budget = float(sys.argv[2])
