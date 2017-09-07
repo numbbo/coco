@@ -92,7 +92,8 @@ static const char *bbob_file_header_str = "%% function evaluation | "
     "x1 | "
     "x2...\n";
     
-static const char *bbob_constrained_file_header_str = "%% f + g evaluations | "
+static const char *bbob_constrained_file_header_str = "%% f evaluations | "
+    "g evaluations | "
     "noise-free fitness - Fopt (%13.12e) | "
     "best noise-free fitness - Fopt | "
     "measured fitness | "
@@ -100,21 +101,31 @@ static const char *bbob_constrained_file_header_str = "%% f + g evaluations | "
     "x1 | "
     "x2...\n";
 
+static const char *logger_name = "bbob";
+
 /**
  * adds a formated line to a data file
  */
 static void logger_bbob_write_data(FILE *target_file,
-                                   size_t number_of_evaluations,
+                                   size_t number_of_f_evaluations,
+                                   size_t number_of_cons_evaluations,
                                    double fvalue,
                                    double best_fvalue,
                                    double best_value,
                                    const double *x,
-                                   size_t number_of_variables) {
+                                   size_t number_of_variables,
+                                   int constrained_problem) {
   /* for some reason, it's %.0f in the old code instead of the 10.9e
    * in the documentation
    */
-  fprintf(target_file, "%lu %+10.9e %+10.9e %+10.9e %+10.9e", (unsigned long) number_of_evaluations,
-  		fvalue - best_value, best_fvalue - best_value, fvalue, best_fvalue);
+  if (constrained_problem) {
+    fprintf(target_file, "%lu %lu %+10.9e %+10.9e %+10.9e %+10.9e", (unsigned long) number_of_f_evaluations,
+    		(unsigned long) number_of_cons_evaluations, fvalue - best_value, best_fvalue - best_value,
+            fvalue, best_fvalue);
+  } else {
+    fprintf(target_file, "%lu %+10.9e %+10.9e %+10.9e %+10.9e", (unsigned long) number_of_f_evaluations,
+    		fvalue - best_value, best_fvalue - best_value, fvalue, best_fvalue);
+  }
   if (number_of_variables < 22) {
     size_t i;
     for (i = 0; i < number_of_variables; i++) {
@@ -203,6 +214,7 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
   char file_path[COCO_PATH_MAX + 2] = { 0 };
   FILE **target_file;
   FILE *tmp_file;
+  char *data_format;
   strncpy(used_dataFile_path, dataFile_path, COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
   if (bbob_infoFile_firstInstance == 0) {
     bbob_infoFile_firstInstance = logger->instance_id;
@@ -278,12 +290,17 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
         }
         fclose(tmp_file);
       }
-      
+      if (logger->constrained_problem) {
+          data_format = coco_strdup("bbob-constrained");
+      } else {
+          data_format = coco_strdup("bbob");
+      }
       fprintf(*target_file,
-          "suite = '%s', funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', coco_version = '%s'\n",
+          "suite = '%s', funcId = %d, DIM = %lu, Precision = %.3e, algId = '%s', coco_version = '%s', logger = '%s', data_format = '%s'\n",
           suite_name, (int) strtol(function_id, NULL, 10), (unsigned long) logger->number_of_variables,
-          pow(10, -8), logger->observer->algorithm_name, coco_version);
-
+          pow(10, -8), logger->observer->algorithm_name, coco_version, logger_name, data_format);
+        
+      coco_free_memory(data_format);
       fprintf(*target_file, "%%\n");
       strncat(used_dataFile_path, "_i", COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
       strncat(used_dataFile_path, bbob_infoFile_firstInstance_char,
@@ -426,12 +443,14 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
        * does not correspond to evaluation counter 1.
        */
       logger_bbob_write_data(logger->fdata_file, 
-          1, initial_solution_fvalue, initial_solution_fvalue, 
-          logger->optimal_fvalue, inner_problem->initial_solution, problem->number_of_variables);
+          1, 0, initial_solution_fvalue, initial_solution_fvalue,
+          logger->optimal_fvalue, inner_problem->initial_solution,
+          problem->number_of_variables, logger->constrained_problem);
       coco_observer_targets_trigger(logger->targets, initial_solution_fvalue - logger->optimal_fvalue);
       logger_bbob_write_data(logger->tdata_file, 
-          1, initial_solution_fvalue, initial_solution_fvalue,
-          logger->optimal_fvalue, inner_problem->initial_solution, problem->number_of_variables);
+          1, 0, initial_solution_fvalue, initial_solution_fvalue,
+          logger->optimal_fvalue, inner_problem->initial_solution,
+          problem->number_of_variables, logger->constrained_problem);
       coco_observer_evaluations_trigger(logger->evaluations, 1);
     }
   
@@ -482,12 +501,13 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
 		return;
   }
 
-  /* Add a line in the .dat file for each logging target reached. */
+  /* Add a line in the .dat file for each logging target reached. */ /* asma: replace + by , to have an additional column and check the header */
   if (is_feasible) {
     if (coco_observer_targets_trigger(logger->targets, z_objvalue - logger->optimal_fvalue)) {
-      logger_bbob_write_data(logger->fdata_file, 
-          logger->number_of_evaluations + logger->number_of_evaluations_constraints, z_objvalue, 
-          logger->best_fvalue, logger->optimal_fvalue, z, problem->number_of_variables);
+      logger_bbob_write_data(logger->fdata_file,
+          logger->number_of_evaluations, logger->number_of_evaluations_constraints, z_objvalue,
+          logger->best_fvalue, logger->optimal_fvalue, z, problem->number_of_variables,
+          logger->constrained_problem);
     }
   }
 
@@ -495,14 +515,16 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   if (coco_observer_evaluations_trigger(logger->evaluations, 
         logger->number_of_evaluations + logger->number_of_evaluations_constraints)) {
     if (is_feasible) {
-      logger_bbob_write_data(logger->tdata_file, 
-          logger->number_of_evaluations + logger->number_of_evaluations_constraints, z_objvalue, 
-          logger->best_fvalue, logger->optimal_fvalue, z, problem->number_of_variables);
+      logger_bbob_write_data(logger->tdata_file,
+          logger->number_of_evaluations, logger->number_of_evaluations_constraints, z_objvalue,
+          logger->best_fvalue, logger->optimal_fvalue, z, problem->number_of_variables,
+          logger->constrained_problem);
     }
     else {
       logger_bbob_write_data(logger->tdata_file, 
-          logger->number_of_evaluations + logger->number_of_evaluations_constraints, logger->best_fvalue, 
-          logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, problem->number_of_variables);
+          logger->number_of_evaluations, logger->number_of_evaluations_constraints, logger->best_fvalue,
+          logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, problem->number_of_variables,
+          logger->constrained_problem);
     }
     logger->written_last_eval = 1;
   }
@@ -549,15 +571,15 @@ static void logger_bbob_free(void *stuff) {
      */
     if (!logger->written_last_eval) {
 		if (!logger->constrained_problem) {
-		  logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, 
+		  logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, 0,
 		      logger->last_fvalue, logger->best_fvalue, logger->optimal_fvalue, 
-		      logger->best_solution, logger->number_of_variables);
+		      logger->best_solution, logger->number_of_variables, 0);
 		}
 		else {
         logger_bbob_write_data(logger->tdata_file, 
-            logger->number_of_evaluations + logger->number_of_evaluations_constraints, 
+            logger->number_of_evaluations, logger->number_of_evaluations_constraints,
             logger->best_fvalue, logger->best_fvalue, logger->optimal_fvalue, 
-            logger->best_solution, logger->number_of_variables);
+            logger->best_solution, logger->number_of_variables, 1);
       } 
 	 }
     fclose(logger->tdata_file);
