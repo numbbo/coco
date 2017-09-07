@@ -431,9 +431,7 @@ int coco_problem_final_target_hit(const coco_problem_t *problem) {
   if (coco_problem_get_number_of_objectives(problem) != 1 ||
       coco_problem_get_evaluations(problem) < 1) 
     return 0;
-  if (problem->best_value == NULL ||
-      problem->final_target_delta == NULL ||
-      problem->best_observed_fvalue == NULL)
+  if (problem->best_value == NULL)
     return 0;
   return problem->best_observed_fvalue[0] <= problem->best_value[0] + problem->final_target_delta[0] ?
     1 : 0;
