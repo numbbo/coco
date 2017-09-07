@@ -407,8 +407,14 @@ def main(budget=budget,
     t0 = time.clock()
     batch_loop(SOLVER, suite, observer, budget, max_runs,
                current_batch, number_of_batches)
-    print(", %s (%s total elapsed time)." % 
+    print(", %s (%s total elapsed time)." %
             (time.asctime(), ascetime(time.clock() - t0)))
+    print('Data written to folder', observer.result_folder)
+    print('To post-process the data call \n'
+          '    python -m cocopp %s \n'
+          'from a system shell or \n'
+          '    cocopp.main("%s") \n'
+          'from a python shell' % (2 * (observer.result_folder,)))
 
 # ===============================================
 if __name__ == '__main__':
