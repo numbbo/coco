@@ -141,6 +141,8 @@ struct coco_problem_s {
   size_t evaluations_constraints;      /**< @brief Number of constraint function evaluations performed on the problem. */
 
   /* Convenience fields for output generation */
+  /* If at some point in time these arrays are changed to pointers, checks need to be added in the code to make sure
+   * they are not NULL.*/
 
   double final_target_delta[1];        /**< @brief Final target delta. */
   double best_observed_fvalue[1];      /**< @brief The best observed value so far. */
