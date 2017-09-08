@@ -201,7 +201,6 @@ class RunlengthBasedTargetValues(TargetValues):
     """a class instance call returns f-target values based on 
     reference runlengths::
     
-        >>> import os
         >>> import cocopp as bb
         >>> # make sure to use the right `bbob` test suite for the test below:
         >>> bb.genericsettings.isNoisy = False

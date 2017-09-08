@@ -352,5 +352,4 @@ def main(arguments):
 """
 
 if __name__ == "__main__":
-    args = sys.argv[1:] if len(sys.argv) else []
-    main(args)
+    main(sys.argv[1:])

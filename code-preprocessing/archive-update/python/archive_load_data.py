@@ -180,12 +180,12 @@ def get_instances(file_name):
 def get_archive_file_info(file_name, functions, instances, dimensions):
     """Returns information on the problem instances contained in the given archive file that also correspond to the
        given functions, instances and dimensions in the form of the following list of lists:
-       file_name, suite_name, function, instance1, dimension
-       file_name, suite_name, function, instance2, dimension
+       file_name, single_instance, suite_name, function, instance1, dimension
+       file_name, single_instance, suite_name, function, instance2, dimension
        ...
-       The suite_name, function and dimension are always retrieved from the file name, while instances are retrieved
-       from the file name, if the file name is in form [suite-name]_f[function]_i[instance]_d[dimension]_*.*, and
-       read from the file otherwise.
+       The suite_name, function and dimension are always retrieved from the file name, while instances are either (1)
+       retrieved from the file name, if the file name is in form [suite-name]_f[function]_i[instance]_d[dimension]_*.*,
+       or (2) read from the file. Value of single_instance is set to True if (1) and False if (2).
        :param file_name: archive file name
        :param functions: functions to be considered
        :param instances: instances to be considered
@@ -197,15 +197,17 @@ def get_archive_file_info(file_name, functions, instances, dimensions):
             return None
         if not instance:
             instance_list = get_instances(file_name)
+            single_instance = False
         else:
             instance_list = [instance]
+            single_instance = True
     except PreprocessingWarning as warning:
         raise PreprocessingWarning('Skipping file {}\n{}'.format(file_name, warning))
 
     result = []
     for instance in instance_list:
         if instance in instances:
-            result.append((file_name, suite_name, function, instance, dimension))
+            result.append((file_name, single_instance, suite_name, function, instance, dimension))
     return result
 
 

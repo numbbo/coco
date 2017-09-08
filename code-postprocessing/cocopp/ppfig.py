@@ -295,7 +295,7 @@ def save_single_functions_html(filename,
             f.write(caption_string_format % '##bbobppscatterlegend##')
 
         elif htmlPage is HtmlPage.PPFIGS:
-            current_header = 'Scaling of aRT with dimension'
+            current_header = 'Scaling of run "time" with dimension'
             f.write("\n<H2> %s </H2>\n" % current_header)
             for function_number in range(first_function_number, last_function_number + 1):
                 f.write(add_image('ppfigs_f%03d%s.%s' % (function_number, add_to_names, extension), True))
