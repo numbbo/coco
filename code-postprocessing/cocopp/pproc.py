@@ -837,6 +837,7 @@ class DataSet(object):
         parts = data.split(', ')
         idx_of_instances_to_load = []
         for elem in parts:
+            elem = elem.strip()
             if elem.endswith('dat'):
                 #Windows data to Linux processing
                 filename = elem
