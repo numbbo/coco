@@ -282,7 +282,6 @@ def main(argv=None):
         open(os.path.join(outputdir,
                           'cocopp_commands.tex'), 'a').close()
 
-        ppfig.save_index_html_file(os.path.join(outputdir, genericsettings.index_html_file_name))
 
         # print changed genericsettings attributes
         def as_str(s, clip=25):
