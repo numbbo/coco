@@ -596,8 +596,7 @@ def main(argv=None):
                         latex_commands_file)
             plt.rcdefaults()
             print_done()
-        if prepare_figures or prepare_tables or prepare_RLDistr or prepare_scatter:
-            print("Output data written to folder %s" % many_algorithms_output)
+        print("Output data written to folder %s" % many_algorithms_output)
 
         plt.rcdefaults()
 
