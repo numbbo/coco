@@ -438,7 +438,7 @@ def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key
 def copy_js_files(output_dir):
     """Copies js files to output directory."""
 
-    js_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'js')
+    js_folder = os.path.join(toolsdivers.path_in_package(), 'js')
     for file_in_folder in os.listdir(js_folder):
         if file_in_folder.endswith(".js"):
             shutil.copy(os.path.join(js_folder, file_in_folder), output_dir)
@@ -552,9 +552,9 @@ def consecutiveNumbers(data, prefix=''):
 
     Example::
       >>> import os
-      >>> returnpath = os.getcwd()  # needed for no effect on other doctests
-      >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname('__file__'))))
       >>> import cocopp as bb
+      >>> returnpath = os.getcwd()  # needed for no effect on other doctests
+      >>> os.chdir(bb.toolsdivers.path_in_package())
       >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9])
       '0-2, 4, 5, 7-9'
       >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9], 'f')

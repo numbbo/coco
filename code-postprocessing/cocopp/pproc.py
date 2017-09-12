@@ -299,7 +299,7 @@ class RunlengthBasedTargetValues(TargetValues):
             self._short_info = 'reference budgets from ' + self.reference_algorithm
 
             from . import bestalg
-            self.reference_data = bestalg.load_reference_algorithm(self.reference_algorithm, force=True, relative_load=False)
+            self.reference_data = bestalg.load_reference_algorithm(self.reference_algorithm, force=True)
             # TODO: remove targets smaller than 1e-8
         elif type(self.reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work
             self._short_info = 'reference budgets from ' + self.reference_data
@@ -551,11 +551,11 @@ class DataSet(object):
         >>> import os
         >>> import urllib
         >>> import tarfile
-        >>> returnpath = os.getcwd() # needed for no effect to other doctests
-        >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
-        >>> os.chdir(path)
         >>> import cocopp as bb
-        >>> bb.genericsettings.verbose = False # ensure to make doctests work        
+        >>> returnpath = os.getcwd() # needed for no effect to other doctests
+        >>> path = bb.toolsdivers.path_in_package()
+        >>> os.chdir(path)
+        >>> bb.genericsettings.verbose = False # ensure to make doctests work
         >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
         >>> if not os.path.exists(infoFile):
         ...   os.chdir(os.path.join(path, 'data'))
@@ -692,9 +692,9 @@ class DataSet(object):
         >>> import os
         >>> import urllib
         >>> import tarfile
-        >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
-        >>> os.chdir(path)
         >>> import cocopp as bb
+        >>> path = bb.toolsdivers.path_in_package()
+        >>> os.chdir(path)
         >>> bb.genericsettings.verbose = False # ensure to make doctests work
         >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
         >>> if not os.path.exists(infoFile):

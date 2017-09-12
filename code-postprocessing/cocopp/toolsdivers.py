@@ -295,3 +295,10 @@ def get_version_label(algorithmID=None):
     else:
         label = "v%s" % (coco_version) if reference_values is None else "v%s, hv-hash=%s" % (coco_version, reference_values)      
     return label
+
+
+def path_in_package(sub_path=""):
+    """return the absolute path prepended to `subpath` in this module.
+    """
+    egg_info = pkg_resources.require('cocopp')[0]
+    return os.path.join(egg_info.location, egg_info.project_name, sub_path)

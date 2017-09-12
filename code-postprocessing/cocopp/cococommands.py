@@ -21,7 +21,7 @@ Examples:
     >>> import urllib
     >>> import tarfile
     >>> returnpath = os.getcwd()  # needed for no effect on other doctests
-    >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+    >>> path = pp.toolsdivers.path_in_package()
     >>> os.chdir(path)
     >>> pp.genericsettings.verbose = False # ensure to make below doctests work 
 
