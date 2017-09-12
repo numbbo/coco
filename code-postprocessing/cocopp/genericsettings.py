@@ -220,8 +220,8 @@ rctick = {"labelsize": 20}
 rcfont = {"size": 20}
 rclegend = {"fontsize": 20}
 
-single_algorithm_file_name = 'templateBBOBarticle'
-many_algorithm_file_name = 'comparison_data'
+single_algorithm_file_name = 'index1'
+many_algorithm_file_name = 'index'
 index_html_file_name = 'index'
 ppconv_file_name = 'ppconv'
 pprldmany_file_name = 'pprldmany'
@@ -230,6 +230,7 @@ ppfigs_file_name = 'ppfigs'
 ppscatter_file_name = 'ppscatter'
 pptables_file_name = 'pptables'
 pprldistr2_file_name = 'pprldistr2'
+ppfigdim_file_name = 'ppfigdim'
 
 latex_commands_for_html = 'latex_commands_for_html'
 

@@ -334,12 +334,17 @@ def main(argv=None):
         if genericsettings.isPickled:
             dsList.pickle()
 
-        if genericsettings.isConv:
-            print("Generating convergence plots...")
-            ppconverrorbars.main(dictAlg,
-                                 algoutputdir, 
-                                 genericsettings.single_algorithm_file_name)
-            print_done()
+        dictFunc = dsList.dictByFunc()
+        if dictFunc[list(dictFunc.keys())[0]][0].algId not in ("", "ALG"):
+            algorithm_string = " for Algorithm %s" % dictFunc[list(dictFunc.keys())[0]][0].algId
+        else:
+            algorithm_string = ""
+        page_title = 'Results%s on the <TT>%s</TT> Benchmark Suite' % \
+                     (algorithm_string, dictFunc[list(dictFunc.keys())[0]][0].get_suite())
+        ppfig.save_single_functions_html(os.path.join(algoutputdir, genericsettings.single_algorithm_file_name),
+                                         page_title,
+                                         htmlPage=ppfig.HtmlPage.ONE,
+                                         function_groups=dsList.getFuncGroups())
 
         values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
         if prepare_figures:
@@ -363,6 +368,13 @@ def main(argv=None):
         plt.rc("font", **inset.rcfont)
         plt.rc("legend", **inset.rclegend)
         plt.rc('pdf', fonttype = 42)
+
+        if genericsettings.isConv:
+            print("Generating convergence plots...")
+            ppconverrorbars.main(dictAlg,
+                                 algoutputdir,
+                                 genericsettings.single_algorithm_file_name)
+            print_done()
 
         if prepare_tables:
             print("Generating LaTeX tables...")
@@ -458,18 +470,6 @@ def main(argv=None):
                     pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
             print_done()
 
-        dictFunc = dsList.dictByFunc()
-        if dictFunc[list(dictFunc.keys())[0]][0].algId not in ("", "ALG"):
-            algorithm_string = " for Algorithm %s" % dictFunc[list(dictFunc.keys())[0]][0].algId
-        else:
-            algorithm_string = ""
-        page_title = 'Results%s on the <TT>%s</TT> Benchmark Suite' % \
-                     (algorithm_string, dictFunc[list(dictFunc.keys())[0]][0].get_suite())
-        ppfig.save_single_functions_html(os.path.join(algoutputdir, genericsettings.single_algorithm_file_name),
-                                         page_title,
-                                         htmlPage = ppfig.HtmlPage.ONE,
-                                         function_groups= dsList.getFuncGroups())
-
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\bbobloglosstablecaption}[1]{',
                          pplogloss.table_caption(), '}'])
@@ -502,8 +502,7 @@ def main(argv=None):
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\algname}{' + 
                          (str_to_latex(strip_pathname1(args[0])) if len(args) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
-        if prepare_figures or prepare_tables or prepare_RLDistr or prepare_log_loss:
-            print("Output data written to folder %s" % algoutputdir)
+        print("Output data written to folder %s" % algoutputdir)
 
         plt.rcdefaults()
 

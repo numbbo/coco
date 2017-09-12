@@ -334,6 +334,13 @@ def main(argv=None):
         ppfig.copy_js_files(many_algorithms_output)
 
         ppfig.save_single_functions_html(
+            os.path.join(many_algorithms_output, genericsettings.many_algorithm_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            htmlPage=ppfig.HtmlPage.MANY,
+            function_groups=dictAlg[sortedAlgs[0]].getFuncGroups()
+        )
+
+        ppfig.save_single_functions_html(
             os.path.join(many_algorithms_output, genericsettings.ppfigs_file_name),
             '',  # algorithms names are clearly visible in the figure
             htmlPage=ppfig.HtmlPage.PPFIGS,
@@ -573,13 +580,6 @@ def main(argv=None):
 
             print_done()
 
-        ppfig.save_single_functions_html(
-            os.path.join(many_algorithms_output, genericsettings.many_algorithm_file_name),
-            '',  # algorithms names are clearly visible in the figure
-            htmlPage=ppfig.HtmlPage.MANY,
-            function_groups=dictAlg[sortedAlgs[0]].getFuncGroups()
-        )
-
         if prepare_figures:
             print("Scaling figures...")
             plt.rc("axes", labelsize=20, titlesize=24)
@@ -596,8 +596,7 @@ def main(argv=None):
                         latex_commands_file)
             plt.rcdefaults()
             print_done()
-        if prepare_figures or prepare_tables or prepare_RLDistr or prepare_scatter:
-            print("Output data written to folder %s" % many_algorithms_output)
+        print("Output data written to folder %s" % many_algorithms_output)
 
         plt.rcdefaults()
 

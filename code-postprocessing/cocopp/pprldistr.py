@@ -101,8 +101,8 @@ styles = genericsettings.line_styles
 
 previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'
 previous_RLBdata_filename = 'pprldistr2009_hardestRLB.pickle.gz'
-previous_data_filename = os.path.join(os.path.split(__file__)[0], previous_data_filename)
-previous_RLBdata_filename = os.path.join(os.path.split(__file__)[0], previous_RLBdata_filename)
+previous_data_filename = os.path.join(toolsdivers.path_in_package(), previous_data_filename)
+previous_RLBdata_filename = os.path.join(toolsdivers.path_in_package(), previous_RLBdata_filename)
 previous_data_dict = None
 previous_RLBdata_dict = None
 def load_previous_data(filename=previous_data_filename, force=False):

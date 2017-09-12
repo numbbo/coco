@@ -30,7 +30,7 @@ def enum(*sequential, **named):
     return type('Enum', (), enums)
 
 
-HtmlPage = enum('NON_SPECIFIED', 'ONE', 'TWO', 'MANY', 'PPRLDMANY_BY_GROUP', 'PPRLDMANY_BY_GROUP_MANY',
+HtmlPage = enum('NON_SPECIFIED', 'ONE', 'MANY', 'PPRLDMANY_BY_GROUP', 'PPRLDMANY_BY_GROUP_MANY',
                 'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS')
 
 
@@ -92,6 +92,8 @@ pprldmany_per_func_dim_header = 'Runtime distributions (ECDFs) per function'
 pprldmany_per_group_dim_header = 'Runtime distributions (ECDFs) summary and function groups'
 convergence_plots_header = 'Convergence plots'
 
+links_placeholder = '<!--links-->'
+
 html_header = """<HTML>
 <HEAD>
    <META NAME="description" CONTENT="COCO/BBOB figures by function">
@@ -131,13 +133,6 @@ def add_link(current_dir, folder, file_name, label, indent='', ignore_file_exist
 def save_index_html_file(filename):
     with open(filename + '.html', 'w') as f:
         text = ''
-        index_file = genericsettings.index_html_file_name
-        if index_file not in filename:
-            text = 'This page is deprecated. The new main page is ' \
-                   '<a href="%s.html"">%s.html</a>. The links will be ' \
-                   'correctly updated once the post-processing for the ' \
-                   'algorithms is rerun.' % (index_file, index_file)
-
         f.write(html_header % tuple(2 * ['COCO Post-Processing Results'] + [text]))
 
         current_dir = os.path.dirname(os.path.realpath(filename))
@@ -162,44 +157,75 @@ def save_index_html_file(filename):
         f.write("\n</BODY>\n</HTML>")
 
 
-def get_home_link(html_page):
+def save_folder_index_file(filename, image_file_extension):
+
+    if not filename:
+        return
+
+    current_dir = os.path.dirname(os.path.realpath(filename))
+
+    links = get_home_link()
+    links += get_convergence_link(current_dir)
+    links += get_rld_link(current_dir)
+    links += add_link(current_dir, None, genericsettings.ppfigdim_file_name + '.html',
+                      'Scaling with dimension for selected targets')
+    links += add_link(current_dir, None, 'pptable.html', 'Tables for selected targets')
+    links += add_link(current_dir, None, 'pprldistr.html',
+                      'Runtime distribution for selected targets and f-distributions')
+    links += add_link(current_dir, None, 'pplogloss.html', 'Runtime loss ratios')
+
+    image_file_name = 'pprldmany-single-functions/pprldmany.%s' % image_file_extension
+    if os.path.isfile(os.path.join(current_dir, image_file_name)):
+        links += "<H2> %s </H2>\n" % ' Runtime distributions (ECDFs) over all targets'
+        links += add_image(image_file_name, True, 380)
+
+    links += add_link(current_dir, None, genericsettings.ppfigs_file_name + '.html', 'Scaling with dimension')
+    links += add_link(current_dir, None, genericsettings.pptables_file_name + '.html',
+                      'Tables for selected targets')
+    links += add_link(current_dir, None, genericsettings.ppscatter_file_name + '.html', 'Scatter plots')
+    links += add_link(current_dir, None, genericsettings.pprldistr2_file_name + '.html',
+                      'Runtime distribution for selected targets and f-distributions')
+
+    lines = []
+    with open(filename) as infile:
+        for line in infile:
+            lines.append(line)
+            if links_placeholder in line:
+                lines.append("%s\n</BODY>\n</HTML>" % links)
+                break
+
+    with open(filename, 'w') as outfile:
+        for line in lines:
+            outfile.write(line)
+
+    save_index_html_file(os.path.join(current_dir, '..', genericsettings.index_html_file_name))
+
+
+def get_home_link():
     home_link = '<H3><a href="%s%s.html">Home</a></H3>'
-    if html_page in (HtmlPage.ONE, HtmlPage.MANY):
-        return home_link % ('../', genericsettings.index_html_file_name)
-
-    return ''
+    return home_link % ('../', genericsettings.index_html_file_name)
 
 
-def get_convergence_link(html_page, current_dir):
-    if html_page == HtmlPage.ONE:
-        return add_link(current_dir, None, genericsettings.ppconv_file_name + '.html',
-                        convergence_plots_header, ignore_file_exists=genericsettings.isConv)
-
-    return ''
+def get_convergence_link(current_dir):
+    return add_link(current_dir, None, genericsettings.ppconv_file_name + '.html',
+                    convergence_plots_header)
 
 
-def getRldLink(html_page, current_dir):
+def get_rld_link(current_dir):
     links = ''
     folder = 'pprldmany-single-functions'
 
-    ignore_file_exists = genericsettings.isRldOnSingleFcts
-    if html_page in (HtmlPage.ONE, HtmlPage.MANY):
-        file_name = '%s.html' % genericsettings.pprldmany_file_name
-        links += add_link(current_dir, folder, file_name,
-                          pprldmany_per_func_dim_header,
-                          ignore_file_exists=ignore_file_exists)
+    file_name = '%s.html' % genericsettings.pprldmany_file_name
+    links += add_link(current_dir, folder, file_name,
+                      pprldmany_per_func_dim_header)
 
-        if html_page == HtmlPage.ONE:
-            file_name = '%s.html' % genericsettings.pprldmany_group_file_name
-            links += add_link(current_dir, folder, file_name,
-                              pprldmany_per_group_dim_header,
-                              ignore_file_exists=ignore_file_exists)
+    file_name = '%s.html' % genericsettings.pprldmany_group_file_name
+    links += add_link(current_dir, folder, file_name,
+                      pprldmany_per_group_dim_header)
 
-        if html_page == HtmlPage.MANY:
-            file_name = '%s.html' % genericsettings.pprldmany_file_name
-            links += add_link(current_dir, '', file_name,
-                              pprldmany_per_group_dim_header,
-                              ignore_file_exists=ignore_file_exists)
+    file_name = '%s.html' % genericsettings.pprldmany_file_name
+    links += add_link(current_dir, '', file_name,
+                      pprldmany_per_group_dim_header)
 
     return links
 
@@ -226,10 +252,7 @@ def save_single_functions_html(filename,
     current_dir = os.path.dirname(os.path.realpath(filename))
     with open(filename + add_to_names + '.html', 'w') as f:
         header_title = algname + ', ' + name + add_to_names
-        links = get_home_link(htmlPage)
-        links += get_convergence_link(htmlPage, current_dir)
-        links += getRldLink(htmlPage, current_dir)
-        links += get_parent_link(htmlPage, parentFileName)
+        links = get_parent_link(htmlPage, parentFileName)
 
         f.write(html_header % (header_title.lstrip(',').strip(), algname, links))
 
@@ -247,45 +270,8 @@ def save_single_functions_html(filename,
         caption_string_format = '<p/>\n%s\n<p/><p/>'
         reference_algorithm_exists = testbedsettings.current_testbed.reference_algorithm_filename != ''
 
-        if htmlPage is HtmlPage.ONE:
-            f.write('<H3><a href="ppfigdim.html">Scaling with '
-                    'dimension for selected targets</a></H3>\n')
-            f.write('<H3><a href="pptable.html">Tables for selected '
-                    'targets</a></H3>\n')
-            f.write('<H3><a href="pprldistr.html">Runtime distribution for selected '
-                    'targets and f-distributions</a></H3>\n')
-            if reference_algorithm_exists:
-                f.write('<H3><a href="pplogloss.html">Runtime loss ratios'
-                        '</a></H3>\n')
-
-            header_ecdf = ' Runtime distributions (ECDFs) over all targets'
-            f.write("<H2> %s </H2>\n" % header_ecdf)
-            f.write(add_image('pprldmany-single-functions/pprldmany.%s' % extension, True, 380))
-            save_index_html_file(os.path.join(current_dir, '..', genericsettings.index_html_file_name))
-
-        elif htmlPage is HtmlPage.TWO:
-
-            f.write(
-                '<H3><a href="%s.html">Scaling with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
-            f.write('<H3><a href="%s.html">Scatter plots</a></H3>\n' % genericsettings.ppscatter_file_name)
-            f.write('<H3><a href="%s.html">Runtime distribution for selected '
-                    'targets and f-distributions</a></H3>\n' % genericsettings.pprldistr2_file_name)
-            f.write(
-                '<H3><a href="%s.html">Tables for selected targets</a></H3>\n'
-                % genericsettings.pptables_file_name)
-            save_index_html_file(os.path.join(current_dir, '..', genericsettings.index_html_file_name))
-
-        elif htmlPage is HtmlPage.MANY:
-
-            f.write(
-                '<H3><a href="%s.html">Scaling with dimension</a></H3>\n' % genericsettings.ppfigs_file_name)
-            f.write(
-                '<H3><a href="%s.html">Tables for selected targets</a></H3>\n'
-                % genericsettings.pptables_file_name)
-            f.write(add_link(current_dir, None, genericsettings.ppscatter_file_name + '.html', 'Scatter plots'))
-            f.write(add_link(current_dir, None, genericsettings.pprldistr2_file_name + '.html',
-                    'Runtime distribution for selected targets and f-distributions'))
-
+        if htmlPage in (HtmlPage.ONE, HtmlPage.MANY):
+            f.write(links_placeholder)
         elif htmlPage is HtmlPage.PPSCATTER:
             current_header = 'Scatter plots per function'
             f.write("\n<H2> %s </H2>\n" % current_header)
@@ -414,7 +400,10 @@ def save_single_functions_html(filename,
 
         f.write("\n<BR/><BR/><BR/><BR/><BR/>\n</BODY>\n</HTML>")
         
-        toolsdivers.replace_in_file(filename + add_to_names + '.html', '??COCOVERSION??', '<br />Data produced with COCO %s' % (toolsdivers.get_version_label(None)))
+    toolsdivers.replace_in_file(filename + add_to_names + '.html', '??COCOVERSION??', '<br />Data produced with COCO %s' % (toolsdivers.get_version_label(None)))
+
+    if parentFileName:
+        save_folder_index_file(os.path.join(current_dir, parentFileName + '.html'), extension)
 
 
 def write_dimension_links(dimension, dimensions, index):
@@ -449,7 +438,7 @@ def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key
 def copy_js_files(output_dir):
     """Copies js files to output directory."""
 
-    js_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'js')
+    js_folder = os.path.join(toolsdivers.path_in_package(), 'js')
     for file_in_folder in os.listdir(js_folder):
         if file_in_folder.endswith(".js"):
             shutil.copy(os.path.join(js_folder, file_in_folder), output_dir)
@@ -563,9 +552,9 @@ def consecutiveNumbers(data, prefix=''):
 
     Example::
       >>> import os
-      >>> returnpath = os.getcwd()  # needed for no effect on other doctests
-      >>> os.chdir(os.path.abspath(os.path.dirname(os.path.dirname('__file__'))))
       >>> import cocopp as bb
+      >>> returnpath = os.getcwd()  # needed for no effect on other doctests
+      >>> os.chdir(bb.toolsdivers.path_in_package())
       >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9])
       '0-2, 4, 5, 7-9'
       >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9], 'f')

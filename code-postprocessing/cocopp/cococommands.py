@@ -21,15 +21,18 @@ Examples:
     >>> import urllib
     >>> import tarfile
     >>> returnpath = os.getcwd()  # needed for no effect on other doctests
-    >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+    >>> path = pp.toolsdivers.path_in_package()
     >>> os.chdir(path)
     >>> pp.genericsettings.verbose = False # ensure to make below doctests work 
 
 * Load a data set, assign to variable :py:data:`ds`::
 
     >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
+    >>> data_folder = 'data'
     >>> if not os.path.exists(infoFile):
-    ...   os.chdir(os.path.join(path, 'data'))
+    ...   if not os.path.exists(data_folder):
+    ...     os.makedirs(data_folder)
+    ...   os.chdir(os.path.join(path, data_folder))
     ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
     ...   filename, headers = urllib.urlretrieve(dataurl)
     ...   archivefile = tarfile.open(filename)

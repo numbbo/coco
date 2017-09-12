@@ -766,9 +766,12 @@ static int coco_options_read_string(const char *options, const char *name, char 
 
 /**
  * @brief Reads (possibly delimited) values from options using the form "name1: value1,value2,value3 name2: value4",
- * i.e. reads all characters from the corresponding name up to the next whitespace or end of string.
+ * i.e. reads all characters from the corresponding name up to the next alphabetic character or end of string,
+ * ignoring white-space characters.
  *
  * Formatting requirements:
+ * - names have to start with alphabetic characters
+ * - values cannot include alphabetic characters
  * - name and value need to be separated by a colon (spaces are optional)
  *
  * @return The number of successful assignments.
@@ -786,18 +789,18 @@ static int coco_options_read_values(const char *options, const char *name, char 
     return 0;
   i2 = i1 + coco_strfind(&options[i1], ":") + 1;
 
-  /* Remove trailing white spaces */
-  while (isspace((unsigned char) options[i2]))
-    i2++;
-
   if (i2 <= i1) {
     return 0;
   }
 
   i = 0;
-  while (!isspace((unsigned char) options[i2 + i]) && (options[i2 + i] != '\0')) {
-    pointer[i] = options[i2 + i];
-    i++;
+  while (!isalpha((unsigned char) options[i2 + i]) && (options[i2 + i] != '\0')) {
+    if(isspace((unsigned char) options[i2 + i])) {
+        i2++;
+    } else {
+        pointer[i] = options[i2 + i];
+        i++;
+    }
   }
   pointer[i] = '\0';
   return i;
