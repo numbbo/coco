@@ -33,7 +33,7 @@ from six import advance_iterator
 from . import readalign, pproc
 from .toolsdivers import print_done
 from .ppfig import Usage
-from . import toolsstats, testbedsettings, genericsettings
+from . import toolsstats, toolsdivers, testbedsettings, genericsettings
 from .pproc import DataSet
 
 bestAlgorithmEntries = {}
@@ -408,7 +408,7 @@ def load_reference_algorithm(best_algo_filename, force=False, relative_load=True
     sys.stdout.flush()
 
     if relative_load:
-        best_alg_file_path = os.path.split(__file__)[0]
+        best_alg_file_path = toolsdivers.path_in_package()
         pickleFilename = os.path.join(best_alg_file_path, best_algo_filename)
     else:
         best_alg_file_path = ''
@@ -479,10 +479,10 @@ def deprecated_customgenerate(args=algs2009):
     This method is called from the python command line from a directory
     containing all necessary data folders::
 
-    >>> from cocopp import bestalg
+    >>> from cocopp import bestalg, toolsdivers
     >>> import os
     >>> returnpath = os.getcwd()  # needed for no effect on other doctests 
-    >>> path = os.path.abspath(os.path.dirname('__file__'))
+    >>> path = toolsdivers.path_in_package()
     >>> os.chdir(os.path.join(path, 'data'))
     >>> infoFile = 'ALPS/bbobexp_f2.info'
     >>> if not os.path.exists(infoFile):
@@ -660,11 +660,11 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
        This method should be called from the python command line from a directory
        containing all necessary data folders::
 
-        >>> from cocopp import bestalg
+        >>> from cocopp import bestalg, toolsdivers
         >>> import os
         >>> import urllib
         >>> returnpath = os.getcwd()  # needed for no effect on other doctests
-        >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
+        >>> path = toolsdivers.path_in_package()
         >>> os.chdir(path)
         >>> infoFile = 'data/BIPOP-CMA-ES.tgz'
         >>> if not os.path.exists(infoFile):
