@@ -557,8 +557,11 @@ class DataSet(object):
         >>> os.chdir(path)
         >>> bb.genericsettings.verbose = False # ensure to make doctests work
         >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
+        >>> data_folder = 'data'
         >>> if not os.path.exists(infoFile):
-        ...   os.chdir(os.path.join(path, 'data'))
+        ...   if not os.path.exists(data_folder):
+        ...     os.makedirs(data_folder)
+        ...   os.chdir(os.path.join(path, data_folder))
         ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
         ...   filename, headers = urllib.urlretrieve(dataurl)
         ...   archivefile = tarfile.open(filename)
@@ -697,8 +700,11 @@ class DataSet(object):
         >>> os.chdir(path)
         >>> bb.genericsettings.verbose = False # ensure to make doctests work
         >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
+        >>> data_folder = 'data'
         >>> if not os.path.exists(infoFile):
-        ...   os.chdir(os.path.join(path, 'data'))
+        ...   if not os.path.exists(data_folder):
+        ...     os.makedirs(data_folder)
+        ...   os.chdir(os.path.join(path, data_folder))
         ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
         ...   filename, headers = urllib.urlretrieve(dataurl)
         ...   archivefile = tarfile.open(filename)
