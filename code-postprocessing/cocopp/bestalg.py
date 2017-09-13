@@ -483,7 +483,10 @@ def deprecated_customgenerate(args=algs2009):
     >>> import os
     >>> returnpath = os.getcwd()  # needed for no effect on other doctests 
     >>> path = toolsdivers.path_in_package()
-    >>> os.chdir(os.path.join(path, 'data'))
+    >>> data_folder = os.path.join(path, 'data')
+    >>> if not os.path.exists(data_folder):
+    ...     os.makedirs(data_folder)
+    >>> os.chdir(data_folder)
     >>> infoFile = 'ALPS/bbobexp_f2.info'
     >>> if not os.path.exists(infoFile):
     ...     import urllib
@@ -492,7 +495,6 @@ def deprecated_customgenerate(args=algs2009):
     ...     filename, headers = urllib.urlretrieve(dataurl)
     ...     archivefile = tarfile.open(filename)
     ...     archivefile.extractall()
-    >>> os.chdir(os.path.join(path, 'data'))
     >>> bestalg.custom_generate(('ALPS', ''), 'refAlgFromALPS') # doctest: +ELLIPSIS
     Searching in...
     >>> os.chdir(returnpath)
@@ -667,14 +669,15 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
         >>> path = toolsdivers.path_in_package()
         >>> os.chdir(path)
         >>> infoFile = 'data/BIPOP-CMA-ES.tgz'
+        >>> data_folder = 'data'
         >>> if not os.path.exists(infoFile):
+        ...   if not os.path.exists(data_folder):
+        ...     os.makedirs(data_folder)
         ...   os.chdir(os.path.join(path, 'data'))
         ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
         ...   filename, headers = urllib.urlretrieve(dataurl, 'BIPOP-CMA-ES.tgz')
-        >>> os.chdir(path)
-        >>> infoFile = 'data/MCS.tgz'
+        >>> infoFile = 'MCS.tgz'
         >>> if not os.path.exists(infoFile):
-        ...   os.chdir(os.path.join(path, 'data'))
         ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/MCS_huyer_noiseless.tgz'
         ...   filename, headers = urllib.urlretrieve(dataurl, 'MCS.tgz')
         >>> os.chdir(path)
