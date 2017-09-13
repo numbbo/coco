@@ -502,7 +502,8 @@ def main(argv=None):
         prepend_to_file(latex_commands_file,
                         ['\\providecommand{\\algname}{' + 
                          (str_to_latex(strip_pathname1(args[0])) if len(args) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
-        print("Output data written to folder %s" % algoutputdir)
+        print("Output data written to folder %s" %
+              os.path.join(os.getcwd(), algoutputdir))
 
         plt.rcdefaults()
 
