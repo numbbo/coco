@@ -119,7 +119,7 @@ int main( int argc, char *argv[] )  {
 
   if ((argc == 2) && (strcmp(argv[1], "leak_check") == 0)) {
     valgrind_test();
-    run_once("produce_all_data 1");
+    run_once("produce_all_data: 1");
     multiple_observers();
   }
   else {
