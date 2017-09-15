@@ -46,8 +46,9 @@ def fmin(problem, x0, solver, budget):
 
         if solver.__globals__['__name__'] in ['cma', 'cma.evolution_strategy',
                                               'cma.es']:
-            return solver(problem, x0, 2,
-                          {'verbose': -9})  # set 'verbose': 1 for more output
+            # set verbose=1 for more output
+            return solver(problem, x0, 2, options=dict(maxfevals=budget,
+                                                       verbose=-9))
 
         elif solver.__globals__['__name__'] == 'scipy.optimize.optimize':
             return solver(problem, x0, xtol=1e-9, ftol=1e-9, maxfun=budget,
@@ -184,8 +185,8 @@ class ProblemNonAnytime(object):
     @property
     def random_solution(self):
         return self.lower_bounds + (
-            (np.rand(self.dimension) + np.rand(self.dimension)) * (
-                self.upper_bounds - self.lower_bounds) / 2)
+            (np.random.rand(self.dimension) + np.random.rand(self.dimension))
+            * (self.upper_bounds - self.lower_bounds) / 2)
 
 
 if __name__ == '__main__':
