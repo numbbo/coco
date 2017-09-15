@@ -16,7 +16,7 @@ A more complete example use case can be found in the `example_experiment.py`
 file.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
-from . import utilities
+from . import solvers, utilities
 try:
     from . import _interface
     from ._interface import Suite as _Suite, Observer as _Observer
@@ -30,6 +30,24 @@ del absolute_import, division, print_function, unicode_literals
 
 # from .utilities import about_equal
 # from .exceptions import NoSuchProblemException, InvalidProblemException
+
+def default_observers(update=None):
+    """return a map from suite names to default observer names.
+
+    This function can also be used to update this map using
+    a `dict` or a `list` of key-value pairs.
+    """
+    # this is a function only to make the doc available and
+    # because @property doesn't work on module level
+    _default_observers.update(update or {})
+    return _default_observers
+_default_observers = {
+    'bbob': 'bbob',
+    'bbob-biobj': 'bbob-biobj',
+    'bbob-biobj-ext': 'bbob-biobj',
+    'bbob-constrained': 'bbob',
+    'bbob-largescale': 'bbob',  # todo: needs to be confirmed
+    }
 
 class Suite(_Suite):
     """Suite of benchmark problems.
