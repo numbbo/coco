@@ -31,6 +31,8 @@ del absolute_import, division, print_function, unicode_literals
 # from .utilities import about_equal
 # from .exceptions import NoSuchProblemException, InvalidProblemException
 
+__all__ = ['Observer', 'Suite', 'known_suite_names', 'default_observers']
+
 def default_observers(update=None):
     """return a map from suite names to default observer names.
 
