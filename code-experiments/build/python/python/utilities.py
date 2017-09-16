@@ -54,7 +54,7 @@ class ObserverOptions(dict):
         which calls the underlying C interface
         """
         s = str(self).replace(',', ' ')
-        for c in ["u'", 'u"', "'", '"', "{", "}"]:
+        for c in ["u'", "'", "{", "}"]:
             s = s.replace(c, '')
         return s
 
@@ -119,14 +119,21 @@ class ShortInfo(object):
         """
         f = "f" + problem.id.lower().split('_f')[1].split('_')[0]
         res = ""
-        if self.f_current and f != self.f_current:
+        ran_once = self.f_current is not None
+        f_changed = f != self.f_current
+        d_changed = problem.dimension != self.d_current
+        run_complete = f_changed or d_changed
+        if ran_once and run_complete:
             res += self.function_done() + ' '
-        if problem.dimension != self.d_current:
-            res += '%s%s, d=%d, running: ' % (self.dimension_done() + "\n\n" if self.d_current else '',
-                        ShortInfo.short_time_stap(), problem.dimension)
+        if d_changed:
+            res += '%s%s, d=%d, running: ' % (
+                        self.dimension_done() + "\n\n" if self.d_current else '',
+                        ShortInfo.short_time_stap(),
+                        problem.dimension)
             self.d_current = problem.dimension
-        if f != self.f_current:
+        if run_complete:
             res += '%s' % f
+        if f_changed:
             self.f_current = f
         # print_flush(res)
         return res

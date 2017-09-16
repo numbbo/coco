@@ -186,7 +186,7 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
                 print("WARNING: %d evaluations of budget %d remaining" %
                       (still_remaining, max_evals))
             break
-    return restarts + 1
+    return 1 + restarts  # number of (almost) independent launches of `solver`
 
 # ===============================================
 # set up: CHANGE HERE SOLVER AND FURTHER SETTINGS AS DESIRED
