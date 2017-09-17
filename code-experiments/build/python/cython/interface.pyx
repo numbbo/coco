@@ -212,7 +212,8 @@ cdef class Suite:
         self._dimensions = []
         self._number_of_objectives = []
         if str(self._name) not in [str(n) for n in known_suite_names]:
-            raise NoSuchSuiteException("""Unkown benchmark suite name "%s".
+            raise NoSuchSuiteException("""
+Unkown benchmark suite name "%s".
 Known suite names are %s.
 If "%s" was not a typo, you can add the desired name to `known_suite_names`::
 
