@@ -11,7 +11,7 @@ known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-biobj-ext", b"bbob-constrain
 _known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-biobj-ext", b"bbob-constrained", b"bbob-largescale"]
 
 # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
-# __all__ = ['Problem', 'Benchmark']
+# __all__ = ['Observer', 'Problem', 'Suite']
 
 # Must initialize numpy or risk segfaults
 np.import_array()
@@ -935,7 +935,8 @@ cdef class Problem:
             return "<finalized/invalid problem>"
         
     def __enter__(self):
-        """Allows ``with Benchmark(...).get_problem(...) as problem:``"""
+        """Allows ``with Suite(...)[index] as problem:`` (or ``Suite(...).get_problem(...)``)
+        """
         return self
     def __exit__(self, exception_type, exception_value, traceback):
         try:
