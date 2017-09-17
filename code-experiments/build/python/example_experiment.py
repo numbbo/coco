@@ -165,7 +165,7 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
                    iprint=-1)
         elif solver.__name__ in ("fmin_cobyla", ):
             x0 = fun.initial_solution
-            solver(fun, x0, lambda x: -fun.constraint(x), maxfun = remaining_evals)
+            solver(fun, x0, lambda x: -fun.constraint(x), maxfun=remaining_evals)
 ############################ ADD HERE ########################################
         # ### IMPLEMENT HERE THE CALL TO ANOTHER SOLVER/OPTIMIZER ###
         # elif solver.__name__ == ...:
