@@ -38,21 +38,23 @@ def default_budget_list(max_budget=10, num=50):
 
 def fmin(problem, x0, solver, budget):
     """Invokes `solver` on `problem` with `budget` and initial solution `x0`.
+    Returns the final solution.
 
-    `solver` should evaluate the final/returned solution. Add here the
-    interface to your solver.
+    Add here the interface to your solver.
     """
     if solver.__name__ == 'fmin':
 
         if solver.__globals__['__name__'] in ['cma', 'cma.evolution_strategy',
                                               'cma.es']:
             # set verbose=1 for more output
-            return solver(problem, x0, 2, options=dict(maxfevals=budget,
-                                                       verbose=-9))
+            result = solver(problem, x0, 2, options=dict(maxfevals=budget,
+                                                         verbose=-9))
+            return result[0]
 
         elif solver.__globals__['__name__'] == 'scipy.optimize.optimize':
-            return solver(problem, x0, xtol=1e-9, ftol=1e-9, maxfun=budget,
-                          disp=False)  # set disp=True for more output
+            result = solver(problem, x0, xtol=1e-9, ftol=1e-9, maxfun=budget,
+                            disp=False)  # set disp=True for more output
+            return result
 
         else:
             return solver(problem, x0)
@@ -63,10 +65,11 @@ def fmin(problem, x0, solver, budget):
         max_iter = max(1, int(
             budget / pop_size_multiplier / problem.dimension) - 1)
         bounds = [x for x in zip(problem.lower_bounds, problem.upper_bounds)]
-        return solver(problem, bounds, popsize=pop_size_multiplier,
-                      maxiter=max_iter, strategy='best1bin',
-                      tol=1e-9, polish=False,
-                      disp=False)  # set disp=True for more output
+        result = solver(problem, bounds, popsize=pop_size_multiplier,
+                        maxiter=max_iter, strategy='best1bin',
+                        tol=1e-9, polish=False,
+                        disp=False)  # set disp=True for more output
+        return result.x
 
     else:
         return solver(problem, x0)
@@ -107,7 +110,9 @@ def main():
                 # budget is exhausted
                 while problem.evaluations < budget and \
                         not problem.final_target_hit:
-                    fmin(problem, x0, solver, budget - problem.evaluations)
+                    x = fmin(problem, x0, solver, budget - problem.evaluations)
+                    # make sure the final solution x is evaluated
+                    problem(x)
                     # a random initial solution for restarted algorithms
                     x0 = problem.random_solution
 
