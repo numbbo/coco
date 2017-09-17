@@ -165,7 +165,7 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
                    iprint=-1)
         elif solver.__name__ in ("fmin_cobyla", ):
             x0 = fun.initial_solution
-            solver(fun, x0, lambda x: -fun.constraint(x), maxfun = remaining_evals)
+            solver(fun, x0, lambda x: -fun.constraint(x), maxfun=remaining_evals)
 ############################ ADD HERE ########################################
         # ### IMPLEMENT HERE THE CALL TO ANOTHER SOLVER/OPTIMIZER ###
         # elif solver.__name__ == ...:
@@ -223,11 +223,12 @@ def main(budget=budget,
     """Initialize suite and observer, then benchmark solver by calling
     ``batch_loop(SOLVER, suite, observer, budget,...``
     """
-    observer_name = default_observers()[suite_name]
-    observer_options.update_gracefully(default_observer_options())
-
-    observer = Observer(observer_name, observer_options.as_string)
     suite = Suite(suite_name, suite_instance, suite_options)
+
+    observer_name = default_observers()[suite_name]
+    # observer_name = another observer if so desired
+    observer_options.update_gracefully(default_observer_options())
+    observer = Observer(observer_name, observer_options.as_string)
 
     print("Benchmarking solver '%s' with budget=%d*dimension on %s suite, %s"
           % (' '.join(str(SOLVER).split()[:2]), budget,
@@ -255,6 +256,9 @@ if __name__ == '__main__':
             print("Recognized suite names: " + str(cocoex.known_suite_names))
             sys.exit(0)
     suite_name = sys.argv[1]
+    if suite_name not in cocoex.known_suite_names:
+        print('WARNING: "%s" not in known names %s' %
+                (suite_name, str(cocoex.known_suite_names)))
     if len(sys.argv) > 2:
         budget = float(sys.argv[2])
     if len(sys.argv) > 3:
