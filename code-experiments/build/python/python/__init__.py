@@ -457,6 +457,33 @@ class Problem(_interface.Problem):
         """"inofficial" interface to `self` with target f-value of zero. """
         return self(x) - self.final_target_fvalue1
 
+    def initial_solution_proposal(self, restart_number=None):
+        """return feasible initial solution proposals.
+
+        For unconstrained problems, the proposal is different for each
+        consecutive call without argument and for each `restart_number`
+        and may be different under repeated calls with the same
+        `restart_number`. ``self.initial_solution_proposal(0)`` is the
+        same as ``self.initial_solution``.
+
+        Conceptual example::
+
+            # given: a suite instance, a budget, and fmin
+            for problem in suite:
+                # restart until budget is (over-)exhausted
+                while problem.evaluations < budget and not problem.final_target_hit:
+                    fmin(problem, problem.initial_solution_proposal())
+
+        Details: by default, the first proposal is the domain middle or
+        the (only) known feasible solution.
+        Subsequent proposals are coordinate-wise sampled as the sum
+        of two iid random variates uniformly distributed within the
+        domain boundaries. On the ``'bbob'`` suite their density is
+        0.2 * (x / 5 + 1) for x in [-5, 0] and
+        0.2 * (1 - x / 5) for x in [0, 5] and zero otherwise.
+
+        """
+        return super(Problem, self).initial_solution_proposal(restart_number)
     @property
     def initial_solution(self):
         """return feasible initial solution"""
