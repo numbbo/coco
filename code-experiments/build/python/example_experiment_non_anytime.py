@@ -29,7 +29,7 @@ import scipy.optimize
 import cma
 
 
-def default_budget_list(max_budget=10, num=100):
+def default_budget_list(max_budget=10, num=50):
     """Produces a budget list with at most `num` different increasing budgets
     within [1, `max_budget`] that are equally spaced in the logarithmic space.
     """
@@ -37,7 +37,7 @@ def default_budget_list(max_budget=10, num=100):
 
 
 def fmin(problem, x0, solver, budget):
-    """Invokes `solver` on `problem` with initial solution `x0`.
+    """Invokes `solver` on `problem` with `budget` and initial solution `x0`.
 
     `solver` should evaluate the final/returned solution. Add here the
     interface to your solver.
@@ -85,11 +85,14 @@ def main():
     # gradually increase `max_budget` to 10, 100, ...
     # or replace with a user-defined list
     budget_multiplier_list = default_budget_list(max_budget=5)
+    print("Benchmarking with budgets: ", end="")
+    print(", ".join(str(b) for b in budget_multiplier_list), end="")
+    print(" (* dimension)")
 
     ### prepare (see http://numbbo.github.io/coco-doc/C/ for parameters)
     suite = cocoex.Suite(suite_name, "", "")
     observer = cocoex.Observer(suite_name,
-                               "result_folder: {} algorithm_name: {}".format(
+                               "result_folder: {0} algorithm_name: {1}".format(
                                    output_folder, algorithm_name))
 
     ### go
@@ -143,7 +146,7 @@ class ProblemNonAnytime(object):
     def __call__(self, *arg, **args):
         if self.evaluations > self.p_observed.evaluations:
             raise ValueError(
-                "Evaluations {} are larger than observed evaluations {}"
+                "Evaluations {0} are larger than observed evaluations {1}"
                 "".format(self.evaluations, self.p_observed.evaluations))
         if self.evaluations >= self.p_observed.evaluations:
             self._p = self.p_observed
@@ -160,10 +163,10 @@ class ProblemNonAnytime(object):
 
     def print_progress(self):
         if not self.index % (len(self.suite) / len(self.suite.dimensions)):
-            print("\nd={}: ".format(self.dimension))
-        print("{}{} ".format(
+            print("\nd={0}: ".format(self.dimension))
+        print("{0}{1} ".format(
             self.id[self.id.index("_f") + 1:self.id.index("_i")],
-            self.id[self.id.index("_i"):self.id.index("_d")]), end='',
+            self.id[self.id.index("_i"):self.id.index("_d")]), end="",
               flush=True)
         if not (self.index + 1) % 10:
             print("")
