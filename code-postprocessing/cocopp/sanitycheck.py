@@ -12,6 +12,7 @@ Help:
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 from __future__ import with_statement # This isn't required in Python 2.6
 
 import os

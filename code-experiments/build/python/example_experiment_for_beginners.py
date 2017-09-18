@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """A short and simple example experiment with restarts.
 
 The code is fully functional but mainly emphasises on readability.

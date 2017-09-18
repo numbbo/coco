@@ -750,37 +750,37 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             file_name = os.path.join(outputdir, '%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
         else:
             file_name = os.path.join(outputdir, '%s.tex' % genericsettings.pprldmany_file_name)
-        with open(file_name, 'w') as f:
-            f.write(r'\providecommand{\nperfprof}{7}')
+        with open(file_name, 'w') as file_obj:
+            file_obj.write(r'\providecommand{\nperfprof}{7}')
             algtocommand = {}  # latex commands
             for i, alg in enumerate(order):
                 tmp = r'\alg%sperfprof' % pptex.numtotext(i)
-                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' %
+                file_obj.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' %
                         (tmp, toolsdivers.str_to_latex(
                             toolsdivers.strip_pathname2(algname_to_label(alg)))))
                 algtocommand[algname_to_label(alg)] = tmp
             if displaybest:
                 tmp = r'\algzeroperfprof'
                 refalgname = testbedsettings.current_testbed.reference_algorithm_displayname
-                f.write(r'\providecommand{%s}{%s}' % (tmp, refalgname))
+                file_obj.write(r'\providecommand{%s}{%s}' % (tmp, refalgname))
                 algtocommand[algname_to_label(refalgname)] = tmp
 
             commandnames = []
             for label in labels:
                 commandnames.append(algtocommand[label])
-            # f.write(headleg)
+            # file_obj.write(headleg)
             if len(
                     order) > 28:  # latex sidepanel won't work well for more than 25 algorithms, but original labels are also clipped
-                f.write(r'\providecommand{\perfprofsidepanel}{\mbox{%s}\vfill\mbox{%s}}'
+                file_obj.write(r'\providecommand{\perfprofsidepanel}{\mbox{%s}\vfill\mbox{%s}}'
                         % (commandnames[0], commandnames[-1]))
             else:
                 fontsize_command = r'\tiny{}' if len(order) > 19 else ''
-                f.write(r'\providecommand{\perfprofsidepanel}{{%s\mbox{%s}' %
+                file_obj.write(r'\providecommand{\perfprofsidepanel}{{%s\mbox{%s}' %
                         (fontsize_command, commandnames[0]))  # TODO: check len(labels) > 0
                 for i in range(1, len(labels)):
-                    f.write('\n' + r'\vfill \mbox{%s}' % commandnames[i])
-                f.write('}}\n')
-            # f.write(footleg)
+                    file_obj.write('\n' + r'\vfill \mbox{%s}' % commandnames[i])
+                file_obj.write('}}\n')
+            # file_obj.write(footleg)
             if genericsettings.verbose:
                 print('Wrote right-hand legend in %s' % file_name)
 
