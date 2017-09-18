@@ -24,4 +24,9 @@ is listed in `known_suite_names` (see above).
 
 Adapt the Post-Processing
 =========================
-TODO or give a link. 
+
+In order to able to post process the data a new testbed class must be added in 
+`code-postprocesing/cocopp/testbedsettings.py`. The class should derive from `Testbed` 
+class but if it is not much different from one of the existing classes (i.e. `GECCOBBOBTestbed`) 
+it can also derive from that class and only change some of the variables. Also 
+the ... must be added to the `suite_to_testbed` dictionary in a form `'suite_name':'testbed_name'`.

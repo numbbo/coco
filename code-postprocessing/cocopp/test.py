@@ -184,20 +184,20 @@ def main(arguments):
 
     print('*** testing module cocopp ***')
     t0 = time.time()
-    print(python + command + '--conv' + join_path(data_path, 'BFGS_ros_noiseless.tgz'))
-    result = os.system(python + command + '--conv' + join_path(data_path, 'BFGS_ros_noiseless.tgz'))
-    print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
-    assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
-    run_latex_template("templateBBOBarticle.tex", run_all_tests)
-    delete_files()
-
-    t0 = time.time()
-    print(python + command + join_path(data_path, 'RS-4.tgz'))
-    result = os.system(python + command + join_path(data_path, 'RS-4.tgz'))
-    print('**  subtest 2 finished in ', time.time() - t0, ' seconds')
-    assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
-    run_latex_template("templateBIOBJarticle.tex", run_all_tests)
-    delete_files()
+    # print(python + command + '--conv' + join_path(data_path, 'BFGS_ros_noiseless.tgz'))
+    # result = os.system(python + command + '--conv' + join_path(data_path, 'BFGS_ros_noiseless.tgz'))
+    # print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
+    # assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
+    # run_latex_template("templateBBOBarticle.tex", run_all_tests)
+    # delete_files()
+    #
+    # t0 = time.time()
+    # print(python + command + join_path(data_path, 'RS-4.tgz'))
+    # result = os.system(python + command + join_path(data_path, 'RS-4.tgz'))
+    # print('**  subtest 2 finished in ', time.time() - t0, ' seconds')
+    # assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
+    # run_latex_template("templateBIOBJarticle.tex", run_all_tests)
+    # delete_files()
 
     if run_all_tests:
         t0 = time.time()
