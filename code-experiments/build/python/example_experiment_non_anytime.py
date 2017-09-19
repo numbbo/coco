@@ -84,7 +84,7 @@ def main():
     algorithm_name = "Nelder-Mead"  # no spaces allowed
     output_folder = algorithm_name  # no spaces allowed
 
-    # a list of increasing budgets (to be additionally multiplied by dimension)
+    # a list of increasing budgets to be multiplied by dimension
     # gradually increase `max_budget` to 10, 100, ...
     # or replace with a user-defined list
     budget_multiplier_list = default_budget_list(max_budget=5)
@@ -102,19 +102,13 @@ def main():
     for index in range(len(suite)):
         with ProblemNonAnytime(suite, observer, index) as problem:
             problem.print_progress()
-            for budget in [problem.dimension * x for x in
+            x0 = problem.initial_solution  # initial solution
+            for budget in [b * problem.dimension for b in
                            budget_multiplier_list]:  # iterate over budgets
-                problem.reset()
-                x0 = problem.initial_solution  # initial solution
-                # apply restarts while neither the problem is solved nor the
-                # budget is exhausted
-                while problem.evaluations < budget and \
-                        not problem.final_target_hit:
-                    x = fmin(problem, x0, solver, budget - problem.evaluations)
-                    # make sure the final solution x is evaluated
-                    problem(x)
-                    # a random initial solution for restarted algorithms
-                    x0 = problem.random_solution
+                x = fmin(problem, x0, solver, budget)
+                problem.delivered(x)
+                if problem.final_target_hit:
+                    break
 
     ### post-process data
     cocopp.main(observer.result_folder)  # re-run folders look like "...-001"
@@ -124,10 +118,38 @@ def main():
 class ProblemNonAnytime(object):
     """The non-anytime problem class.
 
-    Contains two problems - one observed and the other unobserved. It switches
-    from unobserved to observed when p_unobserved.evaluations >=
-    p_observed.evaluations.
+    Serves to benchmark a "budgeted" algorithm whose behavior decisively
+    depends on a budget input parameter.
+
+    Usage::
+
+        # given: suite and observer instances, budget_list, fmin
+        for index in range(len(suite)):
+            with ProblemNonAnytime(suite, observer, index) as problem:
+                x0 = problem.initial_solution  # or whatever fmin needs as input
+                for budget in sorted(budget_list):
+                    x = fmin(problem, x0, budget)  # minimize
+                    problem.delivered(x)  # prepares for next budget also
+                    if problem.final_target_hit:
+                        break
+
+    Details: This class maintains two problems - one observed and the
+    other unobserved. It switches from unobserved to observed when
+    ``p_unobserved.evaluations >= p_observed.evaluations``.
+
     """
+    inherited_constant_attributes = [
+            'dimension',
+            'id',
+            'index',
+            'info',
+            'initial_solution',
+            'lower_bounds',
+            'name',
+            'number_of_constraints',
+            'number_of_objectives',
+            'number_of_variables',
+            'upper_bounds']
 
     def __init__(self, suite, observer, index):
         self.suite = suite
@@ -135,20 +157,11 @@ class ProblemNonAnytime(object):
         self.p_observed = suite[index].add_observer(observer)
         self._p = self.p_observed
         self.evaluations = 0
-        for key in ['dimension',
-                    'id',
-                    'index',
-                    'info',
-                    'initial_solution',
-                    'lower_bounds',
-                    'name',
-                    'number_of_constraints',
-                    'number_of_objectives',
-                    'number_of_variables',
-                    'upper_bounds']:
+        self._number_of_delivery_evaluations = 0  # just FTR
+        for key in ProblemNonAnytime.inherited_constant_attributes:
             setattr(self, key, getattr(self._p, key))
 
-    def __call__(self, *arg, **args):
+    def __call__(self, x, *args, **kwargs):
         if self.evaluations > self.p_observed.evaluations:
             raise ValueError(
                 "Evaluations {0} are larger than observed evaluations {1}"
@@ -156,9 +169,33 @@ class ProblemNonAnytime(object):
         if self.evaluations >= self.p_observed.evaluations:
             self._p = self.p_observed
         self.evaluations += 1
-        return self._p(*arg, **args)
+        return self._p(x, *args, **kwargs)
+
+    def delivered(self, x, *args, **kwargs):
+        """to be called with the solution returned by the solver.
+
+        The method records the delivered solution (if necessary) and
+        prepares the problem to be run on the next budget by calling
+        `reset`.
+        """
+        if self.evaluations < self.p_observed.evaluations:
+            raise ValueError(
+                "Delivered solutions should come from increasing budgets,\n"
+                "however the current budget = {0} is smaller than the "
+                "delivery budget = {1}".format(
+                    self.p_observed.evaluations, self.evaluations))
+        # assuming that "same fitness" means the solution was already evaluated
+        if self.p_unobserved(x, *args, **kwargs) != self.best_observed_fvalue1:
+            # ideally we would decrease the observed evaluation counter,
+            # but instead we now increase it only one time step later in
+            # __call__. That is, in effect, we exchange the next solution
+            # to be observed with this delivered solution `x`.
+            self.p_observed(x, *args, **kwargs)
+            self._number_of_delivery_evaluations += 1  # just FTR
+        self.reset()
 
     def reset(self):
+        """prepare the problem to be run on the next budget"""
         self.evaluations = 0
         self._p = self.p_unobserved
 
