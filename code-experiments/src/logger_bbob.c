@@ -90,8 +90,8 @@ typedef struct {
 static const char *bbob_file_header_str = "%% "
     "f evaluations | "
     "g evaluations | "
-    "noise-free fitness - Fopt (%13.12e) | "
     "best noise-free fitness - Fopt | "
+    "noise-free fitness - Fopt (%13.12e) | "
     "measured fitness | "
     "best measured fitness | "
     "x1 | "
@@ -117,8 +117,8 @@ static void logger_bbob_write_data(FILE *target_file,
   fprintf(target_file, "%lu %lu %+10.9e %+10.9e %+10.9e %+10.9e",
           (unsigned long) number_of_f_evaluations,
     	  (unsigned long) number_of_cons_evaluations,
-          fvalue - best_value,
           best_fvalue - best_value,
+          fvalue - best_value,
     	  fvalue,
           best_fvalue);
   if (number_of_variables < 22) {
