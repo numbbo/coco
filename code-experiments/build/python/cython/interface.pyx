@@ -7,7 +7,8 @@ cimport numpy as np
 
 from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
 
-known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-biobj-ext", b"bbob-constrained"]
+known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-biobj-ext"]
+_known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-biobj-ext", b"bbob-constrained"]
 _known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-biobj-ext", b"bbob-constrained", b"bbob-largescale"]
 
 # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
