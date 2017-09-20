@@ -27,19 +27,23 @@ After the header each line represents one evaluation. What columns represent is 
 Current 
 
 Current values for data format:
-1. "bbob":
+1. "bbob" contracted:
   - 1st column: evaluation number
   - 3rd column: function value
-  - number of target function values for each decade = 5
+  - informal:
+    - 2nd column: current function value
+	- number of target function values for each decade = 5
 2. "bbob-cons":
   - 1st column: f evaluation number
   - 2nd column: g evaluation number
-  - 4th column: function value
-  - number of target function values for each decade = 5
+  - 3rd column: function value
+  - informal:
+    - number of target function values for each decade = 5
 3. "bbob-biobj":
   - 1st column: evaluation number
-  - 2nd column: function value
-  - number of target function values for each decade = 10
+  - 2nd column: indicator value
+  - informal:
+    - number of target function values for each decade = 10
 What to change in the post-processing if you add a new data-format?
 
   
