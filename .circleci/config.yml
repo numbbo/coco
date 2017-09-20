@@ -1,0 +1,99 @@
+version: 2
+
+references:
+
+  install_ubuntu_python2: &install_ubuntu_python2
+    run:
+      name: Install Python 2 on Ubuntu.
+      command: |
+        apt-get update -qy
+        apt-get install -y python-dev python-numpy python-matplotlib \
+                           python-six python-setuptools python-scipy \
+                           python-pytest
+
+  install_ubuntu_python3: &install_ubuntu_python3
+    run:
+      name: Install Python 3 on Ubuntu and set it to be the default.
+      command: |
+        apt-get update -qy
+        apt-get install -y python3-dev python3-numpy python3-matplotlib \
+                           python3-six python3-setuptools python3-scipy \
+                           python3-pytest
+        ln -s /usr/bin/python3 /usr/bin/python  # this is dirty
+
+  test_ubuntu_example: &test_ubuntu_example
+    run:
+      name: Run the random search example on Ubuntu.
+      command: |
+        # install dependencies
+        apt-get install -y build-essential
+        # install coco
+        python do.py run-python
+        python do.py install-postprocessing
+        # run the example
+        cd code-experiments/build/python
+        python example_experiment.py bbob
+        # postprocess the results
+        python -m cocopp -o ./postproc ./exdata/*
+
+  test_ubuntu_python2: &test_ubuntu_python2
+    run:
+      name: Run Python 2 coco tests on Ubuntu.
+      command: |
+        apt-get install -y git cython
+        python do.py test-python
+
+  test_ubuntu_python3: &test_ubuntu_python3
+    run:
+      name: Run Python 3 coco tests on Ubuntu.
+      command: |
+        apt-get install -y git cython3
+        python do.py test-python
+
+  test_ubuntu_other: &test_ubuntu_other
+    run:
+      name: Run all coco tests except for Python on Ubuntu.
+      command: |
+        # install extra dependencies for tests
+        apt-get install -y liboctave-dev openjdk-8-jdk libcmocka-dev \
+                           mlocate texlive-full
+        updatedb
+        # test coco
+        python do.py test-c
+        python do.py test-octave
+        python do.py test-java
+        python do.py test-preprocessing
+        python do.py test-postprocessing-all
+      no_output_timeout: 7200
+
+jobs:
+
+  test_ubuntu_rolling_python3:
+    docker:
+      - image: ubuntu:rolling
+    working_directory: ~/coco
+    steps:
+      - checkout
+      - *install_ubuntu_python3
+      - *test_ubuntu_example
+      - *test_ubuntu_python3
+      - *test_ubuntu_other
+
+  test_ubuntu_latest_python2:
+    docker:
+      - image: ubuntu:latest
+    working_directory: ~/coco
+    steps:
+      - checkout
+      - *install_ubuntu_python2
+      - *test_ubuntu_example
+      - *test_ubuntu_python2
+      - *test_ubuntu_other
+
+workflows:
+
+  version: 2
+  test-matrix:
+    jobs:
+      - test_ubuntu_rolling_python3
+      - test_ubuntu_latest_python2

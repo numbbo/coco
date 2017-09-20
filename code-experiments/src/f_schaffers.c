@@ -1,3 +1,9 @@
+/**
+ * @file f_schaffers.c
+ * @brief Implementation of the Schaffer's F7 function and problem, transformations not implemented for the
+ * moment.
+ */
+
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
@@ -11,8 +17,9 @@
 #include "transform_vars_shift.c"
 #include "transform_obj_penalize.c"
 
-/* Schaffer's F7 function, transformations not implemented for the moment  */
-
+/**
+ * @brief Implements the Schaffer's F7 function without connections to any COCO structures.
+ */
 static double f_schaffers_raw(const double *x, const size_t number_of_variables) {
 
   size_t i = 0;
@@ -20,10 +27,16 @@ static double f_schaffers_raw(const double *x, const size_t number_of_variables)
 
   assert(number_of_variables > 1);
 
+  if (coco_vector_contains_nan(x, number_of_variables))
+  	return NAN;
+
   /* Computation core */
   result = 0.0;
   for (i = 0; i < number_of_variables - 1; ++i) {
     const double tmp = x[i] * x[i] + x[i + 1] * x[i + 1];
+    if (coco_is_inf(tmp) && coco_is_nan(sin(50.0 * pow(tmp, 0.1))))  /* sin(inf) -> nan */
+      /* the second condition is necessary to pass the integration tests under Windows and Linux */
+      return tmp;
     result += pow(tmp, 0.25) * (1.0 + pow(sin(50.0 * pow(tmp, 0.1)), 2.0));
   }
   result = pow(result / ((double) (long) number_of_variables - 1.0), 2.0);
@@ -31,11 +44,18 @@ static double f_schaffers_raw(const double *x, const size_t number_of_variables)
   return result;
 }
 
-static void f_schaffers_evaluate(coco_problem_t *self, const double *x, double *y) {
-  assert(self->number_of_objectives == 1);
-  y[0] = f_schaffers_raw(x, self->number_of_variables);
+/**
+ * @brief Uses the raw function to evaluate the COCO problem.
+ */
+static void f_schaffers_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  assert(problem->number_of_objectives == 1);
+  y[0] = f_schaffers_raw(x, problem->number_of_variables);
+  assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
+/**
+ * @brief Allocates the basic Schaffer's F7 problem.
+ */
 static coco_problem_t *f_schaffers_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Schaffer's function",
@@ -47,6 +67,9 @@ static coco_problem_t *f_schaffers_allocate(const size_t number_of_variables) {
   return problem;
 }
 
+/**
+ * @brief Creates the BBOB Schaffer's F7 problem.
+ */
 static coco_problem_t *f_schaffers_bbob_problem_allocate(const size_t function,
                                                          const size_t dimension,
                                                          const size_t instance,
@@ -81,13 +104,13 @@ static coco_problem_t *f_schaffers_bbob_problem_allocate(const size_t function,
   }
 
   problem = f_schaffers_allocate(dimension);
-  problem = f_transform_obj_shift(problem, fopt);
-  problem = f_transform_vars_affine(problem, M, b, dimension);
-  problem = f_transform_vars_asymmetric(problem, 0.5);
+  problem = transform_obj_shift(problem, fopt);
+  problem = transform_vars_affine(problem, M, b, dimension);
+  problem = transform_vars_asymmetric(problem, 0.5);
   bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
-  problem = f_transform_vars_affine(problem, M, b, dimension);
-  problem = f_transform_vars_shift(problem, xopt, 0);
-  problem = f_transform_obj_penalize(problem, penalty_factor);
+  problem = transform_vars_affine(problem, M, b, dimension);
+  problem = transform_vars_shift(problem, xopt, 0);
+  problem = transform_obj_penalize(problem, penalty_factor);
 
   bbob2009_free_matrix(rot1, dimension);
   bbob2009_free_matrix(rot2, dimension);

@@ -1,72 +1,85 @@
-% This is based on "sig-alternate.tex" V2.0 May 2012
-% This file should be compiled with V2.5 of "sig-alternate.cls" May 2012
-%
-% ----------------------------------------------------------------------------------------------------------------
-%
-% This .tex source is an example which *does* use
-% the .bib file (from which the .bbl file % is produced).
-% REMEMBER HOWEVER: After having produced the .bbl file,
-% and prior to final submission, you *NEED* to 'insert'
-% your .bbl file into your source .tex file so as to provide
-% ONE 'self-contained' source file.
-%
-% Information on the sig-alternate class file and on the
-% GECCO workshop paper format and submission can be found at these
-% locations:
-% http://www.acm.org/sigs/publications/proceedings-templates#aL2
-% http://www.sheridanprinting.com/typedept/gecco3.htm
-%
-% ================= IF YOU HAVE QUESTIONS =======================
-% Questions regarding the SIGS styles, SIGS policies and
-% procedures, Conferences etc. should be sent to
-% Adrienne Griscti (griscti@acm.org)
-%
-% Technical questions to bbob@lri.fr
-% ===============================================================
-%
+\documentclass[sigconf]{acmart}
 
-\documentclass{sig-alternate}
-\pdfpagewidth=8.5in
-\pdfpageheight=11in
-\special{papersize=8.5in,11in}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Packages
+\usepackage{booktabs} % For formal tables
 \usepackage{graphicx}
-\usepackage{tabularx}
-\usepackage[dvipsnames]{xcolor}
-\usepackage{float}
 \usepackage{rotating}
+\usepackage{tabularx}
 \usepackage{xstring} % for string operations
 \usepackage{wasysym} % Table legend with symbols input from post-processing
 \usepackage{MnSymbol} % Table legend with symbols input from post-processing
+\usepackage{float}
+\usepackage{ifthen}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Definitions
 
-% Algorithm names on the right of the ECDF figures can be modified by
-% uncommenting the following lines and inputting some text in the last
-% brackets, make sure the algorithms are in the same order as for the post-processing:
-% \newcommand{\algaperfprof}{Algorithm a short name}
-% \newcommand{\algbperfprof}{Algorithm b short name}
-% \newcommand{\algcperfprof}{Algorithm c short name}
-% \newcommand{\algdperfprof}{Algorithm c short name}
-% ...
-% Algorithm names as they appear in the tables, uncomment if necessary
-% \newcommand{\algatables}{\algaperfprof}  % first argument in the post-processing
-% \newcommand{\algbtables}{\algbperfprof}  % first argument in the post-processing
-% \newcommand{\algctables}{\algcperfprof}  % first argument in the post-processing
-% \newcommand{\algdtables}{\algdperfprof}  % second argument in the post-processing
-% ...
-% location of pictures files
-\newcommand{\bbobdatapath}{ppdata/}
-\input{\bbobdatapath bbob_pproc_commands.tex}
-\graphicspath{{\bbobdatapath}}
+% define some COCO/dvipsnames colors because
+% ACM style does not allow to use them directly
+%\definecolor{NavyBlue}{HTML}{000080}
+%\definecolor{Magenta}{HTML}{FF00FF}
+%\definecolor{Orange}{HTML}{FFA500}
+%\definecolor{CornflowerBlue}{HTML}{6495ED}
+%\definecolor{YellowGreen}{HTML}{9ACD32}
+%\definecolor{Gray}{HTML}{BEBEBE}
+%\definecolor{Yellow}{HTML}{FFFF00}
+%\definecolor{GreenYellow}{HTML}{ADFF2F}
+%\definecolor{ForestGreen}{HTML}{228B22}
+%\definecolor{Lavender}{HTML}{FFC0CB}
+%\definecolor{SkyBlue}{HTML}{87CEEB}
+%\definecolor{NavyBlue}{HTML}{000080}
+%\definecolor{Goldenrod}{HTML}{DDF700}
+%\definecolor{VioletRed}{HTML}{D02090}
+%\definecolor{CornflowerBlue}{HTML}{6495ED}
+%\definecolor{LimeGreen}{HTML}{32CD32}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Copyright
+%\setcopyright{none}
+%\setcopyright{acmcopyright}
+%\setcopyright{acmlicensed}
+\setcopyright{rightsretained}
+%\setcopyright{usgov}
+%\setcopyright{usgovmixed}
+%\setcopyright{cagov}
+%\setcopyright{cagovmixed}
+
+
+% DOI
+\acmDOI{10.475/123_4}
+
+% ISBN
+\acmISBN{123-4567-24-567/08/06}
+
+%Conference
+\acmConference[GECCO '17]{the Genetic and Evolutionary Computation Conference 2017}{July 15--19, 2017}{Berlin, Germany}
+\acmYear{2017}
+\copyrightyear{2017}
+
+\acmPrice{15.00}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% TO BE EDITED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% specify acronyms for algorithm1 (1st arg. of post-processing) and algorithm2 (2nd arg.) 
+%\newcommand{\algorithmA}{algorithmB}  % first argument in the post-processing
+%\newcommand{\algorithmB}{algorithmB}  % second argument in the post-processing
+% for the short acronyms in the tables, adjust the following to lines if required.
+%\newcommand{\algorithmAshort}{algA}  % first argument in the post-processing
+%\newcommand{\algorithmBshort}{algB}  % second argument in the post-processing
+
+% rungeneric.py writes data into a subfolder of ppdata
+\newcommand{\bbobdatapath}{ppdata/} % change default output folder of COCO if desired
+\input{\bbobdatapath cocopp_commands.tex} % provide default of algname and algfolder
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\graphicspath{{\bbobdatapath\algsfolder}}
+
 % pre-defined commands
 \newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
+\newcommand{\aRT}{\ensuremath{\mathrm{aRT}}}
 \newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
 \newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
 \newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
@@ -77,148 +90,116 @@
 \newcommand{\CrE}{\ensuremath{\mathrm{CrE}}}
 \newcommand{\change}[1]{{\color{red} #1}}
 
-    \renewcommand{\topfraction}{1}	% max fraction of floats at top
-    \renewcommand{\bottomfraction}{1} % max fraction of floats at bottom
-    %   Parameters for TEXT pages (not float pages):
-    \setcounter{topnumber}{3}
-    \setcounter{bottomnumber}{3}
-    \setcounter{totalnumber}{3}     % 2 may work better
-    \setcounter{dbltopnumber}{4}    % for 2-column pages
-    \renewcommand{\dbltopfraction}{1}	% fit big float above 2-col. text
-    \renewcommand{\textfraction}{0.0}	% allow minimal text w. figs
-    %   Parameters for FLOAT pages (not text pages):
-    \renewcommand{\floatpagefraction}{0.80}	% require fuller float pages
-    % N.B.: floatpagefraction MUST be less than topfraction !!
-    \renewcommand{\dblfloatpagefraction}{0.7}	% require fuller float pages
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
-
-%
-% --- Author Metadata here ---
-\conferenceinfo{GECCO'13,} {July 6-10, 2013, Amsterdam, The Netherlands.}
-\CopyrightYear{2013}
-\crdata{TBA}
-\clubpenalty=10000
-\widowpenalty = 10000
-% --- End of Author Metadata ---
-
 \title{Black-Box Optimization Benchmarking Template for the Comparison of More than Two Algorithms on the Noiseless Testbed}
-\subtitle{Draft version
-\titlenote{Submission deadline: March 28th.}}
-%Camera-ready paper due April 16th.}}
+\renewcommand{\shorttitle}{Black-Box Optimization Benchmarking Template for More Than Two Algorithms}
+\titlenote{Submission deadline: March 31st.}
+%Camera-ready paper due April 24th.}}
+\subtitle{Draft version}
 
-%
-% You need the command \numberofauthors to handle the 'placement
-% and alignment' of the authors beneath the title.
-%
-% For aesthetic reasons, we recommend 'three authors at a time'
-% i.e. three 'name/affiliation blocks' be placed beneath the title.
-%
-% NOTE: You are NOT restricted in how many 'rows' of
-% "name/affiliations" may appear. We just ask that you restrict
-% the number of 'columns' to three.
-%
-% Because of the available 'opening page real-estate'
-% we ask you to refrain from putting more than six authors
-% (two rows with three columns) beneath the article title.
-% More than six makes the first-page appear very cluttered indeed.
-%
-% Use the \alignauthor commands to handle the names
-% and affiliations for an 'aesthetic maximum' of six authors.
-% Add names, affiliations, addresses for
-% the seventh etc. author(s) as the argument for the
-% \additionalauthors command.
-% These 'additional authors' will be output/set for you
-% without further effort on your part as the last section in
-% the body of your article BEFORE References or any Appendices.
 
-\numberofauthors{1} %  in this sample file, there are a *total*
-% of EIGHT authors. SIX appear on the 'first-page' (for formatting
-% reasons) and the remaining two appear in the \additionalauthors section.
-%
-\author{
-% You can go ahead and credit any number of authors here,
-% e.g. one 'row of three' or two rows (consisting of one row of three
-% and a second row of one, two or three).
-%
-% The command \alignauthor (no curly braces needed) should
-% precede each author name, affiliation/snail-mail address and
-% e-mail address. Additionally, tag each line of
-% affiliation/address with \affaddr, and tag the
-% e-mail address with \email.
-%
-% 1st. author
-\alignauthor
-Forename Name\\ %\titlenote{Dr.~Trovato insisted his name be first.}\\
-%       \affaddr{Institute for Clarity in Documentation}\\
-%       \affaddr{1932 Wallamaloo Lane}\\
-%       \affaddr{Wallamaloo, New Zealand}\\
-%       \email{trovato@corporation.com}
-%% 2nd. author
-%\alignauthor
-%G.K.M. Tobin\titlenote{The secretary disavows
-%any knowledge of this author's actions.}\\
-%       \affaddr{Institute for Clarity in Documentation}\\
-%       \affaddr{P.O. Box 1212}\\
-%       \affaddr{Dublin, Ohio 43017-6221}\\
-%       \email{webmaster@marysville-ohio.com}
-%% 3rd. author
-%\alignauthor Lars Th{\o}rv{\"a}ld\titlenote{This author is the
-%one who did all the really hard work.}\\
-%       \affaddr{The Th{\o}rv{\"a}ld Group}\\
-%       \affaddr{1 Th{\o}rv{\"a}ld Circle}\\
-%       \affaddr{Hekla, Iceland}\\
-%       \email{larst@affiliation.org}
-%\and  % use '\and' if you need 'another row' of author names
-%% 4th. author
-%\alignauthor Lawrence P. Leipuner\\
-%       \affaddr{Brookhaven Laboratories}\\
-%       \affaddr{Brookhaven National Lab}\\
-%       \affaddr{P.O. Box 5000}\\
-%       \email{lleipuner@researchlabs.org}
-%% 5th. author
-%\alignauthor Sean Fogarty\\
-%       \affaddr{NASA Ames Research Center}\\
-%       \affaddr{Moffett Field}\\
-%       \affaddr{California 94035}\\
-%       \email{fogartys@amesres.org}
-%% 6th. author
-%\alignauthor Charles Palmer\\
-%       \affaddr{Palmer Research Laboratories}\\
-%       \affaddr{8600 Datapoint Drive}\\
-%       \affaddr{San Antonio, Texas 78229}\\
-%       \email{cpalmer@prl.com}
-} % author
-%% There's nothing stopping you putting the seventh, eighth, etc.
-%% author on the opening page (as the 'third row') but we ask,
-%% for aesthetic reasons that you place these 'additional authors'
-%% in the \additional authors block, viz.
-%\additionalauthors{Additional authors: John Smith (The Th{\o}rv{\"a}ld Group,
-%email: {\texttt{jsmith@affiliation.org}}) and Julius P.~Kumquat
-%(The Kumquat Consortium, email: {\texttt{jpkumquat@consortium.net}}).}
-%\date{30 July 1999}
-%% Just remember to make sure that the TOTAL number of authors
-%% is the number that will appear on the first page PLUS the
-%% number that will appear in the \additionalauthors section.
 
-\maketitle
+\author{Firstname Lastname}
+%\authornote{tba if needed}
+%\orcid{1234-5678-9012}
+%\affiliation{%
+%  \institution{Institute for Clarity in Documentation}
+%  \streetaddress{P.O. Box 1212}
+%  \city{Dublin} 
+%  \state{Ohio} 
+%  \postcode{43017-6221}
+%}
+%\email{trovato@corporation.com}
+%
+%\author{G.K.M. Tobin}
+%\authornote{The secretary disavows any knowledge of this author's actions.}
+%\affiliation{%
+%  \institution{Institute for Clarity in Documentation}
+%  \streetaddress{P.O. Box 1212}
+%  \city{Dublin} 
+%  \state{Ohio} 
+%  \postcode{43017-6221}
+%}
+%\email{webmaster@marysville-ohio.com}
+%
+%\author{Lars Th{\o}rv{\"a}ld}
+%\authornote{This author is the
+%  one who did all the really hard work.}
+%\affiliation{%
+%  \institution{The Th{\o}rv{\"a}ld Group}
+%  \streetaddress{1 Th{\o}rv{\"a}ld Circle}
+%  \city{Hekla} 
+%  \country{Iceland}}
+%\email{larst@affiliation.org}
+%
+%\author{Lawrence P. Leipuner}
+%\affiliation{
+%  \institution{Brookhaven Laboratories}
+%  \streetaddress{P.O. Box 5000}}
+%\email{lleipuner@researchlabs.org}
+%
+%\author{Sean Fogarty}
+%\affiliation{%
+%  \institution{NASA Ames Research Center}
+%  \city{Moffett Field}
+%  \state{California} 
+%  \postcode{94035}}
+%\email{fogartys@amesres.org}
+%
+%\author{Charles Palmer}
+%\affiliation{%
+%  \institution{Palmer Research Laboratories}
+%  \streetaddress{8600 Datapoint Drive}
+%  \city{San Antonio}
+%  \state{Texas} 
+%  \postcode{78229}}
+%\email{cpalmer@prl.com}
+%
+%\author{John Smith}
+%\affiliation{\institution{The Th{\o}rv{\"a}ld Group}}
+%\email{jsmith@affiliation.org}
+%
+%\author{Julius P.~Kumquat}
+%\affiliation{\institution{The Kumquat Consortium}}
+%\email{jpkumquat@consortium.net}
+
+% The default list of authors is too long for headers}
+\renewcommand{\shortauthors}{Firstname Lastname et. al.}
+
+
 \begin{abstract}
 to be written
 \end{abstract}
 
-% Add any ACM category that you feel is needed
-\category{G.1.6}{Numerical Analysis}{Optimization}[global optimization,
-unconstrained optimization]
-\category{F.2.1}{Analysis of Algorithms and Problem Complexity}{Numerical Algorithms and Problems}
 
-% Complete with anything that is needed
-\terms{Algorithms}
+%
+% The code below should be generated by the tool at
+% http://dl.acm.org/ccs.cfm
+% Please copy and paste the code instead of the example below. 
+%
+ \begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10010147.10010178.10010205.10010208</concept_id>
+<concept_desc>Computing methodologies~Continuous space search</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Computing methodologies~Continuous space search}
+
+
+% We no longer use \terms command
+%\terms{Algorithms}
 
 % Complete with anything that is needed
 \keywords{Benchmarking, Black-box optimization}
+
+\maketitle
+
 
 % \section{Introduction}
 %
@@ -230,7 +211,8 @@ unconstrained optimization]
 \section{CPU Timing}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % note that the following text is just a proposal and can/should be changed to your needs:
-In order to evaluate the CPU timing of the algorithm, we have run the \change{MY-ALGORITHM-NAME} on the function $f_{8}$ with restarts for at least 30 seconds and until a maximum budget equal to \change{$400 (D + 2)$} is reached. The code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores. The time per function evaluation for dimensions 2, 3, 5, 10, 20\change{, 40} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} milliseconds respectively. 
+In order to evaluate the CPU timing of the algorithm, we have run the \change{MY-ALGORITHM-NAME} on the  \change{bbob test suite \cite{hansen2010fun}} with restarts for a maximum budget equal to \change{$400 (D + 2)$} function evaluations according to \cite{hansen2016exp}. The \change{C/Java/Python/Matlab/Octave} code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores \change{and (compile) options xxx}. The time per function evaluation for dimensions 2, 3, 5, 10, 20\change{, 40} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
+
 
 \change{repeat the above for any algorithm tested}
 
@@ -239,11 +221,14 @@ In order to evaluate the CPU timing of the algorithm, we have run the \change{MY
 \section{Results}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Results from experiments according to \cite{hansen2012exp} on the
-benchmark functions given in \cite{wp200901_2010,hansen2012fun} are
+Results from experiments according to \cite{hansen2016exp} and \cite{hansen2016perfass} on the
+benchmark functions given in \cite{wp200901_2010,hansen2010fun} are
 presented in Figures~\ref{fig:scaling}, \ref{fig:ECDFs05D} and
-\ref{fig:ECDFs20D} and in Tables~\ref{tab:ERTs5} and~\ref{tab:ERTs20}. The
-\textbf{expected running time (ERT)}, used in the figures and tables,
+\ref{fig:ECDFs20D} and in Tables~\ref{tab:aRTs5} and~\ref{tab:aRTs20}.
+The experiments were performed with COCO \cite{hansen2016cocoplat}, version
+\change{2.0}, the plots were produced with version \change{2.0}.
+
+The \textbf{average runtime (aRT)}, used in the figures and tables,
 depends on a given target function value, $\ftarget=\fopt+\Df$, and is
 computed over all relevant trials as the number of function
 evaluations executed during each trial while the best function value
@@ -263,7 +248,7 @@ unsuccessful trial under consideration.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Scaling of ERT with dimension
+% Scaling of aRT with dimension
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
@@ -298,7 +283,7 @@ unsuccessful trial under consideration.
 \caption[Expected running time divided by dimension
 versus dimension]{
 \label{fig:scaling}
-% command defined in bbob_pproc_commands.tex:
+% command defined in cocopp_commands.tex:
 \bbobppfigslegend{$f_1$ and $f_{24}$}  % \algorithmA can be defined above, see above
 }
 % 
@@ -317,7 +302,7 @@ versus dimension]{
   \begin{rotate}{90}\hspace{#1em}#2
   \end{rotate}}
 \newcommand{\includeperfprof}[1]{% include and annotate at the side
-  \input{\bbobdatapath #1}%
+  \input{\bbobdatapath\algsfolder #1}%
   \includegraphics[width=0.4135\textwidth,trim=0mm 0mm 34mm 10mm, clip]{#1}%
   \raisebox{.037\textwidth}{\parbox[b][.3\textwidth]{.0868\textwidth}{\begin{scriptsize}
     \perfprofsidepanel % this is "\algaperfprof \vfill \algbperfprof \vfill" etc
@@ -369,73 +354,79 @@ ill-conditioned fcts & multi-modal fcts \\
 \end{figure*}
 
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Expected running time (ERT in number of function evaluations)
-% divided by the best ERT measured during BBOB-2009 (given in the respective
+% Average runtime (aRT in number of function evaluations)
+% divided by the best aRT measured during BBOB-2009 (given in the respective
 % first row) for functions $f_1$--$f_{24}$ for dimension 5.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{table*}\tiny
 %\hfill5-D\hfill~\\[1ex]
+{\normalsize \color{red}
+\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
+}
 \mbox{\begin{minipage}[t]{0.499\textwidth}\tiny
 \centering
-\input{\bbobdatapath pptables_f001_05D} 
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f001_05D} 
 
-\input{\bbobdatapath pptables_f002_05D}
+\input{\bbobdatapath\algsfolder pptables_f002_05D}
 
-\input{\bbobdatapath pptables_f003_05D}
+\input{\bbobdatapath\algsfolder pptables_f003_05D}
 
-\input{\bbobdatapath pptables_f004_05D}
+\input{\bbobdatapath\algsfolder pptables_f004_05D}
 
-\input{\bbobdatapath pptables_f005_05D}
+\input{\bbobdatapath\algsfolder pptables_f005_05D}
 
-\input{\bbobdatapath pptables_f006_05D}
+\input{\bbobdatapath\algsfolder pptables_f006_05D}
 
-\input{\bbobdatapath pptables_f007_05D}
+\input{\bbobdatapath\algsfolder pptables_f007_05D}
 
-\input{\bbobdatapath pptables_f008_05D}
+\input{\bbobdatapath\algsfolder pptables_f008_05D}
 
-\input{\bbobdatapath pptables_f009_05D}
+\input{\bbobdatapath\algsfolder pptables_f009_05D}
 
-\input{\bbobdatapath pptables_f010_05D}
+\input{\bbobdatapath\algsfolder pptables_f010_05D}
 
-\input{\bbobdatapath pptables_f011_05D}
+\input{\bbobdatapath\algsfolder pptables_f011_05D}
 
-\input{\bbobdatapath pptables_f012_05D}
+\input{\bbobdatapath\algsfolder pptables_f012_05D}
+\end{tabularx}
 
 \end{minipage}
 \hspace{0.002\textwidth}
 \begin{minipage}[t]{0.499\textwidth}\tiny
 \centering
-\input{\bbobdatapath pptables_f013_05D}
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f013_05D}
 
-\input{\bbobdatapath pptables_f014_05D}
+\input{\bbobdatapath\algsfolder pptables_f014_05D}
 
-\input{\bbobdatapath pptables_f015_05D}
+\input{\bbobdatapath\algsfolder pptables_f015_05D}
 
-\input{\bbobdatapath pptables_f016_05D}
+\input{\bbobdatapath\algsfolder pptables_f016_05D}
 
-\input{\bbobdatapath pptables_f017_05D}
+\input{\bbobdatapath\algsfolder pptables_f017_05D}
 
-\input{\bbobdatapath pptables_f018_05D}
+\input{\bbobdatapath\algsfolder pptables_f018_05D}
 
-\input{\bbobdatapath pptables_f019_05D}
+\input{\bbobdatapath\algsfolder pptables_f019_05D}
 
-\input{\bbobdatapath pptables_f020_05D}
+\input{\bbobdatapath\algsfolder pptables_f020_05D}
 
-\input{\bbobdatapath pptables_f021_05D}
+\input{\bbobdatapath\algsfolder pptables_f021_05D}
 
-\input{\bbobdatapath pptables_f022_05D}
+\input{\bbobdatapath\algsfolder pptables_f022_05D}
 
-\input{\bbobdatapath pptables_f023_05D}
+\input{\bbobdatapath\algsfolder pptables_f023_05D}
 
-\input{\bbobdatapath pptables_f024_05D}
+\input{\bbobdatapath\algsfolder pptables_f024_05D}
+\end{tabularx}
 \end{minipage}}
 
- \caption{\label{tab:ERTs5}
+ \caption{\label{tab:aRTs5}
  \bbobpptablesmanylegend{dimension $5$}
  }
 \end{table*}
@@ -444,8 +435,8 @@ ill-conditioned fcts & multi-modal fcts \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Expected running time (ERT in number of function evaluations)
-% divided by the best ERT measured during BBOB-2009 (given in the respective
+% Average runtime (aRT in number of function evaluations)
+% divided by the best aRT measured during BBOB-2009 (given in the respective
 % first row) for functions $f_1$--$f_{24}$ for dimension 20.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -453,80 +444,73 @@ ill-conditioned fcts & multi-modal fcts \\
 %\hfill20-D\hfill~\\[1ex]
 \mbox{\begin{minipage}[t]{0.499\textwidth}\tiny
 \centering
-\input{\bbobdatapath pptables_f001_20D} 
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f001_20D} 
 
-\input{\bbobdatapath pptables_f002_20D}
+\input{\bbobdatapath\algsfolder pptables_f002_20D}
 
-\input{\bbobdatapath pptables_f003_20D}
+\input{\bbobdatapath\algsfolder pptables_f003_20D}
 
-\input{\bbobdatapath pptables_f004_20D}
+\input{\bbobdatapath\algsfolder pptables_f004_20D}
 
-\input{\bbobdatapath pptables_f005_20D}
+\input{\bbobdatapath\algsfolder pptables_f005_20D}
 
-\input{\bbobdatapath pptables_f006_20D}
+\input{\bbobdatapath\algsfolder pptables_f006_20D}
 
-\input{\bbobdatapath pptables_f007_20D}
+\input{\bbobdatapath\algsfolder pptables_f007_20D}
 
-\input{\bbobdatapath pptables_f008_20D}
+\input{\bbobdatapath\algsfolder pptables_f008_20D}
 
-\input{\bbobdatapath pptables_f009_20D}
+\input{\bbobdatapath\algsfolder pptables_f009_20D}
 
-\input{\bbobdatapath pptables_f010_20D}
+\input{\bbobdatapath\algsfolder pptables_f010_20D}
 
-\input{\bbobdatapath pptables_f011_20D}
+\input{\bbobdatapath\algsfolder pptables_f011_20D}
 
-\input{\bbobdatapath pptables_f012_20D}
+\input{\bbobdatapath\algsfolder pptables_f012_20D}
+\end{tabularx}
 \end{minipage}
 \hspace{0.002\textwidth}
 \begin{minipage}[t]{0.499\textwidth}\tiny
 \centering
-\input{\bbobdatapath pptables_f013_20D}
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f013_20D}
 
-\input{\bbobdatapath pptables_f014_20D}
+\input{\bbobdatapath\algsfolder pptables_f014_20D}
 
-\input{\bbobdatapath pptables_f015_20D}
+\input{\bbobdatapath\algsfolder pptables_f015_20D}
 
-\input{\bbobdatapath pptables_f016_20D}
+\input{\bbobdatapath\algsfolder pptables_f016_20D}
 
-\input{\bbobdatapath pptables_f017_20D}
+\input{\bbobdatapath\algsfolder pptables_f017_20D}
 
-\input{\bbobdatapath pptables_f018_20D}
+\input{\bbobdatapath\algsfolder pptables_f018_20D}
 
-\input{\bbobdatapath pptables_f019_20D}
+\input{\bbobdatapath\algsfolder pptables_f019_20D}
 
-\input{\bbobdatapath pptables_f020_20D}
+\input{\bbobdatapath\algsfolder pptables_f020_20D}
 
-\input{\bbobdatapath pptables_f021_20D}
+\input{\bbobdatapath\algsfolder pptables_f021_20D}
 
-\input{\bbobdatapath pptables_f022_20D}
+\input{\bbobdatapath\algsfolder pptables_f022_20D}
 
-\input{\bbobdatapath pptables_f023_20D}
+\input{\bbobdatapath\algsfolder pptables_f023_20D}
 
-\input{\bbobdatapath pptables_f024_20D}
+\input{\bbobdatapath\algsfolder pptables_f024_20D}
+\end{tabularx}
 \end{minipage}}
- \caption{\label{tab:ERTs20}
+ \caption{\label{tab:aRTs20}
   \bbobpptablesmanylegend{dimension $20$}
 }
 \end{table*}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% The following two commands are all you need in the
-% initial runs of your .tex file to
-% produce the bibliography for the citations in your paper.
-\bibliographystyle{abbrv}
-\bibliography{bbob}  % bbob.bib is the name of the Bibliography in this case
-% You must have a proper ".bib" file
-%  and remember to run:
-% latex bibtex latex latex
-% to resolve all references
-% to create the ~.bbl file.  Insert that ~.bbl file into
-% the .tex source file and comment out
-% the command \texttt{{\char'134}thebibliography}.
-%
-% ACM needs 'a single self-contained file'!
-%
 
-% \clearpage % otherwise the last figure might be missing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{./bbob}  % bbob.bib is the name of the Bibliography in this case
+
+\clearpage % otherwise the last figure might be missing
+
+
 \end{document}

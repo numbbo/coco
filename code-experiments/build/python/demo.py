@@ -56,12 +56,17 @@ def random_search(fun, lbounds, ubounds, budget):
 # set up
 MAXEVALS = 1e2  # always start with something small, CAVEAT: this might be modified from input args
 solver = random_search # fmin_slsqp # cma.fmin #    
-suite_name = "bbob"
-# suite_name = "bbob-biobj"
+suite_name = "bbob"         # available suite names   matching observer names
+observer_name = "bbob"      # -----------------------------------------------
+                            # bbob                    bbob
+                            # bbob-biobj              bbob-biobj
+                            # bbob-biobj-ext          bbob-biobj
+                            # bbob-largescale         bbob
 suite_options = ""  # options syntax could be: "instances:1-5; dimensions:2-20",
-observer_name = "bbob"
-# observer_name = "bbob-biobj"
 observer_options = "%s_on_%s" % (solver.__name__, suite_name)  # TODO: "folder:random_search; verbosity:1"
+# for more details on suite and observer options, see 
+# http://numbbo.github.io/coco-doc/C/#suite-parameters and
+# http://numbbo.github.io/coco-doc/C/#observer-parameters.
 number_of_batches = 99  # CAVEAT: this might be modified below from input args
 current_batch = 1       # ditto
 
@@ -160,17 +165,6 @@ def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=numbe
                (suite_name, addressed_problems, found_problems,
                  ((" in batch %d of %d" % (current_batch, number_of_batches))
                    if number_of_batches > 1 else ""), time.asctime(), (time.clock()-t0)/60, ))
-     
-    if 11 < 3:
-        # generic usecase, possible if solver can be cast into a coco_optimizer_t *
-        # which might often not be a straight forward type conversion, because (i) the
-        # optimizer takes a function (pointer) as input, (ii) argument passing to
-        # the optimizer seems not possible (e.g. max budget) unless the interface
-        # is changed and (iii) argument passing to the function might be impossible
-        # to negotiate. 
-        print("Minimal usecase, doesn't work though")
-        Benchmark(coco_optimize, suite_name, suite_options,  # suite options are in the possible future
-                  observer_name, observer_options)
         
 if __name__ == '__main__':
     if len(sys.argv) > 1:

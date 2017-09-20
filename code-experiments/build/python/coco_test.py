@@ -43,24 +43,24 @@ def process_test_cases(fd, suite_name, test_vectors):
 
         ## A test case is a 4-tuple (deprecated_problem_index, problem_index, test_vector_id,
         ## expected_y) separated by a tab. 
-        deprecated_problem_index, problem_index, test_vector_id, expected_y = test_case.split("\t")
+        deprecated_problem_index, problem_index, test_vector_id, expected_y = test_case.split()
         ## Do type conversion. Python gurus probably know an elegant
         ## one line solution...
-        deprecated_problem_index = int(deprecated_problem_index)
+        problem_index = int(problem_index)
         test_vector_id = int(test_vector_id)
         expected_y = float(expected_y)
 
         ## We cache the problem instances because creating an instance
         ## can be expensive depending on the transformation.
-        if deprecated_problem_index != previous_problem_index:
+        if problem_index != previous_problem_index:
             problem = suite.get_problem(int(problem_index))
-            previous_problem_index = deprecated_problem_index
+            previous_problem_index = problem_index
         test_vector = test_vectors[test_vector_id]
         y = problem(test_vector[:problem.number_of_variables])
-        if not about_equal(y, expected_y):
+        if not about_equal(y, expected_y, 4e-6):
             number_of_failures += 1
             if number_of_failures < 100:
-                print("%8i %8i FAILED expected=%.8e observed=%.8e" % (deprecated_problem_index, test_vector_id, expected_y, y))
+                print("%8i %8i FAILED expected=%.8e observed=%.8e" % (problem_index, test_vector_id, expected_y, y))
             elif number_of_failures == 100:
                 print("... further failed tests suppressed ...")
     print("%i of %i tests passed (failure rate %.2f%%)" % (number_of_testcases - number_of_failures, number_of_testcases, (100.0 * number_of_failures) / number_of_testcases))
@@ -82,7 +82,7 @@ def testmod(module):
 def run_doctests():
     """Run doctests on "all" modules.
 
-    To include this in a unittest enviroment,
+    To include this in a unittest environment,
     see https://docs.python.org/2/library/doctest.html#unittest-api
     """
     interface = ex.interface if hasattr(ex, 'interface') else ex._interface
@@ -93,33 +93,38 @@ def run_doctests():
     testmod(interface)
     testmod(example_experiment)
 
-def _clean_up(start_matches, protected):
-    """permanently remove entries in the current folder which begin with any of
+
+def _clean_up(folder, start_matches, protected):
+    """permanently remove entries in `folder` which begin with any of
     `start_matches`, where `""` matches any string, and which are not in
     `protected`.
 
-    CAVEAT: use with care, as with `"", ""` as arguments this deletes all folder
-    entries like `rm *` does. """
+    CAVEAT: use with care, as with `"", ""` as second and third arguments 
+    this deletes all folder entries like `rm *` does. """
+    if not os.path.isdir(folder):
+        return
     if not protected and "" in start_matches:
         raise ValueError(
-            '_clean_up([..., "", ...], []) is not permitted, resembles "rm *"')
-    for d in os.listdir('.'):
+            '_clean_up(folder, [..., "", ...], []) is not permitted, resembles "rm *"')
+    for d in os.listdir(folder):
         if d not in protected:
             for name in start_matches:
                 if d.startswith(name):
-                    shutil.rmtree(d)
+                    shutil.rmtree(os.path.join(folder, d))
                     break
 
 
 def main(args):
-    list_before = os.listdir('.')
+    list_before = os.listdir('exdata') if os.path.isdir('exdata') else []
     print('Running doctests...'), sys.stdout.flush()
     run_doctests()
     print('doctests done.\nRunning example_experiment:'), sys.stdout.flush()
     example_experiment.main()
     for arg in args if args else default_testcases:
+        if arg is None or arg == 'None':
+            break
         process_testfile(arg) if args or os.path.isfile(arg) else None
-    _clean_up(["random_search_on_bbob-biobj", "results"], list_before)
+    _clean_up('exdata', ['random_search_on_bbob', 'doctest', 'default'], list_before)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

@@ -21,6 +21,9 @@ except ImportError:
         Backported from Python 2.7 as it's implemented as pure python on stdlib.
         >>> check_output(['/usr/bin/python', '--version'])
         Python 2.6.2
+
+        WARNING: This method is also defined in ../../code-postprocessing/cocopp/toolsdivers.py.
+        If you change something you have to change it in both files.
         """
         process = subprocess.Popen(stdout=subprocess.PIPE, *popenargs, **kwargs)
         output, unused_err = process.communicate()
@@ -33,6 +36,14 @@ except ImportError:
             error.output = output
             raise error
         return output
+
+
+def check_output_with_print(verbose, *popenargs, **kwargs):
+    output = check_output(*popenargs, **kwargs)
+    if verbose:
+        print(output)
+
+    return output
 
 def hg(args):
     """Run a Mercurial command and return its output.
@@ -51,7 +62,11 @@ def hg(args):
 def git(args):
     """Run a git command and return its output.
 
-    All errors are deemed fatal and the system will quit."""
+    All errors are deemed fatal and the system will quit.
+
+    WARNING: This method is also defined in ../../code-postprocessing/cocopp/toolsdivers.py.
+    If you change something you have to change it in both files.
+    """
     full_command = ['git']
     full_command.extend(args)
     try:
@@ -68,9 +83,11 @@ def is_dirty():
     raise NotImplementedError()
     return hg(['hg', 'id', '-i'])[-1] == '+'
 
-def git_version(pep440=True):
+def git_version(pep440=False):
     """Return somewhat readible version number from git, like
-    '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'"""
+    '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'
+
+    """
     try:
         res = git(['describe', '--tags'])
     except:
@@ -94,12 +111,12 @@ def git_revision():
         # print('git revision call failed')
         return ""
 
-def run(directory, args):
+def run(directory, args, verbose=False):
     print("RUN\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
     try:
         os.chdir(directory)
-        output = check_output(args, stderr=STDOUT, env=os.environ, 
+        output = check_output_with_print(verbose, args, stderr=STDOUT, env=os.environ,
                               universal_newlines=True)
         # print(output)
     except CalledProcessError as e:
@@ -109,13 +126,13 @@ def run(directory, args):
     finally:
         os.chdir(oldwd)
 
-def python(directory, args, env=None):
+def python(directory, args, env=None, verbose=False, custom_exception_handler=None):
     print("PYTHON\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
-    if os.environ.get('PYTHON') is not None:
+    if env is not None:
         ## Use the Python interpreter specified in the PYTHON
         ## environment variable.
-        full_command = [os.environ['PYTHON']]
+        full_command = [env]
     else:
         ## No interpreter specified. Use the Python interpreter that
         ## is used to execute this script.
@@ -123,17 +140,22 @@ def python(directory, args, env=None):
     full_command.extend(args)
     try:
         os.chdir(directory)
-        output = check_output(full_command, stderr=STDOUT, env=os.environ,
+        output = check_output_with_print(verbose, full_command, stderr=STDOUT, env=os.environ,
                               universal_newlines=True)
         # print(output)
     except CalledProcessError as e:
-        print("ERROR: return value=%i" % e.returncode)
-        print(e.output)
-        raise
+        if custom_exception_handler is None:
+            print("ERROR: return value=%i" % e.returncode)
+            print(e.output)
+            raise
+        else:
+            exception_handled = custom_exception_handler(e)
+            if not exception_handled:
+                raise
     finally:
         os.chdir(oldwd)
 
-def rscript(directory, args, env=None):
+def rscript(directory, args, env=None, verbose=False):
     print("RSCRIPT\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
     if os.environ.get('RSCRIPT') is not None:
@@ -146,7 +168,7 @@ def rscript(directory, args, env=None):
     full_command.extend(args)
     try:
         os.chdir(directory)
-        output = check_output(full_command, stderr=STDOUT, env=os.environ,
+        output = check_output_with_print(verbose, full_command, stderr=STDOUT, env=os.environ,
                               universal_newlines=True)
     except CalledProcessError as e:
         print("ERROR: return value=%i" % e.returncode)
@@ -165,18 +187,19 @@ def copy_tree(source_directory, destination_directory):
         rmtree(destination_directory)
     print("COPY\t%s -> %s" % (source_directory, destination_directory))
     copytree(source_directory, destination_directory)
-    
+
 def write_file(string, destination):
     print("WRITE\t%s" % destination)
     with open(destination, 'w') as fd:
         fd.write(string)
 
-def make(directory, target):
+def make(directory, target, verbose=False):
     """Run make to build a target"""
     print("MAKE\t%s in %s" % (target, directory))
     oldwd = os.getcwd()
     try:
         os.chdir(directory)
+        print("CHDIR\t" + os.getcwd())
         # prepare makefile(s)
         if ((('win32' in sys.platform) or ('win64' in sys.platform)) and
             ('cygwin' not in os.environ['PATH'])):
@@ -184,9 +207,9 @@ def make(directory, target):
             # Windows makefile
             copy_file('Makefile_win_gcc.in', 'Makefile')
         else:
-            copy_file('Makefile.in', 'Makefile')                
-        
-        output = check_output(['make', target], stderr=STDOUT, env=os.environ,
+            copy_file('Makefile.in', 'Makefile')
+
+        output = check_output_with_print(verbose, ['make', target], stderr=STDOUT, env=os.environ,
                               universal_newlines=True)
     except CalledProcessError as e:
         print("ERROR: return value=%i" % e.returncode)

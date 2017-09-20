@@ -8,17 +8,28 @@ import sys
 import setuptools
 from distutils.core import setup
 
-_name = 'bbob_pproc'  # package name, should change to cocopp, however pickle files fail
+_name = 'cocopp'
 setup(
     name = _name,
     version = "$COCO_VERSION",
     packages = [_name, _name + '.comp2', _name + '.compall'],
-    package_dir = {_name: 'bbob_pproc'},
+    package_dir = {_name: 'cocopp'},
     package_data={_name: ['*enchmarkshortinfos.txt',
                           '*enchmarkinfos.txt',
+                          'best*algentries*.pickle',
                           'best*algentries*.pickle.gz',
+                          'refalgs/best*.tar.gz',
                           'pprldistr2009*.pickle.gz',
-                          'js/*', 'tth/*']},
+                          'latex_commands_for_html.html',
+    # this is not supposed to copy to the subfolder, see https://docs.python.org/2/distutils/setupscript.html
+    # but it does. 
+                          'js/*', 'tth/*', 
+                          '../latex-templates/*.tex',
+                          '../latex-templates/*.cls',
+                          '../latex-templates/*.sty',
+                          '../latex-templates/*.bib',
+                          '../latex-templates/*.bst',
+                          ]},
     url = 'https://github.com/numbbo/coco',
     license = 'BSD',
     maintainer = 'Dejan Tusar',

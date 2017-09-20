@@ -1,0 +1,1 @@
+The documentation of the COCO platform moved to the coco-doc repository lately. See the documentation-howto.md there for details.

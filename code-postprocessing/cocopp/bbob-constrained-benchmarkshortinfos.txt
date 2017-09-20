@@ -1,0 +1,48 @@
+1 Sphere with 1 constraint
+2 Sphere with 2 constraints
+3 Sphere with 10 constraints
+4 Sphere with n/2 constraints
+5 Sphere with n-1 constraints
+6 Sphere with n+1 constraints
+7 Sep. Ellipsoid with 1 constraint
+8 Sep. Ellipsoid with 2 constraints
+9 Sep. Ellipsoid with 10 constraints
+10 Sep. Ellipsoid with n/2 constraints
+11 Sep. Ellipsoid with n-1 constraints
+12 Sep. Ellipsoid with n+1 constraints
+13 Linear Slope with 1 constraint
+14 Linear Slope with 2 constraints
+15 Linear Slope with 10 constraints
+16 Linear Slope with n/2 constraints
+17 Linear Slope with n-1 constraints
+18 Linear Slope with n+1 constraints
+19 Rotated Ellipsoid with 1 constraint
+20 Rotated Ellipsoid with 2 constraints
+21 Rotated Ellipsoid with 10 constraints
+22 Rotated Ellipsoid with n/2 constraints
+23 Rotated Ellipsoid with n-1 constraints
+24 Rotated Ellipsoid with n+1 constraints
+25 Discus with 1 constraint
+26 Discus with 2 constraints
+27 Discus with 10 constraints
+28 Discus with n/2 constraints
+29 Discus with n-1 constraints
+30 Discus with n+1 constraints
+31 Bent Cigar with 1 constraint
+32 Bent Cigar with 2 constraints
+33 Bent Cigar with 10 constraints
+34 Bent Cigar with n/2 constraints
+35 Bent Cigar with n-1 constraints
+36 Bent Cigar with n+1 constraints
+37 Different Powers with 1 constraint
+38 Different Powers with 2 constraints
+39 Different Powers with 10 constraints
+40 Different Powers with n/2 constraints
+41 Different Powers with n-1 constraints
+42 Different Powers with n+1 constraints
+43 Separable Rastrigin with 1 constraint
+44 Separable Rastrigin with 2 constraints
+45 Separable Rastrigin with 10 constraints
+46 Separable Rastrigin with n/2 constraints
+47 Separable Rastrigin with n-1 constraints
+48 Separable Rastrigin with n+1 constraints

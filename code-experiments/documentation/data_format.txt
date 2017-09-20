@@ -1,0 +1,84 @@
+This file specifies the format of the data produced by function implementations and used by post processing.
+
+
+Index files (*.info):
+1st line:
+  - single objective case:
+    suite name (e.g. suite = 'bbob'), 
+    function identifier (funcId = 1), 
+    search space dimension (DIM = 2), 
+    precision to reach (Precision = 1.000e-08), 
+    algorithm identifier (algId = 'random_search'), 
+    logger name (logger = 'bbob'), 
+    data format (data_format = 'bbob'), 
+    software version (coco_version = '2.0.507')
+  - bi-objective case:
+    suite name (e.g. suite = 'bbob-biobj'), 
+    algorithm identifier (algorithm = 'RS-100'), 
+    indicator identifier (indicator = 'hyp'), 
+    relative location of data files (folder = '1-separable_1-separable'), 
+    logger name (logger = 'bbob-biobj'), 
+    data format (data_format = 'bbob-biobj'), 
+    software version (coco_version = '2.0.507')
+2nd line: comments of the user (e.g.  important parameter or used internal methods)
+3rd line:
+  - single objective case:
+    relative location and name of data file(s) (e.g. data_f1/bbobexp_f1_DIM2_i1.dat),
+    information on a single run (can be repeated multiple time):
+      the instance of the test function,  
+      final number of function evaluations, 
+      a vertical bar,
+      the final best function value minus target function value (e.g. 1:41|3.5e-01).
+  - bi-objective case:
+    function identifier (function =  2), 
+    search space dimension (dim = 2), 
+    name of data file(s) (e.g. bbob-biobj_f02_d02_hyp.dat), 
+    information on a single run (can be repeated multiple time):
+      the instance of the test function,  
+      final number of function evaluations, 
+      a vertical bar,
+      the final best function value minus target function value (e.g. 1:41|3.5e-01).
+
+All entries in the 1st line and the 3rd line are separated by commas. The 1st line should be a valid Python code when surrounded like "dict(" + line + ")".
+
+
+Data files (*.dat, *.tdat, *.adat):
+Data files contain one or more runs, all of them for the same function and dimension. At the start of each run the header is written. 
+The post-processing checks the header for the following information:
+  - instance: the current instance number
+  - reference value (bi-objective case): 
+  - algorithm type: if this value is set to 'best' then this is an artifical best algorithm data.  
+After the header each line represents one evaluation. You can see what each column represents in the last line of the header. 
+
+What columns represent is defined (at least for the relevant columns) by the data format specified in the info file.
+
+The data format field in the info file specifies which columns in the dat file contain relevant information for the post-processing 
+in order to be able to read in the data correctly.
+
+Possible values for data format field:
+1. "bbob" contracted (for single objective problems):
+  - 1st column: evaluation number
+  - 3rd column: function value
+  - informal:
+    - 2nd column: current function value
+    - number of target function values for each decade = 5
+2. "bbob-biobj" contracted (bi-objective problems):
+  - 1st column: evaluation number
+  - 2nd column: indicator value
+  - informal
+    - number o target function values for each decade = 10
+What to change in the post-processing if you add a new data-format?
+ 
+Possible values for suite name field:
+1. "bbob" results in using GECCOBBOBTestbed class in post-processing
+2. "bbob-noisy" results in using GECCOBBOBNoisyTestbed class in post-processing  
+3. "bbob-biobj" results in using GECCOBiObjBBOBTestbed class in post-processing  
+What to change in the post-processing if you add a new suite?
+
+
+
+
+
+
+
+

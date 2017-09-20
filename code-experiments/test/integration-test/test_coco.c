@@ -13,15 +13,22 @@ static int about_equal(const double a, const double b) {
    *
    * Example: a = +EPS and b = -EPS then the relative error is 2 but
    * in fact the two numbers are both for all practical purposes 0.
+   *
+   * With test_coco bbob2009_testcases.txt in code-experiments/test/integration-test
+   * we observe numbers like:
+   *
+   * expected=8.54680000e+01 observed=8.54680013e+01 problem_id=bbob_f001_i01_d02,
+   *
+   * Only 7 digits are the same and the absolution error is about 1e-6. 
    */
   if (a == b)
     return 1;
   {
     const double absolute_error = fabs(a - b);
     const double larger = fabs(a) > fabs(b) ? a : b;
-    const double relative_error = fabs((a - b) / larger);
+    const double relative_error = fabs((a - b) / (fabs(larger) + 2 * DBL_MIN));
   
-    if (absolute_error < 2 * DBL_MIN)
+    if (absolute_error < 2 * DBL_MIN) /* looks quite tight as condition */
       return 1;
     return relative_error < 4e-6;
   }
@@ -93,18 +100,18 @@ int main(int argc, char **argv) {
       ret = fscanf(testfile, "%30lf", &testvectors[i].x[j]);
       if (ret != 1) {
         fprintf(stderr, "ERROR: Failed to parse testvector %lu element %lu.\n",
-                i + 1, j + 1);
+        		(unsigned long) i + 1, (unsigned long) j + 1);
       }
     }
   }
 
-  suite = coco_suite("bbob", NULL, NULL);
+  suite = coco_suite("bbob", "instances: 1-15", NULL);
 
   while (1) {
     double expected_value, *x, y;
     ret = fscanf(testfile, "%30lu\t%30lu\t%30i\t%30lf", &problem_index_old, &problem_index, &testvector_id,
                  &expected_value);
-    if (ret != 3)
+    if (ret != 4)
       break;
     ++number_of_testcases;
     /* We cache the problem object to save time. Instantiating
@@ -115,7 +122,8 @@ int main(int argc, char **argv) {
       if (NULL != problem)
         coco_problem_free(problem);
       if (problem_index > coco_suite_get_number_of_problems(suite) - 1) {
-        fprintf(stdout, "problem index = %lu, maximum index = %lu \n", problem_index, coco_suite_get_number_of_problems(suite) - 1);
+        fprintf(stdout, "problem index = %lu, maximum index = %lu \n", (unsigned long) problem_index,
+        		(unsigned long) coco_suite_get_number_of_problems(suite) - 1);
       }
       problem = coco_suite_get_problem(suite, problem_index);
       previous_problem_index = (long) problem_index;
