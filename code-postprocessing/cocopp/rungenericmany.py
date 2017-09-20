@@ -280,6 +280,7 @@ def main(argv=None):
                         + 'the file before the text run'
                         )
 
+        print("  loading data...")
         dsList, sortedAlgs, dictAlg = processInputArgs(args, True)
 
         if not dsList:
