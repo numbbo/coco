@@ -278,6 +278,9 @@ def install_postprocessing(package_install_option = []):
     python('code-postprocessing', ['setup.py', 'install'] + package_install_option, verbose=_verbosity,
            custom_exception_handler=install_error)
 
+def uninstall_postprocessing():
+    run('.', ['pip', 'uninstall', 'cocopp', '-y'], verbose=_verbosity)
+
 def test_suites(args):
     """regression test on suites via Python"""
     if not args:
@@ -721,8 +724,8 @@ def test_java():
 ## Post processing
 def test_postprocessing(all_tests=False, package_install_option=[]):
     install_postprocessing(package_install_option = package_install_option)
-    if all_tests:
-        try:
+    try:
+        if all_tests:
             # run example experiment to have a recent data set to postprocess:
             build_python(package_install_option=package_install_option)
             python('code-experiments/build/python/', ['-c', '''
@@ -743,15 +746,18 @@ ee.main()  # doctest: +ELLIPSIS
             '''], verbose=_verbosity)
             # now run all tests
             python('code-postprocessing/cocopp', ['test.py', 'all'], verbose=_verbosity)
-        except subprocess.CalledProcessError:
-            sys.exit(-1)
-        finally:
-            # always remove folder of previously run experiments:
-            shutil.rmtree('code-experiments/build/python/exdata/')
-    else:
-        python('code-postprocessing/cocopp', ['test.py'], verbose=_verbosity)
-    # also run the doctests in aRTAplots/generate_aRTA_plot.py:
-    python('code-postprocessing/aRTAplots', ['generate_aRTA_plot.py'], verbose=_verbosity)
+        else:
+            python('code-postprocessing/cocopp', ['test.py'], verbose=_verbosity)
+        
+        # also run the doctests in aRTAplots/generate_aRTA_plot.py:
+        python('code-postprocessing/aRTAplots', ['generate_aRTA_plot.py'], verbose=_verbosity)
+    except subprocess.CalledProcessError:
+        sys.exit(-1)
+    finally:
+        # always remove folder of previously run experiments:
+        exdata_folder = 'code-experiments/build/python/exdata/'
+        if os.path.exists(exdata_folder):
+            shutil.rmtree(exdata_folder)
     
 
 def verify_postprocessing(package_install_option = []):

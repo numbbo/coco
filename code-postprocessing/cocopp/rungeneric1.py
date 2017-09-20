@@ -294,7 +294,7 @@ def main(argv=None):
         from . import config
         config.config_target_values_setting(genericsettings.isExpensive,
                                             genericsettings.runlength_based_targets)
-        config.config(dsList[0].testbed_name)
+        config.config(dsList[0].testbed_name, dsList[0].get_data_format())
         if genericsettings.verbose:
             for i in dsList:                
                 # check whether current set of instances correspond to correct

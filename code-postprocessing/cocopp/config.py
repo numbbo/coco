@@ -41,13 +41,14 @@ def config_target_values_setting(is_expensive, is_runlength_based):
     settings.maxevals_fix_display = settings.xlimit_expensive if is_expensive else None
     settings.runlength_based_targets = is_runlength_based or is_expensive
 
-def config(testbed_name=None):
+
+def config(testbed_name=None, data_format_name=None):
     """called from a high level, e.g. rungeneric, to configure the lower level
     modules via modifying parameter settings.
     """
 
     if testbed_name:
-        tbs.load_current_testbed(testbed_name, pproc.TargetValues)
+        tbs.load_current_testbed(testbed_name, pproc.TargetValues, data_format_name)
 
     settings.simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max(0, settings.in_a_hurry))
 
