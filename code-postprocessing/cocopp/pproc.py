@@ -36,7 +36,7 @@ import matplotlib.pyplot as plt
 from collections import OrderedDict
 from . import genericsettings, findfiles, toolsstats, toolsdivers
 from . import testbedsettings
-from .readalign import split, alignData, HMultiReader, VMultiReader, openfile
+from .readalign import split, align_data, HMultiReader, VMultiReader, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from .ppfig import consecutiveNumbers, Usage
 
@@ -626,6 +626,7 @@ class DataSet(object):
         funcId
         funvals
         generateRLData
+        get_data_format
         get_suite
         get_testbed_name
         indexFiles
@@ -758,7 +759,8 @@ class DataSet(object):
                    'algorithm': ('algId', str),
                    'suite': ('suite', str),
                    'coco_version': ('coco_version', str),
-                   'reference_values_hash': ('reference_values_hash', str)}
+                   'reference_values_hash': ('reference_values_hash', str),
+                   'data_format': ('data_format', str)}
 
     def isBiobjective(self):
         return hasattr(self, 'indicator')
@@ -766,6 +768,11 @@ class DataSet(object):
     def get_testbed_name(self):
         suite = self.get_suite()
         return testbedsettings.get_testbed_from_suite(suite)
+
+    def get_data_format(self):
+        if hasattr(self, 'data_format'):
+            return getattr(self, 'data_format')
+        return None
 
     def get_suite(self):
         suite = None
@@ -837,7 +844,7 @@ class DataSet(object):
         self.testbed_name = self.get_testbed_name()
 
         if not testbedsettings.current_testbed:
-            testbedsettings.load_current_testbed(self.testbed_name, TargetValues)
+            testbedsettings.load_current_testbed(self.testbed_name, TargetValues, self.get_data_format())
 
         # Split line in data file name(s) and run time information.
         parts = data.split(', ')
@@ -915,12 +922,12 @@ class DataSet(object):
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
         datasets, algorithms, reference_values, success_ratio = split(dataFiles, idx_to_load=idx_of_instances_to_load)
-        data = HMultiReader(datasets, self.isBiobjective())
+        data = HMultiReader(datasets)
         if genericsettings.verbose:
             print("Processing %s: %d/%d trials found." % (dataFiles, len(data), len(self.instancenumbers)))
        
         if data:
-            (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
+            (adata, maxevals, finalfunvals) = align_data(data)
             self.evals = adata
             self.reference_values = reference_values
             if len(algorithms) > 0:
@@ -944,13 +951,13 @@ class DataSet(object):
             raise Usage("Missing tdat files in '{0}'. Please rerun the experiments." % filepath)
 
         datasets, algorithms, reference_values, success_ratio = split(dataFiles, idx_to_load=idx_of_instances_to_load)
-        data = VMultiReader(datasets, self.isBiobjective())
+        data = VMultiReader(datasets)
         if genericsettings.verbose:
             print("Processing %s: %d/%d trials found."
                    % (dataFiles, len(data), len(self.instancenumbers)))
         
         if data:
-            (adata, maxevals, finalfunvals) = alignData(data, self.isBiobjective())
+            (adata, maxevals, finalfunvals) = align_data(data)
             self.funvals = adata
             try:
                 for i in range(len(maxevals)):
@@ -1820,7 +1827,7 @@ class DataSetList(list):
                     i.indexFiles.extend(o.indexFiles)
                     i.funvals = alignArrayData(VArrayMultiReader([i.funvals, o.funvals]))
                     i.finalfunvals = numpy.r_[i.finalfunvals, o.finalfunvals]
-                    i.evals = alignArrayData(HArrayMultiReader([i.evals, o.evals], self.isBiobjective()))
+                    i.evals = alignArrayData(HArrayMultiReader([i.evals, o.evals]))
                     i.maxevals = numpy.r_[i.maxevals, o.maxevals]
                     i.computeERTfromEvals()
                     i.reference_values.update(o.reference_values)

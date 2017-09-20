@@ -3,6 +3,8 @@ import numpy as np
 import warnings
 from six import advance_iterator
 
+from . import dataformatsettings
+
 scenario_rlbased = 'rlbased'
 scenario_fixed = 'fixed'
 scenario_biobjfixed = 'biobjfixed'
@@ -41,7 +43,7 @@ suite_to_testbed = {
 }
 
 
-def load_current_testbed(testbed_name, target_values):
+def load_current_testbed(testbed_name, target_values, data_format_name=None):
     global current_testbed
 
     if testbed_name in globals():
@@ -51,6 +53,12 @@ def load_current_testbed(testbed_name, target_values):
         raise ValueError('Testbed class %s does not exist. Add it to testbedsettings.py to process this data.'
                          % testbed_name)
 
+    if data_format_name is not None:
+        if dataformatsettings.data_format_translation.has_key(data_format_name):
+            current_testbed.data_format = dataformatsettings.data_format_translation[data_format_name]
+        else:
+            raise ValueError('Data format class %s does not exist. '
+                             'Add it to dataformatsettings.py to process this data.' % data_format_name)
     return current_testbed
 
 
@@ -213,6 +221,8 @@ class GECCOBBOBTestbed(Testbed):
         # expensive optimization settings:
         pptable_target_runlengths=pptable_target_runlengths,
         pptables_target_runlengths=pptable_target_runlengths,
+        data_format=dataformatsettings.BBOBDataFormat(),
+        number_of_points=5,  # nb of target function values for each decade
         instancesOfInterest=None  # None: consider all instances
         # .instancesOfInterest={1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
         #                   10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 1,
@@ -374,7 +384,9 @@ class GECCOBiObjBBOBTestbed(Testbed):
         instancesOfInterest={1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}, # None, # None: consider all instances
         # expensive optimization settings:
         pptable_target_runlengths=[0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
-        pptables_target_runlengths=[2, 10, 50]  # used in config for expensive setting
+        pptables_target_runlengths=[2, 10, 50],  # used in config for expensive setting
+        data_format=dataformatsettings.BiObjBBOBDataFormat(),
+        number_of_points=10,  # nb of target function values for each decade
     ) 
 
     def __init__(self, targetValues):
