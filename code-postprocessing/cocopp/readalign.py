@@ -23,20 +23,10 @@ import os, sys
 import numpy
 import warnings
 
-from . import genericsettings
+from . import genericsettings, testbedsettings
 
 from pdb import set_trace
 from six import string_types, advance_iterator
-
-# GLOBAL VARIABLES
-idxEvals = 0  # index of the column where to find the evaluations
-# Single objective case
-idxFSingle = 2  # index of the column where to find the function values
-nbPtsFSingle = 5  # nb of target function values for each decade.
-# Bi-objective case
-idxFBi = 1  # index of the column where to find the function values
-nbPtsFBi = 10  # nb of target function values for each decade.
-
 
 # CLASS DEFINITIONS
 class MultiReader(list):
@@ -121,7 +111,7 @@ class MultiReader(list):
             if isHArray:
                 self.idxEvals = range(1, numpy.shape(data)[1])
             else:
-                self.idxEvals = idxEvals
+                self.idxEvals = testbedsettings.current_testbed.data_format.evaluation_idx
 
         def next(self):
             """Returns the next (last if undefined) line of the array data."""
@@ -151,11 +141,12 @@ class VMultiReader(MultiReader):
 
     """
 
-    idx = idxEvals  # the alignment value is the number of function evaluations.
-
-    def __init__(self, data, isBiobjective):
+    def __init__(self, data):
         super(VMultiReader, self).__init__(data)
-        self.idxData = idxFBi if isBiobjective else idxFSingle  # the data of concern are the function values.
+        # the alignment value is the number of function evaluations.
+        self.idx = testbedsettings.current_testbed.data_format.evaluation_idx
+        # the data of concern are the function values.
+        self.idxData = testbedsettings.current_testbed.data_format.function_value_idx
 
     def isFinished(self):
         return all(i.isFinished for i in self)
@@ -190,13 +181,13 @@ class HMultiReader(MultiReader):
 
     """
 
-    idxData = idxEvals  # the data of concern are the number of function evals.
-
-    def __init__(self, data, isBiobjective):
+    def __init__(self, data):
         super(HMultiReader, self).__init__(data)
+        # the data of concern are the number of function evals.
+        self.idxData = testbedsettings.current_testbed.data_format.evaluation_idx
         # the alignment value is the function value.
-        self.idx = idxFBi if isBiobjective else idxFSingle
-        self.nbPtsF = nbPtsFBi if isBiobjective else nbPtsFSingle
+        self.idx = testbedsettings.current_testbed.data_format.function_value_idx
+        self.nbPtsF = testbedsettings.current_testbed.number_of_points
         self.idxCurrentF = numpy.inf  # Minimization
         # idxCurrentF is a float for the extreme case where it is infinite.
         # else it is an integer and then is the 'i' in 10**(i/nbPtsF)
@@ -325,18 +316,17 @@ class VArrayMultiReaderNew(ArrayMultiReader, VMultiReader):
 class HArrayMultiReader(ArrayMultiReader, HMultiReader):
     """Wrapper class of *aligned* data arrays to be aligned horizontally."""
 
-    def __init__(self, data, isBiobjective):
+    def __init__(self, data):
         ArrayMultiReader.__init__(self, data, isHArray=True)
         # TODO: Should this use super?
-        self.nbPtsF = nbPtsFBi if isBiobjective else nbPtsFSingle
+        self.nbPtsF = testbedsettings.current_testbed.number_of_points
         self.idxCurrentF = numpy.inf  # Minimization
         self.isNegative = False
         self.idxCurrentFOld = 0.
 
 
 # FUNCTION DEFINITIONS
-
-def alignData(data, isBiobjective):
+def align_data(data):
     """Aligns the data from a list of data arrays.
 
     This method returns an array for which the alignment value is the
@@ -346,7 +336,7 @@ def alignData(data, isBiobjective):
 
     # TODO: is template dependent.
 
-    idxF = idxFBi if isBiobjective else idxFSingle
+    idxF = testbedsettings.current_testbed.data_format.function_value_idx
 
     res = []
     current_value= data.getInitialValue()
@@ -358,7 +348,8 @@ def alignData(data, isBiobjective):
         res.append(data.align(current_value))
         current_value = data.newCurrentValue()
 
-    return (numpy.vstack(res), numpy.array(list(i.nextLine[idxEvals] for i in data)),
+    idx_evals = testbedsettings.current_testbed.data_format.evaluation_idx
+    return (numpy.vstack(res), numpy.array(list(i.nextLine[idx_evals] for i in data)),
             numpy.array(list(i.nextLine[idxF] for i in data)))
     # Hack: at this point nextLine contains all information on the last line
     # of the data.
