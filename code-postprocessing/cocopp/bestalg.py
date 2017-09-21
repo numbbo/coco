@@ -371,6 +371,11 @@ class BestAlgSet(DataSet):
 
 
 # FUNCTION DEFINITIONS
+def reset_reference_algorithm():
+    global bestAlgorithmEntries
+    bestAlgorithmEntries = {}
+
+
 def load_reference_algorithm(best_algo_filename, force=False, relative_load=True):
     """Assigns :py:data:`bestAlgorithmEntries`.
 
