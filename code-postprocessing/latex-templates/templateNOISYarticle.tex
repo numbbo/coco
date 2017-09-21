@@ -254,8 +254,13 @@ Results from experiments according to \cite{hansen2016exp} and
 \cite{hansen2016perfass} on the benchmark functions given in 
 \cite{hansen2010noi} are presented in
 %%
-Figures~\ref{fig:scaling}, \ref{fig:ECDFs05D}, and \ref{fig:ECDFs20D} and
-Tables~\ref{tab:ERTs5} and \ref{tab:ERTs20}.
+\ifthenelse{\equal{\numberofalgorithms}{one}}{
+Figures~\ref{fig:ERTgraphs}, \ref{fig:ECDFs}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:aRTs}, \ref{tab:aRTloss}, and \ref{fig:aRTlogloss}.
+}{\ifthenelse{\equal{\numberofalgorithms}{two}}{
+Figures~\ref{fig:scaling}, \ref{fig:ECDFs}, \ref{fig:ECDFsingleOne}, and \ref{fig:scatterplots} and Tables~\ref{tab:ERTs5} and \ref{tab:ERTs20}.
+}{\ifthenelse{\equal{\numberofalgorithms}{three}}{
+Figures~\ref{fig:scaling}, \ref{fig:ECDFs}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:ERTs5} and \ref{tab:ERTs20}.
+}{}}}
 %%
 The experiments were performed with COCO \cite{hansen2016cocoplat}, version
 \change{2.0}, the plots were produced with version \change{2.0}.
