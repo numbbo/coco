@@ -30,6 +30,7 @@ from numpy.random import seed as set_seed
 
 from .cococommands import *  # outdated
 from . import config
+from . import findfiles
 
 from .rungeneric import main as main
 
@@ -39,5 +40,7 @@ __all__ = [# 'main',  # import nothing with "from cocopp import *"
            ]
 
 __version__ = pkg_resources.require('cocopp')[0].version
+
+data_archive = findfiles.COCODataArchive()
 
 del absolute_import, pkg_resources
