@@ -20,7 +20,7 @@ import sys
 import getopt
 import warnings
 import matplotlib
-from . import genericsettings, rungeneric1, rungenericmany, ppfig, toolsdivers #, __main__
+from . import genericsettings, testbedsettings, rungeneric1, rungenericmany, toolsdivers, bestalg
 from .toolsdivers import truncate_latex_command_file, print_done, diff_attr
 from .ppfig import Usage
 from .compall import ppfigs
@@ -192,6 +192,10 @@ def main(argv=None):
         if not args:
             usage()
             sys.exit()
+
+        testbedsettings.reset_current_testbed()
+        testbedsettings.reset_reference_values()
+        bestalg.reset_reference_algorithm()
 
         inputdir = '.'
 
