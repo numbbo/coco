@@ -252,7 +252,7 @@ def main(argv=None):
         truncate_latex_command_file(latex_commands_filename)
 
         for i in range(len(args)):  # prepend common path inputdir to all names
-            args[i] = os.path.join(inputdir, args[i])
+            args[i] = os.path.join(inputdir, args[i].replace('/', os.sep))
         update_background_algorithms(inputdir)
 
         if len(args) == 1 or '--include-single' in dict(opts):
