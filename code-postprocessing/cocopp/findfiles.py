@@ -16,7 +16,6 @@ import os
 import sys
 import warnings
 import tarfile
-import ntpath
 import zipfile
 
 from . import genericsettings
@@ -73,7 +72,7 @@ def get_directory(directory, extract_files):
     #       filelist = IndexFile(root,elem,archive)
     if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
         if '.zip' in directory:
-            head, tail = ntpath.split(directory[:directory.find('.z')])
+            head, tail = os.path.split(directory[:directory.find('.z')])
             dir_name = head + os.sep + genericsettings.extraction_folder_prefix + tail
             # extract only if extracted folder does not exist yet or if it was
             # extracted earlier than last change of archive:
@@ -91,7 +90,7 @@ def get_directory(directory, extract_files):
                     print('    archive extracted to folder', dir_name, '...')
             directory = dir_name
         else: # i.e. either directory or .tar or zipped .tar
-            head, tail = ntpath.split(directory[:directory.find('.t')])
+            head, tail = os.path.split(directory[:directory.find('.t')])
             dir_name = head + os.sep + genericsettings.extraction_folder_prefix + tail
             # extract only if extracted folder does not exist yet or if it was
             # extracted earlier than last change of archive:
