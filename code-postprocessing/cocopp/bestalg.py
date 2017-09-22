@@ -482,27 +482,7 @@ def deprecated_customgenerate(args=algs2009):
     algorithms listed in variable args.
 
     This method is called from the python command line from a directory
-    containing all necessary data folders::
-
-    >>> from cocopp import bestalg, toolsdivers
-    >>> import os
-    >>> returnpath = os.getcwd()  # needed for no effect on other doctests 
-    >>> path = toolsdivers.path_in_package()
-    >>> data_folder = os.path.join(path, 'data')
-    >>> if not os.path.exists(data_folder):
-    ...     os.makedirs(data_folder)
-    >>> os.chdir(data_folder)
-    >>> infoFile = 'ALPS/bbobexp_f2.info'
-    >>> if not os.path.exists(infoFile):
-    ...     import urllib
-    ...     import tarfile
-    ...     dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/ALPS_hornby_noiseless.tgz'
-    ...     filename, headers = urllib.urlretrieve(dataurl)
-    ...     archivefile = tarfile.open(filename)
-    ...     archivefile.extractall()
-    >>> bestalg.custom_generate(('ALPS', ''), 'refAlgFromALPS') # doctest: +ELLIPSIS
-    Searching in...
-    >>> os.chdir(returnpath)
+    containing all necessary data folders.
 
     """
 
@@ -535,6 +515,15 @@ def custom_generate(args=algs2009, algId='bestCustomAlg', suite=None):
 
     This method is called from the python command line from a directory
     containing all necessary data folders::
+
+    >>> import cocopp
+    >>> def print_(*args, **kwargs): pass
+    >>> cocopp.data_archive.print_ = print_  # prevent download message
+    >>> filename = cocopp.data_archive.get('ALPS_hornby_noiseless')[0]
+    >>> with cocopp.toolsdivers.Infolder(cocopp.data_archive.local_data_path):
+    ...     print('ESC'); cocopp.bestalg.custom_generate((filename, ),
+    ...                           '_doctest_refAlgFromALPS') # doctest: +ELLIPSIS
+    ESC...
 
     """
 
@@ -667,28 +656,17 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
        This method should be called from the python command line from a directory
        containing all necessary data folders::
 
-        >>> from cocopp import bestalg, toolsdivers
-        >>> import os
-        >>> import urllib
-        >>> returnpath = os.getcwd()  # needed for no effect on other doctests
-        >>> path = toolsdivers.path_in_package()
-        >>> os.chdir(path)
-        >>> infoFile = 'data/BIPOP-CMA-ES.tgz'
-        >>> data_folder = 'data'
-        >>> if not os.path.exists(infoFile):
-        ...   if not os.path.exists(data_folder):
-        ...     os.makedirs(data_folder)
-        ...   os.chdir(os.path.join(path, 'data'))
-        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
-        ...   filename, headers = urllib.urlretrieve(dataurl, 'BIPOP-CMA-ES.tgz')
-        >>> infoFile = 'MCS.tgz'
-        >>> if not os.path.exists(infoFile):
-        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/MCS_huyer_noiseless.tgz'
-        ...   filename, headers = urllib.urlretrieve(dataurl, 'MCS.tgz')
-        >>> os.chdir(path)
-        >>> bestalg.getAllContributingAlgorithmsToBest(('data/BIPOP-CMA-ES.tgz', 'data/MCS.tgz')) # doctest:+ELLIPSIS
+        >>> import os, cocopp
+        >>> import cocopp.toolsdivers
+        >>> def print_(*args, **kwargs): pass
+        >>> cocopp.data_archive.print_ = print_  # prevent downloading... message
+        >>> filenames = (cocopp.data_archive.get('BIPOP-CMA-ES')[0],  # first match will stay the same forever
+        ...              cocopp.data_archive.get('MCS_huyer_noiseless')[0])
+        >>> with cocopp.toolsdivers.Infolder(cocopp.data_archive.local_data_path):
+        ...     cocopp.bestalg.getAllContributingAlgorithmsToBest(filenames)  # doctest:+ELLIPSIS
         Generating best algorithm data...
-        >>> os.chdir(returnpath)
+        >>> assert os.path.exists(os.path.join(
+        ...         cocopp.data_archive.local_data_path, 'bestCustomAlg.tar.gz'))
 
     """
 
