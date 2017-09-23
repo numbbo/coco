@@ -21,12 +21,32 @@ matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 if sys.version_info[0] >= 3:
     from urllib.request import urlretrieve
 else:
-    # Not Python 3 - today, it is most likely to be Python 2
-    # But note that this might need an update when Python 4
-    # might be around one day
     from urllib import urlretrieve
 
 test_bibtex = False
+
+def data_archive_get(substrs):
+    """return first matching data paths for each element of `substrs`
+    concatenated in a string.
+
+    Specifically::
+
+        return ' ' + ' '.join(cocopp.data_archive.get_first(substrs))
+
+    Implemented via `subprocess` to prevent the need to import `cocopp` in
+    this file here (prevent the script vs module absolute import issue).
+    """
+    res = subprocess.check_output(["python", "-c",
+        """
+from __future__ import division, print_function
+from cocopp import data_archive
+res = data_archive.get_first(""" + repr(substrs) + """)  # get first match for each substr
+print('_split_here_ ' + ' '.join(res), end='')  # communication by print instead of return res
+"""])
+    # res is of type bytes
+    # res contains any output printed during execution (e.g. user infos)
+    # yet we should be able to split away and return the last print
+    return str(res).split('_split_here_')[-1]
 
 def join_path(a, *p):
     joined_path = os.path.join(a, *p)
@@ -69,13 +89,14 @@ def run_latex_template(filename, all_tests):
 
 
 def retrieve_algorithm(data_path, folder_name, algorithm_name, file_name=None):
+    """depreciated (replaced by cocopp.data_archive COCODataArchive instance)"""
     algorithm_file = join_path(data_path, file_name if file_name else algorithm_name)
     if not os.path.exists(algorithm_file):
         data_url = 'http://coco.gforge.inria.fr/data-archive/%s/%s' % (folder_name, algorithm_name)
         urlretrieve(data_url, algorithm_file)
 
 
-def prepare_data(run_all_tests):
+def depreciated_prepare_data(run_all_tests):
     print('preparing algorithm data')
 
     data_path = os.path.abspath(join_path(os.path.dirname(__file__), 'data'))
@@ -175,88 +196,93 @@ def main(arguments):
     if len(sys.argv) > 1 and sys.argv[1] == 'wine':
         python = 'C:\\Python26\\python.exe '  # works for wine
 
-    data_path = ' ' + prepare_data(run_all_tests)
+    # old_data_path = ' ' + prepare_data(run_all_tests)
 
-    command = ' cocopp --no-svg --settings=grayscale '
+    command = ' cocopp --no-svg --settings=grayscale '  # TODO: grayscale has to go
 
     copy_latex_templates()
     print('LaTeX templates copied.')
 
     print('*** testing module cocopp ***')
     t0 = time.time()
-    print(python + command + '--conv' + join_path(data_path, 'BFGS_ros_noiseless.tgz'))
-    result = os.system(python + command + '--conv' + join_path(data_path, 'BFGS_ros_noiseless.tgz'))
+    data_path = data_archive_get('BFGS_ros_noiseless')
+    print(python + command + # '--conv ' +
+          data_path)
+    result = os.system(python + command + # '--conv ' +
+                       data_path)
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
     run_latex_template("templateBBOBarticle.tex", run_all_tests)
     delete_files()
 
     t0 = time.time()
-    print(python + command + join_path(data_path, 'RS-4.tgz'))
-    result = os.system(python + command + join_path(data_path, 'RS-4.tgz'))
+    data_path = data_archive_get('RS-4.tgz')
+    print(python + command + data_path)
+    result = os.system(python + command + data_path)
     print('**  subtest 2 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
     run_latex_template("templateBIOBJarticle.tex", run_all_tests)
     delete_files()
 
     if run_all_tests:
+        data_paths = data_archive_get([
+                        'BIPOP-CMA-ES_hansen_noiseless',
+                        'MCS_huyer_noiseless',
+                        'NEWUOA_ros_noiseless.tgz',
+                        'RANDOMSEARCH_auger_noiseless.tgz',
+                        'BFGS_ros_noiseless.tgz'])
         t0 = time.time()
         print(time.asctime())
-        result = os.system(python + command +
-                           join_path(data_path, 'BIPOP-CMA-ES_hansen_noiseless.tgz') +
-                           join_path(data_path, 'MCS_huyer_noiseless.tgz') +
-                           join_path(data_path, 'NEWUOA_ros_noiseless.tgz') +
-                           join_path(data_path, 'RANDOMSEARCH_auger_noiseless.tgz') +
-                           join_path(data_path, 'BFGS_ros_noiseless.tgz'))
+        result = os.system(python + command + data_paths)
         print('**  subtest 3 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on many algorithms.'
         run_latex_template("templateBBOBmany.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
-        result = os.system(python + command +
-                           join_path(data_path, 'SMAC-BBOB_hutter_noiseless.tgz') +
-                           join_path(data_path, 'lmm-CMA-ES_auger_noiseless.tgz'))
+        result = os.system(python + command + data_archive_get([
+                                'SMAC-BBOB_hutter_noiseless.tgz',
+                                'lmm-CMA-ES_auger_noiseless.tgz']))
         print('**  subtest 4 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two algorithms.'
         run_latex_template("templateBBOBcmp.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
-        result = os.system(python + command + ' --include-single' +
-                           join_path(data_path, 'DE-PSO_garcia-nieto_noiseless.tgz') +
-                           join_path(data_path, 'VNS_garcia-martinez_noiseless.tgz'))
+        result = os.system(python + command + ' --include-single ' + data_archive_get([
+                                'DE-PSO_garcia-nieto_noiseless.tgz',
+                                'VNS_garcia-martinez_noiseless.tgz']))
         print('**  subtest 5 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two algorithms with option --include-single.'
         run_latex_template("templateBBOBcmp.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
-        result = os.system(python + command + ' --expensive ' +
-                           join_path(data_path, 'VNS_garcia-martinez_noiseless.tgz'))
+        result = os.system(python + command + ' --expensive ' + data_archive_get(
+                                'VNS_garcia-martinez_noiseless.tgz'))
         print('**  subtest 6 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on one algorithm with option --expensive.'
         run_latex_template("templateBBOBarticle.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
-        result = os.system(python + command +
-                           join_path(data_path, 'RS-4.tgz') +
-                           join_path(data_path, 'RS-100.tgz'))
+        result = os.system(python + command + data_archive_get([
+                                'RS-4.tgz',
+                                'RS-100.tgz']))
         print('**  subtest 7 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bbob-biobj algorithms.'
         run_latex_template("templateBIOBJmultiple.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
-        # Note: we use the original GA-MULTIOBJ-NSGA-II.tgz data set
+        # Previous note: we use the original GA-MULTIOBJ-NSGA-II.tgz data set
         # but with a shorter file name from the biobj-test folder
         # to avoid problems with too long path names on the windows
         # Jenkins slave
-        result = os.system(python + command +
-                           join_path(data_path, 'N-II.tgz') +
-                           join_path(data_path, 'RS-4.tgz') +
-                           join_path(data_path, 'RS-100.tgz'))
+        result = os.system(python + command + data_archive_get([
+                                'GA-MULTIOBJ-NSGA-II.tgz',
+                                'RS-4.tgz',
+                                'RS-100.tgz']))
         print('**  subtest 8 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on three bbob-biobj algorithms.'
         run_latex_template("templateBIOBJmultiple.tex", run_all_tests)
@@ -264,9 +290,9 @@ def main(arguments):
 
         # testing data from bbob-noisy suite:
         t0 = time.time()
-        result = os.system(python + command +
-                           join_path(data_path, 'MCS_huyer_noisy.tgz') +
-                           join_path(data_path, 'BFGS_ros_noisy.tgz'))
+        result = os.system(python + command + data_archive_get([
+                                'MCS_huyer_noisy.tgz',
+                                'BFGS_ros_noisy.tgz']))
         print('**  subtest 9 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bbob-noisy algorithms.'
         run_latex_template("templateNOISYarticle.tex", run_all_tests)
@@ -297,8 +323,8 @@ def main(arguments):
         delete_files(all_files=True)
 
         t0 = time.time()
-        result = os.system(python + command +
-                           join_path(data_path, 'RS-4.zip'))
+        result = os.system(python + command + data_archive_get(
+                                'test/RS-4.zip'))
         print('**  subtest 13 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on RS-4.zip.'
         delete_files()
