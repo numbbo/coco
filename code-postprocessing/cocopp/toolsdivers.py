@@ -40,6 +40,29 @@ class Infolder(object):
         os.chdir(self.root_dir)
 
 
+class StringList(list):
+    """A microtool to join a list of strings using property `as_string`.
+
+    >>> from cocopp.toolsdivers import StringList
+    >>> word_list = StringList(['this', 'has', 'a', 'leading', 'and',
+    ...                         'trailing', 'space'])
+    >>> word_list.as_string
+    ' this has a leading and trailing space '
+
+    `as_string` is less typing than
+
+    >>> ' ' + ' '.join(word_list) + ' ' == word_list.as_string
+    True
+
+    and provides tab completion.
+
+    """
+    @property
+    def as_string(self):
+        """return concatenation with spaces between"""
+        return ' ' + ' '.join(self) + ' '
+
+
 def print_done(message='  done'):
     """prints a message with time stamp"""
     print(message, '(' + time.asctime() + ').')
