@@ -14,6 +14,32 @@ import pkg_resources
 
 from . import genericsettings, testbedsettings
 
+class Infolder(object):
+    """Contextmanager to do some work in a folder of choice and change dir
+    back in the end.
+
+    Usage::
+
+    >>> import os
+    >>> import cocopp.toolsdivers
+    >>> dir_ = os.getcwd()  # for the record
+    >>> with cocopp.toolsdivers.Infolder('..'):
+    ...     # do some work in a folder here
+    ...     len(dir_) > len(os.getcwd()) and os.getcwd() in dir_
+    True
+    >>> # magically we are back in the original folder
+    >>> assert dir_ == os.getcwd()
+
+    """
+    def __init__(self, foldername):
+        self.target_dir = foldername
+    def __enter__(self):
+        self.root_dir = os.getcwd()
+        os.chdir(self.target_dir)
+    def __exit__(self, *args):
+        os.chdir(self.root_dir)
+
+
 def print_done(message='  done'):
     """prints a message with time stamp"""
     print(message, '(' + time.asctime() + ').')
