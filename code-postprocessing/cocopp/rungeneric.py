@@ -255,21 +255,24 @@ def main(argv=None):
 
         truncate_latex_command_file(latex_commands_filename)
 
-        # check for known data names from data archive
+        # manage data paths as given in args
         data_archive = findfiles.COCODataArchive()
-        replace_map = [(i, name)
-                       for i, name in enumerate(args)
-                       if name in data_archive
-                            and not os.path.exists(os.path.normpath(os.path.join(inputdir, name)))]
-
-        for i in range(len(args)):  # prepend common path inputdir to all names
-            args[i] = os.path.join(inputdir, args[i].replace('/', os.sep))
-
-        for i, name in replace_map:  # replace known names by paths
-            args[i] = data_archive.full_path(name)
-            data_archive.get(name)  # download if necessary
+        for i, name in enumerate(args):
+            # prepend common path inputdir to path names
+            path = os.path.join(inputdir, args[i].replace('/', os.sep))
+            if os.path.exists(path):
+                args[i] = path
+            elif data_archive.find(name):  # find list is not empty
+                args[i] = data_archive.get_first(name)[0]  # download if necessary
+            else:
+                warnings.warn('"%s" seems not to be an existing file or match any archived data' % name)
 
         update_background_algorithms(inputdir)
+
+        print('Post-processing (%s)' % ('1' if len(args) == 1 else '2+'))  # to not break doctests
+        print('  Using:')
+        for path in args:
+            print('    %s' % path)
 
         if len(args) == 1 or '--include-single' in dict(opts):
             for i, alg in enumerate(args):
@@ -331,4 +334,5 @@ def main(argv=None):
 
 def update_background_algorithms(input_dir):
     for key, value in genericsettings.background.items():
+        # why can't we use different variable names than value and item, please?
         genericsettings.background[key] = [os.path.join(input_dir, item) for item in value]

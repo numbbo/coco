@@ -48,6 +48,11 @@ print('_split_here_ ' + ' '.join(res), end='')  # communication by print instead
     # yet we should be able to split away and return the last print
     return str(res).split('_split_here_')[-1]
 
+def data_archive_get(substrs):
+    if str(substrs) == substrs:
+        return substrs
+    return ' ' + ' '.join(substrs)
+
 def join_path(a, *p):
     joined_path = os.path.join(a, *p)
     return joined_path
