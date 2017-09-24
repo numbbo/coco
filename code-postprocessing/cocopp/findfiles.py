@@ -466,7 +466,9 @@ class COCODataArchive(list):
         if not self.names_found:
             return None
         res = self.get(self.names_found[0], remote=remote)
-        assert len(res) == 1  # only one exact matching entry in data base
+        # assert len(res) == 1  # only one exact matching entry in data base
+        if len(res) != 1:
+            print(res)
         return res[0]
 
     def get(self, substrs=None, remote=True):
