@@ -151,7 +151,7 @@ class BestAlgSet(DataSet):
         # Align aRT
         erts = list(np.transpose(np.vstack([dict_alg[i].target, dict_alg[i].ert]))
                     for i in sortedAlgs)
-        res = readalign.alignArrayData(readalign.HArrayMultiReader(erts, False))
+        res = readalign.alignArrayData(readalign.HArrayMultiReader(erts))
 
         resalgs = []
         reserts = []
@@ -371,6 +371,11 @@ class BestAlgSet(DataSet):
 
 
 # FUNCTION DEFINITIONS
+def reset_reference_algorithm():
+    global bestAlgorithmEntries
+    bestAlgorithmEntries = {}
+
+
 def load_reference_algorithm(best_algo_filename, force=False, relative_load=True):
     """Assigns :py:data:`bestAlgorithmEntries`.
 

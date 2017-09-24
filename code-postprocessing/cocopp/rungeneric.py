@@ -20,7 +20,7 @@ import sys
 import getopt
 import warnings
 import matplotlib
-from . import genericsettings, rungeneric1, rungenericmany, ppfig, toolsdivers #, __main__
+from . import genericsettings, testbedsettings, rungeneric1, rungenericmany, toolsdivers, bestalg
 from .toolsdivers import truncate_latex_command_file, print_done, diff_attr
 from .ppfig import Usage
 from .compall import ppfigs
@@ -193,6 +193,10 @@ def main(argv=None):
             usage()
             sys.exit()
 
+        testbedsettings.reset_current_testbed()
+        testbedsettings.reset_reference_values()
+        bestalg.reset_reference_algorithm()
+
         inputdir = '.'
 
         # Process options
@@ -252,7 +256,7 @@ def main(argv=None):
         truncate_latex_command_file(latex_commands_filename)
 
         for i in range(len(args)):  # prepend common path inputdir to all names
-            args[i] = os.path.join(inputdir, args[i])
+            args[i] = os.path.join(inputdir, args[i].replace('/', os.sep))
         update_background_algorithms(inputdir)
 
         if len(args) == 1 or '--include-single' in dict(opts):
