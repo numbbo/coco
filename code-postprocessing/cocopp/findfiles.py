@@ -570,9 +570,9 @@ class COCODataArchive(list):
                 '' % (name, self._hash(name)))
         elif self._hash(name) != known_hash:
             raise ValueError(
-                'wrong checksum for "%s%".'
+                'wrong checksum for "%s".'
                 'Consider to (re)move file\n'
-                '   %s%\n'
+                '   %s\n'
                 'as it may be a partial/unsuccessful download.\n'
                 'A missing file will be downloaded again by `get`.'
                 '' % (name, self.full_path(name)))
