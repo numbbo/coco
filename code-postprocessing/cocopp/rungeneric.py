@@ -20,7 +20,7 @@ import sys
 import getopt
 import warnings
 import matplotlib
-from . import genericsettings, testbedsettings, rungeneric1, rungenericmany, toolsdivers, bestalg
+from . import genericsettings, testbedsettings, rungeneric1, rungenericmany, toolsdivers, bestalg, findfiles
 from .toolsdivers import truncate_latex_command_file, print_done, diff_attr
 from .ppfig import Usage
 from .compall import ppfigs
@@ -255,8 +255,20 @@ def main(argv=None):
 
         truncate_latex_command_file(latex_commands_filename)
 
+        # check for known data names from data archive
+        data_archive = findfiles.COCODataArchive()
+        replace_map = [(i, name)
+                       for i, name in enumerate(args)
+                       if name in data_archive
+                            and not os.path.exists(os.path.normpath(os.path.join(inputdir, name)))]
+
         for i in range(len(args)):  # prepend common path inputdir to all names
             args[i] = os.path.join(inputdir, args[i].replace('/', os.sep))
+
+        for i, name in replace_map:  # replace known names by paths
+            args[i] = data_archive.full_path(name)
+            data_archive.get(name)  # download if necessary
+
         update_background_algorithms(inputdir)
 
         if len(args) == 1 or '--include-single' in dict(opts):
