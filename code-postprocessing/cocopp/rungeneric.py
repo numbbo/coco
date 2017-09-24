@@ -262,8 +262,8 @@ def main(argv=None):
             path = os.path.join(inputdir, args[i].replace('/', os.sep))
             if os.path.exists(path):
                 args[i] = path
-            elif data_archive.find(name):  # find list is not empty
-                args[i] = data_archive.get_first(name)[0]  # download if necessary
+            elif data_archive.get_one(name):  # download if necessary
+                args[i] = data_archive.get_one(name)
             else:
                 warnings.warn('"%s" seems not to be an existing file or match any archived data' % name)
 

@@ -25,8 +25,11 @@ else:
 
 test_bibtex = False
 
-def data_archive_get(substrs):
-    """return first matching data paths for each element of `substrs`
+def depreciated_data_archive_get(substrs):
+    """CAVEAT: this won't work anymore as the get_first method changed to
+    get_one
+
+    return first matching data paths for each element of `substrs`
     concatenated in a string.
 
     Specifically::

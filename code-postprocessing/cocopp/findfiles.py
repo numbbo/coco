@@ -163,9 +163,9 @@ class COCODataArchive(list):
     Method `get` downloads "matching" data if necessary and returns the
     list of absolute data paths which can be passed to `cocopp.main`.
 
-    `get_first` gets only the first match, which will never change when
+    `get_one` gets only the first match, which will never change when
     the archive grows (currently the archive is still versatile and no
-    guaranties are given).
+    guaranties are given). It also downloads at most one data set.
 
     Method `index` is inherited from `list` and finds the index of the
     respective name entry in the archive (exact match only):
@@ -189,14 +189,14 @@ class COCODataArchive(list):
     >>> data_paths = (cda.get(['auger', '2013'], remote=False)  # understood as AND search
     ...               + cda.get(['hansen', '2010'], remote=False))
     >>> assert len(data_paths) >= 0  # could be any number, because remote was False and archive could be growing
-    >>> data_paths = cda.get_first(['auger', '2013'], remote=False)  # understood as two independent searches
-    >>> assert len(data_paths) <= 2  # for each substr at most one data path
+    >>> data_path = cda.get_one(['au', '2009'], remote=False)
+    >>> assert data_path is None or str(data_path) == data_path
 
     where `data_paths` could be empty. Now we can call
     ``cocopp.main(' '.join(data_paths))``.
 
     Details: most of the matching work is done in `find`. Calls to
-    `get`, `get_first`, `find_indices` rely on calling `find` to
+    `get`, `get_one`, `find_indices` rely on calling `find` to
     resolve the input matches. The resulting match can always be found
     in the property attribute `names_found`.
     """
@@ -442,50 +442,48 @@ class COCODataArchive(list):
         """same as `find` but returns indices instead of names"""
         return StringList([self.index(name) for name in self.find(*substrs)])
 
-    def get_first(self,  substrs=None, remote=True):
-        """get for each entry in `substrs` the first match in the archived data.
+    def get_one(self,  substrs=None, remote=True):
+        """get the first match of `substrs` in the archived data.
 
-        Return a list of absolute pathnames.
+        Return the absolute pathname if a name matches all substrings.
 
         Argument `substrs` can be a list of substrings or a single
-        substring.
+        substring and is passed to `find`.
 
-        If no match is found, the respective substring is ignored.
+        If no match is found, `None` is returned.
 
         If ``substrs is None`` (default), the result from the last
         ``find*`` or ``get*`` is used like `self.current_names[0]``.
 
-        `get_first` guaranties, like ``find(...)[0]`` and in contrast to
-        `get`, a stable result even when the data base grows.
+        When successful, `get_one` guaranties, like ``find(...)[0]``
+        and in contrast to `get`, a stable result even when the data
+        base grows.
 
         See also `get`.
         """
-        # wrap substrs if it is a single string only
-        if substrs == str(substrs):
-            substrs = [substrs]
-        if substrs is None:
-            res = self.get(self.names_found[0])
-            assert len(res) == 1  # only one exact matching entry in data base
-            return res
-        res = []
-        for substr in substrs:
-            res.extend(self.get(self.find(substr)[0], remote=remote))
-        return StringList(res)
+        if substrs is not None:
+            self.find(substrs)
+        if not self.names_found:
+            return None
+        res = self.get(self.names_found[0], remote=remote)
+        assert len(res) == 1  # only one exact matching entry in data base
+        return res[0]
 
     def get(self, substrs=None, remote=True):
         """get matching archived data to be used as argument to `cocopp.main`.
 
         Return a list of absolute pathnames.
 
-        `substrs` may be a list of matching substrings used as
-        ``find(*substrs)``.
+        `substrs` may be a single substring or a list of matching
+        substrings used as argument to `find`.
 
         `substrs` may also be an index (as `int`) or list of indices.
 
         If ``substrs is None`` (default), the last result of `find` is
         used.
 
-        ``get('')`` matches everything and returns all known data paths.
+        ``get('')`` matches everything and may download the entire archive
+        before it returns all known data paths.
 
         If ``remote is True`` (default), the respective data are
         downloaded from the remote location if necessary.
@@ -564,7 +562,7 @@ class COCODataArchive(list):
                 'COCODataArchive has no hash checksum for\n  %s\n'
                 'The computed checksum was \n  %s\n'
                 'To remove this warning, consider to manually insert this hash in `COCODataArchive._all`\n'
-                'Or, if this happens for many different data, consider using `_compute_hashes` to\n'
+                'Or, if this happens for many different data, consider using `_generate_names_list` to\n'
                 'compute all hashes of local data and then manually insert the hash in _all.\n'
                 'Or consider filing a bug report (issue) at https://github.com/numbbo/coco/issues'
                 '' % (name, self._hash(name)))
