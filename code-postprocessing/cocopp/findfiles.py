@@ -430,10 +430,12 @@ class COCODataArchive(list):
         if substrs and len(substrs) == 1 and substrs[0] != str(substrs[0]):
             substrs = substrs[0]  # we may now have a list of str as expected
             if isinstance(substrs, int):  # or maybe just an int
-                substrs = [self[substrs]]
+                self._names_found = [self[substrs]]
+                return StringList(self._names_found)
             elif substrs and isinstance(substrs[0], int):  # or a list of indices
-                substrs = [self[i] for i in substrs]
-        names = [name for name in self]
+                self._names_found = [self[i] for i in substrs]
+                return StringList(self._names_found)
+        names = list(self)
         for s in substrs:
             names = [name for name in names if s.lower() in name.lower()]
         self._names_found = names
