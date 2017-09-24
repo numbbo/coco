@@ -315,7 +315,7 @@ class COCODataArchive(list):
             ['bbob/2013/U-zero_tran_noiseless.tgz'],
             ['bbob/2013/fmincon_pal_noiseless.tgz'],
             ['bbob/2013/fminunc_pal_noiseless.tgz'],
-            ('bbob/2013/lmm-CMA-ES_auger_noiseless.tgz', '66f960ff70bcb74e4169ef9e8de9972c0e37c40db7dbd57c522531e2a811116b') ,
+            ['bbob/2013/lmm-CMA-ES_auger_noiseless.tgz'] ,
             ['bbob/2013/simplex_pal_noiseless.tgz'],
             ['bbob/2013/tany_liao_noiseless.tgz'],
             ['bbob/2013/texp_liao_noiseless.tgz'],
