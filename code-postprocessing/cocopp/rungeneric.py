@@ -255,6 +255,7 @@ def main(argv=None):
 
         truncate_latex_command_file(latex_commands_filename)
 
+        print('Post-processing (%s)' % ('1' if len(args) == 1 else '2+'))  # to not break doctests
         # manage data paths as given in args
         data_archive = findfiles.COCODataArchive()
         for i, name in enumerate(args):
@@ -269,7 +270,6 @@ def main(argv=None):
 
         update_background_algorithms(inputdir)
 
-        print('Post-processing (%s)' % ('1' if len(args) == 1 else '2+'))  # to not break doctests
         print('  Using:')
         for path in args:
             print('    %s' % path)
