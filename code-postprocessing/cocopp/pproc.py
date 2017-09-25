@@ -303,8 +303,9 @@ class RunlengthBasedTargetValues(TargetValues):
             # TODO: remove targets smaller than 1e-8
         elif type(self.reference_data) is str:  # self.reference_data in ('RANDOMSEARCH', 'IPOP-CMA-ES') should work
             self._short_info = 'reference budgets from ' + self.reference_data
-            dsl = DataSetList(os.path.join(sys.modules[globals()['__name__']].__file__.split('cocopp')[0],
-                                           'cocopp', 'data', self.reference_data))
+            # dsl = DataSetList(os.path.join(sys.modules[globals()['__name__']].__file__.split('cocopp')[0],
+            #                                'cocopp', 'data', self.reference_data))
+            dsl = DataSetList(findfiles.COCODataArchive().get_one(self.reference_data))
             dsd = {}
             for ds in dsl:
                 # ds._clean_data()
@@ -552,21 +553,11 @@ class DataSet(object):
         >>> import urllib
         >>> import tarfile
         >>> import cocopp as bb
-        >>> returnpath = os.getcwd() # needed for no effect to other doctests
-        >>> path = bb.toolsdivers.path_in_package()
-        >>> os.chdir(path)
         >>> bb.genericsettings.verbose = False # ensure to make doctests work
-        >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
-        >>> data_folder = 'data'
+        >>> infoFile = os.path.join(bb.data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
         >>> if not os.path.exists(infoFile):
-        ...   if not os.path.exists(data_folder):
-        ...     os.makedirs(data_folder)
-        ...   os.chdir(os.path.join(path, data_folder))
-        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
-        ...   filename, headers = urllib.urlretrieve(dataurl)
-        ...   archivefile = tarfile.open(filename)
-        ...   archivefile.extractall()
-        ...   os.chdir(path)
+        ...   filename = bb.data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
+        ...   tarfile.open(filename).extractall(bb.data_archive.local_data_path)
         >>> dslist = bb.load(infoFile)
           Data consistent according to consistency_check() in pproc.DataSet
         >>> print(dslist)  # doctest:+ELLIPSIS
@@ -697,20 +688,11 @@ class DataSet(object):
         >>> import urllib
         >>> import tarfile
         >>> import cocopp as bb
-        >>> path = bb.toolsdivers.path_in_package()
-        >>> os.chdir(path)
         >>> bb.genericsettings.verbose = False # ensure to make doctests work
-        >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
-        >>> data_folder = 'data'
+        >>> infoFile = os.path.join(bb.data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
         >>> if not os.path.exists(infoFile):
-        ...   if not os.path.exists(data_folder):
-        ...     os.makedirs(data_folder)
-        ...   os.chdir(os.path.join(path, data_folder))
-        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
-        ...   filename, headers = urllib.urlretrieve(dataurl)
-        ...   archivefile = tarfile.open(filename)
-        ...   archivefile.extractall()
-        ...   os.chdir(path)
+        ...   filename = bb.data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
+        ...   tarfile.open(filename).extractall(bb.data_archive.local_data_path)
         >>> dslist = bb.load(infoFile)
           Data consistent according to consistency_check() in pproc.DataSet
         >>> dslist[2].instancenumbers
@@ -736,8 +718,6 @@ class DataSet(object):
         >>> # set things back to cause no troubles elsewhere:
         >>> bb.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = None
         >>> bb.config.config('GECCOBBOBTestbed') # make sure that settings are used
-        
-        >>> os.chdir(returnpath) # return to folder before doctest
 
     """
 
