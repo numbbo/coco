@@ -184,7 +184,7 @@ class COCODataArchive(list):
     >>> cda.find('auger')[0]
     'bbob/2009/CMA-ESPLUSSEL_auger_noiseless.tgz'
     >>> cda.index('bbob/2009/CMA-ESPLUSSEL_auger_noiseless.tgz')
-    5
+    6
 
     >>> data_paths = (cda.get(['auger', '2013'], remote=False)  # understood as AND search
     ...               + cda.get(['hansen', '2010'], remote=False))
@@ -206,7 +206,6 @@ class COCODataArchive(list):
         ('bbob/2009/ALPS_hornby_noiseless.tgz', '98810d28d879eb25d87949f3d7666b36f524a591e3c7d16ef89eb2caec02613b', 19150),
         ('bbob/2009/AMALGAM_bosman_noiseless.tgz', 'e92951f11f8d56e0d1bdea7026bb1087142c3ea054d9e7be44fea2b063c6f394', 17020),
         ('bbob/2009/BAYEDA_gallagher_noiseless.tgz', 'ed674ff71237cc020c9526b332e2d817d5cd82579920c7ff2d25ff064a57ed33', 12872),
-        ('bbob/2009/BBOB2009rawdata_noiseless.tgz', '2f14bba663d88a7db6478d639acbf22712196e856c24e2437ce5d3b79fa8235c', 380396),
         ('bbob/2009/BFGS_ros_noiseless.tgz', 'ca9dbeab9f7ecd7d3bb39596a6835a01f832178f57add98d95592143f0095c7a', 15026),
         ('bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz', '6b1276dc15988dc71db0d48525ae8c41781aba8a171079159cdc845cc0f1932d', 16476),
         ('bbob/2009/Cauchy-EDA_posik_noiseless.tgz', 'd256677b215fe9a2bfc6f5a2b509b1adc0d76223e142bfe0775e70de9b5609e9', 16777),
@@ -289,7 +288,6 @@ class COCODataArchive(list):
         ('bbob/2012/SNES_schaul_noiseless.tgz', '9d227d96bb3eebbc5a94ec8086b88323949a349f1c92e6cabe30f902f78b84ce', 15945),
         ('bbob/2012/xNES_schaul_noiseless.tgz', '38779ce6003ed8b76f7cb067a6b481d9ecbf63cf40a0aa227969d2d27fe36f64', 11824),
         ('bbob/2012/xNESas_schaul_noiseless.tgz', '344ae21594e32a635c99e96f34460a83129d5f129c216e060befcf4bd73fd3ef', 14311),
-        ('bbob/2013/BBOB2013rawdata.tgz', '513603d9f683dcecae76aec5b733e652e3dd8815a595b5de504c43bd80849879', 252833),
         ('bbob/2013/BIPOP-aCMA-STEP_loshchilov_noiseless.tgz', 'daf898ca724e6bddb18153a61d8725f4ae5576a7cf484978d086ea68ffb7d5e0', 8958),
         ('bbob/2013/BIPOP-saACM-k_loshchilov_noiseless.tgz', '46914c801af2c87e9bb2a3f6309e8227f28d7b8f39108c32ca83793bf1d81452', 9536),
         ('bbob/2013/CGA-grid100_holtschulte_noiseless.tgz', 'bc56600f2eed365c6b3391f5e2cf9074b3946c77d93cdd7db84eab689b45f057', 8214),
@@ -322,7 +320,6 @@ class COCODataArchive(list):
         ('bbob/2013/texp_liao_noiseless.tgz', '9ec405ca9dc45b795a60082d09e166cae711b6d452b4a9ab56942e61027ea5da', 9925),
         ('bbob/2013/U-DCN_tran_noiseless.tgz', 'ea8d3fc4ee7b28af2680b195cc2b7341a5563900af47a9af58816c73317d331f', 9585),
         ('bbob/2013/U-zero_tran_noiseless.tgz', '6286ca5bbc9624ac82c81d8550f93d75c2dce117ce2c06c9c01ae68b19b07f3f', 8279),
-        ('bbob/2015-CEC/CECBBOB2015rawdata.tgz', '21c5b407b53ae95d1f345d63fc1978197a52e053f316be449debe2f1c24938d2', 56949),
         ('bbob/2015-CEC/MATSUMOTO-Brockhoff-noiseless.tgz', 'eb2543fcfc6d41310edbbd523b877db2c759db481db0135e20b5c9f5c610108d', 4807),
         ('bbob/2015-CEC/R-DE-10e2-Tanabe-noiseless.tgz', '4bb88c605435f89aea4f3b26ad0b347a3b603bc1aa6a865584a31673ca82c120', 4509),
         ('bbob/2015-CEC/R-DE-10e5-Tanabe-noiseless.tgz', 'd843d9edf54cf637f134a990b6a6937ef72e487545ac1a6351514cb76b27052b', 10266),
@@ -332,7 +329,6 @@ class COCODataArchive(list):
         ('bbob/2015-CEC/RL-SHADE-10e2-Tanabe-noiseless.tgz', '36a64007f60115cacbf54427182c9438177af3a62cd74510bc38ed3638be3fd2', 4518),
         ('bbob/2015-CEC/RL-SHADE-10e5-Tanabe-noiseless.tgz', 'cef2938e2d40803aef18f6294faaa88ac06d61bad8d6c204ef070ad2eb0bbcb1', 10729),
         ('bbob/2015-CEC/SOO-Derbel-noiseless.tgz', '0a9d505d8998f4886ca27847e26ec18d7f1e881e635ef5ec984b2180fc535cb0', 7013),
-        ('bbob/2015-GECCO/BBOB2015rawdata.tar.gz', 'd88c2e73524fa55de9ed151c4795fce730a8bfcdee2fb8a1133ad56aee749258', 128325),
         ('bbob/2015-GECCO/BSif.tgz', '8cc18e2515990749743d2240dc73c99ffc66c4a8b347316384e029f6089971b7', 4520),
         ('bbob/2015-GECCO/BSifeg.tgz', '39bdafd9c150c700d0a347330934972c3d899711f7c1131477efb797f8a29909', 4857),
         ('bbob/2015-GECCO/BSqi.tgz', 'ccc3dd5c586677343271955cf3ba07754e2849a9e46cf478e5d65af7c86b113f', 4142),
@@ -392,7 +388,6 @@ class COCODataArchive(list):
         ('bbob-noisy/2009/ALPS_hornby_noisy.tgz', 'e18f829dd313013f502305958df89c4a21cf0526e54c329272b226c9cf73a23b', 23257),
         ('bbob-noisy/2009/AMALGAM_bosman_noisy.tgz', '4c244655fd34451603cd0c78357aaff271a14f56004bff97ba65aa8ec9b4b655', 23319),
         ('bbob-noisy/2009/BAYEDA_gallagher_noisy.tgz', '2ec479f6cfeafaee05bfb7a8bbae28724124206c3f17623a4f9980bc4b3028d4', 16267),
-        ('bbob-noisy/2009/BBOB2009rawdata_noisy.tgz', '0becf2b7aad6baa20f06e436782c33a727deac37bd6b74e0e6ea9d9d6c164f67', 322040),
         ('bbob-noisy/2009/BFGS_ros_noisy.tgz', '8ec01dcaa6bbce310865b0cce1b35d20eb8438fa151b89bbd1cab8444e557b59', 9253),
         ('bbob-noisy/2009/BIPOP-CMA-ES_hansen_noisy.tgz', 'cd0dfb1604149834a712d11f9336f9f60fe33af221c2fb72fc6794695d960988', 23987),
         ('bbob-noisy/2009/CMA-ESPLUSSEL_auger_noisy.tgz', 'dcd1a52abab0135aab20787fca0434d232a675b9e2e1d188db9dddb81488fb89', 16743),
@@ -671,7 +666,9 @@ class COCODataArchive(list):
             archive_root = self.local_data_path
         for dirpath, dirnames, filenames in os.walk(archive_root):
             for filename in filenames:
-                if '.extracted' not in dirpath and not filename.endswith(('dat', 'info')):
+                if '.extracted' not in dirpath \
+                        and not filename.endswith(('dat', 'info'))\
+                        and not ('BBOB' in filename and 'rawdata' in filename):
                     name = '/'.join([dirpath.replace(os.path.sep, '/'), filename])[len(archive_root) + 1:]
                     path = os.path.join(dirpath, filename)
                     print("('%s', '%s', %d), " % (
