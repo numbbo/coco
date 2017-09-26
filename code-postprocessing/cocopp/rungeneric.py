@@ -267,6 +267,13 @@ def main(argv=None):
                 args[i] = data_archive.get_one(name)
             else:
                 warnings.warn('"%s" seems not to be an existing file or match any archived data' % name)
+                # TODO: with option --include-single we may have to wait some time until this leads to
+                # an error. Hence we should raise the error here?
+        if len(args) != len(set(args)):
+            warnings.warn("Several data arguments point to the very same location."
+                          "This will most likely lead to a rather unexpected outcome.")
+            # TODO: we would like the users input with timeout to confirm
+            # and otherwise raise a ValueError
 
         update_background_algorithms(inputdir)
 
