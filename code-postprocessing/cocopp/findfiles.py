@@ -506,7 +506,7 @@ class COCODataArchive(list):
 
     def find_indices(self, *substrs):
         """same as `find` but returns indices instead of names"""
-        return StringList([self.index(name) for name in self.find(*substrs)])
+        return [self.index(name) for name in self.find(*substrs)]
 
     def print(self, *substrs):
         """print the result of ``find(*substrs)`` with absolute indices.
@@ -514,8 +514,8 @@ class COCODataArchive(list):
         Does not change `names_found` and returns `None`.
         """
         current_names = list(self._names_found)
-        for name in self.find(*substrs):
-            print("%4d '%s'" % (self.find_indices(name)[0], name))
+        for index in self.find_indices(*substrs):
+            print("%4d '%s'" % (index, self[index]))
         self._names_found = current_names
 
     def get_one(self,  substrs=None, remote=True):
