@@ -739,10 +739,9 @@ for ee.suite_name, ee.observer_options['result_folder'] in [
         ["bbob", "RS-bb"],
         ["bbob-constrained", "RS-co"]
     ]:
-    if ee.suite_name not in ee.cocoex.known_suite_names:
-        continue
-    ee.main()  # doctest: +ELLIPSIS
-            '''], verbose=_verbosity)
+    if ee.suite_name in ee.cocoex.known_suite_names:
+        ee.main()  # doctest: +ELLIPSIS
+                '''], verbose=_verbosity)
             # now run all tests
             python('code-postprocessing/cocopp', ['test.py', 'all'], verbose=_verbosity)
         else:
