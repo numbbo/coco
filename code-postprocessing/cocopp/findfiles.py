@@ -508,6 +508,18 @@ class COCODataArchive(list):
         """same as `find` but returns indices instead of names"""
         return StringList([self.index(name) for name in self.find(*substrs)])
 
+    def print(self, *substrs):
+        """print the result of ``find(*substrs)`` with absolute indices.
+
+        Does not change `names_found` and returns `None`.
+        """
+        current_names = list(self._names_found)
+        res = self.find(*substrs)
+        for name in res:
+            print("%4d '%s'" % (self.find_indices(name)[0], name))
+
+        self._names_found = current_names
+
     def get_one(self,  substrs=None, remote=True):
         """get the first match of `substrs` in the archived data.
 
