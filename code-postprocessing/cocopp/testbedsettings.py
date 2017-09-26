@@ -43,6 +43,11 @@ suite_to_testbed = {
 }
 
 
+def reset_current_testbed():
+    global current_testbed
+    current_testbed = None
+
+
 def load_current_testbed(testbed_name, target_values, data_format_name=None):
     global current_testbed
 

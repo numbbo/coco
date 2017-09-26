@@ -1,4 +1,5 @@
-This file specifies the format of the data produced by function implementations and used by post processing.
+This file specifies the format of the data produced by function implementations and 
+used by post processing.
 
 
 Index files (*.info):
@@ -39,21 +40,31 @@ Index files (*.info):
       a vertical bar,
       the final best function value minus target function value (e.g. 1:41|3.5e-01).
 
-All entries in the 1st line and the 3rd line are separated by commas. The 1st line should be a valid Python code when surrounded like "dict(" + line + ")".
+All entries in the 1st line and the 3rd line are separated by commas. The 1st line 
+should be a valid Python code when surrounded like "dict(" + line + ")".
 
 
 Data files (*.dat, *.tdat, *.adat):
-Data files contain one or more runs, all of them for the same function and dimension. At the start of each run the header is written. 
+Data files contain one or more runs, all of them for the same function and dimension. 
+At the start of each run the header is written. 
 The post-processing checks the header for the following information:
   - instance: the current instance number
   - reference value (bi-objective case): 
-  - algorithm type: if this value is set to 'best' then this is an artifical best algorithm data.  
-After the header each line represents one evaluation. You can see what each column represents in the last line of the header. 
+  - algorithm type: if this value is set to 'best' then this is an artifical best 
+    algorithm data.  
+After the header each line represents one evaluation. You can see what each column 
+represents in the last line of the header. 
 
-What columns represent is defined (at least for the relevant columns) by the data format specified in the info file.
+If the final number of function evaluations (for a specific function, dimension 
+and instance) in the info file does not match the last evaluation number in tdat 
+file then a warning is issued: "There is a difference between the maxevals in the 
+*.info file and in the data files." 
 
-The data format field in the info file specifies which columns in the dat file contain relevant information for the post-processing 
-in order to be able to read in the data correctly.
+What columns represent is defined (at least for the relevant columns) by the data format 
+specified in the info file.
+
+The data format field in the info file specifies which columns in the dat file contain 
+relevant information for the post-processing in order to be able to read in the data correctly.
 
 Possible values for data format field:
 1. "bbob" contracted (for single objective problems):
@@ -81,9 +92,6 @@ Possible values for suite name field:
 3. "bbob-biobj" results in using GECCOBiObjBBOBTestbed class in post-processing  
 4. "bbob-constrained" results in using CONSBBOBTestbed class in post-processing
 What to change in the post-processing if you add a new suite?
-
-
-
 
 
 

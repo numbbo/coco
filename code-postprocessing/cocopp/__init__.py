@@ -30,6 +30,7 @@ from numpy.random import seed as set_seed
 
 from .cococommands import *  # outdated
 from . import config
+from . import findfiles
 
 from .rungeneric import main as main
 
@@ -39,5 +40,13 @@ __all__ = [# 'main',  # import nothing with "from cocopp import *"
            ]
 
 __version__ = pkg_resources.require('cocopp')[0].version
+
+_data_archive = findfiles.COCODataArchive()
+data_archive = _data_archive  # this line will go away
+"depreciated"
+
+bbob = findfiles.COCOBBOBDataArchive()
+bbob_noisy = findfiles.COCOBBOBNoisyDataArchive()
+bbob_biobj = findfiles.COCOBBOBBiobjDataArchive()
 
 del absolute_import, pkg_resources

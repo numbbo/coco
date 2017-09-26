@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Module for using COCO from the (i)Python interpreter.
-
-For all operations in the Python interpreter, it will be assumed that
-the package has been imported as bb, just like it is done in the first
-line of the examples below.
+"""Depreciated (`cocopp` itself is to be used from Jupyter or IPython):
+Module for using COCO from the (i)Python interpreter.
 
 The main data structures used in COCO are :py:class:`DataSet`, which
 corresponds to data of one algorithm on one problem, and
@@ -16,42 +13,48 @@ Examples:
 
 * Start by importing :py:mod:`cocopp`::
 
-    >>> import cocopp as pp # load COCO postprocessing
-    >>> import os
-    >>> import urllib
-    >>> import tarfile
-    >>> returnpath = os.getcwd()  # needed for no effect on other doctests
-    >>> path = pp.toolsdivers.path_in_package()
-    >>> os.chdir(path)
-    >>> pp.genericsettings.verbose = False # ensure to make below doctests work 
+    >>> import cocopp
+    >>> cocopp.genericsettings.verbose = False # ensure to make below doctests work
+    >>> def print_(*args, **kwargs): pass
+    >>> cocopp._data_archive.print_ = print_  # avoid download notification
 
 * Load a data set, assign to variable :py:data:`ds`::
 
-    >>> infoFile = 'data/BIPOP-CMA-ES/bbobexp_f2.info'
-    >>> data_folder = 'data'
-    >>> if not os.path.exists(infoFile):
-    ...   if not os.path.exists(data_folder):
-    ...     os.makedirs(data_folder)
-    ...   os.chdir(os.path.join(path, data_folder))
-    ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
-    ...   filename, headers = urllib.urlretrieve(dataurl)
-    ...   archivefile = tarfile.open(filename)
-    ...   archivefile.extractall()
-    ...   os.chdir(path)
-    >>> ds = pp.load(infoFile)
-      Data consistent according to consistency_check() in pproc.DataSet
+    >>> path = cocopp._data_archive.get(4)
+    >>> print('ESC'); dsl = cocopp.load(path)  # a dataset list  # doctest:+ELLIPSIS
+    ESC...
+    >>> ds = dsl[0]
 
 * Get some information on a :py:class:`DataSetList` instance::
 
-    >>> print(ds) # doctest:+ELLIPSIS
-    [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
-    >>> pp.info(ds)
-    6 data set(s)
+    >>> print(dsl)  # doctest:+ELLIPSIS
+    [DataSet(BIPOP-CMA-ES on f1 2-D), DataSet(BIPOP-CMA-ES on f2 2-D),...
+    >>> dsl.info()
+    144 data set(s)
     Algorithm(s): BIPOP-CMA-ES
-    1 Function with ID 2
+    24 Functions with IDs 1-24
     Dimension(s): 2, 3, 5, 10, 20, 40
-    Max evals: [762, 1537, 2428, 6346, 20678, 75010]
-    >>> os.chdir(returnpath)  # no effect on path from this doctest
+    Max evals: [1625595, 2349823, 3114271, 5884514, 12102699, 36849608]
+
+* Get some information on a :py:class:`DataSet` instance::
+
+    >>> print(ds)
+    DataSet(BIPOP-CMA-ES on f1 2-D)
+    >>> ds.info()
+    Algorithm: BIPOP-CMA-ES
+    Function ID: 1
+    Dimension DIM = 2
+    Number of trials: 15
+    Final target Df: 1e-08
+    min / max number of evals per trial: 224 / 333
+       evals/DIM:  best     15%     50%     85%     max |  aRT/DIM  nsucc
+      ---Df---|-----------------------------------------|----------------
+      1.0e+03 |       0       0       0       0       0 |      0.5  15
+      1.0e+01 |       0       0       2       8      10 |      2.9  15
+      1.0e-01 |       8      13      22      38      52 |     24.2  15
+      1.0e-03 |      34      48      56      74      77 |     58.2  15
+      1.0e-05 |      64      70      89     100     102 |     86.1  15
+      1.0e-08 |     112     116     128     150     166 |    130.9  15
 
 """
 
