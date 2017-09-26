@@ -514,10 +514,8 @@ class COCODataArchive(list):
         Does not change `names_found` and returns `None`.
         """
         current_names = list(self._names_found)
-        res = self.find(*substrs)
-        for name in res:
+        for name in self.find(*substrs):
             print("%4d '%s'" % (self.find_indices(name)[0], name))
-
         self._names_found = current_names
 
     def get_one(self,  substrs=None, remote=True):
