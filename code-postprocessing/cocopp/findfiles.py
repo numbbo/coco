@@ -19,6 +19,7 @@ import warnings
 import tarfile
 import zipfile
 import hashlib
+import ast
 if sys.version_info[0] >= 3:
     from urllib.request import urlretrieve
 else:
@@ -156,16 +157,14 @@ class COCODataArchive(list):
     full experiment, benchmarking one algorithm on an entire benchmark
     suite.
 
-    Method `find` helps to find entries matching one or several
-    substrings, e.g. a year or a method. `find_indices` returns the
-    respective indices instead of the names.
+    Calling the class instance (alias to `find`) helps to find entries
+    matching one or several substrings, e.g. a year or a method.
+    `find_indices` returns the respective indices instead of the names.
+    `print` displays both.
 
-    Method `get` downloads "matching" data if necessary and returns the
-    list of absolute data paths which can be passed to `cocopp.main`.
-
-    `get_one` gets only the first match, which will never change when
-    the archive grows (currently the archive is still versatile and no
-    guaranties are given). It also downloads at most one data set.
+    Method `get` downloads the "matching" data set if necessary and
+    returns the the absolute data path which can be used with
+    `cocopp.main`.
 
     Method `index` is inherited from `list` and finds the index of the
     respective name entry in the archive (exact match only):
@@ -174,31 +173,43 @@ class COCODataArchive(list):
     >>> len(bbob) > 150
     True
 
+    >>> bbob[:3]  # doctest:+ELLIPSIS
+    ['2009/...
+    >>> bbob('2009/bi')[0]  # doctest:+ELLIPSIS
+    '...
+
     Get a `list` of already downloaded data full pathnames:
 
-    >>> bbob.get('', remote=False)  # doctest:+ELLIPSIS
+    >>> [bbob.get(i, remote=False) for i in range(len(bbob))] # doctest:+ELLIPSIS
     [...
 
     Find something more specific:
 
-    >>> bbob.find('auger')[0]
+    >>> bbob('auger')[0]  # == bbob.find('auger')[0]
     '2009/CMA-ESPLUSSEL_auger_noiseless.tgz'
-    >>> bbob.index('2009/CMA-ESPLUSSEL_auger_noiseless.tgz')
+
+    corresponds to ``cocopp.main('auger!')``.
+
+    >>> bbob.index('2009/CMA-ESPLUSSEL_auger_noiseless.tgz')  # just list.index
     6
 
-    >>> data_paths = (bbob.get(['auger', '2013'], remote=False)  # understood as AND search
-    ...               + bbob.get(['hansen', '2010'], remote=False))
-    >>> assert len(data_paths) >= 0  # could be any number, because remote was False and archive could be growing
-    >>> data_path = bbob.get_one(['au', '2009'], remote=False)
+    >>> data_path = bbob.get(bbob(['au', '2009'])[0], remote=False)
     >>> assert data_path is None or str(data_path) == data_path
 
-    where `data_paths` could be empty. Now we can call
-    ``cocopp.main(' '.join(data_paths))``.
+    These commands may download data, to avoid this the option ``remote=False`` is given:
 
-    Details: most of the matching work is done in `find`. Calls to
-    `get`, `get_one`, `find_indices` rely on calling `find` to
-    resolve the input matches. The resulting match can always be found
-    in the property attribute `names_found`.
+    >>> ' '.join(bbob.get(i, remote=False) for i in [2, 13, 33])  # can serve as argument to cocopp.main  # doctest:+ELLIPSIS
+    '...
+    >>> bbob.get_all([2, 13, 33]).as_string  # is the same  # doctest:+ELLIPSIS
+    ' ...
+    >>> ' '.join(bbob.get(name, remote=False) for name in [bbob[2], bbob[13], bbob[33]])  # is the same  # doctest:+ELLIPSIS
+    '...
+    >>> ' '.join(bbob.get(name, remote=False) for name in [
+    ...         '2009/BAYEDA_gallagher_noiseless.tgz',
+    ...         '2009/GA_nicolau_noiseless.tgz',
+    ...         '2010/1komma2mirser_brockhoff_noiseless.tar.gz'])  # is the same  # doctest:+ELLIPSIS
+    '...
+
     """
     # _all can be fully generated on a synced archive (e.g. rsync'ed) with
     # method _generate_names_list
@@ -429,23 +440,7 @@ class COCODataArchive(list):
         ('test/N-II.tgz', '4e7a550277583a331276b08b309c3168edebf3ec7e5b06d72365670c3a24e9cc', 9371),
         ('test/RS-4.zip', '1e9b0f4e63eaf934bdd819113c160b4663561f2d83059d799feb0c8cb5672978', 6158),
 ]
-    def __init__(self,
-                 local_path='~/.cocopp/data-archive',
-                 url='http://coco.gforge.inria.fr/data-archive'):
-        """Arguments are a full local path and an URL.
 
-        ``~`` refers to the user home folder. By default the archive is
-        hosted at ``'~/.cocopp/data-archive'``.
-        """
-        # extract names (first column) from _all
-        if not hasattr(self, '_all'):
-            self._all = COCODataArchive._all
-        list.__init__(self, (entry[0] for entry in self._all))
-
-        self.local_data_path = os.path.expanduser(os.path.join(*local_path.split('/')))
-        self.remote_data_path = url
-        self._names_found = []  # names recently found
-        self.print_ = print  # like this we can make it quiet for testing
     @property
     def names_found(self):
         """names as (to be) used in `get` when called without argument.
@@ -456,34 +451,72 @@ class COCODataArchive(list):
         """
         return self._names_found
 
+    def __init__(self,
+                 local_path='~/.cocopp/data-archive',
+                 url='http://coco.gforge.inria.fr/data-archive',
+                 definition_file=None):
+        """Arguments are a full local path and an URL.
+
+        ``~`` refers to the user home folder. By default the archive is
+        hosted at ``'~/.cocopp/data-archive'``.
+
+        For the time being, `definition_file` may be a filename in
+        `local_path` containing the `_all` list describing the (remote)
+        archive, however this functionality has never been tested and
+        needs most likely a few bug fixes.
+        """
+        self.local_data_path = os.path.expanduser(os.path.join(*local_path.split('/')))
+        self.remote_data_path = url
+        self._names_found = []  # names recently found
+        self._print = print  # like this we can make it quiet for testing
+        if definition_file:
+            self._all = self._read_names_list(definition_file)
+        # extract names (first column) from _all
+        if not hasattr(self, '_all'):
+            self._all = COCODataArchive._all
+        list.__init__(self, (entry[0] for entry in self._all))
+
+
+    def __call__(self, *substrs):
+        """alias to `find`"""
+        return self.find(*substrs)
+
     def find(self, *substrs):
         """return names of archived data that match all `substrs`.
 
-        This method serves for interactive exploration of available data.
+        This method serves for interactive exploration of available data
+        and is aliased to the shortcut of calling the instance itself.
 
-        When given several `substrs` arguments the result matches each
-        substring (AND search). Upper/lower case is ignored.
+        When given several `substrs` arguments the results match each
+        substring (AND search, an OR can be simply achieved by appending
+        the result of two finds). Upper/lower case is ignored.
 
         When given a single `substrs` argument, it may be
 
-        - a list of matching substrings, used as several substrings above
+        - a list of matching substrings, used as several substrings as above
         - an index of `type` `int`
         - a list of indices
 
-        Returned names correspond to the unique trailing subpath of data
-        filenames. The next call to `get` without argument will
-        retrieve the found data and return a `list` of full data paths
-        which can be used with `cocopp.main`.
+        Returned names correspond to the unique trailing subpath of
+        data filenames. The next call to `get` without argument will
+        retrieve the first found data and return the full data path. A
+        call to `get_all` will call `get` on all found entries and
+        return a `list` of full data paths which can be used with
+        `cocopp.main`.
 
-        The single input argument can be used as is also in `get`.
+        Example:
 
-        Example::
+        >>> import cocopp
+        >>> cocopp.bbob.find('Auger', '2013')[1]
+        '2013/lmm-CMA-ES_auger_noiseless.tgz'
 
-            >>> import cocopp
-            >>> cocopp._data_archive.find('Auger', '2013')[1]
-            'bbob/2013/lmm-CMA-ES_auger_noiseless.tgz'
+        Sitting in front of a shell, we prefer using the shortcut to find
+        via `__call__`:
 
-        Details: The list of matching names is stored in `current_names`.
+        >>> cocopp.bbob('Auger', '2013') == cocopp.bbob.find('Auger', '2013')
+        True
+
+        Details: The list of matching names is stored in `names_found`.
         """
         # check whether the first arg is a list rather than a str
         if substrs and len(substrs) == 1 and substrs[0] != str(substrs[0]):
@@ -496,7 +529,11 @@ class COCODataArchive(list):
                 return StringList(self._names_found)
         names = list(self)
         for s in substrs:
-            names = [name for name in names if s.lower() in name.lower()]
+            try:
+                names = [name for name in names if s.lower() in name.lower()]
+            except AttributeError:
+                warnings.warn("arguments to `find` must be strings or a single integer or an interger list")
+                raise
         self._names_found = names
         return StringList(names)
 
@@ -505,91 +542,96 @@ class COCODataArchive(list):
         return [self.index(name) for name in self.find(*substrs)]
 
     def print(self, *substrs):
-        """print the result of ``find(*substrs)`` with absolute indices.
+        """print the result of ``find(*substrs)`` with indices.
 
-        Does not change `names_found` and returns `None`.
+        Details: does not change `names_found` and returns `None`.
         """
         current_names = list(self._names_found)
         for index in self.find_indices(*substrs):
             print("%4d '%s'" % (index, self[index]))
         self._names_found = current_names
 
-    def get_one(self,  substrs=None, remote=True):
-        """get the first match of `substrs` in the archived data.
+    def get_all(self, indices=None, remote=True):
+        """Return a `list` (`StringList`) of absolute pathnames,
 
-        Return the absolute pathname if a name matches all substrings.
-
-        Argument `substrs` can be a list of substrings or a single
-        substring and is passed to `find`.
-
-        If no match is found, `None` is returned.
-
-        If ``substrs is None`` (default), the result from the last
-        ``find*`` or ``get*`` is used like `self.current_names[0]``.
-
-        When successful, `get_one` guaranties, like ``find(...)[0]``
-        and in contrast to `get`, a stable result even when the data
-        base grows.
+        by repeatedly calling `get`. Elements of the `indices` list can
+        be an index or a substring that matches one and only one name
+        in the archive. If ``indices is None``, the results from the
+        last call to `find` are used. Download the data if necessary.
 
         See also `get`.
         """
-        if substrs is not None:
-            self.find(substrs)
-        if not self.names_found:
-            return None
-        # name is in archive, but with remote=False we may still end up with nothing
-        res = self.get(self.names_found[0], remote=remote)
-        assert len(res) == 1 or not remote
-        return res[0] if res else None
+        if indices is None:
+            names = self.names_found
+        else:
+            names = self.find(indices)
+        return StringList(self.get(name, remote=remote)
+                          for name in names)
 
-    def get(self, substrs=None, remote=True):
-        """get matching archived data to be used as argument to `cocopp.main`.
+    def get(self, substr=None, remote=True):
+        """return the full data pathname of `substr` in the archived data.
 
-        Return a list of absolute pathnames.
+        Retrieves the data from remote if necessary.
 
-        `substrs` may be a single substring or a list of matching
-        substrings used as argument to `find`.
+        `substr` can be a substring that matches one and only one name in
+        the data archive or an integer between 0 and `len(self)`.
 
-        `substrs` may also be an index (as `int`) or list of indices.
+        Raises a `ValueError` if `substr` matches several archive entries
+        on none.
 
-        If ``substrs is None`` (default), the last result of `find` is
-        used.
-
-        ``get('')`` matches everything and may download the entire archive
-        before it returns all known data paths.
+        If ``substr is None`` (default), the first match of the last
+        call to ``find*`` or ``get*`` is used like `self.names_found[0]``.
 
         If ``remote is True`` (default), the respective data are
-        downloaded from the remote location if necessary.
+        downloaded from the remote location if necessary. Otherwise
+        return `None` for a match.
         """
+        # handle different ways to pass arguments, create names
         if not isinstance(remote, bool):
             raise ValueError(
                 "Second argument to `COCODataArchive.get` must be a "
-                "`bool`,\n that is either `True` or `False`. "
+                "`bool`,\n that is ``remote=True`` or `False`."
                 "Use a `list` of `str` to define several substrings.")
-        if substrs is not None:
-            self.find(substrs)  # set self._names_found as desired
+        if substr is None:
+            try:
+                names = [self.names_found[0]]
+            except IndexError:
+                raise ValueError("nothing specified to `get`, use `find` first or give a name")
+        elif isinstance(substr, int):
+            names = [self[substr]]
+        else:
+            names = self.find(substr)
 
-        full_names = []
-        for name in self.names_found:
-            full_name = self.full_path(name)
-            if os.path.exists(full_name):
-                if len(self.names_found) < 20:  # takes about 0.03s per entry
-                    self.check_hash(name)
-                full_names.append(full_name)
-                continue
-            if not remote:
-                if 22 < 3:
-                    warnings.warn('Name %s locally not found by COCODataArchive. Consider option "remote=True".'
-                          ' %s' % full_name)
-                continue
-            if not os.path.exists(os.path.split(full_name)[0]):
-                os.makedirs(os.path.split(full_name)[0])
-            url = '/'.join((self.remote_data_path, name))
-            self.print_("downloading %s to %s" % (url, full_name))
-            urlretrieve(url, full_name)
-            self.check_hash(name)
-            full_names.append(full_name)
-        return StringList(full_names)
+        # check that names has only one match
+        if len(names) < 1:
+                raise ValueError("'%s' has no match in data archive" % substr)
+        elif len(names) > 1:
+                raise ValueError("'%s' has multiple matches in data archive:\n   %s"
+                                 % (substr,
+                                    '\n   '.join(names)))
+        # create full path
+        full_name = self.full_path(names[0])
+        if os.path.exists(full_name):
+            self.check_hash(full_name)
+            return full_name
+        if not remote:
+            if 22 < 3:  # suppressed, because remote is by default True
+                warnings.warn('Name %s locally not found by COCODataArchive. Consider option "remote=True".'
+                      ' %s' % full_name)
+            return None
+
+        # download
+        if not os.path.exists(os.path.split(full_name)[0]):
+            os.makedirs(os.path.split(full_name)[0])  # create path
+        url = '/'.join((self.remote_data_path, names[0]))
+        self._print("downloading %s to %s" % (url, full_name))
+        urlretrieve(url, full_name)
+        self.check_hash(full_name)
+        return full_name
+
+    def get_one(self, *args, **kwargs):
+        """depreciated, for backwards compatibility"""
+        return self.get(*args, **kwargs)
 
     def full_path(self, name):
         """return full local path of `name` or of a full path, idempotent
@@ -605,17 +647,12 @@ class COCODataArchive(list):
         If `full_path` is not from the data archive, the outcome is
         undefined.
 
-        >>> from cocopp import bbob
-        >>> for path in bbob.get("", remote=False):  # path to all locally available data
-        ...     name = bbob.name(path)
-        ...     assert bbob.name(name) == name, "method `name` is not idempotent on '%s'" % name
-        ...     assert bbob.count(name) == 1, "%s counted %d times in data archive" % (name, cda.count(name))
-
         Check that all names are only once found in the data archive:
 
+        >>> from cocopp import bbob
         >>> for name in bbob:
-        ...     assert bbob.count(name) == 1, "%s counted %d times in data archive" % (name, cda.count(name))
-        ...     assert len(bbob.find(name)) == 1, "%s found %d times" % (name, cda.find(name))
+        ...     assert bbob.count(name) == 1, "%s counted %d times in data archive" % (name, bbob.count(name))
+        ...     assert len(bbob.find(name)) == 1, "%s found %d times" % (name, bbob.find(name))
 
         """
         if full_path.startswith(self.local_data_path):
@@ -659,32 +696,45 @@ class COCODataArchive(list):
         """return known hash or `None`
         """
         try:
-            return self._all[self.index(name)][1]
+            return self._all[self.index(self.name(name))][1]
         except IndexError:
             return None
 
-    def _generate_names_list(self, archive_root=None):
-        """print an _all list of an existing archive including hashes and
-        filesizes.
+    def _read_names_list(self, filename='archive_info.txt'):
+        """read data archive info for `_all`
+
+        from a file generated with `_generate_names_list`
+
+        TODO: never tested
+        """
+        with open(os.path.join(self.local_data_path, filename), 'rt') as file_:
+            return ast.literat_eval(file_.read())
+
+    def _generate_names_list(self, filename=None):
+        """write an _all list of an existing archive including hashes and
+        filesizes to `filename`.
 
         This may serve as new/improved/updated/final _all class
         attribute via manual copy-paste.
 
         May or may not need to be modified under Windows.
         """
-        if archive_root is None:
-            archive_root = self.local_data_path
-        for dirpath, dirnames, filenames in os.walk(archive_root):
+        res = []
+        for dirpath, dirnames, filenames in os.walk(filename):
             for filename in filenames:
                 if '.extracted' not in dirpath \
-                        and not filename.endswith(('dat', 'info'))\
+                        and not filename.endswith(('dat', 'info')) \
                         and not ('BBOB' in filename and 'rawdata' in filename):
-                    name = '/'.join([dirpath.replace(os.path.sep, '/'), filename])[len(archive_root) + 1:]
+                    name = '/'.join([dirpath.replace(os.path.sep, '/'), filename])[len(filename) + 1:]
                     path = os.path.join(dirpath, filename)
-                    print("('%s', '%s', %d), " % (
+                    res = res + [(
                         name,
                         self._hash(path),
-                         os.path.getsize(path) // 1000))  # or os.stat(path).st_size
+                         os.path.getsize(path) // 1000)] # or os.stat(path).st_size
+        if filename:
+            with open(os.path.join(self.local_data_path, filename), 'rt') as file_:
+                file_.write(repr(res))
+        return res
 
 class COCOBBOBDataArchive(COCODataArchive):
     """This class "contains" archived data for the 'bbob' suite.

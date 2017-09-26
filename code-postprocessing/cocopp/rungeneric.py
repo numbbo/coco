@@ -73,6 +73,12 @@ def main(argv=None):
     * the package was installed (which essentially copies the package
       to a location which is in the path)
 
+    ``data_folder`` may be a name from the known data archive, see e.g.
+    `cocopp.bbob`, or a uniquely matching substring of such a name,
+    or a matching substring with added "!" in which case the first
+    match is taken, or a matching substring with added "*" in which
+    case all matches are taken.
+
     This routine will:
 
     * call sub-routine :py:func:`cocopp.rungeneric1.main` for each
@@ -94,7 +100,7 @@ def main(argv=None):
     * :file:`*many.tex` and :file:`*3*.tex`
       for showing the comparison of **more than 2** algorithms.
     The templates with `noisy` mentioned in the filename have to be used
-      for the noisy testbed, the others for the noise-less one.
+    for the noisy testbed, the others for the noise-less one.
 
     These latex templates need to be copied in the current working directory
     and possibly edited so that the LaTeX commands ``\bbobdatapath`` and
@@ -212,7 +218,7 @@ def main(argv=None):
                 usage()
                 sys.exit()
             elif o in ("-o", "--output-dir"):
-                outputdir = a
+                outputdir = a.strip()  # like this ["-o folder"] + ... works as input
             elif o in ("--in-a-hurry", ):
                 genericsettings.in_a_hurry = int(a)
                 if genericsettings.in_a_hurry:
@@ -258,13 +264,19 @@ def main(argv=None):
         print('Post-processing (%s)' % ('1' if len(args) == 1 else '2+'))  # to not break doctests
         # manage data paths as given in args
         data_archive = findfiles.COCODataArchive()
+        clean_extended_args = []
         for i, name in enumerate(args):
             # prepend common path inputdir to path names
             path = os.path.join(inputdir, args[i].replace('/', os.sep))
             if os.path.exists(path):
-                args[i] = path
-            elif data_archive.get_one(name):  # download if necessary
-                args[i] = data_archive.get_one(name)
+                clean_extended_args.append(path)
+            elif name.endswith('!'):  # take first match
+                data_archive.find(name[:-1])
+                clean_extended_args.append(data_archive.get())
+            elif name.endswith('*'):  # take all matches
+                clean_extended_args.extend(data_archive.get_all(name[:-1]))  # download if necessary
+            elif data_archive.find(name):  # get will bail out if there is not exactly one match
+                clean_extended_args.append(data_archive.get(name))  # download if necessary
             else:
                 warnings.warn('"%s" seems not to be an existing file or match any archived data' % name)
                 # TODO: with option --include-single we may have to wait some time until this leads to
@@ -275,11 +287,23 @@ def main(argv=None):
             # TODO: we would like the users input with timeout to confirm
             # and otherwise raise a ValueError
 
+        args = clean_extended_args
+
         update_background_algorithms(inputdir)
 
         print('  Using:')
         for path in args:
             print('    %s' % path)
+
+        # we still need to check that all data come from the same
+        # test suite, at least for the data_archive data
+        suites = set()
+        for path in clean_extended_args:
+            if data_archive.name(path) in data_archive:
+                suites.add(data_archive.name(path).split('/')[0])
+        if len(suites) > 1:
+            raise ValueError("Data from more than one suites %s cannot "
+                             "be post-processed together" % str(suites))
 
         if len(args) == 1 or '--include-single' in dict(opts):
             for i, alg in enumerate(args):

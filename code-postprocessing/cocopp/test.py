@@ -236,7 +236,7 @@ def main(arguments):
         data_paths = data_archive_get([
                         'BIPOP-CMA-ES_hansen_noiseless',
                         'MCS_huyer_noiseless',
-                        'NEWUOA_ros_noiseless.tgz',
+                        '2009/NEWUOA_ros_noiseless.tgz',
                         'RANDOMSEARCH_auger_noiseless.tgz',
                         'BFGS_ros_noiseless.tgz'])
         t0 = time.time()

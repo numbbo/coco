@@ -16,7 +16,7 @@ Examples:
     >>> import cocopp
     >>> cocopp.genericsettings.verbose = False # ensure to make below doctests work
     >>> def print_(*args, **kwargs): pass
-    >>> cocopp._data_archive.print_ = print_  # avoid download notification
+    >>> cocopp._data_archive._print = print_  # avoid download notification
 
 * Load a data set, assign to variable :py:data:`ds`::
 
