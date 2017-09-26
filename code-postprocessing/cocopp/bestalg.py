@@ -518,9 +518,9 @@ def custom_generate(args=algs2009, algId='bestCustomAlg', suite=None):
 
     >>> import cocopp
     >>> def print_(*args, **kwargs): pass
-    >>> cocopp.data_archive.print_ = print_  # prevent download message
-    >>> filename = cocopp.data_archive.get('ALPS_hornby_noiseless')[0]
-    >>> with cocopp.toolsdivers.Infolder(cocopp.data_archive.local_data_path):
+    >>> cocopp._data_archive.print_ = print_  # prevent download message
+    >>> filename = cocopp._data_archive.get('ALPS_hornby_noiseless')[0]
+    >>> with cocopp.toolsdivers.Infolder(cocopp._data_archive.local_data_path):
     ...     print('ESC'); cocopp.bestalg.custom_generate((filename, ),
     ...                           '_doctest_refAlgFromALPS') # doctest: +ELLIPSIS
     ESC...
@@ -659,14 +659,14 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
         >>> import os, cocopp
         >>> import cocopp.toolsdivers
         >>> def print_(*args, **kwargs): pass
-        >>> cocopp.data_archive.print_ = print_  # prevent downloading... message
-        >>> filenames = (cocopp.data_archive.get('BIPOP-CMA-ES')[0],  # first match will stay the same forever
-        ...              cocopp.data_archive.get('MCS_huyer_noiseless')[0])
-        >>> with cocopp.toolsdivers.Infolder(cocopp.data_archive.local_data_path):
+        >>> cocopp._data_archive.print_ = print_  # prevent downloading... message
+        >>> filenames = (cocopp._data_archive.get('BIPOP-CMA-ES')[0],  # first match will stay the same forever
+        ...              cocopp._data_archive.get('MCS_huyer_noiseless')[0])
+        >>> with cocopp.toolsdivers.Infolder(cocopp._data_archive.local_data_path):
         ...     cocopp.bestalg.getAllContributingAlgorithmsToBest(filenames)  # doctest:+ELLIPSIS
         Generating best algorithm data...
         >>> assert os.path.exists(os.path.join(
-        ...         cocopp.data_archive.local_data_path, 'bestCustomAlg.tar.gz'))
+        ...         cocopp._data_archive.local_data_path, 'bestCustomAlg.tar.gz'))
 
     """
 

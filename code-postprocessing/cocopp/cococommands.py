@@ -16,11 +16,11 @@ Examples:
     >>> import cocopp
     >>> cocopp.genericsettings.verbose = False # ensure to make below doctests work
     >>> def print_(*args, **kwargs): pass
-    >>> cocopp.data_archive.print_ = print_  # avoid download notification
+    >>> cocopp._data_archive.print_ = print_  # avoid download notification
 
 * Load a data set, assign to variable :py:data:`ds`::
 
-    >>> path = cocopp.data_archive.get(4)
+    >>> path = cocopp._data_archive.get(4)
     >>> print('ESC'); dsl = cocopp.load(path)  # a dataset list  # doctest:+ELLIPSIS
     ESC...
     >>> ds = dsl[0]

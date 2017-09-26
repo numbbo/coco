@@ -34,7 +34,7 @@ def depreciated_data_archive_get(substrs):
 
     Specifically::
 
-        return ' ' + ' '.join(cocopp.data_archive.get_first(substrs))
+        return ' ' + ' '.join(cocopp._data_archive.get_first(substrs))
 
     Implemented via `subprocess` to prevent the need to import `cocopp` in
     this file here (prevent the script vs module absolute import issue).
@@ -97,7 +97,7 @@ def run_latex_template(filename, all_tests):
 
 
 def retrieve_algorithm(data_path, folder_name, algorithm_name, file_name=None):
-    """depreciated (replaced by cocopp.data_archive COCODataArchive instance)"""
+    """depreciated (replaced by cocopp._data_archive COCODataArchive instance)"""
     algorithm_file = join_path(data_path, file_name if file_name else algorithm_name)
     if not os.path.exists(algorithm_file):
         data_url = 'http://coco.gforge.inria.fr/data-archive/%s/%s' % (folder_name, algorithm_name)

@@ -554,10 +554,10 @@ class DataSet(object):
         >>> import tarfile
         >>> import cocopp as bb
         >>> bb.genericsettings.verbose = False # ensure to make doctests work
-        >>> infoFile = os.path.join(bb.data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
+        >>> infoFile = os.path.join(bb._data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
         >>> if not os.path.exists(infoFile):
-        ...   filename = bb.data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
-        ...   tarfile.open(filename).extractall(bb.data_archive.local_data_path)
+        ...   filename = bb._data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
+        ...   tarfile.open(filename).extractall(bb._data_archive.local_data_path)
         >>> dslist = bb.load(infoFile)
           Data consistent according to consistency_check() in pproc.DataSet
         >>> print(dslist)  # doctest:+ELLIPSIS
@@ -689,10 +689,10 @@ class DataSet(object):
         >>> import tarfile
         >>> import cocopp as bb
         >>> bb.genericsettings.verbose = False # ensure to make doctests work
-        >>> infoFile = os.path.join(bb.data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
+        >>> infoFile = os.path.join(bb._data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
         >>> if not os.path.exists(infoFile):
-        ...   filename = bb.data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
-        ...   tarfile.open(filename).extractall(bb.data_archive.local_data_path)
+        ...   filename = bb._data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
+        ...   tarfile.open(filename).extractall(bb._data_archive.local_data_path)
         >>> dslist = bb.load(infoFile)
           Data consistent according to consistency_check() in pproc.DataSet
         >>> dslist[2].instancenumbers

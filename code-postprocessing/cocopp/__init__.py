@@ -41,6 +41,12 @@ __all__ = [# 'main',  # import nothing with "from cocopp import *"
 
 __version__ = pkg_resources.require('cocopp')[0].version
 
-data_archive = findfiles.COCODataArchive()
+_data_archive = findfiles.COCODataArchive()
+data_archive = _data_archive  # this line will go away
+"depreciated"
+
+bbob = findfiles.COCOBBOBDataArchive()
+bbob_noisy = findfiles.COCOBBOBNoisyDataArchive()
+bbob_biobj = findfiles.COCOBBOBBiobjDataArchive()
 
 del absolute_import, pkg_resources
