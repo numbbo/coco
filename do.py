@@ -142,7 +142,7 @@ def build_c_unit_tests():
         file_name = 'libcmocka.dylib'
 
     if len(library_path) > 0:
-        source_path = os.path.join(os.path.normpath(library_path), file_name)
+        source_path = os.path.join(os.path.normpath('code-experiments/test/unit-test/lib/win32_mingw'), file_name)
         if os.path.exists(source_path):
             print("*****{} exists.\n".format(source_path))
         else:
