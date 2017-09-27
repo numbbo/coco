@@ -142,8 +142,17 @@ def build_c_unit_tests():
         file_name = 'libcmocka.dylib'
 
     if len(library_path) > 0:
-        copy_file(os.path.join(library_path, file_name),
-                  os.path.join('code-experiments/test/unit-test', file_name))
+        source_path = os.path.join(os.path.normpath('code-experiments/test/unit-test/lib/win32_mingw'), file_name)
+        if os.path.exists(source_path):
+            print("*****{} exists.\n".format(source_path))
+        else:
+            print("*****{} does not exist.\n".format(source_path))
+        destination_path = os.path.join(os.path.normpath('code-experiments/test/unit-test'), file_name)
+        copy_file(source_path, destination_path)
+        if os.path.exists(destination_path):
+            print("*****{} exists.\n".format(destination_path))
+        else:
+            print("*****{} does not exist.\n".format(destination_path))
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/unit-test/coco.c')
     expand_file('code-experiments/src/coco.h', 'code-experiments/test/unit-test/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
