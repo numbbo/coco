@@ -67,7 +67,8 @@ cdef extern from "coco.h":
 cdef bytes _bstring(s):
     if type(s) is bytes:
         return <bytes>s
-    return <bytes>bytes(s, encoding='ascii')  # works for str and unicode also in 2.6
+    s = bytes(s, encoding='ascii')  # works for str and unicode also in 2.6
+    return <bytes>s
     # old code, can be deleted if the above works
     if isinstance(s, unicode):  # ignores str type
         return s.encode('ascii')  # is still a string, not bytes
