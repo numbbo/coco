@@ -377,11 +377,19 @@ def beautify(legend=False, rightlegend=False):
     else:
         plt.xlim(1.8, 45)                # Should depend on xmin and xmax
 
-    tmp = axisHandle.get_yticks()
-    tmp2 = []
-    for i in tmp:
-        tmp2.append('%d' % round(numpy.log10(i)))
-    axisHandle.set_yticklabels(tmp2)
+    if 1 < 3:
+        tick_locs = [n for n in axisHandle.get_yticks()
+                     if n > plt.ylim()[0] and n < plt.ylim()[1]]
+        tick_labels = ['%d' % round(numpy.log10(n)) if n < 1e10  # assure 1 digit for uniform figure sizes
+                       else '' for n in tick_locs]
+        axisHandle.set_yticks(tick_locs)
+        axisHandle.set_yticklabels(tick_labels)
+    else:  # old code for debugging purpose, just remove after Sept 2017
+        tmp = axisHandle.get_yticks()
+        tmp2 = []
+        for i in tmp:
+            tmp2.append('%d' % round(numpy.log10(i)))
+        axisHandle.set_yticklabels(tmp2)
 
     if legend:
         toolsdivers.legend(loc=0, numpoints=1,

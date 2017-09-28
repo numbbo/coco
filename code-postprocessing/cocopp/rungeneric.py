@@ -20,7 +20,7 @@ import sys
 import getopt
 import warnings
 import matplotlib
-from . import genericsettings, rungeneric1, rungenericmany, ppfig, toolsdivers #, __main__
+from . import genericsettings, testbedsettings, rungeneric1, rungenericmany, toolsdivers, bestalg, findfiles
 from .toolsdivers import truncate_latex_command_file, print_done, diff_attr
 from .ppfig import Usage
 from .compall import ppfigs
@@ -193,6 +193,10 @@ def main(argv=None):
             usage()
             sys.exit()
 
+        testbedsettings.reset_current_testbed()
+        testbedsettings.reset_reference_values()
+        bestalg.reset_reference_algorithm()
+
         inputdir = '.'
 
         # Process options
@@ -251,9 +255,31 @@ def main(argv=None):
 
         truncate_latex_command_file(latex_commands_filename)
 
-        for i in range(len(args)):  # prepend common path inputdir to all names
-            args[i] = os.path.join(inputdir, args[i])
+        print('Post-processing (%s)' % ('1' if len(args) == 1 else '2+'))  # to not break doctests
+        # manage data paths as given in args
+        data_archive = findfiles.COCODataArchive()
+        for i, name in enumerate(args):
+            # prepend common path inputdir to path names
+            path = os.path.join(inputdir, args[i].replace('/', os.sep))
+            if os.path.exists(path):
+                args[i] = path
+            elif data_archive.get_one(name):  # download if necessary
+                args[i] = data_archive.get_one(name)
+            else:
+                warnings.warn('"%s" seems not to be an existing file or match any archived data' % name)
+                # TODO: with option --include-single we may have to wait some time until this leads to
+                # an error. Hence we should raise the error here?
+        if len(args) != len(set(args)):
+            warnings.warn("Several data arguments point to the very same location."
+                          "This will most likely lead to a rather unexpected outcome.")
+            # TODO: we would like the users input with timeout to confirm
+            # and otherwise raise a ValueError
+
         update_background_algorithms(inputdir)
+
+        print('  Using:')
+        for path in args:
+            print('    %s' % path)
 
         if len(args) == 1 or '--include-single' in dict(opts):
             for i, alg in enumerate(args):
@@ -315,4 +341,5 @@ def main(argv=None):
 
 def update_background_algorithms(input_dir):
     for key, value in genericsettings.background.items():
+        # why can't we use different variable names than value and item, please?
         genericsettings.background[key] = [os.path.join(input_dir, item) for item in value]

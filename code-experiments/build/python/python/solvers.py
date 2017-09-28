@@ -16,16 +16,12 @@ def random_search(fun, lbounds, ubounds, budget):
         # about five times faster than "for k in range(budget):..."
         X = lbounds + (ubounds - lbounds) * np.random.rand(chunk, dim)
         if fun.number_of_constraints > 0:
-            CF = [[fun.constraint(x), fun(x)] for x in X]  # call f and constraint at the "same" time
-            F = [cf[1] for cf in CF]  # for indexing argmin
+            C = [fun.constraint(x) for x in X]  # call constraints
+            F = [fun(x) for i, x in enumerate(X) if np.all(C[i] <= 0)]
         else:
             F = [fun(x) for x in X]
         if fun.number_of_objectives == 1:
-            if fun.number_of_constraints > 0:
-                idx_feasible = np.where([np.all(cf[0] <= 0) for cf in CF])[0]
-                index = idx_feasible[np.argmin(np.asarray(F)[idx_feasible])] if len(idx_feasible) else None
-            else:
-                index = np.argmin(F)
+            index = np.argmin(F) if len(F) else None
             if index is not None and (f_min is None or F[index] < f_min):
                 x_min, f_min = X[index], F[index]
         budget -= chunk

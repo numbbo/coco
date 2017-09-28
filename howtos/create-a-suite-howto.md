@@ -25,8 +25,13 @@ is listed in `known_suite_names` (see above).
 Adapt the Post-Processing
 =========================
 
-In order to able to post process the data a new testbed class must be added in 
-`code-postprocesing/cocopp/testbedsettings.py`. The class should derive from `Testbed` 
-class but if it is not much different from one of the existing classes (i.e. `GECCOBBOBTestbed`) 
-it can also derive from that class and only change some of the variables. Also 
-the ... must be added to the `suite_to_testbed` dictionary in a form `'suite_name':'testbed_name'`.
+In order to show plots and tables for a new suite some changes have to be made also 
+in the post-processing module. All the logic about dealing with the suites is in
+`code-postprocesing/cocopp/testbedsettings.py` file. There is a dictionary called 
+`suite_to_testbed` where you can set which testbed is used for a specific suite. 
+An new element `'new_suite_name':'testbed_name'` should be added to the dictionary. 
+If none of the existing testbed classes (they are defined in the same file) is 
+appropriate then a new testbed class should be added. The class should derive from 
+the base `Testbed` class or from one of the existing classes (e.g. `GECCOBBOBTestbed`). 
+Only the values that are different from the base class can be specified in the new 
+derived class. 
