@@ -67,11 +67,8 @@ cdef extern from "coco.h":
 cdef bytes _bstring(s):
     if type(s) is bytes:
         return <bytes>s
-    # s = bytes(s, encoding='ascii')  # works for str and unicode also in 2.6
-    # return <bytes>s
-    # old code, can be deleted if the above works
-    if isinstance(s, (str, unicode)):  # ignores str type
-        return s.encode('ascii')  # is still a string, not bytes
+    if isinstance(s, (str, unicode)):
+        return s.encode('ascii')  # why not <bytes>s.encode('ascii') ?
     else:
         raise TypeError("expect a string, got %s" % str(type(s)))
 
