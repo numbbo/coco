@@ -7,8 +7,9 @@ cimport numpy as np
 
 from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
 
-known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-biobj-ext", b"bbob-constrained"]
-_known_suite_names = [b"bbob", b"bbob-biobj", b"bbob-biobj-ext", b"bbob-constrained", b"bbob-largescale"]
+known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext"]
+_known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained"]
+_known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]
 
 # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
 # __all__ = ['Observer', 'Problem', 'Suite']
@@ -66,8 +67,8 @@ cdef extern from "coco.h":
 cdef bytes _bstring(s):
     if type(s) is bytes:
         return <bytes>s
-    elif isinstance(s, unicode):
-        return s.encode('ascii')
+    if isinstance(s, (str, unicode)):
+        return s.encode('ascii')  # why not <bytes>s.encode('ascii') ?
     else:
         raise TypeError("expect a string, got %s" % str(type(s)))
 
@@ -211,11 +212,11 @@ cdef class Suite:
         self._names = []
         self._dimensions = []
         self._number_of_objectives = []
-        if str(self._name) not in [str(n) for n in known_suite_names]:
+        if self._name not in [_bstring(name) for name in known_suite_names]:
             raise NoSuchSuiteException("""
-Unkown benchmark suite name "%s".
+Unkown benchmark suite name %s.
 Known suite names are %s.
-If "%s" was not a typo, you can add the desired name to `known_suite_names`::
+If %s was not a typo, you can add the desired name to `known_suite_names`::
 
         >> import cocoex as ex
         >> ex.known_suite_names.append(b"my_name")  # must be a byte string
