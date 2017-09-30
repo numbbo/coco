@@ -26,6 +26,7 @@ function evaluations of unsuccessful runs divided by dimension.
     import cocopp as bb
     
     # Collect and unarchive data (3.4MB)
+    # THIS IS OUTDATED, use cocopp.bbob instead
     dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
     filename, headers = urllib.urlretrieve(dataurl)
     archivefile = tarfile.open(filename)
