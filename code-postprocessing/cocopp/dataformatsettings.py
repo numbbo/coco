@@ -70,17 +70,25 @@ class BBOBNewDataFormat(DataFormat):
         assert np.nansum(dataset.evals_function > -1) == np.nansum(dataset.evals_constraints > -1)
         assert len(dataset.evals_function) >= len(dataset.evals_constraints)
 
-        # for the time being we add evals_functions and evals_constraints
-        dataset.evals = dataset.evals_function.copy()
-        # (target) f-value rows are not aligned, so we need to find for
-        # each evals the respective data row in evals_constraints
-        j, j_max = 0, len(dataset.evals_constraints[:, 0])
-        for i, eval_row in enumerate(dataset.evals):
-            # find j such that target[j] < target[i] (don't rely on floats being equal, though we probably could)
-            while j < j_max and dataset.evals_constraints[j, 0] + 1e-14 >= eval_row[0]:
-                j += 1  # next smaller (target) f-value
-            eval_row[1:] += dataset.evals_constraints[j-1, 1:]
-        # print(dataset.evals_function, dataset.evals_constraints, dataset.evals)
+        # check whether all constraints evaluations are zero
+        # we then conclude that we don't need the _function and
+        # _constraints attributes
+        if np.nanmax(dataset.evals_constraints) == 0 and np.nanmax(dataset.evals_function) > 1:
+            # if evals_function <= 1 we rather keep attributes to be on the save side for debugging
+            dataset.evals = dataset.evals_function
+            del dataset.evals_function  # clean dataset namespace
+        else:
+            # for the time being we add evals_functions and evals_constraints
+            dataset.evals = dataset.evals_function.copy()
+            # (target) f-value rows are not aligned, so we need to find for
+            # each evals the respective data row in evals_constraints
+            j, j_max = 0, len(dataset.evals_constraints[:, 0])
+            for i, eval_row in enumerate(dataset.evals):
+                # find j such that target[j] < target[i] (don't rely on floats being equal, though we probably could)
+                while j < j_max and dataset.evals_constraints[j, 0] + 1e-14 >= eval_row[0]:
+                    j += 1  # next smaller (target) f-value
+                eval_row[1:] += dataset.evals_constraints[j-1, 1:]
+            # print(dataset.evals_function, dataset.evals_constraints, dataset.evals)
         return maxevals, finalfunvals
 
 
