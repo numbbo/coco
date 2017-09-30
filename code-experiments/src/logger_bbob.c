@@ -87,6 +87,14 @@ typedef struct {
 
 } logger_bbob_data_t;
 
+/* was:
+ * function evaluation | 
+ * noise-free fitness - Fopt (7.948000000000e+01) | 
+ * best noise-free fitness - Fopt | 
+ * measured fitness | 
+ * best measured fitness | 
+ * x1 | x2...
+ */
 static const char *bbob_file_header_str = "%% "
     "f evaluations | "
     "g evaluations | "
@@ -98,7 +106,7 @@ static const char *bbob_file_header_str = "%% "
     "x2...\n";
 
 static const char *logger_name = "bbob";
-static const char *data_format = "bbob-constrained"; /* or whatever we agree upon, bbob or bbob2 may be alternatives */
+static const char *data_format = "bbob-new"; /* or whatever we agree upon, bbob or bbob2 or bbob-constrained may be alternatives */
 
 /**
  * adds a formated line to a data file
