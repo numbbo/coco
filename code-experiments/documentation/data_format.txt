@@ -78,17 +78,17 @@ Possible values for data format field:
   - 2nd column: indicator value
   - informal
     - number o target function values for each decade = 10
+3. "bbob-constrained" (single objective constrained problems):
+  - 1st column: f evaluation number
+  - 2nd column: g evaluation number
+  - 3rd column: function value
+  - informal:
+    - number of target function values for each decade = 5
+What to change in the post-processing if you add a new data-format?
  
 Possible values for suite name field:
 1. "bbob" results in using GECCOBBOBTestbed class in post-processing
 2. "bbob-noisy" results in using GECCOBBOBNoisyTestbed class in post-processing  
-3. "bbob-biobj" results in using GECCOBiObjBBOBTestbed class in post-processing  
-
-
-
-
-
-
-
-
-
+3. "bbob-biobj" results in using GECCOBiObjBBOBTestbed class in post-processing
+4. "bbob-constrained" results in using CONSBBOBTestbed class in post-processing
+What to change in the post-processing if you add a new suite?

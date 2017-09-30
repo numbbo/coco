@@ -35,7 +35,7 @@ import numpy, numpy as np
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 from . import genericsettings, findfiles, toolsstats, toolsdivers
-from . import testbedsettings
+from . import testbedsettings, dataformatsettings
 from .readalign import split, align_data, HMultiReader, VMultiReader, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from .ppfig import consecutiveNumbers, Usage
@@ -750,6 +750,9 @@ class DataSet(object):
         return testbedsettings.get_testbed_from_suite(suite)
 
     def get_data_format(self):
+        # TODO: data_format is a specification of the files written by the 
+        # experiment loggers. I believe it was never meant to be a specification
+        # for a data set.
         if hasattr(self, 'data_format'):
             return getattr(self, 'data_format')
         return None
@@ -907,14 +910,26 @@ class DataSet(object):
             print("Processing %s: %d/%d trials found." % (dataFiles, len(data), len(self.instancenumbers)))
        
         if data:
-            (adata, maxevals, finalfunvals) = align_data(data)
-            self.evals = adata
+            if 2 < 3:  # this takes different data formats into account:
+                # print(testbedsettings.current_testbed.data_format, dataformatsettings.current_data_format)
+                # this should call align_data_into_evals from dataformatsettings.current_data_format, but the latter isn't set correctly
+                maxevals, finalfunvals = testbedsettings.current_testbed.data_format.align_data_into_evals(
+                                                align_data, data, self)
+            else:  # was before Sep 2017:
+                adata, maxevals, finalfunvals = align_data(data,
+                    testbedsettings.current_testbed.data_format.evaluation_idx,
+                    testbedsettings.current_testbed.data_format.function_value_idx,
+                    # should be:
+                    # dataformatsettings.current_data_format.evaluation_idx,
+                    # dataformatsettings.current_data_format.function_value_idx,
+                )
+                self.evals = adata
             self.reference_values = reference_values
             if len(algorithms) > 0:
-                algorithms = align_list(algorithms, [item[1] for item in adata])
+                algorithms = align_list(algorithms, [item[1] for item in self.evals])
             self.algs = algorithms
             if len(success_ratio) > 0:
-                success_ratio = align_list(success_ratio, [item[1] for item in adata])
+                success_ratio = align_list(success_ratio, [item[1] for item in self.evals])
             self.success_ratio = success_ratio
             try:
                 for i in range(len(maxevals)):
@@ -937,7 +952,18 @@ class DataSet(object):
                    % (dataFiles, len(data), len(self.instancenumbers)))
         
         if data:
-            (adata, maxevals, finalfunvals) = align_data(data)
+            adata, maxevals, finalfunvals = align_data(
+                data, 
+                testbedsettings.current_testbed.data_format.evaluation_idx,
+                testbedsettings.current_testbed.data_format.function_value_idx,
+                # should be:
+                # dataformatsettings.current_data_format.evaluation_idx,
+                # dataformatsettings.current_data_format.function_value_idx,
+                )
+            # TODO: this depends implicitely on the global variable setting of
+            # testbedsettings.current_testbed.data_format which
+            # seems like code which is bug prone and hard to maintain
+            # (adata, maxevals, finalfunvals) = align_data(data)
             self.funvals = adata
             try:
                 for i in range(len(maxevals)):
@@ -977,7 +1003,6 @@ class DataSet(object):
             self._cut_data()
             # Compute aRT
             self.computeERTfromEvals()
-            assert all(self.evals[0][1:] == 1)
 
     @property
     def evals_(self):
@@ -1939,7 +1964,8 @@ class DataSetList(list):
 
         """
         sorted = {} 
-        
+
+        # TODO: this should be done in the testbed, not here
         if testbedsettings.current_testbed.name == 'bbob-constrained':
             for i in self:
                 if i.funcId in range(1, 19):
