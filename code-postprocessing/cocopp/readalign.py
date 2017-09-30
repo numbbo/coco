@@ -110,7 +110,7 @@ class MultiReader(list):
         def __init__(self, data, isHArray=False):
             if len(data) == 0:
                 raise ValueError('Empty data array.')
-            self.data = numpy.array(data)
+            self.data = numpy.asarray(data)
             self.it = self.data.__iter__()
             self.isNearlyFinished = False
             self.isFinished = False
