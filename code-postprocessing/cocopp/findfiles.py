@@ -568,6 +568,25 @@ class COCODataArchive(list):
         return StringList(self.get(name, remote=remote)
                           for name in names)
 
+    def get_first(self, substrs, remote=True):
+        """get the first archived data matching all of `substrs`.
+
+        `substrs` is a list of substrings.
+
+        `get_first(substrs, remote)` is a shortcut for::
+
+            self.find(*substrs)
+            if self.names_found:
+                return self.get(self.names_found[0], remote=remote)
+            return None
+
+        """
+        self.find(*substrs)
+        if self.names_found:
+            return self.get(self.names_found[0], remote=remote)
+        return None
+
+
     def get(self, substr=None, remote=True):
         """return the full data pathname of `substr` in the archived data.
 
