@@ -18,25 +18,13 @@ function evaluations of unsuccessful runs divided by dimension.
 .. plot::
     :width: 50%
 
-    import urllib
-    import tarfile
-    import glob
-    from pylab import *
-    
-    import cocopp as bb
-    
-    # Collect and unarchive data (3.4MB)
-    # THIS IS OUTDATED, use cocopp.bbob instead
-    dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
-    filename, headers = urllib.urlretrieve(dataurl)
-    archivefile = tarfile.open(filename)
-    archivefile.extractall()
-    
+    import cocopp
+
     # Empirical cumulative distribution function of bootstrapped aRT figure
-    ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
+    ds = cocopp.load(cocopp.bbob.get('2009/BIPOP-CMA-ES'))
     figure()
-    bb.compall.pprldmany.plot(ds) # must rather call main instead of plot?
-    bb.compall.pprldmany.beautify()
+    cocopp.compall.pprldmany.plot(ds) # must rather call main instead of plot?
+    cocopp.compall.pprldmany.beautify()
 
 """
 

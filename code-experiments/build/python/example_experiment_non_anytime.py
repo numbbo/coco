@@ -17,6 +17,7 @@ To apply the code to a different solver, add an interface to function `fmin`.
 from __future__ import absolute_import, division, print_function
 from __future__ import unicode_literals
 import cocoex  # experimentation module
+from cocoex.utilities import ProblemNonAnytime
 import numpy as np
 
 # for postprocessing
@@ -113,125 +114,6 @@ def main():
     ### post-process data
     cocopp.main(observer.result_folder)  # re-run folders look like "...-001"
     webbrowser.open("file://" + os.getcwd() + "/ppdata/index.html")
-
-
-class ProblemNonAnytime(object):
-    """The non-anytime problem class.
-
-    Serves to benchmark a "budgeted" algorithm whose behavior decisively
-    depends on a budget input parameter.
-
-    Usage::
-
-        # given: suite and observer instances, budget_list, fmin
-        for index in range(len(suite)):
-            with ProblemNonAnytime(suite, observer, index) as problem:
-                x0 = problem.initial_solution  # or whatever fmin needs as input
-                for budget in sorted(budget_list):
-                    x = fmin(problem, x0, budget)  # minimize
-                    problem.delivered(x)  # prepares for next budget also
-                    if problem.final_target_hit:
-                        break
-
-    Details: This class maintains two problems - one observed and the
-    other unobserved. It switches from unobserved to observed when
-    ``p_unobserved.evaluations >= p_observed.evaluations``.
-
-    """
-    inherited_constant_attributes = [
-            'dimension',
-            'id',
-            'index',
-            'info',
-            'initial_solution',
-            'lower_bounds',
-            'name',
-            'number_of_constraints',
-            'number_of_objectives',
-            'number_of_variables',
-            'upper_bounds']
-
-    def __init__(self, suite, observer, index):
-        self.suite = suite
-        self.p_unobserved = suite[index]
-        self.p_observed = suite[index].add_observer(observer)
-        self._p = self.p_observed
-        self.evaluations = 0
-        self._number_of_delivery_evaluations = 0  # just FTR
-        for key in ProblemNonAnytime.inherited_constant_attributes:
-            setattr(self, key, getattr(self._p, key))
-
-    def __call__(self, x, *args, **kwargs):
-        if self.evaluations > self.p_observed.evaluations:
-            raise ValueError(
-                "Evaluations {0} are larger than observed evaluations {1}"
-                "".format(self.evaluations, self.p_observed.evaluations))
-        if self.evaluations >= self.p_observed.evaluations:
-            self._p = self.p_observed
-        self.evaluations += 1
-        return self._p(x, *args, **kwargs)
-
-    def delivered(self, x, *args, **kwargs):
-        """to be called with the solution returned by the solver.
-
-        The method records the delivered solution (if necessary) and
-        prepares the problem to be run on the next budget by calling
-        `reset`.
-        """
-        if self.evaluations < self.p_observed.evaluations:
-            raise ValueError(
-                "Delivered solutions should come from increasing budgets,\n"
-                "however the current budget = {0} is smaller than the "
-                "delivery budget = {1}".format(
-                    self.p_observed.evaluations, self.evaluations))
-        # assuming that "same fitness" means the solution was already evaluated
-        if self.p_unobserved(x, *args, **kwargs) != self.best_observed_fvalue1:
-            # ideally we would decrease the observed evaluation counter,
-            # but instead we now increase it only one time step later in
-            # __call__. That is, in effect, we exchange the next solution
-            # to be observed with this delivered solution `x`.
-            self.p_observed(x, *args, **kwargs)
-            self._number_of_delivery_evaluations += 1  # just FTR
-        self.reset()
-
-    def reset(self):
-        """prepare the problem to be run on the next budget"""
-        self.evaluations = 0
-        self._p = self.p_unobserved
-
-    def free(self):
-        self.p_observed.free()
-        self.p_unobserved.free()
-
-    def print_progress(self):
-        if not self.index % (len(self.suite) / len(self.suite.dimensions)):
-            print("\nd={0}: ".format(self.dimension))
-        print("{0}{1} ".format(
-            self.id[self.id.index("_f") + 1:self.id.index("_i")],
-            self.id[self.id.index("_i"):self.id.index("_d")]), end="",
-              flush=True)
-        if not (self.index + 1) % 10:
-            print("")
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args):
-        self.free()
-
-    @property
-    def final_target_hit(self):
-        return self.p_observed.final_target_hit
-
-    @property
-    def best_observed_fvalue1(self):
-        return self.p_observed.best_observed_fvalue1
-
-    @property
-    def random_solution(self):
-        return self.lower_bounds + (
-            (np.random.rand(self.dimension) + np.random.rand(self.dimension))
-            * (self.upper_bounds - self.lower_bounds) / 2)
 
 
 if __name__ == '__main__':

@@ -19,7 +19,10 @@ http://coco.lri.fr/BBOB2009/
 
 # grep '^>>>\|^\.\.\.' firstsession.tex |sed -e 's/^.\{4\}//'
 
-import urllib
+try:
+    from urllib.request import urlretrieve
+except ImportError:
+    from urllib import urlretrieve
 import tarfile
 from pylab import *
 ion() # may be needed for figures to be shown when executing the script
@@ -28,7 +31,7 @@ import cocopp as bb
 
 # Collect and unarchive data (~20MB)
 dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
-filename, headers = urllib.urlretrieve(dataurl)
+filename, headers = urlretrieve(dataurl)
 archivefile = tarfile.open(filename)
 archivefile.extractall()
 
@@ -38,7 +41,7 @@ print(ds)
 
 # Collect and unarchive data (3.4MB)
 dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
-filename, headers = urllib.urlretrieve(dataurl)
+filename, headers = urlretrieve(dataurl)
 archivefile = tarfile.open(filename)
 archivefile.extractall()
 
@@ -74,7 +77,7 @@ legend() # display legend
 
 # Add another data set
 dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/NEWUOA.tar.gz'
-filename, headers = urllib.urlretrieve(dataurl)
+filename, headers = urlretrieve(dataurl)
 archivefile = tarfile.open(filename)
 archivefile.extractall()
 

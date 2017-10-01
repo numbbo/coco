@@ -14,34 +14,28 @@ functions.
 .. plot::
    :width: 75%
 
-   import urllib
-   import tarfile
    import glob
    from pylab import *
    import pickle
-   import cocopp as bb
+   import cocopp
    import cocopp.compall.pprldmany
    import cocopp.algportfolio
 
    # Collect and unarchive data
    dsets = {}
    for alg in ('BIPOP-CMA-ES_hansen_noiseless', 'NEWUOA_ros_noiseless'):
-      dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/' + alg + '.tgz'
-      filename, headers = urllib.urlretrieve(dataurl)
-      archivefile = tarfile.open(filename)
-      archivefile.extractall()  # write to disc
-      dsets[alg] = bb.load(filename)
+      dsets[alg] = cocopp.load(cocopp.bbob(alg))
 
    # Generate the algorithm portfolio
-   dspf = bb.algportfolio.build(dsets)
+   dspf = cocopp.algportfolio.build(dsets)
    dsets['Portfolio'] = dspf # store the portfolio in dsets
 
    # plot the run lengths distribution functions
    plt.figure()
    for algname, ds in dsets.items():
       dataset = ds.dictByDimFunc()[10][13]  # DataSet dimension 10 on F13
-      bb.compall.pprldmany.plot(dataset, label=algname)
-   bb.compall.pprldmany.beautify()
+      cocopp.compall.pprldmany.plot(dataset, label=algname)
+   cocopp.compall.pprldmany.beautify()
    legend(loc='best') # Display legend
    plt.show()   
    
