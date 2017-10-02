@@ -643,7 +643,7 @@ class COCODataArchive(list):
         if not os.path.exists(os.path.split(full_name)[0]):
             os.makedirs(os.path.split(full_name)[0])  # create path
         url = '/'.join((self.remote_data_path, names[0]))
-        self._print("downloading %s to %s" % (url, full_name))
+        self._print("  downloading %s to %s" % (url, full_name))
         urlretrieve(url, full_name)
         self.check_hash(full_name)
         return full_name
