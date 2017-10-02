@@ -729,6 +729,7 @@ def test_postprocessing(all_tests=False, package_install_option=[]):
             # run example experiment to have a recent data set to postprocess:
             build_python(package_install_option=package_install_option)
             python('code-experiments/build/python/', ['-c', '''
+from __future__ import print_function
 try:
     import example_experiment as ee
 except Exception as e:
