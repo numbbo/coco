@@ -198,7 +198,7 @@ class COCODataArchive(list):
 
     These commands may download data, to avoid this the option ``remote=False`` is given:
 
-    >>> ' '.join(bbob.get(i, remote=False) for i in [2, 13, 33])  # can serve as argument to cocopp.main  # doctest:+ELLIPSIS
+    >>> ' '.join(bbob.get(i, remote=False) or '' for i in [2, 13, 33])  # can serve as argument to cocopp.main  # doctest:+ELLIPSIS
     '...
     >>> bbob.get_all([2, 13, 33], remote=False).as_string  # is the same  # doctest:+ELLIPSIS
     ' ...
