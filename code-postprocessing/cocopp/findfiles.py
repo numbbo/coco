@@ -634,10 +634,7 @@ class COCODataArchive(list):
             self.check_hash(full_name)
             return full_name
         if not remote:
-            if 22 < 3:  # suppressed, because remote is by default True
-                warnings.warn('Name %s locally not found by COCODataArchive. Consider option "remote=True".'
-                      ' %s' % full_name)
-            return None
+            return ''  # like this string operations don't bail out
 
         # download
         if not os.path.exists(os.path.split(full_name)[0]):
