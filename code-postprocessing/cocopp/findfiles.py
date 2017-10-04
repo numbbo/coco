@@ -198,9 +198,9 @@ class COCODataArchive(list):
 
     These commands may download data, to avoid this the option ``remote=False`` is given:
 
-    >>> ' '.join(bbob.get(i, remote=False) for i in [2, 13, 33])  # can serve as argument to cocopp.main  # doctest:+ELLIPSIS
+    >>> ' '.join(bbob.get(i, remote=False) or '' for i in [2, 13, 33])  # can serve as argument to cocopp.main  # doctest:+ELLIPSIS
     '...
-    >>> bbob.get_all([2, 13, 33]).as_string  # is the same  # doctest:+ELLIPSIS
+    >>> bbob.get_all([2, 13, 33], remote=False).as_string  # is the same  # doctest:+ELLIPSIS
     ' ...
     >>> ' '.join(bbob.get(name, remote=False) for name in [bbob[2], bbob[13], bbob[33]])  # is the same  # doctest:+ELLIPSIS
     '...
@@ -568,6 +568,25 @@ class COCODataArchive(list):
         return StringList(self.get(name, remote=remote)
                           for name in names)
 
+    def get_first(self, substrs, remote=True):
+        """get the first archived data matching all of `substrs`.
+
+        `substrs` is a list of substrings.
+
+        `get_first(substrs, remote)` is a shortcut for::
+
+            self.find(*substrs)
+            if self.names_found:
+                return self.get(self.names_found[0], remote=remote)
+            return None
+
+        """
+        self.find(*substrs)
+        if self.names_found:
+            return self.get(self.names_found[0], remote=remote)
+        return None
+
+
     def get(self, substr=None, remote=True):
         """return the full data pathname of `substr` in the archived data.
 
@@ -615,16 +634,13 @@ class COCODataArchive(list):
             self.check_hash(full_name)
             return full_name
         if not remote:
-            if 22 < 3:  # suppressed, because remote is by default True
-                warnings.warn('Name %s locally not found by COCODataArchive. Consider option "remote=True".'
-                      ' %s' % full_name)
-            return None
+            return ''  # like this string operations don't bail out
 
         # download
         if not os.path.exists(os.path.split(full_name)[0]):
             os.makedirs(os.path.split(full_name)[0])  # create path
         url = '/'.join((self.remote_data_path, names[0]))
-        self._print("downloading %s to %s" % (url, full_name))
+        self._print("  downloading %s to %s" % (url, full_name))
         urlretrieve(url, full_name)
         self.check_hash(full_name)
         return full_name

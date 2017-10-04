@@ -1,5 +1,10 @@
-This file specifies the format of the data produced by function implementations and 
-used by post processing.
+This file specifies the different COCO data formats produced by the experiment code (i.e. written by a logger) and 
+read in by the post processing part of COCO.
+
+General remarks:
+  - all data of each COCO experiment are written into a single folder into human-readable .info and .dat files with potential further .tdat and .rdat files and additional subfolders
+  - the .info files are summary files and serve as the index files to the actual raw data files (.dat, .tdat, etc.)
+  - the actual raw data, used in the postprocessing is contained in the .dat files, indexed by the .info files
 
 
 Index files (*.info):

@@ -729,6 +729,7 @@ def test_postprocessing(all_tests=False, package_install_option=[]):
             # run example experiment to have a recent data set to postprocess:
             build_python(package_install_option=package_install_option)
             python('code-experiments/build/python/', ['-c', '''
+from __future__ import print_function
 try:
     import example_experiment as ee
 except Exception as e:
@@ -739,8 +740,12 @@ for ee.suite_name, ee.observer_options['result_folder'] in [
         ["bbob", "RS-bb"],
         ["bbob-constrained", "RS-co"]
     ]:
+    print("  suite %s" % ee.suite_name, end=' ')  # these prints are swallowed
     if ee.suite_name in ee.cocoex.known_suite_names:
-        ee.main()  # doctest: +ELLIPSIS
+        print("testing into folder %s" % ee.observer_options['result_folder'])
+        ee.main()
+    else:
+        print("is not known")
                 '''], verbose=_verbosity)
             # now run all tests
             python('code-postprocessing/cocopp', ['test.py', 'all'], verbose=_verbosity)
