@@ -58,7 +58,11 @@ def load_current_testbed(testbed_name, target_values, data_format_name=None):
         raise ValueError('Testbed class %s does not exist. Add it to testbedsettings.py to process this data.'
                          % testbed_name)
 
+    # this doesn't look like the exact right place to do this
     if data_format_name is not None:
+        dataformatsettings.set_data_format(data_format_name)
+        current_testbed.data_format = dataformatsettings.current_data_format
+    if 22 < 3 and data_format_name is not None:
         if dataformatsettings.data_format_translation.has_key(data_format_name):
             current_testbed.data_format = dataformatsettings.data_format_translation[data_format_name]
         else:
@@ -226,7 +230,11 @@ class GECCOBBOBTestbed(Testbed):
         # expensive optimization settings:
         pptable_target_runlengths=pptable_target_runlengths,
         pptables_target_runlengths=pptable_target_runlengths,
-        data_format=dataformatsettings.BBOBDataFormat(),
+        data_format=dataformatsettings.BBOBOldDataFormat(),  #  we cannot assume the 2nd column have constraints evaluation
+        # why do we want the data format hard coded in the testbed?
+        # Isn't the point that the data_format should be set
+        # independently of the testbed constrained to the data we actually
+        # see, that is, not assigned here?
         number_of_points=5,  # nb of target function values for each decade
         instancesOfInterest=None  # None: consider all instances
         # .instancesOfInterest={1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
@@ -296,7 +304,12 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         pptable_ftarget = min_target,  # value for determining the success ratio in all tables
         pptable_targetsOfInterest = pptable_targetsOfInterest,
         pptablemany_targetsOfInterest = pptable_targetsOfInterest,
-        ppfvdistr_min_target = min_target
+        ppfvdistr_min_target = min_target,
+        data_format=dataformatsettings.BBOBNewDataFormat(),  # the 2nd column has constraints evaluations
+        # why do we want the data format hard coded in the testbed?
+        # Isn't the point that the data_format should be set
+        # independently of the testbed constrained to the data we actually
+        # see, that is, not assigned here?
     )
 
 
@@ -390,7 +403,11 @@ class GECCOBiObjBBOBTestbed(Testbed):
         # expensive optimization settings:
         pptable_target_runlengths=[0.5, 1.2, 3, 10, 50],  # [0.5, 2, 10, 50]  # used in config for expensive setting
         pptables_target_runlengths=[2, 10, 50],  # used in config for expensive setting
-        data_format=dataformatsettings.BiObjBBOBDataFormat(),
+        data_format=dataformatsettings.BBOBBiObjDataFormat(),
+        # TODO: why do we want the data format hard coded in the testbed?
+        # Isn't the point that the data_format should be set
+        # independently of the testbed constrained to the data we actually
+        # see, that is, not assigned here?
         number_of_points=10,  # nb of target function values for each decade
     ) 
 

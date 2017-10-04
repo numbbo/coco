@@ -22,6 +22,7 @@ import numpy as np
 from . import ppfigdim
 from . import genericsettings as settings, pproc, pprldistr
 from . import testbedsettings as tbs
+from . import dataformatsettings
 from .comp2 import ppfig2, ppscatter
 from .compall import pprldmany
 from . import __path__  # import path for default genericsettings
@@ -48,7 +49,9 @@ def config(testbed_name=None, data_format_name=None):
     """
 
     if testbed_name:
-        tbs.load_current_testbed(testbed_name, pproc.TargetValues, data_format_name)
+        tbs.load_current_testbed(testbed_name, pproc.TargetValues)
+    if data_format_name:  # not at all in use yet
+        dataformatsettings.set_data_format(data_format_name)
 
     settings.simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max(0, settings.in_a_hurry))
 
