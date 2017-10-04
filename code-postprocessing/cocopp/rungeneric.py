@@ -299,7 +299,8 @@ def main(argv=None):
         # test suite, at least for the data_archive data
         suites = set()
         for path in clean_extended_args:
-            if data_archive.name(path) in data_archive:
+            if data_archive.contains(path):  # this is the archive of *all* testbeds
+                # extract suite name
                 suites.add(data_archive.name(path).split('/')[0])
         if len(suites) > 1:
             raise ValueError("Data from more than one suites %s cannot "

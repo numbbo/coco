@@ -649,19 +649,30 @@ class COCODataArchive(list):
         """depreciated, for backwards compatibility"""
         return self.get(*args, **kwargs)
 
+    def _name(self, full_path):
+        """return supposed name of full_path or name without any checks"""
+        if full_path.startswith(self.local_data_path):
+            name = full_path[len(self.local_data_path) + 1:]  # assuming the path separator has len 1
+        else:
+            name = full_path
+        return name.replace(os.path.sep, '/')  # this may not be a 100% fix
+
+    def contains(self, name):
+        """return `True` if (the exact) name or path is in the archive"""
+        return self._name(name) in self
+
     def full_path(self, name):
         """return full local path of `name` or of a full path, idempotent
         """
-        if name.startswith(self.local_data_path):
-            return name
+        name = self.name(name)
         return os.path.join(self.local_data_path,
                             os.path.join(*name.split('/')))
 
     def name(self, full_path):
         """return name of `full_path`, idempotent.
 
-        If `full_path` is not from the data archive, the outcome is
-        undefined.
+        If `full_path` is not from the data archive a warning is issued
+        and path seperators are replaced with `/`.
 
         Check that all names are only once found in the data archive:
 
@@ -671,11 +682,7 @@ class COCODataArchive(list):
         ...     assert len(bbob.find(name)) == 1, "%s found %d times" % (name, bbob.find(name))
 
         """
-        if full_path.startswith(self.local_data_path):
-            name = full_path[len(self.local_data_path) + 1:]
-        else:
-            name = full_path
-        name = name.replace(os.path.sep, '/')  # this may not be a 100% fix
+        name = self._name(full_path)
         if name not in self:
             warnings.warn('name "%s" not in COCODataArchive' % name)
         return name
