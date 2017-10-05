@@ -13,9 +13,12 @@ init:
   - cmd: "ECHO %PYTHON_VERSION% %MINICONDA%"
   - cmd: "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%"
   - cmd: "set PATH=%CYGWIN%;%CYGWIN%\\bin;%PATH%"
+  - cmd: "set PATH=C:\\Program Files\\MiKTeX 2.9\\miktex\\bin\\x64;%PATH%"
+  
 
 install:
-  - cmd: conda install -y matplotlib numpy scipy setuptools six pytest
+  - cinst miktex
+  - cmd: conda install -y matplotlib numpy scipy setuptools six pytest cython
   - cmd: python do.py run-python
   - cmd: python do.py install-postprocessing
 
@@ -26,7 +29,6 @@ test_script:
   - cmd: python -m cocopp -o .\postproc .\exdata\random_search_on_bbob_budget0002xD
   - cmd: cd ..\..\..
   # run the tests
-  - cmd: python do.py test-c
   - cmd: python do.py build-python
   - cmd: python do.py test-python
   - cmd: python do.py test-java
