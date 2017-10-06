@@ -723,27 +723,43 @@ class COCODataArchive(list):
         except IndexError:
             return None
 
-    def _read_names_list(self, filename='archive_info.txt'):
+    def _read_names_list(self, definition_filename='archive_info.txt'):
         """read data archive info for `_all`
 
         from a file generated with `_generate_names_list`
 
+        In the best case scenario::
+
+            self.local_data_path = path_to_archive
+            self._all = self._read_names_list()
+
+        is all what is needed to make this archive work for the lifetime
+        of the class instance.
+
+        See also `_generate_names_list`.
+
         TODO: never tested
         """
-        with open(os.path.join(self.local_data_path, filename), 'rt') as file_:
+        with open(os.path.join(self.local_data_path, definition_filename),
+                  'rt') as file_:
             return ast.literat_eval(file_.read())
 
-    def _generate_names_list(self, filename=None):
+    def _generate_names_list(self, definition_filename=None):
         """write an _all list of an existing archive including hashes and
-        filesizes to `filename`.
+        filesizes to `definition_filename`.
 
         This may serve as new/improved/updated/final _all class
         attribute via manual copy-paste.
 
+        Assumes that `self.local_data_path` points to a complete and sane
+        archive.
+
+        TODO: never tested.
+
         May or may not need to be modified under Windows.
         """
         res = []
-        for dirpath, dirnames, filenames in os.walk(filename):
+        for dirpath, dirnames, filenames in os.walk(self.local_data_path):
             for filename in filenames:
                 if '.extracted' not in dirpath \
                         and not filename.endswith(('dat', 'info')) \
@@ -754,8 +770,8 @@ class COCODataArchive(list):
                         name,
                         self._hash(path),
                          os.path.getsize(path) // 1000)] # or os.stat(path).st_size
-        if filename:
-            with open(os.path.join(self.local_data_path, filename), 'rt') as file_:
+        if definition_filename:
+            with open(os.path.join(self.local_data_path, definition_filename), 'rt') as file_:
                 file_.write(repr(res))
         return res
 
