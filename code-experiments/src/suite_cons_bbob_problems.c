@@ -7,7 +7,7 @@
  * noiseless bbob test suite with randomly-generated 
  * linear constraints perturbed by nonlinear transformations.
  * Each one of the 8 functions is combined with 6 different numbers of 
- * constraints: 1, 2, 10, n/2, n-1 and n+1.
+ * constraints: 1, 2, 6, 6+n/2, 6+n and 6+3n.
  * 
  * We consider constrained optimization problems of the form
  * 
