@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function
 import numpy as np
+import genericsettings
 
 current_data_format = None  # is currently hidden under testbedsettings.data_format, so this needs clean-up
 
@@ -77,9 +78,12 @@ class BBOBNewDataFormat(DataFormat):
             # if evals_function <= 1 we rather keep attributes to be on the save side for debugging
             dataset.evals = dataset.evals_function
             del dataset.evals_function  # clean dataset namespace
+            del dataset.evals_constraints
         else:
             # for the time being we add evals_functions and evals_constraints
             dataset.evals = dataset.evals_function.copy()
+            if genericsettings.weight_evaluations_constraints[0] != 1:
+                dataset.evals[:,1:] *= genericsettings.weight_evaluations_constraints[0]
             # (target) f-value rows are not aligned, so we need to find for
             # each evals the respective data row in evals_constraints
             j, j_max = 0, len(dataset.evals_constraints[:, 0])
@@ -87,7 +91,7 @@ class BBOBNewDataFormat(DataFormat):
                 # find j such that target[j] < target[i] (don't rely on floats being equal, though we probably could)
                 while j < j_max and dataset.evals_constraints[j, 0] + 1e-14 >= eval_row[0]:
                     j += 1  # next smaller (target) f-value
-                eval_row[1:] += dataset.evals_constraints[j-1, 1:]
+                eval_row[1:] += dataset.evals_constraints[j-1, 1:] * genericsettings.weight_evaluations_constraints[1]
             # print(dataset.evals_function, dataset.evals_constraints, dataset.evals)
         return maxevals, finalfunvals
 
