@@ -165,7 +165,8 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
                    iprint=-1)
         elif solver.__name__ in ("fmin_cobyla", ):
             x0 = fun.initial_solution
-            solver(fun, x0, lambda x: -fun.constraint(x), maxfun=remaining_evals)
+            solver(fun, x0, lambda x: -fun.constraint(x), maxfun=remaining_evals,
+                   disp=0, rhoend=1e-9)
 ############################ ADD HERE ########################################
         # ### IMPLEMENT HERE THE CALL TO ANOTHER SOLVER/OPTIMIZER ###
         # elif solver.__name__ == ...:
@@ -202,6 +203,7 @@ current_batch = 1      # 1..number_of_batches
 ##############################################################################
 # By default we call SOLVER(fun, x0), but the INTERFACE CAN BE ADAPTED TO EACH SOLVER ABOVE
 SOLVER = random_search
+# SOLVER = optimize.fmin_cobyla
 # SOLVER = my_solver # SOLVER = fmin_slsqp # SOLVER = cma.fmin
 suite_instance = "" # "year:2016"
 suite_options = ""  # "dimensions: 2,3,5,10,20 "  # if 40 is not desired

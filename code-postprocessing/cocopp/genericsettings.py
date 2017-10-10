@@ -22,6 +22,10 @@ figure_file_formats = ['svg', 'pdf']
 scaling_figures_with_boxes = True
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
+weight_evaluations_constraints = (1, 1)
+"""weights used to sum function evaluations and constraints evaluations
+in attribute DataSet.evals, if any constraints evaluations are found"""
+
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
