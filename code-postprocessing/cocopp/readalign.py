@@ -262,11 +262,11 @@ class HMultiReader(MultiReader):
                 currentValue = 0.
             else:
                 self.idxCurrentF = max(self.idxCurrentF,
-                                       numpy.floor(numpy.log10(-max(fvalues)) * self.nbPtsF))
+                                       numpy.floor(numpy.log10(-max(fvalues) + 1e-12) * self.nbPtsF))
                 currentValue = self.calculateCurrentValue()
         else:
             self.idxCurrentF = min(self.idxCurrentF,
-                                   numpy.ceil(numpy.log10(max(fvalues)) * self.nbPtsF))
+                                   numpy.ceil(numpy.log10(max(fvalues) - 1e-12) * self.nbPtsF))
             # Above line may return: Warning: divide by zero encountered in
             # log10 in the case of negative fvalues.
             # In the case of negative values for fvalues, self.idxCurrentF
