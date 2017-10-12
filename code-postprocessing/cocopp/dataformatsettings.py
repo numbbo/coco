@@ -67,9 +67,9 @@ class BBOBNewDataFormat(DataFormat):
                 self.function_value_idx, rewind_reader=True)
 
         assert all(finalfunvals == finalfunvals_cons)  # evals are different
-        # number of (non-)nan's in both data must agree
-        assert np.nansum(dataset.evals_function > -1) == np.nansum(dataset.evals_constraints > -1)
-        assert len(dataset.evals_function) >= len(dataset.evals_constraints)
+        assert len(dataset.evals_function) >= len(dataset.evals_constraints)  # can't be > !?
+        # number of (non-)nan's in both data must agree because the very same aligner was used
+        assert np.sum(np.isfinite(dataset.evals_function)) == np.sum(np.isfinite(dataset.evals_constraints))
 
         # check whether all constraints evaluations are zero
         # we then conclude that we don't need the _function and
