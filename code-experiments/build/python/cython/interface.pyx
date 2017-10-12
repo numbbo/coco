@@ -64,6 +64,7 @@ cdef extern from "coco.h":
     size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem)
     double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
     int coco_problem_final_target_hit(const coco_problem_t *problem)
+    void bbob_problem_best_parameter_print(const coco_problem_t *problem)
 
 cdef bytes _bstring(s):
     if type(s) is bytes:
@@ -882,6 +883,10 @@ cdef class Problem:
             for i in range(self._number_of_objectives):
                 self._largest_fvalues_of_interest[i] = coco_problem_get_largest_fvalues_of_interest(self.problem)[i]
         return self._largest_fvalues_of_interest
+
+    def _best_parameter(self, what=None):
+        if what == 'print':
+            bbob_problem_best_parameter_print(self.problem)
 
     def free(self, force=False):
         """Free the given test problem.

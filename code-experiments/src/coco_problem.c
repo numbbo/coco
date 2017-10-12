@@ -585,6 +585,19 @@ static size_t coco_problem_get_suite_dep_instance(const coco_problem_t *problem)
 }
 /**@}*/
 
+void bbob_problem_best_parameter_print(const coco_problem_t *problem) {
+  size_t i;
+  FILE *file;
+  assert(problem != NULL);
+  assert(problem->best_parameter != NULL);
+  file = fopen("._bbob_problem_best_parameter.txt", "w");
+  if (file != NULL) {
+    for (i = 0; i < problem->number_of_variables; ++i)
+      fprintf(file, " %.16f ", problem->best_parameter[i]);
+    fclose(file);
+  }
+}
+
 /***********************************************************************************************************/
 
 /**
