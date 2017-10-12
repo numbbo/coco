@@ -18,13 +18,13 @@ class Infolder(object):
     """Contextmanager to do some work in a folder of choice and change dir
     back in the end.
 
-    Usage::
+    Usage:
 
     >>> import os
     >>> import cocopp.toolsdivers
     >>> dir_ = os.getcwd()  # for the record
     >>> with cocopp.toolsdivers.Infolder('..'):
-    ...     # do some work in a folder here
+    ...     # do some work in a folder here, e.g. open a file
     ...     len(dir_) > len(os.getcwd()) and os.getcwd() in dir_
     True
     >>> # magically we are back in the original folder
