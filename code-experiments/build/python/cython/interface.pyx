@@ -686,8 +686,12 @@ cdef class Problem:
     def constraint(self, x):
         """return constraint values for `x`. 
 
-        By convention, constraints with values <= 0 are satisfied.
+        By convention, constraints with values <= 0 are considered as satisfied.
         """
+        if self.number_of_constraints <= 0:
+            return  # return None, prevent Python kernel from dying
+            # or should we return `[]` for zero constraints?
+            # `[]` is more likely to produce quietly unexpected result?
         cdef np.ndarray[double, ndim=1, mode="c"] _x
         x = np.array(x, copy=False, dtype=np.double, order='C')
         if np.size(x) != self.number_of_variables:
