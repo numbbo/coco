@@ -221,6 +221,8 @@ struct coco_suite_s {
 
 };
 
+static void bbob_evaluate_gradient(coco_problem_t *problem, const double *x, double *y);
+
 #ifdef __cplusplus
 }
 #endif

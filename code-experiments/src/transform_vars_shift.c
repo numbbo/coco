@@ -92,7 +92,7 @@ static void transform_vars_shift_evaluate_gradient(coco_problem_t *problem, cons
   for (i = 0; i < problem->number_of_variables; ++i) {
     data->shifted_x[i] = x[i] - data->offset[i];
   }
-  coco_evaluate_gradient(inner_problem, data->shifted_x, y);
+  bbob_evaluate_gradient(inner_problem, data->shifted_x, y);
 
 }
 

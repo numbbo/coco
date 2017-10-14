@@ -115,11 +115,11 @@ void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *
  * @param x The decision vector.
  * @param y The gradient of the function evaluated at the point x.
  */
-void coco_evaluate_gradient(coco_problem_t *problem, const double *x, double *y) {
+static void bbob_evaluate_gradient(coco_problem_t *problem, const double *x, double *y) {
   /* implements a safer version of problem->evaluate_gradient(problem, x, y) */
   assert(problem != NULL);
   if (problem->evaluate_gradient == NULL) {
-    coco_error("coco_evaluate_gradient(): No gradient function implemented for problem %s",
+    coco_error("bbob_evaluate_gradient(): No gradient function implemented for problem %s",
         problem->problem_id);
   }
   problem->evaluate_gradient(problem, x, y);
@@ -640,17 +640,14 @@ static void coco_problem_transformed_evaluate_constraint(coco_problem_t *problem
   coco_evaluate_constraint(data->inner_problem, x, y);
 }
 
-/**
- * @brief Calls the coco_evaluate_gradient function on the inner problem.
- */
-static void coco_problem_transformed_evaluate_gradient(coco_problem_t *problem, const double *x, double *y) {
+static void bbob_problem_transformed_evaluate_gradient(coco_problem_t *problem, const double *x, double *y) {
   coco_problem_transformed_data_t *data;
   assert(problem != NULL);
   assert(problem->data != NULL);
   data = (coco_problem_transformed_data_t *) problem->data;
   assert(data->inner_problem != NULL);
 
-  coco_evaluate_gradient(data->inner_problem, x, y);
+  bbob_evaluate_gradient(data->inner_problem, x, y);
 }
 
 /**
@@ -731,7 +728,7 @@ static coco_problem_t *coco_problem_transformed_allocate(coco_problem_t *inner_p
   inner_copy = coco_problem_duplicate(inner_problem);
   inner_copy->evaluate_function = coco_problem_transformed_evaluate_function;
   inner_copy->evaluate_constraint = coco_problem_transformed_evaluate_constraint;
-  inner_copy->evaluate_gradient = coco_problem_transformed_evaluate_gradient;
+  inner_copy->evaluate_gradient = bbob_problem_transformed_evaluate_gradient;
   inner_copy->recommend_solution = coco_problem_transformed_recommend_solution;
   inner_copy->problem_free_function = coco_problem_transformed_free;
   inner_copy->data = problem;

@@ -306,12 +306,6 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
 void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y);
 
 /**
- * @brief Evaluates the gradient of the function at x and stores it
- *        at y.
- */
-void coco_evaluate_gradient(coco_problem_t *problem, const double *x, double *y);
-
-/**
  * @brief Recommends a solution as the current best guesses to the problem. Not implemented yet.
  */
 void coco_recommend_solution(coco_problem_t *problem, const double *x);
