@@ -218,6 +218,7 @@ static coco_problem_t *f_ellipsoid_cons_bbob_problem_allocate(const size_t funct
   bbob2009_compute_xopt(xopt, rseed, dimension);
 
   problem = f_ellipsoid_allocate(dimension);
+  /* TODO (NH): fopt -= problem->evaluate(all_zeros(dimension)) */
   problem = transform_vars_shift(problem, xopt, 0);
   problem = transform_obj_shift(problem, fopt);
   

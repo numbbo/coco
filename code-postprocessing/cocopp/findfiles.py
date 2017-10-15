@@ -623,11 +623,13 @@ class COCODataArchive(list):
 
         # check that names has only one match
         if len(names) < 1:
+            if len(self) > 0:  # there are known data entries but substr doesn't match
                 raise ValueError("'%s' has no match in data archive" % substr)
+            # a blank archive, hope for the best, match must be exact
+            names = [substr]
         elif len(names) > 1:
-                raise ValueError("'%s' has multiple matches in data archive:\n   %s"
-                                 % (substr,
-                                    '\n   '.join(names)))
+            raise ValueError("'%s' has multiple matches in data archive:"
+                             "\n   %s" % (substr, '\n   '.join(names)))
         # create full path
         full_name = self.full_path(names[0])
         if os.path.exists(full_name):
@@ -677,6 +679,9 @@ class COCODataArchive(list):
         Check that all names are only once found in the data archive:
 
         >>> from cocopp import bbob
+        >>> # This should become:
+        >>> # from cocopp.data_archives import open as open_da
+        >>> # bbob = open_da('bbob')
         >>> for name in bbob:
         ...     assert bbob.count(name) == 1, "%s counted %d times in data archive" % (name, bbob.count(name))
         ...     assert len(bbob.find(name)) == 1, "%s found %d times" % (name, bbob.find(name))
@@ -684,7 +689,7 @@ class COCODataArchive(list):
         """
         name = self._name(full_path)
         if name not in self:
-            warnings.warn('name "%s" not in COCODataArchive' % name)
+            warnings.warn('name "%s" is not defined as member of this COCODataArchive' % name)
         return name
 
     def check_hash(self, name):
