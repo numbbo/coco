@@ -845,7 +845,7 @@ class COCOBBOBBiobjDataArchive(COCODataArchive):
 
     >>> import cocopp
     >>> cocopp.bbob_biobj  # doctest:+ELLIPSIS
-    ['2016/DEMO.tgz', '2016/GA-MULTIOBJ-NSGA-II.tgz',...
+    ['2016/DEMO_Tusar_bbob-biobj.tgz', '2016/HMO-CMA-ES_Loshchilov_bbob-biobj.tgz',...
     >>> isinstance(cocopp.bbob_biobj, cocopp.findfiles.COCOBBOBBiobjDataArchive)
     True
 
