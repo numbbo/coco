@@ -224,7 +224,7 @@ def main(arguments):
     delete_files()
 
     t0 = time.time()
-    data_path = data_archive_get('RS-4.tgz')
+    data_path = data_archive_get('RANDOMSEARCH-4_Auger_bbob-biobj.tgz')
     print(python + command + data_path)
     result = os.system(python + command + data_path)
     print('**  subtest 2 finished in ', time.time() - t0, ' seconds')
@@ -275,8 +275,8 @@ def main(arguments):
 
         t0 = time.time()
         result = os.system(python + command + data_archive_get([
-                                'RS-4.tgz',
-                                'RS-100.tgz']))
+                                'RANDOMSEARCH-4_Auger_bbob-biobj.tgz',
+                                'RANDOMSEARCH-100_Auger_bbob-biobj.tgz']))
         print('**  subtest 7 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bbob-biobj algorithms.'
         run_latex_template("templateBIOBJmultiple.tex", run_all_tests)
@@ -288,9 +288,9 @@ def main(arguments):
         # to avoid problems with too long path names on the windows
         # Jenkins slave
         result = os.system(python + command + data_archive_get([
-                                'GA-MULTIOBJ-NSGA-II.tgz',
-                                'RS-4.tgz',
-                                'RS-100.tgz']))
+                                'NSGA-II-MATLAB_Auger_bbob-biobj.tgz',
+                                'RANDOMSEARCH-4_Auger_bbob-biobj.tgz',
+                                'RANDOMSEARCH-100_Auger_bbob-biobj.tgz']))
         print('**  subtest 8 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on three bbob-biobj algorithms.'
         run_latex_template("templateBIOBJmultiple.tex", run_all_tests)
