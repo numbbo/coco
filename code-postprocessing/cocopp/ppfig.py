@@ -186,6 +186,27 @@ def save_folder_index_file(filename, image_file_extension):
     links += add_link(current_dir, None, genericsettings.pprldistr2_file_name + '.html',
                       'Runtime distribution for selected targets and f-distributions')
 
+    # add the ECDFs aggregated over all functions in all dimensions at the end:
+    if os.path.isfile(os.path.join(current_dir, 'pprldmany_02D_noiselessall.svg')):  # weird way to decide what to plot
+        links += "<H2> %s </H2>\n" % ' Runtime distributions (ECDFs) over all targets'
+        links += add_image('pprldmany_02D_noiselessall.svg', True, 220)
+        links += add_image('pprldmany_03D_noiselessall.svg', True, 220)
+        links += add_image('pprldmany_05D_noiselessall.svg', True, 220) + ' <br />'
+        links += add_image('pprldmany_10D_noiselessall.svg', True, 220)
+        links += add_image('pprldmany_20D_noiselessall.svg', True, 220)
+        if os.path.isfile(os.path.join(current_dir, 'pprldmany_40D_noiselessall.svg')):
+            links += add_image('pprldmany_40D_noiselessall.svg', True, 220)
+    if os.path.isfile(os.path.join(current_dir, 'pprldmany_02D_nzall.svg')):  # weird way to decide what to plot
+        links += "<H2> %s </H2>\n" % ' Runtime distributions (ECDFs) over all targets'
+        links += add_image('pprldmany_02D_nzall.svg', True, 220)
+        links += add_image('pprldmany_03D_nzall.svg', True, 220)
+        links += add_image('pprldmany_05D_nzall.svg', True, 220) + ' <br />'
+        links += add_image('pprldmany_10D_nzall.svg', True, 220)
+        links += add_image('pprldmany_20D_nzall.svg', True, 220)
+        if os.path.isfile(os.path.join(current_dir, 'pprldmany_40D_nzall.svg')):
+            links += add_image('pprldmany_40D_nzall.svg', True, 220)
+
+
     lines = []
     with open(filename) as infile:
         for line in infile:
@@ -552,12 +573,12 @@ def consecutiveNumbers(data, prefix=''):
 
     Example::
       >>> import os
-      >>> import cocopp as bb
+      >>> import cocopp
       >>> returnpath = os.getcwd()  # needed for no effect on other doctests
-      >>> os.chdir(bb.toolsdivers.path_in_package())
-      >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9])
+      >>> os.chdir(cocopp.toolsdivers.path_in_package())
+      >>> cocopp.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9])
       '0-2, 4, 5, 7-9'
-      >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9], 'f')
+      >>> cocopp.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9], 'f')
       'f0-f2, f4, f5, f7-f9'
       >>> os.chdir(returnpath)  # no effect on path from this doctest
 

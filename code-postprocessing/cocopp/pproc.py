@@ -201,12 +201,12 @@ class RunlengthBasedTargetValues(TargetValues):
     """a class instance call returns f-target values based on 
     reference runlengths::
     
-        >>> import cocopp as bb
+        >>> import cocopp
         >>> # make sure to use the right `bbob` test suite for the test below:
-        >>> bb.genericsettings.isNoisy = False
-        >>> bb.genericsettings.isNoiseFree = False
-        >>> bb.config.config('GECCOBBOBTestbed')
-        >>> targets = bb.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension==True
+        >>> cocopp.genericsettings.isNoisy = False
+        >>> cocopp.genericsettings.isNoiseFree = False
+        >>> cocopp.config.config('GECCOBBOBTestbed')
+        >>> targets = cocopp.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension==True
         >>> # make also sure to have loaded the corresponding reference algo
         >>> # from BBOB-2009:
         >>> targets.reference_data = 'testbedsettings'
@@ -552,13 +552,13 @@ class DataSet(object):
         >>> import os
         >>> import urllib
         >>> import tarfile
-        >>> import cocopp as bb
-        >>> bb.genericsettings.verbose = False # ensure to make doctests work
-        >>> infoFile = os.path.join(bb._data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
+        >>> import cocopp
+        >>> cocopp.genericsettings.verbose = False # ensure to make doctests work
+        >>> infoFile = os.path.join(cocopp._data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
         >>> if not os.path.exists(infoFile):
-        ...   filename = bb._data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
-        ...   tarfile.open(filename).extractall(bb._data_archive.local_data_path)
-        >>> dslist = bb.load(infoFile)
+        ...   filename = cocopp._data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
+        ...   tarfile.open(filename).extractall(cocopp._data_archive.local_data_path)
+        >>> dslist = cocopp.load(infoFile)
           Data consistent according to consistency_check() in pproc.DataSet
         >>> print(dslist)  # doctest:+ELLIPSIS
         [DataSet(BIPOP-CMA-ES on f2 2-D), ..., DataSet(BIPOP-CMA-ES on f2 40-D)]
@@ -687,13 +687,13 @@ class DataSet(object):
         >>> import os
         >>> import urllib
         >>> import tarfile
-        >>> import cocopp as bb
-        >>> bb.genericsettings.verbose = False # ensure to make doctests work
-        >>> infoFile = os.path.join(bb._data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
+        >>> import cocopp
+        >>> cocopp.genericsettings.verbose = False # ensure to make doctests work
+        >>> infoFile = os.path.join(cocopp._data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
         >>> if not os.path.exists(infoFile):
-        ...   filename = bb._data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
-        ...   tarfile.open(filename).extractall(bb._data_archive.local_data_path)
-        >>> dslist = bb.load(infoFile)
+        ...   filename = cocopp._data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
+        ...   tarfile.open(filename).extractall(cocopp._data_archive.local_data_path)
+        >>> dslist = cocopp.load(infoFile)
           Data consistent according to consistency_check() in pproc.DataSet
         >>> dslist[2].instancenumbers
         [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5]
@@ -705,9 +705,9 @@ class DataSet(object):
                  2.21400000e+03,   1.97000000e+03,   1.92400000e+03,
                  2.01200000e+03])
         >>> # because testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] was None
-        >>> bb.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = [1, 3]
-        >>> bb.config.config('GECCOBBOBTestbed') # make sure that settings are used
-        >>> dslist2 = bb.load(infoFile)
+        >>> cocopp.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = [1, 3]
+        >>> cocopp.config.config('GECCOBBOBTestbed') # make sure that settings are used
+        >>> dslist2 = cocopp.load(infoFile)
           Data consistent according to consistency_check() in pproc.DataSet
         >>> dslist2[2].instancenumbers
         [1, 1, 1, 3, 3, 3]
@@ -716,8 +716,8 @@ class DataSet(object):
                  2.31700000e+03,   2.32400000e+03,   2.30500000e+03,
                  2.20700000e+03])
         >>> # set things back to cause no troubles elsewhere:
-        >>> bb.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = None
-        >>> bb.config.config('GECCOBBOBTestbed') # make sure that settings are used
+        >>> cocopp.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = None
+        >>> cocopp.config.config('GECCOBBOBTestbed') # make sure that settings are used
 
     """
 
@@ -738,6 +738,7 @@ class DataSet(object):
                    'algId': ('algId', str),
                    'algorithm': ('algId', str),
                    'suite': ('suite', str),
+                   'logger': ('logger', str),
                    'coco_version': ('coco_version', str),
                    'reference_values_hash': ('reference_values_hash', str),
                    'data_format': ('data_format', str)}

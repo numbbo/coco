@@ -135,8 +135,8 @@ def main(argv=None):
       package is in python search path; most simply achieved by running
       `python do.py install-postprocessing`)::
 
-        >> import cocopp as pp
-        >> pp.rungeneric1.main('-o outputfolder folder1'.split())
+        >> import cocopp
+        >> cocopp.rungeneric1.main('-o outputfolder folder1'.split())
 
       This will execute the post-processing on the index files found in
       :file:`folder1`. The ``-o`` option changes the output folder from

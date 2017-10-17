@@ -84,7 +84,7 @@ class ProblemInstanceInfo:
                                 archive.add_solution(float(line.split()[1]), float(line.split()[2]), line)
                                 solution_found = True
                             except IndexError:
-                                print('Problem in file {}, line {}, skipping line'.format(f_name, line))
+                                print('Problem in file {}, line {}, skipping line'.format(f_name, line), flush=True)
                                 continue
 
                 f.close()
@@ -150,16 +150,16 @@ class ArchiveInfo:
                     archive_info_list.append(archive_info_set)
                     count += 1
                     if output_files:
-                        print(input_file)
+                        print(input_file, flush=True)
 
             # If any problems are encountered, the file is skipped
             except PreprocessingWarning as warning:
-                print(warning)
+                print(warning, flush=True)
 
-        print('Successfully processed archive information from {} files.'.format(count))
+        print('Successfully processed archive information from {} files.'.format(count), flush=True)
 
         # Store archive information only for instances that correspond to instance_list
-        print('Storing archive information...')
+        print('Storing archive information...', flush=True)
         for archive_info_set in archive_info_list:
             for archive_info_entry in archive_info_set:
                 self._add_entry(*archive_info_entry)

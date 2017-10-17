@@ -376,13 +376,13 @@ def main(arguments):
 
 
 """
-        import cocopp as bb
-        print(dir(bb))
-        for s in dir(bb):
-            if(inspect.ismodule(eval("bb."+s)) and s[:2]!="__"):
-                print("bb."+s)
-                doctest.testmod(eval("bb."+s),verbose=False)
-        print(bb.__all__)
+        import cocopp
+        print(dir(cocopp))
+        for s in dir(cocopp):
+            if(inspect.ismodule(eval("cocopp."+s)) and s[:2]!="__"):
+                print("cocopp."+s)
+                doctest.testmod(eval("cocopp."+s),verbose=False)
+        print(cocopp.__all__)
 """
 
 if __name__ == "__main__":

@@ -13,26 +13,26 @@
    import glob
    from pylab import *
    import pickle
-   import cocopp as bb
+   import cocopp
    import cocopp.compall.ppperfprof
    import cocopp.bestalg
 
    # Collect and unarchive data
    dsets = {}
-   for alg in bb.compall.ppperfprof.best:
+   for alg in cocopp.compall.ppperfprof.best:
        for date in ('2010', '2009'):
            try:
                dataurl = 'http://coco.lri.fr/BBOB'+date+'/pythondata/' + alg + '.tar.gz'
                filename, headers = urllib.urlretrieve(dataurl)
                archivefile = tarfile.open(filename)
                archivefile.extractall()  # write to disc
-               dsets[alg] = bb.load(glob.glob('BBOB'+date+'pythondata/' + alg + '/ppdata_f0*_20.pickle'))
+               dsets[alg] = cocopp.load(glob.glob('BBOB'+date+'pythondata/' + alg + '/ppdata_f0*_20.pickle'))
            except:
                pass
 
    # plot the profiles
    figure()
-   # bb.compall.ppperfprof.plotmultiple(dsets, dsref=bb.bestalg.bestAlgorithmEntries)
+   # cocopp.compall.ppperfprof.plotmultiple(dsets, dsref=cocopp.bestalg.bestAlgorithmEntries)
 
 """
 from __future__ import absolute_import

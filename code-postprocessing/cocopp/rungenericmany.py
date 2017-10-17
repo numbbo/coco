@@ -145,8 +145,8 @@ def main(argv=None):
     * From the python interpreter (requires that the path to this
       package is in python search path)::
 
-        >> import cocopp as bb
-        >> bb.rungenericmany.main('-o outputfolder folder1 folder2'.split())
+        >> import cocopp
+        >> cocopp.rungenericmany.main('-o outputfolder folder1 folder2'.split())
 
       This will execute the post-processing on the data found in
       :file:`folder1` and :file:`folder2`.
