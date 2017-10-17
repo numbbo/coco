@@ -384,6 +384,12 @@ const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t 
 const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem);
 
 /**
+ * @brief For multi-objective problems, returns a vector of largest values of interest in each objective.
+ * Currently, this equals the nadir point. For single-objective problems it raises an error.
+ */
+const double *coco_problem_get_largest_fvalues_of_interest(const coco_problem_t *problem);
+
+/**
  * @brief Returns the problem_index of the problem in its current suite.
  */
 size_t coco_problem_get_suite_dep_index(const coco_problem_t *problem);

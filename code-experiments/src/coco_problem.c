@@ -523,6 +523,15 @@ const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *
   return problem->largest_values_of_interest;
 }
 
+const double *coco_problem_get_largest_fvalues_of_interest(const coco_problem_t *problem) {
+  assert(problem != NULL);
+  if (problem->number_of_objectives == 1)
+    coco_error("coco_problem_get_largest_fvalues_of_interest(): nadir undefined for single-objective problems");
+  if (problem->nadir_value == NULL)
+    coco_error("coco_problem_get_largest_fvalues_of_interest(): nadir undefined");
+  return problem->nadir_value;
+}
+
 /**
  * Copies problem->initial_solution into initial_solution if not null, 
  * otherwise the center of the problem's region of interest is the 
