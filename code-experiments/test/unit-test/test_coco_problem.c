@@ -134,12 +134,33 @@ static void test_coco_is_feasible(void **state) {
   (void)state; /* unused */
 }
 
+/**
+ * Tests whether coco_problem_get_largest_fvalues_of_interest returns non-NULL values
+ * on problems from the "bbob-biobj" test suite.
+ */
+static void test_coco_problem_get_largest_fvalues_of_interest_bbob_biobj(void **state) {
+
+  coco_suite_t *suite;
+  coco_problem_t *problem;
+  const double *result;
+
+  suite = coco_suite("bbob-biobj", NULL, NULL);
+  while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
+    result = coco_problem_get_largest_fvalues_of_interest(problem);
+    assert(result);
+  }
+  coco_suite_free(suite);
+
+  (void)state; /* unused */
+}
+
 static int test_all_coco_problem(void) {
 
   const struct CMUnitTest tests[] = {
     cmocka_unit_test(test_coco_evaluate_function),
     cmocka_unit_test(test_coco_evaluate_constraint),
     cmocka_unit_test(test_coco_is_feasible),
+    cmocka_unit_test(test_coco_problem_get_largest_fvalues_of_interest_bbob_biobj),
   };
 
   return cmocka_run_group_tests(tests, NULL, NULL);

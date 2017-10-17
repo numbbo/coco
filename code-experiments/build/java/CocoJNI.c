@@ -442,6 +442,37 @@ JNIEXPORT jdoubleArray JNICALL Java_CocoJNI_cocoProblemGetLargestValuesOfInteres
 
 /*
  * Class:     CocoJNI
+ * Method:    cocoProblemGetLargestFValuesOfInterest
+ * Signature: (J)[D
+ */
+JNIEXPORT jdoubleArray JNICALL Java_CocoJNI_cocoProblemGetLargestFValuesOfInterest
+(JNIEnv *jenv, jclass interface_cls, jlong jproblem_pointer) {
+
+  coco_problem_t *problem = NULL;
+  const double *result;
+  jdoubleArray jresult;
+  jint num_obj;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoProblemGetLargestFValuesOfInterest\n");
+  }
+
+  problem = (coco_problem_t *) jproblem_pointer;
+  num_obj = (int) coco_problem_get_number_of_objectives(problem);
+  if (num_obj == 1)
+  	return NULL;
+  result = coco_problem_get_largest_fvalues_of_interest(problem);
+
+  /* Prepare the return value */
+  jresult = (*jenv)->NewDoubleArray(jenv, num_obj);
+  (*jenv)->SetDoubleArrayRegion(jenv, jresult, 0, num_obj, result);
+  return jresult;
+}
+
+/*
+ * Class:     CocoJNI
  * Method:    cocoProblemGetId
  * Signature: (J)Ljava/lang/String;
  */
