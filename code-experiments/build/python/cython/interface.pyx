@@ -58,6 +58,7 @@ cdef extern from "coco.h":
     const char *coco_problem_get_name(const coco_problem_t *problem)
     const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *problem)
     const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem)
+    const double *coco_problem_get_largest_fvalues_of_interest(const coco_problem_t *problem)
     # double coco_problem_get_final_target_fvalue1(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations(const coco_problem_t *problem)
     size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem)
@@ -636,6 +637,7 @@ cdef class Problem:
     # cdef public np.ndarray upper_bounds
     cdef public np.ndarray _lower_bounds
     cdef public np.ndarray _upper_bounds
+    cdef public np.ndarray _largest_fvalues_of_interest
     cdef size_t _number_of_variables
     cdef size_t _number_of_objectives
     cdef size_t _number_of_constraints
@@ -677,6 +679,11 @@ cdef class Problem:
                 self._lower_bounds[i] = coco_problem_get_smallest_values_of_interest(self.problem)[i]
             if coco_problem_get_largest_values_of_interest(self.problem) is not NULL:
                 self._upper_bounds[i] = coco_problem_get_largest_values_of_interest(self.problem)[i]
+        ## FIXME: If the code above is inefficient, so is this one:
+        self._largest_fvalues_of_interest = np.inf * np.ones(self._number_of_objectives)
+        if self._number_of_objectives > 1 and coco_problem_get_largest_fvalues_of_interest(self.problem) is not NULL:
+            for i in range(self._number_of_objectives):
+                self._largest_fvalues_of_interest[i] = coco_problem_get_largest_fvalues_of_interest(self.problem)[i]
         self.initialized = True
         return self
     def constraint(self, x):
@@ -869,6 +876,11 @@ cdef class Problem:
     def best_observed_fvalue1(self):
         assert(self.problem)
         return coco_problem_get_best_observed_fvalue1(self.problem)
+    @property
+    def largest_fvalues_of_interest(self):
+        "largest f-values of interest (defined only for multi-objective problems)"
+        assert(self.problem)
+        return self._largest_fvalues_of_interest
 
     def free(self, force=False):
         """Free the given test problem.
