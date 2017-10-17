@@ -22,7 +22,7 @@ function evaluations.
    import tarfile
    import glob
    from pylab import *
-   import cocopp as bb
+   import cocopp
 
    # Collect and unarchive data (3.4MB)
    dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
@@ -31,10 +31,10 @@ function evaluations.
    archivefile.extractall()
 
    # Empirical cumulative distribution function figure
-   ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
+   ds = cocopp.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
    figure()
-   bb.pprldistr.plot(ds)
-   bb.pprldistr.beautify() # resize the window to view whole figure
+   cocopp.pprldistr.plot(ds)
+   cocopp.pprldistr.beautify() # resize the window to view whole figure
 
 CAVEAT: the naming conventions in this module mix up ART (an estimate
 of the expected running length) and run lengths.

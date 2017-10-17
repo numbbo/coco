@@ -172,8 +172,8 @@ def main(argv=None):
 
     From the python interpreter::
 
-        >> import cocopp as pp
-        >> pp.main('-o outputfolder folder1 folder2')
+        >> import cocopp
+        >> cocopp.main('-o outputfolder folder1 folder2')
 
     This will execute the post-processing on the data found in
     :file:`folder1` and :file:`folder2` and return the respective
