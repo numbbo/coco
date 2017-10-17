@@ -35,7 +35,7 @@ target (if in the expensive/runlength-based targets setting).
     import glob
     from pylab import *
     
-    import cocopp as bb
+    import cocopp
     
     # Collect and unarchive data (3.4MB)
     dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
@@ -44,11 +44,11 @@ target (if in the expensive/runlength-based targets setting).
     archivefile.extractall()
     
     # Scaling figure
-    ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_*.pickle'))
+    ds = cocopp.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_*.pickle'))
     figure()
-    bb.ppfigdim.plot(ds)
-    bb.ppfigdim.beautify()
-    bb.ppfigdim.plot_previous_algorithms(2, False) # plot BBOB 2009 best algorithm on fun 2
+    cocopp.ppfigdim.plot(ds)
+    cocopp.ppfigdim.beautify()
+    cocopp.ppfigdim.plot_previous_algorithms(2, False) # plot BBOB 2009 best algorithm on fun 2
 
 """
 from __future__ import absolute_import

@@ -573,12 +573,12 @@ def consecutiveNumbers(data, prefix=''):
 
     Example::
       >>> import os
-      >>> import cocopp as bb
+      >>> import cocopp
       >>> returnpath = os.getcwd()  # needed for no effect on other doctests
-      >>> os.chdir(bb.toolsdivers.path_in_package())
-      >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9])
+      >>> os.chdir(cocopp.toolsdivers.path_in_package())
+      >>> cocopp.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9])
       '0-2, 4, 5, 7-9'
-      >>> bb.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9], 'f')
+      >>> cocopp.ppfig.consecutiveNumbers([0, 1, 2, 4, 5, 7, 8, 9], 'f')
       'f0-f2, f4, f5, f7-f9'
       >>> os.chdir(returnpath)  # no effect on path from this doctest
 
