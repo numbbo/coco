@@ -738,6 +738,7 @@ class DataSet(object):
                    'algId': ('algId', str),
                    'algorithm': ('algId', str),
                    'suite': ('suite', str),
+                   'logger': ('logger', str),
                    'coco_version': ('coco_version', str),
                    'reference_values_hash': ('reference_values_hash', str),
                    'data_format': ('data_format', str)}
