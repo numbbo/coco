@@ -679,11 +679,7 @@ cdef class Problem:
                 self._lower_bounds[i] = coco_problem_get_smallest_values_of_interest(self.problem)[i]
             if coco_problem_get_largest_values_of_interest(self.problem) is not NULL:
                 self._upper_bounds[i] = coco_problem_get_largest_values_of_interest(self.problem)[i]
-        ## FIXME: If the code above is inefficient, so is this one:
-        self._largest_fvalues_of_interest = np.inf * np.ones(self._number_of_objectives)
-        if self._number_of_objectives > 1 and coco_problem_get_largest_fvalues_of_interest(self.problem) is not NULL:
-            for i in range(self._number_of_objectives):
-                self._largest_fvalues_of_interest[i] = coco_problem_get_largest_fvalues_of_interest(self.problem)[i]
+        self._largest_fvalues_of_interest = None
         self.initialized = True
         return self
     def constraint(self, x):
@@ -880,6 +876,11 @@ cdef class Problem:
     def largest_fvalues_of_interest(self):
         "largest f-values of interest (defined only for multi-objective problems)"
         assert(self.problem)
+        if self._number_of_objectives > 1 and coco_problem_get_largest_fvalues_of_interest(self.problem) is not NULL:
+            # Not a particulary nice way of doing this, mostly due to cython
+            self._largest_fvalues_of_interest = np.inf * np.ones(self._number_of_objectives)
+            for i in range(self._number_of_objectives):
+                self._largest_fvalues_of_interest[i] = coco_problem_get_largest_fvalues_of_interest(self.problem)[i]
         return self._largest_fvalues_of_interest
 
     def free(self, force=False):

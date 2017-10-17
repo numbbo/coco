@@ -526,9 +526,9 @@ const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *
 const double *coco_problem_get_largest_fvalues_of_interest(const coco_problem_t *problem) {
   assert(problem != NULL);
   if (problem->number_of_objectives == 1)
-    coco_error("coco_problem_get_largest_fvalues_of_interest(): nadir undefined for single-objective problems");
+    coco_error("coco_problem_get_largest_fvalues_of_interest(): f-values of interest undefined for single-objective problems");
   if (problem->nadir_value == NULL)
-    coco_error("coco_problem_get_largest_fvalues_of_interest(): nadir undefined");
+    coco_error("coco_problem_get_largest_fvalues_of_interest(): f-values of interest undefined");
   return problem->nadir_value;
 }
 

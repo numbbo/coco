@@ -461,6 +461,8 @@ JNIEXPORT jdoubleArray JNICALL Java_CocoJNI_cocoProblemGetLargestFValuesOfIntere
 
   problem = (coco_problem_t *) jproblem_pointer;
   num_obj = (int) coco_problem_get_number_of_objectives(problem);
+  if (num_obj == 1)
+  	return NULL;
   result = coco_problem_get_largest_fvalues_of_interest(problem);
 
   /* Prepare the return value */
