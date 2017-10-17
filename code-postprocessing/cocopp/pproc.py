@@ -553,7 +553,6 @@ class DataSet(object):
         >>> import urllib
         >>> import tarfile
         >>> import cocopp
-
         >>> cocopp.genericsettings.verbose = False # ensure to make doctests work
         >>> infoFile = os.path.join(cocopp._data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
         >>> if not os.path.exists(infoFile):
