@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
+import sys
 import argparse
 
 from cocoprep.archive_load_data import parse_range, read_best_values, write_best_values
@@ -23,8 +24,9 @@ def update_best_hypervolume(old_best_files, new_best_data, new_best_file):
     try:
         old_best_data = read_best_values(old_best_files)
     except IOError as err:
-        print(err, flush=True)
-        print('Continuing nevertheless...', flush=True)
+        print(err)
+        print('Continuing nevertheless...')
+        sys.stdout.flush()
         result = new_best_data
     else:
         # Create a set of problem_names contained in at least one dictionary
@@ -44,11 +46,13 @@ def update_best_hypervolume(old_best_files, new_best_data, new_best_file):
                 result.update({problem_name: max(float(new_value), float(old_value))})
 
             if new_value is not None and old_value is not None and float(new_value) > float(old_value):
-                print('{} HV improved by {:.15f}'.format(problem_name, float(new_value) - float(old_value)), flush=True)
+                print('{} HV improved by {:.15f}'.format(problem_name, float(new_value) - float(old_value)))
+                sys.stdout.flush()
 
     # Write the best values
     write_best_values(result, new_best_file)
-    print('Done.', flush=True)
+    print('Done.')
+    sys.stdout.flush()
 
 
 def merge_archives(input_path, output_path, functions, instances, dimensions, crop_variables):
@@ -63,10 +67,12 @@ def merge_archives(input_path, output_path, functions, instances, dimensions, cr
     """
     result = {}
 
-    print('Reading archive information...', flush=True)
+    print('Reading archive information...')
+    sys.stdout.flush()
     archive_info = ArchiveInfo(input_path, functions, instances, dimensions)
 
-    print('Processing archives...', flush=True)
+    print('Processing archives...')
+    sys.stdout.flush()
     while True:
         # Get information about the next problem instance
         problem_instance_info = archive_info.get_next_problem_instance_info()
@@ -86,7 +92,8 @@ def merge_archives(input_path, output_path, functions, instances, dimensions, cr
         problem_instance_info.write_archive_solutions(output_path, archive, crop_variables)
 
         result.update({str(problem_instance_info): archive.hypervolume})
-        print('{}: {:.15f}'.format(problem_instance_info, archive.hypervolume), flush=True)
+        print('{}: {:.15f}'.format(problem_instance_info, archive.hypervolume))
+        sys.stdout.flush()
 
         log_level(old_level)
 
