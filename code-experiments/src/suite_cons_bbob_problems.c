@@ -157,7 +157,7 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
   problem = f_sphere_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
 	 
-  coco_evaluate_gradient(problem, all_zeros, feasible_direction);	 
+  bbob_evaluate_gradient(problem, all_zeros, feasible_direction);	 
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
 	 
   /* Create the constraints. Use the gradient of the objective
@@ -234,7 +234,7 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   problem = f_ellipsoid_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
 
-  coco_evaluate_gradient(problem, all_zeros, feasible_direction);
+  bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
   
   /* Create the constraints. Use the gradient of the objective
@@ -317,7 +317,7 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
   problem = f_ellipsoid_rotated_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
       
-  coco_evaluate_gradient(problem, all_zeros, feasible_direction);
+  bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
   
   /* Create the constraints. Use the gradient of the objective
@@ -400,7 +400,7 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
   problem = f_linear_slope_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
       
-  coco_evaluate_gradient(problem, all_zeros, feasible_direction);
+  bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
   
   /* Create the constraints. Use the gradient of the objective
@@ -481,7 +481,7 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
   problem = f_discus_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
       
-  coco_evaluate_gradient(problem, all_zeros, feasible_direction);
+  bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
 
   /* Create the constraints. Use the gradient of the objective
@@ -564,7 +564,7 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   problem = f_bent_cigar_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
       
-  coco_evaluate_gradient(problem, all_zeros, feasible_direction);
+  bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
 
   /* Create the constraints. Use the gradient of the objective
@@ -647,7 +647,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   problem = f_different_powers_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
       
-  coco_evaluate_gradient(problem, all_zeros, feasible_direction);
+  bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
   
   /* Create the constraints. Use the gradient of the objective

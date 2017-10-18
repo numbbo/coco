@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
+import sys
 
 from .archive_exceptions import PreprocessingWarning, PreprocessingException
 from .archive_load_data import create_path, get_key_value, get_file_name_list, get_archive_file_info, get_range
@@ -84,7 +85,8 @@ class ProblemInstanceInfo:
                                 archive.add_solution(float(line.split()[1]), float(line.split()[2]), line)
                                 solution_found = True
                             except IndexError:
-                                print('Problem in file {}, line {}, skipping line'.format(f_name, line), flush=True)
+                                print('Problem in file {}, line {}, skipping line'.format(f_name, line))
+                                sys.stdout.flush()
                                 continue
 
                 f.close()
@@ -150,16 +152,19 @@ class ArchiveInfo:
                     archive_info_list.append(archive_info_set)
                     count += 1
                     if output_files:
-                        print(input_file, flush=True)
+                        print(input_file)
+                        sys.stdout.flush()
 
             # If any problems are encountered, the file is skipped
             except PreprocessingWarning as warning:
-                print(warning, flush=True)
+                print(warning)
+                sys.stdout.flush()
 
-        print('Successfully processed archive information from {} files.'.format(count), flush=True)
+        print('Successfully processed archive information from {} files.'.format(count))
 
         # Store archive information only for instances that correspond to instance_list
-        print('Storing archive information...', flush=True)
+        print('Storing archive information...')
+        sys.stdout.flush()
         for archive_info_set in archive_info_list:
             for archive_info_entry in archive_info_set:
                 self._add_entry(*archive_info_entry)

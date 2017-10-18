@@ -64,6 +64,7 @@ cdef extern from "coco.h":
     size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem)
     double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
     int coco_problem_final_target_hit(const coco_problem_t *problem)
+    void bbob_problem_best_parameter_print(const coco_problem_t *problem)
 
 cdef bytes _bstring(s):
     if type(s) is bytes:
@@ -682,8 +683,12 @@ cdef class Problem:
     def constraint(self, x):
         """return constraint values for `x`. 
 
-        By convention, constraints with values <= 0 are satisfied.
+        By convention, constraints with values <= 0 are considered as satisfied.
         """
+        if self.number_of_constraints <= 0:
+            return  # return None, prevent Python kernel from dying
+            # or should we return `[]` for zero constraints?
+            # `[]` is more likely to produce quietly unexpected result?
         cdef np.ndarray[double, ndim=1, mode="c"] _x
         x = np.array(x, copy=False, dtype=np.double, order='C')
         if np.size(x) != self.number_of_variables:
@@ -877,6 +882,10 @@ cdef class Problem:
             self._largest_fvalues_of_interest = np.asarray(
                 [coco_problem_get_largest_fvalues_of_interest(self.problem)[i] for i in range(self._number_of_objectives)])
         return self._largest_fvalues_of_interest
+
+    def _best_parameter(self, what=None):
+        if what == 'print':
+            bbob_problem_best_parameter_print(self.problem)
 
     def free(self, force=False):
         """Free the given test problem.

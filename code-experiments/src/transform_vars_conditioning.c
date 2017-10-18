@@ -67,7 +67,7 @@ static void transform_vars_conditioning_evaluate_gradient(coco_problem_t *proble
     gradient[i] = pow(data->alpha, 0.5 * (double) (long) i / ((double) (long) problem->number_of_variables - 1.0));
     data->x[i] = gradient[i] * x[i];
   }
-  coco_evaluate_gradient(inner_problem, data->x, y);
+  bbob_evaluate_gradient(inner_problem, data->x, y);
   
   for (i = 0; i < inner_problem->number_of_variables; ++i)
     gradient[i] *= y[i];

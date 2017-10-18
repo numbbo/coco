@@ -122,7 +122,7 @@ static void transform_vars_affine_evaluate_gradient(coco_problem_t *problem, con
     }
   }
   
-  coco_evaluate_gradient(inner_problem, data->x, y);
+  bbob_evaluate_gradient(inner_problem, data->x, y);
   
   /* grad_(f o g )(x), where g(x) = M * x + b, equals to
    * M^T * grad_f(M *x + b) 
