@@ -632,12 +632,9 @@ cdef class Problem:
     cdef np.ndarray y_values  # argument for coco_evaluate
     cdef np.ndarray constraint_values  # argument for coco_evaluate
     cdef np.ndarray x_initial  # argument for coco_problem_get_initial_solution
-    # cdef public const double[:] test_bounds
-    # cdef public np.ndarray lower_bounds
-    # cdef public np.ndarray upper_bounds
-    cdef public np.ndarray _lower_bounds
-    cdef public np.ndarray _upper_bounds
-    cdef public np.ndarray _largest_fvalues_of_interest
+    cdef np.ndarray _lower_bounds
+    cdef np.ndarray _upper_bounds
+    cdef np.ndarray _largest_fvalues_of_interest
     cdef size_t _number_of_variables
     cdef size_t _number_of_objectives
     cdef size_t _number_of_constraints
@@ -877,10 +874,8 @@ cdef class Problem:
         "largest f-values of interest (defined only for multi-objective problems)"
         assert(self.problem)
         if self._number_of_objectives > 1 and coco_problem_get_largest_fvalues_of_interest(self.problem) is not NULL:
-            # Not a particulary nice way of doing this, mostly due to cython
-            self._largest_fvalues_of_interest = np.inf * np.ones(self._number_of_objectives)
-            for i in range(self._number_of_objectives):
-                self._largest_fvalues_of_interest[i] = coco_problem_get_largest_fvalues_of_interest(self.problem)[i]
+            self._largest_fvalues_of_interest = np.asarray(
+                [coco_problem_get_largest_fvalues_of_interest(self.problem)[i] for i in range(self._number_of_objectives)])
         return self._largest_fvalues_of_interest
 
     def free(self, force=False):
