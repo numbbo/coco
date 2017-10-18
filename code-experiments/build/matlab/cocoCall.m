@@ -32,6 +32,10 @@
 %       Returns the ID of the problem. 
 %   * cocoProblemGetInitialSolution: problem
 %       Returns an initial solution (ie a feasible variable setting) to problem.
+%   * cocoProblemGetLargestFValuesOfInterest: problem
+%       For multi-objective problems, returns a vector of largest values of 
+%         interest in each objective. Currently, this equals the nadir point. 
+%         For single-objective problems it raises an error.
 %   * cocoProblemGetLargestValuesOfInterest: problem
 %       Returns a vector of size 'dimension' with upper bounds of the region
 %         of interest in the decision space for the given problem.

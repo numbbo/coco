@@ -286,6 +286,33 @@ void cocoProblemGetInitialSolution(int nlhs, mxArray *plhs[], int nrhs, const mx
     printf("%e", v[0]);
 }
 
+void cocoProblemGetLargestFValuesOfInterest(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    size_t *ref;
+    coco_problem_t *problem = NULL;
+    size_t nb_obj;
+    const double *res;
+    int i;
+    double *v; /* intermediate variable that allows to set plhs[0] */
+
+    /* check for proper number of arguments */
+    if(nrhs!=1) {
+        mexErrMsgIdAndTxt("cocoProblemGetLargestFValuesOfInterest:nrhs","One input required.");
+    }
+    /* get the problem */
+    ref = (size_t *)mxGetData(prhs[0]);
+    problem = (coco_problem_t *)(*ref);
+    
+    nb_obj = coco_problem_get_number_of_objectives(problem);
+    plhs[0] = mxCreateDoubleMatrix(1, nb_obj, mxREAL);
+    v = mxGetPr(plhs[0]);
+    /* call coco_problem_get_largest_fvalues_of_interest(...) */
+    res = coco_problem_get_largest_fvalues_of_interest(problem);
+    for (i = 0; i < nb_obj; i++){
+        v[i] = res[i];
+    }
+}
+
 void cocoProblemGetLargestValuesOfInterest(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     size_t *ref;
@@ -606,6 +633,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoProblemGetId(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetinitialsolution") == 0) {
         cocoProblemGetInitialSolution(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocoproblemgetlargestfvaluesofinterest") == 0) {
+        cocoProblemGetLargestFValuesOfInterest(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetlargestvaluesofinterest") == 0) {
         cocoProblemGetLargestValuesOfInterest(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetname") == 0) {
