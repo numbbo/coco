@@ -99,7 +99,7 @@
 static size_t obj_function_type(const size_t function) {
   
   size_t problems_per_obj_function_type = 6;
-  return (size_t)ceil((double)function/problems_per_obj_function_type);
+  return (size_t)ceil((double)function/(double)problems_per_obj_function_type);
   
 }
 
