@@ -45,6 +45,8 @@ MATLAB_FILES = ['cocoCall.m', 'cocoEvaluateFunction.m', 'cocoObserver.m',
                 'cocoSuiteGetNextProblem.m', 'cocoSuiteGetProblem.m']
 
 _verbosity = False
+# Do not suppress build messages unless specifically requested
+_build_verbosity = True
 
 ################################################################################
 ## C
@@ -54,7 +56,8 @@ def build_c():
     amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
                'code-experiments/build/c/coco.c', RELEASE,
                {"COCO_VERSION": git_version(pep440=True)})
-    expand_file('code-experiments/src/coco.h', 'code-experiments/build/c/coco.h',
+    expand_file('code-experiments/src/coco.h',
+                'code-experiments/build/c/coco.h',
                 {"COCO_VERSION": git_version(pep440=True)})
     copy_file('code-experiments/build/c/coco.c',
               'code-experiments/examples/bbob2009-c-cmaes/coco.c')
@@ -64,11 +67,13 @@ def build_c():
     write_file(git_revision(), "code-experiments/build/c/REVISION")
     write_file(git_version(), "code-experiments/build/c/VERSION")
     if 11 < 3:
-        python('code-experiments/build/c', ['make.py', 'clean'], verbose=_verbosity)
-        python('code-experiments/build/c', ['make.py', 'all'], verbose=_verbosity)
+        python('code-experiments/build/c', ['make.py', 'clean'],
+               verbose=_build_verbosity)
+        python('code-experiments/build/c', ['make.py', 'all'],
+               verbose=_build_verbosity)
     else:
-        make("code-experiments/build/c", "clean", verbose=_verbosity)
-        make("code-experiments/build/c", "all", verbose=_verbosity)
+        make("code-experiments/build/c", "clean", verbose=_build_verbosity)
+        make("code-experiments/build/c", "all", verbose=_build_verbosity)
 
 
 def run_c():
@@ -120,56 +125,64 @@ def test_c_example():
 
 def build_c_unit_tests():
     """ Builds unit tests in C """
-    library_path = ''
+    library_path = 'code-experiments/test/unit-test/lib'
+    library_dir = ''
     file_name = ''
     if 'win32' in sys.platform:
         file_name = 'cmocka.dll'
         if '64' in platform.machine():
-            library_path = 'code-experiments/test/unit-test/lib/win64'
+            library_dir = 'win64'
         elif ('32' in platform.machine()) or ('x86' in platform.machine()):
             if 'cygwin' in os.environ['PATH']:
-                library_path = 'code-experiments/test/unit-test/lib/win32_cygwin'
+                library_dir = 'win32_cygwin'
             else:
-                library_path = 'code-experiments/test/unit-test/lib/win32_mingw'
+                library_dir = 'win32_mingw'
     elif 'linux' in sys.platform:
         file_name = 'libcmocka.so'
         if 'Ubuntu' in platform.linux_distribution():
-            library_path = 'code-experiments/test/unit-test/lib/linux_ubuntu'
+            library_dir = 'linux_ubuntu'
         elif 'Fedora' in platform.linux_distribution():
-            library_path = 'code-experiments/test/unit-test/lib/linux_fedora'
+            library_dir = 'linux_fedora'
     elif 'darwin' in sys.platform:  # Mac
-        library_path = 'code-experiments/test/unit-test/lib/macosx'
+        library_dir = 'macosx'
         file_name = 'libcmocka.dylib'
 
-    if len(library_path) > 0:
-        copy_file(os.path.join(library_path, file_name),
+    if len(library_dir) > 0:
+        copy_file(os.path.join(library_path, library_dir, file_name),
                   os.path.join('code-experiments/test/unit-test', file_name))
-    copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/unit-test/coco.c')
-    expand_file('code-experiments/src/coco.h', 'code-experiments/test/unit-test/coco.h',
+    copy_file('code-experiments/build/c/coco.c',
+              'code-experiments/test/unit-test/coco.c')
+    expand_file('code-experiments/src/coco.h',
+                'code-experiments/test/unit-test/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
-    make("code-experiments/test/unit-test", "clean", verbose=_verbosity)
-    make("code-experiments/test/unit-test", "all", verbose=_verbosity)
+    make("code-experiments/test/unit-test", "clean", verbose=_build_verbosity)
+    make("code-experiments/test/unit-test", "all", verbose=_build_verbosity)
 
 
 def run_c_unit_tests():
     """ Runs unit tests in C """
     try:
-        run('code-experiments/test/unit-test', ['./unit_test'], verbose=_verbosity)
+        run('code-experiments/test/unit-test', ['./unit_test'],
+            verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
 
 def build_c_integration_tests():
     """ Builds integration tests in C """
-    copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/integration-test/coco.c')
-    expand_file('code-experiments/src/coco.h', 'code-experiments/test/integration-test/coco.h',
+    copy_file('code-experiments/build/c/coco.c',
+              'code-experiments/test/integration-test/coco.c')
+    expand_file('code-experiments/src/coco.h',
+                'code-experiments/test/integration-test/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
     copy_file('code-experiments/src/bbob2009_testcases.txt',
               'code-experiments/test/integration-test/bbob2009_testcases.txt')
     copy_file('code-experiments/src/bbob2009_testcases2.txt',
               'code-experiments/test/integration-test/bbob2009_testcases2.txt')
-    make("code-experiments/test/integration-test", "clean", verbose=_verbosity)
-    make("code-experiments/test/integration-test", "all", verbose=_verbosity)
+    make("code-experiments/test/integration-test", "clean",
+         verbose=_build_verbosity)
+    make("code-experiments/test/integration-test", "all",
+         verbose=_build_verbosity)
 
 
 def run_c_integration_tests():
@@ -183,7 +196,8 @@ def run_c_integration_tests():
             ['./test_instance_extraction'], verbose=_verbosity)
         run('code-experiments/test/integration-test',
             ['./test_biobj'], verbose=_verbosity)
-        run('code-experiments/test/integration-test', ['./test_bbob-constrained'], verbose=_verbosity)
+        run('code-experiments/test/integration-test',
+            ['./test_bbob-constrained'], verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -194,8 +208,10 @@ def build_c_example_tests():
         shutil.rmtree('code-experiments/test/example-test')
         time.sleep(1)  # Needed to avoid permission errors for os.makedirs
     os.makedirs('code-experiments/test/example-test')
-    copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/example-test/coco.c')
-    expand_file('code-experiments/src/coco.h', 'code-experiments/test/example-test/coco.h',
+    copy_file('code-experiments/build/c/coco.c',
+              'code-experiments/test/example-test/coco.c')
+    expand_file('code-experiments/src/coco.h',
+                'code-experiments/test/example-test/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
     copy_file('code-experiments/build/c/example_experiment.c',
               'code-experiments/test/example-test/example_experiment.c')
@@ -203,14 +219,16 @@ def build_c_example_tests():
               'code-experiments/test/example-test/Makefile.in')
     copy_file('code-experiments/build/c/Makefile_win_gcc.in',
               'code-experiments/test/example-test/Makefile_win_gcc.in')
-    make("code-experiments/test/example-test", "clean", verbose=_verbosity)
-    make("code-experiments/test/example-test", "all", verbose=_verbosity)
+    make("code-experiments/test/example-test", "clean",
+         verbose=_build_verbosity)
+    make("code-experiments/test/example-test", "all", verbose=_build_verbosity)
 
 
 def run_c_example_tests():
     """ Runs an example experiment test in C """
     try:
-        run('code-experiments/test/example-test', ['./example_experiment'], verbose=_verbosity)
+        run('code-experiments/test/example-test', ['./example_experiment'],
+            verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -223,15 +241,18 @@ def leak_check():
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
                     './test_coco', 'bbob2009_testcases.txt']
-    run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
+    run('code-experiments/test/integration-test', valgrind_cmd,
+        verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
                     './test_biobj', 'leak_check']
-    run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
+    run('code-experiments/test/integration-test', valgrind_cmd,
+        verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
                     './test_bbob-constrained', 'leak_check']
-    run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
+    run('code-experiments/test/integration-test', valgrind_cmd,
+        verbose=_verbosity)
 
 
 ################################################################################
@@ -274,8 +295,10 @@ def install_postprocessing(package_install_option = []):
     expand_file(join('code-postprocessing', 'setup.py.in'),
                 join('code-postprocessing', 'setup.py'),
                 {'COCO_VERSION': git_version(pep440=True)})
-    # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/cocopp/latex-templates')
-    python('code-postprocessing', ['setup.py', 'install'] + package_install_option, verbose=_verbosity,
+    # copy_tree('code-postprocessing/latex-templates',
+    #           'code-postprocessing/cocopp/latex-templates')
+    python('code-postprocessing', ['setup.py', 'install']
+           + package_install_option, verbose=_verbosity,
            custom_exception_handler=install_error)
 
 def uninstall_postprocessing():
@@ -320,9 +343,10 @@ def build_python(package_install_option=[]):
     ## Force distutils to use Cython
     # os.environ['USE_CYTHON'] = 'true'
     # python('code-experiments/build/python', ['setup.py', 'sdist'])
-    # python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'])
-    python(join('code-experiments', 'build', 'python'), ['setup.py', 'install'] + package_install_option,
-                custom_exception_handler=install_error)
+    # python(join('code-experiments', 'build', 'python'),
+    #        ['setup.py', 'install', '--user'])
+    python(join('code-experiments', 'build', 'python'), ['setup.py', 'install']
+           + package_install_option, custom_exception_handler=install_error)
     # os.environ.pop('USE_CYTHON')
 
 
@@ -831,6 +855,11 @@ def verbose(args):
     main(args)
     _verbosity = False
 
+def quiet(args):
+    global _build_verbosity
+    _build_verbosity = False
+    main(args)
+    _build_verbosity = True
 
 def silent(args):
     """calls `main(args)` with redirected output to keep the console clean"""
@@ -975,6 +1004,7 @@ def main(args):
     elif cmd == 'run-octave': run_octave()
     elif cmd == 'run-octave-sms': run_octave_sms()
     elif cmd == 'run-python': run_python(also_test_python, package_install_option = package_install_option)
+    elif cmd == 'quiet': quiet(args[1:])
     elif cmd == 'silent': silent(args[1:])
     elif cmd == 'verbose': verbose(args[1:])
     elif cmd == 'test-c': test_c()
