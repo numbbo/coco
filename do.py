@@ -748,9 +748,11 @@ for ee.suite_name, ee.observer_options['result_folder'] in [
         print("is not known")
                 '''], verbose=_verbosity)
             # now run all tests
-            python('code-postprocessing/cocopp', ['test.py', 'all'], verbose=_verbosity)
+            python('code-postprocessing/cocopp',
+                   ['test.py', 'all', sys.executable], verbose=_verbosity)
         else:
-            python('code-postprocessing/cocopp', ['test.py'], verbose=_verbosity)
+            python('code-postprocessing/cocopp', ['test.py', sys.executable],
+                   verbose=_verbosity)
         
         # also run the doctests in aRTAplots/generate_aRTA_plot.py:
         python('code-postprocessing/aRTAplots', ['generate_aRTA_plot.py'], verbose=_verbosity)
