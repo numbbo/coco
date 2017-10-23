@@ -832,6 +832,8 @@ def get_plotting_styles(algorithms, only_foreground=False):
 
     if not only_foreground:
         for key, value in genericsettings.background.items():
+            if key is None:
+                key = genericsettings.background_default_style
             background_algorithms = [algorithm for algorithm in algorithms if algorithm in value]
             background_algorithms.sort()
             if len(background_algorithms) > 0:
