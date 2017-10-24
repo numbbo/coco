@@ -1,94 +1,187 @@
 version: 2
 
-references:
-
-  install_ubuntu_python2: &install_ubuntu_python2
-    run:
-      name: Install Python 2 on Ubuntu.
-      command: |
-        apt-get update -qy
-        apt-get install -y python-dev python-numpy python-matplotlib \
-                           python-six python-setuptools python-scipy \
-                           python-pytest
-
-  install_ubuntu_python3: &install_ubuntu_python3
-    run:
-      name: Install Python 3 on Ubuntu and set it to be the default.
-      command: |
-        apt-get update -qy
-        apt-get install -y python3-dev python3-numpy python3-matplotlib \
-                           python3-six python3-setuptools python3-scipy \
-                           python3-pytest
-        ln -s /usr/bin/python3 /usr/bin/python  # this is dirty
-
-  test_ubuntu_example: &test_ubuntu_example
-    run:
-      name: Run the random search example on Ubuntu.
-      command: |
-        # install dependencies
-        apt-get install -y build-essential
-        # install coco
-        python do.py run-python
-        python do.py install-postprocessing
-        # run the example
-        cd code-experiments/build/python
-        python example_experiment.py bbob
-        # postprocess the results
-        python -m cocopp -o ./postproc ./exdata/*
-
-  test_ubuntu_python2: &test_ubuntu_python2
-    run:
-      name: Run Python 2 coco tests on Ubuntu.
-      command: |
-        apt-get install -y git cython
-        python do.py test-python
-
-  test_ubuntu_python3: &test_ubuntu_python3
-    run:
-      name: Run Python 3 coco tests on Ubuntu.
-      command: |
-        apt-get install -y git cython3
-        python do.py test-python
-
-  test_ubuntu_other: &test_ubuntu_other
-    run:
-      name: Run all coco tests except for Python on Ubuntu.
-      command: |
-        # install extra dependencies for tests
-        apt-get install -y liboctave-dev openjdk-8-jdk libcmocka-dev \
-                           mlocate texlive-full
-        updatedb
-        # test coco
-        python do.py test-c
-        python do.py test-octave
-        python do.py test-java
-        python do.py test-preprocessing
-        python do.py test-postprocessing-all
-      no_output_timeout: 7200
-
 jobs:
 
   test_ubuntu_rolling_python3:
     docker:
       - image: ubuntu:rolling
+        environment:
+          CC: gcc
     working_directory: ~/coco
     steps:
       - checkout
-      - *install_ubuntu_python3
-      - *test_ubuntu_example
-      - *test_ubuntu_python3
-      - *test_ubuntu_other
+      - run:
+          name: Update apt-get
+          command: apt-get update -qy
+      - run:
+          name: Install python-dev with apt-get
+          command: apt-get install -y python3-dev
+      - run:
+          name: Install pip with apt-get
+          command: apt-get install -y python3-pip
+      - run:
+          name: Install build-essential with apt-get
+          command: apt-get install -y build-essential
+      - run:
+          name: Install git with apt-get
+          command: apt-get install -y git
+      - run:
+          name: Install tkinter with apt-get
+          command: apt-get install -y python3-tk
+      - run:
+          name: Install python packages with pip
+          command: pip3 install --upgrade matplotlib==2.0.2 numpy setuptools \
+                                          six scipy pytest cython
+      - run:
+          name: Create symbolic link to python binaries
+          command: ln -s /usr/bin/python3 /usr/bin/python
+      - run:
+          name: Install coco python
+          command: python3 do.py run-python
+      - run:
+          name: Install coco post-processing
+          command: python3 do.py install-postprocessing
+      - run:
+          name: Run the example experiment
+          command: |
+            cd ~/coco/code-experiments/build/python
+            python3 example_experiment.py bbob
+      - run:
+          name: Post-process the results
+          command: |
+            cd ~/coco/code-experiments/build/python
+            python3 -m cocopp -o ./postproc ./exdata
+      - run:
+          name: Run coco Python 3 tests
+          command: python3 do.py test-python
+          no_output_timeout: 1800
+      - run:
+          name: Install mlocate
+          command: |
+            apt-get install -y mlocate
+            updatedb
+      - run:
+          name: Install octave for octave tests
+          command: |
+            apt-get install -y liboctave-dev
+            updatedb
+      - run:
+          name: Run coco octave tests
+          command: python3 do.py test-octave
+          no_output_timeout: 1800
+      - run:
+          name: Install jdk for java tests
+          command: |
+            apt-get install -y openjdk-8-jdk
+            updatedb
+      - run:
+          name: Run coco octave tests
+          command: python3 do.py test-java
+          no_output_timeout: 1800
+      - run:
+          name: Run coco pre-processing tests
+          command: python3 do.py test-preprocessing
+          no_output_timeout: 1800
+      - run:
+          name: Install extra dependencies for tests
+          command: |
+            apt-get install -y texlive-full
+            updatedb
+      - run:
+          name: Run coco post-processing tests
+          command: python3 do.py test-postprocessing
+          no_output_timeout: 5400
 
   test_ubuntu_latest_python2:
     docker:
       - image: ubuntu:latest
+        environment:
+          CC: gcc
     working_directory: ~/coco
     steps:
       - checkout
-      - *install_ubuntu_python2
-      - *test_ubuntu_example
-      - *test_ubuntu_python2
-      - *test_ubuntu_other
+      - run:
+          name: Update apt-get
+          command: apt-get update -qy
+      - run:
+          name: Install python-dev with apt-get
+          command: apt-get install -y python-dev
+      - run:
+          name: Install pip with apt-get
+          command: apt-get install -y python-pip
+      - run:
+          name: Install build-essential with apt-get
+          command: apt-get install -y build-essential
+      - run:
+          name: Install git with apt-get
+          command: apt-get install -y git
+      - run:
+          name: Install tkinter with apt-get
+          command: apt-get install -y python-tk
+      - run:
+          name: Install python packages with pip
+          command: pip install --upgrade matplotlib==2.0.2 numpy setuptools \
+                                         six scipy pytest cython
+      - run:
+          name: Install coco python
+          command: python do.py run-python
+      - run:
+          name: Install coco post-processing
+          command: python do.py install-postprocessing
+      - run:
+          name: Run the example experiment
+          command: |
+            cd ~/coco/code-experiments/build/python
+            python example_experiment.py bbob
+      - run:
+          name: Post-process the results
+          command: |
+            cd ~/coco/code-experiments/build/python
+            python -m cocopp -o ./postproc ./exdata
+      - run:
+          name: Run coco Python 2 tests
+          command: python do.py test-python
+          no_output_timeout: 1800
+      - run:
+          name: Install cmocka and mlocate for C tests
+          command: |
+            apt-get install -y mlocate libcmocka-dev
+            updatedb
+      - run:
+          name: Run coco C tests
+          command: python do.py test-c
+          no_output_timeout: 1800
+      - run:
+          name: Install octave for octave tests
+          command: |
+            apt-get install -y liboctave-dev
+            updatedb
+      - run:
+          name: Run coco octave tests
+          command: python do.py test-octave
+          no_output_timeout: 1800
+      - run:
+          name: Install jdk for java tests
+          command: |
+            apt-get install -y openjdk-8-jdk
+            updatedb
+      - run:
+          name: Run coco octave tests
+          command: python do.py test-java
+          no_output_timeout: 1800
+      - run:
+          name: Run coco pre-processing tests
+          command: python do.py test-preprocessing
+          no_output_timeout: 1800
+      - run:
+          name: Install extra dependencies for tests
+          command: |
+            apt-get install -y texlive-full
+            updatedb
+      - run:
+          name: Run coco post-processing tests
+          command: python do.py test-postprocessing
+          no_output_timeout: 5400
 
 workflows:
 
