@@ -30,7 +30,7 @@ jobs:
           command: apt-get install -y python3-tk
       - run:
           name: Install python packages with pip
-          command: pip3 install --upgrade matplotlib==2.0.2 numpy setuptools \
+          command: pip3 install --upgrade matplotlib numpy setuptools \
                                           six scipy pytest cython
       - run:
           name: Create symbolic link to python binaries
@@ -120,7 +120,7 @@ jobs:
           command: apt-get install -y python-tk
       - run:
           name: Install python packages with pip
-          command: pip install --upgrade matplotlib==2.0.2 numpy setuptools \
+          command: pip install --upgrade matplotlib numpy setuptools \
                                          six scipy pytest cython
       - run:
           name: Install coco python
