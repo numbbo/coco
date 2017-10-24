@@ -56,14 +56,10 @@ jobs:
           command: python3 do.py test-python
           no_output_timeout: 1800
       - run:
-          name: Install cmocka and mlocate for C tests
+          name: Install mlocate
           command: |
-            apt-get install -y mlocate libcmocka-dev
+            apt-get install -y mlocate
             updatedb
-      - run:
-          name: Run coco C tests
-          command: python3 do.py test-c
-          no_output_timeout: 1800
       - run:
           name: Install octave for octave tests
           command: |
