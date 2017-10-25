@@ -271,7 +271,7 @@ def main(args):
         
         # testing data from bbob-noisy suite:
         t0 = time.time()
-        result = os.system(python + command +
+        result = os.system(python + command + ' --omit-single ' +
                            join_path(data_path, 'MCS_huyer_noisy.tgz') +
                            join_path(data_path, 'BFGS_ros_noisy.tgz'))
         print('**  subtest 9 finished in ', time.time() - t0, ' seconds')
