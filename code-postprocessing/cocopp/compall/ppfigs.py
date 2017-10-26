@@ -596,8 +596,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
         # display only the present number of instances, i.e. remove copies
         if len(set(num_of_instances)) > 1:
             warnings.warn('Number of instances inconsistent over all algorithms.')
-        else:
-            num_of_instances = set(num_of_instances)
+        num_of_instances = set(num_of_instances)
         for n in num_of_instances:
             infotext += '%d, ' % n
 
