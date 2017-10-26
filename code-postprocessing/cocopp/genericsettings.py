@@ -257,7 +257,8 @@ isRLDistr = True
 # usage: background = {(color, linestyle): [alg1, alg2, ...], }
 # for example:
 # background = {('#d8d8d8', '-'): ['data/BFGS_ros_noiseless.tgz'], ('#f88017', ':'): ['data/NEWUOA_ros_noiseless.tgz', 'data/RANDOMSEARCH_auger_noiseless.tgz']}
-background = {}
+background = {}  # TODO: we should have a more instructive name here
+background_default_style = (3 * (0.9,), '-')  # very light gray
 
 foreground_algorithm_list = []
 """a list of data files/folders as those specified in cocopp.main"""
