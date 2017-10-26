@@ -556,7 +556,7 @@ class DataSet(object):
         >>> cocopp.genericsettings.verbose = False # ensure to make doctests work
         >>> def setup(infoFile):
         ...     if not os.path.exists(infoFile):
-        ...         filename = cocopp._data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen'))
+        ...         filename = cocopp._data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
         ...         tarfile.open(filename).extractall(cocopp._data_archive.local_data_path)
         >>> infoFile = os.path.join(cocopp._data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
         >>> print('get'); setup(infoFile) # doctest:+ELLIPSIS
