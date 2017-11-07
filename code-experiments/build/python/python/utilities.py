@@ -178,6 +178,23 @@ class ProblemNonAnytime(object):
             (np.random.rand(self.dimension) + np.random.rand(self.dimension))
             * (self.upper_bounds - self.lower_bounds) / 2)
 
+class MiniPrint(object):
+    """print dimension when changed and a single symbol for each call.
+
+    Details: print '|' if ``problem.final_target_hit`` else '.'
+    """
+    def __init__(self):
+        self.dimension = None
+    def __call__(self, problem, final=False):
+        if self.dimension != problem.dimension:
+            if self.dimension is not None:
+                print('')
+            print("%dD: " % problem.dimension, end='')
+            self.dimension = problem.dimension
+        print('|' if problem.final_target_hit else '.', end='')
+        if final:  # final print
+            print('')
+        _sys.stdout.flush()
 
 class ShortInfo(object):
     """print minimal info during benchmarking.
@@ -255,7 +272,6 @@ class ShortInfo(object):
         d = l[1] + l[2]
         h, m, s = l[3].split(':')
         return d + ' ' + h + 'h' + m + ':' + s
-
 
 def ascetime(sec):
     """return elapsed time as str.
