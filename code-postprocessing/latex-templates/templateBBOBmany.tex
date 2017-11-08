@@ -254,30 +254,30 @@ unsuccessful trial under consideration.
 \begin{figure*}
 \centering
 \begin{tabular}{@{}c@{}c@{}c@{}c@{}}
-\includegraphics[width=0.253\textwidth, trim= 0.7cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f001}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f002}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f003}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f004}\\
-\includegraphics[width=0.253\textwidth, trim= 0.7cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f005}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f006}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f007}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f008}\\
-\includegraphics[width=0.253\textwidth, trim= 0.7cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f009}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f010}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f011}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f012}\\
-\includegraphics[width=0.253\textwidth, trim= 0.7cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f013}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f014}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f015}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f016}\\
-\includegraphics[width=0.253\textwidth, trim= 0.7cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f017}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f018}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f019}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.8cm 0.5cm 0.5cm, clip]{ppfigs_f020}\\
-\includegraphics[width=0.253\textwidth, trim= 0.7cm 0.0cm 0.5cm 0.5cm, clip]{ppfigs_f021}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.0cm 0.5cm 0.5cm, clip]{ppfigs_f022}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.0cm 0.5cm 0.5cm, clip]{ppfigs_f023}&
-\includegraphics[width=0.238\textwidth, trim= 1.8cm 0.0cm 0.5cm 0.5cm, clip]{ppfigs_f024}
+\includegraphics[width=0.238\textwidth]{ppfigs_f001}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f002}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f003}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f004}\\
+\includegraphics[width=0.238\textwidth]{ppfigs_f005}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f006}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f007}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f008}\\
+\includegraphics[width=0.238\textwidth]{ppfigs_f009}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f010}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f011}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f012}\\
+\includegraphics[width=0.238\textwidth]{ppfigs_f013}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f014}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f015}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f016}\\
+\includegraphics[width=0.238\textwidth]{ppfigs_f017}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f018}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f019}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f020}\\
+\includegraphics[width=0.238\textwidth]{ppfigs_f021}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f022}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f023}&
+\includegraphics[width=0.238\textwidth]{ppfigs_f024}
 \end{tabular}
 \vspace*{-0.2cm}
 \caption[Expected running time divided by dimension
@@ -288,6 +288,7 @@ versus dimension]{
 }
 % 
 \end{figure*}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -303,14 +304,16 @@ versus dimension]{
   \end{rotate}}
 \newcommand{\includeperfprof}[1]{% include and annotate at the side
   \input{\bbobdatapath\algsfolder #1}%
-  \includegraphics[width=0.4135\textwidth,trim=0mm 0mm 34mm 10mm, clip]{#1}%
-  \raisebox{.037\textwidth}{\parbox[b][.3\textwidth]{.0868\textwidth}{\begin{scriptsize}
-    \perfprofsidepanel % this is "\algaperfprof \vfill \algbperfprof \vfill" etc
-  \end{scriptsize}}}
+  \includegraphics[height=0.24\textheight]{#1}%
+  %\raisebox{.12\textheight}{
+	%\parbox[b][.24\textheight]{.0868\textwidth}{\begin{scriptsize}
+  %  \perfprofsidepanel % this is "\algaperfprof \vfill \algbperfprof \vfill" etc
+  %\end{scriptsize}}
+	%}
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
-\begin{tabular}{@{}c@{}c@{}}
+\begin{tabular}{@{}c@{\hspace*{0.05\textwidth}}c@{}}
  separable fcts & moderate fcts \\
  \includeperfprof{pprldmany_05D_separ} &
  \includeperfprof{pprldmany_05D_lcond} \\ 
@@ -336,7 +339,7 @@ ill-conditioned fcts & multi-modal fcts \\
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
- \begin{tabular}{@{}c@{}c@{}}
+ \begin{tabular}{@{}c@{\hspace*{0.05\textwidth}}c@{}}
  separable fcts & moderate fcts \\
  \includeperfprof{pprldmany_20D_separ} &
  \includeperfprof{pprldmany_20D_lcond} \\ 
