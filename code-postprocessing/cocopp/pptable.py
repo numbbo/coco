@@ -184,7 +184,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                     temp="%.1e" % targetsOfInterest((f,d))[-1]
                     if temp[-2] == "0":
                         temp = temp[:-2] + temp[-1]
-                    curline.append(r'\multicolumn{2}{@{}c@{}}{\textit{%s}:%s \quad}'
+                    curline.append(r'\multicolumn{2}{@{}c|@{}}{\textit{%s}:%s \quad}'
                                    % (temp, writeFEvalsMaxPrec(refalgdata[i], 2)))
                     curlineHtml.append('<td><i>%s</i>:%s</td>\n' 
                                        % (temp, writeFEvalsMaxPrec(refalgdata[i], 2)))
