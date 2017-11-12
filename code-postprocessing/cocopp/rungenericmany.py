@@ -272,7 +272,13 @@ def main(argv=None):
 
         # prepend the algorithm name command to the tex-command file
         lines = []
-        for i, alg in enumerate(args):
+        # first prepare list of sorted algorithm names as displayed
+        algs = []
+        for alg in args:
+            algs.append(str_to_latex(strip_pathname1(alg)))
+        algs.sort()
+        # now ready for writing the sorted algorithms as \providecommand in tex-command file
+        for i, alg in enumerate(algs):
             lines.append('\\providecommand{\\algorithm' + pptex.numtotext(i) +
                          '}{' + str_to_latex(strip_pathname1(alg)) + '}')
         prepend_to_file(latex_commands_file, lines, 5000,
