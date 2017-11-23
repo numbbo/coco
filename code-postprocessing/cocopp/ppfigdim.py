@@ -120,9 +120,6 @@ def scaling_figure_caption():
         figure_caption = captions.replace(caption_text + caption_part_rlbased_targets)
     else:
         figure_caption = captions.replace(caption_text + caption_part_absolute_targets)
-
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
-        figure_caption = figure_caption.replace('$f$', '$(f+g)$')
         
     return figure_caption
 
