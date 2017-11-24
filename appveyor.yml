@@ -2,22 +2,31 @@ build: false
 
 environment:
   matrix:
-    - PYTHON_VERSION: 2.7
-      MINICONDA: C:\Miniconda
-      CYGWIN: C:\cygwin
-    - PYTHON_VERSION: 3.6
-      MINICONDA: C:\Miniconda36
-      CYGWIN: C:\cygwin
+    - MINICONDA: C:\Miniconda-x64
+      MINGW: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1
+      MSYS: C:\msys64
+      BASH: C:\msys64\usr\bin\bash
+    - MINICONDA: C:\Miniconda36-x64
+      MINGW: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1
+      MSYS: C:\msys64
+      BASH: C:\msys64\usr\bin\bash
+
+cache:
+  # cache chocolatey portable installations (invalidate with change in appveyor.yml)
+  - C:\ProgramData\chocolatey\bin -> appveyor.yml
+  - C:\ProgramData\chocolatey\lib -> appveyor.yml
+  # cache msys packages
+  - C:\msys64\var\cache\pacman\pkg
 
 init:
-  - cmd: "ECHO %PYTHON_VERSION% %MINICONDA%"
+  - cmd: "ECHO %MINICONDA%"
   - cmd: "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%"
-  - cmd: "set PATH=%CYGWIN%;%CYGWIN%\\bin;%PATH%"
+  - cmd: "set PATH=%MINGW%;%MINGW%\\bin;%PATH%"
   - cmd: "set PATH=C:\\Program Files\\MiKTeX 2.9\\miktex\\bin\\x64;%PATH%"
-  
 
 install:
   - cinst miktex
+  - cmd: "%BASH% -lc \"pacman -S --noconfirm mingw-w64-x86_64-cmocka\""
   - cmd: conda install -y matplotlib numpy scipy setuptools six pytest cython
   - cmd: python do.py run-python
   - cmd: python do.py install-postprocessing
@@ -30,6 +39,7 @@ test_script:
   - cmd: cd ..\..\..
   # run the tests
   - cmd: python do.py build-python
+  - cmd: python do.py test-c
   - cmd: python do.py test-python
   - cmd: python do.py test-java
   - cmd: python do.py test-preprocessing
