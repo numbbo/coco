@@ -37,6 +37,12 @@ except ImportError:
             raise error
         return output
 
+# We need to be able to catch WindowsError, but it is not defined on Linux
+# This defines it as None if it is not available.
+try:
+    WindowsError
+except NameError:
+    WindowsError = None
 
 def check_output_with_print(verbose, *popenargs, **kwargs):
     output = check_output(*popenargs, **kwargs)
@@ -201,16 +207,15 @@ def make(directory, target, verbose=False):
         os.chdir(directory)
         print("CHDIR\t" + os.getcwd())
         # prepare makefile(s)
-        if ((('win32' in sys.platform) or ('win64' in sys.platform)) and
-            ('cygwin' not in os.environ['PATH'])):
-            # only if under Windows and without Cygwin, we need a specific
-            # Windows makefile
-            copy_file('Makefile_win_gcc.in', 'Makefile')
-        else:
-            copy_file('Makefile.in', 'Makefile')
+        copy_file('Makefile.in', 'Makefile')
 
-        output = check_output_with_print(verbose, ['make', target], stderr=STDOUT, env=os.environ,
-                              universal_newlines=True)
+        try:
+            output = check_output_with_print(verbose, ['make', target], stderr=STDOUT,
+                                             env=os.environ, universal_newlines=True)
+        except WindowsError:
+            output = check_output_with_print(verbose, ['mingw32-make', target], stderr=STDOUT,
+                                             env=os.environ, universal_newlines=True)
+
     except CalledProcessError as e:
         print("ERROR: return value=%i" % e.returncode)
         print(e.output)

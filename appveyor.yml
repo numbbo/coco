@@ -3,11 +3,11 @@ build: false
 environment:
   matrix:
     - MINICONDA: C:\Miniconda-x64
-      MINGW: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1
+      MINGW: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64
       MSYS: C:\msys64
       BASH: C:\msys64\usr\bin\bash
     - MINICONDA: C:\Miniconda36-x64
-      MINGW: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1
+      MINGW: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64
       MSYS: C:\msys64
       BASH: C:\msys64\usr\bin\bash
 
@@ -23,6 +23,7 @@ init:
   - cmd: "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%"
   - cmd: "set PATH=%MINGW%;%MINGW%\\bin;%PATH%"
   - cmd: "set PATH=C:\\Program Files\\MiKTeX 2.9\\miktex\\bin\\x64;%PATH%"
+  - cmd: "set CC=gcc"
 
 install:
   - cinst miktex
@@ -38,8 +39,8 @@ test_script:
   - cmd: python -m cocopp -o .\postproc .\exdata\random_search_on_bbob_budget0002xD
   - cmd: cd ..\..\..
   # run the tests
-  - cmd: python do.py build-python
   - cmd: python do.py test-c
+  - cmd: python do.py build-python
   - cmd: python do.py test-python
   - cmd: python do.py test-java
   - cmd: python do.py test-preprocessing
