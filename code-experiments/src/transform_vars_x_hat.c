@@ -37,7 +37,7 @@ static void transform_vars_x_hat_evaluate(coco_problem_t *problem, const double 
     bbob2009_unif(data->x, problem->number_of_variables, data->seed);
 
     for (i = 0; i < problem->number_of_variables; ++i) {
-      if (data->x[i] - 0.5 < 0.0) {
+      if (data->x[i] < 0.5) {
         data->x[i] = -x[i];
       } else {
         data->x[i] = x[i];
@@ -62,7 +62,6 @@ static void transform_vars_x_hat_free(void *thing) {
 static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, const long seed) {
   transform_vars_x_hat_data_t *data;
   coco_problem_t *problem;
-  const char *result;
   size_t i;
 
   data = (transform_vars_x_hat_data_t *) coco_allocate_memory(sizeof(*data));
@@ -71,20 +70,11 @@ static coco_problem_t *transform_vars_x_hat(coco_problem_t *inner_problem, const
 
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_x_hat_free, "transform_vars_x_hat");
   problem->evaluate_function = transform_vars_x_hat_evaluate;
-  /* Dirty way of setting the best parameter of the transformed f_schwefel... Wassim: WHY?!!*/
-  bbob2009_unif(data->x, problem->number_of_variables, data->seed);
-  result = strstr(coco_problem_get_id(inner_problem), "schwefel");
-	if (result != NULL) {
-		for (i = 0; i < problem->number_of_variables; ++i) {
-			if (data->x[i] - 0.5 < 0.0) {
-				problem->best_parameter[i] = -0.5 * 4.2096874633;
-			} else {
-				problem->best_parameter[i] = 0.5 * 4.2096874633;
-			}
-		}
-	} else if (coco_problem_best_parameter_not_zero(inner_problem)) {
-		coco_warning("transform_vars_x_hat(): 'best_parameter' not updated, set to NAN");
-		coco_vector_set_to_nan(inner_problem->best_parameter, inner_problem->number_of_variables);
-	}
-	return problem;
+  if (coco_problem_best_parameter_not_zero(problem)) {
+    bbob2009_unif(data->x, problem->number_of_variables, data->seed);
+	for (i = 0; i < problem->number_of_variables; ++i)
+	  if (data->x[i] < 0.5)  /* with probability 1/2 */
+		problem->best_parameter[i] *= -1;
+  }
+  return problem;
 }

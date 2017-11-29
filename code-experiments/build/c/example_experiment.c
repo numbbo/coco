@@ -4,6 +4,7 @@
  *
  * Set the global parameter BUDGET_MULTIPLIER to suit your needs.
  */
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -11,16 +12,18 @@
 
 #include "coco.h"
 
+#define max(a,b) ((a) > (b) ? (a) : (b))
+
 /**
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.
  * Increase the budget multiplier value gradually to see how it affects the runtime.
  */
-static const size_t BUDGET_MULTIPLIER = 2;
+static const int BUDGET_MULTIPLIER = 2;
 
 /**
  * The maximal number of independent restarts allowed for an algorithm that restarts itself.
  */
-static const size_t INDEPENDENT_RESTARTS = 1e5;
+static const long INDEPENDENT_RESTARTS = 1e5;
 
 /**
  * The random seed. Change if needed.
@@ -40,11 +43,19 @@ typedef void (*evaluate_function_t)(const double *x, double *y);
 static coco_problem_t *PROBLEM;
 
 /**
- * The function that calls the evaluation of the first vector on the problem to be optimized and stores the
- * evaluation result in the second vector.
+ * Calls coco_evaluate_function() to evaluate the objective function
+ * of the problem at the point x and stores the result in the vector y
  */
 static void evaluate_function(const double *x, double *y) {
   coco_evaluate_function(PROBLEM, x, y);
+}
+
+/**
+ * Calls coco_evaluate_constraint() to evaluate the constraints
+ * of the problem at the point x and stores the result in the vector y
+ */
+static void evaluate_constraint(const double *x, double *y) {
+  coco_evaluate_constraint(PROBLEM, x, y);
 }
 
 /* Declarations of all functions implemented in this file (so that their order is not important): */
@@ -52,9 +63,11 @@ void example_experiment(const char *suite_name,
                         const char *observer_name,
                         coco_random_state_t *random_generator);
 
-void my_random_search(evaluate_function_t evaluate,
+void my_random_search(evaluate_function_t evaluate_func,
+                      evaluate_function_t evaluate_cons,
                       const size_t dimension,
                       const size_t number_of_objectives,
+                      const size_t number_of_constraints,
                       const double *lower_bounds,
                       const double *upper_bounds,
                       const size_t max_budget,
@@ -95,10 +108,19 @@ int main(void) {
   printf("Running the example experiment... (might take time, be patient)\n");
   fflush(stdout);
 
-  example_experiment("bbob-biobj", "bbob-biobj", random_generator);
-
-  /* Uncomment the line below to run the same example experiment on the bbob suite
-  example_experiment("bbob", "bbob", random_generator); */
+  /** 
+   * Start the actual experiments on a test suite and use a matching logger, for
+   * example one of the following: 
+   *   bbob                 24 unconstrained noiseless single-objective functions
+   *   bbob-biobj           55 unconstrained noiseless bi-objective functions
+   *   bbob-biobj-ext       92 unconstrained noiseless bi-objective functions
+   *   bbob-constrained     48 constrained noiseless single-objective functions
+   *   bbob-largescale      24 unconstrained noiseless single-objective functions in large dimension
+   *
+   * Adapt to your need. Note that the experiment is run according
+   * to the settings, defined in example_experiment(...) below.
+   */
+  example_experiment("bbob", "bbob", random_generator);
 
   printf("Done!\n");
   fflush(stdout);
@@ -109,13 +131,12 @@ int main(void) {
 }
 
 /**
- * A simple example of benchmarking random search on a suite with instances from 2016 that can serve also as
- * a timing experiment.
+ * A simple example of benchmarking random search on a given suite with default instances
+ * that can serve also as a timing experiment.
  *
- * @param suite_name Name of the suite (use "bbob" for the single-objective and "bbob-biobj" for the
- * bi-objective suite).
- * @param observer_name Name of the observer (use "bbob" for the single-objective and "bbob-biobj" for the
- * bi-objective observer).
+ * @param suite_name Name of the suite (e.g. "bbob" or "bbob-biobj").
+ * @param observer_name Name of the observer matching with the chosen suite (e.g. "bbob-biobj" 
+ * when using the "bbob-biobj-ext" suite).
  * @param random_generator The random number generator.
  */
 void example_experiment(const char *suite_name,
@@ -133,8 +154,12 @@ void example_experiment(const char *suite_name,
                    "algorithm_name: RS "
                    "algorithm_info: \"A simple random search algorithm\"", suite_name);
 
-  /* Initialize the suite and observer */
-  suite = coco_suite(suite_name, "year: 2016", "dimensions: 2,3,5,10,20,40");
+  /* Initialize the suite and observer.
+   *
+   * For more details on how to change the default options, see
+   * http://numbbo.github.io/coco-doc/C/#suite-parameters and
+   * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
+  suite = coco_suite(suite_name, "", "");
   observer = coco_observer(observer_name, observer_options);
   coco_free_memory(observer_options);
 
@@ -143,28 +168,33 @@ void example_experiment(const char *suite_name,
 
   /* Iterate over all problems in the suite */
   while ((PROBLEM = coco_suite_get_next_problem(suite, observer)) != NULL) {
-
+    
     size_t dimension = coco_problem_get_dimension(PROBLEM);
 
     /* Run the algorithm at least once */
     for (run = 1; run <= 1 + INDEPENDENT_RESTARTS; run++) {
 
-      size_t evaluations_done = coco_problem_get_evaluations(PROBLEM);
-      long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - (long) evaluations_done;
+      long evaluations_done = (long) (coco_problem_get_evaluations(PROBLEM) + 
+            coco_problem_get_evaluations_constraints(PROBLEM));
+      long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - evaluations_done;
 
       /* Break the loop if the target was hit or there are no more remaining evaluations */
-      if (coco_problem_final_target_hit(PROBLEM) || (evaluations_remaining <= 0))
+      if ((coco_problem_final_target_hit(PROBLEM) && 
+           coco_problem_get_number_of_constraints(PROBLEM) == 0)
+           || (evaluations_remaining <= 0))
         break;
 
       /* Call the optimization algorithm for the remaining number of evaluations */
       my_random_search(evaluate_function,
+                       evaluate_constraint,
                        dimension,
                        coco_problem_get_number_of_objectives(PROBLEM),
+                       coco_problem_get_number_of_constraints(PROBLEM),
                        coco_problem_get_smallest_values_of_interest(PROBLEM),
                        coco_problem_get_largest_values_of_interest(PROBLEM),
                        (size_t) evaluations_remaining,
                        random_generator);
-
+      
       /* Break the loop if the algorithm performed no evaluations or an unexpected thing happened */
       if (coco_problem_get_evaluations(PROBLEM) == evaluations_done) {
         printf("WARNING: Budget has not been exhausted (%lu/%lu evaluations done)!\n",
@@ -190,27 +220,35 @@ void example_experiment(const char *suite_name,
 /**
  * A random search algorithm that can be used for single- as well as multi-objective optimization.
  *
- * @param evaluate The evaluation function used to evaluate the solutions.
+ * @param evaluate_function The function used to evaluate the objective function.
+ * @param evaluate_constraint The function used to evaluate the constraints.
  * @param dimension The number of variables.
  * @param number_of_objectives The number of objectives.
+ * @param number_of_constraints The number of constraints.
  * @param lower_bounds The lower bounds of the region of interested (a vector containing dimension values).
  * @param upper_bounds The upper bounds of the region of interested (a vector containing dimension values).
  * @param max_budget The maximal number of evaluations.
  * @param random_generator Pointer to a random number generator able to produce uniformly and normally
  * distributed random numbers.
  */
-void my_random_search(evaluate_function_t evaluate,
+void my_random_search(evaluate_function_t evaluate_func,
+                      evaluate_function_t evaluate_cons,
                       const size_t dimension,
                       const size_t number_of_objectives,
+                      const size_t number_of_constraints,
                       const double *lower_bounds,
                       const double *upper_bounds,
                       const size_t max_budget,
                       coco_random_state_t *random_generator) {
 
   double *x = coco_allocate_vector(dimension);
-  double *y = coco_allocate_vector(number_of_objectives);
+  double *functions_values = coco_allocate_vector(number_of_objectives);
+  double *constraints_values = NULL;
   double range;
   size_t i, j;
+  
+  if (number_of_constraints > 0 )
+    constraints_values = coco_allocate_vector(number_of_constraints);
 
   for (i = 0; i < max_budget; ++i) {
 
@@ -219,15 +257,20 @@ void my_random_search(evaluate_function_t evaluate,
       range = upper_bounds[j] - lower_bounds[j];
       x[j] = lower_bounds[j] + coco_random_uniform(random_generator) * range;
     }
+    
+    /* Evaluate COCO's constraints function if problem is constrained */
+    if (number_of_constraints > 0 )
+      evaluate_cons(x, constraints_values);
 
-    /* Call the evaluate function to evaluate x on the current problem (this is where all the COCO logging
-     * is performed) */
-    evaluate(x, y);
+    /* Call COCO's evaluate function where all the logging is performed */
+    evaluate_func(x, functions_values);
 
   }
 
   coco_free_memory(x);
-  coco_free_memory(y);
+  coco_free_memory(functions_values);
+  if (number_of_constraints > 0 )
+    coco_free_memory(constraints_values);
 }
 
 /**

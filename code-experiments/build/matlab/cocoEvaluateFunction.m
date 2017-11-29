@@ -14,5 +14,5 @@
 %    y        The objective vector that is the result of the evaluation (in
 %             single-objective problems only the first vector item is being
 %             set).
-function y = cocoEvaluateFunction(f, x)
-y = cocoCall('cocoEvaluateFunction', f, x);
+function y = cocoEvaluateFunction(problem, x)
+y = cocoCall('cocoEvaluateFunction', problem, x);

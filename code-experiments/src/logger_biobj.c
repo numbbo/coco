@@ -25,6 +25,9 @@
  * objective space. The non-normalized ROI is a rectangle with the ideal and nadir points as its two
  * opposite vertices, while the normalized ROI is the square [0, 1]^2. If not specifically mentioned, the
  * normalized ROI is assumed.
+ *
+ * @note This logger can handle both the original bbob-biobj test suite with 55 and the extended
+ * bbob-biobj-ext test suite with 96 functions.
  */
 
 #include <stdio.h>
@@ -358,7 +361,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
                 next_item->indicator_contribution[i] = (node_item->normalized_y[0] - next_item->normalized_y[0])
                     * (1 - next_item->normalized_y[1]);
-                assert(next_item->indicator_contribution[i] > 0);
+                assert(next_item->indicator_contribution[i] >= 0);
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -377,7 +380,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
               if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
                 node_item->indicator_contribution[i] = (previous_item->normalized_y[0] - node_item->normalized_y[0])
                     * (1 - node_item->normalized_y[1]);
-                assert(node_item->indicator_contribution[i] > 0);
+                assert(node_item->indicator_contribution[i] >= 0);
               } else {
                 coco_error(
                     "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -397,7 +400,7 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
             if (strcmp(logger->indicators[i]->name, "hyp") == 0) {
               node_item->indicator_contribution[i] = (1 - node_item->normalized_y[0])
                   * (1 - node_item->normalized_y[1]);
-              assert(node_item->indicator_contribution[i] > 0);
+              assert(node_item->indicator_contribution[i] >= 0);
             } else {
               coco_error(
                   "logger_biobj_tree_update(): Indicator computation not implemented yet for indicator %s",
@@ -453,7 +456,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   indicator->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, problem->number_of_variables);
 
   /* Prepare the info file */
-  path_name = coco_allocate_string(COCO_PATH_MAX);
+  path_name = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_create_directory(path_name);
   file_name = coco_strdupf("%s_%s.info", problem->problem_type, indicator_name);
@@ -468,7 +471,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   coco_free_memory(path_name);
 
   /* Prepare the tdat file */
-  path_name = coco_allocate_string(COCO_PATH_MAX);
+  path_name = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
   coco_create_directory(path_name);
@@ -484,7 +487,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   coco_free_memory(path_name);
 
   /* Prepare the dat file */
-  path_name = coco_allocate_string(COCO_PATH_MAX);
+  path_name = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
   coco_create_directory(path_name);
@@ -500,14 +503,9 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   if (!info_file_exists) {
     /* Output algorithm name */
     assert(problem->suite);
-    /* TODO: Use this once suite can be read by the postprocessing
     fprintf(indicator->info_file,
         "suite = '%s', algorithm = '%s', indicator = '%s', folder = '%s', coco_version = '%s'\n%% %s",
         problem->suite->suite_name, observer->algorithm_name, indicator_name, problem->problem_type,
-        coco_version, observer->algorithm_info);*/
-    fprintf(indicator->info_file,
-        "algorithm = '%s', indicator = '%s', folder = '%s', coco_version = '%s'\n%% %s",
-        observer->algorithm_name, indicator_name, problem->problem_type,
         coco_version, observer->algorithm_info);
     if (logger->log_nondom_mode == LOG_NONDOM_READ)
       fprintf(indicator->info_file, " (reconstructed)");
@@ -889,7 +887,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
       (logger_biobj->log_nondom_mode == LOG_NONDOM_FINAL)) {
 
     /* Create the path to the file */
-    path_name = coco_allocate_string(COCO_PATH_MAX);
+    path_name = coco_allocate_string(COCO_PATH_MAX + 1);
     memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
     coco_join_path(path_name, COCO_PATH_MAX, nondom_folder_name, NULL);
     coco_create_directory(path_name);

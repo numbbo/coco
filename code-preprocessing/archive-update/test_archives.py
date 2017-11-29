@@ -83,7 +83,7 @@ def prepare_archive_data(download_data=False):
         for root, dirs, files in walk(data_folder, topdown=False):
             for name in files:
                 # Change file permission so it can be deleted
-                chmod(join(root, name), 0777)
+                chmod(join(root, name), 0o777)
 
 
 def cleanup_archive_data(delete_all=False):

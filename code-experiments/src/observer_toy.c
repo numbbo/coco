@@ -53,13 +53,13 @@ static void observer_toy(coco_observer_t *observer, const char *options, coco_op
   observer_toy = (observer_toy_data_t *) coco_allocate_memory(sizeof(*observer_toy));
 
   /* Read file_name and number_of_targets from the options and use them to initialize the observer */
-  string_value = coco_allocate_string(COCO_PATH_MAX);
+  string_value = coco_allocate_string(COCO_PATH_MAX + 1);
   if (coco_options_read_string(options, "file_name", string_value) == 0) {
     strcpy(string_value, "first_hitting_times.dat");
   }
 
   /* Open log_file */
-  file_name = coco_allocate_string(COCO_PATH_MAX);
+  file_name = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(file_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_create_directory(file_name);
   coco_join_path(file_name, COCO_PATH_MAX, string_value, NULL);

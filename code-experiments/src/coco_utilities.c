@@ -766,9 +766,12 @@ static int coco_options_read_string(const char *options, const char *name, char 
 
 /**
  * @brief Reads (possibly delimited) values from options using the form "name1: value1,value2,value3 name2: value4",
- * i.e. reads all characters from the corresponding name up to the next whitespace or end of string.
+ * i.e. reads all characters from the corresponding name up to the next alphabetic character or end of string,
+ * ignoring white-space characters.
  *
  * Formatting requirements:
+ * - names have to start with alphabetic characters
+ * - values cannot include alphabetic characters
  * - name and value need to be separated by a colon (spaces are optional)
  *
  * @return The number of successful assignments.
@@ -786,18 +789,18 @@ static int coco_options_read_values(const char *options, const char *name, char 
     return 0;
   i2 = i1 + coco_strfind(&options[i1], ":") + 1;
 
-  /* Remove trailing white spaces */
-  while (isspace((unsigned char) options[i2]))
-    i2++;
-
   if (i2 <= i1) {
     return 0;
   }
 
   i = 0;
-  while (!isspace((unsigned char) options[i2 + i]) && (options[i2 + i] != '\0')) {
-    pointer[i] = options[i2 + i];
-    i++;
+  while (!isalpha((unsigned char) options[i2 + i]) && (options[i2 + i] != '\0')) {
+    if(isspace((unsigned char) options[i2 + i])) {
+        i2++;
+    } else {
+        pointer[i] = options[i2 + i];
+        i++;
+    }
   }
   pointer[i] = '\0';
   return i;
@@ -901,6 +904,70 @@ static int coco_is_inf(const double x) {
 	return (isinf(x) || (x <= -INFINITY) || (x >= INFINITY));
 }
 
+/**
+ * @brief Returns 1 if the input vector of dimension dim contains no NaN of inf values, and 0 otherwise.
+ */
+static int coco_vector_isfinite(const double *x, const size_t dim) {
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		if (coco_is_nan(x[i]) || coco_is_inf(x[i]))
+		  return 0;
+	}
+	return 1;
+}
+
+/**
+ * @brief Returns 1 if the point x is feasible, and 0 otherwise.
+ *
+ * Allows constraint_values == NULL, otherwise constraint_values
+ * must be a valid double* pointer and contains the g-values of x
+ * on "return".
+ * 
+ * Any point x containing NaN or inf values is considered infeasible.
+ *
+ * This function is (and should be) used internally only, and does not
+ * increase the counter of constraint function evaluations.
+ *
+ * @param problem The given COCO problem.
+ * @param x Decision vector.
+ * @param constraint_values Vector of contraints values resulting from evaluation.
+ */
+static int coco_is_feasible(coco_problem_t *problem,
+                     const double *x,
+                     double *constraint_values) {
+
+  size_t i;
+  double *cons_values = constraint_values;
+  int ret_val = 1;
+
+  /* Return 0 if the decision vector contains any INFINITY or NaN values */
+  if (!coco_vector_isfinite(x, coco_problem_get_dimension(problem)))
+    return 0;
+
+  if (coco_problem_get_number_of_constraints(problem) <= 0)
+    return 1;
+
+  assert(problem != NULL);
+  assert(problem->evaluate_constraint != NULL);
+  
+  if (constraint_values == NULL)
+     cons_values = coco_allocate_vector(problem->number_of_constraints);
+
+  problem->evaluate_constraint(problem, x, cons_values);
+  /* coco_evaluate_constraint(problem, x, cons_values) increments problem->evaluations_constraints counter */
+
+  for(i = 0; i < coco_problem_get_number_of_constraints(problem); ++i) {
+    if (cons_values[i] > 0.0) {
+      ret_val = 0;
+      break;
+    }
+  }
+
+  if (constraint_values == NULL)
+    coco_free_memory(cons_values);
+  return ret_val;
+}
+
 /**@}*/
 
 /***********************************************************************************************************/
@@ -947,6 +1014,29 @@ static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, 
   return count;
 }
 
+/**
+ * @brief Normalizes vector x and multiplies each componenent by alpha.
+ *
+ */
+static void coco_scale_vector(double *x, size_t dimension, double alpha) {
+  
+  size_t i;
+  double norm = 0.0;
+  
+  assert(x);
+  
+  for (i = 0; i < dimension; ++i)
+    norm += x[i] * x[i];
+    
+  norm = sqrt(norm);
+  
+  if (norm != 0.0) {
+    for (i = 0; i < dimension; ++i) {
+      x[i] /= norm;
+      x[i] *= alpha;
+	 }
+  }
+}
 /**@}*/
 
 /***********************************************************************************************************/

@@ -229,7 +229,7 @@ static int coco_observer_evaluations_trigger_first(coco_observer_evaluations_t *
 
   assert(evaluations != NULL);
 
-  if (evaluation_number == evaluations->value1) {
+  if (evaluation_number >= evaluations->value1) {
     /* Compute the next value for the first trigger */
     while (coco_double_to_size_t(floor(pow(10, (double) evaluations->exponent1 / (double) evaluations->number_of_triggers)) <= evaluations->value1)) {
       evaluations->exponent1++;
@@ -252,7 +252,7 @@ static int coco_observer_evaluations_trigger_second(coco_observer_evaluations_t 
 
   assert(evaluations != NULL);
 
-  if (evaluation_number == evaluations->value2) {
+  if (evaluation_number >= evaluations->value2) {
     /* Compute the next value for the second trigger */
     if (evaluations->base_index < evaluations->base_count - 1) {
       evaluations->base_index++;
@@ -436,8 +436,8 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     return NULL;
   }
 
-  result_folder = coco_allocate_string(COCO_PATH_MAX);
-  algorithm_name = coco_allocate_string(COCO_PATH_MAX);
+  result_folder = coco_allocate_string(COCO_PATH_MAX + 1);
+  algorithm_name = coco_allocate_string(COCO_PATH_MAX + 1);
   algorithm_info = coco_allocate_string(5 * COCO_PATH_MAX);
   /* Read result_folder, algorithm_name and algorithm_info from the observer_options and use
    * them to initialize the observer */
@@ -445,7 +445,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     strcpy(result_folder, "default");
   }
   /* Create the result_folder inside the "exdata" folder */
-  path = coco_allocate_string(COCO_PATH_MAX);
+  path = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(path, outer_folder_name, strlen(outer_folder_name) + 1);
   coco_join_path(path, COCO_PATH_MAX, result_folder, NULL);
   coco_create_unique_directory(&path);
@@ -516,6 +516,12 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     observer_bbob(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob-biobj")) {
     observer_biobj(observer, observer_options, &additional_option_keys);
+  } else if (0 == strcmp(observer_name, "bbob-biobj-ext")) {
+    observer_biobj(observer, observer_options, &additional_option_keys);
+  } else if (0 == strcmp(observer_name, "bbob-largescale")) {
+    observer_bbob(observer, observer_options, &additional_option_keys);
+  } else if (0 == strcmp(observer_name, "bbob-constrained")) {
+    observer_bbob(observer, observer_options, &additional_option_keys);
   } else {
     coco_warning("Unknown observer!");
     return NULL;
@@ -556,7 +562,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
  * @param problem The given COCO problem.
  * @param observer The COCO observer, whose logger will wrap the problem.
  *
- * @returns The observed problem in the form of a new COCO problem instance or the same problem if the
+ * @return The observed problem in the form of a new COCO problem instance or the same problem if the
  * observer is NULL.
  */
 coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer_t *observer) {
@@ -580,7 +586,7 @@ coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer
  * @param problem The observed COCO problem.
  * @param observer The COCO observer, whose logger was wrapping the problem.
  *
- * @returns The unobserved problem as a pointer to the inner problem or the same problem if the problem
+ * @return The unobserved problem as a pointer to the inner problem or the same problem if the problem
  * was not observed.
  */
 coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_observer_t *observer) {
@@ -612,3 +618,24 @@ coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_obser
 
   return problem_unobserved;
 }
+
+/**
+ * Get the result folder name, which is a unique folder name constructed
+ * from the result_folder option.
+ *
+ * @param observer The COCO observer, whose logger may be wrapping a problem.
+ *
+ * @return The result folder name, where the logger writes its output.
+ */
+const char *coco_observer_get_result_folder(const coco_observer_t *observer) {
+  if (observer == NULL) {
+    coco_warning("coco_observer_get_result_folder: no observer to get result_folder from");
+    return "";
+  }
+  else if (observer->is_active == 0) {
+    coco_warning("coco_observer_get_result_folder: observer is not active, returning empty string");
+    return "";
+  }
+  return observer->result_folder;
+}
+

@@ -1,0 +1,37 @@
+build: false
+
+environment:
+  matrix:
+    - PYTHON_VERSION: 2.7
+      MINICONDA: C:\Miniconda
+      CYGWIN: C:\cygwin
+    - PYTHON_VERSION: 3.6
+      MINICONDA: C:\Miniconda36
+      CYGWIN: C:\cygwin
+
+init:
+  - cmd: "ECHO %PYTHON_VERSION% %MINICONDA%"
+  - cmd: "set PATH=%MINICONDA%;%MINICONDA%\\Scripts;%PATH%"
+  - cmd: "set PATH=%CYGWIN%;%CYGWIN%\\bin;%PATH%"
+  - cmd: "set PATH=C:\\Program Files\\MiKTeX 2.9\\miktex\\bin\\x64;%PATH%"
+  
+
+install:
+  - cinst miktex
+  - cmd: conda install -y matplotlib numpy scipy setuptools six pytest cython
+  - cmd: python do.py run-python
+  - cmd: python do.py install-postprocessing
+
+test_script:
+  # run the experiment
+  - cmd: cd code-experiments\build\python
+  - cmd: python example_experiment.py bbob
+  - cmd: python -m cocopp -o .\postproc .\exdata\random_search_on_bbob_budget0002xD
+  - cmd: cd ..\..\..
+  # run the tests
+  - cmd: python do.py build-python
+  - cmd: python do.py test-python
+  - cmd: python do.py test-java
+  - cmd: python do.py test-preprocessing
+  - cmd: python do.py test-postprocessing
+  # - cmd: python do.py test-postprocessing-all

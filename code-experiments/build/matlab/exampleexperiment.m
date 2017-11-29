@@ -1,13 +1,10 @@
 %
 % This script runs random search for BUDGET_MULTIPLIER*DIM function
-% evaluations on the biobjective 'bbob-biobj' suite.
-%
-% An example experiment on the single-objective 'bbob' suite can be started
-% by renaming the suite_name below.
+% evaluations on a COCO suite and can serve also as a timing experiment.
 %
 % This example experiment allows also for easy implementation of independent
 % restarts by simply increasing NUM_OF_INDEPENDENT_RESTARTS. To make this
-% effective, the algorithm should have at least one more stopping criterium
+% effective, the algorithm should have at least one more stopping criterion
 % than just a maximal budget.
 %
 more off; % to get immediate output in Octave
@@ -25,15 +22,29 @@ NUM_OF_INDEPENDENT_RESTARTS = 1e9; % max. number of independent algorithm
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % Prepare Experiment    %
 %%%%%%%%%%%%%%%%%%%%%%%%%
-suite_name = 'bbob-biobj'; % works for 'bbob' as well
-observer_name = suite_name;
+
+% choose a test suite and a matching logger, for
+% example one of the following:
+%
+% bbob              24 unconstrained noiseless single-objective functions
+% bbob-biobj        55 unconstrained noiseless bi-objective functions
+% bbob-biobj-ext    92 unconstrained noiseless bi-objective functions
+% bbob-largescale   24 unconstrained noiseless single-objective functions in large dimensions
+% bbob-constrained  48 constrained noiseless single-objective functions
+%
+suite_name = 'bbob';
+observer_name = 'bbob';
 observer_options = strcat('result_folder: RS_on_', ...
     suite_name, ...
     [' algorithm_name: RS '...
     ' algorithm_info: A_simple_random_search ']);
 
-% dimension 40 is optional:
-suite = cocoSuite(suite_name, 'year: 2016', 'dimensions: 2,3,5,10,20,40');
+% initialize suite and observer with default options,
+% to change the default, see 
+% http://numbbo.github.io/coco-doc/C/#suite-parameters and
+% http://numbbo.github.io/coco-doc/C/#observer-parameters
+% for details.
+suite = cocoSuite(suite_name, '', '');
 observer = cocoObserver(observer_name, observer_options);
 
 % set log level depending on how much output you want to see, e.g. 'warning'
@@ -74,12 +85,14 @@ while true
     % restart functionality: do at most NUM_OF_INDEPENDENT_RESTARTS+1
     % independent runs until budget is used:
     i = -1; % count number of independent restarts
-    while BUDGET_MULTIPLIER*dimension > cocoProblemGetEvaluations(problem)
+    while (BUDGET_MULTIPLIER*dimension > (cocoProblemGetEvaluations(problem) + ...
+                                          cocoProblemGetEvaluationsConstraints(problem)))
         i = i+1;
         if (i > 0)
             fprintf('INFO: algorithm restarted\n');
         end
-        doneEvalsBefore = cocoProblemGetEvaluations(problem);
+        doneEvalsBefore = cocoProblemGetEvaluations(problem) + ...
+                          cocoProblemGetEvaluationsConstraints(problem);
         
         % start algorithm with remaining number of function evaluations:
         my_optimizer(problem,...
@@ -88,7 +101,8 @@ while true
             BUDGET_MULTIPLIER*dimension - doneEvalsBefore);
         
         % check whether things went wrong or whether experiment is over:
-        doneEvalsAfter = cocoProblemGetEvaluations(problem);
+        doneEvalsAfter = cocoProblemGetEvaluations(problem) + ...
+                         cocoProblemGetEvaluationsConstraints(problem);
         if cocoProblemFinalTargetHit(problem) == 1 ||...
                 doneEvalsAfter >= BUDGET_MULTIPLIER * dimension
             break;

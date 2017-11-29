@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os
+import sys
 import argparse
 
 from cocoprep.archive_load_data import parse_range, read_best_values, write_best_values
@@ -25,6 +26,7 @@ def update_best_hypervolume(old_best_files, new_best_data, new_best_file):
     except IOError as err:
         print(err)
         print('Continuing nevertheless...')
+        sys.stdout.flush()
         result = new_best_data
     else:
         # Create a set of problem_names contained in at least one dictionary
@@ -45,10 +47,12 @@ def update_best_hypervolume(old_best_files, new_best_data, new_best_file):
 
             if new_value is not None and old_value is not None and float(new_value) > float(old_value):
                 print('{} HV improved by {:.15f}'.format(problem_name, float(new_value) - float(old_value)))
+                sys.stdout.flush()
 
     # Write the best values
     write_best_values(result, new_best_file)
     print('Done.')
+    sys.stdout.flush()
 
 
 def merge_archives(input_path, output_path, functions, instances, dimensions, crop_variables):
@@ -59,13 +63,16 @@ def merge_archives(input_path, output_path, functions, instances, dimensions, cr
        :param functions: functions to be included in the merging
        :param instances: instances to be included in the merging
        :param dimensions: dimensions to be included in the merging
+       :param crop_variables: whether output archives should contain information on solution variables
     """
     result = {}
 
     print('Reading archive information...')
+    sys.stdout.flush()
     archive_info = ArchiveInfo(input_path, functions, instances, dimensions)
 
     print('Processing archives...')
+    sys.stdout.flush()
     while True:
         # Get information about the next problem instance
         problem_instance_info = archive_info.get_next_problem_instance_info()
@@ -86,6 +93,7 @@ def merge_archives(input_path, output_path, functions, instances, dimensions, cr
 
         result.update({str(problem_instance_info): archive.hypervolume})
         print('{}: {:.15f}'.format(problem_instance_info, archive.hypervolume))
+        sys.stdout.flush()
 
         log_level(old_level)
 
@@ -103,9 +111,9 @@ if __name__ == '__main__':
     import timing
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--functions', type=parse_range, default=range(1, 56),
+    parser.add_argument('-f', '--functions', type=parse_range, default=range(1, 93),
                         help='function numbers to be included in the processing of archives')
-    parser.add_argument('-i', '--instances', type=parse_range, default=range(1, 11),
+    parser.add_argument('-i', '--instances', type=parse_range, default=range(1, 16),
                         help='instance numbers to be included in the processing of archives')
     parser.add_argument('-d', '--dimensions', type=parse_range, default=[2, 3, 5, 10, 20, 40],
                         help='dimensions to be included in the processing of archives')

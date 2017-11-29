@@ -33,7 +33,12 @@ static const size_t suite_biobj_instances[][3] = {
     { 7, 15, 16 },
     { 8, 17, 18 },
     { 9, 19, 21 },
-    { 10, 21, 22 }
+    { 10, 21, 22 },
+    { 11, 23, 24 },
+    { 12, 25, 26 },
+    { 13, 27, 28 },
+    { 14, 29, 30 },
+    { 15, 31, 34 }
 };
 
 /**
@@ -70,7 +75,7 @@ static coco_suite_t *suite_biobj_initialize(void) {
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "year: 2016");
+  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "year: 2017");
 
   return suite;
 }
@@ -80,8 +85,11 @@ static coco_suite_t *suite_biobj_initialize(void) {
  */
 static const char *suite_biobj_get_instances_by_year(const int year) {
 
-  if (year == 2016) {
+  if ((year == 2016) || (year == 0000)) { /* default/test case */
     return "1-10";
+  }
+  else if (year == 2017) {
+    return "1-15";
   }
   else {
     coco_error("suite_biobj_get_instances_by_year(): year %d not defined for suite_biobj", year);
@@ -380,7 +388,7 @@ static double suite_biobj_get_best_value(const char *indicator_name, const char 
 
   if (strcmp(indicator_name, "hyp") == 0) {
 
-    curr_key = coco_allocate_string(COCO_PATH_MAX);
+    curr_key = coco_allocate_string(COCO_PATH_MAX + 1);
     count = sizeof(suite_biobj_best_values_hyp) / sizeof(char *);
     for (i = 0; i < count; i++) {
       sscanf(suite_biobj_best_values_hyp[i], "%s %lf", curr_key, &best_value);

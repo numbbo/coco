@@ -1,0 +1,64 @@
+% CONSTRAINED SPHERE FUNCTION
+1 Sphere function with 1 constraint
+2 Sphere function with 2 constraints
+3 Sphere function with 6 constraints
+4 Sphere function with 6+n/2 constraints
+5 Sphere function with 6+n constraints
+6 Sphere function with 6+3n constraints
+
+% CONSTRAINED SEPARABLE ELLIPSOID
+7 Constrained Separable Ellipsoid with 1 constraint
+8 Constrained Separable Ellipsoid with 2 constraints
+9 Constrained Separable Ellipsoid with 6 constraints
+10 Constrained Separable Ellipsoid with 6+n/2 constraints
+11 Constrained Separable Ellipsoid with 6+n constraints
+12 Constrained Separable Ellipsoid with 6+3n constraints
+
+% CONSTRAINED LINEAR SLOPE
+13 Constrained Linear Slope with 1 constraint
+14 Constrained Linear Slope with 2 constraints
+15 Constrained Linear Slope with 6 constraints
+16 Constrained Linear Slope with 6+n/2 constraints
+17 Constrained Linear Slope with 6+n constraints
+18 Constrained Linear Slope with 6+3n constraints
+
+% CONSTRAINED ROTATED ELLIPSOID
+19 Constrained Rotated Ellipsoid with 1 constraint
+20 Constrained Rotated Ellipsoid with 2 constraints
+21 Constrained Rotated Ellipsoid with 6 constraints
+22 Constrained Rotated Ellipsoid with 6+n/2 constraints
+23 Constrained Rotated Ellipsoid with 6+n constraints
+24 Constrained Rotated Ellipsoid with 6+3n constraints
+
+% CONSTRAINED DISCUS FUNCTION
+25 Constrained Discus function with 1 constraint
+26 Constrained Discus function with 2 constraints
+27 Constrained Discus function with 6 constraints
+28 Constrained Discus function with 6+n/2 constraints
+29 Constrained Discus function with 6+n constraints
+30 Constrained Discus function with 6+3n constraints
+
+% CONSTRAINED BENT CIGAR FUNCTION
+31 Constrained Bent Cigar function with 1 constraint
+32 Constrained Bent Cigar function with 2 constraints
+33 Constrained Bent Cigar function with 6 constraints
+34 Constrained Bent Cigar function with 6+n/2 constraints
+35 Constrained Bent Cigar function with 6+n constraints
+36 Constrained Bent Cigar function with 6+3n constraints
+
+% CONSTRAINED DIFFERENT POWERS FUNCTION
+37 Constrained Different Powers function with 1 constraint
+38 Constrained Different Powers function with 2 constraints
+39 Constrained Different Powers function with 6 constraints
+40 Constrained Different Powers function with 6+n/2 constraints
+41 Constrained Different Powers function with 6+n constraints
+42 Constrained Different Powers function with 6+3n constraints
+
+% CONSTRAINED SEPARABLE RASTRIGIN FUNCTION
+43 Constrained Separable Rastrigin function with 1 constraint
+44 Constrained Separable Rastrigin function with 2 constraints
+45 Constrained Separable Rastrigin function with 6 constraints
+46 Constrained Separable Rastrigin function with 6+n/2 constraints
+47 Constrained Separable Rastrigin function with 6+n constraints
+48 Constrained Separable Rastrigin function with 6+3n constraints
+

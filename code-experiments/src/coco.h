@@ -35,6 +35,7 @@ typedef unsigned __int64 uint64_t;
 #ifndef INFINITY
 /** @brief Definition of INFINITY to be used only if undefined by the included headers */
 #define INFINITY 1e22
+/* why not using 1e99? */
 #endif
 #ifndef isinf
 /** @brief Definition of isinf to be used only if undefined by the included headers */
@@ -281,6 +282,11 @@ coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer
  */
 coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_observer_t *observer);
 
+/**
+ * @brief Returns result folder name, where logger output is written. 
+ */
+const char *coco_observer_get_result_folder(const coco_observer_t *observer);
+
 /**@}*/
 
 /***********************************************************************************************************/
@@ -300,7 +306,7 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
 void coco_evaluate_constraint(coco_problem_t *problem, const double *x, double *y);
 
 /**
- * @brief Recommends a solution as the current best guesses to the problem.
+ * @brief Recommends a solution as the current best guesses to the problem. Not implemented yet.
  */
 void coco_recommend_solution(coco_problem_t *problem, const double *x);
 
@@ -335,9 +341,14 @@ size_t coco_problem_get_number_of_objectives(const coco_problem_t *problem);
 size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem);
 
 /**
- * @brief Returns the number of evaluations done on the problem.
+ * @brief Returns the number of objective function evaluations done on the problem.
  */
 size_t coco_problem_get_evaluations(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the number of constraint function evaluations done on the problem.
+ */
+size_t coco_problem_get_evaluations_constraints(const coco_problem_t *problem);
 
 /**
  * @brief Returns 1 if the final target was hit, 0 otherwise.
@@ -365,6 +376,12 @@ const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t 
  * the decision space.
  */
 const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem);
+
+/**
+ * @brief For multi-objective problems, returns a vector of largest values of interest in each objective.
+ * Currently, this equals the nadir point. For single-objective problems it raises an error.
+ */
+const double *coco_problem_get_largest_fvalues_of_interest(const coco_problem_t *problem);
 
 /**
  * @brief Returns the problem_index of the problem in its current suite.

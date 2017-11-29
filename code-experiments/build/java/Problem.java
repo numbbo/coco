@@ -95,6 +95,10 @@ public class Problem {
 	public double getLargestValueOfInterest(int index) {
 		return this.upper_bounds[index];
 	}
+
+	public double[] getLargestFValuesOfInterest() {
+		return CocoJNI.cocoProblemGetLargestFValuesOfInterest(pointer);
+	}
 	
 	public String getId() {
 		return this.id;
@@ -106,6 +110,10 @@ public class Problem {
 	
 	public long getEvaluations() {
 		return CocoJNI.cocoProblemGetEvaluations(pointer);
+	}
+	
+	public long getEvaluationsConstraints() {
+		return CocoJNI.cocoProblemGetEvaluationsConstraints(pointer);
 	}
 	
 	public long getIndex() {
