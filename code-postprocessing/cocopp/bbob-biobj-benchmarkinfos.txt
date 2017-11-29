@@ -42,9 +42,9 @@
 28 Rosenbrock/Rosenbrock
 65 Attract. Sector/Step-ellipsoid
 66 Attract. Sector/rot. Rosenbrock
-67 Step-ellipsoid/sep. Rosenbrock
+67 Step-ellipsoid/Rosenbrock
 68 Step-ellipsoid/rot. Rosenbrock
-69 sep. Rosenbrock/rot. Rosenbrock
+69 Rosenbrock/rot. Rosenbrock
 
 % MODERATE - ILL-CONDITIONED
 22 Attractive sector/Sharp ridge
