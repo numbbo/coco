@@ -48,9 +48,9 @@ static size_t bbob_dimensions_in_current_infoFile[6] = { 0, 0, 0, 0, 0, 0 }; /* 
  * A possible solution: bbob_logger_is_open becomes a reference
  * counter and as long as another logger is open, always a new info
  * file is generated.
- * TODO: Shouldn't the new way of handling observers already fix this? 
- *    logger_is_open still triggers when a python run from the python shell is interrupted and a new one is lunched
+ * TODO: Shouldn't the new way of handling observers already fix this?
  */
+static int bbob_logger_is_open = 0; /* this could become lock-list of .info files */
 
 /* TODO: add possibility of adding a prefix to the index files (easy to do through observer options) */
 
@@ -60,17 +60,23 @@ static size_t bbob_dimensions_in_current_infoFile[6] = { 0, 0, 0, 0, 0, 0 }; /* 
 typedef struct {
   coco_observer_t *observer;
   int is_initialized;
-  FILE *index_file; /**< @brief index file */
-  FILE *fdata_file; /**< @brief function value aligned data file */
-  FILE *tdata_file; /**< @brief number of function evaluations aligned data file */
-  FILE *rdata_file; /**< @brief restart info data file */
+  /*char *path;// relative path to the data folder. //Wassim: now fetched from the observer */
+  /*const char *alg_name; the alg name, for now, temporarily the same as the path. Wassim: Now in the observer */
+  FILE *index_file; /* index file */
+  FILE *fdata_file; /* function value aligned data file */
+  FILE *tdata_file; /* number of function evaluations aligned data file */
+  FILE *rdata_file; /* restart info data file */
   size_t number_of_evaluations;
   size_t number_of_evaluations_constraints;
   double best_fvalue;
   double last_fvalue;
-  short written_last_eval; /**< @brief allows writing the data of the final fun eval in the .tdat file if not already written by the t_trigger*/
+  short written_last_eval; /* allows writing the data of the final fun eval in the .tdat file if not already written by the t_trigger*/
   double *best_solution;
-  size_t function_id;
+  /* The following are to only pass data as a parameter in the free function. The
+   * interface should probably be the same for all free functions so passing the
+   * problem as a second parameter is not an option even though we need info
+   * form it.*/
+  size_t function_id; /*TODO: consider changing name*/
   size_t instance_id;
   size_t number_of_variables;
   double optimal_fvalue;
@@ -103,7 +109,7 @@ static const char *logger_name = "bbob";
 static const char *data_format = "bbob-new"; /* or whatever we agree upon, bbob or bbob2 or bbob-constrained may be alternatives */
 
 /**
- * @brief adds a formated line to a data file
+ * adds a formated line to a data file
  */
 static void logger_bbob_write_data(FILE *target_file,
                                    size_t number_of_f_evaluations,
@@ -126,14 +132,14 @@ static void logger_bbob_write_data(FILE *target_file,
   if (number_of_variables < 22) {
     size_t i;
     for (i = 0; i < number_of_variables; i++) {
-      fprintf(target_file, " %.*e", precision_x, x[i]);
+      fprintf(target_file, " %+5.4e", x[i]);
     }
   }
   fprintf(target_file, "\n");
 }
 
 /**
- * @brief Error when trying to create the file "path"
+ * Error when trying to create the file "path"
  */
 static void logger_bbob_error_io(FILE *path, int errnum) {
   const char *error_format = "Error opening file: %s\n ";
@@ -141,8 +147,15 @@ static void logger_bbob_error_io(FILE *path, int errnum) {
 }
 
 /**
- * @brief Creates the data file or simply opens it
+ * Creates the data files or simply opens it
  */
+
+/*
+ calling sequence:
+ logger_bbob_open_dataFile(&(logger->fdata_file), logger->observer->output_folder, dataFile_path,
+ ".dat");
+ */
+
 static void logger_bbob_open_dataFile(FILE **target_file,
                                       const char *path,
                                       const char *dataFile_path,
@@ -187,8 +200,8 @@ static void logger_bbob_open_dataFile(FILE **target_file,
 }*/
 
 /**
- * @brief Creates the index file fileName_prefix+problem_id+file_extension in
- *        folde_path
+ * Creates the index file fileName_prefix+problem_id+file_extension in
+ * folde_path
  */
 static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
                                       const char *folder_path,
@@ -204,10 +217,9 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
   char file_path[COCO_PATH_MAX + 2] = { 0 };
   FILE **target_file;
   FILE *tmp_file;
-  observer_bbob = (observer_bbob_data_t *) logger->observer->data;
   strncpy(used_dataFile_path, dataFile_path, COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
-  if (observer_bbob->info_file_first_instance == 0) {
-    observer_bbob->info_file_first_instance = logger->instance_id;
+  if (bbob_infoFile_firstInstance == 0) {
+    bbob_infoFile_firstInstance = logger->instance_id;
   }
   function_id_char = coco_strdupf("%lu", (unsigned long) logger->function_id);
   bbob_infoFile_firstInstance_char = coco_strdupf("%lu", (unsigned long) bbob_infoFile_firstInstance);
@@ -222,8 +234,8 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
   coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
   if (*target_file == NULL) {
     tmp_file = fopen(file_path, "r"); /* to check for existence */
-    if ((tmp_file) && (observer_bbob->current_dim == logger->number_of_variables)
-        && (observer_bbob->current_fun_id == logger->function_id)) {
+    if ((tmp_file) && (bbob_current_dim == logger->number_of_variables)
+        && (bbob_current_funId == logger->function_id)) {
         /* new instance of current funId and current dim */
       newLine = 0;
       *target_file = fopen(file_path, "a+");
@@ -232,22 +244,21 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
         logger_bbob_error_io(*target_file, errnum);
       }
       fclose(tmp_file);
-    } else { /* either file doesn't exist (new fun_id) or new Dim */
+    } else { /* either file doesn't exist (new funId) or new Dim */
       /* check that the dim was not already present earlier in the file, if so, create a new info file */
-      if (observer_bbob->current_dim != logger->number_of_variables) {
+      if (bbob_current_dim != logger->number_of_variables) {
         int i, j;
         for (i = 0;
-            i < observer_bbob->number_of_dimensions && observer_bbob->dimensions_in_current_info_file[i] != 0
-                && observer_bbob->dimensions_in_current_info_file[i] != logger->number_of_variables; i++) {
+            i < bbob_number_of_dimensions && bbob_dimensions_in_current_infoFile[i] != 0
+                && bbob_dimensions_in_current_infoFile[i] != logger->number_of_variables; i++) {
           ; /* checks whether dimension already present in the current infoFile */
         }
-
-        if (i < observer_bbob->number_of_dimensions && observer_bbob->dimensions_in_current_info_file[i] == 0) {
+        if (i < bbob_number_of_dimensions && bbob_dimensions_in_current_infoFile[i] == 0) {
           /* new dimension seen for the first time */
-          observer_bbob->dimensions_in_current_info_file[i] = logger->number_of_variables;
+          bbob_dimensions_in_current_infoFile[i] = logger->number_of_variables;
           newLine = 1;
         } else {
-          if (i < observer_bbob->number_of_dimensions) { /* dimension already present, need to create a new file */
+          if (i < bbob_number_of_dimensions) { /* dimension already present, need to create a new file */
             newLine = 0;
             file_path[strlen(file_path) - strlen(bbob_infoFile_firstInstance_char) - 7] = 0; /* truncate the instance part */
             bbob_infoFile_firstInstance = logger->instance_id;
@@ -259,13 +270,13 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
           } else { /* we have all dimensions */
             newLine = 1;
           }
-          for (j = 0; j < observer_bbob->number_of_dimensions; j++) { /* new info file, reinitialize list of dims */
-            observer_bbob->dimensions_in_current_info_file[j] = 0;
+          for (j = 0; j < bbob_number_of_dimensions; j++) { /* new info file, reinitialize list of dims */
+            bbob_dimensions_in_current_infoFile[j] = 0;
           }
-          observer_bbob->dimensions_in_current_info_file[i] = logger->number_of_variables;
+          bbob_dimensions_in_current_infoFile[i] = logger->number_of_variables;
         }
       } else {
-        if ( observer_bbob->current_fun_id != logger->function_id ) {
+        if ( bbob_current_funId != logger->function_id ) {
           /*new function in the same file */
           newLine = 1;
         }
@@ -298,8 +309,8 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
       strncat(used_dataFile_path, bbob_infoFile_firstInstance_char,
       COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
       fprintf(*target_file, "%s.dat", used_dataFile_path); /* dataFile_path does not have the extension */
-      observer_bbob->current_dim = logger->number_of_variables;
-      observer_bbob->current_fun_id = logger->function_id;
+      bbob_current_dim = logger->number_of_variables;
+      bbob_current_funId = logger->function_id;
     }
   }
   coco_free_memory(function_id_char);
@@ -318,7 +329,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   char *tmpc_funId; /* serves to extract the function id as a char *. There should be a better way of doing this! */
   char *tmpc_dim; /* serves to extract the dimension as a char *. There should be a better way of doing this! */
   char indexFile_prefix[10] = "bbobexp"; /* TODO (minor): make the prefix bbobexp a parameter that the user can modify */
-  observer_bbob = (observer_bbob_data_t *)logger->observer->data;
+  
   assert(logger != NULL);
   assert(inner_problem != NULL);
   assert(inner_problem->problem_id != NULL);
@@ -348,9 +359,8 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   /* data files */
   /* TODO: definitely improvable but works for now */
   strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
-  sprintf(bbob_infoFile_firstInstance_char, "%ld", observer_bbob->info_file_first_instance);
   strncat(dataFile_path, bbob_infoFile_firstInstance_char,
-          COCO_PATH_MAX - strlen(dataFile_path) - 1);
+  COCO_PATH_MAX - strlen(dataFile_path) - 1);
   
   logger_bbob_open_dataFile(&(logger->fdata_file), logger->observer->result_folder, dataFile_path, ".dat");
   fprintf(logger->fdata_file, bbob_file_header_str, logger->optimal_fvalue);
@@ -452,45 +462,27 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
 }  /* end logger_bbob_evaluate */
 
 /**
- * @brief Finalize function of the logger, writes final data to the index file
- */
-static void logger_bbob_finalize(const logger_bbob_data_t *logger){
-
-  if ((coco_log_level >= COCO_DEBUG) && logger && logger->number_of_evaluations > 0) {
-    coco_debug("best f=%e after %ld fevals (done observing)\n", logger->best_fvalue,
-              (unsigned long) logger->number_of_evaluations);
-  }
-  /* log the final information of the run in the info file*/
-  /*fprintf(logger->index_file, ":%ld|%.1e", logger->number_of_evaluations,
-          logger->best_fvalue - logger->optimal_fvalue);*/
-
-  /* log the last evaluation (if not logged) in the *.tdata file*/
-  if (!logger->written_last_eval) {
-    logger_bbob_write_data(logger->tdata_file, logger->number_of_evaluations, logger->last_fvalue,
-                           logger->best_fvalue, logger->optimal_fvalue, logger->best_solution, logger->number_of_variables, logger->observer->precision_f, logger->observer->precision_x);
-  }
-
-  /* let the observer know that the logger is closed */
-  if (logger->observer->data != NULL) {
-    /*the observer data seems to be freed before the logger in the last run!*/
-    ((observer_bbob_data_t *) logger->observer->data)->logger_is_open = 0;
-  }
-}
-
-
-/**
- * @brief calls the finalize functions then frees the logger
+ * Also serves as a finalize run method so. Must be called at the end
+ * of Each run to correctly fill the index file
+ *
+ * TODO: make sure it is called at the end of each run or move the
+ * writing into files to another function
  */
 static void logger_bbob_free(void *stuff) {
-
+  /* TODO: do all the "non simply freeing" stuff in another function
+   * that can have problem as input
+   */
   logger_bbob_data_t *logger = (logger_bbob_data_t *) stuff;
 
-  logger_bbob_finalize(logger);
+  if ((coco_log_level >= COCO_DEBUG) && logger && logger->number_of_evaluations > 0) {
+    coco_debug("best f=%e after %lu fevals (done observing)\n", logger->best_fvalue,
+    		(unsigned long) logger->number_of_evaluations);
+  }
   if (logger->index_file != NULL) {
     fprintf(logger->index_file, ":%lu|%.1e",
             (unsigned long) logger->number_of_evaluations,
             logger->best_fvalue - logger->optimal_fvalue);
-    fclose(logger->index_file); /*Wassim: now done in logger_bbob_finalize*/
+    fclose(logger->index_file);
     logger->index_file = NULL;
   }
   if (logger->fdata_file != NULL) {
@@ -533,6 +525,7 @@ static void logger_bbob_free(void *stuff) {
     logger->evaluations = NULL;
   }
 
+  bbob_logger_is_open = 0;
 }
 
 static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *inner_problem) {
@@ -546,15 +539,19 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
     coco_warning("logger_bbob(): The bbob logger shouldn't be used to log a problem with %d objectives",
         inner_problem->number_of_objectives);
   }
-  if (((observer_bbob_data_t *) observer->data)->logger_is_open)
-    coco_error("The current bbob_logger (observer) must be closed before a new one is opened");
 
+  if (bbob_logger_is_open)
+    coco_error("The current bbob_logger (observer) must be closed before a new one is opened");
+  /* This is the name of the folder which happens to be the algName */
+  /*logger->path = coco_strdup(observer->output_folder);*/
   logger_bbob->index_file = NULL;
   logger_bbob->fdata_file = NULL;
   logger_bbob->tdata_file = NULL;
   logger_bbob->rdata_file = NULL;
   logger_bbob->number_of_variables = inner_problem->number_of_variables;
   if (inner_problem->best_value == NULL) {
+    /* coco_error("Optimal f value must be defined for each problem in order for the logger to work properly"); */
+    /* Setting the value to 0 results in the assertion y>=optimal_fvalue being susceptible to failure */
     coco_warning("undefined optimal f value. Set to 0");
     logger_bbob->optimal_fvalue = 0;
   } else {
@@ -564,6 +561,10 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   logger_bbob->number_of_evaluations = 0;
   logger_bbob->number_of_evaluations_constraints = 0;
   logger_bbob->best_solution = coco_allocate_vector(inner_problem->number_of_variables);
+  /* TODO: the following inits are just to be in the safe side and
+   * should eventually be removed. Some fields of the bbob_logger struct
+   * might be useless
+   */
   logger_bbob->function_id = coco_problem_get_suite_dep_function(inner_problem);
   logger_bbob->instance_id = coco_problem_get_suite_dep_instance(inner_problem);
   logger_bbob->written_last_eval = 0;
@@ -577,7 +578,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   problem = coco_problem_transformed_allocate(inner_problem, logger_bbob, logger_bbob_free, observer->observer_name);
 
   problem->evaluate_function = logger_bbob_evaluate;
-  ((observer_bbob_data_t *) observer->data)->logger_is_open = 1;
+  bbob_logger_is_open = 1;
   return problem;
 }
 
