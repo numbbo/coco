@@ -330,7 +330,7 @@ def plotLegend(handles, maxval):
     fontsize = genericsettings.minmax_algorithm_fontsize[0] + np.min((1, np.exp(9 - lh))) * (
         genericsettings.minmax_algorithm_fontsize[-1] - genericsettings.minmax_algorithm_fontsize[0])
     i = 0 # loop over the elements of ys
-    best_year = 'best %d' % testbedsettings.current_testbed.best_algorithm_year
+
     for j in sorted(ys.keys()):
         for k in reversed(sorted(ys[j].keys())):
             # enforce "best" algorithm comes first in case of equality

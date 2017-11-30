@@ -28,10 +28,6 @@ weight_evaluations_constraints = (1, 1)
 """weights used to sum function evaluations and constraints evaluations
 in attribute DataSet.evals, if any constraints evaluations are found"""
 
-# Variables used in the routines defining desired output for BBOB.
-#tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
-# Wassim: tabDimsOfInterest is now part of current_testbed
-#tabDimsOfInterest = [40, 160]  # Wassim: large scale TODO: use it by generating new large-scale reference data
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
 target_runlength = 10  # used in ppfigs.main
@@ -47,10 +43,6 @@ xlimit_expensive = 1e3  # used in
 
 dim_related_markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 dim_related_colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
-
-#rldDimsOfInterest = (5, 20)
-# Wassim: rldDimsOfInterest is now part of current_testbed
-#rldDimsOfInterest = [40, 80] # Wassim: for large scale TODO: use it by generating new large-scale reference data
 
 simulated_runlength_bootstrap_sample_size = 10 + 990 // (1 + 10 * max((0, in_a_hurry)))  # for tables and plots
 """10000 would be better for a final camera-ready paper version"""

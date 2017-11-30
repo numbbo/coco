@@ -765,10 +765,6 @@ class DataSet(object):
         suite = None
         if hasattr(self, 'suite'):
             suite = getattr(self, 'suite')
-        if  isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed):
-            # Wassim: prevents from sitching back to GECCOBBOBTestbed once we are in large-scale
-            # Wassim: TODO: not perfect, should be done in a better way, by simply keeping a single instace of current_testbed
-            testbed = testbedsettings.default_testbed_largescale
         if not suite:
             if self.isBiobjective():
                 suite = testbedsettings.default_suite_bi
@@ -1038,17 +1034,10 @@ class DataSet(object):
         
         """
 
-        # Wassim: this should be done on the dataSetList level, and here only if it's not yet set
-        if not testbedsettings.current_testbed or \
-              isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed):
-            testbedsettings.load_current_testbed(self.testbed_name(), TargetValues)
-
-        if isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed) or \
-           isinstance(testbedsettings.current_testbed, testbedsettings.SingleObjectiveTestbed):
+        if isinstance(testbedsettings.current_testbed, testbedsettings.GECCOBBOBTestbed):
             Ndata = np.size(self.evals, 0)
             i = Ndata
             while i > 1 and not self.isBiobjective() and self.evals[i-1][0] <= self.precision:
-                #Wassim: can GECCOBBOBTestbed be biObjective?!
                 i -= 1
             i += 1
             if i < Ndata:

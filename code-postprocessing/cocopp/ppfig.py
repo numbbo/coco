@@ -351,7 +351,7 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
-            dimensions = genericsettings.rldDimsOfInterest
+            dimensions = testbedsettings.current_testbed.rldDimsOfInterest
 
             header_ecdf = ' Empirical cumulative distribution functions (ECDF)'
             f.write("<H2> %s </H2>\n" % header_ecdf)
@@ -369,7 +369,7 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPRLDISTR2:
             names = ['pprldistr', 'pplogabs']
-            dimensions = genericsettings.rldDimsOfInterest
+            dimensions = testbedsettings.current_testbed.rldDimsOfInterest
 
             header_ecdf = 'Empirical cumulative distribution functions ' \
                          '(ECDFs) per function group'
@@ -388,7 +388,7 @@ def save_single_functions_html(filename,
             f.write(caption_string_format % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
-            dimensions = genericsettings.rldDimsOfInterest
+            dimensions = testbedsettings.current_testbed.rldDimsOfInterest
             if reference_algorithm_exists:
                 current_header = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % current_header)

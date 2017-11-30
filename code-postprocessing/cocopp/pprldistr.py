@@ -139,7 +139,7 @@ def load_previous_RLBdata(filename=previous_RLBdata_filename):
 
 
 def caption_single():
-    best_year = testbedsettings.current_testbed.best_algorithm_year
+
     caption_part_one = r"""%
          Empirical cumulative distribution functions (ECDF), plotting the fraction of
          trials with an outcome not larger than the respective value on the $x$-axis.
@@ -175,7 +175,8 @@ def caption_single():
         else:
             figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
     elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
-                                                  testbedsettings.testbed_name_cons]:
+                                                  testbedsettings.testbed_name_cons,
+                                                  testbedsettings.testbed_name_ls]:
         # no best algorithm defined yet:
         figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
     else:
@@ -244,7 +245,8 @@ def caption_two():
                            + caption_two_rlbased_targets_part3)
 
     if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
-                                                testbedsettings.testbed_name_cons]:
+                                                testbedsettings.testbed_name_cons,
+                                                testbedsettings.testbed_name_ls]:
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_two_fixed
     elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,

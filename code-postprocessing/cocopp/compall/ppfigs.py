@@ -73,13 +73,14 @@ def prepare_scaling_figure_caption():
     scaling_figure_caption_fixed = scaling_figure_caption_start_fixed + scaling_figure_caption_end
     scaling_figure_caption_rlbased = scaling_figure_caption_start_rlbased + scaling_figure_caption_end
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext:
+    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
+                                                testbedsettings.testbed_name_cons,
+                                                testbedsettings.testbed_name_ls]:
         # NOTE: no runlength-based targets supported yet
         figure_caption = scaling_figure_caption_fixed
     elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
                                                   testbedsettings.testbed_name_single_noisy,
-                                                  testbedsettings.testbed_name_bi,
-                                                  testbedsettings.testbed_name_cons]:
+                                                  testbedsettings.testbed_name_bi]:
         if genericsettings.runlength_based_targets:
             figure_caption = scaling_figure_caption_rlbased
         else:
@@ -90,6 +91,7 @@ def prepare_scaling_figure_caption():
     return figure_caption
 
 def scaling_figure_caption(for_html = False):
+
 
     if for_html:
         figure_caption = htmldesc.getValue('##bbobppfigslegend' +
@@ -128,7 +130,8 @@ def prepare_ecdfs_figure_caption():
                 )
 
     if testbed.name in [testbedsettings.testbed_name_bi_ext,
-                        testbedsettings.testbed_name_cons]:
+                        testbedsettings.testbed_name_cons,
+                        testbedsettings.testbed_name_ls]:
         # NOTE: no runlength-based targets supported yet
         figure_caption = ecdfs_figure_caption_standard
     elif testbed.name in [testbedsettings.testbed_name_single,

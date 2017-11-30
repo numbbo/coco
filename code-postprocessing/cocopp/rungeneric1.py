@@ -294,8 +294,7 @@ def main(argv=None):
         from . import config
         config.config_target_values_setting(genericsettings.isExpensive,
                                             genericsettings.runlength_based_targets)
-        config.config(dsList.dictByDim()[max(dsList.dictByDim().keys())][0].testbed_name())
-        # Wassim: now checkes the highest dimension testbed instead of the first for eventual large-scale scenarii
+        config.config(dsList[0].testbed_name, dsList[0].get_data_format())
 
         if genericsettings.verbose:
             for i in dsList:                
@@ -405,7 +404,7 @@ def main(argv=None):
                               'results will be mixed in the "all functions" '
                               'ECDF figures.')
             dictDim = dsList.dictByDim()
-            for dim in testbedsettings.current_testbed.rldDimsOfInterest: #inset.rldDimsOfInterest: #Wassim:
+            for dim in testbedsettings.current_testbed.rldDimsOfInterest:
                 try:
                     sliceDim = dictDim[dim]
                 except KeyError:
@@ -457,7 +456,7 @@ def main(argv=None):
                     except (SyntaxError, NameError, ValueError):
                         print("Float value required.")
                 dictDim = sliceNoise.dictByDim()
-                for d in testbedsettings.current_testbed.rldDimsOfInterest: #inset.rldDimsOfInterest: #Wassim:
+                for d in testbedsettings.current_testbed.rldDimsOfInterest:
                     try:
                         sliceDim = dictDim[d]
                     except KeyError:
@@ -469,10 +468,6 @@ def main(argv=None):
                         info = '%s' % fGroup
                         pplogloss.main(sliceFuncGroup, CrE, True,
                                        algoutputdir, info)
-                            pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
-                    except KeyError:
-                        warnings.warn("bestAlg data not found, no pplogloss output")
-
             print_done()
 
         prepend_to_file(latex_commands_file,

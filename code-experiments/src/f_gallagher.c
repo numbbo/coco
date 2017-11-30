@@ -412,8 +412,8 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   size_t *block_sizes;
   size_t nb_blocks;
   size_t idx_blocksize, current_blocksize, next_bs_change; /* needed for the rotated y_i*/
-  size_t swap_range;
-  size_t nb_swaps;
+  /*size_t swap_range;
+  size_t nb_swaps;*/
   coco_random_state_t *rng = coco_random_new((uint32_t) rseed);
   const size_t peaks_21 = 21;
   const size_t peaks_101 = 101;
@@ -439,8 +439,8 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
 
   block_sizes = coco_get_block_sizes(&nb_blocks, dimension, "bbob-largescale");
 
-  swap_range = coco_get_swap_range(dimension, "bbob-largescale");
-  nb_swaps = coco_get_nb_swaps(dimension, "bbob-largescale");
+  /*swap_range = coco_get_swap_range(dimension, "bbob-largescale");
+  nb_swaps = coco_get_nb_swaps(dimension, "bbob-largescale");*/
 
   B = coco_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
   B_copy = (const double *const *)B;
