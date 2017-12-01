@@ -17,12 +17,8 @@ force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000  # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = False  # may be overwritten by expensive setting
-#dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
-# Wassim: dimensions_to_display is now part of current_testbed
-#dimensions_to_display_ls = (20, 40, 80, 160, 320, 640) # Wassim: large scale suite
 figure_file_formats = ['svg', 'pdf']
 scaling_figures_with_boxes = True
-# should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
 weight_evaluations_constraints = (1, 1)
 """weights used to sum function evaluations and constraints evaluations
@@ -272,7 +268,7 @@ isScatter = True  # only affects rungenericmany
 shortoptlist = "hvpo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
-               "verbose", "settings=", "conv", "large-scale", # Wassim: added large-scale option
+               "verbose", "settings=", "conv",
                "expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
                "sca-only", "no-svg", "constrained"]

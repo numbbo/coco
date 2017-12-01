@@ -144,17 +144,6 @@ def prepare_ecdfs_figure_caption():
     else:
         figure_caption = ecdfs_figure_caption_standard
 
-#    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi:
-#        # NOTE: no runlength-based targets supported yet
-#        figure_caption = ecdfs_figure_caption_standard
-#    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_single:
-#        if genericsettings.runlength_based_targets:
-#            figure_caption = ecdfs_figure_caption_rlbased + bestyeartext
-#        else:
-#            figure_caption = ecdfs_figure_caption_standard + bestyeartext
-#    else:
-#        warnings.warn("Current settings do not support ppfigdim caption.")
-
     return figure_caption
 
 
@@ -298,7 +287,6 @@ def plotLegend(handles, maxval=None):
         for k in sorted(ys[j].keys()):
 			# enforce that a "best" algorithm comes first in case of equality
             tmp = []
-            best_year_label = 'best %d' %testbedsettings.current_testbed.best_algorithm_year
             for h in ys[j][k]:
                 if 'best' in plt.getp(h, 'label'):
                     tmp.insert(0, h)
@@ -379,18 +367,13 @@ def beautify(legend=False, rightlegend=False):
 
     # ticks on axes
     #axisHandle.invert_xaxis()
-    #dimticklist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point?
-    dimticklist = testbedsettings.current_testbed.dimensions_to_display # Wassim: dimensions_to_display
-    # dimannlist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point?
-    dimannlist = testbedsettings.current_testbed.dimensions_to_display # Wassim: dimensions_to_display
+    dimticklist = testbedsettings.current_testbed.dimensions_to_display
+    dimannlist = testbedsettings.current_testbed.dimensions_to_display
     # TODO: All these should depend on (xlim, ylim)
 
     axisHandle.set_xticks(dimticklist)
     axisHandle.set_xticklabels([str(n) for n in dimannlist])
 
-    # axes limites # Wassim: what do these numbers mean exactly?!
-
-    # Wassim: to dynamically set xlim
     import numpy
     dim_min_margin = testbedsettings.current_testbed.dimensions_to_display[0] * 0.9
     dim_max_margin = testbedsettings.current_testbed.dimensions_to_display[-1] * 1.125
@@ -651,30 +634,17 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
             alg_definitions_html += (', ' if i > 0 else '') + '%s: %s' % (symb_html, toolsdivers.str_to_latex(toolsdivers.strip_pathname1(sorted_algorithms[i])))
         toolsdivers.prepend_to_file(latex_commands_file,
                 [providecolorsforlatex()]) # needed since the latest change in ACM template
-        if not isinstance(testbedsettings.current_testbed, testbedsettings.LargeScaleTestbed):
-            toolsdivers.prepend_to_file(latex_commands_filename,
-                    [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
-                     #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
-                    '\\providecommand{\\bbobppfigslegend}[1]{',
-                    scaling_figure_caption(),
-                    'Legend: '] + alg_definitions + ['}']
-                    )
-            toolsdivers.prepend_to_file(latex_commands_filename, 
-                    ['\\providecommand{\\bbobECDFslegend}[1]{',
-                    ecdfs_figure_caption(), '}']
-                    )
-        else:
-            toolsdivers.prepend_to_file(latex_commands_filename,
-                    [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}'
-                     #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
-                     '\\providecommand{\\bbobppfigslegend}[1]{',
-                     scaling_figure_caption(),
-                     'Legend: '] + alg_definitions + ['}']
-                    )
-            toolsdivers.prepend_to_file(latex_commands_filename,
-                    ['\\providecommand{\\bbobECDFslegend}[1]{',
-                    ecdfs_figure_caption(), '}']
-                    )
+        toolsdivers.prepend_to_file(latex_commands_file,
+                                    [  # '\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}'
+                                        #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
+                                        '\\providecommand{\\bbobppfigslegend}[1]{',
+                                        scaling_figure_caption(),
+                                        'Legend: '] + alg_definitions + ['}']
+                                    )
+        toolsdivers.prepend_to_file(latex_commands_file,
+                                    ['\\providecommand{\\bbobECDFslegend}[1]{',
+                                     ecdfs_figure_caption(), '}']
+                                    )
         
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
 

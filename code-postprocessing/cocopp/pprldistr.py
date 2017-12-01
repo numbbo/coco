@@ -185,7 +185,7 @@ def caption_single():
     return captions.replace(figure_caption)
 
 def caption_two():
-    best_year = testbedsettings.current_testbed.best_algorithm_year
+
     caption_two_part_one = r"""%
         Empirical cumulative distributions (ECDF)
         of run lengths and speed-up ratios """ + ("""in %d-D (left) and %d-D (right).""" % tuple(testbedsettings.current_testbed.tabDimsOfInterest)) + r"""

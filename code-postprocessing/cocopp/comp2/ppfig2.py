@@ -190,7 +190,7 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
         tmp2 = str(int(line[0][2]))
         txt = tmp + '/' + tmp2
 
-    dimensions = testbedsettings.current_testbed.dimensions_to_display # Wassim: dimensions_to_display
+    dimensions = testbedsettings.current_testbed.dimensions_to_display
     dimension_index = dict([(dimensions[i], i) for i in xrange(len(dimensions))])
 
     dims = dimension_index
@@ -261,7 +261,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir=''):
     dictFun0 = dsList0.dictByFunc()
     dictFun1 = dsList1.dictByFunc()
 
-    dimensions = testbedsettings.current_testbed.dimensions_to_display # Wassim: dimensions_to_display
+    dimensions = testbedsettings.current_testbed.dimensions_to_display
     dimension_index = dict([(dimensions[i], i) for i in xrange(len(dimensions))])
     
     for func in set.intersection(set(dictFun0), set(dictFun1)):

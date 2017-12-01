@@ -212,6 +212,7 @@ class GECCOBBOBTestbed(Testbed):
         shortinfo_filename=shortinfo_filename,
         name=testbed_name_single,
         short_names=get_short_names(shortinfo_filename),
+        dimensions_to_display=(2, 3, 5, 10, 20, 40),
         rldDimsOfInterest=dimsOfInterest,
         tabDimsOfInterest=dimsOfInterest,
         hardesttargetlatex='10^{-8}',  # used for ppfigs, pptable and pptables
@@ -388,6 +389,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         shortinfo_filename=shortinfo_filename,
         name=testbed_name_bi,
         short_names=get_short_names(shortinfo_filename),
+        dimensions_to_display=(2, 3, 5, 10, 20, 40),
         rldDimsOfInterest=dimsOfInterest,
         tabDimsOfInterest=dimsOfInterest,
         hardesttargetlatex='10^{-5}',  # used for ppfigs, pptable and pptables

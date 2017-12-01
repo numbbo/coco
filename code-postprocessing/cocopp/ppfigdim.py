@@ -82,12 +82,6 @@ refcolor = 'wheat'
 
 # should correspond with the colors in pprldistr.
 
-# Wassim: TODO seems to be set before rungeneric so useless here!!!!
-#dimensions = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls
-
-
-#functions_with_legend = (1, 24, 101, 130)
-
 def scaling_figure_caption():
     """Provides a figure caption with the help of captions.py for
        replacing common texts, abbreviations, etc.
@@ -179,8 +173,6 @@ def beautify(axesLabel=True):
     # Ticks on axes
     # axisHandle.invert_xaxis()
     
-    # Wassim:
-    #dimensions = genericsettings.dimensions_to_display if not genericsettings.isLargeScale else genericsettings.dimensions_to_display_ls
     dimensions = testbedsettings.current_testbed.dimensions_to_display
     dimticklist = dimensions
     dimannlist = dimensions 
@@ -501,7 +493,6 @@ def plot_previous_algorithms(func, target=None):  # lambda x: [1e-8]):
         return None
 
     refalgdata = []
-    #for d in dimensions: #Wassim: now uses testbedsettings.current_testbed.dimensions_to_display
     dimensions = testbedsettings.current_testbed.dimensions_to_display
     for d in dimensions:
         try:

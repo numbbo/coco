@@ -1768,7 +1768,7 @@ class DataSetList(list):
             header = ''
             while True:
                 try:
-                    if 'indicator' not in header: #Wassim: not very generic!
+                    if 'indicator' not in header:
                         header = advance_iterator(f)
                         while not header.strip(): # remove blank lines
                             header = advance_iterator(f)

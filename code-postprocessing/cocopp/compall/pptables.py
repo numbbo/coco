@@ -21,7 +21,7 @@ def get_table_caption():
        Based on the testbedsettings.current_testbed
        and genericsettings.runlength_based_targets.
     """
-    best_year = testbedsettings.current_testbed.best_algorithm_year
+
     table_caption_one = r"""%
         Average runtime (\aRT\ in number of function 
         evaluations) divided by the respective !!BEST-ART!! in
@@ -385,8 +385,6 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
         # significance test of best given algorithm against all others
         best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
         significance_versus_others = significance_all_best_vs_other(algentries, targets, best_alg_idx)[0]
-
-        significance_versus_others = significance_all_best_vs_other(algentries, targetsOfInterest, best_alg_idx)[0] # Wassim: seems to crash when data is incomplete
         # Create the table
         table = []
         tableHtml = []

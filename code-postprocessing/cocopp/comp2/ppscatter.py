@@ -46,8 +46,6 @@ from .. import toolsdivers
 from .. import pproc
 from .. import captions
 
-#dimensions = (2, 3, 5, 10, 20, 40) ## Wassim: #
-
 # formattings
 markersize = 14  # modified in config.py
 markersize_addon_beyond_maxevals = -6
@@ -164,7 +162,7 @@ def main(dsList0, dsList1, outputdir, settings):
 
     funInfos = ppfigparam.read_fun_infos()    
 
-    dimensions = testbedsettings.current_testbed.dimensions_to_display # Wassim: dimensions_to_display
+    dimensions = testbedsettings.current_testbed.dimensions_to_display
 
     for f in funcs:
         dictDim0 = dictFunc0[f].dictByDim()
