@@ -500,7 +500,7 @@ def split(dataFiles, idx_to_load=None, dim=None):
             # Check that it always have the same length?
 
         if content:
-            if (idx_to_load is None) or (idx_to_load and idx_to_load[idx]):
+            if (idx_to_load is None) or (idx_to_load and len(idx_to_load) > idx and idx_to_load[idx]):
                 data_sets.append(numpy.vstack(content))
             elif genericsettings.verbose:
                     print('skipped instance...')
