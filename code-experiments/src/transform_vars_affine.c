@@ -164,6 +164,7 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
    * - Resize bounds vectors if input and output dimensions do not match
    */
 
+  size_t i, j;
   coco_problem_t *problem;
   transform_vars_affine_data_t *data;
   size_t entries_in_M;
@@ -184,11 +185,15 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
     problem->evaluate_constraint = transform_vars_affine_evaluate_constraint;
     
   problem->evaluate_gradient = transform_vars_affine_evaluate_gradient;
-  
-  if (coco_problem_best_parameter_not_zero(inner_problem)) {
-    coco_debug("transform_vars_affine(): 'best_parameter' not updated, set to NAN (see https://github.com/numbbo/coco/issues/814)");
-    coco_vector_set_to_nan(inner_problem->best_parameter, inner_problem->number_of_variables);
+
+  /* Update the best parameter */
+  for (i = 0; i < problem->number_of_variables; ++i) {
+    /* Compute M^T * inner_problem->best_parameter - b */
+    for (j = 0; j < inner_problem->number_of_variables; ++j) {
+      problem->best_parameter[i] += data->M[j * problem->number_of_variables + i] * inner_problem->best_parameter[j];
+    }
+    problem->best_parameter[i] -= data->b[i];
   }
-  
+
   return problem;
 }
