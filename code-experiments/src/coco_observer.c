@@ -116,7 +116,7 @@ static int coco_observer_targets_trigger(coco_observer_targets_t *targets, const
 
     /* If this is the first time the update was called, set the last_exponent to some value greater than the
      * current exponent */
-    if (last_exponent == INT_MAX) {
+    if (targets->exponent == INT_MAX) {
       last_exponent = current_exponent + 1;
     } else {
       last_exponent = targets->exponent;
@@ -147,7 +147,7 @@ static int coco_observer_targets_trigger(coco_observer_targets_t *targets, const
 
     /* If this is the first time the update was called, set the last_exponent to some value greater than the
      * current exponent */
-    if (last_exponent == INT_MAX) {
+    if (targets->exponent == INT_MAX) {
       last_exponent = current_exponent + 1;
     } else {
       last_exponent = targets->exponent;
