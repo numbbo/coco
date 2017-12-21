@@ -12,15 +12,19 @@ scenario_biobjfixed = 'biobjfixed'
 scenario_biobjrlbased = 'biobjrlbased'
 scenario_biobjextfixed = 'biobjextfixed'
 scenario_constrainedfixed = 'constrainedfixed'
+scenario_largescalefixed = 'largescalefixed'
+
 all_scenarios = [scenario_rlbased, scenario_fixed,
                  scenario_biobjfixed, scenario_biobjrlbased,
-                 scenario_biobjextfixed, scenario_constrainedfixed]
+                 scenario_biobjextfixed, scenario_constrainedfixed,
+                 scenario_largescalefixed]
 
 testbed_name_single = 'bbob'
 testbed_name_single_noisy = 'bbob-noisy'
 testbed_name_bi = 'bbob-biobj'
 testbed_name_bi_ext = 'bbob-biobj-ext'
 testbed_name_cons = 'bbob-constrained'
+testbed_name_ls = 'bbob-largescale'
 
 default_suite_single = 'bbob'
 default_suite_single_noisy = 'bbob-noisy'
@@ -31,6 +35,7 @@ default_testbed_single_noisy = 'GECCOBBOBNoisyTestbed'
 default_testbed_bi = 'GECCOBiObjBBOBTestbed'
 default_testbed_bi_ext = 'GECCOBiObjExtBBOBTestbed'
 default_testbed_cons = 'CONSBBOBTestbed'
+default_testbed_ls = 'BBOBLargeScaleTestbed'
 
 current_testbed = None
 
@@ -39,7 +44,8 @@ suite_to_testbed = {
     default_suite_single_noisy: default_testbed_single_noisy,
     default_suite_bi: default_testbed_bi,
     'bbob-biobj-ext': default_testbed_bi_ext,
-    'bbob-constrained': default_testbed_cons
+    'bbob-constrained': default_testbed_cons,
+    'bbob-largescale': default_testbed_ls
 }
 
 
@@ -199,12 +205,16 @@ class GECCOBBOBTestbed(Testbed):
     shortinfo_filename = 'bbob-benchmarkshortinfos.txt'
     pptable_target_runlengths = [0.5, 1.2, 3, 10, 50]  # used in config for expensive setting
     pptable_targetsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7)  # for pptable and pptablemany
+    dimsOfInterest = (5, 20)
 
     settings = dict(
         info_filename='bbob-benchmarkinfos.txt',
         shortinfo_filename=shortinfo_filename,
         name=testbed_name_single,
         short_names=get_short_names(shortinfo_filename),
+        dimensions_to_display=(2, 3, 5, 10, 20, 40),
+        rldDimsOfInterest=dimsOfInterest,
+        tabDimsOfInterest=dimsOfInterest,
         hardesttargetlatex='10^{-8}',  # used for ppfigs, pptable and pptables
         ppfigs_ftarget=1e-8,  # to set target runlength in expensive setting, use genericsettings.target_runlength
         ppfig2_ftarget=1e-8,
@@ -372,12 +382,16 @@ class GECCOBiObjBBOBTestbed(Testbed):
     shortinfo_filename = 'bbob-biobj-benchmarkshortinfos.txt'
     pptable_target_runlengths = [0.5, 1.2, 3, 10, 50] # used in config for expensive setting
     pptable_targetsOfInterest = (10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-7) # for pptable and pptablemany
+    dimsOfInterest = (5, 20)
 
     settings = dict(
         info_filename='bbob-biobj-benchmarkinfos.txt',
         shortinfo_filename=shortinfo_filename,
         name=testbed_name_bi,
         short_names=get_short_names(shortinfo_filename),
+        dimensions_to_display=(2, 3, 5, 10, 20, 40),
+        rldDimsOfInterest=dimsOfInterest,
+        tabDimsOfInterest=dimsOfInterest,
         hardesttargetlatex='10^{-5}',  # used for ppfigs, pptable and pptables
         ppfigs_ftarget=1e-5,  # to set target runlength in expensive setting, use genericsettings.target_runlength
         ppfig2_ftarget=1e-5,
@@ -465,4 +479,35 @@ class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
                 self.instantiate_attributes(targetValues, [key])
 
 
+class BBOBLargeScaleTestbed(GECCOBBOBTestbed):
+    """ Settings related to `bbob-largescale` test suite.
+    """
 
+    dimsOfInterest = (80, 320)
+
+    settings = dict(
+        name=testbed_name_ls,
+        first_dimension=20,
+        scenario=scenario_largescalefixed,
+        dimensions_to_display=[20, 40, 80, 160, 320, 640],
+        tabDimsOfInterest=dimsOfInterest,
+        rldDimsOfInterest=dimsOfInterest,
+        reference_algorithm_filename='',  # TODO produce correct reference algo and update this line
+        reference_algorithm_displayname=''  # TODO: should be read in from data set in reference_algorithm_filename
+    )
+
+
+    def __init__(self, targetValues):
+        super(BBOBLargeScaleTestbed, self).__init__(targetValues)
+
+        if 11 < 3:
+            # override settings if needed...
+            self.settings.reference_algorithm_filename = 'refalgs/best2018-bbob-largescale.tar.gz'
+            self.settings.reference_algorithm_displayname = 'best 2018'  # TODO: should be read in from data set in reference_algorithm_filename
+            self.settings.short_names = get_short_names(self.shortinfo_filename)
+            self.settings.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
+
+        for key, val in BBOBLargeScaleTestbed.settings.items():
+            setattr(self, key, val)
+            if 'target_values' in key or 'targetsOfInterest' in key:
+                self.instantiate_attributes(targetValues, [key])

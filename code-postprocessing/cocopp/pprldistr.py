@@ -139,6 +139,7 @@ def load_previous_RLBdata(filename=previous_RLBdata_filename):
 
 
 def caption_single():
+
     caption_part_one = r"""%
          Empirical cumulative distribution functions (ECDF), plotting the fraction of
          trials with an outcome not larger than the respective value on the $x$-axis.
@@ -174,7 +175,8 @@ def caption_single():
         else:
             figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
     elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
-                                                  testbedsettings.testbed_name_cons]:
+                                                  testbedsettings.testbed_name_cons,
+                                                  testbedsettings.testbed_name_ls]:
         # no best algorithm defined yet:
         figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
     else:
@@ -183,9 +185,10 @@ def caption_single():
     return captions.replace(figure_caption)
 
 def caption_two():
+
     caption_two_part_one = r"""%
         Empirical cumulative distributions (ECDF)
-        of run lengths and speed-up ratios in 5-D (left) and 20-D (right).
+        of run lengths and speed-up ratios """ + ("""in %d-D (left) and %d-D (right).""" % tuple(testbedsettings.current_testbed.tabDimsOfInterest)) + r"""
         Left sub-columns: ECDF of
         the number of function evaluations divided by dimension $D$
         (FEvals/D) """
@@ -205,7 +208,7 @@ def caption_two():
         BBOB-2009. """ if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
                                                                    testbedsettings.testbed_name_single_noisy]
         else "") + r"""Right sub-columns:
-        ECDF of FEval ratios of \algorithmA\ divided by \algorithmB for target
+        ECDF of FEval ratios of \algorithmA\ divided by \algorithmB\ for target
         function values $10^k$ with $k$ given in the legend; all
         trial pairs for each function. Pairs where both trials failed are disregarded,
         pairs where one trial failed are visible in the limits being $>0$ or $<1$. The
@@ -242,7 +245,8 @@ def caption_two():
                            + caption_two_rlbased_targets_part3)
 
     if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
-                                                testbedsettings.testbed_name_cons]:
+                                                testbedsettings.testbed_name_cons,
+                                                testbedsettings.testbed_name_ls]:
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_two_fixed
     elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,

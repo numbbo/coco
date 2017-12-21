@@ -765,7 +765,6 @@ class DataSet(object):
         suite = None
         if hasattr(self, 'suite'):
             suite = getattr(self, 'suite')
-
         if not suite:
             if self.isBiobjective():
                 suite = testbedsettings.default_suite_bi
@@ -1748,7 +1747,7 @@ class DataSetList(list):
                 warnings.warn(s)
                 print(s)
             self.sort()
-
+        self.current_testbed = testbedsettings.current_testbed #Wassim: to be sure
         data_consistent = True
         for ds in self:
             data_consistent = data_consistent and ds.consistency_check()

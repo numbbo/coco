@@ -36,7 +36,7 @@ generate_bbob_testcase <- function(function_id, instance_id, dimension,
 
 testvectors <- generate_testvectors(100)
 
-catf("bbob2009\n%i\n", nrow(testvectors))
+catf("bbob\n%i\n", nrow(testvectors))
 for (i in 1:nrow(testvectors)) {
   catf("%s\n", paste(sprintf("%.14e", testvectors[i,]), collapse=" "))
 }

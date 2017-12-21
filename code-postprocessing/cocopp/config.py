@@ -48,7 +48,6 @@ def config(testbed_name=None, data_format_name=None):
     """called from a high level, e.g. rungeneric, to configure the lower level
     modules via modifying parameter settings.
     """
-
     if testbed_name:
         tbs.load_current_testbed(testbed_name, pproc.TargetValues)
     if data_format_name:  # not at all in use yet

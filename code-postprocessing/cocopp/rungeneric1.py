@@ -295,6 +295,7 @@ def main(argv=None):
         config.config_target_values_setting(genericsettings.isExpensive,
                                             genericsettings.runlength_based_targets)
         config.config(dsList[0].testbed_name, dsList[0].get_data_format())
+
         if genericsettings.verbose:
             for i in dsList:                
                 # check whether current set of instances correspond to correct
@@ -403,7 +404,7 @@ def main(argv=None):
                               'results will be mixed in the "all functions" '
                               'ECDF figures.')
             dictDim = dsList.dictByDim()
-            for dim in inset.rldDimsOfInterest:
+            for dim in testbedsettings.current_testbed.rldDimsOfInterest:
                 try:
                     sliceDim = dictDim[dim]
                 except KeyError:
@@ -455,7 +456,7 @@ def main(argv=None):
                     except (SyntaxError, NameError, ValueError):
                         print("Float value required.")
                 dictDim = sliceNoise.dictByDim()
-                for d in inset.rldDimsOfInterest:
+                for d in testbedsettings.current_testbed.rldDimsOfInterest:
                     try:
                         sliceDim = dictDim[d]
                     except KeyError:
@@ -467,7 +468,6 @@ def main(argv=None):
                         info = '%s' % fGroup
                         pplogloss.main(sliceFuncGroup, CrE, True,
                                        algoutputdir, info)
-                    pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
             print_done()
 
         prepend_to_file(latex_commands_file,
