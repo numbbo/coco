@@ -39,7 +39,8 @@ settings.default_settings = imp.load_module('_coco_default_settings',
 def config_target_values_setting(is_expensive, is_runlength_based):
     """manage target values setting in "expensive" optimization scenario.
     """
-    settings.maxevals_fix_display = settings.xlimit_expensive if is_expensive else None
+    if is_expensive:
+        settings.maxevals_fix_display = settings.xlimit_expensive
     settings.runlength_based_targets = is_runlength_based or is_expensive
 
 
