@@ -5,10 +5,9 @@
  * x |-> Mx + b <br>
  * The matrix M is stored in row-major format.
  *
- * Currently the best parameter is not transformed. It would be simple to transform
- * the best parameter from 0 to -b, if necessary. It would also be simple to transform
- * the best parameter if M is orthogonal. If linear transformations are based on the
- * composition from an SVD, this solves the best parameter setting problem,
+ * Currently, the best parameter is transformed correctly only in the simple 
+ * cases where M is orthogonal which is always the case for the `bbob`
+ * functions. How to code this for general transformations of the above form,
  * see https://github.com/numbbo/coco/issues/814#issuecomment-303724400
  */
 
@@ -186,14 +185,19 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
     
   problem->evaluate_gradient = transform_vars_affine_evaluate_gradient;
 
-  /* Update the best parameter */
-  for (i = 0; i < problem->number_of_variables; ++i) {
-    /* Compute M^T * inner_problem->best_parameter - b */
-    for (j = 0; j < inner_problem->number_of_variables; ++j) {
-      problem->best_parameter[i] += data->M[j * problem->number_of_variables + i] * inner_problem->best_parameter[j];
-    }
-    problem->best_parameter[i] -= data->b[i];
+  /* Update the best parameter by computing
+     problem->best_parameter = M^T * (inner_problem->best_parameter - b)
+  */
+  for (i = 0; i < inner_problem->number_of_variables; ++i) {
+    data->x[i] = inner_problem->best_parameter[i] - data->b[i];
   }
+  for (i = 0; i < problem->number_of_variables; ++i) {
+    problem->best_parameter[i] = 0;
+    for (j = 0; j < inner_problem->number_of_variables; ++j) {
+      problem->best_parameter[i] += data->M[j * problem->number_of_variables + i] * data->x[j];
+    }
+  }
+  
 
   return problem;
 }
