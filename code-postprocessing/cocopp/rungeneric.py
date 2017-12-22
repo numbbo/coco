@@ -282,32 +282,15 @@ def main(argv=None):
         truncate_latex_command_file(latex_commands_filename)
 
         print('Post-processing (%s)' % ('1' if len(args) == 1 else '2+'))  # to not break doctests
+
         # manage data paths as given in args
-        data_archive = findfiles.COCODataArchive()
-        clean_extended_args = []
-        for i, name in enumerate(args):
-            # prepend common path inputdir to path names
-            path = os.path.join(inputdir, args[i].replace('/', os.sep))
-            if os.path.exists(path):
-                clean_extended_args.append(path)
-            elif name.endswith('!'):  # take first match
-                data_archive.find(name[:-1])
-                clean_extended_args.append(data_archive.get())
-            elif name.endswith('*'):  # take all matches
-                clean_extended_args.extend(data_archive.get_all(name[:-1]))  # download if necessary
-            elif data_archive.find(name):  # get will bail out if there is not exactly one match
-                clean_extended_args.append(data_archive.get(name))  # download if necessary
-            else:
-                warnings.warn('"%s" seems not to be an existing file or match any archived data' % name)
-                # TODO: with option --include-single we may have to wait some time until this leads to
-                # an error. Hence we should raise the error here?
+        data_archive = findfiles.COCODataArchive()  # this is the archive of *all* testbeds
+        args = data_archive.get_extended(args)
         if len(args) != len(set(args)):
             warnings.warn("Several data arguments point to the very same location."
                           "This will most likely lead to a rather unexpected outcome.")
             # TODO: we would like the users input with timeout to confirm
             # and otherwise raise a ValueError
-
-        args = clean_extended_args
 
         update_background_algorithms(inputdir)
 
@@ -318,7 +301,7 @@ def main(argv=None):
         # we still need to check that all data come from the same
         # test suite, at least for the data_archive data
         suites = set()
-        for path in clean_extended_args:
+        for path in args:
             if data_archive.contains(path):  # this is the archive of *all* testbeds
                 # extract suite name
                 suites.add(data_archive.name(path).split('/')[0])
