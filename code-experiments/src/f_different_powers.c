@@ -131,3 +131,64 @@ static coco_problem_t *f_different_powers_bbob_problem_allocate(const size_t fun
   coco_free_memory(xopt);
   return problem;
 }
+
+/**
+ * @brief Creates the bbob-constrained different powers problem.
+ */
+static coco_problem_t *f_different_powers_bbob_constrained_problem_allocate(const size_t function,
+                                                                const size_t dimension,
+                                                                const size_t instance,
+                                                                const long rseed,
+                                                                const char *problem_id_template,
+                                                                const char *problem_name_template) {
+  /* Different powers function used in bbob-constrained test suite.
+   * In this version, the (unconstrained) optimum, xopt, is set to
+   * a distance of 1e-5 to the origin. By doing so, the optimum of
+   * the constrained problem is at a "reasonable" distance from
+   * the unconstrained one and, hence, the constrained problem is not too easy.
+   */
+
+  size_t i;
+  double *xopt, fopt, result;
+  coco_problem_t *problem = NULL;
+
+  double *M = coco_allocate_vector(dimension * dimension);
+  double *b = coco_allocate_vector(dimension);
+  double **rot1;
+
+  xopt = coco_allocate_vector(dimension);
+  fopt = bbob2009_compute_fopt(function, instance);
+  bbob2009_compute_xopt(xopt, rseed, dimension);
+
+  /* Compute Euclidean norm of xopt */
+  result = 0.0;
+  for (i = 0; i < dimension; ++i) {
+    result += xopt[i] * xopt[i];
+  }
+  result = sqrt(result);
+
+  /* Scale xopt such that the distance to the origin is 1e-5 */
+  for (i = 0; i < dimension; ++i) {
+    xopt[i] *= 1e-5 / result;
+  }
+
+  rot1 = bbob2009_allocate_matrix(dimension, dimension);
+  bbob2009_compute_rotation(rot1, rseed + 1000000, dimension);
+  bbob2009_copy_rotation_matrix(rot1, M, b, dimension);
+  bbob2009_free_matrix(rot1, dimension);
+
+  problem = f_different_powers_allocate(dimension);
+  problem = transform_obj_shift(problem, fopt);
+  problem = transform_vars_affine(problem, M, b, dimension);
+  problem = transform_vars_shift(problem, xopt, 0);
+
+  coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
+  coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_type(problem, "3-ill-conditioned");
+
+  coco_free_memory(M);
+  coco_free_memory(b);
+  coco_free_memory(xopt);
+  return problem;
+}
+
