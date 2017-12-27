@@ -191,4 +191,3 @@ static coco_problem_t *f_different_powers_bbob_constrained_problem_allocate(cons
   coco_free_memory(xopt);
   return problem;
 }
-
