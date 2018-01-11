@@ -135,13 +135,10 @@ static coco_problem_t *coco_get_cons_bbob_problem(const size_t function,
   }
 
   /* Scale down the objective function value */
-  exponent = 1./3;
+  exponent = -2./3;
   f_0 = coco_problem_get_best_value(problem);
   if (f_0 > 1e3) {
-    problem = transform_obj_scale(problem, 1/f_0);
-    problem = transform_obj_shift(problem, -1.);
     problem = transform_obj_scale(problem, pow(f_0, exponent));
-    problem = transform_obj_shift(problem, bbob2009_compute_fopt(function, instance));
   }
 
   coco_free_memory(xopt);
