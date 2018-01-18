@@ -293,7 +293,7 @@ def run_python(test=False):
         if test:
             run(os.path.join('code-experiments', 'build', 'python'), ['python', 'coco_test.py'])
         python(os.path.join('code-experiments', 'build', 'python'),
-               ['example_experiment.py'])
+               ['example_experiment.py', 'bbob'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
