@@ -93,9 +93,6 @@ static coco_problem_t *transform_obj_shift(coco_problem_t *inner_problem, const 
   if (inner_problem->number_of_objectives > 0)
     problem->evaluate_function = transform_obj_shift_evaluate_function;
     
-  if (inner_problem->number_of_constraints > 0)
-    problem->evaluate_constraint = transform_obj_shift_evaluate_constraint;
-    
   problem->evaluate_gradient = transform_obj_shift_evaluate_gradient;  /* TODO (NH): why do we need a new function pointer here? */
   
   for (i = 0; i < problem->number_of_objectives; i++)
