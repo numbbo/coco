@@ -11,6 +11,7 @@
 #include <time.h>
 #include <assert.h>
 #include <ctype.h>
+#include <errno.h>
 
 #include "coco.h"
 #include "coco_internal.h"
@@ -156,57 +157,72 @@ static int coco_file_exists(const char *path) {
 }
 
 /**
- * @brief Calls the right mkdir() method (depending on the platform).
+ * @brief Calls the right mkdir() method (depending on the platform) with full privileges for the user. 
+ * If the created directory has not existed before, returns 0, otherwise returns 1. If the directory has 
+ * not been created, a coco_error is raised. 
  *
  * @param path The directory path.
  *
- * @return 0 on successful completion, and -1 on error.
+ * @return 0 if the created directory has not existed before and 1 otherwise.
  */
 static int coco_mkdir(const char *path) {
+  int result = 0;
+
 #if _MSC_VER
-  return _mkdir(path);
+  result = _mkdir(path);
 #elif defined(__MINGW32__) || defined(__MINGW64__)
-  return mkdir(path);
+  result = mkdir(path);
 #else
-  return mkdir(path, S_IRWXU);
+  result = mkdir(path, S_IRWXU);
 #endif
+
+  if (result == 0)
+    return 0;
+  else if (errno == EEXIST)
+    return 1;
+  else 
+    coco_error("coco_mkdir(): unable to create %s, mkdir error: %s", path, strerror(errno));
+    return 1; /* Never reached */
 }
 
 /**
- * @brief Creates a directory with full privileges for the user.
- *
- * @note Should work cross-platform.
+ * @brief Creates a directory (possibly having to create nested directories). If the last created directory 
+ * has not existed before, returns 0, otherwise returns 1.
  *
  * @param path The directory path.
+ *
+ * @return 0 if the created directory has not existed before and 1 otherwise.
  */
-static void coco_create_directory(const char *path) {
-  char *tmp = NULL;
-  char *p;
-  size_t len = strlen(path);
+static int coco_create_directory(const char *path) {
+  char *path_copy = NULL;
+  char *tmp, *p;
   char path_sep = coco_path_separator[0];
+  size_t len = strlen(path);
 
-  /* Nothing to do if the path exists. */
-  if (coco_directory_exists(path))
-    return;
+  int result = 0;
 
-  tmp = coco_strdup(path);
-  /* Remove possible trailing slash */
+  path_copy = coco_strdup(path);
+  tmp = path_copy;
+
+  /* Remove possible leading and trailing (back)slash */
   if (tmp[len - 1] == path_sep)
     tmp[len - 1] = 0;
-  for (p = tmp + 1; *p; p++) {
+  if (tmp[0] == path_sep)
+    tmp++;
+
+  /* Iterate through nested directories (does nothing if directories are not nested) */
+  for (p = tmp; *p; p++) {
     if (*p == path_sep) {
       *p = 0;
-      if (!coco_directory_exists(tmp)) {
-        if (0 != coco_mkdir(tmp))
-          coco_error("coco_create_path(): failed creating %s", tmp);
-      }
+      coco_mkdir(tmp);
       *p = path_sep;
     }
   }
-  if (0 != coco_mkdir(tmp))
-    coco_error("coco_create_path(): failed creating %s", tmp);
-  coco_free_memory(tmp);
-  return;
+  
+  /* Create the last nested or only directory */
+  result = coco_mkdir(tmp);
+  coco_free_memory(path_copy);
+  return result;
 }
 
 /* Commented to silence the compiler (unused function warning) */
@@ -251,20 +267,19 @@ static void coco_create_unique_filename(char **file_name) {
 #endif
 
 /**
- * @brief Creates a unique directory from the given path.
+ * @brief Creates a directory that has not existed before.
  *
  * If the given path does not yet exit, it is left as is, otherwise it is changed(!) by appending a number
- * to it. If path already exists, path-01 will be tried. If this one exists as well, path-02 will be tried,
- * and so on. If path-99 exists as well, the function throws an error.
+ * to it. If path already exists, path-001 will be tried. If this one exists as well, path-002 will be tried,
+ * and so on. If path-999 exists as well, an error is raised.
  */
 static void coco_create_unique_directory(char **path) {
 
   int counter = 1;
   char *new_path;
 
-  /* Create the path if it does not yet exist */
-  if (!coco_directory_exists(*path)) {
-    coco_create_directory(*path);
+  if (coco_create_directory(*path) == 0) {
+	/* Directory created */
     return;
   }
 
@@ -272,10 +287,10 @@ static void coco_create_unique_directory(char **path) {
 
     new_path = coco_strdupf("%s-%03d", *path, counter);
 
-    if (!coco_directory_exists(new_path)) {
+    if (coco_create_directory(new_path) == 0) {
+      /* Directory created */
       coco_free_memory(*path);
       *path = new_path;
-      coco_create_directory(*path);
       return;
     } else {
       counter++;
@@ -284,7 +299,7 @@ static void coco_create_unique_directory(char **path) {
 
   }
 
-  coco_error("coco_create_unique_path(): could not create a unique path with name %s", *path);
+  coco_error("coco_create_unique_directory(): unable to create unique directory %s", *path);
   return; /* Never reached */
 }
 
