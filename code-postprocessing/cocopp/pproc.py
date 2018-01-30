@@ -212,8 +212,7 @@ class RunlengthBasedTargetValues(TargetValues):
         >>> targets.reference_data = 'testbedsettings'
         >>> t = targets(fun_dim=(1, 20)) # doctest:+ELLIPSIS
         Loading best algorithm data from ...
-        >>> assert t[0] >= 6.30957345e+01
-        >>> assert t[0] <= 6.30957346e+01
+        >>> assert 6.30957345e+01 <= t[0] <= 6.30957346e+01
         >>> assert t[-1] == 1.00000000e-08
              
     returns a list of target f-values for F1 in 20-D, based on the 
@@ -648,17 +647,14 @@ class DataSet(object):
         True
         >>> # investigate row 0,10,20,... and of the result columns 0,5,6, index 0 is ftarget
         >>> ev = ds.evals[0::10, (0,5,6)]  # doctest:+ELLIPSIS  
-        >>> assert ev[0][0] >= 3.98107170e+07
-        >>> assert ev[0][0] <= 3.98107171e+07
+        >>> assert 3.98107170e+07 <= ev[0][0] <= 3.98107171e+07 
         >>> assert ev[0][1] == 1
         >>> assert ev[0][2] == 1
-        >>> assert ev[-1][-1] >= 6.07000000e+03
-        >>> assert ev[-1][-1] <= 6.07000001e+03
+        >>> assert 6.07000000e+03 <= ev[-1][-1] <= 6.07000001e+03
         >>> # show last row, same columns
         >>> ev = ds.evals[-1,(0,5,6)]  # doctest:+ELLIPSIS
         >>> assert ev[0] == 1e-8
-        >>> assert ev[1] >= 5.67600000e+03
-        >>> assert ev[1] <= 5.67600001e+03
+        >>> assert 5.67600000e+03 <= ev[1] <= 5.67600001e+03
         >>> ds.info()  # prints similar data more nicely formated 
         Algorithm: BIPOP-CMA-ES
         Function ID: 2
@@ -682,9 +678,8 @@ class DataSet(object):
         >>> assert t[0][0] == 0
         >>> assert t[0][2] == 1
         >>> assert t[-1][-2] == 1e-8
-        >>> assert t[-1][-1] >= 6.09626666e+03
-        >>> assert t[-1][-1] <= 6.09626667e+03
-                
+        >>> assert 6.09626666e+03 <= t[-1][-1] <= 6.09626667e+03
+
         Note that the load of a data set depends on the set of instances
         specified in testbedsettings' TestBed class (or its children)
         (None means all instances are read in):
@@ -705,8 +700,7 @@ class DataSet(object):
         >>> dslist[2].evals[-1]  # doctest:+ELLIPSIS
         array([...
         >>> assert (dslist[2].evals[-1])[0] == 1.0e-8
-        >>> assert (dslist[2].evals[-1])[-1] >= 2.01200000e+03
-        >>> assert (dslist[2].evals[-1])[-1] <= 2.01200001e+03
+        >>> assert 2.01200000e+03 <= (dslist[2].evals[-1])[-1] <= 2.01200001e+03
         >>> # because testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] was None
         >>> cocopp.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = [1, 3]
         >>> cocopp.config.config('GECCOBBOBTestbed') # make sure that settings are used
@@ -717,8 +711,7 @@ class DataSet(object):
         >>> dslist2[2].evals[-1]  # doctest:+ELLIPSIS
         array([...
         >>> assert (dslist2[2].evals[-1])[0] == 1.0e-8
-        >>> assert (dslist2[2].evals[-1])[-1] >= 2.20700000e+03
-        >>> assert (dslist2[2].evals[-1])[-1] <= 2.20700001e+03
+        >>> assert 2.20700000e+03 <= (dslist2[2].evals[-1])[-1] <= 2.20700001e+03
         >>> # set things back to cause no troubles elsewhere:
         >>> cocopp.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = None
         >>> cocopp.config.config('GECCOBBOBTestbed') # make sure that settings are used
