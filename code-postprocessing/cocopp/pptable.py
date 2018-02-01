@@ -293,8 +293,8 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                     tableentryHtml = writeFEvalsMaxPrec(tmp, 2)
 
                     if np.isinf(tmp) and i == len(data)-1:
-                        tableentry = (tableentry + r'\textit{%s}' % writeFEvals2(np.median(entry.maxevals), 2, 3))
-                        tableentryHtml = (tableentryHtml + ' <i>%s</i>' % writeFEvals2(np.median(entry.maxevals), 2, 3))
+                        tableentry = (tableentry + r'\textit{%s}' % writeFEvals2(np.median(entry.maxevals).astype(int), 2, 3))
+                        tableentryHtml = (tableentryHtml + ' <i>%s</i>' % writeFEvals2(np.median(entry.maxevals).astype(int), 2, 4))
                         if is_bold:
                             tableentry = r'\textbf{%s}' % tableentry
                             tableentryHtml = '<b>%s</b>' % tableentryHtml
