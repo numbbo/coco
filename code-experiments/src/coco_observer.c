@@ -93,7 +93,6 @@ static int coco_observer_targets_trigger(coco_observer_targets_t *targets, const
   const double number_of_targets_double = (double) (long) targets->number_of_triggers;
 
   double verified_value = 0;
-  int last_exponent = 0;
   int current_exponent = 0;
   int adjusted_exponent = 0;
 
@@ -114,15 +113,7 @@ static int coco_observer_targets_trigger(coco_observer_targets_t *targets, const
 
     current_exponent = (int) (ceil(log10(verified_value) * number_of_targets_double));
 
-    /* If this is the first time the update was called, set the last_exponent to some value greater than the
-     * current exponent */
-    if (last_exponent == INT_MAX) {
-      last_exponent = current_exponent + 1;
-    } else {
-      last_exponent = targets->exponent;
-    }
-
-    if (current_exponent < last_exponent) {
+    if (current_exponent < targets->exponent) {
       /* Update the target information */
       targets->exponent = current_exponent;
       if (given_value == 0)
@@ -145,21 +136,13 @@ static int coco_observer_targets_trigger(coco_observer_targets_t *targets, const
     /* Adjustment: use floor instead of ceil! */
     current_exponent = (int) (floor(log10(verified_value) * number_of_targets_double));
 
-    /* If this is the first time the update was called, set the last_exponent to some value greater than the
-     * current exponent */
-    if (last_exponent == INT_MAX) {
-      last_exponent = current_exponent + 1;
-    } else {
-      last_exponent = targets->exponent;
-    }
-
     /* Compute the adjusted_exponent in such a way, that it is always diminishing in value. The adjusted
      * exponent can only be used to verify if a new target has been hit. To compute the actual target
      * value, the current_exponent needs to be used. */
     adjusted_exponent = 2 * (int) (ceil(log10(targets->precision / 10.0) * number_of_targets_double))
         - current_exponent - 1;
 
-    if (adjusted_exponent < last_exponent) {
+    if (adjusted_exponent < targets->exponent) {
       /* Update the target information */
       targets->exponent = adjusted_exponent;
       targets->value = - pow(10, (double) current_exponent / number_of_targets_double);
