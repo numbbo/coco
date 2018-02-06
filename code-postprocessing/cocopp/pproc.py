@@ -210,10 +210,10 @@ class RunlengthBasedTargetValues(TargetValues):
         >>> # make also sure to have loaded the corresponding reference algo
         >>> # from BBOB-2009:
         >>> targets.reference_data = 'testbedsettings'
-        >>> targets(fun_dim=(1, 20)) # doctest:+ELLIPSIS
+        >>> t = targets(fun_dim=(1, 20)) # doctest:+ELLIPSIS
         Loading best algorithm data from ...
-        array([  6.30957345e+01,   3.98107171e+01,   1.00000000e-08,
-                 1.00000000e-08,   1.00000000e-08])
+        >>> assert 6.30957345e+01 <= t[0] <= 6.30957346e+01
+        >>> assert t[-1] == 1.00000000e-08
              
     returns a list of target f-values for F1 in 20-D, based on the 
     aRT values ``[0.5,...,50]``. 
@@ -645,18 +645,16 @@ class DataSet(object):
         testbed_name
         >>> all(ds.evals[:, 0] == ds.target)  # first column of ds.evals is the "target" f-value
         True
-        >>> ds.evals[0::10, (0,5,6)]  # show row 0,10,20,... and of the result columns 0,5,6, index 0 is ftarget
-        array([[  3.98107171e+07,   1.00000000e+00,   1.00000000e+00],
-               [  3.98107171e+05,   2.00000000e+01,   8.40000000e+01],
-               [  3.98107171e+03,   1.61600000e+03,   1.04500000e+03],
-               [  3.98107171e+01,   3.04400000e+03,   3.21000000e+03],
-               [  3.98107171e-01,   4.42400000e+03,   5.11800000e+03],
-               [  3.98107171e-03,   4.73200000e+03,   5.41300000e+03],
-               [  3.98107171e-05,   5.04000000e+03,   5.74800000e+03],
-               [  3.98107171e-07,   5.36200000e+03,   6.07000000e+03]])
-
-        >>> ds.evals[-1,(0,5,6)]  # show last row, same columns
-        array([  1.00000000e-08,   5.67600000e+03,   6.26900000e+03])
+        >>> # investigate row 0,10,20,... and of the result columns 0,5,6, index 0 is ftarget
+        >>> ev = ds.evals[0::10, (0,5,6)]  # doctest:+ELLIPSIS  
+        >>> assert 3.98107170e+07 <= ev[0][0] <= 3.98107171e+07 
+        >>> assert ev[0][1] == 1
+        >>> assert ev[0][2] == 1
+        >>> assert 6.07000000e+03 <= ev[-1][-1] <= 6.07000001e+03
+        >>> # show last row, same columns
+        >>> ev = ds.evals[-1,(0,5,6)]  # doctest:+ELLIPSIS
+        >>> assert ev[0] == 1e-8
+        >>> assert 5.67600000e+03 <= ev[1] <= 5.67600001e+03
         >>> ds.info()  # prints similar data more nicely formated 
         Algorithm: BIPOP-CMA-ES
         Function ID: 2
@@ -675,14 +673,13 @@ class DataSet(object):
 
         >>> import numpy as np
         >>> idx = list(range(0, 50, 10)) + [-1]
-        >>> np.array([idx, ds.target[idx], ds.ert[idx]]).T  # aRT average runtime for some targets
-        array([[  0.00000000e+00,   3.98107171e+07,   1.00000000e+00],
-               [  1.00000000e+01,   3.98107171e+05,   6.12666667e+01],
-               [  2.00000000e+01,   3.98107171e+03,   1.13626667e+03],
-               [  3.00000000e+01,   3.98107171e+01,   3.07186667e+03],
-               [  4.00000000e+01,   3.98107171e-01,   4.81333333e+03],
-               [ -1.00000000e+00,   1.00000000e-08,   6.09626667e+03]])
-        
+        >>> # get aRT average runtime for some targets
+        >>> t = np.array([idx, ds.target[idx], ds.ert[idx]]).T  # doctest:+ELLIPSIS  
+        >>> assert t[0][0] == 0
+        >>> assert t[0][2] == 1
+        >>> assert t[-1][-2] == 1e-8
+        >>> assert 6.09626666e+03 <= t[-1][-1] <= 6.09626667e+03
+
         Note that the load of a data set depends on the set of instances
         specified in testbedsettings' TestBed class (or its children)
         (None means all instances are read in):
@@ -700,13 +697,10 @@ class DataSet(object):
           Data consistent according to consistency_check() in pproc.DataSet
         >>> dslist[2].instancenumbers
         [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5]
-        >>> dslist[2].evals[-1]
-        array([  1.00000000e-08,   2.14200000e+03,   1.95800000e+03,
-                 2.31700000e+03,   2.22700000e+03,   2.26900000e+03,
-                 2.09000000e+03,   2.32400000e+03,   2.30500000e+03,
-                 2.20700000e+03,   1.96200000e+03,   2.42800000e+03,
-                 2.21400000e+03,   1.97000000e+03,   1.92400000e+03,
-                 2.01200000e+03])
+        >>> dslist[2].evals[-1]  # doctest:+ELLIPSIS
+        array([...
+        >>> assert (dslist[2].evals[-1])[0] == 1.0e-8
+        >>> assert 2.01200000e+03 <= (dslist[2].evals[-1])[-1] <= 2.01200001e+03
         >>> # because testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] was None
         >>> cocopp.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = [1, 3]
         >>> cocopp.config.config('GECCOBBOBTestbed') # make sure that settings are used
@@ -714,10 +708,10 @@ class DataSet(object):
           Data consistent according to consistency_check() in pproc.DataSet
         >>> dslist2[2].instancenumbers
         [1, 1, 1, 3, 3, 3]
-        >>> dslist2[2].evals[-1]
-        array([  1.00000000e-08,   2.14200000e+03,   1.95800000e+03,
-                 2.31700000e+03,   2.32400000e+03,   2.30500000e+03,
-                 2.20700000e+03])
+        >>> dslist2[2].evals[-1]  # doctest:+ELLIPSIS
+        array([...
+        >>> assert (dslist2[2].evals[-1])[0] == 1.0e-8
+        >>> assert 2.20700000e+03 <= (dslist2[2].evals[-1])[-1] <= 2.20700001e+03
         >>> # set things back to cause no troubles elsewhere:
         >>> cocopp.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = None
         >>> cocopp.config.config('GECCOBBOBTestbed') # make sure that settings are used
