@@ -51,15 +51,15 @@ static void transform_obj_shift_evaluate_function(coco_problem_t *problem, const
 static void transform_obj_shift_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
   transform_obj_shift_data_t *data;
   size_t i;
-  
+
   if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
     coco_vector_set_to_nan(y, coco_problem_get_number_of_constraints(problem));
     return;
   }
-  
+
   data = (transform_obj_shift_data_t *) coco_problem_transformed_get_data(problem);
   coco_evaluate_constraint(coco_problem_transformed_get_inner_problem(problem), x, y);
-  
+
   for (i = 0; i < problem->number_of_constraints; i++)
     y[i] += data->offset;
 }
