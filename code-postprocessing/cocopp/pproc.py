@@ -1791,7 +1791,7 @@ class DataSetList(list):
                 warnings.warn("WARNING: a data file has been referenced" +
                     " several times in file %s:" % indexFile)
                 data_file_names = sorted(data_file_names)
-                for i in range(1, data_file_names):
+                for i in range(1, len(data_file_names)):
                     if data_file_names[i-1] == data_file_names[i]:
                         warnings.warn("    data file " + data_file_names[i])
                 warnings.warn("  This is likely to produce spurious results.")
