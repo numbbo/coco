@@ -83,7 +83,7 @@ static coco_suite_t *suite_biobj_ext_initialize(void) {
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-biobj-ext", 55+37, 6, dimensions, "year: 2017");
+  suite = coco_suite_allocate("bbob-biobj-ext", 55+37, 6, dimensions, "year: 2018");
 
   return suite;
 }
@@ -96,7 +96,7 @@ static const char *suite_biobj_ext_get_instances_by_year(const int year) {
   if (year == 0000) { /* default/test case */
     return "1-10";
   }
-  else if (year == 2017) {
+  else if ((year == 2017) || (year == 2018)) {
     return "1-15";
   }
   else {
