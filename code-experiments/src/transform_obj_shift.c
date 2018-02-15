@@ -48,7 +48,7 @@ static void transform_obj_shift_evaluate_function(coco_problem_t *problem, const
 /**
  * @brief Evaluates the transformed constraint
  */
-static void transform_obj_shift_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
+/*static void transform_obj_shift_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
   transform_obj_shift_data_t *data;
   size_t i;
 
@@ -62,7 +62,7 @@ static void transform_obj_shift_evaluate_constraint(coco_problem_t *problem, con
 
   for (i = 0; i < problem->number_of_constraints; i++)
     y[i] += data->offset;
-}
+}*/
 
 /**
  * @brief Evaluates the gradient of the transformed function at x
