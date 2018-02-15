@@ -59,7 +59,7 @@ static coco_problem_t *coco_get_cons_bbob_problem(const size_t function,
   double f_0, exponent;
 
   const char *problem_id_template = "bbob-constrained_f%03lu_i%02lu_d%02lu";
-  const char *problem_name_template = "BBOB-constrained suite problem f%lu instance %lu in %luD";
+  const char *problem_name_template = "bbob-constrained suite problem f%lu instance %lu in %luD";
   
   /* Seed value used for shifting the whole constrained problem */
   long rseed = (long) (function + 10000 * instance);

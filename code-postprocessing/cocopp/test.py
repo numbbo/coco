@@ -327,12 +327,12 @@ def main(arguments):
         assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-biobj`.'
         delete_files()
 
-        t0 = time.time()
-        result = os.system(python + command +
-                           join_path(recent_data_path, 'RS-co'))
-        print('**  subtest 12 finished in ', time.time() - t0, ' seconds')
-        assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-constrained`.'
-        delete_files(all_files=True)
+        # t0 = time.time()
+        # result = os.system(python + command +
+        #                    join_path(recent_data_path, 'RS-co'))
+        # print('**  subtest 12 finished in ', time.time() - t0, ' seconds')
+        # assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-constrained`.'
+        # delete_files(all_files=True)
 
         t0 = time.time()
         result = os.system(python + command + data_archive_get(
