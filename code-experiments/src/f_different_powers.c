@@ -161,15 +161,16 @@ static coco_problem_t *f_different_powers_bbob_constrained_problem_allocate(cons
   bbob2009_compute_xopt(xopt, rseed, dimension);
 
   /* Compute Euclidean norm of xopt */
+  /* CAVEAT: this implementation is not ideal for large dimensions */
   result = 0.0;
   for (i = 0; i < dimension; ++i) {
     result += xopt[i] * xopt[i];
   }
   result = sqrt(result);
 
-  /* Scale xopt such that the distance to the origin is 1e-5 */
+  /* Scale xopt such that the distance to the origin is 1e-2 */
   for (i = 0; i < dimension; ++i) {
-    xopt[i] *= 1e-5 / result;
+    xopt[i] *= 1e-2 / result;
   }
 
   rot1 = bbob2009_allocate_matrix(dimension, dimension);
