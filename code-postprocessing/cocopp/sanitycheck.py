@@ -12,6 +12,7 @@ Help:
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 from __future__ import with_statement # This isn't required in Python 2.6
 
 import os
@@ -20,13 +21,6 @@ import warnings
 import getopt
 import pickle
 import ast
-from pdb import set_trace
-
-# Add the path to cocopp
-if __name__ == "__main__":
-    # os.path.split is system independent
-    (filepath, filename) = os.path.split(sys.argv[0])
-    sys.path.append(os.path.join(filepath, os.path.pardir))
 
 from . import findfiles
 from .pproc import parseinfo
@@ -59,7 +53,7 @@ def checkinfofile(filename, verbose=True):
     
     filepath = os.path.split(filename)[0]
     if verbose:
-        print 'Checking %s' % filename
+        print('Checking %s' % filename)
 
     def check_datfiles(s):
         """Check data from 3rd line in index entry.
@@ -83,7 +77,7 @@ def checkinfofile(filename, verbose=True):
                     raise IOError
                 else:
                     if verbose:
-                        print 'Found data files %s.dat and %s.tdat' % (root, root)
+                        print('Found data files %s.dat and %s.tdat' % (root, root))
                 datfiles.extend((dat, tdat))
             else:
                 if not ':' in elem:
@@ -129,7 +123,7 @@ def checkinfofile(filename, verbose=True):
 
             # Checking by groups of 3 lines (1 index entry)
             if tmp == 2:
-                miss_attr = list(i for i in crit_attr if not info.has_key(i))
+                miss_attr = list(i for i in crit_attr if not i in info)
                 if miss_attr:
                     msg = ('File %s, entry l%d-%d is missing the following'
                            'keys: %s.' % (filename, i-2, i, ', '.join(miss_attr)))
@@ -139,18 +133,22 @@ def checkinfofile(filename, verbose=True):
                         print ('File %s, entry l%d-%d is ok.' %
                                (filename, i-2, i))
 
+
 def is_correct_instances(trials, verbose=True):
     """Check instances and number of repetitions."""
 
     tmp = dict((j, trials.count(j)) for j in set(trials))
-    return (tmp == correct_instances2010 or tmp == correct_instances2009)
+    return tmp == correct_instances2010 or tmp == correct_instances2009
+
 
 def somestatistics():
     """Do some statistics over the data."""
     pass
 
+
 def usage():
-    print main.__doc__
+    print(main.__doc__)
+
 
 def main(argv=None):
     """Main routine for COCO data checking procedure.
@@ -166,7 +164,7 @@ def main(argv=None):
     try:
         try:
             opts, args = getopt.getopt(argv, shortoptlist, longoptlist)
-        except getopt.error, msg:
+        except getopt.error as msg:
              raise Usage(msg)
         if not (args):
             usage()
@@ -178,7 +176,7 @@ def main(argv=None):
             if o in ('-v', '--verbose'):
                 verbose = True
 
-        print 'COCO Checking procedure: This may take a couple of minutes.'
+        print('COCO Checking procedure: This may take a couple of minutes.')
 
         filelist = list()
         for i in args:
@@ -193,7 +191,7 @@ def main(argv=None):
         for i in filelist:
             try:
                 if verbose:
-                    print 'Checking %s.' % i
+                    print('Checking %s.' % i)
                 extension = os.path.splitext(i)[1]
                 if extension == '.info':
                     checkinfofile(i, verbose)
@@ -205,15 +203,12 @@ def main(argv=None):
                         msg = ('File %s: The instances listed do not respect '
                                'the specifications BBOB-2009 or BBOB-2010.' % i)
                         raise Usage(msg)
-            except Usage, err:
-                print >>sys.stderr, err.msg
+            except Usage as err:
+                print(err.msg, file=sys.stderr)
                 continue
-        print '... Done.'
+        print('... Done.')
 
-    except Usage, err:
-        print >>sys.stderr, err.msg
-        #print >>sys.stderr, "for help use -h or --help"
+    except Usage as err:
+        print(err.msg, file=sys.stderr)
+        #print("for help use -h or --help", file=sys.stderr)
         return 2
-
-if __name__ == "__main__":
-    sys.exit(main())

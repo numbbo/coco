@@ -16,7 +16,7 @@ A more complete example use case can be found in the `example_experiment.py`
 file.
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
-from . import utilities
+from . import solvers, utilities
 try:
     from . import _interface
     from ._interface import Suite as _Suite, Observer as _Observer
@@ -30,6 +30,26 @@ del absolute_import, division, print_function, unicode_literals
 
 # from .utilities import about_equal
 # from .exceptions import NoSuchProblemException, InvalidProblemException
+
+__all__ = ['Observer', 'Suite', 'known_suite_names', 'default_observers']
+
+def default_observers(update=None):
+    """return a map from suite names to default observer names.
+
+    This function can also be used to update this map using
+    a `dict` or a `list` of key-value pairs.
+    """
+    # this is a function only to make the doc available and
+    # because @property doesn't work on module level
+    _default_observers.update(update or {})
+    return _default_observers
+_default_observers = {
+    'bbob': 'bbob',
+    'bbob-biobj': 'bbob-biobj',
+    'bbob-biobj-ext': 'bbob-biobj',
+    'bbob-constrained': 'bbob',
+    'bbob-largescale': 'bbob',  # todo: needs to be confirmed
+    }
 
 class Suite(_Suite):
     """Suite of benchmark problems.
@@ -79,7 +99,7 @@ class Suite(_Suite):
     >>> observer = Observer("bbob",
     ...              "result_folder: %s_on_%s" % (solver.__name__, "bbob2009"))
     >>> for fun in suite:
-    ...     if fun.dimension > 10:
+    ...     if fun.dimension >= 10:
     ...         break
     ...     print('Current problem index = %d' % fun.index)
     ...     fun.observe_with(observer)
@@ -376,6 +396,13 @@ class Observer(_Observer):
     @property
     def state(self):
         return super(Observer, self).state
+    @property
+    def result_folder(self):
+        """name of the output folder.
+
+        This name may not be the same as input option `result_folder`.
+        """
+        return super(Observer, self).result_folder
 
 # this definition is copy-edited from interface, solely to pass docstrings to pydoctor
 class Problem(_interface.Problem):
@@ -418,6 +445,8 @@ class Problem(_interface.Problem):
         around the problem. For the observer to be finalized, the problem
         must be free'd (implictly or explicitly).
 
+        Return the observed problem `self`.
+
         Details: `observer` can be `None`, in which case nothing is done.
 
         See also: class `Observer`
@@ -428,14 +457,49 @@ class Problem(_interface.Problem):
         """"inofficial" interface to `self` with target f-value of zero. """
         return self(x) - self.final_target_fvalue1
 
+    def initial_solution_proposal(self, restart_number=None):
+        """return feasible initial solution proposals.
+
+        For unconstrained problems, the proposal is different for each
+        consecutive call without argument and for each `restart_number`
+        and may be different under repeated calls with the same
+        `restart_number`. ``self.initial_solution_proposal(0)`` is the
+        same as ``self.initial_solution``.
+
+        Conceptual example::
+
+            # given: a suite instance, a budget, and fmin
+            for problem in suite:
+                # restart until budget is (over-)exhausted
+                while problem.evaluations < budget and not problem.final_target_hit:
+                    fmin(problem, problem.initial_solution_proposal())
+
+        Details: by default, the first proposal is the domain middle or
+        the (only) known feasible solution.
+        Subsequent proposals are coordinate-wise sampled as the sum
+        of two iid random variates uniformly distributed within the
+        domain boundaries. On the ``'bbob'`` suite their density is
+        0.2 * (x / 5 + 1) for x in [-5, 0] and
+        0.2 * (1 - x / 5) for x in [0, 5] and zero otherwise.
+
+        """
+        return super(Problem, self).initial_solution_proposal(restart_number)
     @property
     def initial_solution(self):
         """return feasible initial solution"""
         return super(Problem, self).initial_solution()
     @property
-    def list_of_observers(self):
+    def observers(self):
+        """list of observers wrapped around this problem"""
         return super(Problem, self).list_of_observers
-    
+    @property
+    def is_observed(self):
+        """problem ``p`` is observed ``p.is_observed`` times.
+
+        See also: the list of observers in property `observers`.
+        """
+        return super(Problem, self).is_observed
+
     @property
     def number_of_variables(self):  # this is cython syntax, not known in Python
         # this is a class definition which is instantiated automatically!?

@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from .. import toolsstats, pproc, toolsdivers
 from ..ppfig import save_figure, consecutiveNumbers, plotUnifLogXMarkers
 from pdb import set_trace
+from six import advance_iterator
 
 #__all__ = []
 
@@ -240,17 +241,17 @@ def plotLogRel(indexEntries0, indexEntries1, isByInstance=True):
             it0 = iter(i0.funvals)
             it1 = iter(i1.funvals)
             try:
-                nline0 = it0.next()
+                nline0 = advance_iterator(it0)
                 while nline0[0] < curevals:
                     line0 = nline0
-                    nline0 = it0.next()
+                    nline0 = advance_iterator(it0)
             except StopIteration:
                 pass #we keep the last line obtained.
             try:
-                nline1 = it1.next()
+                nline1 = advance_iterator(it1)
                 while nline1[0] < curevals:
                     line1 = nline1
-                    nline1 = it1.next()
+                    nline1 = advance_iterator(it1)
             except StopIteration:
                 pass #we keep the last line obtained.
 
@@ -374,7 +375,7 @@ def main(dsList0, dsList1, dim, targetsOfInterest=None,
     funcs = set(dsList0.dictByFunc().keys()) & set(dsList1.dictByFunc().keys())
     text = consecutiveNumbers(sorted(funcs), 'f')
     if len(dsList0.dictByDim().keys()) == len(dsList1.dictByDim().keys()) == 1: 
-        text += ',%d-D' % dsList0.dictByDim().keys()[0]
+        text += ',%d-D' % list(dsList0.dictByDim().keys())[0]
 
     plt.text(0.98, 0.02, text, horizontalalignment="right",
              transform=plt.gca().transAxes)

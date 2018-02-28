@@ -11,6 +11,7 @@
 #include <time.h>
 #include <assert.h>
 #include <ctype.h>
+#include <errno.h>
 
 #include "coco.h"
 #include "coco_internal.h"
@@ -156,57 +157,72 @@ static int coco_file_exists(const char *path) {
 }
 
 /**
- * @brief Calls the right mkdir() method (depending on the platform).
+ * @brief Calls the right mkdir() method (depending on the platform) with full privileges for the user. 
+ * If the created directory has not existed before, returns 0, otherwise returns 1. If the directory has 
+ * not been created, a coco_error is raised. 
  *
  * @param path The directory path.
  *
- * @return 0 on successful completion, and -1 on error.
+ * @return 0 if the created directory has not existed before and 1 otherwise.
  */
 static int coco_mkdir(const char *path) {
+  int result = 0;
+
 #if _MSC_VER
-  return _mkdir(path);
+  result = _mkdir(path);
 #elif defined(__MINGW32__) || defined(__MINGW64__)
-  return mkdir(path);
+  result = mkdir(path);
 #else
-  return mkdir(path, S_IRWXU);
+  result = mkdir(path, S_IRWXU);
 #endif
+
+  if (result == 0)
+    return 0;
+  else if (errno == EEXIST)
+    return 1;
+  else 
+    coco_error("coco_mkdir(): unable to create %s, mkdir error: %s", path, strerror(errno));
+    return 1; /* Never reached */
 }
 
 /**
- * @brief Creates a directory with full privileges for the user.
- *
- * @note Should work cross-platform.
+ * @brief Creates a directory (possibly having to create nested directories). If the last created directory 
+ * has not existed before, returns 0, otherwise returns 1.
  *
  * @param path The directory path.
+ *
+ * @return 0 if the created directory has not existed before and 1 otherwise.
  */
-static void coco_create_directory(const char *path) {
-  char *tmp = NULL;
-  char *p;
-  size_t len = strlen(path);
+static int coco_create_directory(const char *path) {
+  char *path_copy = NULL;
+  char *tmp, *p;
   char path_sep = coco_path_separator[0];
+  size_t len = strlen(path);
 
-  /* Nothing to do if the path exists. */
-  if (coco_directory_exists(path))
-    return;
+  int result = 0;
 
-  tmp = coco_strdup(path);
-  /* Remove possible trailing slash */
+  path_copy = coco_strdup(path);
+  tmp = path_copy;
+
+  /* Remove possible leading and trailing (back)slash */
   if (tmp[len - 1] == path_sep)
     tmp[len - 1] = 0;
-  for (p = tmp + 1; *p; p++) {
+  if (tmp[0] == path_sep)
+    tmp++;
+
+  /* Iterate through nested directories (does nothing if directories are not nested) */
+  for (p = tmp; *p; p++) {
     if (*p == path_sep) {
       *p = 0;
-      if (!coco_directory_exists(tmp)) {
-        if (0 != coco_mkdir(tmp))
-          coco_error("coco_create_path(): failed creating %s", tmp);
-      }
+      coco_mkdir(tmp);
       *p = path_sep;
     }
   }
-  if (0 != coco_mkdir(tmp))
-    coco_error("coco_create_path(): failed creating %s", tmp);
-  coco_free_memory(tmp);
-  return;
+  
+  /* Create the last nested or only directory */
+  result = coco_mkdir(tmp);
+  coco_free_memory(path_copy);
+  return result;
 }
 
 /* Commented to silence the compiler (unused function warning) */
@@ -251,20 +267,19 @@ static void coco_create_unique_filename(char **file_name) {
 #endif
 
 /**
- * @brief Creates a unique directory from the given path.
+ * @brief Creates a directory that has not existed before.
  *
  * If the given path does not yet exit, it is left as is, otherwise it is changed(!) by appending a number
- * to it. If path already exists, path-01 will be tried. If this one exists as well, path-02 will be tried,
- * and so on. If path-99 exists as well, the function throws an error.
+ * to it. If path already exists, path-001 will be tried. If this one exists as well, path-002 will be tried,
+ * and so on. If path-999 exists as well, an error is raised.
  */
 static void coco_create_unique_directory(char **path) {
 
   int counter = 1;
   char *new_path;
 
-  /* Create the path if it does not yet exist */
-  if (!coco_directory_exists(*path)) {
-    coco_create_directory(*path);
+  if (coco_create_directory(*path) == 0) {
+	/* Directory created */
     return;
   }
 
@@ -272,10 +287,10 @@ static void coco_create_unique_directory(char **path) {
 
     new_path = coco_strdupf("%s-%03d", *path, counter);
 
-    if (!coco_directory_exists(new_path)) {
+    if (coco_create_directory(new_path) == 0) {
+      /* Directory created */
       coco_free_memory(*path);
       *path = new_path;
-      coco_create_directory(*path);
       return;
     } else {
       counter++;
@@ -284,7 +299,7 @@ static void coco_create_unique_directory(char **path) {
 
   }
 
-  coco_error("coco_create_unique_path(): could not create a unique path with name %s", *path);
+  coco_error("coco_create_unique_directory(): unable to create unique directory %s", *path);
   return; /* Never reached */
 }
 
@@ -766,9 +781,12 @@ static int coco_options_read_string(const char *options, const char *name, char 
 
 /**
  * @brief Reads (possibly delimited) values from options using the form "name1: value1,value2,value3 name2: value4",
- * i.e. reads all characters from the corresponding name up to the next whitespace or end of string.
+ * i.e. reads all characters from the corresponding name up to the next alphabetic character or end of string,
+ * ignoring white-space characters.
  *
  * Formatting requirements:
+ * - names have to start with alphabetic characters
+ * - values cannot include alphabetic characters
  * - name and value need to be separated by a colon (spaces are optional)
  *
  * @return The number of successful assignments.
@@ -786,18 +804,18 @@ static int coco_options_read_values(const char *options, const char *name, char 
     return 0;
   i2 = i1 + coco_strfind(&options[i1], ":") + 1;
 
-  /* Remove trailing white spaces */
-  while (isspace((unsigned char) options[i2]))
-    i2++;
-
   if (i2 <= i1) {
     return 0;
   }
 
   i = 0;
-  while (!isspace((unsigned char) options[i2 + i]) && (options[i2 + i] != '\0')) {
-    pointer[i] = options[i2 + i];
-    i++;
+  while (!isalpha((unsigned char) options[i2 + i]) && (options[i2 + i] != '\0')) {
+    if(isspace((unsigned char) options[i2 + i])) {
+        i2++;
+    } else {
+        pointer[i] = options[i2 + i];
+        i++;
+    }
   }
   pointer[i] = '\0';
   return i;
@@ -901,6 +919,70 @@ static int coco_is_inf(const double x) {
 	return (isinf(x) || (x <= -INFINITY) || (x >= INFINITY));
 }
 
+/**
+ * @brief Returns 1 if the input vector of dimension dim contains no NaN of inf values, and 0 otherwise.
+ */
+static int coco_vector_isfinite(const double *x, const size_t dim) {
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		if (coco_is_nan(x[i]) || coco_is_inf(x[i]))
+		  return 0;
+	}
+	return 1;
+}
+
+/**
+ * @brief Returns 1 if the point x is feasible, and 0 otherwise.
+ *
+ * Allows constraint_values == NULL, otherwise constraint_values
+ * must be a valid double* pointer and contains the g-values of x
+ * on "return".
+ * 
+ * Any point x containing NaN or inf values is considered infeasible.
+ *
+ * This function is (and should be) used internally only, and does not
+ * increase the counter of constraint function evaluations.
+ *
+ * @param problem The given COCO problem.
+ * @param x Decision vector.
+ * @param constraint_values Vector of contraints values resulting from evaluation.
+ */
+static int coco_is_feasible(coco_problem_t *problem,
+                     const double *x,
+                     double *constraint_values) {
+
+  size_t i;
+  double *cons_values = constraint_values;
+  int ret_val = 1;
+
+  /* Return 0 if the decision vector contains any INFINITY or NaN values */
+  if (!coco_vector_isfinite(x, coco_problem_get_dimension(problem)))
+    return 0;
+
+  if (coco_problem_get_number_of_constraints(problem) <= 0)
+    return 1;
+
+  assert(problem != NULL);
+  assert(problem->evaluate_constraint != NULL);
+  
+  if (constraint_values == NULL)
+     cons_values = coco_allocate_vector(problem->number_of_constraints);
+
+  problem->evaluate_constraint(problem, x, cons_values);
+  /* coco_evaluate_constraint(problem, x, cons_values) increments problem->evaluations_constraints counter */
+
+  for(i = 0; i < coco_problem_get_number_of_constraints(problem); ++i) {
+    if (cons_values[i] > 0.0) {
+      ret_val = 0;
+      break;
+    }
+  }
+
+  if (constraint_values == NULL)
+    coco_free_memory(cons_values);
+  return ret_val;
+}
+
 /**@}*/
 
 /***********************************************************************************************************/
@@ -947,6 +1029,29 @@ static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, 
   return count;
 }
 
+/**
+ * @brief Normalizes vector x and multiplies each componenent by alpha.
+ *
+ */
+static void coco_scale_vector(double *x, size_t dimension, double alpha) {
+  
+  size_t i;
+  double norm = 0.0;
+  
+  assert(x);
+  
+  for (i = 0; i < dimension; ++i)
+    norm += x[i] * x[i];
+    
+  norm = sqrt(norm);
+  
+  if (norm != 0.0) {
+    for (i = 0; i < dimension; ++i) {
+      x[i] /= norm;
+      x[i] *= alpha;
+	 }
+  }
+}
 /**@}*/
 
 /***********************************************************************************************************/

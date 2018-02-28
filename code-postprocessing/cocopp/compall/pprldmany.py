@@ -18,28 +18,17 @@ function evaluations of unsuccessful runs divided by dimension.
 .. plot::
     :width: 50%
 
-    import urllib
-    import tarfile
-    import glob
-    from pylab import *
-    
-    import cocopp as bb
-    
-    # Collect and unarchive data (3.4MB)
-    dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
-    filename, headers = urllib.urlretrieve(dataurl)
-    archivefile = tarfile.open(filename)
-    archivefile.extractall()
-    
+    import cocopp
+
     # Empirical cumulative distribution function of bootstrapped aRT figure
-    ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
+    ds = cocopp.load(cocopp.bbob.get('2009/BIPOP-CMA-ES'))
     figure()
-    bb.compall.pprldmany.plot(ds) # must rather call main instead of plot?
-    bb.compall.pprldmany.beautify()
+    cocopp.compall.pprldmany.plot(ds) # must rather call main instead of plot?
+    cocopp.compall.pprldmany.beautify()
 
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import os
 import warnings
@@ -65,7 +54,8 @@ save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
 median_max_evals_marker_format = ['x', 24, 3]
-label_fontsize = 18
+label_fontsize = 17
+title_fontsize = 20
 styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
 
 refcolor = 'wheat'
@@ -123,9 +113,9 @@ MC = ('Monte Carlo',)
 third = ('POEMS', 'VNS (Garcia)', 'DE-PSO', 'EDA-PSO', 'PSO_Bounds', 'PSO', 'AMaLGaM IDEA', 'iAMaLGaM IDEA',
          'MA-LS-Chain', 'DASA', 'BayEDAcG')
 
-funi = [1, 2] + range(5, 15)  # 2 is paired Ellipsoid
-funilipschitz = [1] + [5, 6] + range(8, 13) + [14]  # + [13]  #13=sharp ridge, 7=step-ellipsoid
-fmulti = [3, 4] + range(15, 25)  # 3 = paired Rastrigin
+funi = [1, 2] + list(range(5, 15))  # 2 is paired Ellipsoid
+funilipschitz = [1] + [5, 6] + list(range(8, 13)) + [14]  # + [13]  #13=sharp ridge, 7=step-ellipsoid
+fmulti = [3, 4] + list(range(15, 25))  # 3 = paired Rastrigin
 funisep = [1, 2, 5]
 
 # input parameter settings
@@ -179,10 +169,16 @@ def beautify():
 
     global divide_by_dimension
     if divide_by_dimension:
-        plt.xlabel('log10 of (# f-evals / dimension)', fontsize=label_fontsize)
+        if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+            plt.xlabel('log10(# (f+g)-evals / dimension)', fontsize=label_fontsize)
+        else:
+            plt.xlabel('log10(# f-evals / dimension)', fontsize=label_fontsize)
     else:
-        plt.xlabel('log10 of # f-evals', fontsize=label_fontsize)
-    plt.ylabel('Proportion of function+target pairs', fontsize=label_fontsize)
+        if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+            plt.xlabel('log10(# (f+g)-evals)', fontsize=label_fontsize)
+        else:
+            plt.xlabel('log10(# f-evals)', fontsize=label_fontsize)
+    plt.ylabel('Fraction of function,target pairs', fontsize=label_fontsize)
     ppfig.logxticks()
     pprldistr.beautifyECDF()
 
@@ -288,23 +284,24 @@ def plotLegend(handles, maxval):
     ys = {}
     lh = 0
 
-    def get_label_length(labelList):
+    def get_label_length(label_list):
         """ Finds the minimal length of the names used in the label so that 
         all the names are different. Always at least 9 character are displayed.
         """
 
         numberOfCharacters = 7
-        firstPart = [i[:numberOfCharacters] for i in labelList]
-        maxLength = max(len(i) for i in labelList)
+        firstPart = [i[:numberOfCharacters] for i in label_list]
+        maxLength = max(len(i) for i in label_list)
         while (len(firstPart) > len(set(firstPart)) and numberOfCharacters <= maxLength):
             numberOfCharacters += 1
-            firstPart = [i[:numberOfCharacters] for i in labelList]
+            firstPart = [i[:numberOfCharacters] for i in label_list]
 
         return min(numberOfCharacters + 2, maxLength)
 
-    labelList = [toolsdivers.strip_pathname1(plt.getp(h[-1], 'label')) for h in handles]
-    numberOfCharacters = get_label_length(labelList)
-    for h in handles:
+    handles_with_legend = [h for h in handles if not plt.getp(h[-1], 'label').startswith('_line')]
+    label_list = [toolsdivers.strip_pathname1(plt.getp(h[-1], 'label')) for h in handles_with_legend]
+    numberOfCharacters = get_label_length(label_list)
+    for h in handles_with_legend:
         x2 = []
         y2 = []
         for i in h:
@@ -366,7 +363,8 @@ def plotLegend(handles, maxval):
                                  toolsdivers.str_to_latex(
                                      toolsdivers.strip_pathname1(plt.getp(h, 'label'))[:numberOfCharacters]),
                                  horizontalalignment="left",
-                                 verticalalignment="center", size=fontsize))
+                                 verticalalignment="center",
+                                 fontsize=fontsize))
                     reslabels.append(plt.getp(h, 'label'))
                     # set_trace()
                     i += 1
@@ -468,7 +466,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
              settings=settings)
 
         dictFG = pp.dictAlgByFuncGroup(dict_alg)
-        for fg, entries in dictFG.iteritems():
+        for fg, entries in sorted(dictFG.items()):
             main(entries,
                  order=sorted_algs,
                  outputdir=single_fct_output_dir,
@@ -478,7 +476,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
                  settings=settings)
 
     dictFG = pp.dictAlgByFun(dict_alg)
-    for fg, tempDictAlg in dictFG.iteritems():
+    for fg, tempDictAlg in sorted(dictFG.items()):
 
         if is_single_algorithm:
             main(tempDictAlg,
@@ -510,7 +508,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
             )
 
     if is_single_algorithm:
-        functionGroups = dict_alg[dict_alg.keys()[0]].getFuncGroups()
+        functionGroups = dict_alg[list(dict_alg.keys())[0]].getFuncGroups()
 
         dictDim = pp.dictAlgByDim(dict_alg)
         dims = sorted(dictDim)
@@ -518,7 +516,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
             tempDictAlg = dictDim[d]
             next_dim = dims[i+1] if i + 1 < len(dims) else dims[0]
             dictFG = pp.dictAlgByFuncGroup(tempDictAlg)
-            for fg, entries in dictFG.iteritems():
+            for fg, entries in sorted(dictFG.items()):
                 main(entries,
                      order=sorted_algs,
                      outputdir=single_fct_output_dir,
@@ -532,7 +530,7 @@ def all_single_functions(dict_alg, is_single_algorithm, sorted_algs=None,
             '',
             dimensions=dims,
             htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP,
-            functionGroups=functionGroups,
+            function_groups=functionGroups,
             parentFileName='../%s' % parent_html_file_name if parent_html_file_name else None
         )
 
@@ -562,15 +560,16 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     tmp = pp.dictAlgByDim(dictAlg)
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
+    algorithms_with_data.sort()
 
     if len(algorithms_with_data) > 1 and len(tmp) != 1 and dimension is None:
-        raise ValueError('We never integrate over dimension for than one algorithm.')
+        raise ValueError('We never integrate over dimension for more than one algorithm.')
     if dimension is not None:
         if dimension not in tmp.keys():
             raise ValueError('dimension %d not in dictAlg dimensions %s'
                              % (dimension, str(tmp.keys())))
         tmp = {dimension: tmp[dimension]}
-    dimList = tmp.keys()
+    dimList = list(tmp.keys())
 
     # The sort order will be defined inside this function.    
     if plotType == PlotType.DIM:
@@ -584,9 +583,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         if 1 < 3 and dictAlg[alg][0].algId == 'GLOBAL':
             tmp = dictAlg[alg].dictByNoise()
             assert len(tmp.keys()) == 1
-            if tmp.keys()[0] == 'noiselessall':
+            if list(tmp.keys())[0] == 'noiselessall':
                 CrE = 0.5117
-            elif tmp.keys()[0] == 'nzall':
+            elif list(tmp.keys())[0] == 'nzall':
                 CrE = 0.6572
         if plotType == PlotType.DIM:
             for dim in dimList:
@@ -594,13 +593,13 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 CrEperAlg[keyValue] = CrE
         elif plotType == PlotType.FUNC:
             tmp = pp.dictAlgByFun(dictAlg)
-            for f, dictAlgperFunc in tmp.iteritems():
+            for f, dictAlgperFunc in tmp.items():
                 keyValue = 'f%d' % (f)
                 CrEperAlg[keyValue] = CrE
         else:
             CrEperAlg[alg] = CrE
         if CrE != 0.0:
-            print 'Crafting effort for', alg, 'is', CrE
+            print('Crafting effort for', alg, 'is', CrE)
 
     dictData = {}  # list of (ert per function) per algorithm
     dictMaxEvals = {}  # list of (maxevals per function) per algorithm
@@ -617,13 +616,13 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
         dictDim = dictDimList[dim]
         dictFunc = pp.dictAlgByFun(dictDim)
-        for f, dictAlgperFunc in dictFunc.iteritems():
-            # print target_values((f, dim))
+        for f, dictAlgperFunc in sorted(dictFunc.items()):
+            # print(target_values((f, dim)))
             for j, t in enumerate(target_values((f, dim))):
                 # for j, t in enumerate(testbedsettings.current_testbed.ecdf_target_values(1e2, f)):
                 # funcsolved[j].add(f)
 
-                for alg in algorithms_with_data:
+                for alg in sorted(algorithms_with_data):
                     x = [np.inf] * perfprofsamplesize
                     runlengthunsucc = []
                     try:
@@ -663,7 +662,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 else:
                     refalgentry = refalgentries[(dim, f)]
                     refalgevals = refalgentry.detEvals(target_values((f, dim)))
-                    # print refalgevals
+                    # print(refalgevals)
                     for j in range(len(refalgevals[0])):
                         if refalgevals[1][j]:
                             evals = refalgevals[0][j]
@@ -700,91 +699,96 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             return ' '.join([str(name) for name in algname])
         return str(algname)
 
-    for i, alg in enumerate(order):
-        try:
-            data = dictData[alg]
-            maxevals = dictMaxEvals[alg]
-        except KeyError:
-            continue
+    plotting_style_list = ppfig.get_plotting_styles(order)
+    for plotting_style in plotting_style_list:
+        for i, alg in enumerate(plotting_style.algorithm_list):
+            try:
+                data = dictData[alg]
+                maxevals = dictMaxEvals[alg]
+            except KeyError:
+                continue
 
-        args = styles[i % len(styles)]
-        args = args.copy()
-        args['linewidth'] = 1.5
-        args['markersize'] = 12.
-        args['markeredgewidth'] = 1.5
-        args['markerfacecolor'] = 'None'
-        args['markeredgecolor'] = args['color']
-        args['label'] = algname_to_label(alg)
-        if plotType == PlotType.DIM:
-            args['marker'] = genericsettings.dim_related_markers[i]
-            args['markeredgecolor'] = genericsettings.dim_related_colors[i]
-            args['color'] = genericsettings.dim_related_colors[i]
+            args = styles[i % len(styles)]
+            args = args.copy()
+            args['linewidth'] = 1.5
+            args['markersize'] = 12.
+            args['markeredgewidth'] = 1.5
+            args['markerfacecolor'] = 'None'
+            args['markeredgecolor'] = args['color']
+            args['label'] = algname_to_label(alg)
+            if plotType == PlotType.DIM:
+                args['marker'] = genericsettings.dim_related_markers[i]
+                args['markeredgecolor'] = genericsettings.dim_related_colors[i]
+                args['color'] = genericsettings.dim_related_colors[i]
 
-            # args['markevery'] = perfprofsamplesize # option available in latest version of matplotlib
-            # elif len(show_algorithms) > 0:
-            # args['color'] = 'wheat'
-            # args['ls'] = '-'
-            # args['zorder'] = -1
-        # plotdata calls pprldistr.plotECDF which calls ppfig.plotUnifLog... which does the work
-        lines.append(plotdata(np.array(data), x_limit, maxevals,
-                              CrE=CrEperAlg[alg], **args))
+                # args['markevery'] = perfprofsamplesize # option available in latest version of matplotlib
+                # elif len(show_algorithms) > 0:
+                # args['color'] = 'wheat'
+                # args['ls'] = '-'
+                # args['zorder'] = -1
+            # plotdata calls pprldistr.plotECDF which calls ppfig.plotUnifLog... which does the work
+
+            args.update(plotting_style.pprldmany_styles)
+
+            lines.append(plotdata(np.array(data), x_limit, maxevals,
+                                  CrE=CrEperAlg[alg], **args))
 
     labels, handles = plotLegend(lines, x_limit)
     if True:  # isLateXLeg:
         if info:
             file_name = os.path.join(outputdir, '%s_%s.tex' % (genericsettings.pprldmany_file_name, info))
         else:
-            file_name = os.path.join(outputdir, '%s.tex' % (genericsettings.pprldmany_file_name))
-        with open(file_name, 'w') as f:
-            f.write(r'\providecommand{\nperfprof}{7}')
+            file_name = os.path.join(outputdir, '%s.tex' % genericsettings.pprldmany_file_name)
+        with open(file_name, 'w') as file_obj:
+            file_obj.write(r'\providecommand{\nperfprof}{7}')
             algtocommand = {}  # latex commands
             for i, alg in enumerate(order):
                 tmp = r'\alg%sperfprof' % pptex.numtotext(i)
-                f.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' %
+                file_obj.write(r'\providecommand{%s}{\StrLeft{%s}{\nperfprof}}' %
                         (tmp, toolsdivers.str_to_latex(
                             toolsdivers.strip_pathname2(algname_to_label(alg)))))
                 algtocommand[algname_to_label(alg)] = tmp
             if displaybest:
                 tmp = r'\algzeroperfprof'
                 refalgname = testbedsettings.current_testbed.reference_algorithm_displayname
-                f.write(r'\providecommand{%s}{%s}' % (tmp, refalgname))
+                file_obj.write(r'\providecommand{%s}{%s}' % (tmp, refalgname))
                 algtocommand[algname_to_label(refalgname)] = tmp
 
             commandnames = []
             for label in labels:
                 commandnames.append(algtocommand[label])
-            # f.write(headleg)
+            # file_obj.write(headleg)
             if len(
                     order) > 28:  # latex sidepanel won't work well for more than 25 algorithms, but original labels are also clipped
-                f.write(r'\providecommand{\perfprofsidepanel}{\mbox{%s}\vfill\mbox{%s}}'
+                file_obj.write(r'\providecommand{\perfprofsidepanel}{\mbox{%s}\vfill\mbox{%s}}'
                         % (commandnames[0], commandnames[-1]))
             else:
                 fontsize_command = r'\tiny{}' if len(order) > 19 else ''
-                f.write(r'\providecommand{\perfprofsidepanel}{{%s\mbox{%s}' %
+                file_obj.write(r'\providecommand{\perfprofsidepanel}{{%s\mbox{%s}' %
                         (fontsize_command, commandnames[0]))  # TODO: check len(labels) > 0
                 for i in range(1, len(labels)):
-                    f.write('\n' + r'\vfill \mbox{%s}' % commandnames[i])
-                f.write('}}\n')
-            # f.write(footleg)
+                    file_obj.write('\n' + r'\vfill \mbox{%s}' % commandnames[i])
+                file_obj.write('}}\n')
+            # file_obj.write(footleg)
             if genericsettings.verbose:
-                print 'Wrote right-hand legend in %s' % file_name
+                print('Wrote right-hand legend in %s' % file_name)
 
     if info:
         figureName = os.path.join(outputdir, '%s_%s' % (genericsettings.pprldmany_file_name, info))
     else:
-        figureName = os.path.join(outputdir, '%s' % (genericsettings.pprldmany_file_name))
+        figureName = os.path.join(outputdir, '%s' % genericsettings.pprldmany_file_name)
     # beautify(figureName, funcsolved, x_limit*x_annote_factor, False, fileFormat=figformat)
     beautify()
 
     if plotType == PlotType.FUNC:
         dictFG = pp.dictAlgByFuncGroup(dictAlg)
-        dictKey = dictFG.keys()[0]
-        functionGroups = dictAlg[dictAlg.keys()[0]].getFuncGroups()
+        dictKey = list(dictFG.keys())[0]
+        functionGroups = dictAlg[list(dictAlg.keys())[0]].getFuncGroups()
         text = '%s\n%s, %d-D' % (testbedsettings.current_testbed.name,
                                  functionGroups[dictKey],
                                  dimList[0])
     else:
-        text = '%s - %s' % (testbedsettings.current_testbed.name,
+        text = '%s %s' % (testbedsettings.current_testbed.name,
                             ppfig.consecutiveNumbers(sorted(dictFunc.keys()), 'f'))
         if not (plotType == PlotType.DIM):
             text += ', %d-D' % dimList[0]
@@ -792,12 +796,12 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     text += '\n'
     targetstrings = target_values.labels()
     if isinstance(target_values, pp.RunlengthBasedTargetValues):
-        text += (str(len(targetstrings)) + ' target RLs/dim: ' +
+        text += (str(len(targetstrings)) + ' targets RLs/dim: ' +
                  targetstrings[0] + '..' +
                  targetstrings[len(targetstrings)-1] + '\n')
-        text += '   from ' + testbedsettings.current_testbed.reference_algorithm_filename
+        text += '  from ' + testbedsettings.current_testbed.reference_algorithm_filename
     else:
-        text += (str(len(targetstrings)) + ' targets in ' +
+        text += (str(len(targetstrings)) + ' targets: ' +
                  targetstrings[0] + '..' +
                  targetstrings[len(targetstrings)-1])        
     # add number of instances 
@@ -819,11 +823,15 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     text = text.rstrip(', ')
     text += ' instances'
 
-    plt.text(0.01, 0.98, text, horizontalalignment="left",
-             verticalalignment="top", transform=plt.gca().transAxes, size='small')
+    plt.text(0.01, 0.99, text,
+             horizontalalignment="left",
+             verticalalignment="top",
+             transform=plt.gca().transAxes,
+             fontsize=0.6*label_fontsize)
     if len(dictFunc) == 1:
-        plt.title(' '.join((str(dictFunc.keys()[0]),
-                            testbedsettings.current_testbed.short_names[dictFunc.keys()[0]])))
+        plt.title(' '.join((str(list(dictFunc.keys())[0]),
+                            testbedsettings.current_testbed.short_names[list(dictFunc.keys())[0]])),
+                  fontsize=title_fontsize)
     a = plt.gca()
 
     plt.xlim(xmin=1e-0, xmax=x_limit ** annotation_space_end_relative)
@@ -834,7 +842,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     a.set_xticklabels(tmp)
 
     if save_figure:
-        ppfig.save_figure(figureName, dictAlg[algorithms_with_data[0]][0].algId)
+        ppfig.save_figure(figureName,
+                          dictAlg[algorithms_with_data[0]][0].algId,
+                          layout_rect=(0, 0, 0.88, 1))
         if plotType == PlotType.DIM:
             file_name = genericsettings.pprldmany_file_name
             ppfig.save_single_functions_html(
@@ -848,10 +858,3 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         plt.close()
 
         # TODO: should return status or sthg
-
-
-if __name__ == "__main__":
-    # should become a test case
-    import sys
-
-    sys.path.append('.')

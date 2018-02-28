@@ -20,6 +20,7 @@
 #include "suite_biobj_ext.c"
 #include "suite_toy.c"
 #include "suite_largescale.c"
+#include "suite_cons_bbob.c"
 
 /** @brief The maximum number of different instances in a suite. */
 #define COCO_MAX_INSTANCES 1000
@@ -43,6 +44,8 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_biobj_ext_initialize();
   } else if (strcmp(suite_name, "bbob-largescale") == 0) {
     suite = suite_largescale_initialize();
+  } else if (strcmp(suite_name, "bbob-constrained") == 0) {
+    suite = suite_cons_bbob_initialize();
   }
   else {
     coco_error("coco_suite_intialize(): unknown problem suite");
@@ -66,6 +69,8 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
     year_string = suite_biobj_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-biobj-ext") == 0) {
     year_string = suite_biobj_ext_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "bbob-constrained") == 0) {
+    year_string = suite_cons_bbob_get_instances_by_year(year);
   } else {
     coco_error("coco_suite_get_instances_by_year(): suite '%s' has no years defined", suite->suite_name);
     return NULL;
@@ -87,7 +92,7 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
                                                            const size_t instance_idx) {
 
   coco_problem_t *problem;
-
+  
   if ((suite->functions[function_idx] == 0) ||
       (suite->dimensions[dimension_idx] == 0) ||
 	  (suite->instances[instance_idx] == 0)) {
@@ -104,6 +109,8 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     problem = suite_biobj_ext_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-largescale") == 0) {
     problem = suite_largescale_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "bbob-constrained") == 0) {
+    problem = suite_cons_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else {
     coco_error("coco_suite_get_problem_from_indices(): unknown problem suite");
     return NULL;
@@ -553,7 +560,7 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
 }
 
 /**
- * Currently, five suites are supported:
+ * Currently, six suites are supported:
  * - "bbob" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective
@@ -563,6 +570,9 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * (2, 3, 5, 10, 20, 40)
  * - "bbob-largescale" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 large dimensions (40, 80, 160, 320, 640, 1280)
+ * - "bbob-constrained" contains 48 linearly-constrained problems, which are combinations of 8 single 
+ * objective functions with 6 different numbers of linear constraints (1, 2, 10, dimension/2, dimension-1, 
+ * dimension+1), in 6 dimensions (2, 3, 5, 10, 20, 40).
  * - "toy" contains 6 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 5 dimensions (2, 3, 5, 10, 20)
  *
@@ -571,7 +581,7 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * and the suite is not filtered by default).
  *
  * @param suite_name A string containing the name of the suite. Currently supported suite names are "bbob",
- * "bbob-biobj", "bbob-biobj-ext", "bbob-largescale" and "toy".
+ * "bbob-biobj", "bbob-biobj-ext", "bbob-largescale", "bbob-constrained", and "toy".
  * @param suite_instance A string used for defining the suite instances. Two ways are supported:
  * - "year: YEAR", where YEAR is the year of the BBOB workshop, includes the instances (to be) used in that
  * year's workshop;
@@ -649,7 +659,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
 
   /* Apply filter if any given by the suite_options */
   if ((suite_options) && (strlen(suite_options) > 0)) {
-    option_string = coco_allocate_string(COCO_PATH_MAX);
+    option_string = coco_allocate_string(COCO_PATH_MAX + 1);
     if (coco_options_read_values(suite_options, "function_indices", option_string) > 0) {
       indices = coco_string_parse_ranges(option_string, 1, suite->number_of_functions, "function_indices", COCO_MAX_INSTANCES);
       if (indices != NULL) {
@@ -659,7 +669,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
     }
     coco_free_memory(option_string);
 
-    option_string = coco_allocate_string(COCO_PATH_MAX);
+    option_string = coco_allocate_string(COCO_PATH_MAX + 1);
     if (coco_options_read_values(suite_options, "instance_indices", option_string) > 0) {
       indices = coco_string_parse_ranges(option_string, 1, suite->number_of_instances, "instance_indices", COCO_MAX_INSTANCES);
       if (indices != NULL) {
@@ -683,7 +693,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
       }
     }
 
-    option_string = coco_allocate_string(COCO_PATH_MAX);
+    option_string = coco_allocate_string(COCO_PATH_MAX + 1);
     if ((dim_idx_found >= 0) && (parce_dim_idx == 1)
         && (coco_options_read_values(suite_options, "dimension_indices", option_string) > 0)) {
       indices = coco_string_parse_ranges(option_string, 1, suite->number_of_dimensions, "dimension_indices",
@@ -695,7 +705,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
     }
     coco_free_memory(option_string);
 
-    option_string = coco_allocate_string(COCO_PATH_MAX);
+    option_string = coco_allocate_string(COCO_PATH_MAX + 1);
     if ((dim_found >= 0) && (parce_dim == 1)
         && (coco_options_read_values(suite_options, "dimensions", option_string) > 0)) {
       ptr = option_string;
@@ -769,7 +779,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
  * @returns The next problem of the suite or NULL if there is no next problem left.
  */
 coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer) {
-
+  
   size_t function_idx;
   size_t dimension_idx;
   size_t instance_idx;
@@ -794,7 +804,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
     coco_info_partial("done\n");
     return NULL;
   }
-
+ 
   if (suite->current_problem) {
     coco_problem_free(suite->current_problem);
   }

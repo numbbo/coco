@@ -126,13 +126,13 @@ def run(directory, args, verbose=False):
     finally:
         os.chdir(oldwd)
 
-def python(directory, args, env=None, verbose=False):
+def python(directory, args, env=None, verbose=False, custom_exception_handler=None):
     print("PYTHON\t%s in %s" % (" ".join(args), directory))
     oldwd = os.getcwd()
-    if os.environ.get('PYTHON') is not None:
+    if env is not None:
         ## Use the Python interpreter specified in the PYTHON
         ## environment variable.
-        full_command = [os.environ['PYTHON']]
+        full_command = [env]
     else:
         ## No interpreter specified. Use the Python interpreter that
         ## is used to execute this script.
@@ -144,9 +144,14 @@ def python(directory, args, env=None, verbose=False):
                               universal_newlines=True)
         # print(output)
     except CalledProcessError as e:
-        print("ERROR: return value=%i" % e.returncode)
-        print(e.output)
-        raise
+        if custom_exception_handler is None:
+            print("ERROR: return value=%i" % e.returncode)
+            print(e.output)
+            raise
+        else:
+            exception_handled = custom_exception_handler(e)
+            if not exception_handled:
+                raise
     finally:
         os.chdir(oldwd)
 
@@ -194,6 +199,7 @@ def make(directory, target, verbose=False):
     oldwd = os.getcwd()
     try:
         os.chdir(directory)
+        print("CHDIR\t" + os.getcwd())
         # prepare makefile(s)
         if ((('win32' in sys.platform) or ('win64' in sys.platform)) and
             ('cygwin' not in os.environ['PATH'])):

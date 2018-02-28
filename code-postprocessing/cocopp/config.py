@@ -1,95 +1,107 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""This module is an attempt for a global configuration file for various parameters.
+"""This module is an attempt for a global configuration file for various
+parameters.
 
-The import of this module, :py:mod:`config`, changes default settings (attributes)
+The import of this module changes default settings (attributes)
 of other modules. This works, because each module has only one instance.
 
 Before this module is imported somewhere, modules use their default settings.
 
 This file could be dynamically modified and reloaded.
 
-See also genericsettings.py which is a central place to define settings
+See also `genericsettings` which is a central place to define settings
 used by other modules, but does not modify settings of other modules.
 
 """
 
+import imp  # import default genericsettings
 import warnings
 import numpy as np
-import ppfigdim
-from . import genericsettings, pproc, pprldistr
+from . import ppfigdim
+from . import genericsettings as settings, pproc, pprldistr
 from . import testbedsettings as tbs
+from . import dataformatsettings
 from .comp2 import ppfig2, ppscatter
 from .compall import pprldmany
+from . import __path__  # import path for default genericsettings
+
+if settings.test:
+    np.seterr(all='raise')
+np.seterr(under='ignore')  # ignore underflow
+
+settings.default_settings = imp.load_module('_coco_default_settings',
+                                      *imp.find_module('genericsettings',
+                                                       __path__))
 
 
-def target_values(is_expensive):
+def config_target_values_setting(is_expensive, is_runlength_based):
     """manage target values setting in "expensive" optimization scenario.
-
     """
-
     if is_expensive:
-        genericsettings.runlength_based_targets = True
-        genericsettings.maxevals_fix_display = genericsettings.xlimit_expensive
-    else:
-        genericsettings.runlength_based_targets = False
-        genericsettings.maxevals_fix_display = None
+        settings.maxevals_fix_display = settings.xlimit_expensive
+    settings.runlength_based_targets = is_runlength_based or is_expensive
 
 
-def config(testbed_name=None):
+def config(testbed_name=None, data_format_name=None):
     """called from a high level, e.g. rungeneric, to configure the lower level
     modules via modifying parameter settings.
     """
 
     if testbed_name:
         tbs.load_current_testbed(testbed_name, pproc.TargetValues)
+    if data_format_name:  # not at all in use yet
+        dataformatsettings.set_data_format(data_format_name)
 
-    genericsettings.simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max(0, genericsettings.in_a_hurry))
+    settings.simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max(0, settings.in_a_hurry))
 
     if tbs.current_testbed and tbs.current_testbed.name not in tbs.suite_to_testbed:
-        if ((genericsettings.isExpensive in (True, 1) or
-                genericsettings.runlength_based_targets in (True, 1)) and
+        if ((settings.isExpensive in (True, 1) or
+                settings.runlength_based_targets in (True, 1)) and
                 tbs.current_testbed.reference_algorithm_filename == ''):
             warnings.warn('Expensive setting not yet supported with ' +
                           tbs.current_testbed.name +
                           ' testbed; using non-expensive setting instead.')
-            genericsettings.isExpensive = False
-            genericsettings.runlength_based_targets = False
+            settings.isExpensive = False
+            settings.runlength_based_targets = False
 
     # pprldist.plotRLDistr2 needs to be revised regarding run_length based targets
-    if genericsettings.runlength_based_targets in (True, 1):
+    if settings.runlength_based_targets in (True, 1) and not tbs.current_testbed:
+        # this message may be removed at some point
+        print('  runlength-based targets are on, but there is no testbed available (yet)')
+    if settings.runlength_based_targets in (True, 1) and tbs.current_testbed:
         
         print('Reference algorithm based target values, using ' +
               tbs.current_testbed.reference_algorithm_filename +
-              ': now for each function, the target ' + 
-              'values differ, but the "level of difficulty" ' +
-              'is "the same". ')
+              ':\n  now for each function, the target '
+              'values differ, but the "level of difficulty" '
+              'is "the same".')
 
         reference_data = 'testbedsettings'
         # pprldmany:
         if 1 < 3:  # not yet functional, captions need to be adjusted and the bug reported by Ilya sorted out
             # pprldmany.caption = ... captions are still hard coded in LaTeX
-            pprldmany.x_limit = genericsettings.maxevals_fix_display  # always fixed
+            pprldmany.x_limit = settings.maxevals_fix_display  # always fixed
 
         if tbs.current_testbed:
 
             testbed = tbs.current_testbed
 
             testbed.scenario = tbs.scenario_rlbased
-            # genericsettings (to be used in rungeneric2 while calling pprldistr.comp(...)):
+            # settings (to be used in rungenericmany while calling pprldistr.comp(...)):
             testbed.rldValsOfInterest = pproc.RunlengthBasedTargetValues(
-                                        genericsettings.target_runlengths_in_single_rldistr,
+                                        settings.target_runlengths_in_single_rldistr,
                                         reference_data=reference_data,
                                         force_different_targets_factor=10**-0.2)
 
             testbed.ppfigdim_target_values = pproc.RunlengthBasedTargetValues(
-                                             genericsettings.target_runlengths_in_scaling_figs,
+                                             settings.target_runlengths_in_scaling_figs,
                                              reference_data=reference_data,
                                              force_different_targets_factor=10**-0.2)
 
             testbed.pprldistr_target_values = pproc.RunlengthBasedTargetValues(
-                                              genericsettings.target_runlengths_in_single_rldistr,
+                                              settings.target_runlengths_in_single_rldistr,
                                               reference_data=reference_data,
                                               force_different_targets_factor=10**-0.2)
 
@@ -108,26 +120,21 @@ def config(testbed_name=None):
                                                 testbed.pptable_target_runlengths,
                                                 reference_data=reference_data,
                                                 force_different_targets_factor=10**-0.2)
-            # pptable2:
-            testbed.pptable2_targetsOfInterest = pproc.RunlengthBasedTargetValues(
-                                                 testbed.pptable2_target_runlengths,
-                                                 reference_data=reference_data,
-                                                 force_different_targets_factor=10**-0.2)
             # pptables:
             testbed.pptablemany_targetsOfInterest = pproc.RunlengthBasedTargetValues(
                                                  testbed.pptables_target_runlengths,
                                                  reference_data=reference_data,
                                                  force_different_targets_factor=10**-0.2)
             # ppfigs
-            testbed.ppfigs_ftarget = pproc.RunlengthBasedTargetValues([genericsettings.target_runlength],
+            testbed.ppfigs_ftarget = pproc.RunlengthBasedTargetValues([settings.target_runlength],
                                                                       reference_data=reference_data)
 
         # pprldistr:
         pprldistr.runlen_xlimits_max = \
-            genericsettings.maxevals_fix_display / 2 if genericsettings.maxevals_fix_display else None  # can be None
+            settings.maxevals_fix_display / 2 if settings.maxevals_fix_display else None  # can be None
         pprldistr.runlen_xlimits_min = 10**-0.3  # can be None
         # ppfigdim:
-        ppfigdim.xlim_max = genericsettings.maxevals_fix_display
+        ppfigdim.xlim_max = settings.maxevals_fix_display
         if ppfigdim.xlim_max:
             ppfigdim.styles = [  # sort of rainbow style, most difficult (red) first
                       {'color': 'y', 'marker': '^', 'markeredgecolor': 'k', 'markeredgewidth': 2, 'linewidth': 4},

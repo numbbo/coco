@@ -28,7 +28,7 @@ JNIEXPORT void JNICALL Java_CocoJNI_cocoSetLogLevel
   /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
   if (interface_cls == NULL) {
     jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
-    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoGetObserver\n");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoSetLogLevel\n");
   }
 
   log_level = (*jenv)->GetStringUTFChars(jenv, jlog_level, NULL);
@@ -277,6 +277,7 @@ JNIEXPORT jdoubleArray JNICALL Java_CocoJNI_cocoEvaluateFunction
   (*jenv)->ReleaseDoubleArrayElements(jenv, jx, x, JNI_ABORT);
   return jy;
 }
+
 /*
  * Class:     CocoJNI
  * Method:    cocoEvaluateConstraint
@@ -288,7 +289,7 @@ JNIEXPORT jdoubleArray JNICALL Java_CocoJNI_cocoEvaluateConstraint
   coco_problem_t *problem = NULL;
   double *y = NULL;
   double *x = NULL;
-  int number_of_objectives;
+  int number_of_constraints;
   jdoubleArray jy;
 
   /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
@@ -298,16 +299,16 @@ JNIEXPORT jdoubleArray JNICALL Java_CocoJNI_cocoEvaluateConstraint
   }
 
   problem = (coco_problem_t *) jproblem_pointer;
-  number_of_objectives = (int) coco_problem_get_number_of_objectives(problem);
+  number_of_constraints = (int) coco_problem_get_number_of_constraints(problem);
 
   /* Call coco_evaluate_constraint */
   x = (*jenv)->GetDoubleArrayElements(jenv, jx, NULL);
-  y = coco_allocate_vector(number_of_objectives);
+  y = coco_allocate_vector(number_of_constraints);
   coco_evaluate_constraint(problem, x, y);
 
   /* Prepare the return value */
-  jy = (*jenv)->NewDoubleArray(jenv, number_of_objectives);
-  (*jenv)->SetDoubleArrayRegion(jenv, jy, 0, number_of_objectives, y);
+  jy = (*jenv)->NewDoubleArray(jenv, number_of_constraints);
+  (*jenv)->SetDoubleArrayRegion(jenv, jy, 0, number_of_constraints, y);
 
   /* Free resources */
   coco_free_memory(y);
@@ -441,6 +442,37 @@ JNIEXPORT jdoubleArray JNICALL Java_CocoJNI_cocoProblemGetLargestValuesOfInteres
 
 /*
  * Class:     CocoJNI
+ * Method:    cocoProblemGetLargestFValuesOfInterest
+ * Signature: (J)[D
+ */
+JNIEXPORT jdoubleArray JNICALL Java_CocoJNI_cocoProblemGetLargestFValuesOfInterest
+(JNIEnv *jenv, jclass interface_cls, jlong jproblem_pointer) {
+
+  coco_problem_t *problem = NULL;
+  const double *result;
+  jdoubleArray jresult;
+  jint num_obj;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoProblemGetLargestFValuesOfInterest\n");
+  }
+
+  problem = (coco_problem_t *) jproblem_pointer;
+  num_obj = (int) coco_problem_get_number_of_objectives(problem);
+  if (num_obj == 1)
+  	return NULL;
+  result = coco_problem_get_largest_fvalues_of_interest(problem);
+
+  /* Prepare the return value */
+  jresult = (*jenv)->NewDoubleArray(jenv, num_obj);
+  (*jenv)->SetDoubleArrayRegion(jenv, jresult, 0, num_obj, result);
+  return jresult;
+}
+
+/*
+ * Class:     CocoJNI
  * Method:    cocoProblemGetId
  * Signature: (J)Ljava/lang/String;
  */
@@ -501,11 +533,33 @@ JNIEXPORT jlong JNICALL Java_CocoJNI_cocoProblemGetEvaluations
   /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
   if (interface_cls == NULL) {
     jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
-    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoProblemGetIndex\n");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoProblemGetEvaluations\n");
   }
 
   problem = (coco_problem_t *) jproblem_pointer;
   jresult = (jlong) coco_problem_get_evaluations(problem);
+  return jresult;
+}
+
+/*
+ * Class:     CocoJNI
+ * Method:    cocoProblemGetEvaluationsConstraints
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_CocoJNI_cocoProblemGetEvaluationsConstraints
+(JNIEnv *jenv, jclass interface_cls, jlong jproblem_pointer) {
+    
+  coco_problem_t *problem = NULL;
+  jlong jresult;
+    
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoProblemGetEvaluationsConstraints\n");
+  }
+    
+  problem = (coco_problem_t *) jproblem_pointer;
+  jresult = (jlong) coco_problem_get_evaluations_constraints(problem);
   return jresult;
 }
 

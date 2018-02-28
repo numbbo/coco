@@ -17,26 +17,14 @@ import os
 import sys
 import getopt
 import warnings
-import matplotlib
 
-if __name__ == "__main__":
-    matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
-    # matplotlib.use('pdf')
-    filepath = os.path.split(sys.argv[0])[0]
-    # Add the path to cocopp/.. folder
-    sys.path.append(os.path.join(filepath, os.path.pardir))
-
-    import cocopp
-    res = cocopp.rungenericmany.main(sys.argv[1:])
-    sys.exit(res)
-
-from . import genericsettings, ppfig, testbedsettings
-from . import pproc, pptex
+from . import genericsettings, ppfig, testbedsettings, findfiles
+from . import pproc, pptex, pprldistr
 from .pproc import DataSetList, processInputArgs
 from .ppfig import Usage
 from .toolsdivers import prepend_to_file, strip_pathname1, str_to_latex, replace_in_file
 from .compall import pprldmany, pptables, ppfigs
-from . import ppconverrorbars
+from .comp2 import pprldistr2, ppscatter
 
 import matplotlib.pyplot as plt
 from .toolsdivers import print_done, get_version_label
@@ -48,11 +36,11 @@ def usage():
     print(main.__doc__)
 
 
-def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings):
+def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings, parent_file_name):
     """ Generates ecdf graphs, aggregated over groups as
         indicated via algdict
     """
-    for gr, tmpdictAlg in alg_dict.iteritems():
+    for gr, tmpdictAlg in alg_dict.items():
         dictDim = pproc.dictAlgByDim(tmpdictAlg)
         dims = sorted(dictDim)
 
@@ -61,8 +49,8 @@ def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings):
             '',  # algorithms names are clearly visible in the figure
             dimensions=dims,
             htmlPage=ppfig.HtmlPage.PPRLDMANY_BY_GROUP_MANY,
-            functionGroups=function_groups,
-            parentFileName=genericsettings.many_algorithm_file_name
+            function_groups=function_groups,
+            parentFileName=parent_file_name
         )
 
         for i, d in enumerate(dims):
@@ -126,9 +114,6 @@ def main(argv=None):
             comparison TeX tables, the run lengths distributions or the
             figures of aRT/dim vs dim only. A combination of any two or
             more of these options results in no output.
-        --conv
-            if this option is chosen, additionally convergence
-            plots for each function and algorithm are generated.
         --no-rld-single-fcts
             do not generate runlength distribution figures for each
             single function.
@@ -160,8 +145,8 @@ def main(argv=None):
     * From the python interpreter (requires that the path to this
       package is in python search path)::
 
-        >> import cocopp as bb
-        >> bb.rungenericmany.main('-o outputfolder folder1 folder2'.split())
+        >> import cocopp
+        >> cocopp.rungenericmany.main('-o outputfolder folder1 folder2'.split())
 
       This will execute the post-processing on the data found in
       :file:`folder1` and :file:`folder2`.
@@ -182,7 +167,7 @@ def main(argv=None):
         try:
             opts, args = getopt.getopt(argv, genericsettings.shortoptlist,
                                        genericsettings.longoptlist)
-        except getopt.error, msg:
+        except getopt.error as msg:
             raise Usage(msg)
 
         if not args:
@@ -191,6 +176,11 @@ def main(argv=None):
 
         # Process options
         outputdir = genericsettings.outputdir
+        prepare_scatter = genericsettings.isScatter
+        prepare_RLDistr = genericsettings.isRLDistr
+        prepare_figures = genericsettings.isFig
+        prepare_tables = genericsettings.isTab
+
         for o, a in opts:
             if o in ("-v", "--verbose"):
                 genericsettings.verbose = True
@@ -204,29 +194,32 @@ def main(argv=None):
             elif o == "--noise-free":
                 genericsettings.isNoiseFree = True
             # The next 3 are for testing purpose
-            elif o == "--tab-only":
-                genericsettings.isRLDistr = False
-                genericsettings.isFig = False
             elif o == "--no-rld-single-fcts":
                 genericsettings.isRldOnSingleFcts = False
+            elif o == "--tab-only":
+                prepare_RLDistr = False
+                prepare_figures = False
+                prepare_scatter = False
             elif o == "--rld-only":
-                genericsettings.isTab = False
-                genericsettings.isFig = False
+                prepare_tables = False
+                prepare_figures = False
+                prepare_scatter = False
             elif o == "--fig-only":
-                genericsettings.isRLDistr = False
-                genericsettings.isTab = False
+                prepare_RLDistr = False
+                prepare_tables = False
+                prepare_scatter = False
+            elif o == "--sca-only":
+                prepare_figures = False
+                prepare_RLDistr = False
+                prepare_tables = False
             elif o == "--settings":
                 genericsettings.inputsettings = a
-            elif o == "--conv":
-                genericsettings.isConv = True
             elif o == "--runlength-based":
                 genericsettings.runlength_based_targets = True
             elif o == "--expensive":
                 genericsettings.isExpensive = True  # comprises runlength-based
             elif o == "--no-svg":
                 genericsettings.generate_svg_files = False
-            elif o == "--sca-only":
-                warnings.warn("option --sca-only will have no effect with rungenericmany.py")
             elif o == "--los-only":
                 warnings.warn("option --los-only will have no effect with rungenericmany.py")
             elif o == "--crafting-effort=":
@@ -260,38 +253,56 @@ def main(argv=None):
             warnings.filterwarnings('module', '.*', Warning, '.*')  # same warning just once
             #warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
 
-        config.target_values(genericsettings.isExpensive)
+        config.config_target_values_setting(genericsettings.isExpensive,
+                                            genericsettings.runlength_based_targets)
 
-    except Usage, err:
+    except Usage as err:
         print(err.msg, file=sys.stderr)
         print("for help use -h or --help", file=sys.stderr)
         return 2
 
     if 1 < 3:
-        print("\nPost-processing (3+): will generate output " +
-              "data in folder %s" % outputdir)
-        print("  this might take several minutes.")
-
+        print("\nPost-processing (2+)");
         if not os.path.exists(outputdir):
             os.makedirs(outputdir)
             if genericsettings.verbose:
                 print('Folder %s was created.' % outputdir)
 
+        latex_commands_file = os.path.join(outputdir, 'cocopp_commands.tex')
+
         # prepend the algorithm name command to the tex-command file
         lines = []
-        for i, alg in enumerate(args):
+        # first prepare list of sorted algorithm names as displayed
+        algs = []
+        for alg in args:
+            algs.append(str_to_latex(strip_pathname1(alg)))
+        algs.sort()
+        # now ready for writing the sorted algorithms as \providecommand in tex-command file
+        for i, alg in enumerate(algs):
             lines.append('\\providecommand{\\algorithm' + pptex.numtotext(i) +
                          '}{' + str_to_latex(strip_pathname1(alg)) + '}')
-        prepend_to_file(os.path.join(outputdir,
-                                     'cocopp_commands.tex'), lines, 5000,
+        prepend_to_file(latex_commands_file, lines, 5000,
                         'bbob_proc_commands.tex truncated, consider removing '
                         + 'the file before the text run'
                         )
 
-        dsList, sortedAlgs, dictAlg = processInputArgs(args)
+        print("  loading data...")
+        dsList, sortedAlgs, dictAlg = processInputArgs(args, True)
 
         if not dsList:
             sys.exit()
+
+        algorithm_folder = findfiles.get_output_directory_sub_folder(genericsettings.foreground_algorithm_list)
+        prepend_to_file(latex_commands_file, ['\\providecommand{\\algsfolder}{' + algorithm_folder + '/}'])
+        many_algorithms_output = os.path.join(outputdir, algorithm_folder)
+
+        print("  Will generate output data in folder %s" % many_algorithms_output)
+        print("    this might take several minutes.")
+
+        if not os.path.exists(many_algorithms_output):
+            os.makedirs(many_algorithms_output)
+            if genericsettings.verbose:
+                print('Folder %s was created.' % many_algorithms_output)
 
         for i in dictAlg:
             if genericsettings.isNoisy and not genericsettings.isNoiseFree:
@@ -301,8 +312,9 @@ def main(argv=None):
 
         # set target values
         from . import config
-        config.target_values(genericsettings.isExpensive)
-        config.config(dsList[0].testbed_name)
+        config.config_target_values_setting(genericsettings.isExpensive,
+                                            genericsettings.runlength_based_targets)
+        config.config(dsList[0].testbed_name, dsList[0].get_data_format())
 
         for i in dsList:
             if i.dim not in genericsettings.dimensions_to_display:
@@ -326,58 +338,164 @@ def main(argv=None):
         plt.rc("legend", **inset.rclegend)
         plt.rc('pdf', fonttype=42)
 
-        ppfig.copy_js_files(outputdir)
+        ppfig.copy_js_files(many_algorithms_output)
 
         ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.ppfigs_file_name),
+            os.path.join(many_algorithms_output, genericsettings.many_algorithm_file_name),
+            '',  # algorithms names are clearly visible in the figure
+            htmlPage=ppfig.HtmlPage.MANY,
+            function_groups=dictAlg[sortedAlgs[0]].getFuncGroups()
+        )
+
+        ppfig.save_single_functions_html(
+            os.path.join(many_algorithms_output, genericsettings.ppfigs_file_name),
             '',  # algorithms names are clearly visible in the figure
             htmlPage=ppfig.HtmlPage.PPFIGS,
-            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
+            function_groups=dictAlg[sortedAlgs[0]].getFuncGroups(),
             parentFileName=genericsettings.many_algorithm_file_name
         )
 
         dimensions = sorted(pproc.dictAlgByDim(dictAlg))
 
         ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.pptables_file_name),
+            os.path.join(many_algorithms_output, genericsettings.pptables_file_name),
             '',  # algorithms names are clearly visible in the figure
             dimensions=dimensions,
             htmlPage=ppfig.HtmlPage.PPTABLES,
-            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups(),
+            function_groups=dictAlg[sortedAlgs[0]].getFuncGroups(),
             parentFileName=genericsettings.many_algorithm_file_name
         )
 
-        # convergence plots
-        print("Generating convergence plots...")
-        if genericsettings.isConv:
-            ppconverrorbars.main(dictAlg,
-                                 outputdir,
-                                 genericsettings.many_algorithm_file_name,
-                                 '')
-        print_done()
-
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
-        if genericsettings.isRLDistr:
-            config.config(dsList[0].testbed_name)
+        if prepare_RLDistr:
+            config.config(dsList[0].testbed_name, dsList[0].get_data_format())
+
+            if len(genericsettings.foreground_algorithm_list) == 2:
+                print("ECDF runlength ratio graphs...")
+
+                ds_list0 = dictAlg[sortedAlgs[0]]
+                dict_fun0 = ds_list0.dictByNoise()
+                ds_list1 = dictAlg[sortedAlgs[1]]
+                dict_fun1 = ds_list1.dictByNoise()
+
+                if len(dict_fun0) > 1 or len(dict_fun1) > 1:
+                    warnings.warn('Data for functions from both the noisy and ' +
+                                  'non-noisy testbeds have been found. Their ' +
+                                  'results will be mixed in the "all functions" ' +
+                                  'ECDF figures.')
+
+                algorithm_name0 = str_to_latex(strip_pathname1(sortedAlgs[0]))
+                algorithm_name1 = str_to_latex(strip_pathname1(sortedAlgs[1]))
+
+                algorithm_name = "%s vs %s" % (algorithm_name1, algorithm_name0)
+                ppfig.save_single_functions_html(
+                    os.path.join(many_algorithms_output, genericsettings.pprldistr2_file_name),
+                    algname=algorithm_name,
+                    htmlPage=ppfig.HtmlPage.PPRLDISTR2,
+                    function_groups=ds_list0.getFuncGroups(),
+                    parentFileName=genericsettings.many_algorithm_file_name
+                )
+
+                # ECDFs of aRT ratios
+                dic_dim0 = ds_list0.dictByDim()
+                dic_dim1 = ds_list1.dictByDim()
+                for dim in set(dic_dim0.keys()) & set(dic_dim1.keys()):
+                    if dim in inset.rldDimsOfInterest:
+                        # ECDF for all functions altogether
+                        try:
+                            pprldistr2.main(dic_dim0[dim], dic_dim1[dim], dim,
+                                            testbedsettings.current_testbed.rldValsOfInterest,
+                                            many_algorithms_output,
+                                            '%02dD_all' % dim)
+                        except KeyError:
+                            warnings.warn('Could not find some data in %d-D.' % dim)
+                            continue
+
+                        # ECDFs per function groups
+                        dict_fun_group0 = dic_dim0[dim].dictByFuncGroup()
+                        dict_fun_group1 = dic_dim1[dim].dictByFuncGroup()
+
+                        for fGroup in set(dict_fun_group0.keys()) & set(dict_fun_group1.keys()):
+                            pprldistr2.main(dict_fun_group1[fGroup], dict_fun_group0[fGroup], dim,
+                                            testbedsettings.current_testbed.rldValsOfInterest,
+                                            many_algorithms_output,
+                                            '%02dD_%s' % (dim, fGroup))
+
+                        # ECDFs per noise groups
+                        dict_fun0 = dic_dim0[dim].dictByNoise()
+                        dict_fun1 = dic_dim1[dim].dictByNoise()
+
+                        for fGroup in set(dict_fun0.keys()) & set(dict_fun1.keys()):
+                            pprldistr2.main(dict_fun1[fGroup], dict_fun0[fGroup], dim,
+                                            testbedsettings.current_testbed.rldValsOfInterest,
+                                            many_algorithms_output,
+                                            '%02dD_%s' % (dim, fGroup))
+
+                prepend_to_file(latex_commands_file,
+                                ['\\providecommand{\\bbobpprldistrlegendtwo}[1]{',
+                                 pprldistr.caption_two(),  # depends on the config
+                                 # setting, should depend
+                                 # on maxfevals
+                                 '}'
+                                 ])
+                print_done()
+
+                if testbedsettings.current_testbed not in [testbedsettings.GECCOBiObjBBOBTestbed,
+                                                           testbedsettings.GECCOBiObjExtBBOBTestbed]:
+                    print("ECDF runlength graphs...")
+                    for dim in set(dic_dim0.keys()) & set(dic_dim1.keys()):
+                        pprldistr.fmax = None  # Resetting the max final value
+                        pprldistr.evalfmax = None  # Resetting the max #fevalsfactor
+                        # ECDFs of all functions altogether
+                        if dim in inset.rldDimsOfInterest:
+                            try:
+                                pprldistr.comp(dic_dim1[dim], dic_dim0[dim],
+                                               testbedsettings.current_testbed.rldValsOfInterest,
+                                               # TODO: let rldVals... possibly be RL-based targets
+                                               True,
+                                               many_algorithms_output, 'all')
+                            except KeyError:
+                                warnings.warn('Could not find some data in %d-D.' % dim)
+                                continue
+
+                            # ECDFs per function groups
+                            dict_fun_group0 = dic_dim0[dim].dictByFuncGroup()
+                            dict_fun_group1 = dic_dim1[dim].dictByFuncGroup()
+
+                            for fGroup in set(dict_fun_group0.keys()) & set(dict_fun_group1.keys()):
+                                pprldistr.comp(dict_fun_group1[fGroup], dict_fun_group0[fGroup],
+                                               testbedsettings.current_testbed.rldValsOfInterest, True,
+                                               many_algorithms_output,
+                                               '%s' % fGroup)
+
+                            # ECDFs per noise groups
+                            dict_fun0 = dic_dim0[dim].dictByNoise()
+                            dict_fun1 = dic_dim1[dim].dictByNoise()
+                            for fGroup in set(dict_fun0.keys()) & set(dict_fun1.keys()):
+                                pprldistr.comp(dict_fun1[fGroup], dict_fun0[fGroup],
+                                               testbedsettings.current_testbed.rldValsOfInterest, True,
+                                               many_algorithms_output,
+                                               '%s' % fGroup)
+                    print_done()  # of "ECDF runlength graphs..."
 
             # ECDFs per noise groups
             print("ECDF graphs per noise group...")
             grouped_ecdf_graphs(pproc.dictAlgByNoi(dictAlg),
                                 sortedAlgs,
-                                outputdir,
+                                many_algorithms_output,
                                 dictAlg[sortedAlgs[0]].getFuncGroups(),
-                                inset
-                                )
+                                inset,
+                                genericsettings.many_algorithm_file_name)
             print_done()
 
             # ECDFs per function groups
             print("ECDF graphs per function group...")
             grouped_ecdf_graphs(pproc.dictAlgByFuncGroup(dictAlg),
                                 sortedAlgs,
-                                outputdir,
+                                many_algorithms_output,
                                 dictAlg[sortedAlgs[0]].getFuncGroups(),
-                                inset
-                                )
+                                inset,
+                                genericsettings.many_algorithm_file_name)
             print_done()
 
             # copy-paste from above, here for each function instead of function groups:
@@ -388,17 +506,17 @@ def main(argv=None):
                     pprldmany.all_single_functions(dictAlg,
                                                    False,
                                                    sortedAlgs,
-                                                   outputdir,
+                                                   many_algorithms_output,
                                                    genericsettings.many_algorithm_file_name,
                                                    settings=inset)
                 else:  # subject to removal
                     dictFG = pproc.dictAlgByFun(dictAlg)
-                    for fg, tmpdictAlg in dictFG.iteritems():
+                    for fg, tmpdictAlg in dictFG.items():
                         dictDim = pproc.dictAlgByDim(tmpdictAlg)
                         dims = sorted(dictDim)
                         for i, d in enumerate(dims):
                             entries = dictDim[d]
-                            single_fct_output_dir = (outputdir.rstrip(os.sep) + os.sep +
+                            single_fct_output_dir = (many_algorithms_output.rstrip(os.sep) + os.sep +
                                                      'pprldmany-single-functions'
                                                      # + os.sep + ('f%03d' % fg)
                                                      )
@@ -419,31 +537,57 @@ def main(argv=None):
                             header=ppfig.pprldmany_per_func_dim_header)
             print_done()
 
-        if genericsettings.isTab:
+        if prepare_tables:
             print("Generating comparison tables...")
-            prepend_to_file(os.path.join(outputdir, 'cocopp_commands.tex'),
-                            ['\providecommand{\\bbobpptablesmanylegend}[2]{' +
+            prepend_to_file(latex_commands_file,
+                            ['\providecommand{\\bbobpptablesmanylegend}[1]{' +
                              pptables.get_table_caption() + '}'])
             dictNoi = pproc.dictAlgByNoi(dictAlg)
-            for ng, tmpdictng in dictNoi.iteritems():
+            for ng, tmpdictng in dictNoi.items():
                 dictDim = pproc.dictAlgByDim(tmpdictng)
-                for d, tmpdictdim in sorted(dictDim.iteritems()):
+                for d, tmpdictdim in sorted(dictDim.items()):
                     pptables.main(
                         tmpdictdim,
                         sortedAlgs,
-                        outputdir,
+                        many_algorithms_output,
                         ([1, 20, 38] if (testbedsettings.current_testbed.name ==
-                                         testbedsettings.testbed_name_bi) else True))
+                                         testbedsettings.testbed_name_bi) else True),
+                        latex_commands_file)
             print_done()
 
-        ppfig.save_single_functions_html(
-            os.path.join(outputdir, genericsettings.many_algorithm_file_name),
-            '',  # algorithms names are clearly visible in the figure
-            htmlPage=ppfig.HtmlPage.MANY,
-            functionGroups=dictAlg[sortedAlgs[0]].getFuncGroups()
-        )
+        if prepare_scatter and len(genericsettings.foreground_algorithm_list) == 2:
+            print("Scatter plots...")
 
-        if genericsettings.isFig:
+            ds_list0 = dictAlg[sortedAlgs[0]]
+            algorithm_name0 = str_to_latex(strip_pathname1(sortedAlgs[0]))
+            ds_list1 = dictAlg[sortedAlgs[1]]
+            algorithm_name1 = str_to_latex(strip_pathname1(sortedAlgs[1]))
+
+            algorithm_name = "%s vs %s" % (algorithm_name1, algorithm_name0)
+            ppfig.save_single_functions_html(
+                os.path.join(many_algorithms_output, genericsettings.ppscatter_file_name),
+                algname=algorithm_name,
+                htmlPage=ppfig.HtmlPage.PPSCATTER,
+                function_groups=ds_list0.getFuncGroups(),
+                parentFileName=genericsettings.many_algorithm_file_name
+            )
+
+            html_file_name = os.path.join(many_algorithms_output, genericsettings.ppscatter_file_name + '.html')
+
+            ppscatter.main(ds_list1, ds_list0, many_algorithms_output, inset)
+            prepend_to_file(latex_commands_file,
+                            ['\\providecommand{\\bbobppscatterlegend}[1]{',
+                             ppscatter.figure_caption(),
+                             '}'
+                             ])
+
+            replace_in_file(html_file_name, '##bbobppscatterlegend##', ppscatter.figure_caption(for_html=True))
+            for i, alg in enumerate(args):
+                replace_in_file(html_file_name, 'algorithm' + pptex.numtotext(i), str_to_latex(strip_pathname1(alg)))
+
+            print_done()
+
+        if prepare_figures:
             print("Scaling figures...")
             plt.rc("axes", labelsize=20, titlesize=24)
             plt.rc("xtick", labelsize=20)
@@ -455,12 +599,16 @@ def main(argv=None):
             ppfigs.main(dictAlg,
                         genericsettings.ppfigs_file_name,
                         sortedAlgs,
-                        outputdir)
+                        many_algorithms_output,
+                        latex_commands_file)
             plt.rcdefaults()
             print_done()
+        print("Output data written to folder %s" %
+              os.path.join(os.getcwd(), many_algorithms_output))
 
         plt.rcdefaults()
 
+        return DataSetList(dsList).dictByAlg()
 
-if __name__ == "__main__":
-    sys.exit(main())
+
+

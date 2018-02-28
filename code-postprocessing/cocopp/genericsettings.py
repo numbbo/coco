@@ -1,30 +1,30 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""This module contains some variables settings for COCO.
+"""This module contains some global variables settings for COCO.
 
-These variables are used for producing figures and tables 
-in rungeneric1, -2, and -many.
+These variables may be modified (in particular in rungeneric1, -2, and
+-many) and are used for producing figures and tables.
 
-For setting variables dynamically see config.py, where some 
-of the variables here and some 
+For setting variables dynamically or changing other module settings
+here see `config.py`.
 
 """
-import numpy as np
 
 test = False  # debug/test flag, set to False for committing the final version
-if 1 < 3 and test:
-    np.seterr(all='raise')
-np.seterr(under='ignore')  # ignore underflow
 
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000  # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
-runlength_based_targets = 'auto'  # 'auto' means automatic choice, otherwise True or False
+runlength_based_targets = False  # may be overwritten by expensive setting
 dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
-generate_svg_files = True  # generate the svg figures
+figure_file_formats = ['svg', 'pdf']
 scaling_figures_with_boxes = True
 # should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
+
+weight_evaluations_constraints = (1, 1)
+"""weights used to sum function evaluations and constraints evaluations
+in attribute DataSet.evals, if any constraints evaluations are found"""
 
 # Variables used in the routines defining desired output for BBOB.
 tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
@@ -46,7 +46,8 @@ dim_related_colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm'
 
 rldDimsOfInterest = (5, 20)
 
-simulated_runlength_bootstrap_sample_size = 10 + 990 / (1 + 10 * max((0, in_a_hurry)))  # for tables and plots
+simulated_runlength_bootstrap_sample_size = 10 + 990 // (1 + 10 * max((0, in_a_hurry)))  # for tables and plots
+"""10000 would be better for a final camera-ready paper version"""
 
 # single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default in pprldistr.plot method, on graph for each
 # single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each, seems not in use
@@ -68,14 +69,20 @@ instancesOfInterest2015 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 41: 1, 42: 1, 43: 1, 44
                            45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1}  # 2015 instances
 instancesOfInterest2016 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 51: 1, 52: 1, 53: 1, 54: 1,
                            55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1}  # 2016 instances
+instancesOfInterest2017 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 61: 1, 62: 1, 63: 1, 64: 1,
+                           65: 1, 66: 1, 67: 1, 68: 1, 69: 1, 70: 1}  # 2016 instances
 instancesOfInterestBiobj2016 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}  # bi-objective 2016 instances
+instancesOfInterestBiobj2017 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
+                                10: 1, 11: 1, 12: 1, 13: 1, 14:1, 15:1}  # bi-objective 2017 instances
 instancesOfInterest = [instancesOfInterest2009,
                        instancesOfInterest2010,
                        instancesOfInterest2012,
                        instancesOfInterest2013,
                        instancesOfInterest2015,
                        instancesOfInterest2016,
-                       instancesOfInterestBiobj2016]
+                       instancesOfInterest2017,
+                       instancesOfInterestBiobj2016,
+                       instancesOfInterestBiobj2017]
 
 line_styles = [  # used by ppfigs and pprlmany  
     {'marker': 'o', 'markersize': 31, 'linestyle': '-', 'color': '#000080'},  # 'NavyBlue'
@@ -89,35 +96,35 @@ line_styles = [  # used by ppfigs and pprlmany
     #          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'}, # 'Black' is too close to NavyBlue
     #          {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': '#d02090'}, # square, 'VioletRed' seems too close to red
     {'marker': 'p', 'markersize': 24, 'linestyle': '-', 'color': 'c'},
-    {'marker': 'H', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
+    #{'marker': 'H', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
     # {'marker': 'o', 'markersize': 23, 'linestyle': '-', 'color': '#ffff00'}, # 'Yellow'
     {'marker': '3', 'markersize': 23, 'linestyle': '-', 'color': '#adff2f'},  # 'GreenYellow'
     {'marker': '1', 'markersize': 23, 'linestyle': '-', 'color': '#228b22'},  # 'ForestGreen'
     {'marker': 'D', 'markersize': 23, 'linestyle': '-', 'color': '#ffc0cb'},  # 'Lavender'
     {'marker': '<', 'markersize': 23, 'linestyle': '-', 'color': '#87ceeb'},  # 'SkyBlue' close to CornflowerBlue
-    {'marker': 'v', 'markersize': 23, 'linestyle': '--', 'color': '#000080'},  # 'NavyBlue'
-    {'marker': '*', 'markersize': 23, 'linestyle': '--', 'color': 'r'},  # 'Red'
-    {'marker': 's', 'markersize': 23, 'linestyle': '--', 'color': '#ffd700'},  # 'Goldenrod'
-    {'marker': 'd', 'markersize': 23, 'linestyle': '--', 'color': '#d02090'},  # square, 'VioletRed'
-    {'marker': '^', 'markersize': 23, 'linestyle': '--', 'color': '#6495ed'},  # 'CornflowerBlue'
-    {'marker': '<', 'markersize': 23, 'linestyle': '--', 'color': '#ffa500'},  # 'Orange'
-    {'marker': 'h', 'markersize': 23, 'linestyle': '--', 'color': '#ff00ff'},  # 'Magenta'
+    {'marker': 'v', 'markersize': 23, 'linestyle': '-', 'color': '#000080'},  # 'NavyBlue'
+    {'marker': '*', 'markersize': 23, 'linestyle': '-', 'color': 'r'},  # 'Red'
+    {'marker': 's', 'markersize': 23, 'linestyle': '-', 'color': '#ffd700'},  # 'Goldenrod'
+    {'marker': 'd', 'markersize': 23, 'linestyle': '-', 'color': '#d02090'},  # square, 'VioletRed'
+    {'marker': '^', 'markersize': 23, 'linestyle': '-', 'color': '#6495ed'},  # 'CornflowerBlue'
+    {'marker': '<', 'markersize': 23, 'linestyle': '-', 'color': '#ffa500'},  # 'Orange'
+    {'marker': 'h', 'markersize': 23, 'linestyle': '-', 'color': '#ff00ff'},  # 'Magenta'
     # {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'}, # square, magenta
-    {'marker': 'p', 'markersize': 23, 'linestyle': '--', 'color': '#bebebe'},  # 'Gray'
-    {'marker': 'H', 'markersize': 23, 'linestyle': '--', 'color': '#87ceeb'},  # 'SkyBlue'
-    {'marker': '1', 'markersize': 23, 'linestyle': '--', 'color': '#ffc0cb'},  # 'Lavender'
-    {'marker': '2', 'markersize': 23, 'linestyle': '--', 'color': '#228b22'},  # 'ForestGreen'
-    {'marker': '4', 'markersize': 23, 'linestyle': '--', 'color': '#32cd32'},  # 'LimeGreen'
-    {'marker': '3', 'markersize': 23, 'linestyle': '--', 'color': '#9acd32'},  # 'YellowGreen'
-    {'marker': 'D', 'markersize': 23, 'linestyle': '--', 'color': '#adff2f'},  # 'GreenYellow'
-    {'marker': 'd', 'markersize': 31, 'linestyle': ':', 'color': '#000080'},  # 'NavyBlue'
-    {'marker': '*', 'markersize': 26, 'linestyle': ':', 'color': '#ff00ff'},  # 'Magenta'
-    {'marker': 'v', 'markersize': 33, 'linestyle': ':', 'color': '#ffa500'},  # 'Orange'
-    {'marker': 'h', 'markersize': 28, 'linestyle': ':', 'color': '#6495ed'},  # 'CornflowerBlue'
-    {'marker': '^', 'markersize': 30, 'linestyle': ':', 'color': 'r'},  # 'Red'
-    {'marker': 'p', 'markersize': 25, 'linestyle': ':', 'color': '#9acd32'},  # 'YellowGreen'
-    {'marker': 'H', 'markersize': 24, 'linestyle': ':', 'color': 'c'},
-    {'marker': '3', 'markersize': 23, 'linestyle': ':', 'color': '#bebebe'},  # 'Gray'
+    {'marker': 'p', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
+    {'marker': 'H', 'markersize': 23, 'linestyle': '-', 'color': '#87ceeb'},  # 'SkyBlue'
+    {'marker': '1', 'markersize': 23, 'linestyle': '-', 'color': '#ffc0cb'},  # 'Lavender'
+    {'marker': '2', 'markersize': 23, 'linestyle': '-', 'color': '#228b22'},  # 'ForestGreen'
+    {'marker': '4', 'markersize': 23, 'linestyle': '-', 'color': '#32cd32'},  # 'LimeGreen'
+    {'marker': '3', 'markersize': 23, 'linestyle': '-', 'color': '#9acd32'},  # 'YellowGreen'
+    {'marker': 'D', 'markersize': 23, 'linestyle': '-', 'color': '#adff2f'},  # 'GreenYellow'
+    {'marker': 'd', 'markersize': 31, 'linestyle': '-', 'color': '#000080'},  # 'NavyBlue'
+    {'marker': '*', 'markersize': 26, 'linestyle': '-', 'color': '#ff00ff'},  # 'Magenta'
+    {'marker': 'v', 'markersize': 33, 'linestyle': '-', 'color': '#ffa500'},  # 'Orange'
+    {'marker': 'h', 'markersize': 28, 'linestyle': '-', 'color': '#6495ed'},  # 'CornflowerBlue'
+    {'marker': '^', 'markersize': 30, 'linestyle': '-', 'color': 'r'},  # 'Red'
+    {'marker': 'p', 'markersize': 25, 'linestyle': '-', 'color': '#9acd32'},  # 'YellowGreen'
+    {'marker': 'H', 'markersize': 24, 'linestyle': '-', 'color': 'c'},
+    {'marker': '3', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
 
 ]
 line_styles_old = [  # used by ppfigs and pprlmany
@@ -205,7 +212,7 @@ if 11 < 3:  # in case using my own linestyles
         {'marker': '3', 'markersize': 24, 'linestyle': '-', 'color': 'g'}
     ]
 
-minmax_algorithm_fontsize = [10, 15]  # depending on the number of algorithms
+minmax_algorithm_fontsize = [9, 17]  # depending on the number of algorithms
 
 rcaxeslarger = {"labelsize": 24, "titlesize": 28.8}
 rcticklarger = {"labelsize": 24}
@@ -217,24 +224,23 @@ rctick = {"labelsize": 20}
 rcfont = {"size": 20}
 rclegend = {"fontsize": 20}
 
-single_algorithm_file_name = 'templateBBOBarticle'
-two_algorithm_file_name = 'templateBBOBcmp'
-many_algorithm_file_name = 'templateBBOBmany'
+single_algorithm_file_name = 'index1'
+many_algorithm_file_name = 'index'
 index_html_file_name = 'index'
 ppconv_file_name = 'ppconv'
 pprldmany_file_name = 'pprldmany'
 pprldmany_group_file_name = 'pprldmany_gr'
 ppfigs_file_name = 'ppfigs'
 ppscatter_file_name = 'ppscatter'
-pptable2_file_name = 'pptable2'
 pptables_file_name = 'pptables'
 pprldistr2_file_name = 'pprldistr2'
+ppfigdim_file_name = 'ppfigdim'
 
 latex_commands_for_html = 'latex_commands_for_html'
 
-extraction_folder_prefix = '_extracted_'
+extraction_folder_prefix = '.extracted_'
 
-# default settings for rungeneric, rungeneric1, rungeneric2, and rungenericmany
+# default settings for rungeneric, rungeneric1 and rungenericmany
 inputCrE = 0.
 isFig = True
 isTab = True
@@ -247,12 +253,21 @@ inputsettings = 'color'
 isExpensive = False
 isRldOnSingleFcts = True
 isRLDistr = True
+
+# usage: background = {(color, linestyle): [alg1, alg2, ...], }
+# for example:
+# background = {('#d8d8d8', '-'): ['data/BFGS_ros_noiseless.tgz'], ('#f88017', ':'): ['data/NEWUOA_ros_noiseless.tgz', 'data/RANDOMSEARCH_auger_noiseless.tgz']}
+background = {}  # TODO: we should have a more instructive name here
+background_default_style = (3 * (0.9,), '-')  # very light gray
+
+foreground_algorithm_list = []
+"""a list of data files/folders as those specified in cocopp.main"""
+
 ##
 isLogLoss = True  # only affects rungeneric1
 isPickled = False  # only affects rungeneric1
 ##    
-isScatter = True  # only affects rungeneric2
-isScaleUp = True  # only affects rungeneric2, only set here and not altered by any command line argument for now
+isScatter = True  # only affects rungenericmany
 
 # Used by getopt:
 shortoptlist = "hvpo:"
@@ -261,26 +276,8 @@ longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "verbose", "settings=", "conv",
                "expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
-               "sca-only", "no-svg"]
+               "sca-only", "no-svg", "constrained"]
 
 
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
-# and "sca-only" only affects rungeneric2
-
-
-def getFigFormats():
-    if in_a_hurry:
-        fig_formats = ('pdf', 'svg') if generate_svg_files else ('pdf',)
-    else:
-        fig_formats = ('eps', 'pdf', 'svg') if generate_svg_files else ('eps', 'pdf')
-    # fig_formats = ('eps', 'pdf', 'png', 'svg')
-
-    return fig_formats
-
-
-def getFontSize(nameList):
-    maxFuncLength = max(len(i) for i in nameList)
-    fontSize = 24 - max(0, 2 * ((maxFuncLength - 35) / 5))
-    return fontSize
-
-
+# and "sca-only" only affects rungenericmany
