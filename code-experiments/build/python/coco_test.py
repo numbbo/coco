@@ -82,7 +82,7 @@ def testmod(module):
 def run_doctests():
     """Run doctests on "all" modules.
 
-    To include this in a unittest enviroment,
+    To include this in a unittest environment,
     see https://docs.python.org/2/library/doctest.html#unittest-api
     """
     interface = ex.interface if hasattr(ex, 'interface') else ex._interface

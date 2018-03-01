@@ -28,8 +28,7 @@ setup(
                           '../latex-templates/*.cls',
                           '../latex-templates/*.sty',
                           '../latex-templates/*.bib',
-                          'data/IPOP-CMA-ES.tgz',
-                          'data/MCS.tgz'
+                          '../latex-templates/*.bst',
                           ]},
     url = 'https://github.com/numbbo/coco',
     license = 'BSD',

@@ -1,0 +1,104 @@
+This file specifies the different COCO data formats produced by the experiment code (i.e. written by a logger) and 
+read in by the post processing part of COCO.
+
+General remarks:
+  - all data of each COCO experiment are written into a single folder into human-readable .info and .dat files with potential further .tdat and .rdat files and additional subfolders
+  - the .info files are summary files and serve as the index files to the actual raw data files (.dat, .tdat, etc.)
+  - the actual raw data, used in the postprocessing is contained in the .dat files, indexed by the .info files
+  - comments are done by `%`
+
+Index files (*.info):
+1st line (note that starred entries might be omitted in older
+data sets and are then inferred from the data):
+  - single objective case:
+    suite name (e.g. suite = 'bbob')*, 
+    function identifier (funcId = 1), 
+    search space dimension (DIM = 2), 
+    precision to reach (Precision = 1.000e-08), 
+    algorithm identifier (algId = 'random_search'), 
+    logger name (logger = 'bbob')*, 
+    data format (data_format = 'bbob')*, 
+    software version (coco_version = '2.0.507')*
+  - bi-objective case:
+    suite name (e.g. suite = 'bbob-biobj')*, 
+    algorithm identifier (algorithm = 'RS-100'), 
+    indicator identifier (indicator = 'hyp'), 
+    relative location of data files (folder = '1-separable_1-separable'), 
+    logger name (logger = 'bbob-biobj')*, 
+    data format (data_format = 'bbob-biobj')*, 
+    software version (coco_version = '2.0.507')*
+2nd line: comments of the user (e.g. important parameter or used internal methods)
+3rd line (and all succeeding ones):
+  - single objective case:
+    relative location and name of data file(s) (e.g. data_f1/bbobexp_f1_DIM2_i1.dat),
+    information on a single run (can be repeated multiple times, separated by commata):
+      the instance of the test function,
+      a colon,
+      final number of function evaluations, 
+      a vertical bar,
+      the final best function value minus target function value (e.g. 1:41|3.5e-01).
+  - bi-objective case:
+    function identifier (function =  2), 
+    search space dimension (dim = 2), 
+    name of data file(s) (e.g. bbob-biobj_f02_d02_hyp.dat), 
+    information on a single run (can be repeated multiple times, separated by commata):
+      the instance of the test function,
+      a colon,
+      final number of function evaluations, 
+      a vertical bar,
+      the final best function value minus target function value (e.g. 1:41|3.5e-01).
+
+All entries in the 1st, 3rd and all succeeding lines are separated by commas. The 1st line 
+should be a valid Python code when surrounded like "dict(" + line + ")".
+
+
+Data files (*.dat, *.tdat, *.adat):
+Data files contain one or more runs, all of them for the same function and dimension. 
+At the start of each run the header is written. 
+The post-processing checks the header for the following information:
+  - instance: the current instance number
+  - reference value of the hypervolume indicator (bi-objective case)
+  - algorithm type: if this value is set to 'best' then this is an artifical best 
+    algorithm data.  
+After the header each line represents one evaluation. You can see what each column 
+represents in the last line of the header. 
+
+If the final number of function evaluations (for a specific function, dimension 
+and instance) in the info file does not match the last evaluation number in tdat 
+file then a warning is issued: "There is a difference between the maxevals in the 
+*.info file and in the data files." 
+
+What columns represent is defined (at least for the relevant columns) by the data format 
+specified in the info file.
+
+The data format field in the info file specifies which columns in the dat file contain 
+relevant information for the post-processing in order to be able to read in the data correctly.
+
+Possible values for data format field:
+1. "bbob" contracted (for single objective problems):
+  - 1st column: evaluation number
+  - 3rd column: function value
+  - informal:
+    - 2nd column: current function value
+    - number of target function values for each decade = 5
+2. "bbob-biobj" contracted (bi-objective problems):
+  - 1st column: evaluation number
+  - 2nd column: indicator value
+  - informal:
+    - number of target function values for each decade = 10
+3. "bbob-constrained" (single objective constrained problems):
+  - 1st column: f evaluation number
+  - 2nd column: g evaluation number
+  - 3rd column: function value
+  - informal:
+    - number of target function values for each decade = 5
+    
+TODO: What to change in the post-processing if you add a new data-format?
+ 
+Possible values for suite name field:
+1. "bbob" results in using GECCOBBOBTestbed class in post-processing
+2. "bbob-noisy" results in using GECCOBBOBNoisyTestbed class in post-processing  
+3. "bbob-biobj" results in using GECCOBiObjBBOBTestbed class in post-processing
+4. "bbob-constrained" results in using CONSBBOBTestbed class in post-processing
+
+TODO: What to change in the post-processing if you add a new suite?

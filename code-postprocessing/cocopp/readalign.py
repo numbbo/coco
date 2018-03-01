@@ -17,25 +17,16 @@ the experimental data.
 
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import os, sys
 import numpy
 import warnings
 
-from . import genericsettings
+from . import genericsettings, testbedsettings
 
 from pdb import set_trace
-
-# GLOBAL VARIABLES
-idxEvals = 0  # index of the column where to find the evaluations
-# Single objective case
-idxFSingle = 2  # index of the column where to find the function values
-nbPtsFSingle = 5  # nb of target function values for each decade.
-# Bi-objective case
-idxFBi = 1  # index of the column where to find the function values
-nbPtsFBi = 10  # nb of target function values for each decade.
-
+from six import string_types, advance_iterator
 
 # CLASS DEFINITIONS
 class MultiReader(list):
@@ -66,16 +57,26 @@ class MultiReader(list):
 
     """
 
-    # TODO: this class and all inheriting class may have to be redesigned for
-    # other kind of problems to work.
+    # TODO: this class and the inheriting classes may have to be
+    # redesigned for other kind of problems to work. They seem too have
+    # quite a complicated inheritance structure for what they are
+    # suppposed to do, that is, just read in a few info and data files.
 
     # idx: index of the column in the data array of the alignment value.
     # idxData: index of the column in the data array for the data of concern.
 
     def __init__(self, data, isHArray=False):
-        for i in data:
-            if len(i) > 0:  # ie. if the data array is not empty.
-                self.append(self.SingleReader(i, isHArray))
+        """accepts a list of arrays or a `MultiReader` (i.e. a list of
+        `SingleReader`) as input `data` type """
+        self.isHArray = isHArray
+        try:  # we act like data is a MultiReader
+            #  this is meant to make a reset-copy of MultiReader
+            for i, reader in enumerate(data):
+                self.append(self.SingleReader(reader.data, data.isHArray))
+        except AttributeError:  # we assume that data is a simple list
+            for ar in data:
+                if len(ar) > 0:  # ie. if the data array is not empty.
+                    self.append(self.SingleReader(ar, isHArray))
 
     def currentLine(self):
         """Aggregates currentLines information."""
@@ -110,17 +111,19 @@ class MultiReader(list):
 
         def __init__(self, data, isHArray=False):
             if len(data) == 0:
-                raise ValueError, 'Empty data array.'
-            self.data = numpy.array(data)
+                raise ValueError('Empty data array.')
+            self.data = numpy.asarray(data)
             self.it = self.data.__iter__()
             self.isNearlyFinished = False
             self.isFinished = False
             self.currentLine = None
-            self.nextLine = self.it.next()
+            self.nextLine = advance_iterator(self.it)
             if isHArray:
                 self.idxEvals = range(1, numpy.shape(data)[1])
             else:
-                self.idxEvals = idxEvals
+                # TODO: this looks like a very bad use-case for global variables (as most are)
+                # similar are scattered over the classes below
+                self.idxEvals = testbedsettings.current_testbed.data_format.evaluation_idx
 
         def next(self):
             """Returns the next (last if undefined) line of the array data."""
@@ -130,7 +133,7 @@ class MultiReader(list):
                     self.currentLine = self.nextLine.copy()
                     # Update nextLine
                     try:
-                        self.nextLine = self.it.next()
+                        self.nextLine = advance_iterator(self.it)
                     except StopIteration:
                         self.isNearlyFinished = True
                 else:
@@ -150,11 +153,12 @@ class VMultiReader(MultiReader):
 
     """
 
-    idx = idxEvals  # the alignment value is the number of function evaluations.
-
-    def __init__(self, data, isBiobjective):
+    def __init__(self, data):
         super(VMultiReader, self).__init__(data)
-        self.idxData = idxFBi if isBiobjective else idxFSingle  # the data of concern are the function values.
+        # the alignment value is the number of function evaluations.
+        self.idx = testbedsettings.current_testbed.data_format.evaluation_idx
+        # the data of concern are the function values.
+        self.idxData = testbedsettings.current_testbed.data_format.function_value_idx
 
     def isFinished(self):
         return all(i.isFinished for i in self)
@@ -189,13 +193,13 @@ class HMultiReader(MultiReader):
 
     """
 
-    idxData = idxEvals  # the data of concern are the number of function evals.
-
-    def __init__(self, data, isBiobjective):
+    def __init__(self, data):
         super(HMultiReader, self).__init__(data)
+        # the data of concern are the number of function evals.
+        self.idxData = testbedsettings.current_testbed.data_format.evaluation_idx
         # the alignment value is the function value.
-        self.idx = idxFBi if isBiobjective else idxFSingle
-        self.nbPtsF = nbPtsFBi if isBiobjective else nbPtsFSingle
+        self.idx = testbedsettings.current_testbed.data_format.function_value_idx
+        self.nbPtsF = testbedsettings.current_testbed.number_of_points
         self.idxCurrentF = numpy.inf  # Minimization
         # idxCurrentF is a float for the extreme case where it is infinite.
         # else it is an integer and then is the 'i' in 10**(i/nbPtsF)
@@ -249,7 +253,7 @@ class HMultiReader(MultiReader):
 
         # This should not happen
         if not fvalues:
-            raise ValueError, 'Value %g is not reached.'
+            raise ValueError('Value %g is not reached.')
 
         if max(fvalues) <= 0.:
             if currentValue > 0.:
@@ -258,11 +262,11 @@ class HMultiReader(MultiReader):
                 currentValue = 0.
             else:
                 self.idxCurrentF = max(self.idxCurrentF,
-                                       numpy.floor(numpy.log10(-max(fvalues)) * self.nbPtsF))
+                                       numpy.floor(numpy.log10(-max(fvalues) + 1e-12) * self.nbPtsF))
                 currentValue = self.calculateCurrentValue()
         else:
             self.idxCurrentF = min(self.idxCurrentF,
-                                   numpy.ceil(numpy.log10(max(fvalues)) * self.nbPtsF))
+                                   numpy.ceil(numpy.log10(max(fvalues) - 1e-12) * self.nbPtsF))
             # Above line may return: Warning: divide by zero encountered in
             # log10 in the case of negative fvalues.
             # In the case of negative values for fvalues, self.idxCurrentF
@@ -310,7 +314,7 @@ class VArrayMultiReader(ArrayMultiReader, VMultiReader):
 
     def __init__(self, data):
         ArrayMultiReader.__init__(self, data)
-        # TODO: Should this use super?
+        # TODO: Should this use super? It probably shouldn't have multiple inheritance in the first place.
 
 
 class VArrayMultiReaderNew(ArrayMultiReader, VMultiReader):
@@ -324,18 +328,17 @@ class VArrayMultiReaderNew(ArrayMultiReader, VMultiReader):
 class HArrayMultiReader(ArrayMultiReader, HMultiReader):
     """Wrapper class of *aligned* data arrays to be aligned horizontally."""
 
-    def __init__(self, data, isBiobjective):
+    def __init__(self, data):
         ArrayMultiReader.__init__(self, data, isHArray=True)
         # TODO: Should this use super?
-        self.nbPtsF = nbPtsFBi if isBiobjective else nbPtsFSingle
+        self.nbPtsF = testbedsettings.current_testbed.number_of_points
         self.idxCurrentF = numpy.inf  # Minimization
         self.isNegative = False
         self.idxCurrentFOld = 0.
 
 
 # FUNCTION DEFINITIONS
-
-def alignData(data, isBiobjective):
+def align_data(data, idx_evals, idx_funvals, rewind_reader=False):
     """Aligns the data from a list of data arrays.
 
     This method returns an array for which the alignment value is the
@@ -343,9 +346,14 @@ def alignData(data, isBiobjective):
 
     """
 
-    # TODO: is template dependent.
-
-    idxF = idxFBi if isBiobjective else idxFSingle
+    if rewind_reader:
+        if isinstance(data, HMultiReader):
+            data = HMultiReader(data)
+        elif isinstance(data, VMultiReader):
+            data = VMultiReader(data)
+        else:
+            raise TypeError("reset class %s not implemented"
+                            % type(data))
 
     res = []
     current_value= data.getInitialValue()
@@ -357,8 +365,8 @@ def alignData(data, isBiobjective):
         res.append(data.align(current_value))
         current_value = data.newCurrentValue()
 
-    return (numpy.vstack(res), numpy.array(list(i.nextLine[idxEvals] for i in data)),
-            numpy.array(list(i.nextLine[idxF] for i in data)))
+    return (numpy.vstack(res), numpy.array(list(i.nextLine[idx_evals] for i in data)),
+            numpy.array(list(i.nextLine[idx_funvals] for i in data)))
     # Hack: at this point nextLine contains all information on the last line
     # of the data.
 
@@ -425,7 +433,7 @@ def split(dataFiles, idx_to_load=None, dim=None):
         for line in lines:
             if line.startswith('%'):
                 if content:
-                    if (idx_to_load is None) or (idx_to_load and idx_to_load[idx]):
+                    if (idx_to_load is None) or (idx_to_load and len(idx_to_load) > idx and idx_to_load[idx]):
                         data_sets.append(numpy.vstack(content))
                     elif genericsettings.verbose:
                             print('skipped instance...')
@@ -473,7 +481,7 @@ def split(dataFiles, idx_to_load=None, dim=None):
                 warnings.warn('Incomplete line %s in  ' % line +
                               'data file %s: ' % fil)
                 continue
-            for index in xrange(len(data)):
+            for index in range(len(data)):
                 if data[index] in ('Inf', 'inf'):
                     data[index] = numpy.inf
                 elif data[index] in ('-Inf', '-inf'):
@@ -492,7 +500,7 @@ def split(dataFiles, idx_to_load=None, dim=None):
             # Check that it always have the same length?
 
         if content:
-            if (idx_to_load is None) or (idx_to_load and idx_to_load[idx]):
+            if (idx_to_load is None) or (idx_to_load and len(idx_to_load) > idx and idx_to_load[idx]):
                 data_sets.append(numpy.vstack(content))
             elif genericsettings.verbose:
                     print('skipped instance...')

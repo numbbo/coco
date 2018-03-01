@@ -28,11 +28,12 @@ import warnings
 import numpy as np
 import tarfile
 import pkg_resources
+from six import advance_iterator
 
 from . import readalign, pproc
 from .toolsdivers import print_done
 from .ppfig import Usage
-from . import toolsstats, testbedsettings, genericsettings
+from . import toolsstats, toolsdivers, testbedsettings, genericsettings
 from .pproc import DataSet
 
 bestAlgorithmEntries = {}
@@ -126,7 +127,7 @@ class BestAlgSet(DataSet):
         best_algorithms = []
         self.success_ratio = []
 
-        for alg, i in dict_alg.iteritems():
+        for alg, i in dict_alg.items():
             if len(i) == 0:
                 warnings.warn('Algorithm %s was not tested on f%d %d-D.'
                               % (alg, f, d))
@@ -144,13 +145,13 @@ class BestAlgSet(DataSet):
 
         dict_alg = tmpdictAlg
 
-        sortedAlgs = dict_alg.keys()
+        sortedAlgs = list(dict_alg.keys())
         # algorithms will be sorted along sortedAlgs which is now a fixed list
 
         # Align aRT
         erts = list(np.transpose(np.vstack([dict_alg[i].target, dict_alg[i].ert]))
                     for i in sortedAlgs)
-        res = readalign.alignArrayData(readalign.HArrayMultiReader(erts, False))
+        res = readalign.alignArrayData(readalign.HArrayMultiReader(erts))
 
         resalgs = []
         reserts = []
@@ -189,7 +190,7 @@ class BestAlgSet(DataSet):
             curLine = dictcurLine.setdefault(alg, np.array([np.inf, 0]))
             while curLine[0] > funval:
                 try:
-                    curLine = it.next()
+                    curLine = advance_iterator(it)
                 except StopIteration:
                     break
             dictcurLine[alg] = curLine.copy()
@@ -284,8 +285,8 @@ class BestAlgSet(DataSet):
                 f.close()
                 if genericsettings.verbose:
                     print('Saved pickle in %s.' % self.pickleFile)
-            except IOError, (errno, strerror):
-                print("I/O error(%s): %s" % (errno, strerror))
+            except IOError as e:
+                print("I/O error(%s): %s" % (e.errno, e.strerror))
             except pickle.PicklingError:
                 print("Could not pickle %s" % self)
                 # else: #What?
@@ -370,6 +371,11 @@ class BestAlgSet(DataSet):
 
 
 # FUNCTION DEFINITIONS
+def reset_reference_algorithm():
+    global bestAlgorithmEntries
+    bestAlgorithmEntries = {}
+
+
 def load_reference_algorithm(best_algo_filename, force=False, relative_load=True):
     """Assigns :py:data:`bestAlgorithmEntries`.
 
@@ -407,7 +413,7 @@ def load_reference_algorithm(best_algo_filename, force=False, relative_load=True
     sys.stdout.flush()
 
     if relative_load:
-        best_alg_file_path = os.path.split(__file__)[0]
+        best_alg_file_path = toolsdivers.path_in_package()
         pickleFilename = os.path.join(best_alg_file_path, best_algo_filename)
     else:
         best_alg_file_path = ''
@@ -458,8 +464,8 @@ def generate(dict_alg, algId):
 
     # dsList, sortedAlgs, dictAlg = processInputArgs(args)
     res = {}
-    for f, i in pproc.dictAlgByFun(dict_alg).iteritems():
-        for d, j in pproc.dictAlgByDim(i).iteritems():
+    for f, i in pproc.dictAlgByFun(dict_alg).items():
+        for d, j in pproc.dictAlgByDim(i).items():
             tmp = BestAlgSet(j, algId)
             res[(d, f)] = tmp
     return res
@@ -476,24 +482,7 @@ def deprecated_customgenerate(args=algs2009):
     algorithms listed in variable args.
 
     This method is called from the python command line from a directory
-    containing all necessary data folders::
-
-    >>> from cocopp import bestalg
-    >>> import os
-    >>> path = os.path.abspath(os.path.dirname('__file__'))
-    >>> os.chdir(os.path.join(path, 'data'))
-    >>> infoFile = 'ALPS/bbobexp_f2.info'
-    >>> if not os.path.exists(infoFile):
-    ...     import urllib
-    ...     import tarfile
-    ...     dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/ALPS_hornby_noiseless.tgz'
-    ...     filename, headers = urllib.urlretrieve(dataurl)
-    ...     archivefile = tarfile.open(filename)
-    ...     archivefile.extractall()
-    >>> os.chdir(os.path.join(path, 'data'))
-    >>> bestalg.custom_generate(('ALPS', ''), 'refAlgFromALPS') # doctest: +ELLIPSIS
-    Searching in...
-    >>> os.chdir(path)
+    containing all necessary data folders.
 
     """
 
@@ -526,6 +515,15 @@ def custom_generate(args=algs2009, algId='bestCustomAlg', suite=None):
 
     This method is called from the python command line from a directory
     containing all necessary data folders::
+
+    >>> import cocopp
+    >>> def print_(*args, **kwargs): pass
+    >>> cocopp._data_archive._print = print_  # prevent download message
+    >>> filename = cocopp._data_archive.get('2009/ALPS_hornby_noiseless')
+    >>> with cocopp.toolsdivers.Infolder(cocopp._data_archive.local_data_path):
+    ...     print('ESC'); cocopp.bestalg.custom_generate((filename, ),
+    ...                           '_doctest_refAlgFromALPS') # doctest: +ELLIPSIS
+    ESC...
 
     """
 
@@ -560,7 +558,7 @@ def create_data_files(output_dir, result, suite):
     info_lines = []
     all_instances_used = []
     algorithms_used = []
-    for key, value in sorted(result.iteritems()):
+    for key, value in sorted(result.items()):
 
         # TODO: throw an error
         # if not len(value.target) == len(value.ert):
@@ -576,7 +574,7 @@ def create_data_files(output_dir, result, suite):
         lines.append("% algorithm type = best")
         target_list = value.target.tolist()
         instances_used = []
-        for key_target, value_target in sorted(dict_evaluation.iteritems()):
+        for key_target, value_target in sorted(dict_evaluation.items()):
             successful_runs, all_runs = result[(key[0], key[1])].get_success_ratio(value_target)
             target_index = target_list.index(value_target)
             alg_for_target = os.path.basename(value.algs[target_index])
@@ -595,7 +593,7 @@ def create_data_files(output_dir, result, suite):
             test_suite = suite
 
         algorithm_id = value.algId
-        if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
+        if result[list(result.keys())[0]].testbed == testbedsettings.default_testbed_bi:
             info_lines.append("function = %d, dim = %d, %s, %s"
                               % (key[1], key[0], filename_template % (key[1], key[0], 'dat'), instance_data))
         else:
@@ -616,7 +614,7 @@ def create_data_files(output_dir, result, suite):
             if algorithm not in algorithms_used:
                 algorithms_used.append(algorithm)
 
-    if result[result.keys()[0]].testbed == testbedsettings.default_testbed_bi:
+    if result[list(result.keys())[0]].testbed == testbedsettings.default_testbed_bi:
         header = "algorithm = '%s', indicator = 'hyp'" % algorithm_id
         if test_suite is not None:
             header += ", suite = '%s'" % test_suite
@@ -649,7 +647,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
                                        target_ub=1e2):
     """Computes first the artificial best algorithm from given algorithm list
        algnamelist, constructed by extracting for each target/function pair
-       the algorithm with best aRT among the given ones. Returns then the list
+       thalgorithm with best aRT among the given ones. Returns then the list
        of algorithms that are contributing to the definition of the best
        algorithm, separated by dimension, and sorted by importance (i.e. with
        respect to the number of target/function pairs where each algorithm is
@@ -658,25 +656,17 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
        This method should be called from the python command line from a directory
        containing all necessary data folders::
 
-        >>> from cocopp import bestalg
-        >>> import os
-        >>> import urllib
-        >>> path = os.path.abspath(os.path.dirname(os.path.dirname('__file__')))
-        >>> os.chdir(path)
-        >>> infoFile = 'data/BIPOP-CMA-ES.tgz'
-        >>> if not os.path.exists(infoFile):
-        ...   os.chdir(os.path.join(path, 'data'))
-        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
-        ...   filename, headers = urllib.urlretrieve(dataurl, 'BIPOP-CMA-ES.tgz')
-        >>> os.chdir(path)
-        >>> infoFile = 'data/MCS.tgz'
-        >>> if not os.path.exists(infoFile):
-        ...   os.chdir(os.path.join(path, 'data'))
-        ...   dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/MCS_huyer_noiseless.tgz'
-        ...   filename, headers = urllib.urlretrieve(dataurl, 'MCS.tgz')
-        >>> os.chdir(path)
-        >>> bestalg.getAllContributingAlgorithmsToBest(('data/BIPOP-CMA-ES.tgz', 'data/MCS.tgz')) # doctest:+ELLIPSIS
+        >>> import os, cocopp
+        >>> import cocopp.toolsdivers
+        >>> def print_(*args, **kwargs): pass
+        >>> cocopp._data_archive._print = print_  # prevent downloading... message
+        >>> filenames = (cocopp._data_archive.get('bbob/2009/BIPOP-CMA-ES'),  # first match will stay the same forever
+        ...              cocopp._data_archive.get('bbob/2009/MCS_huyer_noiseless'))
+        >>> with cocopp.toolsdivers.Infolder(cocopp._data_archive.local_data_path):
+        ...     cocopp.bestalg.getAllContributingAlgorithmsToBest(filenames)  # doctest:+ELLIPSIS
         Generating best algorithm data...
+        >>> assert os.path.exists(os.path.join(
+        ...         cocopp._data_archive.local_data_path, 'bestCustomAlg.tar.gz'))
 
     """
 
@@ -694,8 +684,6 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
 
     countsperalgorithm = {}
     for (d, f) in bestalgentries:
-        print('dimension: %d, function: %d' % (d, f))
-        print(f)
         setofalgs = set(bestalgentries[d, f].algs)
         # pre-processing data to only look at targets >= target_lb:
         correctedbestalgentries = []
@@ -703,7 +691,6 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
             if ((bestalgentries[d, f].target[i] >= target_lb) and
                     (bestalgentries[d, f].target[i] <= target_ub)):
                 correctedbestalgentries.append(bestalgentries[d, f].algs[i])
-        print(len(correctedbestalgentries))
         # now count how often algorithm a is best for the extracted targets
         for a in setofalgs:
             # use setdefault to initialize with zero if a entry not existant:
@@ -712,7 +699,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
 
     selectedalgsperdimension = {}
     for (d, a) in sorted(countsperalgorithm):
-        if not selectedalgsperdimension.has_key(d):
+        if not d in selectedalgsperdimension:
             selectedalgsperdimension[d] = []
         selectedalgsperdimension[d].append((countsperalgorithm[(d, a)], a))
 
@@ -753,8 +740,8 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
     print('This may take a while (depending on the number of algorithms)')
 
     selectedAlgsPerProblem = {}
-    for f, i in pproc.dictAlgByFun(dictAlg).iteritems():
-        for d, j in pproc.dictAlgByDim(i).iteritems():
+    for f, i in pproc.dictAlgByFun(dictAlg).items():
+        for d, j in pproc.dictAlgByDim(i).items():
 
             best = BestAlgSet(j)
 
@@ -774,7 +761,7 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
                     secondbest_included = False
                     for astring in j:
                         currdictalg = dictAlg[astring].dictByDim()
-                        if currdictalg.has_key(d):
+                        if d in currdictalg:
                             curralgdata = currdictalg[d][f - 1]
                             currERT = curralgdata.detERT([t])[0]
                             if (astring != best.algs[i]):
@@ -807,7 +794,7 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
 
     selectedalgsperdimension = {}
     for (d, a) in sorted(countsperalgorithm):
-        if not selectedalgsperdimension.has_key(d):
+        if not d in selectedalgsperdimension:
             selectedalgsperdimension[d] = []
         selectedalgsperdimension[d].append((countsperalgorithm[(d, a)], a))
 

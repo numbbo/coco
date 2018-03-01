@@ -45,6 +45,8 @@ MATLAB_FILES = ['cocoCall.m', 'cocoEvaluateFunction.m', 'cocoObserver.m',
                 'cocoSuiteGetNextProblem.m', 'cocoSuiteGetProblem.m']
 
 _verbosity = False
+# Do not suppress build messages unless specifically requested
+_build_verbosity = True
 
 ################################################################################
 ## C
@@ -54,7 +56,8 @@ def build_c():
     amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
                'code-experiments/build/c/coco.c', RELEASE,
                {"COCO_VERSION": git_version(pep440=True)})
-    expand_file('code-experiments/src/coco.h', 'code-experiments/build/c/coco.h',
+    expand_file('code-experiments/src/coco.h',
+                'code-experiments/build/c/coco.h',
                 {"COCO_VERSION": git_version(pep440=True)})
     copy_file('code-experiments/build/c/coco.c',
               'code-experiments/examples/bbob2009-c-cmaes/coco.c')
@@ -64,11 +67,11 @@ def build_c():
     write_file(git_revision(), "code-experiments/build/c/REVISION")
     write_file(git_version(), "code-experiments/build/c/VERSION")
     if 11 < 3:
-        python('code-experiments/build/c', ['make.py', 'clean'], verbose=_verbosity)
-        python('code-experiments/build/c', ['make.py', 'all'], verbose=_verbosity)
+        python('code-experiments/build/c', ['make.py', 'clean'], verbose=_build_verbosity)
+        python('code-experiments/build/c', ['make.py', 'all'], verbose=_build_verbosity)
     else:
-        make("code-experiments/build/c", "clean", verbose=_verbosity)
-        make("code-experiments/build/c", "all", verbose=_verbosity)
+        make("code-experiments/build/c", "clean", verbose=_build_verbosity)
+        make("code-experiments/build/c", "all", verbose=_build_verbosity)
 
 
 def run_c():
@@ -120,35 +123,36 @@ def test_c_example():
 
 def build_c_unit_tests():
     """ Builds unit tests in C """
-    library_path = ''
+    library_path = 'code-experiments/test/unit-test/lib'
+    library_dir = ''
     file_name = ''
     if 'win32' in sys.platform:
         file_name = 'cmocka.dll'
         if '64' in platform.machine():
-            library_path = 'code-experiments/test/unit-test/lib/win64'
+            library_dir = 'win64'
         elif ('32' in platform.machine()) or ('x86' in platform.machine()):
             if 'cygwin' in os.environ['PATH']:
-                library_path = 'code-experiments/test/unit-test/lib/win32_cygwin'
+                library_dir = 'win32_cygwin'
             else:
-                library_path = 'code-experiments/test/unit-test/lib/win32_mingw'
+                library_dir = 'win32_mingw'
     elif 'linux' in sys.platform:
         file_name = 'libcmocka.so'
         if 'Ubuntu' in platform.linux_distribution():
-            library_path = 'code-experiments/test/unit-test/lib/linux_ubuntu'
+            library_dir = 'linux_ubuntu'
         elif 'Fedora' in platform.linux_distribution():
-            library_path = 'code-experiments/test/unit-test/lib/linux_fedora'
+            library_dir = 'linux_fedora'
     elif 'darwin' in sys.platform:  # Mac
-        library_path = 'code-experiments/test/unit-test/lib/macosx'
+        library_dir = 'macosx'
         file_name = 'libcmocka.dylib'
 
-    if len(library_path) > 0:
-        copy_file(os.path.join(library_path, file_name),
+    if len(library_dir) > 0:
+        copy_file(os.path.join(library_path, library_dir, file_name),
                   os.path.join('code-experiments/test/unit-test', file_name))
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/unit-test/coco.c')
     expand_file('code-experiments/src/coco.h', 'code-experiments/test/unit-test/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
-    make("code-experiments/test/unit-test", "clean", verbose=_verbosity)
-    make("code-experiments/test/unit-test", "all", verbose=_verbosity)
+    make("code-experiments/test/unit-test", "clean", verbose=_build_verbosity)
+    make("code-experiments/test/unit-test", "all", verbose=_build_verbosity)
 
 
 def run_c_unit_tests():
@@ -161,15 +165,15 @@ def run_c_unit_tests():
 
 def build_c_integration_tests():
     """ Builds integration tests in C """
-    copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/integration-test/coco.c')
-    expand_file('code-experiments/src/coco.h', 'code-experiments/test/integration-test/coco.h',
+    copy_file('code-experiments/build/c/coco.c',
+              'code-experiments/test/integration-test/coco.c')
+    expand_file('code-experiments/src/coco.h',
+                'code-experiments/test/integration-test/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
-    copy_file('code-experiments/src/bbob2009_testcases.txt',
-              'code-experiments/test/integration-test/bbob2009_testcases.txt')
-    copy_file('code-experiments/src/bbob2009_testcases2.txt',
-              'code-experiments/test/integration-test/bbob2009_testcases2.txt')
-    make("code-experiments/test/integration-test", "clean", verbose=_verbosity)
-    make("code-experiments/test/integration-test", "all", verbose=_verbosity)
+    copy_file('code-experiments/src/bbob2009_testcases.txt', 'code-experiments/test/integration-test/bbob2009_testcases.txt')
+    copy_file('code-experiments/src/bbob2009_testcases2.txt', 'code-experiments/test/integration-test/bbob2009_testcases2.txt')
+    make("code-experiments/test/integration-test", "clean", verbose=_build_verbosity)
+    make("code-experiments/test/integration-test", "all", verbose=_build_verbosity)
 
 
 def run_c_integration_tests():
@@ -183,6 +187,8 @@ def run_c_integration_tests():
             ['./test_instance_extraction'], verbose=_verbosity)
         run('code-experiments/test/integration-test',
             ['./test_biobj'], verbose=_verbosity)
+        run('code-experiments/test/integration-test',
+            ['./test_bbob-constrained'], verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -202,14 +208,15 @@ def build_c_example_tests():
               'code-experiments/test/example-test/Makefile.in')
     copy_file('code-experiments/build/c/Makefile_win_gcc.in',
               'code-experiments/test/example-test/Makefile_win_gcc.in')
-    make("code-experiments/test/example-test", "clean", verbose=_verbosity)
-    make("code-experiments/test/example-test", "all", verbose=_verbosity)
+    make("code-experiments/test/example-test", "clean", verbose=_build_verbosity)
+    make("code-experiments/test/example-test", "all", verbose=_build_verbosity)
 
 
 def run_c_example_tests():
     """ Runs an example experiment test in C """
     try:
-        run('code-experiments/test/example-test', ['./example_experiment'], verbose=_verbosity)
+        run('code-experiments/test/example-test', ['./example_experiment'],
+            verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -227,18 +234,59 @@ def leak_check():
                     '--leak-check=full', '--show-reachable=yes',
                     './test_biobj', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
+    valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
+                    '--leak-check=full', '--show-reachable=yes',
+                    './test_bbob-constrained', 'leak_check']
+    run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
 
 
 ################################################################################
 ## Python 2
-def install_postprocessing():
+def install_error(e):
+    exception_message = e.output.splitlines()
+    formatted_message = ["|" + " " * 77 + "|"]
+    for line in exception_message:
+        while len(line) > 75:
+            formatted_message.append("| " + line[:75] + " |")
+            line = line[75:]
+        formatted_message.append("| " + line.ljust(75) + " |")
+    print("""
+An exception occurred while trying to install packages.
+
+A common reason for this error is insufficient access rights
+to the installation directory. The original exception message
+is as follows:
+
+/----------------------------< EXCEPTION MESSAGE >----------------------------\\
+{0}
+\\-----------------------------------------------------------------------------/
+
+To fix an access rights issue, you may try the following:
+
+- Run the same command with "install-user" as additional argument.
+  To get further help run do.py without a specific command.
+
+- On *nix systems or MacOS, run the same command with a preceded "sudo ".
+
+- Gain write access to the installation directory by changing
+  access permissions or gaining administrative access.
+
+""".format("\n".join(formatted_message)))
+    return True
+
+def install_postprocessing(package_install_option = []):
     ''' Installs the COCO postprocessing as python module. '''
     global RELEASE
     expand_file(join('code-postprocessing', 'setup.py.in'),
                 join('code-postprocessing', 'setup.py'),
                 {'COCO_VERSION': git_version(pep440=True)})
     # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/cocopp/latex-templates')
-    python('code-postprocessing', ['setup.py', 'install', '--user'], verbose=_verbosity)
+    python('code-postprocessing', ['setup.py', 'install']
+           + package_install_option, verbose=_verbosity,
+           custom_exception_handler=install_error)
+
+def uninstall_postprocessing():
+    run('.', ['pip', 'uninstall', 'cocopp', '-y'], verbose=_verbosity)
 
 def test_suites(args):
     """regression test on suites via Python"""
@@ -274,26 +322,28 @@ def _prep_python():
     #     run('code-experiments/build/python/cython', ['cython', 'interface.pyx'])
 
 
-def build_python():
+def build_python(package_install_option=[]):
     _prep_python()
     ## Force distutils to use Cython
     # os.environ['USE_CYTHON'] = 'true'
     # python('code-experiments/build/python', ['setup.py', 'sdist'])
-    # python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'])
-    python(join('code-experiments', 'build', 'python'), ['setup.py', 'install', '--user'])
+    # python(join('code-experiments', 'build', 'python'),
+    #        ['setup.py', 'install', '--user'])
+    python(join('code-experiments', 'build', 'python'), ['setup.py', 'install']
+           + package_install_option, custom_exception_handler=install_error)
     # os.environ.pop('USE_CYTHON')
 
 
-def run_python(test=False):
+def run_python(test=False, package_install_option = []):
     """ Builds and installs the Python module `cocoex` and runs the
     `example_experiment.py` as a simple test case. If `test` is True,
     it runs, in addition, the tests in `coco_test.py`."""
-    build_python()
+    build_python(package_install_option=package_install_option)
     try:
         if test:
-            run(os.path.join('code-experiments', 'build', 'python'), ['python', 'coco_test.py'])
+            python(os.path.join('code-experiments', 'build', 'python'), ['coco_test.py'])
         python(os.path.join('code-experiments', 'build', 'python'),
-               ['example_experiment.py'])
+               ['example_experiment.py', 'bbob'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -318,7 +368,8 @@ def run_sandbox_python(directory, script_filename=
         os.environ['PYTHONPATH'] = python_temp_lib
         os.environ['USE_CYTHON'] = 'true'
         python('code-experiments/build/python',
-               ['setup.py', 'install', '--home', python_temp_home], verbose=_verbosity)
+               ['setup.py', 'install', '--home', python_temp_home],
+               verbose=_verbosity, custom_exception_handler=install_error)
         python(directory, [script_filename])
         os.environ.pop('USE_CYTHON')
         os.environ.pop('PYTHONPATH')
@@ -346,7 +397,7 @@ def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']
         os.environ['USE_CYTHON'] = 'true'
         python('code-experiments/build/python',
                ['setup.py', 'install', '--home', python_temp_home],
-               verbose=_verbosity)
+               verbose=_verbosity, custom_exception_handler=install_error)
         for folder, more_args in args:
             python(folder, more_args, verbose=_verbosity)
         # python('code-experiments/build/python',
@@ -359,34 +410,6 @@ def test_python(args=(['code-experiments/build/python', ['coco_test.py', 'None']
         sys.exit(-1)
     finally:
         shutil.rmtree(python_temp_home)
-
-
-################################################################################
-## Python 2
-def build_python2():
-    os.environ['PYTHON'] = 'python2.7'
-    build_python()
-    os.environ.pop('PYTHON')
-
-
-def test_python2():
-    os.environ['PYTHON'] = 'python2.7'
-    test_python()
-    os.environ.pop('PYTHON')
-
-
-################################################################################
-## Python 3
-def build_python3():
-    os.environ['PYTHON'] = 'python3'
-    build_python()
-    os.environ.pop('PYTHON')
-
-
-def test_python3():
-    os.environ['PYTHON'] = 'python3'
-    test_python()
-    os.environ.pop('PYTHON')
 
 
 ################################################################################
@@ -707,78 +730,85 @@ def test_java():
 
 ################################################################################
 ## Post processing
-def test_postprocessing(all_tests=False):
-    install_postprocessing()
-    if all_tests:
-        try:
+def test_postprocessing(all_tests=False, package_install_option=[]):
+    install_postprocessing(package_install_option = package_install_option)
+    try:
+        if all_tests:
             # run example experiment to have a recent data set to postprocess:
-            build_python()
+            build_python(package_install_option=package_install_option)
             python('code-experiments/build/python/', ['-c', '''
+from __future__ import print_function
 try:
     import example_experiment as ee
 except Exception as e:
     print(e)
 ee.SOLVER = ee.random_search  # which is default anyway
-ee.suite_name = "bbob-biobj"
-ee.observer_options['result_folder'] = "RS-bi"  # use a short path for Jenkins
-ee.main()  # doctest: +ELLIPSIS
-ee.suite_name = "bbob"
-ee.observer_options['result_folder'] = "RS-bb"
-ee.main()  # doctest: +ELLIPSIS
-            '''], verbose=_verbosity)
-            # now run all tests
-            python('code-postprocessing/cocopp', ['__main__.py', 'all'], verbose=_verbosity)
-        except subprocess.CalledProcessError:
-            sys.exit(-1)
-        finally:
-            # always remove folder of previously run experiments:
-            shutil.rmtree('code-experiments/build/python/exdata/')
+for ee.suite_name, ee.observer_options['result_folder'] in [
+        ["bbob-biobj", "RS-bi"],  # use a short path for Jenkins
+        ["bbob", "RS-bb"],
+        ["bbob-constrained", "RS-co"]
+    ]:
+    print("  suite %s" % ee.suite_name, end=' ')  # these prints are swallowed
+    if ee.suite_name in ee.cocoex.known_suite_names:
+        print("testing into folder %s" % ee.observer_options['result_folder'])
+        ee.main()
     else:
-        python('code-postprocessing/cocopp', ['__main__.py'], verbose=_verbosity)
-    # also run the doctests in aRTAplots/generate_aRTA_plot.py:
-    python('code-postprocessing/aRTAplots', ['generate_aRTA_plot.py'], verbose=_verbosity)
-    # python('code-postprocessing', ['-m', 'cocopp'])
-    if 11 < 3:  # provisorial test fo biobj data
-        run_c()
-        python('code-experiments/build/c', ['-m', 'cocopp',
-                                            'RS_on_bbob-biobj'], verbose=_verbosity)
+        print("is not known")
+                '''], verbose=_verbosity)
+            # now run all tests
+            python('code-postprocessing/cocopp',
+                   ['test.py', 'all', sys.executable], verbose=_verbosity)
+        else:
+            python('code-postprocessing/cocopp', ['test.py', sys.executable],
+                   verbose=_verbosity)
+        
+        # also run the doctests in aRTAplots/generate_aRTA_plot.py:
+        python('code-postprocessing/aRTAplots', ['generate_aRTA_plot.py'], verbose=_verbosity)
+    except subprocess.CalledProcessError:
+        sys.exit(-1)
+    finally:
+        # always remove folder of previously run experiments:
+        exdata_folder = 'code-experiments/build/python/exdata/'
+        if os.path.exists(exdata_folder):
+            shutil.rmtree(exdata_folder)
+    
 
-
-def verify_postprocessing():
-    install_postprocessing()
+def verify_postprocessing(package_install_option = []):
+    install_postprocessing(package_install_option = package_install_option)
     # This is not affected by the _verbosity value. Verbose should always be True.
     python('code-postprocessing/cocopp', ['preparehtml.py', '-v'], verbose=True)
 
 
 ################################################################################
 ## Pre-processing
-def install_preprocessing():
+def install_preprocessing(package_install_option = []):
     global RELEASE
     expand_file(join('code-preprocessing/archive-update', 'setup.py.in'),
                 join('code-preprocessing/archive-update', 'setup.py'),
                 {'COCO_VERSION': git_version(pep440=True)})
-    build_python()
+    build_python(package_install_option = package_install_option)
     amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
                'code-preprocessing/archive-update/interface/coco.c', RELEASE,
                {"COCO_VERSION": git_version(pep440=True)})
     expand_file('code-experiments/src/coco.h', 'code-preprocessing/archive-update/interface/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
     python('code-preprocessing/archive-update',
-           ['setup.py', 'install', '--user'], verbose=_verbosity)
+           ['setup.py', 'install'] + package_install_option,
+           verbose=_verbosity, custom_exception_handler=install_error)
 
 
-def test_preprocessing():
-    install_preprocessing()
+def test_preprocessing(package_install_option = []):
+    install_preprocessing(package_install_option = package_install_option)
     python('code-preprocessing/archive-update', ['-m', 'pytest'], verbose=_verbosity)
     python('code-preprocessing/log-reconstruction', ['-m', 'pytest'], verbose=_verbosity)
 
 ################################################################################
 ## Global
-def build():
+def build(package_install_option = []):
     builders = [
         build_c,
         # build_matlab,
-        build_python,
+        build_python(package_install_option = package_install_option),
         build_java,
     ]
     for builder in builders:
@@ -793,24 +823,31 @@ def build():
             print("============")
 
 
-def run_all():
+def run_all(package_install_option = []):
     run_c()
     run_java()
-    run_python()
+    run_python(package_install_option = package_install_option)
 
 
-def test():
+def test(package_install_option = []):
     test_c()
     test_java()
-    test_python()
+    test_python(package_install_option = package_install_option)
 
 
 def verbose(args):
+    """Calls main(args) in verbose mode for additional output"""
     global _verbosity
     _verbosity = True
     main(args)
     _verbosity = False
 
+def quiet(args):
+    """Calls main(args) in quiet mode for less output during c builds"""
+    global _build_verbosity
+    _build_verbosity = False
+    main(args)
+    _build_verbosity = True
 
 def silent(args):
     """calls `main(args)` with redirected output to keep the console clean"""
@@ -862,48 +899,61 @@ Available commands for users:
   build-matlab            - Build Matlab module
   build-matlab-sms        - Build SMS-EMOA example in Matlab
   build-octave            - Build Matlab module in Octave
-  build-python            - Build Python modules
-  build-python2           - Build Python 2 modules
-  build-python3           - Build Python 3 modules
-  install-postprocessing  - Install postprocessing (user-locally)
+  build-python            - Build Python modules (see NOTE below)
+  install-postprocessing  - Install postprocessing (see NOTE below)
 
   run-c                   - Build and run example experiment in C
   run-java                - Build and run example experiment in Java
   run-matlab              - Build and run example experiment in MATLAB
-  run-matlab-sms          - Build and run SMS-EMOA on bbob-biobj suite in MATLAB
+  run-matlab-sms          - Build and run SMS-EMOA on bbob-biobj suite in
+                            MATLAB
   run-octave              - Build and run example experiment in Octave
   run-python              - Build and install COCO module and then run the
-                            example experiment in Python. The optional parameter
-                            "and-test" also runs the tests of `coco_test.py`
+                            example experiment in Python. The optional
+                            parameter "and-test" also runs the tests of
+                            `coco_test.py` (see NOTE below)
 
 Available commands for developers:
 
-  build                   - Build C, Java and Python modules
-  run                     - Run example experiments in C, Java and Python
-  silent cmd ...          - Calls "do.py cmd ..." and remains silent if no error occurs
+  build                   - Build C, Java and Python modules (see NOTE below)
+  run                     - Run example experiments in C, Java and Python (see
+                            NOTE below)
+  silent cmd ...          - Calls "do.py cmd ..." and remains silent if no
+                            error occurs
   verbose cmd ...         - Calls "do.py cmd ..." and shows more output
-  test                    - Test C, Java and Python modules
+  test                    - Test C, Java and Python modules (see NOTE below)
 
   run-sandbox-python      - Run a Python script with installed COCO module
-                            Takes a single argument (name of Python script file)
+                            Takes a single argument(name of Python script file)
 
-  test-c                  - Build and run unit tests, integration tests 
-                            and an example experiment test in C 
+  test-c                  - Build and run unit tests, integration tests
+                            and an example experiment test in C
   test-c-unit             - Build and run unit tests in C
   test-c-integration      - Build and run integration tests in C
-  test-c-example          - Build and run an example experiment test in C 
+  test-c-example          - Build and run an example experiment test in C
   test-java               - Build and run a test in Java
   test-python             - Build and run minimal test of Python module
-  test-python2            - Build and run minimal test of Python 2 module
-  test-python3            - Build and run minimal test of Python 3 module
   test-octave             - Build and run example experiment in Octave
-  test-postprocessing     - Runs some of the post-processing tests
-  test-postprocessing-all - Runs all of the post-processing tests [needs access to the internet]
-  verify-postprocessing   - Checks if the generated html is up-to-date
+  test-postprocessing     - Runs some of the post-processing tests (see NOTE
+                            below)
+  test-postprocessing-all - Runs all of the post-processing tests [needs access
+                            to the internet] (see NOTE below)
+  test-suites             - Runs regression test on all benchmark suites
+  verify-postprocessing   - Checks if the generated html is up-to-date (see
+                            NOTE below)
   leak-check              - Check for memory leaks in C
   
-  install-preprocessing   - Install preprocessing (user-locally)
-  test-preprocessing      - Runs preprocessing tests [needs access to the internet]
+  install-preprocessing   - Install preprocessing (user-locally) (see NOTE
+                            below)
+  test-preprocessing      - Runs preprocessing tests [needs access to the
+                            internet] (see NOTE below)
+  
+NOTE: These commands install Python packages to the global site packages by
+      by default. This behavior can be modified by providing one of the
+      following arguments.
+  
+       install-user       - Installs under the user directory
+       install-home=<dir> - Installs under the specified home directory
 
 To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
@@ -915,27 +965,34 @@ def main(args):
         help()
         sys.exit(0)
     cmd = args[0].replace('_', '-').lower()
-    if cmd == 'build': build()
-    elif cmd == 'run': run_all()
-    elif cmd == 'test': test()
+    also_test_python = False
+    package_install_option = []
+    for arg in args[1:]:
+        if arg == 'and-test':
+            also_test_python = True
+        elif arg == 'install-user':
+            package_install_option = ['--user']
+        elif arg[:13] == 'install-home=':
+            package_install_option = ['--home=' + arg[13:]]
+    if cmd == 'build': build(package_install_option = package_install_option)
+    elif cmd == 'run': run_all(package_install_option = package_install_option)
+    elif cmd == 'test': test(package_install_option = package_install_option)
     elif cmd == 'build-c': build_c()
     elif cmd == 'build-java': build_java()
     elif cmd == 'build-matlab': build_matlab()
     elif cmd == 'build-matlab-sms': build_matlab_sms()
     elif cmd == 'build-octave': build_octave()
     elif cmd == 'build-octave-sms': build_octave_sms()
-    elif cmd == 'build-python': build_python()
-    elif cmd == 'build-python2': build_python2()
-    elif cmd == 'build-python3': build_python3()
-    elif cmd == 'install-postprocessing': install_postprocessing()
+    elif cmd == 'build-python': build_python(package_install_option = package_install_option)
+    elif cmd == 'install-postprocessing': install_postprocessing(package_install_option = package_install_option)
     elif cmd == 'run-c': run_c()
     elif cmd == 'run-java': run_java()
     elif cmd == 'run-matlab': run_matlab()
     elif cmd == 'run-matlab-sms': run_matlab_sms()
     elif cmd == 'run-octave': run_octave()
     elif cmd == 'run-octave-sms': run_octave_sms()
-    elif cmd == 'run-python':
-        run_python(True) if len(args) > 1 and args[1] == 'and-test' else run_python()
+    elif cmd == 'run-python': run_python(also_test_python, package_install_option = package_install_option)
+    elif cmd == 'quiet': quiet(args[1:])
     elif cmd == 'silent': silent(args[1:])
     elif cmd == 'verbose': verbose(args[1:])
     elif cmd == 'test-c': test_c()
@@ -944,16 +1001,14 @@ def main(args):
     elif cmd == 'test-c-example': test_c_example()
     elif cmd == 'test-java': test_java()
     elif cmd == 'test-python': test_python()
-    elif cmd == 'test-python2': test_python2()
-    elif cmd == 'test-python3': test_python3()
     elif cmd == 'test-octave': test_octave()
-    elif cmd == 'test-postprocessing': test_postprocessing()
-    elif cmd == 'test-postprocessing-all': test_postprocessing(True)
+    elif cmd == 'test-postprocessing': test_postprocessing(all_tests = False, package_install_option = package_install_option)
+    elif cmd == 'test-postprocessing-all': test_postprocessing(all_tests = True, package_install_option = package_install_option)
     elif cmd == 'test-suites': test_suites(args[1:])
-    elif cmd == 'verify-postprocessing': verify_postprocessing()
+    elif cmd == 'verify-postprocessing': verify_postprocessing(package_install_option = package_install_option)
     elif cmd == 'leak-check': leak_check()
-    elif cmd == 'install-preprocessing': install_preprocessing()
-    elif cmd == 'test-preprocessing': test_preprocessing()
+    elif cmd == 'install-preprocessing': install_preprocessing(package_install_option = package_install_option)
+    elif cmd == 'test-preprocessing': test_preprocessing(package_install_option = package_install_option)
     else: help()
 
 

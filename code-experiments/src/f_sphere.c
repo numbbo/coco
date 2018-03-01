@@ -19,9 +19,9 @@ static double f_sphere_raw(const double *x, const size_t number_of_variables) {
 
   size_t i = 0;
   double result;
-
+    
   if (coco_vector_contains_nan(x, number_of_variables))
-  	return NAN;
+    return NAN;
 
   result = 0.0;
   for (i = 0; i < number_of_variables; ++i) {
@@ -41,12 +41,25 @@ static void f_sphere_evaluate(coco_problem_t *problem, const double *x, double *
 }
 
 /**
+ * @brief Evaluates the gradient of the sphere function.
+ */
+static void f_sphere_evaluate_gradient(coco_problem_t *problem, const double *x, double *y) {
+
+  size_t i;
+
+  for (i = 0; i < problem->number_of_variables; ++i) {
+    y[i] = 2.0 * x[i];
+  }
+}
+
+/**
  * @brief Allocates the basic sphere problem.
  */
 static coco_problem_t *f_sphere_allocate(const size_t number_of_variables) {
-
+	
   coco_problem_t *problem = coco_problem_allocate_from_scalars("sphere function",
-      f_sphere_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
+     f_sphere_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
+  problem->evaluate_gradient = f_sphere_evaluate_gradient;
   coco_problem_set_id(problem, "%s_d%02lu", "sphere", number_of_variables);
 
   /* Compute best solution */

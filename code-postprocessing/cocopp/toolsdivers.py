@@ -4,7 +4,7 @@
 """Various tools. 
 
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import os, time
 import numpy as np
@@ -14,9 +14,58 @@ import pkg_resources
 
 from . import genericsettings, testbedsettings
 
+class Infolder(object):
+    """Contextmanager to do some work in a folder of choice and change dir
+    back in the end.
+
+    Usage:
+
+    >>> import os
+    >>> import cocopp.toolsdivers
+    >>> dir_ = os.getcwd()  # for the record
+    >>> with cocopp.toolsdivers.Infolder('..'):
+    ...     # do some work in a folder here, e.g. open a file
+    ...     len(dir_) > len(os.getcwd()) and os.getcwd() in dir_
+    True
+    >>> # magically we are back in the original folder
+    >>> assert dir_ == os.getcwd()
+
+    """
+    def __init__(self, foldername):
+        self.target_dir = foldername
+    def __enter__(self):
+        self.root_dir = os.getcwd()
+        os.chdir(self.target_dir)
+    def __exit__(self, *args):
+        os.chdir(self.root_dir)
+
+
+class StringList(list):
+    """A microtool to join a list of strings using property `as_string`.
+
+    >>> from cocopp.toolsdivers import StringList
+    >>> word_list = StringList(['this', 'has', 'a', 'leading', 'and',
+    ...                         'trailing', 'space'])
+    >>> word_list.as_string
+    ' this has a leading and trailing space '
+
+    `as_string` is less typing than
+
+    >>> ' ' + ' '.join(word_list) + ' ' == word_list.as_string
+    True
+
+    and provides tab completion.
+
+    """
+    @property
+    def as_string(self):
+        """return concatenation with spaces between"""
+        return ' ' + ' '.join(self) + ' '
+
+
 def print_done(message='  done'):
     """prints a message with time stamp"""
-    print message, '(' + time.asctime() + ').'
+    print(message, '(' + time.asctime() + ').')
 
 def equals_approximately(a, b, eps=1e-12):
     if a < 0:
@@ -31,47 +80,67 @@ def less(a, b):
     np.seterr(**current_err_setting)
     return res
 
+def diff_attr(m1, m2, exclude=('_', )):
+    """return `list` of ``[name, val1, val2]`` triplets for
+    attributes with different values.
+
+    Attributes whose names start with any string from the
+    `exclude` list are skipped. Furthermore, only attributes
+    present in both `m1` and `m2` are compared.
+
+    This function was introduced to compare the `genericsettings`
+    module with its state directly after import. It should be
+    applicable any other two class instances as well.
+
+    Details: to "find" the attributes, `m1.__dict__` is iterated over. 
+    """
+    return [[key, getattr(m1, key), getattr(m2, key)]
+            for key in m1.__dict__
+                if hasattr(m2, key) and
+                    not any(key.startswith(s) for s in exclude)
+                    and getattr(m1, key) != getattr(m2, key)]
+
 def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
     """"prepend lines the tex-command filename """
     try:
-        lines_to_append = list(open(filename, 'r'))
+        with open(filename, 'r') as f:
+            lines_to_append = list(f)
     except IOError:
         lines_to_append = []
-    f = open(filename, 'w')
-    for line in lines:
-        f.write(line + '\n')
-    for i, line in enumerate(lines_to_append):
-        f.write(line)
-        if i > maxlines:
-            print warn_message
-            break
-    f.close()
+    with open(filename, 'w') as f:
+        for line in lines:
+            f.write(line + '\n')
+        for i, line in enumerate(lines_to_append):
+            f.write(line)
+            if i > maxlines:
+                print(warn_message)
+                break
         
 def replace_in_file(filename, old_text, new_text):
     """"replace a string in the file with another string"""
 
     lines = []    
     try:
-        lines = list(open(filename, 'r'))
+        with open(filename, 'r') as f:
+            lines = list(f)
     except IOError:
-        print 'File %s does not exist.' % filename
+        print('File %s does not exist.' % filename)
     
     if lines:    
-        f = open(filename, 'w')
-        for line in lines:
-            f.write(line.replace(old_text, new_text))
-        f.close()
+        with open(filename, 'w') as f:
+            for line in lines:
+                f.write(line.replace(old_text, new_text))
         
 def truncate_latex_command_file(filename, keeplines=200):
     """truncate file but keep in good latex shape"""
     open(filename, 'a').close()
-    lines = list(open(filename, 'r'))
-    f = open(filename, 'w')
-    for i, line in enumerate(lines):
-        if i > keeplines and line.startswith('\providecommand'):
-            break
-        f.write(line)
-    f.close()
+    with open(filename, 'r') as f:
+        lines = list(f)
+    with open(filename, 'w') as f:
+        for i, line in enumerate(lines):
+            if i > keeplines and line.startswith('\providecommand'):
+                break
+            f.write(line)
     
 def strip_pathname(name):
     """remove ../ and ./ and leading/trailing blanks and path separators
@@ -116,7 +185,7 @@ def num2str(val, significant_digits=2, force_rounding=False,
     ``remove_trailing_zeros`` removes zeros, if and only if the value is exactly. 
      
     >>> from cocopp import toolsdivers as td
-    >>> print [td.num2str(val) for val in [12345, 1234.5, 123.45, 12.345, 1.2345, .12345, .012345, .0012345]]
+    >>> print([td.num2str(val) for val in [12345, 1234.5, 123.45, 12.345, 1.2345, .12345, .012345, .0012345]])
     ['12345', '1234', '123', '12', '1.2', '0.12', '0.012', '1.2e-3']
     
     """
@@ -144,7 +213,7 @@ def num2str(val, significant_digits=2, force_rounding=False,
         while idx1 < len(s) and s[idx1] in ('-', '0', '.'):
             idx1 += 1  # find index of first significant number
         idx2 = idx1 + significant_digits + (s.find('.') > idx1)
-        # print val, val_rounded, s, len(s), idx1, idx2
+        # print(val, val_rounded, s, len(s), idx1, idx2)
         # pad some zeros in the end, in case
         if val != val_rounded:
             if len(s) < idx2:
@@ -172,7 +241,7 @@ def num2str(val, significant_digits=2, force_rounding=False,
         s = s[:-1]
     s_exp = ('-' if is_negative else '') + s 
     
-    # print s_float, s_exp
+    # print(s_float, s_exp)
     
     # now return the better (most of the time the shorter) representation
     if (len(s_exp) < len(s_float) or 
@@ -275,3 +344,10 @@ def get_version_label(algorithmID=None):
     else:
         label = "v%s" % (coco_version) if reference_values is None else "v%s, hv-hash=%s" % (coco_version, reference_values)      
     return label
+
+
+def path_in_package(sub_path=""):
+    """return the absolute path prepended to `subpath` in this module.
+    """
+    egg_info = pkg_resources.require('cocopp')[0]
+    return os.path.join(egg_info.location, egg_info.project_name, sub_path)

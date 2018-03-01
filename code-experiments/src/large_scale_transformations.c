@@ -175,7 +175,7 @@ static int f_compare_doubles_for_random_permutation(const void *a, const void *b
  * generates a random, uniformly sampled, permutation and puts it in P
  */
 static void ls_compute_random_permutation(size_t *P, long seed, size_t n) {
-  long i;
+  unsigned long i;
   coco_random_state_t *rng = coco_random_new((uint32_t) seed);
   ls_random_data = coco_allocate_vector(n);
   for (i = 0; i < n; i++){
@@ -205,7 +205,7 @@ long ls_rand_int(long lower_bound, long upper_bound, coco_random_state_t *rng){
  * if swap_range is the largest possible size_t value ( (size_t) -1 ), a random uniform permutation is generated
  */
 static void ls_compute_truncated_uniform_swap_permutation(size_t *P, long seed, size_t n, size_t nb_swaps, size_t swap_range) {
-  long i, idx_swap;
+  unsigned long i, idx_swap;
   size_t lower_bound, upper_bound, first_swap_var, second_swap_var, tmp;
   size_t *idx_order;
   coco_random_state_t *rng = coco_random_new((uint32_t) seed);
@@ -283,7 +283,7 @@ size_t *coco_duplicate_size_t_vector(const size_t *src, const size_t number_of_e
 size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
   size_t *block_sizes;
   size_t block_size;
-  int i;
+  size_t i;
   
   block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension / 4, 100));
   *nb_blocks = dimension / block_size + ((dimension % block_size) > 0);

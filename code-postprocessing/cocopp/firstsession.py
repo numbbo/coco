@@ -19,43 +19,46 @@ http://coco.lri.fr/BBOB2009/
 
 # grep '^>>>\|^\.\.\.' firstsession.tex |sed -e 's/^.\{4\}//'
 
-import urllib
+try:
+    from urllib.request import urlretrieve
+except ImportError:
+    from urllib import urlretrieve
 import tarfile
 from pylab import *
 ion() # may be needed for figures to be shown when executing the script
 
-import cocopp as bb
+import cocopp
 
 # Collect and unarchive data (~20MB)
 dataurl = 'http://coco.gforge.inria.fr/data-archive/2009/BIPOP-CMA-ES_hansen_noiseless.tgz'
-filename, headers = urllib.urlretrieve(dataurl)
+filename, headers = urlretrieve(dataurl)
 archivefile = tarfile.open(filename)
 archivefile.extractall()
 
 # Display some information
-ds = bb.load('BIPOP-CMA-ES/bbobexp_f2.info')
-print ds
+ds = cocopp.load('BIPOP-CMA-ES/bbobexp_f2.info')
+print(ds)
 
 # Collect and unarchive data (3.4MB)
 dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
-filename, headers = urllib.urlretrieve(dataurl)
+filename, headers = urlretrieve(dataurl)
 archivefile = tarfile.open(filename)
 archivefile.extractall()
 
 # Load a pickle file
-ds = bb.load('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_20.pickle')
+ds = cocopp.load('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_20.pickle')
 # Load a folder
-ds = bb.load('BIPOP-CMA-ES')
+ds = cocopp.load('BIPOP-CMA-ES')
 
 # Load data using a wildcard
 import glob
-ds = bb.load(glob.glob('BIPOP-CMA-ES/ppdata_f002_*.pickle'))
+ds = cocopp.load(glob.glob('BIPOP-CMA-ES/ppdata_f002_*.pickle'))
 
 # Display function values versus time
-ds = bb.load('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_20.pickle')
-bb.info(ds) # display information on DataSetList ds
+ds = cocopp.load('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_20.pickle')
+cocopp.info(ds) # display information on DataSetList ds
 d = ds[0] # store the first element of ds in d for convenience
-print d.funvals
+print(d.funvals)
 budgets = d.funvals[:, 0] # stores first column in budgets
 funvals = d.funvals[:, 1:] # stores all other columns in funvals
 
@@ -74,12 +77,12 @@ legend() # display legend
 
 # Add another data set
 dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/NEWUOA.tar.gz'
-filename, headers = urllib.urlretrieve(dataurl)
+filename, headers = urlretrieve(dataurl)
 archivefile = tarfile.open(filename)
 archivefile.extractall()
 
-ds1 = bb.load('BBOB2009pythondata/NEWUOA/ppdata_f002_20.pickle')
-print ds1
+ds1 = cocopp.load('BBOB2009pythondata/NEWUOA/ppdata_f002_20.pickle')
+print(ds1)
 d1 = ds1[0]
 budgets1 = d1.funvals[:, 0]
 funvals1 = d1.funvals[:, 1:]
@@ -135,21 +138,21 @@ legend()
 
 # Empirical cumulative distribution function figure
 from . import pprldistr
-ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
+ds = cocopp.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
 figure()
 pprldistr.plot(ds)
 pprldistr.beautify() # resize the window to view whole figure
 
 # Empirical cumulative distribution function of bootstrapped aRT figure
 from .compall import pprldmany
-ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
+ds = cocopp.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
 figure()
 pprldmany.plot(ds)
 pprldmany.beautify()
 
 # Scaling figure
 from . import ppfigdim
-ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_*.pickle'))
+ds = cocopp.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_*.pickle'))
 figure()
 ppfigdim.plot(ds)
 ppfigdim.beautify()

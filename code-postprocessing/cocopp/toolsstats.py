@@ -3,16 +3,24 @@
 
 """Bootstrapping and statistics routines."""
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import warnings
 import numpy as np
 from . import genericsettings
 from pdb import set_trace
 
+def _has_len(thing):
+    try: len(thing)
+    except TypeError: return False
+    return True
 
 def fix_data_number(data, ndata=15,
                        last_elements_randomized=True, warn=False):
-    """return copy of data vector modified to length ``ndata``
+    """Obsolete and subject to removal. Use instead
+    ``np.asarray(data)[randint_derandomized(0, len(data), ndata)]`` or
+    ``[data[i] for i in randint_derandomized(0, len(data), ndata)]``.
+
+    return copy of data vector modified to length ``ndata``
     or ``data`` itself.
 
     Assures ``len(data) == ndata``.
@@ -26,6 +34,9 @@ def fix_data_number(data, ndata=15,
     >>> assert len(fix_data_number(data, 4)) == 4
     >>> assert len(fix_data_number(data, 14)) == 14
     >>> assert fix_data_number(data, 14)[2] == data[2]
+
+    See also ``data[randint_derandomized(0, len(data), ndata)]``, which
+    should do pretty much the same, a little more randomized.
 
     """
     if len(data) == ndata:
@@ -74,16 +85,16 @@ def sp1(data, maxvalue=np.Inf, issuccessful=None):
 
     # check input args
     if not getattr(data, '__iter__', False):  # is not iterable
-        raise Exception, 'data must be a sequence'
+        raise Exception('data must be a sequence')
     if issuccessful is not None:
         if not getattr(issuccessful, '__iter__', False):  # is not iterable
-            raise Exception, 'issuccessful must be a sequence or None'
+            raise Exception('issuccessful must be a sequence or None')
         if len(issuccessful) != len(data):
-            raise Exception, 'lengths of data and issuccessful disagree'
+            raise Exception('lengths of data and issuccessful disagree')
 
     # remove NaNs
     if issuccessful is not None:
-        issuccessful = [issuccessful[i] for i in xrange(len(issuccessful))
+        issuccessful = [issuccessful[i] for i in range(len(issuccessful))
                         if not np.isnan(data[i])]
     dat = [d for d in data if not np.isnan(d)]
     N = len(dat)
@@ -93,7 +104,7 @@ def sp1(data, maxvalue=np.Inf, issuccessful=None):
 
     # remove unsuccessful data
     if issuccessful is not None:
-        dat = [dat[i] for i in xrange(len(dat)) if issuccessful[i]]
+        dat = [dat[i] for i in range(len(dat)) if issuccessful[i]]
     else:
         dat = [d for d in dat if d < maxvalue]
     succ = float(len(dat)) / N
@@ -129,26 +140,27 @@ def sp(data, maxvalue=np.Inf, issuccessful=None, allowinf=True):
 
     # check input args
     if not getattr(data, '__iter__', False):  # is not iterable
-        raise Exception, 'data must be a sequence'
+        raise Exception('data must be a sequence')
     if issuccessful is not None:
         if not getattr(issuccessful, '__iter__', False):  # is not iterable
-            raise Exception, 'issuccessful must be a sequence or None'
+            raise Exception('issuccessful must be a sequence or None')
         if len(issuccessful) != len(data):
-            raise Exception, 'lengths of data and issuccessful disagree'
+            raise Exception('lengths of data and issuccessful disagree')
 
     # remove NaNs
     if issuccessful is not None:
-        issuccessful = [issuccessful[i] for i in xrange(len(issuccessful))
+        issuccessful = [issuccessful[i] for i in range(len(issuccessful))
                         if not np.isnan(data[i])]
     dat = [d for d in data if not np.isnan(d)]
     N = len(dat)
+    dat.sort()
 
     if N == 0:
         return(np.nan, np.nan, np.nan)
 
     # remove unsuccessful data
     if issuccessful is not None:
-        succdat = [dat[i] for i in xrange(len(dat)) if issuccessful[i]]
+        succdat = [dat[i] for i in range(len(dat)) if issuccessful[i]]
     else:
         succdat = [d for d in dat if d < maxvalue]
     succ = float(len(succdat)) / N
@@ -180,7 +192,7 @@ def drawSP_from_dataset(data_set, ftarget, percentiles, samplesize=genericsettin
     try:
         evals = data_set.detEvals([ftarget])[0]
     except AttributeError:
-        print 'drawSP_from_dataset expects a DataSet instance as first input, was: ' + str(type(data_set))
+        print('drawSP_from_dataset expects a DataSet instance as first input, was: ' + str(type(data_set)))
         raise 
     nanidx = np.isnan(evals)
     return drawSP(evals[~nanidx], data_set.maxevals[nanidx], percentiles, samplesize)
@@ -215,6 +227,12 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
        successful one is chosen. In case of no successful run an
        exception is raised.
 
+    This implementation is depreciated and replaced by `simulated_evals`.
+    The latter is also depreciated, see
+    `DataSet.evals_with_simulated_restarts` instead.
+
+    See also: `simulated_evals`.
+
     """
     # TODO: for efficiency reasons a special treatment in the case, 
     #   where all runs are successful and all_sampled_values_sorted is not needed
@@ -234,13 +252,13 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
     #    return 
     if 11 < 3 and Nunsucc == 0:  # not tested yet: draw each once without replacement and repeat  
         idx = np.random.shuffle(range(Nsucc))
-        arrStats = [runlengths_succ[idx[i % Nsucc]] for i in xrange(int(samplesize))]
+        arrStats = [runlengths_succ[idx[i % Nsucc]] for i in range(int(samplesize))]
         arrStats.sort()  # could be avoided
         return (prctile(runlengths_succ, percentiles, issorted=False),
             arrStats)
     if 11 < 3 and Nunsucc == 0:  # not tested yet: bootstraps, but more efficient
         arrStats = [runlengths_succ[np.random.randint(Nsucc)] 
-                      for i in xrange(int(samplesize))]
+                      for i in range(int(samplesize))]
         arrStats.sort()  # could be avoided
         return (prctile(arrStats, percentiles, issorted=True), arrStats)
 
@@ -249,13 +267,15 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
 
     arrStats = []
     sdata = np.array(runlengths_succ)  # more efficient indexing
+    sdata.sort()
     udata = np.array(runlengths_unsucc)  # more efficient indexing
+    udata.sort()
     Nu = len(udata)
     Ns = len(sdata)
     # data = np.r_[udata, sdata]
     N = Ns + Nu
 
-    for i in xrange(int(samplesize)):
+    for i in range(int(samplesize)):
         # relying that idx<len(data)
         sumdata = 0
         idx = np.random.randint(N)
@@ -272,6 +292,111 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
 
     return (prctile(arrStats, percentiles, issorted=True),
             arrStats)
+
+
+def randint_derandomized(low, high=None, size=None):
+    """return a `numpy` array of derandomized random integers.
+
+    The interface is the same as for `numpy.randint`, however the
+    default value for `size` is ``high-low`` and each "random" integer
+    is guarantied to appear exactly once in each chunk of size
+    ``high-low``. (That is, by default a permutation is returned.)
+
+    As for `numpy.randint`, the value range is [low, high-1] or [0, low-1]
+    if ``high is None``.
+
+    >>> import numpy as np
+    >>> from cocopp.toolsstats import randint_derandomized
+    >>> np.random.seed(1)
+    >>> list(randint_derandomized(0, 4, 6))
+    [3, 2, 0, 1, 0, 2]
+
+    A typical usecase is indexing of ``data`` like::
+
+        [data[i] for i in randint_derandomized(0, len(data), ndata)]
+        # or almost equivalently
+        np.asarray(data)[randint_derandomized(0, len(data), ndata)]
+
+    """
+    return np.asarray(list(_randint_derandomized_generator(low, high, size)))
+
+def _randint_derandomized_generator(low, high=None, size=None):
+    """the generator for `randint_derandomized`"""
+    if high is None:
+        low, high = 0, low
+    if size is None:
+        size = high
+    delivered = 0
+    while delivered < size:
+        for randi in np.random.permutation(high - low):
+            delivered += 1
+            yield low + randi
+            if delivered >= size:
+                break
+
+def simulated_evals(evals, nfails,
+            samplesize=genericsettings.simulated_runlength_bootstrap_sample_size,
+            randint=randint_derandomized):
+    """Obsolete: see `DataSet.evals_with_simulated_restarts` instead.
+
+    Return `samplesize` "simulated" run lengths (#evaluations), sorted.
+
+    Input:
+      - *evals* -- array of evaluations
+      - *nfail* -- only the last `nfail` evaluations come from
+                    unsuccessful runs
+      - *randint* -- random integer index function of the first simulated run
+
+    Return:
+       all_sampled_runlengths_sorted
+
+    Example:
+
+    >>> from cocopp import set_seed
+    >>> from cocopp.toolsstats import simulated_evals
+    >>> set_seed(4)
+    >>> evals_succ = [1]  # only one evaluation in the successful trial
+    >>> evals_unsucc = [2, 4, 2, 6, 100]
+    >>> simulated_evals(np.hstack([evals_succ, evals_unsucc]),
+    ...                 len(evals_unsucc), 13)  # doctest: +ELLIPSIS
+    [1, 1, 3, ...
+
+    Details:
+       A single successful running length is computed by adding
+       uniformly randomly chosen running lengths until the first time a
+       successful one is chosen. In case of no successful run an
+       exception is raised.
+
+    """
+    # Testing:
+    # Expected (previous):
+    #     [1, 1, 3, 5, 5, 9, 11, 23, 107, 113, 215, 423, 439]
+    # Got (now):
+    #     [1, 1, 3, 3, 7, 9, 11, 17, 107, 115, 209, 427, 445]
+
+    if len(evals) == 0 or nfails >= len(evals):
+        raise ValueError("""without any successful run, simulated
+    runlengths are undefined from these data. A reasonable lower bound
+    for a single measurement from these data is %d""" %
+                         int(sum(evals)))
+    samplesize = int(samplesize)
+    evals = np.asarray(evals)
+    evals.sort()
+
+    indices = randint(0, len(evals), samplesize)
+    sums = evals[indices]
+    if nfails == 0:
+        return sorted(sums)
+    failing = np.where(indices >= len(evals) - nfails)[0]
+    assert len(evals) - nfails > 0  # prevent infinite loop
+    while len(failing):
+        indices = np.random.randint(0, len(evals), len(failing))
+        sums[failing] += evals[indices]
+        # keep failing indices
+        failing = [failing[i] for i in range(len(failing))
+                               if indices[i] >= len(evals) - nfails]
+    return sorted(sums)
+
 
 def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     """Generates the empirical bootstrap distribution from a sample.
@@ -298,7 +423,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
         >> import toolsstats
         >> data = np.random.randn(22)
         >> res = toolsstats.draw(data, (10,50,90), samplesize=1e4)
-        >> print res[0]
+        >> print(res[0])
 
     .. note::
        NaN-values are also bootstrapped, but disregarded for the 
@@ -309,6 +434,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     arrStats = []
     N = len(data)
     adata = np.array(data)  # more efficient indexing
+    adata.sort()
     succ = None
     # there is a third argument to func which is the array of success
     if len(args) > 1:
@@ -316,7 +442,7 @@ def draw(data, percentiles, samplesize=1e3, func=sp1, args=()):
     # should NaNs also be boostrapped?
     argsv = args
     if 1 < 3:
-        for i in xrange(int(samplesize)):
+        for i in range(int(samplesize)):
             # relying that idx<len(data)
             idx = np.random.randint(N, size=N)
 
@@ -351,7 +477,7 @@ def prctile(x, arrprctiles, issorted=False, ignore_nan=True):
         prctiles
 
     .. note::
-        treats np.Inf and -np.Inf and np.NaN, the latter are
+        treats np.Inf and -np.Inf, np.NaN and None, the latter are
         simply disregarded
 
     """
@@ -391,7 +517,7 @@ def prctile(x, arrprctiles, issorted=False, ignore_nan=True):
 def randint(upper, n):
     res = np.floor(upper * np.random.rand(n))
     if any(res >= upper):
-        raise Exception, 'np.random.rand returned 1'
+        raise Exception('np.random.rand returned 1')
     return res
 
 def ranksum_statistic(N1, N2):
@@ -539,12 +665,12 @@ def rankdata(a):
     sumranks = 0
     dupcount = 0
     newarray = np.zeros(n, float)
-    for i in xrange(n):
+    for i in range(n):
         sumranks += i
         dupcount += 1
         if i == n - 1 or svec[i] != svec[i + 1]:
             averank = sumranks / float(dupcount) + 1
-            for j in xrange(i - dupcount + 1, i + 1):
+            for j in range(i - dupcount + 1, i + 1):
                 newarray[ivec[j]] = averank
             sumranks = 0
             dupcount = 0
@@ -580,7 +706,7 @@ def significancetest(entry0, entry1, targets):
     # one of the entry is an instance of BestAlgDataSet
     for entry in (entry0, entry1):
         tmp = entry.detEvals(targets)
-        if not entry.__dict__.has_key('funvals') and not entry.__dict__.has_key('indicator'):  # this looks like a terrible hack
+        if not 'funvals' in entry.__dict__ and not 'indicator' in entry.__dict__:  # this looks like a terrible hack
             isRefAlg = True
             # for i, j in enumerate(tmp[0]):
                 # if np.isnan(j).all():
@@ -723,7 +849,7 @@ def significance_all_best_vs_other(datasets, targets, best_alg_idx=None):
     if len(datasets) > 1:
         for itarget, target in enumerate(targets):
             z_and_p = (0, 0)
-            for jalg in xrange(len(datasets)):
+            for jalg in range(len(datasets)):
                 if jalg == best_alg_idx[itarget]:
                     continue
                 z_and_p2 = significancetest(datasets[jalg], datasets[best_alg_idx[itarget]], [target])[0]
@@ -770,7 +896,7 @@ def sliding_window_data(data, width=2, operator=np.median,
     stats_mod = len(d) // number_of_stats
     i_last_stats = 0
     next = 0.1 + 1.8 * np.random.rand()
-    for i in xrange(len(d)):
+    for i in range(len(d)):
         current_data = d[max((i - down, 0)) : min((i + up, len(d)))]
         if only_finite_data:
             if np.isfinite(d[i]):

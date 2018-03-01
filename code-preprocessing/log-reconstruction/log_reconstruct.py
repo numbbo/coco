@@ -30,7 +30,10 @@ def log_reconstruct(input_path, output_path, algorithm_name, algorithm_info, fun
     print('Initializing the suite and observer...')
     suite_instance = 'instances: {}'.format(instance_string)
     suite_options = 'dimensions: {} function_indices: {}'.format(dimension_string, function_string)
-    suite = Suite(ext_suite_name, suite_instance, suite_options)
+    if archive_info.is_suite_bbob_biobj_ext():
+        suite = Suite(ext_suite_name, suite_instance, suite_options)
+    else:
+        suite = Suite(suite_name, suite_instance, suite_options)
     observer_options = 'result_folder: {} algorithm_name: {} algorithm_info: "{}" log_nondominated: read'. \
         format(output_path, algorithm_name, algorithm_info)
     observer = Observer(suite_name, observer_options)

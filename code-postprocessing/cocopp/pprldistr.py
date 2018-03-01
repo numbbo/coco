@@ -22,7 +22,7 @@ function evaluations.
    import tarfile
    import glob
    from pylab import *
-   import cocopp as bb
+   import cocopp
 
    # Collect and unarchive data (3.4MB)
    dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
@@ -31,18 +31,18 @@ function evaluations.
    archivefile.extractall()
 
    # Empirical cumulative distribution function figure
-   ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
+   ds = cocopp.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
    figure()
-   bb.pprldistr.plot(ds)
-   bb.pprldistr.beautify() # resize the window to view whole figure
+   cocopp.pprldistr.plot(ds)
+   cocopp.pprldistr.beautify() # resize the window to view whole figure
 
 CAVEAT: the naming conventions in this module mix up ART (an estimate
 of the expected running length) and run lengths.
 
 """
-from __future__ import absolute_import
-
+from __future__ import absolute_import, print_function
 import os
+import sys
 import warnings # I don't know what I am doing here
 import pickle, gzip
 import matplotlib.pyplot as plt
@@ -101,8 +101,8 @@ styles = genericsettings.line_styles
 
 previous_data_filename = 'pprldistr2009_1e-8.pickle.gz'
 previous_RLBdata_filename = 'pprldistr2009_hardestRLB.pickle.gz'
-previous_data_filename = os.path.join(os.path.split(__file__)[0], previous_data_filename)
-previous_RLBdata_filename = os.path.join(os.path.split(__file__)[0], previous_RLBdata_filename)
+previous_data_filename = os.path.join(toolsdivers.path_in_package(), previous_data_filename)
+previous_RLBdata_filename = os.path.join(toolsdivers.path_in_package(), previous_RLBdata_filename)
 previous_data_dict = None
 previous_RLBdata_dict = None
 def load_previous_data(filename=previous_data_filename, force=False):
@@ -111,11 +111,13 @@ def load_previous_data(filename=previous_data_filename, force=False):
     try:
         # cocofy(previous_data_filename)
         f = gzip.open(previous_data_filename, 'r')
+        if sys.version_info > (3, 0):
+            return pickle.load(f, encoding='latin1')
         return pickle.load(f)
-    except IOError, (errno, strerror):
-        print "I/O error(%s): %s" % (errno, strerror)
+    except IOError as e:
+        print("I/O error(%s): %s" % (e.errno, e.strerror))
         previous_algorithm_data_found = False
-        print 'Could not find file: ', previous_data_filename
+        print('Could not find file: ', previous_data_filename)
     else:
         f.close()
     return None
@@ -125,10 +127,12 @@ def load_previous_RLBdata(filename=previous_RLBdata_filename):
         return previous_RLBdata_dict
     try:
         f = gzip.open(previous_RLBdata_filename, 'r')
+        if sys.version_info > (3, 0):
+            return pickle.load(f, encoding='latin1')
         return pickle.load(f)
-    except IOError, (errno, strerror):
-        print "I/O error(%s): %s" % (errno, strerror)
-        print 'Could not find file: ', previous_RLBdata_filename
+    except IOError as e:
+        print("I/O error(%s): %s" % (e.errno, e.strerror))
+        print('Could not find file: ', previous_RLBdata_filename)
     else:
         f.close()
     return None
@@ -139,12 +143,16 @@ def caption_single():
          Empirical cumulative distribution functions (ECDF), plotting the fraction of
          trials with an outcome not larger than the respective value on the $x$-axis.
          #1"""
-    caption_left_fixed_targets = (r"""%
-         Left subplots: ECDF of the number of function evaluations (FEvals) divided by search space dimension $D$,
+    caption_left_fixed_targets = r"""%
+         Left subplots: ECDF of the number of function evaluations """ + (
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons
+         else r"""(FEvals)""") + (r""" divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ with $!!DF!!=10^{k}$, where $k$ is the first value in the legend.
          The thick red line represents the most difficult target value $!!FOPT!!+ !!HARDEST-TARGET-LATEX!!$. """)
     caption_left_rlbased_targets = r"""%
-         Left subplots: ECDF of number of function evaluations (FEvals) divided by search space dimension $D$,
+         Left subplots: ECDF of number of function evaluations """ + (
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons
+         else r"""(FEvals)""") + r""" divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ where !!DF!!{} is the
          target just not reached by !!THE-REF-ALG!! within a budget of
          $k\times!!DIM!!$ evaluations, where $k$ is the first value in the legend. """
@@ -165,7 +173,8 @@ def caption_single():
             figure_caption = caption_part_one + caption_left_rlbased_targets + caption_right
         else:
             figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
-    elif testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext:
+    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
+                                                  testbedsettings.testbed_name_cons]:
         # no best algorithm defined yet:
         figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
     else:
@@ -232,7 +241,8 @@ def caption_two():
                            + symbAlgorithmB
                            + caption_two_rlbased_targets_part3)
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext:
+    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
+                                                testbedsettings.testbed_name_cons]:
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_two_fixed
     elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
@@ -252,7 +262,7 @@ def caption_two():
 def beautifyECDF():
     """Generic formatting of ECDF figures."""
     plt.ylim(-0.0, 1.01) # was plt.ylim(-0.01, 1.01)
-    plt.yticks(np.arange(0., 1.001, 0.2)) # , ('0.0', '', '0.5', '', '1.0'))
+    plt.yticks(np.arange(0., 1.001, 0.2), fontsize=16)
     plt.grid(True)
     xmin, xmax = plt.xlim()
     # plt.xlim(xmin=xmin*0.90)  # why this?
@@ -300,7 +310,10 @@ def beautifyRLD(xlimit_max=None):
     """
     a = plt.gca()
     a.set_xscale('log')
-    a.set_xlabel('log10 of FEvals / DIM')
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        a.set_xlabel('log10 of (f+g)-evals / dimension')
+    else:
+        a.set_xlabel('log10 of FEvals / DIM')
     a.set_ylabel('proportion of trials')
     logxticks()
     if xlimit_max:
@@ -391,8 +404,8 @@ def _plotRLDistr_old(dsList, target, **plotArgs):
         try:
             target = target[i.funcId] # TODO: this can only work for a single function, generally looks like a bug
             if not genericsettings.test:
-                print 'target:', target
-                print 'function:', i.funcId
+                print('target:', target)
+                print('function:', i.funcId)
                 raise Exception('please check this, it looks like a bug')
         except TypeError:
             target = target
@@ -633,7 +646,10 @@ def beautify():
     plt.subplot(121)
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-    axisHandle.set_xlabel('log10 of FEvals / DIM')
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        axisHandle.set_xlabel('log10 of (f+g)-evals / dimension')
+    else:
+        axisHandle.set_xlabel('log10 of FEvals / DIM')
     axisHandle.set_ylabel('proportion of trials')
     # Grid options
     logxticks()
@@ -798,7 +814,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
     testbed = testbedsettings.current_testbed
     targets = testbed.pprldistr_target_values # convenience abbreviation
 
-    for d, dictdim in dsList.dictByDim().iteritems():
+    for d, dictdim in sorted(dsList.dictByDim().items()):
         maxEvalsFactor = max(i.mMaxEvals() / d for i in dictdim)
         if isStoringXMax:
             global evalfmax

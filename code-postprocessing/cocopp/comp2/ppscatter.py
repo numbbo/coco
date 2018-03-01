@@ -41,7 +41,7 @@ except ImportError:
     # compatibility matplotlib 0.8
     from matplotlib.transforms import blend_xy_sep_transform as blend
 from .. import genericsettings, htmldesc, ppfigparam, testbedsettings
-from ..ppfig import save_figure
+from ..ppfig import save_figure, getFontSize
 from .. import toolsdivers
 from .. import pproc
 from .. import captions
@@ -60,11 +60,11 @@ offset = 0. #0.02 offset provides a way to move away the box boundaries to displ
 def prepare_figure_caption():
 
     caption_start_fixed = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations)
-        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS!!$ target values
+        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS-SCATTER!!$ target values
         $!!DF!! \in [!!NBLOW!!, !!NBUP!!]$ in each dimension on functions #1. """
 
     caption_start_rlbased = r"""Average running time (\aRT\ in $\log_{10}$ of number of function evaluations)
-        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS!!$ runlength-based target
+        of \algorithmA\ ($y$-axis) versus \algorithmB\ ($x$-axis) for $!!NBTARGETS-SCATTER!!$ runlength-based target
         values for budgets between $!!NBLOW!!$ and $!!NBUP!!$ evaluations.
         Each runlength-based target $!!F!!$-value is chosen such that the \aRT{}s of 
         !!THE-REF-ALG!! for the given and a slightly easier
@@ -97,18 +97,7 @@ def figure_caption(for_html = False):
     else:
         caption = prepare_figure_caption()
 
-    caption = caption.replace('!!NBTARGETS!!', str(len(targets)))
-
-    if genericsettings.runlength_based_targets:
-        caption = caption.replace('!!NBLOW!!', toolsdivers.number_to_latex(targets.label(0)) +
-                                           r'\times\DIM' if targets.times_dimension else '')
-        caption = caption.replace('!!NBUP!!', toolsdivers.number_to_latex(targets.label(-1)) +
-                                           r'\times\DIM' if targets.times_dimension else '')
-    else:
-        caption = caption.replace('!!NBLOW!!', toolsdivers.number_to_latex(targets.label(0)))
-        caption = caption.replace('!!NBUP!!', toolsdivers.number_to_latex(targets.label(-1)))
-
-    return captions.replace(caption)
+    return captions.replace(caption, html=for_html)
 
 
 def beautify():
@@ -123,22 +112,29 @@ def beautify():
     maxbnd = max(xmax, ymax)
     maxbnd = maxbnd ** (1 + 11.*offset/(numpy.log10(float(maxbnd)/minbnd)))
     plt.plot([minbnd, maxbnd], [minbnd, maxbnd], ls='-', color='k')
-    plt.plot([10*minbnd, 10*maxbnd], [minbnd, maxbnd], ls=':', color='k')
-    plt.plot([100*minbnd, 100*maxbnd], [minbnd, maxbnd], ls=':', color='k')
-    plt.plot([minbnd, maxbnd], [10*minbnd, 10*maxbnd], ls=':', color='k')
-    plt.plot([minbnd, maxbnd], [100*minbnd, 100*maxbnd], ls=':', color='k')
+    for grid_line_pos in [
+            [[10*minbnd, 10*maxbnd], [minbnd, maxbnd]],
+            [[100*minbnd, 100*maxbnd], [minbnd, maxbnd]],
+            [[minbnd, maxbnd], [10*minbnd, 10*maxbnd]],
+            [[minbnd, maxbnd], [100*minbnd, 100*maxbnd]]
+        ]:
+        plt.plot(grid_line_pos[0], grid_line_pos[1],
+                 ls='-', lw=1, color='lightgray')
 
     plt.xlim(minbnd, maxbnd)
     plt.ylim(minbnd, maxbnd)
     #a.set_aspect(1./a.get_data_ratio())
     a.set_aspect('equal')
     plt.grid(True)
-    tmp = a.get_yticks()
-    tmp2 = []
-    for i in tmp:
-        tmp2.append('%d' % round(numpy.log10(i)))
-    a.set_yticklabels(tmp2)
-    a.set_xticklabels(tmp2)
+
+    tick_locs = [n for n in a.get_xticks() if n > minbnd and n < maxbnd]
+    tick_labels = ['%d' % round(np.log10(n)) if n < 1e10  # assure 1 digit for uniform figure sizes
+                   else '' for n in tick_locs]
+    a.set_xticks(tick_locs)
+    a.set_yticks(tick_locs)
+    a.set_xticklabels(tick_labels)
+    a.set_yticklabels(tick_labels)
+
     #for line in a.get_xticklines():# + a.get_yticklines():
     #    plt.setp(line, color='b', marker='o', markersize=10)
     #set_trace()
@@ -226,7 +222,7 @@ def main(dsList0, dsList1, outputdir, settings):
                     plt.plot(xdata[idx], ydata[idx], ls='',
                              markersize=markersize,
                              marker=markers[i], markerfacecolor='None',
-                             markeredgecolor=colors[i], markeredgewidth=3, 
+                             markeredgecolor=colors[i], markeredgewidth=3,
                              clip_on=False)
                 except KeyError:
                     plt.plot(xdata[idx], ydata[idx], ls='', markersize=markersize,
@@ -328,10 +324,10 @@ def main(dsList0, dsList1, outputdir, settings):
                     targetlabels[len(targetlabels)-1] + '\n')
             text += '   from ' + testbedsettings.current_testbed.reference_algorithm_filename
         else:
-            text = (str(len(targetlabels)) + ' targets in ' +
+            text = (str(len(targetlabels)) + ' targets: ' +
                     targetlabels[0] + '..' +
                     targetlabels[len(targetlabels)-1])
-        # add number of instances 
+        # add number of instances
         text += '\n'
         num_of_instances_alg0 = []
         num_of_instances_alg1 = []
@@ -339,13 +335,13 @@ def main(dsList0, dsList1, outputdir, settings):
             num_of_instances_alg0.append((dictDim0[d][0]).nbRuns())
             num_of_instances_alg1.append((dictDim1[d][0]).nbRuns())
         # issue a warning if the numbers of instances are inconsistent:
-        if (len(set(num_of_instances_alg0)) > 1):
+        if len(set(num_of_instances_alg0)) > 1:
             warnings.warn('Inconsistent numbers of instances over dimensions found for ALG0:\n\
                            found instances %s' % str(num_of_instances_alg0))
-        if (len(set(num_of_instances_alg1)) > 1):
+        if len(set(num_of_instances_alg1)) > 1:
             warnings.warn('Inconsistent numbers of instances over dimensions found for ALG1:\n\
                            found instances %s' % str(num_of_instances_alg1))
-        if (len(set(num_of_instances_alg0)) == 1 and len(set(num_of_instances_alg0)) == 1):
+        if len(set(num_of_instances_alg0)) == 1 and len(set(num_of_instances_alg1)) == 1:
             text += '%s and %s instances' % (num_of_instances_alg0[0], num_of_instances_alg1[0])
         else:
             for n in num_of_instances_alg0:
@@ -357,7 +353,8 @@ def main(dsList0, dsList1, outputdir, settings):
             text = text.rstrip(', ')
             text += ' instances'
         plt.text(0.01, 0.98, text, horizontalalignment="left",
-                 verticalalignment="top", transform=plt.gca().transAxes, size='small')
+                 verticalalignment="top", transform=plt.gca().transAxes,
+                 size=0.6*17)
 
         beautify()
 
@@ -384,12 +381,12 @@ def main(dsList0, dsList1, outputdir, settings):
             #plt.axvline(entry0.mMaxEvals(), ls='--', color=colors[i])
             #plt.axhline(entry1.mMaxEvals(), ls='--', color=colors[i])
 
-        fontSize = genericsettings.getFontSize(funInfos.values())
+        fontSize = getFontSize(funInfos.values())
         if f in funInfos.keys():        
-            plt.ylabel(funInfos[f], fontsize=fontSize)
+            plt.title(funInfos[f], fontsize=0.75*fontSize)
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
-        save_figure(filename, dsList0[0].algId)
+        save_figure(filename, dsList0[0].algId, bbox_inches='tight')
         plt.close()
 
     #plt.rcdefaults()

@@ -11,7 +11,9 @@
 % where COCOFUNCTION and the variable argument list are one of the following:
 %
 %   * cocoEvaluateFunction: problem, x, y 
-%       Evaluates problem in point x and saves the result in y. 
+%       Evaluates the objective function at point x and saves the result in y. 
+%   * cocoEvaluateConstraint: problem, x, y 
+%       Evaluates the constraints at point x and saves the result in y. 
 %   * cocoObserver: observer_name, observer_options
 %       Returns a new COCO observer. 
 %   * cocoObserverFree: observer
@@ -30,6 +32,10 @@
 %       Returns the ID of the problem. 
 %   * cocoProblemGetInitialSolution: problem
 %       Returns an initial solution (ie a feasible variable setting) to problem.
+%   * cocoProblemGetLargestFValuesOfInterest: problem
+%       For multi-objective problems, returns a vector of largest values of 
+%         interest in each objective. Currently, this equals the nadir point. 
+%         For single-objective problems it raises an error.
 %   * cocoProblemGetLargestValuesOfInterest: problem
 %       Returns a vector of size 'dimension' with upper bounds of the region
 %         of interest in the decision space for the given problem.

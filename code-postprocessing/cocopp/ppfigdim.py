@@ -35,7 +35,7 @@ target (if in the expensive/runlength-based targets setting).
     import glob
     from pylab import *
     
-    import cocopp as bb
+    import cocopp
     
     # Collect and unarchive data (3.4MB)
     dataurl = 'http://coco.lri.fr/BBOB2009/pythondata/BIPOP-CMA-ES.tar.gz'
@@ -44,11 +44,11 @@ target (if in the expensive/runlength-based targets setting).
     archivefile.extractall()
     
     # Scaling figure
-    ds = bb.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_*.pickle'))
+    ds = cocopp.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f002_*.pickle'))
     figure()
-    bb.ppfigdim.plot(ds)
-    bb.ppfigdim.beautify()
-    bb.ppfigdim.plot_previous_algorithms(2, False) # plot BBOB 2009 best algorithm on fun 2
+    cocopp.ppfigdim.plot(ds)
+    cocopp.ppfigdim.beautify()
+    cocopp.ppfigdim.plot_previous_algorithms(2, False) # plot BBOB 2009 best algorithm on fun 2
 
 """
 from __future__ import absolute_import
@@ -58,6 +58,7 @@ import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
+from six import advance_iterator
 
 from . import genericsettings, toolsstats, bestalg, pproc, ppfig, ppfigparam, htmldesc, toolsdivers
 from . import testbedsettings
@@ -119,7 +120,7 @@ def scaling_figure_caption():
         figure_caption = captions.replace(caption_text + caption_part_rlbased_targets)
     else:
         figure_caption = captions.replace(caption_text + caption_part_absolute_targets)
-
+        
     return figure_caption
 
 def beautify(axesLabel=True):
@@ -158,11 +159,11 @@ def beautify(axesLabel=True):
     else:
         # TODO: none of this is visible in svg format!
         axisHandle.yaxis.grid(True, which='major')
-        # for i in xrange(0, 11):
+        # for i in range(0, 11):
         #     plt.plot((0.2, 20000), 2 * [10**i], 'k:', linewidth=0.5)
 
     # quadratic slanted "grid"
-    for i in xrange(-2, 7, 1 if ymax < 1e5 else 2):
+    for i in range(-2, 7, 1 if ymax < 1e5 else 2):
         plt.plot((0.2, 20000), (10**i, 10**(i + 5)), 'k:', linewidth=0.5)
         # TODO: this should be done before the real lines are plotted?
 
@@ -178,7 +179,7 @@ def beautify(axesLabel=True):
     axisHandle.set_xticks(dimticklist)
     axisHandle.set_xticklabels([str(n) for n in dimannlist])
     logyend = 11  # int(1 + np.log10(plt.ylim()[1]))
-    axisHandle.set_yticks([10.**i for i in xrange(0, logyend)])
+    axisHandle.set_yticks([10.**i for i in range(0, logyend)])
     axisHandle.set_yticklabels(range(0, logyend))
     if 11 < 3:
         tmp = axisHandle.get_yticks()
@@ -189,7 +190,7 @@ def beautify(axesLabel=True):
     if 11 < 3:
         # ticklabels = 10**np.arange(int(np.log10(plt.ylim()[0])), int(np.log10(1 + plt.ylim()[1])))
         ticks = []
-        for i in xrange(int(np.log10(plt.ylim()[0])), int(np.log10(1 + plt.ylim()[1]))):
+        for i in range(int(np.log10(plt.ylim()[0])), int(np.log10(1 + plt.ylim()[1]))):
             ticks += [10 ** i, 2 * 10 ** i, 5 * 10 ** i]
         axisHandle.set_yticks(ticks)
         # axisHandle.set_yticklabels(ticklabels)
@@ -226,13 +227,13 @@ def generateData(dataSet, targetFuncValue):
     """
 
     it = iter(reversed(dataSet.evals))
-    i = it.next()
+    i = advance_iterator(it)
     prev = np.array([np.nan] * len(i))
 
     while i[0] <= targetFuncValue:
         prev = i
         try:
-            i = it.next()
+            i = advance_iterator(it)
         except StopIteration:
             break
 
@@ -442,7 +443,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
             plt.ylim(ylim)
         # median
         if mediandata:
-            # for i, tm in mediandata.iteritems():
+            # for i, tm in mediandata.items():
             for i in displaynumber:  # display median where success prob is smaller than one
                 tm = mediandata[i]
                 plt.plot((i,), (tm[1] / i**ynormalize_by_dimension,), 
@@ -455,7 +456,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
         # therefore the displaynumber displayed below correspond to the
         # last target (must be the hardest)
         if displaynumber:  # displayed only for the smallest valuesOfInterest
-            for _k, j in displaynumber.iteritems():
+            for _k, j in displaynumber.items():
                 # the 1.5 factor is a shift up for the digits 
                 plt.text(j[0], 1.5 * j[1] / j[0]**ynormalize_by_dimension, 
                          "%.0f" % j[2], axes=a,
@@ -528,31 +529,34 @@ def main(dsList, _valuesOfInterest, outputdir):
     key = 'bbobppfigdimlegend' + testbedsettings.current_testbed.scenario
     joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
     caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
+    header = 'Average number of <i>f</i>-evaluations to reach target'
+    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        header = header.replace('<i>f</i>', '<i>(f+g)</i>')
 
     ppfig.save_single_functions_html(
         os.path.join(outputdir, 'ppfigdim'),
         htmlPage = ppfig.HtmlPage.NON_SPECIFIED,
         parentFileName=genericsettings.single_algorithm_file_name,
-        header = 'Average number of <i>f</i>-evaluations to reach target',
+        header = header,
         caption = caption)
 
     ppfig.save_single_functions_html(
         os.path.join(outputdir, 'pprldistr'),
         htmlPage = ppfig.HtmlPage.PPRLDISTR,
-        functionGroups = dsList.getFuncGroups(),
+        function_groups= dsList.getFuncGroups(),
         parentFileName=genericsettings.single_algorithm_file_name)
 
     if not testbedsettings.current_testbed.reference_algorithm_filename == '':
         ppfig.save_single_functions_html(
             os.path.join(outputdir, 'pplogloss'),
             htmlPage = ppfig.HtmlPage.PPLOGLOSS,
-            functionGroups = dsList.getFuncGroups(),
+            function_groups= dsList.getFuncGroups(),
             parentFileName=genericsettings.single_algorithm_file_name)
 
     ppfig.copy_js_files(outputdir)
     
     funInfos = ppfigparam.read_fun_infos()    
-    fontSize = genericsettings.getFontSize(funInfos.values())
+    fontSize = ppfig.getFontSize(funInfos.values())
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
         beautify(axesLabel=False)
