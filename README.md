@@ -605,6 +605,8 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - Full description of the platform: http://coco.lri.fr/COCOdoc/
   - Experimental setup before 2016: http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
  - Old framework software documentation: http://coco.lri.fr/downloads/download15.03/bbobdocsoftware.pdf
+ 
+ * Some examples of [results](https://github.com/numbbo/coco/wiki/COCO-Wiki-Home).
 
 ^1: see [#837](https://github.com/numbbo/coco/issues/837) and [#1266](https://github.com/numbbo/coco/issues/1266) for two pending errata
 
