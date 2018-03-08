@@ -140,6 +140,7 @@ static coco_problem_t *suite_biobj_ext_get_problem(coco_suite_t *suite,
   coco_problem_t *problem1, *problem2, *problem = NULL;
   size_t instance1 = 0, instance2 = 0;
   size_t function1_idx, function2_idx;
+  int *are_variables_integer = NULL; /* All variables are continuous */
 
   const size_t function = suite->functions[function_idx];
   const size_t dimension = suite->dimensions[dimension_idx];
@@ -343,7 +344,8 @@ static coco_problem_t *suite_biobj_ext_get_problem(coco_suite_t *suite,
     problem2 = coco_get_bbob_problem(all_bbob_functions[function2_idx], dimension, instance2);
   }
   
-  problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest, largest_values_of_interest);
+  problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
+  		largest_values_of_interest, are_variables_integer);
     
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
@@ -379,6 +381,7 @@ static int check_consistency_of_instances(const size_t dimension,
   int break_search = 0;
   double norm;
   double *smallest_values_of_interest, *largest_values_of_interest;
+  int *are_variables_integer = NULL; /* All variables are continuous */
   const double apart_enough = 1e-4;
   
   problem1 = coco_get_bbob_problem(function1, dimension, instance1);
@@ -389,7 +392,7 @@ static int check_consistency_of_instances(const size_t dimension,
   smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
   largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
   problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
-          largest_values_of_interest);
+          largest_values_of_interest, are_variables_integer);
   coco_free_memory(smallest_values_of_interest);
   coco_free_memory(largest_values_of_interest);
 
@@ -397,7 +400,7 @@ static int check_consistency_of_instances(const size_t dimension,
   norm = mo_get_norm(problem->best_value, problem->nadir_value, 2);
   if (norm < 1e-1) { /* TODO How to set this value in a sensible manner? */
     coco_debug(
-        "suite_biobj_ext_get_new_instance(): The ideal and nadir points of %s are too close in the objective space",
+        "check_consistency_of_instances(): The ideal and nadir points of %s are too close in the objective space",
         problem->problem_id);
     coco_debug("norm = %e, ideal = %e\t%e, nadir = %e\t%e", norm, problem->best_value[0],
         problem->best_value[1], problem->nadir_value[0], problem->nadir_value[1]);
@@ -408,7 +411,7 @@ static int check_consistency_of_instances(const size_t dimension,
   norm = mo_get_norm(problem1->best_parameter, problem2->best_parameter, problem->number_of_variables);
   if (norm < apart_enough) {
     coco_debug(
-        "suite_biobj_ext_get_new_instance(): The extreme points of %s are too close in the decision space",
+        "check_consistency_of_instances(): The extreme points of %s are too close in the decision space",
         problem->problem_id);
     coco_debug("norm = %e", norm);
     break_search = 1;

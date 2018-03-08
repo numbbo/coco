@@ -127,6 +127,8 @@ struct coco_problem_s {
 
   double *smallest_values_of_interest; /**< @brief The lower bounds of the ROI in the decision space. */
   double *largest_values_of_interest;  /**< @brief The upper bounds of the ROI in the decision space. */
+  int *are_variables_integer;          /**< @brief Flags noting whether the variables are integer (1) or continuous (0).
+                                       If NULL, all variables are continuous. */
 
   double *initial_solution;            /**< @brief Initial feasible solution. */
   double *best_value;                  /**< @brief Optimal (smallest) function value */
