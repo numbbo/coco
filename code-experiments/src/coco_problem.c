@@ -10,7 +10,7 @@
 #include "coco_utilities.c"
 
 /* A declaration of a function defined below */
-static void coco_problem_round_solution(const coco_problem_t *problem, double *solution);
+static void coco_problem_round_solution(const coco_problem_t *problem, double *solution, int consider_bounds);
 
 /***********************************************************************************************************/
 
@@ -58,7 +58,7 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
   /* Round the vector x in case of integer variables */
   x_rounded = coco_duplicate_vector(x, coco_problem_get_dimension(problem));
   if (problem->are_variables_integer != NULL)
-  	coco_problem_round_solution(problem, x_rounded);
+  	coco_problem_round_solution(problem, x_rounded, 0);
 
   problem->evaluate_function(problem, x_rounded, y);
   problem->evaluations++; /* each derived class has its own counter, only the most outer will be visible */
@@ -226,10 +226,12 @@ static coco_problem_t *coco_problem_duplicate(const coco_problem_t *other) {
     if (other->best_parameter)
       problem->best_parameter[i] = other->best_parameter[i];
   }
-  if (other->are_variables_integer)
+  if (other->are_variables_integer) {
+  	problem->are_variables_integer = coco_allocate_vector_int(other->number_of_variables);
 	  for (i = 0; i < problem->number_of_variables; ++i) {
 	    problem->are_variables_integer[i] = other->are_variables_integer[i];
 	  }
+  }
   else
 	  problem->are_variables_integer = NULL;
   
@@ -322,6 +324,8 @@ static coco_problem_t *coco_problem_allocate_mixed_integer(const char *problem_n
   assert(smallest_values_of_interest != NULL);
   assert(largest_values_of_interest != NULL);
   assert(best_parameter != NULL);
+
+  problem->are_variables_integer = coco_allocate_vector_int(number_of_variables);
 
   for (i = 0; i < number_of_variables; ++i) {
     problem->smallest_values_of_interest[i] = smallest_values_of_interest[i];
@@ -620,7 +624,7 @@ void coco_problem_get_initial_solution(const coco_problem_t *problem, double *in
       initial_solution[i] = problem->smallest_values_of_interest[i] + 0.5
           * (problem->largest_values_of_interest[i] - problem->smallest_values_of_interest[i]);
     if (problem->are_variables_integer != NULL)
-    	coco_problem_round_solution(problem, initial_solution);
+    	coco_problem_round_solution(problem, initial_solution, 0);
   }
 }
 
@@ -652,10 +656,13 @@ static size_t coco_problem_get_suite_dep_instance(const coco_problem_t *problem)
 }
 
 /**
- * In case of integer variables, modifies the given solution so that it fits the problem
- * boundaries and has integer values where needed.
+ * In case of a mixed-integer problem, modifies the given solution so that it has integer variables
+ * where required. If consider_bounds, the smallest_values_of_interest and largest_values_of_interest
+ * are taken into consideration.
  */
-static void coco_problem_round_solution(const coco_problem_t *problem, double *solution) {
+static void coco_problem_round_solution(const coco_problem_t *problem,
+		                                    double *solution,
+		                                    int consider_bounds) {
 	size_t i;
   assert(problem != NULL);
 
@@ -664,10 +671,10 @@ static void coco_problem_round_solution(const coco_problem_t *problem, double *s
     assert(problem->largest_values_of_interest != NULL);
     for (i = 0; i < problem->number_of_variables; ++i) {
     	if (problem->are_variables_integer[i] == 1) {
-				if (solution[i] < ceil(problem->smallest_values_of_interest[i]))
-					solution[i] = ceil(problem->smallest_values_of_interest[i]);
-				else if (solution[i] > floor(problem->largest_values_of_interest[i]))
-					solution[i] = floor(problem->largest_values_of_interest[i]);
+    		if ((consider_bounds) && (solution[i] < ceil(problem->smallest_values_of_interest[i])))
+						solution[i] = ceil(problem->smallest_values_of_interest[i]);
+    		else if ((consider_bounds) && (solution[i] > floor(problem->largest_values_of_interest[i])))
+						solution[i] = floor(problem->largest_values_of_interest[i]);
 				else
 					solution[i] = coco_double_round(solution[i]);
     	}
