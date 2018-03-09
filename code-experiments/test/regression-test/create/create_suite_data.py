@@ -17,7 +17,6 @@ import os, sys
 import numpy as np
 import cocoex
 suite_names = cocoex.known_suite_names
-# suite_names = 'bbob-constrained'
 
 def is_finite(res):
     return all(np.all(np.isfinite(x)) for x in res)

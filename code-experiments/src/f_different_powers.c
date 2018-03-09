@@ -143,7 +143,7 @@ static coco_problem_t *f_different_powers_bbob_constrained_problem_allocate(cons
                                                                 const char *problem_name_template) {
   /* Different powers function used in bbob-constrained test suite.
    * In this version, the (unconstrained) optimum, xopt, is set to
-   * a distance of 1e-5 to the origin. By doing so, the optimum of
+   * a distance of 1e-2 to the origin. By doing so, the optimum of
    * the constrained problem is at a "reasonable" distance from
    * the unconstrained one and, hence, the constrained problem is not too easy.
    */
