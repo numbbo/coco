@@ -28,7 +28,6 @@
 
 static const double fvalue_logged_for_infinite = 3e21;   /* value used for logging try */
 static const double fvalue_logged_for_nan = 2e21;
-static const double fvalue_logged_for_infeasible = 1e21; /* only in first evaluation */
 
 /*static const size_t bbob_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
 /*static const size_t bbob_nbpts_fval = 5;*/
@@ -201,7 +200,7 @@ static void logger_bbob_open_dataFile(FILE **target_file,
 
 /**
  * Creates the index file fileName_prefix+problem_id+file_extension in
- * folde_path
+ * folder_path
  */
 static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
                                       const char *folder_path,
@@ -381,7 +380,8 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
  */
 static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, double *y) {
   size_t i;
-  double y_logged;
+  double y_logged, sum_cons;
+  double *cons;
   logger_bbob_data_t *logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
   coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);
   const int is_feasible = problem->number_of_constraints <= 0
@@ -411,32 +411,35 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   if (is_feasible)  /* infeasible solutions can have much better y0 values */
     assert(y_logged + 1e-13 >= logger->optimal_fvalue);
 
+  /* Evaluate the constraints */
+  cons = coco_allocate_vector(problem->number_of_constraints);
+  inner_problem->evaluate_constraint(inner_problem, x, cons);
+
+  /* Compute the sum of positive constraint values */
+  sum_cons = 0;
+  for (i = 0; i < problem->number_of_constraints; ++i) {
+    if (cons[i] > 0)
+        sum_cons += cons[i];
+  }
+  if (coco_is_nan(sum_cons))
+    sum_cons = fvalue_logged_for_nan;
+  else if (coco_is_inf(sum_cons))
+    sum_cons = fvalue_logged_for_infinite;
+
   /* Update logger state.
-   *   at logger->number_of_evaluations == 1 the logger->best_fvalue is not inialized,
+   *   at logger->number_of_evaluations == 1 the logger->best_fvalue is not initialized,
    *   also compare to y_logged to not potentially be thrown off by weird values in y[0]
    */
-  if (logger->number_of_evaluations == 1 || (is_feasible && y_logged < logger->best_fvalue)) {
-    if (is_feasible)
-      logger->best_fvalue = y_logged;
-    else  /* can only be the case in the first evaluation */
-      logger->best_fvalue = fvalue_logged_for_infeasible;
+  if (logger->number_of_evaluations == 1 || y_logged + sum_cons < logger->best_fvalue) {
+    logger->best_fvalue = y_logged + sum_cons;
     for (i = 0; i < problem->number_of_variables; i++)
       logger->best_solution[i] = x[i]; /* may be infeasible in evaluation one */
   
     /* Add a line in the .dat file for each logging target reached
      * by a feasible solution and always at evaluation one
      */
-
-    /* The call for the constraint function should be done here, after after everything
-       related to f-evaluation has been done
-
-       The call to "coco_evaluate_constraint(...)" increments the counter for constraint calls
-       Since this counter should reflect the number of calls to the constraints by the optimizer,
-       "our" call to the constraints should not change it
-    */
-    if (logger->number_of_evaluations == 1 || (is_feasible &&
-          coco_observer_targets_trigger(logger->targets,
-                                        logger->best_fvalue - logger->optimal_fvalue))) {
+    if (logger->number_of_evaluations == 1 || coco_observer_targets_trigger(logger->targets,
+                                        logger->best_fvalue - logger->optimal_fvalue)) {
       logger_bbob_write_data(
           logger->fdata_file,
           logger->number_of_evaluations,
@@ -456,13 +459,16 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
         logger->tdata_file,
         logger->number_of_evaluations,
         logger->number_of_evaluations_constraints,
-        is_feasible ? y_logged : logger->best_fvalue,
+        y_logged,
         logger->best_fvalue,
         logger->optimal_fvalue,
         x,
         problem->number_of_variables);
     logger->written_last_eval = 1;
   }
+
+  /* Free allocated memory */
+  coco_free_memory(cons);
 
   /* Flush output so that impatient users can see progress. */
   fflush(logger->fdata_file);
