@@ -412,7 +412,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     assert(y_logged + 1e-13 >= logger->optimal_fvalue);
 
   /* Update logger state.
-   *   at logger->number_of_evaluations == 1 the logger->best_fvalue is not inialized,
+   *   at logger->number_of_evaluations == 1 the logger->best_fvalue is not initialized,
    *   also compare to y_logged to not potentially be thrown off by weird values in y[0]
    */
   if (logger->number_of_evaluations == 1 || (is_feasible && y_logged < logger->best_fvalue)) {
@@ -426,14 +426,6 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     /* Add a line in the .dat file for each logging target reached
      * by a feasible solution and always at evaluation one
      */
-
-    /* The call for the constraint function should be done here, after after everything
-       related to f-evaluation has been done
-
-       The call to "coco_evaluate_constraint(...)" increments the counter for constraint calls
-       Since this counter should reflect the number of calls to the constraints by the optimizer,
-       "our" call to the constraints should not change it
-    */
     if (logger->number_of_evaluations == 1 || (is_feasible &&
           coco_observer_targets_trigger(logger->targets,
                                         logger->best_fvalue - logger->optimal_fvalue))) {
@@ -589,4 +581,3 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   bbob_logger_is_open = 1;
   return problem;
 }
-
