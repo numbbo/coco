@@ -87,11 +87,11 @@ typedef struct {
 } logger_bbob_data_t;
 
 /* was:
- * function evaluation | 
- * noise-free fitness - Fopt (7.948000000000e+01) | 
- * best noise-free fitness - Fopt | 
- * measured fitness | 
- * best measured fitness | 
+ * function evaluation |
+ * noise-free fitness - Fopt (7.948000000000e+01) |
+ * best noise-free fitness - Fopt |
+ * measured fitness |
+ * best measured fitness |
  * x1 | x2...
  */
 static const char *bbob_file_header_str = "%% "
@@ -328,7 +328,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   char *tmpc_funId; /* serves to extract the function id as a char *. There should be a better way of doing this! */
   char *tmpc_dim; /* serves to extract the dimension as a char *. There should be a better way of doing this! */
   char indexFile_prefix[10] = "bbobexp"; /* TODO (minor): make the prefix bbobexp a parameter that the user can modify */
-  
+
   assert(logger != NULL);
   assert(inner_problem != NULL);
   assert(inner_problem->problem_id != NULL);
@@ -360,7 +360,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
   strncat(dataFile_path, "_i", COCO_PATH_MAX - strlen(dataFile_path) - 1);
   strncat(dataFile_path, bbob_infoFile_firstInstance_char,
   COCO_PATH_MAX - strlen(dataFile_path) - 1);
-  
+
   logger_bbob_open_dataFile(&(logger->fdata_file), logger->observer->result_folder, dataFile_path, ".dat");
   fprintf(logger->fdata_file, bbob_file_header_str, logger->optimal_fvalue);
 
@@ -394,9 +394,9 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     coco_debug("%4lu: ", (unsigned long) inner_problem->suite_dep_index);
     coco_debug("on problem %s ... ", coco_problem_get_id(inner_problem));
   }
-  
+
   coco_evaluate_function(inner_problem, x, y); /* fulfill contract as "being" a coco evaluate function */
-  
+
   logger->number_of_evaluations_constraints = coco_problem_get_evaluations_constraints(problem);
   logger->number_of_evaluations++; /* could be != coco_problem_get_evaluations(problem) for non-anytime logging? */
   logger->written_last_eval = 0; /* flag whether the current evaluation was logged? */
@@ -436,7 +436,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     logger->best_fvalue = y_logged + sum_cons;
     for (i = 0; i < problem->number_of_variables; i++)
       logger->best_solution[i] = x[i]; /* may be infeasible in evaluation one */
-  
+
     /* Add a line in the .dat file for each logging target reached
      * by a feasible solution and always at evaluation one
      */
@@ -455,7 +455,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   }
 
   /* Add a line in the .tdat file each time an fevals trigger is reached.*/
-  if (coco_observer_evaluations_trigger(logger->evaluations, 
+  if (coco_observer_evaluations_trigger(logger->evaluations,
         logger->number_of_evaluations + logger->number_of_evaluations_constraints)) {
     logger_bbob_write_data(
         logger->tdata_file,
@@ -598,4 +598,3 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   bbob_logger_is_open = 1;
   return problem;
 }
-
