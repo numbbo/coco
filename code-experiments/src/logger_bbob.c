@@ -412,10 +412,8 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     assert(y_logged + 1e-13 >= logger->optimal_fvalue);
 
   /* Evaluate the constraints */
-  if (problem->number_of_constraints > 0) {
-    cons = coco_allocate_vector(problem->number_of_constraints);
-    inner_problem->evaluate_constraint(inner_problem, x, cons);
-  }
+  cons = coco_allocate_vector(problem->number_of_constraints);
+  inner_problem->evaluate_constraint(inner_problem, x, cons);
 
   /* Compute the sum of positive constraint values */
   sum_cons = 0;
@@ -470,8 +468,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   }
 
   /* Free allocated memory */
-  if (problem->number_of_constraints > 0)
-    coco_free_memory(cons);
+  coco_free_memory(cons);
 
   /* Flush output so that impatient users can see progress. */
   fflush(logger->fdata_file);
