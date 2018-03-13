@@ -155,11 +155,7 @@ show_algorithms = ()  # could be one of the list above
 
 
 def plt_plot(*args, **kwargs):
-    if 'zorder' in kwargs:
-        res = plt.plot(*args, clip_on=False, **kwargs)
-    else:
-        res = plt.plot(*args, clip_on=False, zorder=15, **kwargs)
-    return res
+    return plt.plot(*args, clip_on=False, **kwargs)
 
 
 def beautify():
@@ -693,7 +689,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
                 'label': testbedsettings.current_testbed.reference_algorithm_displayname,
-                'zorder': 10}
+                'zorder': -1}
         lines.append(plotdata(np.array(xbest), x_limit, maxevalsbest,
                               CrE=0., **args))
 
@@ -837,10 +833,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                             testbedsettings.current_testbed.short_names[list(dictFunc.keys())[0]])),
                   fontsize=title_fontsize)
     a = plt.gca()
-    xmax = x_limit ** annotation_space_end_relative
-    plt.xlim(xmin=1e-0, xmax=xmax)
-    plt.axvspan(x_limit, xmax, facecolor='w', zorder=1)
-    a.set_axisbelow(True)
+
+    plt.xlim(xmin=1e-0, xmax=x_limit ** annotation_space_end_relative)
     xticks, labels = plt.xticks()
     tmp = []
     for i in xticks:
