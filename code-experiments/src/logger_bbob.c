@@ -461,7 +461,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
         logger->tdata_file,
         logger->number_of_evaluations,
         logger->number_of_evaluations_constraints,
-        is_feasible ? y_logged : logger->best_fvalue,
+        y_logged,
         logger->best_fvalue,
         logger->optimal_fvalue,
         x,
