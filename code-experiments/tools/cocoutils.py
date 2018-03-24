@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 
 import sys
 import os
+from distutils.spawn import find_executable
 from shutil import copyfile, copytree, rmtree
 from subprocess import CalledProcessError, call, STDOUT
 
@@ -225,3 +226,10 @@ def expand_file(source, destination, dictionary):
         content = Template(fd.read())
         with open(destination, "w") as outfd:
             outfd.write(content.safe_substitute(dictionary))
+
+
+def executable_path(name):
+    p = find_executable(name)
+    if p:
+        return os.path.realpath(p)
+

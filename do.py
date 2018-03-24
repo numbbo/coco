@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import sys
 import os
-from os.path import join
+from os.path import join, abspath, realpath
 import shutil
 import tempfile
 import subprocess
@@ -24,6 +24,7 @@ sys.path.insert(0, os.path.abspath(join('code-experiments', 'tools')))
 from amalgamate import amalgamate
 from cocoutils import make, run, python, check_output
 from cocoutils import copy_file, expand_file, write_file
+from cocoutils import executable_path
 from cocoutils import git_version, git_revision
 
 CORE_FILES = ['code-experiments/src/coco_random.c',
@@ -631,8 +632,17 @@ def build_java():
                 {'COCO_VERSION': git_version(pep440=True)})
     write_file(git_revision(), "code-experiments/build/java/REVISION")
     write_file(git_version(), "code-experiments/build/java/VERSION")
-    run('code-experiments/build/java', ['javac', 'CocoJNI.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javah', 'CocoJNI'], verbose=_verbosity)
+
+    javacpath = executable_path('javac')
+    javahpath = executable_path('javah')
+    if javacpath and javahpath:
+        run('code-experiments/build/java', ['javac', 'CocoJNI.java'], verbose=_verbosity)
+        run('code-experiments/build/java', ['javah', 'CocoJNI'], verbose=_verbosity)
+    elif javacpath:
+        run('code-experiments/build/java', ['javac', '-h', '.', 'CocoJNI.java'], verbose=_verbosity)
+    else:
+        raise RuntimeError('Can not find javac path!')
+
 
     # Finds the path to the headers jni.h and jni_md.h (platform-dependent)
     # and compiles the CocoJNI library (compiler-dependent). So far, only
@@ -671,9 +681,15 @@ def build_java():
 
     # 4. Linux
     elif 'linux' in sys.platform:
-        jdkpath = check_output(['locate', 'jni.h'], stderr=STDOUT,
-                               env=os.environ, universal_newlines=True)
-        jdkpath1 = jdkpath.split("jni.h")[0]
+        # bad bad bad...
+        #jdkpath = check_output(['locate', 'jni.h'], stderr=STDOUT,
+        #                       env=os.environ, universal_newlines=True)
+        #jdkpath1 = jdkpath.split("jni.h")[0]
+        # better
+        javapath = executable_path('java')
+        if not javapath:
+            raise RuntimeError('Can not find Java executable')
+        jdkpath1 = abspath(join(javapath, os.pardir, os.pardir, 'include'))
         jdkpath2 = jdkpath1 + '/linux'
         run('code-experiments/build/java',
             ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-c', 'CocoJNI.c'],
