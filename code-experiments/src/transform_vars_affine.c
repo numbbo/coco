@@ -163,10 +163,12 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
    * - Resize bounds vectors if input and output dimensions do not match
    */
 
-  size_t i, j;
+  size_t i, j, z;
+  int is_equal;
   coco_problem_t *problem;
   transform_vars_affine_data_t *data;
   size_t entries_in_M;
+  double sum = 0.0;
 
   entries_in_M = inner_problem->number_of_variables * number_of_variables;
   data = (transform_vars_affine_data_t *) coco_allocate_memory(sizeof(*data));
@@ -184,6 +186,29 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
     problem->evaluate_constraint = transform_vars_affine_evaluate_constraint;
     
   problem->evaluate_gradient = transform_vars_affine_evaluate_gradient;
+
+  /* Check if the transformation matrix M is orthogonal
+   */
+  for (i = 0; i < problem->number_of_variables; ++i) {
+    for (j = 0; j < inner_problem->number_of_variables; ++j) {
+        for (z = 0; problem->number_of_variables; ++z) {
+            sum += data->M[i * problem->number_of_variables + j] * data->M[j * inner_problem->number_of_variables + z];
+        }
+        if (j == z) {
+            is_equal = coco_double_almost_equal(sum, 1, 1e-9);
+            if (!is_equal) {
+                coco_warning("transform_vars_affine(): rotation matrix is not orthogonal");
+                break;
+            }
+        } else {
+            is_equal = coco_double_almost_equal(sum, 0, 1e-9);
+            if (!is_equal) {
+                coco_warning("transform_vars_affine(): rotation matrix is not orthogonal");
+                break;
+            }
+        }
+    }
+  }
 
   /* Update the best parameter by computing
      problem->best_parameter = M^T * (inner_problem->best_parameter - b)
