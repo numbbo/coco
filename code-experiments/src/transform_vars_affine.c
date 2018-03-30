@@ -191,7 +191,7 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
    */
   for (i = 0; i < problem->number_of_variables; ++i) {
     for (j = 0; j < inner_problem->number_of_variables; ++j) {
-        for (z = 0; problem->number_of_variables; ++z) {
+        for (z = 0; z < problem->number_of_variables; ++z) {
             sum += data->M[i * problem->number_of_variables + j] * data->M[j * inner_problem->number_of_variables + z];
         }
         if (j == z) {
