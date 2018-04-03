@@ -190,11 +190,11 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
   /* Check if the transformation matrix M is orthogonal
    */
   for (i = 0; i < problem->number_of_variables; ++i) {
-    for (j = 0; j < inner_problem->number_of_variables; ++j) {
-        for (z = 0; z < problem->number_of_variables; ++z) {
-            sum += data->M[i * problem->number_of_variables + j] * data->M[j * inner_problem->number_of_variables + z];
+    for (j = 0; j < problem->number_of_variables; ++j) {
+        for (z = 0; z < inner_problem->number_of_variables; ++z) {
+            sum += data->M[i * inner_problem->number_of_variables + z] * data->M[j * inner_problem->number_of_variables + z];
         }
-        if (j == z) {
+        if (i == j) {
             is_equal = coco_double_almost_equal(sum, 1, 1e-9);
             if (!is_equal) {
                 coco_warning("transform_vars_affine(): rotation matrix is not orthogonal");
