@@ -269,6 +269,10 @@ background_default_style = (3 * (0.9,), '-')  # very light gray
 
 foreground_algorithm_list = []
 """a list of data files/folders as those specified in cocopp.main"""
+algorithm_line_styles = {}
+"""keys are entries of `foreground_algorithms_list`, values must look like
+elements of `line_styles`
+"""
 
 ##
 isLogLoss = True  # only affects rungeneric1

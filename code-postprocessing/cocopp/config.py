@@ -35,6 +35,16 @@ settings.default_settings = imp.load_module('_coco_default_settings',
                                       *imp.find_module('genericsettings',
                                                        __path__))
 
+def config_line_styles():
+    """set line styles by algorithm names from `genericsettings.foreground_algorithm_list`.
+
+    Assumes that by default the sorted list of algorithms,
+    `genericsettings.foreground_algorithm_list`, is mapped to the
+    `genericsettings.line_styles` entries.
+    """
+    for i, algorithm in enumerate(sorted(settings.foreground_algorithm_list)):
+        if algorithm in settings.algorithm_line_styles:
+            settings.line_styles[i] = settings.algorithm_line_styles[algorithm]
 
 def config_target_values_setting(is_expensive, is_runlength_based):
     """manage target values setting in "expensive" optimization scenario.
@@ -162,7 +172,8 @@ def config(testbed_name=None, data_format_name=None):
     ppscatter.markersize = 14
 
     ppfig2.linewidth = 4
- 
+
+    config_line_styles()
 
 def main():
     config()
