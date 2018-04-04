@@ -1052,6 +1052,43 @@ static void coco_scale_vector(double *x, size_t dimension, double alpha) {
 	 }
   }
 }
+
+
+/**
+ * @brief Checks if a given matrix M is orthogonal by computing M * M^T.
+ *
+ */
+static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_t nb_columns) {
+
+  size_t i, j, z;
+  int is_equal;
+  double sum;
+
+  if (nb_rows != nb_columns)
+    return 0;
+
+  for (i = 0; i < nb_rows; ++i) {
+    for (j = 0; j < nb_rows; ++j) {
+        sum = 0.0;
+        for (z = 0; z < nb_rows; ++z) {
+            sum += M[i * nb_rows + z] * M[j * nb_rows + z];
+        }
+        if (i == j) {
+            is_equal = coco_double_almost_equal(sum, 1, 1e-9);
+            if (!is_equal) {
+                return 0;
+            }
+        } else {
+            is_equal = coco_double_almost_equal(sum, 0, 1e-9);
+            if (!is_equal) {
+                return 0;
+            }
+        }
+    }
+  }
+  return 1;
+}
+
 /**@}*/
 
 /***********************************************************************************************************/
