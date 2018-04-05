@@ -1056,7 +1056,8 @@ static void coco_scale_vector(double *x, size_t dimension, double alpha) {
 
 /**
  * @brief Checks if a given matrix M is orthogonal by computing M * M^T.
- *
+ * The function returns 1 if M * M^T is the identity matrix and 0 otherwise.
+ * The matrix M is stored as a list of doubles.
  */
 static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_t nb_columns) {
 
@@ -1069,10 +1070,17 @@ static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_
 
   for (i = 0; i < nb_rows; ++i) {
     for (j = 0; j < nb_rows; ++j) {
+        /* Compute the dot product of the ith line of M
+         * and the jth column of M^T (i.e. jth line of M)
+         */
         sum = 0.0;
         for (z = 0; z < nb_rows; ++z) {
             sum += M[i * nb_rows + z] * M[j * nb_rows + z];
         }
+
+        /* Check if the dot product is 1 (resp. 0) when the line and the column
+         * indices are the same (resp. different)
+         */
         if (i == j) {
             is_equal = coco_double_almost_equal(sum, 1, 1e-9);
             if (!is_equal) {

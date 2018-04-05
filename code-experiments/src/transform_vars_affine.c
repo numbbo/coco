@@ -202,7 +202,5 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
       problem->best_parameter[i] += data->M[j * problem->number_of_variables + i] * data->x[j];
     }
   }
-  
-
   return problem;
 }

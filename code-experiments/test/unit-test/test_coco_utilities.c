@@ -436,6 +436,19 @@ static void test_coco_is_inf(void **state) {
   (void) state; /* unused */
 }
 
+/**
+ * Tests the function coco_is_orthogonal.
+ */
+static void test_coco_is_orthogonal(void **state) {
+
+  double *M;
+
+  M = coco_allocate_vector(4);
+  assert(coco_is_orthogonal(M, 4, 4));
+  coco_free_memory(M);
+  (void)state; /* unused */
+}
+
 static int test_all_coco_utilities(void) {
 
   const struct CMUnitTest tests[] =
@@ -448,6 +461,7 @@ static int test_all_coco_utilities(void) {
       cmocka_unit_test(test_coco_string_split),
       cmocka_unit_test(test_coco_option_keys),
       cmocka_unit_test(test_coco_string_parse_ranges),
+      cmocka_unit_test(test_coco_is_orthogonal),
       cmocka_unit_test_setup_teardown(
           test_coco_create_remove_directory,
           setup_coco_create_remove_directory,
