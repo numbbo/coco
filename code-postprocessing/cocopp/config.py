@@ -45,6 +45,8 @@ def config_line_styles():
     for i, algorithm in enumerate(sorted(settings.foreground_algorithm_list)):
         if algorithm in settings.algorithm_line_styles:
             settings.line_styles[i] = settings.algorithm_line_styles[algorithm]
+            print('linestyle %d' % i, 'set for algorithm %s' % algorithm)
+
 
 def config_target_values_setting(is_expensive, is_runlength_based):
     """manage target values setting in "expensive" optimization scenario.
