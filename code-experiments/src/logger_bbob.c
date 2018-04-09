@@ -28,7 +28,7 @@
 
 static const double fvalue_logged_for_infinite = 3e21;   /* value used for logging try */
 static const double fvalue_logged_for_nan = 2e21;
-static const boudle fvalue_initialization = 1e21;   /* only in first evaluation */
+static const double fvalue_initialization = 1e21;   /* only in first evaluation */
 
 /*static const size_t bbob_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
 /*static const size_t bbob_nbpts_fval = 5;*/
@@ -385,7 +385,8 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   double *cons;
   logger_bbob_data_t *logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
   coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);
-  const int log, is_feasible = problem->number_of_constraints <= 0
+  int log;
+  const int is_feasible = problem->number_of_constraints <= 0
                             || coco_is_feasible(inner_problem, x, NULL);
 
   if (!logger->is_initialized) {
@@ -447,8 +448,8 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     /* Add a line in the .dat file for each logging target reached
      * by a feasible solution and always at evaluation one
      */
-    if (logger->number_of_evaluations == 1 || log && coco_observer_targets_trigger(logger->targets,
-                                        logger->best_fvalue - logger->optimal_fvalue)) {
+    if (logger->number_of_evaluations == 1 || (log && coco_observer_targets_trigger(logger->targets,
+                                        logger->best_fvalue - logger->optimal_fvalue))) {
       logger_bbob_write_data(
           logger->fdata_file,
           logger->number_of_evaluations,
