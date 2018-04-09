@@ -1108,17 +1108,9 @@ class DataSet(object):
                                 str(self.instancenumbers)+ 
                                 ' (f' + str(self.funcId) + ', ' + 
                                 str(self.dim) + 'D)')
-        elif ((instancedict != genericsettings.instancesOfInterest2009)
-                and (instancedict != genericsettings.instancesOfInterest2010)
-                and (instancedict != genericsettings.instancesOfInterest2012)
-                and (instancedict != genericsettings.instancesOfInterest2013)
-                and (instancedict != genericsettings.instancesOfInterest2015)
-                and (instancedict != genericsettings.instancesOfInterest2016)
-                and (instancedict != genericsettings.instancesOfInterest2017)
-                and (instancedict != genericsettings.instancesOfInterestBiobj2016)
-                and (instancedict != genericsettings.instancesOfInterestBiobj2017)):
+        elif (instancedict not in genericsettings.instancesOfInterest):
             is_consistent = False
-            warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, 2015 or 2016')
+            warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, and 2015-2018')
         return is_consistent
             
     def computeERTfromEvals(self):
