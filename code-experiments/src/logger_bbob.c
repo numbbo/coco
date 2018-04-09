@@ -29,7 +29,6 @@
 static const double fvalue_logged_for_infinite = 3e21;   /* value used for logging try */
 static const double fvalue_logged_for_nan = 2e21;
 static const double fvalue_initialization = 1e21;   /* only in first evaluation */
-
 /*static const size_t bbob_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
 /*static const size_t bbob_nbpts_fval = 5;*/
 static size_t bbob_current_dim = 0;
