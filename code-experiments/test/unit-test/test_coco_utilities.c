@@ -444,7 +444,11 @@ static void test_coco_is_orthogonal(void **state) {
   double *M;
 
   M = coco_allocate_vector(4);
-  assert(coco_is_orthogonal(M, 4, 4));
+  M[0] = 1.;
+  M[1] = 0.;
+  M[2] = 0.;
+  M[3] = 1.;
+  assert(coco_is_orthogonal(M, 2, 2));
   coco_free_memory(M);
   (void)state; /* unused */
 }
