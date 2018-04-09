@@ -157,7 +157,7 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
                 sigma0 = 0.02
                 restarts_ = 0
             else:
-                x0 = "%f + %f * np.random.rand(%d)" % (
+                x0 = "%f + %f * (np.random.rand(%d) - 0.5)" % (
                         center[0], 0.8 * range_[0], fun.dimension)
                 sigma0 = 0.2
                 restarts_ = 6 * (observer_options.as_string.find('IPOP') >= 0)
