@@ -28,6 +28,7 @@
 
 static const double fvalue_logged_for_infinite = 3e21;   /* value used for logging try */
 static const double fvalue_logged_for_nan = 2e21;
+static const boudle fvalue_initialization = 1e21;   /* only in first evaluation */
 
 /*static const size_t bbob_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
 /*static const size_t bbob_nbpts_fval = 5;*/
@@ -384,7 +385,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   double *cons;
   logger_bbob_data_t *logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
   coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);
-  const int is_feasible = problem->number_of_constraints <= 0
+  const int log, is_feasible = problem->number_of_constraints <= 0
                             || coco_is_feasible(inner_problem, x, NULL);
 
   if (!logger->is_initialized) {
@@ -428,19 +429,25 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   else if (coco_is_inf(sum_cons))
     sum_cons = fvalue_logged_for_infinite;
 
+  /* Indicates whether the current solution should be logged */
+  log = y_logged - logger->optimal_fvalue > 0;
+
   /* Update logger state.
    *   at logger->number_of_evaluations == 1 the logger->best_fvalue is not initialized,
    *   also compare to y_logged to not potentially be thrown off by weird values in y[0]
    */
-  if (logger->number_of_evaluations == 1 || y_logged + sum_cons < logger->best_fvalue) {
-    logger->best_fvalue = y_logged + sum_cons;
+  if (logger->number_of_evaluations == 1 || (log && y_logged + sum_cons < logger->best_fvalue)) {
+    if (log)
+        logger->best_fvalue = y_logged + sum_cons;
+    else    /* can only be the case in the first evaluation */
+        logger->best_fvalue = fvalue_initialization;
     for (i = 0; i < problem->number_of_variables; i++)
-      logger->best_solution[i] = x[i]; /* may be infeasible in evaluation one */
+      logger->best_solution[i] = x[i];
 
     /* Add a line in the .dat file for each logging target reached
      * by a feasible solution and always at evaluation one
      */
-    if (logger->number_of_evaluations == 1 || coco_observer_targets_trigger(logger->targets,
+    if (logger->number_of_evaluations == 1 || log && coco_observer_targets_trigger(logger->targets,
                                         logger->best_fvalue - logger->optimal_fvalue)) {
       logger_bbob_write_data(
           logger->fdata_file,
@@ -461,7 +468,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
         logger->tdata_file,
         logger->number_of_evaluations,
         logger->number_of_evaluations_constraints,
-        y_logged,
+        log ? y_logged : logger->best_fvalue,
         logger->best_fvalue,
         logger->optimal_fvalue,
         x,
