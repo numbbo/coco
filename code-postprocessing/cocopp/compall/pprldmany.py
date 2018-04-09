@@ -327,8 +327,13 @@ def plotLegend(handles, maxval):
         lh = min(lh, len(show_algorithms))
     if lh <= 1:
         lh = 2
-    fontsize = genericsettings.minmax_algorithm_fontsize[0] + np.min((1, np.exp(9 - lh))) * (
-        genericsettings.minmax_algorithm_fontsize[-1] - genericsettings.minmax_algorithm_fontsize[0])
+    fontsize_interp = (20.0 - lh) / 10.0
+    if fontsize_interp > 1.0:
+        fontsize_interp = 1.0
+    if fontsize_interp < 0.0:
+        fontsize_interp = 0.0
+    fontsize_bounds = genericsettings.minmax_algorithm_fontsize
+    fontsize = fontsize_bounds[0] + fontsize_interp * (fontsize_bounds[-1] - fontsize_bounds[0])
     i = 0  # loop over the elements of ys
     for j in sorted(ys.keys()):
         for k in reversed(sorted(ys[j].keys())):
