@@ -56,7 +56,7 @@ nbperdecade = 1
 median_max_evals_marker_format = ['x', 24, 3]
 label_fontsize = 17
 title_fontsize = 20
-styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
+styles = genericsettings.line_styles
 
 refcolor = 'wheat'
 """color of reference (best) algorithm"""
