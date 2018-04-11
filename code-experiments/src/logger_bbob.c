@@ -380,7 +380,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
  */
 static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, double *y) {
   size_t i;
-  double y_logged, sum_cons;
+  double y_logged, max_fvalue, sum_cons;
   double *cons;
   logger_bbob_data_t *logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
   coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);
@@ -402,10 +402,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   logger->written_last_eval = 0; /* flag whether the current evaluation was logged? */
   logger->last_fvalue = y[0]; /* asma: should be: max(y[0], logger->optimal_fvalue) */
 
-  /* bbob-constrained (only for infeasible solutions):
-   * If an f-value is smaller than optimal_fvalue, we log optimal_fvalue
-   */
-  y_logged = y[0] > logger->optimal_fvalue ? y[0] : logger->optimal_fvalue;
+  y_logged = y[0];
   if (coco_is_nan(y_logged))
     y_logged = fvalue_logged_for_nan;
   else if (coco_is_inf(y_logged))
@@ -431,12 +428,14 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   else if (coco_is_inf(sum_cons))
     sum_cons = fvalue_logged_for_infinite;
 
+  max_fvalue =  y_logged > logger->optimal_fvalue ? y_logged : logger->optimal_fvalue;
+
   /* Update logger state.
    *   at logger->number_of_evaluations == 1 the logger->best_fvalue is not initialized,
    *   also compare to y_logged to not potentially be thrown off by weird values in y[0]
    */
-  if (logger->number_of_evaluations == 1 || (y_logged + sum_cons < logger->best_fvalue)) {
-    logger->best_fvalue = y_logged + sum_cons;
+  if (logger->number_of_evaluations == 1 || (max_fvalue + sum_cons < logger->best_fvalue)) {
+    logger->best_fvalue = max_fvalue + sum_cons;
     for (i = 0; i < problem->number_of_variables; i++)
       logger->best_solution[i] = x[i];
 
