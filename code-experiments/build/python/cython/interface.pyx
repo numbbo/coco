@@ -523,8 +523,10 @@ also report back a missing name to https://github.com/numbbo/coco/issues
                 try:
                     problem = s.next_problem()
                     if problem is None:
+                        return  # StopIteration is deprecated
                         raise StopIteration
                 except NoSuchProblemException:
+                    return  # StopIteration is deprecated
                     raise StopIteration
                 yield problem
         except:
