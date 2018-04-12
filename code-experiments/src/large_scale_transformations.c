@@ -9,8 +9,10 @@
 
 /* TODO: Document this file in doxygen style! */
 
-static double *ls_random_data;/* global variable used to generate the random permutations */
+static const size_t BBOB_MAX_BLOCK_SIZE_ABSOLUTE = 40;  /* for block rotations */
+static const double BBOB_MAX_BLOCK_SIZE_RELATIVE = 1;   /* for block rotations, relative to dimension */ 
 
+static double *ls_random_data;/* global variable used to generate the random permutations */
 /**
  * ls_allocate_blockmatrix(n, m, bs):
  *
@@ -285,7 +287,9 @@ static size_t *ls_get_block_sizes(size_t *nb_blocks, size_t dimension){
   size_t block_size;
   size_t i;
 
-  block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension / 4, 100));
+  block_size = coco_double_to_size_t(bbob2009_fmin(
+                  (double) BBOB_MAX_BLOCK_SIZE_RELATIVE * dimension,
+                  BBOB_MAX_BLOCK_SIZE_ABSOLUTE));
   *nb_blocks = dimension / block_size + ((dimension % block_size) > 0);
   block_sizes = coco_allocate_vector_size_t(*nb_blocks);
   for (i = 0; i < *nb_blocks - 1; i++) {
