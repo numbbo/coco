@@ -81,7 +81,7 @@ def main(latex_commands_for_html):
             config.config(testbedsettings.default_testbed_cons)
         elif scenario == testbedsettings.scenario_largescalefixed:
             genericsettings.runlength_based_targets = False
-            config.config(testbedsettings.default_testbed_largescale)
+            config.config(testbedsettings.default_testbed_ls)
         else:
             warnings.warn("Scenario not supported yet in HTML")
 
