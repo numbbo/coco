@@ -662,6 +662,35 @@ class COCODataArchive(list):
         """depreciated, for backwards compatibility"""
         return self.get(*args, **kwargs)
 
+    def get_extended(self, args, remote=True):
+        """return a list of valid paths.
+
+        Elements in `args` may be a valid path name or a known name
+        from the data archive, or a uniquely matching substring of such
+        a name, or a matching substring with added "!" in which case
+        the first match is taken only (calling `self.get_first`),
+        or a matching substring with added "*" in which case all
+        matches are taken (calling `self.get_all`).
+        """
+        res = []
+        for i, name in enumerate(args):
+            if os.path.exists(name):
+                res.append(name)
+            elif name.endswith('!'):  # take first match
+                res.append(self.get_first(name[:-1], remote=remote))
+            elif name.endswith('*'):  # take all matches
+                res.extend(self.get_all(name[:-1], remote=remote))
+            elif self.find(name):  # get will bail out if there is not exactly one match
+                res.append(self.get(name, remote=remote))
+            else:
+                warnings.warn('"%s" seems not to be an existing file or match any archived data' % name)
+        if len(args) != len(set(args)):
+            warnings.warn("Several data arguments point to the very same location. "
+                          "This will most likely lead to a rather unexpected outcomes.")
+            # TODO: we would like the users input with timeout to confirm
+            # and otherwise raise a ValueError
+        return res
+
     def _name(self, full_path):
         """return supposed name of full_path or name without any checks"""
         if full_path.startswith(self.local_data_path):

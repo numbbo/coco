@@ -516,8 +516,9 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             # data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
             command_name = r'\alg%stables' % numtotext(i)
             #            header += r'\providecommand{%s}{{%s}{}}' % (command_name, str_to_latex(strip_pathname(alg)))
-            additional_commands.append('\\providecommand{%s}{\\StrLeft{%s}{\\ntables}}' %
-                                       (command_name, str_to_latex(strip_pathname1(alg))))
+            if df[0] == genericsettings.tabDimsOfInterest[0]:
+                additional_commands.append('\\providecommand{%s}{\\StrLeft{%s}{\\ntables}}' %
+                                           (command_name, str_to_latex(strip_pathname1(alg))))
             curline = [command_name + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
             curlineHtml = ['<th>%s</th>\n' % str_to_latex(strip_pathname1(alg))]
 
@@ -705,7 +706,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
     if len(additional_commands) > 0:
         for command in additional_commands:
             prepend_to_file(latex_commands_file, [command])
-    if len(tables_header) > 0:
+    if len(tables_header) > 0 and df[0] == genericsettings.tabDimsOfInterest[0]:
         extraeol = [r'\hline']
         res = tableXLaTeX([tables_header], spec=spec, extra_eol=extraeol, add_end_tabular=False)
         prepend_to_file(latex_commands_file, ['\\providecommand{\\pptablesheader}{', res, '}'])

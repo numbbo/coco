@@ -212,8 +212,8 @@ def main(arguments):
 
     command = ' cocopp --no-svg --settings=grayscale '  # TODO: grayscale has to go
 
-    copy_latex_templates()
-    print('LaTeX templates copied.')
+    #copy_latex_templates()
+    #print('LaTeX templates copied.')
 
     print('*** testing module cocopp ***')
     t0 = time.time()
@@ -224,7 +224,7 @@ def main(arguments):
                        data_path)
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
-    run_latex_template("templateBBOBarticle.tex", run_all_tests)
+    #run_latex_template("templateBBOBarticle.tex", run_all_tests)
     delete_files()
 
     t0 = time.time()
@@ -233,7 +233,7 @@ def main(arguments):
     result = os.system(python + command + data_path)
     print('**  subtest 2 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
-    run_latex_template("templateBIOBJarticle.tex", run_all_tests)
+    #run_latex_template("templateBIOBJarticle.tex", run_all_tests)
     delete_files()
 
     if run_all_tests:
@@ -248,7 +248,7 @@ def main(arguments):
         result = os.system(python + command + data_paths)
         print('**  subtest 3 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on many algorithms.'
-        run_latex_template("templateBBOBmany.tex", run_all_tests)
+        #run_latex_template("templateBBOBmany.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
@@ -257,7 +257,7 @@ def main(arguments):
                                 'lmm-CMA-ES_auger_noiseless.tgz']))
         print('**  subtest 4 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two algorithms.'
-        run_latex_template("templateBBOBcmp.tex", run_all_tests)
+        #run_latex_template("templateBBOBcmp.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
@@ -266,7 +266,7 @@ def main(arguments):
                                 'VNS_garcia-martinez_noiseless.tgz']))
         print('**  subtest 5 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two algorithms with option --include-single.'
-        run_latex_template("templateBBOBcmp.tex", run_all_tests)
+        #run_latex_template("templateBBOBcmp.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
@@ -274,7 +274,7 @@ def main(arguments):
                                 'VNS_garcia-martinez_noiseless.tgz'))
         print('**  subtest 6 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on one algorithm with option --expensive.'
-        run_latex_template("templateBBOBarticle.tex", run_all_tests)
+        #run_latex_template("templateBBOBarticle.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
@@ -283,7 +283,7 @@ def main(arguments):
                                 'RANDOMSEARCH-100_Auger_bbob-biobj.tgz']))
         print('**  subtest 7 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bbob-biobj algorithms.'
-        run_latex_template("templateBIOBJmultiple.tex", run_all_tests)
+        #run_latex_template("templateBIOBJmultiple.tex", run_all_tests)
         delete_files()
 
         t0 = time.time()
@@ -297,7 +297,7 @@ def main(arguments):
                                 'RANDOMSEARCH-100_Auger_bbob-biobj.tgz']))
         print('**  subtest 8 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on three bbob-biobj algorithms.'
-        run_latex_template("templateBIOBJmultiple.tex", run_all_tests)
+        #run_latex_template("templateBIOBJmultiple.tex", run_all_tests)
         delete_files()
 
         # testing data from bbob-noisy suite:
@@ -307,7 +307,7 @@ def main(arguments):
                                 'BFGS_ros_noisy.tgz']))
         print('**  subtest 9 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bbob-noisy algorithms.'
-        run_latex_template("templateNOISYarticle.tex", run_all_tests)
+        #run_latex_template("templateNOISYarticle.tex", run_all_tests)
         delete_files()
 
         # testing data from recent runs, prepared in do.py:
@@ -327,12 +327,12 @@ def main(arguments):
         assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-biobj`.'
         delete_files()
 
-        t0 = time.time()
-        result = os.system(python + command +
-                           join_path(recent_data_path, 'RS-co'))
-        print('**  subtest 12 finished in ', time.time() - t0, ' seconds')
-        assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-constrained`.'
-        delete_files(all_files=True)
+        # t0 = time.time()
+        # result = os.system(python + command +
+        #                    join_path(recent_data_path, 'RS-co'))
+        # print('**  subtest 12 finished in ', time.time() - t0, ' seconds')
+        # assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-constrained`.'
+        # delete_files(all_files=True)
 
         t0 = time.time()
         result = os.system(python + command + data_archive_get(

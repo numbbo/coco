@@ -18,7 +18,7 @@
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.
  * Increase the budget multiplier value gradually to see how it affects the runtime.
  */
-static const int BUDGET_MULTIPLIER = 2;
+static const unsigned int BUDGET_MULTIPLIER = 2;
 
 /**
  * The maximal number of independent restarts allowed for an algorithm that restarts itself.
@@ -114,8 +114,10 @@ int main(void) {
    *   bbob                 24 unconstrained noiseless single-objective functions
    *   bbob-biobj           55 unconstrained noiseless bi-objective functions
    *   bbob-biobj-ext       92 unconstrained noiseless bi-objective functions
-   *   bbob-constrained     48 constrained noiseless single-objective functions
-   *   bbob-largescale      24 unconstrained noiseless single-objective functions in large dimension
+   *   [bbob-constrained*   48 constrained noiseless single-objective functions]
+   *   [bbob-largescale*    24 unconstrained noiseless single-objective functions in large dimension]
+   *
+   * Suites with a star are partly implemented but not yet fully supported.
    *
    * Adapt to your need. Note that the experiment is run according
    * to the settings, defined in example_experiment(...) below.

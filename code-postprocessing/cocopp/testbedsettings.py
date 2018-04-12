@@ -258,7 +258,7 @@ class GECCOBBOBTestbed(Testbed):
 
     def __init__(self, targetValues):
 
-        if 1 < 3:
+        if 11 < 3:
             # override settings if needed...
             # self.reference_algorithm_filename = 'best09-16-bbob.tar.gz'
             # self.reference_algorithm_displayname = 'best 2009--16'  # TODO: should be read in from data set in reference_algorithm_filename

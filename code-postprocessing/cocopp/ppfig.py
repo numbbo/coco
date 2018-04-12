@@ -545,25 +545,26 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
 
     This function only works with monotonous graph.
     """
-    res = plt.plot(x, y, **kwargs)  # shouldn't this be done in the calling code?
+    line_args = kwargs.copy()
+    line_args['marker'] = ''
+    line_args['label'] = ''
+    res = plt.plot(x, y, **line_args)  # shouldn't this be done in the calling code?
 
     if 'marker' in kwargs and len(x) > 0:
         # x2, y2 = downsample(x, y)
         x2, y2 = marker_positions(x, y, nbperdecade, 19, plt.axis(),
                                   np.log10 if logscale else None)
-        res2 = plt.plot(x2, y2)
-        for i in res2:
-            i.update_from(res[0])  # copy all attributes of res
-        plt.setp(res2, linestyle='', label='')
+        marker_args = kwargs.copy()
+        marker_args['drawstyle'] = 'default'
+        marker_args['linestyle'] = ''
+        marker_args['label'] = ''
+        res2 = plt.plot(x2, y2, **marker_args)
         res.extend(res2)
 
     if 'label' in kwargs:
-        res3 = plt.plot([np.nan], [np.nan], **kwargs)
-        for i in res3:
-            i.update_from(res[0])  # copy all attributes of res
+        res3 = plt.plot([-1.], [-1.], **kwargs)
         res.extend(res3)
 
-    plt.setp(res[0], marker='', label='')
     return res
 
 

@@ -57,18 +57,24 @@ from cocoex import default_observers  # see cocoex.__init__.py
 from cocoex.utilities import ObserverOptions, ShortInfo, ascetime, print_flush
 from cocoex.solvers import random_search
 
-def default_observer_options(budget_=None, suite_name_=None):
+def default_observer_options(budget_=None, suite_name_=None, current_batch_=None):
     """return defaults computed from input parameters or current global vars
     """
-    global budget, suite_name
+    global budget, suite_name, number_of_batches, current_batch
     if budget_ is None:
         budget_ = budget
     if suite_name_ is None:
         suite_name_ = suite_name
+    if current_batch_ is None and number_of_batches > 1:
+        current_batch_ = current_batch
     opts = {}
     try:
-        opts.update({'result_folder': '"%s_on_%s_budget%04dxD"'
-                    % (SOLVER.__name__, suite_name_, budget_)})
+        opts.update({'result_folder': '"%s_on_%s%s_budget%04dxD"'
+                    % (SOLVER.__name__,
+                       suite_name_,
+                       "" if current_batch_ is None
+                          else "_batch%03dof%d" % (current_batch_, number_of_batches),
+                       budget_)})
     except: pass
     try:
         solver_module = '(%s)' % SOLVER.__module__
@@ -151,7 +157,7 @@ def coco_optimize(solver, fun, max_evals, max_runs=1e9):
                 sigma0 = 0.02
                 restarts_ = 0
             else:
-                x0 = "%f + %f * np.random.rand(%d)" % (
+                x0 = "%f + %f * (np.random.rand(%d) - 0.5)" % (
                         center[0], 0.8 * range_[0], fun.dimension)
                 sigma0 = 0.2
                 restarts_ = 6 * (observer_options.as_string.find('IPOP') >= 0)

@@ -64,7 +64,7 @@ static void f_katsuura_evaluate(coco_problem_t *problem, const double *x, double
 static coco_problem_t *f_katsuura_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Katsuura function",
-      f_katsuura_evaluate, NULL, number_of_variables, -5.0, 5.0, 0);
+      f_katsuura_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
   coco_problem_set_id(problem, "%s_d%02lu", "katsuura", number_of_variables);
 
   /* Compute best solution */
