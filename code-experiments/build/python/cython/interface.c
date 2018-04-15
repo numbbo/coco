@@ -1891,7 +1891,6 @@ static const char __pyx_k_cocoex_exceptions[] = "cocoex.exceptions";
 static const char __pyx_k_known_suite_names[] = "known_suite_names";
 static const char __pyx_k_Suite_ids_line_391[] = "Suite.ids (line 391)";
 static const char __pyx_k_NotImplementedError[] = "NotImplementedError";
-static const char __pyx_k_known_suite_names_2[] = "_known_suite_names";
 static const char __pyx_k_number_of_variables[] = "number_of_variables";
 static const char __pyx_k_with_d_constraint_s[] = " with %d constraint%s";
 static const char __pyx_k_NoSuchSuiteException[] = "NoSuchSuiteException";
@@ -2029,7 +2028,6 @@ static PyObject *__pyx_n_u_initialized;
 static PyObject *__pyx_n_s_instance;
 static PyObject *__pyx_n_s_iter;
 static PyObject *__pyx_n_s_known_suite_names;
-static PyObject *__pyx_n_s_known_suite_names_2;
 static PyObject *__pyx_n_s_level;
 static PyObject *__pyx_n_s_level_2;
 static PyObject *__pyx_n_s_log_level;
@@ -17401,7 +17399,6 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_instance, __pyx_k_instance, sizeof(__pyx_k_instance), 0, 0, 1, 1},
   {&__pyx_n_s_iter, __pyx_k_iter, sizeof(__pyx_k_iter), 0, 0, 1, 1},
   {&__pyx_n_s_known_suite_names, __pyx_k_known_suite_names, sizeof(__pyx_k_known_suite_names), 0, 0, 1, 1},
-  {&__pyx_n_s_known_suite_names_2, __pyx_k_known_suite_names_2, sizeof(__pyx_k_known_suite_names_2), 0, 0, 1, 1},
   {&__pyx_n_s_level, __pyx_k_level, sizeof(__pyx_k_level), 0, 0, 1, 1},
   {&__pyx_n_s_level_2, __pyx_k_level_2, sizeof(__pyx_k_level_2), 0, 0, 1, 1},
   {&__pyx_n_s_log_level, __pyx_k_log_level, sizeof(__pyx_k_log_level), 0, 0, 1, 1},
@@ -17968,7 +17965,7 @@ PyMODINIT_FUNC PyInit_interface(void)
  * 
  * # known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained"]
  * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext"]             # <<<<<<<<<<<<<<
- * _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]
+ * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]
  * 
  */
   __pyx_t_2 = PyList_New(3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 11, __pyx_L1_error)
@@ -17988,7 +17985,7 @@ PyMODINIT_FUNC PyInit_interface(void)
   /* "cython/interface.pyx":12
  * # known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained"]
  * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext"]
- * _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]             # <<<<<<<<<<<<<<
+ * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]             # <<<<<<<<<<<<<<
  * 
  * # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
  */
@@ -18009,7 +18006,7 @@ PyMODINIT_FUNC PyInit_interface(void)
   __Pyx_INCREF(__pyx_kp_u_bbob_largescale);
   __Pyx_GIVEREF(__pyx_kp_u_bbob_largescale);
   PyList_SET_ITEM(__pyx_t_2, 4, __pyx_kp_u_bbob_largescale);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_known_suite_names_2, __pyx_t_2) < 0) __PYX_ERR(0, 12, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_known_suite_names, __pyx_t_2) < 0) __PYX_ERR(0, 12, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "cython/interface.pyx":18
