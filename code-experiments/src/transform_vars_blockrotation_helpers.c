@@ -14,6 +14,18 @@
 
 /* TODO: Document this file in doxygen style! */
 
+/**
+ * @brief Returns block size for block rotation matrices.
+ *
+ */
+static size_t coco_rotation_matrix_block_size(size_t const dimension) {
+  const double BLOCK_SIZE_RELATIVE = 1;   /* for block rotations, relative to dimension */
+  const size_t MAX_BLOCK_SIZE_ABSOLUTE = 40;  /* for block rotations */
+
+  return coco_double_to_size_t(coco_double_min(
+                  BLOCK_SIZE_RELATIVE * dimension,
+                  MAX_BLOCK_SIZE_ABSOLUTE));
+}
 
 /**
  * @brief
@@ -169,7 +181,8 @@ static size_t *coco_get_block_sizes(size_t *nb_blocks, size_t dimension, const c
   
   if (strcmp(suite_name, "bbob-largescale") == 0) {
     /*block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension / 4, 100));*/ /*old value*/
-    block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension, 40));
+    /*block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension, 40));*/
+    block_size = coco_rotation_matrix_block_size(dimension);
     *nb_blocks = dimension / block_size + ((dimension % block_size) > 0);
     block_sizes = coco_allocate_vector_size_t(*nb_blocks);
     for (i = 0; i < *nb_blocks - 1; i++) {
