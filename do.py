@@ -686,7 +686,7 @@ def build_java():
         #                       env=os.environ, universal_newlines=True)
         #jdkpath1 = jdkpath.split("jni.h")[0]
         # better
-        jdkhome = os.environ['JAVA_HOME'] or os.environ['JDK_HOME']
+        jdkhome = os.environ.get('JAVA_HOME') or os.environ.get('JDK_HOME')
         if not jdkhome:
             javapath = executable_path('java')
             if not javapath:
