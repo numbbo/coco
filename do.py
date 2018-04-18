@@ -692,7 +692,7 @@ def build_java():
             if not javapath:
                 raise RuntimeError('Can not find Java executable')
             jdkhome = abspath(join(javapath, os.pardir, os.pardir))
-            if os.path.dirname(jdkhome) == 'jre':
+            if os.path.basename(jdkhome) == 'jre':
                 jdkhome = join(jdkhome, os.pardir)
 
         jdkpath1 = join(jdkhome, 'include')
