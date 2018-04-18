@@ -686,10 +686,16 @@ def build_java():
         #                       env=os.environ, universal_newlines=True)
         #jdkpath1 = jdkpath.split("jni.h")[0]
         # better
-        javapath = executable_path('java')
-        if not javapath:
-            raise RuntimeError('Can not find Java executable')
-        jdkpath1 = abspath(join(javapath, os.pardir, os.pardir, 'include'))
+        jdkhome = os.environ['JAVA_HOME'] or os.environ['JDK_HOME']
+        if not jdkhome:
+            javapath = executable_path('java')
+            if not javapath:
+                raise RuntimeError('Can not find Java executable')
+            jdkhome = abspath(join(javapath, os.pardir, os.pardir))
+            if os.path.dirname(jdkhome) == 'jre':
+                jdkhome = join(jdkhome, os.pardir)
+
+        jdkpath1 = join(jdkhome, 'include')
         jdkpath2 = jdkpath1 + '/linux'
         run('code-experiments/build/java',
             ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-c', 'CocoJNI.c'],
