@@ -632,8 +632,8 @@ def build_java_deps(build_dir):
                 {'COCO_VERSION': git_version(pep440=True)})
     write_file(git_revision(), "code-experiments/build/java/REVISION")
     write_file(git_version(), "code-experiments/build/java/VERSION")
-    run('code-experiments/build/java', ['javac', 'CocoJNI.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javah', 'CocoJNI'], verbose=_verbosity)
+    run(build_path, ['javac', 'CocoJNI.java'], verbose=_verbosity)
+    run(build_path, ['javah', 'CocoJNI'], verbose=_verbosity)
 
     # Finds the path to the headers jni.h and jni_md.h (platform-dependent)
     # and compiles the CocoJNI library (compiler-dependent). So far, only
