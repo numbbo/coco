@@ -11,7 +11,8 @@ generates outputs that will be used in the generation of the LateX-
 formatted article summarizing the experiments.
 
 The main method of this package is `cocopp.main` (currently aliased to
-`cocopp.rungeneric.main`). This method allows to use the post-processing
+`cocopp.rungeneric.main`, which is **the best place to look for getting
+a quick start**). This method allows to use the post-processing
 through a command-line interface.
 
 To obtain more information on the use of this package from the python
@@ -31,8 +32,9 @@ from numpy.random import seed as set_seed
 from .cococommands import *  # outdated
 from . import config
 from . import findfiles
+from . import rungeneric
 
-from .rungeneric import main as main
+from .rungeneric import main
 
 import pkg_resources
 
@@ -41,12 +43,18 @@ __all__ = [# 'main',  # import nothing with "from cocopp import *"
 
 __version__ = pkg_resources.require('cocopp')[0].version
 
-_data_archive = findfiles.COCODataArchive()
-data_archive = _data_archive  # this line will go away
-"depreciated"
+data_archive = findfiles.COCODataArchive()
+_data_archive = data_archive  # should go away but some tests rely on this
 
 bbob = findfiles.COCOBBOBDataArchive()
 bbob_noisy = findfiles.COCOBBOBNoisyDataArchive()
 bbob_biobj = findfiles.COCOBBOBBiobjDataArchive()
 
+# clean up namespace
 del absolute_import, pkg_resources
+# del bestalg, captions, comp2, compall, htmldesc, pickle, ppconverrorbars
+# del ppfig, ppfigdim, ppfigparam, pplogloss, pprldistr, pproc, pptable
+# del pptex, readalign, rungeneric1, rungenericmany, toolsdivers, toolsstats
+
+# cococommands, config, data_archive, dataformatsettings, findfiles,
+# genericsettings, info, load, main, rungeneric, set_seed, systeminfo, testbedsettings,
