@@ -81,14 +81,34 @@ def main(argv=None):
 
     This routine will:
 
-    * call sub-routine :py:func:`cocopp.rungeneric1.main` for each
-      input argument; each input argument will be used as output
-      sub-folder relative to the main output folder,
+    * call sub-routine :py:func:`cocopp.rungeneric1.main` for one
+      input argument (see also --include-single option); the input
+      argument will be used as output sub-folder relative to the main
+      output folder,
     * call sub-routine :py:func:`cocopp.rungenericmany.main`
       (2 or more input arguments) for the input arguments altogether.
     * alternatively call sub-routine :py:func:`cocopp.__main__.main` if option
       flag --test is used. In this case it will run through the
       post-processing tests.
+
+    Usecase from a Python shell
+    ---------------------------
+    To fine-control the behavior of the module, it is highly recommended
+    to work from an (I)Python shell. For example::
+
+        import cocopp
+        cocopp.genericsettings.background = {None: cocopp.bbob.get_all("2009/")}
+        cocopp.main("data_folder " + cocopp.data_archive.get("2009/BFGS_ros_noiseless"))
+
+    compares an experiment given in `"data_folder"` with BFGS and displays
+    all archived results from 2009 in the background. `cocopp.bbob` is a
+    `cocopp.findfiles.COCODataArchive` class.
+
+    This may take 5-15 minutes to complete, because more than 30 algorithm
+    datasets are processed.
+
+    Output
+    ------
 
     The output figures and tables written by default to the output folder
     :file:`ppdata` are used in the provided LaTeX templates:

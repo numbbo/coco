@@ -157,19 +157,34 @@ class COCODataArchive(list):
     full experiment, benchmarking one algorithm on an entire benchmark
     suite.
 
-    Calling the class instance (alias to `find`) helps to find entries
+    Calling the class instance (alias to `find`) helps to extract entries
     matching one or several substrings, e.g. a year or a method.
     `find_indices` returns the respective indices instead of the names.
-    `print` displays both.
+    `print` displays both. For example::
 
-    Method `get` downloads the "matching" data set if necessary and
-    returns the the absolute data path which can be used with
+        import cocopp
+        cocopp.bbob.find('bfgs')  # will give
+        ['2009/BFGS_ros_noiseless.tgz',
+         '2012/DE-BFGS_voglis_noiseless.tgz',
+         '2012/PSO-BFGS_voglis_noiseless.tgz',
+         '2014-others/BFGS-scipy-Baudis.tgz',
+         '2014-others/L-BFGS-B-scipy-Baudis.tgz'...
+
+    To post-process these data call::
+
+        cocopp.main(cocopp.bbob.get_all('bfgs'))
+
+    Method `get` downloads a single "matching" data set if necessary and
+    returns the absolute data path which can be used with
     `cocopp.main`.
 
     Method `index` is inherited from `list` and finds the index of the
-    respective name entry in the archive (exact match only):
+    respective name entry in the archive (exact match only).
 
-    >>> from cocopp import bbob
+    `cocopp.data_archive` contains all experimental data for all test
+    suites.
+
+    >>> from cocopp import bbob  # the bbob testbed archive
     >>> len(bbob) > 150
     True
 
