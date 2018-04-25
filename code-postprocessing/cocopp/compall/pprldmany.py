@@ -48,8 +48,9 @@ displaybest = True
 x_limit = None  # not sure whether this is necessary/useful
 x_limit_default = 1e7  # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
 divide_by_dimension = True
+annotation_line_start_relative = 1.03
 annotation_line_end_relative = 1.11  # lines between graph and annotation
-annotation_space_end_relative = 1.24  # figure space end relative to x_limit
+annotation_space_end_relative = 1.0 # 1.24  # figure space end relative to x_limit
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
@@ -357,12 +358,15 @@ def plotLegend(handles, maxval):
                                  'markeredgewidth', 'markerfacecolor',
                                  'markeredgecolor', 'markersize', 'zorder'):
                         tmp[attr] = plt.getp(h, attr)
+                    anox = maxval ** annotation_line_start_relative
                     legx = maxval ** annotation_line_end_relative
-                    if 'marker' in attr:
-                        legx = maxval ** annotation_line_end_relative
-                    # reshandles.extend(plt_plot((maxval, legx), (j, y),
-                    reshandles.extend(plt_plot((maxval, legx), (j, y),
-                                               color=plt.getp(h, 'markeredgecolor'), **tmp))
+                    for attr in ('lw', 'ls', 'color', 'marker',
+                                 'markeredgewidth', 'markerfacecolor',
+                                 'markeredgecolor', 'markersize', 'zorder'):
+                        tmp[attr] = plt.getp(h, attr)
+                    reshandles.extend(plt_plot((legx, ), (y, ), **tmp))
+                    tmp['marker'] = ''
+                    reshandles.extend(plt_plot((anox, legx), (j, y), **tmp))
                     reshandles.append(
                         plt.text(maxval ** (0.02 + annotation_line_end_relative), y,
                                  toolsdivers.str_to_latex(
@@ -849,7 +853,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     if save_figure:
         ppfig.save_figure(figureName,
                           dictAlg[algorithms_with_data[0]][0].algId,
-                          layout_rect=(0, 0, 0.88, 1))
+                          layout_rect=(0, 0, 0.735, 1))
         if plotType == PlotType.DIM:
             file_name = genericsettings.pprldmany_file_name
             ppfig.save_single_functions_html(
