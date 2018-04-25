@@ -218,7 +218,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
 
         x = np.array(sorted(dictx))  # x is not a multiset anymore
         y = np.cumsum(list(dictx[i] for i in x))  # cumsum of size of y-steps (nb of appearences)
-        idx = sum(x <= x_limit ** annotation_space_end_relative) - 1
+        idx = sum(x <= x_limit ** 1.24) - 1
         y_last, x_last = y[idx] / float(nn), x[idx]
         if maxval is None:
             maxval = max(x)
