@@ -1,23 +1,72 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""COmparing Continuous Optimisers (COCO) post-processing software
+"""`cocopp`, COmparing Continuous Optimisers (COCO) post-processing
 
-This package is meant to generate output figures and tables for the
-benchmarking of continuous optimisers in the case of black-box
-optimisation.
-The post-processing tool takes as input data from experiments and
-generates outputs that will be used in the generation of the LateX-
-formatted article summarizing the experiments.
+This package (`cocopp`) generates output figures and tables in html format
+and for including into LaTeX-documents.
 
-The main method of this package is `cocopp.main` (currently aliased to
-`cocopp.rungeneric.main`, which is **the best place to look for getting
-a quick start**). This method allows to use the post-processing
-through a command-line interface.
+The main method of this package is `main` (currently aliased to
+`cocopp.rungeneric.main`). The `main` method also allows basic use of the
+post-processing through a command-line interface. The recommended use
+is however from an IPython/Jupyter shell.
 
-To obtain more information on the use of this package from the python
-interpreter, type ``help(cocopp.cococommands)``, however remark that
-this info might not be entirely up-to-date.
+The `cocopp.Interface` class lists the most basic commands and data of
+the package, sufficient for most use cases.
+
+>>> import cocopp
+>>> print("\n".join(dir(cocopp.Interface)))  # doctest:+ELLIPSIS, +NORMALIZE_WHITESPACE
+_...
+archives
+config
+genericsettings
+load
+main
+
+The `main` function,
+
+>>> cocopp.main('exdata another_folder yet_another_or_not')  # doctest:+SKIP
+
+postprocesses data from one or several folders, for example data
+generated with the help from the `cocoex` module. Each folder is
+considered to contain data of a full experiment with a single algorithm.
+
+Results can be explored from the ``ppdata/index.html`` file, unless a
+a different output folder is specified with the ``-o`` option.
+
+Comparative data from over 200 full experiments are archived online and
+can be easily listed, filtered, retrieved and displayed in
+`COCODataArchive` instances. For example
+
+>>> cocopp.archives.bbob('bfgs')  # doctest:+ELLIPSIS
+['2009/BFGS_...
+
+lists all data sets containing ``'bfgs'`` in their name. The first in
+the list can be postprocessed by
+
+>>> cocopp.main('bfgs!')  # doctest:+SKIP
+
+All of them can be processed like
+
+>>> cocopp.main('bfgs*')  # doctest:+SKIP
+
+Only a trailing `*` is accepted and any string containing the
+substring is matched. The postprocessing result of
+
+>>> cocopp.main('bbob/2009/*')  # doctest:+SKIP
+
+can be investigated at http://coco.gforge.inria.fr/ppdata-archive/bbob/2009-all.
+
+To display algorithms in the background, the ``genericsettings.background``
+variables needs to be set:
+
+>>> cocopp.genericsettings.background = {None: cocopp.archives.bbob.get_all('bfgs')}  # doctest:+SKIP
+
+where `None` invokes the default color (grey) and line style (solid)
+``genericsettings.background_default_style``. Now we can show the first
+``'bfgs'``-matching algorithm with all others in the background:
+
+>>> cocopp.main('bfgs!')  # doctest:+SKIP
 
 """
 
@@ -33,6 +82,7 @@ from .cococommands import *  # outdated
 from . import config
 from . import findfiles
 from . import rungeneric
+from . import genericsettings
 
 from .rungeneric import main
 
@@ -46,9 +96,30 @@ __version__ = pkg_resources.require('cocopp')[0].version
 data_archive = findfiles.COCODataArchive()
 _data_archive = data_archive  # should go away but some tests rely on this
 
-bbob = findfiles.COCOBBOBDataArchive()
+archives = findfiles.KnownArchives()
+bbob = findfiles.COCOBBOBDataArchive()  # should go away
+# bbob = 'use `archives.bbob` instead'
 bbob_noisy = findfiles.COCOBBOBNoisyDataArchive()
 bbob_biobj = findfiles.COCOBBOBBiobjDataArchive()
+
+class Interface:
+    """collection of the most user-relevant methods and data.
+
+    `archives`: online data archives of type `KnownArchives`
+
+    `config`: dynamic configuration tool (advanced)
+
+    `genericsettings`: basic settings
+
+    `load`: loading data from disk
+
+    `main`: post-processing data from disk
+    """
+    archives = archives
+    config = config
+    genericsettings = genericsettings
+    load = load
+    main = main
 
 # clean up namespace
 del absolute_import, pkg_resources

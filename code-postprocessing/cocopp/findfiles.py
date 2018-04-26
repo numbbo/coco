@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Recursively find :file:`info` and :file:`pickle` files within a directory
+"""Recursively find :file:`info` and zipped files within a directory and
+administer archives.
 
 This module can be called from the shell, it will recursively look for
 :file:`info` and :file:`pickle` files in the current working directory::
@@ -836,16 +837,22 @@ class COCODataArchive(list):
         return res
 
 class COCOBBOBDataArchive(COCODataArchive):
-    """This class "contains" archived data for the 'bbob' suite.
+    """`list` of archived data for the 'bbob' test suite.
+
+    To see the list of all data from 2009:
 
     >>> import cocopp
-    >>> cocopp.bbob  # doctest:+ELLIPSIS
-    ['2009/ALPS_hornby_noiseless.tgz',...
-    >>> isinstance(cocopp.bbob, cocopp.findfiles.COCOBBOBDataArchive)
-    True
+    >>> cocopp.archives.bbob.find("2009/")  # doctest:+ELLIPSIS
+    ['2009/ALPS...
 
-    While the data are specific to `COCOBBOBDataArchive`, all the
+    To use the above list in `main`:
+
+    >>> cocopp.main(cocopp.archives.bbob.get_all("2009/")  # doctest:+SKIP
+
+    `get_all` downloads the data from the online archive if necessary.
+    While the data are specific to the `COCOBBOBDataArchive` class, all
     functionality is inherited from the parent `class` `COCODataArchive`:
+
     """
     __doc__ += COCODataArchive.__doc__
     def __init__(self,
@@ -908,3 +915,112 @@ class COCOBBOBBiobjDataArchive(COCODataArchive):
         self._all = [[line[0][11:]] + list(line[1:]) for line in COCODataArchive._all
                      if line[0].startswith('bbob-biobj/')]
         COCODataArchive.__init__(self, local_path, url)
+
+class KnownArchives:
+    """collection of known online data archives as attributes.
+
+    `cocopp.archives` is an instance of `KnownArchives` and contains as
+    archive attributes:
+
+    ``all``: the `list` of all archived data from all test suites.
+
+    `bbob`: the `list` of archived data run on the `bbob` test suite.
+
+    `bbob_noisy`: ditto on the `bbob_noisy` test suite.
+
+    `bbob_biobj`: ditto...
+
+    A Quick Guide
+    -------------
+
+    **1) To list all available data**:
+
+        >>> import cocopp
+        >>> cocopp.archives.all  # doctest:+ELLIPSIS
+        ['bbob/2009/AL...
+
+    **2) To see all available data from a given test suite**:
+
+        >>> cocopp.archives.bbob  # doctest:+ELLIPSIS
+        ['2009/ALPS...
+
+    or
+
+        >>> cocopp.archives.bbob_biobj  # doctest:+ELLIPSIS
+        ['2016/DEMO_Tusar...
+
+    or
+
+        >>> cocopp.archives.bbob_noisy  # doctest:+ELLIPSIS
+        ['2009/ALPS...
+
+    **3) We can extract a subset** from any test suite (such as
+    `cocopp.archives.all`, `cocopp.archives.bbob`, ...) of the
+    archive by very basic pattern matching:
+
+        >>> cocopp.bbob.find('bfgs')  # doctest:+NORMALIZE_WHITESPACE
+        ['2009/BFGS_ros_noiseless.tgz',
+         '2012/DE-BFGS_voglis_noiseless.tgz',
+         '2012/PSO-BFGS_voglis_noiseless.tgz',
+         '2014-others/BFGS-scipy-Baudis.tgz',
+         '2014-others/L-BFGS-B-scipy-Baudis.tgz']
+
+    The `find` method will not download data and is only for inspecting
+    the archives. If we want to actually process the data we need to get
+    them to/from our disk by replacing `find` with `get` or `get_all`:
+
+    **4) When postprocessing data via `cocopp.main`**, we can use the above
+    such as
+
+        >>> cocopp.main(cocopp.bbob.get_all('bfgs'))  # doctest:+SKIP
+
+    When using `get` results in multiple matches, the postprocessing
+    will complain.
+
+    To make things even easier, the `get` and `get_all` methods are called
+    on each argument given in a string to `main`, such that we can do
+    things like
+
+        >>> cocopp.main('bbob/2009/BIPOP DE-BFGS')  # doctest:+SKIP
+
+    Again, the postprocessing bails out when there are multiple
+    matches. For such cases, we can use the symbols `*` (AKA take
+    all matches) and `!` (AKA take the first match):
+
+        >>> cocopp.main('BIPOP! 2012/DE*')  # doctest:+SKIP
+
+    will expand to the following:
+
+        Post-processing (2+)
+          Using:
+            /.../.cocopp/data-archive/bbob/2009/BIPOP-CMA-ES_hansen_noiseless.tgz
+            /.../.cocopp/data-archive/bbob/2012/DE-AUTO_voglis_noiseless.tgz
+            /.../.cocopp/data-archive/bbob/2012/DE-BFGS_voglis_noiseless.tgz
+            /.../.cocopp/data-archive/bbob/2012/DE-ROLL_voglis_noiseless.tgz
+            /.../.cocopp/data-archive/bbob/2012/DE-SIMPLEX_voglis_noiseless.tgz
+            /.../.cocopp/data-archive/bbob/2012/DE_posik_noiseless.tgz
+            /.../.cocopp/data-archive/bbob/2012/DEAE_posik_noiseless.tgz
+            /.../.cocopp/data-archive/bbob/2012/DEb_posik_noiseless.tgz
+            /.../.cocopp/data-archive/bbob/2012/DEctpb_posik_noiseless.tgz
+
+        Post-processing (2+)
+          loading data...
+        [...]
+
+    **5) If we want to also pass other arguments to the postprocessing**
+    (e.g. the output folder) in case 3) above, we can use the
+    following "trick" to make a string from the returned list of
+    algorithms:
+
+       >>> cocopp.main('-o myoutputfolder ' + ' '.join(cocopp.bbob.get_all('bfgs')))  # doctest:+SKIP
+
+    Note the crucial space in the end of the first string.
+    For case 4), this works directly:
+
+       >>> cocopp.main('-o myoutputfolder BIPOP! 2012/DE*')  # doctest:+SKIP
+
+    """
+    all = COCODataArchive()
+    bbob = COCOBBOBDataArchive()
+    bbob_noisy = COCOBBOBNoisyDataArchive()
+    bbob_biobj = COCOBBOBBiobjDataArchive()
