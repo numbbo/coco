@@ -10,6 +10,7 @@ import time
 import inspect
 import fnmatch
 import urllib
+import tempfile
 import shutil
 import subprocess
 import doctest
@@ -24,6 +25,35 @@ else:
     from urllib import urlretrieve
 
 test_bibtex = False
+
+class InfolderGoneWithTheWind:
+    """``with InfolderGoneWithTheWind(): ...`` executes the block in a
+
+    temporary folder under the current folder. The temporary folder is
+    deleted on exiting the block.
+
+    >>> import os
+    >>> dir_ = os.getcwd()  # for the record
+    >>> len_ = len(os.listdir('.'))
+    >>> with InfolderGoneWithTheWind():  # doctest: +SKIP
+    ...     # do some work in a folder here, e.g. write files
+    ...     len(dir_) > len(os.getcwd()) and os.getcwd() in dir_
+    True
+    >>> # magically we are back in the original folder
+    >>> assert dir_ == os.getcwd()
+    >>> assert len(os.listdir('.')) == len_
+
+    """
+    def __init__(self, prefix='_ppdata'):
+        """no folder needs to be given"""
+        self.prefix = prefix
+    def __enter__(self):
+        self.root_dir = os.getcwd()
+        self.target_dir = tempfile.mkdtemp(prefix=self.prefix, dir='.')
+        os.chdir(self.target_dir)
+    def __exit__(self, *args):
+        os.chdir(self.root_dir)
+        shutil.rmtree(self.target_dir)
 
 def depreciated_data_archive_get(substrs):
     """CAVEAT: this won't work anymore as the get_first method changed to
@@ -180,7 +210,7 @@ def process_doctest_output(stream=None):
 
 
 def delete_files(all_files=False):
-    shutil.rmtree('ppdata')
+    assert all_files
     if all_files:
         cwd = os.getcwd()
         os.remove(join_path(cwd, 'acmart.cls'))
@@ -220,21 +250,21 @@ def main(arguments):
     data_path = data_archive_get('BFGS_ros_noiseless')
     print(python + command + # '--conv ' +
           data_path)
-    result = os.system(python + command + # '--conv ' +
-                       data_path)
+    with InfolderGoneWithTheWind():
+        result = os.system(python + command + # '--conv ' +
+                           data_path)
     print('**  subtest 1 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one algorithm with option --conv.'
     #run_latex_template("templateBBOBarticle.tex", run_all_tests)
-    delete_files()
 
     t0 = time.time()
     data_path = data_archive_get('RANDOMSEARCH-4_Auger_bbob-biobj.tgz')
     print(python + command + data_path)
-    result = os.system(python + command + data_path)
+    with InfolderGoneWithTheWind():
+        result = os.system(python + command + data_path)
     print('**  subtest 2 finished in ', time.time() - t0, ' seconds')
     assert result == 0, 'Test failed: rungeneric on one bi-objective algorithm.'
     #run_latex_template("templateBIOBJarticle.tex", run_all_tests)
-    delete_files()
 
     if run_all_tests:
         data_paths = data_archive_get([
@@ -245,87 +275,86 @@ def main(arguments):
                         'BFGS_ros_noiseless.tgz'])
         t0 = time.time()
         print(time.asctime())
-        result = os.system(python + command + data_paths)
+        with InfolderGoneWithTheWind():
+            result = os.system(python + command + data_paths)
         print('**  subtest 3 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on many algorithms.'
         #run_latex_template("templateBBOBmany.tex", run_all_tests)
-        delete_files()
 
         t0 = time.time()
-        result = os.system(python + command + data_archive_get([
+        with InfolderGoneWithTheWind():
+            result = os.system(python + command + data_archive_get([
                                 'SMAC-BBOB_hutter_noiseless.tgz',
                                 'lmm-CMA-ES_auger_noiseless.tgz']))
         print('**  subtest 4 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two algorithms.'
         #run_latex_template("templateBBOBcmp.tex", run_all_tests)
-        delete_files()
 
         t0 = time.time()
-        result = os.system(python + command + ' --include-single ' + data_archive_get([
+        with InfolderGoneWithTheWind():
+            result = os.system(python + command + ' --include-single ' + data_archive_get([
                                 'DE-PSO_garcia-nieto_noiseless.tgz',
                                 'VNS_garcia-martinez_noiseless.tgz']))
         print('**  subtest 5 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two algorithms with option --include-single.'
         #run_latex_template("templateBBOBcmp.tex", run_all_tests)
-        delete_files()
 
         t0 = time.time()
-        result = os.system(python + command + ' --expensive ' + data_archive_get(
+        with InfolderGoneWithTheWind():
+            result = os.system(python + command + ' --expensive ' + data_archive_get(
                                 'VNS_garcia-martinez_noiseless.tgz'))
         print('**  subtest 6 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on one algorithm with option --expensive.'
         #run_latex_template("templateBBOBarticle.tex", run_all_tests)
-        delete_files()
 
         t0 = time.time()
-        result = os.system(python + command + data_archive_get([
+        with InfolderGoneWithTheWind():
+            result = os.system(python + command + data_archive_get([
                                 'RANDOMSEARCH-4_Auger_bbob-biobj.tgz',
                                 'RANDOMSEARCH-100_Auger_bbob-biobj.tgz']))
         print('**  subtest 7 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bbob-biobj algorithms.'
         #run_latex_template("templateBIOBJmultiple.tex", run_all_tests)
-        delete_files()
 
         t0 = time.time()
         # Previous note: we use the original GA-MULTIOBJ-NSGA-II.tgz data set
         # but with a shorter file name from the biobj-test folder
         # to avoid problems with too long path names on the windows
         # Jenkins slave
-        result = os.system(python + command + data_archive_get([
+        with InfolderGoneWithTheWind():
+            result = os.system(python + command + data_archive_get([
                                 'NSGA-II-MATLAB_Auger_bbob-biobj.tgz',
                                 'RANDOMSEARCH-4_Auger_bbob-biobj.tgz',
                                 'RANDOMSEARCH-100_Auger_bbob-biobj.tgz']))
         print('**  subtest 8 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on three bbob-biobj algorithms.'
         #run_latex_template("templateBIOBJmultiple.tex", run_all_tests)
-        delete_files()
 
         # testing data from bbob-noisy suite:
         t0 = time.time()
-        result = os.system(python + command + data_archive_get([
+        with InfolderGoneWithTheWind():
+            result = os.system(python + command + data_archive_get([
                                 'MCS_huyer_noisy.tgz',
                                 'BFGS_ros_noisy.tgz']))
         print('**  subtest 9 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bbob-noisy algorithms.'
         #run_latex_template("templateNOISYarticle.tex", run_all_tests)
-        delete_files()
 
         # testing data from recent runs, prepared in do.py:
         recent_data_path = os.path.abspath(join_path(os.path.dirname(__file__),
                                                      '../../code-experiments/build/python/exdata'))
         t0 = time.time()
-        result = os.system(python + command +
-                           join_path(recent_data_path, 'RS-bb'))
-        print('**  subtest 10 finished in ', time.time() - t0, ' seconds')
-        assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob`.'
-        delete_files()
+        with InfolderGoneWithTheWind():
+            result = os.system(python + command +
+                               join_path(recent_data_path, 'RS-bb'))
+            print('**  subtest 10 finished in ', time.time() - t0, ' seconds')
+            assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob`.'
 
-        t0 = time.time()
-        result = os.system(python + command +
-                           join_path(recent_data_path, 'RS-bi'))
-        print('**  subtest 11 finished in ', time.time() - t0, ' seconds')
-        assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-biobj`.'
-        delete_files()
+            t0 = time.time()
+            result = os.system(python + command +
+                               join_path(recent_data_path, 'RS-bi'))
+            print('**  subtest 11 finished in ', time.time() - t0, ' seconds')
+            assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-biobj`.'
 
         # t0 = time.time()
         # result = os.system(python + command +
@@ -335,11 +364,11 @@ def main(arguments):
         # delete_files(all_files=True)
 
         t0 = time.time()
-        result = os.system(python + command + data_archive_get(
+        with InfolderGoneWithTheWind():
+            result = os.system(python + command + data_archive_get(
                                 'test/RS-4.zip'))
         print('**  subtest 13 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on RS-4.zip.'
-        delete_files()
 
     print('launching doctest (it might be necessary to close a few pop up windows to finish)')
     t0 = time.time()
