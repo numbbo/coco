@@ -107,7 +107,7 @@ def asTargetValues(target_values):
         raise NotImplementedError("""type %s not recognized""" %
                                   str(type(target_values)))
 class TargetValues(object):
-    """store and retrieve a list of target function values::
+    """store and retrieve a list of target function values:
 
         >>> import numpy as np
         >>> import cocopp.pproc as pp
@@ -199,7 +199,7 @@ class TargetValues(object):
 
 class RunlengthBasedTargetValues(TargetValues):
     """a class instance call returns f-target values based on 
-    reference runlengths::
+    reference runlengths:
     
         >>> import cocopp
         >>> # make sure to use the right `bbob` test suite for the test below:
