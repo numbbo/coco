@@ -60,7 +60,9 @@ Examples:
 
 from __future__ import absolute_import
 
-from . import pproc
+from .pproc import DataSetList as _DataSetList
+from .toolsdivers import StringList as _StringList
+from .findfiles import COCODataArchive as _COCODataArchive
 
 def load(filename):
     """Create a :py:class:`DataSetList` instance from a file or folder.
@@ -71,7 +73,7 @@ def load(filename):
     files.
 
     """
-    return pproc.DataSetList(filename)
+    return _DataSetList(_COCODataArchive().get_extended(_StringList(filename)))
 
 # info on the DataSetList: algId, function, dim
 
