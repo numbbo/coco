@@ -50,10 +50,15 @@ class InfolderGoneWithTheWind:
     def __enter__(self):
         self.root_dir = os.getcwd()
         self.target_dir = tempfile.mkdtemp(prefix=self.prefix, dir='.')
+        self._target_dir = self.target_dir
         os.chdir(self.target_dir)
     def __exit__(self, *args):
         os.chdir(self.root_dir)
-        shutil.rmtree(self.target_dir)
+        if self.target_dir == self._target_dir:
+            shutil.rmtree(self.target_dir)
+        else:
+            raise ValueError("inconsistent temporary folder name %s vs %s"
+                             % (self._target_dir, self.target_dir))
 
 def depreciated_data_archive_get(substrs):
     """CAVEAT: this won't work anymore as the get_first method changed to
