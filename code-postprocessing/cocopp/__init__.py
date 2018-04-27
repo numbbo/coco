@@ -32,8 +32,9 @@ Results can be explored from the ``ppdata/index.html`` file, unless a
 a different output folder is specified with the ``-o`` option.
 
 Comparative data from over 200 full experiments are archived online and
-can be listed, filtered, and retrieved from `COCODataArchive` instances
-in `cocopp.archives` and processed alone or together with local data.
+can be listed, filtered, and retrieved from the `COCODataArchive` instances
+in `cocopp.archives` (of type `KnownArchives`) and processed alone or
+together with local data.
 
 For example
 

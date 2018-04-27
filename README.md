@@ -166,11 +166,11 @@ Getting Started <a name="Getting-Started"></a>
   processes the referenced archived data set because the given substring finds
   a unique match in the archive. See
   [`help(cocopp)`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html) or
-  [`help(cocopp.archives`)](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.
-  findfiles.KnownArchives.html) or the class
-  [`COCODataArchive`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.
-  findfiles.COCODataArchive.html) for more information in how to obtain and
-  display specific archived data.
+  [`help(cocopp.archives)`](
+  http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.findfiles.KnownArchives.html)
+  or the class [`COCODataArchive`](
+  http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.findfiles.COCODataArchive.html)
+  for more information in how to obtain and display specific archived data.
   
   For the `bbob` test suite, the data descriptions can be found at
   http://coco.gforge.inria.fr/doku.php?id=algorithms and for the `bbob-biobj`
