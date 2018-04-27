@@ -20,7 +20,7 @@ import sys
 import getopt
 import warnings
 import matplotlib
-from . import genericsettings, testbedsettings, rungeneric1, rungenericmany, toolsdivers, bestalg, findfiles
+from . import genericsettings, testbedsettings, rungeneric1, rungenericmany, toolsdivers, bestalg, archiving
 from .toolsdivers import truncate_latex_command_file, print_done, diff_attr
 from .ppfig import Usage
 from .compall import ppfigs
@@ -102,7 +102,7 @@ def main(argv=None):
 
     compares an experiment given in `"data_folder"` with BFGS and displays
     all archived results from 2009 in the background. `cocopp.bbob` is a
-    `cocopp.findfiles.COCODataArchive` class.
+    `cocopp.archiving.COCODataArchive` class.
 
     This may take 5-15 minutes to complete, because more than 30 algorithm
     datasets are processed.
@@ -284,7 +284,7 @@ def main(argv=None):
         print('Post-processing (%s)' % ('1' if len(args) == 1 else '2+'))  # to not break doctests
 
         # manage data paths as given in args
-        data_archive = findfiles.COCODataArchive()  # this is the archive of *all* testbeds
+        data_archive = archiving.COCODataArchive()
         args = data_archive.get_extended(args)
         if len(args) != len(set(args)):
             warnings.warn("Several data arguments point to the very same location."

@@ -38,7 +38,7 @@ together with local data.
 
 For example
 
->>> cocopp.archives.bbob('bfgs')  # doctest:+ELLIPSIS
+>>> cocopp.archives.bbob('bfgs')  # doctest:+ELLIPSIS,+SKIP,
 ['2009/BFGS_...
 
 lists all data sets containing ``'bfgs'`` in their name. The first in
@@ -83,7 +83,7 @@ from numpy.random import seed as set_seed
 
 from .cococommands import *  # outdated
 from . import config
-from . import findfiles
+from . import archiving
 from . import rungeneric
 from . import genericsettings
 
@@ -96,14 +96,15 @@ __all__ = [# 'main',  # import nothing with "from cocopp import *"
 
 __version__ = pkg_resources.require('cocopp')[0].version
 
-data_archive = findfiles.COCODataArchive()
-_data_archive = data_archive  # should go away but some tests rely on this
-
-archives = findfiles.KnownArchives()
-bbob = findfiles.COCOBBOBDataArchive()  # should go away
+archives = archiving.KnownArchives()
+data_archive = archives.all
+bbob = archives.bbob
+bbob_noisy = archives.bbob_noisy
+bbob_biobj = archives.bbob_biobj
+# data_archive = 'use `archives.all` instead'
 # bbob = 'use `archives.bbob` instead'
-bbob_noisy = findfiles.COCOBBOBNoisyDataArchive()
-bbob_biobj = findfiles.COCOBBOBBiobjDataArchive()
+# bbob_noisy = 'use `archives.bbob_noisy` instead'
+# bbob_biobj = 'use `archives.bbob_biobj` instead'
 
 class Interface:
     """collection of the most user-relevant modules, methods and data.
