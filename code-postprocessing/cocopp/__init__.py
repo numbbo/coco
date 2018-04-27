@@ -55,7 +55,7 @@ substring is matched. The postprocessing result of
 
 >>> cocopp.main('bbob/2009/*')  # doctest:+SKIP
 
-can be investigated at http://coco.gforge.inria.fr/ppdata-archive/bbob/2009-all.
+can be browsed at http://coco.gforge.inria.fr/ppdata-archive/bbob/2009-all.
 
 To display algorithms in the background, the ``genericsettings.background``
 variable needs to be set:
@@ -106,7 +106,7 @@ bbob_noisy = findfiles.COCOBBOBNoisyDataArchive()
 bbob_biobj = findfiles.COCOBBOBBiobjDataArchive()
 
 class Interface:
-    """collection of the most user-relevant methods and data.
+    """collection of the most user-relevant modules, methods and data.
 
     `archives`: online data archives of type `KnownArchives`
 
@@ -120,6 +120,7 @@ class Interface:
     """
     @classmethod
     def dir(cls):
+        """return `dict` of non-private class attribute names->values"""
         return dict(it for it in cls.__dict__.items()
                     if not it[0].startswith('_') and not it[0] == 'dir')
     archives = archives
