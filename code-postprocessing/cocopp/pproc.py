@@ -1811,10 +1811,12 @@ class DataSetList(list):
                     break
                 if set(i.instancenumbers).intersection(o.instancenumbers) \
                         and any([_i > 5 for _i in set(i.instancenumbers).intersection(o.instancenumbers)]):
-                    warnings.warn('instances ' + str(set(i.instancenumbers).intersection(o.instancenumbers))
-                                  + (' found several times. Read data for F%d in %d-D' % (i.funcId, i.dim)) 
+                    warn_message = ('in DataSetList.processIndexFile: instances '
+                                    + str(set(i.instancenumbers).intersection(o.instancenumbers))
+                                    + ' found several times.'
+                                    + ' Read data for F%d in %d-D might be inconsistent' % (i.funcId, i.dim))
+                    warnings.warn(warn_message)
                                   # + ' found several times. Read data for F%(argone)d in %(argtwo)d-D ' % {'argone':i.funcId, 'argtwo':i.dim}
-                                  + 'might be inconsistent. ')
                 # tmp = set(i.dataFiles).symmetric_difference(set(o.dataFiles))
                 #Check if there are new data considered.
                 if 1 < 3:
