@@ -922,13 +922,16 @@ class KnownArchives:
     `cocopp.archives` is an instance of `KnownArchives` and contains as
     archive attributes:
 
-    ``all``: the `list` of all archived data from all test suites.
+    ``all``: `COCODataArchive`, the `list` of all archived data from
+    all test suites.
 
-    `bbob`: the `list` of archived data run on the `bbob` test suite.
+    ``bbob``: `COCOBBOBDataArchive`, the `list` of archived data run on the
+    `bbob` test suite.
 
-    `bbob_noisy`: ditto on the `bbob_noisy` test suite.
+    ``bbob_noisy``: `COCOBBOBNoisyDataArchvive`, ditto on the `bbob_noisy`
+    test suite.
 
-    `bbob_biobj`: ditto...
+    ``bbob_biobj``: `COCOBBOBBiobjDataArchive`, ditto...
 
     A Quick Guide
     -------------
@@ -989,7 +992,7 @@ class KnownArchives:
 
         >>> cocopp.main('BIPOP! 2012/DE*')  # doctest:+SKIP
 
-    will expand to the following:
+    will expand to the following::
 
         Post-processing (2+)
           Using:

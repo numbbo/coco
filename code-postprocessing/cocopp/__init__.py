@@ -1,42 +1,41 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""`cocopp`, COmparing Continuous Optimisers (COCO) post-processing
+"""COmparing Continuous Optimisers (COCO) post-processing package
 
 This package (`cocopp`) generates output figures and tables in html format
 and for including into LaTeX-documents.
 
-The main method of this package is `main` (currently aliased to
-`cocopp.rungeneric.main`). The `main` method also allows basic use of the
-post-processing through a command-line interface. The recommended use
-is however from an IPython/Jupyter shell.
-
-The `cocopp.Interface` class lists the most basic commands and data of
+The `cocopp.Interface` class contains the most basic commands and data of
 the package, sufficient for most use cases.
 
 >>> import cocopp
->>> print("\n".join(dir(cocopp.Interface)))  # doctest:+ELLIPSIS, +NORMALIZE_WHITESPACE
-_...
-archives
-config
-genericsettings
-load
-main
+>>> sorted(cocopp.Interface.dir())
+['archives', 'config', 'genericsettings', 'load', 'main']
+>>> all(hasattr(cocopp, name) for name in cocopp.Interface.dir())
+True
 
-The `main` function,
+The main method of the `cocopp` package is `main` (currently aliased to
+`cocopp.rungeneric.main`). The `main` method also allows basic use of the
+post-processing through a command-line interface. The recommended use
+is however from an IPython/Jupyter shell:
 
->>> cocopp.main('exdata another_folder yet_another_or_not')  # doctest:+SKIP
+>>> import cocopp
+>>> cocopp.main('exdata/my_output another_folder yet_another_or_not')  # doctest:+SKIP
 
 postprocesses data from one or several folders, for example data
-generated with the help from the `cocoex` module. Each folder is
-considered to contain data of a full experiment with a single algorithm.
+generated with the help from the `cocoex` module. Each folder should
+contain data of a full experiment with a single algorithm. (Within the
+folder the data can be distributed over subfolders).
 
 Results can be explored from the ``ppdata/index.html`` file, unless a
 a different output folder is specified with the ``-o`` option.
 
 Comparative data from over 200 full experiments are archived online and
-can be easily listed, filtered, retrieved and displayed in
-`COCODataArchive` instances. For example
+can be listed, filtered, and retrieved from `COCODataArchive` instances
+in `cocopp.archives` and processed alone or together with local data.
+
+For example
 
 >>> cocopp.archives.bbob('bfgs')  # doctest:+ELLIPSIS
 ['2009/BFGS_...
@@ -58,15 +57,18 @@ substring is matched. The postprocessing result of
 can be investigated at http://coco.gforge.inria.fr/ppdata-archive/bbob/2009-all.
 
 To display algorithms in the background, the ``genericsettings.background``
-variables needs to be set:
+variable needs to be set:
 
 >>> cocopp.genericsettings.background = {None: cocopp.archives.bbob.get_all('bfgs')}  # doctest:+SKIP
 
 where `None` invokes the default color (grey) and line style (solid)
-``genericsettings.background_default_style``. Now we can show the first
-``'bfgs'``-matching algorithm with all others in the background:
+``genericsettings.background_default_style``.
 
->>> cocopp.main('bfgs!')  # doctest:+SKIP
+Now we could compare our own data with the first ``'bfgs'``-matching
+archived algorithm where all other archived BFGS data are shown in the
+background with
+
+>>> cocopp.main('exdata/my_output bfgs!')  # doctest:+SKIP
 
 """
 
@@ -115,6 +117,10 @@ class Interface:
 
     `main`: post-processing data from disk
     """
+    @classmethod
+    def dir(cls):
+        return dict(it for it in cls.__dict__.items()
+                    if not it[0].startswith('_') and not it[0] == 'dir')
     archives = archives
     config = config
     genericsettings = genericsettings
