@@ -131,13 +131,13 @@ def get_output_directory_sub_folder(args):
 
         if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
             directory = directory[:directory.find('.t')]
-
-        directory = (directory.split(os.sep)[-1]).replace(genericsettings.extraction_folder_prefix, '')
+        directory = directory.split(':')[-1]
+        directory = directory.split(os.sep)[-1].replace(genericsettings.extraction_folder_prefix, '')
     else:
         for index, argument in enumerate(args):
             if not os.path.isdir(argument) and is_recognized_repository_filetype(argument):
                 argument = argument[:argument.find('.t')]
-            argument = argument.split(os.sep)[-1]
+            argument = argument.split(':')[-1].split(os.sep)[-1]
             directory += (argument if len(argument) <= 5 else argument[:5]) + '_'
             if index >= 6:
                 directory += 'et_al'
