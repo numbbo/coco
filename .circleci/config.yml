@@ -99,6 +99,9 @@ jobs:
           name: Update apt-get
           command: apt-get update -qy
       - run:
+          name: Install mlocate (updatedb)
+          command: apt-get install mlocate
+      - run:
           name: Install python-dev with apt-get
           command: apt-get install -y python-dev
       - run:
