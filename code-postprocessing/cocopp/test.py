@@ -44,12 +44,13 @@ class InfolderGoneWithTheWind:
     >>> assert len(os.listdir('.')) == len_
 
     """
-    def __init__(self, prefix='_ppdata'):
+    def __init__(self, prefix='_'):
         """no folder needs to be given"""
         self.prefix = prefix
     def __enter__(self):
         self.root_dir = os.getcwd()
-        self.target_dir = tempfile.mkdtemp(prefix=self.prefix, dir='.')
+        # self.target_dir = tempfile.mkdtemp(prefix=self.prefix, dir='.')
+        self.target_dir = tempfile.mkdtemp(prefix=self.prefix)
         self._target_dir = self.target_dir
         os.chdir(self.target_dir)
     def __exit__(self, *args):
