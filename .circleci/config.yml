@@ -166,6 +166,37 @@ jobs:
           name: Run coco post-processing tests
           command: python do.py test-postprocessing
           no_output_timeout: 5400
+
+  test_ubuntu_latest_python2_cmocka:
+    docker:
+      - image: ubuntu:latest
+        environment:
+          CC: gcc
+    working_directory: ~/coco
+    steps:
+      - checkout
+      - run:
+          name: Update apt-get
+          command: apt-get update -qy
+      - run:
+          name: Install python-dev with apt-get
+          command: apt-get install -y python-dev
+      - run:
+          name: Install pip with apt-get
+          command: apt-get install -y python-pip
+      - run:
+          name: Install build-essential with apt-get
+          command: apt-get install -y build-essential
+      - run:
+          name: Install git with apt-get
+          command: apt-get install -y git
+      - run:
+          name: Install python packages with pip
+          command: pip install --upgrade numpy setuptools \
+                                         six scipy pytest cython
+      - run:
+          name: Run coco C
+          command: python do.py run-c
       - run:
           name: Install cmocka and mlocate for C tests
           command: |
@@ -183,3 +214,4 @@ workflows:
     jobs:
       - test_ubuntu_rolling_python3
       - test_ubuntu_latest_python2
+      - test_ubuntu_latest_python2_cmocka
