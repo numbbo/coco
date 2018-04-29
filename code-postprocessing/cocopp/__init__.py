@@ -97,7 +97,7 @@ __all__ = [# 'main',  # import nothing with "from cocopp import *"
 __version__ = pkg_resources.require('cocopp')[0].version
 
 archives = archiving.KnownArchives()
-data_archive = archives.all
+data_archive = archives.all  # only for historical reasons
 bbob = archives.bbob
 bbob_noisy = archives.bbob_noisy
 bbob_biobj = archives.bbob_biobj

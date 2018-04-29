@@ -1,5 +1,39 @@
 # -*- coding: utf-8 -*-
 """Online archiving related classes.
+
+`COCODataArchive` contains all archived data as given in a folder
+hierarchy.
+
+Derived classes "point" to subfolders in the folder tree and "contain"
+all archived data from a single test suites.
+
+An online archive class defines (and is defined by) a source URL and a
+list of all contained datasets by name, a sha256 hash and optionally
+their approximate size. The name must reflect a (tar-)zipped path/filename
+containing a full experiment from a single algorithm.
+
+A new class can be generated "on the fly" by inheriting from
+`cocopp.archiving.COCODataArchive`. This hopefully works by using
+`_generate_names_list` (in beta) to set the defining elements, like
+
+>>> from cocopp import archiving
+>>> my_archive = archiving.COCODataArchive(local_path='~/.cocopp/my-archives/unique-name')
+>>> my_archive._all = my_archive._generate_names_list()
+
+assuming that the new to-be-archived data reside at
+``~/.cocopp/my-archives/unique-name``.
+
+If a mirror of the archive is online, we can write a definition file and
+publish it together with the URL, such that everyone can use the archive
+on the fly like
+
+>>> new_archive = archiving.COCODataArchive(  # doctest:+SKIP
+...                  local_path='~/.cocopp/new-archives/unique-name',
+...                  url=given_URL,
+...                  definition_file=filename)
+
+assuming the definition file ``filename`` is located in ``local_path``.
+
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
 del absolute_import, division, print_function, unicode_literals
@@ -354,11 +388,27 @@ class COCODataArchive(list):
         hosted at ``'~/.cocopp/data-archive'``.
 
         For the time being, `definition_file` may be a filename in
-        `local_path` containing the `_all` list describing the (remote)
-        archive, however this functionality has never been tested and
-        needs most likely a few bug fixes.
+        `local_path` containing the `_all` list describing the archive,
+        however this functionality is in beta. The `definition_file`
+        argument may disappear in future (though it seems quite useful
+        for testing to not overwrite a future default definition file).
+
+        TODO: find a logic for missing input arguments that always(?)
+        gets into a consistent state. In particular: either the default
+        ``_all`` attribute must be correct, or `definition_file` must
+        be given. Hence we need a way to find out whether ``_all`` is
+        consistent.
+
+        Possible solution: search for a definition file under
+        the local path or (if not found) the URL and (always) (re-)set
+        ``_all``.
+
+        TODO: always generated a local definition file if none is found.
+        TODO: implement consistency check between a definition list and
+        a local archive.
+
         """
-        self.local_data_path = os.path.expanduser(os.path.join(*local_path.split('/')))
+        self.local_data_path = os.path.abspath(os.path.expanduser(local_path))
         self.remote_data_path = url
         self._names_found = []  # names recently found
         self._print = print  # like this we can make it quiet for testing
@@ -612,6 +662,11 @@ class COCODataArchive(list):
             warnings.warn('name "%s" is not defined as member of this COCODataArchive' % name)
         return name
 
+    def consistency_check(self):
+        """basic quick consistency check of definitions and hashes"""
+        for name in self:
+            self.check_hash(name)
+
     def check_hash(self, name):
         """warn if hash is unknown, raise ValueError if hashes disagree
         """
@@ -667,7 +722,7 @@ class COCODataArchive(list):
         """
         with open(os.path.join(self.local_data_path, definition_filename),
                   'rt') as file_:
-            return ast.literat_eval(file_.read())
+            return ast.literal_eval(file_.read())
 
     def _generate_names_list(self, definition_filename=None):
         """write an _all list of an existing archive including hashes and
@@ -679,25 +734,49 @@ class COCODataArchive(list):
         Assumes that `self.local_data_path` points to a complete and sane
         archive.
 
-        TODO: never tested.
+        TODO: more testing could not hurt.
+        TODO: may or may not need to be modified under Windows.
 
-        May or may not need to be modified under Windows.
+        >>> import os, uuid
+        >>> from cocopp import archiving, archives
+        >>> print('get_all'); archives.bbob.get_all("2017-others")  # download data (45MB) for new archive  # doctest:+ELLIPSIS
+        get_all...
+        >>> arch_path = '~/.cocopp/data-archive/bbob/2017-others'  # make "new" archive here
+        >>> arch = archiving.COCODataArchive(local_path=arch_path)  # caveat: arch is and remains in inconsistent state
+        >>> fn = uuid.uuid4().hex + '.txt'
+        >>> def_list = arch._generate_names_list(fn)  # write definition file based on local_path
+
+        Now we can use the newly defined archive
+
+        >>> myarch = archiving.COCODataArchive(local_path=arch_path,  # use the new archive
+        ...                                    definition_file=fn)  # overwrite the default definitions
+        >>> os.remove(os.path.join(myarch.local_data_path, fn))  # not needed anymore
+        >>> assert def_list == myarch._all
+
         """
         res = []
         for dirpath, dirnames, filenames in os.walk(self.local_data_path):
             for filename in filenames:
-                if '.extracted' not in dirpath \
-                        and not filename.endswith(('dat', 'info')) \
-                        and not ('BBOB' in filename and 'rawdata' in filename):
-                    name = '/'.join([dirpath.replace(os.path.sep, '/'), filename])[len(filename) + 1:]
+                if ('.extracted' not in dirpath
+                        and not filename.endswith(('dat', 'info', 'txt'))
+                        # and not ('BBOB' in filename and 'rawdata' in filename)
+                    ):
+                    name = dirpath[len(self.local_data_path) + 1:].replace(os.path.sep, '/')
+                    # print(dirpath, self.local_data_path, name, filename)
+                    name = '/'.join([name, filename]) if name else filename
                     path = os.path.join(dirpath, filename)
-                    res = res + [(
-                        name,
-                        self._hash(path),
-                         os.path.getsize(path) // 1000)] # or os.stat(path).st_size
+                    res += [(name,
+                             self._hash(path),
+                             os.path.getsize(path) // 1000)] # or os.stat(path).st_size
         if definition_filename:
-            with open(os.path.join(self.local_data_path, definition_filename), 'rt') as file_:
-                file_.write(repr(res))
+            output_location = os.path.join(self.local_data_path, definition_filename)
+            if os.path.exists(output_location):
+                raise ValueError("file % already exists. Use a different "
+                                 "name or delete the file first."
+                                 % output_location)
+            else:
+                with open(output_location, 'wt') as file_:
+                    file_.write(repr(res))
         return res
 
 class COCOBBOBDataArchive(COCODataArchive):
