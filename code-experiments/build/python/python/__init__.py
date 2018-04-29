@@ -61,8 +61,10 @@ class Suite(_Suite):
     >>> suite = ex.Suite("bbob", "", "")
     >>> f = suite.next_problem()
     >>> assert f.number_of_objectives == 1
+    >>> assert f.evaluations == 0
     >>> print("f([1,2]) = %.11f" % f([1,2]))
     f([1,2]) = 90.00369408000
+    >>> assert f.evaluations == 1
 
     Sweeping through all problems is as simple as:
 
@@ -76,6 +78,7 @@ class Suite(_Suite):
     ...                  suite.number_of_objectives[0],
     ...                  suite.number_of_objectives[-1]))
     ...     fun.observe_with(observer)
+    ...     assert fun.evaluations == 0
     ...     assert fun.number_of_objectives == suite.number_of_objectives[0]
     ...     # run run run using fun  # doctest: +ELLIPSIS
     Number of objectives 2, 2, 2...
@@ -99,13 +102,16 @@ class Suite(_Suite):
     >>> observer = Observer("bbob",
     ...              "result_folder: %s_on_%s" % (solver.__name__, "bbob2009"))
     >>> for fun in suite:
+    ...     assert fun.evaluations == 0
     ...     if fun.dimension >= 10:
     ...         break
     ...     print('Current problem index = %d' % fun.index)
     ...     fun.observe_with(observer)
+    ...     assert fun.evaluations == 0
     ...     solver(fun, fun.lower_bounds, fun.upper_bounds, MAX_FE)
-    ...   # data should be now in the "exdata/random_search_on_bbob2009" folder
-    ...   # doctest: +ELLIPSIS
+    ...     # data should be now in the "exdata/random_search_on_bbob2009" folder
+    ...     assert fun.evaluations == MAX_FE  # depends on the solver
+    ...     # doctest: +ELLIPSIS
     Current problem index = 0...
     >>> #
     >>> # Exactly the same using another looping technique:
@@ -136,6 +142,7 @@ class Suite(_Suite):
     ...     print(suite.dimensions)
     ...     for f in suite:
     ...         assert f.dimension in suite.dimensions
+    ...         assert f.evaluations == 0
     ...         # doctest: +ELLIPSIS
     [2, 3, 5, 10, 20, 40]...
 
