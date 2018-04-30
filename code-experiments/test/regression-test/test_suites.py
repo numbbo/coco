@@ -67,7 +67,7 @@ def regression_test_a_suite(suite_name, filename):
             try:
                 assert is_equal(f.constraint(x), xfc_dict[key][1])
             except AssertionError:
-                print(f.name, "index,x =", key, "stored x,f,con =",
+                print(f.name, "index,x =", key, "stored f,con =",
                       xfc_dict[key], "computed con =", f.constraint(x))
                 raise
     if verbose:
