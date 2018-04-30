@@ -24,7 +24,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import matplotlib
 # Force matplotlib to not use any Xwindows backend.
 matplotlib.use('Agg')
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 
 from matplotlib import patches
 import matplotlib.pyplot as plt
