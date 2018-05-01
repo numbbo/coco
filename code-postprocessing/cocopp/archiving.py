@@ -571,8 +571,12 @@ class COCODataArchive(list):
             # a blank archive, hope for the best, match must be exact
             names = [substr]
         elif len(names) > 1:
-            raise ValueError("'%s' has multiple matches in data archive:"
-                             "\n   %s" % (substr, '\n   '.join(names)))
+            raise ValueError(
+                "'%s' has multiple matches in the data archive:\n   %s\n"
+                "Either pick a single match, or use the `get_all` or\n"
+                "`get_first` method, or use the ! (first) or * (all)\n"
+                "marker and try again."
+                % (substr, '\n   '.join(names)))
         # create full path
         full_name = self.full_path(names[0])
         if os.path.exists(full_name):
