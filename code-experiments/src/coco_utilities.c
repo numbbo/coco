@@ -1053,7 +1053,6 @@ static void coco_scale_vector(double *x, size_t dimension, double alpha) {
   }
 }
 
-
 /**
  * @brief Checks if a given matrix M is orthogonal by computing M * M^T.
  * The function returns 1 if M * M^T is the identity matrix and 0 otherwise.
@@ -1097,6 +1096,23 @@ static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_
   return 1;
 }
 
+/**
+ * @brief Returns 1 if the input vector x is (close to) zero and 0 otherwise.
+ */
+static int coco_vector_is_zero(const double *x, const size_t dim) {
+  size_t i = 0;
+  int is_zero = 1;
+
+  if (coco_vector_contains_nan(x, dim))
+    return 0;
+
+  while (i < dim && is_zero) {
+    is_zero = coco_double_almost_equal(x[i], 0, 1e-9);
+    i++;
+  }
+
+  return is_zero;
+}
 /**@}*/
 
 /***********************************************************************************************************/
