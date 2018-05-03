@@ -1055,11 +1055,13 @@ static void coco_scale_vector(double *x, size_t dimension, double alpha) {
 
 /**
  * @brief Checks if a given matrix M is orthogonal by computing M * M^T.
- * The function returns 1 if M * M^T is the identity matrix and 0 otherwise.
- * The matrix M is stored as a list of doubles.
+ * The function returns 1 if M is a square matrix and M * M^T
+ * is the identity matrix, and 0 otherwise.
+ * The matrix M is represented as an array of doubles.
  */
 static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_t nb_columns) {
 
+  static const double precision = 1e-9;
   size_t i, j, z;
   int is_equal;
   double sum;
@@ -1081,12 +1083,12 @@ static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_
          * indices are the same (resp. different)
          */
         if (i == j) {
-            is_equal = coco_double_almost_equal(sum, 1, 1e-9);
+            is_equal = coco_double_almost_equal(sum, 1, precision);
             if (!is_equal) {
                 return 0;
             }
         } else {
-            is_equal = coco_double_almost_equal(sum, 0, 1e-9);
+            is_equal = coco_double_almost_equal(sum, 0, precision);
             if (!is_equal) {
                 return 0;
             }
