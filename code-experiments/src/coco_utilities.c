@@ -1054,9 +1054,9 @@ static void coco_scale_vector(double *x, size_t dimension, double alpha) {
 }
 
 /**
- * @brief Checks if a given matrix M is orthogonal by computing M * M^T.
- * The function returns 1 if M is a square matrix and M * M^T
- * is the identity matrix, and 0 otherwise.
+ * @brief Checks if a given matrix M is orthogonal by checking if M * M^T
+ * is the identity matrix. The function returns 1 if M is a square matrix and M * M^T
+ * is the identity, and 0 otherwise.
  * The matrix M is represented as an array of doubles.
  */
 static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_t nb_columns) {
