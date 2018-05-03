@@ -167,7 +167,7 @@ jobs:
           command: python do.py test-postprocessing
           no_output_timeout: 5400
 
-  test_ubuntu_latest_python2_cmocka:
+  test_cmocka_ubuntu_latest_python2:
     docker:
       - image: ubuntu:latest
         environment:
@@ -214,4 +214,4 @@ workflows:
     jobs:
       - test_ubuntu_rolling_python3
       - test_ubuntu_latest_python2
-      - test_ubuntu_latest_python2_cmocka
+      - test_cmocka_ubuntu_latest_python2
