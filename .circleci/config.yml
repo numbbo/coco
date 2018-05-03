@@ -25,9 +25,9 @@ jobs:
       - run:
           name: Install git with apt-get
           command: apt-get install -y git
-      - run:
-          name: Install tkinter with apt-get
-          command: apt-get install -y python3-tk
+#      - run:
+#          name: Install tkinter with apt-get
+#          command: apt-get install -y python3-tk
       - run:
           name: Install python packages with pip
           command: pip3 install --upgrade matplotlib numpy setuptools \
@@ -99,6 +99,9 @@ jobs:
           name: Update apt-get
           command: apt-get update -qy
       - run:
+          name: Install mlocate (updatedb)
+          command: apt-get install mlocate
+      - run:
           name: Install python-dev with apt-get
           command: apt-get install -y python-dev
       - run:
@@ -110,9 +113,9 @@ jobs:
       - run:
           name: Install git with apt-get
           command: apt-get install -y git
-      - run:
-          name: Install tkinter with apt-get
-          command: apt-get install -y python-tk
+#      - run:
+#          name: Install tkinter with apt-get
+#          command: apt-get install -y python-tk
       - run:
           name: Install python packages with pip
           command: pip install --upgrade matplotlib numpy setuptools \
@@ -138,15 +141,6 @@ jobs:
           command: python do.py test-python
           no_output_timeout: 1800
       - run:
-          name: Install cmocka and mlocate for C tests
-          command: |
-            apt-get install -y mlocate libcmocka-dev
-            updatedb
-      - run:
-          name: Run coco C tests
-          command: python do.py test-c
-          no_output_timeout: 1800
-      - run:
           name: Install octave for octave tests
           command: |
             apt-get install -y liboctave-dev
@@ -161,7 +155,7 @@ jobs:
             apt-get install -y openjdk-8-jdk
             updatedb
       - run:
-          name: Run coco octave tests
+          name: Run coco java tests
           command: python do.py test-java
           no_output_timeout: 1800
       - run:
@@ -173,6 +167,46 @@ jobs:
           command: python do.py test-postprocessing
           no_output_timeout: 5400
 
+  test_ubuntu_latest_python2_cmocka:
+    docker:
+      - image: ubuntu:latest
+        environment:
+          CC: gcc
+    working_directory: ~/coco
+    steps:
+      - checkout
+      - run:
+          name: Update apt-get
+          command: apt-get update -qy
+      - run:
+          name: Install python-dev with apt-get
+          command: apt-get install -y python-dev
+      - run:
+          name: Install pip with apt-get
+          command: apt-get install -y python-pip
+      - run:
+          name: Install build-essential with apt-get
+          command: apt-get install -y build-essential
+      - run:
+          name: Install git with apt-get
+          command: apt-get install -y git
+      - run:
+          name: Install python packages with pip
+          command: pip install --upgrade numpy setuptools \
+                                         six scipy pytest cython
+      - run:
+          name: Run coco C
+          command: python do.py run-c
+      - run:
+          name: Install cmocka and mlocate for C tests
+          command: |
+            apt-get install -y mlocate libcmocka-dev
+            updatedb
+      - run:
+          name: Run coco C tests
+          command: python do.py test-c
+          no_output_timeout: 1800
+
 workflows:
 
   version: 2
@@ -180,3 +214,4 @@ workflows:
     jobs:
       - test_ubuntu_rolling_python3
       - test_ubuntu_latest_python2
+      - test_ubuntu_latest_python2_cmocka

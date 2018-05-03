@@ -107,7 +107,7 @@ def asTargetValues(target_values):
         raise NotImplementedError("""type %s not recognized""" %
                                   str(type(target_values)))
 class TargetValues(object):
-    """store and retrieve a list of target function values::
+    """store and retrieve a list of target function values:
 
         >>> import numpy as np
         >>> import cocopp.pproc as pp
@@ -199,7 +199,7 @@ class TargetValues(object):
 
 class RunlengthBasedTargetValues(TargetValues):
     """a class instance call returns f-target values based on 
-    reference runlengths::
+    reference runlengths:
     
         >>> import cocopp
         >>> # make sure to use the right `bbob` test suite for the test below:
@@ -556,9 +556,9 @@ class DataSet(object):
         >>> cocopp.genericsettings.verbose = False # ensure to make doctests work
         >>> def setup(infoFile):
         ...     if not os.path.exists(infoFile):
-        ...         filename = cocopp._data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
-        ...         tarfile.open(filename).extractall(cocopp._data_archive.local_data_path)
-        >>> infoFile = os.path.join(cocopp._data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
+        ...         filename = cocopp.archives.bbob.get_one('2009/BIPOP-CMA-ES_hansen')
+        ...         tarfile.open(filename).extractall(cocopp.archives.bbob.local_data_path)
+        >>> infoFile = os.path.join(cocopp.archives.bbob.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
         >>> print('get'); setup(infoFile) # doctest:+ELLIPSIS
         get...
         >>> dslist = cocopp.load(infoFile)
@@ -689,10 +689,10 @@ class DataSet(object):
         >>> import tarfile
         >>> import cocopp
         >>> cocopp.genericsettings.verbose = False # ensure to make doctests work
-        >>> infoFile = os.path.join(cocopp._data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
+        >>> infoFile = os.path.join(cocopp.archives.bbob.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
         >>> if not os.path.exists(infoFile):
-        ...   filename = cocopp._data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
-        ...   tarfile.open(filename).extractall(cocopp._data_archive.local_data_path)
+        ...   filename = cocopp.archives.bbob.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
+        ...   tarfile.open(filename).extractall(cocopp.archives.bbob.local_data_path)
         >>> dslist = cocopp.load(infoFile)
           Data consistent according to consistency_check() in pproc.DataSet
         >>> dslist[2].instancenumbers
@@ -1811,10 +1811,12 @@ class DataSetList(list):
                     break
                 if set(i.instancenumbers).intersection(o.instancenumbers) \
                         and any([_i > 5 for _i in set(i.instancenumbers).intersection(o.instancenumbers)]):
-                    warnings.warn('instances ' + str(set(i.instancenumbers).intersection(o.instancenumbers))
-                                  + (' found several times. Read data for F%d in %d-D' % (i.funcId, i.dim)) 
+                    warn_message = ('in DataSetList.processIndexFile: instances '
+                                    + str(set(i.instancenumbers).intersection(o.instancenumbers))
+                                    + ' found several times.'
+                                    + ' Read data for F%d in %d-D might be inconsistent' % (i.funcId, i.dim))
+                    warnings.warn(warn_message)
                                   # + ' found several times. Read data for F%(argone)d in %(argtwo)d-D ' % {'argone':i.funcId, 'argtwo':i.dim}
-                                  + 'might be inconsistent. ')
                 # tmp = set(i.dataFiles).symmetric_difference(set(o.dataFiles))
                 #Check if there are new data considered.
                 if 1 < 3:
