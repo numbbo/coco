@@ -1071,15 +1071,15 @@ static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_
 
   for (i = 0; i < nb_rows; ++i) {
     for (j = 0; j < nb_rows; ++j) {
-        /* Compute the dot product of the ith line of M
-         * and the jth column of M^T (i.e. jth line of M)
+        /* Compute the dot product of the ith row of M
+         * and the jth column of M^T (i.e. jth row of M)
          */
         sum = 0.0;
         for (z = 0; z < nb_rows; ++z) {
             sum += M[i * nb_rows + z] * M[j * nb_rows + z];
         }
 
-        /* Check if the dot product is 1 (resp. 0) when the line and the column
+        /* Check if the dot product is 1 (resp. 0) when the row and the column
          * indices are the same (resp. different)
          */
         if (i == j) {
