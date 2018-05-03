@@ -1063,7 +1063,6 @@ static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_
 
   static const double precision = 1e-9;
   size_t i, j, z;
-  int is_equal;
   double sum;
 
   if (nb_rows != nb_columns)
@@ -1083,15 +1082,11 @@ static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_
          * indices are the same (resp. different)
          */
         if (i == j) {
-            is_equal = coco_double_almost_equal(sum, 1, precision);
-            if (!is_equal) {
+            if (!coco_double_almost_equal(sum, 1, precision))
                 return 0;
-            }
         } else {
-            is_equal = coco_double_almost_equal(sum, 0, precision);
-            if (!is_equal) {
+            if (!coco_double_almost_equal(sum, 0, precision))
                 return 0;
-            }
         }
     }
   }
