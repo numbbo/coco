@@ -49,9 +49,8 @@ displaybest = True
 x_limit = None  # not sure whether this is necessary/useful
 x_limit_default = 1e7  # better: 10 * genericsettings.evaluation_setting[1], noisy: 1e8, otherwise: 1e7. maximal run length shown
 divide_by_dimension = True
-annotation_line_start_relative = 1.03
 annotation_line_end_relative = 1.11  # lines between graph and annotation
-annotation_space_end_relative = 1.0 # 1.24  # figure space end relative to x_limit
+annotation_space_end_relative = 1.24  # figure space end relative to x_limit
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
@@ -219,7 +218,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
 
         x = np.array(sorted(dictx))  # x is not a multiset anymore
         y = np.cumsum(list(dictx[i] for i in x))  # cumsum of size of y-steps (nb of appearences)
-        idx = sum(x <= x_limit ** 1.24) - 1
+        idx = sum(x <= x_limit ** annotation_space_end_relative) - 1
         y_last, x_last = y[idx] / float(nn), x[idx]
         if maxval is None:
             maxval = max(x)
@@ -376,7 +375,7 @@ def plotLegend(handles, maxval):
     # plt.axvline(x=maxval, color='k') # Not as efficient?
     reshandles.append(plt_plot((maxval, maxval), (0., 1.), color='k'))
     reslabels.reverse()
-    plt.xlim(xmax=maxval ** annotation_space_end_relative)
+    plt.xlim(xmax=maxval)
     return reslabels, reshandles
 
 
@@ -838,9 +837,8 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                   fontsize=title_fontsize)
     a = plt.gca()
 
-    xmax = x_limit ** annotation_space_end_relative
-    plt.xlim(xmin=1e-0, xmax=xmax)
-    xmaxexp = int(np.floor(np.log10(xmax)))
+    plt.xlim(xmin=1e-0, xmax=x_limit)
+    xmaxexp = int(np.floor(np.log10(x_limit)))
     xmajorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1, 2)]
     xminorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1)]
     def formatlabel(val, pos):
