@@ -17,6 +17,14 @@
 #include "coco_internal.h"
 #include "coco_string.c"
 
+
+/***********************************************************************************************************/
+
+/**
+ * @brief Sets precision to 1e-9.
+ */
+static const double precision = 1e-9;
+
 /***********************************************************************************************************/
 
 /**
@@ -885,7 +893,7 @@ static int coco_double_almost_equal(const double a, const double b, const double
  * @brief Returns 1 if x is NAN and 0 otherwise.
  */
 static int coco_is_nan(const double x) {
-  return (isnan(x) || (x != x) || !(x == x) || ((x >= NAN / (1 + 1e-9)) && (x <= NAN * (1 + 1e-9))));
+  return (isnan(x) || (x != x) || !(x == x) || ((x >= NAN / (1 + precision)) && (x <= NAN * (1 + precision))));
 }
 
 /**
@@ -1061,7 +1069,6 @@ static void coco_scale_vector(double *x, size_t dimension, double alpha) {
  */
 static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_t nb_columns) {
 
-  static const double precision = 1e-9;
   size_t i, j, z;
   double sum;
 
@@ -1104,7 +1111,7 @@ static int coco_vector_is_zero(const double *x, const size_t dim) {
     return 0;
 
   while (i < dim && is_zero) {
-    is_zero = coco_double_almost_equal(x[i], 0, 1e-9);
+    is_zero = coco_double_almost_equal(x[i], 0, precision);
     i++;
   }
 
