@@ -100,12 +100,11 @@ typedef struct {
  */
 static int single_digit_constraint_value(const double c) {
   const double limits[9] = {0, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1};
-  const int values[9] = {0, 1, 2, 3, 4, 5, 6, 7, 8};
-
   int i;
 
   for (i = 0; i < 9; ++i)
-    if (c <= limits[i]) return values[i];
+    if (c <= limits[i])
+      return i;
   return 9;
 }
 
@@ -136,7 +135,7 @@ static const char *bbob_file_header_str = "%% "
     "x2...\n";
 
 static const char *logger_name = "bbob";
-static const char *data_format = "bbob-new2"; /* or whatever we agree upon, bbob or bbob2 or bbob-constrained may be alternatives */
+static const char *data_format = "bbob-new2"; /* back to 5 columns, 5-th column writes single digit constraint values */
 
 /**
  * adds a formated line to a data file
@@ -463,7 +462,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     if (cons[i] > 0)
         sum_cons += cons[i];
   }
-  sum_cons *= weight_constraints;  /* rather to this before the checks */
+  sum_cons *= weight_constraints;  /* do this before the checks */
   if (coco_is_nan(sum_cons))
     sum_cons = fvalue_logged_for_nan;
   else if (coco_is_inf(sum_cons))
@@ -553,7 +552,7 @@ static void logger_bbob_free(void *stuff) {
     fclose(logger->fdata_file);
     logger->fdata_file = NULL;
   }
-  if (logger->tdata_file != NULL && logger->number_of_evaluations_constraints == 0) {
+  if (logger->tdata_file != NULL) {
     /* TODO: make sure it handles restarts well. i.e., it writes
      * at the end of a single run, not all the runs on a given
      * instance. Maybe start with forcing it to generate a new
