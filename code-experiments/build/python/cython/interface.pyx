@@ -645,6 +645,7 @@ cdef class Problem:
     cdef _list_of_observers  # for the record
     cdef _problem_index  # for the record, this is not public but used in index property
     cdef _do_free
+    cdef _initial_solution_proposal_calls
     cdef initialized
     def __cinit__(self):
         cdef np.npy_intp shape[1]
@@ -669,6 +670,7 @@ cdef class Problem:
         self.y_values = np.zeros(self._number_of_objectives)
         self.constraint_values = np.zeros(self._number_of_constraints)
         self.x_initial = np.zeros(self._number_of_variables)
+        self._initial_solution_proposal_calls = 0
         ## FIXME: Inefficient because we copy the bounds instead of
         ## sharing the data.
         self._lower_bounds = -np.inf * np.ones(self._number_of_variables)
@@ -802,11 +804,8 @@ cdef class Problem:
 
         """
         if restart_number is None:
-            try:
-                self._initial_solution_proposal_calls += 1
-            except AttributeError:
-                self._initial_solution_proposal_calls = 0
             restart_number = self._initial_solution_proposal_calls
+            self._initial_solution_proposal_calls += 1  # count calls without explicit argument
         if restart_number <= 0 or self.number_of_constraints > 0:
             return self.initial_solution
         return self.lower_bounds + (self.upper_bounds - self.lower_bounds) * (

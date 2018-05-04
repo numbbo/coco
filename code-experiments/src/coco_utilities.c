@@ -21,9 +21,9 @@
 /***********************************************************************************************************/
 
 /**
- * @brief Sets precision to 1e-9.
+ * @brief Sets the constant chosen_precision to 1e-9.
  */
-static const double precision = 1e-9;
+static const double chosen_precision = 1e-9;
 
 /***********************************************************************************************************/
 
@@ -893,7 +893,7 @@ static int coco_double_almost_equal(const double a, const double b, const double
  * @brief Returns 1 if x is NAN and 0 otherwise.
  */
 static int coco_is_nan(const double x) {
-  return (isnan(x) || (x != x) || !(x == x) || ((x >= NAN / (1 + precision)) && (x <= NAN * (1 + precision))));
+  return (isnan(x) || (x != x) || !(x == x) || ((x >= NAN / (1 + chosen_precision)) && (x <= NAN * (1 + chosen_precision))));
 }
 
 /**
@@ -1088,13 +1088,10 @@ static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_
         /* Check if the dot product is 1 (resp. 0) when the row and the column
          * indices are the same (resp. different)
          */
-        if (i == j) {
-            if (!coco_double_almost_equal(sum, 1, precision))
+        if (((i == j) && !coco_double_almost_equal(sum, 1, chosen_precision)) ||
+            ((i != j) && !coco_double_almost_equal(sum, 0, chosen_precision)))
                 return 0;
-        } else {
-            if (!coco_double_almost_equal(sum, 0, precision))
-                return 0;
-        }
+
     }
   }
   return 1;
@@ -1111,7 +1108,7 @@ static int coco_vector_is_zero(const double *x, const size_t dim) {
     return 0;
 
   while (i < dim && is_zero) {
-    is_zero = coco_double_almost_equal(x[i], 0, precision);
+    is_zero = coco_double_almost_equal(x[i], 0, chosen_precision);
     i++;
   }
 

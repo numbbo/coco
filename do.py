@@ -768,10 +768,10 @@ for ee.suite_name, ee.observer_options['result_folder'] in [
         sys.exit(-1)
     finally:
         # always remove folder of previously run experiments:
-        exdata_folder = 'code-experiments/build/python/exdata/'
-        if os.path.exists(exdata_folder):
-            shutil.rmtree(exdata_folder)
-    
+        for s in ['bi', 'bb', 'co']:
+            shutil.rmtree('code-experiments/build/python/exdata/RS-' + s,
+                          ignore_errors=True)
+
 
 def verify_postprocessing(package_install_option = []):
     install_postprocessing(package_install_option = package_install_option)
