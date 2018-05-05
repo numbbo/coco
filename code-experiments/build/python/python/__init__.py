@@ -367,7 +367,9 @@ class Observer(_Observer):
     >>> # work work work with observed f
     >>> f.free()
 
-    Details:
+    Details
+    -------
+
         - ``f.free()`` in the above example must be called before to observe
           another problem with the "bbob" observer. Otherwise the Python
           interpreter will crash due to an error raised from the C code.
@@ -394,7 +396,7 @@ class Observer(_Observer):
     @property
     def name(self):
         """name of the observer as used with `Observer(name, ...)` to instantiate
-        `self` before.
+        `self` before
         """
         return super(Observer, self).name
     @property
@@ -417,13 +419,17 @@ class Problem(_interface.Problem):
     
     The main feature of a problem instance is that it is callable, returning the
     objective function value when called with a candidate solution as input.
+    
+    It provides other useful properties and methods like `dimension`,
+    `number_of_constraints`, `observe_with`, `initial_solution_proposal`...
+
     """
     def __init__(self):
         super(Problem, self).__init__()
     def constraint(self, x):
         """return constraint values for `x`. 
 
-        By convention, constraints with values >= 0 are satisfied.
+        By convention, constraints with values <= 0 are satisfied.
         """
         return super(Problem, self).constraint(x)
 
@@ -568,6 +574,7 @@ class Problem(_interface.Problem):
 
     @property
     def name(self):
+        """human readible short description with spaces"""
         return super(Problem, self).name
 
     @property
@@ -582,6 +589,13 @@ class Problem(_interface.Problem):
 
     @property
     def info(self):
+        """human readible info, alias for ``str(self)``.
+
+        The format of this info string is not guarantied and may change
+        in future.
+
+        See also: ``repr(self)``
+        """
         return str(self)
 
 def log_level(level=None):
