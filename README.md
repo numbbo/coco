@@ -27,7 +27,6 @@ For more general information,
 - see the [links below](#Links) to learn more about the ideas behind CoCO.
 
 
-
 Requirements  <a name="Requirements"></a>
 ------------
 1. For a machine running experiments 
@@ -118,9 +117,10 @@ Getting Started <a name="Getting-Started"></a>
   
 4. **Copy** the folder `code-experiments/build/YOUR-FAVORITE-LANGUAGE` and
   its content to another location. In Python it is sufficient to copy the 
-  file `example_experiment.py`. Run the example experiment (it already is
-  compiled). As the details vary, see the respective read-me's 
-  and/or example experiment files:
+  file [`example_experiment_for_beginners.py`](./code-experiments/build/python/example_experiment_for_beginners.py)
+  or `example_experiment.py`.
+  Run the example experiment (it already is compiled). As the details vary, see
+  the respective read-me's and/or example experiment files:
 
   - `C` [read me](./code-experiments/build/c/README.md) 
     and [example experiment](./code-experiments/build/c/example_experiment.c)
@@ -163,14 +163,15 @@ Getting Started <a name="Getting-Started"></a>
     python -m cocopp 'bbob/2009/BFGS_ros'
   ```
 
-  processes the referenced archived data set because the given substring finds
-  a unique match in the archive. See
+  processes the referenced archived BFGS data set. The given substring must
+  have a unique match in the archive. Otherwise, all matches are listed but none
+  is processed with this call. For more information in how to obtain and
+  display specific archived data, see
   [`help(cocopp)`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html) or
-  [`help(cocopp.archives)`](
-  http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.findfiles.KnownArchives.html)
-  or the class [`COCODataArchive`](
-  http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.findfiles.COCODataArchive.html)
-  for more information in how to obtain and display specific archived data.
+  [`help(cocopp.archives`)](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.
+  archiving.KnownArchives.html) or the class
+  [`COCODataArchive`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.
+  archiving.COCODataArchive.html).
   
   For the `bbob` test suite, the data descriptions can be found at
   http://coco.gforge.inria.fr/doku.php?id=algorithms and for the `bbob-biobj`
@@ -182,7 +183,8 @@ Getting Started <a name="Getting-Started"></a>
     python -m cocopp YOURDATAFOLDER 'bbob/2010/IPOP-ACT'
   ```
 
-  which adds an archived data set to the shown results.
+  which processes the data from `YOURDATAFOLDER` and the archived IPOP-ACT data
+  set in comparison.
 
   The output folder, `ppdata` by default, contains all output from 
   the post-processing. The `index.html` file is the main entry point to 
@@ -624,6 +626,7 @@ Comprehensive List of Documentations <a name="Documentations"></a>
 * APIs
   - ``C`` experiments code: http://numbbo.github.io/coco-doc/C
   - Python experiments code `cocoex`: http://coco.gforge.inria.fr/apidocs-cocoex/cocoex.html
+  - Python short [beginners example experiment](code-experiments/build/python/example_experiment_for_beginners.py)
   - Python `example_experiment.py`: http://coco.gforge.inria.fr/apidocs-example_experiment/example_experiment.html
   - Postprocessing code: http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html
 
