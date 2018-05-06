@@ -676,10 +676,13 @@ cdef class Problem:
         if restart_number is None:
             restart_number = self._initial_solution_proposal_calls
             self._initial_solution_proposal_calls += 1  # count calls without explicit argument
-        if restart_number <= 0 or self.number_of_constraints > 0:
+        if restart_number <= 0:
             return self.initial_solution
-        return self.lower_bounds + (self.upper_bounds - self.lower_bounds) * (
-            np.random.rand(self.dimension) + np.random.rand(self.dimension)) / 2
+        rv_triangular = np.random.rand(self.dimension) + np.random.rand(self.dimension)
+        if self.number_of_constraints > 0:
+            return self.initial_solution + 1.0 * (rv_triangular - 1)
+        return self.lower_bounds + rv_triangular * (
+                                    self.upper_bounds - self.lower_bounds) / 2
     @property
     def initial_solution(self):
         """return feasible initial solution"""
