@@ -117,6 +117,15 @@ def _hash(file_name, hash_function=hashlib.sha256):
     with open(file_name, 'rb') as file_:
         return hash_function(file_.read()).hexdigest()
 
+def _str_to_list(str_or_list):
+    """return a `list` in either case"""
+    if isinstance(str_or_list, (tuple, list, set)):
+        return str_or_list
+    if str(str_or_list) == str_or_list:
+        return [str_or_list]
+    raise ValueError(str_or_list)
+
+
 def read_definition_file(local_path_or_definition_file):
     """return definition triple `list`"""
     with open(_definition_file_to_read(local_path_or_definition_file), 'rt') as file_:
@@ -718,11 +727,10 @@ class COCODataArchive(list):
             return None
 
         """
-        self.find(*substrs)
+        self.find(*_str_to_list(substrs))
         if self.names_found:
             return self.get(self.names_found[0], remote=remote)
         return None
-
 
     def get(self, substr=None, remote=True):
         """return the full data pathname of `substr` in the archived data.
@@ -790,7 +798,9 @@ class COCODataArchive(list):
         return full_name
 
     def get_one(self, *args, **kwargs):
-        """depreciated, for backwards compatibility"""
+        """deprecated, for backwards compatibility only, use `get` instead
+        """
+        warnings.warn("use get instead", DeprecationWarning)
         return self.get(*args, **kwargs)
 
     def get_extended(self, args, remote=True):
@@ -804,7 +814,9 @@ class COCODataArchive(list):
         matches are taken (calling `self.get_all`).
         """
         res = []
+        args = _str_to_list(args)
         for i, name in enumerate(args):
+            name = name.strip()
             if os.path.exists(name):
                 res.append(name)
             elif name.endswith('!'):  # take first match
