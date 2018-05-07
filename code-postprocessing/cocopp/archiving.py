@@ -820,7 +820,7 @@ class COCODataArchive(list):
             if os.path.exists(name):
                 res.append(name)
             elif name.endswith('!'):  # take first match
-                res.append(self.get_first(name[:-1], remote=remote))
+                res.append(self.get_first([name[:-1]], remote=remote))
             elif name.endswith('*'):  # take all matches
                 res.extend(self.get_all(name[:-1], remote=remote))
             elif self.find(name):  # get will bail out if there is not exactly one match
