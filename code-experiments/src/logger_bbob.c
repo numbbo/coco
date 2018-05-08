@@ -28,6 +28,8 @@
 
 static const double fvalue_logged_for_infinite = 3e21;   /* value used for logging try */
 static const double fvalue_logged_for_nan = 2e21;
+/* static const double fvalue_logged_for_infeasible = 1e21;  only in first evaluation */
+static const double weight_constraints = 1e3;  /* factor used in logged indicator (f-f*)^+ + sum_i g_i^+ in front of the sum */
 
 /*static const size_t bbob_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
 /*static const size_t bbob_nbpts_fval = 5;*/
@@ -86,15 +88,34 @@ typedef struct {
 
 } logger_bbob_data_t;
 
-/* was:
+/**
+ * @brief Discretized constraint value, ~8 + log10(c), in a single digit.
+ *
+ * -\infty..0 -> 0
+ *    0..1e-7 -> 1
+ * 1e-7..1e-6 -> 2
+ *    ...
+ * 1e-1..1    -> 8
+ *   >1       -> 9
+ */
+static int single_digit_constraint_value(const double c) {
+  const double limits[9] = {0, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1};
+  int i;
+
+  for (i = 0; i < 9; ++i)
+    if (c <= limits[i])
+      return i;
+  return 9;
+}
+
+/* was (old):
  * function evaluation |
  * noise-free fitness - Fopt (7.948000000000e+01) |
  * best noise-free fitness - Fopt |
  * measured fitness |
  * best measured fitness |
  * x1 | x2...
- */
-static const char *bbob_file_header_str = "%% "
+ was (bbob-new):
     "f evaluations | "
     "g evaluations | "
     "best noise-free fitness - Fopt | "
@@ -103,9 +124,18 @@ static const char *bbob_file_header_str = "%% "
     "best measured fitness | "
     "x1 | "
     "x2...\n";
+ */
+static const char *bbob_file_header_str = "%% "
+    "f evaluations | "
+    "g evaluations | "
+    "best noise-free fitness - Fopt (%13.12e) | "
+    "measured fitness | "
+    "best measured fitness or single-digit g-values | "
+    "x1 | "
+    "x2...\n";
 
 static const char *logger_name = "bbob";
-static const char *data_format = "bbob-new"; /* or whatever we agree upon, bbob or bbob2 or bbob-constrained may be alternatives */
+static const char *data_format = "bbob-new2"; /* back to 5 columns, 5-th column writes single digit constraint values */
 
 /**
  * adds a formated line to a data file
@@ -117,19 +147,28 @@ static void logger_bbob_write_data(FILE *target_file,
                                    double best_fvalue,
                                    double best_value,
                                    const double *x,
-                                   size_t number_of_variables) {
+                                   size_t number_of_variables,
+                                   const double *constraints,
+                                   size_t number_of_constraints) {
+  size_t i;
   /* for some reason, it's %.0f in the old code instead of the 10.9e
    * in the documentation
    */
-  fprintf(target_file, "%lu %lu %+10.9e %+10.9e %+10.9e %+10.9e",
+  fprintf(target_file, "%lu %lu %+10.9e %+10.9e ",
           (unsigned long) number_of_f_evaluations,
     	  (unsigned long) number_of_cons_evaluations,
           best_fvalue - best_value,
-          fvalue - best_value,
-    	  fvalue,
-          best_fvalue);
+    	  fvalue);
+
+  if (number_of_constraints > 0)
+    for (i = 0; i < number_of_constraints; ++i)
+      fprintf(target_file, "%d",
+              constraints ? single_digit_constraint_value(constraints[i])
+                          : (int) (i % 10)); /* print 01234567890123..., may happen in last line of .tdat */
+  else
+    fprintf(target_file, "%+10.9e", best_fvalue);
+
   if (number_of_variables < 22) {
-    size_t i;
     for (i = 0; i < number_of_variables; i++) {
       fprintf(target_file, " %+5.4e", x[i]);
     }
@@ -423,6 +462,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     if (cons[i] > 0)
         sum_cons += cons[i];
   }
+  sum_cons *= weight_constraints;  /* do this before the checks */
   if (coco_is_nan(sum_cons))
     sum_cons = fvalue_logged_for_nan;
   else if (coco_is_inf(sum_cons))
@@ -437,13 +477,13 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   if (logger->number_of_evaluations == 1 || (max_fvalue + sum_cons < logger->best_fvalue)) {
     logger->best_fvalue = max_fvalue + sum_cons;
     for (i = 0; i < problem->number_of_variables; i++)
-      logger->best_solution[i] = x[i];
+      logger->best_solution[i] = x[i]; /* may well be infeasible */
 
     /* Add a line in the .dat file for each logging target reached
      * by a feasible solution and always at evaluation one
      */
-    if (logger->number_of_evaluations == 1 || (coco_observer_targets_trigger(logger->targets,
-                                        logger->best_fvalue - logger->optimal_fvalue))) {
+    if (logger->number_of_evaluations == 1 || coco_observer_targets_trigger(logger->targets,
+                                        logger->best_fvalue - logger->optimal_fvalue)) {
       logger_bbob_write_data(
           logger->fdata_file,
           logger->number_of_evaluations,
@@ -452,7 +492,9 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
           logger->best_fvalue,
           logger->optimal_fvalue,
           x,
-          problem->number_of_variables);
+          problem->number_of_variables,
+          cons,
+          problem->number_of_constraints);
     }
   }
 
@@ -467,7 +509,9 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
         logger->best_fvalue,
         logger->optimal_fvalue,
         x,
-        problem->number_of_variables);
+        problem->number_of_variables,
+        cons,
+        problem->number_of_constraints);
     logger->written_last_eval = 1;
   }
 
@@ -516,9 +560,15 @@ static void logger_bbob_free(void *stuff) {
      */
     if (!logger->written_last_eval) {
       logger_bbob_write_data(logger->tdata_file, 
-          logger->number_of_evaluations, logger->number_of_evaluations_constraints,
-          logger->best_fvalue, logger->best_fvalue, logger->optimal_fvalue, 
-          logger->best_solution, logger->number_of_variables);
+          logger->number_of_evaluations,
+          logger->number_of_evaluations_constraints,
+          logger->best_fvalue,
+          logger->best_fvalue,
+          logger->optimal_fvalue,
+          logger->best_solution,
+          logger->number_of_variables,
+          NULL,
+          0);
 	}
     fclose(logger->tdata_file);
     logger->tdata_file = NULL;
