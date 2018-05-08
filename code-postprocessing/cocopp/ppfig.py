@@ -3,6 +3,8 @@
 
 """Generic routines for figure generation."""
 from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import os
 from collections import OrderedDict
 from operator import itemgetter
@@ -116,7 +118,10 @@ def add_image(image_name, add_link_to_image, height=160):
         return '<IMG SRC="%s" height="%dem">' % (image_name, height)
 
 
-def add_link(current_dir, folder, file_name, label, indent='', ignore_file_exists=False):
+def add_link(current_dir, folder, file_name, label,
+             indent='',
+             ignore_file_exists=False,
+             dimension=None):
     if folder:
         path = os.path.join(os.path.realpath(current_dir), folder, file_name)
         href = '%s/%s' % (folder, file_name)
@@ -125,7 +130,8 @@ def add_link(current_dir, folder, file_name, label, indent='', ignore_file_exist
         href = file_name
 
     if ignore_file_exists or os.path.isfile(path):
-        return '<H3>%s<a href="%s">%s</a></H3>\n' % (indent, href, label)
+        return '<H3>%s<a href="%s%s">%s</a></H3>\n' % (
+            indent, href, "#" + str(dimension) if dimension else "", label)
 
     return ''
 
@@ -238,15 +244,15 @@ def get_rld_link(current_dir):
 
     file_name = '%s.html' % genericsettings.pprldmany_file_name
     links += add_link(current_dir, folder, file_name,
-                      pprldmany_per_func_dim_header)
+                      pprldmany_per_func_dim_header, dimension=20)
 
     file_name = '%s.html' % genericsettings.pprldmany_group_file_name
     links += add_link(current_dir, folder, file_name,
-                      pprldmany_per_group_dim_header)
+                      pprldmany_per_group_dim_header, dimension=20)
 
     file_name = '%s.html' % genericsettings.pprldmany_file_name
     links += add_link(current_dir, '', file_name,
-                      pprldmany_per_group_dim_header)
+                      pprldmany_per_group_dim_header, dimension=20)
 
     return links
 
@@ -433,7 +439,7 @@ def write_dimension_links(dimension, dimensions, index):
         links += '<A HREF="#%d">Last dimension</A> | ' % dimensions[-1]
     else:
         links += '<A HREF="#%d">Previous dimension</A> | ' % dimensions[index - 1]
-    links += '<b>Dimension = %d</b>' % dimension
+    links += '<A HREF="#%d"><b>Dimension = %d</b></A>' % (dimension, dimension)
     if index == len(dimensions) - 1:
         links += ' | <A HREF="#%d">First dimension</A>' % dimensions[0]
     else:
