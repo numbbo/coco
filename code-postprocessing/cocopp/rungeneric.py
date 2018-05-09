@@ -14,11 +14,13 @@ python -m cocopp
 
 from __future__ import absolute_import
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import os
 import sys
 import getopt
 import warnings
+import webbrowser
 import matplotlib
 from . import genericsettings, testbedsettings, rungeneric1, rungenericmany, toolsdivers, bestalg, archiving
 from .toolsdivers import truncate_latex_command_file, print_done, diff_attr
@@ -356,7 +358,10 @@ def main(argv=None):
             print(mess, end='')
 
         print_done('ALL done')
-
+        try:
+            webbrowser.open("file://" + os.getcwd() + '/' + outputdir + "/index.html")
+        except:
+            pass
         return dsld
 
     # TODO prevent loading the data every time...
@@ -368,6 +373,13 @@ def main(argv=None):
 
 
 def update_background_algorithms(input_dir):
-    for key, value in genericsettings.background.items():
-        # why can't we use different variable names than value and item, please?
-        genericsettings.background[key] = [os.path.join(input_dir, item) for item in value]
+    for format, names in genericsettings.background.items():
+        if not isinstance(names, (tuple, list, set)):
+            raise ValueError(
+                "`genericsettings.background` has the wrongly formatted entry\n"
+                "%s\n"
+                "Expected is ``(format, names)``, where format is"
+                " `None` or a (color, linestyle)-`tuple`\n"
+                "and names is a `list` of pathnames"
+                % str((format, names)))
+        genericsettings.background[format] = [os.path.join(input_dir, filename) for filename in names]
