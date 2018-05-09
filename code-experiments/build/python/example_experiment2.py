@@ -47,16 +47,20 @@ fmin = scipy.optimize.fmin_slsqp
 
 suite_name = "bbob"  # see cocoex.known_suite_names
 budget_multiplier = 2  # times dimension, increase to 10, 100, ...
+omit_last_dimension = False
 
 batches = 1  # number of batches, batch=3/32 works to set both, current_batch and batches
 current_batch = 1  # only current_batch modulo batches is relevant
-output_folder = fmin.__name__ + '_from_' + fmin.__module__ + '_%dD_on_%s' % (int(budget_multiplier), suite_name)
 
 ### possibly modify/overwrite above input parameters from input args
 if __name__ == "__main__":
     input_params = cocoex.utilities.args_to_dict(
         sys.argv[1:], globals(), {'batch': 'current_batch/batches'}, print=print)
     globals().update(input_params)  # (re-)assign variables
+
+# overwrites folder input parameter, comment out if desired otherwise
+output_folder = '%s_of_%s_%dD_on_%s' % (fmin.__name__, fmin.__module__,
+                                        int(budget_multiplier), suite_name)
 
 ### prepare
 suite = cocoex.Suite(suite_name, "", "")
@@ -70,6 +74,8 @@ print('*** benchmarking %s from %s on suite %s ***'
       % (fmin.__name__, fmin.__module__, suite_name))
 time0 = time.time()
 for problem in suite:  # this loop may take several minutes or hours or days...
+    if omit_last_dimension and problem.dimension == max(suite.dimensions):
+        break
     if problem.index % batches != current_batch % batches:
         continue
     if not len(timings[problem.dimension]) and len(timings) > 1:
@@ -105,7 +111,12 @@ for problem in suite:  # this loop may take several minutes or hours or days...
     minimal_print(problem, restarted=any(x0 != problem.initial_solution),
                   final=problem.index == len(suite) - 1)
     with open(output_folder + '_stopping_conditions.out', 'wt') as file_:
-        file_.write(repr(stoppings))  # stoppings = ast.literal_eval(file_.read()) to read them back in
+        file_.write("# code to read in these data:\n"
+                    "# import ast\n"
+                    "# with open('%s_stopping_conditions.out', 'rt') as file_:\n"
+                    "#     stoppings = ast.literal_eval(file_.read())\n"
+                    % output_folder)
+        file_.write(repr(stoppings))
 
 ### print timings and final message
 print("\n  dimension  median seconds/evaluations")
@@ -114,10 +125,12 @@ for dimension in sorted(timings):
     print("    %3d       %.1e" % (dimension, np.median(timings[dimension])))
 print("  -------------------------------------")
 if batches > 1:
-    print("*** Batch %d of %d batches finished in %s. Make sure to run *all* batches (via current_batch). ***"
+    print("*** Batch %d of %d batches finished in %s."
+          " Make sure to run *all* batches (via current_batch or batch=#/#) ***"
           % (current_batch, batches, cocoex.utilities.ascetime(time.time() - time0)))
 else:
-    print("*** Full experiment done in %s ***" % cocoex.utilities.ascetime(time.time() - time0))
+    print("*** Full experiment done in %s ***"
+          % cocoex.utilities.ascetime(time.time() - time0))
 
 ### post-process data
 if batches == 1 and 'cocopp' in globals() and cocopp not in (None, 'None'):
