@@ -75,7 +75,7 @@ The data format field in the info file specifies which columns in the dat file c
 relevant information for the post-processing in order to be able to read in the data correctly.
 
 Possible values for data format field:
-1. "bbob" contracted (for single objective problems):
+1. "bbob" contracted (for single objective problems, till 2017):
   - 1st column: evaluation number
   - 3rd column: function value
   - informal:
@@ -86,7 +86,7 @@ Possible values for data format field:
   - 2nd column: indicator value
   - informal:
     - number of target function values for each decade = 10
-3. "bbob-constrained" (single objective constrained problems):
+3. "bbob-new" contracted (single objective unconstrained or constrained problems, from 2018):
   - 1st column: f evaluation number
   - 2nd column: g evaluation number
   - 3rd column: function value

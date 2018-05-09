@@ -7,6 +7,7 @@
 
 #include "coco.h"
 #include "suite_cons_bbob_problems.c"
+#include "transform_obj_scale.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
@@ -55,7 +56,8 @@ static coco_problem_t *coco_get_cons_bbob_problem(const size_t function,
   
   double *feasible_direction = coco_allocate_vector(dimension);  
   double *xopt = coco_allocate_vector(dimension);  
-  
+  double f_0, exponent;
+
   const char *problem_id_template = "bbob-constrained_f%03lu_i%02lu_d%02lu";
   const char *problem_name_template = "bbob-constrained suite problem f%lu instance %lu in %luD";
   
@@ -131,7 +133,14 @@ static coco_problem_t *coco_get_cons_bbob_problem(const size_t function,
     coco_free_memory(feasible_direction);
     return NULL; /* Never reached */
   }
-  
+
+  /* Scale down the objective function value */
+  exponent = -2./3;
+  f_0 = coco_problem_get_best_value(problem);
+  if (f_0 > 1e3) {
+    problem = transform_obj_scale(problem, pow(f_0, exponent));
+  }
+
   coco_free_memory(xopt);
   coco_free_memory(feasible_direction);
   

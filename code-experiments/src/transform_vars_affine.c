@@ -187,17 +187,20 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
 
   /* Update the best parameter by computing
      problem->best_parameter = M^T * (inner_problem->best_parameter - b)
+
+     The update takes place only if the best parameter or b are different than zero
   */
-  for (i = 0; i < inner_problem->number_of_variables; ++i) {
-    data->x[i] = inner_problem->best_parameter[i] - data->b[i];
-  }
-  for (i = 0; i < problem->number_of_variables; ++i) {
-    problem->best_parameter[i] = 0;
-    for (j = 0; j < inner_problem->number_of_variables; ++j) {
-      problem->best_parameter[i] += data->M[j * problem->number_of_variables + i] * data->x[j];
+  if (coco_problem_best_parameter_not_zero(inner_problem) || !coco_vector_is_zero(data->b, inner_problem->number_of_variables)) {
+    for (i = 0; i < inner_problem->number_of_variables; ++i) {
+      data->x[i] = inner_problem->best_parameter[i] - data->b[i];
+    }
+    for (i = 0; i < problem->number_of_variables; ++i) {
+      problem->best_parameter[i] = 0;
+      for (j = 0; j < inner_problem->number_of_variables; ++j) {
+        problem->best_parameter[i] += data->M[j * problem->number_of_variables + i] * data->x[j];
+      }
     }
   }
-  
 
   return problem;
 }

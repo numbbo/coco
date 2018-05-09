@@ -25,7 +25,8 @@ Getting Started  <a name="Getting-Started"></a>
 
 See _Getting Started_ [here](../../../README.md#Getting-Started) for the first steps. Then
 
-- Copy (and rename) `example_experiment.py` to a place (and name) of
+- Copy (and rename) [`example_experiment_for_beginners.py`](./example_experiment_for_beginners.py)
+  or [`example_experiment.py`](`./example_experiment.py`) to a place (and name) of
   your choice. Modify this file to include the solver of your choice (instead of
   `random_search`) to the benchmarking framework. Do not forget to also choose
   the right benchmarking suite and the corresponding observer.
@@ -46,7 +47,8 @@ See _Getting Started_ [here](../../../README.md#Getting-Started) for the first s
       [...]
       bbob-biobj done (3300 of 3300 problems benchmarked),...
   ```
-  or in python or ipython like
+  or (with [`example_experiment.py`](`./example_experiment.py`) only) in python or
+  ipython like
   ```
       >>> import example_experiment_new_name as ee
       >>> ee.main()
