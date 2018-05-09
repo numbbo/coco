@@ -839,6 +839,7 @@ def get_plotting_styles(algorithms, only_foreground=False):
 
     if not only_foreground:
         for format, pathnames in genericsettings.background.items():
+            assert isinstance(pathnames, (list, tuple, set))
             if format is None:
                 format = genericsettings.background_default_style
             background_algorithms = [algorithm for algorithm in algorithms
