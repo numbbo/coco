@@ -838,24 +838,26 @@ def get_plotting_styles(algorithms, only_foreground=False):
     plotting_styles = []
 
     if not only_foreground:
-        for key, value in genericsettings.background.items():
-            if key is None:
-                key = genericsettings.background_default_style
-            background_algorithms = [algorithm for algorithm in algorithms if algorithm in value]
+        for format, pathnames in genericsettings.background.items():
+            if format is None:
+                format = genericsettings.background_default_style
+            background_algorithms = [algorithm for algorithm in algorithms
+                                     if algorithm in pathnames]
             background_algorithms.sort()
             if len(background_algorithms) > 0:
                 ppfigs_styles = {'marker': '',
-                                 'color': key[0],
-                                 'linestyle': key[1],
+                                 'color': format[0],
+                                 'linestyle': format[1],
                                  }
                 pprldmany_styles = {'marker': '',
                                     'label': '',
-                                    'color': key[0],
-                                    'linestyle': key[1],
+                                    'color': format[0],
+                                    'linestyle': format[1],
                                     }
                 plotting_styles.append(PlottingStyle(pprldmany_styles, ppfigs_styles, background_algorithms, True))
 
-    foreground_algorithms = [key for key in algorithms if key in genericsettings.foreground_algorithm_list]
+    foreground_algorithms = [key for key in algorithms
+                             if key in genericsettings.foreground_algorithm_list]
     foreground_algorithms.sort()
     plotting_styles.append(PlottingStyle({},
                                          {},
