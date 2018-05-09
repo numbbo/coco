@@ -378,8 +378,8 @@ def update_background_algorithms(input_dir):
             raise ValueError(
                 "`genericsettings.background` has the wrongly formatted entry\n"
                 "%s\n"
-                "Expected is ``(format, names)``, where format is"
-                " `None` or a (color, linestyle)-`tuple`\n"
-                "and names is a `list` of pathnames (not a single pathname)"
+                "Expected is ``(format, names)``, where"
+                " names is a `list` of one or more pathnames (not a"
+                " single pathname as `str`)"
                 % str((format, names)))
         genericsettings.background[format] = [os.path.join(input_dir, filename) for filename in names]
