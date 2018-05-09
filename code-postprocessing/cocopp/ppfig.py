@@ -562,10 +562,7 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
         res.extend(res2)
 
     if 'label' in kwargs:
-        label_args = kwargs.copy()
-        label_args['linestyle'] = ''
-        label_args['marker'] = ''
-        res3 = plt.plot([np.nan], [np.nan], **label_args)
+        res3 = plt.plot([-1.], [-1.], **kwargs)
         res.extend(res3)
 
     return res

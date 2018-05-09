@@ -106,6 +106,7 @@ data_format_name_to_class_mapping = {
         'bbob': BBOBOldDataFormat,  # the name 'bbob' is probably never used and depreciated
         'bbob-old': BBOBOldDataFormat,  # probably never used
         'bbob-new': BBOBNewDataFormat,  # 2nd column has constraints evaluations
+        'bbob-new2': BBOBNewDataFormat,  # 2nd column has constraints evaluations
         'bbob-biobj': BBOBBiObjDataFormat,  # 2nd column has function evaluations
 }
 

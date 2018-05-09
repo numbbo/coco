@@ -19,23 +19,30 @@ Simple Version (without documentation)
 Advanced Version (with documentation)
 -------------------------------------
  1. Draft a release (under the Code / releases tabs). Consider previous releases to see what to write. 
- 2. update version and release numbers in the documentation in all docs/*/source/config.py files
- 3. update version and release numbers in C documentation (coco.h) for producing web documentation 
- 4. publish the new documentation by running `make html-topublish` in all docs/* folders and pushing the created html files,
-   see also documentation-howto.md
- 5. publish the Coco C documentation through doxygen by following the instructions in documentation-howto.md
- 6. check that README.md is up-to-date
- 7. clean and test the development branch
- 8. Merge the `development` branch into the `master` branch.
- 9. Publish the release. 
-10. Adding the .tar.gz file of the release right after the release by hand will allow for
+ 2. check that README.md is up-to-date
+ 3. clean and test the development branch
+ 4. Run tests by pushing the development branch to the `devel-test1` and `test-nightly` branches, which
+    are the ones, the master branch is protected against
+ 5. Merge the `development` branch into the `master` branch.
+ 6. Publish the release. 
+ 7. Adding the .tar.gz file of the release right after the release by hand will allow for
     tracking downloads later on, see http://mmilidoni.github.io/github-downloads-count/
 
+Afterwards or before (can be skipped potentially if this is not affected by the release):
+ 8. update version and release numbers in the coco-doc documentation repository in
+    all docs/*/source/config.py files
+ 9. publish the new documentation by running `make html-topublish` in all the docs/* folders 
+    if uten 8. and pushing the created html files, see also documentation-howto.md
+10. publish the Coco C documentation through doxygen by following the instructions in documentation-howto.md
+11. publish the documentation of the cocoex and cocopp modules, see also the
+    documentation-howto.md in the coco-doc repository for details
+
+    
 Instead of merging directly the `development` branch, another approach can be useful if not all functionality
 shall be contained in the release:
 
-2./7.   Create a release branch from `development`
-2a./7a. Clean and test the release branch
-2b./7b. Merge the release branch back into the `development` branch
-2c./7c. Merge the release branch into the `master` branch.
-3./9.   Publish the release.
+2./5.   Create a release branch from `development`
+2a./5a. Clean and test the release branch
+2b./5b. Merge the release branch back into the `development` branch
+2c./5c. Merge the release branch into the `master` branch.
+3./6.   Publish the release.

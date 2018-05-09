@@ -4,7 +4,7 @@ data files. Optional input parameter is the number of
 test solutions per problem, by default 10.
 
 Data is a dictionary with the tupel `problem_index,
-solution` as keys and tupel `f_value(s), constraints_values`
+solution` as keys and tuple `f_value(s), constraints_values`
 as values.
 
 When a new suite is added only the data for this new suite
@@ -17,7 +17,6 @@ import os, sys
 import numpy as np
 import cocoex
 suite_names = cocoex.known_suite_names
-# suite_names = 'bbob-largescale'
 
 def is_finite(res):
     return all(np.all(np.isfinite(x)) for x in res)

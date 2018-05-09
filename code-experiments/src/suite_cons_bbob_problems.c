@@ -650,7 +650,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
     all_zeros[i] = 0.0;
 	 
   /* Create the objective function */
-  problem = f_different_powers_bbob_problem_allocate(function, dimension, 
+  problem = f_different_powers_bbob_constrained_problem_allocate(function, dimension,
       instance, rseed, problem_id_template, problem_name_template);
       
   bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
