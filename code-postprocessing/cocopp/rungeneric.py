@@ -380,6 +380,6 @@ def update_background_algorithms(input_dir):
                 "%s\n"
                 "Expected is ``(format, names)``, where format is"
                 " `None` or a (color, linestyle)-`tuple`\n"
-                "and names is a `list` of pathnames"
+                "and names is a `list` of pathnames (not a single pathname)"
                 % str((format, names)))
         genericsettings.background[format] = [os.path.join(input_dir, filename) for filename in names]
