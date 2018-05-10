@@ -1,7 +1,4 @@
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include "cmocka.h"
+#include "minunit.h"
 #include "coco.h"
 
 static int about_equal_value(const double a, const double b);
@@ -9,7 +6,7 @@ static int about_equal_value(const double a, const double b);
 /**
  * Tests coco_archive-related functions.
  */
-static void test_coco_archive(void **state) {
+static void test_coco_archive(void) {
 
   size_t number_of_evaluations, i;
   char file_name[] = "test_hypervolume.txt";
@@ -53,28 +50,26 @@ static void test_coco_archive(void **state) {
 
   /* Check if the values are correct */
   number_of_solutions = coco_archive_get_number_of_solutions(archive);
-  assert(number_of_solutions == 11);
+  mu_check(number_of_solutions == 11);
 
   /* Checks that the computed hypervolume is correct */
   hypervolume_computed = coco_archive_get_hypervolume(archive);
-  assert(about_equal_value(hypervolume_computed, hypervolume_read));
+  mu_check(about_equal_value(hypervolume_computed, hypervolume_read));
 
   i = 0;
   while (strcmp(text = coco_archive_get_next_solution_text(archive), "") != 0) {
     number = (size_t) strtol(text, NULL, 10);
-    assert(numbers[i] == number);
+    mu_check(numbers[i] == number);
     i++;
   }
 
   coco_archive_free(archive);
-
-  (void)state; /* unused */
 }
 
 /**
  * Tests updating the coco_archive with solutions better than the extremes.
  */
-static void test_coco_archive_extreme_solutions(void **state) {
+static void test_coco_archive_extreme_solutions(void) {
 
   size_t number_of_evaluations;
   double *y = coco_allocate_vector(2);
@@ -106,9 +101,9 @@ static void test_coco_archive_extreme_solutions(void **state) {
   coco_free_memory(line);
 
   /* Checks that the computed hypervolume is correct */
-  assert(coco_archive_get_number_of_solutions(archive) == 2);
+  mu_check(coco_archive_get_number_of_solutions(archive) == 2);
   hypervolume = coco_archive_get_hypervolume(archive);
-  assert(about_equal_value(hypervolume, 0));
+  mu_check(about_equal_value(hypervolume, 0));
 
   number_of_evaluations = 1;
   y[0] = 5.2220345785e+03;
@@ -118,20 +113,18 @@ static void test_coco_archive_extreme_solutions(void **state) {
   coco_free_memory(line);
 
   /* Checks that the computed hypervolume is correct */
-  assert(coco_archive_get_number_of_solutions(archive) == 3);
+  mu_check(coco_archive_get_number_of_solutions(archive) == 3);
   hypervolume = coco_archive_get_hypervolume(archive);
-  assert(about_equal_value(hypervolume, 8.1699208579037619e-05));
+  mu_check(about_equal_value(hypervolume, 8.1699208579037619e-05));
 
   coco_free_memory(y);
   coco_archive_free(archive);
-
-  (void)state; /* unused */
 }
 
 /**
  * Tests updating the coco_archive with similar solutions.
  */
-static void test_coco_archive_precision_issues(void **state) {
+static void test_coco_archive_precision_issues(void) {
 
   size_t number_of_evaluations, count;
   double *y = coco_allocate_vector(2);
@@ -152,8 +145,8 @@ static void test_coco_archive_precision_issues(void **state) {
 
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
-  assert(count == 2);
-  assert(about_equal_value(hypervolume, 0));
+  mu_check(count == 2);
+  mu_check(about_equal_value(hypervolume, 0));
 
   number_of_evaluations = 0;
   y[0] = 3.944800000000000e+02;
@@ -164,8 +157,8 @@ static void test_coco_archive_precision_issues(void **state) {
 
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
-  assert(count == 2);
-  assert(about_equal_value(hypervolume, 0));
+  mu_check(count == 2);
+  mu_check(about_equal_value(hypervolume, 0));
 
   number_of_evaluations = 342;
   y[0] = 4.262796567880355e+02;
@@ -176,8 +169,8 @@ static void test_coco_archive_precision_issues(void **state) {
 
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
-  assert(count == 2);
-  assert(about_equal_value(hypervolume, 0));
+  mu_check(count == 2);
+  mu_check(about_equal_value(hypervolume, 0));
 
   number_of_evaluations = 351;
   y[0] = 4.262796555526893e+02;
@@ -187,8 +180,8 @@ static void test_coco_archive_precision_issues(void **state) {
   coco_free_memory(line);
 
   count = coco_archive_get_number_of_solutions(archive);
-  assert(count == 2);
-  assert(about_equal_value(hypervolume, 0));
+  mu_check(count == 2);
+  mu_check(about_equal_value(hypervolume, 0));
 
   number_of_evaluations = 2240;
   y[0] = 4.262796544864155e+02;
@@ -198,8 +191,8 @@ static void test_coco_archive_precision_issues(void **state) {
   coco_free_memory(line);
 
   count = coco_archive_get_number_of_solutions(archive);
-  assert(count == 2);
-  assert(about_equal_value(hypervolume, 0));
+  mu_check(count == 2);
+  mu_check(about_equal_value(hypervolume, 0));
 
   coco_archive_free(archive);
 
@@ -216,8 +209,8 @@ static void test_coco_archive_precision_issues(void **state) {
 
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
-  assert(count == 3);
-  assert(about_equal_value(hypervolume, 9.998501993074473e-01));
+  mu_check(count == 3);
+  mu_check(about_equal_value(hypervolume, 9.998501993074473e-01));
 
   number_of_evaluations = 1;
   y[0] = 2790;
@@ -228,8 +221,8 @@ static void test_coco_archive_precision_issues(void **state) {
 
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
-  assert(count == 4);
-  assert(about_equal_value(hypervolume, 9.998510436916014e-01));
+  mu_check(count == 4);
+  mu_check(about_equal_value(hypervolume, 9.998510436916014e-01));
 
   number_of_evaluations = 5118865;
   y[0] = 2.809875541591976e+03;
@@ -240,8 +233,8 @@ static void test_coco_archive_precision_issues(void **state) {
 
   count = coco_archive_get_number_of_solutions(archive);
   hypervolume = coco_archive_get_hypervolume(archive);
-  assert(count == 5);
-  assert(about_equal_value(hypervolume, 9.998510436916023e-01));
+  mu_check(count == 5);
+  mu_check(about_equal_value(hypervolume, 9.998510436916023e-01));
 
   number_of_evaluations = 2173490;
   y[0] = 2.814996411168355e+03;
@@ -251,7 +244,7 @@ static void test_coco_archive_precision_issues(void **state) {
   coco_free_memory(line);
 
   count = coco_archive_get_number_of_solutions(archive);
-  assert(count == 6);
+  mu_check(count == 6);
 
   number_of_evaluations = 361541;
   y[0] = 2.940001451714048e+03;
@@ -261,20 +254,17 @@ static void test_coco_archive_precision_issues(void **state) {
   coco_free_memory(line);
 
   count = coco_archive_get_number_of_solutions(archive);
-  assert(count == 6);
+  mu_check(count == 6);
 
   coco_free_memory(y);
   coco_archive_free(archive);
-
-  (void)state; /* unused */
 }
 
-static int test_all_coco_archive(void) {
-
-  const struct CMUnitTest tests[] = {
-  cmocka_unit_test(test_coco_archive),
-  cmocka_unit_test(test_coco_archive_extreme_solutions),
-  cmocka_unit_test(test_coco_archive_precision_issues) };
-
-  return cmocka_run_group_tests(tests, NULL, NULL);
+/**
+ * Run all tests in this file.
+ */
+MU_TEST_SUITE(test_all_coco_archive) {
+  MU_RUN_TEST(test_coco_archive);
+  MU_RUN_TEST(test_coco_archive_extreme_solutions);
+  MU_RUN_TEST(test_coco_archive_precision_issues);
 }
