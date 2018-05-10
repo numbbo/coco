@@ -12,12 +12,10 @@ static void test_coco_evaluate_function(void) {
   double *x;
   double *y;
 
-  suite = coco_suite("bbob", NULL, NULL);
+  suite = coco_suite("bbob", NULL, "dimensions: 2 instance_indices: 1");
   x = coco_allocate_vector(2);
   y = coco_allocate_vector(1);
   while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
-    if (coco_problem_get_dimension(problem) > 2)
-  		continue;
     x[0] = 0;
     x[1] = NAN;
     coco_evaluate_function(problem, x, y);
@@ -27,29 +25,25 @@ static void test_coco_evaluate_function(void) {
   coco_free_memory(x);
   coco_free_memory(y);
 
-  suite = coco_suite("bbob-biobj", NULL, NULL);
+  suite = coco_suite("bbob-biobj", NULL, "dimensions: 2 instance_indices: 1");
   x = coco_allocate_vector(2);
   y = coco_allocate_vector(2);
   while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
-  	 if (coco_problem_get_dimension(problem) > 2)
-  		continue;
-  	 x[0] = 0;
-  	 x[1] = NAN;
+  	x[0] = 0;
+  	x[1] = NAN;
     coco_evaluate_function(problem, x, y);
     mu_check(coco_vector_contains_nan(y, 2));
   }
   coco_suite_free(suite);
   coco_free_memory(x);
   coco_free_memory(y);
-  
-  suite = coco_suite("bbob-constrained", NULL, NULL);
+
+  suite = coco_suite("bbob-constrained", NULL, "dimensions: 2 instance_indices: 1");
   x = coco_allocate_vector(2);
   y = coco_allocate_vector(1);
   while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
-  	 if (coco_problem_get_dimension(problem) > 2)
-  		continue;
-  	 x[0] = 0;
-  	 x[1] = NAN;
+  	x[0] = 0;
+  	x[1] = NAN;
     coco_evaluate_function(problem, x, y);
     mu_check(coco_vector_contains_nan(y, 1));
   }
@@ -70,16 +64,13 @@ static void test_coco_evaluate_constraint(void) {
   double *y;
   size_t number_of_constraints;
 
-  suite = coco_suite("bbob-constrained", NULL, NULL);
+  suite = coco_suite("bbob-constrained", NULL, "dimensions: 2 instance_indices: 1");
   x = coco_allocate_vector(2);
   while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
-  	 if (coco_problem_get_dimension(problem) > 2)
-      continue;
     x[0] = 0;
     x[1] = NAN;
-  	
-  	 number_of_constraints = coco_problem_get_number_of_constraints(problem);
-  	 y = coco_allocate_vector(number_of_constraints);
+  	number_of_constraints = coco_problem_get_number_of_constraints(problem);
+  	y = coco_allocate_vector(number_of_constraints);
     coco_evaluate_constraint(problem, x, y);
     mu_check(coco_vector_contains_nan(y, number_of_constraints));
     coco_free_memory(y);
@@ -101,24 +92,18 @@ static void test_coco_is_feasible(void) {
   double *y;
   size_t number_of_constraints;
 
-  suite = coco_suite("bbob-constrained", NULL, NULL);
+  suite = coco_suite("bbob-constrained", NULL, "dimensions: 2 instance_indices: 1");
   x = coco_allocate_vector(2);
   initial_solution = coco_allocate_vector(2);
   
   while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
-  	 if (coco_problem_get_dimension(problem) > 2)
-      continue;
     x[0] = 0;
     x[1] = NAN;
-  	
   	number_of_constraints = coco_problem_get_number_of_constraints(problem);
   	y = coco_allocate_vector(number_of_constraints);
-    
     mu_check(coco_is_feasible(problem, x, y) == 0);
-    
     coco_problem_get_initial_solution(problem, initial_solution);
     mu_check(coco_is_feasible(problem, initial_solution, y) == 1);
-    
     coco_free_memory(y);
   }
   coco_suite_free(suite);
