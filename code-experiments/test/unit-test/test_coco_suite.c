@@ -1,5 +1,4 @@
-#include "minunit.h"
-#include "coco.h"
+#include "coco_minunit.h"
 
 /* Since the move from cmocka to minunit, this code should not longer work. */
 #if 0

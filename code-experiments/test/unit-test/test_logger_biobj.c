@@ -1,5 +1,4 @@
-#include "minunit.h"
-#include "coco.h"
+#include "coco_minunit.h"
 
 static int about_equal_vector(const double *a, const double *b, const size_t dimension);
 static int about_equal_2d(const double *a, const double b1, const double b2);
