@@ -188,4 +188,3 @@ workflows:
     jobs:
       - test_ubuntu_rolling_python3
       - test_ubuntu_latest_python2
-      - test_cmocka_ubuntu_latest_python2
