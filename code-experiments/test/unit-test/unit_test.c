@@ -22,8 +22,8 @@ int main(void) {
 	MU_RUN_SUITE(test_all_logger_biobj);
 	MU_RUN_SUITE(test_all_mo_utilities);
 
-	/* Run this if you want to see the tests fail */
-	MU_RUN_SUITE(test_suite_fail);
+	/* Run this if you want to see some tests fail
+	MU_RUN_SUITE(test_suite_fail); */
 
 	MU_REPORT();
 
