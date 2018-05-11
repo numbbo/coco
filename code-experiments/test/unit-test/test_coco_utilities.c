@@ -1,5 +1,4 @@
-#include "minunit.h"
-#include "coco.h"
+#include "coco_minunit.h"
 
 static char *convert_to_string_with_newlines(char **array) {
 

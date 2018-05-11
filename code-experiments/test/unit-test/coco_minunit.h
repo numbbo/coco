@@ -1,3 +1,13 @@
+/**
+ * A COCO-specific instance of MinUnit (a minimal unit testing framework for C).
+ *
+ * These changes were made to ensure the implementation is compliant with the C89 standard
+ * (some functionalities have been removed):
+ *   - No timers
+ *   - No usage of __func__
+ *   - snprintf replaced with coco_strdupf
+ */
+
 /*
  * Copyright (c) 2012 David Siñuela Pastor, siu.4coders@gmail.com
  * 
@@ -27,20 +37,11 @@
 	extern "C" {
 #endif
 
-#if defined(_WIN32)
-	#include <Windows.h>
-	#if defined(_MSC_VER) && _MSC_VER < 1900
-		#define snprintf _snprintf
-		#define __func__ __FUNCTION__
-	#endif
-#endif
-
 #include <string.h>
 #include <stdio.h>
 #include <math.h>
+#include "coco.h"
 
-/*  Maximum length of last message */
-#define MINUNIT_MESSAGE_LEN 1024
 /*  Accuracy with which floats are compared */
 #define MINUNIT_EPSILON 1E-12
 
@@ -51,7 +52,7 @@ static int minunit_fail = 0;
 static int minunit_status = 0;
 
 /*  Last message */
-static char minunit_last_message[MINUNIT_MESSAGE_LEN];
+static char *minunit_last_message = NULL;
 
 /*  Test setup and teardown function pointers */
 static void (*minunit_setup)(void) = NULL;
@@ -78,6 +79,12 @@ static void (*minunit_teardown)(void) = NULL;
 	minunit_teardown = teardown_fun;\
 )
 
+static void clear_last_message(void) {
+	if (minunit_last_message != NULL) {
+		coco_free_memory(minunit_last_message);
+	}
+}
+
 /*  Test runner */
 #define MU_RUN_TEST(test) MU__SAFE_BLOCK(\
 	if (minunit_setup) (*minunit_setup)();\
@@ -88,6 +95,7 @@ static void (*minunit_teardown)(void) = NULL;
 		minunit_fail++;\
 		printf("F");\
 		printf("\n%s\n", minunit_last_message);\
+		clear_last_message();\
 	}\
 	fflush(stdout);\
 	if (minunit_teardown) (*minunit_teardown)();\
@@ -102,7 +110,8 @@ static void (*minunit_teardown)(void) = NULL;
 #define mu_check(test) MU__SAFE_BLOCK(\
 	minunit_assert++;\
 	if (!(test)) {\
-		snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %s", __func__, __FILE__, __LINE__, #test);\
+		clear_last_message();\
+		minunit_last_message = coco_strdupf("test failed:\n\t%s:%d: %s", __FILE__, __LINE__, #test);\
 		minunit_status = 1;\
 		return;\
 	} else {\
@@ -112,7 +121,8 @@ static void (*minunit_teardown)(void) = NULL;
 
 #define mu_fail(message) MU__SAFE_BLOCK(\
 	minunit_assert++;\
-	snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %s", __func__, __FILE__, __LINE__, message);\
+	clear_last_message();\
+	minunit_last_message = coco_strdupf("test failed:\n\t%s:%d: %s", __FILE__, __LINE__, message);\
 	minunit_status = 1;\
 	return;\
 )
@@ -120,7 +130,8 @@ static void (*minunit_teardown)(void) = NULL;
 #define mu_assert(test, message) MU__SAFE_BLOCK(\
 	minunit_assert++;\
 	if (!(test)) {\
-		snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %s", __func__, __FILE__, __LINE__, message);\
+		clear_last_message();\
+		minunit_last_message = coco_strdupf("test failed:\n\t%s:%d: %s", __FILE__, __LINE__, message);\
 		minunit_status = 1;\
 		return;\
 	} else {\
@@ -135,7 +146,8 @@ static void (*minunit_teardown)(void) = NULL;
 	minunit_tmp_e = (expected);\
 	minunit_tmp_r = (result);\
 	if (minunit_tmp_e != minunit_tmp_r) {\
-		snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %d expected but was %d", __func__, __FILE__, __LINE__, minunit_tmp_e, minunit_tmp_r);\
+		clear_last_message();\
+		minunit_last_message = coco_strdupf("test failed:\n\t%s:%d: %d expected but was %d", __FILE__, __LINE__, minunit_tmp_e, minunit_tmp_r);\
 		minunit_status = 1;\
 		return;\
 	} else {\
@@ -151,7 +163,8 @@ static void (*minunit_teardown)(void) = NULL;
 	minunit_tmp_r = (result);\
 	if (fabs(minunit_tmp_e-minunit_tmp_r) > MINUNIT_EPSILON) {\
 		int minunit_significant_figures = 1 - log10(MINUNIT_EPSILON);\
-		snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: %.*g expected but was %.*g", __func__, __FILE__, __LINE__, minunit_significant_figures, minunit_tmp_e, minunit_significant_figures, minunit_tmp_r);\
+		clear_last_message();\
+		minunit_last_message = coco_strdupf("test failed:\n\t%s:%d: %.*g expected but was %.*g", __FILE__, __LINE__, minunit_significant_figures, minunit_tmp_e, minunit_significant_figures, minunit_tmp_r);\
 		minunit_status = 1;\
 		return;\
 	} else {\
@@ -170,7 +183,8 @@ static void (*minunit_teardown)(void) = NULL;
 		minunit_tmp_r = "<null pointer>";\
 	}\
 	if(strcmp(minunit_tmp_e, minunit_tmp_r)) {\
-		snprintf(minunit_last_message, MINUNIT_MESSAGE_LEN, "%s failed:\n\t%s:%d: '%s' expected but was '%s'", __func__, __FILE__, __LINE__, minunit_tmp_e, minunit_tmp_r);\
+		clear_last_message();\
+		minunit_last_message = coco_strdupf("test failed:\n\t%s:%d: '%s' expected but was '%s'", __FILE__, __LINE__, minunit_tmp_e, minunit_tmp_r);\
 		minunit_status = 1;\
 		return;\
 	} else {\

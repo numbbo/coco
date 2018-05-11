@@ -1,5 +1,4 @@
-#include "minunit.h"
-#include "coco.h"
+#include "coco_minunit.h"
 
 static int about_equal_value(const double a, const double b);
 

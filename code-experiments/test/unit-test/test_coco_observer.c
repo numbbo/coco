@@ -1,5 +1,4 @@
-#include "minunit.h"
-#include "coco.h"
+#include "coco_minunit.h"
 
 /**
  * Tests the function coco_observer_targets_trigger.
