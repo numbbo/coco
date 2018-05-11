@@ -1,48 +1,48 @@
-1 Sphere with 1 constraint
-2 Sphere with 2 constraints
-3 Sphere with 6 constraints
-4 Sphere with 6+n/2 constraints
-5 Sphere with 6+n constraints
-6 Sphere with 6+3n constraints
-7 Sep. Ellipsoid with 1 constraint
-8 Sep. Ellipsoid with 2 constraints
-9 Sep. Ellipsoid with 6 constraints
-10 Sep. Ellipsoid with 6+n/2 constraints
-11 Sep. Ellipsoid with 6+n constraints
-12 Sep. Ellipsoid with 6+3n constraints
-13 Linear Slope with 1 constraint
-14 Linear Slope with 2 constraints
-15 Linear Slope with 6 constraints
-16 Linear Slope with 6+n/2 constraints
-17 Linear Slope with 6+n constraints
-18 Linear Slope with 6+3n constraints
-19 Rotated Ellipsoid with 1 constraint
-20 Rotated Ellipsoid with 2 constraints
-21 Rotated Ellipsoid with 6 constraints
-22 Rotated Ellipsoid with 6+n/2 constraints
-23 Rotated Ellipsoid with 6+n constraints
-24 Rotated Ellipsoid with 6+3n constraints
-25 Discus with 1 constraint
-26 Discus with 2 constraints
-27 Discus with 6 constraints
-28 Discus with 6+n/2 constraints
-29 Discus with 6+n constraints
-30 Discus with 6+3n constraints
-31 Bent Cigar with 1 constraint
-32 Bent Cigar with 2 constraints
-33 Bent Cigar with 6 constraints
-34 Bent Cigar with 6+n/2 constraints
-35 Bent Cigar with 6+n constraints
-36 Bent Cigar with 6+3n constraints
-37 Different Powers with 1 constraint
-38 Different Powers with 2 constraints
-39 Different Powers with 6 constraints
-40 Different Powers with 6+n/2 constraints
-41 Different Powers with 6+n constraints
-42 Different Powers with 6+3n constraints
-43 Separable Rastrigin with 1 constraint
-44 Separable Rastrigin with 2 constraints
-45 Separable Rastrigin with 6 constraints
-46 Separable Rastrigin with 6+n/2 constraints
-47 Separable Rastrigin with 6+n constraints
-48 Separable Rastrigin with 6+3n constraints
+1 Sphere, 1 constraint
+2 Sphere, 2 constraints
+3 Sphere, 6 constraints
+4 Sphere, n/2+6 constraints
+5 Sphere, n+6 constraints
+6 Sphere, 3n+6 constraints
+7 Sep. Ellipsoid, 1 constraint
+8 Sep. Ellipsoid, 2 constraints
+9 Sep. Ellipsoid, 6 constraints
+10 Sep. Ellipsoid, n/2+6 constraints
+11 Sep. Ellipsoid, n+6 constraints
+12 Sep. Ellipsoid, 3n+6 constraints
+13 Linear Slope, 1 constraint
+14 Linear Slope, 2 constraints
+15 Linear Slope, 6 constraints
+16 Linear Slope, n/2+6 constraints
+17 Linear Slope, n+6 constraints
+18 Linear Slope, 3n+6 constraints
+19 Rotated Ellipsoid, 1 constraint
+20 Rotated Ellipsoid, 2 constraints
+21 Rotated Ellipsoid, 6 constraints
+22 Rotated Ellipsoid, n/2+6 constraints
+23 Rotated Ellipsoid, n+6 constraints
+24 Rotated Ellipsoid, 3n+6 constraints
+25 Discus, 1 constraint
+26 Discus, 2 constraints
+27 Discus, 6 constraints
+28 Discus, n/2+6 constraints
+29 Discus, n+6 constraints
+30 Discus, 3n+6 constraints
+31 Bent Cigar, 1 constraint
+32 Bent Cigar, 2 constraints
+33 Bent Cigar, 6 constraints
+34 Bent Cigar, n/2+6 constraints
+35 Bent Cigar, n+6 constraints
+36 Bent Cigar, 3n+6 constraints
+37 Different Powers, 1 constraint
+38 Different Powers, 2 constraints
+39 Different Powers, 6 constraints
+40 Different Powers, n/2+6 constraints
+41 Different Powers, n+6 constraints
+42 Different Powers, 3n+6 constraints
+43 Separable Rastrigin, 1 constraint
+44 Separable Rastrigin, 2 constraints
+45 Separable Rastrigin, 6 constraints
+46 Separable Rastrigin, n/2+6 constraints
+47 Separable Rastrigin, n+6 constraints
+48 Separable Rastrigin, 3n+6 constraints
