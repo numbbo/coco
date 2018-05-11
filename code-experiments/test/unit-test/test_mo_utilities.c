@@ -1,13 +1,10 @@
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include "cmocka.h"
+#include "minunit.h"
 #include "coco.h"
 
 /**
  * Tests the function mo_get_norm.
  */
-static void test_mo_get_norm(void **state) {
+static void test_mo_get_norm(void) {
 
   double norm = 0;
 
@@ -19,36 +16,34 @@ static void test_mo_get_norm(void **state) {
       0.53, 0.84, 0.94, 0.78, 0.38, 0.78, 0.58, 0.27, 0.57 };
 
   norm = mo_get_norm(first, second, 1);
-  assert(norm >= 0.04999);  assert(norm <= 0.05001);
+  mu_check(norm >= 0.04999);  mu_check(norm <= 0.05001);
 
   norm = mo_get_norm(first, second, 2);
-  assert(norm >= 0.40310);  assert(norm <= 0.40312);
+  mu_check(norm >= 0.40310);  mu_check(norm <= 0.40312);
 
   norm = mo_get_norm(first, second, 3);
-  assert(norm >= 0.40754);  assert(norm <= 0.40756);
+  mu_check(norm >= 0.40754);  mu_check(norm <= 0.40756);
 
   norm = mo_get_norm(first, second, 4);
-  assert(norm >= 0.40865);  assert(norm <= 0.40867);
+  mu_check(norm >= 0.40865);  mu_check(norm <= 0.40867);
 
   norm = mo_get_norm(first, second, 5);
-  assert(norm >= 0.70950);  assert(norm <= 0.70952);
+  mu_check(norm >= 0.70950);  mu_check(norm <= 0.70952);
 
   norm = mo_get_norm(first, second, 10);
-  assert(norm >= 1.00493);  assert(norm <= 1.00495);
+  mu_check(norm >= 1.00493);  mu_check(norm <= 1.00495);
 
   norm = mo_get_norm(first, second, 20);
-  assert(norm >= 1.65465);  assert(norm <= 1.65467);
+  mu_check(norm >= 1.65465);  mu_check(norm <= 1.65467);
 
   norm = mo_get_norm(first, second, 40);
-  assert(norm >= 2.17183);  assert(norm <= 2.17185);
-
-  (void)state; /* unused */
+  mu_check(norm >= 2.17183);  mu_check(norm <= 2.17185);
 }
 
 /**
  * Tests the function mo_normalize.
  */
-static void test_mo_normalize(void **state) {
+static void test_mo_normalize(void) {
 
   double *y = coco_allocate_vector(2);
   double *ideal = coco_allocate_vector(2);
@@ -62,37 +57,35 @@ static void test_mo_normalize(void **state) {
 
   result = mo_normalize(ideal, ideal, nadir, 2);
   /* Note that the ideal point gets adjusted to be equal to an extreme point! */
-  assert(about_equal_2d(result, 0, 1));
+  mu_check(about_equal_2d(result, 0, 1));
   coco_free_memory(result);
 
   result = mo_normalize(nadir, ideal, nadir, 2);
-  assert(about_equal_2d(result, 1, 1));
+  mu_check(about_equal_2d(result, 1, 1));
   coco_free_memory(result);
 
   y[0] = 50;
   y[1] = 0.1;
   result = mo_normalize(y, ideal, nadir, 2);
   /* Note that a point better than the ideal point gets adjusted to be equal to an extreme point! */
-  assert(about_equal_2d(result, 0, 1));
+  mu_check(about_equal_2d(result, 0, 1));
   coco_free_memory(result);
 
   y[0] = 180;
   y[1] = 0.21;
   result = mo_normalize(y, ideal, nadir, 2);
-  assert(about_equal_2d(result, 0.8, 0.5));
+  mu_check(about_equal_2d(result, 0.8, 0.5));
   coco_free_memory(result);
 
   coco_free_memory(y);
   coco_free_memory(ideal);
   coco_free_memory(nadir);
-
-  (void)state; /* unused */
 }
 
 /**
  * Tests the function mo_get_dominance.
  */
-static void test_mo_get_dominance(void **state) {
+static void test_mo_get_dominance(void) {
 
   double *a = coco_allocate_vector(2);
   double *b = coco_allocate_vector(2);
@@ -104,87 +97,78 @@ static void test_mo_get_dominance(void **state) {
   c[0] = 0.6;  c[1] = 0.4;
   d[0] = 0.6;  d[1] = 0.4;
 
-  assert(mo_get_dominance(a, b, 2) == 0);
-  assert(mo_get_dominance(c, b, 2) == -1);
-  assert(mo_get_dominance(b, d, 2) == 1);
-  assert(mo_get_dominance(c, d, 2) == -2);
-  assert(mo_get_dominance(a, a, 2) == -2);
+  mu_check(mo_get_dominance(a, b, 2) == 0);
+  mu_check(mo_get_dominance(c, b, 2) == -1);
+  mu_check(mo_get_dominance(b, d, 2) == 1);
+  mu_check(mo_get_dominance(c, d, 2) == -2);
+  mu_check(mo_get_dominance(a, a, 2) == -2);
 
   coco_free_memory(a);
   coco_free_memory(b);
   coco_free_memory(c);
   coco_free_memory(d);
-
-  (void)state; /* unused */
 }
 
 /**
  * Tests the function mo_is_within_ROI.
  */
-static void test_mo_is_within_ROI(void **state) {
+static void test_mo_is_within_ROI(void) {
 
   double *y = coco_allocate_vector(2);
 
   y[0] = 0.5; y[1] = 0.2;
-  assert(mo_is_within_ROI(y, 2) == 1);
+  mu_check(mo_is_within_ROI(y, 2) == 1);
 
   y[0] = 0; y[1] = 0;
-  assert(mo_is_within_ROI(y, 2) == 1);
+  mu_check(mo_is_within_ROI(y, 2) == 1);
 
   y[0] = 1; y[1] = 1;
-  assert(mo_is_within_ROI(y, 2) == 1);
+  mu_check(mo_is_within_ROI(y, 2) == 1);
 
   y[0] = -0.00001; y[1] = 1;
-  assert(mo_is_within_ROI(y, 2) == 0);
+  mu_check(mo_is_within_ROI(y, 2) == 0);
 
   y[0] = 1.2; y[1] = 0.5;
-  assert(mo_is_within_ROI(y, 2) == 0);
+  mu_check(mo_is_within_ROI(y, 2) == 0);
 
   coco_free_memory(y);
-
-  (void)state; /* unused */
 }
 
 /**
  * Tests the function mo_get_distance_to_ROI.
  */
-static void test_mo_get_distance_to_ROI(void **state) {
+static void test_mo_get_distance_to_ROI(void) {
 
   double *y = coco_allocate_vector(2);
   double result;
 
   y[0] = 0.5; y[1] = 0.2;
-  assert(about_equal_value(mo_get_distance_to_ROI(y, 2), 0));
+  mu_check(about_equal_value(mo_get_distance_to_ROI(y, 2), 0));
 
   y[0] = 0; y[1] = 0;
-  assert(about_equal_value(mo_get_distance_to_ROI(y, 2), 0));
+  mu_check(about_equal_value(mo_get_distance_to_ROI(y, 2), 0));
 
   y[0] = 1; y[1] = 1;
-  assert(about_equal_value(mo_get_distance_to_ROI(y, 2), 0));
+  mu_check(about_equal_value(mo_get_distance_to_ROI(y, 2), 0));
 
   y[0] = 1.00001; y[1] = 1;
   result = mo_get_distance_to_ROI(y, 2);
-  assert(about_equal_value(result, 0.00001));
+  mu_check(about_equal_value(result, 0.00001));
 
   y[0] = 1.2; y[1] = 1.5;
   result = mo_get_distance_to_ROI(y, 2);
-  assert(about_equal_value(mo_get_distance_to_ROI(y, 2), 0.53851648071345037));
+  mu_check(about_equal_value(mo_get_distance_to_ROI(y, 2), 0.53851648071345037));
 
   coco_free_memory(y);
-
-
-  (void)state; /* unused */
 }
 
-static int test_all_mo_utilities(void) {
-
-  const struct CMUnitTest tests[] = {
-      cmocka_unit_test(test_mo_get_norm),
-      cmocka_unit_test(test_mo_normalize),
-      cmocka_unit_test(test_mo_get_dominance),
-      cmocka_unit_test(test_mo_is_within_ROI),
-      cmocka_unit_test(test_mo_get_distance_to_ROI)
-  };
-
-  return cmocka_run_group_tests(tests, NULL, NULL);
+/**
+ * Run all tests in this file.
+ */
+MU_TEST_SUITE(test_all_mo_utilities) {
+  MU_RUN_TEST(test_mo_get_norm);
+  MU_RUN_TEST(test_mo_normalize);
+  MU_RUN_TEST(test_mo_get_dominance);
+  MU_RUN_TEST(test_mo_is_within_ROI);
+  MU_RUN_TEST(test_mo_get_distance_to_ROI);
 }

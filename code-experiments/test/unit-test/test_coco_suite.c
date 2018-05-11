@@ -1,9 +1,7 @@
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include "cmocka.h"
+#include "minunit.h"
 #include "coco.h"
 
+/* Since the move from cmocka to minunit, this code should not longer work. */
 #if 0
 
 /* This is how wrapping would look like if it worked */
@@ -52,45 +50,40 @@ static void test_coco_suite_encode_problem_index_with_wrapping(void **state) {
 /**
  * Tests the function coco_suite_get_problem.
  */
-static void test_coco_suite_get_problem(void **state) {
+static void test_coco_suite_get_problem(void) {
 
   coco_suite_t *suite = coco_suite("bbob-biobj", "year: 0000", "dimensions: 5");
   coco_problem_t *problem;
 
   problem = coco_suite_get_problem(suite, 0);
-  assert_true(problem == NULL);
+  mu_check(problem == NULL);
 
   problem = coco_suite_get_problem(suite, 1200);
-  assert_true(problem != NULL);
+  mu_check(problem != NULL);
 
   coco_problem_free(problem);
   coco_suite_free(suite);
-
-  (void)state; /* unused */
 }
 
 /**
  * Tests the function coco_suite_encode_problem_index.
  */
-static void test_coco_suite_encode_problem_index(void **state) {
+static void test_coco_suite_encode_problem_index(void) {
 
   coco_suite_t *suite;
   size_t index;
 
   suite = coco_suite("bbob", "year: 0000", NULL);
   index = coco_suite_encode_problem_index(suite, 13, 0, 10);
-  assert_true(index == 205);
+  mu_check(index == 205);
   coco_suite_free(suite);
-
-  (void)state; /* unused */
 }
 
-static int test_all_coco_suite(void) {
-
-  const struct CMUnitTest tests[] = {
-      cmocka_unit_test(test_coco_suite_encode_problem_index),
-      cmocka_unit_test(test_coco_suite_get_problem)
-  };
-
-  return cmocka_run_group_tests(tests, NULL, NULL);
+/**
+ * Run all tests in this file.
+ */
+MU_TEST_SUITE(test_all_coco_suite) {
+  MU_RUN_TEST(test_coco_suite_encode_problem_index);
+  MU_RUN_TEST(test_coco_suite_get_problem);
 }
+

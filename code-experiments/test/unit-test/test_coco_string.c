@@ -1,13 +1,10 @@
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include "cmocka.h"
+#include "minunit.h"
 #include "coco.h"
 
 /**
  * Tests coco_archive-related functions.
  */
-static void test_coco_string_trim(void **state) {
+static void test_coco_string_trim(void) {
 
 	char *sample_strings[] = {
 			"nothing to trim",
@@ -38,16 +35,13 @@ static void test_coco_string_trim(void **state) {
 
 	for (index = 0; sample_strings[index] != NULL; ++index) {
 		strcpy(str, sample_strings[index] );
-		assert(strcmp(coco_string_trim(str), result_strings[index]) == 0);
+		mu_check(strcmp(coco_string_trim(str), result_strings[index]) == 0);
 	}
-
-  (void)state; /* unused */
 }
 
-static int test_all_coco_string(void) {
-
-  const struct CMUnitTest tests[] = {
-  cmocka_unit_test(test_coco_string_trim) };
-
-  return cmocka_run_group_tests(tests, NULL, NULL);
+/**
+ * Run all tests in this file.
+ */
+MU_TEST_SUITE(test_all_coco_string) {
+  MU_RUN_TEST(test_coco_string_trim);
 }
