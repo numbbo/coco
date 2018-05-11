@@ -1,4 +1,4 @@
-#include "coco_minunit.h"
+#include "minunit_c89.h"
 
 static int foo = 5;
 static const double dbar = 0.1;
