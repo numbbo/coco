@@ -1,4 +1,4 @@
-#include "coco_minunit.h"
+#include "minunit_c89.h"
 
 static int foo = 5;
 static const double dbar = 0.1;
@@ -36,7 +36,7 @@ MU_TEST(test_fail) {
 }
 
 MU_TEST(test_string_eq_fail){
-	mu_assert_string_eq("Thatstring", "Thisstring");
+	mu_assert_string_eq("That string", "This string");
 }
 
 

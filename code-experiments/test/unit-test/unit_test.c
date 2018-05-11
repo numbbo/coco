@@ -1,5 +1,6 @@
+#include "coco.h"
 #include "coco.c"
-#include "coco_minunit.h"
+#include "minunit_c89.h"
 #include "unit_test_utilities.c"
 #include "test_coco_archive.c"
 #include "test_coco_observer.c"
