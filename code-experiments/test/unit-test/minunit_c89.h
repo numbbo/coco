@@ -5,7 +5,7 @@
  * (some functionalities have been removed):
  *   - No timers
  *   - No usage of __func__
- *   - snprintf replaced with coco_strdupf
+ *   - snprintf replaced with the write_last_message function based on coco_strdupf and coco_error
  */
 
 /*
