@@ -79,11 +79,13 @@ static void (*minunit_teardown)(void) = NULL;
 	minunit_teardown = teardown_fun;\
 )
 
-static void clear_last_message(void) {
-	if (minunit_last_message != NULL) {
-		coco_free_memory(minunit_last_message);
-	}
-}
+/* Free the memory allocated for the last message */
+#define clear_last_message(void) MU__SAFE_BLOCK(\
+	if (minunit_last_message != NULL) {\
+		coco_free_memory(minunit_last_message);\
+		minunit_last_message = NULL;\
+	}\
+)
 
 /*  Test runner */
 #define MU_RUN_TEST(test) MU__SAFE_BLOCK(\
@@ -97,6 +99,7 @@ static void clear_last_message(void) {
 		printf("\n%s\n", minunit_last_message);\
 		clear_last_message();\
 	}\
+	clear_last_message();\
 	fflush(stdout);\
 	if (minunit_teardown) (*minunit_teardown)();\
 )

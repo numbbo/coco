@@ -4,7 +4,7 @@
  * Tests whether the coco_evaluate_function returns a vector of NANs when given a vector with one or more
  * NAN values.
  */
-static void test_coco_evaluate_function(void) {
+MU_TEST(test_coco_evaluate_function) {
 
   coco_suite_t *suite;
   coco_problem_t *problem;
@@ -55,7 +55,7 @@ static void test_coco_evaluate_function(void) {
  * Tests whether coco_evaluate_constraint returns a vector of NANs 
  * when given a vector with one or more NAN values.
  */
-static void test_coco_evaluate_constraint(void) {
+MU_TEST(test_coco_evaluate_constraint) {
 
   coco_suite_t *suite;
   coco_problem_t *problem;
@@ -83,7 +83,7 @@ static void test_coco_evaluate_constraint(void) {
  * with one or more NAN values and 1 for the initial solution given
  * by COCO.
  */
-static void test_coco_is_feasible(void) {
+MU_TEST(test_coco_is_feasible) {
 
   coco_suite_t *suite;
   coco_problem_t *problem;
@@ -113,7 +113,7 @@ static void test_coco_is_feasible(void) {
  * Tests whether coco_problem_get_largest_fvalues_of_interest returns non-NULL values
  * on problems from the "bbob-biobj" test suite.
  */
-static void test_coco_problem_get_largest_fvalues_of_interest_bbob_biobj(void) {
+MU_TEST(test_coco_problem_get_largest_fvalues_of_interest_bbob_biobj) {
 
   coco_suite_t *suite;
   coco_problem_t *problem;

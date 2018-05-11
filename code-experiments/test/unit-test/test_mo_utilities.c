@@ -3,7 +3,7 @@
 /**
  * Tests the function mo_get_norm.
  */
-static void test_mo_get_norm(void) {
+MU_TEST(test_mo_get_norm) {
 
   double norm = 0;
 
@@ -42,7 +42,7 @@ static void test_mo_get_norm(void) {
 /**
  * Tests the function mo_normalize.
  */
-static void test_mo_normalize(void) {
+MU_TEST(test_mo_normalize) {
 
   double *y = coco_allocate_vector(2);
   double *ideal = coco_allocate_vector(2);
@@ -84,7 +84,7 @@ static void test_mo_normalize(void) {
 /**
  * Tests the function mo_get_dominance.
  */
-static void test_mo_get_dominance(void) {
+MU_TEST(test_mo_get_dominance) {
 
   double *a = coco_allocate_vector(2);
   double *b = coco_allocate_vector(2);
@@ -111,7 +111,7 @@ static void test_mo_get_dominance(void) {
 /**
  * Tests the function mo_is_within_ROI.
  */
-static void test_mo_is_within_ROI(void) {
+MU_TEST(test_mo_is_within_ROI) {
 
   double *y = coco_allocate_vector(2);
 
@@ -136,7 +136,7 @@ static void test_mo_is_within_ROI(void) {
 /**
  * Tests the function mo_get_distance_to_ROI.
  */
-static void test_mo_get_distance_to_ROI(void) {
+MU_TEST(test_mo_get_distance_to_ROI) {
 
   double *y = coco_allocate_vector(2);
   double result;

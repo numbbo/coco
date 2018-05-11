@@ -3,7 +3,7 @@
 /**
  * Tests coco_archive-related functions.
  */
-static void test_coco_string_trim(void) {
+MU_TEST(test_coco_string_trim) {
 
 	char *sample_strings[] = {
 			"nothing to trim",

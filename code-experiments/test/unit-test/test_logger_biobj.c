@@ -8,7 +8,7 @@ static int about_equal_2d(const double *a, const double b1, const double b2);
  * Tests several things in the computation of the modified hypervolume indicator for a specific
  * biobjective problem (problem data is contained in test_logger_biobj.txt).
  */
-static void test_logger_biobj_evaluate(void) {
+MU_TEST(test_logger_biobj_evaluate) {
 
   coco_suite_t *suite;
   coco_observer_t *observer;
@@ -73,7 +73,7 @@ static void test_logger_biobj_evaluate(void) {
 }
 
 
-static void test_logger_biobj_evaluate2(void) {
+MU_TEST(test_logger_biobj_evaluate2) {
 
   coco_suite_t *suite;
   coco_observer_t *observer;
@@ -136,7 +136,7 @@ static void test_logger_biobj_evaluate2(void) {
 /**
  * Tests the coco_logger_biobj_feed_solution function.
  */
-static void test_coco_logger_biobj_feed_solution(void) {
+MU_TEST(test_coco_logger_biobj_feed_solution) {
 
   coco_suite_t *suite;
   coco_observer_t *observer;

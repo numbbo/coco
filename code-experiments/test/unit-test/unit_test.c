@@ -9,6 +9,7 @@
 #include "test_coco_utilities.c"
 #include "test_logger_biobj.c"
 #include "test_mo_utilities.c"
+#include "unit_test_fail.c"
 
 int main(void) {
 
@@ -21,8 +22,11 @@ int main(void) {
 	MU_RUN_SUITE(test_all_logger_biobj);
 	MU_RUN_SUITE(test_all_mo_utilities);
 
+	/* Run this if you want to see the tests fail */
+	MU_RUN_SUITE(test_suite_fail);
+
 	MU_REPORT();
 
-  coco_remove_directory("exdata");
+  /*coco_remove_directory("exdata");*/
 	return 0;
 }
