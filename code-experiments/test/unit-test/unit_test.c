@@ -27,6 +27,7 @@ int main(void) {
 
 	MU_REPORT();
 
-  /*coco_remove_directory("exdata");*/
-	return 0;
+  coco_remove_directory("exdata");
+
+  return minunit_status;
 }
