@@ -1,4 +1,5 @@
 #include "coco_minunit.h"
+#include "coco.h"
 
 /**
  * Tests the function mo_get_norm.

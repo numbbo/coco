@@ -1,4 +1,5 @@
 #include "coco_minunit.h"
+#include "coco.h"
 
 /**
  * Tests coco_archive-related functions.

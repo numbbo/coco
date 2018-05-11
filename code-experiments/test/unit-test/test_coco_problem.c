@@ -1,4 +1,5 @@
 #include "coco_minunit.h"
+#include "coco.h"
 
 /**
  * Tests whether the coco_evaluate_function returns a vector of NANs when given a vector with one or more
