@@ -49,7 +49,7 @@ static void test_coco_suite_encode_problem_index_with_wrapping(void **state) {
 /**
  * Tests the function coco_suite_get_problem.
  */
-static void test_coco_suite_get_problem(void) {
+MU_TEST(test_coco_suite_get_problem) {
 
   coco_suite_t *suite = coco_suite("bbob-biobj", "year: 0000", "dimensions: 5");
   coco_problem_t *problem;
@@ -67,7 +67,7 @@ static void test_coco_suite_get_problem(void) {
 /**
  * Tests the function coco_suite_encode_problem_index.
  */
-static void test_coco_suite_encode_problem_index(void) {
+MU_TEST(test_coco_suite_encode_problem_index) {
 
   coco_suite_t *suite;
   size_t index;

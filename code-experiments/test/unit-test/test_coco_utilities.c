@@ -25,7 +25,7 @@ static char *convert_to_string_with_newlines(char **array) {
 /**
  * Tests the function coco_set_log_level.
  */
-static void test_coco_set_log_level(void) {
+MU_TEST(test_coco_set_log_level) {
 
   char *previous_log_level;
 
@@ -93,7 +93,7 @@ static void create_time_string(char **string) {
 /*
  * Tests creating and removing directory.
  */
-static void test_coco_create_remove_directory(void) {
+MU_TEST(test_coco_create_remove_directory) {
 
   int exists;
   char *path_string = NULL;
@@ -127,7 +127,7 @@ static void test_coco_create_remove_directory(void) {
 /**
  * Tests the functions coco_double_max and coco_double_min.
  */
-static void test_coco_double_max_min(void) {
+MU_TEST(test_coco_double_max_min) {
 
   double first_value = 5.0;
 	double second_value = 6.0;
@@ -144,7 +144,7 @@ static void test_coco_double_max_min(void) {
 /**
  * Tests the function coco_double_round.
  */
-static void test_coco_double_round(void) {
+MU_TEST(test_coco_double_round) {
 
   double input_value = 5.4;
 
@@ -159,7 +159,7 @@ static void test_coco_double_round(void) {
 /**
  * Tests the function coco_string_split.
  */
-static void test_coco_string_split(void) {
+MU_TEST(test_coco_string_split) {
 
   char **result;
   char *converted_result;
@@ -210,7 +210,7 @@ static char *convert_to_string(size_t *array) {
 /**
  * Tests the function coco_string_parse_ranges.
  */
-static void test_coco_string_parse_ranges(void) {
+MU_TEST(test_coco_string_parse_ranges) {
 
   size_t *result;
   char *converted_result;
@@ -346,7 +346,7 @@ static void test_coco_string_parse_ranges(void) {
 /**
  * Tests the function coco_option_keys.
  */
-static void test_coco_option_keys(void) {
+MU_TEST(test_coco_option_keys) {
 
   coco_option_keys_t *option_keys = NULL;
 
@@ -380,7 +380,7 @@ static void test_coco_option_keys(void) {
 /**
  * Tests the function coco_is_nan.
  */
-static void test_coco_is_nan(void) {
+MU_TEST(test_coco_is_nan) {
 
   mu_check(coco_is_nan(NAN));
   mu_check(!coco_is_nan(1e100));
@@ -389,7 +389,7 @@ static void test_coco_is_nan(void) {
 /**
  * Tests the function coco_is_inf.
  */
-static void test_coco_is_inf(void) {
+MU_TEST(test_coco_is_inf) {
 
   mu_check(coco_is_inf(INFINITY));
   mu_check(coco_is_inf(-INFINITY));

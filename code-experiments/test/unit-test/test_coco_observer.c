@@ -3,7 +3,7 @@
 /**
  * Tests the function coco_observer_targets_trigger.
  */
-static void test_coco_observer_targets_trigger(void) {
+MU_TEST(test_coco_observer_targets_trigger) {
 
   coco_observer_targets_t *targets = coco_observer_targets(10, 1e-8);
   int update;
@@ -85,7 +85,7 @@ static void test_coco_observer_targets_trigger(void) {
 /**
  * Tests the function coco_observer_evaluations_trigger.
  */
-static void test_coco_observer_evaluations_trigger(void) {
+MU_TEST(test_coco_observer_evaluations_trigger) {
 
   size_t evals[53] = { 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 14, 15, 17, 19, 20, 22, 25, 28, 31, 35, 39, 40, 44,
       50, 56, 63, 70, 79, 89, 100, 112, 125, 141, 158, 177, 199, 200, 223, 251, 281, 316, 354, 398, 400, 446,

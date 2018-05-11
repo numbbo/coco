@@ -5,7 +5,7 @@ static int about_equal_value(const double a, const double b);
 /**
  * Tests coco_archive-related functions.
  */
-static void test_coco_archive(void) {
+MU_TEST(test_coco_archive) {
 
   size_t number_of_evaluations, i;
   char file_name[] = "test_hypervolume.txt";
@@ -68,7 +68,7 @@ static void test_coco_archive(void) {
 /**
  * Tests updating the coco_archive with solutions better than the extremes.
  */
-static void test_coco_archive_extreme_solutions(void) {
+MU_TEST(test_coco_archive_extreme_solutions) {
 
   size_t number_of_evaluations;
   double *y = coco_allocate_vector(2);
@@ -123,7 +123,7 @@ static void test_coco_archive_extreme_solutions(void) {
 /**
  * Tests updating the coco_archive with similar solutions.
  */
-static void test_coco_archive_precision_issues(void) {
+MU_TEST(test_coco_archive_precision_issues) {
 
   size_t number_of_evaluations, count;
   double *y = coco_allocate_vector(2);
