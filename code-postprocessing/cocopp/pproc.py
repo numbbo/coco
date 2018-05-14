@@ -2644,6 +2644,7 @@ def processInputArgs(args, process_background_algorithms=False):
     if process_background_algorithms:
         genericsettings.foreground_algorithm_list.extend(sortedAlgs)
         for value in genericsettings.background.values():
+            assert isinstance(value, (list, tuple, set))
             process_arguments(value, current_hash, dictAlg, dsList, sortedAlgs)
 
     store_reference_values(DataSetList(dsList))
