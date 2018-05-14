@@ -453,19 +453,19 @@ static void test_coco_is_orthogonal(void **state) {
   assert(coco_is_orthogonal(M, 2, 2));
 
   /* Case of a non-orthogonal square matrix */
-  M[0] = 1.;
-  M[1] = 1.;
+  M[0] = 0.01;
+  M[1] = 0.01;
   M[2] = 0.;
-  M[3] = 1.;
+  M[3] = 0.01;
   assert(!coco_is_orthogonal(M, 2, 2));
 
   /* Case of an orthogonal diagonal matrix (almost identity matrix)
    * such that the function "coco_double_almost_equal()" is tested
    */
-  M[0] = 1e-5;
+  M[0] = 1. + 1e-10;
   M[1] = 0.;
   M[2] = 0.;
-  M[3] = 1e-5;
+  M[3] = 1. + 1e-10;
   assert(coco_is_orthogonal(M, 2, 2));
 
   coco_free_memory(M);
