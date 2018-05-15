@@ -46,32 +46,32 @@ static coco_problem_t *coco_get_test_mixint_problem(const size_t function,
   int *are_variables_integer = coco_allocate_vector_int(dimension);
 
   if (function == 1) {
-  	for (i = 0; i < dimension; i++) {
+    for (i = 0; i < dimension; i++) {
       smallest_values_of_interest[i] = -5;
       largest_values_of_interest[i] = 5;
-  		if (i < dimension / 2)
-  			are_variables_integer[i] = 0;
-  		else
-  			are_variables_integer[i] = 1;
-  	}
+      if (i < dimension / 2)
+        are_variables_integer[i] = 0;
+      else
+        are_variables_integer[i] = 1;
+    }
     problem = mi_f_sphere_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template, smallest_values_of_interest,
         largest_values_of_interest, are_variables_integer);
   } else if (function == 2) {
-  	for (i = 0; i < dimension; i++) {
+    for (i = 0; i < dimension; i++) {
       smallest_values_of_interest[i] = -5;
       largest_values_of_interest[i] = 5;
-  		if (i % 3 == 0)
-  			are_variables_integer[i] = 0;
-  		else
-  			are_variables_integer[i] = 1;
-  	}
+      if (i % 3 == 0)
+        are_variables_integer[i] = 0;
+      else
+        are_variables_integer[i] = 1;
+    }
     problem = mi_f_sphere_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template, smallest_values_of_interest,
         largest_values_of_interest, are_variables_integer);
   } else {
     coco_error("coco_get_test_mixint_problem(): cannot retrieve problem f%lu instance %lu in %luD",
-    		(unsigned long) function, (unsigned long) instance, (unsigned long) dimension);
+        (unsigned long) function, (unsigned long) instance, (unsigned long) dimension);
     return NULL; /* Never reached */
   }
 
@@ -92,9 +92,9 @@ static coco_problem_t *coco_get_test_mixint_problem(const size_t function,
  * @return The problem that corresponds to the given parameters.
  */
 static coco_problem_t *suite_test_mixint_get_problem(coco_suite_t *suite,
-		                                               const size_t function_idx,
-		                                               const size_t dimension_idx,
-		                                               const size_t instance_idx) {
+                                                     const size_t function_idx,
+                                                     const size_t dimension_idx,
+                                                     const size_t instance_idx) {
 
   coco_problem_t *problem = NULL;
 

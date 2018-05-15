@@ -138,7 +138,7 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
                                                       const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
-                                                         		
+
   size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
@@ -156,23 +156,23 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
   /* Create the objective function */
   problem = f_sphere_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
-	 
-  bbob_evaluate_gradient(problem, all_zeros, feasible_direction);	 
+
+  bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
   coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
-	 
+
   /* Create the constraints. Use the gradient of the objective
    * function at the origin to build the first constraint. 
    */
   problem_c = c_linear_cons_bbob_problem_allocate(function, 
       dimension, instance, number_of_linear_constraints,
       problem_id_template, problem_name_template, feasible_direction);
-	    
+
   problem_type_temp = coco_strdup(problem->problem_type);
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
       problem_c->largest_values_of_interest,
       problem_c->are_variables_integer);
-	    
+
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value.
    */
@@ -198,7 +198,7 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
  
   coco_free_memory(problem_type_temp);
   coco_free_memory(all_zeros);
-	
+
   return problem;
  
 }
@@ -216,7 +216,7 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
                                                       const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
-																			
+
   size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
@@ -300,7 +300,7 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
                                                       const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
-																			
+
   size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
@@ -314,7 +314,7 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
  
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
-	 
+
   /* Create the objective function */
   problem = f_ellipsoid_rotated_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
@@ -384,7 +384,7 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
                                                       const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
-																			
+
   size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
@@ -398,7 +398,7 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
  
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
-	 
+
   /* Create the objective function */
   problem = f_linear_slope_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
@@ -466,7 +466,7 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
                                                       const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
-																			
+
   size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
@@ -550,7 +550,7 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
                                                       const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
-																			
+
   size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
@@ -564,7 +564,7 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
  
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
-	 
+
   /* Create the objective function */
   problem = f_bent_cigar_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
@@ -634,7 +634,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
                                                       const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
-																			
+
   size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
@@ -648,7 +648,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
  
   for (i = 0; i < dimension; ++i)
     all_zeros[i] = 0.0;
-	 
+
   /* Create the objective function */
   problem = f_different_powers_bbob_constrained_problem_allocate(function, dimension,
       instance, rseed, problem_id_template, problem_name_template);
@@ -716,7 +716,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
                                                       const double *xopt,
                                                       const char *problem_id_template,
                                                       const char *problem_name_template) {
-																			
+
   size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
@@ -724,7 +724,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
-	 
+
   coco_random_state_t *rand_state = coco_random_new((uint32_t) rseed);
 
   /* Create the objective function */

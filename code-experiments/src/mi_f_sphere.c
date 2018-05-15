@@ -19,7 +19,7 @@
  * @note Takes care of rounding x
  */
 static void mi_f_sphere_evaluate(coco_problem_t *problem, const double *x, double *y) {
-	double *x_rounded;
+  double *x_rounded;
   assert(problem->number_of_objectives == 1);
   x_rounded = coco_duplicate_vector(x, problem->number_of_variables);
   y[0] = f_sphere_raw(x_rounded, problem->number_of_variables);
@@ -35,7 +35,7 @@ static void mi_f_sphere_evaluate(coco_problem_t *problem, const double *x, doubl
 static void mi_f_sphere_evaluate_gradient(coco_problem_t *problem, const double *x, double *y) {
 
   size_t i;
-	double *x_rounded;
+  double *x_rounded;
 
   x_rounded = coco_duplicate_vector(x, problem->number_of_variables);
   for (i = 0; i < problem->number_of_variables; ++i) {
@@ -51,8 +51,8 @@ static coco_problem_t *mi_f_sphere_allocate(const size_t number_of_variables,
                                             const double *smallest_values_of_interest,
                                             const double *largest_values_of_interest,
                                             const int *are_variables_integer) {
-	
-	double *best_parameter = coco_allocate_vector_with_value(number_of_variables, 0.0);
+
+  double *best_parameter = coco_allocate_vector_with_value(number_of_variables, 0.0);
   coco_problem_t *problem = coco_problem_allocate_mixed_integer("mixed-integer sphere function",
      mi_f_sphere_evaluate, NULL, number_of_variables, 0, smallest_values_of_interest,
      largest_values_of_interest, are_variables_integer, best_parameter);
@@ -85,7 +85,7 @@ static coco_problem_t *mi_f_sphere_bbob_problem_allocate(const size_t function,
   fopt = bbob2009_compute_fopt(function, instance);
 
   problem = mi_f_sphere_allocate(dimension, smallest_values_of_interest,
-  		largest_values_of_interest, are_variables_integer);
+      largest_values_of_interest, are_variables_integer);
   coco_problem_round_solution(problem, xopt, 0);
   problem = transform_vars_shift(problem, xopt, 0);
   problem = transform_obj_shift(problem, fopt);

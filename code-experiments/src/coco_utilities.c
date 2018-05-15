@@ -279,7 +279,7 @@ static void coco_create_unique_directory(char **path) {
   char *new_path;
 
   if (coco_create_directory(*path) == 0) {
-	/* Directory created */
+  /* Directory created */
     return;
   }
 
@@ -429,7 +429,7 @@ static double *coco_allocate_vector_with_value(const size_t number_of_elements, 
   size_t i;
 
   for (i = 0; i < number_of_elements; i++)
-  	vector[i] = value;
+    vector[i] = value;
 
   return vector;
 }
@@ -608,7 +608,7 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
 
   /* Check for empty string */
   if ((option_string == NULL) || (strlen(option_string) == 0)) {
-	    return NULL;
+      return NULL;
   }
 
   /* Split the options w.r.t ':' */
@@ -901,43 +901,43 @@ static int coco_is_nan(const double x) {
  * @brief Returns 1 if the input vector of dimension dim contains any NAN values and 0 otherwise.
  */
 static int coco_vector_contains_nan(const double *x, const size_t dim) {
-	size_t i;
-	for (i = 0; i < dim; i++) {
-		if (coco_is_nan(x[i]))
-		  return 1;
-	}
-	return 0;
+  size_t i;
+  for (i = 0; i < dim; i++) {
+    if (coco_is_nan(x[i]))
+      return 1;
+  }
+  return 0;
 }
 
 /**
  * @brief Sets all dim values of y to NAN.
  */
 static void coco_vector_set_to_nan(double *y, const size_t dim) {
-	size_t i;
-	for (i = 0; i < dim; i++) {
-		y[i] = NAN;
-	}
+  size_t i;
+  for (i = 0; i < dim; i++) {
+    y[i] = NAN;
+  }
 }
 
 /**
  * @brief Returns 1 if x is INFINITY and 0 otherwise.
  */
 static int coco_is_inf(const double x) {
-	if (coco_is_nan(x))
-		return 0;
-	return (isinf(x) || (x <= -INFINITY) || (x >= INFINITY));
+  if (coco_is_nan(x))
+    return 0;
+  return (isinf(x) || (x <= -INFINITY) || (x >= INFINITY));
 }
 
 /**
  * @brief Returns 1 if the input vector of dimension dim contains no NaN of inf values, and 0 otherwise.
  */
 static int coco_vector_isfinite(const double *x, const size_t dim) {
-	size_t i;
-	for (i = 0; i < dim; i++) {
-		if (coco_is_nan(x[i]) || coco_is_inf(x[i]))
-		  return 0;
-	}
-	return 1;
+  size_t i;
+  for (i = 0; i < dim; i++) {
+    if (coco_is_nan(x[i]) || coco_is_inf(x[i]))
+      return 0;
+  }
+  return 1;
 }
 
 /**
@@ -1058,7 +1058,7 @@ static void coco_scale_vector(double *x, size_t dimension, double alpha) {
     for (i = 0; i < dimension; ++i) {
       x[i] /= norm;
       x[i] *= alpha;
-	 }
+    }
   }
 }
 

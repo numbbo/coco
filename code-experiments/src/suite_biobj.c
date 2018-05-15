@@ -207,7 +207,7 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   problem2 = coco_get_bbob_problem(bbob_functions[function2_idx], dimension, instance2);
 
   problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
-  		largest_values_of_interest, are_variables_integer);
+      largest_values_of_interest, are_variables_integer);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
@@ -216,7 +216,7 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   /* Use the standard stacked problem_id as problem_name and construct a new suite-specific problem_id */
   coco_problem_set_name(problem, problem->problem_id);
   coco_problem_set_id(problem, "bbob-biobj_f%02lu_i%02lu_d%02lu", (unsigned long) function,
-  		(unsigned long) instance, (unsigned long) dimension);
+      (unsigned long) instance, (unsigned long) dimension);
 
   /* Construct problem type */
   coco_problem_set_type(problem, "%s_%s", problem1->problem_type, problem2->problem_type);
@@ -293,7 +293,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
           smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
           largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
           problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
-          		largest_values_of_interest, are_variables_integer);
+              largest_values_of_interest, are_variables_integer);
           coco_free_memory(smallest_values_of_interest);
           coco_free_memory(largest_values_of_interest);
 
@@ -333,7 +333,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
       /* An appropriate instance was found */
       appropriate_instance_found = 1;
       coco_info("suite_biobj_set_new_instance(): Instance %lu created from instances %lu and %lu",
-      		(unsigned long) instance, (unsigned long) instance1, (unsigned long) instance2);
+          (unsigned long) instance, (unsigned long) instance1, (unsigned long) instance2);
 
       /* Save the instance to new_instances */
       for (i = 0; i < data->max_new_instances; i++) {
@@ -349,7 +349,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
 
   if (!appropriate_instance_found) {
     coco_error("suite_biobj_get_new_instance(): Could not find suitable instance %lu in %lu tries",
-    		(unsigned long) instance, (unsigned long) num_tries);
+        (unsigned long) instance, (unsigned long) num_tries);
     return 0; /* Never reached */
   }
 

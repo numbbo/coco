@@ -100,8 +100,8 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
   
   if ((suite->functions[function_idx] == 0) ||
       (suite->dimensions[dimension_idx] == 0) ||
-	  (suite->instances[instance_idx] == 0)) {
-	  return NULL;
+    (suite->instances[instance_idx] == 0)) {
+    return NULL;
   }
 
   if (strcmp(suite->suite_name, "toy") == 0) {
@@ -839,7 +839,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
       else
         coco_info_partial("\n");
       coco_info_partial("COCO INFO: %s, d=%lu, running: f%02lu", time_string,
-      		(unsigned long) suite->dimensions[dimension_idx], (unsigned long) suite->functions[function_idx]);
+          (unsigned long) suite->dimensions[dimension_idx], (unsigned long) suite->functions[function_idx]);
       coco_free_memory(time_string);
     }
     else if ((long) function_idx != previous_function_idx){
