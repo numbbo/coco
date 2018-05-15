@@ -125,7 +125,7 @@ def get_directory(directory, extract_files):
 def get_output_directory_sub_folder(args):
 
     directory = ''
-    if isinstance(args, str):
+    if not isinstance(args, (list, set, tuple)):
         directory = args.strip().rstrip(os.path.sep)
 
         if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
