@@ -77,7 +77,7 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
 
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
-  size_t i;
+  size_t i, block_size;
   double *minus_one, factor;
 
   minus_one = coco_allocate_vector(dimension);
@@ -89,7 +89,7 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
   }
   fopt = bbob2009_compute_fopt(function, instance);
   if (coco_strfind(problem_name_template, "BBOB large-scale suite") >= 0){
-    size_t block_size = coco_rotation_matrix_block_size(dimension);
+    block_size = coco_rotation_matrix_block_size(dimension);
     factor = coco_double_max(1.0, sqrt((double) block_size) / 8.0);
   } else {
     factor = coco_double_max(1.0, sqrt((double) dimension) / 8.0);
@@ -193,17 +193,20 @@ static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const si
   size_t *P1 = coco_allocate_vector_size_t(dimension);
   size_t *P2 = coco_allocate_vector_size_t(dimension);
   size_t *block_sizes;
+  size_t block_size;
   size_t nb_blocks;
   size_t swap_range;
   size_t nb_swaps;
   double *best_parameter = coco_allocate_vector(dimension); /* Manh: will serve to set the optimal solution "manually"*/
 
   block_sizes = coco_get_block_sizes(&nb_blocks, dimension, "bbob-largescale");
+  block_size = coco_rotation_matrix_block_size(dimension);
+    
   swap_range = coco_get_swap_range(dimension, "bbob-largescale");
   nb_swaps = coco_get_nb_swaps(dimension, "bbob-largescale");
 
   fopt = bbob2009_compute_fopt(function, instance);
-  factor = coco_double_max(1.0, sqrt((double) block_sizes[0]) / 8.0);
+  factor = coco_double_max(1.0, sqrt((double) block_size) / 8.0);
   minus_one = coco_allocate_vector(dimension);
   xopt = coco_allocate_vector(dimension);
   bbob2009_compute_xopt(xopt, rseed, dimension);
