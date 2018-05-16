@@ -10,7 +10,7 @@
 #include "coco_utilities.c"
 
 /* A declaration of a function defined below */
-static void coco_problem_round_solution(const coco_problem_t *problem, double *solution, int within_bounds);
+static void coco_problem_round_solution(const coco_problem_t *problem, double *solution);
 
 /***********************************************************************************************************/
 
@@ -58,7 +58,7 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
   /* Round the vector x in case of integer variables */
   x_rounded = coco_duplicate_vector(x, coco_problem_get_dimension(problem));
   if (problem->are_variables_integer != NULL)
-    coco_problem_round_solution(problem, x_rounded, 0);
+    coco_problem_round_solution(problem, x_rounded);
 
   problem->evaluate_function(problem, x_rounded, y);
   problem->evaluations++; /* each derived class has its own counter, only the most outer will be visible */
@@ -302,15 +302,15 @@ static coco_problem_t *coco_problem_allocate_from_scalars(const char *problem_na
  * @brief Allocates a problem using arrays for smallest_value_of_interest, largest_value_of_interest,
  * best_parameter and are_variables_integer.
  */
-static coco_problem_t *coco_problem_allocate_mixed_integer(const char *problem_name,
-                                                           coco_evaluate_function_t evaluate_function,
-                                                           coco_problem_free_function_t problem_free_function,
-                                                           const size_t number_of_variables,
-                                                           const size_t number_of_constraints,
-                                                           const double *smallest_values_of_interest,
-                                                           const double *largest_values_of_interest,
-                                                           const int *are_variables_integer,
-                                                           const double *best_parameter) {
+static coco_problem_t *coco_problem_allocate_from_arrays(const char *problem_name,
+                                                         coco_evaluate_function_t evaluate_function,
+                                                         coco_problem_free_function_t problem_free_function,
+                                                         const size_t number_of_variables,
+                                                         const size_t number_of_constraints,
+                                                         const double *smallest_values_of_interest,
+                                                         const double *largest_values_of_interest,
+                                                         const int *are_variables_integer,
+                                                         const double *best_parameter) {
   size_t i;
   coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
 
@@ -587,7 +587,7 @@ const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *
   return problem->largest_values_of_interest;
 }
 
-const int *coco_problem_are_variables_integer(const coco_problem_t *problem) {
+const int *coco_problem_get_are_variables_integer(const coco_problem_t *problem) {
   assert(problem != NULL);
   return problem->are_variables_integer;
 }
@@ -624,7 +624,7 @@ void coco_problem_get_initial_solution(const coco_problem_t *problem, double *in
       initial_solution[i] = problem->smallest_values_of_interest[i] + 0.5
           * (problem->largest_values_of_interest[i] - problem->smallest_values_of_interest[i]);
     if (problem->are_variables_integer != NULL)
-      coco_problem_round_solution(problem, initial_solution, 0);
+      coco_problem_round_solution(problem, initial_solution);
   }
 }
 
@@ -656,26 +656,17 @@ static size_t coco_problem_get_suite_dep_instance(const coco_problem_t *problem)
 }
 
 /**
- * In case of a mixed-integer problem, modifies the given solution so that it has integer values
- * where required. If within_bounds, the values lie between the smallest_values_of_interest and
- * the largest_values_of_interest.
+ * In case of a mixed-integer problem, rounds any value that should be integer to the closest integer
+ * value.
  */
 static void coco_problem_round_solution(const coco_problem_t *problem,
-                                        double *solution,
-                                        int within_bounds) {
+                                        double *solution) {
   size_t i;
   assert(problem != NULL);
 
   if (problem->are_variables_integer != NULL) {
-    assert(problem->smallest_values_of_interest != NULL);
-    assert(problem->largest_values_of_interest != NULL);
     for (i = 0; i < problem->number_of_variables; ++i) {
       if (problem->are_variables_integer[i] == 1) {
-        if ((within_bounds) && (solution[i] < ceil(problem->smallest_values_of_interest[i])))
-          solution[i] = ceil(problem->smallest_values_of_interest[i]);
-        else if ((within_bounds) && (solution[i] > floor(problem->largest_values_of_interest[i])))
-          solution[i] = floor(problem->largest_values_of_interest[i]);
-        else
           solution[i] = coco_double_round(solution[i]);
       }
     }

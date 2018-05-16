@@ -53,7 +53,7 @@ static coco_problem_t *mi_f_sphere_allocate(const size_t number_of_variables,
                                             const int *are_variables_integer) {
 
   double *best_parameter = coco_allocate_vector_with_value(number_of_variables, 0.0);
-  coco_problem_t *problem = coco_problem_allocate_mixed_integer("mixed-integer sphere function",
+  coco_problem_t *problem = coco_problem_allocate_from_arrays("mixed-integer sphere function",
      mi_f_sphere_evaluate, NULL, number_of_variables, 0, smallest_values_of_interest,
      largest_values_of_interest, are_variables_integer, best_parameter);
   problem->evaluate_gradient = mi_f_sphere_evaluate_gradient;
@@ -86,7 +86,7 @@ static coco_problem_t *mi_f_sphere_bbob_problem_allocate(const size_t function,
 
   problem = mi_f_sphere_allocate(dimension, smallest_values_of_interest,
       largest_values_of_interest, are_variables_integer);
-  coco_problem_round_solution(problem, xopt, 0);
+  coco_problem_round_solution(problem, xopt);
   problem = transform_vars_shift(problem, xopt, 0);
   problem = transform_obj_shift(problem, fopt);
 
