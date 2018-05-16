@@ -88,7 +88,12 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
     xopt[i] *= 0.75;
   }
   fopt = bbob2009_compute_fopt(function, instance);
-  factor = coco_double_max(1.0, sqrt((double) dimension) / 8.0);
+  if (coco_strfind(problem_name_template, "BBOB large-scale suite") >= 0){
+    size_t block_size = coco_rotation_matrix_block_size(dimension);
+    factor = coco_double_max(1.0, sqrt((double) block_size) / 8.0);
+  } else {
+    factor = coco_double_max(1.0, sqrt((double) dimension) / 8.0);
+  }
 
   problem = f_rosenbrock_allocate(dimension);
   problem = transform_vars_shift(problem, minus_one, 0);
