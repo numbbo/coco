@@ -229,12 +229,6 @@ static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const si
   problem = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
   problem = transform_vars_permutation(problem, P1, dimension);
 
-  /* Manh: manually set best parameter to zero */
-
-  for (j = 0; j < dimension; ++j) {
-    problem->best_parameter[j] = 0.0;
-  } /* TODO: Check if it's unnecessairy */
-
   problem = transform_vars_shift(problem, xopt, 0);
   problem = transform_obj_norm_by_dim(problem);
   problem = transform_obj_shift(problem, fopt);
