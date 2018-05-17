@@ -183,6 +183,18 @@ static void test_coco_double_round(void **state) {
   round_value = coco_double_round(input_value);
   assert_true(round_value == 6);
 
+  input_value = 5;
+  round_value = coco_double_round(input_value);
+  assert_true(round_value == 5);
+
+  input_value = 5 - 0.0000000000000001;
+  round_value = coco_double_round(input_value);
+  assert_true(round_value == 5);
+
+  input_value = 5 + 0.0000000000000001;
+  round_value = coco_double_round(input_value);
+  assert_true(round_value == 5);
+
   (void)state; /* unused */
 }
 
