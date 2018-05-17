@@ -186,7 +186,7 @@ static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const si
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
   double *minus_one, factor;
-  size_t i, j, k, next_bs_change;
+  size_t i;
 
   double **B;
   const double *const *B_copy;
