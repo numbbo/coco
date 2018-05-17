@@ -45,7 +45,7 @@ static void suite_bbob_mixint_set_ROI(const size_t dimension, const size_t insta
   for (i = 1; i < dimension; i++) {
     smallest_values_of_interest[i] = 0;
     are_variables_integer[i] = 1;
-    num = (dimension + instance + i) % 5;
+    num = (double)((dimension + instance + i) % 5);
     largest_values_of_interest[i] = coco_double_round(coco_double_max(2, pow(10, num)));
   }
 }
@@ -58,10 +58,8 @@ static coco_problem_t *coco_get_bbob_mixint_problem(const size_t function,
                                                     const size_t instance) {
   coco_problem_t *problem = NULL;
   const char *problem_type = NULL;
-  size_t i;
-
-  double *smallest_values_of_interest = coco_allocate_vector_double(dimension);
-  double *largest_values_of_interest = coco_allocate_vector_double(dimension);
+  double *smallest_values_of_interest = coco_allocate_vector(dimension);
+  double *largest_values_of_interest = coco_allocate_vector(dimension);
   int *are_variables_integer = coco_allocate_vector_int(dimension);
 
   suite_bbob_mixint_set_ROI(dimension, instance, smallest_values_of_interest,

@@ -298,45 +298,6 @@ static coco_problem_t *coco_problem_allocate_from_scalars(const char *problem_na
   return problem;
 }
 
-/**
- * @brief Allocates a problem using arrays for smallest_value_of_interest, largest_value_of_interest,
- * best_parameter and are_variables_integer.
- */
-static coco_problem_t *coco_problem_allocate_from_arrays(const char *problem_name,
-                                                         coco_evaluate_function_t evaluate_function,
-                                                         coco_problem_free_function_t problem_free_function,
-                                                         const size_t number_of_variables,
-                                                         const size_t number_of_constraints,
-                                                         const double *smallest_values_of_interest,
-                                                         const double *largest_values_of_interest,
-                                                         const int *are_variables_integer,
-                                                         const double *best_parameter) {
-  size_t i;
-  coco_problem_t *problem = coco_problem_allocate(number_of_variables, 1, 0);
-
-  problem->problem_name = coco_strdup(problem_name);
-  problem->number_of_variables = number_of_variables;
-  problem->number_of_objectives = 1;
-  problem->number_of_constraints = number_of_constraints;
-  problem->evaluate_function = evaluate_function;
-  problem->problem_free_function = problem_free_function;
-
-  assert(smallest_values_of_interest != NULL);
-  assert(largest_values_of_interest != NULL);
-  assert(best_parameter != NULL);
-
-  problem->are_variables_integer = coco_allocate_vector_int(number_of_variables);
-
-  for (i = 0; i < number_of_variables; ++i) {
-    problem->smallest_values_of_interest[i] = smallest_values_of_interest[i];
-    problem->largest_values_of_interest[i] = largest_values_of_interest[i];
-    problem->best_parameter[i] = best_parameter[i];
-    if (are_variables_integer != NULL)
-      problem->are_variables_integer[i] = are_variables_integer[i];
-  }
-  return problem;
-}
-
 void coco_problem_free(coco_problem_t *problem) {
   assert(problem != NULL);
   if (problem->problem_free_function != NULL) {
