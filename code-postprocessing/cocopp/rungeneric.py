@@ -14,11 +14,13 @@ python -m cocopp
 
 from __future__ import absolute_import
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import os
 import sys
 import getopt
 import warnings
+import webbrowser
 import matplotlib
 from . import genericsettings, testbedsettings, rungeneric1, rungenericmany, toolsdivers, bestalg, archiving
 from .toolsdivers import truncate_latex_command_file, print_done, diff_attr
@@ -255,6 +257,8 @@ def main(argv=None):
                     # command line arguments might be incorrect
                     if a:
                         genopts.append(a)
+                    if o == '--settings' and a == 'grayscale':  # a hack for test cases
+                        genericsettings.interactive_mode = False
                     is_assigned = True
                 if o in ("-v", "--verbose"):
                     genericsettings.verbose = True
@@ -263,7 +267,6 @@ def main(argv=None):
                     is_assigned = True
                 if not is_assigned:
                     assert False, "unhandled option"
-
         if not genericsettings.verbose:
             warnings.filterwarnings('module', '.*', UserWarning, '.*')
             # warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
@@ -356,7 +359,11 @@ def main(argv=None):
             print(mess, end='')
 
         print_done('ALL done')
-
+        if genericsettings.interactive_mode:
+            try:
+                webbrowser.open("file://" + os.getcwd() + '/' + outputdir + "/index.html")
+            except:
+                pass
         return dsld
 
     # TODO prevent loading the data every time...
@@ -368,6 +375,13 @@ def main(argv=None):
 
 
 def update_background_algorithms(input_dir):
-    for key, value in genericsettings.background.items():
-        # why can't we use different variable names than value and item, please?
-        genericsettings.background[key] = [os.path.join(input_dir, item) for item in value]
+    for format, names in genericsettings.background.items():
+        if not isinstance(names, (tuple, list, set)):
+            raise ValueError(
+                "`genericsettings.background` has the wrongly formatted entry\n"
+                "%s\n"
+                "Expected is ``(format, names)``, where"
+                " names is a `list` of one or more pathnames (not a"
+                " single pathname as `str`)"
+                % str((format, names)))
+        genericsettings.background[format] = [os.path.join(input_dir, filename) for filename in names]

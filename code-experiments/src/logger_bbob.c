@@ -128,7 +128,7 @@ static int single_digit_constraint_value(const double c) {
 static const char *bbob_file_header_str = "%% "
     "f evaluations | "
     "g evaluations | "
-    "best noise-free fitness - Fopt (%13.12e) | "
+    "best noise-free fitness - Fopt (%13.12e) + 1e3 * sum g_i+ | "
     "measured fitness | "
     "best measured fitness or single-digit g-values | "
     "x1 | "
@@ -174,6 +174,11 @@ static void logger_bbob_write_data(FILE *target_file,
     }
   }
   fprintf(target_file, "\n");
+
+  /* Flush output so that impatient users can see progress.
+   * Otherwise it can take a long time until the output appears.
+   */
+  fflush(target_file);
 }
 
 /**
@@ -519,9 +524,6 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   if (problem->number_of_constraints > 0)
     coco_free_memory(cons);
 
-  /* Flush output so that impatient users can see progress. */
-  fflush(logger->fdata_file);
-     
 }  /* end logger_bbob_evaluate */
 
 /**

@@ -12,6 +12,7 @@ here see `config.py`.
 """
 
 test = False  # debug/test flag, set to False for committing the final version
+interactive_mode = True  # open browser with results, grayscale setting (deprecated) deactivates interactive mode
 
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000  # [0, 1000] lower resolution, no eps, saves 30% time
