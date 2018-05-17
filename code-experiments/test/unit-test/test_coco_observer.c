@@ -108,7 +108,7 @@ MU_TEST(test_coco_observer_evaluations_trigger) {
       }
     }
     if (update != found) {
-      coco_warning("test_coco_observer_evaluations_trigger(): mu_check fails for evaluation number = %lu",
+      coco_warning("test_coco_observer_evaluations_trigger(): Assert fails for evaluation number = %lu",
       		(unsigned long) i);
     }
     mu_check(update == found);
