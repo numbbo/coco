@@ -27,7 +27,7 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
   size_t i;
   transform_vars_discretize_data_t *data;
   coco_problem_t *inner_problem;
-  double *discretized_x = NULL;
+  double *discretized_x = coco_allocate_vector(problem->number_of_variables);
   double inner_l, inner_u, outer_l, outer_u;
   
   if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
@@ -38,8 +38,7 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
   data = (transform_vars_discretize_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
-  discretized_x = coco_duplicate_vector(x, problem->number_of_variables);
-  coco_problem_round_solution(problem, discretized_x);
+  /* The solution x already has integer values where needed */
   for (i = 0; i < problem->number_of_variables; ++i) {
     inner_l = inner_problem->smallest_values_of_interest[i];
     inner_u = inner_problem->largest_values_of_interest[i];
@@ -95,9 +94,9 @@ static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
       inner_u = inner_problem->largest_values_of_interest[i];
       outer_l = problem->smallest_values_of_interest[i];
       outer_u = problem->largest_values_of_interest[i];
-      /* Step 1: Find location of the optimum in the outer problem */
+      /* Step 1: Find location of the optimum in the coordinates of the outer problem */
       xopt = outer_l + (outer_u - outer_l) * (inner_problem->best_parameter[i] - inner_l) / (inner_u - inner_l);
-      /* Step 2: Round to closest integer */
+      /* Step 2: Round to the closest integer */
       xopt = coco_double_round(xopt);
       problem->best_parameter[i] = xopt;
       /* Step 3: Find the corresponding discretized value in the inner problem */

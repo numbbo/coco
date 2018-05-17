@@ -46,7 +46,7 @@ static void suite_bbob_mixint_set_ROI(const size_t dimension, const size_t insta
     smallest_values_of_interest[i] = 0;
     are_variables_integer[i] = 1;
     num = (double)((dimension + instance + i) % 5);
-    largest_values_of_interest[i] = coco_double_round(coco_double_max(2, pow(10, num)));
+    largest_values_of_interest[i] = coco_double_round(pow(10, num));
   }
 }
 
