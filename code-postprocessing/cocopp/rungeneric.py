@@ -257,6 +257,8 @@ def main(argv=None):
                     # command line arguments might be incorrect
                     if a:
                         genopts.append(a)
+                    if o == '--settings' and a == 'grayscale':  # a hack for test cases
+                        genericsettings.interactive_mode = False
                     is_assigned = True
                 if o in ("-v", "--verbose"):
                     genericsettings.verbose = True
@@ -265,7 +267,6 @@ def main(argv=None):
                     is_assigned = True
                 if not is_assigned:
                     assert False, "unhandled option"
-
         if not genericsettings.verbose:
             warnings.filterwarnings('module', '.*', UserWarning, '.*')
             # warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
@@ -358,10 +359,11 @@ def main(argv=None):
             print(mess, end='')
 
         print_done('ALL done')
-        try:
-            webbrowser.open("file://" + os.getcwd() + '/' + outputdir + "/index.html")
-        except:
-            pass
+        if genericsettings.interactive_mode:
+            try:
+                webbrowser.open("file://" + os.getcwd() + '/' + outputdir + "/index.html")
+            except:
+                pass
         return dsld
 
     # TODO prevent loading the data every time...
@@ -378,8 +380,8 @@ def update_background_algorithms(input_dir):
             raise ValueError(
                 "`genericsettings.background` has the wrongly formatted entry\n"
                 "%s\n"
-                "Expected is ``(format, names)``, where format is"
-                " `None` or a (color, linestyle)-`tuple`\n"
-                "and names is a `list` of pathnames (not a single pathname)"
+                "Expected is ``(format, names)``, where"
+                " names is a `list` of one or more pathnames (not a"
+                " single pathname as `str`)"
                 % str((format, names)))
         genericsettings.background[format] = [os.path.join(input_dir, filename) for filename in names]
