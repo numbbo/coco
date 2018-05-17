@@ -68,14 +68,14 @@ static coco_problem_t *mi_f_sphere_allocate(const size_t number_of_variables,
  * @brief Creates the BBOB mixed-integer sphere problem.
  */
 static coco_problem_t *mi_f_sphere_bbob_problem_allocate(const size_t function,
-                                                        const size_t dimension,
-                                                        const size_t instance,
-                                                        const long rseed,
-                                                        const char *problem_id_template,
-                                                        const char *problem_name_template,
-                                                        const double *smallest_values_of_interest,
-                                                        const double *largest_values_of_interest,
-                                                        const int *are_variables_integer) {
+                                                         const size_t dimension,
+                                                         const size_t instance,
+                                                         const long rseed,
+                                                         const char *problem_id_template,
+                                                         const char *problem_name_template,
+                                                         const double *smallest_values_of_interest,
+                                                         const double *largest_values_of_interest,
+                                                         const int *are_variables_integer) {
 
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
