@@ -2,17 +2,16 @@
 """A short and simple example experiment with restarts.
 
 The code is fully functional but mainly emphasises on readability.
-Hence it neither produces any progress messages (which can be very
-annoying for long experiments) nor provides batch distribution,
-as `example_experiment.py` does.
+Hence produces only rudimentary progress messages and does not provide
+batch distribution or timing prints, as `example_experiment2.py` does.
 
 To apply the code to a different solver, `fmin` must be re-assigned or
 re-defined accordingly. For example, using `cma.fmin` instead of
 `scipy.optimize.fmin` can be done like::
 
-    import cma
-    def fmin(fun, x0):
-        return cma.fmin(fun, x0, 2, {'verbose':-9})
+>>> import cma  # doctest:+SKIP
+>>> def fmin(fun, x0):
+...     return cma.fmin(fun, x0, 2, {'verbose':-9})
 
 """
 from __future__ import division, print_function
