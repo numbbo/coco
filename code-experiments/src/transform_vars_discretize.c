@@ -94,14 +94,14 @@ static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
       inner_u = inner_problem->largest_values_of_interest[i];
       outer_l = problem->smallest_values_of_interest[i];
       outer_u = problem->largest_values_of_interest[i];
-      /* Step 1: Find location of the optimum in the coordinates of the outer problem */
+      /* Step 1: Find the location of the optimum in the coordinates of the outer problem */
       xopt = outer_l + (outer_u - outer_l) * (inner_problem->best_parameter[i] - inner_l) / (inner_u - inner_l);
       /* Step 2: Round to the closest integer */
       xopt = coco_double_round(xopt);
       problem->best_parameter[i] = xopt;
-      /* Step 3: Find the corresponding discretized value in the inner problem */
+      /* Step 3: Find the corresponding discretized value in the coordinates of the inner problem */
       xopt = inner_l + (inner_u - inner_l) * (xopt - outer_l) / (outer_u - outer_l);
-      /* Step 4: Compute the difference */
+      /* Step 4: Compute the difference between the discretized value and the location of the optimum */
       data->offset[i] = xopt - inner_problem->best_parameter[i];
     }
   }
