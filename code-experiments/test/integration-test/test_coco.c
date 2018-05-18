@@ -143,7 +143,7 @@ int main(int argc, char **argv) {
       if (shown_failures < 100) {
         fprintf(stdout,
                 "%8lu %8i FAILED expected=%.8e observed=%.8e problem_id=%s\n",
-                problem_index, testvector_id, expected_value, y,
+                (unsigned long)problem_index, testvector_id, expected_value, y,
                 coco_problem_get_id(problem));
         fflush(stdout);
         ++shown_failures;
