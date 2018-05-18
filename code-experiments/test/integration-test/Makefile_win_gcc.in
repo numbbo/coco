@@ -15,7 +15,7 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 
 ########################################################################
 ## Toplevel targets
-all: test_coco test_instance_extraction test_biobj test_bbob-constrained
+all: test_coco test_instance_extraction test_biobj test_bbob-constrained test_bbob-mixint
 
 clean:
 	IF EXIST "coco.o" DEL /F coco.o
@@ -27,6 +27,8 @@ clean:
 	IF EXIST "test_biobj.exe" DEL /F test_biobj.exe
 	IF EXIST "test_bbob-constrained.o" DEL /F test_bbob-constrained.o 
 	IF EXIST "test_bbob-constrained.exe" DEL /F test_bbob-constrained.exe
+	IF EXIST  "test_bbob-mixint.o" DEL /F test_bbob-mixint.o
+	IF EXIST  "test_bbob-mixint.exe" DEL /F test_bbob-mixint.exe  
 
 ########################################################################
 ## Programs
@@ -42,6 +44,9 @@ test_biobj: test_biobj.o coco.o
 test_bbob-constrained: test_bbob-constrained.o coco.o
 	${CC} ${CCFLAGS} -o test_bbob-constrained coco.o test_bbob-constrained.o ${LDFLAGS}  
 
+test_bbob-mixint: test_bbob-mixint.o
+	${CC} ${CCFLAGS} -o test_bbob-mixint test_bbob-mixint.o ${LDFLAGS}  
+
 ########################################################################
 ## Additional dependencies
 coco.o: coco.h coco.c
@@ -54,3 +59,5 @@ test_biobj.o: coco.h coco.c test_biobj.c
 	${CC} -c ${CCFLAGS} -o test_biobj.o test_biobj.c
 test_bbob-constrained.o: coco.h coco.c test_bbob-constrained.c
 	${CC} -c ${CCFLAGS} -o test_bbob-constrained.o test_bbob-constrained.c
+test_bbob-mixint.o: test_bbob-mixint.c
+	${CC} -c ${CCFLAGS} -o test_bbob-mixint.o test_bbob-mixint.c
