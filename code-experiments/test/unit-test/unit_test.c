@@ -10,7 +10,7 @@
 #include "test_coco_utilities.c"
 #include "test_logger_biobj.c"
 #include "test_mo_utilities.c"
-#include "unit_test_fail.c"
+/*#include "unit_test_fail.c"*/
 
 int main(void) {
 

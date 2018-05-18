@@ -14,7 +14,7 @@ MU_TEST(test_logger_biobj_evaluate) {
   coco_observer_t *observer;
   coco_problem_t *problem;
 
-  size_t number_of_evaluations;
+  unsigned long number_of_evaluations;
   double *x = coco_allocate_vector(2);
   double *y = coco_allocate_vector(2);
   double *y_eval = coco_allocate_vector(2);

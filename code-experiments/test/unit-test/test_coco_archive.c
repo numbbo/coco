@@ -8,7 +8,8 @@ static int about_equal_value(const double a, const double b);
  */
 MU_TEST(test_coco_archive) {
 
-  size_t number_of_evaluations, i;
+  unsigned long number_of_evaluations;
+  size_t i;
   char file_name[] = "test_hypervolume.txt";
   double *x = coco_allocate_vector(2);
   double *y = coco_allocate_vector(2);
@@ -38,7 +39,7 @@ MU_TEST(test_coco_archive) {
       break;
 
     /* Add solution to the archive */
-    line = coco_strdupf("%lu\t%f\t%f\t%f\t%f\t%f\n", (unsigned long) number_of_evaluations, x[0], x[1], y[0],
+    line = coco_strdupf("%lu\t%f\t%f\t%f\t%f\t%f\n", number_of_evaluations, x[0], x[1], y[0],
     		y[1], hypervolume_read);
     coco_archive_add_solution(archive, y[0], y[1], line);
     coco_free_memory(line);
