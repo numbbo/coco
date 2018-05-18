@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
     goto err;
   }
 
-  ret = fscanf(testfile, "%30lu", &number_of_testvectors);
+  ret = fscanf(testfile, "%30lu", &(unsigned long)number_of_testvectors);
   if (ret != 1) {
     fprintf(stderr,
             "Failed to read number of test vectors from testcases file.\n");
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
 
   while (1) {
     double expected_value, *x, y;
-    ret = fscanf(testfile, "%30lu\t%30lu\t%30i\t%30lf", &problem_index_old, &problem_index, &testvector_id,
+    ret = fscanf(testfile, "%30lu\t%30lu\t%30i\t%30lf", &(unsigned long)problem_index_old, &(unsigned long)problem_index, &testvector_id,
                  &expected_value);
     if (ret != 4)
       break;
