@@ -51,12 +51,25 @@ static void suite_bbob_mixint_set_ROI(const size_t dimension, const size_t insta
 }
 
 /**
- * @brief Creates and returns a bbob-mixint problem.
+ * @brief Returns the problem from the bbob-mixint suite that corresponds to the given parameters.
+ *
+ * @param suite The COCO suite.
+ * @param function_idx Index of the function (starting from 0).
+ * @param dimension_idx Index of the dimension (starting from 0).
+ * @param instance_idx Index of the instance (starting from 0).
+ * @return The problem that corresponds to the given parameters.
  */
-static coco_problem_t *coco_get_bbob_mixint_problem(const size_t function,
-                                                    const size_t dimension,
-                                                    const size_t instance) {
+static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
+                                                     const size_t function_idx,
+                                                     const size_t dimension_idx,
+                                                     const size_t instance_idx) {
+
   coco_problem_t *problem = NULL;
+
+  const size_t function = suite->functions[function_idx];
+  const size_t dimension = suite->dimensions[dimension_idx];
+  const size_t instance = suite->instances[instance_idx];
+
   const char *problem_type = NULL;
   double *smallest_values_of_interest = coco_allocate_vector(dimension);
   double *largest_values_of_interest = coco_allocate_vector(dimension);
@@ -78,38 +91,13 @@ static coco_problem_t *coco_get_bbob_mixint_problem(const size_t function,
   coco_problem_set_name(problem, "mixed-integer bbob suite problem f%lu instance %lu in %luD", function, instance, dimension);
   coco_problem_set_type(problem, problem_type);
 
-  coco_free_memory(are_variables_integer);
-  coco_free_memory(smallest_values_of_interest);
-  coco_free_memory(largest_values_of_interest);
-
-  return problem;
-}
-
-/**
- * @brief Returns the problem from the bbob-mixint suite that corresponds to the given parameters.
- *
- * @param suite The COCO suite.
- * @param function_idx Index of the function (starting from 0).
- * @param dimension_idx Index of the dimension (starting from 0).
- * @param instance_idx Index of the instance (starting from 0).
- * @return The problem that corresponds to the given parameters.
- */
-static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
-                                                     const size_t function_idx,
-                                                     const size_t dimension_idx,
-                                                     const size_t instance_idx) {
-
-  coco_problem_t *problem = NULL;
-
-  const size_t function = suite->functions[function_idx];
-  const size_t dimension = suite->dimensions[dimension_idx];
-  const size_t instance = suite->instances[instance_idx];
-
-  problem = coco_get_bbob_mixint_problem(function, dimension, instance);
-
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
   problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
+
+  coco_free_memory(are_variables_integer);
+  coco_free_memory(smallest_values_of_interest);
+  coco_free_memory(largest_values_of_interest);
 
   return problem;
 }
