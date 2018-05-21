@@ -70,7 +70,6 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
   const size_t dimension = suite->dimensions[dimension_idx];
   const size_t instance = suite->instances[instance_idx];
 
-  const char *problem_type = NULL;
   double *smallest_values_of_interest = coco_allocate_vector(dimension);
   double *largest_values_of_interest = coco_allocate_vector(dimension);
   int *are_variables_integer = coco_allocate_vector_int(dimension);
@@ -80,7 +79,6 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
 
   problem = coco_get_bbob_problem(function, dimension, instance);
   assert(problem != NULL);
-  problem_type = problem->problem_type;
 
   problem = transform_vars_discretize(problem,
       smallest_values_of_interest,
@@ -89,7 +87,6 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
 
   coco_problem_set_id(problem, "bbob-mixint_f%03lu_i%02lu_d%02lu", function, instance, dimension);
   coco_problem_set_name(problem, "mixed-integer bbob suite problem f%lu instance %lu in %luD", function, instance, dimension);
-  coco_problem_set_type(problem, problem_type);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
