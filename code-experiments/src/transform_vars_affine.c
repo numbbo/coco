@@ -15,6 +15,7 @@
 
 #include "coco.h"
 #include "coco_problem.c"
+#include "coco_utilities.c"
 
 /**
  * @brief Data type for transform_vars_affine.
@@ -186,9 +187,11 @@ static coco_problem_t *transform_vars_affine(coco_problem_t *inner_problem,
   problem->evaluate_gradient = transform_vars_affine_evaluate_gradient;
 
   /* Check if the transformation matrix M is orthogonal
+     and throw a warning if debugging mode
    */
-  if (!coco_is_orthogonal(data->M, problem->number_of_variables, inner_problem->number_of_variables))
-    coco_warning("transform_vars_affine(): rotation matrix is not orthogonal");
+  if (coco_log_level == COCO_DEBUG)
+    if (!coco_is_orthogonal(data->M, problem->number_of_variables, inner_problem->number_of_variables))
+        coco_warning("transform_vars_affine(): rotation matrix is not orthogonal");
 
   /* Update the best parameter by computing
      problem->best_parameter = M^T * (inner_problem->best_parameter - b)
