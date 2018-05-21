@@ -18,7 +18,7 @@
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.
  * Increase the budget multiplier value gradually to see how it affects the runtime.
  */
-static const unsigned int BUDGET_MULTIPLIER = 2;
+static const unsigned int BUDGET_MULTIPLIER = 10;
 
 /**
  * The maximal number of independent restarts allowed for an algorithm that restarts itself.
@@ -122,7 +122,7 @@ int main(void) {
    * Adapt to your need. Note that the experiment is run according
    * to the settings, defined in example_experiment(...) below.
    */
-  example_experiment("bbob", "bbob", random_generator);
+  example_experiment("rw-gan", "bbob", random_generator);
 
   printf("Done!\n");
   fflush(stdout);
