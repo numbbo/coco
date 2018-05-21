@@ -24,7 +24,6 @@ typedef struct {
  * @brief Writes x to var_fname, calls the process given in exe_fname and then reads the result
  * from obj_fname.
  *
- * The file exe_fname contains a single line with the command to be run.
  * The first line in var_fname contains the number of variables. Each next line contains values
  * for each variable.
  * The first line in obj_fname should contain the number of objectives. Each next line contains
