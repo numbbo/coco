@@ -567,7 +567,7 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
 }
 
 /**
- * Currently, six suites are supported:
+ * Currently, seven suites are supported:
  * - "bbob" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective
