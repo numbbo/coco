@@ -28,8 +28,10 @@ is taken modulo to the second.
 
 """
 from __future__ import division, print_function, unicode_literals
+__author__ = "Nikolaus Hansen and ..."
 import sys
 import time  # output some timings per evaluation
+from collections import defaultdict
 import os, webbrowser  # to show post-processed results in the browser
 import numpy as np  # for np.median
 import cocoex  # experimentation module
@@ -66,8 +68,8 @@ output_folder = '%s_of_%s_%dD_on_%s' % (fmin.__name__, fmin.__module__,
 suite = cocoex.Suite(suite_name, "", "")
 observer = cocoex.Observer(suite_name, "result_folder: " + output_folder)
 minimal_print = cocoex.utilities.MiniPrint()
-stoppings = cocoex.utilities.Dictof(list)  # dict of lists, key is the problem index
-timings = cocoex.utilities.Dictof(list)  # key is the dimension
+stoppings = defaultdict(list)  # dict of lists, key is the problem index
+timings = defaultdict(list)  # key is the dimension
 
 ### go
 print('*** benchmarking %s from %s on suite %s ***'
@@ -86,7 +88,7 @@ for problem in suite:  # this loop may take several minutes or hours or days...
     time1 = time.time()
 
     # apply restarts
-    while problem.evaluations < maxevals and not problem.final_target_hit:
+    while max((problem.evaluations, problem.evaluations_constraints)) < maxevals and not problem.final_target_hit:
         x0 = problem.initial_solution_proposal()  # give different proposals, all zeros in first call
         # here we assume that `fmin` evaluates the final/returned solution:
         if fmin is scipy.optimize.fmin:

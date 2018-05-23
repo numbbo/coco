@@ -92,7 +92,9 @@ def args_to_dict(args, known_names, specials=None, split='=',
 
 
 class Dictof(dict):
-    """a `dict` where missing keys are initialzed automatically.
+    """obsolete: use collections.defaultdict instead
+
+    a `dict` where missing keys are initialzed automatically.
 
     In essence, `__getitem__` is replaced by `setdefault` with the given
     default argument.
