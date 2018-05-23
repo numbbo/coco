@@ -126,6 +126,41 @@ static size_t nb_of_linear_constraints(const size_t function,
 }
 
 /**
+ * @brief Re-scale the initial solution to remain in the -5, 5 domain
+ *
+ * For this we set alpha <= 1 to ensure
+ * -5 <= xopt + alpha * initial_solution <= 5 in each coordinate.
+ */
+static void cons_rescale_initial_solution(
+        double *initial_solution,
+        const double *xopt,
+        size_t dimension) {
+
+   /* TODO: before to offset the problem->initial_solution we should
+   scale it down such that it will remain in the [-5, 5] domain after
+   setting xopt, that is -5 < xopt + initial_solution < 5 before
+   xopt is set below */
+
+  int i;
+  double alpha, b, bound, denom;
+
+  alpha = 1;
+  for (i = 0; i < dimension; ++i) {
+    denom = initial_solution[i];
+    for (b = -5; b <= 5; b += 10)
+    if (b * denom > 0) {
+      bound = (b - xopt[i]) / denom;
+      if (alpha > bound)
+        alpha = bound;
+    }
+  }
+  if (alpha < 0)
+     coco_error("something went wrong in cons_rescale_initial_solution");
+  coco_scale_vector(initial_solution, dimension,
+    coco_norm(initial_solution) * alpha);
+}
+
+/**
  * @brief Objective function: sphere
  *        Constraint(s): linear
  */
@@ -189,6 +224,8 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin.
    */
+  /* make sure initial solution remains in search domain */
+  cons_rescale_initial_solution(problem->initial_solution, xopt, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
@@ -272,6 +309,8 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin.
    */
+  /* make sure initial solution remains in search domain */
+  cons_rescale_initial_solution(problem->initial_solution, xopt, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
@@ -355,6 +394,8 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin .
    */
+  /* make sure initial solution remains in search domain */
+  cons_rescale_initial_solution(problem->initial_solution, xopt, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
@@ -436,6 +477,8 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin.
    */
+  /* make sure initial solution remains in search domain */
+  cons_rescale_initial_solution(problem->initial_solution, xopt, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
@@ -471,7 +514,7 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
   
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
-  
+
   all_zeros = coco_allocate_vector(dimension);
  
   for (i = 0; i < dimension; ++i)
@@ -516,9 +559,11 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
      
   problem = transform_vars_oscillate(problem);
      
-  /* Apply a translation to the whole problem so that the constrained 
-   * minimum is no longer at the origin. 
+  /* Apply a translation to the whole problem so that the constrained
+   * minimum is no longer at the origin.
    */
+  /* make sure initial solution remains in search domain */
+  cons_rescale_initial_solution(problem->initial_solution, xopt, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
@@ -602,6 +647,8 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin. 
    */
+  /* make sure initial solution remains in search domain */
+  cons_rescale_initial_solution(problem->initial_solution, xopt, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
@@ -683,6 +730,8 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin.
    */
+  /* make sure initial solution remains in search domain */
+  cons_rescale_initial_solution(problem->initial_solution, xopt, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
@@ -772,6 +821,8 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   /* Apply a translation to the whole problem so that the constrained 
    * minimum is no longer at the origin. 
    */
+  /* make sure initial solution remains in search domain */
+  cons_rescale_initial_solution(problem->initial_solution, xopt, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
  
   /* Construct problem type */
