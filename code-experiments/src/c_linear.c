@@ -44,7 +44,6 @@ static coco_problem_t *c_linear_shuffle(coco_problem_t *problem_c,
 static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
-                                                      const size_t number_of_linear_constraints,
                                                       const size_t constraint_number,
                                                       const double factor1,
                                                       const char *problem_id_template,
@@ -264,7 +263,6 @@ static coco_problem_t *c_linear_shuffle(coco_problem_t *problem_c,
 static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
-                                                      const size_t number_of_linear_constraints,
                                                       const size_t constraint_number,
                                                       const double factor1,
                                                       const char *problem_id_template,
@@ -278,7 +276,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
   coco_problem_t *problem = NULL;
   coco_random_state_t *random_generator;
   long seed_cons_i;
-  double exp2, factor2;
+  double factor2;
   
   problem = c_sum_variables_allocate(dimension);
   
@@ -296,11 +294,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
    * number 10**U_i[0,1])
    */
      
-  if (number_of_linear_constraints == dimension + 1)
-    exp2 = coco_random_uniform(random_generator);
-  else 
-    exp2 = 2.0 * coco_random_uniform(random_generator);
-  factor2 = pow(10.0, exp2);
+  factor2 = pow(100.0, coco_random_uniform(random_generator));
     
   
   /* Set the gradient of the linear constraint if it is given.
@@ -324,7 +318,8 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
      * and scale it with 'factor1' and 'factor2' (see comments above)
      */
     for (i = 0; i < dimension; ++i)
-      gradient_linear_constraint[i] = factor1 * coco_random_normal(random_generator) * factor2;
+      gradient_linear_constraint[i] = factor1 *
+                coco_random_normal(random_generator) * factor2 / sqrt(dimension);
 
     problem = c_linear_transform(problem, gradient_linear_constraint);
     coco_free_memory(gradient_linear_constraint);
@@ -371,6 +366,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
                                                       const char *problem_name_template,
                                                       const double *feasible_direction) {
 																																			
+  const double global_scaling_factor = 100.;
   size_t i;
   
   coco_problem_t *problem_c = NULL;
@@ -397,13 +393,13 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   seed_cons = (long)(function + 10000 * instance);
   random_generator = coco_random_new((uint32_t) seed_cons);
   exp1 = coco_random_uniform(random_generator);
-  factor1 = pow(10.0, exp1);
+  factor1 = global_scaling_factor * pow(10.0, exp1);
   
   /* Build the first linear constraint using 'gradient_c1' to build
    * its gradient.
    */ 
   problem_c = c_linear_single_cons_bbob_problem_allocate(function, 
-      dimension, instance, number_of_linear_constraints, 1, factor1, 
+      dimension, instance, 1, factor1,
       problem_id_template, problem_name_template, gradient_c1, 
       feasible_direction);
   
@@ -417,7 +413,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
 	 
     /* Instantiate a new problem containing one linear constraint only */
     problem_c2 = c_linear_single_cons_bbob_problem_allocate(function, 
-        dimension, instance, number_of_linear_constraints, i, factor1, 
+        dimension, instance, i, factor1,
         problem_id_template, problem_name_template, NULL, 
         feasible_direction);
 		

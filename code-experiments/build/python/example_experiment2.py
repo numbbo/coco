@@ -42,8 +42,9 @@ import scipy.optimize  # to define the solver to be benchmarked
 # import cma
 
 ### input (to be modified if necessary/desired)
-fmin = scipy.optimize.fmin
+# fmin = scipy.optimize.fmin
 fmin = scipy.optimize.fmin_slsqp
+# fmin = scipy.optimize.fmin_cobyla
 # fmin = cocoex.solvers.random_search
 # fmin = cma.fmin2
 
@@ -102,10 +103,13 @@ for problem in suite:  # this loop may take several minutes or hours or days...
         elif fmin is cocoex.solvers.random_search:
             fmin(problem, problem.dimension * [-5], problem.dimension * [5],
                  maxevals)
-        elif fmin is cma.fmin2:
+        elif fmin.__name__ == 'fmin2' and fmin.__module__ == 'cma':  # cma.fmin2:
             xopt, es = fmin(problem, problem.initial_solution_proposal(), 2,
                             {'maxfevals':maxevals, 'verbose':-9}, restarts=7)
             stoppings[problem.index].append(es.stop())
+        elif fmin is scipy.optimize.fmin_cobyla:
+            fmin(problem, x0, lambda x: -problem.constraint(x), maxfun=maxevals,
+                   disp=0, rhoend=1e-9)
         # add another solver here
 
     timings[problem.dimension].append((time.time() - time1) / problem.evaluations
