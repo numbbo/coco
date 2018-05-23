@@ -38,9 +38,6 @@ static coco_problem_t *c_sum_variables_allocate(const size_t number_of_variables
 static coco_problem_t *c_linear_transform(coco_problem_t *inner_problem, 
                                           const double *gradient);
          
-static coco_problem_t *c_linear_shuffle(coco_problem_t *problem_c, 
-                                        linear_constraint_data_t *data_c1);
-                                                   
 static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t function,
                                                       const size_t dimension,
                                                       const size_t instance,
@@ -188,71 +185,6 @@ static coco_problem_t *c_linear_transform(coco_problem_t *inner_problem,
 }
 
 /**
- * @brief Exchange the first constraint for another one, if any, by
- *        exchanging their gradients.
- * 
- * It picks a random constraint number different from one and runs
- * through the stack of constraints until the chosen constraint is found.
- * Then it extracts the gradient from it and exchange it for the
- * first constraint's.
- */
-static coco_problem_t *c_linear_shuffle(coco_problem_t *problem_c,
-                                        linear_constraint_data_t *data_c1) {
-  
-  coco_problem_t *iter_problem;
-  coco_problem_stacked_data_t *stacked_data;
-  linear_constraint_data_t *constraint_data;
-  coco_random_state_t *random_generator;
-  double aux;
-  size_t i, exchanged;
-  
-  /* Nothing to do if there is only one constraint */
-  if (problem_c->number_of_constraints < 2)
-    return problem_c;
-  
-  iter_problem = problem_c;
-  
-  /* Pick up a random constraint number other than 1.
-   * formula for U[M,N]: 
-   * random = M + (rand() / (RAND_MAX + 1.0)) * (N - M + 1)
-   * 
-   * Notes:
-   * 
-   * 1. (rand() / (RAND_MAX + 1.0)) ranges from 0.0 to 0.9999. The 1.0
-   *    instead of 1 causes RAND_MAX + 1.0 to be evaluated as a double.
-   * 
-   * 2. 'random' ranges from M to (N+0.9999), but, since 'exchanged'
-   *    is of type size_t, the fraction is discarded.
-   */
-  random_generator = coco_random_new(1); /* TODO: choose problem-dependent seed */
-  exchanged = coco_double_to_size_t(2 + coco_random_uniform(random_generator) * (double)(problem_c->number_of_constraints - 1)); /*(rand() / (RAND_MAX + 1.0)) * (problem_c->number_of_constraints - 2 + 1);*/
-  
-  /* Run through the stack until the chosen constraint is found */
-  for (i = problem_c->number_of_constraints; i > exchanged; --i) {
-    stacked_data = (coco_problem_stacked_data_t*) iter_problem->data;
-    iter_problem = stacked_data->problem1;
-  }
-  
-  stacked_data = (coco_problem_stacked_data_t*) iter_problem->data;
-  /* stacked_data->problem1 contains the other problems in the stack
-   * while stacked_data->problem2 contains the sought problem whose
-   * number is given by the value of 'exchanged'
-   */
-  iter_problem = stacked_data->problem2;
-  
-  constraint_data = (linear_constraint_data_t *) coco_problem_transformed_get_data(iter_problem);
-  
-  /* Exchange the gradients */
-  for (i = 0; i < problem_c->number_of_variables; ++i) {
-    aux = constraint_data->gradient[i];
-    constraint_data->gradient[i] = data_c1->gradient[i];
-    data_c1->gradient[i] = aux;
-  }
-  coco_random_free(random_generator);
-  return problem_c;
-}
-
-/**
  * @brief Builds a coco_problem_t containing one single linear constraint.
  * 
  * This function is called by c_linear_cons_bbob_problem_allocate(),
@@ -374,6 +306,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   linear_constraint_data_t *data_c1 = NULL;
   coco_random_state_t *random_generator;
   double *gradient_c1 = NULL;
+  double *gradient;
   long seed_cons;
   double exp1, factor1;
   
@@ -381,7 +314,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   																	
   for (i = 0; i < dimension; ++i)
     gradient_c1[i] = -feasible_direction[i];
-    
+
   /* Build a coco_problem_t object for each constraint. 
    * The constraints' gradients are generated randomly with
    * distriution 10**U[0,1] * N_i(0, I) * 10**U_i[0,2]
@@ -394,13 +327,15 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   random_generator = coco_random_new((uint32_t) seed_cons);
   exp1 = coco_random_uniform(random_generator);
   factor1 = global_scaling_factor * pow(10.0, exp1);
-  
+
   /* Build the first linear constraint using 'gradient_c1' to build
    * its gradient.
    */ 
-  problem_c = c_linear_single_cons_bbob_problem_allocate(function, 
+  /* set gradient depending on instance number */
+  gradient = instance % number_of_linear_constraints ? NULL : gradient_c1;
+  problem_c = c_linear_single_cons_bbob_problem_allocate(function,
       dimension, instance, 1, factor1,
-      problem_id_template, problem_name_template, gradient_c1, 
+      problem_id_template, problem_name_template, gradient,
       feasible_direction);
   
   /* Store the pointer to the first gradient for later */
@@ -412,9 +347,11 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   for (i = 2; i <= number_of_linear_constraints; ++i) {
 	 
     /* Instantiate a new problem containing one linear constraint only */
-    problem_c2 = c_linear_single_cons_bbob_problem_allocate(function, 
+    /* set gradient depending on instance number */
+    gradient = (i - 1 + instance) % number_of_linear_constraints ? NULL : gradient_c1;
+    problem_c2 = c_linear_single_cons_bbob_problem_allocate(function,
         dimension, instance, i, factor1,
-        problem_id_template, problem_name_template, NULL, 
+        problem_id_template, problem_name_template, gradient,
         feasible_direction);
 		
     problem_c = coco_problem_stacked_allocate(problem_c, problem_c2,
@@ -431,9 +368,6 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
     coco_problem_set_type(problem_c, "%s_%s", problem_c2->problem_type, 
         problem_c2->problem_type);
   }
-  
-  /* Exchange the first constraint position for another one if any */
-  problem_c = c_linear_shuffle(problem_c, data_c1);
   
   coco_free_memory(gradient_c1);
   coco_random_free(random_generator);
