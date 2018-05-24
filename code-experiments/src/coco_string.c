@@ -481,20 +481,20 @@ static char *coco_string_replace(char *string, char *find, char *replace) {
     char *result;    /* the return string */
     char *ins;       /* the next insert point */
     char *tmp;
-    size_t len_find;    /* length of 'find' */
-    size_t len_replace; /* length of 'replace' */
-    long len_front;     /* distance between two consecutive 'find' strings */
-    size_t count;       /* number of replacements */
+    long len_find;    /* length of 'find' */
+    long len_replace; /* length of 'replace' */
+    long len_front;   /* distance between two consecutive 'find' strings */
+    long count;       /* number of replacements */
 
     /* Sanity checks and initialization */
     if (!string || !find)
         return NULL;
-    len_find = strlen(find);
+    len_find = (long)strlen(find);
     if (len_find == 0)
         return NULL;
     if (!replace)
     	replace = "";
-    len_replace = strlen(replace);
+    len_replace = (long)strlen(replace);
 
     /* Count the number of replacements needed */
     ins = string;
@@ -502,7 +502,7 @@ static char *coco_string_replace(char *string, char *find, char *replace) {
         ins = tmp + len_find;
     }
 
-    result = coco_allocate_string((strlen(string) + (len_replace - len_find) * count + 1));
+    result = coco_allocate_string((size_t)((long)strlen(string) + (len_replace - len_find) * count + 1));
     if (!result)
         return NULL;
 
@@ -513,9 +513,10 @@ static char *coco_string_replace(char *string, char *find, char *replace) {
     while (count--) {
         ins = strstr(string, find);
         len_front = ins - string;
-        tmp = strncpy(tmp, string, len_front) + len_front;
+        assert(len_front >= 0);
+        tmp = strncpy(tmp, string, (unsigned long)len_front) + len_front;
         tmp = strcpy(tmp, replace) + len_replace;
-        string += (unsigned long) len_front + len_find; /* move to the next end of find */
+        string += len_front + len_find; /* move to the next end of find */
     }
     strcpy(tmp, string);
     return result;
