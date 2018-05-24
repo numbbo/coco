@@ -63,7 +63,7 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
   char dir1[] = "..";
   char dir2[] = "rw-problems";
   char dir3[] = "rw-gan";
-  char command_template[COCO_PATH_MAX];
+  char command_template[COCO_PATH_MAX] = "";
   char *exe_fname, *tmp, *replace;
   FILE *exe_file;
   size_t i;
@@ -97,11 +97,11 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
   exe_file = fopen(exe_fname, "r");
   if (exe_file == NULL) {
     coco_error("rw_gan_problem_allocate(): failed to open file '%s'.", exe_fname);
-    return 0; /* Never reached */
+    return NULL; /* Never reached */
   }
   if (fgets(command_template, COCO_PATH_MAX, exe_file) == NULL) {
     coco_error("rw_gan_problem_allocate(): failed to read file '%s'.", exe_fname);
-    return 0; /* Never reached */
+    return NULL; /* Never reached */
   }
   coco_free_memory(exe_fname);
   replace = coco_strdupf("%lu", (unsigned long)dimension);
