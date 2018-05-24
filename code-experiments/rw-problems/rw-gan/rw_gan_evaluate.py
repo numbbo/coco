@@ -20,4 +20,3 @@ if __name__ == '__main__':
         f.write('{}\n'.format(1))
         f.write('{}\n'.format(variable_sum))
         f.close()
-
