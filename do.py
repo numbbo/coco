@@ -166,6 +166,8 @@ def run_c_integration_tests():
             ['./test_bbob-constrained'], verbose=_verbosity)
         run('code-experiments/test/integration-test',
             ['./test_bbob-mixint'], verbose=_verbosity)
+        run('code-experiments/test/integration-test',
+            ['./test_rw-gan'], verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -214,6 +216,14 @@ def leak_check():
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
                     './test_bbob-constrained', 'leak_check']
+    run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
+    valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
+                    '--leak-check=full', '--show-reachable=yes',
+                    './test_bbob-mixint', 'leak_check']
+    run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
+    valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
+                    '--leak-check=full', '--show-reachable=yes',
+                    './test_rw-gan', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
 
 
