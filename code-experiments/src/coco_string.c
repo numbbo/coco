@@ -10,6 +10,7 @@
 #include "coco.h"
 
 static size_t *coco_allocate_vector_size_t(const size_t number_of_elements);
+static char *coco_allocate_string(const size_t number_of_elements);
 
 /**
  * @brief Creates a duplicate copy of string and returns a pointer to it.
@@ -476,14 +477,14 @@ static char *coco_string_trim(char *string) {
  *
  * If the input string does not contain any 'find' substrings, the same string is returned.
  */
-static char *coco_str_replace(char *string, char *find, char *replace) {
+static char *coco_string_replace(char *string, char *find, char *replace) {
     char *result;    /* the return string */
     char *ins;       /* the next insert point */
     char *tmp;
-    int len_find;    /* length of 'find' */
-    int len_replace; /* length of 'replace' */
-    int len_front;   /* distance between two consecutive 'find' strings */
-    int count;       /* number of replacements */
+    size_t len_find;    /* length of 'find' */
+    size_t len_replace; /* length of 'replace' */
+    long len_front;     /* distance between two consecutive 'find' strings */
+    size_t count;       /* number of replacements */
 
     /* Sanity checks and initialization */
     if (!string || !find)
@@ -497,7 +498,7 @@ static char *coco_str_replace(char *string, char *find, char *replace) {
 
     /* Count the number of replacements needed */
     ins = string;
-    for (count = 0; tmp = strstr(ins, find); ++count) {
+    for (count = 0; (tmp = strstr(ins, find)); ++count) {
         ins = tmp + len_find;
     }
 
@@ -513,8 +514,8 @@ static char *coco_str_replace(char *string, char *find, char *replace) {
         ins = strstr(string, find);
         len_front = ins - string;
         tmp = strncpy(tmp, string, len_front) + len_front;
-        tmp = strcpy(tmp, find) + len_replace;
-        string += len_front + len_find; // move to next "end of find"
+        tmp = strcpy(tmp, replace) + len_replace;
+        string += (unsigned long) len_front + len_find; /* move to the next end of find */
     }
     strcpy(tmp, string);
     return result;
