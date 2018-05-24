@@ -63,7 +63,8 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
   char dir1[] = "..";
   char dir2[] = "rw-problems";
   char dir3[] = "rw-gan";
-  char *exe_fname, *command_template, *tmp, *replace;
+  char command_template[COCO_PATH_MAX] = "";
+  char *exe_fname, *tmp, *replace;
   FILE *exe_file;
   size_t i;
 
@@ -92,17 +93,15 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
    * problem function and store the resulting command to the data structure */
   exe_fname = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(exe_fname, "", 1);
-  coco_join_path(exe_fname, COCO_PATH_MAX, dir1, dir1, dir2, dir3, "executable_template.txt", NULL);
+  coco_join_path(exe_fname, COCO_PATH_MAX, dir1, dir1, dir2, dir3, "executable_template", NULL);
   exe_file = fopen(exe_fname, "r");
   if (exe_file == NULL) {
     coco_error("rw_gan_problem_allocate(): failed to open file '%s'.", exe_fname);
-    return 0; /* Never reached */
+    return NULL; /* Never reached */
   }
-  command_template = coco_allocate_string(COCO_PATH_MAX + 1);
-  memcpy(command_template, "", 1);
   if (fgets(command_template, COCO_PATH_MAX, exe_file) == NULL) {
     coco_error("rw_gan_problem_allocate(): failed to read file '%s'.", exe_fname);
-    return 0; /* Never reached */
+    return NULL; /* Never reached */
   }
   coco_free_memory(exe_fname);
   replace = coco_strdupf("%lu", (unsigned long)dimension);
@@ -112,7 +111,6 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
   data->command = coco_string_replace(tmp, "<fun>", replace);
   coco_free_memory(replace);
   coco_free_memory(tmp);
-  coco_free_memory(command_template);
   fclose(exe_file);
 
   problem->data = data;
