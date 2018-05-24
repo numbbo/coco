@@ -72,6 +72,7 @@ def build_c():
     else:
         make("code-experiments/build/c", "clean", verbose=_build_verbosity)
         make("code-experiments/build/c", "all", verbose=_build_verbosity)
+    prepare_rw_evaluation_template()
 
 
 def run_c():
@@ -225,6 +226,16 @@ def leak_check():
                     '--leak-check=full', '--show-reachable=yes',
                     './test_rw-gan', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
+
+
+def prepare_rw_evaluation_template():
+    """ Uses the right external evaluation template (depending on the platform) """
+    if ('win32' in sys.platform) or ('win64' in sys.platform):
+        copy_file('code-experiments/rw-problems/rw-gan/executable_template_win.in',
+                  'code-experiments/rw-problems/rw-gan/executable_template')
+    else:
+        copy_file('code-experiments/rw-problems/rw-gan/executable_template.in',
+                  'code-experiments/rw-problems/rw-gan/executable_template')
 
 
 ################################################################################

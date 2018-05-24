@@ -93,7 +93,7 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
    * problem function and store the resulting command to the data structure */
   exe_fname = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(exe_fname, "", 1);
-  coco_join_path(exe_fname, COCO_PATH_MAX, dir1, dir1, dir2, dir3, "executable_template.txt", NULL);
+  coco_join_path(exe_fname, COCO_PATH_MAX, dir1, dir1, dir2, dir3, "executable_template", NULL);
   exe_file = fopen(exe_fname, "r");
   if (exe_file == NULL) {
     coco_error("rw_gan_problem_allocate(): failed to open file '%s'.", exe_fname);
