@@ -69,8 +69,8 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
   size_t i;
 
   for (i = 0; i < dimension; ++i) {
-    problem->smallest_values_of_interest[i] = 0; /* TODO */
-    problem->largest_values_of_interest[i] = 1;  /* TODO */
+    problem->smallest_values_of_interest[i] = -1;
+    problem->largest_values_of_interest[i] = 1;
   }
   problem->are_variables_integer = NULL;
   problem->evaluate_function = rw_gan_evaluate;
@@ -115,7 +115,6 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
 
   problem->data = data;
 
-  /* The best parameter and value are not known yet (TODO) */
   problem->best_value[0] = 0;
   if (problem->best_parameter != NULL) {
     coco_free_memory(problem->best_parameter);
