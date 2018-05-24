@@ -230,7 +230,8 @@ def leak_check():
 
 def prepare_rw_evaluation_template():
     """ Uses the right external evaluation template (depending on the platform) """
-    if ('win32' in sys.platform) or ('win64' in sys.platform):
+    if (('win32' in sys.platform) or ('win64' in sys.platform)) and\
+            ('cygwin' not in os.environ['PATH']):
         copy_file('code-experiments/rw-problems/rw-gan/executable_template_win.in',
                   'code-experiments/rw-problems/rw-gan/executable_template')
     else:

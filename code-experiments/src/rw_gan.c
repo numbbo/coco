@@ -63,7 +63,7 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
   char dir1[] = "..";
   char dir2[] = "rw-problems";
   char dir3[] = "rw-gan";
-  char command_template[COCO_PATH_MAX] = "";
+  char command_template[COCO_PATH_MAX + 1];
   char *exe_fname, *tmp, *replace;
   FILE *exe_file;
   size_t i;
