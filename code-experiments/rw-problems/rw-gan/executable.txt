@@ -1,1 +1,1 @@
-python ../../rw-problems/rw-gan/rw_gan_evaluate.py
+cd ../../rw-problems/rw-gan/; python rw_gan_evaluate.py <dim> <fun>

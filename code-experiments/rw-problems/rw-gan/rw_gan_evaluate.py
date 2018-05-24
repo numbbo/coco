@@ -1,6 +1,6 @@
 if __name__ == '__main__':
     expected_num_variables = 32
-    path = '../../rw-problems/rw-gan/'
+    path = ''
 
     # Read the variables
     with open(path + 'variables.txt') as f:
