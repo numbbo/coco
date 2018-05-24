@@ -5,7 +5,7 @@
  * learning of a Generative Adversarial Network (GAN) that understands the structure of Super Mario
  * Bros. levels. A bi-objective version can be found in the file suite_rw_gan_biobj.c (TODO)
  *
- * The suite contains X problems with dimensions X, X, and X and instances... TODO!
+ * The suite contains 30 problems with dimensions 10, 20, 30, 40 and one instance (at the moment).
  */
 
 #include "coco.h"

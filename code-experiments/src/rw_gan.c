@@ -64,7 +64,7 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
   char dir2[] = "rw-problems";
   char dir3[] = "rw-gan";
   char command_template[COCO_PATH_MAX + 1];
-  char *exe_fname, *tmp, *replace;
+  char *exe_fname, *tmp1, *tmp2, *replace;
   FILE *exe_file;
   size_t i;
 
@@ -105,12 +105,16 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
   }
   coco_free_memory(exe_fname);
   replace = coco_strdupf("%lu", (unsigned long)dimension);
-  tmp = coco_string_replace(command_template, "<dim>", replace);
+  tmp1 = coco_string_replace(command_template, "<dim>", replace);
   coco_free_memory(replace);
   replace = coco_strdupf("%lu", (unsigned long)function);
-  data->command = coco_string_replace(tmp, "<fun>", replace);
+  tmp2 = coco_string_replace(tmp1, "<fun>", replace);
   coco_free_memory(replace);
-  coco_free_memory(tmp);
+  replace = coco_strdupf("%lu", (unsigned long)instance);
+  data->command = coco_string_replace(tmp2, "<inst>", replace);
+  coco_free_memory(replace);
+  coco_free_memory(tmp1);
+  coco_free_memory(tmp2);
   fclose(exe_file);
 
   problem->data = data;

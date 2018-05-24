@@ -62,7 +62,7 @@ def fitnessSO(x, nz):
 
 #expecting variables <prob> <dim>
 if __name__ == '__main__':
-    _, dim, problem = sys.argv
+    _, dim, problem, instance = sys.argv
     problem = int(problem)
     dim = int(dim)
 
