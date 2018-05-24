@@ -30,55 +30,35 @@ GROUND = 0
 ENEMY = 5
 PIPE = 6 #7, 8 9
 
-def combine_images(generated_images):
-    num = generated_images.shape[0]
-    width = int(math.sqrt(num))
-    height = int(math.ceil(float(num)/width))
-    shape = generated_images.shape[1:]
-    image = numpy.zeros((height*shape[0], width*shape[1],shape[2]), dtype=generated_images.dtype)
-    for index, img in enumerate(generated_images):
-        i = int(index/width)
-        j = index % width
-        image[i*shape[0]:(i+1)*shape[0], j*shape[1]:(j+1)*shape[1]] = img
-    return image
-
-
 batchSize = 1
 
-def gan_maximse_title_type(x):
+def count_tile_type(x, nz, tile):
     x = numpy.array(x)
-    latent_vector = torch.FloatTensor(x).view(batchSize, nz, 1,
-                                              1)  # torch.from_numpy(lv)# torch.FloatTensor( torch.from_numpy(lv) )
+    latent_vector = torch.FloatTensor(x).view(batchSize, nz, 1, 1)
     levels = generator(Variable(latent_vector, volatile=True))
     levels.data = levels.data[:, :, :14, :28]
     im = levels.data.cpu().numpy()
     im = numpy.argmax( im, axis = 1)
+    num_tiles = (len (im[im==tile]))
+    return num_tiles
 
-    num_titles =  (len (im[im == PIPE]))
-    return 100.0 - num_titles
+def gan_maximse_tile_type(x, nz, tile):
+    return -count_tile_type(x, nz, tile)
+
+def gan_target_tile_type(x, nz, tile, target):
+    return abs(target-count_tile_type(x,nz, tile))
+
+def gan_target_tile_type_frac(x, nz, tile, target_frac):
+    total_tiles = 14*28
+    if tile==GROUND:
+        total_tiles=28
+    return abs(target_frac-(count_tile_type(x,nz, tile)/(total_tiles)))
 
 
-def gan_fitness_function(x, nz):
-    x = numpy.array(x)
-    # print(x)
-
-    latent_vector = torch.FloatTensor(x).view(batchSize, nz, 1,
-                                              1)  # torch.from_numpy(lv)# torch.FloatTensor( torch.from_numpy(lv) )
-    levels = generator(Variable(latent_vector, volatile=True))
-    levels.data = levels.data[:, :, :14, :28]
-    #return solid_blocks_fraction(levels.data, 0.2)
-    return solid_blocks_fraction(levels.data, 0.4)*ground_blocks_fraction(levels.data,0.8)
+def fitnessSO(x, nz):
+    return gan_target_tile_type_frac(x,nz, GROUND, 0.8)*gan_target_tile_type(x, nz, ENEMY, 5)
 
 
-def ground_blocks_fraction(data, frac):
-    ground_count = sum(data[0, GROUND, 13, :] > 0)
-    #print(ground_count)
-    #print(ground_count- frac*28)
-    return math.sqrt(math.pow(ground_count - frac*28, 2))
-
-def solid_blocks_fraction(data, frac):
-    solid_block_count = len(data[data > 0.])
-    return math.sqrt(math.pow(solid_block_count - frac*14*28, 2))
 
 #expecting variables <prob> <dim>
 if __name__ == '__main__':
@@ -114,7 +94,10 @@ if __name__ == '__main__':
         if problem<=15: #direct evaluation
             generator = dcgan.DCGAN_G(imageSize, dim, features, ngf, ngpu, n_extra_layers)
             generator.load_state_dict(torch.load(netG, map_location=lambda storage, loc: storage))
-            result = gan_fitness_function(content[1:], dim)
+            result = fitnessSO(content[1:], dim)
+            #print(count_tile_type(content[1:], dim, GROUND))
+            #print(count_tile_type(content[1:], dim, ENEMY))
+            #print(count_tile_type(content[1:], dim, PIPE))
 
             # Write the result
             with open('objectives.txt', 'w') as f:
