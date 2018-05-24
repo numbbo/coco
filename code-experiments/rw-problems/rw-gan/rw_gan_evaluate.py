@@ -82,7 +82,7 @@ def solid_blocks_fraction(data, frac):
 
 #expecting variables <prob> <dim>
 if __name__ == '__main__':
-    _, problem, dim = sys.argv
+    _, dim, problem = sys.argv
     problem = int(problem)
     dim = int(dim)
 

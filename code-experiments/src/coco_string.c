@@ -10,6 +10,7 @@
 #include "coco.h"
 
 static size_t *coco_allocate_vector_size_t(const size_t number_of_elements);
+static char *coco_allocate_string(const size_t number_of_elements);
 
 /**
  * @brief Creates a duplicate copy of string and returns a pointer to it.
@@ -469,4 +470,53 @@ static char *coco_string_trim(char *string) {
 	}
 
 	return string;
+}
+
+/**
+ * @brief Replaces all occurrences of the 'find' substring with the 'replace' string.
+ *
+ * If the input string does not contain any 'find' substrings, the same string is returned.
+ */
+static char *coco_string_replace(char *string, char *find, char *replace) {
+    char *result;    /* the return string */
+    char *ins;       /* the next insert point */
+    char *tmp;
+    size_t len_find;    /* length of 'find' */
+    size_t len_replace; /* length of 'replace' */
+    long len_front;     /* distance between two consecutive 'find' strings */
+    size_t count;       /* number of replacements */
+
+    /* Sanity checks and initialization */
+    if (!string || !find)
+        return NULL;
+    len_find = strlen(find);
+    if (len_find == 0)
+        return NULL;
+    if (!replace)
+    	replace = "";
+    len_replace = strlen(replace);
+
+    /* Count the number of replacements needed */
+    ins = string;
+    for (count = 0; (tmp = strstr(ins, find)); ++count) {
+        ins = tmp + len_find;
+    }
+
+    result = coco_allocate_string((strlen(string) + (len_replace - len_find) * count + 1));
+    if (!result)
+        return NULL;
+
+    /* tmp points to the end of the result string */
+    /* ins points to the next occurrence of find in string */
+    /* string points to the remainder of string after the end of find */
+    tmp = result;
+    while (count--) {
+        ins = strstr(string, find);
+        len_front = ins - string;
+        tmp = strncpy(tmp, string, len_front) + len_front;
+        tmp = strcpy(tmp, replace) + len_replace;
+        string += (unsigned long) len_front + len_find; /* move to the next end of find */
+    }
+    strcpy(tmp, string);
+    return result;
 }

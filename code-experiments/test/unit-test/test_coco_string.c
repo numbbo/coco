@@ -1,13 +1,10 @@
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include "cmocka.h"
 #include "coco.h"
+#include "minunit_c89.h"
 
 /**
- * Tests coco_archive-related functions.
+ * Tests coco_string-related functions.
  */
-static void test_coco_string_trim(void **state) {
+MU_TEST(test_coco_string_trim) {
 
 	char *sample_strings[] = {
 			"nothing to trim",
@@ -38,16 +35,34 @@ static void test_coco_string_trim(void **state) {
 
 	for (index = 0; sample_strings[index] != NULL; ++index) {
 		strcpy(str, sample_strings[index] );
-		assert(strcmp(coco_string_trim(str), result_strings[index]) == 0);
+		mu_check(strcmp(coco_string_trim(str), result_strings[index]) == 0);
 	}
-
-  (void)state; /* unused */
 }
 
-static int test_all_coco_string(void) {
+MU_TEST(test_coco_string_replace) {
+	char *result_string;
 
-  const struct CMUnitTest tests[] = {
-  cmocka_unit_test(test_coco_string_trim) };
+	result_string = coco_string_replace("replace <A> <B> <A> <AB> <A", "<A>", "42");
+	mu_check(strcmp(result_string, "replace 42 <B> 42 <AB> <A") == 0);
+	coco_free_memory(result_string);
 
-  return cmocka_run_group_tests(tests, NULL, NULL);
+	result_string = coco_string_replace("replace <A> <B> <A> <AB> <A", "<A>>", "42");
+	mu_check(strcmp(result_string, "replace <A> <B> <A> <AB> <A") == 0);
+	coco_free_memory(result_string);
+
+	result_string = coco_string_replace("replace <A> <B> <A> <AB> <A", "<A>", NULL);
+	mu_check(strcmp(result_string, "replace  <B>  <AB> <A") == 0);
+	coco_free_memory(result_string);
+
+	result_string = coco_string_replace("replace <A> <B> <A> <AB> <A", NULL, "42");
+	mu_check(result_string == NULL);
+	coco_free_memory(result_string);
+}
+
+/**
+ * Run all tests in this file.
+ */
+MU_TEST_SUITE(test_all_coco_string) {
+  MU_RUN_TEST(test_coco_string_trim);
+  MU_RUN_TEST(test_coco_string_replace);
 }

@@ -46,5 +46,8 @@ int main(void) {
   if (test_instance_extraction("bbob-mixint") != 0)
     return 1;
 
+  if (test_instance_extraction("rw-gan") != 0)
+    return 1;
+
   return 0;
 }
