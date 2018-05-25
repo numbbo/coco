@@ -168,7 +168,7 @@ def create_from_remote(local_path, url_definition_file):
     _makedirs(os.path.split(definition_file)[0])
     urlretrieve(url_definition_file, definition_file)
     with open(definition_file, 'rt') as file_:
-        definitions = ast.literal_eval(file_.read())
+        definitions = ast.literal_eval(file_.read().replace('L)', ')'))
     _url_ = COCOUserDataArchive._url_(definitions)
     url = url_definition_file.rsplit('/', 1)[0]
     if not _url_:
@@ -244,7 +244,7 @@ def create(local_path):
                 path = os.path.join(dirpath, filename)
                 res += [(name,
                          _hash(path),
-                         os.path.getsize(path) // 1000)] # or os.stat(path).st_size
+                         int(os.path.getsize(path) // 1000))] # or os.stat(path).st_size
     if not len(res):
         warnings.warn('archiving.create: no data found in %s' % local_path)
         return
