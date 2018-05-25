@@ -9,7 +9,7 @@
 
 #include "coco.h"
 
-static void wait_in_seconds(unsigned int secs) {
+static void wait_in_seconds(time_t secs) {
     time_t retTime = time(0) + secs;
     while (time(0) < retTime);
 }
