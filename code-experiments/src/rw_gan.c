@@ -63,8 +63,8 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
   char dir1[] = "..";
   char dir2[] = "rw-problems";
   char dir3[] = "rw-gan";
-  char command_template[COCO_PATH_MAX + 1];
-  char *exe_fname, *tmp1, *tmp2, *replace;
+  char *template1, *template2;
+  char *exe_fname, *replace;
   FILE *exe_file;
   size_t i;
 
@@ -99,23 +99,32 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
     coco_error("rw_gan_problem_allocate(): failed to open file '%s'.", exe_fname);
     return NULL; /* Never reached */
   }
-  if (fgets(command_template, COCO_PATH_MAX, exe_file) == NULL) {
+  template2 = coco_allocate_string(COCO_PATH_MAX + 2);
+  /* Store the contents of the exe_file to template2 */
+  template1 = fgets(template2, COCO_PATH_MAX, exe_file);
+  if (template1 == NULL) {
     coco_error("rw_gan_problem_allocate(): failed to read file '%s'.", exe_fname);
     return NULL; /* Never reached */
   }
-  coco_free_memory(exe_fname);
+  assert(template1 == template2);
+  /* Replace <dim> with dimension */
   replace = coco_strdupf("%lu", (unsigned long)dimension);
-  tmp1 = coco_string_replace(command_template, "<dim>", replace);
+  template1 = coco_string_replace(template2, "<dim>", replace);
   coco_free_memory(replace);
+  coco_free_memory(template2);
+  /* Replace <fun> with function */
   replace = coco_strdupf("%lu", (unsigned long)function);
-  tmp2 = coco_string_replace(tmp1, "<fun>", replace);
+  template2 = coco_string_replace(template1, "<fun>", replace);
   coco_free_memory(replace);
+  coco_free_memory(template1);
+  /* Replace <inst> with instance */
   replace = coco_strdupf("%lu", (unsigned long)instance);
-  data->command = coco_string_replace(tmp2, "<inst>", replace);
+  data->command = coco_string_replace(template2, "<inst>", replace);
   coco_free_memory(replace);
-  coco_free_memory(tmp1);
-  coco_free_memory(tmp2);
+  coco_free_memory(template2);
+
   fclose(exe_file);
+  coco_free_memory(exe_fname);
 
   problem->data = data;
 
