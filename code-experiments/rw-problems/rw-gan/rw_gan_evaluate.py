@@ -27,10 +27,50 @@ features = 10
 budget=50
 
 GROUND = 0
+BREAK = 1
+QUESTION = 3
+EQUESTION = 4
 ENEMY = 5
-PIPE = 6 #7, 8 9
+LEFTTOPPIPE = 6
+RIGHTTOPPIPE = 7
+LEFTBOTPIPE = 8
+RIGHTBOTPIPE = 9
+COIN = 10
+
+#        "X" : ["solid","ground"],
+#        "S" : ["solid","breakable"],
+#        "-" : ["passable","empty"],
+#        "?" : ["solid","question block", "full question block"],
+#        "Q" : ["solid","question block", "empty question block"],
+#        "E" : ["enemy","damaging","hazard","moving"],
+#        "<" : ["solid","top-left pipe","pipe"],
+#        ">" : ["solid","top-right pipe","pipe"],
+#        "[" : ["solid","left pipe","pipe"],
+#        "]" : ["solid","right pipe","pipe"],
+#	     "o" : ["coin","collectable","passable"]
+
 
 batchSize = 1
+
+def exist_gap(x, im):
+    #gap exists if not 10 (coin), not 2 (passable)
+    gaps = numpy.zeros(28)
+    for i in range(0,27):
+        imc = im[:,:,i]
+        if imc[0].count(10) + imc[0].count(2)==28:#all tiles in column passable
+            gaps[i]=1
+    return gaps
+
+def count_gaps(x, im):
+    gaps = exist_gap(x, im)
+    return sum(gaps)
+	
+def max_gap(x, im):
+    gaps = exist_gap(x, im)
+    gaps = "".join([str(x) for x in gaps])
+    max_gap = max(map(len,gaps.split('0')))
+    return max_gap
+
 
 def count_tile_type(x, nz, tile):
     x = numpy.array(x)
@@ -53,6 +93,8 @@ def gan_target_tile_type_frac(x, nz, tile, target_frac):
     if tile==GROUND:
         total_tiles=28
     return abs(target_frac-(count_tile_type(x,nz, tile)/(total_tiles)))
+
+#def leniency(x, 
 
 
 def fitnessSO(x, nz):
