@@ -26,10 +26,10 @@ void run_once(char *suite_options) {
     initial_solution = coco_allocate_vector(coco_problem_get_dimension(problem));
     coco_problem_get_initial_solution(problem, initial_solution);
     coco_evaluate_function(problem, initial_solution, y);
+    coco_free_memory(initial_solution);
   }
 
   coco_suite_free(suite);
-  coco_free_memory(initial_solution);
   coco_free_memory(y);
 
   printf("Performed integration test on the rw-gan suite\n");
