@@ -20,6 +20,8 @@ shell::
     example_experiment2.py budget_multiplier=3  # times dimension
 
     example_experiment2.py budget_multiplier=1e4 cocopp=None
+    
+    example_experiment2.py budget_multiplier=1e4 suite_name=bbob-biobj
 
     example_experiment2.py budget_multiplier=1000 batch=1/16
 
@@ -103,7 +105,7 @@ for problem in suite:  # this loop may take several minutes or hours or days...
         elif fmin is cocoex.solvers.random_search:
             fmin(problem, problem.dimension * [-5], problem.dimension * [5],
                  maxevals)
-        elif fmin.__name__ == 'fmin2' and fmin.__module__ == 'cma':  # cma.fmin2:
+        elif fmin.__name__ == 'fmin2' and 'cma' in fmin.__module__:  # cma.fmin2:
             xopt, es = fmin(problem, problem.initial_solution_proposal(), 2,
                             {'maxfevals':maxevals, 'verbose':-9}, restarts=7)
             stoppings[problem.index].append(es.stop())
