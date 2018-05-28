@@ -99,7 +99,7 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
     coco_error("rw_gan_problem_allocate(): failed to open file '%s'.", exe_fname);
     return NULL; /* Never reached */
   }
-  template2 = coco_allocate_string(COCO_PATH_MAX + 2);
+  template2 = coco_allocate_string(COCO_PATH_MAX + 1);
   /* Store the contents of the exe_file to template2 */
   template1 = fgets(template2, COCO_PATH_MAX, exe_file);
   if (template1 == NULL) {
