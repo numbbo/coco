@@ -230,15 +230,16 @@ def create(local_path):
                       "name or delete the file first."
                          % definition_file)
         raise
+    full_local_path = os.path.split(definition_file)[0]
     res = []
-    for dirpath, dirnames, filenames in os.walk(os.path.split(definition_file)[0]):
+    for dirpath, dirnames, filenames in os.walk(full_local_path):
         for filename in filenames:
             if ('.extracted' not in dirpath
-                and not filename.endswith(('.dat', '.info', '.txt', '.md'))
+                and not filename.endswith(('.dat', '.info', '.txt', '.md', '.py', '.ipynb'))
                 and not filename in ('README', 'readme')
                     # and not ('BBOB' in filename and 'rawdata' in filename)
                 ):
-                name = dirpath[len(local_path) + 1:].replace(os.path.sep, '/')
+                name = dirpath[len(full_local_path) + 1:].replace(os.path.sep, '/')
                 # print(dirpath, local_path, name, filename)
                 name = '/'.join([name, filename]) if name else filename
                 path = os.path.join(dirpath, filename)
