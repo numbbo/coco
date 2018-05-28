@@ -28,6 +28,7 @@ budget=50
 
 GROUND = 0
 BREAK = 1
+PASS = 2
 QUESTION = 3
 EQUESTION = 4
 ENEMY = 5
@@ -52,33 +53,31 @@ COIN = 10
 
 batchSize = 1
 
-def exist_gap(x, im):
+def exist_gap(im):
     #gap exists if not 10 (coin), not 2 (passable)
     gaps = numpy.zeros(28)
-    for i in range(0,27):
-        imc = im[:,:,i]
-        if imc[0].count(10) + imc[0].count(2)==28:#all tiles in column passable
+    for i in range(0,28):
+        imc = im[:,:,i][0]
+        unique, counts = numpy.unique(imc, return_counts=True)
+        dist = dict(zip(unique, counts))
+        if dist.get(COIN,0) + dist.get(PASS,0)==14:#all tiles in column passable
             gaps[i]=1
     return gaps
 
-def count_gaps(x, im):
-    gaps = exist_gap(x, im)
+def count_gaps(im):
+    gaps = exist_gap(im)
     return sum(gaps)
-	
-def max_gap(x, im):
-    gaps = exist_gap(x, im)
-    gaps = "".join([str(x) for x in gaps])
-    max_gap = max(map(len,gaps.split('0')))
-    return max_gap
+
+def gap_lengths(im):
+    gaps = exist_gap(im)
+    gaps = "".join([str(int(x)) for x in gaps])
+    return map(len,gaps.split('0'))
+
+def max_gap(im):
+    return max(gap_lengths(im))
 
 
-def count_tile_type(x, nz, tile):
-    x = numpy.array(x)
-    latent_vector = torch.FloatTensor(x).view(batchSize, nz, 1, 1)
-    levels = generator(Variable(latent_vector, volatile=True))
-    levels.data = levels.data[:, :, :14, :28]
-    im = levels.data.cpu().numpy()
-    im = numpy.argmax( im, axis = 1)
+def count_tile_type(im, tile):
     num_tiles = (len (im[im==tile]))
     return num_tiles
 
@@ -88,21 +87,38 @@ def gan_maximse_tile_type(x, nz, tile):
 def gan_target_tile_type(x, nz, tile, target):
     return abs(target-count_tile_type(x,nz, tile))
 
-def gan_target_tile_type_frac(x, nz, tile, target_frac):
+def gan_target_tile_type_frac(im, tile, target_frac):
     total_tiles = 14*28
-    if tile==GROUND:
-        total_tiles=28
-    return abs(target_frac-(count_tile_type(x,nz, tile)/(total_tiles)))
+    return abs(target_frac-(count_tile_type(im, tile)/(total_tiles)))
 
-#def leniency(x, 
-
+def leniency(im):
+    unique, counts = numpy.unique(im, return_counts=True)
+    dist = dict(zip(unique, counts))
+    val =0
+    val += dist.get(QUESTION,0)*1
+    val += dist.get(ENEMY,0)*(-1)
+    val += count_gaps(im)*(-0.5)
+    t = numpy.array(gap_lengths(im))
+    val -= numpy.mean(t[t!=0])
+    print(dist)
+    return val
 
 def fitnessSO(x, nz):
-    return gan_target_tile_type_frac(x,nz, GROUND, 0.8)*gan_target_tile_type(x, nz, ENEMY, 5)
+    x = numpy.array(x)
+    latent_vector = torch.FloatTensor(x).view(batchSize, nz, 1, 1)
+    levels = generator(Variable(latent_vector, volatile=True))
+    levels.data = levels.data[:, :, :14, :28]
+    im = levels.data.cpu().numpy()
+    im = numpy.argmax( im, axis = 1)
+    print(im)
+    #return count_gaps(im)
+    #return max_gap(im)
+    return leniency(im)
+    #return gan_target_tile_type_frac(im, GROUND, 0.8)*gan_target_tile_type(im, ENEMY, 5)
 
 
 
-#expecting variables <prob> <dim>
+#expecting variables <prob> <dim> <instance>
 if __name__ == '__main__':
     _, dim, problem, instance = sys.argv
     problem = int(problem)
@@ -137,6 +153,7 @@ if __name__ == '__main__':
             generator = dcgan.DCGAN_G(imageSize, dim, features, ngf, ngpu, n_extra_layers)
             generator.load_state_dict(torch.load(netG, map_location=lambda storage, loc: storage))
             result = fitnessSO(content[1:], dim)
+            print(result)
             #print(count_tile_type(content[1:], dim, GROUND))
             #print(count_tile_type(content[1:], dim, ENEMY))
             #print(count_tile_type(content[1:], dim, PIPE))
