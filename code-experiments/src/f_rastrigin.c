@@ -50,12 +50,26 @@ static void f_rastrigin_evaluate(coco_problem_t *problem, const double *x, doubl
 }
 
 /**
+ * @brief Evaluates the gradient of the raw Rastrigin function.
+ */
+static void f_rastrigin_evaluate_gradient(coco_problem_t *problem, const double *x, double *y) {
+
+  size_t i;
+
+  for (i = 0; i < problem->number_of_variables; ++i) {
+    y[i] = 2.0 * (10. * coco_pi * sin(coco_two_pi * x[i]) + x[i]);
+  }
+}
+
+/**
  * @brief Allocates the basic Rastrigin problem.
  */
 static coco_problem_t *f_rastrigin_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Rastrigin function",
       f_rastrigin_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
+  /* TODO: make sure the gradient is computed correctly for the rotated Rastrigin */
+  problem->evaluate_gradient = f_rastrigin_evaluate_gradient;
   coco_problem_set_id(problem, "%s_d%02lu", "rastrigin", number_of_variables);
 
   /* Compute best solution */
