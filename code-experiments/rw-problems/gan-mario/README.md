@@ -1,4 +1,4 @@
-# Requirements for the `gw-gan` test suite
+# Requirements for the `gan-mario` test suite
 
 - `pytorch 0.3.1`
 - `torchvision 0.2.0` or lower

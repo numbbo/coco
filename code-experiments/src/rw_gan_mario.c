@@ -1,5 +1,5 @@
 /**
- * @file rw_gan.c
+ * @file rw_gan_mario.c
  *
  * @brief Implementation of the real-world problems of unsupervised learning of a Generative
  * Adversarial Network (GAN) that understands the structure of Super Mario Bros. levels.
@@ -13,22 +13,22 @@
 #include "coco_utilities.c"
 
 /**
- * @brief Data type for the rw-gan problem.
+ * @brief Data type for the rw-gan-mario problem.
  */
 typedef struct {
   char *command;
   char *var_fname;
   char *obj_fname;
-} rw_gan_data_t;
+} rw_gan_mario_data_t;
 
 
 /**
  * @brief Calls the external function to evaluate the problem.
  */
-static void rw_gan_evaluate(coco_problem_t *problem, const double *x, double *y) {
+static void rw_gan_mario_evaluate(coco_problem_t *problem, const double *x, double *y) {
 
-  rw_gan_data_t *data;
-  data = (rw_gan_data_t *) problem->data;
+  rw_gan_mario_data_t *data;
+  data = (rw_gan_mario_data_t *) problem->data;
 
   assert(problem->number_of_objectives == 1);
   if (coco_vector_contains_nan(x, problem->number_of_variables))
@@ -41,9 +41,9 @@ static void rw_gan_evaluate(coco_problem_t *problem, const double *x, double *y)
 /**
  * @brief Frees the rw_gan_data object.
  */
-static void rw_gan_free(coco_problem_t *problem) {
-  rw_gan_data_t *data;
-  data = (rw_gan_data_t *) problem->data;
+static void rw_gan_mario_free(coco_problem_t *problem) {
+  rw_gan_mario_data_t *data;
+  data = (rw_gan_mario_data_t *) problem->data;
   coco_free_memory(data->var_fname);
   coco_free_memory(data->obj_fname);
   coco_free_memory(data->command);
@@ -54,15 +54,15 @@ static void rw_gan_free(coco_problem_t *problem) {
 /**
  * @brief Creates a rw-gan problem.
  */
-static coco_problem_t *rw_gan_problem_allocate(const size_t function,
-                                               const size_t dimension,
-                                               const size_t instance) {
+static coco_problem_t *rw_gan_mario_problem_allocate(const size_t function,
+                                                     const size_t dimension,
+                                                     const size_t instance) {
 
   coco_problem_t *problem = coco_problem_allocate(dimension, 1, 0);
-  rw_gan_data_t *data;
+  rw_gan_mario_data_t *data;
   char dir1[] = "..";
   char dir2[] = "rw-problems";
-  char dir3[] = "rw-gan";
+  char dir3[] = "gan-mario";
   char *template1, *template2;
   char *exe_fname, *replace;
   FILE *exe_file;
@@ -73,15 +73,23 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
     problem->largest_values_of_interest[i] = 1;
   }
   problem->are_variables_integer = NULL;
-  problem->evaluate_function = rw_gan_evaluate;
-  problem->problem_free_function = rw_gan_free;
+  problem->evaluate_function = rw_gan_mario_evaluate;
+  problem->problem_free_function = rw_gan_mario_free;
 
-  coco_problem_set_id(problem, "rw-gan_f%03lu_i%02lu_d%02lu", function, instance, dimension);
-  coco_problem_set_name(problem, "real-world GAN problem f%lu instance %lu in %luD",
+  coco_problem_set_id(problem, "rw-gan-mario_f%03lu_i%02lu_d%02lu", function, instance, dimension);
+  coco_problem_set_name(problem, "real-world GAN Mario problem f%lu instance %lu in %luD",
       function, instance, dimension);
-  coco_problem_set_type(problem, "rw-gan-mario-single");
+  if ((function >= 1) && (function <= 15))
+    coco_problem_set_type(problem, "direct");
+  else if ((function > 15) && (function <= 30))
+    coco_problem_set_type(problem, "simulated");
+  else {
+    coco_error("rw_gan_mario_problem_allocate(): cannot allocate problem with function %lu",
+        (unsigned long)function);
+    return NULL; /* Never reached*/
+  }
 
-  data = (rw_gan_data_t *) coco_allocate_memory(sizeof(*data));
+  data = (rw_gan_mario_data_t *) coco_allocate_memory(sizeof(*data));
   data->var_fname = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(data->var_fname, "", 1);
   coco_join_path(data->var_fname, COCO_PATH_MAX, dir1, dir1, dir2, dir3, "variables.txt", NULL);
@@ -89,21 +97,24 @@ static coco_problem_t *rw_gan_problem_allocate(const size_t function,
   memcpy(data->obj_fname, "", 1);
   coco_join_path(data->obj_fname, COCO_PATH_MAX, dir1, dir1, dir2, dir3, "objectives.txt", NULL);
 
-  /* Load the command template from exe_fname, replace <dim> with problem dimension and <fun> with
-   * problem function and store the resulting command to the data structure */
+  /* Load the command template from exe_fname, replace:
+   * <dim> with the problem dimension,
+   * <fun> with the problem function and
+   * <inst> with the problem instance
+   * and store the resulting command to data->command */
   exe_fname = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(exe_fname, "", 1);
-  coco_join_path(exe_fname, COCO_PATH_MAX, dir1, dir1, dir2, dir3, "executable_template", NULL);
+  coco_join_path(exe_fname, COCO_PATH_MAX, dir1, dir1, dir2, dir3, "evaluate_function_template", NULL);
   exe_file = fopen(exe_fname, "r");
   if (exe_file == NULL) {
-    coco_error("rw_gan_problem_allocate(): failed to open file '%s'.", exe_fname);
+    coco_error("rw_gan_mario_problem_allocate(): failed to open file '%s'.", exe_fname);
     return NULL; /* Never reached */
   }
   template2 = coco_allocate_string(COCO_PATH_MAX + 1);
   /* Store the contents of the exe_file to template2 */
   template1 = fgets(template2, COCO_PATH_MAX, exe_file);
   if (template1 == NULL) {
-    coco_error("rw_gan_problem_allocate(): failed to read file '%s'.", exe_fname);
+    coco_error("rw_gan_mario_problem_allocate(): failed to read file '%s'.", exe_fname);
     return NULL; /* Never reached */
   }
   assert(template1 == template2);

@@ -168,7 +168,7 @@ def run_c_integration_tests():
         run('code-experiments/test/integration-test',
             ['./test_bbob-mixint'], verbose=_verbosity)
         run('code-experiments/test/integration-test',
-            ['./test_rw-gan'], verbose=_verbosity)
+            ['./test_rw_gan_mario'], verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -224,7 +224,7 @@ def leak_check():
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
-                    './test_rw-gan', 'leak_check']
+                    './test_rw_gan_mario', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
 
 
@@ -232,11 +232,11 @@ def prepare_rw_evaluation_template():
     """ Uses the right external evaluation template (depending on the platform) """
     if (('win32' in sys.platform) or ('win64' in sys.platform)) and\
             ('cygwin' not in os.environ['PATH']):
-        copy_file('code-experiments/rw-problems/rw-gan/executable_template_win.in',
-                  'code-experiments/rw-problems/rw-gan/executable_template')
+        copy_file('code-experiments/rw-problems/gan-mario/evaluate_function_template_win.in',
+                  'code-experiments/rw-problems/gan-mario/evaluate_function_template')
     else:
-        copy_file('code-experiments/rw-problems/rw-gan/executable_template.in',
-                  'code-experiments/rw-problems/rw-gan/executable_template')
+        copy_file('code-experiments/rw-problems/gan-mario/evaluate_function_template.in',
+                  'code-experiments/rw-problems/gan-mario/evaluate_function_template')
 
 
 ################################################################################

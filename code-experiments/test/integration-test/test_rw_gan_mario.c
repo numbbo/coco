@@ -20,7 +20,7 @@ void run_once(char *suite_options) {
   double *initial_solution;
   double *y = coco_allocate_vector(1);
 
-  suite = coco_suite("rw-gan", NULL, suite_options);
+  suite = coco_suite("rw-gan-mario", NULL, suite_options);
 
   while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
     initial_solution = coco_allocate_vector(coco_problem_get_dimension(problem));
@@ -32,7 +32,7 @@ void run_once(char *suite_options) {
   coco_suite_free(suite);
   coco_free_memory(y);
 
-  printf("Performed integration test on the rw-gan suite\n");
+  printf("Performed integration test on the rw-gan-mario suite\n");
   printf("DONE!\n");
   fflush(stdout);
 }

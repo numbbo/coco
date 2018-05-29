@@ -1,1 +1,0 @@
-cd ../../rw-problems/rw-gan/; python rw_gan_evaluate_backup.py <dim> <fun> <inst>

@@ -1,15 +1,15 @@
 /**
- * @file suite_rw_gan.c
+ * @file suite_rw_gan_mario.c
  *
  * @brief Implementation of a single-objective suite containing real-world problems of unsupervised
  * learning of a Generative Adversarial Network (GAN) that understands the structure of Super Mario
- * Bros. levels. A bi-objective version can be found in the file suite_rw_gan_biobj.c (TODO)
+ * Bros. levels. A bi-objective version can be found in the file suite_rw_gan_mario_biobj.c (TODO)
  *
  * The suite contains 30 problems with dimensions 10, 20, 30, 40 and one instance (at the moment).
  */
 
 #include "coco.h"
-#include "rw_gan.c"
+#include "rw_gan_mario.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
@@ -20,18 +20,18 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 /**
  * @brief Sets the dimensions and default instances for the suite_rw_gan suite.
  */
-static coco_suite_t *suite_rw_gan_initialize(void) {
+static coco_suite_t *suite_rw_gan_mario_initialize(void) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 10, 20, 30, 40 };
 
-  suite = coco_suite_allocate("rw-gan", 1, 4, dimensions, "instances: 1");
+  suite = coco_suite_allocate("rw-gan-mario", 1, 4, dimensions, "instances: 1");
 
   return suite;
 }
 
 /**
- * @brief Returns the problem from the rw-gan suite that corresponds to the given parameters.
+ * @brief Returns the problem from the rw-gan-mario suite that corresponds to the given parameters.
  *
  * @param suite The COCO suite.
  * @param function_idx Index of the function (starting from 0).
@@ -39,10 +39,10 @@ static coco_suite_t *suite_rw_gan_initialize(void) {
  * @param instance_idx Index of the instance (starting from 0).
  * @return The problem that corresponds to the given parameters.
  */
-static coco_problem_t *suite_rw_gan_get_problem(coco_suite_t *suite,
-                                                const size_t function_idx,
-                                                const size_t dimension_idx,
-                                                const size_t instance_idx) {
+static coco_problem_t *suite_rw_gan_mario_get_problem(coco_suite_t *suite,
+                                                      const size_t function_idx,
+                                                      const size_t dimension_idx,
+                                                      const size_t instance_idx) {
 
   coco_problem_t *problem = NULL;
 
@@ -50,7 +50,7 @@ static coco_problem_t *suite_rw_gan_get_problem(coco_suite_t *suite,
   const size_t dimension = suite->dimensions[dimension_idx];
   const size_t instance = suite->instances[instance_idx];
 
-  problem = rw_gan_problem_allocate(function, dimension, instance);
+  problem = rw_gan_mario_problem_allocate(function, dimension, instance);
   assert(problem != NULL);
 
   problem->suite_dep_function = function;

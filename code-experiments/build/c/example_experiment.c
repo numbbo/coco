@@ -122,7 +122,7 @@ int main(void) {
    * Adapt to your need. Note that the experiment is run according
    * to the settings, defined in example_experiment(...) below.
    */
-  example_experiment("rw-gan", "bbob", random_generator);
+  example_experiment("rw-gan-mario", "bbob", random_generator);
 
   printf("Done!\n");
   fflush(stdout);

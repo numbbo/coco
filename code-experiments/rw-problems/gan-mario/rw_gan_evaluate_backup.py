@@ -1,5 +1,5 @@
 if __name__ == '__main__':
-    path = '../../rw-problems/rw-gan/'
+    path = ''
 
     # Read the variables
     with open(path + 'variables.txt') as f:
