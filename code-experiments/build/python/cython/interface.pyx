@@ -808,6 +808,31 @@ cdef class Problem:
         if self.problem is not NULL:
             return coco_problem_get_id(self.problem)
 
+    def _parse_id(self, substr):
+        "search `substr` in `id` and return converted `int` up to '_'"
+        if self.problem is NULL:
+            return None
+        i = self.id.find(substr)
+        if i < 0:
+            raise ValueError()
+        return int(self.id[i + len(substr):].split('_')[0])
+
+    @property
+    def id_function(self):
+        "see __init__.py"
+        try:
+            return self._parse_id('_f')
+        except ValueError:
+            raise ValueError("cannot deduce function id from '%s'" % self.id)
+
+    @property
+    def id_instance(self):
+        "see __init__.py"
+        try:
+            return self._parse_id('_i')
+        except ValueError:
+            raise ValueError("cannot deduce instance id from '%s'" % self.id)
+
     @property
     def name(self):
         if self.problem is not NULL:
