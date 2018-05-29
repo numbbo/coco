@@ -9,7 +9,7 @@
  */
 
 #include "coco.h"
-#include "rw_gan.c"
+#include "rw_gan_mario.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
@@ -50,7 +50,7 @@ static coco_problem_t *suite_rw_gan_get_problem(coco_suite_t *suite,
   const size_t dimension = suite->dimensions[dimension_idx];
   const size_t instance = suite->instances[instance_idx];
 
-  problem = rw_gan_problem_allocate(function, dimension, instance);
+  problem = rw_gan_mario_problem_allocate(function, dimension, instance);
   assert(problem != NULL);
 
   problem->suite_dep_function = function;
