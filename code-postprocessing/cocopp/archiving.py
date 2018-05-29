@@ -246,11 +246,16 @@ def create(local_path):
                 res += [(name,
                          _hash(path),
                          int(os.path.getsize(path) // 1000))] # or os.stat(path).st_size
+                if 'L)' in name:
+                    raise ValueError("Name '%s' at %s contains 'L)' which"
+                                     " is not allowed."
+                                     "\nPlease change the filename."
+                                     % (name, path))
     if not len(res):
         warnings.warn('archiving.create: no data found in %s' % local_path)
         return
     with open(definition_file, 'wt') as file_:
-        file_.write(repr(res))
+        file_.write(repr(res).replace('L)', ')'))
     return COCOUserDataArchive(definition_file)
 
 
