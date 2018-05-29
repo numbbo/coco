@@ -448,4 +448,5 @@ MU_TEST_SUITE(test_all_coco_utilities) {
   MU_RUN_TEST(test_coco_option_keys);
   MU_RUN_TEST(test_coco_string_parse_ranges);
   MU_RUN_TEST(test_coco_create_remove_directory);
+  MU_RUN_TEST(test_coco_is_orthogonal);
 }
