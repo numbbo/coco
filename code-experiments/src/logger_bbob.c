@@ -29,7 +29,7 @@
 static const double fvalue_logged_for_infinite = 3e21;   /* value used for logging try */
 static const double fvalue_logged_for_nan = 2e21;
 /* static const double fvalue_logged_for_infeasible = 1e21;  only in first evaluation */
-static const double weight_constraints = 1e3;  /* factor used in logged indicator (f-f*)^+ + sum_i g_i^+ in front of the sum */
+static const double weight_constraints = 1e0;  /* factor used in logged indicator (f-f*)^+ + sum_i g_i^+ in front of the sum */
 
 /*static const size_t bbob_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
 /*static const size_t bbob_nbpts_fval = 5;*/
@@ -128,7 +128,7 @@ static int single_digit_constraint_value(const double c) {
 static const char *bbob_file_header_str = "%% "
     "f evaluations | "
     "g evaluations | "
-    "best noise-free fitness - Fopt (%13.12e) + 1e3 * sum g_i+ | "
+    "best noise-free fitness - Fopt (%13.12e) + sum g_i+ | "
     "measured fitness | "
     "best measured fitness or single-digit g-values | "
     "x1 | "
@@ -600,11 +600,11 @@ static void logger_bbob_free(void *stuff) {
 }
 
 static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *inner_problem) {
-  logger_bbob_data_t *logger_bbob;
+  logger_bbob_data_t *logger_data;
   coco_problem_t *problem;
 
-  logger_bbob = (logger_bbob_data_t *) coco_allocate_memory(sizeof(*logger_bbob));
-  logger_bbob->observer = observer;
+  logger_data = (logger_bbob_data_t *) coco_allocate_memory(sizeof(*logger_data));
+  logger_data->observer = observer;
 
   if (inner_problem->number_of_objectives != 1) {
     coco_warning("logger_bbob(): The bbob logger shouldn't be used to log a problem with %d objectives",
@@ -615,38 +615,38 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
     coco_error("The current bbob_logger (observer) must be closed before a new one is opened");
   /* This is the name of the folder which happens to be the algName */
   /*logger->path = coco_strdup(observer->output_folder);*/
-  logger_bbob->index_file = NULL;
-  logger_bbob->fdata_file = NULL;
-  logger_bbob->tdata_file = NULL;
-  logger_bbob->rdata_file = NULL;
-  logger_bbob->number_of_variables = inner_problem->number_of_variables;
+  logger_data->index_file = NULL;
+  logger_data->fdata_file = NULL;
+  logger_data->tdata_file = NULL;
+  logger_data->rdata_file = NULL;
+  logger_data->number_of_variables = inner_problem->number_of_variables;
   if (inner_problem->best_value == NULL) {
     /* coco_error("Optimal f value must be defined for each problem in order for the logger to work properly"); */
     /* Setting the value to 0 results in the assertion y>=optimal_fvalue being susceptible to failure */
     coco_warning("undefined optimal f value. Set to 0");
-    logger_bbob->optimal_fvalue = 0;
+    logger_data->optimal_fvalue = 0;
   } else {
-    logger_bbob->optimal_fvalue = *(inner_problem->best_value);
+    logger_data->optimal_fvalue = *(inner_problem->best_value);
   }
 
-  logger_bbob->number_of_evaluations = 0;
-  logger_bbob->number_of_evaluations_constraints = 0;
-  logger_bbob->best_solution = coco_allocate_vector(inner_problem->number_of_variables);
+  logger_data->number_of_evaluations = 0;
+  logger_data->number_of_evaluations_constraints = 0;
+  logger_data->best_solution = coco_allocate_vector(inner_problem->number_of_variables);
   /* TODO: the following inits are just to be in the safe side and
    * should eventually be removed. Some fields of the bbob_logger struct
    * might be useless
    */
-  logger_bbob->function_id = coco_problem_get_suite_dep_function(inner_problem);
-  logger_bbob->instance_id = coco_problem_get_suite_dep_instance(inner_problem);
-  logger_bbob->written_last_eval = 0;
-  logger_bbob->last_fvalue = DBL_MAX;
-  logger_bbob->is_initialized = 0;
+  logger_data->function_id = coco_problem_get_suite_dep_function(inner_problem);
+  logger_data->instance_id = coco_problem_get_suite_dep_instance(inner_problem);
+  logger_data->written_last_eval = 0;
+  logger_data->last_fvalue = DBL_MAX;
+  logger_data->is_initialized = 0;
     
   /* Initialize triggers based on target values and number of evaluations */
-  logger_bbob->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
-  logger_bbob->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, inner_problem->number_of_variables);
+  logger_data->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
+  logger_data->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, inner_problem->number_of_variables);
 
-  problem = coco_problem_transformed_allocate(inner_problem, logger_bbob, logger_bbob_free, observer->observer_name);
+  problem = coco_problem_transformed_allocate(inner_problem, logger_data, logger_bbob_free, observer->observer_name);
 
   problem->evaluate_function = logger_bbob_evaluate;
   bbob_logger_is_open = 1;

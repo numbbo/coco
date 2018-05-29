@@ -24,7 +24,7 @@ def is_finite(res):
 
 def solution_array(dimension, number=10):
     """return an array of `dimension`-dimensional search points"""
-    return ((np.random.randn(number) / (np.abs(np.random.randn(number)) + 1e-11)) *
+    return (0.1 * (np.random.randn(number) / (np.abs(np.random.randn(number)) + 1e-6)) *
         np.random.randn(number, dimension).T).T
 
 

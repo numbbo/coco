@@ -20,6 +20,8 @@ shell::
     example_experiment2.py budget_multiplier=3  # times dimension
 
     example_experiment2.py budget_multiplier=1e4 cocopp=None
+    
+    example_experiment2.py budget_multiplier=1e4 suite_name=bbob-biobj
 
     example_experiment2.py budget_multiplier=1000 batch=1/16
 
@@ -28,8 +30,10 @@ is taken modulo to the second.
 
 """
 from __future__ import division, print_function, unicode_literals
+__author__ = "Nikolaus Hansen and ..."
 import sys
 import time  # output some timings per evaluation
+from collections import defaultdict
 import os, webbrowser  # to show post-processed results in the browser
 import numpy as np  # for np.median
 import cocoex  # experimentation module
@@ -40,8 +44,9 @@ import scipy.optimize  # to define the solver to be benchmarked
 # import cma
 
 ### input (to be modified if necessary/desired)
-fmin = scipy.optimize.fmin
+# fmin = scipy.optimize.fmin
 fmin = scipy.optimize.fmin_slsqp
+# fmin = scipy.optimize.fmin_cobyla
 # fmin = cocoex.solvers.random_search
 # fmin = cma.fmin2
 
@@ -66,8 +71,8 @@ output_folder = '%s_of_%s_%dD_on_%s' % (fmin.__name__, fmin.__module__,
 suite = cocoex.Suite(suite_name, "", "")
 observer = cocoex.Observer(suite_name, "result_folder: " + output_folder)
 minimal_print = cocoex.utilities.MiniPrint()
-stoppings = cocoex.utilities.Dictof(list)  # dict of lists, key is the problem index
-timings = cocoex.utilities.Dictof(list)  # key is the dimension
+stoppings = defaultdict(list)  # dict of lists, key is the problem index
+timings = defaultdict(list)  # key is the dimension
 
 ### go
 print('*** benchmarking %s from %s on suite %s ***'
@@ -86,7 +91,7 @@ for problem in suite:  # this loop may take several minutes or hours or days...
     time1 = time.time()
 
     # apply restarts
-    while problem.evaluations < maxevals and not problem.final_target_hit:
+    while max((problem.evaluations, problem.evaluations_constraints)) < maxevals and not problem.final_target_hit:
         x0 = problem.initial_solution_proposal()  # give different proposals, all zeros in first call
         # here we assume that `fmin` evaluates the final/returned solution:
         if fmin is scipy.optimize.fmin:
@@ -100,10 +105,13 @@ for problem in suite:  # this loop may take several minutes or hours or days...
         elif fmin is cocoex.solvers.random_search:
             fmin(problem, problem.dimension * [-5], problem.dimension * [5],
                  maxevals)
-        elif fmin is cma.fmin2:
+        elif fmin.__name__ == 'fmin2' and 'cma' in fmin.__module__:  # cma.fmin2:
             xopt, es = fmin(problem, problem.initial_solution_proposal(), 2,
                             {'maxfevals':maxevals, 'verbose':-9}, restarts=7)
             stoppings[problem.index].append(es.stop())
+        elif fmin is scipy.optimize.fmin_cobyla:
+            fmin(problem, x0, lambda x: -problem.constraint(x), maxfun=maxevals,
+                   disp=0, rhoend=1e-9)
         # add another solver here
 
     timings[problem.dimension].append((time.time() - time1) / problem.evaluations

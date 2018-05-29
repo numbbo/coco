@@ -92,7 +92,9 @@ def args_to_dict(args, known_names, specials=None, split='=',
 
 
 class Dictof(dict):
-    """a `dict` where missing keys are initialzed automatically.
+    """obsolete: use collections.defaultdict instead
+
+    a `dict` where missing keys are initialzed automatically.
 
     In essence, `__getitem__` is replaced by `setdefault` with the given
     default argument.
@@ -305,7 +307,7 @@ class MiniPrint(object):
             print("%dD " % problem.dimension, end='')
             print("%dh%02d:%02ds" % ltime[1:], end='')
             if ltime[0] > self._day0:
-                print("+%dd" % ltime[0] - self._day0, end='')
+                print("+%dd" % (ltime[0] - self._day0), end='')
             print('')
             self.dimension = problem.dimension
             self._calls = 0
