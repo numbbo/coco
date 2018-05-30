@@ -82,51 +82,16 @@ def args_to_dict(args, known_names, specials=None, split='=',
             else:
                 raise ValueError(name, 'is unknown special')
         for known_name in known_names if known_names is not None else [name]:
-            if name == known_name:
-                res[name] = eval_value(value)
-                print(name, '=', res[name])
-                break  # name is processed
+            # check that name is an abbreviation of known_name and unique in known_names
+            if known_name.startswith(name) and (
+                        sum([other.startswith(name)
+                             for other in known_names or [names]]) == 1):
+                res[known_name] = eval_value(value)
+                print(known_name, '=', res[known_name])
+                break  # name == arg.split()[0] is processed
         else:
-            raise ValueError(name, 'not found in `known_names`')
+            raise ValueError(name, 'not found or ambiguous in `known_names`')
     return res
-
-
-class Dictof(dict):
-    """obsolete: use collections.defaultdict instead
-
-    a `dict` where missing keys are initialzed automatically.
-
-    In essence, `__getitem__` is replaced by `setdefault` with the given
-    default argument.
-
-    >>> import cocoex
-    >>> d = cocoex.utilities.Dictof(list)  # `list` is default
-    >>> d['a'].append(33)  # would usually raise a KeyError
-    >>> d[2] += [4]  # ditto
-    >>> d[2] += [5]
-    >>> d
-    {'a': [33], 2: [4, 5]}
-
-    >>> d0 = cocoex.utilities.Dictof(lambda: 1.23)  # `float` were 0.0
-    >>> d0[33] == 1.23  # would usually raise a KeyError
-    True
-    >>> isinstance(d0[''], float)
-    True
-
-    """
-    def __init__(self, get_initial_value=list):
-        """``get_initial_value()`` sets the default initial value"""
-        self._get_initial = get_initial_value
-    def __getitem__(self, key):
-        """return self.setdefault(key, self._get_initial())
-
-        has the same functionality, but calls `_get_initial` each and every
-        time. The design ``initial_value=[]`` does not work out, because for
-        mutable types we must have a different instance for each key.
-        """
-        if key in self:
-            return self.get(key)  # self[key] leads to endless recursion
-        return self.setdefault(key, self._get_initial())
 
 
 class ObserverOptions(dict):
@@ -287,6 +252,63 @@ class ProblemNonAnytime(object):
         return self.lower_bounds + (
             (np.random.rand(self.dimension) + np.random.rand(self.dimension))
             * (self.upper_bounds - self.lower_bounds) / 2)
+
+
+class SameFunction:
+    """Count the number of consecutive instances of the same function.
+
+    Useful to limit the number of repetitions on the same function.
+
+    Example:
+
+    >>> import cocoex
+    >>> from cocoex.utilities import SameFunction
+    >>>
+    >>> suite = cocoex.Suite('bbob', '', '')
+    >>> already_seen = SameFunction()
+    >>> processed = 0
+    >>> for problem in suite:
+    ...     if already_seen(problem.id) > 5:
+    ...         continue
+    ...     # do something here only with the first five instances
+    ...     processed += 1
+    >>> processed, len(suite), already_seen.count
+    (864, 2160, 15)
+
+    More arbitrary tests:
+
+    >>> for i in range(4):
+    ...     if seen('f001_i%d' % i) > 2:
+    ...         continue
+    ...     # do something here only the first two instances
+    >>> seen.count
+    4
+    >>> seen('f_d03_i001')
+    0
+    >>> seen('f_d03_i02')
+    1
+    >>> for i in range(4):
+    ...     if seen('f%d_i%d' % (i, i)):
+    ...         break
+    >>> i, seen.count
+    (3, 1)
+
+    """
+    @staticmethod
+    def filter(id):
+        """remove instance information and return a `tuple`"""
+        return tuple(i for i in id.split('_') if not i.startswith('i'))
+    def __init__(self):
+        self.count = 0
+    def __call__(self, id):
+        """return number of directly preceding calls with similar `id`s
+        """
+        new = SameFunction.filter(id)
+        if self.count == 0 or new != self.last:
+            self.last = new
+            self.count = 0
+        self.count += 1
+        return self.count - 1  # return old count
 
 
 class MiniPrint(object):
