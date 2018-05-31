@@ -569,8 +569,18 @@ class Problem(_interface.Problem):
 
     @property
     def id(self):
-        "id as string without spaces or weird characters"
+        "ID as string without spaces or weird characters"
         return super(Problem, self).id
+
+    @property
+    def id_function(self):
+        "function number inferred from `id`"
+        return super(Problem, self).id_function
+
+    @property
+    def id_instance(self):
+        "instance number inferred from `id`"
+        return super(Problem, self).id_instance
 
     @property
     def name(self):
