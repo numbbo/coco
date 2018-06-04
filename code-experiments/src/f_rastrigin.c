@@ -209,17 +209,17 @@ static coco_problem_t *f_rastrigin_cons_bbob_problem_allocate(const size_t funct
 
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
-  size_t i;
-  FILE *xopt_f_rastrigin = fopen("uncons_xopt_f_rastrigin.txt", "a");
+  /* size_t i;
+  FILE *xopt_f_rastrigin = fopen("uncons_xopt_f_rastrigin.txt", "a"); */
 
   xopt = coco_allocate_vector(dimension);
   f_rastrigin_cons_compute_xopt(xopt, rseed, dimension);
 
-  fprintf(xopt_f_rastrigin, "f%lu, %luD, i%lu:\n[ ", function, dimension, instance);
+  /* fprintf(xopt_f_rastrigin, "f%lu, %luD, i%lu:\n[ ", function, dimension, instance);
   for (i = 0; i < dimension; ++i)
     fprintf(xopt_f_rastrigin, "%.2f ", xopt[i]);
   fprintf(xopt_f_rastrigin, "]\n\n");
-  fclose(xopt_f_rastrigin);
+  fclose(xopt_f_rastrigin); */
 
   fopt = bbob2009_compute_fopt(function, instance);
 
