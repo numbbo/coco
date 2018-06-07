@@ -47,5 +47,8 @@ We acknowledge in particular:
 * the hypervolume code of the SMS-EMOA from the Shark library in
   ``code-experiments/examples/bbob-biobj-matlab-smsemoa/``, distributed
   under the terms of the GNU General Public License and the non-dominated
-  sorting part as written by Y. Cao.
+  sorting part as written by Y. Cao
+* the MinUnit code used as the basis for the implementation in 
+  ``code-experiments/test/unit-test/minunit_c89.h``, distributed under
+  the terms of the MIT Licence.
 

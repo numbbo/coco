@@ -17,6 +17,14 @@
 #include "coco_internal.h"
 #include "coco_string.c"
 
+
+/***********************************************************************************************************/
+
+/**
+ * @brief Sets the constant chosen_precision to 1e-9.
+ */
+static const double chosen_precision = 1e-9;
+
 /***********************************************************************************************************/
 
 /**
@@ -279,7 +287,7 @@ static void coco_create_unique_directory(char **path) {
   char *new_path;
 
   if (coco_create_directory(*path) == 0) {
-  /* Directory created */
+	/* Directory created */
     return;
   }
 
@@ -429,7 +437,7 @@ static double *coco_allocate_vector_with_value(const size_t number_of_elements, 
   size_t i;
 
   for (i = 0; i < number_of_elements; i++)
-    vector[i] = value;
+  	vector[i] = value;
 
   return vector;
 }
@@ -443,15 +451,6 @@ static size_t *coco_allocate_vector_size_t(const size_t number_of_elements) {
   return (size_t *) coco_allocate_memory(block_size);
 }
 
-/**
- * @brief Safe memory allocation for a vector with int elements that either succeeds or triggers a
- * coco_error.
-[Commented because not used]
-static int *coco_allocate_vector_int(const size_t number_of_elements) {
-  const size_t block_size = number_of_elements * sizeof(int);
-  return (int *) coco_allocate_memory(block_size);
-}
- */
 static char *coco_allocate_string(const size_t number_of_elements) {
   const size_t block_size = number_of_elements * sizeof(char);
   return (char *) coco_allocate_memory(block_size);
@@ -608,7 +607,7 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
 
   /* Check for empty string */
   if ((option_string == NULL) || (strlen(option_string) == 0)) {
-      return NULL;
+	    return NULL;
   }
 
   /* Split the options w.r.t ':' */
@@ -894,50 +893,50 @@ static int coco_double_almost_equal(const double a, const double b, const double
  * @brief Returns 1 if x is NAN and 0 otherwise.
  */
 static int coco_is_nan(const double x) {
-  return (isnan(x) || (x != x) || !(x == x) || ((x >= NAN / (1 + 1e-9)) && (x <= NAN * (1 + 1e-9))));
+  return (isnan(x) || (x != x) || !(x == x) || ((x >= NAN / (1 + chosen_precision)) && (x <= NAN * (1 + chosen_precision))));
 }
 
 /**
  * @brief Returns 1 if the input vector of dimension dim contains any NAN values and 0 otherwise.
  */
 static int coco_vector_contains_nan(const double *x, const size_t dim) {
-  size_t i;
-  for (i = 0; i < dim; i++) {
-    if (coco_is_nan(x[i]))
-      return 1;
-  }
-  return 0;
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		if (coco_is_nan(x[i]))
+		  return 1;
+	}
+	return 0;
 }
 
 /**
  * @brief Sets all dim values of y to NAN.
  */
 static void coco_vector_set_to_nan(double *y, const size_t dim) {
-  size_t i;
-  for (i = 0; i < dim; i++) {
-    y[i] = NAN;
-  }
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		y[i] = NAN;
+	}
 }
 
 /**
  * @brief Returns 1 if x is INFINITY and 0 otherwise.
  */
 static int coco_is_inf(const double x) {
-  if (coco_is_nan(x))
-    return 0;
-  return (isinf(x) || (x <= -INFINITY) || (x >= INFINITY));
+	if (coco_is_nan(x))
+		return 0;
+	return (isinf(x) || (x <= -INFINITY) || (x >= INFINITY));
 }
 
 /**
  * @brief Returns 1 if the input vector of dimension dim contains no NaN of inf values, and 0 otherwise.
  */
 static int coco_vector_isfinite(const double *x, const size_t dim) {
-  size_t i;
-  for (i = 0; i < dim; i++) {
-    if (coco_is_nan(x[i]) || coco_is_inf(x[i]))
-      return 0;
-  }
-  return 1;
+	size_t i;
+	for (i = 0; i < dim; i++) {
+		if (coco_is_nan(x[i]) || coco_is_inf(x[i]))
+		  return 0;
+	}
+	return 1;
 }
 
 /**
@@ -1039,27 +1038,77 @@ static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, 
 }
 
 /**
- * @brief Normalizes vector x and multiplies each componenent by alpha.
+ * @brief multiply each componenent by nom/denom or by nom if denom == 0.
+ *
+ * return used scaling factor, usually nom/denom.
+ *
+ * Example: coco_vector_scale(x, dimension, 1, coco_vector_norm(x, dimension));
+ */
+static double coco_vector_scale(double *x, size_t dimension, double nom, double denom) {
+
+  size_t i;
+
+  assert(x);
+
+  if (denom != 0)
+    nom /= denom;
+
+  for (i = 0; i < dimension; ++i)
+      x[i] *= nom;
+  return nom;
+}
+
+/**
+ * @brief return norm of vector x.
  *
  */
-static void coco_scale_vector(double *x, size_t dimension, double alpha) {
-  
+static double coco_vector_norm(const double *x, size_t dimension) {
+
   size_t i;
-  double norm = 0.0;
-  
+  double ssum = 0.0;
+
   assert(x);
-  
+
   for (i = 0; i < dimension; ++i)
-    norm += x[i] * x[i];
-    
-  norm = sqrt(norm);
-  
-  if (norm != 0.0) {
-    for (i = 0; i < dimension; ++i) {
-      x[i] /= norm;
-      x[i] *= alpha;
+    ssum += x[i] * x[i];
+
+  return sqrt(ssum);
+}
+
+/**
+ * @brief Checks if a given matrix M is orthogonal by (partially) computing M * M^T.
+ * If M is a square matrix and M * M^T is close enough to the identity matrix
+ * (up to a chosen precision), the function returns 1. Otherwise, it returns 0.
+ * The matrix M must be represented as an array of doubles.
+ */
+static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_t nb_columns) {
+
+  size_t i, j, z;
+  double sum;
+
+  if (nb_rows != nb_columns)
+    return 0;
+
+  for (i = 0; i < nb_rows; ++i) {
+    for (j = 0; j < nb_rows; ++j) {
+        /* Compute the dot product of the ith row of M
+         * and the jth column of M^T (i.e. jth row of M)
+         */
+        sum = 0.0;
+        for (z = 0; z < nb_rows; ++z) {
+            sum += M[i * nb_rows + z] * M[j * nb_rows + z];
+        }
+
+        /* Check if the dot product is 1 (resp. 0) when the row and the column
+         * indices are the same (resp. different)
+         */
+        if (((i == j) && !coco_double_almost_equal(sum, 1, chosen_precision)) ||
+            ((i != j) && !coco_double_almost_equal(sum, 0, chosen_precision)))
+                return 0;
+
     }
   }
+  return 1;
 }
 
 /**
@@ -1073,7 +1122,7 @@ static int coco_vector_is_zero(const double *x, const size_t dim) {
     return 0;
 
   while (i < dim && is_zero) {
-    is_zero = coco_double_almost_equal(x[i], 0, 1e-9);
+    is_zero = coco_double_almost_equal(x[i], 0, chosen_precision);
     i++;
   }
 

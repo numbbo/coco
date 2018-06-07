@@ -41,7 +41,7 @@ static void observer_toy_free(void *stuff) {
  */
 static void observer_toy(coco_observer_t *observer, const char *options, coco_option_keys_t **option_keys) {
 
-  observer_toy_data_t *observer_toy;
+  observer_toy_data_t *observer_data;
   char *string_value;
   char *file_name;
 
@@ -50,7 +50,7 @@ static void observer_toy(coco_observer_t *observer, const char *options, coco_op
   const char *known_keys[] = { "file_name" };
   *option_keys = coco_option_keys_allocate(sizeof(known_keys) / sizeof(char *), known_keys);
 
-  observer_toy = (observer_toy_data_t *) coco_allocate_memory(sizeof(*observer_toy));
+  observer_data = (observer_toy_data_t *) coco_allocate_memory(sizeof(*observer_data));
 
   /* Read file_name and number_of_targets from the options and use them to initialize the observer */
   string_value = coco_allocate_string(COCO_PATH_MAX + 1);
@@ -64,8 +64,8 @@ static void observer_toy(coco_observer_t *observer, const char *options, coco_op
   coco_create_directory(file_name);
   coco_join_path(file_name, COCO_PATH_MAX, string_value, NULL);
 
-  observer_toy->log_file = fopen(file_name, "a");
-  if (observer_toy->log_file == NULL) {
+  observer_data->log_file = fopen(file_name, "a");
+  if (observer_data->log_file == NULL) {
     coco_error("observer_toy(): failed to open file %s.", file_name);
     return; /* Never reached */
   }
@@ -76,5 +76,5 @@ static void observer_toy(coco_observer_t *observer, const char *options, coco_op
   observer->logger_allocate_function = logger_toy;
   observer->logger_free_function = logger_toy_free;
   observer->data_free_function = observer_toy_free;
-  observer->data = observer_toy;
+  observer->data = observer_data;
 }

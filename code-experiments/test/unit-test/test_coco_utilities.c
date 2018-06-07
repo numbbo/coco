@@ -1,9 +1,5 @@
-#include <stdarg.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include "cmocka.h"
 #include "coco.h"
-#include <time.h>
+#include "minunit_c89.h"
 
 static char *convert_to_string_with_newlines(char **array) {
 
@@ -30,41 +26,39 @@ static char *convert_to_string_with_newlines(char **array) {
 /**
  * Tests the function coco_set_log_level.
  */
-static void test_coco_set_log_level(void **state) {
+MU_TEST(test_coco_set_log_level) {
 
   char *previous_log_level;
 
   /* Check whether the default set to COCO_INFO */
-  assert(strcmp(coco_set_log_level(""), "info") == 0);
+  mu_check(strcmp(coco_set_log_level(""), "info") == 0);
 
   /* Check whether the method works */
   previous_log_level = coco_strdup(coco_set_log_level("error"));
-  assert(strcmp(previous_log_level, "info") == 0);
-  assert(strcmp(coco_set_log_level(""), "error") == 0);
+  mu_check(strcmp(previous_log_level, "info") == 0);
+  mu_check(strcmp(coco_set_log_level(""), "error") == 0);
   coco_free_memory(previous_log_level);
 
   previous_log_level = coco_strdup(coco_set_log_level("warning"));
-  assert(strcmp(previous_log_level, "error") == 0);
-  assert(strcmp(coco_set_log_level(""), "warning") == 0);
+  mu_check(strcmp(previous_log_level, "error") == 0);
+  mu_check(strcmp(coco_set_log_level(""), "warning") == 0);
   coco_free_memory(previous_log_level);
 
   previous_log_level = coco_strdup(coco_set_log_level("debug"));
-  assert(strcmp(previous_log_level, "warning") == 0);
-  assert(strcmp(coco_set_log_level(""), "debug") == 0);
+  mu_check(strcmp(previous_log_level, "warning") == 0);
+  mu_check(strcmp(coco_set_log_level(""), "debug") == 0);
   coco_free_memory(previous_log_level);
 
   previous_log_level = coco_strdup(coco_set_log_level("info"));
-  assert(strcmp(previous_log_level, "debug") == 0);
-  assert(strcmp(coco_set_log_level(""), "info") == 0);
+  mu_check(strcmp(previous_log_level, "debug") == 0);
+  mu_check(strcmp(coco_set_log_level(""), "info") == 0);
   coco_free_memory(previous_log_level);
 
   /* An invalid argument shouldn't change the current value */
   previous_log_level = coco_strdup(coco_set_log_level("bla"));
-  assert(strcmp(previous_log_level, "info") == 0);
-  assert(strcmp(coco_set_log_level(""), "info") == 0);
+  mu_check(strcmp(previous_log_level, "info") == 0);
+  mu_check(strcmp(coco_set_log_level(""), "info") == 0);
   coco_free_memory(previous_log_level);
-
-  (void)state; /* unused */
 }
 
 static void create_time_string(char **string) {
@@ -98,62 +92,43 @@ static void create_time_string(char **string) {
 }
 
 /*
- * Setup for creating directory test.
+ * Tests creating and removing directory.
  */
-static int setup_coco_create_remove_directory(void **state) {
+MU_TEST(test_coco_create_remove_directory) {
 
-  char *path_string;
+  int exists;
+  char *path_string = NULL;
 
   path_string = coco_strdup("temp");
   create_time_string(&path_string);
 
-  assert_non_null(path_string);
-
-  *state = (void*)path_string;
-
-  return 0;
-}
-
-/*
- * Tear down for creating directory test.
- */
-static int teardown_coco_create_remove_directory(void **state) {
-
-  coco_free_memory(*state);
-  return 0;
-}
-
-/*
- * Tests creating and removing directory.
- */
-static void test_coco_create_remove_directory(void **state) {
-
-  int exists;
-  char *path_string = (char *)*state;
+  mu_check(path_string != NULL);
 
   /* At the beginning the path should not exist. */
   exists = coco_directory_exists(path_string);
-  assert_false(exists);
+  mu_check(!exists);
 
   coco_create_directory(path_string);
   exists = coco_directory_exists(path_string);
-  assert_true(exists);
+  mu_check(exists);
 
   /* Calling it again to check the handling if the path does exist. */
   coco_create_directory(path_string);
 
   coco_remove_directory(path_string);
   exists = coco_directory_exists(path_string);
-  assert_false(exists);
+  mu_check(!exists);
 
   /* Calling it again to check the handling if the path does not exist. */
   coco_remove_directory(path_string);
+
+  coco_free_memory(path_string);
 }
 
 /**
  * Tests the functions coco_double_max and coco_double_min.
  */
-static void test_coco_double_max_min(void **state) {
+MU_TEST(test_coco_double_max_min) {
 
   double first_value = 5.0;
 	double second_value = 6.0;
@@ -161,47 +136,31 @@ static void test_coco_double_max_min(void **state) {
 	double max_value, min_value;
 
   max_value = coco_double_max(first_value, second_value);
-	assert_true(max_value == second_value);
+	mu_check(max_value == second_value);
 
   min_value = coco_double_min(first_value, second_value);
-  assert_true(min_value == first_value);
-
-	(void)state; /* unused */
+  mu_check(min_value == first_value);
 }
 
 /**
  * Tests the function coco_double_round.
  */
-static void test_coco_double_round(void **state) {
+MU_TEST(test_coco_double_round) {
 
   double input_value = 5.4;
 
   double round_value = coco_double_round(input_value);
-  assert_true(round_value == 5);
+  mu_check(round_value == 5);
 
   input_value = 5.5;
   round_value = coco_double_round(input_value);
-  assert_true(round_value == 6);
-
-  input_value = 5;
-  round_value = coco_double_round(input_value);
-  assert_true(round_value == 5);
-
-  input_value = 5 - 0.0000000000000001;
-  round_value = coco_double_round(input_value);
-  assert_true(round_value == 5);
-
-  input_value = 5 + 0.0000000000000001;
-  round_value = coco_double_round(input_value);
-  assert_true(round_value == 5);
-
-  (void)state; /* unused */
+  mu_check(round_value == 6);
 }
 
 /**
  * Tests the function coco_string_split.
  */
-static void test_coco_string_split(void **state) {
+MU_TEST(test_coco_string_split) {
 
   char **result;
   char *converted_result;
@@ -209,8 +168,8 @@ static void test_coco_string_split(void **state) {
 
   result = coco_string_split("1-3,5-6,7,-3,15-", ',');
   converted_result = convert_to_string_with_newlines(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "1-3\n5-6\n7\n-3\n15-\n") == 0);
+  mu_check(converted_result);
+  mu_check(strcmp(converted_result, "1-3\n5-6\n7\n-3\n15-\n") == 0);
   for (i = 0; *(result + i); i++) {
     coco_free_memory(*(result + i));
   }
@@ -219,15 +178,13 @@ static void test_coco_string_split(void **state) {
 
   result = coco_string_split(",,,a,,b,c,d,e,,,,,f,", ',');
   converted_result = convert_to_string_with_newlines(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "a\nb\nc\nd\ne\nf\n") == 0);
+  mu_check(converted_result);
+  mu_check(strcmp(converted_result, "a\nb\nc\nd\ne\nf\n") == 0);
   for (i = 0; *(result + i); i++) {
     coco_free_memory(*(result + i));
   }
   coco_free_memory(result);
   coco_free_memory(converted_result);
-
-  (void)state; /* unused */
 }
 
 static char *convert_to_string(size_t *array) {
@@ -254,217 +211,242 @@ static char *convert_to_string(size_t *array) {
 /**
  * Tests the function coco_string_parse_ranges.
  */
-static void test_coco_string_parse_ranges(void **state) {
+MU_TEST(test_coco_string_parse_ranges) {
 
   size_t *result;
   char *converted_result;
 
   result = coco_string_parse_ranges("", 1, 2, "", 100);
-  assert_true(result == NULL);
+  mu_check(result == NULL);
   coco_free_memory(result);
 
   result = coco_string_parse_ranges(NULL, 1, 2, NULL, 100);
-  assert_true(result == NULL);
+  mu_check(result == NULL);
   coco_free_memory(result);
 
   result = coco_string_parse_ranges("", 1, 2, "bla", 100);
-  assert_true(result == NULL);
+  mu_check(result == NULL);
   coco_free_memory(result);
 
   result = coco_string_parse_ranges("bla", 1, 2, "", 100);
-  assert_true(result == NULL);
+  mu_check(result == NULL);
   coco_free_memory(result);
 
   result = coco_string_parse_ranges("bla", 1, 2, "bla", 100);
-  assert_true(result == NULL);
+  mu_check(result == NULL);
   coco_free_memory(result);
 
   result = coco_string_parse_ranges("1-3,5-6,7,-3,15-", 1, 20, "name", 100);
   converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "1,2,3,5,6,7,1,2,3,15,16,17,18,19,20,0") == 0);
+  mu_check(converted_result);
+  mu_check(strcmp(converted_result, "1,2,3,5,6,7,1,2,3,15,16,17,18,19,20,0") == 0);
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
   result = coco_string_parse_ranges("1-3,5-6", 1, 2, "name", 100);
   converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "1,2,0") == 0);
+  mu_check(converted_result);
+  mu_check(strcmp(converted_result, "1,2,0") == 0);
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
   result = coco_string_parse_ranges("1-3,5-6", 0, 20, "name", 100);
   converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "1,2,3,5,6,0") == 0);
+  mu_check(converted_result);
+  mu_check(strcmp(converted_result, "1,2,3,5,6,0") == 0);
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
   result = coco_string_parse_ranges("1-", 1, 1200, "name", 1000);
-  assert_true(result[1000] == 0);
-  assert_true(result[999] != 0);
+  mu_check(result[1000] == 0);
+  mu_check(result[999] != 0);
   coco_free_memory(result);
 
   result = coco_string_parse_ranges("1-2,1-", 0, 0, "name", 1000);
   converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "1,2,0") == 0);
+  mu_check(converted_result);
+  mu_check(strcmp(converted_result, "1,2,0") == 0);
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
   result = coco_string_parse_ranges("1-4,5-8", 2, 7, "name", 1000);
   converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "2,3,4,5,6,7,0") == 0);
+  mu_check(converted_result);
+  mu_check(strcmp(converted_result, "2,3,4,5,6,7,0") == 0);
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
   result = coco_string_parse_ranges("4-1", 1, 20, "name", 1000);
-  assert_true(result == NULL);
+  mu_check(result == NULL);
   coco_free_memory(result);
 
   result = coco_string_parse_ranges("-0", 1, 20, "name", 1000);
-  assert_true(result == NULL);
+  mu_check(result == NULL);
   coco_free_memory(result);
 
   result = coco_string_parse_ranges("-2,8-", 3, 7, "name", 1000);
-  assert_true(result == NULL);
+  mu_check(result == NULL);
   coco_free_memory(result);
 
   result = coco_string_parse_ranges("1-8", 4, 8, "name", 1000);
   converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "4,5,6,7,8,0") == 0);
+  mu_check(converted_result);
+  mu_check(strcmp(converted_result, "4,5,6,7,8,0") == 0);
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
   result = coco_string_parse_ranges(",7", 1, 20, "name", 1000);
   converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "7,0") == 0);
+  mu_check(converted_result);
+  mu_check(strcmp(converted_result, "7,0") == 0);
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
   result = coco_string_parse_ranges("7,", 1, 20, "name", 1000);
   converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "7,0") == 0);
+  mu_check(converted_result);
+  mu_check(strcmp(converted_result, "7,0") == 0);
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
   result = coco_string_parse_ranges("-7-", 1, 20, "name", 1000);
-  assert_true(result == NULL);
+  mu_check(result == NULL);
   coco_free_memory(result);
 
   result = coco_string_parse_ranges("--7", 1, 20, "name", 1000);
-  assert_true(result == NULL);
+  mu_check(result == NULL);
   coco_free_memory(result);
 
   result = coco_string_parse_ranges("7--", 1, 20, "name", 1000);
-  assert_true(result == NULL);
+  mu_check(result == NULL);
   coco_free_memory(result);
 
   result = coco_string_parse_ranges("7-,-", 5, 8, "name", 1000);
   converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "7,8,5,6,7,8,0") == 0);
+  mu_check(converted_result);
+  mu_check(strcmp(converted_result, "7,8,5,6,7,8,0") == 0);
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
   result = coco_string_parse_ranges("7-,,5", 1, 8, "name", 1000);
   converted_result = convert_to_string(result);
-  assert_true(converted_result);
-  assert_true(strcmp(converted_result, "7,8,5,0") == 0);
+  mu_check(converted_result);
+  mu_check(strcmp(converted_result, "7,8,5,0") == 0);
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
   result = coco_string_parse_ranges(",,", 1, 20, "name", 1000);
-  assert_true(result == NULL);
+  mu_check(result == NULL);
   coco_free_memory(result);
 
   result = coco_string_parse_ranges("1-8", 5, 2, "name", 1000);
-  assert_true(result == NULL);
+  mu_check(result == NULL);
   coco_free_memory(result);
-
-  (void)state; /* unused */
 }
 
 /**
  * Tests the function coco_option_keys.
  */
-static void test_coco_option_keys(void **state) {
+MU_TEST(test_coco_option_keys) {
 
   coco_option_keys_t *option_keys = NULL;
 
   option_keys = coco_option_keys("key");
-  assert_true(option_keys->count == 1);
+  mu_check(option_keys->count == 1);
   coco_option_keys_free(option_keys);
 
   option_keys = coco_option_keys("key: ");
-  assert_true(option_keys->count == 1);
+  mu_check(option_keys->count == 1);
   coco_option_keys_free(option_keys);
 
   option_keys = coco_option_keys("key1 key2: ");
-  assert_true(option_keys->count == 1);
+  mu_check(option_keys->count == 1);
   coco_option_keys_free(option_keys);
 
   option_keys = coco_option_keys("key1: value1 key2");
   /* In this case we would rather have detected two keys, but this should also trigger a warning,
    * which is OK. */
-  assert_true(option_keys->count == 1);
+  mu_check(option_keys->count == 1);
   coco_option_keys_free(option_keys);
 
   option_keys = coco_option_keys("key1: value1 key2: value2");
-  assert_true(option_keys->count == 2);
+  mu_check(option_keys->count == 2);
   coco_option_keys_free(option_keys);
 
   option_keys = coco_option_keys("key: \"A multi-word value\"");
-  assert_true(option_keys->count == 1);
+  mu_check(option_keys->count == 1);
   coco_option_keys_free(option_keys);
-
-  (void) state; /* unused */
 }
 
 /**
  * Tests the function coco_is_nan.
  */
-static void test_coco_is_nan(void **state) {
+MU_TEST(test_coco_is_nan) {
 
-  assert_true(coco_is_nan(NAN));
-  assert_true(!coco_is_nan(1e100));
-  (void) state; /* unused */
+  mu_check(coco_is_nan(NAN));
+  mu_check(!coco_is_nan(1e100));
 }
 
 /**
  * Tests the function coco_is_inf.
  */
-static void test_coco_is_inf(void **state) {
+MU_TEST(test_coco_is_inf) {
 
-  assert_true(coco_is_inf(INFINITY));
-  assert_true(coco_is_inf(-INFINITY));
-  assert_true(coco_is_inf(2*INFINITY));
-  assert_true(coco_is_inf(-2*INFINITY));
-  assert_true(!coco_is_inf(NAN));
-  (void) state; /* unused */
+  mu_check(coco_is_inf(INFINITY));
+  mu_check(coco_is_inf(-INFINITY));
+  mu_check(coco_is_inf(2*INFINITY));
+  mu_check(coco_is_inf(-2*INFINITY));
+  mu_check(!coco_is_inf(NAN));
 }
 
-static int test_all_coco_utilities(void) {
+/**
+ * Tests the function coco_is_orthogonal.
+ */
+MU_TEST(test_coco_is_orthogonal) {
 
-  const struct CMUnitTest tests[] =
-  {
-      cmocka_unit_test(test_coco_is_nan),
-      cmocka_unit_test(test_coco_is_inf),
-      cmocka_unit_test(test_coco_set_log_level),
-      cmocka_unit_test(test_coco_double_max_min),
-      cmocka_unit_test(test_coco_double_round),
-      cmocka_unit_test(test_coco_string_split),
-      cmocka_unit_test(test_coco_option_keys),
-      cmocka_unit_test(test_coco_string_parse_ranges),
-      cmocka_unit_test_setup_teardown(
-          test_coco_create_remove_directory,
-          setup_coco_create_remove_directory,
-          teardown_coco_create_remove_directory)
-  };
+  double *M;
 
-  return cmocka_run_group_tests(tests, NULL, NULL);
+  M = coco_allocate_vector(4);
+
+  /* Case of an orthogonal diagonal matrix (identity matrix) */
+  M[0] = 1.;
+  M[1] = 0.;
+  M[2] = 0.;
+  M[3] = 1.;
+  mu_check(coco_is_orthogonal(M, 2, 2));
+
+  /* Case of a non-orthogonal square matrix */
+  M[0] = 1.;
+  M[1] = 0.01;
+  M[2] = 0.;
+  M[3] = 1.;
+  mu_check(!coco_is_orthogonal(M, 2, 2));
+
+  /* Case of an orthogonal diagonal matrix (almost identity matrix)
+   * such that the function "coco_double_almost_equal()" is tested
+   */
+  M[0] = 1. + 1e-10;
+  M[1] = 0.;
+  M[2] = 0.;
+  M[3] = 1. + 1e-10;
+  mu_check(coco_is_orthogonal(M, 2, 2));
+
+  coco_free_memory(M);
+}
+
+
+/**
+ * Run all tests in this file.
+ */
+MU_TEST_SUITE(test_all_coco_utilities) {
+  MU_RUN_TEST(test_coco_is_nan);
+  MU_RUN_TEST(test_coco_is_inf);
+  MU_RUN_TEST(test_coco_set_log_level);
+  MU_RUN_TEST(test_coco_double_max_min);
+  MU_RUN_TEST(test_coco_double_round);
+  MU_RUN_TEST(test_coco_string_split);
+  MU_RUN_TEST(test_coco_option_keys);
+  MU_RUN_TEST(test_coco_string_parse_ranges);
+  MU_RUN_TEST(test_coco_create_remove_directory);
+  MU_RUN_TEST(test_coco_is_orthogonal);
 }
