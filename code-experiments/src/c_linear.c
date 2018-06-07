@@ -423,8 +423,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
 
     problem_c = coco_problem_stacked_allocate(problem_c, problem_c2,
         problem_c2->smallest_values_of_interest,
-        problem_c2->largest_values_of_interest,
-        problem_c2->are_variables_integer);
+        problem_c2->largest_values_of_interest);
 
     /* Use the standard stacked problem_id as problem_name and 
      * construct a new suite-specific problem_id 

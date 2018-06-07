@@ -66,7 +66,7 @@ static void transform_vars_discretize_free(void *thing) {
 static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
                                                  const double *smallest_values_of_interest,
                                                  const double *largest_values_of_interest,
-                                                 const int *are_variables_integer) {
+                                                 const size_t number_of_integer_variables) {
   transform_vars_discretize_data_t *data;
   coco_problem_t *problem = NULL;
   double inner_l, inner_u, outer_l, outer_u, xopt;
@@ -76,19 +76,14 @@ static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
   data->offset = coco_allocate_vector(inner_problem->number_of_variables);
 
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_discretize_free, "transform_vars_discretize");
-  if (problem->are_variables_integer == NULL) {
-    problem->are_variables_integer = coco_allocate_vector_int(problem->number_of_variables);
-  }
+  assert(number_of_integer_variables > 0);
+  problem->number_of_integer_variables = number_of_integer_variables;
 
   for (i = 0; i < problem->number_of_variables; i++) {
     assert(smallest_values_of_interest[i] < largest_values_of_interest[i]);
     problem->smallest_values_of_interest[i] = smallest_values_of_interest[i];
     problem->largest_values_of_interest[i] = largest_values_of_interest[i];
-    assert((are_variables_integer[i] == 0) || (are_variables_integer[i] == 1));
-    problem->are_variables_integer[i] = are_variables_integer[i];
-    if (are_variables_integer[i] == 0)
-      data->offset[i] = 0;
-    else {
+    if (i < number_of_integer_variables) {
       /* Compute the offset in four steps: */
       inner_l = inner_problem->smallest_values_of_interest[i];
       inner_u = inner_problem->largest_values_of_interest[i];
@@ -103,6 +98,9 @@ static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
       xopt = inner_l + (inner_u - inner_l) * (xopt - outer_l) / (outer_u - outer_l);
       /* Step 4: Compute the difference between the discretized value and the location of the optimum */
       data->offset[i] = xopt - inner_problem->best_parameter[i];
+    }
+    else {
+      data->offset[i] = 0;
     }
   }
     

@@ -57,7 +57,7 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
 
   /* Round the vector x in case of integer variables */
   x_rounded = coco_duplicate_vector(x, coco_problem_get_dimension(problem));
-  if (problem->are_variables_integer != NULL)
+  if (problem->number_of_integer_variables > 0)
     coco_problem_round_solution(problem, x_rounded);
 
   problem->evaluate_function(problem, x_rounded, y);
@@ -179,7 +179,7 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->number_of_constraints = number_of_constraints;
   problem->smallest_values_of_interest = coco_allocate_vector(number_of_variables);
   problem->largest_values_of_interest = coco_allocate_vector(number_of_variables);
-  problem->are_variables_integer = NULL; /* No integer variables by default */
+  problem->number_of_integer_variables = 0; /* No integer variables by default */
 
   problem->best_parameter = coco_allocate_vector(number_of_variables);
   if (number_of_objectives > 1)
@@ -226,14 +226,7 @@ static coco_problem_t *coco_problem_duplicate(const coco_problem_t *other) {
     if (other->best_parameter)
       problem->best_parameter[i] = other->best_parameter[i];
   }
-  if (other->are_variables_integer) {
-    problem->are_variables_integer = coco_allocate_vector_int(other->number_of_variables);
-    for (i = 0; i < problem->number_of_variables; ++i) {
-      problem->are_variables_integer[i] = other->are_variables_integer[i];
-    }
-  }
-  else
-    problem->are_variables_integer = NULL;
+  problem->number_of_integer_variables = other->number_of_integer_variables;
 
   if (other->initial_solution)
     problem->initial_solution = coco_duplicate_vector(other->initial_solution, other->number_of_variables);
@@ -294,7 +287,7 @@ static coco_problem_t *coco_problem_allocate_from_scalars(const char *problem_na
     problem->largest_values_of_interest[i] = largest_value_of_interest;
     problem->best_parameter[i] = best_parameter;
   }
-  problem->are_variables_integer = NULL;
+  problem->number_of_integer_variables = 0;
   return problem;
 }
 
@@ -308,8 +301,6 @@ void coco_problem_free(coco_problem_t *problem) {
       coco_free_memory(problem->smallest_values_of_interest);
     if (problem->largest_values_of_interest != NULL)
       coco_free_memory(problem->largest_values_of_interest);
-    if (problem->are_variables_integer != NULL)
-      coco_free_memory(problem->are_variables_integer);
     if (problem->best_parameter != NULL)
       coco_free_memory(problem->best_parameter);
     if (problem->best_value != NULL)
@@ -328,7 +319,6 @@ void coco_problem_free(coco_problem_t *problem) {
       coco_free_memory(problem->initial_solution);
     problem->smallest_values_of_interest = NULL;
     problem->largest_values_of_interest = NULL;
-    problem->are_variables_integer = NULL;
     problem->best_parameter = NULL;
     problem->best_value = NULL;
     problem->nadir_value = NULL;
@@ -548,9 +538,9 @@ const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *
   return problem->largest_values_of_interest;
 }
 
-const int *coco_problem_get_are_variables_integer(const coco_problem_t *problem) {
+size_t coco_problem_get_number_of_integer_variables(const coco_problem_t *problem) {
   assert(problem != NULL);
-  return problem->are_variables_integer;
+  return problem->number_of_integer_variables;
 }
 
 const double *coco_problem_get_largest_fvalues_of_interest(const coco_problem_t *problem) {
@@ -584,7 +574,7 @@ void coco_problem_get_initial_solution(const coco_problem_t *problem, double *in
     for (i = 0; i < problem->number_of_variables; ++i)
       initial_solution[i] = problem->smallest_values_of_interest[i] + 0.5
           * (problem->largest_values_of_interest[i] - problem->smallest_values_of_interest[i]);
-    if (problem->are_variables_integer != NULL)
+    if (problem->number_of_integer_variables > 0)
       coco_problem_round_solution(problem, initial_solution);
   }
 }
@@ -625,11 +615,9 @@ static void coco_problem_round_solution(const coco_problem_t *problem,
   size_t i;
   assert(problem != NULL);
 
-  if (problem->are_variables_integer != NULL) {
-    for (i = 0; i < problem->number_of_variables; ++i) {
-      if (problem->are_variables_integer[i] == 1) {
-          solution[i] = coco_double_round(solution[i]);
-      }
+  if (problem->number_of_integer_variables > 0) {
+    for (i = 0; i < problem->number_of_integer_variables; ++i) {
+      solution[i] = coco_double_round(solution[i]);
     }
   }
 }
@@ -898,8 +886,7 @@ static void coco_problem_stacked_free(coco_problem_t *problem) {
 static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1, 
                                                      coco_problem_t *problem2,
                                                      const double *smallest_values_of_interest,
-                                                     const double *largest_values_of_interest,
-                                                     const int *are_variables_integer) {
+                                                     const double *largest_values_of_interest) {
 
   const size_t number_of_variables = coco_problem_get_dimension(problem1);
   const size_t number_of_objectives = coco_problem_get_number_of_objectives(problem1)
@@ -933,14 +920,8 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1,
     problem->smallest_values_of_interest[i] = smallest_values_of_interest[i];
     problem->largest_values_of_interest[i] = largest_values_of_interest[i];
   }
-
-  if (are_variables_integer == NULL)
-    problem->are_variables_integer = NULL;
-  else {
-    for (i = 0; i < number_of_variables; ++i) {
-      problem->are_variables_integer[i] = are_variables_integer[i];
-    }
-  }
+  assert(problem1->number_of_integer_variables == problem2->number_of_integer_variables);
+  problem->number_of_integer_variables = problem1->number_of_integer_variables;
 
   assert(problem->best_value);
     

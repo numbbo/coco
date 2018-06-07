@@ -170,8 +170,7 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
   problem_type_temp = coco_strdup(problem->problem_type);
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
-      problem_c->largest_values_of_interest,
-      problem_c->are_variables_integer);
+      problem_c->largest_values_of_interest);
 
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value.
@@ -252,8 +251,7 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
    */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
-      problem_c->largest_values_of_interest,
-      problem_c->are_variables_integer);
+      problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value.
@@ -336,8 +334,7 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
    */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
-      problem_c->largest_values_of_interest,
-      problem_c->are_variables_integer);
+      problem_c->largest_values_of_interest);
      
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value.
@@ -420,8 +417,7 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
    */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
-      problem_c->largest_values_of_interest,
-      problem_c->are_variables_integer);
+      problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value.
@@ -502,8 +498,7 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
    */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
-      problem_c->largest_values_of_interest,
-      problem_c->are_variables_integer);
+      problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value
@@ -586,8 +581,7 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
    */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
-      problem_c->largest_values_of_interest,
-      problem_c->are_variables_integer);
+      problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value.
@@ -670,8 +664,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
    */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
-      problem_c->largest_values_of_interest,
-      problem_c->are_variables_integer);
+      problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value.
@@ -757,8 +750,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
    */
   problem = coco_problem_stacked_allocate(problem, problem_c,
       problem_c->smallest_values_of_interest, 
-      problem_c->largest_values_of_interest,
-      problem_c->are_variables_integer);
+      problem_c->largest_values_of_interest);
   
   /* Define problem->best_parameter as the origin and store its
    * objective function value into problem->best_value.

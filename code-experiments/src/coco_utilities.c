@@ -446,12 +446,12 @@ static size_t *coco_allocate_vector_size_t(const size_t number_of_elements) {
 /**
  * @brief Safe memory allocation for a vector with int elements that either succeeds or triggers a
  * coco_error.
- */
+[Commented because not used]
 static int *coco_allocate_vector_int(const size_t number_of_elements) {
   const size_t block_size = number_of_elements * sizeof(int);
   return (int *) coco_allocate_memory(block_size);
 }
-
+ */
 static char *coco_allocate_string(const size_t number_of_elements) {
   const size_t block_size = number_of_elements * sizeof(char);
   return (char *) coco_allocate_memory(block_size);

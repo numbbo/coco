@@ -41,7 +41,7 @@ void run_once(char *suite_options) {
     num_points[1] = 1;
     matching_roi = 1;
     for (j = 0; j < 2; j++) {
-      if (problem_disc->are_variables_integer[j] == 1) {
+      if (j < problem_disc->number_of_integer_variables) {
         num_points[j] = (unsigned long)(problem_disc->largest_values_of_interest[j] - problem_disc->smallest_values_of_interest[j] + 1);
       }
       else

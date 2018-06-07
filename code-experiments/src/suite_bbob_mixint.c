@@ -27,24 +27,22 @@ static coco_suite_t *suite_bbob_mixint_initialize(void) {
 }
 
 /**
- * @brief Sets the ROI (smallest_values_of_interest, largest_values_of_interest and are_variables_integer)
+ * @brief Sets the ROI (smallest_values_of_interest, largest_values_of_interest)
  * in a deterministic way depending on the values of dimension and instance.
  * This is just a temporary implementation for testing purposes.
  */
 static void suite_bbob_mixint_set_ROI(const size_t dimension, const size_t instance,
-    double *smallest_values_of_interest, double *largest_values_of_interest, int *are_variables_integer) {
+    double *smallest_values_of_interest, double *largest_values_of_interest) {
 
   size_t i;
   double num;
 
-  /* The first variable is continuous */
-  smallest_values_of_interest[0] = -5;
-  largest_values_of_interest[0] = 5;
-  are_variables_integer[0] = 0;
+  /* The last variable is continuous */
+  smallest_values_of_interest[dimension - 1] = -5;
+  largest_values_of_interest[dimension - 1] = 5;
 
-  for (i = 1; i < dimension; i++) {
+  for (i = 0; i < dimension - 1; i++) {
     smallest_values_of_interest[i] = 0;
-    are_variables_integer[i] = 1;
     num = (double)((dimension + instance + i) % 5);
     largest_values_of_interest[i] = coco_double_round(pow(10, num));
   }
@@ -72,10 +70,9 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
 
   double *smallest_values_of_interest = coco_allocate_vector(dimension);
   double *largest_values_of_interest = coco_allocate_vector(dimension);
-  int *are_variables_integer = coco_allocate_vector_int(dimension);
 
   suite_bbob_mixint_set_ROI(dimension, instance, smallest_values_of_interest,
-      largest_values_of_interest, are_variables_integer);
+      largest_values_of_interest);
 
   problem = coco_get_bbob_problem(function, dimension, instance);
   assert(problem != NULL);
@@ -83,7 +80,7 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
   problem = transform_vars_discretize(problem,
       smallest_values_of_interest,
       largest_values_of_interest,
-      are_variables_integer);
+      dimension-1);
 
   coco_problem_set_id(problem, "bbob-mixint_f%03lu_i%02lu_d%02lu", function, instance, dimension);
   coco_problem_set_name(problem, "mixed-integer bbob suite problem f%lu instance %lu in %luD", function, instance, dimension);
@@ -92,7 +89,6 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
   problem->suite_dep_instance = instance;
   problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
 
-  coco_free_memory(are_variables_integer);
   coco_free_memory(smallest_values_of_interest);
   coco_free_memory(largest_values_of_interest);
 
