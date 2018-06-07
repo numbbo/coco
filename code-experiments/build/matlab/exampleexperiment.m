@@ -31,6 +31,7 @@ NUM_OF_INDEPENDENT_RESTARTS = 1e9; % max. number of independent algorithm
 % bbob-biobj-ext    92 unconstrained noiseless bi-objective functions
 % bbob-largescale   24 unconstrained noiseless single-objective functions in large dimensions
 % bbob-constrained  48 constrained noiseless single-objective functions
+% bbob-mixint       mixed-integer single-objective functions
 %
 suite_name = 'bbob';
 observer_name = 'bbob';
@@ -98,6 +99,7 @@ while true
         my_optimizer(problem,...
             cocoProblemGetSmallestValuesOfInterest(problem),...
             cocoProblemGetLargestValuesOfInterest(problem),...
+            cocoProblemGetNumberOfIntegerVariables(problem),...
             BUDGET_MULTIPLIER*dimension - doneEvalsBefore);
         
         % check whether things went wrong or whether experiment is over:
