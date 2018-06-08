@@ -44,11 +44,11 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
     inner_u = inner_problem->largest_values_of_interest[i];
     outer_l = problem->smallest_values_of_interest[i];
     outer_u = problem->largest_values_of_interest[i];
+    assert(!coco_double_almost_equal(outer_u, outer_l, 1e-13));
     discretized_x[i] = inner_l + (inner_u - inner_l) * (x[i] - outer_l) / (outer_u - outer_l) - data->offset[i];
   }
   
   coco_evaluate_function(inner_problem, discretized_x, y);
-  assert(y[0] + 1e-13 >= problem->best_value[0]);
   coco_free_memory(discretized_x);
 }
 
