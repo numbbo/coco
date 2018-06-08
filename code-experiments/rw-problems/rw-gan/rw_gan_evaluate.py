@@ -247,8 +247,32 @@ def outputResult(result, d=1):
         f.close()
 
 
-def simulate1(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim))
+def progressSimAStar(x, netG, dim):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(0))
+
+
+def basicFitnessSimAStar(x, netG, dim):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(0))
+
+
+def jumpFractionSimAStar(x, netG, dim):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(0))
+
+
+def totalActionsSimAStar(x, netG, dim):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(0))
+
+def progressSimREALM(x, netG, dim):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(1))
+
+def basicFitnessSimREALM(x, netG, dim):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(1))
+
+def jumpFractionSimREALM(x, netG, dim):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(1))
+
+def totalActionsSimREALM(x, netG, dim):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(1))
 
 
 # expecting variables <prob> <dim> <instance>
@@ -258,12 +282,14 @@ if __name__ == '__main__':
     dim = int(dim)
     inst = int(inst) - 1
     # TODO check if ranges for functions and instances from 0 or from 1
+    # TODO check better large value if level unsolvable or NaN
 
     available_dims = [10, 20, 30, 40]
     available_instances = [5641, 3854, 8370, 494, 1944, 9249, 2517, 2531, 5453, 2982, 670, 56, 6881, 1930, 5812]
     available_jsons = ["overworld", "underground", "overworlds"]  # G
     available_fit = [enemyDistribution, positionDistribution, decorationFrequency, negativeSpace, leniency, density,
-                     simulate1]  # F
+                     progressSimAStar, basicFitnessSimAStar, jumpFractionSimAStar, totalActionsSimAStar,
+                     progressSimREALM, basicFitnessSimREALM, jumpFractionSimREALM, totalActionsSimREALM]  # F
 
     if dim not in available_dims:  # check Dimension available
         raise ValueError("asked for dimension '{}', but is not available".format(dim))
