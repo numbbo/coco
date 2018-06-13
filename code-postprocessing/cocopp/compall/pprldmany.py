@@ -811,7 +811,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     text += '\n'
     num_of_instances = []
     for alg in algorithms_with_data:
-        if len(dictAlgperFunc[alg]) > 0:
+        if alg in genericsettings.foreground_algorithm_list and len(dictAlgperFunc[alg]) > 0:
             num_of_instances.append(len((dictAlgperFunc[alg])[0].instancenumbers))
         else:
             warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
