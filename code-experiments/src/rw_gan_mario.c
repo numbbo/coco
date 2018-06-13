@@ -72,7 +72,7 @@ static coco_problem_t *rw_gan_mario_problem_allocate(const size_t function,
     problem->smallest_values_of_interest[i] = -1;
     problem->largest_values_of_interest[i] = 1;
   }
-  problem->are_variables_integer = NULL;
+  problem->number_of_integer_variables = 0;
   problem->evaluate_function = rw_gan_mario_evaluate;
   problem->problem_free_function = rw_gan_mario_free;
 
