@@ -56,8 +56,8 @@ def get_table_caption():
         
     table_caption_start = r"""%
         Average running time (\aRT\ in number of function 
-        evaluations) divided by the \aRT\ of !!THE-REF-ALG!! in #1. The \aRT\ 
-        and in braces, as dispersion measure, the half difference between 90 and 
+        evaluations) divided by the \aRT\ of !!THE-REF-ALG!! in #1. This \aRT\
+        ratio and, in braces as dispersion measure, the half difference between 90 and
         10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
         the best \aRT\
         """

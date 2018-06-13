@@ -21,10 +21,15 @@ suite_names = cocoex.known_suite_names
 def is_finite(res):
     return all(np.all(np.isfinite(x)) for x in res)
 
+def is_smaller_than(res, val=1e22):
+    """return `True` if all absolute values in `res` are smaller than `val`
+    """
+    return all(np.all(np.abs(x) < val) for x in res)
+
 
 def solution_array(dimension, number=10):
     """return an array of `dimension`-dimensional search points"""
-    return ((np.random.randn(number) / (np.abs(np.random.randn(number)) + 1e-11)) *
+    return (0.1 * (np.random.randn(number) / (np.abs(np.random.randn(number)) + 1e-6)) *
         np.random.randn(number, dimension).T).T
 
 
@@ -42,7 +47,7 @@ def generate_test_data_for_suite(suite_name, filename, solution_array=solution_a
         for x in solution_array(f.dimension):
             res = (f(x) if f.number_of_objectives == 1 else list(f(x)),
                    list(f.constraint(x) if f.number_of_constraints > 0 else []))
-            if is_finite(res):
+            if is_finite(res) and is_smaller_than(res, 1e22):
                 xfc_dict[i, tuple(x)] = res  # tuple, because keys must be immutable
             else:
                 print("rejected: ", f.name, i, x, res)

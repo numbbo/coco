@@ -128,7 +128,6 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   coco_problem_t *problem1, *problem2, *problem = NULL;
   size_t function1_idx, function2_idx;
   size_t instance1 = 0, instance2 = 0;
-  int *are_variables_integer = NULL; /* All variables are continuous */
 
   const size_t function = suite->functions[function_idx];
   const size_t dimension = suite->dimensions[dimension_idx];
@@ -207,7 +206,7 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   problem2 = coco_get_bbob_problem(bbob_functions[function2_idx], dimension, instance2);
 
   problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
-      largest_values_of_interest, are_variables_integer);
+      largest_values_of_interest);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
@@ -253,7 +252,6 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
   size_t function1, function2, dimension;
   double norm;
   double *smallest_values_of_interest, *largest_values_of_interest;
-  int *are_variables_integer = NULL; /* All variables are continuous */
 
   suite_biobj_t *data;
   assert(suite->data);
@@ -293,7 +291,7 @@ static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
           smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
           largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
           problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
-              largest_values_of_interest, are_variables_integer);
+              largest_values_of_interest);
           coco_free_memory(smallest_values_of_interest);
           coco_free_memory(largest_values_of_interest);
 

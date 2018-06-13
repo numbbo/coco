@@ -412,6 +412,41 @@ MU_TEST(test_coco_is_inf) {
 }
 
 /**
+ * Tests the function coco_is_orthogonal.
+ */
+MU_TEST(test_coco_is_orthogonal) {
+
+  double *M;
+
+  M = coco_allocate_vector(4);
+
+  /* Case of an orthogonal diagonal matrix (identity matrix) */
+  M[0] = 1.;
+  M[1] = 0.;
+  M[2] = 0.;
+  M[3] = 1.;
+  mu_check(coco_is_orthogonal(M, 2, 2));
+
+  /* Case of a non-orthogonal square matrix */
+  M[0] = 1.;
+  M[1] = 0.01;
+  M[2] = 0.;
+  M[3] = 1.;
+  mu_check(!coco_is_orthogonal(M, 2, 2));
+
+  /* Case of an orthogonal diagonal matrix (almost identity matrix)
+   * such that the function "coco_double_almost_equal()" is tested
+   */
+  M[0] = 1. + 1e-10;
+  M[1] = 0.;
+  M[2] = 0.;
+  M[3] = 1. + 1e-10;
+  mu_check(coco_is_orthogonal(M, 2, 2));
+
+  coco_free_memory(M);
+}
+
+/**
  * Run all tests in this file.
  */
 MU_TEST_SUITE(test_all_coco_utilities) {
@@ -424,4 +459,5 @@ MU_TEST_SUITE(test_all_coco_utilities) {
   MU_RUN_TEST(test_coco_option_keys);
   MU_RUN_TEST(test_coco_string_parse_ranges);
   MU_RUN_TEST(test_coco_create_remove_directory);
+  MU_RUN_TEST(test_coco_is_orthogonal);
 }
