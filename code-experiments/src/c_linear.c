@@ -250,7 +250,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
      */
     for (i = 0; i < dimension; ++i)
       gradient_linear_constraint[i] = factor1 *
-                coco_random_normal(random_generator) * factor2 / sqrt(dimension);
+                coco_random_normal(random_generator) * factor2 / sqrt((double)dimension);
 
     problem = c_linear_transform(problem, gradient_linear_constraint);
     coco_free_memory(gradient_linear_constraint);
