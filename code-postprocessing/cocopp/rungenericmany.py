@@ -314,7 +314,7 @@ def main(argv=None):
         from . import config
         config.config_target_values_setting(genericsettings.isExpensive,
                                             genericsettings.runlength_based_targets)
-        config.config(dsList[0].testbed_name, dsList[0].get_data_format())
+        config.config(dsList[0].testbed_name)
 
         for i in dsList:
             if i.dim not in genericsettings.dimensions_to_display:
@@ -372,7 +372,7 @@ def main(argv=None):
 
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if prepare_RLDistr:
-            config.config(dsList[0].testbed_name, dsList[0].get_data_format())
+            config.config(dsList[0].testbed_name)
 
             if len(genericsettings.foreground_algorithm_list) == 2:
                 print("ECDF runlength ratio graphs...")
