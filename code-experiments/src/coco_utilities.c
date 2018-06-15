@@ -1141,7 +1141,7 @@ static void coco_external_evaluate(const double *x,
                                    const size_t size_of_x,
                                    const char *command,
                                    const char *in_fname,
-                                   const char *obj_fname,
+                                   const char *out_fname,
                                    double *y,
                                    const size_t expected_size_of_y) {
 
@@ -1175,13 +1175,13 @@ static void coco_external_evaluate(const double *x,
   }
 
   /* Reads the values of y from file */
-  out_file = fopen(obj_fname, "r");
+  out_file = fopen(out_fname, "r");
   if (out_file == NULL) {
-    coco_error("coco_external_evaluate(): failed to open file '%s'.", obj_fname);
+    coco_error("coco_external_evaluate(): failed to open file '%s'.", out_fname);
   }
   scan_result = fscanf(out_file, "%d\n", &read_size_of_y);
   if (scan_result != 1) {
-    coco_error("coco_external_evaluate(): failed to read from '%s'.", obj_fname);
+    coco_error("coco_external_evaluate(): failed to read from '%s'.", out_fname);
   }
 
   if (read_size_of_y == 0) {
@@ -1192,13 +1192,13 @@ static void coco_external_evaluate(const double *x,
 
   if (read_size_of_y != expected_size_of_y) {
     coco_error("coco_external_evaluate(): '%s' contains %lu elements instead of %lu.",
-        obj_fname, (unsigned long)read_size_of_y, (unsigned long)expected_size_of_y);
+        out_fname, (unsigned long)read_size_of_y, (unsigned long)expected_size_of_y);
   }
 
   for (i = 0; i < read_size_of_y; i++) {
     scan_result = fscanf(out_file, "%lf\n", &result);
     if (scan_result != 1) {
-      coco_error("coco_external_evaluate(): failed to read from '%s'.", obj_fname);
+      coco_error("coco_external_evaluate(): failed to read from '%s'.", out_fname);
     }
     y[i] = result;
   }

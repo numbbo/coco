@@ -1,18 +1,21 @@
+import sys
+
 if __name__ == '__main__':
-    path = ''
+    obj = int(sys.argv[1])
 
     # Read the variables
-    with open(path + 'variables.txt') as f:
+    with open('variables.txt') as f:
         content = f.readlines()
         content = [float(line.rstrip('\n')) for line in content]
-        f.close()
 
     # Compute the result
     variable_sum = abs(sum(content[1:]))
 
     # Write the result
-    with open(path + 'objectives.txt', 'w') as f:
-        f.write('{}\n'.format(1))
+    with open('objectives.txt', 'w') as f:
+        f.write('{}\n'.format(obj))
         f.write('{}\n'.format(variable_sum))
-        f.close()
+        if obj == 2:
+            f.write('{}\n'.format(10 - variable_sum))
+
 

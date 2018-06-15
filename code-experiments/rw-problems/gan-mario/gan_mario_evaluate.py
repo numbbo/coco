@@ -60,9 +60,9 @@ def fitnessSO(x, nz):
 
 
 
-#expecting variables <prob> <dim>
+#expecting variables <obj> <dim> <fun> <inst>
 if __name__ == '__main__':
-    _, dim, problem, instance = sys.argv
+    _, obj, dim, problem, instance = sys.argv
     problem = int(problem)
     dim = int(dim)
 
@@ -79,14 +79,12 @@ if __name__ == '__main__':
         if num_variables != dim: #check appropriate number of variables there
             raise ValueError("num_variables should be '{}', but is '{}'"
                              "".format(dim, num_variables))
-        f.close()
 
     #check variables in range
     inp = numpy.array(content[1:])
     if numpy.any(inp>1) or  numpy.any(inp<-1):#input out of range
         with open('objectives.txt', 'w') as f: #write out NaN result
             f.write('{}\n'.format(0))
-            f.close()
     else:
         netG = "GAN/samples-{0}-{1}-{2}/netG_epoch_{0}_{1}_{2}.pth".format(budget, problem%15, dim)
     
@@ -103,6 +101,5 @@ if __name__ == '__main__':
             with open('objectives.txt', 'w') as f:
                 f.write('{}\n'.format(1))
                 f.write('{}\n'.format(result))
-                f.close()
         else:
             os.system('java -jar marioaiDagstuhl.jar "'+str(content[1:])+'" '+netG+' '+str(dim))

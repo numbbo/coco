@@ -1,11 +1,11 @@
 /**
- * @file suite_rw_gan_mario.c
+ * @file suite_rw_gan_mario_biobj.c
  *
- * @brief Implementation of a single-objective suite containing real-world problems of unsupervised
+ * @brief Implementation of a bi-objective suite containing real-world problems of unsupervised
  * learning of a Generative Adversarial Network (GAN) that understands the structure of Super Mario
- * Bros. levels. A bi-objective version can be found in the file suite_rw_gan_mario_biobj.c
+ * Bros. levels. A single-objective version can be found in the file suite_rw_gan_mario.c
  *
- * The suite contains 84 problems with dimensions 10, 20, 30, 40 and 15 instances.
+ * The suite contains XX problems with dimensions 10, 20, 30, 40 and 15 instances (TODO).
  */
 
 #include "coco.h"
@@ -18,20 +18,20 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const char *default_instances);
 
 /**
- * @brief Sets the dimensions and default instances for the rw-gan-mario suite.
+ * @brief Sets the dimensions and default instances for the rw-gan-mario-biobj suite.
  */
 static coco_suite_t *suite_rw_gan_mario_initialize(void) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 10, 20, 30, 40 };
 
-  suite = coco_suite_allocate("rw-gan-mario", 84, 4, dimensions, "instances: 1-15");
+  suite = coco_suite_allocate("rw-gan-mario-biobj", 10, 4, dimensions, "instances: 1-15");  /* TODO */
 
   return suite;
 }
 
 /**
- * @brief Returns the problem from the rw-gan-mario suite that corresponds to the given parameters.
+ * @brief Returns the problem from the rw-gan-mario-biobj suite that corresponds to the given parameters.
  *
  * @param suite The COCO suite.
  * @param function_idx Index of the function (starting from 0).
@@ -50,7 +50,7 @@ static coco_problem_t *suite_rw_gan_mario_get_problem(coco_suite_t *suite,
   const size_t dimension = suite->dimensions[dimension_idx];
   const size_t instance = suite->instances[instance_idx];
 
-  problem = rw_gan_mario_problem_allocate(suite->suite_name, 1, function, dimension, instance);
+  problem = rw_gan_mario_problem_allocate(suite->suite_name, 2, function, dimension, instance);
   assert(problem != NULL);
 
   problem->suite_dep_function = function;
