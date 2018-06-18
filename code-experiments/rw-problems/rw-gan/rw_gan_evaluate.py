@@ -157,7 +157,7 @@ def density(x, netG, dim):
 
 # Estimates how much of the space can be reached by computing how many of the tiles can be stood upon
 # Value Range 0-1
-# minimise
+# maximise
 def negativeSpace(x, netG, dim):
     im = translateLatentVector(x, netG, dim)
     unique, counts = numpy.unique(im, return_counts=True)
@@ -174,7 +174,7 @@ def negativeSpace(x, netG, dim):
     val += dist.get(PLANT, 0) * 2 # Because only one tile, but width of 2
     val += dist.get(BILL, 0)
     val = float(val) / (width * height)
-    outputResult(val, 1)
+    outputResult(-val, 1)
 
 
 # Frequency of pretty tiles, i.e. non-standard.
@@ -283,10 +283,11 @@ if __name__ == '__main__':
     inst = int(inst) - 1
     # TODO check if ranges for functions and instances from 0 or from 1
     # TODO check better large value if level unsolvable or NaN
+    # TODO value ranges and how to set up
 
     available_dims = [10, 20, 30, 40]
     available_instances = [5641, 3854, 8370, 494, 1944, 9249, 2517, 2531, 5453, 2982, 670, 56, 6881, 1930, 5812]
-    available_jsons = ["overworld", "underground", "overworlds"]  # G
+    available_jsons = ["underground"]#"'["overworld"]#, "underground", "overworlds"]  # G
     available_fit = [enemyDistribution, positionDistribution, decorationFrequency, negativeSpace, leniency, density,
                      progressSimAStar, basicFitnessSimAStar, jumpFractionSimAStar, totalActionsSimAStar,
                      progressSimREALM, basicFitnessSimREALM, jumpFractionSimREALM, totalActionsSimREALM]  # F
