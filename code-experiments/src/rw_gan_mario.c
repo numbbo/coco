@@ -22,7 +22,7 @@ static coco_problem_t *rw_gan_mario_problem_allocate(const char *suite_name,
                                                      const size_t instance) {
 
   coco_problem_t *problem = NULL;
-  char *str1, *str2, *str3;
+  char *str1 = NULL, *str2 = NULL, *str3 = NULL;
   size_t i, num;
 
   if ((objectives != 1) && (objectives != 2))
