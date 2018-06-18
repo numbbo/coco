@@ -51,7 +51,7 @@ if __name__ == '__main__':
     ngf = 64
     ngpu = 1
     n_extra_layers = 0
-    z_dims = 10  # number different titles
+    z_dims = 13  # number different titles
 
     generator = dcgan.DCGAN_G(imageSize, nz, z_dims, ngf, ngpu, n_extra_layers)
     # generator.load_state_dict(torch.load('netG_epoch_24.pth', map_location=lambda storage, loc: storage))

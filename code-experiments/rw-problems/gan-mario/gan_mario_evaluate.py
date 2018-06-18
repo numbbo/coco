@@ -280,7 +280,9 @@ if __name__ == '__main__':
     problem = int(problem)-1
     dim = int(dim)
     inst = int(inst) - 1
+    obj = int(obj)
     # TODO value ranges and how to set up
+    # TODO why no file close?
 
     available_dims = [10, 20, 30, 40]
     available_instances = [5641, 3854, 8370, 494, 1944, 9249, 2517, 2531, 5453, 2982, 670, 56, 6881, 1930, 5812]
