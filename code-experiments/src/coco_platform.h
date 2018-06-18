@@ -22,6 +22,7 @@
 static const char *coco_path_separator = "\\";
 #define COCO_PATH_MAX MAX_PATH
 #define HAVE_GFA 1
+#define USES_CREATEPROCESS
 #elif defined(__gnu_linux__)
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -29,6 +30,8 @@ static const char *coco_path_separator = "\\";
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
 #define COCO_PATH_MAX PATH_MAX
+#include <unistd.h>
+#define USES_EXECV
 #elif defined(__APPLE__)
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -36,6 +39,8 @@ static const char *coco_path_separator = "/";
 static const char *coco_path_separator = "/";
 #define HAVE_STAT 1
 #define COCO_PATH_MAX PATH_MAX
+#include <unistd.h>
+#define USES_EXECV
 #elif defined(__FreeBSD__)
 #include <sys/stat.h>
 #include <sys/types.h>

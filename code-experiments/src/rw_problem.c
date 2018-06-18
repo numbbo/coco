@@ -11,6 +11,7 @@
  */
 typedef struct {
   char *command;
+  char *path;
   char *var_fname;
   char *obj_fname;
 } rw_problem_data_t;
@@ -25,6 +26,7 @@ static void rw_problem_data_free(coco_problem_t *problem) {
   coco_free_memory(data->var_fname);
   coco_free_memory(data->obj_fname);
   coco_free_memory(data->command);
+  coco_free_memory(data->path);
   problem->problem_free_function = NULL;
   coco_problem_free(problem);
 }
@@ -105,6 +107,109 @@ static void rw_problem_external_evaluate(const double *x,
   fclose(out_file);
 }
 
+void rw_problem_run_process(const double *x,
+                            const size_t size_of_x,
+                            char *command,
+                            char *path,
+                            const char *in_fname,
+                            const char *out_fname,
+                            double *y,
+                            const size_t expected_size_of_y) {
+  int process_result;
+  size_t i = 0;
+  double result;
+  FILE *in_file;
+  FILE *out_file;
+  const int precision_x = 8;
+  int scan_result, read_size_of_y;
+#if defined(USES_CREATEPROCESS)
+  STARTUPINFO StartupInfo;
+  PROCESS_INFORMATION ProcessInfo;
+
+  StartupInfo.cb = sizeof(STARTUPINFO);
+  StartupInfo.dwFlags = STARTF_USESHOWWINDOW || STARTF_FORCEONFEEDBACK;
+  StartupInfo.wShowWindow = SW_HIDE;
+  StartupInfo.lpReserved = NULL;
+  StartupInfo.lpDesktop = NULL;
+  StartupInfo.lpTitle = NULL;
+  StartupInfo.cbReserved2 = 0;
+  StartupInfo.lpReserved2 = NULL;
+#elif defined(USES_EXECV)
+  pid_t processId;
+#else
+#error Unsupported platform
+#endif
+
+  /* Writes x to file */
+  in_file = fopen(in_fname, "w");
+  if (in_file == NULL) {
+    coco_error("rw_problem_run_process(): failed to open file '%s'.", in_fname);
+  }
+  fprintf(in_file,"%lu\n", (unsigned long)size_of_x);
+  for (i = 0; i < size_of_x; ++i) {
+    fprintf(in_file, "%.*e\n", precision_x, x[i]);
+  }
+  fclose(in_file);
+
+#ifdef USES_CREATEPROCESS
+  process_result = CreateProcess(NULL, command, NULL, NULL, 0,
+    NORMAL_PRIORITY_CLASS, NULL, path, &StartupInfo, &ProcessInfo);
+
+  do {} while (WaitForSingleObject(ProcessInfo.hProcess, 100) == WAIT_TIMEOUT);
+
+  if (!process_result) {
+    coco_error("rw_problem_run_process(): failed to execute '%s'. Error: %d", command,
+        GetLastError());
+  }
+
+  CloseHandle(ProcessInfo.hProcess);
+  CloseHandle(ProcessInfo.hThread);
+#elif defined(USES_EXECV)
+  if ((processId = fork()) == 0) {
+    char app[] = "/bin/echo";
+    char * const argv[] = { app, "success", NULL };
+    if (execv(app, argv) < 0) {
+      coco_error("rw_problem_run_process(): failed to execute '%s'", command);
+    }
+  } else if (processId < 0) {
+    coco_error("rw_problem_run_process(): fork error");
+  } else {
+      return EXIT_SUCCESS;
+  }
+  return EXIT_FAILURE;
+#endif
+
+  /* Reads the values of y from file */
+  out_file = fopen(out_fname, "r");
+  if (out_file == NULL) {
+    coco_error("rw_problem_run_process(): failed to open file '%s'.", out_fname);
+  }
+  scan_result = fscanf(out_file, "%d\n", &read_size_of_y);
+  if (scan_result != 1) {
+    coco_error("rw_problem_run_process(): failed to read from '%s'.", out_fname);
+  }
+
+  if (read_size_of_y == 0) {
+    /* x could not be evaluated */
+    coco_vector_set_to_nan(y, expected_size_of_y);
+    return;
+  }
+
+  if (read_size_of_y != expected_size_of_y) {
+    coco_error("rw_problem_run_process(): '%s' contains %lu elements instead of %lu.",
+        out_fname, (unsigned long)read_size_of_y, (unsigned long)expected_size_of_y);
+  }
+
+  for (i = 0; i < read_size_of_y; i++) {
+    scan_result = fscanf(out_file, "%lf\n", &result);
+    if (scan_result != 1) {
+      coco_error("rw_problem_run_process(): failed to read from '%s'.", out_fname);
+    }
+    y[i] = result;
+  }
+  fclose(out_file);
+}
+
 /**
  * @brief Calls the external function to evaluate the problem.
  */
@@ -117,6 +222,9 @@ static void rw_problem_evaluate(coco_problem_t *problem, const double *x, double
   if (coco_vector_contains_nan(x, problem->number_of_variables))
     for (i = 0; i < problem->number_of_objectives; i++)
       y[i] = NAN;
+
+  /*rw_problem_run_process(x, problem->number_of_variables, data->command, data->path, data->var_fname,
+      data->obj_fname, y, problem->number_of_objectives);*/
 
   rw_problem_external_evaluate(x, problem->number_of_variables, data->command, data->var_fname,
       data->obj_fname, y, problem->number_of_objectives);
@@ -136,12 +244,15 @@ static rw_problem_data_t *get_rw_problem_data(const char *folder_name,
   FILE *exe_file;
 
   data = (rw_problem_data_t *) coco_allocate_memory(sizeof(*data));
+  data->path = coco_allocate_string(COCO_PATH_MAX + 1);
+  memcpy(data->path, "", 1);
+  coco_join_path(data->path, COCO_PATH_MAX, dir1, dir1, dir2, folder_name, NULL);
   data->var_fname = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(data->var_fname, "", 1);
-  coco_join_path(data->var_fname, COCO_PATH_MAX, dir1, dir1, dir2, folder_name, "variables.txt", NULL);
+  coco_join_path(data->var_fname, COCO_PATH_MAX, data->path, "variables.txt", NULL);
   data->obj_fname = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(data->obj_fname, "", 1);
-  coco_join_path(data->obj_fname, COCO_PATH_MAX, dir1, dir1, dir2, folder_name, "objectives.txt", NULL);
+  coco_join_path(data->obj_fname, COCO_PATH_MAX, data->path, "objectives.txt", NULL);
 
   /* Load the command template from exe_fname, replace:
    * <obj> with the problem objectives,
@@ -151,7 +262,7 @@ static rw_problem_data_t *get_rw_problem_data(const char *folder_name,
    * and store the resulting command to data->command */
   exe_fname = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(exe_fname, "", 1);
-  coco_join_path(exe_fname, COCO_PATH_MAX, dir1, dir1, dir2, folder_name, "evaluate_function_template", NULL);
+  coco_join_path(exe_fname, COCO_PATH_MAX, data->path, "evaluate_function_template", NULL);
   exe_file = fopen(exe_fname, "r");
   if (exe_file == NULL) {
     coco_error("rw_problem_allocate(): failed to open file '%s'.", exe_fname);
