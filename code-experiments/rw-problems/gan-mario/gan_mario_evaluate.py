@@ -318,6 +318,13 @@ if __name__ == '__main__':
 
     print([c, f, g])
 
+    # JUST FOR TESTING PURPOSES TO SPEED UP
+    # TODO remove later
+    if f != 1:
+        with open('objectives.txt', 'w') as file:  # write out NaN result
+            file.write('{}\n'.format(1))
+            file.write('{}\n'.format(-1000))
+
     # check variables in range
     inp = numpy.array(content[1:])
     if numpy.any(inp > 1) or numpy.any(inp < -1):  # input out of range
