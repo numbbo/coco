@@ -378,10 +378,10 @@ const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t 
 const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem);
 
 /**
- * @brief Returns NULL or a vector of size 'dimension' with flags noting whether the variables are
- * integer (1) or continuous (0). If NULL, all variables are continuous.
+ * @brief Returns the number of integer variables. If > 0, all integer variables come before any
+ * continuous ones.
  */
-const int *coco_problem_get_are_variables_integer(const coco_problem_t *problem);
+size_t coco_problem_get_number_of_integer_variables(const coco_problem_t *problem);
 
 /**
  * @brief For multi-objective problems, returns a vector of largest values of interest in each objective.

@@ -29,7 +29,7 @@
 static const double fvalue_logged_for_infinite = 3e21;   /* value used for logging try */
 static const double fvalue_logged_for_nan = 2e21;
 /* static const double fvalue_logged_for_infeasible = 1e21;  only in first evaluation */
-static const double weight_constraints = 1e3;  /* factor used in logged indicator (f-f*)^+ + sum_i g_i^+ in front of the sum */
+static const double weight_constraints = 1e0;  /* factor used in logged indicator (f-f*)^+ + sum_i g_i^+ in front of the sum */
 
 /*static const size_t bbob_nbpts_nbevals = 20; Wassim: tentative, are now observer options with these default values*/
 /*static const size_t bbob_nbpts_fval = 5;*/
@@ -128,7 +128,7 @@ static int single_digit_constraint_value(const double c) {
 static const char *bbob_file_header_str = "%% "
     "f evaluations | "
     "g evaluations | "
-    "best noise-free fitness - Fopt (%13.12e) + 1e3 * sum g_i+ | "
+    "best noise-free fitness - Fopt (%13.12e) + sum g_i+ | "
     "measured fitness | "
     "best measured fitness or single-digit g-values | "
     "x1 | "

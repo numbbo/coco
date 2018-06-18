@@ -33,7 +33,7 @@ runs the 2nd of 300 batches with budget 5 * dimension and at most 9 restarts.
 Calling `example_experiment` without parameters prints this
 help and the available suite names.
 """
-from __future__ import absolute_import, division, print_function, unicode_literals
+from __future__ import absolute_import, division, print_function
 try: range = xrange
 except NameError: pass
 import os, sys
@@ -42,7 +42,7 @@ import numpy as np  # "pip install numpy" installs numpy
 import cocoex
 from scipy import optimize # for tests with fmin_cobyla
 from cocoex import Suite, Observer, log_level
-del absolute_import, division, print_function, unicode_literals
+del absolute_import, division, print_function
 
 verbose = 1
 

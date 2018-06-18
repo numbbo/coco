@@ -72,7 +72,7 @@ def build_c():
     else:
         make("code-experiments/build/c", "clean", verbose=_build_verbosity)
         make("code-experiments/build/c", "all", verbose=_build_verbosity)
-    prepare_rw_evaluation_template()
+    prepare_rw_evaluation_templates()
 
 
 def run_c():
@@ -168,7 +168,7 @@ def run_c_integration_tests():
         run('code-experiments/test/integration-test',
             ['./test_bbob-mixint'], verbose=_verbosity)
         run('code-experiments/test/integration-test',
-            ['./test_rw-gan'], verbose=_verbosity)
+            ['./test_rw_suites'], verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -224,19 +224,23 @@ def leak_check():
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
-                    './test_rw-gan', 'leak_check']
+                    './test_rw_suites', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
 
 
-def prepare_rw_evaluation_template():
-    """ Uses the right external evaluation template (depending on the platform) """
+def prepare_rw_evaluation_templates():
+    """ Uses the right external evaluation templates (depending on the platform) """
     if (('win32' in sys.platform) or ('win64' in sys.platform)) and\
             ('cygwin' not in os.environ['PATH']):
-        copy_file('code-experiments/rw-problems/rw-gan/executable_template_win.in',
-                  'code-experiments/rw-problems/rw-gan/executable_template')
+        copy_file('code-experiments/rw-problems/gan-mario/evaluate_function_template_win.in',
+                  'code-experiments/rw-problems/gan-mario/evaluate_function_template')
+        copy_file('code-experiments/rw-problems/top-trumps/evaluate_function_template_win.in',
+                  'code-experiments/rw-problems/top-trumps/evaluate_function_template')
     else:
-        copy_file('code-experiments/rw-problems/rw-gan/executable_template.in',
-                  'code-experiments/rw-problems/rw-gan/executable_template')
+        copy_file('code-experiments/rw-problems/gan-mario/evaluate_function_template.in',
+                  'code-experiments/rw-problems/gan-mario/evaluate_function_template')
+        copy_file('code-experiments/rw-problems/top-trumps/evaluate_function_template.in',
+                  'code-experiments/rw-problems/top-trumps/evaluate_function_template')
 
 
 ################################################################################
@@ -630,8 +634,8 @@ def build_java():
                 {'COCO_VERSION': git_version(pep440=True)})
     write_file(git_revision(), "code-experiments/build/java/REVISION")
     write_file(git_version(), "code-experiments/build/java/VERSION")
-    run('code-experiments/build/java', ['javac', 'CocoJNI.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javah', 'CocoJNI'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'CocoJNI.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javah', '-classpath', '.', 'CocoJNI'], verbose=_verbosity)
 
     # Finds the path to the headers jni.h and jni_md.h (platform-dependent)
     # and compiles the CocoJNI library (compiler-dependent). So far, only
@@ -698,11 +702,11 @@ def build_java():
             ['gcc', '-dynamiclib', '-o', 'libCocoJNI.jnilib', 'CocoJNI.o'],
             verbose=_verbosity)
 
-    run('code-experiments/build/java', ['javac', 'Problem.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'Benchmark.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'Observer.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'Suite.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'ExampleExperiment.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Problem.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Benchmark.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Observer.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Suite.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'ExampleExperiment.java'], verbose=_verbosity)
 
 
 def run_java():
@@ -710,7 +714,7 @@ def run_java():
     build_java()
     try:
         run('code-experiments/build/java',
-            ['java', '-Djava.library.path=.', 'ExampleExperiment'],
+            ['java', '-Djava.library.path=.', '-classpath', '.', 'ExampleExperiment'],
             verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
@@ -721,7 +725,7 @@ def test_java():
     build_java()
     try:
         run('code-experiments/build/java',
-            ['java', '-Djava.library.path=.', 'ExampleExperiment'],
+            ['java', '-Djava.library.path=.', '-classpath', '.', 'ExampleExperiment'],
             verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)

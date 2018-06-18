@@ -22,7 +22,10 @@
 #include "suite_toy.c"
 #include "suite_largescale.c"
 #include "suite_cons_bbob.c"
-#include "suite_rw_gan.c"
+#include "suite_rw_gan_mario.c"
+#include "suite_rw_gan_mario_biobj.c"
+#include "suite_rw_top_trumps.c"
+#include "suite_rw_top_trumps_biobj.c"
 
 /** @brief The maximum number of different instances in a suite. */
 #define COCO_MAX_INSTANCES 1000
@@ -50,8 +53,14 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_cons_bbob_initialize();
   } else if (strcmp(suite_name, "bbob-mixint") == 0) {
     suite = suite_bbob_mixint_initialize();
-  } else if (strcmp(suite_name, "rw-gan") == 0) {
-    suite = suite_rw_gan_initialize();
+  } else if (strcmp(suite_name, "rw-gan-mario") == 0) {
+    suite = suite_rw_gan_mario_initialize();
+  } else if (strcmp(suite_name, "rw-gan-mario-biobj") == 0) {
+    suite = suite_rw_gan_mario_biobj_initialize();
+  } else if (strcmp(suite_name, "rw-top-trumps") == 0) {
+    suite = suite_rw_top_trumps_initialize();
+  } else if (strcmp(suite_name, "rw-top-trumps-biobj") == 0) {
+    suite = suite_rw_top_trumps_biobj_initialize();
   }
   else {
     coco_error("coco_suite_intialize(): unknown problem suite");
@@ -121,8 +130,14 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     problem = suite_cons_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-mixint") == 0) {
     problem = suite_bbob_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
-  } else if (strcmp(suite->suite_name, "rw-gan") == 0) {
-    problem = suite_rw_gan_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "rw-gan-mario") == 0) {
+    problem = suite_rw_gan_mario_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "rw-gan-mario-biobj") == 0) {
+    problem = suite_rw_gan_mario_biobj_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "rw-top-trumps") == 0) {
+    problem = suite_rw_top_trumps_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "rw-top-trumps-biobj") == 0) {
+    problem = suite_rw_top_trumps_biobj_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else {
     coco_error("coco_suite_get_problem_from_indices(): unknown problem suite");
     return NULL;
@@ -572,7 +587,8 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
 }
 
 /**
- * Currently, six suites are supported:
+ * Currently, eleven suites are supported.
+ * Seven suites with artificial test functions:
  * - "bbob" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective
@@ -585,10 +601,14 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * - "bbob-constrained" contains 48 linearly-constrained problems, which are combinations of 8 single 
  * objective functions with 6 different numbers of linear constraints (1, 2, 10, dimension/2, dimension-1, 
  * dimension+1), in 6 dimensions (2, 3, 5, 10, 20, 40).
- * - "bbob-mixint" contains 24 mixed-integer <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
- * single-objective functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
+ * - "bbob-mixint" contains mixed-integer single-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "toy" contains 6 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 5 dimensions (2, 3, 5, 10, 20)
+ * Four suites with real-world problems: [TODO: Add more info]
+ * - "rw-gan-mario"
+ * - "rw-gan-mario-biobj"
+ * - "rw-top-trumps"
+ * - "rw-top-trumps-biobj"
  *
  * Only the suite_name parameter needs to be non-empty. The suite_instance and suite_options can be "" or
  * NULL. In this case, default values are taken (default instances of a suite are those used in the last year

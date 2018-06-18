@@ -92,6 +92,11 @@ Possible values for data format field:
   - 3rd column: function value
   - informal:
     - number of target function values for each decade = 5
+4. "bbob-new2" contracted (single objective unconstrained or constrained problems, from 2018):
+  - 1st column: f evaluation number
+  - 2nd column: g evaluation number
+  - 3rd column: function value
+  - 5th column: when constraints are present, single-digit constraint values concancenated in a single (big) number
     
 TODO: What to change in the post-processing if you add a new data-format?
  

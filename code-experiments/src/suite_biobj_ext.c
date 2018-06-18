@@ -140,7 +140,6 @@ static coco_problem_t *suite_biobj_ext_get_problem(coco_suite_t *suite,
   coco_problem_t *problem1, *problem2, *problem = NULL;
   size_t instance1 = 0, instance2 = 0;
   size_t function1_idx, function2_idx;
-  int *are_variables_integer = NULL; /* All variables are continuous */
 
   const size_t function = suite->functions[function_idx];
   const size_t dimension = suite->dimensions[dimension_idx];
@@ -345,7 +344,7 @@ static coco_problem_t *suite_biobj_ext_get_problem(coco_suite_t *suite,
   }
   
   problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
-      largest_values_of_interest, are_variables_integer);
+      largest_values_of_interest);
     
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
@@ -381,7 +380,6 @@ static int check_consistency_of_instances(const size_t dimension,
   int break_search = 0;
   double norm;
   double *smallest_values_of_interest, *largest_values_of_interest;
-  int *are_variables_integer = NULL; /* All variables are continuous */
   const double apart_enough = 1e-4;
   
   problem1 = coco_get_bbob_problem(function1, dimension, instance1);
@@ -392,7 +390,7 @@ static int check_consistency_of_instances(const size_t dimension,
   smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
   largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
   problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
-          largest_values_of_interest, are_variables_integer);
+          largest_values_of_interest);
   coco_free_memory(smallest_values_of_interest);
   coco_free_memory(largest_values_of_interest);
 

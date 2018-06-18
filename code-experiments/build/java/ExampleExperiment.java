@@ -72,6 +72,7 @@ public class ExampleExperiment {
          *   bbob-biobj-ext       92 unconstrained noiseless bi-objective functions
          *   bbob-largescale      24 unconstrained noiseless single-objective functions in large dimension
          *   bbob-constrained     48 constrained noiseless single-objective functions
+         *   bbob-mixint          mixed-integer single-objective functions
          *
          * Adapt to your need. Note that the experiment is run according
          * to the settings, defined in exampleExperiment(...) below.
@@ -135,6 +136,7 @@ public class ExampleExperiment {
 							       PROBLEM.getNumberOfConstraints(),
 							       PROBLEM.getSmallestValuesOfInterest(),
 							       PROBLEM.getLargestValuesOfInterest(),
+							       PROBLEM.getNumberOfIntegerVariabls(),
 							       evaluationsRemaining,
 							       randomGenerator);
 
@@ -171,6 +173,7 @@ public class ExampleExperiment {
                                       int numberOfConstraints,
 			                          double[] lowerBounds,
 			                          double[] upperBounds, 
+                                      int numberOfIntegerVariables,
 			                          long maxBudget, 
 			                          Random randomGenerator) {
 
@@ -185,7 +188,11 @@ public class ExampleExperiment {
 			for (int j = 0; j < dimension; j++) {
 				range = upperBounds[j] - lowerBounds[j];
 				x[j] = lowerBounds[j] + randomGenerator.nextDouble() * range;
+				/* Round the variable if integer */
+				if (j < numberOfIntegerVariables)
+					x[j] = (double) Math.round(x[j]);
 			}
+			
 
 		    /* Call the evaluate function to evaluate x on the current problem (this is where all the COCO logging
 		     * is performed) */
