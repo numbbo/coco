@@ -114,7 +114,6 @@ def tilePositionSummaryStats(im, tiles):
         y_coords = numpy.append(y_coords, tmp[0])
     return numpy.mean(x_coords), numpy.std(x_coords), numpy.mean(y_coords), numpy.std(y_coords)
 
-<<<<<<< HEAD:code-experiments/rw-problems/rw-gan/rw_gan_evaluate.py
 ################################################################################################
 # Fitness Functions
 
@@ -245,7 +244,6 @@ def outputResult(result, d=1):
     with open('objectives.txt', 'w') as f:
         f.write('{}\n'.format(d))
         f.write('{}\n'.format(result))
-        f.close()
 
 
 def progressSimAStar(x, netG, dim):
@@ -276,16 +274,10 @@ def totalActionsSimREALM(x, netG, dim):
     os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(1))
 
 
-# expecting variables <prob> <dim> <instance>
-if __name__ == '__main__':
-    _, dim, problem, inst = sys.argv
-    problem = int(problem)-1
-=======
 #expecting variables <obj> <dim> <fun> <inst>
 if __name__ == '__main__':
-    _, obj, dim, problem, instance = sys.argv
-    problem = int(problem)
->>>>>>> upstream/rw-new-suite:code-experiments/rw-problems/gan-mario/gan_mario_evaluate.py
+    _, obj, dim, problem, inst = sys.argv
+    problem = int(problem)-1
     dim = int(dim)
     inst = int(inst) - 1
     # TODO value ranges and how to set up
@@ -297,6 +289,8 @@ if __name__ == '__main__':
                      progressSimAStar, basicFitnessSimAStar, jumpFractionSimAStar, totalActionsSimAStar,
                      progressSimREALM, basicFitnessSimREALM, jumpFractionSimREALM, totalActionsSimREALM]  # F
 
+    if obj != 1:
+        raise ValueError("currently only 1 objective")
     if dim not in available_dims:  # check Dimension available
         raise ValueError("asked for dimension '{}', but is not available".format(dim))
     if inst < 0 | inst >= available_instances.count():
@@ -310,10 +304,6 @@ if __name__ == '__main__':
         if num_variables != dim:  # check appropriate number of variables there
             raise ValueError("num_variables should be '{}', but is '{}'"
                              "".format(dim, num_variables))
-<<<<<<< HEAD:code-experiments/rw-problems/rw-gan/rw_gan_evaluate.py
-        file.close()
-=======
->>>>>>> upstream/rw-new-suite:code-experiments/rw-problems/gan-mario/gan_mario_evaluate.py
 
     # Decode Problem id
     c = int(problem / (len(available_jsons) * len(available_fit)))
@@ -328,11 +318,9 @@ if __name__ == '__main__':
 
     # check variables in range
     inp = numpy.array(content[1:])
-<<<<<<< HEAD:code-experiments/rw-problems/rw-gan/rw_gan_evaluate.py
     if numpy.any(inp > 1) or numpy.any(inp < -1):  # input out of range
         with open('objectives.txt', 'w') as file:  # write out NaN result
             file.write('{}\n'.format(0))
-            file.close()
     else:
         # find correct file with highest epoch
         pattern = "GAN/{}-{}-{}/netG_epoch_*_{}.pth".format(available_jsons[g], dim, budget, available_instances[inst])
@@ -343,26 +331,3 @@ if __name__ == '__main__':
 
         fun = available_fit[f]
         fun(content[1:], netG, dim)
-=======
-    if numpy.any(inp>1) or  numpy.any(inp<-1):#input out of range
-        with open('objectives.txt', 'w') as f: #write out NaN result
-            f.write('{}\n'.format(0))
-    else:
-        netG = "GAN/samples-{0}-{1}-{2}/netG_epoch_{0}_{1}_{2}.pth".format(budget, problem%15, dim)
-    
-        # Compute the result
-        if problem<=15: #direct evaluation
-            generator = dcgan.DCGAN_G(imageSize, dim, features, ngf, ngpu, n_extra_layers)
-            generator.load_state_dict(torch.load(netG, map_location=lambda storage, loc: storage))
-            result = fitnessSO(content[1:], dim)
-            #print(count_tile_type(content[1:], dim, GROUND))
-            #print(count_tile_type(content[1:], dim, ENEMY))
-            #print(count_tile_type(content[1:], dim, PIPE))
-
-            # Write the result
-            with open('objectives.txt', 'w') as f:
-                f.write('{}\n'.format(1))
-                f.write('{}\n'.format(result))
-        else:
-            os.system('java -jar marioaiDagstuhl.jar "'+str(content[1:])+'" '+netG+' '+str(dim))
->>>>>>> upstream/rw-new-suite:code-experiments/rw-problems/gan-mario/gan_mario_evaluate.py
