@@ -23,9 +23,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 static coco_suite_t *suite_rw_gan_initialize(void) {
 
   coco_suite_t *suite;
-  const size_t dimensions[] = { 10, 20, 30, 40 };
-
-  suite = coco_suite_allocate("rw-gan", 1, 4, dimensions, "instances: 1");
+  const size_t dimensions[] = { 10 };
+  suite = coco_suite_allocate("rw-gan", 13, 1, dimensions, "instances: 1");
 
   return suite;
 }
