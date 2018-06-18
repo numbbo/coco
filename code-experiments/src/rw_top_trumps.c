@@ -9,7 +9,6 @@
 
 #include "coco.h"
 #include "coco_problem.c"
-#include "coco_utilities.c"
 #include "rw_problem.c"
 
 /**
@@ -22,8 +21,7 @@ static coco_problem_t *rw_top_trumps_problem_allocate(const char *suite_name,
                                                       const size_t instance) {
 
   coco_problem_t *problem = NULL;
-  char *str1, *str2, *str3;
-  size_t i, num;
+  size_t i;
 
   if ((objectives != 1) && (objectives != 2))
     coco_error("rw_top_trumps_problem_allocate(): %lu objectives are not supported (only 1 or 2)",

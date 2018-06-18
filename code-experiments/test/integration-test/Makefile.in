@@ -17,7 +17,7 @@ CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow
 
 ########################################################################
 ## Toplevel targets
-all: test_coco test_instance_extraction test_biobj test_bbob-constrained test_bbob-mixint test_rw_gan_mario
+all: test_coco test_instance_extraction test_biobj test_bbob-constrained test_bbob-mixint test_rw_suites
 
 clean:
 	rm -f coco.o  
@@ -26,7 +26,7 @@ clean:
 	rm -f test_biobj.o test_biobj  
 	rm -f test_bbob-constrained.o test_bbob-constrained  
 	rm -f test_bbob-mixint.o test_bbob-mixint  
-	rm -f test_rw_gan_mario.o test_rw_gan_mario  
+	rm -f test_rw_suites.o test_rw_suites  
 
 ########################################################################
 ## Programs
@@ -45,8 +45,8 @@ test_bbob-constrained: test_bbob-constrained.o coco.o
 test_bbob-mixint: test_bbob-mixint.o
 	${CC} ${CCFLAGS} -o test_bbob-mixint test_bbob-mixint.o ${LDFLAGS}  
 
-test_rw_gan_mario: test_rw_gan_mario.o
-	${CC} ${CCFLAGS} -o test_rw_gan_mario test_rw_gan_mario.o ${LDFLAGS}  
+test_rw_suites: test_rw_suites.o
+	${CC} ${CCFLAGS} -o test_rw_suites test_rw_suites.o ${LDFLAGS}  
 
 ########################################################################
 ## Additional dependencies
@@ -62,5 +62,5 @@ test_bbob-constrained.o: coco.h coco.c test_bbob-constrained.c
 	${CC} -c ${CCFLAGS} -o test_bbob-constrained.o test_bbob-constrained.c
 test_bbob-mixint.o: test_bbob-mixint.c
 	${CC} -c ${CCFLAGS} -o test_bbob-mixint.o test_bbob-mixint.c
-test_rw_gan_mario.o: test_rw_gan_mario.c
-	${CC} -c ${CCFLAGS} -o test_rw_gan_mario.o test_rw_gan_mario.c
+test_rw_suites.o: test_rw_suites.c
+	${CC} -c ${CCFLAGS} -o test_rw_suites.o test_rw_suites.c

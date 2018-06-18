@@ -30,6 +30,82 @@ static void rw_problem_data_free(coco_problem_t *problem) {
 }
 
 /**
+ * @brief Performs external evaluation of x (writes x to in_fname, calls the process given in exe_fname,
+ * reads the result from out_fname and saves it to y).
+ *
+ * The first line in in_fname contains the size of x. Each next line contains the values of x.
+ * The first line in out_fname should contain the size of y. Each next line contains the values of y.
+ * If the first line in out_fname is 0, all elements of y are set to NAN.
+ */
+static void rw_problem_external_evaluate(const double *x,
+                                         const size_t size_of_x,
+                                         const char *command,
+                                         const char *in_fname,
+                                         const char *out_fname,
+                                         double *y,
+                                         const size_t expected_size_of_y) {
+
+  size_t i = 0;
+  double result;
+  FILE *in_file;
+  FILE *out_file;
+  const int precision_x = 8;
+  int system_result, scan_result, read_size_of_y;
+
+  /* Writes x to file */
+  in_file = fopen(in_fname, "w");
+  if (in_file == NULL) {
+    coco_error("rw_problem_external_evaluate(): failed to open file '%s'.", in_fname);
+  }
+  fprintf(in_file,"%lu\n", (unsigned long)size_of_x);
+  for (i = 0; i < size_of_x; ++i) {
+    fprintf(in_file, "%.*e\n", precision_x, x[i]);
+  }
+  fclose(in_file);
+
+  /* Executes external evaluation with system() although
+     https://wiki.sei.cmu.edu/confluence/pages/viewpage.action?pageId=87152177
+     warns against using system() */
+  system_result = system(command);
+  if (system_result == -1) {
+    coco_error("rw_problem_external_evaluate(): failed to execute '%s'.", command);
+  }
+  else if (system_result != 0) {
+    coco_error("rw_problem_external_evaluate(): '%s' completed with error '%d'.", command, system_result);
+  }
+
+  /* Reads the values of y from file */
+  out_file = fopen(out_fname, "r");
+  if (out_file == NULL) {
+    coco_error("rw_problem_external_evaluate(): failed to open file '%s'.", out_fname);
+  }
+  scan_result = fscanf(out_file, "%d\n", &read_size_of_y);
+  if (scan_result != 1) {
+    coco_error("rw_problem_external_evaluate(): failed to read from '%s'.", out_fname);
+  }
+
+  if (read_size_of_y == 0) {
+    /* x could not be evaluated */
+    coco_vector_set_to_nan(y, expected_size_of_y);
+    return;
+  }
+
+  if (read_size_of_y != expected_size_of_y) {
+    coco_error("rw_problem_external_evaluate(): '%s' contains %lu elements instead of %lu.",
+        out_fname, (unsigned long)read_size_of_y, (unsigned long)expected_size_of_y);
+  }
+
+  for (i = 0; i < read_size_of_y; i++) {
+    scan_result = fscanf(out_file, "%lf\n", &result);
+    if (scan_result != 1) {
+      coco_error("rw_problem_external_evaluate(): failed to read from '%s'.", out_fname);
+    }
+    y[i] = result;
+  }
+  fclose(out_file);
+}
+
+/**
  * @brief Calls the external function to evaluate the problem.
  */
 static void rw_problem_evaluate(coco_problem_t *problem, const double *x, double *y) {
@@ -42,7 +118,7 @@ static void rw_problem_evaluate(coco_problem_t *problem, const double *x, double
     for (i = 0; i < problem->number_of_objectives; i++)
       y[i] = NAN;
 
-  coco_external_evaluate(x, problem->number_of_variables, data->command, data->var_fname,
+  rw_problem_external_evaluate(x, problem->number_of_variables, data->command, data->var_fname,
       data->obj_fname, y, problem->number_of_objectives);
 }
 
@@ -78,14 +154,14 @@ static rw_problem_data_t *get_rw_problem_data(const char *folder_name,
   coco_join_path(exe_fname, COCO_PATH_MAX, dir1, dir1, dir2, folder_name, "evaluate_function_template", NULL);
   exe_file = fopen(exe_fname, "r");
   if (exe_file == NULL) {
-    coco_error("rw_gan_mario_problem_allocate(): failed to open file '%s'.", exe_fname);
+    coco_error("rw_problem_allocate(): failed to open file '%s'.", exe_fname);
     return NULL; /* Never reached */
   }
   str2 = coco_allocate_string(COCO_PATH_MAX + 1);
   /* Store the contents of the exe_file to template2 */
   str1 = fgets(str2, COCO_PATH_MAX, exe_file);
   if (str1 == NULL) {
-    coco_error("rw_gan_mario_problem_allocate(): failed to read file '%s'.", exe_fname);
+    coco_error("rw_problem_allocate(): failed to read file '%s'.", exe_fname);
     return NULL; /* Never reached */
   }
   assert(str1 == str2);

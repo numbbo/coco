@@ -20,7 +20,7 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 /**
  * @brief Sets the dimensions and default instances for the rw-gan-mario-biobj suite.
  */
-static coco_suite_t *suite_rw_gan_mario_initialize(void) {
+static coco_suite_t *suite_rw_gan_mario_biobj_initialize(void) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 10, 20, 30, 40 };
@@ -39,10 +39,10 @@ static coco_suite_t *suite_rw_gan_mario_initialize(void) {
  * @param instance_idx Index of the instance (starting from 0).
  * @return The problem that corresponds to the given parameters.
  */
-static coco_problem_t *suite_rw_gan_mario_get_problem(coco_suite_t *suite,
-                                                      const size_t function_idx,
-                                                      const size_t dimension_idx,
-                                                      const size_t instance_idx) {
+static coco_problem_t *suite_rw_gan_mario_biobj_get_problem(coco_suite_t *suite,
+                                                            const size_t function_idx,
+                                                            const size_t dimension_idx,
+                                                            const size_t instance_idx) {
 
   coco_problem_t *problem = NULL;
 

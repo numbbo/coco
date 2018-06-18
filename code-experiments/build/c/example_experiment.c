@@ -130,11 +130,11 @@ int main(void) {
    */
   example_experiment("rw-gan-mario", "bbob", random_generator);
 
-  example_experiment("rw-gan-mario-biobj", "bbob-biobj", random_generator);
+  /*example_experiment("rw-gan-mario-biobj", "bbob-biobj", random_generator);*/
 
   example_experiment("rw-top-trumps", "bbob", random_generator);
 
-  example_experiment("rw-top-trumps-biobj", "bbob-biobj", random_generator);
+  /*example_experiment("rw-top-trumps-biobj", "bbob-biobj", random_generator);*/
 
   printf("Done!\n");
   fflush(stdout);

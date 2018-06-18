@@ -10,7 +10,6 @@
 
 #include "coco.h"
 #include "coco_problem.c"
-#include "coco_utilities.c"
 #include "rw_problem.c"
 
 /**
