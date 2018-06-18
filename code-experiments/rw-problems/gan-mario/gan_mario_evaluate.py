@@ -106,6 +106,8 @@ def gan_target_tile_type_frac(im, tile, target_frac):
 
 def tilePositionSummaryStats(im, tiles):
     coords = numpy.where(im==tiles[0])
+    if len(coords[0])==0:
+        return 0, 0, 0, 0
     x_coords = coords[1]
     y_coords = coords[0]
     for tile in tiles[1:]:
@@ -235,12 +237,11 @@ def translateLatentVector(x, netG, dim):
             final = im[0]
         else:
             final = numpy.column_stack([final, im[0]])
-    print(final)
     return final
 
 
 def outputResult(result, d=1):
-    print(result)
+    #print(result)
     with open('objectives.txt', 'w') as f:
         f.write('{}\n'.format(d))
         f.write('{}\n'.format(result))
@@ -316,14 +317,7 @@ if __name__ == '__main__':
     if c == 1:
         dim = 10
 
-    print([c, f, g])
-
-    # JUST FOR TESTING PURPOSES TO SPEED UP
-    # TODO remove later
-    if f != 1:
-        with open('objectives.txt', 'w') as file:  # write out NaN result
-            file.write('{}\n'.format(1))
-            file.write('{}\n'.format(-1000))
+    #print([c, f, g, inst])
 
     # check variables in range
     inp = numpy.array(content[1:])
@@ -332,7 +326,8 @@ if __name__ == '__main__':
             file.write('{}\n'.format(0))
     else:
         # find correct file with highest epoch
-        pattern = "GAN/{}-{}-{}/netG_epoch_*_{}.pth".format(available_jsons[g], dim, budget, available_instances[inst])
+        pattern = "GAN/{}-{}-{}/netG_epoch_*_{}.pth".format(available_jsons[g], dim, budget,
+                                                            available_instances[inst])
         files = glob.glob(pattern)
         epochs = [int(str.split(file, "_")[2]) for file in files]
         netG = "GAN/{}-{}-{}/netG_epoch_{}_{}.pth".format(available_jsons[g], dim, budget, max(epochs),
