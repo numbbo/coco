@@ -278,11 +278,9 @@ def totalActionsSimREALM(x, netG, dim):
 # expecting variables <prob> <dim> <instance>
 if __name__ == '__main__':
     _, dim, problem, inst = sys.argv
-    problem = int(problem)
+    problem = int(problem)-1
     dim = int(dim)
     inst = int(inst) - 1
-    # TODO check if ranges for functions and instances from 0 or from 1
-    # TODO check better large value if level unsolvable or NaN
     # TODO value ranges and how to set up
 
     available_dims = [10, 20, 30, 40]
