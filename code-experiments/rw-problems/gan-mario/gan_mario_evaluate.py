@@ -286,7 +286,7 @@ if __name__ == '__main__':
 
     available_dims = [10, 20, 30, 40]
     available_instances = [5641, 3854, 8370, 494, 1944, 9249, 2517, 2531, 5453, 2982, 670, 56, 6881, 1930, 5812]
-    available_jsons = ["underground"]#"'["overworld"]#, "underground", "overworlds"]  # G
+    available_jsons = ["overworld", "underground", "overworlds"]  # G
     available_fit = [enemyDistribution, positionDistribution, decorationFrequency, negativeSpace, leniency, density,
                      progressSimAStar, basicFitnessSimAStar, jumpFractionSimAStar, totalActionsSimAStar,
                      progressSimREALM, basicFitnessSimREALM, jumpFractionSimREALM, totalActionsSimREALM]  # F
