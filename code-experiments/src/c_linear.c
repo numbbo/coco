@@ -250,7 +250,7 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
      */
     for (i = 0; i < dimension; ++i)
       gradient_linear_constraint[i] = factor1 *
-                coco_random_normal(random_generator) * factor2 / sqrt(dimension);
+                coco_random_normal(random_generator) * factor2 / sqrt((double)dimension);
 
     problem = c_linear_transform(problem, gradient_linear_constraint);
     coco_free_memory(gradient_linear_constraint);
@@ -302,7 +302,6 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   
   coco_problem_t *problem_c = NULL;
   coco_problem_t *problem_c2 = NULL;
-  linear_constraint_data_t *data_c1 = NULL;
   coco_random_state_t *random_generator;
   double *gradient_c1 = NULL;
   double *gradient;
@@ -336,9 +335,6 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
       dimension, instance, 1, factor1,
       problem_id_template, problem_name_template, gradient,
       feasible_direction);
-  
-  /* Store the pointer to the first gradient for later */
-  data_c1 = (linear_constraint_data_t *) coco_problem_transformed_get_data(problem_c);
 	 
   /* Instantiate the other linear constraints (if any) and stack them 
    * all into problem_c

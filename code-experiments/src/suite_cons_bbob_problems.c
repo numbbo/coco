@@ -135,7 +135,7 @@ static void feasible_direction_set_length(double * feasible_direction,
                                           const double *xopt,
                                           size_t dimension,
                                           long rseed) {
-  const unsigned seed_offset = 412;  /* was sampled uniform in 0-999 */
+  const long seed_offset = 412;  /* was sampled uniform in 0-999 */
   const double feas_shrink = 0.75;  /* scale randomly between 0.75 and 1.0 */
   const double feas_bound = 5.0;
 

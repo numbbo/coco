@@ -23,7 +23,7 @@ import os, sys
 import numpy
 import warnings
 
-from . import genericsettings, testbedsettings
+from . import genericsettings, testbedsettings, dataformatsettings
 
 from pdb import set_trace
 from six import string_types, advance_iterator
@@ -123,7 +123,7 @@ class MultiReader(list):
             else:
                 # TODO: this looks like a very bad use-case for global variables (as most are)
                 # similar are scattered over the classes below
-                self.idxEvals = testbedsettings.current_testbed.data_format.evaluation_idx
+                self.idxEvals = dataformatsettings.current_data_format.evaluation_idx
 
         def next(self):
             """Returns the next (last if undefined) line of the array data."""
@@ -156,9 +156,9 @@ class VMultiReader(MultiReader):
     def __init__(self, data):
         super(VMultiReader, self).__init__(data)
         # the alignment value is the number of function evaluations.
-        self.idx = testbedsettings.current_testbed.data_format.evaluation_idx
+        self.idx = dataformatsettings.current_data_format.evaluation_idx
         # the data of concern are the function values.
-        self.idxData = testbedsettings.current_testbed.data_format.function_value_idx
+        self.idxData = dataformatsettings.current_data_format.function_value_idx
 
     def isFinished(self):
         return all(i.isFinished for i in self)
@@ -196,9 +196,9 @@ class HMultiReader(MultiReader):
     def __init__(self, data):
         super(HMultiReader, self).__init__(data)
         # the data of concern are the number of function evals.
-        self.idxData = testbedsettings.current_testbed.data_format.evaluation_idx
+        self.idxData = dataformatsettings.current_data_format.evaluation_idx
         # the alignment value is the function value.
-        self.idx = testbedsettings.current_testbed.data_format.function_value_idx
+        self.idx = dataformatsettings.current_data_format.function_value_idx
         self.nbPtsF = testbedsettings.current_testbed.number_of_points
         self.idxCurrentF = numpy.inf  # Minimization
         # idxCurrentF is a float for the extreme case where it is infinite.
@@ -355,8 +355,25 @@ def align_data(data, idx_evals, idx_funvals, rewind_reader=False):
             raise TypeError("reset class %s not implemented"
                             % type(data))
 
+    keep_idxData, keep_idx = data.idxData, data.idx
+    # This is terrible but needed, because several columns idxData need
+    # to be read from the very same `data` in the constrained case and a
+    # single call to `align_data` only allows to read in one column
+    if isinstance(data, HMultiReader):
+        data.idxData = idx_evals
+        data.idx = idx_funvals
+    elif isinstance(data, VMultiReader):  # so far not necessary
+        data.idxData = idx_funvals
+        data.idx = idx_evals
+    else:
+        raise TypeError("reset class %s not implemented"
+                        % type(data))
+    if set((data.idxData, data.idx)) != set((idx_evals, idx_funvals)):
+        raise ValueError("indices are inconsistent " +
+                         str((idx_evals, idx_funvals, data.idx, data.idxData)))
+
     res = []
-    current_value= data.getInitialValue()
+    current_value = data.getInitialValue()
     # set_trace()
     if data.isFinished():
         res.append(data.align(current_value))
@@ -365,10 +382,14 @@ def align_data(data, idx_evals, idx_funvals, rewind_reader=False):
         res.append(data.align(current_value))
         current_value = data.newCurrentValue()
 
-    return (numpy.vstack(res), numpy.array(list(i.nextLine[idx_evals] for i in data)),
-            numpy.array(list(i.nextLine[idx_funvals] for i in data)))
+    res = (numpy.vstack(res), numpy.asarray([i.nextLine[idx_evals] for i in data]),
+            numpy.asarray([i.nextLine[idx_funvals] for i in data]))
     # Hack: at this point nextLine contains all information on the last line
     # of the data.
+
+    data.idxData, data.idx = keep_idxData, keep_idx
+
+    return res
 
 
 def alignArrayData(data):

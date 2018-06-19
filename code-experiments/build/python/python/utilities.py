@@ -334,7 +334,10 @@ class MiniPrint(object):
             self.dimension = problem.dimension
             self._calls = 0
         elif not self._calls % 10:
-            print(' ', end='')
+            if self._calls % 50:
+                print(' ', end='')
+            else:
+                print()
         self._calls += 1
         print('|' if problem.final_target_hit else ':' if restarted else '.', end='')
         if final:  # final print
