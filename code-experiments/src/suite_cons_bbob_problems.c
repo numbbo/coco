@@ -83,7 +83,6 @@
 
 #include "coco.h"
 #include "coco_utilities.c"
-#include "coco_random.c"
 #include "c_linear.c"
 #include "f_different_powers.c"
 #include "f_discus.c"

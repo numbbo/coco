@@ -206,15 +206,16 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
   
   double *gradient_linear_constraint = NULL;
   coco_problem_t *problem = NULL;
-  coco_random_state_t *random_generator;
   long seed_cons_i;
-  double factor2;
+  double factor2, *uniform, *gaussian;
   
   problem = c_sum_variables_allocate(dimension);
   
   seed_cons_i = (long)(function + 10000 * instance 
                                 + 50000 * constraint_number);
-  random_generator = coco_random_new((uint32_t) seed_cons_i);
+
+  uniform = coco_allocate_vector(1);
+  gaussian = coco_allocate_vector(dimension);
   
   /* The constraints gradients are scaled with random numbers
    * 10**U[0,1] and 10**U_i[0,2], where U[a, b] is uniform in [a,b] 
@@ -225,8 +226,8 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
    * constraints is n+1, in which case 'factor2' defines a random
    * number 10**U_i[0,1])
    */
-     
-  factor2 = pow(100.0, coco_random_uniform(random_generator));
+  bbob2009_unif(uniform, 1, seed_cons_i);
+  factor2 = pow(100.0, uniform[0]);
     
   
   /* Set the gradient of the linear constraint if it is given.
@@ -248,9 +249,10 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
     /* Generate a pseudorandom vector with distribution N_i(0, I)
      * and scale it with 'factor1' and 'factor2' (see comments above)
      */
+    bbob2009_gauss(gaussian, dimension, seed_cons_i);
     for (i = 0; i < dimension; ++i)
       gradient_linear_constraint[i] = factor1 *
-                coco_random_normal(random_generator) * factor2 / sqrt((double)dimension);
+                gaussian[i] * factor2 / sqrt((double)dimension);
 
     problem = c_linear_transform(problem, gradient_linear_constraint);
     coco_free_memory(gradient_linear_constraint);
@@ -268,7 +270,8 @@ static coco_problem_t *c_linear_single_cons_bbob_problem_allocate(const size_t f
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "linear");
-  coco_random_free(random_generator);
+  coco_free_memory(uniform);
+  coco_free_memory(gaussian);
   return problem;
   
 }
@@ -302,11 +305,10 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   
   coco_problem_t *problem_c = NULL;
   coco_problem_t *problem_c2 = NULL;
-  coco_random_state_t *random_generator;
   double *gradient_c1 = NULL;
-  double *gradient;
+  double *gradient, *uniform;
   long seed_cons;
-  double exp1, factor1;
+  double factor1;
   
   gradient_c1 = coco_allocate_vector(dimension);
   																	
@@ -322,9 +324,9 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   
   /* Calculate the first random factor 10**U[0,1]. */
   seed_cons = (long)(function + 10000 * instance);
-  random_generator = coco_random_new((uint32_t) seed_cons);
-  exp1 = coco_random_uniform(random_generator);
-  factor1 = global_scaling_factor * pow(10.0, exp1);
+  uniform = coco_allocate_vector(1);
+  bbob2009_unif(uniform, 1, seed_cons);
+  factor1 = global_scaling_factor * pow(10.0, uniform[0]);
 
   /* Build the first linear constraint using 'gradient_c1' to build
    * its gradient.
@@ -365,7 +367,7 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
   }
   
   coco_free_memory(gradient_c1);
-  coco_random_free(random_generator);
+  coco_free_memory(uniform);
   
   return problem_c;
  
