@@ -19,6 +19,13 @@ conda install torchvision=0.2.0
 
 If the right versions are not available, download the `whl` files for your system at [https://pytorch.org/previous-versions/](https://pytorch.org/previous-versions/)
 
+Another alternative (for the installation on Windows):
+
+````
+conda install -c peterjc123 pytorch
+pip install torchvision==0.2.0
+````
+
 ## Java
 
 Java is required to perform evaluation through simulations. 
