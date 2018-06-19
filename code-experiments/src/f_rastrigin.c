@@ -10,7 +10,6 @@
 #include "coco.h"
 #include "coco_problem.c"
 #include "suite_bbob_legacy_code.c"
-#include "coco_random.c"
 #include "coco_utilities.c"
 #include "transform_vars_conditioning.c"
 #include "transform_vars_asymmetric.c"
@@ -176,15 +175,11 @@ static coco_problem_t *f_rastrigin_rotated_bbob_problem_allocate(const size_t fu
 static void f_rastrigin_cons_compute_xopt(double *xopt, const long rseed, const size_t dim) {
 
   size_t i;
-  coco_random_state_t *state;
 
-  /* printf("-------\n"); */
-  state = coco_random_new((uint32_t) rseed);
-  /* printf("f_rastrigin_cons_compute_xopt(): first random number: %f\n", state->x[0]);
-  printf("-------\n"); */
+  bbob2009_unif(xopt, dim, rseed);
 
   for (i = 0; i < dim; ++i) {
-    xopt[i] = 10 * coco_random_uniform(state) - 5;
+    xopt[i] = 10 * xopt[i] - 5;
     xopt[i] = (int) xopt[i];
   }
 
@@ -193,8 +188,6 @@ static void f_rastrigin_cons_compute_xopt(double *xopt, const long rseed, const 
     for (i = 0; i < dim; ++i) {
         xopt[i] = (int) (i % 9) - 4;
     }
-
-  coco_random_free(state);
 }
 
 /**
@@ -209,18 +202,9 @@ static coco_problem_t *f_rastrigin_cons_bbob_problem_allocate(const size_t funct
 
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
-  /* size_t i;
-  FILE *xopt_f_rastrigin = fopen("uncons_xopt_f_rastrigin.txt", "a"); */
 
   xopt = coco_allocate_vector(dimension);
   f_rastrigin_cons_compute_xopt(xopt, rseed, dimension);
-
-  /* fprintf(xopt_f_rastrigin, "f%lu, %luD, i%lu:\n[ ", function, dimension, instance);
-  for (i = 0; i < dimension; ++i)
-    fprintf(xopt_f_rastrigin, "%.2f ", xopt[i]);
-  fprintf(xopt_f_rastrigin, "]\n\n");
-  fclose(xopt_f_rastrigin); */
-
   fopt = bbob2009_compute_fopt(function, instance);
 
   problem = f_rastrigin_allocate(dimension);
