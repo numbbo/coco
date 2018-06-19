@@ -25,7 +25,7 @@ static coco_suite_t *suite_rw_gan_mario_initialize(void) {
   coco_suite_t *suite;
   const size_t dimensions[] = { 10, 20, 30, 40 };
 
-  suite = coco_suite_allocate("rw-gan-mario", 84, 4, dimensions, "instances: 1-15");
+  suite = coco_suite_allocate("rw-gan-mario", 84, 4, dimensions, "instances: 1-3");
 
   return suite;
 }
