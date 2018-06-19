@@ -1600,6 +1600,29 @@ class DataSet(object):
 
         return list(tmp[i][1:] for i in targets)
 
+    def get_nb_constraints_label(self):
+        """Returns the label corresponding to the number of constraints
+        of a bbob-constrained problem. Constraints labels are:
+        '1', '2', '6', '6 + n/2', '6 + n', and '6 + 3n', where n is
+        the dimension of the problem
+        """
+        if not isinstance(testbedsettings.current_testbed, testbedsettings.CONSBBOBTestbed):
+            warnings.warn("This data set does not correspond to a constrained problem.")
+            raise ValueError("Function get_nb_constraints_label() not implemented for this testbed.")
+
+        return testbedsettings.current_testbed.settings['constraints_labels'][(self.funcId - 1) % \
+                                                                              len(testbedsettings.current_testbed.settings['constraints_labels'])]
+
+    def get_underlying_objective_fct(self):
+        """Returns the name of the objective function in a constrained problem
+        """
+        if not isinstance(testbedsettings.current_testbed, testbedsettings.CONSBBOBTestbed):
+            warnings.warn("This data set does not correspond to a constrained problem.")
+            raise ValueError("Function get_underlying_objective_fct() not implemented for this testbed.")
+
+        return testbedsettings.current_testbed.settings['objective_fcts'][(self.funcId - 1) // \
+                                                                          len(testbedsettings.current_testbed.settings['constraints_labels'])]
+
     def plot_funvals(self, **kwargs):
         """plot data of `funvals` attribute, versatile
 
@@ -2049,6 +2072,27 @@ class DataSetList(list):
         d = {}
         for i in self:
             d.setdefault(getattr(i, param, None), DataSetList()).append(i)
+        return d
+
+    def dictByObjectiveFct(self):
+        """Returns a dictionary of DataSetList by objective function labels.
+        This function is used to plot aRT graphs as a function of the number of constraints
+        on the bbob-constrained testbed.
+        """
+        d = {}
+        for i in self:
+            obj_fct = i.get_underlying_objective_fct()
+            d.setdefault(obj_fct, DataSetList()).append(i)
+        return d
+
+    def dictByNumberOfConstraints(self):
+        """Returns a dictionary of DataSetList by constraint numbers
+        as labels '1', '2', '6', '6 + n/2', '6 + n', '6 + 3n'
+        """
+        d = {}
+        for i in self:
+            number_of_constraints = i.get_nb_constraints_label()
+            d.setdefault(number_of_constraints, DataSetList()).append(i)
         return d
 
     def info(self, opt=None):

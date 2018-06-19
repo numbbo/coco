@@ -299,6 +299,11 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         # Isn't the point that the data_format should be set
         # independently of the testbed constrained to the data we actually
         # see, that is, not assigned here?
+        #
+        # Constraints labels and objective functions
+        constraints_labels=['1', '2', '6', '6 + n/2', '6 + n', '6 + 3n'],
+        objective_fcts = ['sphere', 'ellipsoid', 'linear', 'rotated ellipsoid', 'discus', 'bent cigar', \
+                          'different powers', 'rastrigin']
     )
 
 
