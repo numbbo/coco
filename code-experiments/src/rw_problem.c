@@ -56,6 +56,8 @@ void rw_problem_external_evaluate(const double *x,
   int scan_result, read_size_of_y;
 
 #if defined(USES_CREATEPROCESS)
+  char *path_dup;
+  char *command_dup;
   STARTUPINFO StartupInfo;
   PROCESS_INFORMATION ProcessInfo;
   StartupInfo.cb = sizeof(STARTUPINFO);
@@ -66,7 +68,6 @@ void rw_problem_external_evaluate(const double *x,
   StartupInfo.lpTitle = NULL;
   StartupInfo.cbReserved2 = 0;
   StartupInfo.lpReserved2 = NULL;
-  char *path_dup = coco_strdup(path);
 #elif defined(USES_EXECVP)
   pid_t process_id;
   int status;
@@ -88,7 +89,9 @@ void rw_problem_external_evaluate(const double *x,
 
 #ifdef USES_CREATEPROCESS
   /* Call the process Windows-style */
-  process_result = CreateProcess(NULL, command, NULL, NULL, 0,
+  path_dup = coco_strdup(path);
+  command_dup = coco_strdup(command);
+  process_result = CreateProcess(NULL, command_dup, NULL, NULL, 0,
     NORMAL_PRIORITY_CLASS, NULL, path_dup, &StartupInfo, &ProcessInfo);
 
   do {} while (WaitForSingleObject(ProcessInfo.hProcess, 100) == WAIT_TIMEOUT);
@@ -101,6 +104,7 @@ void rw_problem_external_evaluate(const double *x,
   CloseHandle(ProcessInfo.hProcess);
   CloseHandle(ProcessInfo.hThread);
   coco_free_memory(path_dup);
+  coco_free_memory(command_dup);
 
 #elif defined(USES_EXECVP)
   /* Call the process Linux-style */
