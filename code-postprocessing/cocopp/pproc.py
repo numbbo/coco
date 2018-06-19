@@ -621,8 +621,10 @@ class DataSet(object):
         funvals
         generateRLData
         get_data_format
+        get_nb_constraints_label
         get_suite
         get_testbed_name
+        get_underlying_objective_fct
         indexFiles
         info
         instancenumbers
