@@ -109,7 +109,7 @@ def diff_attr(m1, m2, exclude=('_', )):
             for key in m1.__dict__
                 if hasattr(m2, key) and
                     not any(key.startswith(s) for s in exclude)
-                    and getattr(m1, key) != getattr(m2, key)]
+                    and np.all(getattr(m1, key) != getattr(m2, key))]
 
 def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
     """"prepend lines the tex-command filename """

@@ -104,15 +104,14 @@ def config(testbed_name=None):
                                               force_different_targets_factor=10**-0.2)
 
             testbed.pprldmany_target_values = pproc.RunlengthBasedTargetValues(
-                                              np.logspace(np.log10(0.5), np.log10(50), 31),
+                                              settings.target_runlengths_pprldmany,
                                               reference_data=reference_data,
                                               smallest_target=1e-8 * 10**0.000,
                                               force_different_targets_factor=1,
                                               unique_target_values=True)
 
             testbed.ppscatter_target_values = pproc.RunlengthBasedTargetValues(
-                                              np.logspace(np.log10(0.5),
-                                                          np.log10(50), 8))
+                                              settings.target_runlengths_ppscatter)
             # pptable:
             testbed.pptable_targetsOfInterest = pproc.RunlengthBasedTargetValues(
                                                 testbed.pptable_target_runlengths,
