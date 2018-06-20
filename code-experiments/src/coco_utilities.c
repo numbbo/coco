@@ -17,6 +17,14 @@
 #include "coco_internal.h"
 #include "coco_string.c"
 
+
+/***********************************************************************************************************/
+
+/**
+ * @brief Sets the constant chosen_precision to 1e-9.
+ */
+static const double chosen_precision = 1e-9;
+
 /***********************************************************************************************************/
 
 /**
@@ -885,7 +893,7 @@ static int coco_double_almost_equal(const double a, const double b, const double
  * @brief Returns 1 if x is NAN and 0 otherwise.
  */
 static int coco_is_nan(const double x) {
-  return (isnan(x) || (x != x) || !(x == x) || ((x >= NAN / (1 + 1e-9)) && (x <= NAN * (1 + 1e-9))));
+  return (isnan(x) || (x != x) || !(x == x) || ((x >= NAN / (1 + chosen_precision)) && (x <= NAN * (1 + chosen_precision))));
 }
 
 /**
@@ -1030,27 +1038,95 @@ static size_t coco_count_numbers(const size_t *numbers, const size_t max_count, 
 }
 
 /**
- * @brief Normalizes vector x and multiplies each componenent by alpha.
+ * @brief multiply each componenent by nom/denom or by nom if denom == 0.
+ *
+ * return used scaling factor, usually nom/denom.
+ *
+ * Example: coco_vector_scale(x, dimension, 1, coco_vector_norm(x, dimension));
+ */
+static double coco_vector_scale(double *x, size_t dimension, double nom, double denom) {
+
+  size_t i;
+
+  assert(x);
+
+  if (denom != 0)
+    nom /= denom;
+
+  for (i = 0; i < dimension; ++i)
+      x[i] *= nom;
+  return nom;
+}
+
+/**
+ * @brief return norm of vector x.
  *
  */
-static void coco_scale_vector(double *x, size_t dimension, double alpha) {
-  
+static double coco_vector_norm(const double *x, size_t dimension) {
+
   size_t i;
-  double norm = 0.0;
-  
+  double ssum = 0.0;
+
   assert(x);
-  
+
   for (i = 0; i < dimension; ++i)
-    norm += x[i] * x[i];
-    
-  norm = sqrt(norm);
-  
-  if (norm != 0.0) {
-    for (i = 0; i < dimension; ++i) {
-      x[i] /= norm;
-      x[i] *= alpha;
-	 }
+    ssum += x[i] * x[i];
+
+  return sqrt(ssum);
+}
+
+/**
+ * @brief Checks if a given matrix M is orthogonal by (partially) computing M * M^T.
+ * If M is a square matrix and M * M^T is close enough to the identity matrix
+ * (up to a chosen precision), the function returns 1. Otherwise, it returns 0.
+ * The matrix M must be represented as an array of doubles.
+ */
+static int coco_is_orthogonal(const double *M, const size_t nb_rows, const size_t nb_columns) {
+
+  size_t i, j, z;
+  double sum;
+
+  if (nb_rows != nb_columns)
+    return 0;
+
+  for (i = 0; i < nb_rows; ++i) {
+    for (j = 0; j < nb_rows; ++j) {
+        /* Compute the dot product of the ith row of M
+         * and the jth column of M^T (i.e. jth row of M)
+         */
+        sum = 0.0;
+        for (z = 0; z < nb_rows; ++z) {
+            sum += M[i * nb_rows + z] * M[j * nb_rows + z];
+        }
+
+        /* Check if the dot product is 1 (resp. 0) when the row and the column
+         * indices are the same (resp. different)
+         */
+        if (((i == j) && !coco_double_almost_equal(sum, 1, chosen_precision)) ||
+            ((i != j) && !coco_double_almost_equal(sum, 0, chosen_precision)))
+                return 0;
+
+    }
   }
+  return 1;
+}
+
+/**
+ * @brief Returns 1 if the input vector x is (close to) zero and 0 otherwise.
+ */
+static int coco_vector_is_zero(const double *x, const size_t dim) {
+  size_t i = 0;
+  int is_zero = 1;
+
+  if (coco_vector_contains_nan(x, dim))
+    return 0;
+
+  while (i < dim && is_zero) {
+    is_zero = coco_double_almost_equal(x[i], 0, chosen_precision);
+    i++;
+  }
+
+  return is_zero;
 }
 /**@}*/
 

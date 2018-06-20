@@ -1,7 +1,9 @@
 from __future__ import absolute_import, division, print_function
 import sys as _sys  # avoid name space polluting
+import ast as _ast
 import time as _time
 import numpy as np
+
 
 def about_equal(a, b, precision=1e-6):
     """
@@ -9,7 +11,7 @@ def about_equal(a, b, precision=1e-6):
     """
     if a == b:
         return True
-    
+
     absolute_error = abs(a - b)
     larger = a if abs(a) > abs(b) else b
     relative_error = abs(a - b) / (abs(larger) + 2 * _sys.float_info.min)
@@ -19,10 +21,83 @@ def about_equal(a, b, precision=1e-6):
     return relative_error < precision
 
 
+def args_to_dict(args, known_names, specials=None, split='=',
+                 print=lambda *args, **kwargs: None):
+    """return a `dict` from a list of ``"name=value"`` strings.
+
+    `args` come in the form of a `list` of ``"name=value"`` strings
+    without spaces, like ``["budget_multiplier=100"]``.
+
+    Return ``dict(arg.split(split) for arg in args)`` in the most
+    basic case, but additionally (i) checks that the keys of this
+    `dict` are known names, (ii) evaluates the values in some cases
+    and (iii) handles `specials`.
+
+    `know_names` is an iterable (`dict` or `list` or `tuple`) of strings.
+    If ``know_names is None``, all args are processed, otherwise a
+    `ValueError` is raised for unknown names. This is useful if we
+    want to re-assign variables (overwrite default values) and avoid
+    spelling mistakes pass silently.
+
+    The value is processed as a Python literal with `ast.literal_eval`
+    or remains a `str` when this is unsuccessful.
+
+    `specials` is a `dict` and can currently only contain ``'batch'``,
+    followed by ``"name1/name2"`` as value. ``name1`` and ``name2`` are
+    then assigned from the values in `arg`, for example to 2 and 4 with
+    ``batch=2/4``.
+
+    A main usecase is to process ``sys.argv[1:]`` into a `dict` in a
+    python script, like::
+
+        command_line_dict = args_to_dict(sys.argv[1:], globals())
+        globals().update(command_line_dict)
+
+    >>> import cocoex
+    >>> d = cocoex.utilities.args_to_dict(["budget=2.3", "bed=bed-name", "number=4"],
+    ...                                   ["budget", "bed", "number", "whatever"])
+    >>> len(d)
+    3
+    >>> assert d['bed'] == 'bed-name'
+    >>> assert isinstance(d["budget"], float)
+
+    """
+    def eval_value(value):
+        try:
+            return _ast.literal_eval(value)
+        except ValueError:
+            return value
+    res = {}
+    for arg in args:
+        name, value = arg.split(split)
+        # what remains to be done is to verify name,
+        # compute non-string value, and assign res[name] = value
+        if specials and name in specials:
+            if name == 'batch':
+                print('batch:')
+                for k, v in zip(specials['batch'].split('/'), value.split('/')):
+                    res[k] = int(v)  # batch accepts only int
+                    print(' ', k, '=', res[k])
+                continue  # name is processed
+            else:
+                raise ValueError(name, 'is unknown special')
+        for known_name in known_names if known_names is not None else [name]:
+            # check that name is an abbreviation of known_name and unique in known_names
+            if known_name.startswith(name) and (
+                        sum([other.startswith(name)
+                             for other in known_names or [names]]) == 1):
+                res[known_name] = eval_value(value)
+                print(known_name, '=', res[known_name])
+                break  # name == arg.split()[0] is processed
+        else:
+            raise ValueError(name, 'not found or ambiguous in `known_names`')
+    return res
+
+
 class ObserverOptions(dict):
     """a `dict` with observer options which can be passed to
     the (C-based) `Observer` via the `as_string` property.
-    
+
     See http://numbbo.github.io/coco-doc/C/#observer-parameters
     for details on the available (C-based) options.
 
@@ -178,23 +253,97 @@ class ProblemNonAnytime(object):
             (np.random.rand(self.dimension) + np.random.rand(self.dimension))
             * (self.upper_bounds - self.lower_bounds) / 2)
 
+
+class SameFunction:
+    """Count the number of consecutive instances of the same function.
+
+    Useful to limit the number of repetitions on the same function.
+
+    Example:
+
+    >>> import cocoex
+    >>> from cocoex.utilities import SameFunction
+    >>>
+    >>> suite = cocoex.Suite('bbob', '', '')
+    >>> already_seen = SameFunction()
+    >>> processed = 0
+    >>> for problem in suite:
+    ...     if already_seen(problem.id) > 5:
+    ...         continue
+    ...     # do something here only with the first five instances
+    ...     processed += 1
+    >>> processed, len(suite), already_seen.count
+    (864, 2160, 15)
+
+    More arbitrary tests:
+
+    >>> for i in range(4):
+    ...     if seen('f001_i%d' % i) > 2:
+    ...         continue
+    ...     # do something here only the first two instances
+    >>> seen.count
+    4
+    >>> seen('f_d03_i001')
+    0
+    >>> seen('f_d03_i02')
+    1
+    >>> for i in range(4):
+    ...     if seen('f%d_i%d' % (i, i)):
+    ...         break
+    >>> i, seen.count
+    (3, 1)
+
+    """
+    @staticmethod
+    def filter(id):
+        """remove instance information and return a `tuple`"""
+        return tuple(i for i in id.split('_') if not i.startswith('i'))
+    def __init__(self):
+        self.count = 0
+    def __call__(self, id):
+        """return number of directly preceding calls with similar `id`s
+        """
+        new = SameFunction.filter(id)
+        if self.count == 0 or new != self.last:
+            self.last = new
+            self.count = 0
+        self.count += 1
+        return self.count - 1  # return old count
+
+
 class MiniPrint(object):
     """print dimension when changed and a single symbol for each call.
 
-    Details: print '|' if ``problem.final_target_hit`` else '.'
+    Details: print '|' if ``problem.final_target_hit``, ':' if restarted
+    and '.' otherwise.
     """
     def __init__(self):
         self.dimension = None
-    def __call__(self, problem, final=False):
+        self._calls = 0
+        self._day0 = _time.localtime()[2]
+    def __call__(self, problem, final=False, restarted=False):
         if self.dimension != problem.dimension:
             if self.dimension is not None:
                 print('')
-            print("%dD: " % problem.dimension, end='')
+            ltime = _time.localtime()[2:6]
+            print("%dD " % problem.dimension, end='')
+            print("%dh%02d:%02ds" % ltime[1:], end='')
+            if ltime[0] > self._day0:
+                print("+%dd" % (ltime[0] - self._day0), end='')
+            print('')
             self.dimension = problem.dimension
-        print('|' if problem.final_target_hit else '.', end='')
+            self._calls = 0
+        elif not self._calls % 10:
+            if self._calls % 50:
+                print(' ', end='')
+            else:
+                print()
+        self._calls += 1
+        print('|' if problem.final_target_hit else ':' if restarted else '.', end='')
         if final:  # final print
             print('')
         _sys.stdout.flush()
+
 
 class ShortInfo(object):
     """print minimal info during benchmarking.
@@ -273,10 +422,11 @@ class ShortInfo(object):
         h, m, s = l[3].split(':')
         return d + ' ' + h + 'h' + m + ':' + s
 
+
 def ascetime(sec):
     """return elapsed time as str.
 
-    Example: return `"0h33:21"` if `sec == 33*60 + 21`. 
+    Example: return `"0h33:21"` if `sec == 33*60 + 21`.
     """
     h = sec / 60**2
     m = 60 * (h - h // 1)
@@ -290,4 +440,3 @@ def print_flush(*args):
     _sys.stdout.flush()
 
 del absolute_import, division, print_function
-

@@ -35,6 +35,7 @@ import warnings
 from pdb import set_trace
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import (FixedLocator, FuncFormatter, NullFormatter)
 from .. import toolsstats, bestalg, genericsettings, testbedsettings
 from .. import pproc as pp  # import dictAlgByDim, dictAlgByFun
 from .. import toolsdivers  # strip_pathname, str_to_latex
@@ -327,8 +328,13 @@ def plotLegend(handles, maxval):
         lh = min(lh, len(show_algorithms))
     if lh <= 1:
         lh = 2
-    fontsize = genericsettings.minmax_algorithm_fontsize[0] + np.min((1, np.exp(9 - lh))) * (
-        genericsettings.minmax_algorithm_fontsize[-1] - genericsettings.minmax_algorithm_fontsize[0])
+    fontsize_interp = (20.0 - lh) / 10.0
+    if fontsize_interp > 1.0:
+        fontsize_interp = 1.0
+    if fontsize_interp < 0.0:
+        fontsize_interp = 0.0
+    fontsize_bounds = genericsettings.minmax_algorithm_fontsize
+    fontsize = fontsize_bounds[0] + fontsize_interp * (fontsize_bounds[-1] - fontsize_bounds[0])
     i = 0  # loop over the elements of ys
     for j in sorted(ys.keys()):
         for k in reversed(sorted(ys[j].keys())):
@@ -352,12 +358,9 @@ def plotLegend(handles, maxval):
                                  'markeredgewidth', 'markerfacecolor',
                                  'markeredgecolor', 'markersize', 'zorder'):
                         tmp[attr] = plt.getp(h, attr)
+                    tmp['color'] = tmp['markeredgecolor']
                     legx = maxval ** annotation_line_end_relative
-                    if 'marker' in attr:
-                        legx = maxval ** annotation_line_end_relative
-                    # reshandles.extend(plt_plot((maxval, legx), (j, y),
-                    reshandles.extend(plt_plot((maxval, legx), (j, y),
-                                               color=plt.getp(h, 'markeredgecolor'), **tmp))
+                    reshandles.extend(plt_plot((maxval, legx), (j, y), **tmp))
                     reshandles.append(
                         plt.text(maxval ** (0.02 + annotation_line_end_relative), y,
                                  toolsdivers.str_to_latex(
@@ -372,7 +375,7 @@ def plotLegend(handles, maxval):
     # plt.axvline(x=maxval, color='k') # Not as efficient?
     reshandles.append(plt_plot((maxval, maxval), (0., 1.), color='k'))
     reslabels.reverse()
-    plt.xlim(xmax=maxval ** annotation_space_end_relative)
+    plt.xlim(xmax=maxval)
     return reslabels, reshandles
 
 
@@ -808,7 +811,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     text += '\n'
     num_of_instances = []
     for alg in algorithms_with_data:
-        if len(dictAlgperFunc[alg]) > 0:
+        if alg in genericsettings.foreground_algorithm_list and len(dictAlgperFunc[alg]) > 0:
             num_of_instances.append(len((dictAlgperFunc[alg])[0].instancenumbers))
         else:
             warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
@@ -834,17 +837,22 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                   fontsize=title_fontsize)
     a = plt.gca()
 
-    plt.xlim(xmin=1e-0, xmax=x_limit ** annotation_space_end_relative)
-    xticks, labels = plt.xticks()
-    tmp = []
-    for i in xticks:
-        tmp.append('%d' % round(np.log10(i)))
-    a.set_xticklabels(tmp)
+    plt.xlim(xmin=1e-0, xmax=x_limit)
+    xmaxexp = int(np.floor(np.log10(x_limit)))
+    xmajorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1, 2)]
+    xminorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1)]
+    def formatlabel(val, pos):
+        labeltext = '{:d}'.format(int(round(np.log10(val))))
+        return labeltext
+    a.xaxis.set_major_locator(FixedLocator(xmajorticks))
+    a.xaxis.set_major_formatter(FuncFormatter(formatlabel))
+    a.xaxis.set_minor_locator(FixedLocator(xminorticks))
+    a.xaxis.set_minor_formatter(NullFormatter())
 
     if save_figure:
         ppfig.save_figure(figureName,
                           dictAlg[algorithms_with_data[0]][0].algId,
-                          layout_rect=(0, 0, 0.88, 1))
+                          layout_rect=(0, 0, 0.735, 1))
         if plotType == PlotType.DIM:
             file_name = genericsettings.pprldmany_file_name
             ppfig.save_single_functions_html(

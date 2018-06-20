@@ -2,7 +2,8 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 from . import genericsettings
 
-current_data_format = None  # is currently hidden under testbedsettings.data_format, so this needs clean-up
+current_data_format = None  # used in readalign as global var
+
 
 class DataFormat(object):
     """serves to define and manage the interfacing between written logger
@@ -37,11 +38,13 @@ class DataFormat(object):
         assert all(dataset.evals[0][1:] == 1)
         return maxevals, finalfunvals
 
+
 class BBOBOldDataFormat(DataFormat):
     def __init__(self):
         self.evaluation_idx = 0  # index of the column where to find the evaluations
         # column idx 1 is current noise-free fitness - Fopt
         self.function_value_idx = 2  # index of the column where to find the function values (best fitness)
+
 
 class BBOBNewDataFormat(DataFormat):
     """the new data format assumes constraints evaluations as second column
@@ -54,10 +57,10 @@ class BBOBNewDataFormat(DataFormat):
     def align_data_into_evals(self, aligner, data, dataset):
         "" + DataFormat.align_data_into_evals.__doc__ + """
 
-        Writes attributes of `dataset`, namely `evals_constraints`,
-        `evals_function`, and `evals` as sum of the two.
+        Writes attributes of `dataset`, in particular `evals_constraints`,
+        and `evals_function`, and `evals` as weighted sum of the two,
+        unless no single constraints evaluation is found.
         """
-        # print('in align_data_into_evals')
         dataset.evals_function, maxevals, finalfunvals = aligner(data,
                                                             self.evaluation_idx,
                                                             self.function_value_idx)
@@ -68,19 +71,21 @@ class BBOBNewDataFormat(DataFormat):
 
         assert all(finalfunvals == finalfunvals_cons)  # evals are different
         assert len(dataset.evals_function) >= len(dataset.evals_constraints)  # can't be > !?
-        # number of (non-)nan's in both data must agree because the very same aligner was used
-        assert np.sum(np.isfinite(dataset.evals_function)) == np.sum(np.isfinite(dataset.evals_constraints))
+        # number of (non-)nan's in both data do not agree!
+        # there may be no nan's in dataset.evals_constraints (not sure why)
+        # assert np.sum(np.isfinite(dataset.evals_function)) == np.sum(np.isfinite(dataset.evals_constraints))
 
         # check whether all constraints evaluations are zero
-        # we then conclude that we don't need the _function and
-        # _constraints attributes
+        # we then conclude that we don't need the evals_function and
+        # evals_constraints attributes
         if np.nanmax(dataset.evals_constraints) == 0 and np.nanmax(dataset.evals_function) > 1:
             # if evals_function <= 1 we rather keep attributes to be on the save side for debugging
             dataset.evals = dataset.evals_function
             del dataset.evals_function  # clean dataset namespace
             del dataset.evals_constraints
+            return maxevals, finalfunvals
         else:
-            # for the time being we add evals_functions and evals_constraints
+            # assign dataset.evals
             dataset.evals = dataset.evals_function.copy()
             if genericsettings.weight_evaluations_constraints[0] != 1:
                 dataset.evals[:,1:] *= genericsettings.weight_evaluations_constraints[0]
@@ -89,11 +94,13 @@ class BBOBNewDataFormat(DataFormat):
             j, j_max = 0, len(dataset.evals_constraints[:, 0])
             for i, eval_row in enumerate(dataset.evals):
                 # find j such that target[j] < target[i] (don't rely on floats being equal, though we probably could)
-                while j < j_max and dataset.evals_constraints[j, 0] + 1e-14 >= eval_row[0]:
+                while j < j_max and dataset.evals_constraints[j, 0] + 1e-14 > eval_row[0]:
                     j += 1  # next smaller (target) f-value
                 eval_row[1:] += dataset.evals_constraints[j-1, 1:] * genericsettings.weight_evaluations_constraints[1]
-            # print(dataset.evals_function, dataset.evals_constraints, dataset.evals)
-        return maxevals, finalfunvals
+            # TODO: not sure this is always what we want, but it is at least consistent with dataset.evals
+            return (genericsettings.weight_evaluations_constraints[0] * maxevals +
+                    genericsettings.weight_evaluations_constraints[1] * maxevals_cons,
+                    finalfunvals)
 
 
 class BBOBBiObjDataFormat(DataFormat):
@@ -101,28 +108,12 @@ class BBOBBiObjDataFormat(DataFormat):
         self.evaluation_idx = 0  # index of the column where to find the evaluations
         self.function_value_idx = 1  # index of the column where to find the function values
 
+
 data_format_name_to_class_mapping = {
         None: BBOBOldDataFormat,  # the default
         'bbob': BBOBOldDataFormat,  # the name 'bbob' is probably never used and depreciated
         'bbob-old': BBOBOldDataFormat,  # probably never used
         'bbob-new': BBOBNewDataFormat,  # 2nd column has constraints evaluations
+        'bbob-new2': BBOBNewDataFormat,  # 2nd column has constraints evaluations, 5th column constraints as single digits
         'bbob-biobj': BBOBBiObjDataFormat,  # 2nd column has function evaluations
 }
-
-def get_data_format(name):
-    """return the respective data format class instance.
-
-    So far the code only works, because the data_format is assigned in the
-    testbed class and fixed for each testbed class, which somehow defeats
-    its original purpose.
-    """
-    return data_format_name_to_class_mapping[name]()
-
-def set_data_format(name):
-    """set global variable `dataformatsettings.current_data_format`.
-    
-    This is probably not the right way to do this.
-    """
-    global current_data_format
-    current_data_format = get_data_format(name)
-

@@ -16,11 +16,11 @@ Examples:
     >>> import cocopp
     >>> cocopp.genericsettings.verbose = False # ensure to make below doctests work
     >>> def print_(*args, **kwargs): pass
-    >>> cocopp._data_archive._print = print_  # avoid download notification
+    >>> cocopp.archives.all._print = print_  # avoid download notification
 
 * Load a data set, assign to variable :py:data:`ds`::
 
-    >>> path = cocopp._data_archive.get(4)
+    >>> path = cocopp.archives.all.get(4)
     >>> print('ESC'); dsl = cocopp.load(path)  # a dataset list  # doctest:+ELLIPSIS
     ESC...
     >>> ds = dsl[0]
@@ -60,7 +60,9 @@ Examples:
 
 from __future__ import absolute_import
 
-from . import pproc
+from .pproc import DataSetList as _DataSetList
+from .toolsdivers import StringList as _StringList
+from .archiving import COCODataArchive as _COCODataArchive
 
 def load(filename):
     """Create a :py:class:`DataSetList` instance from a file or folder.
@@ -71,7 +73,7 @@ def load(filename):
     files.
 
     """
-    return pproc.DataSetList(filename)
+    return _DataSetList(_COCODataArchive().get_extended(_StringList(filename)))
 
 # info on the DataSetList: algId, function, dim
 
