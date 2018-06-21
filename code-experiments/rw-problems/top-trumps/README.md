@@ -2,8 +2,9 @@
 
 ## To install
 cd TopTrumps
-cmake ..
+cmake .
 make
+cp TopTrumpsExec ../
 
 
 ## C++

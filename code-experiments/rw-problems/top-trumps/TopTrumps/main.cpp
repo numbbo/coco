@@ -12,36 +12,65 @@
 
 using namespace std;
 
-void printOutput(double value){
+void printOutput(double* value, int obj){
     ofstream file;
     file.open("objectives.txt");
-    file << "1\n" << value;
+    file << obj;
+    for(int i=0; i<obj; i++){
+        file << "\n" << value[i];
+    }
     file.close();
 }
 
 
 /*
- * Input: Seed, objectiveIndicator, rep, n, x
+ * Input: Seed, objectiveIndicator, rep
  */
 int main(int argc, char** argv) {
     int seed = atof(argv[1]);
     int obj = atof(argv[2]);
     int rep = atof(argv[3]);
+    int d = 0;
+    
     
     int m = 4;
     int players = 2;
-    
-    int n = atof(argv[4]);
-    double values[n*m];
-    for(int i=0; i<n*m; i++){
-        values[i] = atof(argv[5+i]);
+
+    double readNumber;
+    int inputDimension;
+    double * values;
+    bool first=true;
+    int counter = 0;
+    std::ifstream file("variables.txt");
+    while (file >> readNumber){
+        if(first){
+            inputDimension= readNumber;
+            values = new double[(int)inputDimension];
+            first=false;
+        }else{
+            values[counter] = readNumber;
+            counter++;
+        }
     }
+    
+    int n = (int) inputDimension/m;
+    
+    if(obj>=5){
+        d =2;
+    }else{
+        d=1;
+    }
+    
+    double * result= new double[n];
     
     Deck deck(values, n, m);
     if(obj==0){
-        printOutput(deck.getHV());
+        result[0] = -deck.getHV();
     }else if(obj==1){
-        printOutput(deck.getSD());
+        result[0] = -deck.getSD();
+    }else if(obj==5){
+        result[0] = -deck.getHV();
+        result[1] = -deck.getSD();
     }else{
         Agent * agents = new Agent[players];
         int playerLevel1[4]= {0};
@@ -57,13 +86,21 @@ int main(int argc, char** argv) {
         }
         
         if(obj==2){
-            printOutput(out.getFairAgg());
+            result[0] = -out.getFairAgg();
         }else if(obj==3){
-            printOutput(out.getLeadChangeAgg());
+            result[0] = -out.getLeadChangeAgg();
         }else if(obj==4){
-            printOutput(out.getTrickDiffAgg());
+            result[0] = out.getTrickDiffAgg();
+        }else if(obj==6){
+            result[0] = -out.getFairAgg();
+            result[1] = -out.getLeadChangeAgg();
+        }else if(obj=7){
+            result[0] = out.getTrickDiffAgg();
+            result[1] = -out.getLeadChangeAgg();
         }
     }
+    
+    printOutput(result, d);
     return 0;
 }
 
