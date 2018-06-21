@@ -165,9 +165,6 @@ static coco_problem_t *logger_rw(coco_observer_t *observer, coco_problem_t *inne
   coco_create_directory(path_name);
 
   /* Construct file name */
-  coco_warning("%s", path_name);
-  coco_warning("%s", coco_problem_get_id(inner_problem));
-  coco_warning("%s", coco_problem_get_name(inner_problem));
   file_name = coco_strdupf("%s_rw.dat", coco_problem_get_id(inner_problem));
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
   coco_free_memory(file_name);
@@ -184,14 +181,20 @@ static coco_problem_t *logger_rw(coco_observer_t *observer, coco_problem_t *inne
   fprintf(logger_data->dat_file, "\n%%suite = '%s', problem_id = '%s', problem_name = '%s', coco_version = '%s'\n",
           coco_problem_get_suite(inner_problem)->suite_name, coco_problem_get_id(inner_problem),
           coco_problem_get_name(inner_problem), coco_version);
-  fprintf(logger_data->dat_file, "%% evaluation | %lu objectives",
+  fprintf(logger_data->dat_file, "%% evaluation | %lu objective",
       (unsigned long) inner_problem->number_of_objectives);
+  if (inner_problem->number_of_objectives > 1)
+    fprintf(logger_data->dat_file, "s");
   if (logger_data->log_vars)
-    fprintf(logger_data->dat_file, "| %lu variables",
+    fprintf(logger_data->dat_file, " | %lu variable",
         (unsigned long) inner_problem->number_of_variables);
+  if (inner_problem->number_of_variables > 1)
+    fprintf(logger_data->dat_file, "s");
   if (logger_data->log_cons)
-    fprintf(logger_data->dat_file, "| %lu constraints",
+    fprintf(logger_data->dat_file, " | %lu constraint",
         (unsigned long) inner_problem->number_of_constraints);
+  if (inner_problem->number_of_constraints > 1)
+    fprintf(logger_data->dat_file, "s");
   fprintf(logger_data->dat_file, "\n");
 
   problem = coco_problem_transformed_allocate(inner_problem, logger_data, logger_rw_free, observer->observer_name);
