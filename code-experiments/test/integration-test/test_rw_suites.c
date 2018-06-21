@@ -85,7 +85,7 @@ void test_two_observers(char *suite_name, char *suite_options) {
 
   while ((problem_inner = coco_suite_get_next_problem(suite, observer_inner)) != NULL) {
 
-    problem_outer = coco_problem_add_observer(problem_outer, observer_outer);
+    problem_outer = coco_problem_add_observer(problem_inner, observer_outer);
     my_optimizer(problem_outer);
     problem_inner = coco_problem_remove_observer(problem_outer, observer_outer);
   }
