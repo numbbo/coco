@@ -79,7 +79,16 @@ void rw_problem_external_evaluate(const double *x,
   /* Writes x to file */
   in_file = fopen(in_fname, "w");
   if (in_file == NULL) {
-    coco_error("rw_problem_run_process(): failed to open file '%s'.", in_fname);
+    /* Wait for a second and try again */
+    coco_info("rw_problem_external_evaluate(): additional attempt to open file '%s'.", in_fname);
+#if defined(USES_CREATEPROCESS)
+    Sleep(1000);
+#elif defined(USES_EXECVP)
+    sleep(1);
+#endif
+    in_file = fopen(in_fname, "w");
+    if (in_file == NULL)
+      coco_error("rw_problem_external_evaluate(): failed to open file '%s'.", in_fname);
   }
   fprintf(in_file,"%lu\n", (unsigned long)size_of_x);
   for (i = 0; i < size_of_x; ++i) {
@@ -148,7 +157,16 @@ void rw_problem_external_evaluate(const double *x,
   /* Reads the values of y from file */
   out_file = fopen(out_fname, "r");
   if (out_file == NULL) {
-    coco_error("rw_problem_external_evaluate(): failed to open file '%s'.", out_fname);
+    /* Wait for a second and try again */
+    coco_info("rw_problem_external_evaluate(): additional attempt to open file '%s'.", out_fname);
+#if defined(USES_CREATEPROCESS)
+    Sleep(1000);
+#elif defined(USES_EXECVP)
+    sleep(1);
+#endif
+    out_file = fopen(out_fname, "r");
+    if (out_file == NULL)
+      coco_error("rw_problem_external_evaluate(): failed to open file '%s'.", out_fname);
   }
   scan_result = fscanf(out_file, "%d\n", &read_size_of_y);
   if (scan_result != 1) {
@@ -189,6 +207,7 @@ static void rw_problem_evaluate(coco_problem_t *problem, const double *x, double
     for (i = 0; i < problem->number_of_objectives; i++)
       y[i] = NAN;
 
+  coco_info("evaluation #%lu", (unsigned long)problem->evaluations);
   rw_problem_external_evaluate(x, problem->number_of_variables, data->path, data->command,
       data->var_fname, data->obj_fname, y, problem->number_of_objectives);
 }
