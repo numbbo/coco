@@ -245,6 +245,7 @@ def outputResult(result, d=1):
     with open('objectives.txt', 'w') as f:
         f.write('{}\n'.format(d))
         f.write('{}\n'.format(result))
+        f.close()
 
 
 def progressSimAStar(x, netG, dim):
@@ -307,6 +308,7 @@ if __name__ == '__main__':
         if num_variables != dim:  # check appropriate number of variables there
             raise ValueError("num_variables should be '{}', but is '{}'"
                              "".format(dim, num_variables))
+        file.close()
 
     # Decode Problem id
     c = int(problem / (len(available_jsons) * len(available_fit)))
@@ -324,6 +326,7 @@ if __name__ == '__main__':
     if numpy.any(inp > 1) or numpy.any(inp < -1):  # input out of range
         with open('objectives.txt', 'w') as file:  # write out NaN result
             file.write('{}\n'.format(0))
+            file.close()
     else:
         # find correct file with highest epoch
         pattern = "GAN/{}-{}-{}/netG_epoch_*_{}.pth".format(available_jsons[g], dim, budget,

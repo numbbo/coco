@@ -7,6 +7,7 @@ if __name__ == '__main__':
     with open('variables.txt') as f:
         content = f.readlines()
         content = [1 + float(line.rstrip('\n')) for line in content]
+        f.close()
 
     # Compute the result
     variable_sum = abs(sum(content[1:]))
@@ -17,5 +18,5 @@ if __name__ == '__main__':
         f.write('{}\n'.format(variable_sum))
         if obj == 2:
             f.write('{}\n'.format(10 - variable_sum))
-
+        f.close()
 

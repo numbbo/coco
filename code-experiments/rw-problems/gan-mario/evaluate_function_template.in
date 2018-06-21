@@ -1,1 +1,0 @@
-cd ../../rw-problems/gan-mario/; python gan_mario_evaluate.py <obj> <dim> <fun> <inst>
