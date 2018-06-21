@@ -19,10 +19,10 @@ conda install torchvision=0.2.0
 
 If the right versions are not available, download the `whl` files for your system at [https://pytorch.org/previous-versions/](https://pytorch.org/previous-versions/)
 
-Another alternative (for the installation on Windows):
+Another alternative (for the installation on Windows without CUDA):
 
 ````
-conda install -c peterjc123 pytorch
+conda install -c peterjc123 pytorch-cpu
 pip install torchvision==0.2.0
 ````
 
