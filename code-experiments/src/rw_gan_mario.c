@@ -69,6 +69,9 @@ static coco_problem_t *rw_gan_mario_problem_allocate(const char *suite_name,
     coco_problem_set_type(problem, coco_strdupf(
         "rw_gan_mario_eval = '%s', rw_gan_mario_set = '%s', rw_gan_mario_concat = '%s'",
         str1, str2, str3));
+    coco_free_memory(str1);
+    coco_free_memory(str2);
+    coco_free_memory(str3);
   }
   else if (objectives == 2) {
     coco_problem_set_name(problem, "real-world GAN Mario bi-objective problem f%lu instance %lu in %luD",

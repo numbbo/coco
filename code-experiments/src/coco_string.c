@@ -128,7 +128,13 @@ static long coco_strfind(const char *base, const char *seq) {
  * @brief Splits a string based on the given delimiter.
  *
  * Returns a pointer to the resulting substrings with NULL as the last one.
- * The caller is responsible for freeing the allocated memory using coco_free_memory().
+ * The caller is responsible for freeing the allocated memory using:
+ *
+ *  for (i = 0; *(result + i); i++)
+ *    coco_free_memory(*(result + i));
+ *  coco_free_memory(*(result + i));    <- This is needed!
+ *  coco_free_memory(result);
+ *
  */
 static char **coco_string_split(const char *string, const char delimiter) {
 
@@ -294,6 +300,7 @@ static size_t *coco_string_parse_ranges(const char *string,
         /* Cleanup */
         for (j = i; *(ranges + j); j++)
           coco_free_memory(*(ranges + j));
+        coco_free_memory(*(ranges + j));
         coco_free_memory(ranges);
         if (i_result == 0) {
           coco_free_memory(result);
@@ -318,6 +325,7 @@ static size_t *coco_string_parse_ranges(const char *string,
             num[j] = (size_t) strtol(*(numbers + j), NULL, 10);
             coco_free_memory(*(numbers + j));
           }
+          coco_free_memory(*(numbers + j));
         }
         coco_free_memory(numbers);
 

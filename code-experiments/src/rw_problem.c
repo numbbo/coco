@@ -125,6 +125,7 @@ void rw_problem_external_evaluate(const double *x,
     /* Free argv */
     for (i = 0; *(argv + i); i++)
       coco_free_memory(*(argv + i));
+    coco_free_memory(*(argv + i));
     coco_free_memory(argv);
 
     if (process_result < 0) {
