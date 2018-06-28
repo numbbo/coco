@@ -18,7 +18,7 @@ void run_once(char *suite_name, char *suite_options) {
   coco_suite_t *suite;
   coco_problem_t *problem;
   double *initial_solution;
-  double *y = coco_allocate_vector(1);
+  double *y = coco_allocate_vector(2);
 
   suite = coco_suite(suite_name, NULL, suite_options);
 
@@ -102,15 +102,15 @@ void test_two_observers(char *suite_name, char *suite_options) {
 
 int main(void)  {
 
-  test_two_observers("rw-gan-mario", "dimensions: 10 function_indices: 1-3 instance_indices: 1-2");
+  test_two_observers("rw-gan-mario", "dimensions: 10 function_indices: 1 instance_indices: 1");
 
-  run_once("rw-gan-mario", "");
+  run_once("rw-gan-mario", "instance_indices: 1");
 
-  run_once("rw-gan-mario-biobj", "");
+  run_once("rw-gan-mario-biobj", "instance_indices: 1");
 
-  run_once("rw-top-trumps", "");
+  run_once("rw-top-trumps", "instance_indices: 1");
 
-  run_once("rw-top-trumps-biobj", "");
+  run_once("rw-top-trumps-biobj", "instance_indices: 1");
 
   coco_remove_directory("exdata");
   return 0;
