@@ -108,6 +108,7 @@ MU_TEST(test_coco_is_feasible) {
   }
   coco_suite_free(suite);
   coco_free_memory(x);
+  coco_free_memory(initial_solution);
 }
 
 /**

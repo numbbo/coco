@@ -84,7 +84,6 @@ static void create_time_string(char **string) {
   }
 
   /* Produce the new string */
-  new_string = coco_allocate_memory(sizeof(char) * (strlen(*string) + date_time_len));
   new_string = coco_strconcat(*string, date_time_string);
   coco_free_memory(date_time_string);
   coco_free_memory(*string);
