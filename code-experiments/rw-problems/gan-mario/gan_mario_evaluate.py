@@ -12,6 +12,7 @@ import os
 import numpy
 import pytorch.models.dcgan as dcgan
 import glob
+import gc
 
 batchSize = 64
 
@@ -338,3 +339,5 @@ if __name__ == '__main__':
 
         fun = available_fit[f]
         fun(content[1:], netG, dim)
+
+    gc.collect()

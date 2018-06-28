@@ -81,6 +81,10 @@ void rw_problem_external_evaluate(const double *x,
   if (in_file == NULL) {
     /* Wait for a second and try again */
     coco_info("rw_problem_external_evaluate(): additional attempt to open file '%s'.", in_fname);
+    coco_info_partial("x = [");
+    for (i = 0; i < size_of_x; ++i)
+      coco_info_partial("%.*e, ", precision_x, x[i]);
+    coco_info_partial("]\n");
 #if defined(USES_CREATEPROCESS)
     Sleep(1000);
 #elif defined(USES_EXECVP)
@@ -160,6 +164,14 @@ void rw_problem_external_evaluate(const double *x,
   if (out_file == NULL) {
     /* Wait for a second and try again */
     coco_info("rw_problem_external_evaluate(): additional attempt to open file '%s'.", out_fname);
+    coco_info_partial("x = [");
+    for (i = 0; i < size_of_x; ++i)
+      coco_info_partial("%.*e, ", precision_x, x[i]);
+    coco_info_partial("]\n");
+    coco_info_partial("y = [");
+    for (i = 0; i < expected_size_of_y; ++i)
+      coco_info_partial("%.f, ", y[i]);
+    coco_info_partial("]\n");
 #if defined(USES_CREATEPROCESS)
     Sleep(1000);
 #elif defined(USES_EXECVP)
