@@ -185,7 +185,6 @@ MU_TEST(test_coco_string_split) {
   for (i = 0; *(result + i); i++) {
     coco_free_memory(*(result + i));
   }
-  coco_free_memory(*(result + i));
   coco_free_memory(result);
   coco_free_memory(converted_result);
 
@@ -196,7 +195,6 @@ MU_TEST(test_coco_string_split) {
   for (i = 0; *(result + i); i++) {
     coco_free_memory(*(result + i));
   }
-  coco_free_memory(*(result + i));
   coco_free_memory(result);
   coco_free_memory(converted_result);
 }

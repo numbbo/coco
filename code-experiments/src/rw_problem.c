@@ -122,12 +122,6 @@ void rw_problem_external_evaluate(const double *x,
     chdir(path);
     process_result = execvp(argv[0], argv);
 
-    /* Free argv */
-    for (i = 0; *(argv + i); i++)
-      coco_free_memory(*(argv + i));
-    coco_free_memory(*(argv + i));
-    coco_free_memory(argv);
-
     if (process_result < 0) {
       coco_error("rw_problem_external_evaluate(): failed to execute '%s'. Error: %d", command,
           errno);
@@ -138,6 +132,12 @@ void rw_problem_external_evaluate(const double *x,
   } else {
     /* Wait for the process to complete */
     while (wait(&status) != process_id) {}
+
+    /* Free argv */
+    for (i = 0; *(argv + i); i++) {
+      coco_free_memory(*(argv + i));
+    }
+    coco_free_memory(argv);
   }
 #else
   /* Executes external evaluation with system() although

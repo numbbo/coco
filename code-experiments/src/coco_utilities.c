@@ -650,7 +650,6 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
     for (i = 0; *(keys + i); i++) {
       coco_free_memory(*(keys + i));
     }
-    coco_free_memory(*(keys + i));
     coco_free_memory(keys);
   }
 

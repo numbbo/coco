@@ -300,7 +300,6 @@ static size_t *coco_string_parse_ranges(const char *string,
         /* Cleanup */
         for (j = i; *(ranges + j); j++)
           coco_free_memory(*(ranges + j));
-        coco_free_memory(*(ranges + j));
         coco_free_memory(ranges);
         if (i_result == 0) {
           coco_free_memory(result);
@@ -325,7 +324,6 @@ static size_t *coco_string_parse_ranges(const char *string,
             num[j] = (size_t) strtol(*(numbers + j), NULL, 10);
             coco_free_memory(*(numbers + j));
           }
-          coco_free_memory(*(numbers + j));
         }
         coco_free_memory(numbers);
 
