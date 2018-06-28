@@ -234,8 +234,11 @@ def main(budget=budget,
     """Initialize suite and observer, then benchmark solver by calling
     ``batch_loop(SOLVER, suite, observer, budget,...``
     """
-    cocoex.known_suite_names.append(b"rw-gan-mario")
-    print(str(cocoex.known_suite_names))
+    cocoex.known_suite_names.append("rw-gan-mario")
+    if suite_name not in cocoex.known_suite_names:
+        print('WARNING: "%s" not in known names %s' %
+                (suite_name, str(cocoex.known_suite_names)))
+
     suite = Suite(suite_name, suite_instance, suite_options)
 
     observer_name = default_observers()["bbob"]
@@ -269,9 +272,6 @@ if __name__ == '__main__':
             print("Recognized suite names: " + str(cocoex.known_suite_names))
             sys.exit(0)
     suite_name = sys.argv[1]
-    if suite_name not in cocoex.known_suite_names:
-        print('WARNING: "%s" not in known names %s' %
-                (suite_name, str(cocoex.known_suite_names)))
     if len(sys.argv) > 2:
         budget = float(sys.argv[2])
     if len(sys.argv) > 3:
