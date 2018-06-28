@@ -66,9 +66,9 @@ static coco_problem_t *rw_gan_mario_problem_allocate(const char *suite_name,
       coco_error("rw_gan_mario_problem_allocate(): cannot allocate problem with function %lu",
           (unsigned long)function);
     }
-    coco_problem_set_type(problem, coco_strdupf(
+    coco_problem_set_type(problem,
         "rw_gan_mario_eval = '%s', rw_gan_mario_set = '%s', rw_gan_mario_concat = '%s'",
-        str1, str2, str3));
+        str1, str2, str3);
     coco_free_memory(str1);
     coco_free_memory(str2);
     coco_free_memory(str3);
