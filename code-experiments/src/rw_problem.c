@@ -79,19 +79,8 @@ void rw_problem_external_evaluate(const double *x,
   /* Writes x to file */
   in_file = fopen(in_fname, "w");
   if (in_file == NULL) {
-    /* Wait for a second and try again */
-    coco_info("rw_problem_external_evaluate(): cannot open file '%s', error %s.",
+    coco_error("rw_problem_external_evaluate(): failed to open file '%s'. Error: %s.",
         in_fname, strerror(errno));
-    coco_info("rw_problem_external_evaluate(): additional attempt to open file '%s'.", in_fname);
-#if defined(USES_CREATEPROCESS)
-    Sleep(1000);
-#elif defined(USES_EXECVP)
-    sleep(1);
-#endif
-    in_file = fopen(in_fname, "w");
-    if (in_file == NULL)
-      coco_error("rw_problem_external_evaluate(): failed to open file '%s', error %s.",
-          in_fname, strerror(errno));
   }
   fprintf(in_file,"%lu\n", (unsigned long)size_of_x);
   for (i = 0; i < size_of_x; ++i) {
@@ -152,7 +141,7 @@ void rw_problem_external_evaluate(const double *x,
     coco_error("rw_problem_external_evaluate(): failed to execute '%s'.", command);
   }
   else if (process_result != 0) {
-    coco_error("rw_problem_external_evaluate(): '%s' completed with error '%d'.", command,
+    coco_error("rw_problem_external_evaluate(): '%s' completed with error: '%d'.", command,
         process_result);
   }
   coco_free_memory(entire_command);
@@ -161,19 +150,8 @@ void rw_problem_external_evaluate(const double *x,
   /* Reads the values of y from file */
   out_file = fopen(out_fname, "r");
   if (out_file == NULL) {
-    /* Wait for a second and try again */
-    coco_info("rw_problem_external_evaluate(): cannot open file '%s', error %s.",
+    coco_error("rw_problem_external_evaluate(): failed to open file '%s'. Error: %s.",
         out_fname, strerror(errno));
-    coco_info("rw_problem_external_evaluate(): additional attempt to open file '%s'.", out_fname);
-#if defined(USES_CREATEPROCESS)
-    Sleep(1000);
-#elif defined(USES_EXECVP)
-    sleep(1);
-#endif
-    out_file = fopen(out_fname, "r");
-    if (out_file == NULL)
-      coco_error("rw_problem_external_evaluate(): failed to open file '%s', error %s.",
-          out_fname, strerror(errno));
   }
   scan_result = fscanf(out_file, "%d\n", &read_size_of_y);
   if (scan_result != 1) {
