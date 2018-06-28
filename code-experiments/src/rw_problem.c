@@ -80,12 +80,9 @@ void rw_problem_external_evaluate(const double *x,
   in_file = fopen(in_fname, "w");
   if (in_file == NULL) {
     /* Wait for a second and try again */
-    coco_info("rw_problem_external_evaluate(): cannot open file '%s', error %d.", in_fname, errno);
+    coco_info("rw_problem_external_evaluate(): cannot open file '%s', error %s.",
+        in_fname, strerror(errno));
     coco_info("rw_problem_external_evaluate(): additional attempt to open file '%s'.", in_fname);
-    coco_info_partial("x = [");
-    for (i = 0; i < size_of_x; ++i)
-      coco_info_partial("%.*e, ", precision_x, x[i]);
-    coco_info_partial("]\n");
 #if defined(USES_CREATEPROCESS)
     Sleep(1000);
 #elif defined(USES_EXECVP)
@@ -93,7 +90,8 @@ void rw_problem_external_evaluate(const double *x,
 #endif
     in_file = fopen(in_fname, "w");
     if (in_file == NULL)
-      coco_error("rw_problem_external_evaluate(): failed to open file '%s'.", in_fname);
+      coco_error("rw_problem_external_evaluate(): failed to open file '%s', error %s.",
+          in_fname, strerror(errno));
   }
   fprintf(in_file,"%lu\n", (unsigned long)size_of_x);
   for (i = 0; i < size_of_x; ++i) {
@@ -128,8 +126,8 @@ void rw_problem_external_evaluate(const double *x,
     process_result = execvp(argv[0], argv);
 
     if (process_result < 0) {
-      coco_error("rw_problem_external_evaluate(): failed to execute '%s'. Error: %d", command,
-          errno);
+      coco_error("rw_problem_external_evaluate(): failed to execute '%s'. Error: %s", command,
+          strerror(errno));
     }
 
   } else if (process_id < 0) {
@@ -164,16 +162,9 @@ void rw_problem_external_evaluate(const double *x,
   out_file = fopen(out_fname, "r");
   if (out_file == NULL) {
     /* Wait for a second and try again */
-    coco_info("rw_problem_external_evaluate(): cannot open file '%s', error %d.", out_fname, errno);
+    coco_info("rw_problem_external_evaluate(): cannot open file '%s', error %s.",
+        out_fname, strerror(errno));
     coco_info("rw_problem_external_evaluate(): additional attempt to open file '%s'.", out_fname);
-    coco_info_partial("x = [");
-    for (i = 0; i < size_of_x; ++i)
-      coco_info_partial("%.*e, ", precision_x, x[i]);
-    coco_info_partial("]\n");
-    coco_info_partial("y = [");
-    for (i = 0; i < expected_size_of_y; ++i)
-      coco_info_partial("%.f, ", y[i]);
-    coco_info_partial("]\n");
 #if defined(USES_CREATEPROCESS)
     Sleep(1000);
 #elif defined(USES_EXECVP)
@@ -181,7 +172,8 @@ void rw_problem_external_evaluate(const double *x,
 #endif
     out_file = fopen(out_fname, "r");
     if (out_file == NULL)
-      coco_error("rw_problem_external_evaluate(): failed to open file '%s'.", out_fname);
+      coco_error("rw_problem_external_evaluate(): failed to open file '%s', error %s.",
+          out_fname, strerror(errno));
   }
   scan_result = fscanf(out_file, "%d\n", &read_size_of_y);
   if (scan_result != 1) {
