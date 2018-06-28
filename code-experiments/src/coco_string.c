@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "coco.h"
 
@@ -438,7 +439,8 @@ static size_t *coco_string_parse_ranges(const char *string,
  * allocated, it can be still freed on the returned pointer.
  */
 static char *coco_string_trim(char *string) {
-	size_t len = 0;
+	size_t i, len = 0;
+	int all_whitespaces = 1;
 	char *frontp = string;
 	char *endp = NULL;
 
@@ -451,6 +453,13 @@ static char *coco_string_trim(char *string) {
 
 	len = strlen(string);
 	endp = string + len;
+
+	for (i = 0; ((i < len) && all_whitespaces); i++)
+		all_whitespaces = all_whitespaces && isspace(string[i]);
+	if (all_whitespaces) {
+	  string[0] = '\0';
+		return string;
+	}
 
 	/* Move the front and back pointers to address the first non-whitespace characters from each end. */
 	while (isspace((unsigned char) *frontp)) {
