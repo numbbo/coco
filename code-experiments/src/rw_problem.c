@@ -208,7 +208,7 @@ static void rw_problem_evaluate(coco_problem_t *problem, const double *x, double
     for (i = 0; i < problem->number_of_objectives; i++)
       y[i] = NAN;
 
-  coco_info("evaluation #%lu", (unsigned long)problem->evaluations);
+  coco_debug("evaluation #%lu", (unsigned long)problem->evaluations);
   rw_problem_external_evaluate(x, problem->number_of_variables, data->path, data->command,
       data->var_fname, data->obj_fname, y, problem->number_of_objectives);
 }
