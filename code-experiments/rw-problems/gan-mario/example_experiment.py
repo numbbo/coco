@@ -89,7 +89,7 @@ def default_observer_options(budget_=None, suite_name_=None, current_batch_=None
 # loops over a benchmark problem suite
 # ===============================================
 def batch_loop(solver, suite, observer, budget,
-               max_runs, current_batch, number_of_batches):
+               max_runs, current_batch, number_of_batches, additional_observer=None):
     """loop over all problems in `suite` calling
     `coco_optimize(solver, problem, budget * problem.dimension, max_runs)`
     for each eligible problem.
@@ -106,6 +106,8 @@ def batch_loop(solver, suite, observer, budget,
         if (problem_index + current_batch - 1) % number_of_batches:
             continue
         observer.observe(problem)
+        if additional_observer:
+            problem.observe_with(additional_observer)
         short_info.print(problem) if verbose else None
         runs = coco_optimize(solver, problem, budget * problem.dimension,
                              max_runs)
@@ -245,6 +247,19 @@ def main(budget=budget,
     # observer_name = another observer if so desired
     observer_options.update_gracefully(default_observer_options())
     observer = Observer(observer_name, observer_options.as_string)
+    # Add an additional real-world observer, options:
+    # -----------------------------------------------
+    # log_only_better: 0/1 [0 means log all solutions, 1 means log only those that are better than
+    # previous ones]
+    # log_variables: 'all', 'low_dim' or 'none'
+    # log_constraints: 'all', 'low_dim' or 'none'
+    # ['none' means don't output any variables/constraints, 'low_dim' means output
+    # variables/constraints only when their number is lower or equal to low_dim_vars/low_dim_cons,
+    # 'all' means output all decision variables/constraints]
+    # low_dim_vars: num [see above, default 10]
+    # low_dim_cons: num [see above, default 10]
+    rw_folder = observer.result_folder.replace('exdata' + os.sep, '')
+    rw_observer = Observer('rw', 'result_folder: {}-rw'.format(rw_folder))
 
     print("Benchmarking solver '%s' with budget=%d*dimension on %s suite, %s"
           % (' '.join(str(SOLVER).split()[:2]), budget,
@@ -254,7 +269,7 @@ def main(budget=budget,
               number_of_batches)
     t0 = time.clock()
     batch_loop(SOLVER, suite, observer, budget, max_runs,
-               current_batch, number_of_batches)
+               current_batch, number_of_batches, additional_observer=rw_observer)
     print(", %s (%s total elapsed time)." %
             (time.asctime(), ascetime(time.clock() - t0)))
     print('Data written to folder', observer.result_folder)
