@@ -5,7 +5,6 @@ LDFLAGS += -fpic -shared
 srcfiles := utils/hoy.cpp Simulation/Card.cpp Simulation/Deck.cpp Simulation/Agent.cpp Simulation/Game.cpp Simulation/Outcome.cpp
 mainfiles:= top_trumps.cpp c_main.c
 objects  := $(patsubst %.cpp, %.o, $(srcfiles))
-mains  := $(patsubst %.cpp, %.o, $(mainfiles))
 
 all: TopTrumpsEval top_trumps_evaluate
 
@@ -13,7 +12,7 @@ TopTrumpsEval: $(objects)
 	$(CXX) $(CXXFLAGS) $(WFLAGS) $(LDFLAGS) -o TopTrumpsEval.dll top_trumps.cpp $(objects)
 	
 top_trumps_evaluate: $(objects)
-	gcc -std=c89 $(WFLAGS) $(LDFLAGS) -L. -lTopTrumpsEval -o top_trumps_evaluate c_main.c
+	gcc -std=c89 $(WFLAGS) -L. -lTopTrumpsEval -o top_trumps_evaluate c_main.c
 
 depend: .depend
 
@@ -22,7 +21,7 @@ depend: .depend
 	$(CXX) $(CXXFLAGS) -MM $^>>./.depend;
 
 clean:
-	rm -f $(objects) $(mains)
+	rm -f $(objects)
 
 dist-clean: clean
 	rm -f *~ .depend

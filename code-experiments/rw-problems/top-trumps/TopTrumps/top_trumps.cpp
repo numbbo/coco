@@ -22,8 +22,7 @@ double *top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
     int players = 2;
     int n = (int) size_x/m;
 
-    assert((obj < 5) && (size_y == 1));
-    assert((obj >= 5) && (size_y == 2));
+    assert(((obj < 5) && (size_y == 1)) || ((obj >= 5) && (size_y == 2)));
     
     double *result = new double[n];
     
