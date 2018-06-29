@@ -1,0 +1,26 @@
+appname := TopTrumpsExec
+
+CXXFLAGS := -std=c++11
+LDFLAGS += -lm
+
+srcfiles := main.cpp utils/hoy.cpp Simulation/Card.cpp Simulation/Deck.cpp Simulation/Agent.cpp Simulation/Game.cpp Simulation/Outcome.cpp
+objects  := $(patsubst %.cpp, %.o, $(srcfiles))
+
+all: $(appname)
+
+$(appname): $(objects)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(appname) $(objects)
+
+depend: .depend
+
+.depend: $(srcfiles)
+	rm -f ./.depend
+	$(CXX) $(CXXFLAGS) -MM $^>>./.depend;
+
+clean:
+	rm -f $(objects)
+
+dist-clean: clean
+	rm -f *~ .depend
+
+include .depend

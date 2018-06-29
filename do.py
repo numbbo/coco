@@ -14,6 +14,7 @@ from subprocess import STDOUT
 import platform
 import time
 import glob
+import stat
 
 
 ## Change to the root directory of repository and add our tools/
@@ -789,6 +790,19 @@ def test_preprocessing(package_install_option = []):
     python('code-preprocessing/archive-update', ['-m', 'pytest'], verbose=_verbosity)
     python('code-preprocessing/log-reconstruction', ['-m', 'pytest'], verbose=_verbosity)
 
+
+################################################################################
+## Real-world problems
+def build_rw_top_trumps():
+    make('code-experiments/rw-problems/top-trumps/TopTrumps', 'clean', verbose=_build_verbosity)
+    make('code-experiments/rw-problems/top-trumps/TopTrumps', 'all', verbose=_build_verbosity)
+    folder1 = 'code-experiments/rw-problems/top-trumps/TopTrumps/'
+    folder2 = 'code-experiments/rw-problems/top-trumps/'
+    executable = stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH | stat.S_IXUSR
+    for filename in os.listdir(folder1):
+        if os.path.isfile(folder1 + filename) and (os.stat(folder1 + filename).st_mode & executable):
+            copy_file(folder1 + filename, folder2 + filename)
+
 ################################################################################
 ## Global
 def build(package_install_option = []):
@@ -887,6 +901,7 @@ Available commands for users:
   build-matlab-sms        - Build SMS-EMOA example in Matlab
   build-octave            - Build Matlab module in Octave
   build-python            - Build Python modules (see NOTE below)
+  build-rw-top-trumps     - Build the TopTrumps real-world problem suite
   install-postprocessing  - Install postprocessing (see NOTE below)
 
   run-c                   - Build and run example experiment in C
@@ -971,6 +986,7 @@ def main(args):
     elif cmd == 'build-octave': build_octave()
     elif cmd == 'build-octave-sms': build_octave_sms()
     elif cmd == 'build-python': build_python(package_install_option = package_install_option)
+    elif cmd == 'build-rw-top-trumps': build_rw_top_trumps()
     elif cmd == 'install-postprocessing': install_postprocessing(package_install_option = package_install_option)
     elif cmd == 'run-c': run_c()
     elif cmd == 'run-java': run_java()

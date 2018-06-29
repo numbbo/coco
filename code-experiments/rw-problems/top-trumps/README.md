@@ -1,14 +1,8 @@
 # Requirements for the `top-trumps` test suite
 
-## To install
+## Build the `top-trumps` problem
+Run
 ````
-cd TopTrumps
-cmake .
-make
-cp TopTrumpsExec ../
+python do.py build-rw-top-trumps
 ````
-
-
-## C++
-cmake >=2.8 (lower probably works as well if CMakeLists.txt is adapted)
-make
+from the root directory of the repository.
