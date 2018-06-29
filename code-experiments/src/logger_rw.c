@@ -4,7 +4,7 @@
  *
  * Can be used to log all (or just those that are better than the preceding) solutions with information
  * about objectives, decision variables (optional) and constraints (optional). See observer_rw() for
- * more information on the options. Produces one "dat" file for each problem function, dimension and
+ * more information on the options. Produces one "txt" file for each problem function, dimension and
  * instance.
  *
  * @note This logger can be used with single- and multi-objective problems, but in the multi-objective
@@ -31,7 +31,7 @@
  * finalization.
  */
 typedef struct {
-  FILE *dat_file;                /**< @brief File for logging. */
+  FILE *out_file;                /**< @brief File for logging. */
 
   double best_value;             /**< @brief The best-so-far value. */
   double current_value;          /**< @brief The current value. */
@@ -72,24 +72,24 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
     inner_problem->evaluate_constraint(inner_problem, x, constraints);
   }
 
-  /* Log to the dat file */
+  /* Log to the output file */
   if ((problem->number_of_objectives == 1) && (logger->current_value < logger->best_value))
     logger->best_value = logger->current_value;
   else
     log_this_time = !logger->log_only_better;
   if (log_this_time) {
-    fprintf(logger->dat_file, "%lu\t", (unsigned long) problem->evaluations);
+    fprintf(logger->out_file, "%lu\t", (unsigned long) problem->evaluations);
     for (i = 0; i < problem->number_of_objectives; i++)
-      fprintf(logger->dat_file, "%.*e\t", logger->precision_f, y[i]);
+      fprintf(logger->out_file, "%.*e\t", logger->precision_f, y[i]);
     if (logger->log_vars) {
       for (i = 0; i < problem->number_of_variables; i++)
-        fprintf(logger->dat_file, "%.*e\t", logger->precision_x, x[i]);
+        fprintf(logger->out_file, "%.*e\t", logger->precision_x, x[i]);
     }
     if (logger->log_cons) {
       for (i = 0; i < problem->number_of_constraints; i++)
-        fprintf(logger->dat_file, "%.*e\t", logger->precision_g, constraints[i]);
+        fprintf(logger->out_file, "%.*e\t", logger->precision_g, constraints[i]);
     }
-    fprintf(logger->dat_file, "\n");
+    fprintf(logger->out_file, "\n");
   }
 
   if (problem->number_of_constraints > 0)
@@ -106,9 +106,9 @@ static void logger_rw_free(void *stuff) {
   assert(stuff != NULL);
   logger = (logger_rw_data_t *) stuff;
 
-  if (logger->dat_file != NULL) {
-    fclose(logger->dat_file);
-    logger->dat_file = NULL;
+  if (logger->out_file != NULL) {
+    fclose(logger->out_file);
+    logger->out_file = NULL;
   }
 }
 
@@ -126,7 +126,6 @@ static coco_problem_t *logger_rw(coco_observer_t *observer, coco_problem_t *inne
   coco_problem_t *problem;
   logger_rw_data_t *logger_data;
   observer_rw_data_t *observer_data;
-  const char folder_name[] = "rw";
   char *path_name, *file_name = NULL;
 
   logger_data = (logger_rw_data_t *) coco_allocate_memory(sizeof(*logger_data));
@@ -158,44 +157,41 @@ static coco_problem_t *logger_rw(coco_observer_t *observer, coco_problem_t *inne
   logger_data->best_value = DBL_MAX;
   logger_data->current_value = DBL_MAX;
 
-  /* Create the path to the file */
+  /* Construct file name */
   path_name = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
-  coco_join_path(path_name, COCO_PATH_MAX, folder_name, NULL);
   coco_create_directory(path_name);
-
-  /* Construct file name */
-  file_name = coco_strdupf("%s_rw.dat", coco_problem_get_id(inner_problem));
+  file_name = coco_strdupf("%s_rw.txt", coco_problem_get_id(inner_problem));
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
-  coco_free_memory(file_name);
 
-  /* Open and initialize the dat file */
-  logger_data->dat_file = fopen(path_name, "a");
-  if (logger_data->dat_file == NULL) {
+  /* Open and initialize the output file */
+  logger_data->out_file = fopen(path_name, "a");
+  if (logger_data->out_file == NULL) {
     coco_error("logger_rw() failed to open file '%s'.", path_name);
     return NULL; /* Never reached */
   }
   coco_free_memory(path_name);
+  coco_free_memory(file_name);
 
   /* Output header information */
-  fprintf(logger_data->dat_file, "\n%%suite = '%s', problem_id = '%s', problem_name = '%s', coco_version = '%s'\n",
+  fprintf(logger_data->out_file, "\n%% suite = '%s', problem_id = '%s', problem_name = '%s', coco_version = '%s'\n",
           coco_problem_get_suite(inner_problem)->suite_name, coco_problem_get_id(inner_problem),
           coco_problem_get_name(inner_problem), coco_version);
-  fprintf(logger_data->dat_file, "%% evaluation | %lu objective",
+  fprintf(logger_data->out_file, "%% evaluation | %lu objective",
       (unsigned long) inner_problem->number_of_objectives);
   if (inner_problem->number_of_objectives > 1)
-    fprintf(logger_data->dat_file, "s");
+    fprintf(logger_data->out_file, "s");
   if (logger_data->log_vars)
-    fprintf(logger_data->dat_file, " | %lu variable",
+    fprintf(logger_data->out_file, " | %lu variable",
         (unsigned long) inner_problem->number_of_variables);
   if (inner_problem->number_of_variables > 1)
-    fprintf(logger_data->dat_file, "s");
+    fprintf(logger_data->out_file, "s");
   if (logger_data->log_cons)
-    fprintf(logger_data->dat_file, " | %lu constraint",
+    fprintf(logger_data->out_file, " | %lu constraint",
         (unsigned long) inner_problem->number_of_constraints);
   if (inner_problem->number_of_constraints > 1)
-    fprintf(logger_data->dat_file, "s");
-  fprintf(logger_data->dat_file, "\n");
+    fprintf(logger_data->out_file, "s");
+  fprintf(logger_data->out_file, "\n");
 
   problem = coco_problem_transformed_allocate(inner_problem, logger_data, logger_rw_free, observer->observer_name);
   problem->evaluate_function = logger_rw_evaluate;
