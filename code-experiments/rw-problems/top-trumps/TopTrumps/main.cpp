@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
         }else if(obj==6){
             result[0] = -out.getFairAgg();
             result[1] = -out.getLeadChangeAgg();
-        }else if(obj=7){
+        }else if(obj==7){
             result[0] = out.getTrickDiffAgg();
             result[1] = -out.getLeadChangeAgg();
         }
