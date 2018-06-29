@@ -161,20 +161,19 @@ void rw_problem_external_evaluate(const double *x,
   if (read_size_of_y == 0) {
     /* x could not be evaluated */
     coco_vector_set_to_nan(y, expected_size_of_y);
-    return;
   }
-
-  if (read_size_of_y != expected_size_of_y) {
+  else if (read_size_of_y != expected_size_of_y) {
     coco_error("rw_problem_external_evaluate(): '%s' contains %lu elements instead of %lu.",
         out_fname, (unsigned long)read_size_of_y, (unsigned long)expected_size_of_y);
   }
-
-  for (i = 0; i < read_size_of_y; i++) {
-    scan_result = fscanf(out_file, "%lf\n", &result);
-    if (scan_result != 1) {
-      coco_error("rw_problem_external_evaluate(): failed to read from '%s'.", out_fname);
+  else {
+    for (i = 0; i < read_size_of_y; i++) {
+      scan_result = fscanf(out_file, "%lf\n", &result);
+      if (scan_result != 1) {
+        coco_error("rw_problem_external_evaluate(): failed to read from '%s'.", out_fname);
+      }
+      y[i] = result;
     }
-    y[i] = result;
   }
   fclose(out_file);
 }
