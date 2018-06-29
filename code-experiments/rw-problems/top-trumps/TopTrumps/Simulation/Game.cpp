@@ -38,7 +38,8 @@ Outcome Game::run(Outcome out, int verbose){
         std::cout<< "Game starts with " << won_last << std::endl;
     }
       
-    int tricks[this->players] = {0};
+    int *tricks;
+    memset(tricks, 0, this->players);
     for(int i=0; i<total_rounds; i++){
         int winner = round(won_last, cards, verbose);
         tricks[winner]++;

@@ -88,7 +88,8 @@ int Deck::getN(){
 
 
 double Deck::getHV(){
-    double refPoint[this->m] = {0};
+    double *refPoint;
+    memset(refPoint, 0, this->m);
     double * values = new double[this->n*this->m];
     int counter =0;
     for(int i =0; i<this->n; i++){
@@ -110,7 +111,8 @@ double Deck::getHV(){
 }
 
 double Deck::getSD(){
-    double colSums[this->m] = {0};
+    double *colSums;
+    memset(colSums, 0, this->m);
     double mean=0;
     for(int i=0; i<this->n; i++){
         Card card = this->cards[i];
