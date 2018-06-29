@@ -12,7 +12,6 @@ import os
 import numpy
 import pytorch.models.dcgan as dcgan
 import glob
-import gc
 
 batchSize = 64
 
@@ -246,7 +245,6 @@ def outputResult(result, d=1):
     with open('objectives.txt', 'w') as f:
         f.write('{}\n'.format(d))
         f.write('{}\n'.format(result))
-        f.close()
 
 
 def progressSimAStar(x, netG, dim):
@@ -285,7 +283,6 @@ if __name__ == '__main__':
     inst = int(inst) - 1
     obj = int(obj)
     # TODO value ranges and how to set up
-    # TODO why no file close?
 
     available_dims = [10, 20, 30, 40]
     available_instances = [5641, 3854, 8370, 494, 1944, 9249, 2517, 2531, 5453, 2982, 670, 56, 6881, 1930, 5812]
@@ -309,7 +306,6 @@ if __name__ == '__main__':
         if num_variables != dim:  # check appropriate number of variables there
             raise ValueError("num_variables should be '{}', but is '{}'"
                              "".format(dim, num_variables))
-        file.close()
 
     # Decode Problem id
     c = int(problem / (len(available_jsons) * len(available_fit)))
@@ -327,7 +323,6 @@ if __name__ == '__main__':
     if numpy.any(inp > 1) or numpy.any(inp < -1):  # input out of range
         with open('objectives.txt', 'w') as file:  # write out NaN result
             file.write('{}\n'.format(0))
-            file.close()
     else:
         # find correct file with highest epoch
         pattern = "GAN/{}-{}-{}/netG_epoch_*_{}.pth".format(available_jsons[g], dim, budget,
@@ -339,5 +334,3 @@ if __name__ == '__main__':
 
         fun = available_fit[f]
         fun(content[1:], netG, dim)
-
-    gc.collect()
