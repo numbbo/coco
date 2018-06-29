@@ -208,7 +208,7 @@ budget = 2  # maxfevals = budget x dimension ### INCREASE budget WHEN THE DATA C
 max_runs = 1e9  # number of (almost) independent trials per problem instance
 number_of_batches = 1  # allows to run everything in several batches
 current_batch = 1      # 1..number_of_batches
-log_level("debug")      # Logging levels (error, warning, info, debug)
+log_level("info")      # Logging levels (error, warning, info, debug)
 ##############################################################################
 # By default we call SOLVER(fun, x0), but the INTERFACE CAN BE ADAPTED TO EACH SOLVER ABOVE
 # SOLVER = optimize.fmin
