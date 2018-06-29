@@ -1,15 +1,24 @@
-appname := TopTrumpsExec
-
 CXXFLAGS := -std=c++11
 LDFLAGS += -lm
 
-srcfiles := main.cpp utils/hoy.cpp Simulation/Card.cpp Simulation/Deck.cpp Simulation/Agent.cpp Simulation/Game.cpp Simulation/Outcome.cpp
+srcfiles := utils/hoy.cpp Simulation/Card.cpp Simulation/Deck.cpp Simulation/Agent.cpp Simulation/Game.cpp Simulation/Outcome.cpp
+mainfiles:= main.cpp tests/DeckTest.cpp tests/AgentTest.cpp tests/GameTest.cpp
 objects  := $(patsubst %.cpp, %.o, $(srcfiles))
+mains  := $(patsubst %.cpp, %.o, $(mainfiles))
 
-all: $(appname)
+all: TopTrumpsExec DeckTest AgentTest GameTest
 
-$(appname): $(objects)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(appname) $(objects)
+TopTrumpsExec: $(objects)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o TopTrumpsExec main.cpp $(objects)
+
+DeckTest: $(objects)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o DeckTest tests/DeckTest.cpp $(objects)
+
+AgentTest: $(objects)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o AgentTest tests/AgentTest.cpp $(objects)
+
+GameTest: $(objects)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o GameTest tests/GameTest.cpp $(objects)
 
 depend: .depend
 
@@ -18,7 +27,7 @@ depend: .depend
 	$(CXX) $(CXXFLAGS) -MM $^>>./.depend;
 
 clean:
-	rm -f $(objects)
+	rm -f $(objects) $(mains)
 
 dist-clean: clean
 	rm -f *~ .depend

@@ -800,7 +800,8 @@ def build_rw_top_trumps():
     folder2 = 'code-experiments/rw-problems/top-trumps/'
     executable = stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH | stat.S_IXUSR
     for filename in os.listdir(folder1):
-        if os.path.isfile(folder1 + filename) and (os.stat(folder1 + filename).st_mode & executable):
+        if filename.startswith('TopTrumps') and os.path.isfile(folder1 + filename) \
+                and (os.stat(folder1 + filename).st_mode & executable):
             copy_file(folder1 + filename, folder2 + filename)
 
 ################################################################################
