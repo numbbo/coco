@@ -112,7 +112,7 @@ void testHV(){
     for(int i=0; i<n*m; i++){
         values[i] = i;
     }
-    double refPoint[m]={37, 38, 39, 40};
+    double refPoint[4]={37, 38, 39, 40};
     HVCalculator hv;
     std::cout << "Hypervolume: " << hv.computeHV(m,n,values,refPoint) << std::endl;
     Deck deck(values, n,m);
