@@ -9,7 +9,39 @@
 
 #include "coco.h"
 #include "coco_problem.c"
-#include "rw_problem.c"
+#include "top_trumps.h"
+
+/**
+ * @brief Data type used by the rw-top-trumps problem.
+ */
+typedef struct {
+  size_t function;
+  size_t instance;
+} rw_top_trumps_data_t;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+/**
+ * @brief Calls the C++ top_trumps_evaluate function to evaluate the problem.
+ */
+static void rw_top_trumps_evaluate(coco_problem_t *problem, const double *x, double *y) {
+
+  rw_top_trumps_data_t *data = (rw_top_trumps_data_t *) problem->data;
+  size_t i;
+
+  if (coco_vector_contains_nan(x, problem->number_of_variables))
+    for (i = 0; i < problem->number_of_objectives; i++)
+      y[i] = NAN;
+
+  coco_debug("evaluation #%lu", (unsigned long)problem->evaluations);
+  y = top_trumps_evaluate(data->function, data->instance, problem->number_of_variables,
+      (double *) x, problem->number_of_objectives);
+}
+#ifdef __cplusplus
+}
+#endif
+
 
 /**
  * @brief Creates a single- or bi-objective rw_top_trumps problem.
@@ -20,8 +52,13 @@ static coco_problem_t *rw_top_trumps_problem_allocate(const char *suite_name,
                                                       const size_t dimension,
                                                       const size_t instance) {
 
+  rw_top_trumps_data_t *data;
   coco_problem_t *problem = NULL;
   size_t i;
+
+  data = (rw_top_trumps_data_t *) coco_allocate_memory(sizeof(*data));
+  data->function = function;
+  data->instance = instance;
 
   if ((objectives != 1) && (objectives != 2))
     coco_error("rw_top_trumps_problem_allocate(): %lu objectives are not supported (only 1 or 2)",
@@ -33,8 +70,8 @@ static coco_problem_t *rw_top_trumps_problem_allocate(const char *suite_name,
     problem->largest_values_of_interest[i] = 100;
   }
   problem->number_of_integer_variables = dimension;
-  problem->evaluate_function = rw_problem_evaluate;
-  problem->problem_free_function = rw_problem_data_free;
+  problem->evaluate_function = rw_top_trumps_evaluate;
+  problem->problem_free_function = NULL;
 
   coco_problem_set_id(problem, "%s_f%03lu_i%02lu_d%02lu", suite_name, (unsigned long) function,
       (unsigned long) instance, (unsigned long) dimension);
@@ -57,7 +94,7 @@ static coco_problem_t *rw_top_trumps_problem_allocate(const char *suite_name,
     problem->best_parameter = NULL;
   }
 
-  problem->data = get_rw_problem_data("top-trumps", objectives, function, dimension, instance);
+  problem->data = data;
 
   return problem;
 }
