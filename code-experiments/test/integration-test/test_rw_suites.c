@@ -104,13 +104,13 @@ int main(void)  {
 
   test_two_observers("rw-gan-mario", "dimensions: 10 function_indices: 1 instance_indices: 1");
 
-  run_once("rw-gan-mario", "instance_indices: 1");
+  run_once("rw-gan-mario", "instance_indices: 1 function_indices: 2,5,8");
+
+  /*run_once("rw-top-trumps", "instance_indices: 1");
 
   run_once("rw-gan-mario-biobj", "instance_indices: 1");
 
-  run_once("rw-top-trumps", "instance_indices: 1");
-
-  run_once("rw-top-trumps-biobj", "instance_indices: 1");
+  run_once("rw-top-trumps-biobj", "instance_indices: 1");*/
 
   coco_remove_directory("exdata");
   return 0;
