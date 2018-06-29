@@ -26,6 +26,3 @@ def read_and_write(obj=1):
 
 if __name__ == '__main__':
     read_and_write(int(sys.argv[1]))
-    #for i in range(10000):
-    #    print(i)
-    #    read_and_write(int(sys.argv[1]))
