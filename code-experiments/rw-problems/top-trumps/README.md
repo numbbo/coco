@@ -1,10 +1,12 @@
 # Requirements for the `top-trumps` test suite
 
 ## To install
+````
 cd TopTrumps
 cmake .
 make
 cp TopTrumpsExec ../
+````
 
 
 ## C++
