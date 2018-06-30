@@ -23,7 +23,7 @@ int main(void) {
   y = (double *) malloc(size_y * sizeof(double));
 
   for (i = 0; i < size_x; i++)
-    x[i] = i;
+    x[i] = 51;
 
   top_trumps_evaluate(function, instance, size_x, x, size_y, y);
 

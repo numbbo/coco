@@ -129,7 +129,7 @@ int main(void) {
    * to the settings, defined in example_experiment(...) below.
    */
 
-  example_experiment("rw-top-trumps", "bbob", random_generator);
+  example_experiment("rw-top-trumps", "rw", random_generator);
 
   /*example_experiment("rw-gan-mario", "bbob", random_generator);
 
@@ -166,8 +166,7 @@ void example_experiment(const char *suite_name,
   /* Set some options for the observer. See documentation for other options. */
   char *observer_options =
       coco_strdupf("result_folder: RS_on_%s "
-                   "algorithm_name: RS "
-                   "algorithm_info: \"A simple random search algorithm\"", suite_name);
+                   "log_variables: low_dim", suite_name);
   coco_set_log_level("info");
 
   /* Initialize the suite and observer.

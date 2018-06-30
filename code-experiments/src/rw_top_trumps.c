@@ -91,7 +91,7 @@ static coco_problem_t *rw_top_trumps_problem_allocate(const char *suite_name,
   }
 
   /* TODO Add realistic best values */
-  problem->best_value[0] = -1e9;
+  problem->best_value[0] = 0;
   if (problem->best_parameter != NULL) {
     coco_free_memory(problem->best_parameter);
     problem->best_parameter = NULL;
