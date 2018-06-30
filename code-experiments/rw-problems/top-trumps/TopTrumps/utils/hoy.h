@@ -19,7 +19,7 @@
 class HVCalculator{
 public:
     HVCalculator();
-    double computeHV(int dim, int n, double* points, double* refPoint);
+    double computeHV(int dim, int n, std::vector<double> points, std::vector<double> refPoint);
 private:
     void stream(double regLow[], double regUp[], const std::vector<double*>& cubs, int lev, double cov);
     static bool cmp(double* a, double* b);

@@ -5,20 +5,20 @@ Agent::Agent(){
     
 }
 
-Agent::Agent(int* playerLevel, Deck deck){
+Agent::Agent(std::vector<int> playerLevel, Deck deck){
     this->currentCard = 0;
     this->deck = deck;
     this->playerLevel= playerLevel;
 }
 
-void Agent::pickUpCards(int handSize, Card* hand){
+void Agent::pickUpCards(int handSize, std::vector<Card> hand){
     this->handSize = handSize;
     this->hand = hand;
     this->currentCard=0;
     
 }
 
-void Agent::updateRanks(int * ranks){
+void Agent::updateRanks(std::vector<int> ranks){
     for(int k=0; k<this->deck.getM(); k++){
         for(int i=this->currentCard; i<this->handSize; i++){
             if(hand[i].getRank(k)>ranks[k]){
@@ -32,10 +32,10 @@ void Agent::updateRanks(int * ranks){
 int Agent::choose(){
     //TODO should be depening on which is playerLevel, but doesn't matter for now
     int choice = 0;
-    int best = 0;
+    double best = 0;
     if(this->getLevel()==0){
         for(int i=0; i<this->deck.getM(); i++){
-            int val = this->hand[this->currentCard].getValue(i);
+            double val = this->hand[this->currentCard].getValue(i);
             if(val>best){
                 choice = i;
                 best = val;
@@ -43,7 +43,7 @@ int Agent::choose(){
         }
     }else{
         for(int i=0; i<this->deck.getM(); i++){
-            int val = this->hand[this->currentCard].getRank(i);
+            double val = this->hand[this->currentCard].getRank(i);
             if(val>best){
                 choice = i;
                 best = val;
@@ -58,7 +58,7 @@ Card Agent::play(){
         throw std::invalid_argument("Out of cards");
     }
     this->currentCard++;
-    return *(this->hand + (this->currentCard-1));
+    return this->hand[this->currentCard-1];
 }
 
 int Agent::getLevel(){

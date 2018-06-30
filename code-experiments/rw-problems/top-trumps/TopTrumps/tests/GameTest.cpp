@@ -18,16 +18,16 @@ void testSetup(){
     int n = 10;
     int m = 4;
     int players = 2;
-    double * values = new double[n*m];
+    std::vector<double>values(n*m);
     for(int i=0; i<n*m; i++){
         values[i] = i;
     }
     Deck deck(values, n, m);
-    Agent * agents = new Agent[players];
-    int playerLevel1[4]= {0};
-    agents[0] = *(new Agent(playerLevel1, deck));
-    int playerLevel2[4] = {1};
-    agents[1] = *(new Agent(playerLevel2, deck));
+    std::vector<Agent>agents(players);
+    std::vector<int>playerLevel1(4,0);
+    agents[0] = Agent(playerLevel1, deck);
+    std::vector<int>playerLevel2(4,1);
+    agents[1] = Agent(playerLevel2, deck);
 
 
     Game game(deck, players, agents, 1);
@@ -54,16 +54,16 @@ void testRandomisation(){
     int m = 4;
     int players = 2;
     int rep = 100;
-    double * values = new double[n*m];
+    std::vector<double>values(n*m);
     for(int i=0; i<n*m; i++){
         values[i] = i;
     }
     Deck deck(values, n, m);
-    Agent * agents = new Agent[players];
-    int playerLevel1[4]= {0};
-    agents[0] = *(new Agent(playerLevel1, deck));
-    int playerLevel2[4] = {1};
-    agents[1] = *(new Agent(playerLevel2, deck));
+    std::vector<Agent>agents(players);
+    std::vector<int>playerLevel1(4,0);
+    agents[0] = Agent(playerLevel1, deck);
+    std::vector<int>playerLevel2(4,1);
+    agents[1] = Agent(playerLevel2, deck);
 
 
     Game game(deck, players, agents, 1);
@@ -95,12 +95,12 @@ void testRankUpdates(){
     int m = 4;
     int players=2;
     Deck deck(n, m, 0, 10, 5);
-    Card *cards = deck.getCards();
-    Agent * agents = new Agent[players];
-    int playerLevel1[4]= {0};
-    agents[0] = *(new Agent(playerLevel1, deck));
-    int playerLevel2[4] = {1};
-    agents[1] = *(new Agent(playerLevel2, deck));
+    std::vector<Card> cards = deck.getCards();
+    std::vector<Agent>agents(players);
+    std::vector<int>playerLevel1(4,0);
+    agents[0] = Agent(playerLevel1, deck);
+    std::vector<int>playerLevel2(4,1);
+    agents[1] = Agent(playerLevel2, deck);
     
     Game game(deck, players, agents, 1);
     Outcome out(2);

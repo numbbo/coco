@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /* 
  * File:   Game.h
  * Author: volz
@@ -21,14 +15,14 @@
 
 class Game{
 public:
-    Game(Deck deck, int players, Agent * agents, int seed);
+    Game(Deck deck, int players, std::vector<Agent> agents, int seed);
         
     Outcome run(Outcome out, int verbose=0);
 protected:
-    int round(int won_last, Card ** cards, int verbose=0);
+    int round(int won_last, std::vector<std::vector<Card>> cards, int verbose=0);
     
 private:
-    Agent * agents;
+    std::vector<Agent> agents;
     int players;
     Deck deck;
     std::default_random_engine re;
