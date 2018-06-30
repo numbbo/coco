@@ -4,19 +4,19 @@
 
 Card::Card(){
     this->m=0;
-    this->ranks = new int[this->m];
+    this->ranks = std::vector<int>(m);
 }
 
-Card::Card(double* values, int m){
+Card::Card(std::vector<double> values, int m, int offset){
     this->m = m;
-    this->values = new double[m];
+    this->values = std::vector<double>(m);
     for(int i=0; i<m; i++){
-        this->values[i] = *(values + (i));
+        this->values[i] = values[i+offset];
     }
-    this->ranks = new int[this->m];
+    this->ranks = std::vector<int>(this->m);
 }
 
-double* Card::getValues(){
+std::vector<double> Card::getValues(){
     return this->values;
 }
 
@@ -56,7 +56,7 @@ void Card::decreaseRank(int i){
     this->ranks[i]--;
 }
 
-int * Card::getRanks(){
+std::vector<int> Card::getRanks(){
     return this->ranks;
 }
 

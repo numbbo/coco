@@ -12,7 +12,7 @@
 
 using namespace std;
 
-void printOutput(double* value, int obj){
+void printOutput(std::vector<double> value, int obj){
     ofstream file;
     file.open("objectives.txt");
     file << obj;
@@ -37,31 +37,26 @@ int main(int argc, char** argv) {
     int players = 2;
 
     double readNumber;
-    int inputDimension;
-    double * values;
-    bool first=true;
-    int counter = 0;
     std::ifstream file("variables.txt");
-    while (file >> readNumber){
-        if(first){
-            inputDimension= readNumber;
-            values = new double[(int)inputDimension];
-            first=false;
-        }else{
-            values[counter] = readNumber;
-            counter++;
-        }
+    file >> readNumber;
+    int inputDimension = (int)readNumber;
+    std::vector<double>values(inputDimension);
+    
+
+    for(int i=0; i<inputDimension; i++){
+        file >> readNumber;
+        values[i] = readNumber;
     }
+    file.close();
     
     int n = (int) inputDimension/m;
-    
     if(obj>=5){
         d =2;
     }else{
         d=1;
     }
     
-    double * result= new double[n];
+    std::vector<double>result(n);
     
     Deck deck(values, n, m);
     if(obj==0){
@@ -72,11 +67,11 @@ int main(int argc, char** argv) {
         result[0] = -deck.getHV();
         result[1] = -deck.getSD();
     }else{
-        Agent * agents = new Agent[players];
-        int playerLevel1[4]= {0};
-        agents[0] = *(new Agent(playerLevel1, deck));
-        int playerLevel2[4] = {1};
-        agents[1] = *(new Agent(playerLevel2, deck));
+        std::vector<Agent>agents(players);
+        std::vector<int>playerLevel1(4,0);
+        agents[0] = Agent(playerLevel1, deck);
+        std::vector<int>playerLevel2(4,1);
+        agents[1] = Agent(playerLevel2, deck);
 
 
         Game game(deck, players, agents, seed);

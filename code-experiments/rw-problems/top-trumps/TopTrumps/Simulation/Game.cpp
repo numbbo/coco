@@ -1,6 +1,6 @@
 #include "Game.h"
 #include <iostream>
-Game::Game(Deck deck, int players, Agent* agents, int seed){
+Game::Game(Deck deck, int players, std::vector<Agent> agents, int seed){
     this->agents = agents;
     this->players = players;
     this->deck = deck;
@@ -23,9 +23,9 @@ Outcome Game::run(Outcome out, int verbose){
     this->deck.shuffle();
     int total_rounds = this->deck.getN()/this->players;
     
-    Card ** cards = deck.distribute(players);
+    std::vector<std::vector<Card>> cards = deck.distribute(players);
     for(int i=0; i<players; i++){
-        Card * hand = cards[i];
+        std::vector<Card> hand = cards[i];
         agents[i].pickUpCards(total_rounds, hand);
     }
     int won_last = (rand() % this->players);
@@ -37,9 +37,8 @@ Outcome Game::run(Outcome out, int verbose){
         }
         std::cout<< "Game starts with " << won_last << std::endl;
     }
-      
-    int *tricks;
-    memset(tricks, 0, this->players);
+    
+    std::vector<int>tricks(this->players, 0);
     for(int i=0; i<total_rounds; i++){
         int winner = round(won_last, cards, verbose);
         tricks[winner]++;
@@ -69,7 +68,7 @@ Outcome Game::run(Outcome out, int verbose){
     return out;
 }
 
-int Game::round(int won_last, Card ** cards, int verbose){
+int Game::round(int won_last, std::vector<std::vector<Card>> cards, int verbose){
     int category = this->agents[won_last].choose();
     if(verbose>=1){
         std::cout << "Chose " << category << std::endl;

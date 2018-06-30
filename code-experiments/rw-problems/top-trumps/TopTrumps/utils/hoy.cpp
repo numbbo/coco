@@ -59,7 +59,7 @@ HVCalculator::HVCalculator(){
 
 }
 
-double HVCalculator::computeHV(int dim, int n, double* points, double* refPoint){
+double HVCalculator::computeHV(int dim, int n, std::vector<double> points, std::vector<double> refPoint){
     /*
     * arguments are:
     * dimension of input data points
@@ -73,11 +73,11 @@ double HVCalculator::computeHV(int dim, int n, double* points, double* refPoint)
     int i,j;
 
     static vector<double*> pointsInitial(dataNumber);
-    int counter;
+    int counter =0;
     for (int n=0; n<dataNumber; n++) {
         pointsInitial[n] = new double[dimension];
         for (int i=0; i<dimension; i++) {
-            pointsInitial[n][i] = *(points + (counter));
+            pointsInitial[n][i] = points[counter];
             counter++;
         }
     }
@@ -108,6 +108,11 @@ double HVCalculator::computeHV(int dim, int n, double* points, double* refPoint)
     // call stream initially
     stream(regionLow, regionUp, pointsInitial, 0, refPoint[dimension-1]);
 
+    for (int n=0; n<dataNumber; n++) {
+        delete[] pointsInitial[n];
+    }
+    delete[] regionLow;
+    delete[] regionUp;
     // print hypervolume
     return(volume);
 
@@ -241,7 +246,7 @@ double HVCalculator::computeTrellis(const double regLow[], const double regUp[],
 
 		// determine sign of summand
 		vol -= summand; 
-		dTemp[i] =- summand;
+		dTemp[i] = (-1)* summand;
 				
 		// add summand to sum
 		// sign = (int) pow((double)-1, (double)counterOnes+1);
@@ -268,8 +273,9 @@ double HVCalculator::computeTrellis(const double regLow[], const double regUp[],
 		vol -= summand;
 	}
 
-	//delete[] valueTrellis;
-	//delete[] valueRegion;
+	delete[] valueTrellis;
+	delete[] valueRegion;
+        delete[] dTemp;
 	return vol;
 }
 // return median of the list of boundaries considered as a set
@@ -387,6 +393,7 @@ void HVCalculator::stream(double regionLow[], double regionUp[], const vector<do
 			} while(next == current);		
 			volume += computeTrellis(regionLow, regionUp, trellis) * (next - current);
 		} while(next != cover);
+                delete[] trellis;
 	}
 	
 
@@ -454,6 +461,7 @@ void HVCalculator::stream(double regionLow[], double regionUp[], const vector<do
 		regionLow[split] = dLast;
 
 	}// end inner node
+        delete[] piles;
 
 } // end stream
 

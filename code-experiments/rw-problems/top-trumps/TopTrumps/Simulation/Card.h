@@ -13,28 +13,29 @@
 
 #ifndef CARD_H
 #define CARD_H
+#include <vector>
 
 class Card{
 public:
     Card();
-    Card(double* values, int m);
+    Card(std::vector<double> values, int m, int offset);
     
-    double* getValues();
+    std::vector<double> getValues();
     double getValue(int i);
     
     //void updateRanks(int * ranks);
     void decreaseRank(int i);
     void setRank(int rank, int j);
-    int * getRanks();
+    std::vector<int> getRanks();
     int getRank(int i);
     
     void toString();
     void printRanks();
         
 private:
-    double *values;
+    std::vector<double> values;
     int m;
-    int * ranks;
+    std::vector<int> ranks;
 };
 
 
