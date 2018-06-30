@@ -9,7 +9,7 @@
 
 #include "coco.h"
 #include "coco_problem.c"
-#include "top_trumps.h"
+#include "rw_top_trumps.h"
 
 /**
  * @brief Data type used by the rw-top-trumps problem.
@@ -23,20 +23,23 @@ typedef struct {
 extern "C" {
 #endif
 /**
- * @brief Calls the C++ top_trumps_evaluate function to evaluate the problem.
+ * @brief Calls the top_trumps_evaluate function from the rw_top_trumps library to evaluate the problem.
  */
 static void rw_top_trumps_evaluate(coco_problem_t *problem, const double *x, double *y) {
 
   rw_top_trumps_data_t *data = (rw_top_trumps_data_t *) problem->data;
   size_t i;
 
-  if (coco_vector_contains_nan(x, problem->number_of_variables))
+  coco_debug("evaluation #%lu", (unsigned long)problem->evaluations);
+
+  if (coco_vector_contains_nan(x, problem->number_of_variables)) {
     for (i = 0; i < problem->number_of_objectives; i++)
       y[i] = NAN;
+    return;
+  }
 
-  coco_debug("evaluation #%lu", (unsigned long)problem->evaluations);
-  y = top_trumps_evaluate(data->function, data->instance, problem->number_of_variables,
-      (double *) x, problem->number_of_objectives);
+  top_trumps_evaluate(data->function, data->instance, problem->number_of_variables,
+      (double *) x, problem->number_of_objectives, y);
 }
 #ifdef __cplusplus
 }
@@ -88,7 +91,7 @@ static coco_problem_t *rw_top_trumps_problem_allocate(const char *suite_name,
   }
 
   /* TODO Add realistic best values */
-  problem->best_value[0] = -1e8;
+  problem->best_value[0] = -1e9;
   if (problem->best_parameter != NULL) {
     coco_free_memory(problem->best_parameter);
     problem->best_parameter = NULL;

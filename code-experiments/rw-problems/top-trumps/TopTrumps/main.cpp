@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
     file.close();
     
     int n = (int) inputDimension/m;
-    if(obj>=5){
+    if(obj>=6){
         d =2;
     }else{
         d=1;
@@ -59,11 +59,11 @@ int main(int argc, char** argv) {
     std::vector<double>result(n);
     
     Deck deck(values, n, m);
-    if(obj==0){
+    if(obj==1){
         result[0] = -deck.getHV();
-    }else if(obj==1){
+    }else if(obj==2){
         result[0] = -deck.getSD();
-    }else if(obj==5){
+    }else if(obj==6){
         result[0] = -deck.getHV();
         result[1] = -deck.getSD();
     }else{
@@ -80,16 +80,16 @@ int main(int argc, char** argv) {
             out = game.run(out,0);
         }
         
-        if(obj==2){
+        if(obj==3){
             result[0] = -out.getFairAgg();
-        }else if(obj==3){
-            result[0] = -out.getLeadChangeAgg();
         }else if(obj==4){
+            result[0] = -out.getLeadChangeAgg();
+        }else if(obj==5){
             result[0] = out.getTrickDiffAgg();
-        }else if(obj==6){
+        }else if(obj==7){
             result[0] = -out.getFairAgg();
             result[1] = -out.getLeadChangeAgg();
-        }else if(obj==7){
+        }else if(obj==8){
             result[0] = out.getTrickDiffAgg();
             result[1] = -out.getLeadChangeAgg();
         }

@@ -19,7 +19,7 @@
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.
  * Increase the budget multiplier value gradually to see how it affects the runtime.
  */
-static const unsigned int BUDGET_MULTIPLIER = 10;
+static const unsigned int BUDGET_MULTIPLIER = 2;
 
 /**
  * The maximal number of independent restarts allowed for an algorithm that restarts itself.
@@ -128,11 +128,12 @@ int main(void) {
    * Adapt to your need. Note that the experiment is run according
    * to the settings, defined in example_experiment(...) below.
    */
-  example_experiment("rw-gan-mario", "bbob", random_generator);
-
-  /*example_experiment("rw-gan-mario-biobj", "bbob-biobj", random_generator);*/
 
   example_experiment("rw-top-trumps", "bbob", random_generator);
+
+  /*example_experiment("rw-gan-mario", "bbob", random_generator);
+
+  example_experiment("rw-gan-mario-biobj", "bbob-biobj", random_generator);*/
 
   /*example_experiment("rw-top-trumps-biobj", "bbob-biobj", random_generator);*/
 
@@ -167,13 +168,14 @@ void example_experiment(const char *suite_name,
       coco_strdupf("result_folder: RS_on_%s "
                    "algorithm_name: RS "
                    "algorithm_info: \"A simple random search algorithm\"", suite_name);
+  coco_set_log_level("info");
 
   /* Initialize the suite and observer.
    *
    * For more details on how to change the default options, see
    * http://numbbo.github.io/coco-doc/C/#suite-parameters and
    * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
-  suite = coco_suite(suite_name, "", "");
+  suite = coco_suite(suite_name, "", "function_indices: 2- instance_indices: 1-3 dimensions: 88");
   observer = coco_observer(observer_name, observer_options);
   coco_free_memory(observer_options);
 

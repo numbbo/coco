@@ -16,6 +16,16 @@ LDFLAGS += -lm
 CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow -Wno-sign-compare -Wconversion
 
 ########################################################################
+## Top trumps library
+LNAME := rw_top_trumps
+ifeq ($(OS),Windows_NT)
+    LIBNAME := $(LNAME).dll
+else
+    LIBNAME := lib$(LNAME).so
+endif
+LDFLAGS += '-Wl,-rpath,$$ORIGIN' -L. -l$(LNAME)
+
+########################################################################
 ## Toplevel targets
 all: example_experiment
 

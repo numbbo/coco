@@ -53,6 +53,7 @@ _build_verbosity = True
 ## C
 def build_c():
     """ Builds the C source code """
+    build_rw_top_trumps()
     global RELEASE
     amalgamate(CORE_FILES + ['code-experiments/src/coco_runtime_c.c'],
                'code-experiments/build/c/coco.c', RELEASE,
@@ -796,13 +797,16 @@ def test_preprocessing(package_install_option = []):
 def build_rw_top_trumps():
     make('code-experiments/rw-problems/top-trumps/TopTrumps', 'clean', verbose=_build_verbosity)
     make('code-experiments/rw-problems/top-trumps/TopTrumps', 'all', verbose=_build_verbosity)
-    folder1 = 'code-experiments/rw-problems/top-trumps/TopTrumps/'
-    folder2 = 'code-experiments/rw-problems/top-trumps/'
-    executable = stat.S_IEXEC | stat.S_IXGRP | stat.S_IXOTH | stat.S_IXUSR
-    for filename in os.listdir(folder1):
-        if filename.startswith('TopTrumps') and os.path.isfile(folder1 + filename) \
-                and (os.stat(folder1 + filename).st_mode & executable):
-            copy_file(folder1 + filename, folder2 + filename)
+    os.makedirs('code-experiments/lib', exist_ok=True)
+    rw_library = 'rw_top_trumps'
+    copy_file('code-experiments/rw-problems/top-trumps/TopTrumps/{}.h'.format(rw_library),
+              'code-experiments/src/{}.h'.format(rw_library))
+    if 'win32' in sys.platform:
+        rw_library += '.dll'
+    else:
+        rw_library = 'lib' + rw_library + '.so'
+    copy_file('code-experiments/rw-problems/top-trumps/TopTrumps/{}'.format(rw_library),
+              'code-experiments/build/c/{}'.format(rw_library))
 
 ################################################################################
 ## Global

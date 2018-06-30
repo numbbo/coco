@@ -187,11 +187,14 @@ static void rw_problem_evaluate(coco_problem_t *problem, const double *x, double
   size_t i;
   data = (rw_problem_data_t *) problem->data;
 
-  if (coco_vector_contains_nan(x, problem->number_of_variables))
+  coco_debug("evaluation #%lu", (unsigned long)problem->evaluations);
+
+  if (coco_vector_contains_nan(x, problem->number_of_variables)) {
     for (i = 0; i < problem->number_of_objectives; i++)
       y[i] = NAN;
+    return;
+  }
 
-  coco_debug("evaluation #%lu", (unsigned long)problem->evaluations);
   rw_problem_external_evaluate(x, problem->number_of_variables, data->path, data->command,
       data->var_fname, data->obj_fname, y, problem->number_of_objectives);
 }
