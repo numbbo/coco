@@ -16,17 +16,18 @@
 
 #include "Card.h"
 #include <random>
+#include <vector>
 
 class Deck{
 public:
     Deck();
-    Deck(double * values, int n, int m);
+    Deck(std::vector<double> values, int n, int m);
     Deck(int n, int m, double min, double max, int seed);
     
     void shuffle();
-    Card** distribute(int players);
+    std::vector<std::vector<Card>> distribute(int players);
     
-    Card* getCards();
+    std::vector<Card> getCards();
     int getM();
     int getN();
     
@@ -35,7 +36,7 @@ public:
     void computeRanks();
     
 private:
-    Card* cards;
+    std::vector<Card> cards;
     int n;
     int m;
 };

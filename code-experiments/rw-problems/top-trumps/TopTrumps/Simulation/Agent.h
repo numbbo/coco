@@ -20,10 +20,10 @@
 class Agent{
 public:
     Agent();
-    Agent(int * playerLevel, Deck deck);
+    Agent(std::vector<int> playerLevel, Deck deck);
     
-    void pickUpCards(int handSize, Card* hand);
-    void updateRanks(int * ranks);
+    void pickUpCards(int handSize, std::vector<Card> hand);
+    void updateRanks(std::vector<int> ranks);
     int choose();
     Card play();
     
@@ -31,11 +31,11 @@ public:
     void printRemainingCards();
     
 private:
-    int* playerLevel;
+    std::vector<int> playerLevel;
     Deck deck;
     int handSize;
     
-    Card* hand;
+    std::vector<Card> hand;
     int currentCard;
 };
 

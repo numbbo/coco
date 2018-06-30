@@ -5,16 +5,18 @@
 #include "../utils/hoy.h"
 #include "../utils/sort.h"
 
+#include <iostream>
+
 Deck::Deck(){
     
 }
 
-Deck::Deck(double* values, int n, int m){
+Deck::Deck(std::vector<double> values, int n, int m){
     this->n = n;
     this->m = m;
-    this->cards = new Card[n];
+    this->cards = std::vector<Card>(n);
     for(int i=0; i<n*m; i+=m){
-        cards[i/m] = *(new Card(&values[i], m));
+        cards[i/m] = Card(values, m, i);
     }
     this->computeRanks();
 }
@@ -23,24 +25,23 @@ Deck::Deck(int n, int m, double min, double max, int seed){
     std::default_random_engine re(seed);
     this->n = n;
     this->m = m;
-    this->cards = new Card[n];
+    this->cards = std::vector<Card>(n);
     std::uniform_real_distribution<double> unif(min, max);
     for(int i=0; i<n; i++){
-        double* card_values = new double[m];
+        std::vector<double> card_values(m);
         for(int j=0; j<m; j++){
             card_values[j] = unif(re);
         }
-        cards[i] = *(new Card(card_values, m));
+        cards[i] = Card(card_values, m,0);
     }
     this->computeRanks();
 }
 
 void Deck::computeRanks(){
     for(int i=0; i<this->m; i++){
-        std::vector<double> colValues;
+        std::vector<double> colValues(this->n);
         std::vector<size_t> idx;
         std::vector<double> b;
-        colValues.resize(this->n);
         for(int j=0; j<this->n; j++){
             colValues[j] = this->cards[j].getValue(i);
         }
@@ -57,15 +58,15 @@ void Deck::shuffle(){
     std::random_shuffle(&cards[0], &cards[n]);
 }
 
-Card ** Deck::distribute(int players){
+std::vector<std::vector<Card>> Deck::distribute(int players){
     if(n%players !=0){
         throw std::invalid_argument("deck can not be divided to players");
     }
     int hand = n/players;
-    Card **distribution = new Card*[players];
+    std::vector<std::vector<Card>> distribution(players);
     int counter = 0;
     for(int i=0; i<players; i++){
-        distribution[i] = new Card[hand];
+        distribution[i] = std::vector<Card>(hand);
         for(int j=0; j<hand; j++){
             distribution[i][j] = cards[counter];
             counter++;
@@ -74,7 +75,7 @@ Card ** Deck::distribute(int players){
     return distribution;
 }
 
-Card * Deck::getCards(){
+std::vector<Card> Deck::getCards(){
     return this->cards;
 }
 
@@ -88,8 +89,8 @@ int Deck::getN(){
 
 
 double Deck::getHV(){
-    double refPoint[this->m] = {0};
-    double * values = new double[this->n*this->m];
+    std::vector<double> refPoint(this->m, std::numeric_limits<double>::min());
+    std::vector<double>values(this->n*this->m);
     int counter =0;
     for(int i =0; i<this->n; i++){
         Card card = this->cards[i];
@@ -110,7 +111,7 @@ double Deck::getHV(){
 }
 
 double Deck::getSD(){
-    double colSums[this->m] = {0};
+    std::vector<double> colSums(this->m, 0);
     double mean=0;
     for(int i=0; i<this->n; i++){
         Card card = this->cards[i];

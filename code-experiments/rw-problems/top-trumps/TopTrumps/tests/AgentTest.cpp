@@ -18,19 +18,20 @@
  */
 
 void testChoose(){
+    std::cout << "Expected output: naive agent, always chooses max number" <<std::endl;
     int n = 10;
     int m = 4;
     int players = 2;
     Deck deck(n, m, 0, 10, 5);
-    Card ** cards = deck.distribute(players);
-    int playerLevel[4]= {0};
-    Agent * agent = new Agent[players];
+    std::vector<std::vector<Card>> cards = deck.distribute(players);
+    std::vector<int> playerLevel(4,0);
+    std::vector<Agent>agent(players);
     for(int i=0; i<players; i++){
-        Card * hand = cards[i];
-        agent[i] = *(new Agent(playerLevel, deck));
+        std::vector<Card> hand = cards[i];
+        agent[i] = Agent(playerLevel, deck);
         agent[i].pickUpCards(n/players, hand);
         for(int j=0; j<n/players; j++){
-            std::cout << "chose" << agent[i].choose() << std::endl;
+            std::cout << "chose " << agent[i].choose() << std::endl;
             Card card = agent[i].play();
             card.toString();
             card.printRanks();
@@ -39,39 +40,39 @@ void testChoose(){
     std::cout << "----------------------------------------" <<std::endl;
     
     Deck deck2(n, m, 0, 10, 5);
-    Card ** cards2 = deck2.distribute(players);
-    int playerLevel2[4]= {1};
-    Agent * agent2 = new Agent[players];
+    std::vector<std::vector<Card>> cards2 = deck2.distribute(players);
+    std::vector<int> playerLevel2(4,1);
+    std::vector<Agent>agent2(players);
     for(int i=0; i<players; i++){
-        Card * hand = cards2[i];
-        agent2[i] = *(new Agent(playerLevel2, deck2));
+        std::vector<Card> hand = cards2[i];
+        agent2[i] = Agent(playerLevel2, deck2);
         agent2[i].pickUpCards(n/players, hand);
         for(int j=0; j<n/players; j++){
-            std::cout << "chose" << agent2[i].choose() << std::endl;
+            std::cout << "chose " << agent2[i].choose() << std::endl;
             Card card = agent2[i].play();
             card.toString();
             card.printRanks();
         }
     }
     
-    std::cout << "Expected output: 0 (for now)" << std::endl;
+    std::cout << "Expected output: lvl 4 agent, always chooses highest rank" << std::endl;
 }
 
 void testPlay(){
     int n = 10;
     int m = 4;
     int players = 2;
-    double * values = new double[n*m];
+    std::vector<double>values(n*m);
     for(int i=0; i<n*m; i++){
         values[i] = i;
     }
     Deck deck(values, n, m);
-    Card ** cards = deck.distribute(players);
-    int playerLevel[4]= {0,1,1,0};
-    Agent * agent = new Agent[players];
+    std::vector<std::vector<Card>> cards = deck.distribute(players);
+    std::vector<int>playerLevel= {0,1,1,0};
+    std::vector<Agent>agent(players);
     for(int i=0; i<players; i++){
-        Card * hand = cards[i];
-        agent[i] = *(new Agent(playerLevel, deck));
+        std::vector<Card> hand = cards[i];
+        agent[i] = Agent(playerLevel, deck);
         agent[i].pickUpCards(n/players, hand);
     }
     for(int i =0; i<n/players; i++){
@@ -91,17 +92,16 @@ void testPlay(){
 void testPlayerLevel(){
     int n = 10;
     int m = 4;
-    int players = 2;
-    double * values = new double[n*m];
+    std::vector<double>values(n*m);
     for(int i=0; i<n*m; i++){
         values[i] = i;
     }
     Deck deck(values, n, m);
-    int playerLevel1[4]= {0,1,1,0};
+    std::vector<int>playerLevel1 = {0,1,1,0};
     Agent agent1(playerLevel1, deck);
     std::cout << "player level " << agent1.getLevel() << std::endl;
     std::cout <<"Expected output: player level 2"<< std::endl;
-    int playerLevel2[4]= {1,0,0,1};
+    std::vector<int>playerLevel2= {1,0,0,1};
     Agent agent2(playerLevel2, deck);
     std::cout << "player level " << agent2.getLevel() << std::endl;
     std::cout <<"Expected output: player level 2"<< std::endl;
@@ -112,12 +112,12 @@ void testRankRemains(){
     int m = 4;
     int players = 2;
     Deck deck(n, m, 0, 10, 5);
-    Card ** cards = deck.distribute(players);
-    int playerLevel[4]= {0,1,1,0};
-    Agent * agent = new Agent[players];
+    std::vector<std::vector<Card>> cards = deck.distribute(players);
+    std::vector<int>playerLevel = {0,1,1,0};
+    std::vector<Agent>agent(players);
     for(int i=0; i<players; i++){
-        Card * hand = cards[i];
-        agent[i] = *(new Agent(playerLevel, deck));
+        std::vector<Card> hand = cards[i];
+        agent[i] = Agent(playerLevel, deck);
         agent[i].pickUpCards(n/players, hand);
         agent[i].printRemainingCards();
     }
