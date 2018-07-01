@@ -149,12 +149,6 @@ int main(void) {
                      "result_folder: rw-top-trumps-biobj",
                      random_generator);
 
-  example_experiment("rw-top-trumps-biobj",
-                     "instance_indices: 1 dimensions: 88",
-                     "rw",
-                     "result_folder: rw-top-trumps-biobj",
-                     random_generator);
-
   example_experiment("rw-gan-mario",
                      "function_indices: 2,5,8 instance_indices: 1 dimensions: 10",
                      "rw",
