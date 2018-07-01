@@ -273,9 +273,9 @@ double HVCalculator::computeTrellis(const double regLow[], const double regUp[],
 		vol -= summand;
 	}
 
-	delete[] valueTrellis;
-	delete[] valueRegion;
-        delete[] dTemp;
+	//delete[] valueTrellis;
+	//delete[] valueRegion;
+        //delete[] dTemp;
 	return vol;
 }
 // return median of the list of boundaries considered as a set
@@ -393,7 +393,7 @@ void HVCalculator::stream(double regionLow[], double regionUp[], const vector<do
 			} while(next == current);		
 			volume += computeTrellis(regionLow, regionUp, trellis) * (next - current);
 		} while(next != cover);
-                delete[] trellis;
+                //delete[] trellis;
 	}
 	
 
@@ -461,7 +461,7 @@ void HVCalculator::stream(double regionLow[], double regionUp[], const vector<do
 		regionLow[split] = dLast;
 
 	}// end inner node
-        delete[] piles;
+        //delete[] piles;
 
 } // end stream
 
