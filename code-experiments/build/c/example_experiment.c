@@ -19,7 +19,7 @@
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.
  * Increase the budget multiplier value gradually to see how it affects the runtime.
  */
-static const unsigned int BUDGET_MULTIPLIER = 2;
+static const unsigned int BUDGET_MULTIPLIER = 10;
 
 /**
  * The maximal number of independent restarts allowed for an algorithm that restarts itself.
@@ -61,7 +61,9 @@ static void evaluate_constraint(const double *x, double *y) {
 
 /* Declarations of all functions implemented in this file (so that their order is not important): */
 void example_experiment(const char *suite_name,
+                        const char *suite_options,
                         const char *observer_name,
+                        const char *observer_options,
                         coco_random_state_t *random_generator);
 
 void my_random_search(evaluate_function_t evaluate_func,
@@ -128,14 +130,43 @@ int main(void) {
    * Adapt to your need. Note that the experiment is run according
    * to the settings, defined in example_experiment(...) below.
    */
+  coco_set_log_level("info");
 
-  example_experiment("rw-top-trumps", "rw", random_generator);
+  /**
+   * For more details on how to change the default suite and observer options, see
+   * http://numbbo.github.io/coco-doc/C/#suite-parameters and
+   * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
 
-  /*example_experiment("rw-gan-mario", "bbob", random_generator);
+  example_experiment("rw-top-trumps",
+                     "instance_indices: 1 dimensions: 88",
+                     "rw",
+                     "result_folder: rw-top-trumps",
+                     random_generator);
 
-  example_experiment("rw-gan-mario-biobj", "bbob-biobj", random_generator);*/
+  example_experiment("rw-top-trumps-biobj",
+                     "instance_indices: 1 dimensions: 88",
+                     "bbob-biobj",
+                     "result_folder: rw-top-trumps-biobj",
+                     random_generator);
 
-  /*example_experiment("rw-top-trumps-biobj", "bbob-biobj", random_generator);*/
+  example_experiment("rw-top-trumps-biobj",
+                     "instance_indices: 1 dimensions: 88",
+                     "rw",
+                     "result_folder: rw-top-trumps-biobj",
+                     random_generator);
+
+  example_experiment("rw-gan-mario",
+                     "function_indices: 2,5,8 instance_indices: 1 dimensions: 10",
+                     "rw",
+                     "result_folder: rw-gan-mario",
+                     random_generator);
+
+  /* The bi-objective rw-gan-mario suite is not supported yet
+   * example_experiment("rw-gan-mario-biobj",
+                     "function_indices: 2,5,8 instance_indices: 1 dimensions: 10",
+                     "bbob-biobj",
+                     "result_folder: rw-gan-mario-biobj",
+                     random_generator);*/
 
   printf("Done!\n");
   fflush(stdout);
@@ -155,7 +186,9 @@ int main(void) {
  * @param random_generator The random number generator.
  */
 void example_experiment(const char *suite_name,
+                        const char *suite_options,
                         const char *observer_name,
+                        const char *observer_options,
                         coco_random_state_t *random_generator) {
 
   size_t run;
@@ -163,20 +196,9 @@ void example_experiment(const char *suite_name,
   coco_observer_t *observer;
   timing_data_t *timing_data;
 
-  /* Set some options for the observer. See documentation for other options. */
-  char *observer_options =
-      coco_strdupf("result_folder: RS_on_%s "
-                   "log_variables: low_dim", suite_name);
-  coco_set_log_level("info");
-
-  /* Initialize the suite and observer.
-   *
-   * For more details on how to change the default options, see
-   * http://numbbo.github.io/coco-doc/C/#suite-parameters and
-   * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
-  suite = coco_suite(suite_name, "", "function_indices: 2- instance_indices: 1-3 dimensions: 88");
+  /* Initialize the suite and observer. */
+  suite = coco_suite(suite_name, "", suite_options);
   observer = coco_observer(observer_name, observer_options);
-  coco_free_memory(observer_options);
 
   /* Initialize timing */
   timing_data = timing_data_initialize(suite);
