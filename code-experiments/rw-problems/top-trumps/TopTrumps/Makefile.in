@@ -6,9 +6,10 @@ else
     LIBNAME := lib$(LNAME).so
 endif
 
-CXXFLAGS := -std=c++11
+CXXFLAGS := -std=c++11 -fPIC
 WFLAGS := -Wall -Wpedantic
-LDFLAGS += '-Wl,-rpath,$$ORIGIN' -L. -l$(LNAME)
+LDFLAGS += '-Wl,-rpath,$$ORIGIN' -L.
+LIBFLAG := -l$(LNAME)
 
 srcfiles := utils/hoy.cpp Simulation/Card.cpp Simulation/Deck.cpp Simulation/Agent.cpp Simulation/Game.cpp Simulation/Outcome.cpp
 objects  := $(patsubst %.cpp, %.o, $(srcfiles))
@@ -18,22 +19,22 @@ mains  := $(patsubst %.cpp, %.o, $(mainfiles))
 all: $(LNAME) $(ENAME) TopTrumpsExec DeckTest AgentTest GameTest
 
 $(LNAME): $(objects)
-	$(CXX) $(CXXFLAGS) $(WFLAGS) -fpic -shared -o $(LIBNAME) $(LNAME).cpp $(objects)
+	$(CXX) $(CXXFLAGS) $(WFLAGS) -shared -o $(LIBNAME) $(LNAME).cpp $(objects)
 
 $(ENAME): $(objects)
-	gcc -std=c89 $(WFLAGS) $(LDFLAGS) -o $(ENAME) $(ENAME).c
+	gcc -std=c89 $(WFLAGS) $(LDFLAGS) -o $(ENAME) $(ENAME).c $(LIBFLAG)
 
 TopTrumpsExec: $(objects)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o TopTrumpsExec main.cpp $(objects)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o TopTrumpsExec main.cpp $(objects) $(LIBFLAG)
 
 DeckTest: $(objects)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o DeckTest tests/DeckTest.cpp $(objects)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o DeckTest tests/DeckTest.cpp $(objects) $(LIBFLAG)
 
 AgentTest: $(objects)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o AgentTest tests/AgentTest.cpp $(objects)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o AgentTest tests/AgentTest.cpp $(objects) $(LIBFLAG)
 
 GameTest: $(objects)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o GameTest tests/GameTest.cpp $(objects)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o GameTest tests/GameTest.cpp $(objects) $(LIBFLAG)
 
 depend: .depend
 

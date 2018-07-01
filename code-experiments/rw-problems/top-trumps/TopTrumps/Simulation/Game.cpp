@@ -5,7 +5,6 @@ Game::Game(Deck deck, int players, std::vector<Agent> agents, int seed){
     this->players = players;
     this->deck = deck;
     this->re = std::default_random_engine(seed);
-    srand(seed);
     
     int maxLevel = 0;
     this->bestPlayer = 0;

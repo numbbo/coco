@@ -18,6 +18,7 @@ void top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
     double *x, size_t size_y, double *y) {
 
   int seed = (int) instance;
+  srand(seed);
   int obj = (int) function;
   int rep = 100;
   int m = 4;
@@ -28,6 +29,32 @@ void top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
 
   std::vector<double> y_vector(n);
   std::vector<double> x_vector(x, x + size_x);
+  
+  //set box constraints based on seed, i.e. depending on instance. Return large value if outside.
+  double lbound = 0;
+  double ubound=100;
+  bool outOfBounds=false;
+  for(int i=0; i<m; i++){
+    double a = lbound + (double)rand()/RAND_MAX*(ubound-lbound);
+    double b = lbound + (double)rand()/RAND_MAX*(ubound-lbound);
+    double box_min = std::min(a,b);
+    double box_max = std::max(a,b);
+    //std::cout << "random bounds [" << box_min << ", " << box_max <<"]"<< std::endl;
+    for(int j=0; j<n; j++){
+        if(x_vector[j*m+i] <box_min || x_vector[j*m+i] > box_max){
+            //std::cout << "boundary on " << j*m+i << std::endl;
+            outOfBounds=true;
+            goto finish; //return high penalty number
+        }
+    }
+      
+  }
+  finish:
+  if(outOfBounds){
+    for (size_t i = 0; i < size_y; i++)
+        y[i] = 1000; //return high number
+  }
+  return;
 
   Deck deck(x_vector, n, m);
   if (obj == 1) {
