@@ -62,6 +62,8 @@ static coco_problem_t *rw_top_trumps_problem_allocate(const char *suite_name,
   data = (rw_top_trumps_data_t *) coco_allocate_memory(sizeof(*data));
   data->function = function;
   data->instance = instance;
+  if (objectives == 2)
+    data->function = function + 5;
 
   if ((objectives != 1) && (objectives != 2))
     coco_error("rw_top_trumps_problem_allocate(): %lu objectives are not supported (only 1 or 2)",
