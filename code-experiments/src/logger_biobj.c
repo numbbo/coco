@@ -444,7 +444,8 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
 
   indicator->name = coco_strdup(indicator_name);
 
-  indicator->best_value = suite_biobj_get_best_value(indicator->name, problem->problem_id);
+  assert(problem->suite);
+  indicator->best_value = coco_suite_get_best_indicator_value(problem->suite, problem, indicator->name);
   indicator->target_hit = 0;
   indicator->evaluation_logged = 0;
   indicator->current_value = 0;
