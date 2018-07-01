@@ -9,8 +9,8 @@
 
 int main(void) {
 
-  size_t function = 2;
-  size_t instance = 1;
+  size_t function = 1;
+  size_t instance = 2;
   size_t size_x = 88;
   size_t size_y = 1;
   size_t i;
@@ -23,7 +23,7 @@ int main(void) {
   y = (double *) malloc(size_y * sizeof(double));
 
   for (i = 0; i < size_x; i++)
-    x[i] = 51;
+    x[i] = i;
 
   top_trumps_evaluate(function, instance, size_x, x, size_y, y);
 

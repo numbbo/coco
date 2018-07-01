@@ -42,6 +42,7 @@ void top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
     //std::cout << "random bounds [" << box_min << ", " << box_max <<"]"<< std::endl;
     for(int j=0; j<n; j++){
         if(x_vector[j*m+i] <box_min || x_vector[j*m+i] > box_max){
+            //std::cout << "boundary on " << j*m+i << std::endl;
             outOfBounds=true;
             goto finish; //return high penalty number
         }
