@@ -23,10 +23,31 @@ int main(void) {
   y = (double *) malloc(size_y * sizeof(double));
 
   for (i = 0; i < size_x; i++)
-    x[i] = i;
+    x[i] = 12;
 
   top_trumps_evaluate(function, instance, size_x, x, size_y, y);
 
+  printf("function = %lu, instance = %lu, objectives = %lu\n",
+      (unsigned long)function, (unsigned long)instance, (unsigned long)size_y);
+  printf("x = ");
+  for (i = 0; i < size_x; i++)
+    printf("%.0f\t", x[i]);
+  printf("\n");
+  printf("y = ");
+  for (i = 0; i < size_y; i++)
+    printf("%.4f\n", y[i]);
+  printf("\n");
+  fflush(stdout);
+
+  free(y);
+
+  function = 6;
+  size_y = 2;
+  y = (double *) malloc(size_y * sizeof(double));
+  top_trumps_evaluate(function, instance, size_x, x, size_y, y);
+
+  printf("function = %lu, instance = %lu, objectives = %lu\n",
+      (unsigned long)function, (unsigned long)instance, (unsigned long)size_y);
   printf("x = ");
   for (i = 0; i < size_x; i++)
     printf("%.0f\t", x[i]);
@@ -39,6 +60,7 @@ int main(void) {
 
   free(x);
   free(y);
+
   return 0;
 }
 

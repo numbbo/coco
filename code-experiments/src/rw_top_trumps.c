@@ -85,15 +85,20 @@ static coco_problem_t *rw_top_trumps_problem_allocate(const char *suite_name,
     coco_problem_set_name(problem, "real-world Top Trumps single-objective problem f%lu instance %lu in %luD",
         function, instance, dimension);
     coco_problem_set_type(problem, "single-objective");
+    /* TODO Add realistic best values */
+    problem->best_value[0] = 0;
   }
   else if (objectives == 2) {
     coco_problem_set_name(problem, "real-world Top Trumps bi-objective problem f%lu instance %lu in %luD",
         function, instance, dimension);
     coco_problem_set_type(problem, "bi-objective");
+    /* TODO Add realistic best values */
+    problem->best_value[0] = 0;
+    problem->best_value[1] = 0;
+    problem->nadir_value[0] = 1000;
+    problem->nadir_value[1] = 1000;
   }
 
-  /* TODO Add realistic best values */
-  problem->best_value[0] = 0;
   if (problem->best_parameter != NULL) {
     coco_free_memory(problem->best_parameter);
     problem->best_parameter = NULL;
