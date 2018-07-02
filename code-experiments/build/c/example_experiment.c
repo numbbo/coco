@@ -138,16 +138,16 @@ int main(void) {
    * http://numbbo.github.io/coco-doc/C/#suite-parameters and
    * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
 
-  /* example_experiment("rw-top-trumps",
-                     "instance_indices: 1 dimensions: 88",
+  /*example_experiment("rw-top-trumps",
+                     "instance_indices: 1-3 dimensions: 128",
                      "rw",
-                     "result_folder: rw-top-trumps",
+                     "result_folder: rw-top-trumps-rs-rw log_only_better: 0 log_variables: all precision_x: 1",
                      random_generator);
 
   example_experiment("rw-top-trumps-biobj",
-                     "instance_indices: 1 dimensions: 88",
+                     "instance_indices: 1-3 dimensions: 128",
                      "bbob-biobj",
-                     "result_folder: rw-top-trumps-biobj",
+                     "result_folder: rw-top-trumps-biobj log_only_better: 0 log_variables: all precision_x: 1",
                      random_generator); */
 
   for (i = 0; i < 10; i++)
