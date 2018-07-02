@@ -45,7 +45,10 @@ def run_experiment(suite_name,
             while problem.evaluations < problem.dimension * budget_multiplier:
                 # CMA-ES
                 cma.fmin(problem, x0, 2, options=dict(maxfevals=problem.dimension * budget_multiplier -
-                                                                problem.evaluations, verbose=-9))
+                                                                problem.evaluations,
+                                                      bounds=[problem.lower_bounds,
+                                                              problem.upper_bounds],
+                                                      verbose=-9))
                 x0 = problem.lower_bounds + ((rand(problem.dimension) + rand(problem.dimension)) *
                                              (problem.upper_bounds - problem.lower_bounds) / 2)
         elif alg == 'rs':
