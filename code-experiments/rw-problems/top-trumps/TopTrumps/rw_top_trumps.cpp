@@ -34,29 +34,31 @@ void top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
   double lbound = 0;
   double ubound=100;
   bool outOfBounds=false;
+  std::vector<double> min(m);
+  std::vector<double> max(m);
   for(int i=0; i<m; i++){
     double a = lbound + (double)rand()/RAND_MAX*(ubound-lbound);
     double b = lbound + (double)rand()/RAND_MAX*(ubound-lbound);
     double box_min = std::min(a,b);
     double box_max = std::max(a,b);
-    //std::cout << "random bounds [" << box_min << ", " << box_max <<"]"<< std::endl;
+    min[i] = std::round(box_min);
+    max[i] = std::round(box_max);
+    //std::cout << "random bounds [" << min[i] << ", " << max[i] <<"]"<< std::endl;
     for(int j=0; j<n; j++){
-        if(x_vector[j*m+i] <box_min || x_vector[j*m+i] > box_max){
+        if(x_vector[j*m+i] <min[i] || x_vector[j*m+i] > max[i]){
             //std::cout << "boundary on " << j*m+i << std::endl;
             outOfBounds=true;
-            goto finish; //return high penalty number
         }
     }
       
   }
-  finish:
   if(outOfBounds){
     for (size_t i = 0; i < size_y; i++)
         y[i] = 1000; //return high number
   }
   return;
 
-  Deck deck(x_vector, n, m);
+  Deck deck(x_vector, n, m, min, max);
   if (obj == 1) {
     y_vector[0] = -deck.getHV();
   } else if (obj == 2) {
@@ -98,10 +100,28 @@ void top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
 
 void top_trumps_bounds(size_t function, size_t instance, size_t size_x,
     double *lower_bounds, double *upper_bounds) {
+    
+  int seed = (int) instance;
+  srand(seed);
+  int m=4;
+    //set box constraints based on seed, i.e. depending on instance. Return large value if outside.
+  double lbound = 0;
+  double ubound=100;
+  std::vector<double> min(m);
+  std::vector<double> max(m);
+  for(int i=0; i<m; i++){
+    double a = lbound + (double)rand()/RAND_MAX*(ubound-lbound);
+    double b = lbound + (double)rand()/RAND_MAX*(ubound-lbound);
+    double box_min = std::min(a,b);
+    double box_max = std::max(a,b);
+    min[i] = std::round(box_min);
+    max[i] = std::round(box_max);
+  }
 
   for(size_t i = 0; i < size_x; i++){
-    lower_bounds[i] = 0;
-    upper_bounds[i] = 1;
+    lower_bounds[i] = min[i%m];
+    upper_bounds[i] = max[i%m];
+    //std::cout << "lower " << lower_bounds[i] << " , upper" << upper_bounds[i] << std::endl;
   }
 }
 

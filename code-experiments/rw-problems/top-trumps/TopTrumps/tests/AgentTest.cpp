@@ -66,7 +66,9 @@ void testPlay(){
     for(int i=0; i<n*m; i++){
         values[i] = i;
     }
-    Deck deck(values, n, m);
+    std::vector<double> min(m, 0);
+    std::vector<double> max(m,100);
+    Deck deck(values, n, m, min, max);
     std::vector<std::vector<Card>> cards = deck.distribute(players);
     std::vector<int>playerLevel= {0,1,1,0};
     std::vector<Agent>agent(players);
@@ -96,7 +98,9 @@ void testPlayerLevel(){
     for(int i=0; i<n*m; i++){
         values[i] = i;
     }
-    Deck deck(values, n, m);
+    std::vector<double> min(m, 0);
+    std::vector<double> max(m,100);
+    Deck deck(values, n, m, min, max);
     std::vector<int>playerLevel1 = {0,1,1,0};
     Agent agent1(playerLevel1, deck);
     std::cout << "player level " << agent1.getLevel() << std::endl;

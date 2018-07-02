@@ -16,6 +16,8 @@ int main(void) {
   size_t i;
   double *x;
   double *y;
+  double * lb;
+  double * ub;
 
   top_trumps_test();
 
@@ -44,6 +46,13 @@ int main(void) {
   function = 6;
   size_y = 2;
   y = (double *) malloc(size_y * sizeof(double));
+  
+
+  lb = (double *) malloc(size_x* sizeof(double));
+  ub= (double *) malloc(size_x* sizeof(double));
+  top_trumps_bounds(function, instance, size_x, lb, ub);
+  
+  
   top_trumps_evaluate(function, instance, size_x, x, size_y, y);
 
   printf("function = %lu, instance = %lu, objectives = %lu\n",

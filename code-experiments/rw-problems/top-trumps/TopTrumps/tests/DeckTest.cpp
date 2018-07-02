@@ -30,7 +30,9 @@ void createDeckDefault() {
     for(int i=0; i<n*m; i++){
         values[i] = i;
     }
-    Deck deck(values, n, m);
+    std::vector<double> min(m, 0);
+    std::vector<double> max(m,100);
+    Deck deck(values, n, m, min, max);
     std::vector<Card> cards = deck.getCards();
     for(int i=0; i<n; i++){
         cards[i].toString();
@@ -70,7 +72,9 @@ void testShuffle(){
     for(int i=0; i<n*m; i++){
         values[i] = i;
     }
-    Deck deck(values, n, m);
+    std::vector<double> min(m, 0);
+    std::vector<double> max(m,100);
+    Deck deck(values, n, m, min, max);
     deck.shuffle();
     std::vector<Card> cards = deck.getCards();
     for(int i=0; i<n; i++){
@@ -93,7 +97,9 @@ void testDistribute(){
     for(int i=0; i<n*m; i++){
         values[i] = i;
     }
-    Deck deck(values, n, m);
+    std::vector<double> min(m, 0);
+    std::vector<double> max(m,100);
+    Deck deck(values, n, m, min, max);
     std::vector<std::vector<Card>> cards = deck.distribute(players);
     for(int i=0; i<players; i++){
         std::cout << "Player " << i << std::endl;
@@ -116,7 +122,9 @@ void testHV(){
     std::vector<double> refPoint ={37, 38, 39, 40};
     HVCalculator hv;
     std::cout << "Hypervolume: " << hv.computeHV(m,n,values,refPoint) << std::endl;
-    Deck deck(values, n,m);
+    std::vector<double> min(m, 0);
+    std::vector<double> max(m,100);
+    Deck deck(values, n, m, min, max);
     std::cout << "Hypervolume: " << deck.getHV() << std::endl;
 }
 
@@ -127,7 +135,9 @@ void testSD(){
     for(int i=0; i<n*m; i++){
         values[i] = i;
     }
-    Deck deck(values, n,m);
+    std::vector<double> min(m, 0);
+    std::vector<double> max(m,100);
+    Deck deck(values, n, m, min, max);
     std::cout << "SD goal 1.290994: " << deck.getSD() << std::endl;
 }
 

@@ -33,7 +33,7 @@ Usage example if you have results for suite rw-gan-mario
 ````
 cd code-postprocessing/ela_features
 Rscript read_rw_data.R ../../code-experiments/build/c/exdata/rw-gan-mario marioData.RData
-Rscript compute_ela.R marioData.RData marioFeatures.RData
+Rscript compute_ela.R marioData.RData marioFeature.RData
 
 ````
 

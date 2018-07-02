@@ -11,7 +11,7 @@ Deck::Deck(){
     
 }
 
-Deck::Deck(std::vector<double> values, int n, int m){
+Deck::Deck(std::vector<double> values, int n, int m, std::vector<double> min, std::vector<double> max){
     this->n = n;
     this->m = m;
     this->cards = std::vector<Card>(n);
@@ -19,12 +19,16 @@ Deck::Deck(std::vector<double> values, int n, int m){
         cards[i/m] = Card(values, m, i);
     }
     this->computeRanks();
+    this->min = min;
+    this->max = max;
 }
 
 Deck::Deck(int n, int m, double min, double max, int seed){
     std::default_random_engine re(seed);
     this->n = n;
     this->m = m;
+    this->min = std::vector<double>(this->m, min);
+    this->max = std::vector<double>(this->m, max);
     this->cards = std::vector<Card>(n);
     std::uniform_real_distribution<double> unif(min, max);
     for(int i=0; i<n; i++){
@@ -128,4 +132,13 @@ double Deck::getSD(){
     sd/=(this->m-1);
     sd = std::sqrt(sd);
     return(sd);
+}
+
+
+std::vector<double> Deck::getMin(){
+    return this->min;
+}
+
+std::vector<double> Deck::getMax(){
+    return this->max;
 }
