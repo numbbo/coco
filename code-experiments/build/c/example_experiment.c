@@ -148,13 +148,13 @@ int main(void) {
                      "instance_indices: 1-3 dimensions: 128",
                      "bbob-biobj",
                      "result_folder: rw-top-trumps-biobj log_only_better: 0 log_variables: all precision_x: 1",
-                     random_generator); */
+                     random_generator);*/
 
   for (i = 0; i < 10; i++)
     example_experiment("rw-gan-mario",
                        "function_indices: 3,6,9,12,15,18,21,24,27,30,33,36,39,42 instance_indices: 1 dimensions: 10",
                        "rw",
-                       "result_folder: rw-gan-mario-rs-rw",
+                       "result_folder: rw-gan-mario-rs-rw log_only_better: 0 log_variables: all",
                        random_generator);
 
   /* The bi-objective rw-gan-mario suite is not supported yet
