@@ -707,7 +707,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         for i, alg in enumerate(plotting_style.algorithm_list):
             try:
                 data = dictData[alg]
-                maxevals = dictMaxEvals[alg]
+                maxevals = None if any([alg in a for a in genericsettings.background.values()])\
+                                else dictMaxEvals[alg]
+
             except KeyError:
                 continue
 

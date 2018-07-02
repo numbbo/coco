@@ -67,7 +67,10 @@ latex_color_map = {
              '#ffd700': 'Goldenrod',
              '#d02090': 'VioletRed',
              'k': 'Black',
-             '#6495ed': 'CornflowerBlue',
+             '#000000': 'Black',
+             '#ff0000': 'red',
+             '#0000ff': 'blue',
+             '#41b0e4': 'CornflowerBlue',
              '#ff4500': 'OrangeRed',
              '#ffff00': 'Yellow',
              '#ff00ff': 'Magenta',
@@ -75,6 +78,7 @@ latex_color_map = {
              '#87ceeb': 'SkyBlue',
              '#ffa500': 'Orange',
              '#ffc0cb': 'Lavender',
+             '#ffb0bb': 'Lavender',
              '#4169e1': 'RoyalBlue',
              '#228b22': 'ForestGreen',
              '#32cd32': 'LimeGreen',
@@ -83,7 +87,13 @@ latex_color_map = {
              '#1f77b4': 'Blue',
              '#ff7f0e': 'Orange',
              '#2ca02c': 'Green',
-             '#9467bd': 'Purple'}
+             '#9467bd': 'Purple',
+             '#0085bc': 'RoyalBlue',
+             '#7977b8': 'Periwinkle',
+             '#99479b': 'Purple',
+             '#af72b0': 'Orchid',
+             '#74729a': 'CadetBlue',
+             '#006795': 'MidnightBlue'}
 
 
 

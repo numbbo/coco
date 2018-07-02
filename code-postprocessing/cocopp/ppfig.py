@@ -854,6 +854,7 @@ def get_plotting_styles(algorithms, only_foreground=False):
                                     'label': '',
                                     'color': format[0],
                                     'linestyle': format[1],
+                                    'linewidth': 1
                                     }
                 plotting_styles.append(PlottingStyle(pprldmany_styles, ppfigs_styles, background_algorithms, True))
 
