@@ -32,6 +32,7 @@
  */
 typedef struct {
   FILE *out_file;                /**< @brief File for logging. */
+  size_t number_of_evaluations;  /**< @brief The number of evaluations performed so far. */
 
   double best_value;             /**< @brief The best-so-far value. */
   double current_value;          /**< @brief The current value. */
@@ -62,7 +63,7 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
 
   /* Evaluate the objective(s) */
   coco_evaluate_function(inner_problem, x, y);
-  problem->evaluations++;
+  logger->number_of_evaluations++;
   if (problem->number_of_objectives == 1)
     logger->current_value = y[0];
 
@@ -78,7 +79,7 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
   else
     log_this_time = !logger->log_only_better;
   if (log_this_time) {
-    fprintf(logger->out_file, "%lu\t", (unsigned long) problem->evaluations);
+    fprintf(logger->out_file, "%lu\t", (unsigned long) logger->number_of_evaluations);
     for (i = 0; i < problem->number_of_objectives; i++)
       fprintf(logger->out_file, "%.*e\t", logger->precision_f, y[i]);
     if (logger->log_vars) {
@@ -130,6 +131,7 @@ static coco_problem_t *logger_rw(coco_observer_t *observer, coco_problem_t *inne
   char *path_name, *file_name = NULL;
 
   logger_data = (logger_rw_data_t *) coco_allocate_memory(sizeof(*logger_data));
+  logger_data->number_of_evaluations = 0;
 
   observer_data = (observer_rw_data_t *) observer->data;
   /* Copy values from the observes that you might need even if they do not exist any more */
