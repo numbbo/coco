@@ -8,6 +8,7 @@ from pyDOE import *                       # alg = lhs
 from cocoex.solvers import random_search  # alg = rs
 import cma                                # alg = cma
 
+
 def run_experiment(suite_name,
                    suite_options='',
                    observer_name='bbob',
@@ -43,7 +44,7 @@ def run_experiment(suite_name,
                 cma.fmin(problem, x0, 2, options=dict(maxfevals=problem.dimension * budget_multiplier -
                                                                 problem.evaluations, verbose=-9))
                 x0 = problem.lower_bounds + ((rand(problem.dimension) + rand(problem.dimension)) *
-                            (problem.upper_bounds - problem.lower_bounds) / 2)
+                                             (problem.upper_bounds - problem.lower_bounds) / 2)
         elif alg == 'rs':
             # Use COCO's implementation of random search
             random_search(problem, problem.lower_bounds, problem.upper_bounds,
@@ -62,14 +63,12 @@ def run_experiment(suite_name,
 
         minimal_print(problem, final=problem.index == len(suite) - 1)
 
+# export LD_LIBRARY_PATH='path_to_rw_top_trumps_library'
 if __name__ == '__main__':
-    run_experiment('rw-top-trumps', '',
-                   observer_name='rw', observer_options='log_only_better: 0 log_variables: all',
-                   add_observer_name='',
-                   alg='lhs', budget_multiplier=100)
-    run_experiment('rw-top-trumps-biob', '',
-                   alg='lhs', budget_multiplier=100)
-    run_experiment('rw-gan-mario', 'function_indices: 2,5,8 instance_indices: 1',
-                   observer_name='rw', observer_options='log_only_better: 0 log_variables: all',
-                   add_observer_name='',
-                   alg='lhs', budget_multiplier=10)
+    run_experiment('rw-top-trumps', 'instance_indices: 1-3 dimensions: 128',
+                   alg='cma', budget_multiplier=50)
+    #run_experiment('rw-top-trumps-biob', 'instance_indices: 1-3 dimensions: 128',
+    #               alg='cma', budget_multiplier=50)
+    run_experiment('rw-gan-mario',
+                   'function_indices: 3,6,9,12,15,18,21,24,27,30,33,36,39,42 instance_indices: 1 dimensions:10',
+                   alg='rs', budget_multiplier=20s)
