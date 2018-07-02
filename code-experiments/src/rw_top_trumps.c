@@ -41,10 +41,6 @@ static void rw_top_trumps_evaluate(coco_problem_t *problem, const double *x, dou
   top_trumps_evaluate(data->function, data->instance, problem->number_of_variables,
       (double *) x, problem->number_of_objectives, y);
 }
-#ifdef __cplusplus
-}
-#endif
-
 
 /**
  * @brief Creates a single- or bi-objective rw_top_trumps problem.
@@ -57,7 +53,6 @@ static coco_problem_t *rw_top_trumps_problem_allocate(const char *suite_name,
 
   rw_top_trumps_data_t *data;
   coco_problem_t *problem = NULL;
-  size_t i;
 
   data = (rw_top_trumps_data_t *) coco_allocate_memory(sizeof(*data));
   data->function = function;
@@ -70,10 +65,10 @@ static coco_problem_t *rw_top_trumps_problem_allocate(const char *suite_name,
         (unsigned long)objectives);
 
   problem = coco_problem_allocate(dimension, objectives, 0);
-  for (i = 0; i < dimension; ++i) {
-    problem->smallest_values_of_interest[i] = 1;
-    problem->largest_values_of_interest[i] = 100;
-  }
+  /* Get the smallest and largest values of interest from the rw_top_trumps library */
+  top_trumps_bounds(function, instance, dimension,
+      problem->smallest_values_of_interest,
+      problem->largest_values_of_interest);
   problem->number_of_integer_variables = dimension;
   problem->evaluate_function = rw_top_trumps_evaluate;
   problem->problem_free_function = NULL;
@@ -108,3 +103,6 @@ static coco_problem_t *rw_top_trumps_problem_allocate(const char *suite_name,
 
   return problem;
 }
+#ifdef __cplusplus
+}
+#endif

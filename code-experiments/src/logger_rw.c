@@ -91,6 +91,7 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
     }
     fprintf(logger->out_file, "\n");
   }
+  fflush(logger->out_file);
 
   if (problem->number_of_constraints > 0)
     coco_free_memory(constraints);

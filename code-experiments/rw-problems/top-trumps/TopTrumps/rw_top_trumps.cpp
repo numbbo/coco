@@ -98,6 +98,11 @@ void top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
 
 void top_trumps_bounds(size_t function, size_t instance, size_t size_x,
     double *lower_bounds, double *upper_bounds) {
+
+  for(size_t i = 0; i < size_x; i++){
+    lower_bounds[i] = 0;
+    upper_bounds[i] = 1;
+  }
 }
 
 void top_trumps_test(void) {
