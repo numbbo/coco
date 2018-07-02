@@ -44,11 +44,11 @@ def run_experiment(suite_name,
             # apply restarts while neither the problem is solved nor the budget is exhausted
             while problem.evaluations < problem.dimension * budget_multiplier:
                 # CMA-ES
-                cma.fmin(problem, x0, 2, options=dict(maxfevals=problem.dimension * budget_multiplier -
+                cma.fmin(problem, x0, 0.1, options=dict(maxfevals=problem.dimension * budget_multiplier -
                                                                 problem.evaluations,
-                                                      bounds=[problem.lower_bounds,
-                                                              problem.upper_bounds],
-                                                      verbose=-9))
+                                                        bounds=[problem.lower_bounds,
+                                                                problem.upper_bounds],
+                                                        verbose=-9))
                 x0 = problem.lower_bounds + ((rand(problem.dimension) + rand(problem.dimension)) *
                                              (problem.upper_bounds - problem.lower_bounds) / 2)
         elif alg == 'rs':
