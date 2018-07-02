@@ -68,9 +68,16 @@ def run_experiment(suite_name,
 # export LD_LIBRARY_PATH='path_to_rw_top_trumps_library'
 if __name__ == '__main__':
     run_experiment('rw-top-trumps', 'instance_indices: 1-3 dimensions: 128',
+                   add_observer_name='rw',
+                   add_observer_options='log_only_better: 0 log_variables: all precision_x: 1',
                    alg='cma', budget_multiplier=50)
     #run_experiment('rw-top-trumps-biob', 'instance_indices: 1-3 dimensions: 128',
+    #               add_observer_name='rw',
+    #               add_observer_options='log_only_better: 0 log_variables: all precision_x: 1',
     #               alg='cma', budget_multiplier=50)
     run_experiment('rw-gan-mario',
-                   'function_indices: 3,6,9,12,15,18,21,24,27,30,33,36,39,42 instance_indices: 1 dimensions:10',
-                   alg='rs', budget_multiplier=20s)
+                   'function_indices: 3,6,9,12,15,18,21,24,27,30,33,36,39,42 instance_indices: 1 dimensions: 10',
+                   alg='rs', budget_multiplier=20)
+    run_experiment('rw-gan-mario',
+                   'function_indices: 3,6,9,12,15,18,21,24,27,30,33,36,39,42 instance_indices: 1 dimensions: 10',
+                   alg='cma', budget_multiplier=50)

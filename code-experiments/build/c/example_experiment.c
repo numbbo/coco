@@ -19,7 +19,7 @@
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.
  * Increase the budget multiplier value gradually to see how it affects the runtime.
  */
-static const unsigned int BUDGET_MULTIPLIER = 10;
+static const unsigned int BUDGET_MULTIPLIER = 20;
 
 /**
  * The maximal number of independent restarts allowed for an algorithm that restarts itself.
@@ -107,6 +107,7 @@ static void timing_data_finalize(timing_data_t *timing_data);
  */
 int main(void) {
 
+  size_t i;
   coco_random_state_t *random_generator = coco_random_new(RANDOM_SEED);
 
   /* Change the log level to "warning" to get less output */
@@ -137,7 +138,7 @@ int main(void) {
    * http://numbbo.github.io/coco-doc/C/#suite-parameters and
    * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
 
-  example_experiment("rw-top-trumps",
+  /* example_experiment("rw-top-trumps",
                      "instance_indices: 1 dimensions: 88",
                      "rw",
                      "result_folder: rw-top-trumps",
@@ -147,13 +148,14 @@ int main(void) {
                      "instance_indices: 1 dimensions: 88",
                      "bbob-biobj",
                      "result_folder: rw-top-trumps-biobj",
-                     random_generator);
+                     random_generator); */
 
-  example_experiment("rw-gan-mario",
-                     "function_indices: 2,5,8 instance_indices: 1 dimensions: 10",
-                     "rw",
-                     "result_folder: rw-gan-mario",
-                     random_generator);
+  for (i = 0; i < 10; i++)
+    example_experiment("rw-gan-mario",
+                       "function_indices: 3,6,9,12,15,18,21,24,27,30,33,36,39,42 instance_indices: 1 dimensions: 10",
+                       "rw",
+                       "result_folder: rw-gan-mario-rs-rw",
+                       random_generator);
 
   /* The bi-objective rw-gan-mario suite is not supported yet
    * example_experiment("rw-gan-mario-biobj",
