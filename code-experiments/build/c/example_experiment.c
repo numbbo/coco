@@ -211,9 +211,8 @@ void example_experiment(const char *suite_name,
             coco_problem_get_evaluations_constraints(PROBLEM));
       long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - evaluations_done;
 
-      /* Break the loop if the target was hit or there are no more remaining evaluations */
-      if ((coco_problem_final_target_hit(PROBLEM) && 
-           coco_problem_get_number_of_constraints(PROBLEM) == 0)
+      /* Break the loop if there are no more remaining evaluations */
+      if ((coco_problem_get_number_of_constraints(PROBLEM) == 0)
            || (evaluations_remaining <= 0))
         break;
 
