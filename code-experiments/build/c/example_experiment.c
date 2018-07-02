@@ -212,8 +212,7 @@ void example_experiment(const char *suite_name,
       long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - evaluations_done;
 
       /* Break the loop if there are no more remaining evaluations */
-      if ((coco_problem_get_number_of_constraints(PROBLEM) == 0)
-           || (evaluations_remaining <= 0))
+      if (evaluations_remaining <= 0)
         break;
 
       /* Call the optimization algorithm for the remaining number of evaluations */
