@@ -16,6 +16,9 @@ extern "C" {
 void top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
     double *x, size_t size_y, double *y);
 
+void top_trumps_bounds(size_t function, size_t instance, size_t size_x,
+    double *lower_bounds, double *upper_bounds);
+
 void top_trumps_test(void);
 
 #ifdef __cplusplus
