@@ -19,7 +19,9 @@ install.packages("RANN")
 install.packages("e1071")
 ````
 
-#Usage
+# Usage
+
+Currently, read_rw_data.R only works for rw logger
 
 ````
 cd code-postprocessing/ela_features
