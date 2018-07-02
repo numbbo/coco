@@ -20,7 +20,8 @@ def run_experiment(suite_name,
 
     # prepare
     output_folder = suite_name + '-' + alg + '-' + observer_name
-    cocoex.known_suite_names.append(suite_name)
+    if suite_name not in cocoex.known_suite_names:
+        cocoex.known_suite_names.append(suite_name)
     suite = cocoex.Suite(suite_name, '', suite_options)
     observer = cocoex.Observer(observer_name, 'result_folder: {} {}'
                                ''.format(output_folder, observer_options))
