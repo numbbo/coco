@@ -24,11 +24,13 @@ def run_experiment(suite_name,
     suite = cocoex.Suite(suite_name, '', suite_options)
     observer = cocoex.Observer(observer_name, 'result_folder: {} {}'
                                ''.format(output_folder, observer_options))
-    if add_observer_name == '':
+    add_observer = None
+    if add_observer_name != '':
         output_folder = suite_name + '-' + alg + '-' + add_observer_name
         add_observer = cocoex.Observer(add_observer_name, 'result_folder: {} {}'
                                                           ''.format(output_folder,
                                                                     add_observer_options))
+
     minimal_print = cocoex.utilities.MiniPrint()
 
     # go
