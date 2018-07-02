@@ -1,12 +1,13 @@
 LNAME := rw_top_trumps
 ENAME := rw_top_trumps_test
+CXXFLAGS := -std=c++11 
 ifeq ($(OS),Windows_NT)
     LIBNAME := $(LNAME).dll
 else
     LIBNAME := lib$(LNAME).so
+    CXXFLAGS += -fPIC
 endif
 
-CXXFLAGS := -std=c++11 -fPIC
 WFLAGS := -Wall -Wpedantic
 LDFLAGS += '-Wl,-rpath,$$ORIGIN' -L.
 LIBFLAG := -l$(LNAME)
