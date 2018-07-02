@@ -22,7 +22,9 @@ void testSetup(){
     for(int i=0; i<n*m; i++){
         values[i] = i;
     }
-    Deck deck(values, n, m);
+    std::vector<double> min(m, 0);
+    std::vector<double> max(m,100);
+    Deck deck(values, n, m, min, max);
     std::vector<Agent>agents(players);
     std::vector<int>playerLevel1(4,0);
     agents[0] = Agent(playerLevel1, deck);
@@ -35,13 +37,13 @@ void testSetup(){
     out = game.run(out,1);
     out.print();
     
-    Deck deck2(values, n, m);
+    Deck deck2(values, n, m, min, max);
     Game game2(deck2, players, agents, 1);
     Outcome out2(1);
     out2 = game2.run(out2,1);
     out2.print();
     
-    Deck deck3(values, n, m);
+    Deck deck3(values, n, m, min, max);
     Game game3(deck3, players, agents, 2);
     Outcome out3(1);
     out3 = game3.run(out3,1);
@@ -58,7 +60,9 @@ void testRandomisation(){
     for(int i=0; i<n*m; i++){
         values[i] = i;
     }
-    Deck deck(values, n, m);
+    std::vector<double> min(m, 0);
+    std::vector<double> max(m,100);
+    Deck deck(values, n, m, min, max);
     std::vector<Agent>agents(players);
     std::vector<int>playerLevel1(4,0);
     agents[0] = Agent(playerLevel1, deck);
@@ -73,7 +77,7 @@ void testRandomisation(){
     }
     out.print();
     
-    Deck deck2(values, n, m);
+    Deck deck2(values, n, m, min, max);
     Game game2(deck2, players, agents, 1);
     Outcome out2(rep);
     for(int i=0; i<rep; i++){
@@ -81,7 +85,7 @@ void testRandomisation(){
     }
     out2.print();
     
-    Deck deck3(values, n, m);
+    Deck deck3(values, n, m, min, max);
     Game game3(deck3, players, agents, 100);
     Outcome out3(rep);
     for(int i=0; i<rep; i++){

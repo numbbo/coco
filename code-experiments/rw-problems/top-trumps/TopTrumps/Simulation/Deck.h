@@ -21,7 +21,7 @@
 class Deck{
 public:
     Deck();
-    Deck(std::vector<double> values, int n, int m);
+    Deck(std::vector<double> values, int n, int m, std::vector<double> min, std::vector<double> max);
     Deck(int n, int m, double min, double max, int seed);
     
     void shuffle();
@@ -30,6 +30,8 @@ public:
     std::vector<Card> getCards();
     int getM();
     int getN();
+    std::vector<double> getMin();
+    std::vector<double> getMax();
     
     double getHV();
     double getSD();
@@ -39,6 +41,8 @@ private:
     std::vector<Card> cards;
     int n;
     int m;
+    std::vector<double> min;
+    std::vector<double> max;
 };
 
 #endif /* DECK_H */

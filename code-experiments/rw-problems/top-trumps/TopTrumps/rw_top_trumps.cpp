@@ -34,29 +34,31 @@ void top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
   double lbound = 0;
   double ubound=100;
   bool outOfBounds=false;
+  std::vector<double> min(m);
+  std::vector<double> max(m);
   for(int i=0; i<m; i++){
     double a = lbound + (double)rand()/RAND_MAX*(ubound-lbound);
     double b = lbound + (double)rand()/RAND_MAX*(ubound-lbound);
     double box_min = std::min(a,b);
     double box_max = std::max(a,b);
+    min[i] = box_min;
+    max[i] = box_max;
     //std::cout << "random bounds [" << box_min << ", " << box_max <<"]"<< std::endl;
     for(int j=0; j<n; j++){
         if(x_vector[j*m+i] <box_min || x_vector[j*m+i] > box_max){
             //std::cout << "boundary on " << j*m+i << std::endl;
             outOfBounds=true;
-            goto finish; //return high penalty number
         }
     }
       
   }
-  finish:
   if(outOfBounds){
     for (size_t i = 0; i < size_y; i++)
         y[i] = 1000; //return high number
   }
   return;
 
-  Deck deck(x_vector, n, m);
+  Deck deck(x_vector, n, m, min, max);
   if (obj == 1) {
     y_vector[0] = -deck.getHV();
   } else if (obj == 2) {

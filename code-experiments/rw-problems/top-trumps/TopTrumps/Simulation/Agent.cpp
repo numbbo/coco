@@ -33,16 +33,20 @@ int Agent::choose(){
     //TODO should be depening on which is playerLevel, but doesn't matter for now
     int choice = 0;
     double best = 0;
+    std::vector<double> min = this->deck.getMin();
+    std::vector<double> max = this->deck.getMax();
+    int m = this->deck.getM();
     if(this->getLevel()==0){
-        for(int i=0; i<this->deck.getM(); i++){
+        for(int i=0; i<m; i++){
             double val = this->hand[this->currentCard].getValue(i);
+            val = min[i] + val*(max[i]-min[i]); //normalise because agent knows bounds
             if(val>best){
                 choice = i;
                 best = val;
             }
         }
     }else{
-        for(int i=0; i<this->deck.getM(); i++){
+        for(int i=0; i<m; i++){
             double val = this->hand[this->currentCard].getRank(i);
             if(val>best){
                 choice = i;

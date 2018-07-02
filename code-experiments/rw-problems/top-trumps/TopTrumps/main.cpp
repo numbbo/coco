@@ -58,7 +58,9 @@ int main(int argc, char** argv) {
     
     std::vector<double>result(n);
     
-    Deck deck(values, n, m);
+    std::vector<double> min(m, 0);
+    std::vector<double> max(m,100);
+    Deck deck(values, n, m, min, max);
     if(obj==1){
         result[0] = -deck.getHV();
     }else if(obj==2){
