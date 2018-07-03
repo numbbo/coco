@@ -55,8 +55,9 @@ void top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
   if(outOfBounds){
     for (size_t i = 0; i < size_y; i++)
         y[i] = 1000; //return high number
+    return;
   }
-  return;
+
 
   Deck deck(x_vector, n, m, min, max);
   if (obj == 1) {
