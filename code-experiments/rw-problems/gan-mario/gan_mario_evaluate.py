@@ -248,31 +248,31 @@ def outputResult(result, d=1):
 
 
 def progressSimAStar(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(0)+ ' > /dev/null 2>&1')
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(0)+ ' > /dev/null')
 
 
 def basicFitnessSimAStar(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(0)+ ' > /dev/null 2>&1')
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(0)+ ' > /dev/null')
 
 
 def jumpFractionSimAStar(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(0)+ ' > /dev/null 2>&1')
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(0)+ ' > /dev/null')
 
 
 def totalActionsSimAStar(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(0)+ ' > /dev/null 2>&1')
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(0)+ ' > /dev/null')
 
 def progressSimREALM(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(1)+ ' > /dev/null 2>&1')
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(1)+ ' > /dev/null')
 
 def basicFitnessSimREALM(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(1)+ ' > /dev/null 2>&1')
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(1)+ ' > /dev/null')
 
 def jumpFractionSimREALM(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(1)+ ' > /dev/null 2>&1')
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(1)+ ' > /dev/null')
 
 def totalActionsSimREALM(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(1)+ ' > /dev/null 2>&1')
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(1)+ ' > /dev/null')
 
 
 #expecting variables <obj> <dim> <fun> <inst>
