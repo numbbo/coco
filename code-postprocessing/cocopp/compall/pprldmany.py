@@ -708,6 +708,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             try:
                 data = dictData[alg]
                 maxevals = None if any([alg in a for a in genericsettings.background.values()])\
+                                   and not any([alg in genericsettings.foreground_algorithm_list])\
                                 else dictMaxEvals[alg]
 
             except KeyError:
