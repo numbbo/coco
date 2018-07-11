@@ -15,7 +15,7 @@ name = args[2]
 ## get file names (required to be in main path of the experiments data folder)
 files <- list.files(path=dir, pattern = "\\.txt$",recursive=T) #switch to "\\.tdat" if required
 
-df <- data.frame(evaluation=integer(), fitness=double(), loc=list(), dim=integer(), fun=integer(), inst=integer())
+df <- data.frame(evaluation=integer(), f1=double(), f2=double(),loc=list(), dim=integer(), fun=integer(), inst=integer())
 for(f in files){
   dim <- as.numeric(str_extract(str_extract(f,"d[0-9]+"),"\\d+")) #extract dimension
   fun <- as.numeric(str_extract(str_extract(f,"f[0-9]+"),"\\d+")) #extract function number
@@ -23,10 +23,10 @@ for(f in files){
   f = paste(dir,f, sep="/")
   res <- readLines(f) #read file
   readdf <- read.table(textConnection(res[4:length(res)]),header=F) #convert lines to table
-  loc = readdf[,3:(2+dim)] #x-values
+  loc = readdf[,4:(3+dim)] #x-values
   loc = apply(loc, 1, list)
-  readdf <- readdf[,1:2]
-  colnames(readdf) = c("evaluation", "fitness")
+  readdf <- readdf[,1:3]
+  colnames(readdf) = c("evaluation", "f1", "f2")
   readdf$loc = loc
   readdf$dim = dim
   readdf$fun = fun
@@ -34,13 +34,3 @@ for(f in files){
   df <- rbind(df,readdf) #append result
 }
 save(df,file=name)
-
-find_runs = function(){
-  idx_start = which(df$fun==min(df$fun) & df$ins==min(df$inst) & df$evaluation==1)
-  runs = numeric(0)
-  for(i in 1:(length(idx_start)-1)){
-    runs= c(runs, rep((i-1), idx_start[i+1]-idx_start[i]))
-  }
-  runs = c(runs, rep((length(idx_start)-1), nrow(df)-idx_start[length(idx_start)]+1))
-  return(runs)
-}

@@ -4,6 +4,7 @@ if(length(args)!=2){
   stop("looking for 2 argument, path to input file and name of output file")
 }
 
+
 file = args[1]
 name = args[2]
 
@@ -15,30 +16,11 @@ for(i in 1:nrow(tries)){
   data = df[df$dim==tries$dim[i] & df$fun==tries$fun[i] &df$run==tries$run[i],]
   insts = unique(data$inst)
   cols = rainbow(length(insts))
-  plot(0,type="n", main=paste("dim", tries$dim[i], "fun", tries$fun[i]),xlab="evaluation", ylab="fitness", xlim=c(0, max(data$evaluation)), ylim = c(min(data$fitness), max(data$fitness)))
+  plot(0,type="n", main=paste("dim", tries$dim[i], "fun", tries$fun[i]),xlab="f1", ylab="f2", xlim=c(min(df$f1), max(data$f1)), ylim = c(min(df$f2), max(data$f2)))
   for(j in 1:length(insts)){
     dt = data[data$inst == insts[j],]
-    lines(dt$evaluation, dt$fitness, col=cols[j])
-  }
-  
-  plot(0,type="n", main=paste("decreasing dim", tries$dim[i], "fun", tries$fun[i]),xlab="evaluation", ylab="fitness", xlim=c(0, max(data$evaluation)), ylim = c(min(data$fitness), max(data$fitness)))
-  for(j in 1:length(insts)){
-    dt = data[data$inst == insts[j],]
-    min = dt$fitness[1]
-    idx = logical(nrow(dt))
-    idx[1] = TRUE
-    for(k in 2:nrow(dt)){
-      if(dt$fitness[k]<min){
-        idx[k]=TRUE
-        min=dt$fitness[k]
-      }else{
-        idx[k]=FALSE
-      }
-    }
-    dt = dt[idx,]
-    lines(c(dt$evaluation, max(data$evaluation)), c(dt$fitness, min(dt$fitness)), col=cols[j])
+    points(dt$f1, dt$f2, col=alpha(cols[j],dt$evaluation/max(dt$evaluation)))
   }
 }
 
 dev.off()
-
