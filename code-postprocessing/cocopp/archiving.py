@@ -844,6 +844,9 @@ class COCODataArchive(list):
                 res.append(name)
             elif name.endswith('!'):  # take first match
                 res.append(self.get_first([name[:-1]], remote=remote))
+                if res and res[-1] is None:
+                    warnings.warn('"%s" seems not to be an existing file or '
+                                  'match any archived data' % name)
             elif name.endswith('*'):  # take all matches
                 res.extend(self.get_all(name[:-1], remote=remote))
             elif self.find(name):  # get will bail out if there is not exactly one match
