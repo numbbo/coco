@@ -1,6 +1,6 @@
 /**
  * @file transform_obj_scale.c
- * @brief Implementation of scaling the objective value by the given factor.
+ * @brief Scale the objective value(s) by some given factor.
  */
 
 #include <assert.h>
@@ -16,12 +16,32 @@ typedef struct {
 } transform_obj_scale_data_t;
 
 /**
- * @brief Evaluates the transformed function.
+ * @brief Evaluate the transformation, scales the first objective value only.
+ *
+ * This function is used for the large-scale suite.
+ */
+static void transform_obj_scale_evaluate(coco_problem_t *problem, const double *x, double *y) {
+  transform_obj_scale_data_t *data;
+
+  data = (transform_obj_scale_data_t *) coco_problem_transformed_get_data(problem);
+  coco_evaluate_function(coco_problem_transformed_get_inner_problem(problem), x, y);
+  y[0] *= data->factor;
+
+  /* This is too expensive and non-removable for an assertion (NH)
+  if (coco_is_feasible(problem, x, NULL))
+  */
+  if (coco_problem_get_number_of_constraints(problem) <= 0)
+    assert(y[0] + 1e-13 >= problem->best_value[0]);
+}
+
+/**
+ * @brief Evaluates the transformed function, scales all objective values.
+ *
+ * This function is used in the constrained case.
  */
 static void transform_obj_scale_evaluate_function(coco_problem_t *problem, const double *x, double *y) {
   transform_obj_scale_data_t *data;
   double *cons_values;
-  int is_feasible;
   size_t i;
 
   if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
@@ -35,14 +55,11 @@ static void transform_obj_scale_evaluate_function(coco_problem_t *problem, const
   for (i = 0; i < problem->number_of_objectives; i++)
     y[i] *= data->factor;
 
-  if (problem->number_of_constraints > 0) {
-    cons_values = coco_allocate_vector(problem->number_of_constraints);
-    is_feasible = coco_is_feasible(problem, x, cons_values);
-    coco_free_memory(cons_values);
-    if (is_feasible)
-      assert(y[0] + 1e-13 >= problem->best_value[0]);
-  }
-  else assert(y[0] + 1e-13 >= problem->best_value[0]);
+  /* This is too expensive and non-removable for an assertion (NH)
+  if (coco_is_feasible(problem, x, NULL))
+  */
+  if (coco_problem_get_number_of_constraints(problem) <= 0)
+    assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
 /**
@@ -74,17 +91,20 @@ static coco_problem_t *transform_obj_scale(coco_problem_t *inner_problem, const 
   size_t i;
   data = (transform_obj_scale_data_t *) coco_allocate_memory(sizeof(*data));
   data->factor = factor;
+  
+  problem = coco_problem_transformed_allocate(inner_problem, data, NULL, "transform_obj_scale");
 
-  problem = coco_problem_transformed_allocate(inner_problem, data,
-    NULL, "transform_obj_scale");
-
-  if (inner_problem->number_of_objectives > 0)
-    problem->evaluate_function = transform_obj_scale_evaluate_function;
-
-  problem->evaluate_gradient = transform_obj_scale_evaluate_gradient;
-
-  for (i = 0; i < problem->number_of_objectives; ++i)
-    problem->best_value[i] *= factor;
+  if (inner_problem->number_of_constraints <= 0 && inner_problem->number_of_objectives == 1) {
+    problem->evaluate_function = transform_obj_scale_evaluate;
+    problem->best_value[0] *= factor;
+  }
+  else if inner_problem->number_of_objectives >= 1 {
+    problem->evaluate_function = transform_obj_scale_evaluate_function; /* handles constraints adequately */
+    problem->evaluate_gradient = transform_obj_scale_evaluate_gradient;
+    for (i = 0; i < problem->number_of_objectives; ++i)
+      problem->best_value[i] *= factor;
+  } else
+    coco_error("transform_obj_scale called with < 1 objectives.");
 
   return problem;
 }

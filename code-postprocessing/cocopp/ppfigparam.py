@@ -37,7 +37,6 @@ styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
 refcolor = 'wheat'
 # should correspond with the colors in pprldistr.
 
-dimsBBOB = (2, 3, 5, 10, 20, 40)
 
 # Get benchmark short infos, prepended with the function id.
 def read_fun_infos():
