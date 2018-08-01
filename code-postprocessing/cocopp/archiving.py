@@ -168,7 +168,7 @@ def create_from_remote(local_path, url_definition_file):
     _makedirs(os.path.split(definition_file)[0])
     urlretrieve(url_definition_file, definition_file)
     with open(definition_file, 'rt') as file_:
-        definitions = ast.literal_eval(file_.read())
+        definitions = ast.literal_eval(file_.read().replace('L)', ')'))
     _url_ = COCOUserDataArchive._url_(definitions)
     url = url_definition_file.rsplit('/', 1)[0]
     if not _url_:
@@ -230,26 +230,32 @@ def create(local_path):
                       "name or delete the file first."
                          % definition_file)
         raise
+    full_local_path = os.path.split(definition_file)[0]
     res = []
-    for dirpath, dirnames, filenames in os.walk(os.path.split(definition_file)[0]):
+    for dirpath, dirnames, filenames in os.walk(full_local_path):
         for filename in filenames:
             if ('.extracted' not in dirpath
-                and not filename.endswith(('.dat', '.info', '.txt', '.md'))
+                and not filename.endswith(('.dat', '.info', '.txt', '.md', '.py', '.ipynb'))
                 and not filename in ('README', 'readme')
                     # and not ('BBOB' in filename and 'rawdata' in filename)
                 ):
-                name = dirpath[len(local_path) + 1:].replace(os.path.sep, '/')
+                name = dirpath[len(full_local_path) + 1:].replace(os.path.sep, '/')
                 # print(dirpath, local_path, name, filename)
                 name = '/'.join([name, filename]) if name else filename
                 path = os.path.join(dirpath, filename)
                 res += [(name,
                          _hash(path),
-                         os.path.getsize(path) // 1000)] # or os.stat(path).st_size
+                         int(os.path.getsize(path) // 1000))] # or os.stat(path).st_size
+                if 'L)' in name:
+                    raise ValueError("Name '%s' at %s contains 'L)' which"
+                                     " is not allowed."
+                                     "\nPlease change the filename."
+                                     % (name, path))
     if not len(res):
         warnings.warn('archiving.create: no data found in %s' % local_path)
         return
     with open(definition_file, 'wt') as file_:
-        file_.write(repr(res))
+        file_.write(repr(res).replace('L)', ')'))
     return COCOUserDataArchive(definition_file)
 
 
@@ -516,6 +522,23 @@ class COCODataArchive(list):
         ('bbob/2017-others/RANDOMSEARCH-4-1e7D-Brockhoff.tgz', 'de8680b55be88ef9d623a1713ba859556962289ea1186c030cd2906c6507e4cd', 15166),
         ('bbob/2017-others/RANDOMSEARCH-4p5-1e7D-Brockhoff.tgz', 'f35493cee25de1d419dd4abea1d4ae1f7300bc392ae77bd37bf9a40d66269ddb', 15069),
         ('bbob/2017-others/RANDOMSEARCH-5-1e7D-Brockhoff.tgz', '8733cfa25b1428b71bb84c0be31b6303d920ff0496138443fc7023c8c8a8e3c3', 15200),
+        ('bbob/2018/BBDE-best.tgz', 'd240ead86c5c95c3cc135bfb48a5d19ce4b03e8ab1b479413cea63aea39f262c', 17492),
+        ('bbob/2018/BBDE-N.tgz', '51752511dbd378f9f7866d6cf82881e3c26ccc7e32577ce629fb7424288dee3b', 16941),
+        ('bbob/2018/BBDE-ttb.tgz', 'ea29da3e9244913b3567d0512830e7397e76f1d750deac525a5d5d7d316668d6', 18359),
+        ('bbob/2018/BBDE.tgz', '947beef3b07c181d0f430a134550d4c110ba3d85bae6a50d3bcf97100be50524', 14599),
+        ('bbob/2018/BFGS-M-17.tgz', '0c8688e489c260e740efe160c9c116ed3c82e759d9af47ea96e89101e3339646', 10164),
+        ('bbob/2018/BFGS-P-09.tgz', '319ba80fd7e55733128366b484d8f29b7224ad8c768b3a255fc5f0e4a86982e1', 9961),
+        ('bbob/2018/BFGS-P-Instances.tgz', '6bbb4146179a30ebd2940ba349fffbb77fedee8a0c58264203a5d62fae2b662f', 9962),
+        ('bbob/2018/BFGS-P-range.tgz', 'e8aabb03b19ad5ac650e009519644a4d00bd663754e8bb3f6d39107788289888', 9855),
+        ('bbob/2018/BFGS-P-StPt.tgz', 'ede4acdf3af867b4946193c157330fadb1eaf8f84c9f6bf93b7d258443cda1cc', 8521),
+        ('bbob/2018/CMAES-APOP-Var1.tgz', '46531c1528f8ee44ad511a9708aedf8028696695548fff8a8cfb0252b397e52b', 17907),
+        ('bbob/2018/CMAES-APOP-Var2.tgz', 'b0b404c69c5161cc9781539cdd626ebb3dab8ec457655ba6ff0b8390abb338c2', 18116),
+        ('bbob/2018/CMAES-APOP-Var3.tgz', '90384e3dddc5fd401a8454e9ce86a9bf7c00d4c8c12cfacbbb12f070c14380b8', 18099),
+        ('bbob/2018/DE-best.tgz', '621159978a2d3f9b6d7108524b3cac585342a79f706adb89d32e2e3b3a0a9e40', 15514),
+        ('bbob/2018/DE-rand.tgz', 'edbe6e765d0bc6c7954955ecbd754bf81ba7044a8eb046622da9abece135a77c', 13914),
+        ('bbob/2018/DE-ttb.tgz', 'f08d2fa51303429b69821cd09ff1b164fc89e4dc27a40abe657706133243eb36', 15514),
+        ('bbob/2018/PSA-CMA-ES.tgz', 'c6a2cd2dda68e109b8454738fc7148f6ffa4cc779c66e303bd0a077efaefce56', 11087),
+        ('bbob/2018/PSA-CMA-ESwRS.tgz', '8237619d4b0bae888c3aded23b6cbbc07387a11df9af4d2a9c6bea888493a38a', 10835),
         ('bbob-biobj/2016/DEMO_Tusar_bbob-biobj.tgz', 'f1e4d3d19d5d36a88bec9916462432f297f5d5ee67ef137e685b45bbce631ed4', 9509),
         ('bbob-biobj/2016/HMO-CMA-ES_Loshchilov_bbob-biobj.tgz', '07254ffa5d818298bb77714e5fb08e226e31f4da60d8500e8f00a030e2e8f530', 18435),
         ('bbob-biobj/2016/MAT-DIRECT_Al-Dujaili_bbob-biobj.tgz', 'b2b08f4614c5881738d04b98246183444b21d801a804a3ce32dbf85a02783cd8', 737),
@@ -821,6 +844,9 @@ class COCODataArchive(list):
                 res.append(name)
             elif name.endswith('!'):  # take first match
                 res.append(self.get_first([name[:-1]], remote=remote))
+                if res and res[-1] is None:
+                    warnings.warn('"%s" seems not to be an existing file or '
+                                  'match any archived data' % name)
             elif name.endswith('*'):  # take all matches
                 res.extend(self.get_all(name[:-1], remote=remote))
             elif self.find(name):  # get will bail out if there is not exactly one match

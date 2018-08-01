@@ -753,6 +753,8 @@ class DataSet(object):
         # for a data set.
         if hasattr(self, 'data_format'):
             return getattr(self, 'data_format')
+        if self.isBiobjective():
+            return 'bbob-biobj'
         return None
 
     def get_suite(self):
@@ -824,7 +826,7 @@ class DataSet(object):
         self.testbed_name = self.get_testbed_name()
 
         if not testbedsettings.current_testbed:
-            testbedsettings.load_current_testbed(self.testbed_name, TargetValues, self.get_data_format())
+            testbedsettings.load_current_testbed(self.testbed_name, TargetValues)
 
         # Split line in data file name(s) and run time information.
         parts = data.split(', ')
@@ -902,25 +904,22 @@ class DataSet(object):
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
         datasets, algorithms, reference_values, success_ratio = split(dataFiles, idx_to_load=idx_of_instances_to_load)
+        dataformatsettings.current_data_format = dataformatsettings.data_format_name_to_class_mapping[self.get_data_format()]()
         data = HMultiReader(datasets)
         if genericsettings.verbose:
             print("Processing %s: %d/%d trials found." % (dataFiles, len(data), len(self.instancenumbers)))
        
         if data:
-            if 2 < 3:  # this takes different data formats into account:
-                # print(testbedsettings.current_testbed.data_format, dataformatsettings.current_data_format)
-                # this should call align_data_into_evals from dataformatsettings.current_data_format, but the latter isn't set correctly
-                maxevals, finalfunvals = testbedsettings.current_testbed.data_format.align_data_into_evals(
+            # this takes different data formats into account to compute
+            # the evals attribute and others into self:
+            maxevals, finalfunvals = dataformatsettings.current_data_format.align_data_into_evals(
                                                 align_data, data, self)
-            else:  # was before Sep 2017:
-                adata, maxevals, finalfunvals = align_data(data,
-                    testbedsettings.current_testbed.data_format.evaluation_idx,
-                    testbedsettings.current_testbed.data_format.function_value_idx,
-                    # should be:
-                    # dataformatsettings.current_data_format.evaluation_idx,
-                    # dataformatsettings.current_data_format.function_value_idx,
-                )
-                self.evals = adata
+            # CAVEAT: maxevals may not be f-evaluations only
+            # TODO: the above depends implicitely (in readalign.align_data)
+            # on the global variable setting of
+            # dataformatsettings.current_data_format which
+            # seems like code which is bug prone and hard to maintain
+
             self.reference_values = reference_values
             if len(algorithms) > 0:
                 algorithms = align_list(algorithms, [item[1] for item in self.evals])
@@ -940,7 +939,7 @@ class DataSet(object):
                          for i in self.dataFiles)
                              
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
-            raise Usage("Missing tdat files in '{0}'. Please rerun the experiments." % filepath)
+            warnings.warn("Missing tdat files in '{0}'. Please consider to rerun the experiments." % filepath)
 
         datasets, algorithms, reference_values, success_ratio = split(dataFiles, idx_to_load=idx_of_instances_to_load)
         data = VMultiReader(datasets)
@@ -949,19 +948,14 @@ class DataSet(object):
                    % (dataFiles, len(data), len(self.instancenumbers)))
         
         if data:
-            adata, maxevals, finalfunvals = align_data(
+            # TODO: maxevals and evals in the constrained case will give
+            # values inconsistent with the above evals attribute
+            self.funvals, maxevals, finalfunvals = align_data(
                 data, 
-                testbedsettings.current_testbed.data_format.evaluation_idx,
-                testbedsettings.current_testbed.data_format.function_value_idx,
-                # should be:
-                # dataformatsettings.current_data_format.evaluation_idx,
-                # dataformatsettings.current_data_format.function_value_idx,
+                dataformatsettings.current_data_format.evaluation_idx,
+                dataformatsettings.current_data_format.function_value_idx,
                 )
-            # TODO: this depends implicitely on the global variable setting of
-            # testbedsettings.current_testbed.data_format which
-            # seems like code which is bug prone and hard to maintain
-            # (adata, maxevals, finalfunvals) = align_data(data)
-            self.funvals = adata
+            # was: (adata, maxevals, finalfunvals) = align_data(data)
             try:
                 for i in range(len(maxevals)):
                     self.maxevals[i] = max(maxevals[i], self.maxevals[i])

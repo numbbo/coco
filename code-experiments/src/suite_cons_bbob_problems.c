@@ -126,6 +126,38 @@ static size_t nb_of_linear_constraints(const size_t function,
 }
 
 /**
+ * @brief Scale feasible direction depending on xopt such that
+ *        xopt + feasible_direction remains in [-5, 5].
+ *
+ *
+ */
+static void feasible_direction_set_length(double * feasible_direction,
+                                          const double *xopt,
+                                          size_t dimension,
+                                          long rseed) {
+  const long seed_offset = 412;  /* was sampled uniform in 0-999 */
+  const double feas_shrink = 0.75;  /* scale randomly between 0.75 and 1.0 */
+  const double feas_bound = 5.0;
+
+  int i;
+  double r[1], maxabs, maxrel;
+
+  for (maxabs = maxrel = i = 0; i < dimension; ++i) {
+    maxabs = coco_double_max(maxabs, fabs(xopt[i]));
+    maxrel = coco_double_max(maxrel, feasible_direction[i] / (feas_bound - xopt[i]));
+    maxrel = coco_double_max(maxrel, feasible_direction[i] / (-feas_bound - xopt[i]));
+  }
+  if (maxabs > 4.01)
+    coco_warning("feasible_direction_set_length: a component of fabs(xopt) was greater than 4.01");
+  if (maxabs > 5.0)
+    coco_error("feasible_direction_set_length: a component of fabs(xopt) was greater than 5.0");
+  bbob2009_unif(r, 1, rseed + seed_offset);
+  coco_vector_scale(feasible_direction, dimension,
+                    feas_shrink + r[0] * (1 - feas_shrink),  /* nominator */
+                    maxrel);  /* denominator */
+}
+
+/**
  * @brief Objective function: sphere
  *        Constraint(s): linear
  */
@@ -143,8 +175,6 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double feasible_direction_norm = 4.0;
-  
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;  
   
@@ -158,7 +188,7 @@ static coco_problem_t *f_sphere_c_linear_cons_bbob_problem_allocate(const size_t
       instance, rseed, problem_id_template, problem_name_template);
 	 
   bbob_evaluate_gradient(problem, all_zeros, feasible_direction);	 
-  coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
+  feasible_direction_set_length(feasible_direction, xopt, dimension, rseed);
 	 
   /* Create the constraints. Use the gradient of the objective
    * function at the origin to build the first constraint. 
@@ -219,9 +249,7 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
   size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
-  
-  double feasible_direction_norm = 4.0;
-  
+
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
   
@@ -235,8 +263,8 @@ static coco_problem_t *f_ellipsoid_c_linear_cons_bbob_problem_allocate(const siz
       instance, rseed, problem_id_template, problem_name_template);
 
   bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
-  coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
-  
+  feasible_direction_set_length(feasible_direction, xopt, dimension, rseed);
+
   /* Create the constraints. Use the gradient of the objective
    * function at the origin to build the first constraint. 
    */
@@ -303,8 +331,6 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double feasible_direction_norm = 4.0;
-  
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
   
@@ -318,7 +344,7 @@ static coco_problem_t *f_ellipsoid_rotated_c_linear_cons_bbob_problem_allocate(c
       instance, rseed, problem_id_template, problem_name_template);
       
   bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
-  coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
+  feasible_direction_set_length(feasible_direction, xopt, dimension, rseed);
   
   /* Create the constraints. Use the gradient of the objective
    * function at the origin to build the first constraint. 
@@ -386,8 +412,6 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double feasible_direction_norm = 4.0;
-  
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
   
@@ -401,7 +425,7 @@ static coco_problem_t *f_linear_slope_c_linear_cons_bbob_problem_allocate(const 
       instance, rseed, problem_id_template, problem_name_template);
       
   bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
-  coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
+  feasible_direction_set_length(feasible_direction, xopt, dimension, rseed);
   
   /* Create the constraints. Use the gradient of the objective
    * function at the origin to build the first constraint. 
@@ -467,8 +491,6 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double feasible_direction_norm = 4.0;
-  
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
   
@@ -482,7 +504,7 @@ static coco_problem_t *f_discus_c_linear_cons_bbob_problem_allocate(const size_t
       instance, rseed, problem_id_template, problem_name_template);
       
   bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
-  coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
+  feasible_direction_set_length(feasible_direction, xopt, dimension, rseed);
 
   /* Create the constraints. Use the gradient of the objective
    * function at the origin to build the first constraint. 
@@ -550,8 +572,6 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double feasible_direction_norm = 4.0;
-  
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
   
@@ -565,7 +585,7 @@ static coco_problem_t *f_bent_cigar_c_linear_cons_bbob_problem_allocate(const si
       instance, rseed, problem_id_template, problem_name_template);
       
   bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
-  coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
+  feasible_direction_set_length(feasible_direction, xopt, dimension, rseed);
 
   /* Create the constraints. Use the gradient of the objective
    * function at the origin to build the first constraint. 
@@ -633,8 +653,6 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
   
-  double feasible_direction_norm = 4.0;
-  
   char *problem_type_temp = NULL;
   double *all_zeros = NULL;
   
@@ -648,7 +666,7 @@ static coco_problem_t *f_different_powers_c_linear_cons_bbob_problem_allocate(co
       instance, rseed, problem_id_template, problem_name_template);
       
   bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
-  coco_scale_vector(feasible_direction, dimension, feasible_direction_norm);
+  feasible_direction_set_length(feasible_direction, xopt, dimension, rseed);
   
   /* Create the constraints. Use the gradient of the objective
    * function at the origin to build the first constraint. 
@@ -713,7 +731,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   size_t i;
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
-  
+
   double feasible_direction_norm = 4.0;
   
   char *problem_type_temp = NULL;
@@ -730,9 +748,14 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
    * solution to the user. Otherwise, algorithms that look for local 
    * optima would stop at iteration 1 if they used such an initial
    * solution.
+   *
+   * But then the testbed is not meant to please certain algorithms, but
+   * to model scenarios these algorithm may realistically face.
    */
+
   for (i = 0; i < dimension; ++i)
     feasible_direction[i] = feasible_direction_norm + coco_random_uniform(rand_state);
+  feasible_direction_set_length(feasible_direction, xopt, dimension, rseed);
 
   coco_random_free(rand_state);
      

@@ -421,13 +421,13 @@ static avl_node_t *avl_item_search(const avl_tree_t *avltree, const void *item) 
  * the supplied strcmp()-like function.
  * Returns the value of avltree (even if it's NULL).
  * O(1) */
-static avl_tree_t *avl_tree_init(avl_tree_t *avltree, avl_compare_t cmp, avl_free_t free) {
+static avl_tree_t *avl_tree_init(avl_tree_t *avltree, avl_compare_t cmp, avl_free_t free_item) {
   if (avltree) {
     avltree->head = NULL;
     avltree->tail = NULL;
     avltree->top = NULL;
     avltree->cmpitem = cmp;
-    avltree->freeitem = free;
+    avltree->freeitem = free_item;
     avltree->userdata = NULL;
     avltree->allocator = NULL;
   }
@@ -438,8 +438,8 @@ static avl_tree_t *avl_tree_init(avl_tree_t *avltree, avl_compare_t cmp, avl_fre
  * ordered using the supplied strcmp()-like function.
  * Returns NULL if memory could not be allocated.
  * O(1) */
-static avl_tree_t *avl_tree_construct(avl_compare_t cmp, avl_free_t free) {
-  return avl_tree_init((avl_tree_t *) malloc(sizeof(avl_tree_t)), cmp, free);
+static avl_tree_t *avl_tree_construct(avl_compare_t cmp, avl_free_t free_item) {
+  return avl_tree_init((avl_tree_t *) malloc(sizeof(avl_tree_t)), cmp, free_item);
 }
 
 /* Reinitializes the tree structure for reuse. Nothing is free()d.

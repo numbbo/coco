@@ -26,7 +26,7 @@ def get_table_caption():
         Average runtime (\aRT\ in number of function 
         evaluations) divided by the respective !!BEST-ART!! in
         #1.
-        The \aRT\ and in braces, as dispersion measure, the half difference between 
+        This \aRT\ ratio and, in braces as dispersion measure, the half difference between
         10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
         """
     table_caption_one_noreference = r"""%
