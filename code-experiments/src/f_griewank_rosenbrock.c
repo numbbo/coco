@@ -147,6 +147,7 @@ static coco_problem_t *f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_all
   size_t *P1 = coco_allocate_vector_size_t(dimension);
   size_t *P2 = coco_allocate_vector_size_t(dimension);
   size_t *block_sizes;
+  size_t block_size;
   size_t nb_blocks;
   size_t swap_range;
   size_t nb_swaps;
@@ -155,15 +156,12 @@ static coco_problem_t *f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_all
 
   
   block_sizes = coco_get_block_sizes(&nb_blocks, dimension, "bbob-largescale");
+  block_size = coco_rotation_matrix_block_size(dimension);
   swap_range = coco_get_swap_range(dimension, "bbob-largescale");
   nb_swaps = coco_get_nb_swaps(dimension, "bbob-largescale");
   
   fopt = bbob2009_compute_fopt(function, instance);
-  /*scales = coco_double_max(1.0, sqrt((double) dimension) / 8.0);*/
-  scales = sqrt((double) dimension) / 8.0;
-  if (dimension < 8) { /* Wassim: shouldn't be true in a large scale setting */
-    scales = 1.0;
-  }
+  scales = coco_double_max(1.0, sqrt((double) block_size) / 8.0);
   shift = coco_allocate_vector(dimension);
   for (i = 0; i < dimension; ++i) {
       shift[i] = -0.5;

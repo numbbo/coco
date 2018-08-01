@@ -77,7 +77,7 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
 
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
-  size_t i;
+  size_t i, block_size;
   double *minus_one, factor;
 
   minus_one = coco_allocate_vector(dimension);
@@ -88,7 +88,12 @@ static coco_problem_t *f_rosenbrock_bbob_problem_allocate(const size_t function,
     xopt[i] *= 0.75;
   }
   fopt = bbob2009_compute_fopt(function, instance);
-  factor = coco_double_max(1.0, sqrt((double) dimension) / 8.0);
+  if (coco_strfind(problem_name_template, "BBOB large-scale suite") >= 0){
+    block_size = coco_rotation_matrix_block_size(dimension);
+    factor = coco_double_max(1.0, sqrt((double) block_size) / 8.0);
+  } else {
+    factor = coco_double_max(1.0, sqrt((double) dimension) / 8.0);
+  }
 
   problem = f_rosenbrock_allocate(dimension);
   problem = transform_vars_shift(problem, minus_one, 0);
@@ -178,31 +183,36 @@ static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const si
                                                                                 const char *problem_id_template,
                                                                                 const char *problem_name_template) {
   
-  double fopt;
+  double *xopt, fopt;
   coco_problem_t *problem = NULL;
-  double *minus_half, factor;
-  size_t i, j, k, next_bs_change;
+  double *minus_one, factor;
+  size_t i;
 
   double **B;
   const double *const *B_copy;
   size_t *P1 = coco_allocate_vector_size_t(dimension);
   size_t *P2 = coco_allocate_vector_size_t(dimension);
   size_t *block_sizes;
+  size_t block_size;
   size_t nb_blocks;
   size_t swap_range;
   size_t nb_swaps;
-  double tmp; /* Wassim: will serve to set the optimal solution "manually"*/
   double *best_parameter = coco_allocate_vector(dimension); /* Manh: will serve to set the optimal solution "manually"*/
 
   block_sizes = coco_get_block_sizes(&nb_blocks, dimension, "bbob-largescale");
+  block_size = coco_rotation_matrix_block_size(dimension);
+    
   swap_range = coco_get_swap_range(dimension, "bbob-largescale");
   nb_swaps = coco_get_nb_swaps(dimension, "bbob-largescale");
 
   fopt = bbob2009_compute_fopt(function, instance);
-  factor = coco_double_max(1.0, sqrt((double) dimension) / 8.0);
-  minus_half = coco_allocate_vector(dimension);
+  factor = coco_double_max(1.0, sqrt((double) block_size) / 8.0);
+  minus_one = coco_allocate_vector(dimension);
+  xopt = coco_allocate_vector(dimension);
+  bbob2009_compute_xopt(xopt, rseed, dimension);
   for (i = 0; i < dimension; ++i) {
-      minus_half[i] = -0.5;
+      minus_one[i] = -1.0;
+      xopt[i] *= 0.75;
   }
 
   B = coco_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
@@ -213,38 +223,22 @@ static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const si
   coco_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);
 
   problem = f_rosenbrock_allocate(dimension);
-  problem = transform_vars_shift(problem, minus_half, 0);
+  problem = transform_vars_shift(problem, minus_one, 0);
   problem = transform_vars_scale(problem, factor);
   problem = transform_vars_permutation(problem, P2, dimension);
   problem = transform_vars_blockrotation(problem, B_copy, dimension, block_sizes, nb_blocks);
   problem = transform_vars_permutation(problem, P1, dimension);
 
+  problem = transform_vars_shift(problem, xopt, 0);
   problem = transform_obj_norm_by_dim(problem);
   problem = transform_obj_shift(problem, fopt);
-
-  /* Manh: manually set xopt = rot1^T ones(dimension)/(2*factor) */
-  next_bs_change = 0;
-  for (k = 0; k < nb_blocks; ++k){
-    for (j = 0; j < block_sizes[k]; ++j) { /* Manh: firstly, set xopt_1 = (B^T)*(P_2^T)*ones(dimension)/(2*factor) */
-      tmp = 0;
-      for (i = 0; i < block_sizes[k]; ++i) {
-        tmp += B[next_bs_change + i][j];
-      }
-      best_parameter[next_bs_change + j] = tmp / (2. * factor);
-    }
-    next_bs_change += block_sizes[k];
-  }
-
-  for (j = 0; j < dimension; ++j) { /* Manh: secondly, set xopt = (P_1^T)* xopt_1 */
-    problem->best_parameter[P1[j]] = best_parameter[j];
-  }
-
+  
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "block-rotated_moderate");
 
   coco_free_memory(best_parameter);
-  coco_free_memory(minus_half);
+  coco_free_memory(minus_one);
   coco_free_block_matrix(B, dimension);
   coco_free_memory(P1);
   coco_free_memory(P2);
