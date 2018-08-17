@@ -24,7 +24,7 @@ static const unsigned int BUDGET_MULTIPLIER = 101;
 /**
  * The maximal number of independent restarts allowed for an algorithm that restarts itself.
  */
-static const long INDEPENDENT_RESTARTS = 1e5;
+static const long INDEPENDENT_RESTARTS = 0;
 
 /**
  * The random seed. Change if needed.
@@ -147,7 +147,7 @@ int main(void) {
    * http://numbbo.github.io/coco-doc/C/#suite-parameters and
    * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
 
-  /*example_experiment("bbob", "dimensions: 2,3,5", "rw", "log_only_better: 0", random_generator);*/
+  example_experiment("bbob", "dimensions: 2,3,5", "rw", "log_only_better: 0", random_generator);
 
   example_experiment("rw-top-trumps",
                      "instance_indices: 1-3 dimensions: 128",
@@ -469,18 +469,21 @@ void my_line_search(evaluate_function_t evaluate_func,
   size_t i, j;
   size_t evaluations = 0;
   int stop = 0;
+  int r;
 
   /* The origin_solution and num_solutions are hard-coded here to keep the example experiment clean */
   double *origin_solution = coco_allocate_vector(dimension);
   size_t *num_solutions = (size_t *) coco_allocate_memory(dimension * sizeof(size_t));
-  /* Set origin to be the middle point of the domain
-  for (i = 0; i < dimension; ++i)
-    origin_solution[i] = lower_bounds[i] + rand() / (1.0 * RAND_MAX) * (upper_bounds[i] - lower_bounds[i]);*/
-  /* Set origin to be a random point in the domain */
-  coco_problem_get_initial_solution(PROBLEM, origin_solution);
   for (i = 0; i < dimension; i++) {
     num_solutions[i] = 101;
   }
+  /* Set origin to be a random point in the domain */
+  for (i = 0; i < dimension; ++i) {
+    r = rand() % (int) num_solutions[i];
+    origin_solution[i] = lower_bounds[i] + r / ((double) num_solutions[i] - 1) * (upper_bounds[i] - lower_bounds[i]);
+  }
+  /* Set origin to be the middle point of the domain
+  coco_problem_get_initial_solution(PROBLEM, origin_solution); */
 
   if (number_of_constraints > 0 )
     cons_values = coco_allocate_vector(number_of_constraints);
@@ -516,7 +519,7 @@ void my_line_search(evaluate_function_t evaluate_func,
       x[j] = origin_solution[j];
     }
 
-    /* Search the line starting with at the lower_bounds */
+    /* Search the line starting at the lower_bounds */
     for (j = 0; j < num_solutions[i]; j++) {
 
       if (i < number_of_integer_variables) {
