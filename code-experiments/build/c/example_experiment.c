@@ -95,7 +95,8 @@ void my_line_search(evaluate_function_t evaluate_func,
                     const double *lower_bounds,
                     const double *upper_bounds,
                     const size_t number_of_integer_variables,
-                    const size_t max_budget);
+                    const size_t max_budget,
+                    coco_random_state_t *random_generator);
 
 /* Structure and functions needed for timing the experiment */
 typedef struct {
@@ -147,7 +148,7 @@ int main(void) {
    * http://numbbo.github.io/coco-doc/C/#suite-parameters and
    * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
 
-  example_experiment("bbob", "dimensions: 2,3,5", "rw", "log_only_better: 0", random_generator);
+  /* example_experiment("bbob", "dimensions: 2,3,5", "rw", "log_only_better: 0", random_generator); */
 
   example_experiment("rw-top-trumps",
                      "instance_indices: 1-3 dimensions: 128",
@@ -234,7 +235,8 @@ void example_experiment(const char *suite_name,
                      coco_problem_get_smallest_values_of_interest(PROBLEM),
                      coco_problem_get_largest_values_of_interest(PROBLEM),
                      coco_problem_get_number_of_integer_variables(PROBLEM),
-                     (size_t) evaluations_remaining);
+                     (size_t) evaluations_remaining,
+                     random_generator);
       
       /* Break the loop if the algorithm performed no evaluations or an unexpected thing happened */
       if (coco_problem_get_evaluations(PROBLEM) == evaluations_done) {
@@ -450,7 +452,9 @@ void my_grid_search(evaluate_function_t evaluate_func,
  * @param upper_bounds The upper bounds of the region of interested (a vector containing dimension values).
  * @param number_of_integer_variables The number of integer variables (if > 0, all integer variables come
  * before any continuous ones).
- * @param max_budget The maximal number of evaluations
+ * @param max_budget The maximal number of evaluations.
+ * @param random_generator Pointer to a random number generator able to produce uniformly and normally
+ * distributed random numbers.
  */
 void my_line_search(evaluate_function_t evaluate_func,
                     evaluate_function_t evaluate_cons,
@@ -460,7 +464,8 @@ void my_line_search(evaluate_function_t evaluate_func,
                     const double *lower_bounds,
                     const double *upper_bounds,
                     const size_t number_of_integer_variables,
-                    const size_t max_budget) {
+                    const size_t max_budget,
+                    coco_random_state_t *random_generator) {
 
 
   double *x = NULL;
@@ -469,7 +474,6 @@ void my_line_search(evaluate_function_t evaluate_func,
   size_t i, j;
   size_t evaluations = 0;
   int stop = 0;
-  int r;
 
   /* The origin_solution and num_solutions are hard-coded here to keep the example experiment clean */
   double *origin_solution = coco_allocate_vector(dimension);
@@ -479,8 +483,7 @@ void my_line_search(evaluate_function_t evaluate_func,
   }
   /* Set origin to be a random point in the domain */
   for (i = 0; i < dimension; ++i) {
-    r = rand() % (int) num_solutions[i];
-    origin_solution[i] = lower_bounds[i] + r / ((double) num_solutions[i] - 1) * (upper_bounds[i] - lower_bounds[i]);
+    origin_solution[i] = lower_bounds[i] + coco_random_uniform(random_generator) *  (upper_bounds[i] - lower_bounds[i]);
   }
   /* Set origin to be the middle point of the domain
   coco_problem_get_initial_solution(PROBLEM, origin_solution); */
