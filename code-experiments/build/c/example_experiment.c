@@ -480,7 +480,7 @@ void my_line_search(evaluate_function_t evaluate_func,
   double *origin_solution = coco_allocate_vector(dimension);
   size_t *num_solutions = (size_t *) coco_allocate_memory(dimension * sizeof(size_t));
   for (i = 0; i < dimension; i++) {
-    num_solutions[i] = 5;
+    num_solutions[i] = 101;
   }
   /* Set origin to be a random point in the domain */
   for (i = 0; i < dimension; ++i) {
