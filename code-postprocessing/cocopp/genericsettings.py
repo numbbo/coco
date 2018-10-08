@@ -11,7 +11,10 @@ here see `config.py`.
 
 """
 
+import numpy as np
+
 test = False  # debug/test flag, set to False for committing the final version
+interactive_mode = True  # open browser with results, grayscale setting (deprecated) deactivates interactive mode
 
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000  # [0, 1000] lower resolution, no eps, saves 30% time
@@ -24,9 +27,10 @@ weight_evaluations_constraints = (1, 1)
 """weights used to sum function evaluations and constraints evaluations
 in attribute DataSet.evals, if any constraints evaluations are found"""
 
-tabDimsOfInterest = (40, 320)  # dimension which are displayed in the tables
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
+target_runlengths_pprldmany = np.logspace(np.log10(0.5), np.log10(50), 31) # used in config
+target_runlengths_ppscatter = np.logspace(np.log10(0.5), np.log10(50), 8) # used in config
 target_runlength = 10  # used in ppfigs.main
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)] # used in pprldistr
 

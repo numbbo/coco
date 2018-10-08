@@ -13,7 +13,6 @@
 #include "coco_utilities.c"
 #include "suite_bbob_legacy_code.c"
 #include "transform_obj_shift.c"
-
 #include "transform_vars_permutation.c"
 #include "transform_vars_blockrotation.c"
 #include "transform_vars_permutation_helpers.c"

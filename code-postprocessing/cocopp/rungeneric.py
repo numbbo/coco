@@ -14,13 +14,15 @@ python -m cocopp
 
 from __future__ import absolute_import
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import os
 import sys
 import getopt
 import warnings
+import webbrowser
 import matplotlib
-from . import genericsettings, testbedsettings, rungeneric1, rungenericmany, toolsdivers, bestalg, findfiles
+from . import genericsettings, testbedsettings, rungeneric1, rungenericmany, toolsdivers, bestalg, archiving
 from .toolsdivers import truncate_latex_command_file, print_done, diff_attr
 from .ppfig import Usage
 from .compall import ppfigs
@@ -81,14 +83,34 @@ def main(argv=None):
 
     This routine will:
 
-    * call sub-routine :py:func:`cocopp.rungeneric1.main` for each
-      input argument; each input argument will be used as output
-      sub-folder relative to the main output folder,
+    * call sub-routine :py:func:`cocopp.rungeneric1.main` for one
+      input argument (see also --include-single option); the input
+      argument will be used as output sub-folder relative to the main
+      output folder,
     * call sub-routine :py:func:`cocopp.rungenericmany.main`
       (2 or more input arguments) for the input arguments altogether.
     * alternatively call sub-routine :py:func:`cocopp.__main__.main` if option
       flag --test is used. In this case it will run through the
       post-processing tests.
+
+    Usecase from a Python shell
+    ---------------------------
+    To fine-control the behavior of the module, it is highly recommended
+    to work from an (I)Python shell. For example::
+
+        import cocopp
+        cocopp.genericsettings.background = {None: cocopp.bbob.get_all("2009/")}
+        cocopp.main("data_folder " + cocopp.data_archive.get("2009/BFGS_ros_noiseless"))
+
+    compares an experiment given in `"data_folder"` with BFGS and displays
+    all archived results from 2009 in the background. `cocopp.bbob` is a
+    `cocopp.archiving.COCODataArchive` class.
+
+    This may take 5-15 minutes to complete, because more than 30 algorithm
+    datasets are processed.
+
+    Output
+    ------
 
     The output figures and tables written by default to the output folder
     :file:`ppdata` are used in the provided LaTeX templates:
@@ -235,6 +257,8 @@ def main(argv=None):
                     # command line arguments might be incorrect
                     if a:
                         genopts.append(a)
+                    if o == '--settings' and a == 'grayscale':  # a hack for test cases
+                        genericsettings.interactive_mode = False
                     is_assigned = True
                 if o in ("-v", "--verbose"):
                     genericsettings.verbose = True
@@ -243,7 +267,6 @@ def main(argv=None):
                     is_assigned = True
                 if not is_assigned:
                     assert False, "unhandled option"
-
         if not genericsettings.verbose:
             warnings.filterwarnings('module', '.*', UserWarning, '.*')
             # warnings.simplefilter('ignore')  # that is bad, but otherwise to many warnings appear
@@ -262,32 +285,18 @@ def main(argv=None):
         truncate_latex_command_file(latex_commands_filename)
 
         print('Post-processing (%s)' % ('1' if len(args) == 1 else '2+'))  # to not break doctests
+
         # manage data paths as given in args
-        data_archive = findfiles.COCODataArchive()
-        clean_extended_args = []
-        for i, name in enumerate(args):
-            # prepend common path inputdir to path names
-            path = os.path.join(inputdir, args[i].replace('/', os.sep))
-            if os.path.exists(path):
-                clean_extended_args.append(path)
-            elif name.endswith('!'):  # take first match
-                data_archive.find(name[:-1])
-                clean_extended_args.append(data_archive.get())
-            elif name.endswith('*'):  # take all matches
-                clean_extended_args.extend(data_archive.get_all(name[:-1]))  # download if necessary
-            elif data_archive.find(name):  # get will bail out if there is not exactly one match
-                clean_extended_args.append(data_archive.get(name))  # download if necessary
-            else:
-                warnings.warn('"%s" seems not to be an existing file or match any archived data' % name)
-                # TODO: with option --include-single we may have to wait some time until this leads to
-                # an error. Hence we should raise the error here?
+        data_archive = archiving.COCODataArchive()
+        args = data_archive.get_extended(args)
+        if None in args:
+            raise ValueError("Data argument %d was not matching any file"
+                             " or archive entry." % (args.index(None) + 1))
         if len(args) != len(set(args)):
             warnings.warn("Several data arguments point to the very same location."
                           "This will most likely lead to a rather unexpected outcome.")
             # TODO: we would like the users input with timeout to confirm
             # and otherwise raise a ValueError
-
-        args = clean_extended_args
 
         update_background_algorithms(inputdir)
 
@@ -298,7 +307,7 @@ def main(argv=None):
         # we still need to check that all data come from the same
         # test suite, at least for the data_archive data
         suites = set()
-        for path in clean_extended_args:
+        for path in args:
             if data_archive.contains(path):  # this is the archive of *all* testbeds
                 # extract suite name
                 suites.add(data_archive.name(path).split('/')[0])
@@ -353,7 +362,11 @@ def main(argv=None):
             print(mess, end='')
 
         print_done('ALL done')
-
+        if genericsettings.interactive_mode:
+            try:
+                webbrowser.open("file://" + os.getcwd() + '/' + outputdir + "/index.html")
+            except:
+                pass
         return dsld
 
     # TODO prevent loading the data every time...
@@ -365,6 +378,13 @@ def main(argv=None):
 
 
 def update_background_algorithms(input_dir):
-    for key, value in genericsettings.background.items():
-        # why can't we use different variable names than value and item, please?
-        genericsettings.background[key] = [os.path.join(input_dir, item) for item in value]
+    for format, names in genericsettings.background.items():
+        if not isinstance(names, (tuple, list, set)):
+            raise ValueError(
+                "`genericsettings.background` has the wrongly formatted entry\n"
+                "%s\n"
+                "Expected is ``(format, names)``, where"
+                " names is a `list` of one or more pathnames (not a"
+                " single pathname as `str`)"
+                % str((format, names)))
+        genericsettings.background[format] = [os.path.join(input_dir, filename) for filename in names]

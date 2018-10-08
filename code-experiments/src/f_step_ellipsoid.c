@@ -19,7 +19,6 @@
 #include "transform_obj_penalize.c"
 #include "transform_obj_shift.c"
 #include "transform_vars_shift.c"
-
 #include "transform_vars_permutation.c"
 #include "transform_vars_blockrotation.c"
 #include "transform_vars_round_step.c"

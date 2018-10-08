@@ -54,11 +54,13 @@ static void usage(const char *program_name) {
 
 int main(int argc, char **argv) {
   int header_shown = 0, number_of_failures = 0, shown_failures = 0;
-  size_t number_of_testvectors = 0, i, j;
+  unsigned long number_of_testvectors = 0;
+  size_t i, j;
   int number_of_testcases = 0;
   testvector_t *testvectors = NULL;
   long previous_problem_index = -1;
-  size_t problem_index_old, problem_index;
+  unsigned long problem_index_old, problem_index_ul;
+  size_t problem_index;
   int testvector_id, ret;
   coco_problem_t *problem = NULL;
   char suit_name[128];
@@ -109,7 +111,7 @@ int main(int argc, char **argv) {
 
   while (1) {
     double expected_value, *x, y;
-    ret = fscanf(testfile, "%30lu\t%30lu\t%30i\t%30lf", &problem_index_old, &problem_index, &testvector_id,
+    ret = fscanf(testfile, "%30lu\t%30lu\t%30i\t%30lf", &problem_index_old, &problem_index_ul, &testvector_id,
                  &expected_value);
     if (ret != 4)
       break;
@@ -118,6 +120,7 @@ int main(int argc, char **argv) {
      * some functions is expensive because we have to generate
      * large rotation matrices.
      */
+    problem_index = (size_t) problem_index_ul;
     if (previous_problem_index != (long) problem_index) {
       if (NULL != problem)
         coco_problem_free(problem);
@@ -140,7 +143,7 @@ int main(int argc, char **argv) {
       if (shown_failures < 100) {
         fprintf(stdout,
                 "%8lu %8i FAILED expected=%.8e observed=%.8e problem_id=%s\n",
-                problem_index, testvector_id, expected_value, y,
+                (unsigned long)problem_index, testvector_id, expected_value, y,
                 coco_problem_get_id(problem));
         fflush(stdout);
         ++shown_failures;

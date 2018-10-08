@@ -16,7 +16,6 @@
 #include "transform_vars_shift.c"
 #include "transform_obj_shift.c"
 #include "transform_vars_affine.c"
-
 #include "transform_vars_permutation.c"
 #include "transform_vars_blockrotation.c"
 #include "transform_obj_norm_by_dim.c"

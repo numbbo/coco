@@ -54,7 +54,7 @@ def reset_current_testbed():
     current_testbed = None
 
 
-def load_current_testbed(testbed_name, target_values, data_format_name=None):
+def load_current_testbed(testbed_name, target_values):
     global current_testbed
 
     if testbed_name in globals():
@@ -63,17 +63,6 @@ def load_current_testbed(testbed_name, target_values, data_format_name=None):
     else:
         raise ValueError('Testbed class %s does not exist. Add it to testbedsettings.py to process this data.'
                          % testbed_name)
-
-    # this doesn't look like the exact right place to do this
-    if data_format_name is not None:
-        dataformatsettings.set_data_format(data_format_name)
-        current_testbed.data_format = dataformatsettings.current_data_format
-    if 22 < 3 and data_format_name is not None:
-        if dataformatsettings.data_format_translation.has_key(data_format_name):
-            current_testbed.data_format = dataformatsettings.data_format_translation[data_format_name]
-        else:
-            raise ValueError('Data format class %s does not exist. '
-                             'Add it to dataformatsettings.py to process this data.' % data_format_name)
     return current_testbed
 
 
