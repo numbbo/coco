@@ -121,14 +121,15 @@ int main(void) {
    *   bbob-biobj-ext       92 unconstrained noiseless bi-objective functions
    *   [bbob-constrained*   48 constrained noiseless single-objective functions]
    *   [bbob-largescale*    24 unconstrained noiseless single-objective functions in large dimension]
-   *   [bbob-mixint*        mixed-integer single-objective functions]
+   *   [bbob-mixint*        24 mixed-integer single-objective functions]
    *
    * Suites with a star are partly implemented but not yet fully supported.
    *
    * Adapt to your need. Note that the experiment is run according
    * to the settings, defined in example_experiment(...) below.
    */
-  example_experiment("bbob", "bbob", random_generator);
+  example_experiment("bbob-mixint-1", "bbob", random_generator);
+  example_experiment("bbob-mixint-2", "bbob", random_generator);
 
   printf("Done!\n");
   fflush(stdout);

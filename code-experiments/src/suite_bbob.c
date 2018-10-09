@@ -76,6 +76,9 @@ static const char *suite_bbob_get_instances_by_year(const int year) {
   else if (year == 2018) {
     return "1-5,71-80";
   }
+  else if (year == 2019) {
+    return "1-5,81-90";
+  }
 
   else {
     coco_error("suite_bbob_get_instances_by_year(): year %d not defined for suite_bbob", year);

@@ -1,6 +1,6 @@
 /**
  * @file suite_bbob_mixint.c
- * @brief Test implementation of a suite with mixed-integer BBOB problems.
+ * @brief A suite with mixed-integer BBOB problems.
  */
 
 #include "coco.h"
@@ -16,36 +16,14 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 /**
  * @brief Sets the dimensions and default instances for the bbob-mixint suite.
  */
-static coco_suite_t *suite_bbob_mixint_initialize(void) {
+static coco_suite_t *suite_bbob_mixint_initialize(const char *suite_name) {
 
   coco_suite_t *suite;
-  const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
-
-  suite = coco_suite_allocate("bbob-mixint", 24, 6, dimensions, "year: 2018");
+  const size_t dimensions[] = { 5, 10, 20, 40, 80, 160 };
+  /* TODO: Use also dimensions 80 and 160 (change the 4 below into a 6) */
+  suite = coco_suite_allocate(suite_name, 24, 4, dimensions, "year: 2019");
 
   return suite;
-}
-
-/**
- * @brief Sets the ROI (smallest_values_of_interest, largest_values_of_interest)
- * in a deterministic way depending on the values of dimension and instance.
- * This is just a temporary implementation for testing purposes.
- */
-static void suite_bbob_mixint_set_ROI(const size_t dimension, const size_t instance,
-    double *smallest_values_of_interest, double *largest_values_of_interest) {
-
-  size_t i;
-  double num;
-
-  /* The last variable is continuous */
-  smallest_values_of_interest[dimension - 1] = -5;
-  largest_values_of_interest[dimension - 1] = 5;
-
-  for (i = 0; i < dimension - 1; i++) {
-    smallest_values_of_interest[i] = 0;
-    num = (double)((dimension + instance + i) % 5);
-    largest_values_of_interest[i] = coco_double_round(pow(10, num));
-  }
 }
 
 /**
@@ -68,19 +46,46 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
   const size_t dimension = suite->dimensions[dimension_idx];
   const size_t instance = suite->instances[instance_idx];
 
+  /* The cardinality of variables (0 = continuous variables should always come last) */
+  const size_t variable_cardinality_1[] = { 2, 4, 8, 16, 0 };
+  const size_t variable_cardinality_2[] = { 2, 6, 18, 0, 0 };
+
   double *smallest_values_of_interest = coco_allocate_vector(dimension);
   double *largest_values_of_interest = coco_allocate_vector(dimension);
 
-  suite_bbob_mixint_set_ROI(dimension, instance, smallest_values_of_interest,
-      largest_values_of_interest);
+  size_t i, j;
+  size_t cardinality = 0;
+  size_t num_integer = dimension;
+  if (dimension % 5 != 0)
+    coco_error("suite_bbob_mixint_get_problem(): dimension %lu not supported for suite_bbob_mixint", dimension_idx);
 
+  /* Sets the ROI according to the given cardinality of variables */
+  for (i = 0; i < dimension; i++) {
+    j = i / (dimension / 5);
+    if (strcmp(suite->suite_name, "bbob-mixint-1") == 0)
+      cardinality = variable_cardinality_1[j];
+    else
+      cardinality = variable_cardinality_2[j];
+    if (cardinality == 0) {
+      smallest_values_of_interest[i] = -5;
+      largest_values_of_interest[i] = 5;
+      if (num_integer == dimension)
+        num_integer = i;
+    }
+    else {
+      smallest_values_of_interest[i] = 0;
+      largest_values_of_interest[i] = (double)cardinality - 1;
+    }
+  }
+
+  /* TODO: Use the large scale versions of the bbob problems */
   problem = coco_get_bbob_problem(function, dimension, instance);
   assert(problem != NULL);
 
   problem = transform_vars_discretize(problem,
       smallest_values_of_interest,
       largest_values_of_interest,
-      dimension-1);
+      num_integer);
 
   coco_problem_set_id(problem, "bbob-mixint_f%03lu_i%02lu_d%02lu", function, instance, dimension);
   coco_problem_set_name(problem, "mixed-integer bbob suite problem f%lu instance %lu in %luD", function, instance, dimension);
