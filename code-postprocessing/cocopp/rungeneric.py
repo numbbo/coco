@@ -289,6 +289,9 @@ def main(argv=None):
         # manage data paths as given in args
         data_archive = archiving.COCODataArchive()
         args = data_archive.get_extended(args)
+        if None in args:
+            raise ValueError("Data argument %d was not matching any file"
+                             " or archive entry." % (args.index(None) + 1))
         if len(args) != len(set(args)):
             warnings.warn("Several data arguments point to the very same location."
                           "This will most likely lead to a rather unexpected outcome.")

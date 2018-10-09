@@ -11,6 +11,8 @@ here see `config.py`.
 
 """
 
+import numpy as np
+
 test = False  # debug/test flag, set to False for committing the final version
 interactive_mode = True  # open browser with results, grayscale setting (deprecated) deactivates interactive mode
 
@@ -31,6 +33,8 @@ in attribute DataSet.evals, if any constraints evaluations are found"""
 tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
+target_runlengths_pprldmany = np.logspace(np.log10(0.5), np.log10(50), 31) # used in config
+target_runlengths_ppscatter = np.logspace(np.log10(0.5), np.log10(50), 8) # used in config
 target_runlength = 10  # used in ppfigs.main
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)] # used in pprldistr
 

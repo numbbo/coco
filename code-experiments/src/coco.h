@@ -326,6 +326,11 @@ const char *coco_problem_get_name(const coco_problem_t *problem);
 const char *coco_problem_get_id(const coco_problem_t *problem);
 
 /**
+ * @brief Returns the type of the problem.
+ */
+const char *coco_problem_get_type(const coco_problem_t *problem);
+
+/**
  * @brief Returns the number of variables i.e. the dimension of the problem.
  */
 size_t coco_problem_get_dimension(const coco_problem_t *problem);
