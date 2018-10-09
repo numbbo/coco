@@ -106,29 +106,30 @@ typedef struct {
  */
 typedef struct {
   observer_biobj_log_nondom_e log_nondom_mode;
-                                 /**< @brief Mode for archiving nondominated solutions. */
-  FILE *adat_file;               /**< @brief File for archiving nondominated solutions (all or final). */
+                                      /**< @brief Mode for archiving nondominated solutions. */
+  FILE *adat_file;                    /**< @brief File for archiving nondominated solutions (all or final). */
 
-  int log_vars;                  /**< @brief Whether to log the decision values. */
+  int log_vars;                       /**< @brief Whether to log the decision values. */
 
-  int precision_x;               /**< @brief Precision for outputting decision values. */
-  int precision_f;               /**< @brief Precision for outputting objective values. */
+  int precision_x;                    /**< @brief Precision for outputting decision values. */
+  int precision_f;                    /**< @brief Precision for outputting objective values. */
 
-  size_t number_of_evaluations;  /**< @brief The number of evaluations performed so far. */
-  size_t number_of_variables;    /**< @brief Dimension of the problem. */
-  size_t number_of_objectives;   /**< @brief Number of objectives (clearly equal to 2). */
-  size_t suite_dep_instance;     /**< @brief Suite-dependent instance number of the observed problem. */
+  size_t number_of_evaluations;       /**< @brief The number of evaluations performed so far. */
+  size_t number_of_variables;         /**< @brief Dimension of the problem. */
+  size_t number_of_integer_variables; /**< @brief Number of integer variables. */
+  size_t number_of_objectives;        /**< @brief Number of objectives (clearly equal to 2). */
+  size_t suite_dep_instance;          /**< @brief Suite-dependent instance number of the observed problem. */
 
-  size_t previous_evaluations;   /**< @brief The number of evaluations from the previous call to the logger. */
+  size_t previous_evaluations;        /**< @brief The number of evaluations from the previous call to the logger. */
 
-  avl_tree_t *archive_tree;      /**< @brief The tree keeping currently non-dominated solutions. */
-  avl_tree_t *buffer_tree;       /**< @brief The tree with pointers to nondominated solutions that haven't
-                                      been logged yet. */
+  avl_tree_t *archive_tree;           /**< @brief The tree keeping currently non-dominated solutions. */
+  avl_tree_t *buffer_tree;            /**< @brief The tree with pointers to nondominated solutions that haven't
+                                           been logged yet. */
 
   /* Indicators (TODO: Implement others!) */
-  int compute_indicators;        /**< @brief Whether to compute the indicators. */
+  int compute_indicators;             /**< @brief Whether to compute the indicators. */
   logger_biobj_indicator_t *indicators[LOGGER_BIOBJ_NUMBER_OF_INDICATORS];
-                                 /**< @brief The implemented indicators. */
+                                      /**< @brief The implemented indicators. */
 } logger_biobj_data_t;
 
 /**
@@ -241,6 +242,7 @@ static int avl_tree_compare_by_eval_number(const logger_biobj_avl_item_t *item1,
 static size_t logger_biobj_tree_output(FILE *file,
                                        const avl_tree_t *tree,
                                        const size_t dim,
+                                       const size_t num_int_vars,
                                        const size_t num_obj,
                                        const int log_vars,
                                        const int precision_x,
@@ -260,7 +262,10 @@ static size_t logger_biobj_tree_output(FILE *file,
         fprintf(file, "%.*e\t", precision_f, ((logger_biobj_avl_item_t*) solution->item)->y[j]);
       if (log_vars) {
         for (i = 0; i < dim; i++)
-          fprintf(file, "%.*e\t", precision_x, ((logger_biobj_avl_item_t*) solution->item)->x[i]);
+          if (i < num_int_vars)
+            fprintf(file, "%d\t", (int)((logger_biobj_avl_item_t*) solution->item)->x[i]);
+          else
+            fprintf(file, "%.*e\t", precision_x, ((logger_biobj_avl_item_t*) solution->item)->x[i]);
       }
       fprintf(file, "\n");
       solution = solution->next;
@@ -716,7 +721,8 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
    * nondom_file */
   if (update_performed && (logger->log_nondom_mode == LOG_NONDOM_ALL)) {
     logger_biobj_tree_output(logger->adat_file, logger->buffer_tree, logger->number_of_variables,
-        logger->number_of_objectives, logger->log_vars, logger->precision_x, logger->precision_f);
+        logger->number_of_integer_variables, logger->number_of_objectives, logger->log_vars,
+        logger->precision_x, logger->precision_f);
     avl_tree_purge(logger->buffer_tree);
 
     /* Flush output so that impatient users can see progress. */
@@ -798,7 +804,8 @@ static void logger_biobj_finalize(logger_biobj_data_t *logger) {
   }
 
   logger_biobj_tree_output(logger->adat_file, resorted_tree, logger->number_of_variables,
-      logger->number_of_objectives, logger->log_vars, logger->precision_x, logger->precision_f);
+      logger->number_of_integer_variables, logger->number_of_objectives, logger->log_vars,
+      logger->precision_x, logger->precision_f);
 
   avl_tree_destruct(resorted_tree);
 }
@@ -866,6 +873,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   logger_data->number_of_evaluations = 0;
   logger_data->previous_evaluations = 0;
   logger_data->number_of_variables = inner_problem->number_of_variables;
+  logger_data->number_of_integer_variables = inner_problem->number_of_integer_variables;
   logger_data->number_of_objectives = inner_problem->number_of_objectives;
   logger_data->suite_dep_instance = inner_problem->suite_dep_instance;
 
