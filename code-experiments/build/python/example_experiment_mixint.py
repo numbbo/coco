@@ -28,14 +28,15 @@ def solve(solver_name, problem, x0, budget, de_pop_mult):
     elif solver_name == "cma-b-int":
         # CMA with bounds and integer variables
         return cma.fmin(problem, x0, 0.5, {'verbose': -9,
-                                         'maxfevals': budget,
-                                         'bounds': [problem.lower_bounds, problem.upper_bounds],
-                                         'integer_variables': np.arange(problem.number_of_integer_variables)})
+                                           'maxfevals': budget,
+                                           'bounds': [problem.lower_bounds, problem.upper_bounds],
+                                           'integer_variables': np.arange(
+                                               problem.number_of_integer_variables)})
     elif solver_name == "cma-b-cont":
         # CMA with bounds and continuous variables
         return cma.fmin(problem, x0, 0.5, {'verbose': -9,
-                                         'maxfevals': budget,
-                                         'bounds': [problem.lower_bounds, problem.upper_bounds]})
+                                           'maxfevals': budget,
+                                           'bounds': [problem.lower_bounds, problem.upper_bounds]})
     elif solver_name == "cma-cont":
         # CMA without bounds and with continuous variables
         return cma.fmin(problem, x0, 2, {'verbose': -9,
