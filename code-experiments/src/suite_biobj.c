@@ -75,7 +75,7 @@ static coco_suite_t *suite_biobj_initialize(void) {
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "year: 2018");
+  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "year: 2019");
 
   return suite;
 }
@@ -88,7 +88,9 @@ static const char *suite_biobj_get_instances_by_year(const int year) {
   if ((year == 2016) || (year == 0000)) { /* default/test case */
     return "1-10";
   }
-  else if ((year == 2017) || (year == 2018)) {
+  /* TODO: This should be simply treated as "else" since there will be no year-based instances for
+   * the bi-objective suites... */
+  else if ((year == 2017) || (year == 2018) || (year == 2019)) {
     return "1-15";
   }
   else {
