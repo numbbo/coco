@@ -128,6 +128,7 @@ def get_light_brown_line_text(testbedname):
             algorithms benchmarked during BBOB-2009.""" 
     else:
         warnings.warn("Current testbed not supported for this caption text.")
+        return ""
         
     
 # please try to avoid underscores in the labels to not break the HTML code:
