@@ -7996,7 +7996,7 @@ static int __pyx_pf_6cocoex_9interface_8Observer___cinit__(struct __pyx_obj_6coc
 
 /* Python wrapper */
 static PyObject *__pyx_pw_6cocoex_9interface_8Observer_3_update_current_observer_global(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_6cocoex_9interface_8Observer_2_update_current_observer_global[] = "assign the global _current_observer variable to self._observer, \n        for purely technical reasons";
+static char __pyx_doc_6cocoex_9interface_8Observer_2_update_current_observer_global[] = "assign the global _current_observer variable to self._observer,\n        for purely technical reasons";
 static PyObject *__pyx_pw_6cocoex_9interface_8Observer_3_update_current_observer_global(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
@@ -14863,7 +14863,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_7Problem_36__setstate_cython__(CYTH
 
 /* Python wrapper */
 static PyObject *__pyx_pw_6cocoex_9interface_1log_level(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_6cocoex_9interface_log_level[] = "`log_level(level=None)` return current log level and\n    set new log level if `level is not None and level`.\n    \n    `level` must be 'error' or 'warning' or 'info' or 'debug', listed\n    with increasing verbosity, or '' which doesn't change anything.\n    ";
+static char __pyx_doc_6cocoex_9interface_log_level[] = "`log_level(level=None)` return current log level and\n    set new log level if `level is not None and level`.\n\n    `level` must be 'error' or 'warning' or 'info' or 'debug', listed\n    with increasing verbosity, or '' which doesn't change anything.\n    ";
 static PyMethodDef __pyx_mdef_6cocoex_9interface_1log_level = {"log_level", (PyCFunction)__pyx_pw_6cocoex_9interface_1log_level, METH_VARARGS|METH_KEYWORDS, __pyx_doc_6cocoex_9interface_log_level};
 static PyObject *__pyx_pw_6cocoex_9interface_1log_level(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_level = 0;
@@ -14934,7 +14934,6 @@ static PyObject *__pyx_pf_6cocoex_9interface_log_level(CYTHON_UNUSED PyObject *_
  *     """
  *     cdef bytes _level = _bstring(level if level is not None else "")             # <<<<<<<<<<<<<<
  *     return coco_set_log_level(_level)
- * 
  */
   __pyx_t_2 = (__pyx_v_level != Py_None);
   if ((__pyx_t_2 != 0)) {
@@ -14954,7 +14953,6 @@ static PyObject *__pyx_pf_6cocoex_9interface_log_level(CYTHON_UNUSED PyObject *_
  *     """
  *     cdef bytes _level = _bstring(level if level is not None else "")
  *     return coco_set_log_level(_level)             # <<<<<<<<<<<<<<
- * 
  */
   __Pyx_XDECREF(__pyx_r);
   if (unlikely(__pyx_v__level == Py_None)) {
@@ -17757,7 +17755,7 @@ static struct PyGetSetDef __pyx_getsets_6cocoex_9interface_Suite[] = {
   {(char *)"problem_names", __pyx_getprop_6cocoex_9interface_5Suite_problem_names, 0, (char *)"list of problem names in this `Suite`, see also `ids`", 0},
   {(char *)"dimensions", __pyx_getprop_6cocoex_9interface_5Suite_dimensions, 0, (char *)"list of problem dimensions occuring at least once in this `Suite`", 0},
   {(char *)"number_of_objectives", __pyx_getprop_6cocoex_9interface_5Suite_number_of_objectives, 0, (char *)"list of number of objectives occuring in this `Suite`", 0},
-  {(char *)"indices", __pyx_getprop_6cocoex_9interface_5Suite_indices, 0, (char *)"list of all problem indices, deprecated.\n        \n        These values are (only) used to call the underlying C structures.\n        Indices used in the Python interface run between 0 and `len(self)`.\n        ", 0},
+  {(char *)"indices", __pyx_getprop_6cocoex_9interface_5Suite_indices, 0, (char *)"list of all problem indices, deprecated.\n\n        These values are (only) used to call the underlying C structures.\n        Indices used in the Python interface run between 0 and `len(self)`.\n        ", 0},
   {(char *)"name", __pyx_getprop_6cocoex_9interface_5Suite_name, 0, (char *)"see __init__.py", 0},
   {(char *)"instance", __pyx_getprop_6cocoex_9interface_5Suite_instance, 0, (char *)"instance of this suite as used to instantiate the suite via\n        `Suite(name, instance, ...)`", 0},
   {(char *)"options", __pyx_getprop_6cocoex_9interface_5Suite_options, 0, (char *)"options for this suite as used to instantiate the suite via\n        `Suite(name, instance, options)`", 0},
@@ -19262,7 +19260,7 @@ static int __pyx_pymod_exec_interface(PyObject *__pyx_pyinit_module)
  * 
  * from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException             # <<<<<<<<<<<<<<
  * 
- * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained"]
+ * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]
  */
   __pyx_t_1 = PyList_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -19295,11 +19293,11 @@ static int __pyx_pymod_exec_interface(PyObject *__pyx_pyinit_module)
   /* "cython/interface.pyx":10
  * from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
  * 
- * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained"]             # <<<<<<<<<<<<<<
+ * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]             # <<<<<<<<<<<<<<
  * # known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext"]
  * _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]
  */
-  __pyx_t_2 = PyList_New(4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_2 = PyList_New(5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_n_u_bbob);
   __Pyx_GIVEREF(__pyx_n_u_bbob);
@@ -19313,11 +19311,14 @@ static int __pyx_pymod_exec_interface(PyObject *__pyx_pyinit_module)
   __Pyx_INCREF(__pyx_kp_u_bbob_constrained);
   __Pyx_GIVEREF(__pyx_kp_u_bbob_constrained);
   PyList_SET_ITEM(__pyx_t_2, 3, __pyx_kp_u_bbob_constrained);
+  __Pyx_INCREF(__pyx_kp_u_bbob_largescale);
+  __Pyx_GIVEREF(__pyx_kp_u_bbob_largescale);
+  PyList_SET_ITEM(__pyx_t_2, 4, __pyx_kp_u_bbob_largescale);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_known_suite_names, __pyx_t_2) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "cython/interface.pyx":12
- * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained"]
+ * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]
  * # known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext"]
  * _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]             # <<<<<<<<<<<<<<
  * 

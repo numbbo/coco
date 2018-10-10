@@ -7,7 +7,7 @@ cimport numpy as np
 
 from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
 
-known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained"]
+known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]
 # known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext"]
 _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]
 
@@ -22,18 +22,18 @@ cdef extern from "coco.h":
         pass
     ctypedef struct coco_observer_t:
         pass
-    ctypedef struct coco_suite_t: 
+    ctypedef struct coco_suite_t:
         pass
 
     const char* coco_set_log_level(const char *level)
 
     coco_observer_t *coco_observer(const char *observer_name, const char *options)
     void coco_observer_free(coco_observer_t *self)
-    coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, 
+    coco_problem_t *coco_problem_add_observer(coco_problem_t *problem,
                                               coco_observer_t *observer)
     const char *coco_observer_get_result_folder(const coco_observer_t *observer)
 
-    coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, 
+    coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance,
                              const char *suite_options)
     void coco_suite_free(coco_suite_t *suite)
     void coco_problem_free(coco_problem_t *problem)
@@ -377,7 +377,7 @@ also report back a missing name to https://github.com/numbbo/coco/issues
     @property
     def indices(self):
         """list of all problem indices, deprecated.
-        
+
         These values are (only) used to call the underlying C structures.
         Indices used in the Python interface run between 0 and `len(self)`.
         """
@@ -457,7 +457,7 @@ cdef class Observer:
         self._state = 'initialized'
 
     def _update_current_observer_global(self):
-        """assign the global _current_observer variable to self._observer, 
+        """assign the global _current_observer variable to self._observer,
         for purely technical reasons"""
         global _current_observer
         _current_observer = self._observer
@@ -494,10 +494,10 @@ cdef class Observer:
             coco_observer_free(self._observer)
 
 cdef Problem_init(coco_problem_t* problem, free=True, suite_name=None):
-    """`Problem` class instance initialization wrapper passing 
-    a `problem_t*` C-variable to `__init__`. 
-    
-    This is necessary because __cinit__ cannot be defined as cdef, only as def. 
+    """`Problem` class instance initialization wrapper passing
+    a `problem_t*` C-variable to `__init__`.
+
+    This is necessary because __cinit__ cannot be defined as cdef, only as def.
     """
     res = Problem()
     res._suite_name = suite_name
@@ -535,7 +535,7 @@ cdef class Problem:
         self._list_of_observers = []
         # _problem_suite = _bstring(problem_suite)
         # self.problem_suite = _problem_suite
-        # Implicit type conversion via passing safe, 
+        # Implicit type conversion via passing safe,
         # see http://docs.cython.org/src/userguide/language_basics.html
         self._number_of_variables = coco_problem_get_dimension(self.problem)
         self._number_of_objectives = coco_problem_get_number_of_objectives(self.problem)
@@ -568,7 +568,7 @@ cdef class Problem:
         if np.size(x) != self.number_of_variables:
             raise ValueError(
                 "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
-                "not match the problem dimension `number_of_variables==%d`." 
+                "not match the problem dimension `number_of_variables==%d`."
                              % self.number_of_variables)
         _x = x  # this is the final type conversion
         if self.problem is NULL:
@@ -790,7 +790,7 @@ cdef class Problem:
         if np.size(x) != self.number_of_variables:
             raise ValueError(
                 "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
-                "not match the problem dimension `number_of_variables==%d`." 
+                "not match the problem dimension `number_of_variables==%d`."
                              % self.number_of_variables)
         _x = x  # this is the final type conversion
         if self.problem is NULL:
@@ -867,7 +867,7 @@ cdef class Problem:
             return '%s: a %s %s problem%s (problem %d of suite "%s" with name "%s")' % (
                     self.id, dimensional, objective, constraints, self.index,
                     self.suite, self.name)
-                    # self.name.replace(self.name.split()[0], 
+                    # self.name.replace(self.name.split()[0],
                     #               self.name.split()[0] + "(%d)"
                     #               % (self.index if self.index is not None else -2)))
         else:
@@ -881,7 +881,7 @@ cdef class Problem:
                     self.id)
         else:
             return "<finalized/invalid problem>"
-        
+
     def __enter__(self):
         """Allows ``with Suite(...)[index] as problem:`` (or ``Suite(...).get_problem(...)``)
         """
@@ -895,10 +895,9 @@ cdef class Problem:
 def log_level(level=None):
     """`log_level(level=None)` return current log level and
     set new log level if `level is not None and level`.
-    
+
     `level` must be 'error' or 'warning' or 'info' or 'debug', listed
     with increasing verbosity, or '' which doesn't change anything.
     """
     cdef bytes _level = _bstring(level if level is not None else "")
     return coco_set_log_level(_level)
-
