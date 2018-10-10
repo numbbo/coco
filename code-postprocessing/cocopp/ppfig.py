@@ -211,7 +211,23 @@ def save_folder_index_file(filename, image_file_extension):
         links += add_image('pprldmany_20D_nzall.svg', True, 220)
         if os.path.isfile(os.path.join(current_dir, 'pprldmany_40D_nzall.svg')):
             links += add_image('pprldmany_40D_nzall.svg', True, 220)
-
+#    if os.path.isfile(os.path.join(current_dir, 'pprldmany_320D_noiselessall.svg')):  # weird way to decide what to plot
+#        links += "<H2> %s </H2>\n" % ' Runtime distributions (ECDFs) over all targets'
+#        links += add_image('pprldmany_20D_noiselessall.svg', True, 220)
+#        links += add_image('pprldmany_40D_noiselessall.svg', True, 220)
+#        links += add_image('pprldmany_80D_noiselessall.svg', True, 220) + ' <br />'
+#       links += add_image('pprldmany_160D_noiselessall.svg', True, 220)
+#        links += add_image('pprldmany_320D_noiselessall.svg', True, 220)
+#        if os.path.isfile(os.path.join(current_dir, 'pprldmany_640D_noiselessall.svg')):
+#            links += add_image('pprldmany_640D_noiselessall.svg', True, 220)
+    if testbedsettings.current_testbed.name == 'bbob-largescale':
+        links += "<H2> %s </H2>\n" % ' Runtime distributions (ECDFs) over all targets'
+        links += add_image('pprldmany_20D_noiselessall.svg', True, 220)
+        links += add_image('pprldmany_40D_noiselessall.svg', True, 220)
+        links += add_image('pprldmany_80D_noiselessall.svg', True, 220) + ' <br />'
+        links += add_image('pprldmany_160D_noiselessall.svg', True, 220)
+        links += add_image('pprldmany_320D_noiselessall.svg', True, 220)
+        links += add_image('pprldmany_640D_noiselessall.svg', True, 220)
 
     lines = []
     with open(filename) as infile:
