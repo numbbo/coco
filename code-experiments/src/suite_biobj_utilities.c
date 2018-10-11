@@ -269,6 +269,7 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
   coco_problem_t *problem1, *problem2, *problem = NULL;
   size_t instance1 = 0, instance2 = 0;
   size_t function1_idx, function2_idx;
+  const size_t function_idx = function - 1;
 
   size_t i, j;
   const size_t num_existing_instances = sizeof(suite_biobj_instances) / sizeof(suite_biobj_instances[0]);
@@ -278,125 +279,125 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
   double *largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
   
   /* Determine the corresponding single-objective function indices */
-  if (function < 55) {
+  if (function_idx < 55) {
     /* A "magic" formula to compute the BBOB function index from the bi-objective function index */
     function1_idx = num_sel_bbob_functions
         - coco_double_to_size_t(
-            floor(-0.5 + sqrt(0.25 + 2.0 * (double) (55 - function - 1)))) - 1;
-    function2_idx = function - (function1_idx * num_sel_bbob_functions) +
+            floor(-0.5 + sqrt(0.25 + 2.0 * (double) (55 - function_idx - 1)))) - 1;
+    function2_idx = function_idx - (function1_idx * num_sel_bbob_functions) +
         (function1_idx * (function1_idx + 1)) / 2;
         
   } else {
     /* There is not a simple "magic" formula for functions >= 55 */
-    if (function == 55) {
+    if (function_idx == 55) {
         function1_idx = 0;
         function2_idx = 2;
-    } else if (function == 56) {
+    } else if (function_idx == 56) {
         function1_idx = 0;
         function2_idx = 3;
-    } else if (function == 57) {
+    } else if (function_idx == 57) {
         function1_idx = 0;
         function2_idx = 4;
-    } else if (function == 58) {
+    } else if (function_idx == 58) {
         function1_idx = 1;
         function2_idx = 2;
-    } else if (function == 59) {
+    } else if (function_idx == 59) {
         function1_idx = 1;
         function2_idx = 3;
-    } else if (function == 60) {
+    } else if (function_idx == 60) {
         function1_idx = 1;
         function2_idx = 4;
-    } else if (function == 61) {
+    } else if (function_idx == 61) {
         function1_idx = 2;
         function2_idx = 3;
-    } else if (function == 62) {
+    } else if (function_idx == 62) {
         function1_idx = 2;
         function2_idx = 4;
-    } else if (function == 63) {
+    } else if (function_idx == 63) {
         function1_idx = 3;
         function2_idx = 4;
-    } else if (function == 64) {
+    } else if (function_idx == 64) {
         function1_idx = 5;
         function2_idx = 6;
-    } else if (function == 65) {
+    } else if (function_idx == 65) {
         function1_idx = 5;
         function2_idx = 8;
-    } else if (function == 66) {
+    } else if (function_idx == 66) {
         function1_idx = 6;
         function2_idx = 7;
-    } else if (function == 67) {
+    } else if (function_idx == 67) {
         function1_idx = 6;
         function2_idx = 8;
-    } else if (function == 68) {
+    } else if (function_idx == 68) {
         function1_idx = 7;
         function2_idx = 8;
-    } else if (function == 69) {
+    } else if (function_idx == 69) {
         function1_idx = 9;
         function2_idx = 10;
-    } else if (function == 70) {
+    } else if (function_idx == 70) {
         function1_idx = 9;
         function2_idx = 11;
-    } else if (function == 71) {
+    } else if (function_idx == 71) {
         function1_idx = 9;
         function2_idx = 12;
-    } else if (function == 72) {
+    } else if (function_idx == 72) {
         function1_idx = 9;
         function2_idx = 13;
-    } else if (function == 73) {
+    } else if (function_idx == 73) {
         function1_idx = 10;
         function2_idx = 11;
-    } else if (function == 74) {
+    } else if (function_idx == 74) {
         function1_idx = 10;
         function2_idx = 12;
-    } else if (function == 75) {
+    } else if (function_idx == 75) {
         function1_idx = 10;
         function2_idx = 13;
-    } else if (function == 76) {
+    } else if (function_idx == 76) {
         function1_idx = 11;
         function2_idx = 12;
-    } else if (function == 77) {
+    } else if (function_idx == 77) {
         function1_idx = 11;
         function2_idx = 13;
-    } else if (function == 78) {
+    } else if (function_idx == 78) {
         function1_idx = 14;
         function2_idx = 17;
-    } else if (function == 79) {
+    } else if (function_idx == 79) {
         function1_idx = 14;
         function2_idx = 18;
-    } else if (function == 80) {
+    } else if (function_idx == 80) {
         function1_idx = 16;
         function2_idx = 17;
-    } else if (function == 81) {
+    } else if (function_idx == 81) {
         function1_idx = 16;
         function2_idx = 18;
-    } else if (function == 82) {
+    } else if (function_idx == 82) {
         function1_idx = 17;
         function2_idx = 18;
-    } else if (function == 83) {
+    } else if (function_idx == 83) {
         function1_idx = 19;
         function2_idx = 21;
-    } else if (function == 84) {
+    } else if (function_idx == 84) {
         function1_idx = 19;
         function2_idx = 22;
-    } else if (function == 85) {
+    } else if (function_idx == 85) {
         function1_idx = 19;
         function2_idx = 23;
-    } else if (function == 86) {
+    } else if (function_idx == 86) {
         function1_idx = 20;
         function2_idx = 21;
-    } else if (function == 87) {
+    } else if (function_idx == 87) {
         function1_idx = 20;
         function2_idx = 22;
-    } else if (function == 88) {
+    } else if (function_idx == 88) {
         function1_idx = 20;
         function2_idx = 23;
-    } else if (function == 89) {
+    } else if (function_idx == 89) {
         function1_idx = 21;
         function2_idx = 22;
-    } else if (function == 90) {
+    } else if (function_idx == 90) {
         function1_idx = 21;
         function2_idx = 23;
-    } else if (function == 91) {
+    } else if (function_idx == 91) {
         function1_idx = 22;
         function2_idx = 23;
     } 
@@ -457,7 +458,7 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
         num_all_bbob_functions, sel_bbob_functions, num_sel_bbob_functions, dimensions, num_dimensions);
   }
   
-  if (function < 55) {
+  if (function_idx < 55) {
     problem1 = coco_get_bbob_problem(sel_bbob_functions[function1_idx], dimension, instance1);
     problem2 = coco_get_bbob_problem(sel_bbob_functions[function2_idx], dimension, instance2);
   } else {
@@ -469,7 +470,7 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
 
   /* Use the standard stacked problem_id as problem_name and construct a new problem_id */
   coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "bbob-biobj_f%02lu_i%02lu_d%02lu", (unsigned long) function,
+  coco_problem_set_id(problem, "bbob-biobj_f%03lu_i%02lu_d%02lu", (unsigned long) function,
       (unsigned long) instance, (unsigned long) dimension);
 
   /* Construct problem type */
