@@ -1,8 +1,19 @@
 /**
  * @file suite_biobj.c
- * @brief Implementation of the bbob-biobj suite containing 55 functions and 6 dimensions.
+ * @brief Implementation of two bi-objective suites created by combining two single-objective problems
+ * from the bbob suite:
+ * - bbob-biobj contains 55 functions and 6 dimensions
+ * - bbob-biobj-ext contains 55 + 37 functions and 6 dimensions
  *
- * The bi-objective suite was created by combining two single-objective problems from the bbob suite.
+ * The 55 functions of the bbob-biobj suite are created by combining any two single-objective bbob functions
+ * i,j (where i<j) from a subset of 10 functions.
+ *
+ * The first 55 functions of the bbob-biobj-ext suite are the same as in the original bbob-biobj test suite
+ * to which 37 functions are added. Those additional functions are constructed by combining all not yet
+ * contained in-group combinations (i,j) of single-objective bbob functions i and j such that i<j (i.e. in
+ * particular not all combinations (i,i) are included in this bbob-biobj-ext suite), with the exception of
+ * the Weierstrass function (f16) for which the optimum is not unique and thus a nadir point is difficult
+ * to compute, see http://numbbo.github.io/coco-doc/bbob-biobj/functions/ for details.
  *
  * @note See file suite_biobj_utilities.c for the implementation of the bi-objective problems and the handling
  * of new instances.
@@ -21,12 +32,16 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 /**
  * @brief Sets the dimensions and default instances for the bbob-biobj suite.
  */
-static coco_suite_t *suite_biobj_initialize(void) {
+static coco_suite_t *suite_biobj_initialize(const char *suite_name) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
-  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "instances: 1-15");
+  if (strcmp(suite_name, "bbob-biobj") == 0) {
+    suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "instances: 1-15");
+  } else if (strcmp(suite_name, "bbob-biobj-ext") == 0) {
+    suite = coco_suite_allocate("bbob-biobj-ext", 55+37, 6, dimensions, "instances: 1-15");
+  }
 
   return suite;
 }
