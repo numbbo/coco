@@ -228,6 +228,7 @@ def save_folder_index_file(filename, image_file_extension):
         links += add_image('pprldmany_160D_noiselessall.svg', True, 220)
         links += add_image('pprldmany_320D_noiselessall.svg', True, 220)
         links += add_image('pprldmany_640D_noiselessall.svg', True, 220)
+    #TODO: Remove hardcoded part 
 
     lines = []
     with open(filename) as infile:
