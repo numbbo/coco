@@ -96,7 +96,7 @@ void run_once(char *suite_options) {
   if (counter == 0)
     coco_error("No tests of bbob-mixint-1 were performed!");
   else
-    print("Performed %lu tests on bbob-mixint-1\n", (unsigned long)counter);
+    printf("Performed %lu tests on bbob-mixint-1\n", (unsigned long)counter);
   printf("DONE!\n");
   fflush(stdout);
 }
