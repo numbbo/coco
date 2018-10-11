@@ -443,7 +443,7 @@ static size_t *coco_suite_get_instance_indices(const coco_suite_t *suite, const 
   char *instances = NULL;
   const char *year_string = NULL;
   long year_found, instances_found;
-  int parce_year = 1, parce_instances = 1;
+  int parse_year = 1, parse_instances = 1;
   size_t *result = NULL;
 
   if (suite_instance == NULL)
@@ -457,16 +457,16 @@ static size_t *coco_suite_get_instance_indices(const coco_suite_t *suite, const 
 
   if ((year_found > 0) && (instances_found > 0)) {
     if (year_found < instances_found) {
-      parce_instances = 0;
+      parse_instances = 0;
       coco_warning("coco_suite_get_instance_indices(): 'instances' suite option ignored because it follows 'year'");
     }
     else {
-      parce_year = 0;
+      parse_year = 0;
       coco_warning("coco_suite_get_instance_indices(): 'year' suite option ignored because it follows 'instances'");
     }
   }
 
-  if ((year_found >= 0) && (parce_year == 1)) {
+  if ((year_found >= 0) && (parse_year == 1)) {
     if (coco_options_read_int(suite_instance, "year", &(year)) != 0) {
       year_string = coco_suite_get_instances_by_year(suite, year);
       result = coco_string_parse_ranges(year_string, 1, 0, "instances", COCO_MAX_INSTANCES);
@@ -476,7 +476,7 @@ static size_t *coco_suite_get_instance_indices(const coco_suite_t *suite, const 
   }
 
   instances = coco_allocate_string(COCO_MAX_INSTANCES);
-  if ((instances_found >= 0) && (parce_instances == 1)) {
+  if ((instances_found >= 0) && (parse_instances == 1)) {
     if (coco_options_read_values(suite_instance, "instances", instances) > 0) {
       result = coco_string_parse_ranges(instances, 1, 0, "instances", COCO_MAX_INSTANCES);
     } else {
@@ -862,7 +862,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
  * @param suite The suite.
  * @param function_idx Index of the function (starting with 0).
  * @param dimension_idx Index of the dimension (starting with 0).
- * @param instance_idx Index of the insatnce (starting with 0).
+ * @param instance_idx Index of the instance (starting with 0).
  *
  * @return The problem index in the suite computed from function_idx, dimension_idx and instance_idx.
  */
