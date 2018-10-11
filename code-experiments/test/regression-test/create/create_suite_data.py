@@ -41,7 +41,10 @@ def generate_test_data_for_suite(suite_name, filename, solution_array=solution_a
     """
     if os.path.exists(filename):
         raise ValueError("file '" + filename + "' exists already")
-    suite = cocoex.Suite(suite_name, "year: 0000", "")
+    if "biobj" in suite_name:
+        suite = cocoex.Suite(suite_name, "instances: 1-10", "")
+    else:
+        suite = cocoex.Suite(suite_name, "year: 0000", "")
     xfc_dict = {}
     for i, f in enumerate(suite):
         for x in solution_array(f.dimension):
