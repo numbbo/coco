@@ -1,6 +1,6 @@
 /**
  * @file suite_largescale.c
- * @brief Implementation of the bbob large-scale suite containing 1 function in 6 large dimensions.
+ * @brief Implementation of the bbob large-scale suite containing 24 functions in 6 large dimensions.
  */
 
 #include "coco.h"
