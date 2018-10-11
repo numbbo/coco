@@ -89,9 +89,13 @@ if __name__ == "__main__":
         pass
     else:
         for name in cocoex.known_suite_names:
+            _ndata = ndata
+            if "mixint" in name:
+                ndata = 10
             regression_test_a_suite(name,
                 os.path.join("data",
                              "regression_test_%ddata_for_suite_" % ndata + name + ".py"))
+            ndata = _ndata
     
     if 11 < 3: # test whether last dimensions of `bbob` and first of `bbob-largescale` match
         regression_test_a_suite("bbob-largescale",
