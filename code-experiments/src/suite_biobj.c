@@ -41,7 +41,12 @@ static coco_suite_t *suite_biobj_initialize(const char *suite_name) {
     suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "instances: 1-15");
   } else if (strcmp(suite_name, "bbob-biobj-ext") == 0) {
     suite = coco_suite_allocate("bbob-biobj-ext", 55+37, 6, dimensions, "instances: 1-15");
+  } else {
+    coco_error("suite_biobj_initialize(): unknown problem suite");
+    return NULL;
   }
+
+  suite->data_free_function = suite_biobj_new_inst_free;
 
   return suite;
 }
@@ -59,6 +64,7 @@ static const char *suite_biobj_get_instances_by_year(const int year) {
   else
     return "1-15";
 }
+
 /**
  * @brief Returns the problem from the bbob-biobj suite that corresponds to the given parameters.
  *
@@ -74,16 +80,14 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
                                                const size_t instance_idx) {
 
   coco_problem_t *problem = NULL;
+  suite_biobj_new_inst_t *new_inst_data = (suite_biobj_new_inst_t *) suite->data;
 
   const size_t function = suite->functions[function_idx];
   const size_t dimension = suite->dimensions[dimension_idx];
   const size_t instance = suite->instances[instance_idx];
 
-  suite_biobj_new_inst_t *data = (suite_biobj_new_inst_t *) suite->data;
-  suite->data_free_function = suite_biobj_new_inst_free;
-
-  problem = coco_get_biobj_problem(function, dimension, instance, data, suite->number_of_instances,
-      suite->dimensions, suite->number_of_dimensions);
+  problem = coco_get_biobj_problem(function, dimension, instance, &new_inst_data,
+      suite->number_of_instances, suite->dimensions, suite->number_of_dimensions);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;

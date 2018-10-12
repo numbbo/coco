@@ -254,7 +254,7 @@ static size_t suite_biobj_get_new_instance(suite_biobj_new_inst_t *new_inst_data
 static coco_problem_t *coco_get_biobj_problem(const size_t function,
                                               const size_t dimension,
                                               const size_t instance,
-                                              suite_biobj_new_inst_t *new_inst_data,
+                                              suite_biobj_new_inst_t **new_inst_data,
                                               const size_t num_new_instances,
                                               const size_t *dimensions,
                                               const size_t num_dimensions) {
@@ -416,15 +416,15 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
     }
   }
 
-  if ((!instance_found) && (new_inst_data)) {
+  if ((!instance_found) && ((*new_inst_data) != NULL)) {
     /* Next, search for instance in new_instances */
-    for (i = 0; i < new_inst_data->max_new_instances; i++) {
-      if (new_inst_data->new_instances[i][0] == 0)
+    for (i = 0; i < (*new_inst_data)->max_new_instances; i++) {
+      if ((*new_inst_data)->new_instances[i][0] == 0)
         break;
-      if (new_inst_data->new_instances[i][0] == instance) {
+      if ((*new_inst_data)->new_instances[i][0] == instance) {
         /* The instance has been found in new_instances */
-        instance1 = new_inst_data->new_instances[i][1];
-        instance2 = new_inst_data->new_instances[i][2];
+        instance1 = (*new_inst_data)->new_instances[i][1];
+        instance2 = (*new_inst_data)->new_instances[i][2];
         instance_found = 1;
         break;
       }
@@ -434,27 +434,27 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
   if (!instance_found) {
     /* Finally, if the instance is not found, create a new one */
 
-    if (!new_inst_data) {
+    if ((*new_inst_data) == NULL) {
       /* Allocate space needed for saving new instances */
-      new_inst_data = (suite_biobj_new_inst_t *) coco_allocate_memory(sizeof(*new_inst_data));
+      (*new_inst_data) = (suite_biobj_new_inst_t *) coco_allocate_memory(sizeof(**new_inst_data));
 
       /* Most often the actual number of new instances will be lower than max_new_instances, because
        * some of them are already in suite_biobj_instances. However, in order to avoid iterating over
        * suite_biobj_new_inst_t, the allocation uses max_new_instances. */
-      new_inst_data->max_new_instances = num_new_instances;
+      (*new_inst_data)->max_new_instances = num_new_instances;
 
-      new_inst_data->new_instances = (size_t **) coco_allocate_memory(new_inst_data->max_new_instances * sizeof(size_t *));
-      for (i = 0; i < new_inst_data->max_new_instances; i++) {
-        new_inst_data->new_instances[i] = (size_t *) malloc(3 * sizeof(size_t));
+      (*new_inst_data)->new_instances = (size_t **) coco_allocate_memory((*new_inst_data)->max_new_instances * sizeof(size_t *));
+      for (i = 0; i < (*new_inst_data)->max_new_instances; i++) {
+        (*new_inst_data)->new_instances[i] = (size_t *) malloc(3 * sizeof(size_t));
         for (j = 0; j < 3; j++) {
-          new_inst_data->new_instances[i][j] = 0;
+          (*new_inst_data)->new_instances[i][j] = 0;
         }
       }
     }
 
     /* A simple formula to set the first instance */
     instance1 = 2 * instance + 1;
-    instance2 = suite_biobj_get_new_instance(new_inst_data, instance, instance1, all_bbob_functions,
+    instance2 = suite_biobj_get_new_instance((*new_inst_data), instance, instance1, all_bbob_functions,
         num_all_bbob_functions, sel_bbob_functions, num_sel_bbob_functions, dimensions, num_dimensions);
   }
   
