@@ -105,7 +105,7 @@ static int suite_biobj_check_inst_consistency(const size_t dimension,
   norm = mo_get_norm(problem->best_value, problem->nadir_value, 2);
   if (norm < 1e-1) { /* TODO How to set this value in a sensible manner? */
     coco_debug(
-        "check_consistency_of_instances(): The ideal and nadir points of %s are too close in the objective space",
+        "suite_biobj_check_inst_consistency(): The ideal and nadir points of %s are too close in the objective space",
         problem->problem_id);
     coco_debug("norm = %e, ideal = %e\t%e, nadir = %e\t%e", norm, problem->best_value[0],
         problem->best_value[1], problem->nadir_value[0], problem->nadir_value[1]);
@@ -116,7 +116,7 @@ static int suite_biobj_check_inst_consistency(const size_t dimension,
   norm = mo_get_norm(problem1->best_parameter, problem2->best_parameter, problem->number_of_variables);
   if (norm < apart_enough) {
     coco_debug(
-        "check_consistency_of_instances(): The extreme points of %s are too close in the decision space",
+        "suite_biobj_check_inst_consistency(): The extreme points of %s are too close in the decision space",
         problem->problem_id);
     coco_debug("norm = %e", norm);
     break_search = 1;
