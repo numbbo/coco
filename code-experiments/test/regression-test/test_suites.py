@@ -54,10 +54,7 @@ def regression_test_a_suite(suite_name, filename):
         print("using file %s with %d test cases " % (filename, len(xfc_dict)), end="")
         sys.stdout.flush()
         t0 = time.clock()
-    if "biobj" in suite_name:
-        suite = cocoex.Suite(suite_name, "instances: 1-10", "")
-    else:
-        suite = cocoex.Suite(suite_name, "year: 0000", "") # choose "default" year for test
+    suite = cocoex.Suite(suite_name, "year: 0000", "") # choose "default" year for test
     for key in xfc_dict:
         f, x = suite[key[0]], key[1]
         try:

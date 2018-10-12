@@ -30,7 +30,7 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const char *default_instances);
 
 /**
- * @brief Sets the dimensions and default instances for the bbob-biobj suite.
+ * @brief Sets the dimensions and default instances for the bbob-biobj suites.
  */
 static coco_suite_t *suite_biobj_initialize(const char *suite_name) {
 
@@ -46,6 +46,19 @@ static coco_suite_t *suite_biobj_initialize(const char *suite_name) {
   return suite;
 }
 
+/**
+ * @brief Sets the instances associated with years for the bbob-biobj suites.
+ *
+ * @note
+ */
+static const char *suite_biobj_get_instances_by_year(const int year) {
+
+  if ((year == 2016) || (year == 0000)) { /* test case */
+    return "1-10";
+  }
+  else
+    return "1-15";
+}
 /**
  * @brief Returns the problem from the bbob-biobj suite that corresponds to the given parameters.
  *

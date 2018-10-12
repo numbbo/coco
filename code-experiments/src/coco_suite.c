@@ -70,6 +70,9 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
     year_string = suite_bbob_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-constrained") == 0) {
     year_string = suite_cons_bbob_get_instances_by_year(year);
+  } else if ((strcmp(suite->suite_name, "bbob-biobj") == 0) ||
+      (strcmp(suite->suite_name, "bbob-biobj-ext") == 0)) {
+    year_string = suite_biobj_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-mixint-1") == 0) {
     year_string = suite_bbob_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-mixint-2") == 0) {
