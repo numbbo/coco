@@ -27,27 +27,28 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
   size_t i;
   transform_vars_discretize_data_t *data;
   coco_problem_t *inner_problem;
-  double *discretized_x = coco_allocate_vector(problem->number_of_variables);
+  double *discretized_x;
   double inner_l, inner_u, outer_l, outer_u;
-  
+
   if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
-  	coco_vector_set_to_nan(y, coco_problem_get_number_of_objectives(problem));
-  	return;
+    coco_vector_set_to_nan(y, coco_problem_get_number_of_objectives(problem));
+    return;
   }
 
   data = (transform_vars_discretize_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
-  /* The solution x already has integer values where needed */
-  for (i = 0; i < problem->number_of_variables; ++i) {
+  /* Transform x to fit in the discretized space */
+  discretized_x = coco_duplicate_vector(x, problem->number_of_variables);
+  for (i = 0; i < problem->number_of_integer_variables; ++i) {
     inner_l = inner_problem->smallest_values_of_interest[i];
     inner_u = inner_problem->largest_values_of_interest[i];
     outer_l = problem->smallest_values_of_interest[i];
     outer_u = problem->largest_values_of_interest[i];
     assert(!coco_double_almost_equal(outer_u, outer_l, 1e-13));
-    discretized_x[i] = inner_l + (inner_u - inner_l) * (x[i] - outer_l) / (outer_u - outer_l) - data->offset[i];
+    discretized_x[i] = inner_l + (inner_u - inner_l) * (coco_double_round(x[i]) - outer_l) / (outer_u - outer_l) - data->offset[i];
   }
-  
+
   coco_evaluate_function(inner_problem, discretized_x, y);
   coco_free_memory(discretized_x);
 }

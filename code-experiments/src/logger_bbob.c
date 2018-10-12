@@ -173,7 +173,7 @@ static void logger_bbob_write_data(FILE *target_file,
   if ((number_of_variables - number_of_integer_variables) < 22) {
     for (i = 0; i < number_of_variables; i++) {
       if (i < number_of_integer_variables)
-        fprintf(target_file, " %d", (int)x[i]);
+        fprintf(target_file, " %d", (int)(x[i] + 0.5)); /* Round the number to the nearest integer */
       else
         fprintf(target_file, " %+5.4e", x[i]);
     }
