@@ -838,10 +838,29 @@ static int coco_options_read_values(const char *options, const char *name, char 
 /**@{*/
 
 /**
- * @brief Rounds the given double to the nearest integer.
+ * @brief Rounds the given double to the nearest integer (returns the number in double type).
  */
 static double coco_double_round(const double number) {
   return floor(number + 0.5);
+}
+
+/**
+ * @brief Rounds the given double to the nearest integer (returns the number in int type)
+ */
+static int coco_double_round_to_int(const double number) {
+  if (number > (double)INT_MAX) {
+    coco_error("coco_double_round_to_int(): Cannot cast %f to the nearest integer, max %d allowed",
+        number, INT_MAX);
+    return -1; /* Never reached */
+  }
+  else if (number < (double)INT_MIN) {
+    coco_error("coco_double_round_to_int(): Cannot cast %f to the nearest integer, min %d allowed",
+        number, INT_MIN);
+    return -1; /* Never reached */
+  }
+  else {
+    return (int)(number + 0.5);
+  }
 }
 
 /**
