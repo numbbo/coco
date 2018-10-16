@@ -263,7 +263,7 @@ static size_t logger_biobj_tree_output(FILE *file,
       if (log_vars) {
         for (i = 0; i < dim; i++)
           if (i < num_int_vars)
-            fprintf(file, "%d\t", coco_double_round_to_int(((logger_biobj_avl_item_t*) solution->item)->x[i]));
+            fprintf(file, "%d\t", coco_double_to_int(((logger_biobj_avl_item_t*) solution->item)->x[i]));
           else
             fprintf(file, "%.*e\t", precision_x, ((logger_biobj_avl_item_t*) solution->item)->x[i]);
       }
