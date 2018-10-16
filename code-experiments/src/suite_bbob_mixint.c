@@ -1,6 +1,7 @@
 /**
  * @file suite_bbob_mixint.c
- * @brief A suite with mixed-integer BBOB problems.
+ * @brief Implementation of a suite with mixed-integer bbob problems (based on the 24 bbob functions,
+ * but using their large-scale implementations instead of the original ones).
  */
 
 #include "coco.h"
@@ -52,6 +53,7 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
 
   double *smallest_values_of_interest = coco_allocate_vector(dimension);
   double *largest_values_of_interest = coco_allocate_vector(dimension);
+  char *inner_problem_id;
 
   size_t i, j;
   size_t cardinality = 0;
@@ -81,6 +83,7 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
   /* TODO: Use the large scale versions of the bbob problems */
   problem = coco_get_bbob_problem(function, dimension, instance);
   assert(problem != NULL);
+  inner_problem_id = problem->problem_id;
 
   problem = transform_vars_discretize(problem,
       smallest_values_of_interest,
@@ -88,7 +91,7 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
       num_integer);
 
   coco_problem_set_id(problem, "bbob-mixint_f%03lu_i%02lu_d%02lu", function, instance, dimension);
-  coco_problem_set_name(problem, "mixed-integer bbob suite problem f%lu instance %lu in %luD", function, instance, dimension);
+  coco_problem_set_name(problem, "mixint(%s)", inner_problem_id);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;

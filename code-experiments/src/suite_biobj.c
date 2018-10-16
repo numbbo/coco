@@ -54,7 +54,7 @@ static coco_suite_t *suite_biobj_initialize(const char *suite_name) {
 /**
  * @brief Sets the instances associated with years for the bbob-biobj suites.
  *
- * @note
+ * @note The instances of the bi-objective suites generally do not changes with years.
  */
 static const char *suite_biobj_get_instances_by_year(const int year) {
 
