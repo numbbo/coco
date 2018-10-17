@@ -8,7 +8,7 @@ from numpy.random import rand
 import scipy.optimize as opt
 import cma
 
-budget_multiplier = 1e5
+budget_multiplier = 1e4
 
 
 def solve(solver_name, problem, x0, budget, de_pop_mult):
@@ -67,7 +67,7 @@ def run_experiment(suite_name, observer_name, solver_name):
 def run_all():
     observer_name = "bbob"
     for suite_name in ["bbob-mixint-1", "bbob-mixint-2"]:
-        for solver_name in ["cma-b-int", "cma-b-cont", "cma-cont", "de"]:
+        for solver_name in ["cma-b-int", "cma-cont", "de"]:
             try:
                 run_experiment(suite_name, observer_name, solver_name)
             except ValueError as e:
