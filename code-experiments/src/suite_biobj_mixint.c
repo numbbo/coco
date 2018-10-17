@@ -135,6 +135,9 @@ static coco_problem_t *suite_biobj_mixint_get_problem(coco_suite_t *suite,
   coco_problem_set_id(problem, "bbob-biobj-mixint_f%03lu_i%03lu_d%02lu", (unsigned long) function,
       (unsigned long) instance, (unsigned long) dimension);
 
+  /* Construct problem type */
+  coco_problem_set_type(problem, "%s_%s", problem1->problem_type, problem2->problem_type);
+
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
   problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
