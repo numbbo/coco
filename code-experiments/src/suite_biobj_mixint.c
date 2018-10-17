@@ -81,10 +81,12 @@ static coco_problem_t *suite_biobj_mixint_get_problem(coco_suite_t *suite,
 
   /* Sets the ROI according to the given cardinality of variables */
   for (i = 0; i < dimension; i++) {
+    /* Sets the largest_values_of_interest and smallest_values_of_interest outside the if clause to show
+     * valgrind that they are indeed always initialized */
+    smallest_values_of_interest[i] = -5;
+    largest_values_of_interest[i] = 5;
     j = i / (dimension / 5);
     if (variable_cardinality[j] == 0) {
-      smallest_values_of_interest[i] = -5;
-      largest_values_of_interest[i] = 5;
       if (num_integer == dimension)
         num_integer = i;
     }
