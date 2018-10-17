@@ -863,11 +863,9 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1,
                                                      const double *smallest_values_of_interest,
                                                      const double *largest_values_of_interest) {
 
-  const size_t number_of_variables = coco_problem_get_dimension(problem1);
-  const size_t number_of_objectives = coco_problem_get_number_of_objectives(problem1)
-      + coco_problem_get_number_of_objectives(problem2);
-  const size_t number_of_constraints = coco_problem_get_number_of_constraints(problem1)
-      + coco_problem_get_number_of_constraints(problem2);
+  const size_t number_of_variables;
+  const size_t number_of_objectives;
+  const size_t number_of_constraints;
   size_t i;
   char *s;
   coco_problem_stacked_data_t *data;
@@ -876,6 +874,12 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1,
   assert(problem1);
   assert(problem2);
   assert(coco_problem_get_dimension(problem1) == coco_problem_get_dimension(problem2));
+
+  number_of_variables = coco_problem_get_dimension(problem1);
+  number_of_objectives = coco_problem_get_number_of_objectives(problem1)
+      + coco_problem_get_number_of_objectives(problem2);
+  number_of_constraints = coco_problem_get_number_of_constraints(problem1)
+      + coco_problem_get_number_of_constraints(problem2);
 
   problem = coco_problem_allocate(number_of_variables, number_of_objectives, number_of_constraints);
   
