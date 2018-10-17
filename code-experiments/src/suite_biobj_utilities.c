@@ -266,7 +266,7 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
   const size_t all_bbob_functions[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 };
   const size_t num_all_bbob_functions = 24;
   
-  coco_problem_t *problem1, *problem2, *problem = NULL;
+  coco_problem_t *problem1 = NULL, *problem2 = NULL, *problem = NULL;
   size_t instance1 = 0, instance2 = 0;
   size_t function1_idx, function2_idx;
   const size_t function_idx = function - 1;

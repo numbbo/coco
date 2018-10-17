@@ -873,6 +873,8 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1,
   coco_problem_stacked_data_t *data;
   coco_problem_t *problem; /* the new coco problem */
 
+  assert(problem1);
+  assert(problem2);
   assert(coco_problem_get_dimension(problem1) == coco_problem_get_dimension(problem2));
 
   problem = coco_problem_allocate(number_of_variables, number_of_objectives, number_of_constraints);
