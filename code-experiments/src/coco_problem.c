@@ -169,15 +169,16 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->largest_values_of_interest = coco_allocate_vector(number_of_variables);
   problem->number_of_integer_variables = 0; /* No integer variables by default */
 
-  problem->best_parameter = coco_allocate_vector(number_of_variables);
-  if (number_of_objectives > 1)
+  if (number_of_objectives > 1) {
+    problem->best_parameter = NULL;
     problem->best_value = coco_allocate_vector(number_of_objectives);
-  else
-    problem->best_value = coco_allocate_vector(1);
-  if (number_of_objectives > 1)
     problem->nadir_value = coco_allocate_vector(number_of_objectives);
-  else
+  }
+  else {
+    problem->best_parameter = coco_allocate_vector(number_of_variables);
+    problem->best_value = coco_allocate_vector(1);
     problem->nadir_value = NULL;
+  }
   problem->problem_name = NULL;
   problem->problem_id = NULL;
   problem->problem_type = NULL;
