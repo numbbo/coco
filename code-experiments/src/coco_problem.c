@@ -863,9 +863,7 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1,
                                                      const double *smallest_values_of_interest,
                                                      const double *largest_values_of_interest) {
 
-  const size_t number_of_variables;
-  const size_t number_of_objectives;
-  const size_t number_of_constraints;
+  size_t number_of_variables, number_of_objectives, number_of_constraints;
   size_t i;
   char *s;
   coco_problem_stacked_data_t *data;
