@@ -113,6 +113,7 @@ typedef struct {
 
   int precision_x;                    /**< @brief Precision for outputting decision values. */
   int precision_f;                    /**< @brief Precision for outputting objective values. */
+  int log_discrete_as_int;            /**< @brief Whether to output discrete variables in int or double format. */
 
   size_t number_of_evaluations;       /**< @brief The number of evaluations performed so far. */
   size_t number_of_variables;         /**< @brief Dimension of the problem. */
@@ -246,7 +247,8 @@ static size_t logger_biobj_tree_output(FILE *file,
                                        const size_t num_obj,
                                        const int log_vars,
                                        const int precision_x,
-                                       const int precision_f) {
+                                       const int precision_f,
+                                       const int log_discrete_as_int) {
 
   avl_node_t *solution;
   size_t i;
@@ -262,7 +264,7 @@ static size_t logger_biobj_tree_output(FILE *file,
         fprintf(file, "%.*e\t", precision_f, ((logger_biobj_avl_item_t*) solution->item)->y[j]);
       if (log_vars) {
         for (i = 0; i < dim; i++)
-          if (i < num_int_vars)
+          if ((i < num_int_vars) && (log_discrete_as_int))
             fprintf(file, "%d\t", coco_double_to_int(((logger_biobj_avl_item_t*) solution->item)->x[i]));
           else
             fprintf(file, "%.*e\t", precision_x, ((logger_biobj_avl_item_t*) solution->item)->x[i]);
@@ -722,7 +724,7 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
   if (update_performed && (logger->log_nondom_mode == LOG_NONDOM_ALL)) {
     logger_biobj_tree_output(logger->adat_file, logger->buffer_tree, logger->number_of_variables,
         logger->number_of_integer_variables, logger->number_of_objectives, logger->log_vars,
-        logger->precision_x, logger->precision_f);
+        logger->precision_x, logger->precision_f, logger->log_discrete_as_int);
     avl_tree_purge(logger->buffer_tree);
 
     /* Flush output so that impatient users can see progress. */
@@ -805,7 +807,7 @@ static void logger_biobj_finalize(logger_biobj_data_t *logger) {
 
   logger_biobj_tree_output(logger->adat_file, resorted_tree, logger->number_of_variables,
       logger->number_of_integer_variables, logger->number_of_objectives, logger->log_vars,
-      logger->precision_x, logger->precision_f);
+      logger->precision_x, logger->precision_f, logger->log_discrete_as_int);
 
   avl_tree_destruct(resorted_tree);
 }
@@ -883,6 +885,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   logger_data->compute_indicators = observer_data->compute_indicators;
   logger_data->precision_x = observer->precision_x;
   logger_data->precision_f = observer->precision_f;
+  logger_data->log_discrete_as_int = observer->log_discrete_as_int;
 
   if (((observer_data->log_vars_mode == LOG_VARS_LOW_DIM) && (inner_problem->number_of_variables > 5))
       || (observer_data->log_vars_mode == LOG_VARS_NEVER))
