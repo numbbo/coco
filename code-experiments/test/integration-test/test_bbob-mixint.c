@@ -10,7 +10,7 @@
 #include "coco.h"
 #include "coco.c"
 
-/* Tests whether the discretization of a single-objective suite was implemented correctly by
+/* Tests whether the discretization in the single-objective suite was implemented correctly by
  * checking if the optima of the continuous and mixint problems match. This is not a comprehensive
  * test, because it disregards problems with dimension != 5 and those that have more than 20,000
  * discrete points and checks only the optima (even if the optima match, the transformation could
@@ -102,20 +102,21 @@ void check_discretization_single(char *suite_name, char *suite_options) {
   fflush(stdout);
 }
 
-/* Tests whether the discretization of a bi-objective suite was implemented correctly by checking
+/* Tests whether the discretization in the bi-objective suite was implemented correctly by checking
  * if the extreme solutions of the continuous and mixint problems match. This is not a comprehensive
  * test, because it disregards problems with dimension != 5 and those that have more than 20,000
  * discrete points and checks only the extreme solutions (even if they match, the transformation
  * could be wrong).
  *
- * Note also that this test assumes that the discretization was the last transformation, i.e. that
- * the discretized problems are constructed with the following 'wrapping' of problems:
- * discretize(biobjective(problem1, problem2))
+ * Note also that this test assumes that the discretization was done on single-objective problems
+ * before they were stacked to form bi-objective problems, i.e. the 'wrapping' order was:
+ * stacking(discretize(problem1), discretize(problem2))
  */
 void check_discretization_bi(char *suite_name, char *suite_options) {
 
   coco_suite_t *suite;
-  coco_problem_t *problem_cont, *problem_disc;
+  coco_problem_t *problem_disc;
+  coco_problem_t *problem1_disc, *problem2_disc;
   coco_problem_t *problem1_cont, *problem2_cont;
   size_t j, k1, k2, k3, k4;
   double *x_ext_cont;
@@ -156,16 +157,16 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
       continue;
 
     /* Check whether the two extreme points are equal */
-    problem_cont = coco_problem_transformed_get_inner_problem(problem_disc);
-    f_ext1_cont = problem_cont->best_value[0];
-    f_ext2_cont = problem_cont->best_value[1];
-    problem1_cont = ((coco_problem_stacked_data_t *) problem_cont->data)->problem1;
-    problem2_cont = ((coco_problem_stacked_data_t *) problem_cont->data)->problem2;
+    problem1_disc = ((coco_problem_stacked_data_t *) problem_disc->data)->problem1;
+    problem2_disc = ((coco_problem_stacked_data_t *) problem_disc->data)->problem2;
+    problem1_cont = coco_problem_transformed_get_inner_problem(problem1_disc);
+    problem2_cont = coco_problem_transformed_get_inner_problem(problem2_disc);
+    f_ext1_cont = problem1_cont->best_value[0];
+    f_ext2_cont = problem2_cont->best_value[0];
 
     /* The first extreme point */
     x_ext_cont = problem1_cont->best_parameter;
     f_ext1_disc = DBL_MAX;
-    f_ext2_disc = DBL_MAX;
     for (j = 0; j < num_points[0]; j++) {
       x[0] = ((num_points[0] == 1) ? x_ext_cont[0] : (double)j);
       for (k1 = 0; k1 < num_points[1]; k1++) {
@@ -179,26 +180,23 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
               coco_evaluate_function(problem_disc, x, f);
               if (f[0] < f_ext1_disc) {
                 f_ext1_disc = f[0];
-                f_ext2_disc = f[1];
               }
             }
           }
         }
       }
     }
-    if (!coco_double_almost_equal(f_ext1_cont, f_ext1_disc, 1e-10) ||
-        !coco_double_almost_equal(f_ext2_cont, f_ext2_disc, 1e-10)) {
+    if (!coco_double_almost_equal(f_ext1_cont, f_ext1_disc, 1e-10)) {
       coco_suite_free(suite);
       coco_free_memory(x);
       coco_free_memory(f);
-      coco_error("The extreme point of the original and discretized problem %lu do not match (%f, %f) != (%f, %f)!",
-          (unsigned long)coco_problem_get_suite_dep_index(problem_disc), f_ext1_cont, f_ext2_cont,
-          f_ext1_disc, f_ext2_disc);
+      coco_error("The first coordinate of the first extreme point of the original and discretized "
+          "problem %lu do not match, %f != %f!",
+          (unsigned long)coco_problem_get_suite_dep_index(problem_disc), f_ext1_cont, f_ext1_disc);
     }
 
     /* The second extreme point */
     x_ext_cont = problem2_cont->best_parameter;
-    f_ext1_disc = DBL_MAX;
     f_ext2_disc = DBL_MAX;
     for (j = 0; j < num_points[0]; j++) {
       x[0] = ((num_points[0] == 1) ? x_ext_cont[0] : (double)j);
@@ -213,21 +211,19 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
               coco_evaluate_function(problem_disc, x, f);
               if (f[1] < f_ext2_disc) {
                 f_ext2_disc = f[1];
-                f_ext1_disc = f[0];
               }
             }
           }
         }
       }
     }
-    if (!coco_double_almost_equal(f_ext1_cont, f_ext1_disc, 1e-10) ||
-        !coco_double_almost_equal(f_ext2_cont, f_ext2_disc, 1e-10)) {
+    if (!coco_double_almost_equal(f_ext2_cont, f_ext2_disc, 1e-10)) {
       coco_suite_free(suite);
       coco_free_memory(x);
       coco_free_memory(f);
-      coco_error("The extreme point of the original and discretized problem %lu do not match (%f, %f) != (%f, %f)!",
-          (unsigned long)coco_problem_get_suite_dep_index(problem_disc), f_ext1_cont, f_ext2_cont,
-          f_ext1_disc, f_ext2_disc);
+      coco_error("The second coordinate of the second extreme point of the original and discretized "
+          "problem %lu do not match, %f != %f!",
+          (unsigned long)coco_problem_get_suite_dep_index(problem_disc), f_ext2_cont, f_ext2_disc);
     }
     counter++;
   }

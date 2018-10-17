@@ -48,6 +48,9 @@ static const char *suite_biobj_mixint_get_instances_by_year(const int year) {
 /**
  * @brief Returns the problem from the bbob-biobj-mixint suite that corresponds to the given parameters.
  *
+ * The problem is constructed by first finding the underlying single-objective continuous problems,
+ * then discretizing the problems and finally stacking them to get a bi-objective mixed-integer problem.
+ *
  * @param suite The COCO suite.
  * @param function_idx Index of the function (starting from 0).
  * @param dimension_idx Index of the dimension (starting from 0).
@@ -59,23 +62,25 @@ static coco_problem_t *suite_biobj_mixint_get_problem(coco_suite_t *suite,
                                                       const size_t dimension_idx,
                                                       const size_t instance_idx) {
 
-  coco_problem_t *problem = NULL;
+  coco_problem_t *problem_cont = NULL, *problem = NULL;
+  coco_problem_t *problem1, *problem2;
+  coco_problem_t *problem1_mixint, *problem2_mixint;
+  coco_problem_t *problem1_cont, *problem2_cont;
   suite_biobj_new_inst_t *new_inst_data = (suite_biobj_new_inst_t *) suite->data;
 
   const size_t function = suite->functions[function_idx];
   const size_t dimension = suite->dimensions[dimension_idx];
   const size_t instance = suite->instances[instance_idx];
 
+  double *smallest_values_of_interest = coco_allocate_vector(dimension);
+  double *largest_values_of_interest = coco_allocate_vector(dimension);
+
+  size_t i, j;
+  size_t num_integer = dimension;
   /* TODO: use the correct cardinality!
    * The cardinality of variables (0 = continuous variables should always come last) */
   const size_t variable_cardinality[] = { 2, 4, 8, 16, 0 };
 
-  double *smallest_values_of_interest = coco_allocate_vector(dimension);
-  double *largest_values_of_interest = coco_allocate_vector(dimension);
-  char *inner_problem_name;
-
-  size_t i, j;
-  size_t num_integer = dimension;
   if (dimension % 5 != 0)
     coco_error("suite_bbob_mixint_get_problem(): dimension %lu not supported for suite_bbob_mixint", dimension_idx);
 
@@ -95,19 +100,40 @@ static coco_problem_t *suite_biobj_mixint_get_problem(coco_suite_t *suite,
   }
 
   /* TODO: Use the large scale versions of the bbob-biobj problems */
-  problem = coco_get_biobj_problem(function, dimension, instance, &new_inst_data,
+  /* First, find the underlying single-objective continuous problems */
+  problem_cont = coco_get_biobj_problem(function, dimension, instance, &new_inst_data,
       suite->number_of_instances, suite->dimensions, suite->number_of_dimensions);
-  assert(problem != NULL);
-  inner_problem_name = problem->problem_name;
+  assert(problem_cont != NULL);
+  problem1_cont = ((coco_problem_stacked_data_t *) problem_cont->data)->problem1;
+  problem2_cont = ((coco_problem_stacked_data_t *) problem_cont->data)->problem2;
+  problem1 = coco_problem_duplicate(problem1_cont);
+  problem2 = coco_problem_duplicate(problem2_cont);
+  assert(problem1);
+  assert(problem2);
+  /* Copy also the data of the underlying problems and set all pointers in such a way that
+   * problem_cont can be safely freed */
+  problem1->data = problem1_cont->data;
+  problem2->data = problem2_cont->data;
+  problem1_cont->data = NULL;
+  problem2_cont->data = NULL;
+  problem1_cont->problem_free_function = NULL;
+  problem2_cont->problem_free_function = NULL;
+  coco_problem_free(problem_cont);
 
-  problem = transform_vars_discretize(problem,
-      smallest_values_of_interest,
-      largest_values_of_interest,
-      num_integer);
+  /* Second, discretize the single-objective problems */
+  problem1_mixint = transform_vars_discretize(problem1, smallest_values_of_interest,
+      largest_values_of_interest, num_integer);
+  problem2_mixint = transform_vars_discretize(problem2, smallest_values_of_interest,
+      largest_values_of_interest, num_integer);
 
-  coco_problem_set_id(problem, "bbob-biobj-mixint_f%03lu_i%02lu_d%02lu", (unsigned long) function,
+  /* Third, combine the problems in a bi-objective problem */
+  problem = coco_problem_stacked_allocate(problem1_mixint, problem2_mixint, smallest_values_of_interest,
+      largest_values_of_interest);
+
+  /* Use the standard stacked problem_id as problem_name and construct a new problem_id */
+  coco_problem_set_name(problem, problem->problem_id);
+  coco_problem_set_id(problem, "bbob-biobj-mixint_f%03lu_i%03lu_d%02lu", (unsigned long) function,
       (unsigned long) instance, (unsigned long) dimension);
-  coco_problem_set_name(problem, "mixint(%s)", inner_problem_name);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
