@@ -126,7 +126,7 @@ static coco_problem_t *suite_biobj_mixint_get_problem(coco_suite_t *suite,
   problem2_mixint = transform_vars_discretize(problem2, smallest_values_of_interest,
       largest_values_of_interest, num_integer);
 
-  /* Third, combine the problems in a bi-objective problem */
+  /* Third, combine the problems in a bi-objective mixed-integer problem */
   problem = coco_problem_stacked_allocate(problem1_mixint, problem2_mixint, smallest_values_of_interest,
       largest_values_of_interest);
 
