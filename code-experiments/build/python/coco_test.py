@@ -95,7 +95,7 @@ def run_constrained_suite_test():
         counts[-5] += np.any(f.initial_solution < -5)
         counts[5] += np.any(f.initial_solution > 5)
         counts['c'] += np.any(f.constraint(f.initial_solution) > 0)
-        counts['b'] += np.any(f.constraint(best_parameter(f)) > 1e-12)  # mac: 1.2525567688017087e-14 is the largest value
+        counts['b'] += np.any(f.constraint(best_parameter(f)) > 1e-11)  # mac: 6.8361219664552603e-12 is the largest value
     assert sum(counts.values()) == 0
 
 def run_doctests():

@@ -732,32 +732,20 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
 
-  double feasible_direction_norm = 4.0;
-  
+  double *all_zeros = NULL;
   char *problem_type_temp = NULL;
-	 
-  coco_random_state_t *rand_state = coco_random_new((uint32_t) rseed);
+
+  all_zeros = coco_allocate_vector(dimension);
+
+  for (i = 0; i < dimension; ++i)
+    all_zeros[i] = 0.0;
 
   /* Create the objective function */
   problem = f_rastrigin_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
   
-  /* Define the feasible_direction and, consequently, the initial
-   * solution provided by the testbed as a point in (1,2)^n. This avoids
-   * providing a local optimal solution (such as all-ones) as initial 
-   * solution to the user. Otherwise, algorithms that look for local 
-   * optima would stop at iteration 1 if they used such an initial
-   * solution.
-   *
-   * But then the testbed is not meant to please certain algorithms, but
-   * to model scenarios these algorithm may realistically face.
-   */
-
-  for (i = 0; i < dimension; ++i)
-    feasible_direction[i] = feasible_direction_norm + coco_random_uniform(rand_state);
+  bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
   feasible_direction_set_length(feasible_direction, xopt, dimension, rseed);
-
-  coco_random_free(rand_state);
      
   /* Create the constraints. Use the feasible direction above
    * to build the first constraint. 
@@ -802,6 +790,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   problem_c->problem_type);
  
   coco_free_memory(problem_type_temp);
+  coco_free_memory(all_zeros);
   
   return problem;
  
