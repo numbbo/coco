@@ -51,13 +51,21 @@ typedef void (*coco_recommend_function_t)(coco_problem_t *problem, const double 
  */
 typedef coco_problem_t *(*coco_logger_allocate_function_t)(coco_observer_t *observer,
                                                            coco_problem_t *problem);
-
 /**
  * @brief The free logger function type.
  *
  * This is a template for functions that free a logger.
  */
 typedef void (*coco_logger_free_function_t)(void *logger);
+
+/**
+ * @brief The get problem function type.
+ *
+ * This is a template for functions that return a problem based on function, dimension and instance.
+ */
+typedef coco_problem_t *(*coco_get_problem_function_t)(const size_t function,
+                                                       const size_t dimension,
+                                                       const size_t instance);
 
 
 /**

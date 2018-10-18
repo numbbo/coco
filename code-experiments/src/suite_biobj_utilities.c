@@ -237,23 +237,32 @@ static size_t suite_biobj_get_new_instance(suite_biobj_new_inst_t *new_inst_data
 }
 
 /**
- * @brief Creates and returns a BBOB bi-objective problem without needing a suite.
+ * @brief Creates and returns a bi-objective problem without needing a suite.
  *
  * Useful for creating suites based on the bi-objective problems.
  *
- * Creates the bi-objective problem by constructing it from two single-objective problems from the bbob
- * suite. If the invoked instance number is not in suite_biobj_instances, the function uses the following
- * formula to construct a new appropriate instance:
- *
+ * Creates the bi-objective problem by constructing it from two single-objective problems. If the
+ * invoked instance number is not in suite_biobj_instances, the function uses the following formula
+ * to construct a new appropriate instance:
  *   problem1_instance = 2 * biobj_instance + 1
- *
  *   problem2_instance = problem1_instance + 1
  *
  * If needed, problem2_instance is increased (see also the explanation in suite_biobj_get_new_instance).
+ *
+ * @param function Function
+ * @param dimension Dimension
+ * @param instance Instance
+ * @param coco_get_problem_function The function that is used to access the single-objective problem.
+ * @param new_inst_data Structure containing information on new instance data.
+ * @param num_new_instances The number of new instances.
+ * @param dimensions An array of dimensions to take into account when creating new instances.
+ * @param num_dimensions The number of dimensions to take into account when creating new instances.
+ * @return The problem that corresponds to the given parameters.
  */
 static coco_problem_t *coco_get_biobj_problem(const size_t function,
                                               const size_t dimension,
                                               const size_t instance,
+                                              const coco_get_problem_function_t coco_get_problem_function,
                                               suite_biobj_new_inst_t **new_inst_data,
                                               const size_t num_new_instances,
                                               const size_t *dimensions,
@@ -458,12 +467,14 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
         num_all_bbob_functions, sel_bbob_functions, num_sel_bbob_functions, dimensions, num_dimensions);
   }
   
+  /* Construct the problem based on the function index and dimension */
   if (function_idx < 55) {
-    problem1 = coco_get_bbob_problem(sel_bbob_functions[function1_idx], dimension, instance1);
-    problem2 = coco_get_bbob_problem(sel_bbob_functions[function2_idx], dimension, instance2);
+    problem1 = coco_get_problem_function(sel_bbob_functions[function1_idx], dimension, instance1);
+    problem2 = coco_get_problem_function(sel_bbob_functions[function2_idx], dimension, instance2);
+
   } else {
-    problem1 = coco_get_bbob_problem(all_bbob_functions[function1_idx], dimension, instance1);
-    problem2 = coco_get_bbob_problem(all_bbob_functions[function2_idx], dimension, instance2);
+    problem1 = coco_get_problem_function(all_bbob_functions[function1_idx], dimension, instance1);
+    problem2 = coco_get_problem_function(all_bbob_functions[function2_idx], dimension, instance2);
   }
   
   problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest, largest_values_of_interest);

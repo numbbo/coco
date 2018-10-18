@@ -22,6 +22,7 @@
 #include "coco.h"
 #include "mo_utilities.c"
 #include "suite_biobj_utilities.c"
+#include "suite_bbob.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
@@ -86,7 +87,7 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   const size_t dimension = suite->dimensions[dimension_idx];
   const size_t instance = suite->instances[instance_idx];
 
-  problem = coco_get_biobj_problem(function, dimension, instance, &new_inst_data,
+  problem = coco_get_biobj_problem(function, dimension, instance, coco_get_bbob_problem, &new_inst_data,
       suite->number_of_instances, suite->dimensions, suite->number_of_dimensions);
 
   problem->suite_dep_function = function;
