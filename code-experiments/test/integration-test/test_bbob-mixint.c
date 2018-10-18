@@ -24,7 +24,7 @@ void check_discretization_single(char *suite_name, char *suite_options) {
   double *xopt_cont, *fopt_cont, fopt_disc;
   double *x, *f;
   size_t num_points[5];
-  size_t all_points = 1;
+  size_t all_points;
   size_t matching_roi, counter = 0;
   const size_t MAX_NUM = 20000;
 
@@ -42,19 +42,30 @@ void check_discretization_single(char *suite_name, char *suite_options) {
 
     /* Compute the number of points and check that the continuous ROIs match */
     matching_roi = 1;
+    all_points = 1;
     for (j = 0; j < 5; j++) {
       if (j < problem_disc->number_of_integer_variables) {
-        num_points[j] = (unsigned long)(problem_disc->largest_values_of_interest[j] - problem_disc->smallest_values_of_interest[j] + 1);
+        num_points[j] = (unsigned long)(problem_disc->largest_values_of_interest[j] -
+            problem_disc->smallest_values_of_interest[j] + 1);
         all_points *= num_points[j];
       }
       else {
         num_points[j] = 1;
-        matching_roi = matching_roi && coco_double_almost_equal(problem_disc->largest_values_of_interest[j],
+        matching_roi = matching_roi &&
+            coco_double_almost_equal(problem_disc->largest_values_of_interest[j],
           problem_disc->largest_values_of_interest[j], 1e-10);
       }
     }
-    if ((all_points > MAX_NUM) || (!matching_roi))
+
+    if (!matching_roi)
+      coco_error("check_discretization_single(): The continuous ROI of the original "
+          "and mixed-integer problem %s do not match", coco_problem_get_id(problem_disc));
+
+    if (all_points > MAX_NUM) {
+      coco_info("check_discretization_single(): Skipping problem %s, too many points (%lu)!",
+          coco_problem_get_id(problem_disc), all_points);
       continue;
+    }
 
     /* Compute and compare the optima */
     problem_cont = coco_problem_transformed_get_inner_problem(problem_disc);
@@ -84,8 +95,9 @@ void check_discretization_single(char *suite_name, char *suite_options) {
       coco_suite_free(suite);
       coco_free_memory(x);
       coco_free_memory(f);
-      coco_error("The optima of the original and discretized problem %lu do not match (%f, %f)!",
-          (unsigned long)coco_problem_get_suite_dep_index(problem_disc), fopt_cont[0], fopt_disc);
+      coco_error("check_discretization_single(): The optima of the original "
+          "and mixed-integer problem %s do not match, %f != %f!",
+          coco_problem_get_id(problem_disc), fopt_cont[0], fopt_disc);
     }
     counter++;
   }
@@ -95,7 +107,7 @@ void check_discretization_single(char *suite_name, char *suite_options) {
   coco_free_memory(f);
 
   if (counter == 0)
-    coco_error("No tests of %s were performed!", suite_name);
+    coco_error("check_discretization_single(): No tests of %s were performed!", suite_name);
   else
     printf("Performed %lu tests on %s\n", (unsigned long)counter, suite_name);
   printf("DONE!\n");
@@ -142,19 +154,30 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
 
     /* Compute the number of points and check that the continuous ROIs match */
     matching_roi = 1;
+    all_points = 1;
     for (j = 0; j < 5; j++) {
       if (j < problem_disc->number_of_integer_variables) {
-        num_points[j] = (unsigned long)(problem_disc->largest_values_of_interest[j] - problem_disc->smallest_values_of_interest[j] + 1);
+        num_points[j] = (unsigned long)(problem_disc->largest_values_of_interest[j] -
+            problem_disc->smallest_values_of_interest[j] + 1);
         all_points *= num_points[j];
       }
       else {
         num_points[j] = 1;
-        matching_roi = matching_roi && coco_double_almost_equal(problem_disc->largest_values_of_interest[j],
+        matching_roi = matching_roi &&
+            coco_double_almost_equal(problem_disc->largest_values_of_interest[j],
           problem_disc->largest_values_of_interest[j], 1e-10);
       }
     }
-    if ((all_points > MAX_NUM) || (!matching_roi))
+
+    if (!matching_roi)
+      coco_error("check_discretization_bi(): The continuous ROI of the original "
+          "and mixed-integer problem %s do not match", coco_problem_get_id(problem_disc));
+
+    if (all_points > MAX_NUM) {
+      coco_info("check_discretization_bi(): Skipping problem %s, too many points (%lu)!",
+          coco_problem_get_id(problem_disc), all_points);
       continue;
+    }
 
     /* Check whether the two extreme points are equal */
     problem1_disc = ((coco_problem_stacked_data_t *) problem_disc->data)->problem1;
@@ -190,9 +213,9 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
       coco_suite_free(suite);
       coco_free_memory(x);
       coco_free_memory(f);
-      coco_error("The first coordinate of the first extreme point of the original and discretized "
-          "problem %lu do not match, %f != %f!",
-          (unsigned long)coco_problem_get_suite_dep_index(problem_disc), f_ext1_cont, f_ext1_disc);
+      coco_error("check_discretization_bi(): The first coordinate of the first extreme point of "
+          "the original and mixed-integer problem %s do not match, %f != %f!",
+          coco_problem_get_id(problem_disc), f_ext1_cont, f_ext1_disc);
     }
 
     /* The second extreme point */
@@ -221,9 +244,9 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
       coco_suite_free(suite);
       coco_free_memory(x);
       coco_free_memory(f);
-      coco_error("The second coordinate of the second extreme point of the original and discretized "
-          "problem %lu do not match, %f != %f!",
-          (unsigned long)coco_problem_get_suite_dep_index(problem_disc), f_ext2_cont, f_ext2_disc);
+      coco_error("check_discretization_bi(): The second coordinate of the second extreme point of "
+          "the original and mixed-integer problem %s do not match, %f != %f!",
+          coco_problem_get_id(problem_disc), f_ext2_cont, f_ext2_disc);
     }
     counter++;
   }
@@ -233,7 +256,7 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
   coco_free_memory(f);
 
   if (counter == 0)
-    coco_error("No tests of %s were performed!", suite_name);
+    coco_error("check_discretization_bi(): No tests of %s were performed!", suite_name);
   else
     printf("Performed %lu tests on %s\n", (unsigned long)counter, suite_name);
   printf("DONE!\n");
@@ -242,8 +265,8 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
 
 int main(void)  {
 
-  check_discretization_bi("bbob-biobj-mixint", "dimensions: 5 instance_indices: 1");
-  check_discretization_single("bbob-mixint-1", "dimensions: 5 instance_indices: 1");
+  check_discretization_single("bbob-mixint-2", "dimensions: 5 instance_indices: 1-2");
+  check_discretization_bi("bbob-biobj-mixint", "dimensions: 5 instance_indices: 1-2");
 
   coco_remove_directory("exdata");
   return 0;
