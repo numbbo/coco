@@ -1,5 +1,5 @@
-% Returns the number of integer variables of the given problem (if > 0, , all integer variables
-% come before any continuous ones.
+% Returns the number of integer variables of the given problem (if > 0, all 
+% integer variables come before any continuous ones.
 %
 % Parameters:
 %   problem  The given problem.

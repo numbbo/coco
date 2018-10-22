@@ -62,6 +62,10 @@
 %                              outputting f values and corresponds to the number
 %                              of digits to be printed after the decimal point.
 %                              The default value is 15.
+%                      "log_discrete_as_int: VALUE" determines whether the values 
+%                              of integer variables (in mixed-integer problems)
+%                              are logged as integers (1) or not (0 - in this case 
+%                              they are logged as doubles). The default value is 1.
 %
 % Returns:
 %   The constructed observer object or NULL if observer_name equals NULL, "" or
