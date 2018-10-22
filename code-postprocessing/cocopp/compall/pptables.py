@@ -58,7 +58,8 @@ def get_table_caption():
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
         than 1, with Bonferroni correction by the number of functions (!!TOTAL-NUM-OF-FUNCTIONS!!). """ +
                           (r"""A $\downarrow$ indicates the same tested against !!THE-REF-ALG!!. """
-                           if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext)
+                           if not (testbedsettings.current_testbed.name in (testbedsettings.testbed_name_bi_ext,
+                                                                            testbedsettings.testbed_name_ls))
                            else "") + r"""Best results are printed in bold.
         """ + r"""\cocoversion""")
 
