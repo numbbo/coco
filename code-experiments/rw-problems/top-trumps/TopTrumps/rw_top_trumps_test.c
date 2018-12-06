@@ -10,7 +10,7 @@
 int main(void) {
 
   size_t function = 1;
-  size_t instance = 2;
+  size_t instance = 3;
   size_t size_x = 88;
   size_t size_y = 1;
   size_t i;

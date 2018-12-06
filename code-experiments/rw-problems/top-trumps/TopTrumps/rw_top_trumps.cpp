@@ -43,7 +43,7 @@ void top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
     double box_max = std::max(a,b);
     min[i] = std::round(box_min);
     max[i] = std::round(box_max);
-    //std::cout << "random bounds [" << min[i] << ", " << max[i] <<"]"<< std::endl;
+    std::cout << "random bounds [" << min[i] << ", " << max[i] <<"]"<< std::endl;
     for(int j=0; j<n; j++){
         if(x_vector[j*m+i] <min[i] || x_vector[j*m+i] > max[i]){
             //std::cout << "boundary on " << j*m+i << std::endl;
@@ -129,6 +129,7 @@ void top_trumps_bounds(size_t function, size_t instance, size_t size_x,
 void top_trumps_test(void) {
   std::cout << "Top trumps is working!\n";
 }
+
 
 #ifdef __cplusplus
 }
