@@ -154,7 +154,7 @@ def density(x, netG, dim):
     val += dist.get(GROUND, 0)
     val += dist.get(BREAK, 0)
     val = float(val) / (width * height)
-    outputResult(-val, 1)
+    outputResult(1-val, 1)
 
 
 # Estimates how much of the space can be reached by computing how many of the tiles can be stood upon
@@ -176,7 +176,7 @@ def negativeSpace(x, netG, dim):
     val += dist.get(PLANT, 0) * 2 # Because only one tile, but width of 2
     val += dist.get(BILL, 0)
     val = float(val) / (width * height)
-    outputResult(-val, 1)
+    outputResult(1-val, 1)
 
 
 # Frequency of pretty tiles, i.e. non-standard.
@@ -202,7 +202,7 @@ def decorationFrequency(x, netG, dim):
     val += dist.get(RKOOPA, 0)
     val += dist.get(SPINY, 0)
     val = float(val) / (width * height)
-    outputResult(-val, 1)
+    outputResult(1-val, 1)
 
 # gets vertical distribution of tiles you can stand on
 # Value range ?

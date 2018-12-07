@@ -45,7 +45,20 @@ static coco_problem_t *rw_gan_mario_problem_allocate(const char *suite_name,
     coco_problem_set_name(problem, "real-world GAN Mario single-objective problem f%lu instance %lu in %luD",
         function, instance, dimension);
     /* TODO Add realistic best values */
-    problem->best_value[0] = -1000;
+    if (((function >= 1) && (function <=3)) || ((function >=43) && (function <=45))){ //enemy Distribution
+         problem->best_value[0] = -13.5;
+    }else if (((function >= 4) && (function <=6)) || ((function >=46) && (function <=48))){ //position Distribution
+         problem->best_value[0] = -7;
+    }else if (((function >= 22) && (function <=24)) || ((function >=64) && (function <=66))){ //basic fitness
+         problem->best_value[0] = 1;
+    }else if (((function >= 34) && (function <=36)) || ((function >=76) && (function <=78))){ //basic fitness
+         problem->best_value[0] = 1;
+    }else if (((function >= 22) && (function <=24)) || ((function >=64) && (function <=66))){ //basic fitness
+         problem->best_value[0] = -1;
+    }else{
+         problem->best_value[0] = 0;
+    }
+
 
     if ((function >= 1) && (function <= 84)) {
       if (function <= 42)
