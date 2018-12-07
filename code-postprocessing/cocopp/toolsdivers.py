@@ -6,7 +6,7 @@
 """
 from __future__ import absolute_import, print_function
 
-import os, time
+import os, time, warnings
 import numpy as np
 from matplotlib import pyplot as plt
 from subprocess import CalledProcessError, STDOUT
@@ -290,6 +290,7 @@ def legend(*args, **kwargs):
    try:
       plt.legend(*args, **kwargs)
    except:
+      warnings.warn("framealpha not effective")
       kwargs.pop('framealpha')
       plt.legend(*args, **kwargs)
       
