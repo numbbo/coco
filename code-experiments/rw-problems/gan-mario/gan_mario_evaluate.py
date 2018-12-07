@@ -255,23 +255,23 @@ def basicFitnessSimAStar(x, netG, dim):
     os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(0)+ ' > /dev/null')
 
 
-def jumpFractionSimAStar(x, netG, dim):
+def airTimeSimAStar(x, netG, dim):
     os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(0)+ ' > /dev/null')
 
 
-def totalActionsSimAStar(x, netG, dim):
+def timeTakenSimAStar(x, netG, dim):
     os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(0)+ ' > /dev/null')
 
-def progressSimREALM(x, netG, dim):
+def progressSimScared(x, netG, dim):
     os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(1)+ ' > /dev/null')
 
-def basicFitnessSimREALM(x, netG, dim):
+def basicFitnessSimScared(x, netG, dim):
     os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(1)+ ' > /dev/null')
 
-def jumpFractionSimREALM(x, netG, dim):
+def airTimeSimScared(x, netG, dim):
     os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(1)+ ' > /dev/null')
 
-def totalActionsSimREALM(x, netG, dim):
+def timeTakenSimScared(x, netG, dim):
     os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(1)+ ' > /dev/null')
 
 
@@ -285,11 +285,11 @@ if __name__ == '__main__':
     # TODO value ranges and how to set up
 
     available_dims = [10, 20, 30, 40]
-    available_instances = [5641, 3854, 8370, 494, 1944, 9249, 2517, 2531, 5453, 2982, 670, 56, 6881, 1930, 5812]
+    available_instances = [5641, 3854, 8370, 494, 1944, 9249, 2517]
     available_jsons = ["overworld", "underground", "overworlds"]  # G
     available_fit = [enemyDistribution, positionDistribution, decorationFrequency, negativeSpace, leniency, density,
-                     progressSimAStar, basicFitnessSimAStar, jumpFractionSimAStar, totalActionsSimAStar,
-                     progressSimREALM, basicFitnessSimREALM, jumpFractionSimREALM, totalActionsSimREALM]  # F
+                     progressSimAStar, basicFitnessSimAStar, airTimeSimAStar, timeTakenSimAStar,
+                     progressSimScared, basicFitnessSimScared, airTimeSimScared, timeTakenSimScared]  # F
 
     if obj != 1:
         raise ValueError("currently only 1 objective")
@@ -319,18 +319,18 @@ if __name__ == '__main__':
     #print([c, f, g, inst])
 
     # check variables in range
-    inp = numpy.array(content[1:])
-    if numpy.any(inp > 1) or numpy.any(inp < -1):  # input out of range
-        with open('objectives.txt', 'w') as file:  # write out NaN result
-            file.write('{}\n'.format(0))
-    else:
-        # find correct file with highest epoch
-        pattern = "GAN/{}-{}-{}/netG_epoch_*_{}.pth".format(available_jsons[g], dim, budget,
+    #inp = numpy.array(content[1:])
+    #if numpy.any(inp > 1) or numpy.any(inp < -1):  # input out of range
+    #    with open('objectives.txt', 'w') as file:  # write out NaN result
+    #        file.write('{}\n'.format(0))
+    #else:
+    # find correct file with highest epoch
+    pattern = "GAN/{}-{}-{}/netG_epoch_*_{}.pth".format(available_jsons[g], dim, budget,
                                                             available_instances[inst])
-        files = glob.glob(pattern)
-        epochs = [int(str.split(file, "_")[2]) for file in files]
-        netG = "GAN/{}-{}-{}/netG_epoch_{}_{}.pth".format(available_jsons[g], dim, budget, max(epochs),
+    files = glob.glob(pattern)
+    epochs = [int(str.split(file, "_")[2]) for file in files]
+    netG = "GAN/{}-{}-{}/netG_epoch_{}_{}.pth".format(available_jsons[g], dim, budget, max(epochs),
                                                           available_instances[inst])
 
-        fun = available_fit[f]
-        fun(content[1:], netG, dim)
+    fun = available_fit[f]
+    fun(content[1:], netG, dim)
