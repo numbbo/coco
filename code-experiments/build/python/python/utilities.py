@@ -301,7 +301,7 @@ class SameFunction:
     def __init__(self):
         self.count = 0
     def __call__(self, id):
-        """return number of directly preceding calls with similar `id`s
+        """return number of directly preceding calls with similar `id`
         """
         new = SameFunction.filter(id)
         if self.count == 0 or new != self.last:
