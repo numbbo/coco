@@ -248,31 +248,31 @@ def outputResult(result, d=1):
 
 
 def progressSimAStar(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(0)+ ' > /dev/null')
+    os.system('java -Djava.awt.headless=true -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(0)+ ' > /dev/null')
 
 
 def basicFitnessSimAStar(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(0)+ ' > /dev/null')
+    os.system('java -Djava.awt.headless=true -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(0)+ ' > /dev/null')
 
 
 def airTimeSimAStar(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(0)+ ' > /dev/null')
+    os.system('java -Djava.awt.headless=true -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(0)+ ' > /dev/null')
 
 
 def timeTakenSimAStar(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(0)+ ' > /dev/null')
+    os.system('java -Djava.awt.headless=true -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(0)+ ' > /dev/null')
 
 def progressSimScared(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(1)+ ' > /dev/null')
+    os.system('java -Djava.awt.headless=true -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(1)+ ' > /dev/null')
 
 def basicFitnessSimScared(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(1)+ ' > /dev/null')
+    os.system('java -Djava.awt.headless=true -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(1)+ ' > /dev/null')
 
 def airTimeSimScared(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(1)+ ' > /dev/null')
+    os.system('java -Djava.awt.headless=true -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(1)+ ' > /dev/null')
 
 def timeTakenSimScared(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(1)+ ' > /dev/null')
+    os.system('java -Djava.awt.headless=true -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(1)+ ' > /dev/null')
 
 
 #expecting variables <obj> <dim> <fun> <inst>
