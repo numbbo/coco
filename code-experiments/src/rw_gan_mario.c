@@ -41,6 +41,10 @@ static coco_problem_t *rw_gan_mario_problem_allocate(const char *suite_name,
   coco_problem_set_id(problem, "%s_f%03lu_i%02lu_d%02lu", suite_name, (unsigned long) function,
       (unsigned long) instance, (unsigned long) dimension);
 
+  /*coco_error("test objectives %lu problem f%lu instance %lu in %luD",
+        objectives, function, instance, dimension);*/
+
+
   if (objectives == 1) {
     coco_problem_set_name(problem, "real-world GAN Mario single-objective problem f%lu instance %lu in %luD",
         function, instance, dimension);
@@ -60,6 +64,7 @@ static coco_problem_t *rw_gan_mario_problem_allocate(const char *suite_name,
     }else{
          problem->best_value[0] = 0;
     }
+
 
 
     if ((function >= 1) && (function <= 84)) {
