@@ -20,7 +20,7 @@ void top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
   int seed = (int) instance;
   srand(seed);
   int obj = (int) function;
-  int rep = 100;
+  int rep = 2000;
   int m = 4;
   int players = 2;
   int n = (int) size_x / m;

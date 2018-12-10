@@ -41,11 +41,31 @@ static coco_problem_t *rw_gan_mario_problem_allocate(const char *suite_name,
   coco_problem_set_id(problem, "%s_f%03lu_i%02lu_d%02lu", suite_name, (unsigned long) function,
       (unsigned long) instance, (unsigned long) dimension);
 
+  /*coco_error("test objectives %lu problem f%lu instance %lu in %luD",
+        objectives, function, instance, dimension);*/
+
+
   if (objectives == 1) {
     coco_problem_set_name(problem, "real-world GAN Mario single-objective problem f%lu instance %lu in %luD",
         function, instance, dimension);
     /* TODO Add realistic best values */
-    problem->best_value[0] = -1000;
+    if (((function >= 1) && (function <=3)) || ((function >=43) && (function <=45))){
+         /*enemy Distribution*/
+         problem->best_value[0] = -13.5;
+    }else if (((function >= 4) && (function <=6)) || ((function >=46) && (function <=48))){
+         /*position Distribution*/
+         problem->best_value[0] = -7;
+    }else if (((function >= 22) && (function <=24)) || ((function >=64) && (function <=66))){
+         /*basic fitness agent 0 */
+         problem->best_value[0] = 1;
+    }else if (((function >= 34) && (function <=36)) || ((function >=76) && (function <=78))){
+         /*basic fitness agent 1*/
+         problem->best_value[0] = 1;
+    }else{
+         problem->best_value[0] = 0;
+    }
+
+
 
     if ((function >= 1) && (function <= 84)) {
       if (function <= 42)
