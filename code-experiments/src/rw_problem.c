@@ -216,12 +216,20 @@ static rw_problem_data_t *get_rw_problem_data(const char *folder_name,
   data->path = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(data->path, "", 1);
   coco_join_path(data->path, COCO_PATH_MAX, dir1, dir1, dir2, folder_name, NULL);
+
   data->var_fname = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(data->var_fname, "", 1);
-  coco_join_path(data->var_fname, COCO_PATH_MAX, data->path, "variables.txt", NULL);
+  str1 = coco_strdupf("variables_o%01lu_f%02lu_i%02lu_d%02lu.txt", (unsigned long) objectives,
+      (unsigned long) function, (unsigned long) instance, (unsigned long) dimension);
+  coco_join_path(data->var_fname, COCO_PATH_MAX, data->path, str1, NULL);
+  coco_free_memory(str1);
+
   data->obj_fname = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(data->obj_fname, "", 1);
-  coco_join_path(data->obj_fname, COCO_PATH_MAX, data->path, "objectives.txt", NULL);
+  str1 = coco_strdupf("objectives_o%01lu_f%02lu_i%02lu_d%02lu.txt", (unsigned long) objectives,
+      (unsigned long) function, (unsigned long) instance, (unsigned long) dimension);
+  coco_join_path(data->obj_fname, COCO_PATH_MAX, data->path, str1, NULL);
+  coco_free_memory(str1);
 
   /* Load the command template from exe_fname, replace:
    * <obj> with the problem objectives,

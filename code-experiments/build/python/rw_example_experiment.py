@@ -102,7 +102,7 @@ def run_experiment(suite_name,
 
         minimal_print(problem, final=problem.index == len(suite) - 1)
 
-# export LD_LIBRARY_PATH='path_to_rw_top_trumps_library'
+# export LD_LIBRARY_PATH=path_to_rw_top_trumps_library
 if __name__ == '__main__':
     #run_experiment('rw-top-trumps', 'instance_indices: 1-3 dimensions: 128',
     #               add_observer_name='rw',
