@@ -122,7 +122,7 @@ def tilePositionSummaryStats(im, tiles):
 # Estimates the leniency of the level
 # Value range?
 # minimise
-def leniency(x, netG, dim):
+def leniency(x, netG, dim, file_name):
     im = translateLatentVector(x, netG, dim)
     unique, counts = numpy.unique(im, return_counts=True)
     dist = dict(zip(unique, counts))
@@ -138,12 +138,12 @@ def leniency(x, netG, dim):
     t = numpy.array(gap_lengths(im))
     if count_gaps(im) > 0:
         val -= numpy.mean(t[t != 0])
-    outputResult(val, 1)
+    outputResult(val, 1, file_name)
 
 # Percentage of stackable items
 # Value range 0-1
 # maximise
-def density(x, netG, dim):
+def density(x, netG, dim, file_name):
     im = translateLatentVector(x, netG, dim)
     unique, counts = numpy.unique(im, return_counts=True)
     dist = dict(zip(unique, counts))
@@ -154,13 +154,13 @@ def density(x, netG, dim):
     val += dist.get(GROUND, 0)
     val += dist.get(BREAK, 0)
     val = float(val) / (width * height)
-    outputResult(-val, 1)
+    outputResult(1-val, 1, file_name)
 
 
 # Estimates how much of the space can be reached by computing how many of the tiles can be stood upon
 # Value Range 0-1
 # maximise
-def negativeSpace(x, netG, dim):
+def negativeSpace(x, netG, dim, file_name):
     im = translateLatentVector(x, netG, dim)
     unique, counts = numpy.unique(im, return_counts=True)
     dist = dict(zip(unique, counts))
@@ -176,13 +176,13 @@ def negativeSpace(x, netG, dim):
     val += dist.get(PLANT, 0) * 2 # Because only one tile, but width of 2
     val += dist.get(BILL, 0)
     val = float(val) / (width * height)
-    outputResult(-val, 1)
+    outputResult(1-val, 1, file_name)
 
 
 # Frequency of pretty tiles, i.e. non-standard.
 # Value Range 0-1
 # maximise
-def decorationFrequency(x, netG, dim):
+def decorationFrequency(x, netG, dim, file_name):
     im = translateLatentVector(x, netG, dim)
     unique, counts = numpy.unique(im, return_counts=True)
     dist = dict(zip(unique, counts))
@@ -202,24 +202,24 @@ def decorationFrequency(x, netG, dim):
     val += dist.get(RKOOPA, 0)
     val += dist.get(SPINY, 0)
     val = float(val) / (width * height)
-    outputResult(-val, 1)
+    outputResult(1-val, 1, file_name)
 
 # gets vertical distribution of tiles you can stand on
 # Value range ?
 # maximise
-def positionDistribution(x, netG, dim):
+def positionDistribution(x, netG, dim, file_name):
     im = translateLatentVector(x, netG, dim)
     xm, xs, ym, ys = tilePositionSummaryStats(im, [GROUND, BREAK, QUESTIONP, QUESTIONC, TUBE, PLANT, BILL])
-    outputResult(-ys, 1)
+    outputResult(-ys, 1, file_name)
 
 
 # get horizontal distribution of enemies
 # Value range ?
 # maximise
-def enemyDistribution(x, netG, dim):
+def enemyDistribution(x, netG, dim, file_name):
     im = translateLatentVector(x, netG, dim)
     xm, xs, ym, ys = tilePositionSummaryStats(im, [PLANT, BILL, GOOMBA, GKOOPA, RKOOPA, SPINY])
-    outputResult(-xs, 1)
+    outputResult(-xs, 1, file_name)
 
 
 def translateLatentVector(x, netG, dim):
@@ -240,39 +240,39 @@ def translateLatentVector(x, netG, dim):
     return final
 
 
-def outputResult(result, d=1):
+def outputResult(result, d=1, file_name="objectives.txt"):
     #print(result)
-    with open('objectives.txt', 'w') as f:
+    with open(file_name, 'w') as f:
         f.write('{}\n'.format(d))
         f.write('{}\n'.format(result))
 
 
-def progressSimAStar(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(0)+ ' > /dev/null')
+def progressSimAStar(x, netG, dim, file_name):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(0)+ ' ' + file_name + ' > /dev/null')
 
 
-def basicFitnessSimAStar(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(0)+ ' > /dev/null')
+def basicFitnessSimAStar(x, netG, dim, file_name):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(0)+ ' ' + file_name + ' > /dev/null')
 
 
-def jumpFractionSimAStar(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(0)+ ' > /dev/null')
+def airTimeSimAStar(x, netG, dim, file_name):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(0)+ ' ' + file_name + ' > /dev/null')
 
 
-def totalActionsSimAStar(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(0)+ ' > /dev/null')
+def timeTakenSimAStar(x, netG, dim, file_name):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(0)+ ' ' + file_name + ' > /dev/null')
 
-def progressSimREALM(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(1)+ ' > /dev/null')
+def progressSimScared(x, netG, dim, file_name):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(0) + ' ' + str(1)+ ' ' + file_name + ' > /dev/null')
 
-def basicFitnessSimREALM(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(1)+ ' > /dev/null')
+def basicFitnessSimScared(x, netG, dim, file_name):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(1)+ ' ' + file_name + ' > /dev/null')
 
-def jumpFractionSimREALM(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(1)+ ' > /dev/null')
+def airTimeSimScared(x, netG, dim, file_name):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(2) + ' ' + str(1)+ ' ' + file_name + ' > /dev/null')
 
-def totalActionsSimREALM(x, netG, dim):
-    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(1)+ ' > /dev/null')
+def timeTakenSimScared(x, netG, dim, file_name):
+    os.system('java -jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' + netG + ' ' + str(dim) + ' ' + str(3) + ' ' + str(1)+ ' ' + file_name + ' > /dev/null')
 
 
 #expecting variables <obj> <dim> <fun> <inst>
@@ -285,11 +285,11 @@ if __name__ == '__main__':
     # TODO value ranges and how to set up
 
     available_dims = [10, 20, 30, 40]
-    available_instances = [5641, 3854, 8370, 494, 1944, 9249, 2517, 2531, 5453, 2982, 670, 56, 6881, 1930, 5812]
+    available_instances = [5641, 3854, 8370, 494, 1944, 9249, 2517]
     available_jsons = ["overworld", "underground", "overworlds"]  # G
     available_fit = [enemyDistribution, positionDistribution, decorationFrequency, negativeSpace, leniency, density,
-                     progressSimAStar, basicFitnessSimAStar, jumpFractionSimAStar, totalActionsSimAStar,
-                     progressSimREALM, basicFitnessSimREALM, jumpFractionSimREALM, totalActionsSimREALM]  # F
+                     progressSimAStar, basicFitnessSimAStar, airTimeSimAStar, timeTakenSimAStar,
+                     progressSimScared, basicFitnessSimScared, airTimeSimScared, timeTakenSimScared]  # F
 
     if obj != 1:
         raise ValueError("currently only 1 objective")
@@ -299,7 +299,8 @@ if __name__ == '__main__':
         raise ValueError("asked for instance '{}', but is not available".format(inst))
 
     # Read the variables
-    with open('variables.txt') as file:
+    file_name = "variables_o{:d}_f{:02d}_i{:02d}_d{:02d}.txt".format(obj, problem+1, inst+1, dim)
+    with open(file_name) as file:
         content = file.readlines()
         content = [float(line.rstrip('\n')) for line in content]
         num_variables = int(content[0])
@@ -319,18 +320,19 @@ if __name__ == '__main__':
     #print([c, f, g, inst])
 
     # check variables in range
-    inp = numpy.array(content[1:])
-    if numpy.any(inp > 1) or numpy.any(inp < -1):  # input out of range
-        with open('objectives.txt', 'w') as file:  # write out NaN result
-            file.write('{}\n'.format(0))
-    else:
-        # find correct file with highest epoch
-        pattern = "GAN/{}-{}-{}/netG_epoch_*_{}.pth".format(available_jsons[g], dim, budget,
+    #inp = numpy.array(content[1:])
+    #if numpy.any(inp > 1) or numpy.any(inp < -1):  # input out of range
+    #    with open('objectives.txt', 'w') as file:  # write out NaN result
+    #        file.write('{}\n'.format(0))
+    #else:
+    # find correct file with highest epoch
+    pattern = "GAN/{}-{}-{}/netG_epoch_*_{}.pth".format(available_jsons[g], dim, budget,
                                                             available_instances[inst])
-        files = glob.glob(pattern)
-        epochs = [int(str.split(file, "_")[2]) for file in files]
-        netG = "GAN/{}-{}-{}/netG_epoch_{}_{}.pth".format(available_jsons[g], dim, budget, max(epochs),
+    files = glob.glob(pattern)
+    epochs = [int(str.split(file, "_")[2]) for file in files]
+    netG = "GAN/{}-{}-{}/netG_epoch_{}_{}.pth".format(available_jsons[g], dim, budget, max(epochs),
                                                           available_instances[inst])
 
-        fun = available_fit[f]
-        fun(content[1:], netG, dim)
+    fun = available_fit[f]
+    file_name = "objectives_o{:d}_f{:02d}_i{:02d}_d{:02d}.txt".format(obj, problem+1, inst+1, dim)
+    fun(content[1:], netG, dim, file_name)

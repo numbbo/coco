@@ -34,3 +34,13 @@ for(f in files){
   df <- rbind(df,readdf) #append result
 }
 save(df,file=name)
+
+find_runs = function(){
+  idx_start = which(df$fun==min(df$fun) & df$ins==min(df$inst) & df$evaluation==1)
+  runs = numeric(0)
+  for(i in 1:(length(idx_start)-1)){
+    runs= c(runs, rep((i-1), idx_start[i+1]-idx_start[i]))
+  }
+  runs = c(runs, rep((length(idx_start)-1), nrow(df)-idx_start[length(idx_start)]+1))
+  return(runs)
+}

@@ -150,23 +150,23 @@ int main(void) {
 
   /* example_experiment("bbob", "dimensions: 2,3,5", "rw", "log_only_better: 0", random_generator); */
 
-  example_experiment("rw-top-trumps",
+  /*example_experiment("rw-top-trumps",
                      "instance_indices: 1-3 dimensions: 128",
                      "rw",
                      "result_folder: rw-top-trumps log_only_better: 0 log_variables: all precision_x: 4",
-                     random_generator);
+                     random_generator);*/
 
   /*example_experiment("rw-top-trumps-biobj",
                      "instance_indices: 1-3 dimensions: 128",
                      "bbob-biobj",
                      "result_folder: rw-top-trumps-biobj log_only_better: 0 log_variables: all precision_x: 4",
-                     random_generator);
+                     random_generator);*/
 
   example_experiment("rw-gan-mario",
                      "function_indices: 3,6,9,12,15,18,21,24,27,30,33,36,39,42 instance_indices: 1 dimensions: 10",
                      "rw",
                      "result_folder: rw-gan-mario-rs-rw log_only_better: 0 log_variables: all",
-                     random_generator);*/
+                     random_generator);
 
   /* The bi-objective rw-gan-mario suite is not supported yet
    * example_experiment("rw-gan-mario-biobj",
@@ -653,3 +653,4 @@ static void timing_data_finalize(timing_data_t *timing_data) {
     coco_free_memory(timing_data);
   }
 }
+
