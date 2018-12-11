@@ -87,16 +87,16 @@ void my_grid_search(evaluate_function_t evaluate_func,
                     const size_t number_of_integer_variables,
                     const size_t max_budget);
 
-void my_line_search(evaluate_function_t evaluate_func,
-                    evaluate_function_t evaluate_cons,
-                    const size_t dimension,
-                    const size_t number_of_objectives,
-                    const size_t number_of_constraints,
-                    const double *lower_bounds,
-                    const double *upper_bounds,
-                    const size_t number_of_integer_variables,
-                    const size_t max_budget,
-                    coco_random_state_t *random_generator);
+void my_line_walk(evaluate_function_t evaluate_func,
+                  evaluate_function_t evaluate_cons,
+                  const size_t dimension,
+                  const size_t number_of_objectives,
+                  const size_t number_of_constraints,
+                  const double *lower_bounds,
+                  const double *upper_bounds,
+                  const size_t number_of_integer_variables,
+                  const size_t max_budget,
+                  coco_random_state_t *random_generator);
 
 /* Structure and functions needed for timing the experiment */
 typedef struct {
@@ -227,16 +227,16 @@ void example_experiment(const char *suite_name,
         break;
 
       /* Call the optimization algorithm for the remaining number of evaluations */
-      my_line_search(evaluate_function,
-                     evaluate_constraint,
-                     dimension,
-                     coco_problem_get_number_of_objectives(PROBLEM),
-                     coco_problem_get_number_of_constraints(PROBLEM),
-                     coco_problem_get_smallest_values_of_interest(PROBLEM),
-                     coco_problem_get_largest_values_of_interest(PROBLEM),
-                     coco_problem_get_number_of_integer_variables(PROBLEM),
-                     (size_t) evaluations_remaining,
-                     random_generator);
+      my_line_walk(evaluate_function,
+                   evaluate_constraint,
+                   dimension,
+                   coco_problem_get_number_of_objectives(PROBLEM),
+                   coco_problem_get_number_of_constraints(PROBLEM),
+                   coco_problem_get_smallest_values_of_interest(PROBLEM),
+                   coco_problem_get_largest_values_of_interest(PROBLEM),
+                   coco_problem_get_number_of_integer_variables(PROBLEM),
+                   (size_t) evaluations_remaining,
+                   random_generator);
       
       /* Break the loop if the algorithm performed no evaluations or an unexpected thing happened */
       if (coco_problem_get_evaluations(PROBLEM) == evaluations_done) {
@@ -438,7 +438,7 @@ void my_grid_search(evaluate_function_t evaluate_func,
 
 
 /**
- * A line search that can be used for single- as well as multi-objective optimization.
+ * A line walk that can be used for single- as well as multi-objective optimization.
  *
  * It evaluates num_solutions in axis-aligned lines in each dimension that go through the origin_solution.
  * Can perform redundant evaluations of the origin_solution.
@@ -456,17 +456,16 @@ void my_grid_search(evaluate_function_t evaluate_func,
  * @param random_generator Pointer to a random number generator able to produce uniformly and normally
  * distributed random numbers.
  */
-void my_line_search(evaluate_function_t evaluate_func,
-                    evaluate_function_t evaluate_cons,
-                    const size_t dimension,
-                    const size_t number_of_objectives,
-                    const size_t number_of_constraints,
-                    const double *lower_bounds,
-                    const double *upper_bounds,
-                    const size_t number_of_integer_variables,
-                    const size_t max_budget,
-                    coco_random_state_t *random_generator) {
-
+void my_line_walk(evaluate_function_t evaluate_func,
+                  evaluate_function_t evaluate_cons,
+                  const size_t dimension,
+                  const size_t number_of_objectives,
+                  const size_t number_of_constraints,
+                  const double *lower_bounds,
+                  const double *upper_bounds,
+                  const size_t number_of_integer_variables,
+                  const size_t max_budget,
+                  coco_random_state_t *random_generator) {
 
   double *x = NULL;
   double *func_values = coco_allocate_vector(number_of_objectives);
