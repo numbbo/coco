@@ -18,11 +18,17 @@ typedef struct {
 
 
 /**
- * @brief Frees the rw_problem_data_t object.
+ * @brief Frees the rw_problem_data_t object. Also takes care of deleting the variables_*
+ * and objectives_* files.
  */
 static void rw_problem_data_free(coco_problem_t *problem) {
   rw_problem_data_t *data;
   data = (rw_problem_data_t *) problem->data;
+
+  /* Remove the variables_* and objectives_* files. */
+  coco_remove_file(data->var_fname);
+  coco_remove_file(data->obj_fname);
+
   coco_free_memory(data->var_fname);
   coco_free_memory(data->obj_fname);
   coco_free_memory(data->command);
