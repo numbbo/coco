@@ -282,18 +282,18 @@ void line_walk_experiment(const char *suite_name,
   size_t i, largest_dimension;
   coco_problem_t *last_problem = NULL;
   double *origin_solution;
-  int *r;
+  int *r, j;
 
   /* Initialize the suite and observer. */
   suite = coco_suite(suite_name, "", suite_options);
   observer = coco_observer(observer_name, observer_options);
 
   /* Initialize the fixed random point for the line walk */
-  i = coco_suite_get_number_of_problems(suite) - 1;
+  j = (int)(coco_suite_get_number_of_problems(suite) - 1);
   while (last_problem == NULL) {
-    last_problem = coco_suite_get_problem(suite, i);
-    i--;
-    if (i < 0)
+    last_problem = coco_suite_get_problem(suite, (size_t)j);
+    j--;
+    if (j < 0)
       return;
   }
   largest_dimension = coco_problem_get_dimension(last_problem);
