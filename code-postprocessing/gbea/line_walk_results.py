@@ -129,7 +129,7 @@ def plot_line_walk_results(file_names, pdf=None, title=None, n_rows=4, n_columns
             for j, result in enumerate(results):
                 try:
                     array = result["x{}".format(x)]
-                    color = plt.rcParams['axes.prop_cycle'].by_key()['color'][j]
+                    color = plt.rcParams['axes.prop_cycle'].by_key()['color'][j % 10]
                     fig.axes[i].plot(array[:, 2], array[:, 1], color=color)
                     origin = result["origin".format(x)]
                     fig.axes[i].plot(origin[x, 2], origin[x, 1], 'o', markersize=4, color=color,
@@ -187,11 +187,10 @@ def plot_line_walk_times(file_names, pdf=None, title=None, n_rows=2, n_columns=3
             for instance in instances:
                 i = instance['i']
                 times = instance['times']
-                color = plt.rcParams['axes.prop_cycle'].by_key()['color'][i]
+                color = plt.rcParams['axes.prop_cycle'].by_key()['color'][(i - 1) % 10]
                 fig.axes[j].plot(times[:, 1], times[:, 0], 'o', markersize=4, color=color, alpha=0.5)
-            fig.axes[j].set_title("f{}".format(f))
             fig.axes[j].set_xlabel("time (s)")
-            fig.axes[j].set_ylabel("f")
+            fig.axes[j].set_ylabel("f{}".format(f))
         plt.suptitle(title)
         plt.tight_layout()
         plt.subplots_adjust(top=0.85)
@@ -216,7 +215,7 @@ def rw_gan_mario_line_walk(exdata_path, point='random'):
     files = []
     for func in range(3, 42, 3):
         files.append(os.path.join(path, file_name_template.format(suite_name, func, "time")))
-    plot_line_walk_times(files, pdf=pdf, title="GAN Mario evaluation times".format(func, point))
+    plot_line_walk_times(files, pdf=pdf, title="GAN Mario evaluation times")
     pdf.close()
 
 
@@ -226,11 +225,19 @@ def rw_top_trumps_line_walk(exdata_path, point='random'):
     reformat_line_walk_results(path)
     pdf_file_name = os.path.join(path, "{}-{}.pdf".format(suite_name, point))
     pdf = PdfPages(pdf_file_name)
-    for func in range(1, 6):
-        files = [os.path.join(path, "{}_f00{}_i01_d128_reformatted.txt".format(suite_name, func)),
-                 os.path.join(path, "{}_f00{}_i02_d128_reformatted.txt".format(suite_name, func)),
-                 os.path.join(path, "{}_f00{}_i03_d128_reformatted.txt".format(suite_name, func))]
+    file_name_template = "{}_f{:03d}_i{:02d}_d128_{}.txt"
+    for func in range(1, 7):
+        files = []
+        for instance in range(1, 6):
+            files.append(os.path.join(path, file_name_template.format(suite_name, func,
+                                                                      instance, "reformatted")))
         plot_line_walk_results(files, pdf=pdf, title="Top trumps f{} ({} point)".format(func, point))
+    files = []
+    for func in range(1, 7):
+        for instance in range(1, 6):
+            files.append(os.path.join(path, file_name_template.format(suite_name, func,
+                                                                      instance, "time")))
+    plot_line_walk_times(files, pdf=pdf, title="Top trumps evaluation times")
     pdf.close()
 
 
@@ -238,4 +245,4 @@ if __name__ == '__main__':
     exdata_path = os.path.abspath(os.path.join(os.getcwd(), "..", "..", "code-experiments",
                                                "build", "c", "exdata"))
     rw_gan_mario_line_walk(exdata_path)
-    # rw_top_trumps_line_walk(exdata_path)
+    rw_top_trumps_line_walk(exdata_path)
