@@ -1,93 +1,91 @@
-% This is "sig-alternate.tex" V2.1 April 2013
-% This file should be compiled with V2.5 of "sig-alternate.cls" May 2012
-%
-% This example file demonstrates the use of the 'sig-alternate.cls'
-% V2.5 LaTeX2e document class file. It is for those submitting
-% articles to ACM Conference Proceedings WHO DO NOT WISH TO
-% STRICTLY ADHERE TO THE SIGS (PUBS-BOARD-ENDORSED) STYLE.
-% The 'sig-alternate.cls' file will produce a similar-looking,
-% albeit, 'tighter' paper resulting in, invariably, fewer pages.
-%
-% ----------------------------------------------------------------------------------------------------------------
-% This .tex file (and associated .cls V2.5) produces:
-%       1) The Permission Statement
-%       2) The Conference (location) Info information
-%       3) The Copyright Line with ACM data
-%       4) NO page numbers
-%
-% as against the acm_proc_article-sp.cls file which
-% DOES NOT produce 1) thru' 3) above.
-%
-% Using 'sig-alternate.cls' you have control, however, from within
-% the source .tex file, over both the CopyrightYear
-% (defaulted to 200X) and the ACM Copyright Data
-% (defaulted to X-XXXXX-XX-X/XX/XX).
-% e.g.
-% \CopyrightYear{2007} will cause 2007 to appear in the copyright line.
-% \crdata{0-12345-67-8/90/12} will cause 0-12345-67-8/90/12 to appear in the copyright line.
-%
-% ---------------------------------------------------------------------------------------------------------------
-% This .tex source is an example which *does* use
-% the .bib file (from which the .bbl file % is produced).
-% REMEMBER HOWEVER: After having produced the .bbl file,
-% and prior to final submission, you *NEED* to 'insert'
-% your .bbl file into your source .tex file so as to provide
-% ONE 'self-contained' source file.
-%
-% ================= IF YOU HAVE QUESTIONS =======================
-% Questions regarding the SIGS styles, SIGS policies and
-% procedures, Conferences etc. should be sent to
-% Adrienne Griscti (griscti@acm.org)
-%
-% Technical questions _only_ to
-% Gerald Murray (murray@hq.acm.org)
-%
-% Technical questions related to COCO/BBOB to bbob@lri.fr
-% ===============================================================
-%
-% For tracking purposes - this is V2.0 - May 2012
+\documentclass[sigconf]{acmart}
 
-\documentclass{sig-alternate}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Packages
+\usepackage{booktabs} % For formal tables
 \usepackage{graphicx}
 \usepackage{rotating}
-\usepackage[dvipsnames]{xcolor}  % color is sufficient
-%\usepackage[hidelinks]{hyperref} % make COCO papers clickable
+\usepackage{tabularx}
+\usepackage{xspace}
+\usepackage{float}
+\usepackage{xstring} % for string operations
+\usepackage{wasysym} % Table legend with symbols input from post-processing
+\usepackage{MnSymbol} % Table legend with symbols input from post-processing
+\usepackage{ifthen}
+
+% Copyright
+%\setcopyright{none}
+%\setcopyright{acmcopyright}
+%\setcopyright{acmlicensed}
+\setcopyright{rightsretained}
+%\setcopyright{usgov}
+%\setcopyright{usgovmixed}
+%\setcopyright{cagov}
+%\setcopyright{cagovmixed}
 
 
-\pdfpagewidth=8.5in
-\pdfpageheight=11in
-\special{papersize=8.5in,11in}
+% DOI
+\acmDOI{10.1145/123_4}
 
-    \renewcommand{\topfraction}{1}	% max fraction of floats at top
-    \renewcommand{\bottomfraction}{1} % max fraction of floats at bottom
-    %   Parameters for TEXT pages (not float pages):
-    \setcounter{topnumber}{3}
-    \setcounter{bottomnumber}{3}
-    \setcounter{totalnumber}{3}     % 2 may work better
-    \setcounter{dbltopnumber}{4}    % for 2-column pages
-    \renewcommand{\dbltopfraction}{1}	% fit big float above 2-col. text
-    \renewcommand{\textfraction}{0.0}	% allow minimal text w. figs
-    %   Parameters for FLOAT pages (not text pages):
-    \renewcommand{\floatpagefraction}{0.80}	% require fuller float pages
-	% N.B.: floatpagefraction MUST be less than topfraction !!
-    \renewcommand{\dblfloatpagefraction}{0.7}	% require fuller float pages
+% ISBN
+\acmISBN{123-4567-24-567/18/07}
 
-%%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Conference
+\acmConference[GECCO '18]{the Genetic and Evolutionary Computation Conference 2018}{July 15--19, 2018}{Kyoto, Japan}
+\acmYear{2018}
+\copyrightyear{2018}
+
+\acmPrice{15.00}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% TO BE EDITED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% rungeneric.py writes data into a subfolder of ppdata
-\newcommand{\bbobdatapath}{ppdata/} % default output folder of rungeneric.py
-\input{\bbobdatapath bbob_pproc_commands.tex} % provide default of algname and algfolder
-% \renewcommand{\algname}{MYNAME}  % name of algorithm as it should appear in the text
-% \renewcommand{\algfolder}{ABC/} % subfolder of \bbobdatapath for processed algorithm
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\graphicspath{{\bbobdatapath\algfolder}}
 
+% Algorithm names as they appear in the tables, uncomment and adapt if necessary
+% \newcommand{\algAtables}{ALGO1}  % first argument in the post-processing
+% \newcommand{\algBtables}{ALGO2}  % second argument in the post-processing
+% \newcommand{\algCtables}{ALGO3}  % third argument in the post-processing
+% \newcommand{\algDtables}{ALGO4}  % forth argument in the post-processing
+% ...
+% location of pictures files
+\newcommand{\bbobdatapath}{ppdata/} % change default output folder of COCO if desired
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% read in data and deal with the different number of algorithms:
+\input{\bbobdatapath cocopp_commands.tex}
+\ifthenelse{\isundefined{\numofalgs}}
+{
+		\newcommand{\numberofalgorithms}{one}
+}{
+	  \ifthenelse{\equal{\numofalgs}{2}}
+	  {
+	      \newcommand{\numberofalgorithms}{two}
+	  }{
+	      \newcommand{\numberofalgorithms}{three}
+	  }
+}
+
+\ifthenelse{\equal{\numberofalgorithms}{one}}{
+   \graphicspath{{\bbobdatapath\algfolder}}}{
+	 \graphicspath{{\bbobdatapath\algsfolder}}
+}
+
+\ifthenelse{\isundefined{\algorithmA}}{\newcommand{\algorithmA}{\algname}}{}
+%\ifthenelse{\isundefined{\algorithmA}{\newcommand{\algorithmA}{\change{MY-ALGORITHM-NAME}}}{}  % better use the previous line?
+%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% pre-defined commands
 \newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
 \newcommand{\aRT}{\ensuremath{\mathrm{aRT}}}
 \newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
@@ -99,191 +97,214 @@
 \newcommand{\ftarget}{\ensuremath{f_\mathrm{t}}}
 \newcommand{\CrE}{\ensuremath{\mathrm{CrE}}}
 \newcommand{\change}[1]{{\color{red} #1}}
+\newcommand{\TODO}[1]{{\color{orange} !!! #1 !!!}}
+\newcommand{\bbobls}{{\ttfamily bbob-largescale}\xspace}
+\newcommand{\rot}[2][2.5]{
+  \hspace*{-3.5\baselineskip}%
+  \begin{rotate}{90}\hspace{#1em}#2\vspace{0.5em}
+  \end{rotate}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
-%
-% --- Author Metadata here ---
-\conferenceinfo{GECCO'13,} {July 6-10, 2013, Amsterdam, The Netherlands.}
-\CopyrightYear{2013}
-\crdata{TBA}
-\clubpenalty=10000
-\widowpenalty = 10000
-% --- End of Author Metadata ---
 
-\title{Black-Box Optimization Benchmarking Template for Noiseless Function
-Testbed
-% \titlenote{If needed}
-}
-\subtitle{Draft version
-\titlenote{Submission deadline: March 28th.}}
-%Camera-ready paper due April 17th.}}
 
-%
-% You need the command \numberofauthors to handle the 'placement
-% and alignment' of the authors beneath the title.
-%
-% For aesthetic reasons, we recommend 'three authors at a time'
-% i.e. three 'name/affiliation blocks' be placed beneath the title.
-%
-% NOTE: You are NOT restricted in how many 'rows' of
-% "name/affiliations" may appear. We just ask that you restrict
-% the number of 'columns' to three.
-%
-% Because of the available 'opening page real-estate'
-% we ask you to refrain from putting more than six authors
-% (two rows with three columns) beneath the article title.
-% More than six makes the first-page appear very cluttered indeed.
-%
-% Use the \alignauthor commands to handle the names
-% and affiliations for an 'aesthetic maximum' of six authors.
-% Add names, affiliations, addresses for
-% the seventh etc. author(s) as the argument for the
-% \additionalauthors command.
-% These 'additional authors' will be output/set for you
-% without further effort on your part as the last section in
-% the body of your article BEFORE References or any Appendices.
+\title{Black-Box Optimization Benchmarking Template for the Comparison of Multiple Algorithms on the \bbobls Testbed}
+\renewcommand{\shorttitle}{Template to Compare Multiple Algorithms on the \bbobls Testbed}
+\titlenote{Submission deadline: March 31st.}
+%Camera-ready paper due April 24th.}}
+\subtitle{Draft version}
 
-\numberofauthors{1} %  in this sample file, there are a *total*
-% of EIGHT authors. SIX appear on the 'first-page' (for formatting
-% reasons) and the remaining two appear in the \additionalauthors section.
-%
-\author{
-% You can go ahead and credit any number of authors here,
-% e.g. one 'row of three' or two rows (consisting of one row of three
-% and a second row of one, two or three).
-%
-% The command \alignauthor (no curly braces needed) should
-% precede each author name, affiliation/snail-mail address and
-% e-mail address. Additionally, tag each line of
-% affiliation/address with \affaddr, and tag the
-% e-mail address with \email.
-%
-% 1st. author
-\alignauthor
-Forename Name\\ %\titlenote{Dr.~Trovato insisted his name be first.}\\
-%       \affaddr{Institute for Clarity in Documentation}\\
-%       \affaddr{1932 Wallamaloo Lane}\\
-%       \affaddr{Wallamaloo, New Zealand}\\
-%       \email{trovato@corporation.com}
-%% 2nd. author
-%\alignauthor
-%G.K.M. Tobin\titlenote{The secretary disavows
-%any knowledge of this author's actions.}\\
-%       \affaddr{Institute for Clarity in Documentation}\\
-%       \affaddr{P.O. Box 1212}\\
-%       \affaddr{Dublin, Ohio 43017-6221}\\
-%       \email{webmaster@marysville-ohio.com}
-%% 3rd. author
-%\alignauthor Lars Th{\o}rv{\"a}ld\titlenote{This author is the
-%one who did all the really hard work.}\\
-%       \affaddr{The Th{\o}rv{\"a}ld Group}\\
-%       \affaddr{1 Th{\o}rv{\"a}ld Circle}\\
-%       \affaddr{Hekla, Iceland}\\
-%       \email{larst@affiliation.org}
-%\and  % use '\and' if you need 'another row' of author names
-%% 4th. author
-%\alignauthor Lawrence P. Leipuner\\
-%       \affaddr{Brookhaven Laboratories}\\
-%       \affaddr{Brookhaven National Lab}\\
-%       \affaddr{P.O. Box 5000}\\
-%       \email{lleipuner@researchlabs.org}
-%% 5th. author
-%\alignauthor Sean Fogarty\\
-%       \affaddr{NASA Ames Research Center}\\
-%       \affaddr{Moffett Field}\\
-%       \affaddr{California 94035}\\
-%       \email{fogartys@amesres.org}
-%% 6th. author
-%\alignauthor Charles Palmer\\
-%       \affaddr{Palmer Research Laboratories}\\
-%       \affaddr{8600 Datapoint Drive}\\
-%       \affaddr{San Antonio, Texas 78229}\\
-%       \email{cpalmer@prl.com}
-} % author
-%% There's nothing stopping you putting the seventh, eighth, etc.
-%% author on the opening page (as the 'third row') but we ask,
-%% for aesthetic reasons that you place these 'additional authors'
-%% in the \additional authors block, viz.
-%\additionalauthors{Additional authors: John Smith (The Th{\o}rv{\"a}ld Group,
-%email: {\texttt{jsmith@affiliation.org}}) and Julius P.~Kumquat
-%(The Kumquat Consortium, email: {\texttt{jpkumquat@consortium.net}}).}
-%\date{30 July 1999}
-%% Just remember to make sure that the TOTAL number of authors
-%% is the number that will appear on the first page PLUS the
-%% number that will appear in the \additionalauthors section.
 
-\maketitle
+
+\author{Firstname Lastname}
+%\authornote{tba if needed}
+%\orcid{1234-5678-9012}
+%\affiliation{%
+%  \institution{Institute for Clarity in Documentation}
+%  \streetaddress{P.O. Box 1212}
+%  \city{Dublin} 
+%  \state{Ohio} 
+%  \postcode{43017-6221}
+%}
+%\email{trovato@corporation.com}
+%
+%\author{G.K.M. Tobin}
+%\authornote{The secretary disavows any knowledge of this author's actions.}
+%\affiliation{%
+%  \institution{Institute for Clarity in Documentation}
+%  \streetaddress{P.O. Box 1212}
+%  \city{Dublin} 
+%  \state{Ohio} 
+%  \postcode{43017-6221}
+%}
+%\email{webmaster@marysville-ohio.com}
+%
+%\author{Lars Th{\o}rv{\"a}ld}
+%\authornote{This author is the
+%  one who did all the really hard work.}
+%\affiliation{%
+%  \institution{The Th{\o}rv{\"a}ld Group}
+%  \streetaddress{1 Th{\o}rv{\"a}ld Circle}
+%  \city{Hekla} 
+%  \country{Iceland}}
+%\email{larst@affiliation.org}
+%
+%\author{Lawrence P. Leipuner}
+%\affiliation{
+%  \institution{Brookhaven Laboratories}
+%  \streetaddress{P.O. Box 5000}}
+%\email{lleipuner@researchlabs.org}
+%
+%\author{Sean Fogarty}
+%\affiliation{%
+%  \institution{NASA Ames Research Center}
+%  \city{Moffett Field}
+%  \state{California} 
+%  \postcode{94035}}
+%\email{fogartys@amesres.org}
+%
+%\author{Charles Palmer}
+%\affiliation{%
+%  \institution{Palmer Research Laboratories}
+%  \streetaddress{8600 Datapoint Drive}
+%  \city{San Antonio}
+%  \state{Texas} 
+%  \postcode{78229}}
+%\email{cpalmer@prl.com}
+%
+%\author{John Smith}
+%\affiliation{\institution{The Th{\o}rv{\"a}ld Group}}
+%\email{jsmith@affiliation.org}
+%
+%\author{Julius P.~Kumquat}
+%\affiliation{\institution{The Kumquat Consortium}}
+%\email{jpkumquat@consortium.net}
+
+% The default list of authors is too long for headers}
+\renewcommand{\shortauthors}{Firstname Lastname et. al.}
+
+
+
 \begin{abstract}
 to be written
 \end{abstract}
 
-% Add any ACM category that you feel is needed, not mandatory anymore
-%\category{G.1.6}{Numerical Analysis}{Optimization}[global optimization,
-%unconstrained optimization]
-%\category{F.2.1}{Analysis of Algorithms and Problem Complexity}{Numerical Algorithms and Problems}
+
+%
+% The code below should be generated by the tool at
+% http://dl.acm.org/ccs.cfm
+% Please copy and paste the code instead of the example below. 
+%
+ \begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10010147.10010178.10010205.10010208</concept_id>
+<concept_desc>Computing methodologies~Continuous space search</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Computing methodologies~Continuous space search}
+
+
+% We no longer use \terms command
+%\terms{Algorithms}
 
 % Complete with anything that is needed
-\terms{Algorithms}
+\keywords{Benchmarking, Black-box optimization, Large scale optimization}
 
-% Complete with anything that is needed
-\keywords{Benchmarking, Black-box optimization}
+\maketitle
+
 
 % \section{Introduction}
 %
 % \section{Algorithm Presentation}
 %
 % \section{Experimental Procedure}
-% \subsection{Parameter Tuning}
 %
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{CPU Timing}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % note that the following text is just a proposal and can/should be changed to your needs:
-In order to evaluate the CPU timing of the algorithm, we have run the \change{MY-ALGORITHM-NAME} on the  \change{bbob test suite \cite{hansen2009fun}} with restarts for a maximum budget equal to \change{$400 (D + 2)$} function evaluations. The code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores. The time per function evaluation for dimensions 20, 40, 80, 160, 320\change{, 640} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
+In order to evaluate the CPU timing of the algorithm, we have run the \change{\algorithmA} with restarts on the entire \bbobls test suite \cite{bbobls2018func} for $2 D$ function evaluations according to \cite{hansen2016exp}. The \change{C/Java/Matlab/Octave/Python} code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores \change{and (compile) options xxx}. The time per function evaluation for dimensions 20, 40, 80, 160, 320\change{, 640} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
 
+\ifthenelse{\equal{\numberofalgorithms}{one}}{}{
+\change{repeat the above for any algorithm tested}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Results of \algname\ from experiments according to \cite{hansen2016exp} and \cite{hansen2016perfass} on the benchmark
-functions given in \cite{wp200901_2010,hansen2012fun} are presented in
-Figures~\ref{fig:aRTgraphs}, \ref{fig:RLDs}, \ref{tab:aRTloss}, and \ref{fig:aRTlogloss} and in
-Tables~\ref{tab:aRTs}. The experiments were performed with COCO \cite{hansen2016cocoplat}, version \change{1.0.1}, the plots were produced with version \change{1.0.4}.
+Results from experiments according to \cite{hansen2016exp} and \cite{hansen2016perfass} on the
+benchmark functions given in \cite{bbobls2018func} are
+presented in
+%%
+\ifthenelse{\equal{\numberofalgorithms}{one}}{
+Figures~\ref{fig:aRTgraphs}, \ref{fig:ECDFs}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:aRTs80} and \ref{tab:aRTs320}.
+}{\ifthenelse{\equal{\numberofalgorithms}{two}}{
+Figures~\ref{fig:scaling}, \ref{fig:scatterplots}, \ref{fig:ECDFs80D}, \ref{fig:ECDFs320D} and \ref{fig:ECDFsingleOne}, and Tables~\ref{tab:aRTs}.
+}{\ifthenelse{\equal{\numberofalgorithms}{three}}{
+Figures~\ref{fig:scaling}, \ref{fig:ECDFs80D}, \ref{fig:ECDFs320D}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:aRTs}.
+}{}}}
+%%
+The experiments were performed with COCO \cite{hansen2016cocoplat}, version
+\change{2.0}, the plots were produced with version \change{2.0}.
+
+The \textbf{average runtime (aRT)}, used in the figures and tables,
+depends on a given target function value, $\ftarget=\fopt+\Df$, and is
+computed over all relevant trials as the number of function
+evaluations executed during each trial while the best function value
+did not reach \ftarget, summed over all trials and divided by the
+number of trials that actually reached \ftarget\
+\cite{hansen2012exp,price1997dev}. 
+\textbf{Statistical significance} is tested with the rank-sum test for a given
+target $\Delta\ftarget$ using, for each trial,
+either the number of needed function evaluations to reach
+$\Delta\ftarget$ (inverted and multiplied by $-1$), or, if the target
+was not reached, the best $\Df$-value achieved, measured only up to
+the smallest number of overall function evaluations for any
+unsuccessful trial under consideration.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifthenelse{\equal{\numberofalgorithms}{one}}{
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Scaling of aRT with dimension
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
-\begin{tabular}{l@{\hspace*{-0.025\textwidth}}l@{\hspace*{-0.025\textwidth}}l@{\hspace*{-0.025\textwidth}}l}
-\includegraphics[width=0.268\textwidth]{ppfigdim_f001}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f002}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f003}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f004}\\[-2.2ex]
-\includegraphics[width=0.268\textwidth]{ppfigdim_f005}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f006}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f007}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f008}\\[-2.2ex]
-\includegraphics[width=0.268\textwidth]{ppfigdim_f009}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f010}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f011}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f012}\\[-2.2ex]
-\includegraphics[width=0.268\textwidth]{ppfigdim_f013}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f014}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f015}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f016}\\[-2.2ex]
-\includegraphics[width=0.268\textwidth]{ppfigdim_f017}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f018}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f019}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f020}\\[-2.2ex]
-\includegraphics[width=0.268\textwidth]{ppfigdim_f021}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f022}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f023}&
-\includegraphics[width=0.268\textwidth]{ppfigdim_f024}
+\begin{tabular}{l@{\hspace*{-0.0\textwidth}}l@{\hspace*{-0.0\textwidth}}l@{\hspace*{-0.0\textwidth}}l}
+\includegraphics[width=0.24\textwidth]{ppfigdim_f001}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f002}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f003}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f004}\\[-1ex]
+\includegraphics[width=0.24\textwidth]{ppfigdim_f005}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f006}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f007}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f008}\\[-1ex]
+\includegraphics[width=0.24\textwidth]{ppfigdim_f009}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f010}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f011}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f012}\\[-1ex]
+\includegraphics[width=0.24\textwidth]{ppfigdim_f013}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f014}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f015}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f016}\\[-1ex]
+\includegraphics[width=0.24\textwidth]{ppfigdim_f017}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f018}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f019}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f020}\\[-1ex]
+\includegraphics[width=0.24\textwidth]{ppfigdim_f021}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f022}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f023}&
+\includegraphics[width=0.24\textwidth]{ppfigdim_f024}
 \end{tabular}
 \vspace{-3ex}
  \caption{\label{fig:aRTgraphs}
@@ -295,143 +316,491 @@ Tables~\ref{tab:aRTs}. The experiments were performed with COCO \cite{hansen2016
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 % Table showing the average runtime (aRT in number of function
-% evaluations) divided by the best aRT measured during BBOB-2009 (given in the
-% first row of each cell) for functions $f_1$--$f_{24}$.
+% evaluations) for functions $f_1$--$f_{24} for dimension 80$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{table*}
-\centering {\tiny
-\parbox{0.499\textwidth}{\centering
-   {\small 80-D}\\
-   \input{\bbobdatapath\algfolder pptable_80D_noiselessall}}%
-\parbox{0.499\textwidth}{\centering
-   {\small 320-D}\\
-   \input{\bbobdatapath\algfolder pptable_320D_noiselessall}}}%
-  \caption[Table of aRTs]{\label{tab:aRTs}\bbobpptablecaption{} 
+
+
+\begin{table*}\tiny
+%\hfill80-D\hfill~\\[1ex]
+{\normalsize \color{red}
+\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
+}
+\mbox{\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\pptableheader 
+
+\input{\bbobdatapath\algfolder pptable_f001_80D} 
+\input{\bbobdatapath\algfolder pptable_f002_80D}
+\input{\bbobdatapath\algfolder pptable_f003_80D}
+\input{\bbobdatapath\algfolder pptable_f004_80D}
+\input{\bbobdatapath\algfolder pptable_f005_80D}
+\input{\bbobdatapath\algfolder pptable_f006_80D}
+\input{\bbobdatapath\algfolder pptable_f007_80D}
+\input{\bbobdatapath\algfolder pptable_f008_80D}
+\input{\bbobdatapath\algfolder pptable_f009_80D}
+\input{\bbobdatapath\algfolder pptable_f010_80D}
+\input{\bbobdatapath\algfolder pptable_f011_80D}
+\input{\bbobdatapath\algfolder pptable_f012_80D}
+
+\pptablefooter
+
+\end{minipage}
+\hspace{0.002\textwidth}
+\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+
+\pptableheader 
+
+\input{\bbobdatapath\algfolder pptable_f013_80D}
+\input{\bbobdatapath\algfolder pptable_f014_80D}
+\input{\bbobdatapath\algfolder pptable_f015_80D}
+\input{\bbobdatapath\algfolder pptable_f016_80D}
+\input{\bbobdatapath\algfolder pptable_f017_80D}
+\input{\bbobdatapath\algfolder pptable_f018_80D}
+\input{\bbobdatapath\algfolder pptable_f019_80D}
+\input{\bbobdatapath\algfolder pptable_f020_80D}
+\input{\bbobdatapath\algfolder pptable_f021_80D}
+\input{\bbobdatapath\algfolder pptable_f022_80D}
+\input{\bbobdatapath\algfolder pptable_f023_80D}
+\input{\bbobdatapath\algfolder pptable_f024_80D}
+
+\pptablefooter
+\end{minipage}}
+
+\caption[Table of aRTs]{\label{tab:aRTs80}\bbobpptablecaption{dimension $80$}
 }
 \end{table*}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+% Table showing the average runtime (aRT in number of function
+% evaluations) for functions $f_1$--$f_{24} for dimension 320$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}\tiny
+%\hfill320-D\hfill~\\[1ex]
+\mbox{\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\pptableheader 
+
+\input{\bbobdatapath\algfolder pptable_f001_320D} 
+\input{\bbobdatapath\algfolder pptable_f002_320D}
+\input{\bbobdatapath\algfolder pptable_f003_320D}
+\input{\bbobdatapath\algfolder pptable_f004_320D}
+\input{\bbobdatapath\algfolder pptable_f005_320D}
+\input{\bbobdatapath\algfolder pptable_f006_320D}
+\input{\bbobdatapath\algfolder pptable_f007_320D}
+\input{\bbobdatapath\algfolder pptable_f008_320D}
+\input{\bbobdatapath\algfolder pptable_f009_320D}
+\input{\bbobdatapath\algfolder pptable_f010_320D}
+\input{\bbobdatapath\algfolder pptable_f011_320D}
+\input{\bbobdatapath\algfolder pptable_f012_320D}
+
+\pptablefooter
+
+\end{minipage}
+\hspace{0.002\textwidth}
+\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\pptableheader 
+
+\input{\bbobdatapath\algfolder pptable_f013_320D}
+\input{\bbobdatapath\algfolder pptable_f014_320D}
+\input{\bbobdatapath\algfolder pptable_f015_320D}
+\input{\bbobdatapath\algfolder pptable_f016_320D}
+\input{\bbobdatapath\algfolder pptable_f017_320D}
+\input{\bbobdatapath\algfolder pptable_f018_320D}
+\input{\bbobdatapath\algfolder pptable_f019_320D}
+\input{\bbobdatapath\algfolder pptable_f020_320D}
+\input{\bbobdatapath\algfolder pptable_f021_320D}
+\input{\bbobdatapath\algfolder pptable_f022_320D}
+\input{\bbobdatapath\algfolder pptable_f023_320D}
+\input{\bbobdatapath\algfolder pptable_f024_320D}
+
+\pptablefooter
+
+\end{minipage}}
+ 
+\caption[Table of aRTs]{\label{tab:aRTs320}\bbobpptablecaption{dimension $320$}
+}
+\end{table*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Empirical cumulative distribution functions (ECDFs) per function group.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\rot}[2][2.5]{
-  \hspace*{-3.5\baselineskip}%
-  \begin{rotate}{90}\hspace{#1em}#2
-  \end{rotate}}
+
 \begin{figure*}
-\begin{tabular}{l@{\hspace*{-0.025\textwidth}}l@{\hspace*{-0.00\textwidth}}|l@{\hspace*{-0.025\textwidth}}l}
+\begin{tabular}{l@{\hspace*{-0.00\textwidth}}l@{\hspace*{0.01\textwidth}}|l@{\hspace*{-0.00\textwidth}}l}
 \multicolumn{2}{c}{$D=80$} & \multicolumn{2}{c}{$D=320$}\\[-0.5ex]
-\rot{separable fcts}
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_80D_separ} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_80D_separ} &
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_320D_separ} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_320D_separ} \\[-2ex]
-\rot[1]{misc.\ moderate fcts}
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_80D_lcond} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_80D_lcond} &
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_320D_lcond} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_320D_lcond} \\[-2ex]
-\rot[1.3]{ill-conditioned fcts}
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_80D_hcond} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_80D_hcond} &
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_320D_hcond} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_320D_hcond} \\[-2ex]
-\rot[1.6]{multi-modal fcts}
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_80D_multi} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_80D_multi} &
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_320D_multi} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_320D_multi} \\[-2ex]
-\rot[1.0]{weak structure fcts}
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_80D_mult2} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_80D_mult2} &
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_320D_mult2} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_320D_mult2}\\[-2ex]
-\rot{all functions}
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_80D_noiselessall} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_80D_noiselessall} &
-\includegraphics[width=0.268\textwidth,trim=0 0 0 13mm, clip]{pprldistr_320D_noiselessall} &
-\includegraphics[width=0.2362\textwidth,trim=2.40cm 0 0 13mm, clip]{ppfvdistr_320D_noiselessall}
-\vspace*{-0.5ex}
+\rot[3]{all functions}
+\includegraphics[width=0.2362\textwidth]{pprldistr_80D_noiselessall} &
+\includegraphics[width=0.2362\textwidth]{ppfvdistr_80D_noiselessall} &
+\includegraphics[width=0.2362\textwidth]{pprldistr_320D_noiselessall} &
+\includegraphics[width=0.2362\textwidth]{ppfvdistr_320D_noiselessall} \\[-0.2em]
+\rot[2.9]{separable fcts}
+\includegraphics[width=0.2362\textwidth]{pprldistr_80D_separ} &
+\includegraphics[width=0.2362\textwidth]{ppfvdistr_80D_separ} &
+\includegraphics[width=0.2362\textwidth]{pprldistr_320D_separ} &
+\includegraphics[width=0.2362\textwidth]{ppfvdistr_320D_separ} \\[-0.2em]
+\rot[1.45]{misc.\ moderate fcts}
+\includegraphics[width=0.2362\textwidth]{pprldistr_80D_lcond} &
+\includegraphics[width=0.2362\textwidth]{ppfvdistr_80D_lcond} &
+\includegraphics[width=0.2362\textwidth]{pprldistr_320D_lcond} &
+\includegraphics[width=0.2362\textwidth]{ppfvdistr_320D_lcond} \\[-0.2em]
+\rot[1.5]{ill-conditioned fcts}
+\includegraphics[width=0.2362\textwidth]{pprldistr_80D_hcond} &
+\includegraphics[width=0.2362\textwidth]{ppfvdistr_80D_hcond} &
+\includegraphics[width=0.2362\textwidth]{pprldistr_320D_hcond} &
+\includegraphics[width=0.2362\textwidth]{ppfvdistr_320D_hcond} \\[-0.2em]
+\rot[2.3]{multi-modal fcts}
+\includegraphics[width=0.2362\textwidth]{pprldistr_80D_multi} &
+\includegraphics[width=0.2362\textwidth]{ppfvdistr_80D_multi} &
+\includegraphics[width=0.2362\textwidth]{pprldistr_320D_multi} &
+\includegraphics[width=0.2362\textwidth]{ppfvdistr_320D_multi} \\[-0.2em]
+\rot[1.7]{weak structure fcts}
+\includegraphics[width=0.2362\textwidth]{pprldistr_80D_mult2} &
+\includegraphics[width=0.2362\textwidth]{ppfvdistr_80D_mult2} &
+\includegraphics[width=0.2362\textwidth]{pprldistr_320D_mult2} &
+\includegraphics[width=0.2362\textwidth]{ppfvdistr_320D_mult2}
+\vspace*{-1ex}
 \end{tabular}
-\caption{\label{fig:RLDs}
-	\bbobpprldistrlegend{}
+ \caption{\label{fig:ECDFs}
+ \bbobpprldistrlegend{}
  }
 \end{figure*}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% aRT loss ratios (figure and table)
+% ECDFs per function
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}
+\begin{figure*}
 \centering
-\includegraphics[width=0.24\textwidth,trim=0 0 16mm 12mm, clip]{pplogloss_80D_noiselessall}% 
-\includegraphics[width=0.24\textwidth,trim=7mm 0 9mm 12mm, clip]{pplogloss_320D_noiselessall}%
-\\[-6.2ex]
-\parbox{0.49\columnwidth}{\centering 80-D}%
-\parbox{0.49\columnwidth}{\centering 320-D}\\[5ex]
-%
-\input{\bbobdatapath\algfolder pploglosstable_80D_noiselessall}\\
-\input{\bbobdatapath\algfolder pploglosstable_320D_noiselessall}
-\caption{\label{tab:aRTloss}%
-\bbobloglosstablecaption{}
-}
-\end{figure}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% aRT loss ratios per function group
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{figure}
-\begin{tabular}{@{}l@{}@{}l@{}}
-\multicolumn{1}{c}{80-D} & \multicolumn{1}{c}{320-D}\\
-%\rot{all functions}
-%\hspace*{-2mm}
-\rot{separable fcts}
-\hspace*{-2mm}
-\includegraphics[width=0.24\textwidth,trim=0 0 16mm 12mm, clip]{pplogloss_80D_separ} &
-\includegraphics[width=0.24\textwidth,trim=7mm 0 9mm 12mm, clip]{pplogloss_320D_separ}\\[-2ex]
-\rot[2]{moderate fcts}
-\hspace*{-2mm}
-\includegraphics[width=0.24\textwidth,trim=0 0 16mm 12mm, clip]{pplogloss_80D_lcond} &
-\includegraphics[width=0.24\textwidth,trim=7mm 0 9mm 12mm, clip]{pplogloss_320D_lcond}\\[-2ex]
-\rot[1.3]{ill-conditioned fcts}
-\hspace*{-2mm}
-\includegraphics[width=0.24\textwidth,trim=0 0 16mm 12mm, clip]{pplogloss_80D_hcond} &
-\includegraphics[width=0.24\textwidth,trim=7mm 0 9mm 12mm, clip]{pplogloss_320D_hcond}\\[-2ex]
-\rot[1.6]{multi-modal fcts}
-\hspace*{-2mm}
-\includegraphics[width=0.24\textwidth,trim=0 0 16mm 12mm, clip]{pplogloss_80D_multi} &
-\includegraphics[width=0.24\textwidth,trim=7mm 0 9mm 12mm, clip]{pplogloss_320D_multi}\\[-2ex]
-\rot[1.0]{weak structure fcts}
-\hspace*{-2mm}
-\includegraphics[width=0.24\textwidth,trim=0 0 16mm 12mm, clip]{pplogloss_80D_mult2} &
-\includegraphics[width=0.24\textwidth,trim=7mm 0 9mm 12mm, clip]{pplogloss_320D_mult2}
-\vspace*{-0.5ex}
+\begin{tabular}{l@{\hspace*{-0.00\textwidth}}l@{\hspace*{0.01\textwidth}}|l@{\hspace*{-0.00\textwidth}}l}
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f001}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f002}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f003}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f004}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f005}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f006}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f007}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f008}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f009}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f010}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f011}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f012}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f013}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f014}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f015}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f016}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f017}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f018}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f019}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f020}\\[-0.2em]
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f021}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f022}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f023}&
+\includegraphics[width=0.24\textwidth]{pprldmany-single-functions/pprldmany_f024}
+\vspace*{-1ex}
 \end{tabular}
-\caption{\label{fig:aRTlogloss}%
-	\bbobloglossfigurecaption{}
+ \caption{\label{fig:ECDFsingleOne}
+	\bbobecdfcaptionsinglefunctionssingledim{$\!\!$s 20 to 640}
 }
-\end{figure}
+\end{figure*}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+}{} % end of 1 algorithm template
+
+
+
+
+
+\ifthenelse{\equal{\numberofalgorithms}{two} \or \equal{\numberofalgorithms}{three}}{
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section{Discussion}  % and or conclusion, summary...
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Scaling of aRT with dimension
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}
+\centering
+\begin{tabular}{@{}c@{}c@{}c@{}c@{}}
+\includegraphics[width=0.24\textwidth]{ppfigs_f001}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f002}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f003}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f004}\\[-0.25em]
+\includegraphics[width=0.24\textwidth]{ppfigs_f005}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f006}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f007}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f008}\\[-0.25em]
+\includegraphics[width=0.24\textwidth]{ppfigs_f009}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f010}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f011}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f012}\\[-0.25em]
+\includegraphics[width=0.24\textwidth]{ppfigs_f013}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f014}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f015}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f016}\\[-0.25em]
+\includegraphics[width=0.24\textwidth]{ppfigs_f017}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f018}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f019}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f020}\\[-0.25em]
+\includegraphics[width=0.24\textwidth]{ppfigs_f021}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f022}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f023}&
+\includegraphics[width=0.24\textwidth]{ppfigs_f024}
+\end{tabular}
+\vspace*{-0.2cm}
+\caption[Average running time (\aRT) divided by dimension
+versus dimension in log-log presentation]{
+\label{fig:scaling}
+\bbobppfigslegend{$f_1$ and $f_{24}$}. 
+}
+% 
+\end{figure*}
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+% Empirical cumulative distribution functions (ECDFs) per function group
+% for dimensions 80 and 320
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}
+ \begin{tabular}{@{}c@{\hspace*{0.05\textwidth}}c@{}}
+ separable fcts & moderate fcts \\
+ \includeperfprof{pprldmany_80D_separ} &
+ \includeperfprof{pprldmany_80D_lcond} \\ 
+ill-conditioned fcts & multi-modal fcts \\
+ \includeperfprof{pprldmany_80D_hcond} &
+ \includeperfprof{pprldmany_80D_multi} \\ 
+ weakly structured multi-modal fcts & all functions\\
+ \includeperfprof{pprldmany_80D_mult2} & 
+ \includeperfprof{pprldmany_80D_noiselessall} 
+ \end{tabular}
+\caption{
+\label{fig:ECDFs80D}
+\bbobECDFslegend{80}
+}
+\end{figure*}
+
+
+\begin{figure*}
+ \begin{tabular}{@{}c@{\hspace*{0.05\textwidth}}c@{}}
+ separable fcts & moderate fcts \\
+ \includeperfprof{pprldmany_320D_separ} &
+ \includeperfprof{pprldmany_320D_lcond} \\ 
+ill-conditioned fcts & multi-modal fcts \\
+ \includeperfprof{pprldmany_320D_hcond} &
+ \includeperfprof{pprldmany_320D_multi} \\ 
+ weakly structured multi-modal fcts & all functions\\
+ \includeperfprof{pprldmany_320D_mult2} & 
+ \includeperfprof{pprldmany_320D_noiselessall} 
+ \end{tabular}
+\caption{
+\label{fig:ECDFs320D}
+\bbobECDFslegend{320}
+}
+\end{figure*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ECDFs per function in dimension 160
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}
+\centering
+\begin{tabular}{@{}l@{}l@{}l@{}l@{}l@{}}
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f001_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f002_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f003_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f004_160D}\\
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f005_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f006_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f007_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f008_160D}\\
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f009_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f010_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f011_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f012_160D}\\
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f013_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f014_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f015_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f016_160D}\\
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f017_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f018_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f019_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f020_160D}\\
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f021_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f022_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f023_160D}&
+\includegraphics[width=0.2\textwidth]{pprldmany-single-functions/pprldmany_f024_160D}
+\end{tabular}
+ \caption{\label{fig:ECDFsingleOne}
+	\bbobecdfcaptionsinglefunctionssingledim{160}
+}
+\end{figure*}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+% Table showing the average runtime (aRT in number of function
+% evaluations) for functions $f_1$--$f_{24}$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+%\hfill80-D\hfill~\\[1ex]
+{\normalsize \color{red}
+\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
+}
+\mbox{\begin{minipage}[t]{0.495\textwidth}
+\centering
+80-D\\[5pt]
+\tiny
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f001_80D} 
+\input{\bbobdatapath\algsfolder pptables_f002_80D}
+\input{\bbobdatapath\algsfolder pptables_f003_80D}
+\input{\bbobdatapath\algsfolder pptables_f004_80D}
+\input{\bbobdatapath\algsfolder pptables_f005_80D}
+\input{\bbobdatapath\algsfolder pptables_f006_80D}
+\input{\bbobdatapath\algsfolder pptables_f007_80D}
+\input{\bbobdatapath\algsfolder pptables_f008_80D}
+\input{\bbobdatapath\algsfolder pptables_f009_80D}
+\input{\bbobdatapath\algsfolder pptables_f010_80D}
+\input{\bbobdatapath\algsfolder pptables_f011_80D}
+\input{\bbobdatapath\algsfolder pptables_f012_80D}
+\input{\bbobdatapath\algsfolder pptables_f013_80D}
+\input{\bbobdatapath\algsfolder pptables_f014_80D}
+\input{\bbobdatapath\algsfolder pptables_f015_80D}
+\input{\bbobdatapath\algsfolder pptables_f016_80D}
+\input{\bbobdatapath\algsfolder pptables_f017_80D}
+\input{\bbobdatapath\algsfolder pptables_f018_80D}
+\input{\bbobdatapath\algsfolder pptables_f019_80D}
+\input{\bbobdatapath\algsfolder pptables_f020_80D}
+\input{\bbobdatapath\algsfolder pptables_f021_80D}
+\input{\bbobdatapath\algsfolder pptables_f022_80D}
+\input{\bbobdatapath\algsfolder pptables_f023_80D}
+\input{\bbobdatapath\algsfolder pptables_f024_80D}
+\end{tabularx}
+\end{minipage}}
+\hspace{0.002\textwidth}
+\mbox{\begin{minipage}[t]{0.495\textwidth}
+\centering
+320-D\\[5pt]
+\tiny
+\pptablesheader
+\input{\bbobdatapath\algsfolder pptables_f001_320D} 
+\input{\bbobdatapath\algsfolder pptables_f002_320D}
+\input{\bbobdatapath\algsfolder pptables_f003_320D}
+\input{\bbobdatapath\algsfolder pptables_f004_320D}
+\input{\bbobdatapath\algsfolder pptables_f005_320D}
+\input{\bbobdatapath\algsfolder pptables_f006_320D}
+\input{\bbobdatapath\algsfolder pptables_f007_320D}
+\input{\bbobdatapath\algsfolder pptables_f008_320D}
+\input{\bbobdatapath\algsfolder pptables_f009_320D}
+\input{\bbobdatapath\algsfolder pptables_f010_320D}
+\input{\bbobdatapath\algsfolder pptables_f011_320D}
+\input{\bbobdatapath\algsfolder pptables_f012_320D}
+\input{\bbobdatapath\algsfolder pptables_f013_320D}
+\input{\bbobdatapath\algsfolder pptables_f014_320D}
+\input{\bbobdatapath\algsfolder pptables_f015_320D}
+\input{\bbobdatapath\algsfolder pptables_f016_320D}
+\input{\bbobdatapath\algsfolder pptables_f017_320D}
+\input{\bbobdatapath\algsfolder pptables_f018_320D}
+\input{\bbobdatapath\algsfolder pptables_f019_320D}
+\input{\bbobdatapath\algsfolder pptables_f020_320D}
+\input{\bbobdatapath\algsfolder pptables_f021_320D}
+\input{\bbobdatapath\algsfolder pptables_f022_320D}
+\input{\bbobdatapath\algsfolder pptables_f023_320D}
+\input{\bbobdatapath\algsfolder pptables_f024_320D}
+\end{tabularx}
+\end{minipage}}
+
+\caption{\label{tab:aRTs}
+\bbobpptablesmanylegend{dimensions $80$ (left) and $320$ (right)}
+}
+\end{table*}
+
+
+}{} % end of all that comes for 2 or 3+ algorithms
+
+
+
+\ifthenelse{\equal{\numberofalgorithms}{two}}{
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+% Scatter plots per function.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}
+\begin{tabular}{*{4}{@{}c@{}}}
+    \includegraphics[height=0.2\textwidth]{ppscatter_f001}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f002}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f003}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f004}\\[-0.6em]
+    \includegraphics[height=0.2\textwidth]{ppscatter_f005}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f006}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f007}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f008}\\[-0.6em]
+    \includegraphics[height=0.2\textwidth]{ppscatter_f009}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f010}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f011}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f012}\\[-0.6em]
+    \includegraphics[height=0.2\textwidth]{ppscatter_f013}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f014}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f015}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f016}\\[-0.6em]
+    \includegraphics[height=0.2\textwidth]{ppscatter_f017}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f018}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f019}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f020}\\[-0.6em]
+    \includegraphics[height=0.2\textwidth]{ppscatter_f021}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f022}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f023}&
+    \includegraphics[height=0.2\textwidth]{ppscatter_f024}
+\end{tabular}
+\caption{\label{fig:scatterplots}
+\bbobppscatterlegend{$f_1$--$f_{24}$}
+}
+\end{figure*}
+
+
+
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % The following two commands are all you need in the
 % initial runs of your .tex file to
@@ -449,5 +818,5 @@ Tables~\ref{tab:aRTs}. The experiments were performed with COCO \cite{hansen2016
 % ACM needs 'a single self-contained file'!
 %
 
-\clearpage % otherwise the last figure might be missing
+% \clearpage % otherwise the last figure might be missing
 \end{document}
