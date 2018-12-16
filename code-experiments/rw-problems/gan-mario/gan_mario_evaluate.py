@@ -257,7 +257,7 @@ def progressSimAStar(x, netG, dim, file_name):
 
 def basicFitnessSimAStar(x, netG, dim, file_name):
     os.system('java ' + java_options + '-jar marioaiDagstuhl.jar "' + str(content[1:]) + '" ' +
-              netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(0)+ ' ' + file_name + ' > /dev/null')
+              netG + ' ' + str(dim) + ' ' + str(1) + ' ' + str(0)+ ' ' + file_name)## + ' > /dev/null')
 
 
 def airTimeSimAStar(x, netG, dim, file_name):

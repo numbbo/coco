@@ -160,7 +160,7 @@ if __name__ == '__main__':
         pdf.close()
 
     # GAN Mario line walk with the middle point
-    if True:
+    if False:
         path = os.path.join(exdata_path, "rw-gan-mario-line-walk-middle")
         reformat_line_walk_results(path)
         pdf_file_name = os.path.join(path, "rw-gan-mario-middle.pdf")
@@ -178,7 +178,7 @@ if __name__ == '__main__':
         reformat_line_walk_results(path)
         pdf_file_name = os.path.join(path, "rw-gan-mario-random.pdf")
         pdf = PdfPages(pdf_file_name)
-        for func in range(3, 42, 3):
+        for func in range(3, 22, 3):
             files = [os.path.join(path, "rw-gan-mario_f{0:03d}_i01_d10_reformatted.txt".format(func))]
             plot_line_walk_results(files, pdf=pdf,
                                    title="GAN Mario f{} (random point)".format(func),

@@ -163,7 +163,7 @@ int main(void) {
                      random_generator);*/
 
   example_experiment("rw-gan-mario",
-                     "function_indices: 3,6,9,12,15,18,21,24,27,30,33,36,39,42 instance_indices: 1 dimensions: 10",
+                     "function_indices: 24 instance_indices: 1 dimensions: 10",
                      "rw",
                      "result_folder: rw-gan-mario-rs-rw log_only_better: 0 log_variables: all",
                      random_generator);
@@ -479,7 +479,7 @@ void my_line_walk(evaluate_function_t evaluate_func,
   double *origin_solution = coco_allocate_vector(dimension);
   size_t *num_solutions = (size_t *) coco_allocate_memory(dimension * sizeof(size_t));
   for (i = 0; i < dimension; i++) {
-    num_solutions[i] = 101;
+    num_solutions[i] = 3;
   }
   /* Set origin to be a random point in the domain */
   for (i = 0; i < dimension; ++i) {
