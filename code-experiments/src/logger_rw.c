@@ -40,6 +40,7 @@ typedef struct {
   int log_vars;                  /**< @brief Whether to log the decision values. */
   int log_cons;                  /**< @brief Whether to log the constraints. */
   int log_only_better;           /**< @brief Whether to log only solutions that are better than previous ones. */
+  int log_time;                  /**< @brief Whether to log evaluation time. */
 
   int precision_x;               /**< @brief Precision for outputting decision values. */
   int precision_f;               /**< @brief Precision for outputting objective values. */
@@ -57,9 +58,14 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
   double *constraints;
   size_t i;
   int log_this_time = 1;
+  time_t start, end;
 
   logger = (logger_rw_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
+
+  /* Time the evaluations */
+  if (logger->log_time)
+    time(&start);
 
   /* Evaluate the objective(s) */
   coco_evaluate_function(inner_problem, x, y);
@@ -72,6 +78,10 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
     constraints = coco_allocate_vector(problem->number_of_constraints);
     inner_problem->evaluate_constraint(inner_problem, x, constraints);
   }
+
+  /* Time the evaluations */
+  if (logger->log_time)
+    time(&end);
 
   /* Log to the output file */
   if ((problem->number_of_objectives == 1) && (logger->current_value < logger->best_value))
@@ -90,6 +100,9 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
       for (i = 0; i < problem->number_of_constraints; i++)
         fprintf(logger->out_file, "%.*e\t", logger->precision_g, constraints[i]);
     }
+    /* Log time in seconds */
+    if (logger->log_time)
+      fprintf(logger->out_file, "%.0f\t", difftime(end, start));
     fprintf(logger->out_file, "\n");
   }
   fflush(logger->out_file);
@@ -156,6 +169,7 @@ static coco_problem_t *logger_rw(coco_observer_t *observer, coco_problem_t *inne
 
   logger_data->log_only_better = (observer_data->log_only_better) &&
       (inner_problem->number_of_objectives == 1);
+  logger_data->log_time = observer_data->log_time;
 
   logger_data->best_value = DBL_MAX;
   logger_data->current_value = DBL_MAX;
@@ -194,6 +208,8 @@ static coco_problem_t *logger_rw(coco_observer_t *observer, coco_problem_t *inne
         (unsigned long) inner_problem->number_of_constraints);
   if (inner_problem->number_of_constraints > 1)
     fprintf(logger_data->out_file, "s");
+  if (logger_data->log_time)
+    fprintf(logger_data->out_file, " | evaluation time (s)");
   fprintf(logger_data->out_file, "\n");
 
   problem = coco_problem_transformed_allocate(inner_problem, logger_data, logger_rw_free, observer->observer_name);
