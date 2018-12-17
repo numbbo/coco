@@ -238,7 +238,7 @@ to be written
 \section{CPU Timing}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % note that the following text is just a proposal and can/should be changed to your needs:
-In order to evaluate the CPU timing of the algorithm, we have run the \change{\algorithmA} with restarts on the entire \bbobls test suite \cite{bbobls2018func} for $2 D$ function evaluations according to \cite{hansen2016exp}. The \change{C/Java/Matlab/Octave/Python} code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores \change{and (compile) options xxx}. The time per function evaluation for dimensions 20, 40, 80, 160, 320\change{, 640} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
+In order to evaluate the CPU timing of the algorithm, we have run the \change{\algorithmA} with restarts on the entire \bbobls test suite \cite{bbobls2019func} for $2 D$ function evaluations according to \cite{hansen2016exp}. The \change{C/Java/Matlab/Octave/Python} code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores \change{and (compile) options xxx}. The time per function evaluation for dimensions 20, 40, 80, 160, 320\change{, 640} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
 
 \ifthenelse{\equal{\numberofalgorithms}{one}}{}{
 \change{repeat the above for any algorithm tested}
@@ -249,15 +249,15 @@ In order to evaluate the CPU timing of the algorithm, we have run the \change{\a
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Results from experiments according to \cite{hansen2016exp} and \cite{hansen2016perfass} on the
-benchmark functions given in \cite{bbobls2018func} are
+benchmark functions given in \cite{bbobls2019func} are
 presented in
 %%
 \ifthenelse{\equal{\numberofalgorithms}{one}}{
 Figures~\ref{fig:aRTgraphs}, \ref{fig:ECDFs}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:aRTs80} and \ref{tab:aRTs320}.
 }{\ifthenelse{\equal{\numberofalgorithms}{two}}{
-Figures~\ref{fig:scaling}, \ref{fig:scatterplots}, \ref{fig:ECDFs80D}, \ref{fig:ECDFs320D} and \ref{fig:ECDFsingleOne}, and Tables~\ref{tab:aRTs}.
+Figures~\ref{fig:scaling}, \ref{fig:scatterplots}, \ref{fig:ECDFs80D}, \ref{fig:ECDFs320D} and \ref{fig:ECDFsingleOne}, and Tables~\ref{tab:aRTs80} and \ref{tab:aRTs320}.
 }{\ifthenelse{\equal{\numberofalgorithms}{three}}{
-Figures~\ref{fig:scaling}, \ref{fig:ECDFs80D}, \ref{fig:ECDFs320D}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:aRTs}.
+Figures~\ref{fig:scaling}, \ref{fig:ECDFs80D}, \ref{fig:ECDFs320D}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:aRTs80} and \ref{tab:aRTs320}.
 }{}}}
 %%
 The experiments were performed with COCO \cite{hansen2016cocoplat}, version
@@ -675,18 +675,16 @@ ill-conditioned fcts & multi-modal fcts \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
 % Table showing the average runtime (aRT in number of function
-% evaluations) for functions $f_1$--$f_{24}$.
+% evaluations) for functions $f_1$--$f_{24}$ for dimension 80.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{table*}
+\begin{table*}\tiny
 %\hfill80-D\hfill~\\[1ex]
 {\normalsize \color{red}
 \ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
 }
 \mbox{\begin{minipage}[t]{0.495\textwidth}
 \centering
-80-D\\[5pt]
-\tiny
 \pptablesheader
 \input{\bbobdatapath\algsfolder pptables_f001_80D} 
 \input{\bbobdatapath\algsfolder pptables_f002_80D}
@@ -700,6 +698,12 @@ ill-conditioned fcts & multi-modal fcts \\
 \input{\bbobdatapath\algsfolder pptables_f010_80D}
 \input{\bbobdatapath\algsfolder pptables_f011_80D}
 \input{\bbobdatapath\algsfolder pptables_f012_80D}
+\end{tabularx}
+\end{minipage}
+\hspace{0.002\textwidth}
+\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\pptablesheader
 \input{\bbobdatapath\algsfolder pptables_f013_80D}
 \input{\bbobdatapath\algsfolder pptables_f014_80D}
 \input{\bbobdatapath\algsfolder pptables_f015_80D}
@@ -714,11 +718,27 @@ ill-conditioned fcts & multi-modal fcts \\
 \input{\bbobdatapath\algsfolder pptables_f024_80D}
 \end{tabularx}
 \end{minipage}}
-\hspace{0.002\textwidth}
+
+\caption{\label{tab:aRTs80}
+\bbobpptablesmanylegend{dimension $80$}
+}
+\end{table*}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+% Table showing the average runtime (aRT in number of function
+% evaluations) for functions $f_1$--$f_{24}$ for dimension 320.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}\tiny
+%\hfill80-D\hfill~\\[1ex]
+{\normalsize \color{red}
+\ifthenelse{\isundefined{\algorithmG}}{}{more than 6 algorithms: please split the tables below by hand until it fits to the page limits}
+}
 \mbox{\begin{minipage}[t]{0.495\textwidth}
 \centering
-320-D\\[5pt]
-\tiny
 \pptablesheader
 \input{\bbobdatapath\algsfolder pptables_f001_320D} 
 \input{\bbobdatapath\algsfolder pptables_f002_320D}
@@ -732,6 +752,12 @@ ill-conditioned fcts & multi-modal fcts \\
 \input{\bbobdatapath\algsfolder pptables_f010_320D}
 \input{\bbobdatapath\algsfolder pptables_f011_320D}
 \input{\bbobdatapath\algsfolder pptables_f012_320D}
+\end{tabularx}
+\end{minipage}
+\hspace{0.002\textwidth}
+\begin{minipage}[t]{0.499\textwidth}\tiny
+\centering
+\pptablesheader
 \input{\bbobdatapath\algsfolder pptables_f013_320D}
 \input{\bbobdatapath\algsfolder pptables_f014_320D}
 \input{\bbobdatapath\algsfolder pptables_f015_320D}
@@ -747,8 +773,8 @@ ill-conditioned fcts & multi-modal fcts \\
 \end{tabularx}
 \end{minipage}}
 
-\caption{\label{tab:aRTs}
-\bbobpptablesmanylegend{dimensions $80$ (left) and $320$ (right)}
+\caption{\label{tab:aRTs320}
+\bbobpptablesmanylegend{dimension $320$}
 }
 \end{table*}
 
