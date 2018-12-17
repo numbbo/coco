@@ -259,8 +259,8 @@ def bbob_line_walk(exdata_path, point='random'):
     pdf = PdfPages(pdf_file_name)
     file_name_template = "{}_f{:03d}_i{:02d}_d10_{}.txt"
     for func in range(1, 25):
-        file = os.path.join(path, file_name_template.format(suite_name, func, 1, "reformatted"))
-        plot_line_walk_results(file, pdf=pdf, title="BBOB f{} ({} point)".format(func, point),
+        files = [os.path.join(path, file_name_template.format(suite_name, func, 1, "reformatted"))]
+        plot_line_walk_results(files, pdf=pdf, title="BBOB f{} ({} point)".format(func, point),
                                n_rows=3, n_columns=4)
     pdf.close()
 
