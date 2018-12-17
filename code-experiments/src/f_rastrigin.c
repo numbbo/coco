@@ -10,6 +10,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 #include "suite_bbob_legacy_code.c"
+#include "coco_utilities.c"
 #include "transform_vars_conditioning.c"
 #include "transform_vars_asymmetric.c"
 #include "transform_vars_oscillate.c"
@@ -53,12 +54,26 @@ static void f_rastrigin_evaluate(coco_problem_t *problem, const double *x, doubl
 }
 
 /**
+ * @brief Evaluates the gradient of the raw Rastrigin function.
+ */
+static void f_rastrigin_evaluate_gradient(coco_problem_t *problem, const double *x, double *y) {
+
+  size_t i;
+
+  for (i = 0; i < problem->number_of_variables; ++i) {
+    y[i] = 2.0 * (10. * coco_pi * sin(coco_two_pi * x[i]) + x[i]);
+  }
+}
+
+/**
  * @brief Allocates the basic Rastrigin problem.
  */
 static coco_problem_t *f_rastrigin_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Rastrigin function",
       f_rastrigin_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
+  /* TODO: make sure the gradient is computed correctly for the rotated Rastrigin */
+  problem->evaluate_gradient = f_rastrigin_evaluate_gradient;
   coco_problem_set_id(problem, "%s_d%02lu", "rastrigin", number_of_variables);
 
   /* Compute best solution */
@@ -244,6 +259,28 @@ static coco_problem_t *f_rastrigin_permblockdiag_bbob_problem_allocate(const siz
 }
 
 /**
+ * @brief Computes xopt for constrained Rastrigin (alternative to bbob2009_compute_xopt())
+ * xopt is a vector of dim uniform random integers
+ */
+static void f_rastrigin_cons_compute_xopt(double *xopt, const long rseed, const size_t dim) {
+
+  size_t i;
+
+  bbob2009_unif(xopt, dim, rseed);
+
+  for (i = 0; i < dim; ++i) {
+    xopt[i] = 10 * xopt[i] - 5;
+    xopt[i] = (int) xopt[i];
+  }
+
+  /* In case (0, ..., 0) is sampled, set xopt to a different value */
+  if (coco_vector_is_zero(xopt, dim))
+    for (i = 0; i < dim; ++i) {
+        xopt[i] = (int) (i % 9) - 4;
+    }
+}
+
+/**
  * @brief Creates the Rastrigin problem for the constrained BBOB suite.
  */
 static coco_problem_t *f_rastrigin_cons_bbob_problem_allocate(const size_t function,
@@ -253,25 +290,22 @@ static coco_problem_t *f_rastrigin_cons_bbob_problem_allocate(const size_t funct
                                                          const char *problem_id_template,
                                                          const char *problem_name_template) {
 
-  double *xshift, fopt;
+  double *xopt, fopt;
   coco_problem_t *problem = NULL;
-  size_t i;
 
-  (void)rseed;  /* silence (C89) compilers */
-  xshift = coco_allocate_vector(dimension);
+  xopt = coco_allocate_vector(dimension);
+  f_rastrigin_cons_compute_xopt(xopt, rseed, dimension);
   fopt = bbob2009_compute_fopt(function, instance);
-  
-  for (i = 0; i < dimension; ++i)
-    xshift[i] = -1.0;
 
   problem = f_rastrigin_allocate(dimension);
-  problem = transform_vars_shift(problem, xshift, 0);
+  problem = transform_vars_shift(problem, xopt, 0);
   problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "1-separable");
-  coco_free_memory(xshift);
+
+  coco_free_memory(xopt);
   return problem;
 }
 

@@ -72,7 +72,8 @@ def save_figure(filename, algorithm=None, format=None,
                 # right, i.e., 0.88 is where the "tight" right figure
                 # border is placed whereas everything is plotted
                 # further up to plotted figure border at 1
-                plt.tight_layout(pad=0.15, rect=layout_rect)
+                if plt.matplotlib.__version__[0] < '3':
+                    plt.tight_layout(pad=0.15, rect=layout_rect)
             except Exception as e:
                 warnings.warn(
                     'Figure tightening failed (matplotlib version %s)'
