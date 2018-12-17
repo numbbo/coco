@@ -61,7 +61,7 @@
 {
 		\newcommand{\numberofalgorithms}{one}
 }{
-	  \ifthenelse{\equal{\numofalgs}{2}}
+           \ifthenelse{\isundefined{\algorithmC}}
 	  {
 	      \newcommand{\numberofalgorithms}{two}
 	  }{
@@ -103,7 +103,15 @@
   \hspace*{-3.5\baselineskip}%
   \begin{rotate}{90}\hspace{#1em}#2\vspace{0.5em}
   \end{rotate}}
-
+\newcommand{\includeperfprof}[1]{% include and annotate at the side
+  \input{\bbobdatapath\algsfolder #1}%
+  \includegraphics[height=0.24\textheight]{#1}%
+  %\raisebox{.12\textheight}{
+	%\parbox[b][.24\textheight]{.0868\textwidth}{\begin{scriptsize}
+  %  \perfprofsidepanel % this is "\algaperfprof \vfill \algbperfprof \vfill" etc
+  %\end{scriptsize}}
+	%}
+}
 
 %%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -797,26 +805,16 @@ ill-conditioned fcts & multi-modal fcts \\
 
 
 
-}
+} % end of 2 algorithms template
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% The following two commands are all you need in the
-% initial runs of your .tex file to
-% produce the bibliography for the citations in your paper.
-\bibliographystyle{abbrv}
+
+\bibliographystyle{ACM-Reference-Format}
 \bibliography{bbob}  % bbob.bib is the name of the Bibliography in this case
-% You must have a proper ".bib" file
-%  and remember to run:
-% latex bibtex latex latex
-% to resolve all references
-% to create the ~.bbl file.  Insert that ~.bbl file into
-% the .tex source file and comment out
-% the command \texttt{{\char'134}thebibliography}.
-%
-% ACM needs 'a single self-contained file'!
-%
 
-% \clearpage % otherwise the last figure might be missing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
