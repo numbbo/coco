@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from math import ceil, isclose
 import warnings
+import ntpath
 
 
 def reformat_line_walk_results(path):
@@ -153,7 +154,7 @@ def load_line_walk_times(file_names):
     """Returns the line walk times stored in file_names as a list of dictionaries. """
     time_list = []
     for file_name in sorted(file_names):
-        parts = file_name.split('_')
+        parts = ntpath.basename(file_name).split('_')
         f = int(parts[1][1:])
         i = int(parts[2][1:])
         try:
