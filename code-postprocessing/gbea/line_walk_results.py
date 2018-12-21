@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from math import ceil, isclose
 import warnings
+import ntpath
 
 
 def reformat_line_walk_results(path):
@@ -153,7 +154,7 @@ def load_line_walk_times(file_names):
     """Returns the line walk times stored in file_names as a list of dictionaries. """
     time_list = []
     for file_name in sorted(file_names):
-        parts = file_name.split('_')
+        parts = ntpath.basename(file_name).split('_')
         f = int(parts[1][1:])
         i = int(parts[2][1:])
         try:
@@ -241,8 +242,34 @@ def rw_top_trumps_line_walk(exdata_path, point='random'):
     pdf.close()
 
 
+def bbob_line_walk(exdata_path, point='random'):
+    suite_name = "bbob"
+    path = os.path.join(exdata_path, "{}-line-walk-{}".format(suite_name, point))
+    reformat_line_walk_results(path)
+    pdf_file_name = os.path.join(path, "{}-{}.pdf".format(suite_name, point))
+    pdf = PdfPages(pdf_file_name)
+    file_name_template = "{}_f{:03d}_i{:02d}_d10_{}.txt"
+    for func in range(1, 25):
+        files = []
+        for instance in range(1, 6):
+            files.append(os.path.join(path, file_name_template.format(suite_name, func,
+                                                                      instance, "reformatted")))
+        plot_line_walk_results(files, pdf=pdf, title="BBOB f{} ({} point)".format(func, point),
+                               n_rows=3, n_columns=4)
+    pdf.close()
+    pdf_file_name = os.path.join(path, "{}-{}-i01.pdf".format(suite_name, point))
+    pdf = PdfPages(pdf_file_name)
+    file_name_template = "{}_f{:03d}_i{:02d}_d10_{}.txt"
+    for func in range(1, 25):
+        files = [os.path.join(path, file_name_template.format(suite_name, func, 1, "reformatted"))]
+        plot_line_walk_results(files, pdf=pdf, title="BBOB f{} ({} point)".format(func, point),
+                               n_rows=3, n_columns=4)
+    pdf.close()
+
+
 if __name__ == '__main__':
     exdata_path = os.path.abspath(os.path.join(os.getcwd(), "..", "..", "code-experiments",
                                                "build", "c", "exdata"))
+    bbob_line_walk(exdata_path)
     rw_gan_mario_line_walk(exdata_path)
     rw_top_trumps_line_walk(exdata_path)

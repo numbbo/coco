@@ -166,7 +166,16 @@ int main(void) {
                        "random",
                        3);
 
-  /*line_walk_experiment("rw-gan-mario",
+
+  line_walk_experiment("bbob",
+                       "instance_indices: 1-5 dimensions: 10",
+                       "rw",
+                       "result_folder: bbob-line-walk-random log_only_better: 0 log_variables: all log_time: 0",
+                       random_generator,
+                       "random",
+                       101);
+
+  line_walk_experiment("rw-gan-mario",
                        "function_indices: 3,6,9,12,15,18,21,24,27,30,33,36,39,42 instance_indices: 1 dimensions: 10",
                        "rw",
                        "result_folder: rw-gan-mario-line-walk-random log_only_better: 0 log_variables: all log_time: 1",
