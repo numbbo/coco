@@ -13,22 +13,25 @@ pdf(name)
 tries = unique(df[,c("dim", "fun", "run")])
 for(i in 1:nrow(tries)){
   data = df[df$dim==tries$dim[i] & df$fun==tries$fun[i] &df$run==tries$run[i],]
+  if(tries$fun[i]>=21){
+    data$fitness[data$fitness==2000] = NA
+  }
   insts = unique(data$inst)
-  cols = rainbow(length(insts))
-  plot(0,type="n", main=paste("dim", tries$dim[i], "fun", tries$fun[i]),xlab="evaluation", ylab="fitness", xlim=c(0, max(data$evaluation)), ylim = c(min(data$fitness), max(data$fitness)))
+  cols = rep(rainbow(3),4)
+  plot(0,type="n", main=paste("dim", tries$dim[i], "fun", tries$fun[i]),xlab="evaluation", ylab="fitness", xlim=c(0, max(data$evaluation)), ylim = c(min(data$fitness, na.rm=TRUE), max(data$fitness, na.rm=TRUE)))
   for(j in 1:length(insts)){
     dt = data[data$inst == insts[j],]
     lines(dt$evaluation, dt$fitness, col=cols[j])
   }
   
-  plot(0,type="n", main=paste("decreasing dim", tries$dim[i], "fun", tries$fun[i]),xlab="evaluation", ylab="fitness", xlim=c(0, max(data$evaluation)), ylim = c(min(data$fitness), max(data$fitness)))
+  plot(0,type="n", main=paste("decreasing dim", tries$dim[i], "fun", tries$fun[i]),xlab="evaluation", ylab="fitness", xlim=c(0, max(data$evaluation)), ylim = c(min(data$fitness, na.rm=TRUE), max(data$fitness, na.rm=TRUE)))
   for(j in 1:length(insts)){
     dt = data[data$inst == insts[j],]
-    min = dt$fitness[1]
+    min = 2000
     idx = logical(nrow(dt))
     idx[1] = TRUE
     for(k in 2:nrow(dt)){
-      if(dt$fitness[k]<min){
+      if(!is.na(dt$fitness[k]) & dt$fitness[k]<min){
         idx[k]=TRUE
         min=dt$fitness[k]
       }else{
@@ -36,8 +39,9 @@ for(i in 1:nrow(tries)){
       }
     }
     dt = dt[idx,]
-    lines(c(dt$evaluation, max(data$evaluation)), c(dt$fitness, min(dt$fitness)), col=cols[j])
+    lines(c(dt$evaluation, max(data$evaluation)), c(dt$fitness, min(dt$fitness, na.rm=TRUE)), col=cols[j])
   }
+  legend("topright", c("inst 1", "inst 2", "inst 3"), col=cols, pch=16)
 }
 
 dev.off()
