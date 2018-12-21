@@ -4,7 +4,7 @@
  * @brief Implementation of a single-objective suite containing real-world problems of balancing
  * top trumps decks. A single-objective version can be found in the file suite_rw_top_trumps.c
  *
- * The suite contains 3 problems with dimensions 88, 128, 168, 208 and 15 instances.
+ * The suite contains 6 problems with dimensions 88, 128, 168, 208 and 15 instances.
  */
 
 #include "coco.h"
@@ -24,7 +24,7 @@ static coco_suite_t *suite_rw_top_trumps_biobj_initialize(void) {
   coco_suite_t *suite;
   const size_t dimensions[] = { 88, 128, 168, 208 };
 
-  suite = coco_suite_allocate("rw-top-trumps-biobj", 3, 4, dimensions, "instances: 1-15");
+  suite = coco_suite_allocate("rw-top-trumps-biobj", 6, 4, dimensions, "instances: 1-15");
 
   return suite;
 }

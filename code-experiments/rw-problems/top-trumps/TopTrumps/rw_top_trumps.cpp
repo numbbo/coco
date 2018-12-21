@@ -43,7 +43,7 @@ void top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
     double box_max = std::max(a,b);
     min[i] = std::round(box_min);
     max[i] = std::round(box_max);
-    std::cout << "random bounds [" << min[i] << ", " << max[i] <<"]"<< std::endl;
+    //std::cout << "random bounds [" << min[i] << ", " << max[i] <<"]"<< std::endl;
     for(int j=0; j<n; j++){
         if(x_vector[j*m+i] <min[i] || x_vector[j*m+i] > max[i]){
             //std::cout << "boundary on " << j*m+i << std::endl;
@@ -90,8 +90,17 @@ void top_trumps_evaluate(size_t function, size_t instance, size_t size_x,
       y_vector[0] = -out.getFairAgg();
       y_vector[1] = -out.getLeadChangeAgg();
     } else if (obj == 8) {
-      y_vector[0] = out.getTrickDiffAgg();
-      y_vector[1] = -out.getLeadChangeAgg();
+      y_vector[0] = -out.getFairAgg();
+      y_vector[1] = out.getTrickDiffAgg();
+    } else if (obj == 9) {
+      y_vector[0] = -deck.getHV();
+      y_vector[1] = -out.getFairAgg();
+    } else if (obj == 10) {
+      y_vector[0] = -deck.getHV();
+      y_vector[1] = -out.getLeadChangeAgg();   
+    } else if (obj == 11) {
+      y_vector[0] = -deck.getHV();
+      y_vector[1] = out.getTrickDiffAgg();       
     }
   }
 
