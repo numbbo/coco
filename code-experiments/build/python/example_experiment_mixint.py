@@ -51,7 +51,7 @@ def run_experiment(suite_name, observer_name, solver_name):
     for problem in suite:
         problem.observe_with(observer)
         x0 = problem.initial_solution
-        # population size and population sizde multiplier for DE
+        # population size and population size multiplier for DE
         de_pop_size = int(3 * np.power(np.log10(problem.dimension * budget_multiplier), 2))
         de_pop_mult = max(1, int(de_pop_size / problem.dimension))
         # apply restarts while neither the problem is solved nor the budget is exhausted
