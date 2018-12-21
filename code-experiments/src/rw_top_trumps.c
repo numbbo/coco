@@ -81,7 +81,7 @@ static coco_problem_t *rw_top_trumps_problem_allocate(const char *suite_name,
         function, instance, dimension);
     coco_problem_set_type(problem, "single-objective");
     /* TODO Add realistic best values */
-    problem->best_value[0] = 0;
+    problem->best_value[0] = -1;
   }
   else if (objectives == 2) {
     coco_problem_set_name(problem, "real-world Top Trumps bi-objective problem f%lu instance %lu in %luD",

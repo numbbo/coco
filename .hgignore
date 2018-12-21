@@ -27,3 +27,6 @@ examples/bbob2009-c-cmaes/run_bbob
 examples/bbob2009-c-cmaes/c-cmaes-v.*
 examples/bbob2009-c-cmaes/.*\.o
 examples/bbob2009-c-cmaes/.*\.par
+*.Rhistory
+*.pdf
+code-experiments/rw-problems/gan-mario/GAN/*

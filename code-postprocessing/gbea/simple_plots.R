@@ -13,9 +13,7 @@ pdf(name)
 tries = unique(df[,c("dim", "fun", "run")])
 for(i in 1:nrow(tries)){
   data = df[df$dim==tries$dim[i] & df$fun==tries$fun[i] &df$run==tries$run[i],]
-  if(tries$fun[i]>=21){
-    data$fitness[data$fitness==2000] = NA
-  }
+  data= data[data$f1 <1000 & data$f2 <1000,]
   insts = unique(data$inst)
   cols = rep(rainbow(3),4)
   plot(0,type="n", main=paste("dim", tries$dim[i], "fun", tries$fun[i]),xlab="evaluation", ylab="fitness", xlim=c(0, max(data$evaluation)), ylim = c(min(data$fitness, na.rm=TRUE), max(data$fitness, na.rm=TRUE)))

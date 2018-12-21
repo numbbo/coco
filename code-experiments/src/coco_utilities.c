@@ -415,6 +415,30 @@ int coco_remove_directory(const char *path) {
   return r;
 #endif
 }
+
+
+
+/**
+ * The method should work across different platforms/compilers.
+ *
+ * @file_name The path to the file
+ *
+ * @return 0 on successful completion, and -1 on error.
+ */
+int coco_remove_file(const char *file_name) {
+#if _MSC_VER
+  int r = -1;
+  /* Try to delete the file */
+  /* Careful, DeleteFile returns 0 if it fails and nonzero otherwise! */
+  r = -(DeleteFile(file_name) == 0);
+  return r;
+#else
+  int r = -1;
+  /* Try to delete the file */
+  r = unlink(file_name);
+  return r;
+#endif
+}
 /**@}*/
 
 /***********************************************************************************************************/

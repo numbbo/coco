@@ -19,7 +19,7 @@ def sms_emoa(fun, lb, ub, budget):
     dim = fun.dimension
     def obj_function(phenome):
         return (tuple(fun(phenome)))
-    popsize = 10
+    popsize = 100
     population = []
     init_step_sizes = [0.25]
     for _ in range(popsize):
@@ -102,7 +102,7 @@ def run_experiment(suite_name,
 
         minimal_print(problem, final=problem.index == len(suite) - 1)
 
-# export LD_LIBRARY_PATH='path_to_rw_top_trumps_library'
+# export LD_LIBRARY_PATH=path_to_rw_top_trumps_library
 if __name__ == '__main__':
     #run_experiment('rw-top-trumps', 'instance_indices: 1-3 dimensions: 128',
     #               add_observer_name='rw',
@@ -111,7 +111,7 @@ if __name__ == '__main__':
     run_experiment('rw-top-trumps-biobj', 'instance_indices: 1-3 dimensions: 128', observer_name="bbob-biobj",
                    add_observer_name='rw',
                    add_observer_options='log_only_better: 0 log_variables: all precision_x: 4',
-                   alg='sms', budget_multiplier=2)
+                   alg='sms', budget_multiplier=500)
     #run_experiment('rw-gan-mario',
     #               'function_indices: 3,6,9,12,15,18,21,24,27,30,33,36,39,42 instance_indices: 1 dimensions: 10',
     #               alg='rs', budget_multiplier=20)
