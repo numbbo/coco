@@ -31,7 +31,7 @@ void cocoEvaluateFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *pr
         mexErrMsgIdAndTxt("cocoEvaluateFunction:notDoubleArray","Input x must be an array of doubles.");
     }
     /* test if input dimension is consistent with problem dimension */
-    if(!(mxGetN(prhs[1]) == 1 & mxGetM(prhs[1]) == coco_problem_get_dimension(problem)) 
+    if(!(mxGetN(prhs[1]) == 1 & mxGetM(prhs[1]) == coco_problem_get_dimension(problem))
           & !(mxGetM(prhs[1]) == 1 & mxGetN(prhs[1]) == coco_problem_get_dimension(problem))) {
         mexErrMsgIdAndTxt("cocoEvaluateFunction:wrongDimension", "Input x does not comply with problem dimension.");
     }
@@ -67,7 +67,7 @@ void cocoEvaluateConstraint(int nlhs, mxArray *plhs[], int nrhs, const mxArray *
         mexErrMsgIdAndTxt("cocoEvaluateConstraint:notDoubleArray","Input x must be an array of doubles.");
     }
     /* test if input dimension is consistent with problem dimension */
-    if(!(mxGetN(prhs[1]) == 1 & mxGetM(prhs[1]) == coco_problem_get_dimension(problem)) 
+    if(!(mxGetN(prhs[1]) == 1 & mxGetM(prhs[1]) == coco_problem_get_dimension(problem))
           & !(mxGetM(prhs[1]) == 1 & mxGetN(prhs[1]) == coco_problem_get_dimension(problem))) {
         mexErrMsgIdAndTxt("cocoEvaluateConstraint:wrongDimension", "Input x does not comply with problem dimension.");
     }
@@ -87,7 +87,7 @@ void cocoObserver(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     char *observer_options;
     coco_observer_t *observer = NULL;
     size_t *res;
-    
+
     /* check for proper number of arguments */
     if(nrhs!=2) {
         mexErrMsgIdAndTxt("cocoObserver:nrhs","Two inputs required.");
@@ -108,7 +108,7 @@ void cocoObserverFree(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
 {
     coco_observer_t *observer;
     size_t *ref;
-    
+
     /* check for proper number of arguments */
     if(nrhs!=1) {
         mexErrMsgIdAndTxt("cocoObserverFree:nrhs","One input required.");
@@ -126,22 +126,22 @@ void cocoProblemAddObserver(int nlhs, mxArray *plhs[], int nrhs, const mxArray *
     coco_observer_t *observer;
     coco_problem_t *observedproblem;
     size_t *ref, *ref2;
-    
+
     /* check for proper number of arguments */
     if(nrhs!=2) {
         mexErrMsgIdAndTxt("cocoProblemAddObserver:nrhs","Two inputs required.");
     }
-    
+
     /* get the suite */
     ref = (size_t *)mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
     /* get the observer */
     ref2 = (size_t *)mxGetData(prhs[1]);
     observer = (coco_observer_t *)(*ref2);
-    
+
     /* call coco_problem_add_observer() */
     observedproblem = coco_problem_add_observer(problem, observer);
-    
+
     /* prepare the return value */
     plhs[0] = mxCreateNumericMatrix(1, 1 ,mxINT64_CLASS, mxREAL);
     ref = (size_t *)mxGetData(plhs[0]);
@@ -152,7 +152,7 @@ void cocoProblemFinalTargetHit(int nlhs, mxArray *plhs[], int nrhs, const mxArra
 {
     size_t *ref;
     coco_problem_t *problem = NULL;
-    const mwSize dims[2] = {1, 1};  
+    const mwSize dims[2] = {1, 1};
     size_t *res;
 
     /* check for proper number of arguments */
@@ -277,7 +277,7 @@ void cocoProblemGetInitialSolution(int nlhs, mxArray *plhs[], int nrhs, const mx
     /* get the problem */
     ref = (size_t *)mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
-    
+
     nb_dim = coco_problem_get_dimension(problem);
     plhs[0] = mxCreateDoubleMatrix(1, nb_dim, mxREAL);
     v = mxGetPr(plhs[0]);
@@ -302,7 +302,7 @@ void cocoProblemGetLargestFValuesOfInterest(int nlhs, mxArray *plhs[], int nrhs,
     /* get the problem */
     ref = (size_t *)mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
-    
+
     nb_obj = coco_problem_get_number_of_objectives(problem);
     plhs[0] = mxCreateDoubleMatrix(1, nb_obj, mxREAL);
     v = mxGetPr(plhs[0]);
@@ -329,7 +329,7 @@ void cocoProblemGetLargestValuesOfInterest(int nlhs, mxArray *plhs[], int nrhs, 
     /* get the problem */
     ref = (size_t *)mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
-    
+
     nb_dim = coco_problem_get_dimension(problem);
     plhs[0] = mxCreateDoubleMatrix(1, nb_dim, mxREAL);
     v = mxGetPr(plhs[0]);
@@ -467,22 +467,22 @@ void cocoProblemRemoveObserver(int nlhs, mxArray *plhs[], int nrhs, const mxArra
     coco_problem_t *unobservedproblem;
     size_t *ref;
     size_t *ref2;
-    
+
     /* check for proper number of arguments */
     if(nrhs!=2) {
         mexErrMsgIdAndTxt("cocoProblemREmoveObserver:nrhs","Two inputs required.");
     }
-    
+
     /* get the suite */
     ref = (size_t *)mxGetData(prhs[0]);
     problem = (coco_problem_t *)(*ref);
     /* get the observer */
     ref2 = (size_t *)mxGetData(prhs[1]);
     observer = (coco_observer_t *)(*ref2);
-    
+
     /* call coco_problem_remove_observer() */
     unobservedproblem = coco_problem_remove_observer(problem, observer);
-    
+
     /* prepare the return value */
     plhs[0] = mxCreateNumericMatrix(1, 1 ,mxINT64_CLASS, mxREAL);
     ref = (size_t *)mxGetData(plhs[0]);
@@ -491,7 +491,7 @@ void cocoProblemRemoveObserver(int nlhs, mxArray *plhs[], int nrhs, const mxArra
 
 void cocoSetLogLevel(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-  
+
     char *level;
     const char *res;
 
@@ -514,7 +514,7 @@ void cocoSuite(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     char *suite_options;
     coco_suite_t *suite = NULL;
     size_t *res;
-    
+
     /* check for proper number of arguments */
     if(nrhs!=3) {
         mexErrMsgIdAndTxt("cocoSuite:nrhs","Three inputs required.");
@@ -537,7 +537,7 @@ void cocoSuiteFree(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     coco_suite_t *suite = NULL;
     size_t *ref;
-    
+
     /* check for proper number of arguments */
     if(nrhs!=1) {
         mexErrMsgIdAndTxt("cocoSuiteFree:nrhs","One input required.");
@@ -556,22 +556,22 @@ void cocoSuiteGetNextProblem(int nlhs, mxArray *plhs[], int nrhs, const mxArray 
     coco_problem_t *problem;
     size_t *ref;
     size_t *ref2;
-    
+
     /* check for proper number of arguments */
     if(nrhs!=2) {
         mexErrMsgIdAndTxt("cocoSuiteGetNextProblem:nrhs","Two inputs required.");
     }
-    
+
     /* get the suite */
     ref = (size_t *)mxGetData(prhs[0]);
     suite = (coco_suite_t *)(*ref);
     /* get the observer */
     ref2 = (size_t *)mxGetData(prhs[1]);
     observer = (coco_observer_t *)(*ref2);
-    
+
     /* call coco_suite_get_next_problem() */
     problem = coco_suite_get_next_problem(suite, observer);
-    
+
     /* prepare the return value */
     plhs[0] = mxCreateNumericMatrix(1, 1 ,mxINT64_CLASS, mxREAL);
     ref = (size_t *)mxGetData(plhs[0]);
@@ -583,17 +583,17 @@ void cocoSuiteGetProblem(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prh
     coco_suite_t *problem_suite;
     size_t findex;
     coco_problem_t *pb = NULL;
-    size_t *res; 
+    size_t *res;
     size_t *ref;
 
     /* check for proper number of arguments */
     if(nrhs!=2) {
         mexErrMsgIdAndTxt("cocoSuiteGetProblem:nrhs","Two inputs required.\n Try \'help cocoSuiteGetProblem.m\'.");
     }
-    /* get problem_suite */   
+    /* get problem_suite */
     ref = (size_t *)mxGetData(prhs[0]);
     problem_suite = (coco_suite_t *)(*ref);
- 
+
     /* get function_index */
     findex = (size_t)mxGetScalar(prhs[1]);
     /* call coco_suite_get_problem() */
@@ -601,11 +601,11 @@ void cocoSuiteGetProblem(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prh
     /* prepare the return value */
     plhs[0] = mxCreateNumericMatrix(1, 1 ,mxINT64_CLASS, mxREAL);
     res = (size_t *)mxGetData(plhs[0]);
-    *res = (size_t)pb;   
+    *res = (size_t)pb;
 }
 
 /** @brief The gateway function, calling all Coco functionality from Matlab
- * 
+ *
  * Called as
  *
  *   out = cocoCall('functionName', arguments).
@@ -627,7 +627,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     for(i = 0; cocofunction[i]; i++){
         cocofunction[i] = tolower(cocofunction[i]);
     }
-    
+
     /* Now the big 'switch' accessing all supported Coco functions. */
     if (strcmp(cocofunction, "cocoevaluatefunction") == 0) {
         cocoEvaluateFunction(nlhs, plhs, nrhs-1, prhs+1);
@@ -663,6 +663,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoProblemGetNumberOfObjectives(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetnumberofconstraints") == 0) {
         cocoProblemGetNumberOfConstraints(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocoproblemgetnumberofintegervariables") == 0) {
+        cocoProblemGetNumberOfIntegerVariables(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemgetsmallestvaluesofinterest") == 0) {
         cocoProblemGetSmallestValuesOfInterest(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemisvalid") == 0) {
@@ -682,6 +684,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     } else {
         coco_warning("Function string '%s' not supported", cocofunction);
     }
-    
+
     mxFree(cocofunction);
 }

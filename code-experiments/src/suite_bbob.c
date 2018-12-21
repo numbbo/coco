@@ -42,7 +42,7 @@ static coco_suite_t *suite_bbob_initialize(void) {
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob", 24, 6, dimensions, "year: 2018");
+  suite = coco_suite_allocate("bbob", 24, 6, dimensions, "year: 2019");
 
   return suite;
 }
@@ -75,6 +75,9 @@ static const char *suite_bbob_get_instances_by_year(const int year) {
   }
   else if (year == 2018) {
     return "1-5,71-80";
+  }
+  else if (year == 2019) {
+    return "1-5,81-90";
   }
 
   else {
@@ -173,12 +176,22 @@ static coco_problem_t *coco_get_bbob_problem(const size_t function,
     problem = f_lunacek_bi_rastrigin_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else {
-    coco_error("get_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD",
+    coco_error("coco_get_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD",
     		(unsigned long) function, (unsigned long) instance, (unsigned long) dimension);
     return NULL; /* Never reached */
   }
 
   return problem;
+}
+
+/**
+ * TODO: A mock of the function to call large-scale BBOB functions. To be replaced by the right one
+ * when it is made available.
+ */
+static coco_problem_t *mock_coco_get_largescale_problem(const size_t function,
+                                                        const size_t dimension,
+                                                        const size_t instance) {
+  return coco_get_bbob_problem(function, dimension, instance);
 }
 
 /**

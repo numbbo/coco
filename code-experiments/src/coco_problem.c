@@ -9,9 +9,6 @@
 
 #include "coco_utilities.c"
 
-/* A declaration of a function defined below */
-static void coco_problem_round_solution(const coco_problem_t *problem, double *solution);
-
 /***********************************************************************************************************/
 
 /**
@@ -23,7 +20,6 @@ static void coco_problem_round_solution(const coco_problem_t *problem, double *s
  * and the best observed evaluation number.
  *
  * @note Both x and y must point to correctly sized allocated memory regions.
- * @note If any problem variables are integer, x is first rounded.
  *
  * @param problem The given COCO problem.
  * @param x The decision vector.
@@ -34,7 +30,7 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
   /* implements a safer version of problem->evaluate(problem, x, y) */
   size_t i, j;
   int is_feasible;
-  double *z, *x_rounded;
+  double *z;
   
   assert(problem != NULL);
   assert(problem->evaluate_function != NULL);
@@ -55,12 +51,7 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
     return;
   }
 
-  /* Round the vector x in case of integer variables */
-  x_rounded = coco_duplicate_vector(x, coco_problem_get_dimension(problem));
-  if (problem->number_of_integer_variables > 0)
-    coco_problem_round_solution(problem, x_rounded);
-
-  problem->evaluate_function(problem, x_rounded, y);
+  problem->evaluate_function(problem, x, y);
   problem->evaluations++; /* each derived class has its own counter, only the most outer will be visible */
 
   /* A little bit of bookkeeping */
@@ -68,7 +59,7 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
     is_feasible = 1;
     if (coco_problem_get_number_of_constraints(problem) > 0) {
       z = coco_allocate_vector(coco_problem_get_number_of_constraints(problem));
-      is_feasible = coco_is_feasible(problem, x_rounded, z);
+      is_feasible = coco_is_feasible(problem, x, z);
       coco_free_memory(z);
     }
     if (is_feasible) {
@@ -76,9 +67,6 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
       problem->best_observed_evaluation[0] = problem->evaluations;
     }
   }
-
-  coco_free_memory(x_rounded);
-
 }
 
 /**
@@ -181,15 +169,16 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->largest_values_of_interest = coco_allocate_vector(number_of_variables);
   problem->number_of_integer_variables = 0; /* No integer variables by default */
 
-  problem->best_parameter = coco_allocate_vector(number_of_variables);
-  if (number_of_objectives > 1)
+  if (number_of_objectives > 1) {
+    problem->best_parameter = NULL;
     problem->best_value = coco_allocate_vector(number_of_objectives);
-  else
-    problem->best_value = coco_allocate_vector(1);
-  if (number_of_objectives > 1)
     problem->nadir_value = coco_allocate_vector(number_of_objectives);
-  else
+  }
+  else {
+    problem->best_parameter = coco_allocate_vector(number_of_variables);
+    problem->best_value = coco_allocate_vector(1);
     problem->nadir_value = NULL;
+  }
   problem->problem_name = NULL;
   problem->problem_id = NULL;
   problem->problem_type = NULL;
@@ -574,8 +563,11 @@ void coco_problem_get_initial_solution(const coco_problem_t *problem, double *in
     for (i = 0; i < problem->number_of_variables; ++i)
       initial_solution[i] = problem->smallest_values_of_interest[i] + 0.5
           * (problem->largest_values_of_interest[i] - problem->smallest_values_of_interest[i]);
-    if (problem->number_of_integer_variables > 0)
-      coco_problem_round_solution(problem, initial_solution);
+    if (problem->number_of_integer_variables > 0) {
+      for (i = 0; i < problem->number_of_integer_variables; ++i) {
+        initial_solution[i] = coco_double_round(initial_solution[i]);
+      }
+    }
   }
 }
 
@@ -604,22 +596,6 @@ static size_t coco_problem_get_suite_dep_instance(const coco_problem_t *problem)
   assert(problem != NULL);
   assert(problem->suite_dep_instance > 0);
   return problem->suite_dep_instance;
-}
-
-/**
- * In case of a mixed-integer problem, rounds any value that should be integer to the closest integer
- * value.
- */
-static void coco_problem_round_solution(const coco_problem_t *problem,
-                                        double *solution) {
-  size_t i;
-  assert(problem != NULL);
-
-  if (problem->number_of_integer_variables > 0) {
-    for (i = 0; i < problem->number_of_integer_variables; ++i) {
-      solution[i] = coco_double_round(solution[i]);
-    }
-  }
 }
 /**@}*/
 
@@ -888,17 +864,21 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1,
                                                      const double *smallest_values_of_interest,
                                                      const double *largest_values_of_interest) {
 
-  const size_t number_of_variables = coco_problem_get_dimension(problem1);
-  const size_t number_of_objectives = coco_problem_get_number_of_objectives(problem1)
-      + coco_problem_get_number_of_objectives(problem2);
-  const size_t number_of_constraints = coco_problem_get_number_of_constraints(problem1)
-      + coco_problem_get_number_of_constraints(problem2);
+  size_t number_of_variables, number_of_objectives, number_of_constraints;
   size_t i;
   char *s;
   coco_problem_stacked_data_t *data;
   coco_problem_t *problem; /* the new coco problem */
 
+  assert(problem1);
+  assert(problem2);
   assert(coco_problem_get_dimension(problem1) == coco_problem_get_dimension(problem2));
+
+  number_of_variables = coco_problem_get_dimension(problem1);
+  number_of_objectives = coco_problem_get_number_of_objectives(problem1)
+      + coco_problem_get_number_of_objectives(problem2);
+  number_of_constraints = coco_problem_get_number_of_constraints(problem1)
+      + coco_problem_get_number_of_constraints(problem2);
 
   problem = coco_problem_allocate(number_of_variables, number_of_objectives, number_of_constraints);
   

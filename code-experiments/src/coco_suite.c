@@ -18,7 +18,7 @@
 #include "suite_bbob.c"
 #include "suite_bbob_mixint.c"
 #include "suite_biobj.c"
-#include "suite_biobj_ext.c"
+#include "suite_biobj_mixint.c"
 #include "suite_toy.c"
 #include "suite_largescale.c"
 #include "suite_cons_bbob.c"
@@ -39,16 +39,19 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_toy_initialize();
   } else if (strcmp(suite_name, "bbob") == 0) {
     suite = suite_bbob_initialize();
-  } else if (strcmp(suite_name, "bbob-biobj") == 0) {
-    suite = suite_biobj_initialize();
-  } else if (strcmp(suite_name, "bbob-biobj-ext") == 0) {
-    suite = suite_biobj_ext_initialize();
+  } else if ((strcmp(suite_name, "bbob-biobj") == 0) ||
+      (strcmp(suite_name, "bbob-biobj-ext") == 0)) {
+    suite = suite_biobj_initialize(suite_name);
   } else if (strcmp(suite_name, "bbob-largescale") == 0) {
     suite = suite_largescale_initialize();
   } else if (strcmp(suite_name, "bbob-constrained") == 0) {
     suite = suite_cons_bbob_initialize();
-  } else if (strcmp(suite_name, "bbob-mixint") == 0) {
-    suite = suite_bbob_mixint_initialize();
+  } else if (strcmp(suite_name, "bbob-mixint-1") == 0) {
+    suite = suite_bbob_mixint_initialize(suite_name);
+  } else if (strcmp(suite_name, "bbob-mixint-2") == 0) {
+    suite = suite_bbob_mixint_initialize(suite_name);
+  } else if (strcmp(suite_name, "bbob-biobj-mixint") == 0) {
+    suite = suite_biobj_mixint_initialize();
   }
   else {
     coco_error("coco_suite_intialize(): unknown problem suite");
@@ -68,14 +71,17 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
 
   if (strcmp(suite->suite_name, "bbob") == 0) {
     year_string = suite_bbob_get_instances_by_year(year);
-  } else if (strcmp(suite->suite_name, "bbob-biobj") == 0) {
-    year_string = suite_biobj_get_instances_by_year(year);
-  } else if (strcmp(suite->suite_name, "bbob-biobj-ext") == 0) {
-    year_string = suite_biobj_ext_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-constrained") == 0) {
     year_string = suite_cons_bbob_get_instances_by_year(year);
-  } else if (strcmp(suite->suite_name, "bbob-mixint") == 0) {
+  } else if ((strcmp(suite->suite_name, "bbob-biobj") == 0) ||
+      (strcmp(suite->suite_name, "bbob-biobj-ext") == 0)) {
+    year_string = suite_biobj_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "bbob-mixint-1") == 0) {
     year_string = suite_bbob_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "bbob-mixint-2") == 0) {
+    year_string = suite_bbob_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
+    year_string = suite_biobj_mixint_get_instances_by_year(year);
   } else {
     coco_error("coco_suite_get_instances_by_year(): suite '%s' has no years defined", suite->suite_name);
     return NULL;
@@ -108,16 +114,19 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     problem = suite_toy_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob") == 0) {
     problem = suite_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
-  } else if (strcmp(suite->suite_name, "bbob-biobj") == 0) {
+  } else if ((strcmp(suite->suite_name, "bbob-biobj") == 0) ||
+      (strcmp(suite->suite_name, "bbob-biobj-ext") == 0)) {
     problem = suite_biobj_get_problem(suite, function_idx, dimension_idx, instance_idx);
-  } else if (strcmp(suite->suite_name, "bbob-biobj-ext") == 0) {
-    problem = suite_biobj_ext_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-largescale") == 0) {
     problem = suite_largescale_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-constrained") == 0) {
     problem = suite_cons_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
-  } else if (strcmp(suite->suite_name, "bbob-mixint") == 0) {
+  } else if (strcmp(suite->suite_name, "bbob-mixint-1") == 0) {
     problem = suite_bbob_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "bbob-mixint-2") == 0) {
+    problem = suite_bbob_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
+    problem = suite_biobj_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else {
     coco_error("coco_suite_get_problem_from_indices(): unknown problem suite");
     return NULL;
@@ -460,7 +469,7 @@ static size_t *coco_suite_get_instance_indices(const coco_suite_t *suite, const 
   char *instances = NULL;
   const char *year_string = NULL;
   long year_found, instances_found;
-  int parce_year = 1, parce_instances = 1;
+  int parse_year = 1, parse_instances = 1;
   size_t *result = NULL;
 
   if (suite_instance == NULL)
@@ -474,16 +483,16 @@ static size_t *coco_suite_get_instance_indices(const coco_suite_t *suite, const 
 
   if ((year_found > 0) && (instances_found > 0)) {
     if (year_found < instances_found) {
-      parce_instances = 0;
+      parse_instances = 0;
       coco_warning("coco_suite_get_instance_indices(): 'instances' suite option ignored because it follows 'year'");
     }
     else {
-      parce_year = 0;
+      parse_year = 0;
       coco_warning("coco_suite_get_instance_indices(): 'year' suite option ignored because it follows 'instances'");
     }
   }
 
-  if ((year_found >= 0) && (parce_year == 1)) {
+  if ((year_found >= 0) && (parse_year == 1)) {
     if (coco_options_read_int(suite_instance, "year", &(year)) != 0) {
       year_string = coco_suite_get_instances_by_year(suite, year);
       result = coco_string_parse_ranges(year_string, 1, 0, "instances", COCO_MAX_INSTANCES);
@@ -493,7 +502,7 @@ static size_t *coco_suite_get_instance_indices(const coco_suite_t *suite, const 
   }
 
   instances = coco_allocate_string(COCO_MAX_INSTANCES);
-  if ((instances_found >= 0) && (parce_instances == 1)) {
+  if ((instances_found >= 0) && (parse_instances == 1)) {
     if (coco_options_read_values(suite_instance, "instances", instances) > 0) {
       result = coco_string_parse_ranges(instances, 1, 0, "instances", COCO_MAX_INSTANCES);
     } else {
@@ -880,7 +889,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
  * @param suite The suite.
  * @param function_idx Index of the function (starting with 0).
  * @param dimension_idx Index of the dimension (starting with 0).
- * @param instance_idx Index of the insatnce (starting with 0).
+ * @param instance_idx Index of the instance (starting with 0).
  *
  * @return The problem index in the suite computed from function_idx, dimension_idx and instance_idx.
  */

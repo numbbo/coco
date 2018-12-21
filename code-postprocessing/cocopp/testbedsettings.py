@@ -21,6 +21,7 @@ testbed_name_single_noisy = 'bbob-noisy'
 testbed_name_bi = 'bbob-biobj'
 testbed_name_bi_ext = 'bbob-biobj-ext'
 testbed_name_cons = 'bbob-constrained'
+testbed_name_mixint = 'bbob-mixint'
 
 default_suite_single = 'bbob'
 default_suite_single_noisy = 'bbob-noisy'
@@ -31,6 +32,7 @@ default_testbed_single_noisy = 'GECCOBBOBNoisyTestbed'
 default_testbed_bi = 'GECCOBiObjBBOBTestbed'
 default_testbed_bi_ext = 'GECCOBiObjExtBBOBTestbed'
 default_testbed_cons = 'CONSBBOBTestbed'
+default_testbed_mixint = 'GECCOBBOBMixintTestbed'
 
 current_testbed = None
 
@@ -39,7 +41,9 @@ suite_to_testbed = {
     default_suite_single_noisy: default_testbed_single_noisy,
     default_suite_bi: default_testbed_bi,
     'bbob-biobj-ext': default_testbed_bi_ext,
-    'bbob-constrained': default_testbed_cons
+    'bbob-constrained': default_testbed_cons,
+    'bbob-mixint-1': default_testbed_mixint,
+    'bbob-mixint-2': default_testbed_mixint,
 }
 
 
@@ -453,5 +457,29 @@ class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
             if 'target_values' in key or 'targetsOfInterest' in key:
                 self.instantiate_attributes(targetValues, [key])
 
+
+class GECCOBBOBMixintTestbed(GECCOBBOBTestbed):
+    """Testbed used with the bbob-mixint test suite.
+    """
+
+    dimsOfInterest = (10, 40)
+
+    settings = dict(
+        name=testbed_name_mixint,
+        first_dimension=5,
+        dimensions_to_display=[5, 10, 20, 40],  # TODO: Add higher dimensions
+        tabDimsOfInterest=dimsOfInterest,
+        rldDimsOfInterest=dimsOfInterest,
+        reference_algorithm_filename=None,
+        reference_algorithm_displayname=None
+    )
+
+    def __init__(self, targetValues):
+        super(GECCOBBOBMixintTestbed, self).__init__(targetValues)
+
+        for key, val in GECCOBBOBMixintTestbed.settings.items():
+            setattr(self, key, val)
+            if 'target_values' in key or 'targetsOfInterest' in key:
+                self.instantiate_attributes(targetValues, [key])
 
 

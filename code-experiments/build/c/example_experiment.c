@@ -156,7 +156,9 @@ int main(void) {
    * http://numbbo.github.io/coco-doc/C/#suite-parameters and
    * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
 
-  /* example_experiment("bbob", "dimensions: 2,3,5", "rw", "log_only_better: 0", random_generator); */
+  /* example_experiment("bbob", "dimensions: 2,3,5", "rw", "log_only_better: 0", random_generator);
+  example_experiment("bbob-mixint-1", "bbob", random_generator);
+  example_experiment("bbob-mixint-2", "bbob", random_generator);*/
 
   line_walk_experiment("bbob",
                        "instance_indices: 1-5 dimensions: 10",
@@ -696,4 +698,3 @@ static void timing_data_finalize(timing_data_t *timing_data) {
     coco_free_memory(timing_data);
   }
 }
-

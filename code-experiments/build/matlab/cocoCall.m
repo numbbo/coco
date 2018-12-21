@@ -39,10 +39,14 @@
 %   * cocoProblemGetLargestValuesOfInterest: problem
 %       Returns a vector of size 'dimension' with upper bounds of the region
 %         of interest in the decision space for the given problem.
-%   * cocoProblemGetName:	problem
+%   * cocoProblemGetName: problem
 %       Returns the name of the problem. 
 %   * cocoProblemGetNumberOfObjectives: problem
 %       Returns the number of objectives of the problem.
+%   * cocoProblemGetNumberOfConstraints: problem
+%       Returns the number of constraints of the problem.
+%   * cocoProblemGetNumberOfIntegerVariables: problem
+%       Returns the number of integer variables of the problem.
 %   * cocoProblemGetSmallestValuesOfInterest: problem
 %       Returns a vector of size 'dimension' with lower bounds of the region
 %         of interest in the decision space for the given problem.
