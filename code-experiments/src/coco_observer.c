@@ -490,6 +490,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   if (coco_options_read_int(observer_options, "precision_g", &precision_g) != 0) {
     if ((precision_g < 1) || (precision_g > 32))
       precision_g = 3;
+  }
 
   log_discrete_as_int = 1;
   if (coco_options_read_int(observer_options, "log_discrete_as_int", &log_discrete_as_int) != 0) {

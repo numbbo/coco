@@ -52,7 +52,7 @@ extern "C" {
  * Automatically updated by do.py.
  */
 /**@{*/
-static const char coco_version[32] = "2.2.1.479";
+static const char coco_version[32] = "2.2.1.565";
 /**@}*/
 
 /***********************************************************************************************************/
@@ -324,6 +324,11 @@ const char *coco_problem_get_name(const coco_problem_t *problem);
  * @brief Returns the ID of the problem.
  */
 const char *coco_problem_get_id(const coco_problem_t *problem);
+
+/**
+ * @brief Returns the type of the problem.
+ */
+const char *coco_problem_get_type(const coco_problem_t *problem);
 
 /**
  * @brief Returns the number of variables i.e. the dimension of the problem.

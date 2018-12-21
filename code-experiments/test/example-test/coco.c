@@ -72,7 +72,7 @@ extern "C" {
  * Automatically updated by do.py.
  */
 /**@{*/
-static const char coco_version[32] = "2.2.1.479";
+static const char coco_version[32] = "2.2.1.565";
 /**@}*/
 
 /***********************************************************************************************************/
@@ -346,6 +346,11 @@ const char *coco_problem_get_name(const coco_problem_t *problem);
 const char *coco_problem_get_id(const coco_problem_t *problem);
 
 /**
+ * @brief Returns the type of the problem.
+ */
+const char *coco_problem_get_type(const coco_problem_t *problem);
+
+/**
  * @brief Returns the number of variables i.e. the dimension of the problem.
  */
 size_t coco_problem_get_dimension(const coco_problem_t *problem);
@@ -585,6 +590,7 @@ char *coco_strdupf(const char *str, ...);
 #endif
 #endif
 #line 12 "code-experiments/src/coco_random.c"
+#include <stdio.h>
 
 #define COCO_NORMAL_POLAR /* Use polar transformation method */
 
@@ -625,6 +631,7 @@ static void coco_random_generate(coco_random_state_t *state) {
 coco_random_state_t *coco_random_new(uint32_t seed) {
   coco_random_state_t *state = (coco_random_state_t *) coco_allocate_memory(sizeof(*state));
   size_t i;
+  /* printf("coco_random_new(): %u\n", seed); */
   /* Expand seed to fill initial state array. */
   for (i = 0; i < COCO_LONG_LAG; ++i) {
     /* Uses uint64_t to silence the compiler ("shift count negative or too big, undefined behavior" warning) */
@@ -632,7 +639,8 @@ coco_random_state_t *coco_random_new(uint32_t seed) {
     /* Advance seed based on simple RNG from TAOCP */
     seed = (uint32_t) 1812433253UL * (seed ^ (seed >> 30)) + ((uint32_t) i + 1);
   }
-  state->index = 0;
+  state->index = 12;
+  /* coco_random_generate(state); */
   return state;
 }
 
@@ -742,13 +750,21 @@ typedef void (*coco_recommend_function_t)(coco_problem_t *problem, const double 
  */
 typedef coco_problem_t *(*coco_logger_allocate_function_t)(coco_observer_t *observer,
                                                            coco_problem_t *problem);
-
 /**
  * @brief The free logger function type.
  *
  * This is a template for functions that free a logger.
  */
 typedef void (*coco_logger_free_function_t)(void *logger);
+
+/**
+ * @brief The get problem function type.
+ *
+ * This is a template for functions that return a problem based on function, dimension and instance.
+ */
+typedef coco_problem_t *(*coco_get_problem_function_t)(const size_t function,
+                                                       const size_t dimension,
+                                                       const size_t instance);
 
 
 /**
@@ -875,6 +891,7 @@ struct coco_observer_s {
   int precision_x;           /**< @brief Output precision for decision variables. */
   int precision_f;           /**< @brief Output precision for function values. */
   int precision_g;           /**< @brief Output precision for constraint values. */
+  int log_discrete_as_int;   /**< @brief Whether to output discrete variables in int or double format. */
   void *data;                /**< @brief Void pointer that can be used to point to data specific to an observer. */
 
   coco_data_free_function_t data_free_function;             /**< @brief  The function for freeing this observer. */
@@ -1044,9 +1061,10 @@ int mkdir(const char *pathname, mode_t mode);
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
+#include <limits.h>
 
-#line 17 "code-experiments/src/coco_utilities.c"
 #line 18 "code-experiments/src/coco_utilities.c"
+#line 19 "code-experiments/src/coco_utilities.c"
 #line 1 "code-experiments/src/coco_string.c"
 /**
  * @file coco_string.c
@@ -1537,7 +1555,7 @@ static char *coco_string_trim(char *string) {
 	return string;
 }
 
-#line 19 "code-experiments/src/coco_utilities.c"
+#line 20 "code-experiments/src/coco_utilities.c"
 
 
 /***********************************************************************************************************/
@@ -2414,9 +2432,31 @@ static double coco_double_min(const double a, const double b) {
 
 /**
  * @brief Performs a "safer" double to size_t conversion.
+ *
+ * TODO: This method could (should?) check for overflow when casting (similarly as is done in
+ * coco_double_to_int()).
  */
 static size_t coco_double_to_size_t(const double number) {
   return (size_t) coco_double_round(number);
+}
+
+/**
+ * @brief Rounds the given double to the nearest integer (returns the number in int type)
+ */
+static int coco_double_to_int(const double number) {
+  if (number > (double)INT_MAX) {
+    coco_error("coco_double_to_int(): Cannot cast %f to the nearest integer, max %d allowed",
+        number, INT_MAX);
+    return -1; /* Never reached */
+  }
+  else if (number < (double)INT_MIN) {
+    coco_error("coco_double_to_int(): Cannot cast %f to the nearest integer, min %d allowed",
+        number, INT_MIN);
+    return -1; /* Never reached */
+  }
+  else {
+    return (int)(number + 0.5);
+  }
 }
 
 /**
@@ -2710,9 +2750,6 @@ static int coco_vector_is_zero(const double *x, const size_t dim) {
 
 #line 11 "code-experiments/src/coco_problem.c"
 
-/* A declaration of a function defined below */
-static void coco_problem_round_solution(const coco_problem_t *problem, double *solution);
-
 /***********************************************************************************************************/
 
 /**
@@ -2724,7 +2761,6 @@ static void coco_problem_round_solution(const coco_problem_t *problem, double *s
  * and the best observed evaluation number.
  *
  * @note Both x and y must point to correctly sized allocated memory regions.
- * @note If any problem variables are integer, x is first rounded.
  *
  * @param problem The given COCO problem.
  * @param x The decision vector.
@@ -2735,7 +2771,7 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
   /* implements a safer version of problem->evaluate(problem, x, y) */
   size_t i, j;
   int is_feasible;
-  double *z, *x_rounded;
+  double *z;
   
   assert(problem != NULL);
   assert(problem->evaluate_function != NULL);
@@ -2756,12 +2792,7 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
     return;
   }
 
-  /* Round the vector x in case of integer variables */
-  x_rounded = coco_duplicate_vector(x, coco_problem_get_dimension(problem));
-  if (problem->number_of_integer_variables > 0)
-    coco_problem_round_solution(problem, x_rounded);
-
-  problem->evaluate_function(problem, x_rounded, y);
+  problem->evaluate_function(problem, x, y);
   problem->evaluations++; /* each derived class has its own counter, only the most outer will be visible */
 
   /* A little bit of bookkeeping */
@@ -2769,7 +2800,7 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
     is_feasible = 1;
     if (coco_problem_get_number_of_constraints(problem) > 0) {
       z = coco_allocate_vector(coco_problem_get_number_of_constraints(problem));
-      is_feasible = coco_is_feasible(problem, x_rounded, z);
+      is_feasible = coco_is_feasible(problem, x, z);
       coco_free_memory(z);
     }
     if (is_feasible) {
@@ -2777,9 +2808,6 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
       problem->best_observed_evaluation[0] = problem->evaluations;
     }
   }
-
-  coco_free_memory(x_rounded);
-
 }
 
 /**
@@ -2882,15 +2910,16 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->largest_values_of_interest = coco_allocate_vector(number_of_variables);
   problem->number_of_integer_variables = 0; /* No integer variables by default */
 
-  problem->best_parameter = coco_allocate_vector(number_of_variables);
-  if (number_of_objectives > 1)
+  if (number_of_objectives > 1) {
+    problem->best_parameter = NULL;
     problem->best_value = coco_allocate_vector(number_of_objectives);
-  else
-    problem->best_value = coco_allocate_vector(1);
-  if (number_of_objectives > 1)
     problem->nadir_value = coco_allocate_vector(number_of_objectives);
-  else
+  }
+  else {
+    problem->best_parameter = coco_allocate_vector(number_of_variables);
+    problem->best_value = coco_allocate_vector(1);
     problem->nadir_value = NULL;
+  }
   problem->problem_name = NULL;
   problem->problem_id = NULL;
   problem->problem_type = NULL;
@@ -3275,8 +3304,11 @@ void coco_problem_get_initial_solution(const coco_problem_t *problem, double *in
     for (i = 0; i < problem->number_of_variables; ++i)
       initial_solution[i] = problem->smallest_values_of_interest[i] + 0.5
           * (problem->largest_values_of_interest[i] - problem->smallest_values_of_interest[i]);
-    if (problem->number_of_integer_variables > 0)
-      coco_problem_round_solution(problem, initial_solution);
+    if (problem->number_of_integer_variables > 0) {
+      for (i = 0; i < problem->number_of_integer_variables; ++i) {
+        initial_solution[i] = coco_double_round(initial_solution[i]);
+      }
+    }
   }
 }
 
@@ -3305,22 +3337,6 @@ static size_t coco_problem_get_suite_dep_instance(const coco_problem_t *problem)
   assert(problem != NULL);
   assert(problem->suite_dep_instance > 0);
   return problem->suite_dep_instance;
-}
-
-/**
- * In case of a mixed-integer problem, rounds any value that should be integer to the closest integer
- * value.
- */
-static void coco_problem_round_solution(const coco_problem_t *problem,
-                                        double *solution) {
-  size_t i;
-  assert(problem != NULL);
-
-  if (problem->number_of_integer_variables > 0) {
-    for (i = 0; i < problem->number_of_integer_variables; ++i) {
-      solution[i] = coco_double_round(solution[i]);
-    }
-  }
 }
 /**@}*/
 
@@ -3589,17 +3605,21 @@ static coco_problem_t *coco_problem_stacked_allocate(coco_problem_t *problem1,
                                                      const double *smallest_values_of_interest,
                                                      const double *largest_values_of_interest) {
 
-  const size_t number_of_variables = coco_problem_get_dimension(problem1);
-  const size_t number_of_objectives = coco_problem_get_number_of_objectives(problem1)
-      + coco_problem_get_number_of_objectives(problem2);
-  const size_t number_of_constraints = coco_problem_get_number_of_constraints(problem1)
-      + coco_problem_get_number_of_constraints(problem2);
+  size_t number_of_variables, number_of_objectives, number_of_constraints;
   size_t i;
   char *s;
   coco_problem_stacked_data_t *data;
   coco_problem_t *problem; /* the new coco problem */
 
+  assert(problem1);
+  assert(problem2);
   assert(coco_problem_get_dimension(problem1) == coco_problem_get_dimension(problem2));
+
+  number_of_variables = coco_problem_get_dimension(problem1);
+  number_of_objectives = coco_problem_get_number_of_objectives(problem1)
+      + coco_problem_get_number_of_objectives(problem2);
+  number_of_constraints = coco_problem_get_number_of_constraints(problem1)
+      + coco_problem_get_number_of_constraints(problem2);
 
   problem = coco_problem_allocate(number_of_variables, number_of_objectives, number_of_constraints);
   
@@ -7166,6 +7186,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin_bbob_problem_allocate(const size_t
 #line 11 "code-experiments/src/f_rastrigin.c"
 #line 12 "code-experiments/src/f_rastrigin.c"
 #line 13 "code-experiments/src/f_rastrigin.c"
+#line 14 "code-experiments/src/f_rastrigin.c"
 #line 1 "code-experiments/src/transform_vars_conditioning.c"
 /**
  * @file transform_vars_conditioning.c
@@ -7271,12 +7292,12 @@ static coco_problem_t *transform_vars_conditioning(coco_problem_t *inner_problem
     coco_vector_set_to_nan(inner_problem->best_parameter, inner_problem->number_of_variables);
   }  return problem;
 }
-#line 14 "code-experiments/src/f_rastrigin.c"
 #line 15 "code-experiments/src/f_rastrigin.c"
 #line 16 "code-experiments/src/f_rastrigin.c"
 #line 17 "code-experiments/src/f_rastrigin.c"
 #line 18 "code-experiments/src/f_rastrigin.c"
 #line 19 "code-experiments/src/f_rastrigin.c"
+#line 20 "code-experiments/src/f_rastrigin.c"
 
 /**
  * @brief Implements the Rastrigin function without connections to any COCO structures.
@@ -7311,12 +7332,26 @@ static void f_rastrigin_evaluate(coco_problem_t *problem, const double *x, doubl
 }
 
 /**
+ * @brief Evaluates the gradient of the raw Rastrigin function.
+ */
+static void f_rastrigin_evaluate_gradient(coco_problem_t *problem, const double *x, double *y) {
+
+  size_t i;
+
+  for (i = 0; i < problem->number_of_variables; ++i) {
+    y[i] = 2.0 * (10. * coco_pi * sin(coco_two_pi * x[i]) + x[i]);
+  }
+}
+
+/**
  * @brief Allocates the basic Rastrigin problem.
  */
 static coco_problem_t *f_rastrigin_allocate(const size_t number_of_variables) {
 
   coco_problem_t *problem = coco_problem_allocate_from_scalars("Rastrigin function",
       f_rastrigin_evaluate, NULL, number_of_variables, -5.0, 5.0, 0.0);
+  /* TODO: make sure the gradient is computed correctly for the rotated Rastrigin */
+  problem->evaluate_gradient = f_rastrigin_evaluate_gradient;
   coco_problem_set_id(problem, "%s_d%02lu", "rastrigin", number_of_variables);
 
   /* Compute best solution */
@@ -7415,6 +7450,28 @@ static coco_problem_t *f_rastrigin_rotated_bbob_problem_allocate(const size_t fu
 }
 
 /**
+ * @brief Computes xopt for constrained Rastrigin (alternative to bbob2009_compute_xopt())
+ * xopt is a vector of dim uniform random integers
+ */
+static void f_rastrigin_cons_compute_xopt(double *xopt, const long rseed, const size_t dim) {
+
+  size_t i;
+
+  bbob2009_unif(xopt, dim, rseed);
+
+  for (i = 0; i < dim; ++i) {
+    xopt[i] = 10 * xopt[i] - 5;
+    xopt[i] = (int) xopt[i];
+  }
+
+  /* In case (0, ..., 0) is sampled, set xopt to a different value */
+  if (coco_vector_is_zero(xopt, dim))
+    for (i = 0; i < dim; ++i) {
+        xopt[i] = (int) (i % 9) - 4;
+    }
+}
+
+/**
  * @brief Creates the Rastrigin problem for the constrained BBOB suite.
  */
 static coco_problem_t *f_rastrigin_cons_bbob_problem_allocate(const size_t function,
@@ -7424,25 +7481,22 @@ static coco_problem_t *f_rastrigin_cons_bbob_problem_allocate(const size_t funct
                                                          const char *problem_id_template,
                                                          const char *problem_name_template) {
 
-  double *xshift, fopt;
+  double *xopt, fopt;
   coco_problem_t *problem = NULL;
-  size_t i;
 
-  (void)rseed;  /* silence (C89) compilers */
-  xshift = coco_allocate_vector(dimension);
+  xopt = coco_allocate_vector(dimension);
+  f_rastrigin_cons_compute_xopt(xopt, rseed, dimension);
   fopt = bbob2009_compute_fopt(function, instance);
-  
-  for (i = 0; i < dimension; ++i)
-    xshift[i] = -1.0;
 
   problem = f_rastrigin_allocate(dimension);
-  problem = transform_vars_shift(problem, xshift, 0);
+  problem = transform_vars_shift(problem, xopt, 0);
   problem = transform_obj_shift(problem, fopt);
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
   coco_problem_set_type(problem, "1-separable");
-  coco_free_memory(xshift);
+
+  coco_free_memory(xopt);
   return problem;
 }
 
@@ -8644,7 +8698,7 @@ static coco_suite_t *suite_bbob_initialize(void) {
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob", 24, 6, dimensions, "year: 2018");
+  suite = coco_suite_allocate("bbob", 24, 6, dimensions, "year: 2019");
 
   return suite;
 }
@@ -8677,6 +8731,9 @@ static const char *suite_bbob_get_instances_by_year(const int year) {
   }
   else if (year == 2018) {
     return "1-5,71-80";
+  }
+  else if (year == 2019) {
+    return "1-5,81-90";
   }
 
   else {
@@ -8775,12 +8832,22 @@ static coco_problem_t *coco_get_bbob_problem(const size_t function,
     problem = f_lunacek_bi_rastrigin_bbob_problem_allocate(function, dimension, instance, rseed,
         problem_id_template, problem_name_template);
   } else {
-    coco_error("get_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD",
+    coco_error("coco_get_bbob_problem(): cannot retrieve problem f%lu instance %lu in %luD",
     		(unsigned long) function, (unsigned long) instance, (unsigned long) dimension);
     return NULL; /* Never reached */
   }
 
   return problem;
+}
+
+/**
+ * TODO: A mock of the function to call large-scale BBOB functions. To be replaced by the right one
+ * when it is made available.
+ */
+static coco_problem_t *mock_coco_get_largescale_problem(const size_t function,
+                                                        const size_t dimension,
+                                                        const size_t instance) {
+  return coco_get_bbob_problem(function, dimension, instance);
 }
 
 /**
@@ -8815,26 +8882,37 @@ static coco_problem_t *suite_bbob_get_problem(coco_suite_t *suite,
 #line 1 "code-experiments/src/suite_bbob_mixint.c"
 /**
  * @file suite_bbob_mixint.c
- * @brief Test implementation of a suite with mixed-integer BBOB problems.
+ * @brief Implementation of a suite with mixed-integer bbob problems (based on the 24 bbob functions,
+ * but using their large-scale implementations instead of the original ones).
  */
 
-#line 7 "code-experiments/src/suite_bbob_mixint.c"
 #line 8 "code-experiments/src/suite_bbob_mixint.c"
+#line 9 "code-experiments/src/suite_bbob_mixint.c"
 #line 1 "code-experiments/src/transform_vars_discretize.c"
 /**
  * @file transform_vars_discretize.c
  *
  * @brief Implementation of transforming a continuous problem to a mixed-integer problem by making some
- * of its variables discrete. The entire ROI (including the variables that are not discretized) is first
- * mapped to the ROI of the inner problem. Then, some shifting is performed so that the best_parameter
- * lies in one of the feasible (discrete) values. Caution: this won't work if the inner problem is not
- * defined outside of the ROI!
+ * of its variables discrete. The integer variables are considered as bounded (any variable outside the
+ * decision space is mapped to the closest boundary point), while the continuous ones are treated as
+ * unbounded.
+ *
+ * @note The first problem->number_of_integer_variables are integer, while the rest are continuous.
+ *
+ * The discretization works as follows. Consider the case where the interval [l, u] of the inner problem
+ * needs to be discretized to n integer values of the outer problem. First, [l, u] is discretized to n
+ * integers by placing the integers so that there is a (u-l)/(n+1) distance between them (and the border
+ * points). Then, the transformation is shifted so that the optimum aligns with the closest integer. In
+ * this way, we make sure that the all the shifted points are still within [l, u].
+ *
+ * When evaluating such a problem, the x values of the integer variables are first discretized. Any value
+ * x < 0 is mapped to 0 and any value x > (n-1) is mapped to (n-1).
  */
 
 #include <assert.h>
 
-#line 14 "code-experiments/src/transform_vars_discretize.c"
-#line 15 "code-experiments/src/transform_vars_discretize.c"
+#line 24 "code-experiments/src/transform_vars_discretize.c"
+#line 25 "code-experiments/src/transform_vars_discretize.c"
 
 /**
  * @brief Data type for transform_vars_discretize.
@@ -8850,27 +8928,38 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
   size_t i;
   transform_vars_discretize_data_t *data;
   coco_problem_t *inner_problem;
-  double *discretized_x = coco_allocate_vector(problem->number_of_variables);
-  double inner_l, inner_u, outer_l, outer_u;
-  
+  double *discretized_x;
+  double l, u, inner_l, inner_u, outer_l, outer_u;
+  int n;
+
   if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
-  	coco_vector_set_to_nan(y, coco_problem_get_number_of_objectives(problem));
-  	return;
+    coco_vector_set_to_nan(y, coco_problem_get_number_of_objectives(problem));
+    return;
   }
 
   data = (transform_vars_discretize_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
-  /* The solution x already has integer values where needed */
-  for (i = 0; i < problem->number_of_variables; ++i) {
-    inner_l = inner_problem->smallest_values_of_interest[i];
-    inner_u = inner_problem->largest_values_of_interest[i];
+  /* Transform x to fit in the discretized space */
+  discretized_x = coco_duplicate_vector(x, problem->number_of_variables);
+  for (i = 0; i < problem->number_of_integer_variables; ++i) {
     outer_l = problem->smallest_values_of_interest[i];
     outer_u = problem->largest_values_of_interest[i];
-    assert(!coco_double_almost_equal(outer_u, outer_l, 1e-13));
-    discretized_x[i] = inner_l + (inner_u - inner_l) * (x[i] - outer_l) / (outer_u - outer_l) - data->offset[i];
+    l = inner_problem->smallest_values_of_interest[i];
+    u = inner_problem->largest_values_of_interest[i];
+    n = coco_double_to_int(outer_u) - coco_double_to_int(outer_l) + 1; /* number of integer values in this coordinate */
+    assert(n > 1);
+    inner_l = l + (u - l) / (n + 1);
+    inner_u = u - (u - l) / (n + 1);
+    /* Make sure you the bounds are respected */
+    discretized_x[i] = coco_double_round(x[i]);
+    if (discretized_x[i] < outer_l)
+      discretized_x[i] = outer_l;
+    if (discretized_x[i] > outer_u)
+      discretized_x[i] = outer_u;
+    discretized_x[i] = inner_l + (inner_u - inner_l) * (discretized_x[i] - outer_l) / (outer_u - outer_l) - data->offset[i];
   }
-  
+
   coco_evaluate_function(inner_problem, discretized_x, y);
   coco_free_memory(discretized_x);
 }
@@ -8892,7 +8981,9 @@ static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
                                                  const size_t number_of_integer_variables) {
   transform_vars_discretize_data_t *data;
   coco_problem_t *problem = NULL;
-  double inner_l, inner_u, outer_l, outer_u, xopt;
+  double l, u, inner_l, inner_u, outer_l, outer_u;
+  double outer_xopt, inner_xopt, inner_approx_xopt;
+  int n;
   size_t i;
 
   data = (transform_vars_discretize_data_t *) coco_allocate_memory(sizeof(*data));
@@ -8906,24 +8997,31 @@ static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
     assert(smallest_values_of_interest[i] < largest_values_of_interest[i]);
     problem->smallest_values_of_interest[i] = smallest_values_of_interest[i];
     problem->largest_values_of_interest[i] = largest_values_of_interest[i];
+    data->offset[i] = 0;
     if (i < number_of_integer_variables) {
-      /* Compute the offset in four steps: */
-      inner_l = inner_problem->smallest_values_of_interest[i];
-      inner_u = inner_problem->largest_values_of_interest[i];
+      /* Compute the offset for integer variables */
       outer_l = problem->smallest_values_of_interest[i];
       outer_u = problem->largest_values_of_interest[i];
-      /* Step 1: Find the location of the optimum in the coordinates of the outer problem */
-      xopt = outer_l + (outer_u - outer_l) * (inner_problem->best_parameter[i] - inner_l) / (inner_u - inner_l);
-      /* Step 2: Round to the closest integer */
-      xopt = coco_double_round(xopt);
-      problem->best_parameter[i] = xopt;
-      /* Step 3: Find the corresponding discretized value in the coordinates of the inner problem */
-      xopt = inner_l + (inner_u - inner_l) * (xopt - outer_l) / (outer_u - outer_l);
-      /* Step 4: Compute the difference between the discretized value and the location of the optimum */
-      data->offset[i] = xopt - inner_problem->best_parameter[i];
-    }
-    else {
-      data->offset[i] = 0;
+      l = inner_problem->smallest_values_of_interest[i];
+      u = inner_problem->largest_values_of_interest[i];
+      n = coco_double_to_int(outer_u) - coco_double_to_int(outer_l) + 1; /* number of integer values */
+      assert(n > 1);
+      inner_l = l + (u - l) / (n + 1);
+      inner_u = u - (u - l) / (n + 1);
+      /* Find the location of the optimum in the coordinates of the outer problem */
+      inner_xopt = inner_problem->best_parameter[i];
+      outer_xopt = outer_l + (outer_u - outer_l) * (inner_xopt - inner_l) / (inner_u - inner_l);
+      outer_xopt = coco_double_round(outer_xopt);
+      /* Make sure you the bounds are respected */
+      if (outer_xopt < outer_l)
+        outer_xopt = outer_l;
+      if (outer_xopt > outer_u)
+        outer_xopt = outer_u;
+      problem->best_parameter[i] = outer_xopt;
+      /* Find the value corresponding to outer_xopt in the coordinates of the inner problem */
+      inner_approx_xopt = inner_l + (inner_u - inner_l) * (outer_xopt - outer_l) / (outer_u - outer_l);
+      /* Compute the difference between the inner_approx_xopt and inner_xopt */
+      data->offset[i] = inner_approx_xopt - inner_xopt;
     }
   }
     
@@ -8938,7 +9036,7 @@ static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
       
   return problem;
 }
-#line 9 "code-experiments/src/suite_bbob_mixint.c"
+#line 10 "code-experiments/src/suite_bbob_mixint.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
@@ -8949,40 +9047,89 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 /**
  * @brief Sets the dimensions and default instances for the bbob-mixint suite.
  */
-static coco_suite_t *suite_bbob_mixint_initialize(void) {
+static coco_suite_t *suite_bbob_mixint_initialize(const char *suite_name) {
 
   coco_suite_t *suite;
-  const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
-
-  suite = coco_suite_allocate("bbob-mixint", 24, 6, dimensions, "year: 2018");
+  const size_t dimensions[] = { 5, 10, 20, 40, 80, 160 };
+  /* TODO: Use also dimensions 80 and 160 (change the 4 below into a 6) */
+  suite = coco_suite_allocate(suite_name, 24, 4, dimensions, "year: 2019");
 
   return suite;
 }
 
 /**
- * @brief Sets the ROI (smallest_values_of_interest, largest_values_of_interest)
- * in a deterministic way depending on the values of dimension and instance.
- * This is just a temporary implementation for testing purposes.
+ * @brief Creates and returns a mixed-integer bbob problem without needing the actual bbob-mixint
+ * suite.
+ *
+ * @param function Function
+ * @param dimension Dimension
+ * @param instance Instance
+ * @param coco_get_problem_function The function that is used to access the continuous problem.
+ * @return The problem that corresponds to the given parameters.
  */
-static void suite_bbob_mixint_set_ROI(const size_t dimension, const size_t instance,
-    double *smallest_values_of_interest, double *largest_values_of_interest) {
+static coco_problem_t *coco_get_bbob_mixint_problem(const size_t function,
+                                                    const size_t dimension,
+                                                    const size_t instance,
+                                                    const coco_get_problem_function_t coco_get_problem_function,
+                                                    const char *suite_name) {
+  coco_problem_t *problem = NULL;
 
-  size_t i;
-  double num;
+  /* The cardinality of variables (0 = continuous variables should always come last) */
+  /* TODO: Use just one (and delete the suite_name parameter) */
+  const size_t variable_cardinality_1[] = { 2, 4, 8, 16, 0 };
+  const size_t variable_cardinality_2[] = { 2, 6, 18, 0, 0 };
 
-  /* The last variable is continuous */
-  smallest_values_of_interest[dimension - 1] = -5;
-  largest_values_of_interest[dimension - 1] = 5;
+  double *smallest_values_of_interest = coco_allocate_vector(dimension);
+  double *largest_values_of_interest = coco_allocate_vector(dimension);
+  char *inner_problem_id;
 
-  for (i = 0; i < dimension - 1; i++) {
-    smallest_values_of_interest[i] = 0;
-    num = (double)((dimension + instance + i) % 5);
-    largest_values_of_interest[i] = coco_double_round(pow(10, num));
+  size_t i, j;
+  size_t cardinality = 0;
+  size_t num_integer = dimension;
+  if (dimension % 5 != 0)
+    coco_error("coco_get_bbob_mixint_problem(): dimension %lu not supported for suite_bbob_mixint", dimension);
+
+  /* Sets the ROI according to the given cardinality of variables */
+  for (i = 0; i < dimension; i++) {
+    j = i / (dimension / 5);
+    if (strcmp(suite_name, "bbob-mixint-1") == 0)
+      cardinality = variable_cardinality_1[j];
+    else
+      cardinality = variable_cardinality_2[j];
+    if (cardinality == 0) {
+      smallest_values_of_interest[i] = -5;
+      largest_values_of_interest[i] = 5;
+      if (num_integer == dimension)
+        num_integer = i;
+    }
+    else {
+      smallest_values_of_interest[i] = 0;
+      largest_values_of_interest[i] = (double)cardinality - 1;
+    }
   }
+
+  problem = coco_get_problem_function(function, dimension, instance);
+
+  assert(problem != NULL);
+  inner_problem_id = problem->problem_id;
+
+  problem = transform_vars_discretize(problem, smallest_values_of_interest,
+      largest_values_of_interest, num_integer);
+
+  coco_problem_set_id(problem, "bbob-mixint_f%03lu_i%02lu_d%02lu", function, instance, dimension);
+  coco_problem_set_name(problem, "mixint(%s)", inner_problem_id);
+
+  coco_free_memory(smallest_values_of_interest);
+  coco_free_memory(largest_values_of_interest);
+
+  return problem;
 }
 
 /**
  * @brief Returns the problem from the bbob-mixint suite that corresponds to the given parameters.
+ *
+ * Uses large-scale bbob functions if dimension is equal or larger than the hard-coded dim_large_scale
+ * value (50).
  *
  * @param suite The COCO suite.
  * @param function_idx Index of the function (starting from 0).
@@ -8996,34 +9143,22 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
                                                      const size_t instance_idx) {
 
   coco_problem_t *problem = NULL;
+  const size_t dim_large_scale = 50; /* Switch to large-scale functions for dimensions over 50 */
 
   const size_t function = suite->functions[function_idx];
   const size_t dimension = suite->dimensions[dimension_idx];
   const size_t instance = suite->instances[instance_idx];
 
-  double *smallest_values_of_interest = coco_allocate_vector(dimension);
-  double *largest_values_of_interest = coco_allocate_vector(dimension);
-
-  suite_bbob_mixint_set_ROI(dimension, instance, smallest_values_of_interest,
-      largest_values_of_interest);
-
-  problem = coco_get_bbob_problem(function, dimension, instance);
-  assert(problem != NULL);
-
-  problem = transform_vars_discretize(problem,
-      smallest_values_of_interest,
-      largest_values_of_interest,
-      dimension-1);
-
-  coco_problem_set_id(problem, "bbob-mixint_f%03lu_i%02lu_d%02lu", function, instance, dimension);
-  coco_problem_set_name(problem, "mixed-integer bbob suite problem f%lu instance %lu in %luD", function, instance, dimension);
+  if (dimension < dim_large_scale)
+    problem = coco_get_bbob_mixint_problem(function, dimension, instance, coco_get_bbob_problem,
+        suite->suite_name);
+  else
+    problem = coco_get_bbob_mixint_problem(function, dimension, instance, mock_coco_get_largescale_problem,
+        suite->suite_name);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
   problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
-
-  coco_free_memory(smallest_values_of_interest);
-  coco_free_memory(largest_values_of_interest);
 
   return problem;
 }
@@ -9031,19 +9166,26 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
 #line 1 "code-experiments/src/suite_biobj.c"
 /**
  * @file suite_biobj.c
- * @brief Implementation of the bbob-biobj suite containing 55 functions and 6 dimensions.
+ * @brief Implementation of two bi-objective suites created by combining two single-objective problems
+ * from the bbob suite:
+ * - bbob-biobj contains 55 functions and 6 dimensions
+ * - bbob-biobj-ext contains 55 + 37 functions and 6 dimensions
  *
- * The bi-objective suite was created by combining two single-objective problems from the bbob suite.
+ * The 55 functions of the bbob-biobj suite are created by combining any two single-objective bbob functions
+ * i,j (where i<j) from a subset of 10 functions.
  *
- * @note Because some bi-objective problems constructed from two single-objective ones have a single optimal
- * value, some care must be taken when selecting the instances. The already verified instances are stored in
- * suite_biobj_instances. If a new instance of the problem is called, a check ensures that the two underlying
- * single-objective instances create a true bi-objective problem. However, these new instances need to be
- * manually added to suite_biobj_instances, otherwise they will be computed each time the suite constructor
- * is invoked with these instances.
+ * The first 55 functions of the bbob-biobj-ext suite are the same as in the original bbob-biobj test suite
+ * to which 37 functions are added. Those additional functions are constructed by combining all not yet
+ * contained in-group combinations (i,j) of single-objective bbob functions i and j such that i<j (i.e. in
+ * particular not all combinations (i,i) are included in this bbob-biobj-ext suite), with the exception of
+ * the Weierstrass function (f16) for which the optimum is not unique and thus a nadir point is difficult
+ * to compute, see http://numbbo.github.io/coco-doc/bbob-biobj/functions/ for details.
+ *
+ * @note See file suite_biobj_utilities.c for the implementation of the bi-objective problems and the handling
+ * of new instances.
  */
 
-#line 16 "code-experiments/src/suite_biobj.c"
+#line 23 "code-experiments/src/suite_biobj.c"
 #line 1 "code-experiments/src/mo_utilities.c"
 /**
  * @file mo_utilities.c
@@ -9203,8 +9345,21 @@ static double mo_get_distance_to_ROI(const double *normalized_y, const size_t nu
   else
     return diff_1;
 }
-#line 17 "code-experiments/src/suite_biobj.c"
-#line 18 "code-experiments/src/suite_biobj.c"
+#line 24 "code-experiments/src/suite_biobj.c"
+#line 1 "code-experiments/src/suite_biobj_utilities.c"
+/**
+ * @file suite_biobj_utilities.c
+ * @brief Implementation of some functions (mostly handling instances) used by the bi-objective suites.
+ *
+ * @note Because some bi-objective problems constructed from two single-objective ones have a single optimal
+ * value, some care must be taken when selecting the instances. The already verified instances are stored in
+ * suite_biobj_instances. If a new instance of the problem is called, a check ensures that the two underlying
+ * single-objective instances create a true bi-objective problem. However, these new instances need to be
+ * manually added to suite_biobj_instances, otherwise they will be computed each time the suite constructor
+ * is invoked with these instances.
+ */
+
+#line 14 "code-experiments/src/suite_biobj_utilities.c"
 #line 1 "code-experiments/src/suite_biobj_best_values_hyp.c"
 /**
  * @file suite_biobj_best_values_hyp.c
@@ -17504,438 +17659,15 @@ static const char *suite_biobj_best_values_hyp[] = { /* Best values on 29.01.201
   "bbob-biobj_f92_i15_d20 1.0",
   "bbob-biobj_f92_i15_d40 1.0"
 };
-#line 19 "code-experiments/src/suite_biobj.c"
+#line 15 "code-experiments/src/suite_biobj_utilities.c"
 
 /**
  * @brief The array of triples biobj_instance - problem1_instance - problem2_instance connecting bi-objective
  * suite instances to the instances of the bbob suite.
  *
- * It should be updated with new instances when they are chosen.
+ * It should be updated with new instances when/if they are chosen.
  */
 static const size_t suite_biobj_instances[][3] = {
-    { 1, 2, 4 },
-    { 2, 3, 5 },
-    { 3, 7, 8 },
-    { 4, 9, 10 },
-    { 5, 11, 12 },
-    { 6, 13, 14 },
-    { 7, 15, 16 },
-    { 8, 17, 18 },
-    { 9, 19, 21 },
-    { 10, 21, 22 },
-    { 11, 23, 24 },
-    { 12, 25, 26 },
-    { 13, 27, 28 },
-    { 14, 29, 30 },
-    { 15, 31, 34 }
-};
-
-/**
- * @brief The bbob-biobj suite data type.
- */
-typedef struct {
-
-  size_t **new_instances;    /**< @brief A matrix of new instances (equal in form to suite_biobj_instances)
-                                   that needs to be used only when an instance that is not in
-                                   suite_biobj_instances is being invoked. */
-
-  size_t max_new_instances;  /**< @brief The maximal number of new instances. */
-
-} suite_biobj_t;
-
-static coco_suite_t *coco_suite_allocate(const char *suite_name,
-                                         const size_t number_of_functions,
-                                         const size_t number_of_dimensions,
-                                         const size_t *dimensions,
-                                         const char *default_instances);
-static void suite_biobj_free(void *stuff);
-static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
-                                           const size_t instance,
-                                           const size_t instance1,
-                                           const size_t num_bbob_functions,
-                                           const size_t *bbob_functions);
-
-/**
- * @brief Sets the dimensions and default instances for the bbob-biobj suite.
- */
-static coco_suite_t *suite_biobj_initialize(void) {
-
-  coco_suite_t *suite;
-  const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
-
-  /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "year: 2018");
-
-  return suite;
-}
-
-/**
- * @brief Sets the instances associated with years for the bbob-biobj suite.
- */
-static const char *suite_biobj_get_instances_by_year(const int year) {
-
-  if ((year == 2016) || (year == 0000)) { /* default/test case */
-    return "1-10";
-  }
-  else if ((year == 2017) || (year == 2018)) {
-    return "1-15";
-  }
-  else {
-    coco_error("suite_biobj_get_instances_by_year(): year %d not defined for suite_biobj", year);
-    return NULL;
-  }
-}
-
-/**
- * @brief Returns the problem from the bbob-biobj suite that corresponds to the given parameters.
- *
- * Creates the bi-objective problem by constructing it from two single-objective problems from the bbob
- * suite. If the invoked instance number is not in suite_biobj_instances, the function uses the following
- * formula to construct a new appropriate instance:
- *
- *   problem1_instance = 2 * biobj_instance + 1
- *
- *   problem2_instance = problem1_instance + 1
- *
- * If needed, problem2_instance is increased (see also the explanation of suite_biobj_get_new_instance).
- *
- * @param suite The COCO suite.
- * @param function_idx Index of the function (starting from 0).
- * @param dimension_idx Index of the dimension (starting from 0).
- * @param instance_idx Index of the instance (starting from 0).
- * @return The problem that corresponds to the given parameters.
- */
-static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
-                                               const size_t function_idx,
-                                               const size_t dimension_idx,
-                                               const size_t instance_idx) {
-
-  const size_t num_bbob_functions = 10;
-  /* Functions from the bbob suite that are used to construct the bi-objective problem. */
-  const size_t bbob_functions[] = { 1, 2, 6, 8, 13, 14, 15, 17, 20, 21 };
-
-  coco_problem_t *problem1, *problem2, *problem = NULL;
-  size_t function1_idx, function2_idx;
-  size_t instance1 = 0, instance2 = 0;
-
-  const size_t function = suite->functions[function_idx];
-  const size_t dimension = suite->dimensions[dimension_idx];
-  const size_t instance = suite->instances[instance_idx];
-
-  suite_biobj_t *data = (suite_biobj_t *) suite->data;
-  size_t i, j;
-  const size_t num_existing_instances = sizeof(suite_biobj_instances) / sizeof(suite_biobj_instances[0]);
-  int instance_found = 0;
-
-  double *smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
-  double *largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
-
-  /* A "magic" formula to compute the BBOB function index from the bi-objective function index */
-  function1_idx = num_bbob_functions
-      - coco_double_to_size_t(
-          floor(-0.5 + sqrt(0.25 + 2.0 * (double) (suite->number_of_functions - function_idx - 1)))) - 1;
-  function2_idx = function_idx - (function1_idx * num_bbob_functions) +
-      (function1_idx * (function1_idx + 1)) / 2;
-
-  /* First search for instance in suite_biobj_instances */
-  for (i = 0; i < num_existing_instances; i++) {
-    if (suite_biobj_instances[i][0] == instance) {
-      /* The instance has been found in suite_biobj_instances */
-      instance1 = suite_biobj_instances[i][1];
-      instance2 = suite_biobj_instances[i][2];
-      instance_found = 1;
-      break;
-    }
-  }
-
-  if ((!instance_found) && (data)) {
-    /* Next, search for instance in new_instances */
-    for (i = 0; i < data->max_new_instances; i++) {
-      if (data->new_instances[i][0] == 0)
-        break;
-      if (data->new_instances[i][0] == instance) {
-        /* The instance has been found in new_instances */
-        instance1 = data->new_instances[i][1];
-        instance2 = data->new_instances[i][2];
-        instance_found = 1;
-        break;
-      }
-    }
-  }
-
-  if (!instance_found) {
-    /* Finally, if the instance is not found, create a new one */
-
-    if (!data) {
-      /* Allocate space needed for saving new instances */
-      data = (suite_biobj_t *) coco_allocate_memory(sizeof(*data));
-
-      /* Most often the actual number of new instances will be lower than max_new_instances, because
-       * some of them are already in suite_biobj_instances. However, in order to avoid iterating over
-       * suite_biobj_instances, the allocation uses max_new_instances. */
-      data->max_new_instances = suite->number_of_instances;
-
-      data->new_instances = (size_t **) coco_allocate_memory(data->max_new_instances * sizeof(size_t *));
-      for (i = 0; i < data->max_new_instances; i++) {
-        data->new_instances[i] = (size_t *) malloc(3 * sizeof(size_t));
-        for (j = 0; j < 3; j++) {
-          data->new_instances[i][j] = 0;
-        }
-      }
-      suite->data_free_function = suite_biobj_free;
-      suite->data = data;
-    }
-
-    /* A simple formula to set the first instance */
-    instance1 = 2 * instance + 1;
-    instance2 = suite_biobj_get_new_instance(suite, instance, instance1, num_bbob_functions, bbob_functions);
-  }
-
-  problem1 = coco_get_bbob_problem(bbob_functions[function1_idx], dimension, instance1);
-  problem2 = coco_get_bbob_problem(bbob_functions[function2_idx], dimension, instance2);
-
-  problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
-      largest_values_of_interest);
-
-  problem->suite_dep_function = function;
-  problem->suite_dep_instance = instance;
-  problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
-
-  /* Use the standard stacked problem_id as problem_name and construct a new suite-specific problem_id */
-  coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "bbob-biobj_f%02lu_i%02lu_d%02lu", (unsigned long) function,
-      (unsigned long) instance, (unsigned long) dimension);
-
-  /* Construct problem type */
-  coco_problem_set_type(problem, "%s_%s", problem1->problem_type, problem2->problem_type);
-
-  coco_free_memory(smallest_values_of_interest);
-  coco_free_memory(largest_values_of_interest);
-
-  return problem;
-}
-
-/**
- * @brief Computes the instance number of the second problem/objective so that the resulting bi-objective
- * problem has more than a single optimal solution.
- *
- * Starts by setting instance2 = instance1 + 1 and increases this number until an appropriate instance has
- * been found (or until a maximum number of tries has been reached, in which case it throws a coco_error).
- * An appropriate instance is the one for which the resulting bi-objective problem (in any considered
- * dimension) has the ideal and nadir points apart enough in the objective space and the extreme optimal
- * points apart enough in the decision space. When the instance has been found, it is output through
- * coco_warning, so that the user can see it and eventually manually add it to suite_biobj_instances.
- */
-static size_t suite_biobj_get_new_instance(coco_suite_t *suite,
-                                           const size_t instance,
-                                           const size_t instance1,
-                                           const size_t num_bbob_functions,
-                                           const size_t *bbob_functions) {
-  size_t instance2 = 0;
-  size_t num_tries = 0;
-  const size_t max_tries = 1000;
-  const double apart_enough = 1e-4;
-  int appropriate_instance_found = 0, break_search, warning_produced = 0;
-  coco_problem_t *problem1, *problem2, *problem = NULL;
-  size_t d, f1, f2, i;
-  size_t function1, function2, dimension;
-  double norm;
-  double *smallest_values_of_interest, *largest_values_of_interest;
-
-  suite_biobj_t *data;
-  assert(suite->data);
-  data = (suite_biobj_t *) suite->data;
-
-  while ((!appropriate_instance_found) && (num_tries < max_tries)) {
-    num_tries++;
-    instance2 = instance1 + num_tries;
-    break_search = 0;
-
-    /* An instance is "appropriate" if the ideal and nadir points in the objective space and the two
-     * extreme optimal points in the decisions space are apart enough for all problems (all dimensions
-     * and function combinations); therefore iterate over all dimensions and function combinations  */
-    for (f1 = 0; (f1 < num_bbob_functions) && !break_search; f1++) {
-      function1 = bbob_functions[f1];
-      for (f2 = f1; (f2 < num_bbob_functions) && !break_search; f2++) {
-        function2 = bbob_functions[f2];
-        for (d = 0; (d < suite->number_of_dimensions) && !break_search; d++) {
-          dimension = suite->dimensions[d];
-
-          if (dimension == 0) {
-            if (!warning_produced)
-              coco_warning("suite_biobj_get_new_instance(): remove filtering of dimensions to get generally acceptable instances!");
-            warning_produced = 1;
-            continue;
-          }
-
-          problem1 = coco_get_bbob_problem(function1, dimension, instance1);
-          problem2 = coco_get_bbob_problem(function2, dimension, instance2);
-          if (problem) {
-            coco_problem_stacked_free(problem);
-            problem = NULL;
-          }
-
-          /* Set smallest and largest values of interest to some value (not important which, it just needs to be a
-           * vector of doubles of the right dimension) */
-          smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
-          largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
-          problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
-              largest_values_of_interest);
-          coco_free_memory(smallest_values_of_interest);
-          coco_free_memory(largest_values_of_interest);
-
-          /* Check whether the ideal and nadir points are too close in the objective space */
-          norm = mo_get_norm(problem->best_value, problem->nadir_value, 2);
-          if (norm < 1e-1) { /* TODO How to set this value in a sensible manner? */
-            coco_debug(
-                "suite_biobj_get_new_instance(): The ideal and nadir points of %s are too close in the objective space",
-                problem->problem_id);
-            coco_debug("norm = %e, ideal = %e\t%e, nadir = %e\t%e", norm, problem->best_value[0],
-                problem->best_value[1], problem->nadir_value[0], problem->nadir_value[1]);
-            break_search = 1;
-          }
-
-          /* Check whether the extreme optimal points are too close in the decision space */
-          norm = mo_get_norm(problem1->best_parameter, problem2->best_parameter, problem->number_of_variables);
-          if (norm < apart_enough) {
-            coco_debug(
-                "suite_biobj_get_new_instance(): The extreme points of %s are too close in the decision space",
-                problem->problem_id);
-            coco_debug("norm = %e", norm);
-            break_search = 1;
-          }
-        }
-      }
-    }
-    /* Clean up */
-    if (problem) {
-      coco_problem_stacked_free(problem);
-      problem = NULL;
-    }
-
-    if (break_search) {
-      /* The search was broken, continue with next instance2 */
-      continue;
-    } else {
-      /* An appropriate instance was found */
-      appropriate_instance_found = 1;
-      coco_info("suite_biobj_set_new_instance(): Instance %lu created from instances %lu and %lu",
-          (unsigned long) instance, (unsigned long) instance1, (unsigned long) instance2);
-
-      /* Save the instance to new_instances */
-      for (i = 0; i < data->max_new_instances; i++) {
-        if (data->new_instances[i][0] == 0) {
-          data->new_instances[i][0] = instance;
-          data->new_instances[i][1] = instance1;
-          data->new_instances[i][2] = instance2;
-          break;
-        };
-      }
-    }
-  }
-
-  if (!appropriate_instance_found) {
-    coco_error("suite_biobj_get_new_instance(): Could not find suitable instance %lu in %lu tries",
-        (unsigned long) instance, (unsigned long) num_tries);
-    return 0; /* Never reached */
-  }
-
-  return instance2;
-}
-
-/**
- * @brief  Frees the memory of the given bi-objective suite.
- */
-static void suite_biobj_free(void *stuff) {
-
-  suite_biobj_t *data;
-  size_t i;
-
-  assert(stuff != NULL);
-  data = (suite_biobj_t *) stuff;
-
-  if (data->new_instances) {
-    for (i = 0; i < data->max_new_instances; i++) {
-      if (data->new_instances[i]) {
-        coco_free_memory(data->new_instances[i]);
-        data->new_instances[i] = NULL;
-      }
-    }
-  }
-  coco_free_memory(data->new_instances);
-  data->new_instances = NULL;
-}
-
-/**
- * @brief Returns the best known value for indicator_name matching the given key if the key is found, and
- * throws a coco_error otherwise.
- */
-static double suite_biobj_get_best_value(const char *indicator_name, const char *key) {
-
-  size_t i, count;
-  double best_value = 0;
-  char *curr_key;
-
-  if (strcmp(indicator_name, "hyp") == 0) {
-
-    curr_key = coco_allocate_string(COCO_PATH_MAX + 1);
-    count = sizeof(suite_biobj_best_values_hyp) / sizeof(char *);
-    for (i = 0; i < count; i++) {
-      sscanf(suite_biobj_best_values_hyp[i], "%s %lf", curr_key, &best_value);
-      if (strcmp(curr_key, key) == 0) {
-        coco_free_memory(curr_key);
-        return best_value;
-      }
-    }
-
-    coco_free_memory(curr_key);
-    coco_warning("suite_biobj_get_best_value(): best value of %s could not be found; set to 1.0", key);
-    return 1.0;
-
-  } else {
-    coco_error("suite_biobj_get_best_value(): indicator %s not supported", indicator_name);
-    return 0; /* Never reached */
-  }
-
-  coco_error("suite_biobj_get_best_value(): unexpected exception");
-  return 0; /* Never reached */
-}
-#line 21 "code-experiments/src/coco_suite.c"
-#line 1 "code-experiments/src/suite_biobj_ext.c"
-/**
- * @file suite_biobj_ext.c
- * @brief Implementation of the extended biobjective bbob-biobj-ext suite containing 92 functions and 6 dimensions.
- *
- * The bbob-biobj-ext suite is created by combining two single-objective problems from the bbob suite.
- * The first 55 functions are the same as in the original bbob-biobj test suite to which 37 functions are added.
- * Those additional functions are constructed by combining all not yet contained in-group combinations (i,j) of
- * single-objective bbob functions i and j such that i<j (i.e. in particular not all combinations (i,i) are
- * included in this bbob-biobj-ext suite), with the exception of the Weierstrass function (f16) for which
- * the optimum is not unique and thus a nadir point is difficult to compute, see
- * http://numbbo.github.io/coco-doc/bbob-biobj/functions/ for details.
- *
- * @note Because some bi-objective problems constructed from two single-objective ones have a single optimal
- * value, some care must be taken when selecting the instances. The already verified instances are stored in
- * suite_biobj_ext_instances. If a new instance of the problem is called, a check ensures that the two underlying
- * single-objective instances create a true bi-objective problem. However, these new instances need to be
- * manually added to suite_biobj_ext_instances, otherwise they will be computed each time the suite constructor
- * is invoked with these instances.
- *
- * @note This file is based on the original suite_bbob_biobj.c and extends it by 37 functions in 6 dimensions.
- */
-
-#line 24 "code-experiments/src/suite_biobj_ext.c"
-#line 25 "code-experiments/src/suite_biobj_ext.c"
-#line 26 "code-experiments/src/suite_biobj_ext.c"
-
-
-/**
- * @brief The array of triples biobj_instance - problem1_instance - problem2_instance connecting bi-objective
- * suite instances to the instances of the bbob suite.
- *
- * It should be updated with new instances when they are chosen.
- */
-static const size_t suite_biobj_ext_instances[][3] = {
     { 1, 2, 4 },
     { 2, 3, 5 },
     { 3, 7, 8 },
@@ -17954,121 +17686,266 @@ static const size_t suite_biobj_ext_instances[][3] = {
 }; 
  
 /**
- * @brief The bbob-biobj-ext suite data type.
+ * @brief A structure containing information about the new instances.
  */
 typedef struct {
 
-  size_t **new_instances;    /**< @brief A matrix of new instances (equal in form to suite_biobj_ext_instances)
+  size_t **new_instances;    /**< @brief A matrix of new instances (equal in form to suite_biobj_instances)
                                    that needs to be used only when an instance that is not in
-                                   suite_biobj_ext_instances is being invoked. */
+                                   suite_biobj_instances is being invoked. */
 
   size_t max_new_instances;  /**< @brief The maximal number of new instances. */
 
-} suite_biobj_ext_t;
+} suite_biobj_new_inst_t;
 
-static coco_suite_t *coco_suite_allocate(const char *suite_name,
-                                         const size_t number_of_functions,
-                                         const size_t number_of_dimensions,
-                                         const size_t *dimensions,
-                                         const char *default_instances);
-static void suite_biobj_ext_free(void *stuff);
-static size_t suite_biobj_ext_get_new_instance(coco_suite_t *suite,
+/**
+ * @brief  Frees the memory of the given suite_biobj_new_inst_t object.
+ */
+static void suite_biobj_new_inst_free(void *stuff) {
+
+  suite_biobj_new_inst_t *data;
+  size_t i;
+
+  assert(stuff != NULL);
+  data = (suite_biobj_new_inst_t *) stuff;
+
+  if (data->new_instances) {
+    for (i = 0; i < data->max_new_instances; i++) {
+      if (data->new_instances[i]) {
+        coco_free_memory(data->new_instances[i]);
+        data->new_instances[i] = NULL;
+      }
+    }
+  }
+  coco_free_memory(data->new_instances);
+  data->new_instances = NULL;
+}
+
+/**
+ * @brief  Performs a few checks and returns whether the two given problem instances should break the search
+ * for new instances in suite_biobj_get_new_instance().
+ */
+static int suite_biobj_check_inst_consistency(const size_t dimension,
+                                              size_t function1,
+                                              size_t instance1,
+                                              size_t function2,
+                                              size_t instance2) {
+  coco_problem_t *problem = NULL;
+  coco_problem_t *problem1, *problem2;
+  int break_search = 0;
+  double norm;
+  double *smallest_values_of_interest, *largest_values_of_interest;
+  const double apart_enough = 1e-4;
+
+  problem1 = coco_get_bbob_problem(function1, dimension, instance1);
+  problem2 = coco_get_bbob_problem(function2, dimension, instance2);
+
+  /* Set smallest and largest values of interest to some value (not important which, it just needs to be a
+   * vector of doubles of the right dimension) */
+  smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
+  largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
+  problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
+          largest_values_of_interest);
+  coco_free_memory(smallest_values_of_interest);
+  coco_free_memory(largest_values_of_interest);
+
+  /* Check whether the ideal and nadir points are too close in the objective space */
+  norm = mo_get_norm(problem->best_value, problem->nadir_value, 2);
+  if (norm < 1e-1) { /* TODO How to set this value in a sensible manner? */
+    coco_debug(
+        "suite_biobj_check_inst_consistency(): The ideal and nadir points of %s are too close in the objective space",
+        problem->problem_id);
+    coco_debug("norm = %e, ideal = %e\t%e, nadir = %e\t%e", norm, problem->best_value[0],
+        problem->best_value[1], problem->nadir_value[0], problem->nadir_value[1]);
+    break_search = 1;
+  }
+
+  /* Check whether the extreme optimal points are too close in the decision space */
+  norm = mo_get_norm(problem1->best_parameter, problem2->best_parameter, problem->number_of_variables);
+  if (norm < apart_enough) {
+    coco_debug(
+        "suite_biobj_check_inst_consistency(): The extreme points of %s are too close in the decision space",
+        problem->problem_id);
+    coco_debug("norm = %e", norm);
+    break_search = 1;
+  }
+
+  /* Clean up */
+  if (problem) {
+    coco_problem_stacked_free(problem);
+    problem = NULL;
+  }
+
+  return break_search;
+
+}
+
+/**
+ * @brief Computes the instance number of the second problem/objective so that the resulting bi-objective
+ * problem has more than a single optimal solution.
+ *
+ * Starts by setting instance2 = instance1 + 1 and increases this number until an appropriate instance has
+ * been found (or until a maximum number of tries has been reached, in which case it throws a coco_error).
+ * An appropriate instance is the one for which the resulting bi-objective problem (in any considered
+ * dimension) has the ideal and nadir points apart enough in the objective space and the extreme optimal
+ * points apart enough in the decision space. When the instance has been found, it is output through
+ * coco_warning, so that the user can see it and eventually manually add it to suite_biobj_instances.
+ */
+static size_t suite_biobj_get_new_instance(suite_biobj_new_inst_t *new_inst_data,
                                            const size_t instance,
                                            const size_t instance1,
+                                           const size_t *bbob_functions,
                                            const size_t num_bbob_functions,
-                                           const size_t *bbob_functions);
+                                           const size_t *sel_bbob_functions,
+                                           const size_t num_sel_bbob_functions,
+                                           const size_t *dimensions,
+                                           const size_t num_dimensions) {
 
-/**
- * @brief Sets the dimensions and default instances for the bbob-biobj-ext suite.
- */
-static coco_suite_t *suite_biobj_ext_initialize(void) {
+  size_t instance2 = 0;
+  size_t num_tries = 0;
+  const size_t max_tries = 1000;
+  int appropriate_instance_found = 0, break_search, warning_produced = 0;
+  size_t d, f1, f2, i;
+  size_t function1, function2, dimension;
 
-  coco_suite_t *suite;
-  const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
+  while ((!appropriate_instance_found) && (num_tries < max_tries)) {
+    num_tries++;
+    instance2 = instance1 + num_tries;
+    break_search = 0;
 
-  /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-biobj-ext", 55+37, 6, dimensions, "year: 2018");
+    /* An instance is "appropriate" if the ideal and nadir points in the objective space and the two
+     * extreme optimal points in the decisions space are apart enough for all problems (all dimensions
+     * and function combinations); therefore iterate over all dimensions and function combinations */
 
-  return suite;
+    for (f1 = 0; (f1 < num_bbob_functions-1) && !break_search; f1++) {
+      function1 = bbob_functions[f1];
+      for (f2 = f1+1; (f2 < num_bbob_functions) && !break_search; f2++) {
+        function2 = bbob_functions[f2];
+        for (d = 0; (d < num_dimensions) && !break_search; d++) {
+          dimension = dimensions[d];
+
+          if (dimension == 0) {
+            if (!warning_produced)
+              coco_warning("suite_biobj_get_new_instance(): remove filtering of dimensions to get generally acceptable instances!");
+            warning_produced = 1;
+            continue;
+          }
+
+          break_search = suite_biobj_check_inst_consistency(dimension, function1, instance1, function2, instance2);
+        }
+      }
+    }
+
+    /* Finally, check all functions (f,f) with f in {f1, f2, f6, f8, f13, f14, f15, f17, f20, f21}: */
+    for (f1 = 0; (f1 < num_sel_bbob_functions) && !break_search; f1++) {
+      function1 = sel_bbob_functions[f1];
+      function2 = sel_bbob_functions[f1];
+      for (d = 0; (d < num_dimensions) && !break_search; d++) {
+        dimension = dimensions[d];
+
+        if (dimension == 0) {
+            if (!warning_produced)
+              coco_warning("suite_biobj_get_new_instance(): remove filtering of dimensions to get generally acceptable instances!");
+            warning_produced = 1;
+            continue;
+          }
+
+        break_search = suite_biobj_check_inst_consistency(dimension, function1, instance1, function2, instance2);
+      }
+    }
+
+    if (break_search) {
+      /* The search was broken, continue with next instance2 */
+      continue;
+    } else {
+      /* An appropriate instance was found */
+      appropriate_instance_found = 1;
+      coco_info("suite_biobj_get_new_instance(): Instance %lu created from instances %lu and %lu",
+          (unsigned long) instance, (unsigned long) instance1, (unsigned long) instance2);
+
+      /* Save the instance to new_instances */
+      for (i = 0; i < new_inst_data->max_new_instances; i++) {
+        if (new_inst_data->new_instances[i][0] == 0) {
+          new_inst_data->new_instances[i][0] = instance;
+          new_inst_data->new_instances[i][1] = instance1;
+          new_inst_data->new_instances[i][2] = instance2;
+          break;
+        };
+      }
+    }
+  }
+
+  if (!appropriate_instance_found) {
+    coco_error("suite_biobj_get_new_instance(): Could not find suitable instance %lu in %lu tries",
+        (unsigned long) instance, (unsigned long) num_tries);
+    return 0; /* Never reached */
+  }
+
+  return instance2;
 }
 
 /**
- * @brief Sets the instances associated with years for the bbob-biobj-ext suite.
- */
-static const char *suite_biobj_ext_get_instances_by_year(const int year) {
-
-  if (year == 0000) { /* default/test case */
-    return "1-10";
-  }
-  else if ((year == 2017) || (year == 2018)) {
-    return "1-15";
-  }
-  else {
-    coco_error("suite_biobj_ext_get_instances_by_year(): year %d not defined for suite_biobj_ext", year);
-    return NULL;
-  }
-}
-
-/**
- * @brief Returns the problem from the bbob-biobj-ext suite that corresponds to the given parameters.
+ * @brief Creates and returns a bi-objective problem without needing a suite.
  *
- * Creates the bi-objective problem by constructing it from two single-objective problems from the bbob
- * suite. If the invoked instance number is not in suite_biobj_ext_instances, the function uses the following
- * formula to construct a new appropriate instance:
+ * Useful for creating suites based on the bi-objective problems.
  *
+ * Creates the bi-objective problem by constructing it from two single-objective problems. If the
+ * invoked instance number is not in suite_biobj_instances, the function uses the following formula
+ * to construct a new appropriate instance:
  *   problem1_instance = 2 * biobj_instance + 1
- *
  *   problem2_instance = problem1_instance + 1
  *
- * If needed, problem2_instance is increased (see also the explanation of suite_biobj_ext_get_new_instance).
+ * If needed, problem2_instance is increased (see also the explanation in suite_biobj_get_new_instance).
  *
- * @param suite The COCO suite.
- * @param function_idx Index of the function (starting from 0).
- * @param dimension_idx Index of the dimension (starting from 0).
- * @param instance_idx Index of the instance (starting from 0).
+ * @param function Function
+ * @param dimension Dimension
+ * @param instance Instance
+ * @param coco_get_problem_function The function that is used to access the single-objective problem.
+ * @param new_inst_data Structure containing information on new instance data.
+ * @param num_new_instances The number of new instances.
+ * @param dimensions An array of dimensions to take into account when creating new instances.
+ * @param num_dimensions The number of dimensions to take into account when creating new instances.
  * @return The problem that corresponds to the given parameters.
- * @note Copied from suite_bbob_biobj.c and extended.
  */
-static coco_problem_t *suite_biobj_ext_get_problem(coco_suite_t *suite,
-                                               const size_t function_idx,
-                                               const size_t dimension_idx,
-                                               const size_t instance_idx) {
-
+static coco_problem_t *coco_get_biobj_problem(const size_t function,
+                                              const size_t dimension,
+                                              const size_t instance,
+                                              const coco_get_problem_function_t coco_get_problem_function,
+                                              suite_biobj_new_inst_t **new_inst_data,
+                                              const size_t num_new_instances,
+                                              const size_t *dimensions,
+                                              const size_t num_dimensions) {
   
-  const size_t num_bbob_functions = 10;
-  /* Functions from the bbob suite that are used to construct the original bbob-biobj suite. */
-  const size_t bbob_functions[] = { 1, 2, 6, 8, 13, 14, 15, 17, 20, 21 };
+  /* Selected functions from the bbob suite that are used to construct the original bbob-biobj suite. */
+  const size_t sel_bbob_functions[] = { 1, 2, 6, 8, 13, 14, 15, 17, 20, 21 };
+  const size_t num_sel_bbob_functions = 10;
   /* All functions from the bbob suite for later use during instance generation. */
   const size_t all_bbob_functions[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24 };
+  const size_t num_all_bbob_functions = 24;
   
-  coco_problem_t *problem1, *problem2, *problem = NULL;
+  coco_problem_t *problem1 = NULL, *problem2 = NULL, *problem = NULL;
   size_t instance1 = 0, instance2 = 0;
   size_t function1_idx, function2_idx;
+  const size_t function_idx = function - 1;
 
-  const size_t function = suite->functions[function_idx];
-  const size_t dimension = suite->dimensions[dimension_idx];
-  const size_t instance = suite->instances[instance_idx];
-
-  suite_biobj_ext_t *data = (suite_biobj_ext_t *) suite->data;
   size_t i, j;
-  const size_t num_existing_instances = sizeof(suite_biobj_ext_instances) / sizeof(suite_biobj_ext_instances[0]);
+  const size_t num_existing_instances = sizeof(suite_biobj_instances) / sizeof(suite_biobj_instances[0]);
   int instance_found = 0;
 
   double *smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
   double *largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
   
-  /* First, create all problems from the bbob-biobj suite */
+  /* Determine the corresponding single-objective function indices */
   if (function_idx < 55) {
     /* A "magic" formula to compute the BBOB function index from the bi-objective function index */
-    function1_idx = num_bbob_functions
+    function1_idx = num_sel_bbob_functions
         - coco_double_to_size_t(
             floor(-0.5 + sqrt(0.25 + 2.0 * (double) (55 - function_idx - 1)))) - 1;
-    function2_idx = function_idx - (function1_idx * num_bbob_functions) +
+    function2_idx = function_idx - (function1_idx * num_sel_bbob_functions) +
         (function1_idx * (function1_idx + 1)) / 2;
         
   } else {
-    /* New 41 functions extending the bbob-biobj suite,
-     * unfortunately, there is not a simple "magic" formula anymore. */
+    /* There is not a simple "magic" formula for functions >= 55 */
     if (function_idx == 55) {
         function1_idx = 0;
         function2_idx = 2;
@@ -18183,26 +18060,28 @@ static coco_problem_t *suite_biobj_ext_get_problem(coco_suite_t *suite,
     } 
   }
       
-  /* First search for instance in suite_biobj_ext_instances */
+  /* Determine the instances */
+
+  /* First search for the instance in suite_biobj_instances */
   for (i = 0; i < num_existing_instances; i++) {
-    if (suite_biobj_ext_instances[i][0] == instance) {
-      /* The instance has been found in suite_biobj_ext_instances */
-      instance1 = suite_biobj_ext_instances[i][1];
-      instance2 = suite_biobj_ext_instances[i][2];
+    if (suite_biobj_instances[i][0] == instance) {
+      /* The instance has been found in suite_biobj_instances */
+      instance1 = suite_biobj_instances[i][1];
+      instance2 = suite_biobj_instances[i][2];
       instance_found = 1;
       break;
     }
   }
 
-  if ((!instance_found) && (data)) {
+  if ((!instance_found) && ((*new_inst_data) != NULL)) {
     /* Next, search for instance in new_instances */
-    for (i = 0; i < data->max_new_instances; i++) {
-      if (data->new_instances[i][0] == 0)
+    for (i = 0; i < (*new_inst_data)->max_new_instances; i++) {
+      if ((*new_inst_data)->new_instances[i][0] == 0)
         break;
-      if (data->new_instances[i][0] == instance) {
+      if ((*new_inst_data)->new_instances[i][0] == instance) {
         /* The instance has been found in new_instances */
-        instance1 = data->new_instances[i][1];
-        instance2 = data->new_instances[i][2];
+        instance1 = (*new_inst_data)->new_instances[i][1];
+        instance2 = (*new_inst_data)->new_instances[i][2];
         instance_found = 1;
         break;
       }
@@ -18212,51 +18091,45 @@ static coco_problem_t *suite_biobj_ext_get_problem(coco_suite_t *suite,
   if (!instance_found) {
     /* Finally, if the instance is not found, create a new one */
 
-    if (!data) {
+    if ((*new_inst_data) == NULL) {
       /* Allocate space needed for saving new instances */
-      data = (suite_biobj_ext_t *) coco_allocate_memory(sizeof(*data));
+      (*new_inst_data) = (suite_biobj_new_inst_t *) coco_allocate_memory(sizeof(**new_inst_data));
 
       /* Most often the actual number of new instances will be lower than max_new_instances, because
-       * some of them are already in suite_biobj_ext_instances. However, in order to avoid iterating over
-       * suite_biobj_ext_instances, the allocation uses max_new_instances. */
-      data->max_new_instances = suite->number_of_instances;
+       * some of them are already in suite_biobj_instances. However, in order to avoid iterating over
+       * suite_biobj_new_inst_t, the allocation uses max_new_instances. */
+      (*new_inst_data)->max_new_instances = num_new_instances;
 
-      data->new_instances = (size_t **) coco_allocate_memory(data->max_new_instances * sizeof(size_t *));
-      for (i = 0; i < data->max_new_instances; i++) {
-        data->new_instances[i] = (size_t *) malloc(3 * sizeof(size_t));
+      (*new_inst_data)->new_instances = (size_t **) coco_allocate_memory((*new_inst_data)->max_new_instances * sizeof(size_t *));
+      for (i = 0; i < (*new_inst_data)->max_new_instances; i++) {
+        (*new_inst_data)->new_instances[i] = (size_t *) malloc(3 * sizeof(size_t));
         for (j = 0; j < 3; j++) {
-          data->new_instances[i][j] = 0;
+          (*new_inst_data)->new_instances[i][j] = 0;
         }
       }
-      suite->data_free_function = suite_biobj_ext_free;
-      suite->data = data;
     }
 
-    /* A simple formula to set the first instance, but instead of for 10 functions
-     * as in bbob-biobj suite, now for all combinations of functions.
-     */
+    /* A simple formula to set the first instance */
     instance1 = 2 * instance + 1;
-    instance2 = suite_biobj_ext_get_new_instance(suite, instance, instance1, 24, all_bbob_functions);
+    instance2 = suite_biobj_get_new_instance((*new_inst_data), instance, instance1, all_bbob_functions,
+        num_all_bbob_functions, sel_bbob_functions, num_sel_bbob_functions, dimensions, num_dimensions);
   }
   
-  if (function_idx < 55) {  
-    problem1 = coco_get_bbob_problem(bbob_functions[function1_idx], dimension, instance1);
-    problem2 = coco_get_bbob_problem(bbob_functions[function2_idx], dimension, instance2);
-  } else {
-    problem1 = coco_get_bbob_problem(all_bbob_functions[function1_idx], dimension, instance1);
-    problem2 = coco_get_bbob_problem(all_bbob_functions[function2_idx], dimension, instance2);
-  }
-  
-  problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
-      largest_values_of_interest);
-    
-  problem->suite_dep_function = function;
-  problem->suite_dep_instance = instance;
-  problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
+  /* Construct the problem based on the function index and dimension */
+  if (function_idx < 55) {
+    problem1 = coco_get_problem_function(sel_bbob_functions[function1_idx], dimension, instance1);
+    problem2 = coco_get_problem_function(sel_bbob_functions[function2_idx], dimension, instance2);
 
-  /* Use the standard stacked problem_id as problem_name and construct a new suite-specific problem_id */
+  } else {
+    problem1 = coco_get_problem_function(all_bbob_functions[function1_idx], dimension, instance1);
+    problem2 = coco_get_problem_function(all_bbob_functions[function2_idx], dimension, instance2);
+  }
+  
+  problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest, largest_values_of_interest);
+
+  /* Use the standard stacked problem_id as problem_name and construct a new problem_id */
   coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "bbob-biobj_f%02lu_i%02lu_d%02lu", (unsigned long) function,
+  coco_problem_set_id(problem, "bbob-biobj_f%03lu_i%02lu_d%02lu", (unsigned long) function,
       (unsigned long) instance, (unsigned long) dimension);
 
   /* Construct problem type */
@@ -18268,196 +18141,305 @@ static coco_problem_t *suite_biobj_ext_get_problem(coco_suite_t *suite,
   return problem;
 }
 
-
 /**
- * @brief  Performs a few checks and returns whether the two problem
- * instances given should break the search for new instances in
- * suite_biobj_ext_get_new_instance(...).
+ * @brief Returns the best known value for indicator_name matching the given key if the key is found, and
+ * throws a coco_error otherwise.
  */
-static int check_consistency_of_instances(const size_t dimension, 
-                                          size_t function1,
-                                          size_t instance1,
-                                          size_t function2,
-                                          size_t instance2) {
-  coco_problem_t *problem = NULL;
-  coco_problem_t *problem1, *problem2;
-  int break_search = 0;
-  double norm;
-  double *smallest_values_of_interest, *largest_values_of_interest;
-  const double apart_enough = 1e-4;
-  
-  problem1 = coco_get_bbob_problem(function1, dimension, instance1);
-  problem2 = coco_get_bbob_problem(function2, dimension, instance2);
+static double suite_biobj_get_best_value(const char *indicator_name, const char *key) {
 
-  /* Set smallest and largest values of interest to some value (not important which, it just needs to be a
-   * vector of doubles of the right dimension) */
-  smallest_values_of_interest = coco_allocate_vector_with_value(dimension, -100);
-  largest_values_of_interest = coco_allocate_vector_with_value(dimension, 100);
-  problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest,
-          largest_values_of_interest);
-  coco_free_memory(smallest_values_of_interest);
-  coco_free_memory(largest_values_of_interest);
+  size_t i, count;
+  double best_value = 0;
+  char *curr_key;
 
-  /* Check whether the ideal and nadir points are too close in the objective space */
-  norm = mo_get_norm(problem->best_value, problem->nadir_value, 2);
-  if (norm < 1e-1) { /* TODO How to set this value in a sensible manner? */
-    coco_debug(
-        "check_consistency_of_instances(): The ideal and nadir points of %s are too close in the objective space",
-        problem->problem_id);
-    coco_debug("norm = %e, ideal = %e\t%e, nadir = %e\t%e", norm, problem->best_value[0],
-        problem->best_value[1], problem->nadir_value[0], problem->nadir_value[1]);
-    break_search = 1;
-  }
+  if (strcmp(indicator_name, "hyp") == 0) {
 
-  /* Check whether the extreme optimal points are too close in the decision space */
-  norm = mo_get_norm(problem1->best_parameter, problem2->best_parameter, problem->number_of_variables);
-  if (norm < apart_enough) {
-    coco_debug(
-        "check_consistency_of_instances(): The extreme points of %s are too close in the decision space",
-        problem->problem_id);
-    coco_debug("norm = %e", norm);
-    break_search = 1;
-  }
-
-  /* Clean up */
-  if (problem) {
-    coco_problem_stacked_free(problem);
-    problem = NULL;
-  }
-
-  return break_search;
-
-}
-  
-/**
- * @brief Computes the instance number of the second problem/objective so that the resulting bi-objective
- * problem has more than a single optimal solution.
- *
- * Starts by setting instance2 = instance1 + 1 and increases this number until an appropriate instance has
- * been found (or until a maximum number of tries has been reached, in which case it throws a coco_error).
- * An appropriate instance is the one for which the resulting bi-objective problem (in any considered
- * dimension) has the ideal and nadir points apart enough in the objective space and the extreme optimal
- * points apart enough in the decision space. When the instance has been found, it is output through
- * coco_warning, so that the user can see it and eventually manually add it to suite_biobj_ext_instances.
- *
- * @note Copied from suite_bbob_biobj.c.
- */
-static size_t suite_biobj_ext_get_new_instance(coco_suite_t *suite,
-                                           const size_t instance,
-                                           const size_t instance1,
-                                           const size_t num_bbob_functions,
-                                           const size_t *bbob_functions) {
-  size_t instance2 = 0;
-  size_t num_tries = 0;
-  const size_t max_tries = 1000;
-  int appropriate_instance_found = 0, break_search, warning_produced = 0;
-  size_t d, f1, f2, i;
-  size_t function1, function2, dimension;
-  const size_t reduced_bbob_functions[] = { 1, 2, 6, 8, 13, 14, 15, 17, 20, 21 };
-  
-  suite_biobj_ext_t *data;
-  assert(suite->data);
-  data = (suite_biobj_ext_t *) suite->data;
-
-  while ((!appropriate_instance_found) && (num_tries < max_tries)) {
-    num_tries++;
-    instance2 = instance1 + num_tries;
-    break_search = 0;
-
-    /* An instance is "appropriate" if the ideal and nadir points in the objective space and the two
-     * extreme optimal points in the decisions space are apart enough for all problems (all dimensions
-     * and function combinations); therefore iterate over all dimensions and function combinations  */
-     
-    for (f1 = 0; (f1 < num_bbob_functions-1) && !break_search; f1++) {
-      function1 = bbob_functions[f1];
-      for (f2 = f1+1; (f2 < num_bbob_functions) && !break_search; f2++) {
-        function2 = bbob_functions[f2];
-        for (d = 0; (d < suite->number_of_dimensions) && !break_search; d++) {
-          dimension = suite->dimensions[d];
-          
-          if (dimension == 0) {
-            if (!warning_produced)
-              coco_warning("suite_biobj_ext_get_new_instance(): remove filtering of dimensions to get generally acceptable instances!");
-            warning_produced = 1;
-            continue;
-          }
-          
-          break_search = check_consistency_of_instances(dimension, function1, instance1, function2, instance2);
-        }
-      }
-    }
-    
-    /* Finally, check all functions (f,f) with f in {f1, f2, f6, f8, f13, f14, f15, f17, f20, f21}: */
-    for (f1 = 0; (f1 < 10) && !break_search; f1++) {
-      function1 = reduced_bbob_functions[f1];
-      function2 = reduced_bbob_functions[f1];
-      for (d = 0; (d < suite->number_of_dimensions) && !break_search; d++) {
-        dimension = suite->dimensions[d];
-        
-        if (dimension == 0) {
-            if (!warning_produced)
-              coco_warning("suite_biobj_ext_get_new_instance(): remove filtering of dimensions to get generally acceptable instances!");
-            warning_produced = 1;
-            continue;
-          }
-          
-        break_search = check_consistency_of_instances(dimension, function1, instance1, function2, instance2);
+    curr_key = coco_allocate_string(COCO_PATH_MAX + 1);
+    count = sizeof(suite_biobj_best_values_hyp) / sizeof(char *);
+    for (i = 0; i < count; i++) {
+      sscanf(suite_biobj_best_values_hyp[i], "%s %lf", curr_key, &best_value);
+      if (strcmp(curr_key, key) == 0) {
+        coco_free_memory(curr_key);
+        return best_value;
       }
     }
 
-    if (break_search) {
-      /* The search was broken, continue with next instance2 */
-      continue;
-    } else {
-      /* An appropriate instance was found */
-      appropriate_instance_found = 1;
-      coco_info("suite_biobj_set_new_instance(): Instance %lu created from instances %lu and %lu",
-          (unsigned long) instance, (unsigned long) instance1, (unsigned long) instance2);
+    coco_free_memory(curr_key);
+    coco_warning("suite_biobj_get_best_value(): best value of %s could not be found; set to 1.0", key);
+    return 1.0;
 
-      /* Save the instance to new_instances */
-      for (i = 0; i < data->max_new_instances; i++) {
-        if (data->new_instances[i][0] == 0) {
-          data->new_instances[i][0] = instance;
-          data->new_instances[i][1] = instance1;
-          data->new_instances[i][2] = instance2;
-          break;
-        };
-      }
-    }
-  }
-
-  if (!appropriate_instance_found) {
-    coco_error("suite_biobj_ext_get_new_instance(): Could not find suitable instance %lu in %lu tries",
-        (unsigned long) instance, (unsigned long) num_tries);
+  } else {
+    coco_error("suite_biobj_get_best_value(): indicator %s not supported", indicator_name);
     return 0; /* Never reached */
   }
 
-  return instance2;
+  coco_error("suite_biobj_get_best_value(): unexpected exception");
+  return 0; /* Never reached */
+}
+#line 25 "code-experiments/src/suite_biobj.c"
+#line 26 "code-experiments/src/suite_biobj.c"
+
+static coco_suite_t *coco_suite_allocate(const char *suite_name,
+                                         const size_t number_of_functions,
+                                         const size_t number_of_dimensions,
+                                         const size_t *dimensions,
+                                         const char *default_instances);
+
+/**
+ * @brief Sets the dimensions and default instances for the bbob-biobj suites.
+ */
+static coco_suite_t *suite_biobj_initialize(const char *suite_name) {
+
+  coco_suite_t *suite;
+  const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
+
+  if (strcmp(suite_name, "bbob-biobj") == 0) {
+    suite = coco_suite_allocate("bbob-biobj", 55, 6, dimensions, "instances: 1-15");
+  } else if (strcmp(suite_name, "bbob-biobj-ext") == 0) {
+    suite = coco_suite_allocate("bbob-biobj-ext", 55+37, 6, dimensions, "instances: 1-15");
+  } else {
+    coco_error("suite_biobj_initialize(): unknown problem suite");
+    return NULL;
+  }
+
+  suite->data_free_function = suite_biobj_new_inst_free;
+
+  return suite;
 }
 
 /**
- * @brief  Frees the memory of the given bi-objective suite.
- * @note   Copied from suite_bbob_biobj.c.
+ * @brief Sets the instances associated with years for the bbob-biobj suites.
+ *
+ * @note The instances of the bi-objective suites generally do not changes with years.
  */
-static void suite_biobj_ext_free(void *stuff) {
+static const char *suite_biobj_get_instances_by_year(const int year) {
 
-  suite_biobj_ext_t *data;
-  size_t i;
+  if ((year == 2016) || (year == 0000)) { /* test case */
+    return "1-10";
+  }
+  else
+    return "1-15";
+}
 
-  assert(stuff != NULL);
-  data = (suite_biobj_ext_t *) stuff;
+/**
+ * @brief Returns the problem from the bbob-biobj suite that corresponds to the given parameters.
+ *
+ * @param suite The COCO suite.
+ * @param function_idx Index of the function (starting from 0).
+ * @param dimension_idx Index of the dimension (starting from 0).
+ * @param instance_idx Index of the instance (starting from 0).
+ * @return The problem that corresponds to the given parameters.
+ */
+static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
+                                               const size_t function_idx,
+                                               const size_t dimension_idx,
+                                               const size_t instance_idx) {
 
-  if (data->new_instances) {
-    for (i = 0; i < data->max_new_instances; i++) {
-      if (data->new_instances[i]) {
-        coco_free_memory(data->new_instances[i]);
-        data->new_instances[i] = NULL;
-      }
+  coco_problem_t *problem = NULL;
+  suite_biobj_new_inst_t *new_inst_data = (suite_biobj_new_inst_t *) suite->data;
+
+  const size_t function = suite->functions[function_idx];
+  const size_t dimension = suite->dimensions[dimension_idx];
+  const size_t instance = suite->instances[instance_idx];
+
+  problem = coco_get_biobj_problem(function, dimension, instance, coco_get_bbob_problem, &new_inst_data,
+      suite->number_of_instances, suite->dimensions, suite->number_of_dimensions);
+
+  problem->suite_dep_function = function;
+  problem->suite_dep_instance = instance;
+  problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
+
+  return problem;
+}
+
+#line 21 "code-experiments/src/coco_suite.c"
+#line 1 "code-experiments/src/suite_biobj_mixint.c"
+/**
+ * @file suite_biobj_mixint.c
+ * @brief Implementation of a bi-objective mixed-integer suite. The functions are the same as those
+ * in the bbob-biobj-ext suite with 92 functions, but the large-scale implementations of the
+ * functions are used instead of the original ones.
+ */
+
+#line 9 "code-experiments/src/suite_biobj_mixint.c"
+#line 10 "code-experiments/src/suite_biobj_mixint.c"
+#line 11 "code-experiments/src/suite_biobj_mixint.c"
+#line 12 "code-experiments/src/suite_biobj_mixint.c"
+
+static coco_suite_t *coco_suite_allocate(const char *suite_name,
+                                         const size_t number_of_functions,
+                                         const size_t number_of_dimensions,
+                                         const size_t *dimensions,
+                                         const char *default_instances);
+
+/**
+ * @brief Sets the dimensions and default instances for the bbob-biobj-mixint suite.
+ */
+static coco_suite_t *suite_biobj_mixint_initialize(void) {
+
+  coco_suite_t *suite;
+  const size_t dimensions[] = { 5, 10, 20, 40, 80, 160 };
+
+  /* TODO: Use also dimensions 80 and 160 (change the 4 below into a 6) */
+  suite = coco_suite_allocate("bbob-biobj-mixint", 92, 4, dimensions, "instances: 1-15");
+  suite->data_free_function = suite_biobj_new_inst_free;
+
+  return suite;
+}
+
+/**
+ * @brief Sets the instances associated with years for the bbob-biobj-mixint suites.
+ *
+ * @note The instances of the bi-objective suites generally do not changes with years.
+ */
+static const char *suite_biobj_mixint_get_instances_by_year(const int year) {
+
+  if ((year == 2016) || (year == 0000)) { /* test case */
+    return "1-10";
+  }
+  else
+    return "1-15";
+}
+
+/**
+ * @brief Creates and returns a mixed-integer bi-objective bbob problem without needing the actual
+ * bbob-mixint suite.
+ *
+ * The problem is constructed by first finding the underlying single-objective continuous problems,
+ * then discretizing the problems and finally stacking them to get a bi-objective mixed-integer problem.
+ *
+ * @param function Function
+ * @param dimension Dimension
+ * @param instance Instance
+ * @param coco_get_problem_function The function that is used to access the single-objective problem.
+ * @param new_inst_data Structure containing information on new instance data.
+ * @param num_new_instances The number of new instances.
+ * @param dimensions An array of dimensions to take into account when creating new instances.
+ * @param num_dimensions The number of dimensions to take into account when creating new instances.
+ * @return The problem that corresponds to the given parameters.
+ */
+static coco_problem_t *coco_get_biobj_mixint_problem(const size_t function,
+                                                     const size_t dimension,
+                                                     const size_t instance,
+                                                     const coco_get_problem_function_t coco_get_problem_function,
+                                                     suite_biobj_new_inst_t **new_inst_data,
+                                                     const size_t num_new_instances,
+                                                     const size_t *dimensions,
+                                                     const size_t num_dimensions) {
+
+  coco_problem_t *problem_cont = NULL, *problem = NULL;
+  coco_problem_t *problem1, *problem2;
+  coco_problem_t *problem1_mixint, *problem2_mixint;
+  coco_problem_t *problem1_cont, *problem2_cont;
+
+  double *smallest_values_of_interest = coco_allocate_vector(dimension);
+  double *largest_values_of_interest = coco_allocate_vector(dimension);
+
+  size_t i, j;
+  size_t num_integer = dimension;
+  /* TODO: Use the correct cardinality!
+   * The cardinality of variables (0 = continuous variables should always come last) */
+  const size_t variable_cardinality[] = { 2, 4, 8, 16, 0 };
+
+  if (dimension % 5 != 0)
+    coco_error("coco_get_biobj_mixint_problem(): dimension %lu not supported for suite_bbob_mixint", dimension);
+
+  /* Sets the ROI according to the given cardinality of variables */
+  for (i = 0; i < dimension; i++) {
+    j = i / (dimension / 5);
+    if (variable_cardinality[j] == 0) {
+      smallest_values_of_interest[i] = -5;
+      largest_values_of_interest[i] = 5;
+      if (num_integer == dimension)
+        num_integer = i;
+    }
+    else {
+      smallest_values_of_interest[i] = 0;
+      largest_values_of_interest[i] = (double)variable_cardinality[j] - 1;
     }
   }
-  coco_free_memory(data->new_instances);
-  data->new_instances = NULL;
+
+  /* First, find the underlying single-objective continuous problems */
+  problem_cont = coco_get_biobj_problem(function, dimension, instance, coco_get_problem_function, new_inst_data,
+      num_new_instances, dimensions, num_dimensions);
+  assert(problem_cont != NULL);
+  problem1_cont = ((coco_problem_stacked_data_t *) problem_cont->data)->problem1;
+  problem2_cont = ((coco_problem_stacked_data_t *) problem_cont->data)->problem2;
+  problem1 = coco_problem_duplicate(problem1_cont);
+  problem2 = coco_problem_duplicate(problem2_cont);
+  assert(problem1);
+  assert(problem2);
+  /* Copy also the data of the underlying problems and set all pointers in such a way that
+   * problem_cont can be safely freed */
+  problem1->data = problem1_cont->data;
+  problem2->data = problem2_cont->data;
+  problem1_cont->data = NULL;
+  problem2_cont->data = NULL;
+  problem1_cont->problem_free_function = NULL;
+  problem2_cont->problem_free_function = NULL;
+  coco_problem_free(problem_cont);
+
+  /* Second, discretize the single-objective problems */
+  problem1_mixint = transform_vars_discretize(problem1, smallest_values_of_interest,
+      largest_values_of_interest, num_integer);
+  problem2_mixint = transform_vars_discretize(problem2, smallest_values_of_interest,
+      largest_values_of_interest, num_integer);
+
+  /* Third, combine the problems in a bi-objective mixed-integer problem */
+  problem = coco_problem_stacked_allocate(problem1_mixint, problem2_mixint, smallest_values_of_interest,
+      largest_values_of_interest);
+
+  /* Use the standard stacked problem_id as problem_name and construct a new problem_id */
+  coco_problem_set_name(problem, problem->problem_id);
+  coco_problem_set_id(problem, "bbob-biobj-mixint_f%03lu_i%02lu_d%02lu", (unsigned long) function,
+      (unsigned long) instance, (unsigned long) dimension);
+
+  /* Construct problem type */
+  coco_problem_set_type(problem, "%s_%s", problem1->problem_type, problem2->problem_type);
+
+  coco_free_memory(smallest_values_of_interest);
+  coco_free_memory(largest_values_of_interest);
+
+  return problem;
 }
+/**
+ * @brief Returns the problem from the bbob-biobj-mixint suite that corresponds to the given parameters.
+ *
+ * Uses large-scale bbob functions if dimension is equal or larger than the hard-coded dim_large_scale
+ * value (50).
+ *
+ * @param suite The COCO suite.
+ * @param function_idx Index of the function (starting from 0).
+ * @param dimension_idx Index of the dimension (starting from 0).
+ * @param instance_idx Index of the instance (starting from 0).
+ * @return The problem that corresponds to the given parameters.
+ */
+static coco_problem_t *suite_biobj_mixint_get_problem(coco_suite_t *suite,
+                                                      const size_t function_idx,
+                                                      const size_t dimension_idx,
+                                                      const size_t instance_idx) {
+
+  coco_problem_t *problem = NULL;
+  suite_biobj_new_inst_t *new_inst_data = (suite_biobj_new_inst_t *) suite->data;
+  const size_t dim_large_scale = 50; /* Switch to large-scale functions for dimensions over 50 */
+
+  const size_t function = suite->functions[function_idx];
+  const size_t dimension = suite->dimensions[dimension_idx];
+  const size_t instance = suite->instances[instance_idx];
+
+  if (dimension < dim_large_scale)
+    problem = coco_get_biobj_mixint_problem(function, dimension, instance, coco_get_bbob_problem,
+        &new_inst_data, suite->number_of_instances, suite->dimensions, suite->number_of_dimensions);
+  else
+    problem = coco_get_biobj_mixint_problem(function, dimension, instance, mock_coco_get_largescale_problem,
+        &new_inst_data, suite->number_of_instances, suite->dimensions, suite->number_of_dimensions);
+
+  problem->suite_dep_function = function;
+  problem->suite_dep_instance = instance;
+  problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
+
+  return problem;
+}
+
 #line 22 "code-experiments/src/coco_suite.c"
 #line 1 "code-experiments/src/suite_toy.c"
 /**
@@ -19740,32 +19722,20 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   coco_problem_t *problem = NULL;
   coco_problem_t *problem_c = NULL;
 
-  double feasible_direction_norm = 4.0;
-  
+  double *all_zeros = NULL;
   char *problem_type_temp = NULL;
-	 
-  coco_random_state_t *rand_state = coco_random_new((uint32_t) rseed);
+
+  all_zeros = coco_allocate_vector(dimension);
+
+  for (i = 0; i < dimension; ++i)
+    all_zeros[i] = 0.0;
 
   /* Create the objective function */
   problem = f_rastrigin_cons_bbob_problem_allocate(function, dimension, 
       instance, rseed, problem_id_template, problem_name_template);
   
-  /* Define the feasible_direction and, consequently, the initial
-   * solution provided by the testbed as a point in (1,2)^n. This avoids
-   * providing a local optimal solution (such as all-ones) as initial 
-   * solution to the user. Otherwise, algorithms that look for local 
-   * optima would stop at iteration 1 if they used such an initial
-   * solution.
-   *
-   * But then the testbed is not meant to please certain algorithms, but
-   * to model scenarios these algorithm may realistically face.
-   */
-
-  for (i = 0; i < dimension; ++i)
-    feasible_direction[i] = feasible_direction_norm + coco_random_uniform(rand_state);
+  bbob_evaluate_gradient(problem, all_zeros, feasible_direction);
   feasible_direction_set_length(feasible_direction, xopt, dimension, rseed);
-
-  coco_random_free(rand_state);
      
   /* Create the constraints. Use the feasible direction above
    * to build the first constraint. 
@@ -19810,6 +19780,7 @@ static coco_problem_t *f_rastrigin_c_linear_cons_bbob_problem_allocate(const siz
   problem_c->problem_type);
  
   coco_free_memory(problem_type_temp);
+  coco_free_memory(all_zeros);
   
   return problem;
  
@@ -20100,16 +20071,19 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_toy_initialize();
   } else if (strcmp(suite_name, "bbob") == 0) {
     suite = suite_bbob_initialize();
-  } else if (strcmp(suite_name, "bbob-biobj") == 0) {
-    suite = suite_biobj_initialize();
-  } else if (strcmp(suite_name, "bbob-biobj-ext") == 0) {
-    suite = suite_biobj_ext_initialize();
+  } else if ((strcmp(suite_name, "bbob-biobj") == 0) ||
+      (strcmp(suite_name, "bbob-biobj-ext") == 0)) {
+    suite = suite_biobj_initialize(suite_name);
   } else if (strcmp(suite_name, "bbob-largescale") == 0) {
     suite = suite_largescale_initialize();
   } else if (strcmp(suite_name, "bbob-constrained") == 0) {
     suite = suite_cons_bbob_initialize();
-  } else if (strcmp(suite_name, "bbob-mixint") == 0) {
-    suite = suite_bbob_mixint_initialize();
+  } else if (strcmp(suite_name, "bbob-mixint-1") == 0) {
+    suite = suite_bbob_mixint_initialize(suite_name);
+  } else if (strcmp(suite_name, "bbob-mixint-2") == 0) {
+    suite = suite_bbob_mixint_initialize(suite_name);
+  } else if (strcmp(suite_name, "bbob-biobj-mixint") == 0) {
+    suite = suite_biobj_mixint_initialize();
   }
   else {
     coco_error("coco_suite_intialize(): unknown problem suite");
@@ -20129,14 +20103,17 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
 
   if (strcmp(suite->suite_name, "bbob") == 0) {
     year_string = suite_bbob_get_instances_by_year(year);
-  } else if (strcmp(suite->suite_name, "bbob-biobj") == 0) {
-    year_string = suite_biobj_get_instances_by_year(year);
-  } else if (strcmp(suite->suite_name, "bbob-biobj-ext") == 0) {
-    year_string = suite_biobj_ext_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-constrained") == 0) {
     year_string = suite_cons_bbob_get_instances_by_year(year);
-  } else if (strcmp(suite->suite_name, "bbob-mixint") == 0) {
+  } else if ((strcmp(suite->suite_name, "bbob-biobj") == 0) ||
+      (strcmp(suite->suite_name, "bbob-biobj-ext") == 0)) {
+    year_string = suite_biobj_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "bbob-mixint-1") == 0) {
     year_string = suite_bbob_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "bbob-mixint-2") == 0) {
+    year_string = suite_bbob_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
+    year_string = suite_biobj_mixint_get_instances_by_year(year);
   } else {
     coco_error("coco_suite_get_instances_by_year(): suite '%s' has no years defined", suite->suite_name);
     return NULL;
@@ -20169,16 +20146,19 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     problem = suite_toy_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob") == 0) {
     problem = suite_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
-  } else if (strcmp(suite->suite_name, "bbob-biobj") == 0) {
+  } else if ((strcmp(suite->suite_name, "bbob-biobj") == 0) ||
+      (strcmp(suite->suite_name, "bbob-biobj-ext") == 0)) {
     problem = suite_biobj_get_problem(suite, function_idx, dimension_idx, instance_idx);
-  } else if (strcmp(suite->suite_name, "bbob-biobj-ext") == 0) {
-    problem = suite_biobj_ext_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-largescale") == 0) {
     problem = suite_largescale_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-constrained") == 0) {
     problem = suite_cons_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
-  } else if (strcmp(suite->suite_name, "bbob-mixint") == 0) {
+  } else if (strcmp(suite->suite_name, "bbob-mixint-1") == 0) {
     problem = suite_bbob_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "bbob-mixint-2") == 0) {
+    problem = suite_bbob_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
+    problem = suite_biobj_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else {
     coco_error("coco_suite_get_problem_from_indices(): unknown problem suite");
     return NULL;
@@ -20521,7 +20501,7 @@ static size_t *coco_suite_get_instance_indices(const coco_suite_t *suite, const 
   char *instances = NULL;
   const char *year_string = NULL;
   long year_found, instances_found;
-  int parce_year = 1, parce_instances = 1;
+  int parse_year = 1, parse_instances = 1;
   size_t *result = NULL;
 
   if (suite_instance == NULL)
@@ -20535,16 +20515,16 @@ static size_t *coco_suite_get_instance_indices(const coco_suite_t *suite, const 
 
   if ((year_found > 0) && (instances_found > 0)) {
     if (year_found < instances_found) {
-      parce_instances = 0;
+      parse_instances = 0;
       coco_warning("coco_suite_get_instance_indices(): 'instances' suite option ignored because it follows 'year'");
     }
     else {
-      parce_year = 0;
+      parse_year = 0;
       coco_warning("coco_suite_get_instance_indices(): 'year' suite option ignored because it follows 'instances'");
     }
   }
 
-  if ((year_found >= 0) && (parce_year == 1)) {
+  if ((year_found >= 0) && (parse_year == 1)) {
     if (coco_options_read_int(suite_instance, "year", &(year)) != 0) {
       year_string = coco_suite_get_instances_by_year(suite, year);
       result = coco_string_parse_ranges(year_string, 1, 0, "instances", COCO_MAX_INSTANCES);
@@ -20554,7 +20534,7 @@ static size_t *coco_suite_get_instance_indices(const coco_suite_t *suite, const 
   }
 
   instances = coco_allocate_string(COCO_MAX_INSTANCES);
-  if ((instances_found >= 0) && (parce_instances == 1)) {
+  if ((instances_found >= 0) && (parse_instances == 1)) {
     if (coco_options_read_values(suite_instance, "instances", instances) > 0) {
       result = coco_string_parse_ranges(instances, 1, 0, "instances", COCO_MAX_INSTANCES);
     } else {
@@ -20941,7 +20921,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
  * @param suite The suite.
  * @param function_idx Index of the function (starting with 0).
  * @param dimension_idx Index of the dimension (starting with 0).
- * @param instance_idx Index of the insatnce (starting with 0).
+ * @param instance_idx Index of the instance (starting with 0).
  *
  * @return The problem index in the suite computed from function_idx, dimension_idx and instance_idx.
  */
@@ -21279,7 +21259,8 @@ static coco_observer_t *coco_observer_allocate(const char *result_folder,
                                                const char *base_evaluation_triggers,
                                                const int precision_x,
                                                const int precision_f,
-                                               const int precision_g) {
+                                               const int precision_g,
+                                               const int log_discrete_as_int) {
 
   coco_observer_t *observer;
   observer = (coco_observer_t *) coco_allocate_memory(sizeof(*observer));
@@ -21295,6 +21276,7 @@ static coco_observer_t *coco_observer_allocate(const char *result_folder,
   observer->precision_x = precision_x;
   observer->precision_f = precision_f;
   observer->precision_g = precision_g;
+  observer->log_discrete_as_int = log_discrete_as_int;
   observer->data = NULL;
   observer->data_free_function = NULL;
   observer->logger_allocate_function = NULL;
@@ -21455,6 +21437,8 @@ typedef struct {
   size_t function_id; /*TODO: consider changing name*/
   size_t instance_id;
   size_t number_of_variables;
+  size_t number_of_integer_variables;
+  int log_discrete_as_int;            /**< @brief Whether to output discrete variables in int or double format. */
   double optimal_fvalue;
   char *suite_name;
 
@@ -21523,8 +21507,10 @@ static void logger_bbob_write_data(FILE *target_file,
                                    double best_value,
                                    const double *x,
                                    size_t number_of_variables,
+                                   size_t number_of_integer_variables,
                                    const double *constraints,
-                                   size_t number_of_constraints) {
+                                   size_t number_of_constraints,
+                                   const int log_discrete_as_int) {
   size_t i;
   /* for some reason, it's %.0f in the old code instead of the 10.9e
    * in the documentation
@@ -21543,9 +21529,12 @@ static void logger_bbob_write_data(FILE *target_file,
   else
     fprintf(target_file, "%+10.9e", best_fvalue);
 
-  if (number_of_variables < 22) {
+  if ((number_of_variables - number_of_integer_variables) < 22) {
     for (i = 0; i < number_of_variables; i++) {
-      fprintf(target_file, " %+5.4e", x[i]);
+      if ((i < number_of_integer_variables) && (log_discrete_as_int))
+        fprintf(target_file, " %d", coco_double_to_int(x[i]));
+      else
+        fprintf(target_file, " %+5.4e", x[i]);
     }
   }
   fprintf(target_file, "\n");
@@ -21873,8 +21862,10 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
           logger->optimal_fvalue,
           x,
           problem->number_of_variables,
+          problem->number_of_integer_variables,
           cons,
-          problem->number_of_constraints);
+          problem->number_of_constraints,
+          logger->log_discrete_as_int);
     }
   }
 
@@ -21890,8 +21881,10 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
         logger->optimal_fvalue,
         x,
         problem->number_of_variables,
+        problem->number_of_integer_variables,
         cons,
-        problem->number_of_constraints);
+        problem->number_of_constraints,
+        logger->log_discrete_as_int);
     logger->written_last_eval = 1;
   }
 
@@ -21944,8 +21937,10 @@ static void logger_bbob_free(void *stuff) {
           logger->optimal_fvalue,
           logger->best_solution,
           logger->number_of_variables,
+          logger->number_of_integer_variables,
           NULL,
-          0);
+          0,
+          logger->log_discrete_as_int);
 	}
     fclose(logger->tdata_file);
     logger->tdata_file = NULL;
@@ -21995,6 +21990,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   logger_data->tdata_file = NULL;
   logger_data->rdata_file = NULL;
   logger_data->number_of_variables = inner_problem->number_of_variables;
+  logger_data->number_of_integer_variables = inner_problem->number_of_integer_variables;
   if (inner_problem->best_value == NULL) {
     /* coco_error("Optimal f value must be defined for each problem in order for the logger to work properly"); */
     /* Setting the value to 0 results in the assertion y>=optimal_fvalue being susceptible to failure */
@@ -22016,6 +22012,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   logger_data->written_last_eval = 0;
   logger_data->last_fvalue = DBL_MAX;
   logger_data->is_initialized = 0;
+  logger_data->log_discrete_as_int = observer->log_discrete_as_int;
     
   /* Initialize triggers based on target values and number of evaluations */
   logger_data->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
@@ -22027,7 +22024,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   bbob_logger_is_open = 1;
   return problem;
 }
-#line 355 "code-experiments/src/coco_observer.c"
+#line 357 "code-experiments/src/coco_observer.c"
 #line 1 "code-experiments/src/logger_biobj.c"
 /**
  * @file logger_biobj.c
@@ -23278,29 +23275,31 @@ typedef struct {
  */
 typedef struct {
   observer_biobj_log_nondom_e log_nondom_mode;
-                                 /**< @brief Mode for archiving nondominated solutions. */
-  FILE *adat_file;               /**< @brief File for archiving nondominated solutions (all or final). */
+                                      /**< @brief Mode for archiving nondominated solutions. */
+  FILE *adat_file;                    /**< @brief File for archiving nondominated solutions (all or final). */
 
-  int log_vars;                  /**< @brief Whether to log the decision values. */
+  int log_vars;                       /**< @brief Whether to log the decision values. */
 
-  int precision_x;               /**< @brief Precision for outputting decision values. */
-  int precision_f;               /**< @brief Precision for outputting objective values. */
+  int precision_x;                    /**< @brief Precision for outputting decision values. */
+  int precision_f;                    /**< @brief Precision for outputting objective values. */
+  int log_discrete_as_int;            /**< @brief Whether to output discrete variables in int or double format. */
 
-  size_t number_of_evaluations;  /**< @brief The number of evaluations performed so far. */
-  size_t number_of_variables;    /**< @brief Dimension of the problem. */
-  size_t number_of_objectives;   /**< @brief Number of objectives (clearly equal to 2). */
-  size_t suite_dep_instance;     /**< @brief Suite-dependent instance number of the observed problem. */
+  size_t number_of_evaluations;       /**< @brief The number of evaluations performed so far. */
+  size_t number_of_variables;         /**< @brief Dimension of the problem. */
+  size_t number_of_integer_variables; /**< @brief Number of integer variables. */
+  size_t number_of_objectives;        /**< @brief Number of objectives (clearly equal to 2). */
+  size_t suite_dep_instance;          /**< @brief Suite-dependent instance number of the observed problem. */
 
-  size_t previous_evaluations;   /**< @brief The number of evaluations from the previous call to the logger. */
+  size_t previous_evaluations;        /**< @brief The number of evaluations from the previous call to the logger. */
 
-  avl_tree_t *archive_tree;      /**< @brief The tree keeping currently non-dominated solutions. */
-  avl_tree_t *buffer_tree;       /**< @brief The tree with pointers to nondominated solutions that haven't
-                                      been logged yet. */
+  avl_tree_t *archive_tree;           /**< @brief The tree keeping currently non-dominated solutions. */
+  avl_tree_t *buffer_tree;            /**< @brief The tree with pointers to nondominated solutions that haven't
+                                           been logged yet. */
 
   /* Indicators (TODO: Implement others!) */
-  int compute_indicators;        /**< @brief Whether to compute the indicators. */
+  int compute_indicators;             /**< @brief Whether to compute the indicators. */
   logger_biobj_indicator_t *indicators[LOGGER_BIOBJ_NUMBER_OF_INDICATORS];
-                                 /**< @brief The implemented indicators. */
+                                      /**< @brief The implemented indicators. */
 } logger_biobj_data_t;
 
 /**
@@ -23413,10 +23412,12 @@ static int avl_tree_compare_by_eval_number(const logger_biobj_avl_item_t *item1,
 static size_t logger_biobj_tree_output(FILE *file,
                                        const avl_tree_t *tree,
                                        const size_t dim,
+                                       const size_t num_int_vars,
                                        const size_t num_obj,
                                        const int log_vars,
                                        const int precision_x,
-                                       const int precision_f) {
+                                       const int precision_f,
+                                       const int log_discrete_as_int) {
 
   avl_node_t *solution;
   size_t i;
@@ -23432,7 +23433,10 @@ static size_t logger_biobj_tree_output(FILE *file,
         fprintf(file, "%.*e\t", precision_f, ((logger_biobj_avl_item_t*) solution->item)->y[j]);
       if (log_vars) {
         for (i = 0; i < dim; i++)
-          fprintf(file, "%.*e\t", precision_x, ((logger_biobj_avl_item_t*) solution->item)->x[i]);
+          if ((i < num_int_vars) && (log_discrete_as_int))
+            fprintf(file, "%d\t", coco_double_to_int(((logger_biobj_avl_item_t*) solution->item)->x[i]));
+          else
+            fprintf(file, "%.*e\t", precision_x, ((logger_biobj_avl_item_t*) solution->item)->x[i]);
       }
       fprintf(file, "\n");
       solution = solution->next;
@@ -23889,7 +23893,8 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
    * nondom_file */
   if (update_performed && (logger->log_nondom_mode == LOG_NONDOM_ALL)) {
     logger_biobj_tree_output(logger->adat_file, logger->buffer_tree, logger->number_of_variables,
-        logger->number_of_objectives, logger->log_vars, logger->precision_x, logger->precision_f);
+        logger->number_of_integer_variables, logger->number_of_objectives, logger->log_vars,
+        logger->precision_x, logger->precision_f, logger->log_discrete_as_int);
     avl_tree_purge(logger->buffer_tree);
 
     /* Flush output so that impatient users can see progress. */
@@ -23971,7 +23976,8 @@ static void logger_biobj_finalize(logger_biobj_data_t *logger) {
   }
 
   logger_biobj_tree_output(logger->adat_file, resorted_tree, logger->number_of_variables,
-      logger->number_of_objectives, logger->log_vars, logger->precision_x, logger->precision_f);
+      logger->number_of_integer_variables, logger->number_of_objectives, logger->log_vars,
+      logger->precision_x, logger->precision_f, logger->log_discrete_as_int);
 
   avl_tree_destruct(resorted_tree);
 }
@@ -24039,6 +24045,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   logger_data->number_of_evaluations = 0;
   logger_data->previous_evaluations = 0;
   logger_data->number_of_variables = inner_problem->number_of_variables;
+  logger_data->number_of_integer_variables = inner_problem->number_of_integer_variables;
   logger_data->number_of_objectives = inner_problem->number_of_objectives;
   logger_data->suite_dep_instance = inner_problem->suite_dep_instance;
 
@@ -24048,6 +24055,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   logger_data->compute_indicators = observer_data->compute_indicators;
   logger_data->precision_x = observer->precision_x;
   logger_data->precision_f = observer->precision_f;
+  logger_data->log_discrete_as_int = observer->log_discrete_as_int;
 
   if (((observer_data->log_vars_mode == LOG_VARS_LOW_DIM) && (inner_problem->number_of_variables > 5))
       || (observer_data->log_vars_mode == LOG_VARS_NEVER))
@@ -24113,7 +24121,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
 
   return problem;
 }
-#line 356 "code-experiments/src/coco_observer.c"
+#line 358 "code-experiments/src/coco_observer.c"
 #line 1 "code-experiments/src/logger_toy.c"
 /**
  * @file logger_toy.c
@@ -24303,7 +24311,7 @@ static coco_problem_t *logger_toy(coco_observer_t *observer, coco_problem_t *inn
 
   return problem;
 }
-#line 357 "code-experiments/src/coco_observer.c"
+#line 359 "code-experiments/src/coco_observer.c"
 #line 1 "code-experiments/src/logger_rw.c"
 /**
  * @file logger_rw.c
@@ -24633,7 +24641,7 @@ static coco_problem_t *logger_rw(coco_observer_t *observer, coco_problem_t *inne
 
   return problem;
 }
-#line 358 "code-experiments/src/coco_observer.c"
+#line 360 "code-experiments/src/coco_observer.c"
 
 /**
  * Currently, three observers are supported:
@@ -24672,6 +24680,8 @@ static coco_problem_t *logger_rw(coco_observer_t *observer, coco_problem_t *inne
  * digits to be printed after the decimal point. The default value is 15.
  * - "precision_g: VALUE" defines the precision used when outputting constraints and corresponds to the number
  * of digits to be printed after the decimal point. The default value is 3.
+ * - "log_discrete_as_int: VALUE" determines whether the values of integer variables (in mixed-integer problems)
+ * are logged as integers (1) or not (0 - in this case they are logged as doubles). The default value is 1.
  *
  * @return The constructed observer object or NULL if observer_name equals NULL, "" or "no_observer".
  */
@@ -24680,7 +24690,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   coco_observer_t *observer;
   char *path, *result_folder, *algorithm_name, *algorithm_info;
   const char *outer_folder_name = "exdata";
-  int precision_x, precision_f, precision_g;
+  int precision_x, precision_f, precision_g, log_discrete_as_int;
 
   size_t number_target_triggers;
   size_t number_evaluation_triggers;
@@ -24693,7 +24703,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
    * IMPORTANT: This list should be up-to-date with the code and the documentation */
   const char *known_keys[] = { "result_folder", "algorithm_name", "algorithm_info",
       "number_target_triggers", "target_precision", "number_evaluation_triggers", "base_evaluation_triggers",
-      "precision_x", "precision_f", "precision_g" };
+      "precision_x", "precision_f", "precision_g", "log_discrete_as_int" };
   additional_option_keys = NULL; /* To be set by the chosen observer */
 
   if (0 == strcmp(observer_name, "no_observer")) {
@@ -24767,9 +24777,15 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
       precision_g = 3;
   }
 
+  log_discrete_as_int = 1;
+  if (coco_options_read_int(observer_options, "log_discrete_as_int", &log_discrete_as_int) != 0) {
+    if ((log_discrete_as_int < 0) || (log_discrete_as_int > 1))
+      log_discrete_as_int = 1;
+  }
+
   observer = coco_observer_allocate(path, observer_name, algorithm_name, algorithm_info,
       number_target_triggers, target_precision, number_evaluation_triggers, base_evaluation_triggers,
-      precision_x, precision_f, precision_g);
+      precision_x, precision_f, precision_g, log_discrete_as_int);
 
   coco_free_memory(path);
   coco_free_memory(result_folder);
