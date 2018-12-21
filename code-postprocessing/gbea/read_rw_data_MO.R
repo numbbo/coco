@@ -17,6 +17,7 @@ files <- list.files(path=dir, pattern = "\\.txt$",recursive=T) #switch to "\\.td
 
 df <- data.frame(evaluation=integer(), f1=double(), f2=double(),loc=list(), dim=integer(), fun=integer(), inst=integer())
 for(f in files){
+  print(f)
   dim <- as.numeric(str_extract(str_extract(f,"d[0-9]+"),"\\d+")) #extract dimension
   fun <- as.numeric(str_extract(str_extract(f,"f[0-9]+"),"\\d+")) #extract function number
   inst <- as.numeric(str_extract(str_extract(f,"i[0-9]+"),"\\d+")) #extract instance number

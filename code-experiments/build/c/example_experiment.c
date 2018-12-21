@@ -158,13 +158,14 @@ int main(void) {
 
   /* example_experiment("bbob", "dimensions: 2,3,5", "rw", "log_only_better: 0", random_generator); */
 
-  /* line_walk_experiment("rw-top-trumps",
-                       "function_indices: 1-6 dimensions: 128",
+   line_walk_experiment("rw-top-trumps-biobj",
+                       "function_indices: 1-6 instance_indices: 1 dimensions: 128",
                        "rw",
                        "result_folder: rw-top-trumps-line-walk-random log_only_better: 0 log_variables: all precision_x: 4 log_time: 1",
                        random_generator,
                        "random",
-                       101); */
+                       3);
+
 
   line_walk_experiment("bbob",
                        "instance_indices: 1-5 dimensions: 10",
@@ -180,7 +181,7 @@ int main(void) {
                        "result_folder: rw-gan-mario-line-walk-random log_only_better: 0 log_variables: all log_time: 1",
                        random_generator,
                        "random",
-                       101);
+                       101);*/
 
   printf("Done!\n");
   fflush(stdout);

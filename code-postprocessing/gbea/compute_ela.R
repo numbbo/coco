@@ -31,6 +31,7 @@ for(i in 1:nrow(tries)){
   features$dim = tries$dim[i]
   features$fun = tries$fun[i]
   features$inst = tries$inst[i]
+  print(as.data.frame(features))
   result = rbind(result, as.data.frame(features))
 }
 
