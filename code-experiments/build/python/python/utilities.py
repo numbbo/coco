@@ -301,7 +301,7 @@ class SameFunction:
     def __init__(self):
         self.count = 0
     def __call__(self, id):
-        """return number of directly preceding calls with similar `id`s
+        """return number of directly preceding calls with similar `id`
         """
         new = SameFunction.filter(id)
         if self.count == 0 or new != self.last:
@@ -334,7 +334,10 @@ class MiniPrint(object):
             self.dimension = problem.dimension
             self._calls = 0
         elif not self._calls % 10:
-            print(' ', end='')
+            if self._calls % 50:
+                print(' ', end='')
+            else:
+                print()
         self._calls += 1
         print('|' if problem.final_target_hit else ':' if restarted else '.', end='')
         if final:  # final print

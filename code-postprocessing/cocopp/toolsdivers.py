@@ -6,7 +6,7 @@
 """
 from __future__ import absolute_import, print_function
 
-import os, time
+import os, time, warnings
 import numpy as np
 from matplotlib import pyplot as plt
 from subprocess import CalledProcessError, STDOUT
@@ -109,7 +109,7 @@ def diff_attr(m1, m2, exclude=('_', )):
             for key in m1.__dict__
                 if hasattr(m2, key) and
                     not any(key.startswith(s) for s in exclude)
-                    and getattr(m1, key) != getattr(m2, key)]
+                    and np.all(getattr(m1, key) != getattr(m2, key))]
 
 def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
     """"prepend lines the tex-command filename """
@@ -290,6 +290,7 @@ def legend(*args, **kwargs):
    try:
       plt.legend(*args, **kwargs)
    except:
+      warnings.warn("framealpha not effective")
       kwargs.pop('framealpha')
       plt.legend(*args, **kwargs)
       
