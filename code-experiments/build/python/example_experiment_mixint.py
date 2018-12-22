@@ -59,8 +59,8 @@ def run_experiment(suite_name, observer_name, solver_name):
                and not problem.final_target_hit):
             remaining_budget = problem.dimension * budget_multiplier - problem.evaluations
             solve(solver_name, problem, x0, remaining_budget, de_pop_mult)
-            x0 = problem.lower_bounds + ((rand(problem.dimension) + rand(problem.dimension)) *
-                                         (problem.upper_bounds - problem.lower_bounds) / 2)
+            x0 = problem.lower_bounds + rand(problem.dimension) * \
+                 (problem.upper_bounds - problem.lower_bounds) / 2
         minimal_print(problem, final=problem.index == len(suite) - 1)
 
 
