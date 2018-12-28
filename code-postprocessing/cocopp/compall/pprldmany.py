@@ -166,7 +166,7 @@ def beautify():
     a = plt.gca()
     a.set_xscale('log')
     # Tick label handling
-    plt.xlim(xmin=1e-0)
+    plt.xlim(1e-0)
 
     global divide_by_dimension
     if divide_by_dimension:
@@ -375,7 +375,7 @@ def plotLegend(handles, maxval):
     # plt.axvline(x=maxval, color='k') # Not as efficient?
     reshandles.append(plt_plot((maxval, maxval), (0., 1.), color='k'))
     reslabels.reverse()
-    plt.xlim(xmax=maxval)
+    plt.xlim(None, maxval)
     return reslabels, reshandles
 
 
@@ -837,7 +837,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                   fontsize=title_fontsize)
     a = plt.gca()
 
-    plt.xlim(xmin=1e-0, xmax=x_limit)
+    plt.xlim(1e-0, x_limit)
     xmaxexp = int(np.floor(np.log10(x_limit)))
     xmajorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1, 2)]
     xminorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1)]
@@ -852,7 +852,13 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     if save_figure:
         ppfig.save_figure(figureName,
                           dictAlg[algorithms_with_data[0]][0].algId,
-                          layout_rect=(0, 0, 0.735, 1))
+                          layout_rect=(0, 0, 0.735, 1),
+                          # Prevent clipping in matplotlib >=3:
+                          # Relative additional space numbers are
+                          # bottom, left, 1 - top, and 1 - right.
+                          # bottom=0.13 still clips g in the log(#evals) xlabel
+                          subplots_adjust=dict(bottom=0.135, right=0.735),
+                          )
         if plotType == PlotType.DIM:
             file_name = genericsettings.pprldmany_file_name
             ppfig.save_single_functions_html(

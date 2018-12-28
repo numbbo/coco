@@ -36,15 +36,26 @@ HtmlPage = enum('NON_SPECIFIED', 'ONE', 'MANY', 'PPRLDMANY_BY_GROUP', 'PPRLDMANY
                 'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS')
 
 
-def save_figure(filename, algorithm=None, format=None,
-                layout_rect=(0, 0, 0.99, 1), bbox_inches=None):
+def save_figure(filename,
+                algorithm=None,
+                format=None,
+                layout_rect=(0, 0, 0.99, 1),
+                bbox_inches=None,
+                subplots_adjust=None):
     """Save figure into an image file.
 
     `format` is a `str` denoting a file type known to `pylab.savefig`, like 
     "svg", or `None` in which case the defaults from `genericsettings` are
     applied.
     
-    If `layout_rect`, the `pylab.tight_layout` method is invoked.
+    If `layout_rect`, the `pylab.tight_layout` method is invoked with
+    matplotlib version < 3.
+
+    `subplots_adjust` contains keyword arguments to call the matplotlib
+    function with the same name with matplotlib version >= 3. The function
+    grants relative additional space of size bottom, left, 1 - top, and
+    1 - right by shrinking the printed axes. It is used to prevent outside
+    text being cut away.
 
     'tight' `bbox_inches` lead possibly to (slightly) different figure
     sizes in each case, which is undesirable.
@@ -62,7 +73,10 @@ def save_figure(filename, algorithm=None, format=None,
              color='0.5',
              transform=plt.gca().transAxes)
     for format in fig_formats:
-        if layout_rect:
+        if plt.matplotlib.__version__[0] >= '3' and subplots_adjust:
+            # subplots_adjust is used in pprldmany.main with bottom=0.135, right=0.735
+            plt.subplots_adjust(**subplots_adjust)
+        elif layout_rect:
             try:
                 # possible alternative:
                 # bbox = gcf().get_tightbbox(gcf().canvas.get_renderer())
@@ -72,8 +86,7 @@ def save_figure(filename, algorithm=None, format=None,
                 # right, i.e., 0.88 is where the "tight" right figure
                 # border is placed whereas everything is plotted
                 # further up to plotted figure border at 1
-                if plt.matplotlib.__version__[0] < '3':
-                    plt.tight_layout(pad=0.15, rect=layout_rect)
+                plt.tight_layout(pad=0.15, rect=layout_rect)
             except Exception as e:
                 warnings.warn(
                     'Figure tightening failed (matplotlib version %s)'
@@ -657,7 +670,7 @@ def beautify():
     axisHandle.grid(True)
 
     _ymin, ymax = plt.ylim()
-    plt.ylim(ymin=10 ** -0.2, ymax=ymax)  # Set back the default maximum.
+    plt.ylim(10 ** -0.2, ymax)  # Set back the default maximum.
 
     tmp = axisHandle.get_yticks()
     tmp2 = []
