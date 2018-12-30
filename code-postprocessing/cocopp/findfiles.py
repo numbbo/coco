@@ -80,7 +80,7 @@ def get_directory(directory, extract_files):
     if not os.path.isdir(directory) and is_recognized_repository_filetype(directory):
         if '.zip' in directory:
             head, tail = os.path.split(directory[:directory.find('.z')])
-            dir_name = head + os.sep + genericsettings.extraction_folder_prefix + tail
+            dir_name = os.path.join(head, genericsettings.extraction_folder_prefix + tail)
             # extract only if extracted folder does not exist yet or if it was
             # extracted earlier than last change of archive:
             if extract_files:
@@ -98,7 +98,7 @@ def get_directory(directory, extract_files):
             directory = dir_name
         else: # i.e. either directory or .tar or zipped .tar
             head, tail = os.path.split(directory[:directory.find('.t')])
-            dir_name = head + os.sep + genericsettings.extraction_folder_prefix + tail
+            dir_name = os.path.join(head, genericsettings.extraction_folder_prefix + tail)
             # extract only if extracted folder does not exist yet or if it was
             # extracted earlier than last change of archive:
             if extract_files:
