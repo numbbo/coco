@@ -309,7 +309,6 @@ def save_single_functions_html(filename,
         first_function_number = testbedsettings.current_testbed.first_function_number
         last_function_number = testbedsettings.current_testbed.last_function_number
         caption_string_format = '<p/>\n%s\n<p/><p/>'
-        reference_algorithm_exists = testbedsettings.current_testbed.reference_algorithm_filename != ''
 
         if htmlPage in (HtmlPage.ONE, HtmlPage.MANY):
             f.write(links_placeholder)
@@ -367,7 +366,9 @@ def save_single_functions_html(filename,
             f.write(caption_string_format % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPTABLES:
-            write_tables(f, caption_string_format, reference_algorithm_exists, 'pptablesHtml', 'bbobpptablesmanylegend', dimensions)
+            write_tables(f, caption_string_format,
+                         testbedsettings.current_testbed.reference_algorithm_filename,
+                         'pptablesHtml', 'bbobpptablesmanylegend', dimensions)
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
@@ -409,7 +410,7 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
             dimensions = genericsettings.rldDimsOfInterest
-            if reference_algorithm_exists:
+            if testbedsettings.current_testbed.reference_algorithm_filename:
                 current_header = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % current_header)
 
