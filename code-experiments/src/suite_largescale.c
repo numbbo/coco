@@ -16,7 +16,6 @@
 #include "f_rastrigin.c"
 #include "f_schaffers.c"
 #include "f_schwefel_generalized.c"
-/*#include "f_sharp_ridge.c"*/
 #include "f_sharp_ridge_generalized.c"
 #include "f_sphere.c"
 #include "f_step_ellipsoid.c"

@@ -56,7 +56,6 @@ incrstars = 1.5
 fthresh = 1e-8
 xmax = 1000
 
-#dimension_index = dict([(dimensions[i], i) for i in range(len(dimensions))])
 
 def _generateData(entry0, entry1, fthresh=None, downsampling=None):
 

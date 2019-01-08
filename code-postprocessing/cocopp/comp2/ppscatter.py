@@ -75,7 +75,7 @@ def prepare_figure_caption():
         %d:{\color{blue}$\star$},
         %d:$\circ$,
         %d:{\color{red}$\Box$},
-        %d:{\color{magenta}$\Diamond$}. """ %tuple(testbedsettings.current_testbed.dimensions_to_display)
+        %d:{\color{magenta}$\Diamond$}. """ % tuple(testbedsettings.current_testbed.dimensions_to_display)
 
 
     if genericsettings.runlength_based_targets:

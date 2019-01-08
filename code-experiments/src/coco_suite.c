@@ -70,8 +70,10 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
   } else if (strcmp(suite->suite_name, "bbob-biobj-ext") == 0) {
     year_string = suite_biobj_ext_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-constrained") == 0) {
-    year_string = suite_cons_bbob_get_instances_by_year(year);  } else if (strcmp(suite->suite_name, "bbob-largescale") == 0) {
-    year_string = suite_largescale_get_instances_by_year(year);  } else {
+    year_string = suite_cons_bbob_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "bbob-largescale") == 0) {
+    year_string = suite_largescale_get_instances_by_year(year);  
+  } else {
     coco_error("coco_suite_get_instances_by_year(): suite '%s' has no years defined", suite->suite_name);
     return NULL;
   }

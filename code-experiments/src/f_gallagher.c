@@ -6,8 +6,6 @@
 #include <assert.h>
 #include <math.h>
 
-/*Wassim: timing TODO: remove*/
-
 #include "coco.h"
 #include "coco_problem.c"
 #include "coco_utilities.c"

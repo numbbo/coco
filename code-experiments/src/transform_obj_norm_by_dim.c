@@ -29,6 +29,5 @@ static coco_problem_t *transform_obj_norm_by_dim(coco_problem_t *inner_problem) 
 
   problem = coco_problem_transformed_allocate(inner_problem, NULL, NULL, "transform_obj_norm_by_dim");
   problem->evaluate_function = transform_obj_norm_by_dim_evaluate;
-  /*problem->best_value[0] *= 1;*/ /*shouldn't matter*/
   return problem;
 }

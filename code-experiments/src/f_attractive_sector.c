@@ -159,7 +159,7 @@ static coco_problem_t *f_attractive_sector_permblockdiag_bbob_problem_allocate(c
   const double *const *B2_copy;
   const double condition = 10.0;
   size_t *P11, *P12, *P21, *P22;
-  size_t *block_sizes1, *block_sizes2;/* each of R and Q migh have its own parameter values */
+  size_t *block_sizes1, *block_sizes2;/* each of R and Q might have its own parameter values */
   size_t nb_blocks1, nb_blocks2;
   size_t swap_range1, swap_range2;
   size_t nb_swaps1, nb_swaps2;
@@ -177,7 +177,7 @@ static coco_problem_t *f_attractive_sector_permblockdiag_bbob_problem_allocate(c
 
   B1 = coco_allocate_blockmatrix(dimension, block_sizes1, nb_blocks1);
   B2 = coco_allocate_blockmatrix(dimension, block_sizes2, nb_blocks2);
-  B1_copy = (const double *const *)B1;/* Wassim: silences the warning, not sure it prevents the modification of B at all levels*/
+  B1_copy = (const double *const *)B1;  /* Wassim: silences the warning, not sure it prevents the modification of B at all levels*/
   B2_copy = (const double *const *)B2;
   coco_compute_blockrotation(B1, rseed + 1000000, dimension, block_sizes1, nb_blocks1);
   coco_compute_blockrotation(B2, rseed, dimension, block_sizes2, nb_blocks2);
