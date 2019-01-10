@@ -54,7 +54,7 @@ annotation_space_end_relative = 1.24  # figure space end relative to x_limit
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
-median_max_evals_marker_format = ['x', 24, 3]
+median_max_evals_marker_format = ['x', 24, 1]
 label_fontsize = 17
 title_fontsize = 20
 styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
@@ -256,7 +256,9 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                              # marker='x', markersize=24, markeredgewidth=3, 
                              markeredgecolor=plt.getp(res[0], 'color'),
                              ls=plt.getp(res[0], 'ls'),
-                             color=plt.getp(res[0], 'color'))
+                             color=plt.getp(res[0], 'color'),
+                             # zorder=1.6   # zorder=0;1;1.5 is behind the grid lines, 2 covers other lines, 1.6 is between
+                             )
                 h.extend(res)
                 res = h  # so the last element in res still has the label.
                 # Only take sequences for x and y!
