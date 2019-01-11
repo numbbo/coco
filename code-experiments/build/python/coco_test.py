@@ -139,7 +139,7 @@ def main(args):
     run_doctests()
     print('doctests done.\nRunning example_experiment:'), sys.stdout.flush()
     example_experiment.main()
-    run_constrained_suite_test()
+    # run_constrained_suite_test()
     for arg in args if args else default_testcases:
         if arg is None or arg == 'None':
             break
