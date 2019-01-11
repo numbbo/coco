@@ -510,7 +510,7 @@ def beautify():
     a.set_yscale('log')
     ymin = 1e-2
     ymax = 1e4
-    plt.ylim(ymin=ymin, ymax=ymax)
+    plt.ylim(ymin, ymax)
     ydata = np.power(10., np.arange(np.log10(ymin), np.log10(ymax)+1))
     yticklabels = list(str(i) for i in range(int(np.log10(ymin)),
                                              int(np.log10(ymax)+1)))
@@ -855,9 +855,10 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
                  transform=plt.gca().transAxes)
         beautify()
         if evalf:
-            plt.xlim(xmin=evalf[0]-0.5, xmax=evalf[1]+0.5)
+            plt.xlim(evalf[0]-0.5, evalf[1]+0.5)
 
-        save_figure(filename, dsdim[0].algId)
+        save_figure(filename, dsdim[0].algId,
+                    subplots_adjust={'bottom': 0.135})
 
         #plt.show()
         plt.close()

@@ -3,6 +3,8 @@
 
 """Generic routines for figure generation."""
 from __future__ import absolute_import
+# from __future__ import unicode_literals  # enum construction fails
+
 import os
 from collections import OrderedDict
 from operator import itemgetter
@@ -34,15 +36,26 @@ HtmlPage = enum('NON_SPECIFIED', 'ONE', 'MANY', 'PPRLDMANY_BY_GROUP', 'PPRLDMANY
                 'PPTABLE', 'PPTABLE2', 'PPTABLES', 'PPRLDISTR', 'PPRLDISTR2', 'PPLOGLOSS', 'PPSCATTER', 'PPFIGS')
 
 
-def save_figure(filename, algorithm=None, format=None,
-                layout_rect=(0, 0, 0.99, 1), bbox_inches=None):
+def save_figure(filename,
+                algorithm=None,
+                format=None,
+                layout_rect=(0, 0, 0.99, 1),
+                bbox_inches=None,
+                subplots_adjust=None):
     """Save figure into an image file.
 
     `format` is a `str` denoting a file type known to `pylab.savefig`, like 
     "svg", or `None` in which case the defaults from `genericsettings` are
     applied.
     
-    If `layout_rect`, the `pylab.tight_layout` method is invoked.
+    If `layout_rect`, the `pylab.tight_layout` method is invoked with
+    matplotlib version < 3.
+
+    `subplots_adjust` contains keyword arguments to call the matplotlib
+    function with the same name with matplotlib version >= 3. The function
+    grants relative additional space of size bottom, left, 1 - top, and
+    1 - right by shrinking the printed axes. It is used to prevent outside
+    text being cut away.
 
     'tight' `bbox_inches` lead possibly to (slightly) different figure
     sizes in each case, which is undesirable.
@@ -60,7 +73,10 @@ def save_figure(filename, algorithm=None, format=None,
              color='0.5',
              transform=plt.gca().transAxes)
     for format in fig_formats:
-        if layout_rect:
+        if plt.matplotlib.__version__[0] >= '3' and subplots_adjust:
+            # subplots_adjust is used in pprldmany.main with bottom=0.135, right=0.735
+            plt.subplots_adjust(**subplots_adjust)
+        elif layout_rect:
             try:
                 # possible alternative:
                 # bbox = gcf().get_tightbbox(gcf().canvas.get_renderer())
@@ -116,7 +132,10 @@ def add_image(image_name, add_link_to_image, height=160):
         return '<IMG SRC="%s" height="%dem">' % (image_name, height)
 
 
-def add_link(current_dir, folder, file_name, label, indent='', ignore_file_exists=False):
+def add_link(current_dir, folder, file_name, label,
+             indent='',
+             ignore_file_exists=False,
+             dimension=None):
     if folder:
         path = os.path.join(os.path.realpath(current_dir), folder, file_name)
         href = '%s/%s' % (folder, file_name)
@@ -125,7 +144,8 @@ def add_link(current_dir, folder, file_name, label, indent='', ignore_file_exist
         href = file_name
 
     if ignore_file_exists or os.path.isfile(path):
-        return '<H3>%s<a href="%s">%s</a></H3>\n' % (indent, href, label)
+        return '<H3>%s<a href="%s%s">%s</a></H3>\n' % (
+            indent, href, "#" + str(dimension) if dimension else "", label)
 
     return ''
 
@@ -238,15 +258,15 @@ def get_rld_link(current_dir):
 
     file_name = '%s.html' % genericsettings.pprldmany_file_name
     links += add_link(current_dir, folder, file_name,
-                      pprldmany_per_func_dim_header)
+                      pprldmany_per_func_dim_header, dimension=20)
 
     file_name = '%s.html' % genericsettings.pprldmany_group_file_name
     links += add_link(current_dir, folder, file_name,
-                      pprldmany_per_group_dim_header)
+                      pprldmany_per_group_dim_header, dimension=20)
 
     file_name = '%s.html' % genericsettings.pprldmany_file_name
     links += add_link(current_dir, '', file_name,
-                      pprldmany_per_group_dim_header)
+                      pprldmany_per_group_dim_header, dimension=20)
 
     return links
 
@@ -289,7 +309,6 @@ def save_single_functions_html(filename,
         first_function_number = testbedsettings.current_testbed.first_function_number
         last_function_number = testbedsettings.current_testbed.last_function_number
         caption_string_format = '<p/>\n%s\n<p/><p/>'
-        reference_algorithm_exists = testbedsettings.current_testbed.reference_algorithm_filename != ''
 
         if htmlPage in (HtmlPage.ONE, HtmlPage.MANY):
             f.write(links_placeholder)
@@ -347,7 +366,9 @@ def save_single_functions_html(filename,
             f.write(caption_string_format % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPTABLES:
-            write_tables(f, caption_string_format, reference_algorithm_exists, 'pptablesHtml', 'bbobpptablesmanylegend', dimensions)
+            write_tables(f, caption_string_format,
+                         testbedsettings.current_testbed.reference_algorithm_filename,
+                         'pptablesHtml', 'bbobpptablesmanylegend', dimensions)
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
@@ -389,7 +410,7 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
             dimensions = genericsettings.rldDimsOfInterest
-            if reference_algorithm_exists:
+            if testbedsettings.current_testbed.reference_algorithm_filename:
                 current_header = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % current_header)
 
@@ -433,7 +454,7 @@ def write_dimension_links(dimension, dimensions, index):
         links += '<A HREF="#%d">Last dimension</A> | ' % dimensions[-1]
     else:
         links += '<A HREF="#%d">Previous dimension</A> | ' % dimensions[index - 1]
-    links += '<b>Dimension = %d</b>' % dimension
+    links += '<A HREF="#%d"><b>Dimension = %d</b></A>' % (dimension, dimension)
     if index == len(dimensions) - 1:
         links += ' | <A HREF="#%d">First dimension</A>' % dimensions[0]
     else:
@@ -650,7 +671,7 @@ def beautify():
     axisHandle.grid(True)
 
     _ymin, ymax = plt.ylim()
-    plt.ylim(ymin=10 ** -0.2, ymax=ymax)  # Set back the default maximum.
+    plt.ylim(10 ** -0.2, ymax)  # Set back the default maximum.
 
     tmp = axisHandle.get_yticks()
     tmp2 = []
@@ -832,24 +853,27 @@ def get_plotting_styles(algorithms, only_foreground=False):
     plotting_styles = []
 
     if not only_foreground:
-        for key, value in genericsettings.background.items():
-            if key is None:
-                key = genericsettings.background_default_style
-            background_algorithms = [algorithm for algorithm in algorithms if algorithm in value]
+        for format, pathnames in genericsettings.background.items():
+            assert isinstance(pathnames, (list, tuple, set))
+            if format is None:
+                format = genericsettings.background_default_style
+            background_algorithms = [algorithm for algorithm in algorithms
+                                     if algorithm in pathnames]
             background_algorithms.sort()
             if len(background_algorithms) > 0:
                 ppfigs_styles = {'marker': '',
-                                 'color': key[0],
-                                 'linestyle': key[1],
+                                 'color': format[0],
+                                 'linestyle': format[1],
                                  }
                 pprldmany_styles = {'marker': '',
                                     'label': '',
-                                    'color': key[0],
-                                    'linestyle': key[1],
+                                    'color': format[0],
+                                    'linestyle': format[1],
                                     }
                 plotting_styles.append(PlottingStyle(pprldmany_styles, ppfigs_styles, background_algorithms, True))
 
-    foreground_algorithms = [key for key in algorithms if key in genericsettings.foreground_algorithm_list]
+    foreground_algorithms = [key for key in algorithms
+                             if key in genericsettings.foreground_algorithm_list]
     foreground_algorithms.sort()
     plotting_styles.append(PlottingStyle({},
                                          {},

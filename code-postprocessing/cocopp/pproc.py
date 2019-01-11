@@ -107,7 +107,7 @@ def asTargetValues(target_values):
         raise NotImplementedError("""type %s not recognized""" %
                                   str(type(target_values)))
 class TargetValues(object):
-    """store and retrieve a list of target function values::
+    """store and retrieve a list of target function values:
 
         >>> import numpy as np
         >>> import cocopp.pproc as pp
@@ -199,7 +199,7 @@ class TargetValues(object):
 
 class RunlengthBasedTargetValues(TargetValues):
     """a class instance call returns f-target values based on 
-    reference runlengths::
+    reference runlengths:
     
         >>> import cocopp
         >>> # make sure to use the right `bbob` test suite for the test below:
@@ -556,9 +556,9 @@ class DataSet(object):
         >>> cocopp.genericsettings.verbose = False # ensure to make doctests work
         >>> def setup(infoFile):
         ...     if not os.path.exists(infoFile):
-        ...         filename = cocopp._data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
-        ...         tarfile.open(filename).extractall(cocopp._data_archive.local_data_path)
-        >>> infoFile = os.path.join(cocopp._data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
+        ...         filename = cocopp.archives.bbob.get_one('2009/BIPOP-CMA-ES_hansen')
+        ...         tarfile.open(filename).extractall(cocopp.archives.bbob.local_data_path)
+        >>> infoFile = os.path.join(cocopp.archives.bbob.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
         >>> print('get'); setup(infoFile) # doctest:+ELLIPSIS
         get...
         >>> dslist = cocopp.load(infoFile)
@@ -689,10 +689,10 @@ class DataSet(object):
         >>> import tarfile
         >>> import cocopp
         >>> cocopp.genericsettings.verbose = False # ensure to make doctests work
-        >>> infoFile = os.path.join(cocopp._data_archive.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
+        >>> infoFile = os.path.join(cocopp.archives.bbob.local_data_path, 'BIPOP-CMA-ES', 'bbobexp_f2.info')
         >>> if not os.path.exists(infoFile):
-        ...   filename = cocopp._data_archive.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
-        ...   tarfile.open(filename).extractall(cocopp._data_archive.local_data_path)
+        ...   filename = cocopp.archives.bbob.get_one('bbob/2009/BIPOP-CMA-ES_hansen')
+        ...   tarfile.open(filename).extractall(cocopp.archives.bbob.local_data_path)
         >>> dslist = cocopp.load(infoFile)
           Data consistent according to consistency_check() in pproc.DataSet
         >>> dslist[2].instancenumbers
@@ -753,6 +753,8 @@ class DataSet(object):
         # for a data set.
         if hasattr(self, 'data_format'):
             return getattr(self, 'data_format')
+        if self.isBiobjective():
+            return 'bbob-biobj'
         return None
 
     def get_suite(self):
@@ -825,7 +827,7 @@ class DataSet(object):
         self.testbed_name = self.get_testbed_name()
 
         if not testbedsettings.current_testbed:
-            testbedsettings.load_current_testbed(self.testbed_name, TargetValues, self.get_data_format())
+            testbedsettings.load_current_testbed(self.testbed_name, TargetValues)
 
         # Split line in data file name(s) and run time information.
         parts = data.split(', ')
@@ -903,25 +905,22 @@ class DataSet(object):
         dataFiles = list(os.path.join(filepath, os.path.splitext(i)[0] + '.dat')
                          for i in self.dataFiles)
         datasets, algorithms, reference_values, success_ratio = split(dataFiles, idx_to_load=idx_of_instances_to_load)
+        dataformatsettings.current_data_format = dataformatsettings.data_format_name_to_class_mapping[self.get_data_format()]()
         data = HMultiReader(datasets)
         if genericsettings.verbose:
             print("Processing %s: %d/%d trials found." % (dataFiles, len(data), len(self.instancenumbers)))
        
         if data:
-            if 2 < 3:  # this takes different data formats into account:
-                # print(testbedsettings.current_testbed.data_format, dataformatsettings.current_data_format)
-                # this should call align_data_into_evals from dataformatsettings.current_data_format, but the latter isn't set correctly
-                maxevals, finalfunvals = testbedsettings.current_testbed.data_format.align_data_into_evals(
+            # this takes different data formats into account to compute
+            # the evals attribute and others into self:
+            maxevals, finalfunvals = dataformatsettings.current_data_format.align_data_into_evals(
                                                 align_data, data, self)
-            else:  # was before Sep 2017:
-                adata, maxevals, finalfunvals = align_data(data,
-                    testbedsettings.current_testbed.data_format.evaluation_idx,
-                    testbedsettings.current_testbed.data_format.function_value_idx,
-                    # should be:
-                    # dataformatsettings.current_data_format.evaluation_idx,
-                    # dataformatsettings.current_data_format.function_value_idx,
-                )
-                self.evals = adata
+            # CAVEAT: maxevals may not be f-evaluations only
+            # TODO: the above depends implicitely (in readalign.align_data)
+            # on the global variable setting of
+            # dataformatsettings.current_data_format which
+            # seems like code which is bug prone and hard to maintain
+
             self.reference_values = reference_values
             if len(algorithms) > 0:
                 algorithms = align_list(algorithms, [item[1] for item in self.evals])
@@ -941,7 +940,7 @@ class DataSet(object):
                          for i in self.dataFiles)
                              
         if not any(os.path.isfile(dataFile) for dataFile in dataFiles):
-            raise Usage("Missing tdat files in '{0}'. Please rerun the experiments." % filepath)
+            warnings.warn("Missing tdat files in '{0}'. Please consider to rerun the experiments." % filepath)
 
         datasets, algorithms, reference_values, success_ratio = split(dataFiles, idx_to_load=idx_of_instances_to_load)
         data = VMultiReader(datasets)
@@ -950,19 +949,14 @@ class DataSet(object):
                    % (dataFiles, len(data), len(self.instancenumbers)))
         
         if data:
-            adata, maxevals, finalfunvals = align_data(
+            # TODO: maxevals and evals in the constrained case will give
+            # values inconsistent with the above evals attribute
+            self.funvals, maxevals, finalfunvals = align_data(
                 data, 
-                testbedsettings.current_testbed.data_format.evaluation_idx,
-                testbedsettings.current_testbed.data_format.function_value_idx,
-                # should be:
-                # dataformatsettings.current_data_format.evaluation_idx,
-                # dataformatsettings.current_data_format.function_value_idx,
+                dataformatsettings.current_data_format.evaluation_idx,
+                dataformatsettings.current_data_format.function_value_idx,
                 )
-            # TODO: this depends implicitely on the global variable setting of
-            # testbedsettings.current_testbed.data_format which
-            # seems like code which is bug prone and hard to maintain
-            # (adata, maxevals, finalfunvals) = align_data(data)
-            self.funvals = adata
+            # was: (adata, maxevals, finalfunvals) = align_data(data)
             try:
                 for i in range(len(maxevals)):
                     self.maxevals[i] = max(maxevals[i], self.maxevals[i])
@@ -1108,17 +1102,9 @@ class DataSet(object):
                                 str(self.instancenumbers)+ 
                                 ' (f' + str(self.funcId) + ', ' + 
                                 str(self.dim) + 'D)')
-        elif ((instancedict != genericsettings.instancesOfInterest2009)
-                and (instancedict != genericsettings.instancesOfInterest2010)
-                and (instancedict != genericsettings.instancesOfInterest2012)
-                and (instancedict != genericsettings.instancesOfInterest2013)
-                and (instancedict != genericsettings.instancesOfInterest2015)
-                and (instancedict != genericsettings.instancesOfInterest2016)
-                and (instancedict != genericsettings.instancesOfInterest2017)
-                and (instancedict != genericsettings.instancesOfInterestBiobj2016)
-                and (instancedict != genericsettings.instancesOfInterestBiobj2017)):
+        elif (instancedict not in genericsettings.instancesOfInterest):
             is_consistent = False
-            warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, 2015 or 2016')
+            warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, and 2015-2018')
         return is_consistent
             
     def computeERTfromEvals(self):
@@ -1819,10 +1805,12 @@ class DataSetList(list):
                     break
                 if set(i.instancenumbers).intersection(o.instancenumbers) \
                         and any([_i > 5 for _i in set(i.instancenumbers).intersection(o.instancenumbers)]):
-                    warnings.warn('instances ' + str(set(i.instancenumbers).intersection(o.instancenumbers))
-                                  + (' found several times. Read data for F%d in %d-D' % (i.funcId, i.dim)) 
+                    warn_message = ('in DataSetList.processIndexFile: instances '
+                                    + str(set(i.instancenumbers).intersection(o.instancenumbers))
+                                    + ' found several times.'
+                                    + ' Read data for F%d in %d-D might be inconsistent' % (i.funcId, i.dim))
+                    warnings.warn(warn_message)
                                   # + ' found several times. Read data for F%(argone)d in %(argtwo)d-D ' % {'argone':i.funcId, 'argtwo':i.dim}
-                                  + 'might be inconsistent. ')
                 # tmp = set(i.dataFiles).symmetric_difference(set(o.dataFiles))
                 #Check if there are new data considered.
                 if 1 < 3:
@@ -2650,6 +2638,7 @@ def processInputArgs(args, process_background_algorithms=False):
     if process_background_algorithms:
         genericsettings.foreground_algorithm_list.extend(sortedAlgs)
         for value in genericsettings.background.values():
+            assert isinstance(value, (list, tuple, set))
             process_arguments(value, current_hash, dictAlg, dsList, sortedAlgs)
 
     store_reference_values(DataSetList(dsList))

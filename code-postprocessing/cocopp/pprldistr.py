@@ -263,7 +263,8 @@ def beautifyECDF():
     """Generic formatting of ECDF figures."""
     plt.ylim(-0.0, 1.01) # was plt.ylim(-0.01, 1.01)
     plt.yticks(np.arange(0., 1.001, 0.2), fontsize=16)
-    plt.grid(True)
+    plt.grid(True, 'major')
+    plt.grid(True, 'minor')
     xmin, xmax = plt.xlim()
     # plt.xlim(xmin=xmin*0.90)  # why this?
     c = plt.gca().get_children()
@@ -317,8 +318,9 @@ def beautifyRLD(xlimit_max=None):
     a.set_ylabel('proportion of trials')
     logxticks()
     if xlimit_max:
-        plt.xlim(xmax=xlimit_max ** 1.0) # was 1.05
-    plt.xlim(xmin=runlen_xlimits_min)
+        plt.xlim(runlen_xlimits_min, xlimit_max**1.0) # was 1.05
+    else:
+        plt.xlim(runlen_xlimits_min, None)
     plt.text(plt.xlim()[0],
              plt.ylim()[0],
              testbedsettings.current_testbed.pprldistr_target_values.short_info,

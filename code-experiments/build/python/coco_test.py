@@ -79,6 +79,25 @@ def testmod(module):
     doctest.testmod(module,  # optionflags=doctest.ELLIPSIS,
                     raise_on_error=True)
 
+def best_parameter(f):
+    f._best_parameter('print')
+    with open('._bbob_problem_best_parameter.txt', 'rt') as file_:
+        return [float(s) for s in file_.read().split()]
+
+def run_constrained_suite_test():
+    from collections import defaultdict
+    try:
+        suite = Suite('bbob-constrained', '', '')
+    except NameError:
+        return
+    counts = defaultdict(int)
+    for f in suite:
+        counts[-5] += np.any(f.initial_solution < -5)
+        counts[5] += np.any(f.initial_solution > 5)
+        counts['c'] += np.any(f.constraint(f.initial_solution) > 0)
+        counts['b'] += np.any(f.constraint(best_parameter(f)) > 1e-11)  # mac: 6.8361219664552603e-12 is the largest value
+    assert sum(counts.values()) == 0
+
 def run_doctests():
     """Run doctests on "all" modules.
 
@@ -120,6 +139,7 @@ def main(args):
     run_doctests()
     print('doctests done.\nRunning example_experiment:'), sys.stdout.flush()
     example_experiment.main()
+    # run_constrained_suite_test()
     for arg in args if args else default_testcases:
         if arg is None or arg == 'None':
             break

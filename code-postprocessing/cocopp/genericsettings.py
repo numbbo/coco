@@ -11,7 +11,10 @@ here see `config.py`.
 
 """
 
+import numpy as np
+
 test = False  # debug/test flag, set to False for committing the final version
+interactive_mode = True  # open browser with results, grayscale setting (deprecated) deactivates interactive mode
 
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000  # [0, 1000] lower resolution, no eps, saves 30% time
@@ -30,6 +33,8 @@ in attribute DataSet.evals, if any constraints evaluations are found"""
 tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
+target_runlengths_pprldmany = np.logspace(np.log10(0.5), np.log10(50), 31) # used in config
+target_runlengths_ppscatter = np.logspace(np.log10(0.5), np.log10(50), 8) # used in config
 target_runlength = 10  # used in ppfigs.main
 single_runlength_factors = [0.5, 1.2, 3, 10] + [10 ** i for i in range(2, 12)] # used in pprldistr
 
@@ -70,10 +75,14 @@ instancesOfInterest2015 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 41: 1, 42: 1, 43: 1, 44
 instancesOfInterest2016 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 51: 1, 52: 1, 53: 1, 54: 1,
                            55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1}  # 2016 instances
 instancesOfInterest2017 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 61: 1, 62: 1, 63: 1, 64: 1,
-                           65: 1, 66: 1, 67: 1, 68: 1, 69: 1, 70: 1}  # 2016 instances
+                           65: 1, 66: 1, 67: 1, 68: 1, 69: 1, 70: 1}  # 2017 instances
+instancesOfInterest2018 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 71: 1, 72: 1, 73: 1, 74: 1,
+                           75: 1, 76: 1, 77: 1, 78: 1, 79: 1, 80: 1}  # 2018 instances
 instancesOfInterestBiobj2016 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}  # bi-objective 2016 instances
 instancesOfInterestBiobj2017 = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
                                 10: 1, 11: 1, 12: 1, 13: 1, 14:1, 15:1}  # bi-objective 2017 instances
+instancesOfInterestBiobj2018 = instancesOfInterestBiobj2017  # bi-objective 2018 instances
+
 instancesOfInterest = [instancesOfInterest2009,
                        instancesOfInterest2010,
                        instancesOfInterest2012,
@@ -81,8 +90,10 @@ instancesOfInterest = [instancesOfInterest2009,
                        instancesOfInterest2015,
                        instancesOfInterest2016,
                        instancesOfInterest2017,
+                       instancesOfInterest2018,
                        instancesOfInterestBiobj2016,
-                       instancesOfInterestBiobj2017]
+                       instancesOfInterestBiobj2017,
+                       instancesOfInterestBiobj2018]
 
 line_styles = [  # used by ppfigs and pprlmany  
     {'marker': 'o', 'markersize': 31, 'linestyle': '-', 'color': '#000080'},  # 'NavyBlue'

@@ -123,31 +123,6 @@ def test_c_example():
 
 def build_c_unit_tests():
     """ Builds unit tests in C """
-    library_path = 'code-experiments/test/unit-test/lib'
-    library_dir = ''
-    file_name = ''
-    if 'win32' in sys.platform:
-        file_name = 'cmocka.dll'
-        if '64' in platform.machine():
-            library_dir = 'win64'
-        elif ('32' in platform.machine()) or ('x86' in platform.machine()):
-            if 'cygwin' in os.environ['PATH']:
-                library_dir = 'win32_cygwin'
-            else:
-                library_dir = 'win32_mingw'
-    elif 'linux' in sys.platform:
-        file_name = 'libcmocka.so'
-        if 'Ubuntu' in platform.linux_distribution():
-            library_dir = 'linux_ubuntu'
-        elif 'Fedora' in platform.linux_distribution():
-            library_dir = 'linux_fedora'
-    elif 'darwin' in sys.platform:  # Mac
-        library_dir = 'macosx'
-        file_name = 'libcmocka.dylib'
-
-    if len(library_dir) > 0:
-        copy_file(os.path.join(library_path, library_dir, file_name),
-                  os.path.join('code-experiments/test/unit-test', file_name))
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/unit-test/coco.c')
     expand_file('code-experiments/src/coco.h', 'code-experiments/test/unit-test/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
@@ -768,10 +743,10 @@ for ee.suite_name, ee.observer_options['result_folder'] in [
         sys.exit(-1)
     finally:
         # always remove folder of previously run experiments:
-        exdata_folder = 'code-experiments/build/python/exdata/'
-        if os.path.exists(exdata_folder):
-            shutil.rmtree(exdata_folder)
-    
+        for s in ['bi', 'bb', 'co']:
+            shutil.rmtree('code-experiments/build/python/exdata/RS-' + s,
+                          ignore_errors=True)
+
 
 def verify_postprocessing(package_install_option = []):
     install_postprocessing(package_install_option = package_install_option)

@@ -314,7 +314,7 @@ def main(argv=None):
         from . import config
         config.config_target_values_setting(genericsettings.isExpensive,
                                             genericsettings.runlength_based_targets)
-        config.config(dsList[0].testbed_name, dsList[0].get_data_format())
+        config.config(dsList[0].testbed_name)
 
         for i in dsList:
             if i.dim not in genericsettings.dimensions_to_display:
@@ -326,10 +326,14 @@ def main(argv=None):
             for instance_set_of_interest in inset.instancesOfInterest:
                 if curr_instances == instance_set_of_interest:
                     correct = True
-            if not correct:
-                warnings.warn('The data of %s do not list ' % i +
-                              'the correct instances ' +
+            try: last_incorrect_instances
+            except: last_incorrect_instances = None
+            if not correct and curr_instances != last_incorrect_instances:
+                warnings.warn('The data of %s ' % i +
+                              '(and possibly further data) do not ' +
+                              'list the correct instances ' +
                               'of function F%d.' % i.funcId)
+                last_incorrect_instances = curr_instances
 
         plt.rc("axes", **inset.rcaxes)
         plt.rc("xtick", **inset.rctick)
@@ -368,7 +372,7 @@ def main(argv=None):
 
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if prepare_RLDistr:
-            config.config(dsList[0].testbed_name, dsList[0].get_data_format())
+            config.config(dsList[0].testbed_name)
 
             if len(genericsettings.foreground_algorithm_list) == 2:
                 print("ECDF runlength ratio graphs...")

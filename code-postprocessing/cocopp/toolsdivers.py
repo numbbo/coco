@@ -6,7 +6,7 @@
 """
 from __future__ import absolute_import, print_function
 
-import os, time
+import os, time, warnings
 import numpy as np
 from matplotlib import pyplot as plt
 from subprocess import CalledProcessError, STDOUT
@@ -43,7 +43,11 @@ class Infolder(object):
 class StringList(list):
     """A microtool to join a list of strings using property `as_string`.
 
+    `StringList` can also be initialized with a string.
+
     >>> from cocopp.toolsdivers import StringList
+    >>> StringList('ab bc') == ['ab', 'bc']
+    True
     >>> word_list = StringList(['this', 'has', 'a', 'leading', 'and',
     ...                         'trailing', 'space'])
     >>> word_list.as_string
@@ -57,6 +61,13 @@ class StringList(list):
     and provides tab completion.
 
     """
+    def __init__(self, list_or_str):
+        try:
+            inlist = list_or_str.split()
+        except AttributeError:
+            inlist = list_or_str
+        list.__init__(self, inlist)
+
     @property
     def as_string(self):
         """return concatenation with spaces between"""
@@ -98,7 +109,7 @@ def diff_attr(m1, m2, exclude=('_', )):
             for key in m1.__dict__
                 if hasattr(m2, key) and
                     not any(key.startswith(s) for s in exclude)
-                    and getattr(m1, key) != getattr(m2, key)]
+                    and np.all(getattr(m1, key) != getattr(m2, key))]
 
 def prepend_to_file(filename, lines, maxlines=1000, warn_message=None):
     """"prepend lines the tex-command filename """
@@ -279,6 +290,7 @@ def legend(*args, **kwargs):
    try:
       plt.legend(*args, **kwargs)
    except:
+      warnings.warn("framealpha not effective")
       kwargs.pop('framealpha')
       plt.legend(*args, **kwargs)
       
