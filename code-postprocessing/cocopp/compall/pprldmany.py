@@ -565,7 +565,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     tmp = pp.dictAlgByDim(dictAlg)
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
-    algorithms_with_data.sort()
+    # algorithms_with_data.sort()  # dictAlg now is an OrderedDict, hence sorting isn't desired
 
     if len(algorithms_with_data) > 1 and len(tmp) != 1 and dimension is None:
         raise ValueError('We never integrate over dimension for more than one algorithm.')
@@ -627,7 +627,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 # for j, t in enumerate(testbedsettings.current_testbed.ecdf_target_values(1e2, f)):
                 # funcsolved[j].add(f)
 
-                for alg in sorted(algorithms_with_data):
+                for alg in algorithms_with_data:
                     x = [np.inf] * perfprofsamplesize
                     runlengthunsucc = []
                     try:

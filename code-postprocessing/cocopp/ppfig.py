@@ -874,7 +874,7 @@ def get_plotting_styles(algorithms, only_foreground=False):
 
     foreground_algorithms = [key for key in algorithms
                              if key in genericsettings.foreground_algorithm_list]
-    foreground_algorithms.sort()
+    # foreground_algorithms.sort()  # sorting is not desired, we want to be able to control the order!
     plotting_styles.append(PlottingStyle({},
                                          {},
                                          foreground_algorithms if len(foreground_algorithms) > 0 else algorithms,
