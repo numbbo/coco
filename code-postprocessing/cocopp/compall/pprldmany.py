@@ -690,7 +690,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     # Display data
     lines = []
     if displaybest:
-        args = {'ls': '-', 'linewidth': 6, 'marker': 'D', 'markersize': 11.,
+        args = {'ls': '-', 'linewidth': 4, 'marker': 'D', 'markersize': 11.,
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
                 'label': testbedsettings.current_testbed.reference_algorithm_displayname,
