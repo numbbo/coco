@@ -22,10 +22,20 @@ static coco_suite_t *suite_bbob_mixint_initialize(const char *suite_name) {
   coco_suite_t *suite;
   const size_t dimensions[] = { 5, 10, 20, 40, 80, 160 };
   /* TODO: Use also dimensions 80 and 160 (change the 4 below into a 6) */
-  suite = coco_suite_allocate(suite_name, 24, 4, dimensions, "year: 2019");
+  suite = coco_suite_allocate(suite_name, 24, 4, dimensions, "instances: 1-15");
 
   return suite;
 }
+
+/**
+ * @brief Sets the instances associated with years for the bbob-mixint suites.
+ */
+static const char *suite_bbob_mixint_get_instances_by_year(const int year) {
+
+  (void) year; /* To get rid of compiler warnings */
+  return "1-15";
+}
+
 
 /**
  * @brief Creates and returns a mixed-integer bbob problem without needing the actual bbob-mixint

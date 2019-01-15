@@ -1104,7 +1104,7 @@ class DataSet(object):
                                 str(self.dim) + 'D)')
         elif (instancedict not in genericsettings.instancesOfInterest):
             is_consistent = False
-            warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, and 2015-2019')
+            warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, and 2015-2018')
         return is_consistent
             
     def computeERTfromEvals(self):

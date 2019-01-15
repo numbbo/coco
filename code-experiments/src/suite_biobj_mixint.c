@@ -38,11 +38,8 @@ static coco_suite_t *suite_biobj_mixint_initialize(void) {
  */
 static const char *suite_biobj_mixint_get_instances_by_year(const int year) {
 
-  if ((year == 2016) || (year == 0000)) { /* test case */
-    return "1-10";
-  }
-  else
-    return "1-15";
+  (void) year; /* To get rid of compiler warnings */
+  return "1-15";
 }
 
 /**
