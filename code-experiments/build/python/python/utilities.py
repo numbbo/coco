@@ -301,7 +301,7 @@ class SameFunction:
     def __init__(self):
         self.count = 0
     def __call__(self, id):
-        """return number of directly preceding calls with similar `id`s
+        """return number of directly preceding calls with similar `id`
         """
         new = SameFunction.filter(id)
         if self.count == 0 or new != self.last:
@@ -321,16 +321,19 @@ class MiniPrint(object):
         self.dimension = None
         self._calls = 0
         self._day0 = _time.localtime()[2]
+    @property
+    def stime(self):
+        """current time as string +days since started"""
+        ltime = _time.localtime()[2:6]
+        s = "%dh%02d:%02ds" % tuple(ltime[1:])
+        if ltime[0] > self._day0:
+            s = s + "+%dd" % (ltime[0] - self._day0)
+        return s
     def __call__(self, problem, final=False, restarted=False):
         if self.dimension != problem.dimension:
             if self.dimension is not None:
                 print('')
-            ltime = _time.localtime()[2:6]
-            print("%dD " % problem.dimension, end='')
-            print("%dh%02d:%02ds" % ltime[1:], end='')
-            if ltime[0] > self._day0:
-                print("+%dd" % (ltime[0] - self._day0), end='')
-            print('')
+            print("%dD %s" % (problem.dimension, self.stime))
             self.dimension = problem.dimension
             self._calls = 0
         elif not self._calls % 10:
@@ -375,7 +378,7 @@ class ShortInfo(object):
         self.runs_function += runs
     def dimension_done(self):
         self.evals_by_dimension[self.d_current] = (_time.time() - self.t0_dimension) / self.evals_dimension
-        s = '\n    done in %.1e seconds/evaluation' % (self.evals_by_dimension[self.d_current])
+        s = '\n    %d-D done in %.1e seconds/evaluation' % (self.d_current, self.evals_by_dimension[self.d_current])
         # print(self.evals_dimension)
         self.evals_dimension = 0
         self.t0_dimension = _time.time()

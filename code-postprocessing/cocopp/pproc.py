@@ -2695,9 +2695,9 @@ def store_reference_values(ds_list):
         testbedsettings.update_reference_values(key[0], value.get_reference_values_hash())
 
 
-class DictAlg(dict):
-    def __init__(self, d={}):
-        dict.__init__(self, d)  # was: super.__init(d)
+class DictAlg(OrderedDict):
+    def __init__(self, d=()):
+        OrderedDict.__init__(self, d)  # was: super.__init(d)
         
     def by_dim(self):
         return dictAlgByDim(self) # TODO: put here actual implementation
@@ -2740,7 +2740,7 @@ def dictAlgByDim(dictAlg):
                        % (alg, d))
                 warnings.warn(txt)
 
-            res.setdefault(d, {}).setdefault(alg, tmp)
+            res.setdefault(d, OrderedDict()).setdefault(alg, tmp)
             # Only the first data for a given algorithm in a given dimension
 
     #for alg, dsList in dictAlg.items():
@@ -2767,7 +2767,7 @@ def dictAlgByDim2(dictAlg, remove_empty=False):
 
     for alg, dsList in dictAlg.items():
         for i in dsList:
-            res.setdefault(i.dim, {}).setdefault(alg, DataSetList()).append(i)
+            res.setdefault(i.dim, OrderedDict()).setdefault(alg, DataSetList()).append(i)
 
     if remove_empty:
         raise NotImplementedError
@@ -2813,7 +2813,7 @@ def dictAlgByFun(dictAlg):
                        % (alg, f))
                 warnings.warn(txt)
 
-            res.setdefault(f, {}).setdefault(alg, tmp)
+            res.setdefault(f, OrderedDict()).setdefault(alg, tmp)
             # Only the first data for a given algorithm in a given dimension
 
     return res
@@ -2858,7 +2858,7 @@ def dictAlgByNoi(dictAlg):
                        % (alg, stmp))
                 warnings.warn(txt)
 
-            res.setdefault(n, {}).setdefault(alg, tmp)
+            res.setdefault(n, OrderedDict()).setdefault(alg, tmp)
             # Only the first data for a given algorithm in a given dimension
 
     return res
@@ -2896,7 +2896,7 @@ def dictAlgByFuncGroup(dictAlg):
                        % (alg, g))
                 warnings.warn(txt)
 
-            res.setdefault(g, {}).setdefault(alg, tmp)
+            res.setdefault(g, OrderedDict()).setdefault(alg, tmp)
             # Only the first data for a given algorithm in a given dimension
 
     return res

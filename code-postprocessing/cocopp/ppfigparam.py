@@ -70,7 +70,7 @@ def beautify():
     #plt.plot((2,200), (1e6, 1e10), 'k:')
 
     # axes limits
-    plt.ylim(ymin=10**-0.2, ymax=ymax) # Set back the previous maximum.
+    plt.ylim(10**-0.2, ymax) # Set back the previous maximum.
 
     # ticks on axes
     # axisHandle.invert_xaxis()

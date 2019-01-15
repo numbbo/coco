@@ -322,8 +322,9 @@ def beautifyRLD(xlimit_max=None):
     a.set_ylabel('proportion of trials')
     logxticks()
     if xlimit_max:
-        plt.xlim(xmax=xlimit_max ** 1.0) # was 1.05
-    plt.xlim(xmin=runlen_xlimits_min)
+        plt.xlim(runlen_xlimits_min, xlimit_max**1.0) # was 1.05
+    else:
+        plt.xlim(runlen_xlimits_min, None)
     plt.text(plt.xlim()[0],
              plt.ylim()[0],
              testbedsettings.current_testbed.pprldistr_target_values.short_info,

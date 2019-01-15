@@ -7,6 +7,7 @@
 from __future__ import absolute_import, print_function
 
 import os, time, warnings
+from collections import OrderedDict as _OrderedDict
 import numpy as np
 from matplotlib import pyplot as plt
 from subprocess import CalledProcessError, STDOUT
@@ -72,6 +73,42 @@ class StringList(list):
     def as_string(self):
         """return concatenation with spaces between"""
         return ' ' + ' '.join(self) + ' '
+
+
+class AlgorithmList(list):
+    """Not in use. Not necessary when the algorithm dict is an `OrderedDict` anyway.
+
+    A `list` representing the algorithm name arguments in original order.
+
+    The method `ordered_dict` allows to transform an algorithm `dict` into an
+    `OrderedDict` using the order in self.
+
+    >>> from cocopp.toolsdivers import AlgorithmList
+    >>> l = ['b', 'a', 'c']
+    >>> al = AlgorithmList(l)
+    >>> d = dict(zip(l[-1::-1], [1, 2, 3]))
+    >>> for i, name in enumerate(al.ordered_dict(d)):
+    ...     assert name == l[i]
+
+    """
+    def ordered_dict(self, algorithms_dict):
+        """return algorithms_dict as `OrderedDict` in order of self.
+
+        Keys that are not in self are sorted using `sorted`.
+        """
+        if set(algorithms_dict) != set(self):
+            warnings.warn("keys in algorithm dict: \n%s\n"
+                          "do not agree with original algorithm list: \n%s\n"
+                                 % (str(algorithms_dict.keys()), str(self)))
+        res = _OrderedDict()
+        for name in self:
+            if name in algorithms_dict:
+                res[name] = algorithms_dict[name]
+        for name in sorted(algorithms_dict):
+            if name not in res:
+                res[name] = algorithms_dict[name]
+        assert res == algorithms_dict  # compares keys and values
+        return res
 
 
 def print_done(message='  done'):

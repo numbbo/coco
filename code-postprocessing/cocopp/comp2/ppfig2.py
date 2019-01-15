@@ -124,10 +124,7 @@ def beautify(xmin=None):
     if ybnd < 100:
         yax.grid(True, which='minor')
 
-    # We are setting xmin
-    if xmin:
-        plt.xlim(xmin=xmin)
-    plt.xlim(xmax=xmax)
+    plt.xlim(xmin, xmax)  # None leaves the limit unchanged
     ax.invert_xaxis()
 
     # Annotate figure

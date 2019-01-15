@@ -106,7 +106,7 @@ def get_best_art_text():
         else:
             raise NotImplementedError('reference algorithm not supported for this testbed')
     else:
-        raise NotImplementedError('no reference algorithm indicated in testbedsettings.py')
+        warnings.warn('no reference algorithm indicated in testbedsettings.py')
 
     return text
     

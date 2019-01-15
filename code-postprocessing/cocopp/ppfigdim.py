@@ -203,7 +203,7 @@ def beautify(axesLabel=True):
             plt.ylim(0.3, xlim_max)  # set in config 
         else:
             # pass  # TODO: xlim_max seems to be not None even when not desired
-            plt.ylim(ymax=min([plot.ylim()[1], xlim_max]))
+            plt.ylim(None, min([plot.ylim()[1], xlim_max]))
     plt.ylim(ppfig.discretize_limits((ymin, ymax)))
 
     if 11 < 3:

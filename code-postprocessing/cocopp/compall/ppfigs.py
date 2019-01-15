@@ -363,7 +363,7 @@ def beautify(legend=False, rightlegend=False):
         plt.plot((2,200), (1e6, 1e8), 'k:', zorder=-1)
         # plt.plot((2,200), (1e6, 1e10), 'k:', zorder=-1)
 
-    plt.ylim(ymin=10**-0.2, ymax=ymax) # Set back the default maximum.
+    plt.ylim(10**-0.2, ymax) # Set back the default maximum.
 
     # ticks on axes
     #axisHandle.invert_xaxis()
