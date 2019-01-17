@@ -19,7 +19,7 @@
  * The maximal budget for evaluations done by an optimization algorithm equals dimension * BUDGET_MULTIPLIER.
  * Increase the budget multiplier value gradually to see how it affects the runtime.
  */
-static const unsigned int BUDGET_MULTIPLIER = 101;
+static const unsigned int BUDGET_MULTIPLIER = 10;
 
 /**
  * The maximal number of independent restarts allowed for an algorithm that restarts itself.
@@ -160,13 +160,7 @@ int main(void) {
   example_experiment("bbob-mixint-1", "bbob", random_generator);
   example_experiment("bbob-mixint-2", "bbob", random_generator);*/
 
-  line_walk_experiment("bbob",
-                       "instance_indices: 1-5 dimensions: 10",
-                       "rw",
-                       "result_folder: bbob-line-walk-random log_only_better: 0 log_variables: all log_time: 0",
-                       random_generator,
-                       "random",
-                       101);
+  example_experiment("bbob-biobj-mixint", "dimensions: 5,10", "bbob-biobj", "log_discrete_as_int: 1", random_generator);
 
   printf("Done!\n");
   fflush(stdout);
