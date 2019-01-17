@@ -396,7 +396,7 @@ void coco_observer_free(coco_observer_t *observer) {
  * - "precision_g: VALUE" defines the precision used when outputting constraints and corresponds to the number
  * of digits to be printed after the decimal point. The default value is 3.
  * - "log_discrete_as_int: VALUE" determines whether the values of integer variables (in mixed-integer problems)
- * are logged as integers (1) or not (0 - in this case they are logged as doubles). The default value is 1.
+ * are logged as integers (1) or not (0 - in this case they are logged as doubles). The default value is 0.
  *
  * @return The constructed observer object or NULL if observer_name equals NULL, "" or "no_observer".
  */
@@ -492,10 +492,10 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
       precision_g = 3;
   }
 
-  log_discrete_as_int = 1;
+  log_discrete_as_int = 0;
   if (coco_options_read_int(observer_options, "log_discrete_as_int", &log_discrete_as_int) != 0) {
     if ((log_discrete_as_int < 0) || (log_discrete_as_int > 1))
-      log_discrete_as_int = 1;
+      log_discrete_as_int = 0;
   }
 
   observer = coco_observer_allocate(path, observer_name, algorithm_name, algorithm_info,

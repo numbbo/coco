@@ -67,7 +67,6 @@ typedef coco_problem_t *(*coco_get_problem_function_t)(const size_t function,
                                                        const size_t dimension,
                                                        const size_t instance);
 
-
 /**
  * @brief The transformed COCO problem data type.
  *
