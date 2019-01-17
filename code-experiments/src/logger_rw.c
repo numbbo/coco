@@ -45,6 +45,7 @@ typedef struct {
   int precision_x;               /**< @brief Precision for outputting decision values. */
   int precision_f;               /**< @brief Precision for outputting objective values. */
   int precision_g;               /**< @brief Precision for outputting constraint values. */
+  int log_discrete_as_int;       /**< @brief Whether to output discrete variables in int or double format. */
 } logger_rw_data_t;
 
 /**
@@ -93,8 +94,11 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
     for (i = 0; i < problem->number_of_objectives; i++)
       fprintf(logger->out_file, "%.*e\t", logger->precision_f, y[i]);
     if (logger->log_vars) {
-      for (i = 0; i < problem->number_of_variables; i++)
+      for (i = 0; i < problem->number_of_variables; i++) {
+        if ((i < problem->number_of_integer_variables) && (logger->log_discrete_as_int))
+          fprintf(logger->out_file, " %d", coco_double_to_int(x[i]));
         fprintf(logger->out_file, "%.*e\t", logger->precision_x, x[i]);
+      }
     }
     if (logger->log_cons) {
       for (i = 0; i < problem->number_of_constraints; i++)
@@ -151,6 +155,7 @@ static coco_problem_t *logger_rw(coco_observer_t *observer, coco_problem_t *inne
   logger_data->precision_x = observer->precision_x;
   logger_data->precision_f = observer->precision_f;
   logger_data->precision_g = observer->precision_g;
+  logger_data->log_discrete_as_int = observer->log_discrete_as_int;
 
   if (((observer_data->log_vars_mode == LOG_LOW_DIM) &&
       (inner_problem->number_of_variables > observer_data->low_dim_vars))

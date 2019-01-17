@@ -51,7 +51,7 @@ static void logger_rw_free(void *logger);
  *
  * - "log_only_better: 0/1" determines whether all solutions are logged (0) or only the ones that are better
  * than previous ones (1). This is applicable only for the single-objective problems, where the default value
- * is 1, while for multi-objective problems all solutions are always logged.
+ * is 0. For multi-objective problems, all solutions are always logged.
  *
  * - "log_time: 0/1" determines whether the time needed to evaluate each solution is logged (0) or not (1).
  * The default value is 0.
@@ -96,7 +96,7 @@ static void observer_rw(coco_observer_t *observer, const char *options, coco_opt
     observer_data->low_dim_cons = 10;
 
   if (coco_options_read_int(options, "log_only_better", &(observer_data->log_only_better)) == 0)
-    observer_data->log_only_better = 1;
+    observer_data->log_only_better = 0;
 
   if (coco_options_read_int(options, "log_time", &(observer_data->log_time)) == 0)
     observer_data->log_time = 0;

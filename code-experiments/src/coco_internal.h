@@ -51,14 +51,12 @@ typedef void (*coco_recommend_function_t)(coco_problem_t *problem, const double 
  */
 typedef coco_problem_t *(*coco_logger_allocate_function_t)(coco_observer_t *observer,
                                                            coco_problem_t *problem);
-
 /**
  * @brief The free logger function type.
  *
  * This is a template for functions that free a logger.
  */
 typedef void (*coco_logger_free_function_t)(void *logger);
-
 
 /**
  * @brief The transformed COCO problem data type.
@@ -184,6 +182,7 @@ struct coco_observer_s {
   int precision_x;           /**< @brief Output precision for decision variables. */
   int precision_f;           /**< @brief Output precision for function values. */
   int precision_g;           /**< @brief Output precision for constraint values. */
+  int log_discrete_as_int;   /**< @brief Whether to output discrete variables in int or double format. */
   void *data;                /**< @brief Void pointer that can be used to point to data specific to an observer. */
 
   coco_data_free_function_t data_free_function;             /**< @brief  The function for freeing this observer. */

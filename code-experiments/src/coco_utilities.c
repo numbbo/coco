@@ -892,9 +892,31 @@ static double coco_double_min(const double a, const double b) {
 
 /**
  * @brief Performs a "safer" double to size_t conversion.
+ *
+ * TODO: This method could (should?) check for overflow when casting (similarly as is done in
+ * coco_double_to_int()).
  */
 static size_t coco_double_to_size_t(const double number) {
   return (size_t) coco_double_round(number);
+}
+
+/**
+ * @brief Rounds the given double to the nearest integer (returns the number in int type)
+ */
+static int coco_double_to_int(const double number) {
+  if (number > (double)INT_MAX) {
+    coco_error("coco_double_to_int(): Cannot cast %f to the nearest integer, max %d allowed",
+        number, INT_MAX);
+    return -1; /* Never reached */
+  }
+  else if (number < (double)INT_MIN) {
+    coco_error("coco_double_to_int(): Cannot cast %f to the nearest integer, min %d allowed",
+        number, INT_MIN);
+    return -1; /* Never reached */
+  }
+  else {
+    return (int)(number + 0.5);
+  }
 }
 
 /**
