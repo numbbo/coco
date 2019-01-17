@@ -139,18 +139,16 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
 
 /**
  * @brief Returns the best indicator value for the given problem.
- *
- * @note This function needs to be updated when a new biobjective suite is added to COCO.
  */
 static double coco_suite_get_best_indicator_value(const coco_suite_t *suite,
                                                   const coco_problem_t *problem,
                                                   const char *indicator_name) {
   double result = 0;
 
-  if (strcmp(suite->suite_name, "bbob-biobj") == 0) {
-    result = suite_biobj_get_best_value(indicator_name, problem->problem_id);
+  if (strcmp(indicator_name, "hyp") == 0) {
+    result = suite_biobj_get_best_hyp_value(suite->suite_name, problem->problem_id);
   } else {
-    coco_error("coco_suite_get_best_indicator_value_for_problem(): unknown problem suite");
+    coco_error("coco_suite_get_best_indicator_value(): indicator %s not supported", indicator_name);
     return 0; /* Never reached */
   }
   return result;

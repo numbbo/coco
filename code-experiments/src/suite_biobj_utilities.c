@@ -12,6 +12,7 @@
 
 #include "coco.h"
 #include "suite_biobj_best_values_hyp.c"
+#include "suite_biobj_mixint_best_values_hyp.c"
 
 /**
  * @brief The array of triples biobj_instance - problem1_instance - problem2_instance connecting bi-objective
@@ -494,17 +495,18 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
 }
 
 /**
- * @brief Returns the best known value for indicator_name matching the given key if the key is found, and
+ * @brief Returns the best known value for the hypervolume indicator matching the given key if the key is found, and
  * throws a coco_error otherwise.
+ *
+ * @note This function needs to be updated when a new biobjective suite is added to COCO.
  */
-static double suite_biobj_get_best_value(const char *indicator_name, const char *key) {
+static double suite_biobj_get_best_hyp_value(const char *suite_name, const char *key) {
 
   size_t i, count;
   double best_value = 0;
   char *curr_key;
 
-  if (strcmp(indicator_name, "hyp") == 0) {
-
+  if (strcmp(suite_name, "bbob-biobj") == 0) {
     curr_key = coco_allocate_string(COCO_PATH_MAX + 1);
     count = sizeof(suite_biobj_best_values_hyp) / sizeof(char *);
     for (i = 0; i < count; i++) {
@@ -514,16 +516,27 @@ static double suite_biobj_get_best_value(const char *indicator_name, const char 
         return best_value;
       }
     }
-
-    coco_free_memory(curr_key);
-    coco_warning("suite_biobj_get_best_value(): best value of %s could not be found; set to 1.0", key);
-    return 1.0;
-
-  } else {
-    coco_error("suite_biobj_get_best_value(): indicator %s not supported", indicator_name);
+  }
+  else if (strcmp(suite_name, "bbob-biobj-mixint") == 0) {
+    curr_key = coco_allocate_string(COCO_PATH_MAX + 1);
+    count = sizeof(suite_biobj_mixint_best_values_hyp) / sizeof(char *);
+    for (i = 0; i < count; i++) {
+      sscanf(suite_biobj_mixint_best_values_hyp[i], "%s %lf", curr_key, &best_value);
+      if (strcmp(curr_key, key) == 0) {
+        coco_free_memory(curr_key);
+        return best_value;
+      }
+    }
+  }
+  else {
+    coco_error("suite_biobj_get_best_hyp_value(): suite %s not supported", suite_name);
     return 0; /* Never reached */
   }
 
-  coco_error("suite_biobj_get_best_value(): unexpected exception");
+  coco_free_memory(curr_key);
+  coco_warning("suite_biobj_get_best_hyp_value(): best value of %s could not be found; set to 1.0", key);
+  return 1.0;
+
+  coco_error("suite_biobj_get_best_hyp_value(): unexpected exception");
   return 0; /* Never reached */
 }

@@ -2,7 +2,7 @@
  * @file suite_biobj_mixint.c
  * @brief Implementation of a bi-objective mixed-integer suite. The functions are the same as those
  * in the bbob-biobj-ext suite with 92 functions, but the large-scale implementations of the
- * functions are used instead of the original ones.
+ * functions are used instead of the original ones for dimensions over 40.
  */
 
 #include "coco.h"
@@ -15,6 +15,7 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
                                          const char *default_instances);
+static void suite_biobj_new_inst_free(void *stuff);
 
 /**
  * @brief Sets the dimensions and default instances for the bbob-biobj-mixint suite.
@@ -132,7 +133,7 @@ static coco_problem_t *coco_get_biobj_mixint_problem(const size_t function,
 
   /* Use the standard stacked problem_id as problem_name and construct a new problem_id */
   coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "bbob-biobj-mixint_f%03lu_i%02lu_d%02lu", (unsigned long) function,
+  coco_problem_set_id(problem, "bbob-biobj-mixint_f%03lu_i%02lu_d%03lu", (unsigned long) function,
       (unsigned long) instance, (unsigned long) dimension);
 
   /* Construct problem type */
