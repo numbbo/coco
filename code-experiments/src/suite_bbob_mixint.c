@@ -50,8 +50,7 @@ static const char *suite_bbob_mixint_get_instances_by_year(const int year) {
 static coco_problem_t *coco_get_bbob_mixint_problem(const size_t function,
                                                     const size_t dimension,
                                                     const size_t instance,
-                                                    const coco_get_problem_function_t coco_get_problem_function,
-                                                    const char *suite_name) {
+                                                    const coco_get_problem_function_t coco_get_problem_function) {
   coco_problem_t *problem = NULL;
 
   /* The cardinality of variables (0 = continuous variables should always come last) */
@@ -125,11 +124,9 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
   const size_t instance = suite->instances[instance_idx];
 
   if (dimension < dim_large_scale)
-    problem = coco_get_bbob_mixint_problem(function, dimension, instance, coco_get_bbob_problem,
-        suite->suite_name);
+    problem = coco_get_bbob_mixint_problem(function, dimension, instance, coco_get_bbob_problem);
   else
-    problem = coco_get_bbob_mixint_problem(function, dimension, instance, mock_coco_get_largescale_problem,
-        suite->suite_name);
+    problem = coco_get_bbob_mixint_problem(function, dimension, instance, mock_coco_get_largescale_problem);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
