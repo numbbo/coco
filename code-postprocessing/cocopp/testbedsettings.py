@@ -42,8 +42,7 @@ suite_to_testbed = {
     default_suite_bi: default_testbed_bi,
     'bbob-biobj-ext': default_testbed_bi_ext,
     'bbob-constrained': default_testbed_cons,
-    'bbob-mixint-1': default_testbed_mixint,
-    'bbob-mixint-2': default_testbed_mixint,
+    'bbob-mixint': default_testbed_mixint
 }
 
 
