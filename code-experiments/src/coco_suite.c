@@ -46,9 +46,7 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
     suite = suite_largescale_initialize();
   } else if (strcmp(suite_name, "bbob-constrained") == 0) {
     suite = suite_cons_bbob_initialize();
-  } else if (strcmp(suite_name, "bbob-mixint-1") == 0) {
-    suite = suite_bbob_mixint_initialize(suite_name);
-  } else if (strcmp(suite_name, "bbob-mixint-2") == 0) {
+  } else if (strcmp(suite_name, "bbob-mixint") == 0) {
     suite = suite_bbob_mixint_initialize(suite_name);
   } else if (strcmp(suite_name, "bbob-biobj-mixint") == 0) {
     suite = suite_biobj_mixint_initialize();
@@ -76,9 +74,7 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
   } else if ((strcmp(suite->suite_name, "bbob-biobj") == 0) ||
       (strcmp(suite->suite_name, "bbob-biobj-ext") == 0)) {
     year_string = suite_biobj_get_instances_by_year(year);
-  } else if (strcmp(suite->suite_name, "bbob-mixint-1") == 0) {
-    year_string = suite_bbob_mixint_get_instances_by_year(year);
-  } else if (strcmp(suite->suite_name, "bbob-mixint-2") == 0) {
+  } else if (strcmp(suite->suite_name, "bbob-mixint") == 0) {
     year_string = suite_bbob_mixint_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
     year_string = suite_biobj_mixint_get_instances_by_year(year);
@@ -121,9 +117,7 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     problem = suite_largescale_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-constrained") == 0) {
     problem = suite_cons_bbob_get_problem(suite, function_idx, dimension_idx, instance_idx);
-  } else if (strcmp(suite->suite_name, "bbob-mixint-1") == 0) {
-    problem = suite_bbob_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
-  } else if (strcmp(suite->suite_name, "bbob-mixint-2") == 0) {
+  } else if (strcmp(suite->suite_name, "bbob-mixint") == 0) {
     problem = suite_bbob_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
     problem = suite_biobj_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);

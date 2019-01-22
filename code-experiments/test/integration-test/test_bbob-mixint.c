@@ -265,7 +265,7 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
 
 int main(void)  {
 
-  check_discretization_single("bbob-mixint-2", "dimensions: 5 instance_indices: 1-2");
+  check_discretization_single("bbob-mixint", "dimensions: 5 instance_indices: 1-2");
   check_discretization_bi("bbob-biobj-mixint", "dimensions: 5 instance_indices: 1-2");
 
   coco_remove_directory("exdata");

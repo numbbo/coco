@@ -157,8 +157,7 @@ int main(void) {
    * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
 
   /* example_experiment("bbob", "dimensions: 2,3,5", "rw", "log_only_better: 0", random_generator);
-  example_experiment("bbob-mixint-1", "bbob", random_generator);
-  example_experiment("bbob-mixint-2", "bbob", random_generator);*/
+  example_experiment("bbob-mixint", "bbob", random_generator);*/
 
   example_experiment("bbob-biobj-mixint", "dimensions: 5,10", "bbob-biobj", "log_discrete_as_int: 1", random_generator);
 

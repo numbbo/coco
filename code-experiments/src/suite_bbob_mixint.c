@@ -55,9 +55,7 @@ static coco_problem_t *coco_get_bbob_mixint_problem(const size_t function,
   coco_problem_t *problem = NULL;
 
   /* The cardinality of variables (0 = continuous variables should always come last) */
-  /* TODO: Use just one (and delete the suite_name parameter) */
-  const size_t variable_cardinality_1[] = { 2, 4, 8, 16, 0 };
-  const size_t variable_cardinality_2[] = { 2, 6, 18, 0, 0 };
+  const size_t variable_cardinality[] = { 2, 4, 8, 16, 0 };
 
   double *smallest_values_of_interest = coco_allocate_vector(dimension);
   double *largest_values_of_interest = coco_allocate_vector(dimension);
@@ -72,10 +70,7 @@ static coco_problem_t *coco_get_bbob_mixint_problem(const size_t function,
   /* Sets the ROI according to the given cardinality of variables */
   for (i = 0; i < dimension; i++) {
     j = i / (dimension / 5);
-    if (strcmp(suite_name, "bbob-mixint-1") == 0)
-      cardinality = variable_cardinality_1[j];
-    else
-      cardinality = variable_cardinality_2[j];
+    cardinality = variable_cardinality[j];
     if (cardinality == 0) {
       smallest_values_of_interest[i] = -5;
       largest_values_of_interest[i] = 5;
