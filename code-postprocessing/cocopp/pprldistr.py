@@ -176,7 +176,7 @@ def caption_single():
             figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
     elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
                                                   testbedsettings.testbed_name_cons,
-                                                  testbedsettings.testbed_name_ls
+                                                  testbedsettings.testbed_name_ls,
                                                   testbedsettings.testbed_name_mixint]:
         # no best algorithm defined yet:
         figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
