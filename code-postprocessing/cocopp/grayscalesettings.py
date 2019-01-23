@@ -31,10 +31,6 @@ print("Using grayscale settings.")
 
 instancesOfInterest = genericsettings.instancesOfInterest
 
-# Variables used in the routines defining desired output for BBOB.
-tabDimsOfInterest = genericsettings.tabDimsOfInterest
-rldDimsOfInterest = genericsettings.rldDimsOfInterest
-
 #single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each
 #summarized_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)   # all in one figure
 #summarized_target_function_values = (100, 10, 1e0, 1e-1, 1e-2, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8) 

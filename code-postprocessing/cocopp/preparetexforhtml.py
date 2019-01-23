@@ -80,6 +80,12 @@ def main(latex_commands_for_html):
         elif scenario == testbedsettings.scenario_constrainedfixed:
             genericsettings.runlength_based_targets = False
             config.config(testbedsettings.default_testbed_cons)
+        elif scenario == testbedsettings.scenario_largescalefixed:
+            genericsettings.runlength_based_targets = False
+            config.config(testbedsettings.default_testbed_ls)
+        elif scenario == testbedsettings.scenario_mixintfixed:
+            genericsettings.runlength_based_targets = False
+            config.config(testbedsettings.default_testbed_mixint)
         else:
             warnings.warn("Scenario not supported yet in HTML")
 

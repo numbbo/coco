@@ -316,7 +316,9 @@ def main(argv=None):
                              "be post-processed together" % str(suites))
 
         if len(args) == 1 or '--include-single' in dict(opts):
+            genericsettings.foreground_algorithm_list = []
             for i, alg in enumerate(args):
+                genericsettings.foreground_algorithm_list.append(alg)
                 dsld = rungeneric1.main(genopts + ["-o", outputdir, alg])
 
         if len(args) >= 2 or len(genericsettings.background) > 0:
@@ -329,7 +331,6 @@ def main(argv=None):
             toolsdivers.prepend_to_file(latex_commands_filename,
                                         ['\\providecommand{\\numofalgs}{2+}']
                                         )
-
         toolsdivers.prepend_to_file(latex_commands_filename,
                                     ['\\providecommand{\\cocoversion}{\\hspace{\\textwidth}\\scriptsize\\sffamily{}' +
                                      '\\color{Gray}Data produced with COCO %s}' % (toolsdivers.get_version_label(None))]
