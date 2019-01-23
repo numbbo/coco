@@ -8,6 +8,7 @@
 #include "coco.h"
 #include "mo_utilities.c"
 #include "suite_biobj_utilities.c"
+#include "suite_largescale.c"
 #include "transform_vars_discretize.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
@@ -25,8 +26,7 @@ static coco_suite_t *suite_biobj_mixint_initialize(void) {
   coco_suite_t *suite;
   const size_t dimensions[] = { 5, 10, 20, 40, 80, 160 };
 
-  /* TODO: Use also dimensions 80 and 160 (change the 4 below into a 6) */
-  suite = coco_suite_allocate("bbob-biobj-mixint", 92, 4, dimensions, "instances: 1-15");
+  suite = coco_suite_allocate("bbob-biobj-mixint", 92, 6, dimensions, "instances: 1-15");
   suite->data_free_function = suite_biobj_new_inst_free;
 
   return suite;
@@ -79,8 +79,7 @@ static coco_problem_t *coco_get_biobj_mixint_problem(const size_t function,
 
   size_t i, j;
   size_t num_integer = dimension;
-  /* TODO: Use the correct cardinality!
-   * The cardinality of variables (0 = continuous variables should always come last) */
+  /* The cardinality of variables (0 = continuous variables should always come last) */
   const size_t variable_cardinality[] = { 2, 4, 8, 16, 0 };
 
   if (dimension % 5 != 0)
@@ -173,7 +172,7 @@ static coco_problem_t *suite_biobj_mixint_get_problem(coco_suite_t *suite,
     problem = coco_get_biobj_mixint_problem(function, dimension, instance, coco_get_bbob_problem,
         &new_inst_data, suite->number_of_instances, suite->dimensions, suite->number_of_dimensions);
   else
-    problem = coco_get_biobj_mixint_problem(function, dimension, instance, mock_coco_get_largescale_problem,
+    problem = coco_get_biobj_mixint_problem(function, dimension, instance, coco_get_largescale_problem,
         &new_inst_data, suite->number_of_instances, suite->dimensions, suite->number_of_dimensions);
 
   problem->suite_dep_function = function;
