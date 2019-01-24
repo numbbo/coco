@@ -67,6 +67,7 @@ cdef extern from "coco.h":
     double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
     int coco_problem_final_target_hit(const coco_problem_t *problem)
     void bbob_problem_best_parameter_print(const coco_problem_t *problem)
+    void bbob_biobj_problem_best_parameter_print(const coco_problem_t *problem)
 
 cdef bytes _bstring(s):
     if type(s) is bytes:
@@ -767,7 +768,10 @@ cdef class Problem:
 
     def _best_parameter(self, what=None):
         if what == 'print':
-            bbob_problem_best_parameter_print(self.problem)
+            if self._number_of_objectives == 2:
+                bbob_biobj_problem_best_parameter_print(self.problem)
+            else:
+                bbob_problem_best_parameter_print(self.problem)
 
     def free(self, force=False):
         """Free the given test problem.
