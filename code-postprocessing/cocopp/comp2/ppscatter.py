@@ -46,8 +46,6 @@ from .. import toolsdivers
 from .. import pproc
 from .. import captions
 
-dimensions = (2, 3, 5, 10, 20, 40)
-
 # formattings
 markersize = 14  # modified in config.py
 markersize_addon_beyond_maxevals = -6
@@ -72,12 +70,12 @@ def prepare_figure_caption():
 
     caption_finish = r"""Markers on the upper or right edge indicate that the respective target
         value was never reached. Markers represent dimension:
-        2:{\color{cyan}+},
-        3:{\color{green!45!black}$\triangledown$},
-        5:{\color{blue}$\star$},
-        10:$\circ$,
-        20:{\color{red}$\Box$},
-        40:{\color{magenta}$\Diamond$}. """
+        %d:{\color{cyan}+},
+        %d:{\color{green!45!black}$\triangledown$},
+        %d:{\color{blue}$\star$},
+        %d:$\circ$,
+        %d:{\color{red}$\Box$},
+        %d:{\color{magenta}$\Diamond$}. """ % tuple(testbedsettings.current_testbed.dimensions_to_display)
 
 
     if genericsettings.runlength_based_targets:
@@ -163,6 +161,8 @@ def main(dsList0, dsList1, outputdir, settings):
         linewidth = linewidth_default
 
     funInfos = ppfigparam.read_fun_infos()    
+
+    dimensions = testbedsettings.current_testbed.dimensions_to_display
 
     for f in funcs:
         dictDim0 = dictFunc0[f].dictByDim()

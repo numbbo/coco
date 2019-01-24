@@ -6,7 +6,9 @@
 
 #include "coco.h"
 #include "coco_problem.c"
-#include "large_scale_transformations.c"
+#include "transform_vars_permutation_helpers.c"
+#include "transform_vars_blockrotation_helpers.c"
+
 
 /**
  * @brief Data type for transform_vars_permblockdiag.
@@ -34,20 +36,16 @@ static void transform_vars_permblockdiag_evaluate(coco_problem_t *problem, const
 
   data = (transform_vars_permblockdiag_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
-  
   for (i = 0; i < inner_problem->number_of_variables; ++i) {
-    current_blocksize = data->block_size_map[data->P2[i]];/*the block_size is that of the permuted line*/
+    current_blocksize = data->block_size_map[data->P2[i]];  /* the block_size is that of the permuted line */
     first_non_zero_ind = data->first_non_zero_map[data->P2[i]];
     data->x[i] = 0;
-    /*compute data->x[i] = < B[P2[i]] , x[P1] >  */
-    for (j = first_non_zero_ind; j < first_non_zero_ind + current_blocksize; ++j) {/*blocksize[P2[i]]*/
-      data->x[i] += data->B[data->P2[i]][j - first_non_zero_ind] * x[data->P1[j]];/*all B lines start at 0*/
+    /* compute data->x[i] = < B[P2[i]] , x[P1] > */
+    for (j = first_non_zero_ind; j < first_non_zero_ind + current_blocksize; ++j) {  /* blocksize[P2[i]] */
+      data->x[i] += data->B[data->P2[i]][j - first_non_zero_ind] * x[data->P1[j]];   /* all B lines start at 0 */
     }
-    if (data->x[i] > 100 || data->x[i] < -100 || 1) {
-    }
-    
   }
-  
+
   coco_evaluate_function(inner_problem, data->x, y);
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
@@ -103,7 +101,7 @@ static coco_problem_t *transform_vars_permblockdiag(coco_problem_t *inner_proble
     }
     current_blocksize=block_sizes[idx_blocksize];
     data->block_size_map[i] = current_blocksize;
-    data->first_non_zero_map[i] = next_bs_change - current_blocksize;/* next_bs_change serves also as a cumsum for blocksizes*/
+    data->first_non_zero_map[i] = next_bs_change - current_blocksize; /* next_bs_change serves also as a cumsum for blocksizes */
   }
   
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_permblockdiag_free, "transform_vars_permblockdiag");

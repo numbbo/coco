@@ -18,9 +18,6 @@ print("Using black and white settings.")
 
 instancesOfInterest = genericsettings.instancesOfInterest
 
-# Variables used in the routines defining desired output for BBOB.
-tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables
-
 # function-dependent target function values: hard coded here before we come up
 # with something smarter. It is supposed the number of level of difficulties
 # are the same, it is just the target function value that differs.
@@ -175,8 +172,6 @@ tabDimsOfInterest = (5, 20)    # dimension which are displayed in the tables
 #                       122: 1e-08, 123: 1e-08, 124: 1e-08, 125: 1e-08,
 #                       126: 1e-08, 127: 1e-08, 128: 1e-08, 129: 1e-08,
 #                       130: 1e-08})
-
-rldDimsOfInterest = (5, 20)
 
 single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each
 summarized_target_function_values = (1e0, 1e-1, 1e-3, 1e-5, 1e-7)   # all in one figure

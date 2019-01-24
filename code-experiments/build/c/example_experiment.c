@@ -156,10 +156,11 @@ int main(void) {
    * http://numbbo.github.io/coco-doc/C/#suite-parameters and
    * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
 
-  /* example_experiment("bbob", "dimensions: 2,3,5", "rw", "log_only_better: 0", random_generator);
-  example_experiment("bbob-mixint", "bbob", random_generator);*/
+  /* example_experiment("bbob", "dimensions: 2,3,5", "rw", "log_only_better: 0", random_generator);*/
 
-  example_experiment("bbob-biobj-mixint", "dimensions: 5,10", "bbob-biobj", "log_discrete_as_int: 1", random_generator);
+  example_experiment("bbob-mixint", "", "bbob", "log_discrete_as_int: 1", random_generator);
+
+  /*example_experiment("bbob-biobj-mixint", "dimensions: 5,10", "bbob-biobj", "log_discrete_as_int: 1", random_generator);*/
 
   printf("Done!\n");
   fflush(stdout);

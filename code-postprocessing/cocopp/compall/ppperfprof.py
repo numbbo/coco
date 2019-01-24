@@ -114,7 +114,7 @@ def plotmultiple(dictAlg, dsref=None, order=None, targets=defaulttargets,
         args['markeredgecolor'] = args['color']
         lines.append(plot(dictAlg[k], dsref, targets, istoolsstats, label=k,
                           **args))
-    #plt.xlim(xmin=1e-0, xmax=xlim*x_annote_factor)
+    #plt.xlim(1e-0, xlim*x_annote_factor)
     beautify()
     if rhleg:
         plotLegend(lines, plt.xlim()[1])

@@ -10,6 +10,7 @@
 #include "coco.h"
 #include "coco_problem.c"
 #include "suite_bbob_legacy_code.c"
+#include "transform_vars_conditioning.c"
 #include "transform_obj_shift.c"
 #include "transform_vars_scale.c"
 #include "transform_vars_affine.c"
@@ -101,7 +102,6 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
   }
 
   problem = f_schwefel_allocate(dimension);
-  problem = transform_obj_shift(problem, fopt);
   problem = transform_vars_scale(problem, 100);
   problem = transform_vars_shift(problem, tmp1, 0);
   /* problem = transform_vars_affine(problem, M, b, dimension); */
@@ -110,6 +110,8 @@ static coco_problem_t *f_schwefel_bbob_problem_allocate(const size_t function,
   problem = transform_vars_z_hat(problem, xopt); /* only for the correct xopt the best_parameter is not changed */
   problem = transform_vars_scale(problem, 2);
   problem = transform_vars_x_hat(problem, rseed);
+  problem = transform_obj_shift(problem, fopt);
+
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);

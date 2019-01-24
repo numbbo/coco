@@ -54,7 +54,7 @@ annotation_space_end_relative = 1.24  # figure space end relative to x_limit
 save_zoom = False  # save zoom into left and right part of the figures
 perfprofsamplesize = genericsettings.simulated_runlength_bootstrap_sample_size  # number of bootstrap samples drawn for each fct+target in the performance profile
 nbperdecade = 1
-median_max_evals_marker_format = ['x', 24, 3]
+median_max_evals_marker_format = ['x', 24, 1]
 label_fontsize = 17
 title_fontsize = 20
 styles = [d.copy() for d in genericsettings.line_styles]  # deep copy
@@ -166,7 +166,7 @@ def beautify():
     a = plt.gca()
     a.set_xscale('log')
     # Tick label handling
-    plt.xlim(xmin=1e-0)
+    plt.xlim(1e-0)
 
     global divide_by_dimension
     if divide_by_dimension:
@@ -256,7 +256,9 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                              # marker='x', markersize=24, markeredgewidth=3, 
                              markeredgecolor=plt.getp(res[0], 'color'),
                              ls=plt.getp(res[0], 'ls'),
-                             color=plt.getp(res[0], 'color'))
+                             color=plt.getp(res[0], 'color'),
+                             # zorder=1.6   # zorder=0;1;1.5 is behind the grid lines, 2 covers other lines, 1.6 is between
+                             )
                 h.extend(res)
                 res = h  # so the last element in res still has the label.
                 # Only take sequences for x and y!
@@ -375,7 +377,7 @@ def plotLegend(handles, maxval):
     # plt.axvline(x=maxval, color='k') # Not as efficient?
     reshandles.append(plt_plot((maxval, maxval), (0., 1.), color='k'))
     reslabels.reverse()
-    plt.xlim(xmax=maxval)
+    plt.xlim(None, maxval)
     return reslabels, reshandles
 
 
@@ -563,7 +565,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     tmp = pp.dictAlgByDim(dictAlg)
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
-    algorithms_with_data.sort()
+    # algorithms_with_data.sort()  # dictAlg now is an OrderedDict, hence sorting isn't desired
 
     if len(algorithms_with_data) > 1 and len(tmp) != 1 and dimension is None:
         raise ValueError('We never integrate over dimension for more than one algorithm.')
@@ -625,7 +627,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 # for j, t in enumerate(testbedsettings.current_testbed.ecdf_target_values(1e2, f)):
                 # funcsolved[j].add(f)
 
-                for alg in sorted(algorithms_with_data):
+                for alg in algorithms_with_data:
                     x = [np.inf] * perfprofsamplesize
                     runlengthunsucc = []
                     try:
@@ -688,7 +690,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     # Display data
     lines = []
     if displaybest:
-        args = {'ls': '-', 'linewidth': 6, 'marker': 'D', 'markersize': 11.,
+        args = {'ls': '-', 'linewidth': 4, 'marker': 'D', 'markersize': 11.,
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
                 'label': testbedsettings.current_testbed.reference_algorithm_displayname,
@@ -811,7 +813,10 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     text += '\n'
     num_of_instances = []
     for alg in algorithms_with_data:
-        if alg in genericsettings.foreground_algorithm_list and len(dictAlgperFunc[alg]) > 0:
+
+        if ((alg in genericsettings.foreground_algorithm_list
+                or alg[0] in genericsettings.foreground_algorithm_list[0]) # case of a single algorithm only
+                and len(dictAlgperFunc[alg]) > 0):
             num_of_instances.append(len((dictAlgperFunc[alg])[0].instancenumbers))
         else:
             warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
@@ -837,7 +842,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                   fontsize=title_fontsize)
     a = plt.gca()
 
-    plt.xlim(xmin=1e-0, xmax=x_limit)
+    plt.xlim(1e-0, x_limit)
     xmaxexp = int(np.floor(np.log10(x_limit)))
     xmajorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1, 2)]
     xminorticks = [10 ** exponent for exponent in range(0, xmaxexp + 1)]
@@ -852,7 +857,13 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     if save_figure:
         ppfig.save_figure(figureName,
                           dictAlg[algorithms_with_data[0]][0].algId,
-                          layout_rect=(0, 0, 0.735, 1))
+                          layout_rect=(0, 0, 0.735, 1),
+                          # Prevent clipping in matplotlib >=3:
+                          # Relative additional space numbers are
+                          # bottom, left, 1 - top, and 1 - right.
+                          # bottom=0.13 still clips g in the log(#evals) xlabel
+                          subplots_adjust=dict(bottom=0.135, right=0.735),
+                          )
         if plotType == PlotType.DIM:
             file_name = genericsettings.pprldmany_file_name
             ppfig.save_single_functions_html(

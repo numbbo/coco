@@ -1,0 +1,34 @@
+% SEPARABLE
+1 Sphere normalized with min(1, 40/n)
+2 Ellipsoid separable with monotone x-transformation, condition 1e6, normalized with min(1, 40/n)
+3 Rastrigin separable with both x-transformations "condition" 10, normalized with min(1, 40/n)
+4 Skew Rastrigin-Bueche separable, "condition" 10, skew-"condition" 100, normalized with min(1, 40/n)
+5 Linear slope, neutral extension outside the domain (not flat), normalized with min(1, 40/n)
+
+% LOW OR MODERATE CONDITION
+6 Attractive sector function, normalized with min(1, 40/n)
+7 Step-ellipsoid, condition 100, normalized with min(1, 40/n)
+8 Rosenbrock, original, normalized with min(1, 40/n)
+9 Rosenbrock, rotated, normalized with min(1, 40/n)
+
+% HIGH CONDITION
+10 Ellipsoid with monotone x-transformation, condition 1e6, normalized with min(1, 40/n)
+11 Discus with monotone x-transformation, constant proportion of distinct axis lengths, condition 1e6, normalized with min(1, 40/n)
+12 Bent cigar with asymmetric x-transformation, constant proportion of distinct axis lengths, condition 1e6
+13 Sharp ridge, slope 1:100, constant proportion of distinct axis lengths, condition 10
+14 Sum of different powers, normalized with min(1, 40/n)
+
+% MULTI-MODAL
+15 Rastrigin with both x-transformations, condition 10, normalized with min(1, 40/n)
+16 Weierstrass with monotone x-transformation, condition 100
+17 Schaffer F7 with asymmetric x-transformation, condition 10
+18 Schaffer F7 with asymmetric x-transformation, condition 1000
+19 F8F2 composition of 2-D Griewank-Rosenbrock, normalized with min(1, 40/n)
+
+% MULTI-MODAL WITH WEAK GLOBAL STRUCTURE
+20 Schwefel x*sin(x) with tridiagonal transformation, condition 10
+21 Gallagher 101 Gaussian peaks, condition up to 1000
+22 Gallagher 21 Gaussian peaks, condition up to 1000, 1000 for global opt
+23 Katsuuras repetitive rugged function
+24 Lunacek bi-Rastrigin, condition 100, normalized with min(1, 40/n)
+
