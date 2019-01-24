@@ -6,6 +6,7 @@
 
 #include "coco.h"
 #include "suite_bbob.c"
+#include "suite_largescale.c"
 #include "transform_vars_discretize.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
@@ -21,8 +22,7 @@ static coco_suite_t *suite_bbob_mixint_initialize(const char *suite_name) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 5, 10, 20, 40, 80, 160 };
-  /* TODO: Use also dimensions 80 and 160 (change the 4 below into a 6) */
-  suite = coco_suite_allocate(suite_name, 24, 4, dimensions, "instances: 1-15");
+  suite = coco_suite_allocate(suite_name, 24, 6, dimensions, "instances: 1-15");
 
   return suite;
 }
@@ -126,7 +126,7 @@ static coco_problem_t *suite_bbob_mixint_get_problem(coco_suite_t *suite,
   if (dimension < dim_large_scale)
     problem = coco_get_bbob_mixint_problem(function, dimension, instance, coco_get_bbob_problem);
   else
-    problem = coco_get_bbob_mixint_problem(function, dimension, instance, mock_coco_get_largescale_problem);
+    problem = coco_get_bbob_mixint_problem(function, dimension, instance, coco_get_largescale_problem);
 
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;

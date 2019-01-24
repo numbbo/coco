@@ -20,17 +20,13 @@ force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000  # [0, 1000] lower resolution, no eps, saves 30% time
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = False  # may be overwritten by expensive setting
-dimensions_to_display = (2, 3, 5, 10, 20, 40)  # this could be used to set the dimensions in respective modules
 figure_file_formats = ['svg', 'pdf']
 scaling_figures_with_boxes = True
-# should replace ppfigdim.dimsBBOB, ppfig2.dimensions, ppfigparam.dimsBBOB?
 
 weight_evaluations_constraints = (1, 1)
 """weights used to sum function evaluations and constraints evaluations
 in attribute DataSet.evals, if any constraints evaluations are found"""
 
-# Variables used in the routines defining desired output for BBOB.
-tabDimsOfInterest = (5, 20)  # dimension which are displayed in the tables
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
 target_runlengths_pprldmany = np.logspace(np.log10(0.5), np.log10(50), 31) # used in config
@@ -49,10 +45,9 @@ xlimit_expensive = 1e3  # used in
 dim_related_markers = ('+', 'v', '*', 'o', 's', 'D', 'x')
 dim_related_colors = ('c', 'g', 'b', 'k', 'r', 'm', 'k', 'y', 'k', 'c', 'r', 'm')
 
-rldDimsOfInterest = (5, 20)
-
 simulated_runlength_bootstrap_sample_size = 10 + 990 // (1 + 10 * max((0, in_a_hurry)))  # for tables and plots
 """10000 would be better for a final camera-ready paper version"""
+
 
 # single_target_pprldistr_values = (10., 1e-1, 1e-4, 1e-8)  # used as default in pprldistr.plot method, on graph for each
 # single_target_function_values = (1e1, 1e0, 1e-1, 1e-2, 1e-4, 1e-6, 1e-8)  # one figure for each, seems not in use

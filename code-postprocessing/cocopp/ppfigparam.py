@@ -37,7 +37,6 @@ styles = [{'color': 'k', 'marker': 'o', 'markeredgecolor': 'k'},
 refcolor = 'wheat'
 # should correspond with the colors in pprldistr.
 
-dimsBBOB = (2, 3, 5, 10, 20, 40)
 
 # Get benchmark short infos, prepended with the function id.
 def read_fun_infos():
@@ -71,7 +70,7 @@ def beautify():
     #plt.plot((2,200), (1e6, 1e10), 'k:')
 
     # axes limits
-    plt.ylim(ymin=10**-0.2, ymax=ymax) # Set back the previous maximum.
+    plt.ylim(10**-0.2, ymax) # Set back the previous maximum.
 
     # ticks on axes
     # axisHandle.invert_xaxis()

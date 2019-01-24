@@ -182,16 +182,6 @@ static coco_problem_t *coco_get_bbob_problem(const size_t function,
 }
 
 /**
- * TODO: A mock of the function to call large-scale BBOB functions. To be replaced by the right one
- * when it is made available.
- */
-static coco_problem_t *mock_coco_get_largescale_problem(const size_t function,
-                                                        const size_t dimension,
-                                                        const size_t instance) {
-  return coco_get_bbob_problem(function, dimension, instance);
-}
-
-/**
  * @brief Returns the problem from the bbob suite that corresponds to the given parameters.
  *
  * @param suite The COCO suite.

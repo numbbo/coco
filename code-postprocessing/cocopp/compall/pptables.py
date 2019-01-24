@@ -49,21 +49,24 @@ def get_table_caption():
         (preceded by the target !!DF!!-value in \textit{italics}) in the first row. 
         \#succ is the number of trials that reached the target value of the last column.
         """
+
     table_caption_rest = (r"""%
         The median number of conducted function evaluations is additionally given in 
-        \textit{italics}, if the target in the last column was never reached. 
+        \textit{italics}, if the target in the last column was never reached.
         Entries, succeeded by a star, are statistically significantly better (according to
         the rank-sum test) when compared to all other algorithms of the table, with
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
         than 1, with Bonferroni correction by the number of functions (!!TOTAL-NUM-OF-FUNCTIONS!!). """ +
                           (r"""A $\downarrow$ indicates the same tested against !!THE-REF-ALG!!. """
-                           if not (testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext)
+                           if not (testbedsettings.current_testbed.name in (testbedsettings.testbed_name_bi_ext,
+                                                                            testbedsettings.testbed_name_ls))
                            else "") + r"""Best results are printed in bold.
         """ + r"""\cocoversion""")
 
     table_caption = None
     if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
-                                                testbedsettings.testbed_name_cons]:
+                                                testbedsettings.testbed_name_cons,
+                                                testbedsettings.testbed_name_ls]:
         # NOTE: no runlength-based targets supported yet
         table_caption = table_caption_one_noreference + table_caption_rest
     elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
@@ -383,7 +386,6 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
         # significance test of best given algorithm against all others
         best_alg_idx = numpy.array(algerts).argsort(0)[0, :]  # indexed by target index
         significance_versus_others = significance_all_best_vs_other(algentries, targets, best_alg_idx)[0]
-
         # Create the table
         table = []
         tableHtml = []
@@ -448,12 +450,12 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
  
         extraeol.append(r'\hline')
         #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
-        
+
         # line with function name and potential aRT values of reference algorithm
         curline = [r'\textbf{f%d}' % df[1]]
         replaceValue = '<b>f%d, %d-D</b>' % (df[1], df[0])
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
-        
+
         if refalgentries:
             if isinstance(targets_of_interest, pproc.RunlengthBasedTargetValues):
                 # write ftarget:fevals
@@ -515,7 +517,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
             # data, dispersion, isBoldArray, isItalArray, nbsucc, nbruns, testres):
             command_name = r'\alg%stables' % numtotext(i)
             #            header += r'\providecommand{%s}{{%s}{}}' % (command_name, str_to_latex(strip_pathname(alg)))
-            if df[0] == genericsettings.tabDimsOfInterest[0]:
+            if df[0] == testbedsettings.current_testbed.tabDimsOfInterest[0]:
                 additional_commands.append('\\providecommand{%s}{\\StrLeft{%s}{\\ntables}}' %
                                            (command_name, str_to_latex(strip_pathname1(alg))))
             curline = [command_name + r'\hspace*{\fill}']  # each list element becomes a &-separated table entry?
@@ -679,6 +681,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
 
             if True:
                 filename = os.path.join(output_dir, genericsettings.pptables_file_name + '.html')
+
                 lines = []
                 html_string = '<!--pptablesHtml_%d-->' % df[0]
                 with open(filename) as infile:
@@ -704,7 +707,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
     if len(additional_commands) > 0:
         for command in additional_commands:
             prepend_to_file(latex_commands_file, [command])
-    if len(tables_header) > 0 and df[0] == genericsettings.tabDimsOfInterest[0]:
+    if len(tables_header) > 0 and df[0] == testbedsettings.current_testbed.tabDimsOfInterest[0]:
         extraeol = [r'\hline']
         res = tableXLaTeX([tables_header], spec=spec, extra_eol=extraeol, add_end_tabular=False)
         prepend_to_file(latex_commands_file, ['\\providecommand{\\pptablesheader}{', res, '}'])
