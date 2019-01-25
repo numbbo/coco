@@ -2169,6 +2169,7 @@ static const char __pyx_k_bbob_constrained[] = "bbob-constrained";
 static const char __pyx_k_cocoex_interface[] = "cocoex.interface";
 static const char __pyx_k_initial_solution[] = "initial_solution";
 static const char __pyx_k_integer_variable[] = " integer variable";
+static const char __pyx_k_bbob_biobj_mixint[] = "bbob-biobj-mixint";
 static const char __pyx_k_cocoex_exceptions[] = "cocoex.exceptions";
 static const char __pyx_k_known_suite_names[] = "known_suite_names";
 static const char __pyx_k_Suite_ids_line_299[] = "Suite.ids (line 299)";
@@ -2274,6 +2275,7 @@ static PyObject *__pyx_n_u_ascii;
 static PyObject *__pyx_n_u_bbob;
 static PyObject *__pyx_kp_u_bbob_biobj;
 static PyObject *__pyx_kp_u_bbob_biobj_ext;
+static PyObject *__pyx_kp_u_bbob_biobj_mixint;
 static PyObject *__pyx_kp_u_bbob_constrained;
 static PyObject *__pyx_kp_u_bbob_largescale;
 static PyObject *__pyx_kp_u_bbob_mixint;
@@ -18958,6 +18960,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_u_bbob, __pyx_k_bbob, sizeof(__pyx_k_bbob), 0, 1, 0, 1},
   {&__pyx_kp_u_bbob_biobj, __pyx_k_bbob_biobj, sizeof(__pyx_k_bbob_biobj), 0, 1, 0, 0},
   {&__pyx_kp_u_bbob_biobj_ext, __pyx_k_bbob_biobj_ext, sizeof(__pyx_k_bbob_biobj_ext), 0, 1, 0, 0},
+  {&__pyx_kp_u_bbob_biobj_mixint, __pyx_k_bbob_biobj_mixint, sizeof(__pyx_k_bbob_biobj_mixint), 0, 1, 0, 0},
   {&__pyx_kp_u_bbob_constrained, __pyx_k_bbob_constrained, sizeof(__pyx_k_bbob_constrained), 0, 1, 0, 0},
   {&__pyx_kp_u_bbob_largescale, __pyx_k_bbob_largescale, sizeof(__pyx_k_bbob_largescale), 0, 1, 0, 0},
   {&__pyx_kp_u_bbob_mixint, __pyx_k_bbob_mixint, sizeof(__pyx_k_bbob_mixint), 0, 1, 0, 0},
@@ -19825,7 +19828,7 @@ if (!__Pyx_RefNanny) {
  * 
  * from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException             # <<<<<<<<<<<<<<
  * 
- * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"
+ * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale",
  */
   __pyx_t_1 = PyList_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -19858,11 +19861,11 @@ if (!__Pyx_RefNanny) {
   /* "cython/interface.pyx":10
  * from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
  * 
- * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"             # <<<<<<<<<<<<<<
- * , "bbob-mixint"]
+ * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale",             # <<<<<<<<<<<<<<
+ * "bbob-mixint", "bbob-biobj-mixint"]
  * # known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext"]
  */
-  __pyx_t_2 = PyList_New(6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_2 = PyList_New(7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_n_u_bbob);
   __Pyx_GIVEREF(__pyx_n_u_bbob);
@@ -19882,17 +19885,20 @@ if (!__Pyx_RefNanny) {
   __Pyx_INCREF(__pyx_kp_u_bbob_mixint);
   __Pyx_GIVEREF(__pyx_kp_u_bbob_mixint);
   PyList_SET_ITEM(__pyx_t_2, 5, __pyx_kp_u_bbob_mixint);
+  __Pyx_INCREF(__pyx_kp_u_bbob_biobj_mixint);
+  __Pyx_GIVEREF(__pyx_kp_u_bbob_biobj_mixint);
+  PyList_SET_ITEM(__pyx_t_2, 6, __pyx_kp_u_bbob_biobj_mixint);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_known_suite_names, __pyx_t_2) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "cython/interface.pyx":13
- * , "bbob-mixint"]
+ * "bbob-mixint", "bbob-biobj-mixint"]
  * # known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext"]
  * _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale",             # <<<<<<<<<<<<<<
- *                       "bbob-mixint"]
+ *                       "bbob-mixint", "bbob-biobj-mixint"]
  * 
  */
-  __pyx_t_2 = PyList_New(6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 13, __pyx_L1_error)
+  __pyx_t_2 = PyList_New(7); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_n_u_bbob);
   __Pyx_GIVEREF(__pyx_n_u_bbob);
@@ -19912,6 +19918,9 @@ if (!__Pyx_RefNanny) {
   __Pyx_INCREF(__pyx_kp_u_bbob_mixint);
   __Pyx_GIVEREF(__pyx_kp_u_bbob_mixint);
   PyList_SET_ITEM(__pyx_t_2, 5, __pyx_kp_u_bbob_mixint);
+  __Pyx_INCREF(__pyx_kp_u_bbob_biobj_mixint);
+  __Pyx_GIVEREF(__pyx_kp_u_bbob_biobj_mixint);
+  PyList_SET_ITEM(__pyx_t_2, 6, __pyx_kp_u_bbob_biobj_mixint);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_known_suite_names_2, __pyx_t_2) < 0) __PYX_ERR(0, 13, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
