@@ -85,21 +85,6 @@ static coco_problem_t *coco_get_biobj_mixint_problem(const size_t function,
   if (dimension % 5 != 0)
     coco_error("coco_get_biobj_mixint_problem(): dimension %lu not supported for suite_bbob_mixint", dimension);
 
-  /* Sets the ROI according to the given cardinality of variables */
-  for (i = 0; i < dimension; i++) {
-    j = i / (dimension / 5);
-    if (variable_cardinality[j] == 0) {
-      smallest_values_of_interest[i] = -5;
-      largest_values_of_interest[i] = 5;
-      if (num_integer == dimension)
-        num_integer = i;
-    }
-    else {
-      smallest_values_of_interest[i] = 0;
-      largest_values_of_interest[i] = (double)variable_cardinality[j] - 1;
-    }
-  }
-
   /* First, find the underlying single-objective continuous problems */
   problem_cont = coco_get_biobj_problem(function, dimension, instance, coco_get_problem_function, new_inst_data,
       num_new_instances, dimensions, num_dimensions);
@@ -119,6 +104,30 @@ static coco_problem_t *coco_get_biobj_mixint_problem(const size_t function,
   problem1_cont->problem_free_function = NULL;
   problem2_cont->problem_free_function = NULL;
   coco_problem_free(problem_cont);
+
+  /* Set the ROI of the outer problem according to the given cardinality of variables and the ROI of the
+   * inner problems to [-4, 4] for variables that will be discretized */
+  for (i = 0; i < dimension; i++) {
+    j = i / (dimension / 5);
+    if (variable_cardinality[j] == 0) {
+      /* Continuous variables */
+      /* Outer problem */
+      smallest_values_of_interest[i] = -100;
+      largest_values_of_interest[i] = 100;
+      if (num_integer == dimension)
+        num_integer = i;
+    }
+    else {
+      /* Outer problem */
+      smallest_values_of_interest[i] = 0;
+      largest_values_of_interest[i] = (double)variable_cardinality[j] - 1;
+      /* Inner problems */
+      problem1->smallest_values_of_interest[i] = -4;
+      problem1->largest_values_of_interest[i] = 4;
+      problem2->smallest_values_of_interest[i] = -4;
+      problem2->largest_values_of_interest[i] = 4;
+    }
+  }
 
   /* Second, discretize the single-objective problems */
   problem1_mixint = transform_vars_discretize(problem1, smallest_values_of_interest,

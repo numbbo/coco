@@ -66,25 +66,32 @@ static coco_problem_t *coco_get_bbob_mixint_problem(const size_t function,
   if (dimension % 5 != 0)
     coco_error("coco_get_bbob_mixint_problem(): dimension %lu not supported for suite_bbob_mixint", dimension);
 
-  /* Sets the ROI according to the given cardinality of variables */
+  problem = coco_get_problem_function(function, dimension, instance);
+  assert(problem != NULL);
+
+  /* Set the ROI of the outer problem according to the given cardinality of variables and the ROI of the
+   * inner problem to [-4, 4] for variables that will be discretized */
   for (i = 0; i < dimension; i++) {
     j = i / (dimension / 5);
     cardinality = variable_cardinality[j];
     if (cardinality == 0) {
+      /* Continuous variables */
+      /* Outer problem */
       smallest_values_of_interest[i] = -5;
       largest_values_of_interest[i] = 5;
       if (num_integer == dimension)
         num_integer = i;
     }
     else {
+      /* Outer problem */
       smallest_values_of_interest[i] = 0;
       largest_values_of_interest[i] = (double)cardinality - 1;
+      /* Inner problem */
+      problem->smallest_values_of_interest[i] = -4;
+      problem->largest_values_of_interest[i] = 4;
     }
   }
 
-  problem = coco_get_problem_function(function, dimension, instance);
-
-  assert(problem != NULL);
   inner_problem_id = problem->problem_id;
 
   problem = transform_vars_discretize(problem, smallest_values_of_interest,
