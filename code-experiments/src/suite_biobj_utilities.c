@@ -472,12 +472,17 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
   if (function_idx < 55) {
     problem1 = coco_get_problem_function(sel_bbob_functions[function1_idx], dimension, instance1);
     problem2 = coco_get_problem_function(sel_bbob_functions[function2_idx], dimension, instance2);
+    /* Store function numbers of the underlying problems */
+    problem1->suite_dep_function = sel_bbob_functions[function1_idx];
+    problem2->suite_dep_function = sel_bbob_functions[function2_idx];
 
   } else {
     problem1 = coco_get_problem_function(all_bbob_functions[function1_idx], dimension, instance1);
     problem2 = coco_get_problem_function(all_bbob_functions[function2_idx], dimension, instance2);
+    problem1->suite_dep_function = all_bbob_functions[function1_idx];
+    problem2->suite_dep_function = all_bbob_functions[function2_idx];
   }
-  
+
   problem = coco_problem_stacked_allocate(problem1, problem2, smallest_values_of_interest, largest_values_of_interest);
 
   /* Use the standard stacked problem_id as problem_name and construct a new problem_id */

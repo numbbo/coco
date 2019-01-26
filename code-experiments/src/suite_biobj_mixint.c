@@ -84,7 +84,7 @@ static coco_problem_t *coco_get_biobj_mixint_problem(const size_t function,
   size_t num_integer = dimension;
   /* The cardinality of variables (0 = continuous variables should always come last) */
   const size_t variable_cardinality[] = { 2, 4, 8, 16, 0 };
-  double scaling_factor1, scaling_factor2;
+  size_t function1, function2;
 
   if (dimension % 5 != 0)
     coco_error("coco_get_biobj_mixint_problem(): dimension %lu not supported for suite_bbob_mixint", dimension);
@@ -140,10 +140,10 @@ static coco_problem_t *coco_get_biobj_mixint_problem(const size_t function,
       largest_values_of_interest, num_integer);
 
   /* Third, scale the objective values */
-  scaling_factor1 = suite_bbob_mixint_scaling_factors[problem1->suite_dep_function - 1];
-  scaling_factor2 = suite_bbob_mixint_scaling_factors[problem2->suite_dep_function - 1];
-  problem1_mixint = transform_obj_scale(problem1_mixint, scaling_factor1);
-  problem2_mixint = transform_obj_scale(problem2_mixint, scaling_factor2);
+  function1 = coco_problem_get_suite_dep_function(problem1);
+  function2 = coco_problem_get_suite_dep_function(problem2);
+  problem1_mixint = transform_obj_scale(problem1_mixint, suite_bbob_mixint_scaling_factors[function1 - 1]);
+  problem2_mixint = transform_obj_scale(problem2_mixint, suite_bbob_mixint_scaling_factors[function2 - 1]);
 
   /* Fourth, combine the problems in a bi-objective mixed-integer problem */
   problem = coco_problem_stacked_allocate(problem1_mixint, problem2_mixint, smallest_values_of_interest,

@@ -19,7 +19,7 @@
 void check_discretization_single(char *suite_name, char *suite_options) {
 
   coco_suite_t *suite;
-  coco_problem_t *problem_cont, *problem_disc;
+  coco_problem_t *problem_cont, *problem_disc, *problem_tmp;
   size_t j, k1, k2, k3, k4;
   double *xopt_cont, *fopt_cont, fopt_disc;
   double *x, *f;
@@ -68,7 +68,8 @@ void check_discretization_single(char *suite_name, char *suite_options) {
     }
 
     /* Compute and compare the optima */
-    problem_cont = coco_problem_transformed_get_inner_problem(problem_disc);
+    problem_tmp = coco_problem_transformed_get_inner_problem(problem_disc);
+    problem_cont = coco_problem_transformed_get_inner_problem(problem_tmp);
     xopt_cont = problem_cont->best_parameter;
     fopt_cont = problem_cont->best_value;
     fopt_disc = DBL_MAX;
@@ -91,8 +92,8 @@ void check_discretization_single(char *suite_name, char *suite_options) {
         }
       }
     }
+    fopt_cont[0] *= suite_bbob_mixint_scaling_factors[coco_problem_get_suite_dep_function(problem_disc) - 1];
     if (!coco_double_almost_equal(fopt_cont[0], fopt_disc, 1e-10)) {
-      coco_suite_free(suite);
       coco_free_memory(x);
       coco_free_memory(f);
       coco_error("check_discretization_single(): The optima of the original "
@@ -102,7 +103,6 @@ void check_discretization_single(char *suite_name, char *suite_options) {
     counter++;
   }
 
-  coco_suite_free(suite);
   coco_free_memory(x);
   coco_free_memory(f);
 
@@ -111,6 +111,8 @@ void check_discretization_single(char *suite_name, char *suite_options) {
   else
     printf("Performed %lu tests on %s\n", (unsigned long)counter, suite_name);
   printf("DONE!\n");
+
+  coco_suite_free(suite);
   fflush(stdout);
 }
 
@@ -122,7 +124,7 @@ void check_discretization_single(char *suite_name, char *suite_options) {
  *
  * Note also that this test assumes that the discretization was done on single-objective problems
  * before they were stacked to form bi-objective problems, i.e. the 'wrapping' order was:
- * stacking(discretize(problem1), discretize(problem2))
+ * stacking(scale(discretize(problem1)), scale(discretize(problem2)))
  */
 void check_discretization_bi(char *suite_name, char *suite_options) {
 
@@ -130,6 +132,7 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
   coco_problem_t *problem_disc;
   coco_problem_t *problem1_disc, *problem2_disc;
   coco_problem_t *problem1_cont, *problem2_cont;
+  coco_problem_t *problem1_tmp, *problem2_tmp;
   size_t j, k1, k2, k3, k4;
   double *x_ext_cont;
   double f_ext1_cont, f_ext2_cont;
@@ -182,8 +185,10 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
     /* Check whether the two extreme points are equal */
     problem1_disc = ((coco_problem_stacked_data_t *) problem_disc->data)->problem1;
     problem2_disc = ((coco_problem_stacked_data_t *) problem_disc->data)->problem2;
-    problem1_cont = coco_problem_transformed_get_inner_problem(problem1_disc);
-    problem2_cont = coco_problem_transformed_get_inner_problem(problem2_disc);
+    problem1_tmp = coco_problem_transformed_get_inner_problem(problem1_disc);
+    problem2_tmp = coco_problem_transformed_get_inner_problem(problem2_disc);
+    problem1_cont = coco_problem_transformed_get_inner_problem(problem1_tmp);
+    problem2_cont = coco_problem_transformed_get_inner_problem(problem2_tmp);
     f_ext1_cont = problem1_cont->best_value[0];
     f_ext2_cont = problem2_cont->best_value[0];
 
@@ -209,8 +214,8 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
         }
       }
     }
+    f_ext1_cont *= suite_bbob_mixint_scaling_factors[coco_problem_get_suite_dep_function(problem1_disc) - 1];
     if (!coco_double_almost_equal(f_ext1_cont, f_ext1_disc, 1e-10)) {
-      coco_suite_free(suite);
       coco_free_memory(x);
       coco_free_memory(f);
       coco_error("check_discretization_bi(): The first coordinate of the first extreme point of "
@@ -240,8 +245,8 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
         }
       }
     }
+    f_ext2_cont *= suite_bbob_mixint_scaling_factors[coco_problem_get_suite_dep_function(problem2_disc) - 1];
     if (!coco_double_almost_equal(f_ext2_cont, f_ext2_disc, 1e-10)) {
-      coco_suite_free(suite);
       coco_free_memory(x);
       coco_free_memory(f);
       coco_error("check_discretization_bi(): The second coordinate of the second extreme point of "
@@ -251,7 +256,6 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
     counter++;
   }
 
-  coco_suite_free(suite);
   coco_free_memory(x);
   coco_free_memory(f);
 
@@ -260,6 +264,8 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
   else
     printf("Performed %lu tests on %s\n", (unsigned long)counter, suite_name);
   printf("DONE!\n");
+
+  coco_suite_free(suite);
   fflush(stdout);
 }
 
