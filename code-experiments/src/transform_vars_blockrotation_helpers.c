@@ -40,17 +40,17 @@ static double **coco_allocate_blockmatrix(const size_t n, const size_t* block_si
   size_t idx_blocksize;
   size_t i;
   size_t sum_block_sizes;
-  
+
   sum_block_sizes = 0;
   for (i = 0; i < nb_blocks; i++){
     sum_block_sizes += block_sizes[i];
   }
   assert(sum_block_sizes == n);
-  
+
   matrix = (double **) coco_allocate_memory(sizeof(double *) * n);
   idx_blocksize = 0;
   next_bs_change = block_sizes[idx_blocksize];
-  
+
   for (i = 0; i < n; ++i) {
     if (i >= next_bs_change) {
       idx_blocksize++;
@@ -58,7 +58,7 @@ static double **coco_allocate_blockmatrix(const size_t n, const size_t* block_si
     }
     current_blocksize=block_sizes[idx_blocksize];
     matrix[i] = coco_allocate_vector(current_blocksize);
-    
+
   }
   return matrix;
 }
@@ -90,9 +90,8 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
   double **current_block;
   size_t i, j, k; /* Loop over pairs of column vectors. */
   size_t idx_block, current_blocksize,cumsum_prev_block_sizes, sum_block_sizes;
-  size_t nb_entries;
-  coco_random_state_t *rng = coco_random_new((uint32_t) seed);
-  
+  size_t nb_entries, current_nb_entries;
+  double *tmp_normal;
   nb_entries = 0;
   sum_block_sizes = 0;
   for (i = 0; i < nb_blocks; i++){
@@ -100,17 +99,21 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
     nb_entries += block_sizes[i] * block_sizes[i];
   }
   assert(sum_block_sizes == n);
-  
+
   cumsum_prev_block_sizes = 0;/* shift in rows to account for the previous blocks */
   for (idx_block = 0; idx_block < nb_blocks; idx_block++) {
     current_blocksize = block_sizes[idx_block];
     current_block = bbob2009_allocate_matrix(current_blocksize, current_blocksize);
+    current_nb_entries = current_blocksize * current_blocksize;
+    tmp_normal = coco_allocate_vector(current_nb_entries);
+    bbob2009_gauss(tmp_normal, current_nb_entries, seed + (long) 1000000 * (long) idx_block);/* TODO: To be discussed */
+
     for (i = 0; i < current_blocksize; i++) {
       for (j = 0; j < current_blocksize; j++) {
-        current_block[i][j] = coco_random_normal(rng);
+        current_block[i][j] = tmp_normal[i * j + j];
       }
     }
-    
+
     for (i = 0; i < current_blocksize; i++) {
       for (j = 0; j < i; j++) {
         prod = 0;
@@ -129,20 +132,20 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
         current_block[k][i] /= sqrt(prod);
       }
     }
-    
+
     /* now fill the block matrix*/
     for (i = 0 ; i < current_blocksize; i++) {
       for (j = 0; j < current_blocksize; j++) {
         B[i + cumsum_prev_block_sizes][j]=current_block[i][j];
       }
     }
-    
+
     cumsum_prev_block_sizes+=current_blocksize;
     /*current_gvect_pos += current_blocksize * current_blocksize;*/
     coco_free_block_matrix(current_block, current_blocksize);
+    coco_free_memory(tmp_normal);
   }
   /*coco_free_memory(gvect);*/
-  coco_random_free(rng);
 }
 
 /**
@@ -151,7 +154,7 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
 static double **coco_copy_block_matrix(const double *const *B, const size_t dimension, const size_t *block_sizes, const size_t nb_blocks) {
   double **dest;
   size_t i, j, idx_blocksize, current_blocksize, next_bs_change;
-  
+
   dest = coco_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
   idx_blocksize = 0;
   current_blocksize = block_sizes[idx_blocksize];
@@ -178,7 +181,7 @@ static size_t *coco_get_block_sizes(size_t *nb_blocks, size_t dimension, const c
   size_t *block_sizes;
   size_t block_size;
   int i;
-  
+
   if (strcmp(suite_name, "bbob-largescale") == 0) {
     /*block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension / 4, 100));*/ /*old value*/
     /*block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension, 40));*/
@@ -194,6 +197,3 @@ static size_t *coco_get_block_sizes(size_t *nb_blocks, size_t dimension, const c
     return NULL;
   }
 }
-
-
-
