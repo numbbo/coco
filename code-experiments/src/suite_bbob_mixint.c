@@ -18,7 +18,7 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 
 static double suite_bbob_mixint_scaling_factors[] = {
        1, 1e-3, 1e-1, 1e-1,    1,  /* f1 to f5 */
-    1e-2,    1, 1e-1, 1e-2, 1e-3,  /* f6 to f10 */
+    1e-2,    1, 1e-2, 1e-2, 1e-3,  /* f6 to f10 */
     1e-2, 1e-4, 1e-1,    1, 1e-1,  /* f11 to f15 */
        1,   10,    1,   10, 1e-1,  /* f16 to f20 */
        1,    1,   10, 1e-1         /* f21 to f24 */
