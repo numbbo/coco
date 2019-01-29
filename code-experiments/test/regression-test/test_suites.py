@@ -61,7 +61,7 @@ def regression_test_a_suite(suite_name, filename):
         t0 = time.process_time()
     suite = cocoex.Suite(suite_name, "year: 0000", "") # choose "default" year for test
     failed_test_counter = 0
-    for key in xfc_dict:
+    for key in sorted(xfc_dict):
         f, x = suite[key[0]], key[1]
         try:
             assert is_equal(f(x), xfc_dict[key][0])
