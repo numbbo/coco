@@ -81,7 +81,7 @@ def get_table_caption():
         """
     table_caption_no_reference_algorithm = r"""%
         Average runtime (\aRT) to reach given targets, measured
-        in number of function evaluations. For each function, the \aRT\ 
+        in number of function evaluations in #1. For each function, the \aRT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
         target !!DF!!-values as shown in the top row. 

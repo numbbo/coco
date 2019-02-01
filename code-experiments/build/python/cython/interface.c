@@ -19260,7 +19260,7 @@ static int __pyx_pymod_exec_interface(PyObject *__pyx_pyinit_module)
  * 
  * from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException             # <<<<<<<<<<<<<<
  * 
- * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]
+ * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-largescale"]
  */
   __pyx_t_1 = PyList_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -19293,11 +19293,11 @@ static int __pyx_pymod_exec_interface(PyObject *__pyx_pyinit_module)
   /* "cython/interface.pyx":10
  * from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
  * 
- * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]             # <<<<<<<<<<<<<<
- * # known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext"]
+ * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-largescale"]             # <<<<<<<<<<<<<<
+ * # known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained"]
  * _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]
  */
-  __pyx_t_2 = PyList_New(5); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
+  __pyx_t_2 = PyList_New(4); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_INCREF(__pyx_n_u_bbob);
   __Pyx_GIVEREF(__pyx_n_u_bbob);
@@ -19308,18 +19308,15 @@ static int __pyx_pymod_exec_interface(PyObject *__pyx_pyinit_module)
   __Pyx_INCREF(__pyx_kp_u_bbob_biobj_ext);
   __Pyx_GIVEREF(__pyx_kp_u_bbob_biobj_ext);
   PyList_SET_ITEM(__pyx_t_2, 2, __pyx_kp_u_bbob_biobj_ext);
-  __Pyx_INCREF(__pyx_kp_u_bbob_constrained);
-  __Pyx_GIVEREF(__pyx_kp_u_bbob_constrained);
-  PyList_SET_ITEM(__pyx_t_2, 3, __pyx_kp_u_bbob_constrained);
   __Pyx_INCREF(__pyx_kp_u_bbob_largescale);
   __Pyx_GIVEREF(__pyx_kp_u_bbob_largescale);
-  PyList_SET_ITEM(__pyx_t_2, 4, __pyx_kp_u_bbob_largescale);
+  PyList_SET_ITEM(__pyx_t_2, 3, __pyx_kp_u_bbob_largescale);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_known_suite_names, __pyx_t_2) < 0) __PYX_ERR(0, 10, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "cython/interface.pyx":12
- * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]
- * # known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext"]
+ * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-largescale"]
+ * # known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained"]
  * _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]             # <<<<<<<<<<<<<<
  * 
  * # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
