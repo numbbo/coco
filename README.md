@@ -2,6 +2,7 @@ numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
 [![CircleCI](https://circleci.com/gh/numbbo/coco/tree/master.svg?style=shield)](https://circleci.com/gh/numbbo/coco/tree/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/6ma1i8xsby9v3r8i/branch/master?svg=true)](https://ci.appveyor.com/project/nikohansen/coco-28e3ab1txqzfiw9/branch/master)
 
 [This code](https://github.com/numbbo/coco) reimplements the original Comparing
 Continous Optimizer platform, now rewritten fully in `ANSI C` and `Python` with
