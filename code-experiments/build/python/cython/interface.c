@@ -19793,7 +19793,7 @@ if (!__Pyx_RefNanny) {
  * 
  * from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException             # <<<<<<<<<<<<<<
  * 
- * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"
+ * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale",
  */
   __pyx_t_1 = PyList_New(3); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 8, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
@@ -19826,8 +19826,8 @@ if (!__Pyx_RefNanny) {
   /* "cython/interface.pyx":10
  * from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
  * 
- * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"             # <<<<<<<<<<<<<<
- * , "bbob-mixint"]
+ * known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale",             # <<<<<<<<<<<<<<
+ *                      "bbob-mixint"]
  * # known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext"]
  */
   __pyx_t_2 = PyList_New(6); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 10, __pyx_L1_error)
@@ -19854,7 +19854,7 @@ if (!__Pyx_RefNanny) {
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
   /* "cython/interface.pyx":13
- * , "bbob-mixint"]
+ *                      "bbob-mixint"]
  * # known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext"]
  * _known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale",             # <<<<<<<<<<<<<<
  *                       "bbob-mixint"]
