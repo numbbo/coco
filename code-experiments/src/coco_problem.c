@@ -615,6 +615,29 @@ void bbob_problem_best_parameter_print(const coco_problem_t *problem) {
   }
 }
 
+void bbob_biobj_problem_best_parameter_print(const coco_problem_t *problem) {
+  size_t i;
+  FILE *file;
+  coco_problem_t *problem1, *problem2;
+  assert(problem != NULL);
+  assert(problem->data != NULL);
+  problem1 = ((coco_problem_stacked_data_t *) problem->data)->problem1;
+  problem2 = ((coco_problem_stacked_data_t *) problem->data)->problem2;
+  assert(problem1 != NULL);
+  assert(problem2 != NULL);
+  assert(problem1->best_parameter != NULL);
+  assert(problem2->best_parameter != NULL);
+  file = fopen("._bbob_biobj_problem_best_parameter.txt", "w");
+  if (file != NULL) {
+    for (i = 0; i < problem->number_of_variables; ++i)
+      fprintf(file, " %.16f ", problem1->best_parameter[i]);
+    fprintf(file, "\n");
+    for (i = 0; i < problem->number_of_variables; ++i)
+      fprintf(file, " %.16f ", problem2->best_parameter[i]);
+    fclose(file);
+  }
+}
+
 /***********************************************************************************************************/
 
 /**

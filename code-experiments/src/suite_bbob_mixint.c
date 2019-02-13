@@ -8,12 +8,21 @@
 #include "suite_bbob.c"
 #include "suite_largescale.c"
 #include "transform_vars_discretize.c"
+#include "transform_obj_scale.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
                                          const char *default_instances);
+
+static double suite_bbob_mixint_scaling_factors[] = {
+       1, 1e-3, 1e-1, 1e-1,    1,  /* f1 to f5 */
+    1e-2,    1, 1e-2, 1e-2, 1e-3,  /* f6 to f10 */
+    1e-2, 1e-4, 1e-1,    1, 1e-1,  /* f11 to f15 */
+       1,   10,    1,   10, 1e-1,  /* f16 to f20 */
+       1,    1,   10, 1e-1         /* f21 to f24 */
+};
 
 /**
  * @brief Sets the dimensions and default instances for the bbob-mixint suite.
@@ -66,29 +75,38 @@ static coco_problem_t *coco_get_bbob_mixint_problem(const size_t function,
   if (dimension % 5 != 0)
     coco_error("coco_get_bbob_mixint_problem(): dimension %lu not supported for suite_bbob_mixint", dimension);
 
-  /* Sets the ROI according to the given cardinality of variables */
+  problem = coco_get_problem_function(function, dimension, instance);
+  assert(problem != NULL);
+
+  /* Set the ROI of the outer problem according to the given cardinality of variables and the ROI of the
+   * inner problem to [-4, 4] for variables that will be discretized */
   for (i = 0; i < dimension; i++) {
     j = i / (dimension / 5);
     cardinality = variable_cardinality[j];
     if (cardinality == 0) {
+      /* Continuous variables */
+      /* Outer problem */
       smallest_values_of_interest[i] = -5;
       largest_values_of_interest[i] = 5;
       if (num_integer == dimension)
         num_integer = i;
     }
     else {
+      /* Outer problem */
       smallest_values_of_interest[i] = 0;
       largest_values_of_interest[i] = (double)cardinality - 1;
+      /* Inner problem */
+      problem->smallest_values_of_interest[i] = -4;
+      problem->largest_values_of_interest[i] = 4;
     }
   }
 
-  problem = coco_get_problem_function(function, dimension, instance);
-
-  assert(problem != NULL);
   inner_problem_id = problem->problem_id;
 
   problem = transform_vars_discretize(problem, smallest_values_of_interest,
       largest_values_of_interest, num_integer);
+
+  problem = transform_obj_scale(problem, suite_bbob_mixint_scaling_factors[function - 1]);
 
   coco_problem_set_id(problem, "bbob-mixint_f%03lu_i%02lu_d%02lu", function, instance, dimension);
   coco_problem_set_name(problem, "mixint(%s)", inner_problem_id);

@@ -10,6 +10,8 @@
 #include "suite_biobj_utilities.c"
 #include "suite_largescale.c"
 #include "transform_vars_discretize.c"
+#include "transform_obj_scale.c"
+#include "suite_bbob_mixint.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
@@ -48,7 +50,8 @@ static const char *suite_biobj_mixint_get_instances_by_year(const int year) {
  * bbob-mixint suite.
  *
  * The problem is constructed by first finding the underlying single-objective continuous problems,
- * then discretizing the problems and finally stacking them to get a bi-objective mixed-integer problem.
+ * then discretizing the problems, then scaling them to adjust their difficulty and finally stacking
+ * them to get a bi-objective mixed-integer problem.
  *
  * @param function Function
  * @param dimension Dimension
@@ -81,24 +84,10 @@ static coco_problem_t *coco_get_biobj_mixint_problem(const size_t function,
   size_t num_integer = dimension;
   /* The cardinality of variables (0 = continuous variables should always come last) */
   const size_t variable_cardinality[] = { 2, 4, 8, 16, 0 };
+  size_t function1, function2;
 
   if (dimension % 5 != 0)
     coco_error("coco_get_biobj_mixint_problem(): dimension %lu not supported for suite_bbob_mixint", dimension);
-
-  /* Sets the ROI according to the given cardinality of variables */
-  for (i = 0; i < dimension; i++) {
-    j = i / (dimension / 5);
-    if (variable_cardinality[j] == 0) {
-      smallest_values_of_interest[i] = -5;
-      largest_values_of_interest[i] = 5;
-      if (num_integer == dimension)
-        num_integer = i;
-    }
-    else {
-      smallest_values_of_interest[i] = 0;
-      largest_values_of_interest[i] = (double)variable_cardinality[j] - 1;
-    }
-  }
 
   /* First, find the underlying single-objective continuous problems */
   problem_cont = coco_get_biobj_problem(function, dimension, instance, coco_get_problem_function, new_inst_data,
@@ -120,13 +109,43 @@ static coco_problem_t *coco_get_biobj_mixint_problem(const size_t function,
   problem2_cont->problem_free_function = NULL;
   coco_problem_free(problem_cont);
 
+  /* Set the ROI of the outer problem according to the given cardinality of variables and the ROI of the
+   * inner problems to [-4, 4] for variables that will be discretized */
+  for (i = 0; i < dimension; i++) {
+    j = i / (dimension / 5);
+    if (variable_cardinality[j] == 0) {
+      /* Continuous variables */
+      /* Outer problem */
+      smallest_values_of_interest[i] = -100;
+      largest_values_of_interest[i] = 100;
+      if (num_integer == dimension)
+        num_integer = i;
+    }
+    else {
+      /* Outer problem */
+      smallest_values_of_interest[i] = 0;
+      largest_values_of_interest[i] = (double)variable_cardinality[j] - 1;
+      /* Inner problems */
+      problem1->smallest_values_of_interest[i] = -4;
+      problem1->largest_values_of_interest[i] = 4;
+      problem2->smallest_values_of_interest[i] = -4;
+      problem2->largest_values_of_interest[i] = 4;
+    }
+  }
+
   /* Second, discretize the single-objective problems */
   problem1_mixint = transform_vars_discretize(problem1, smallest_values_of_interest,
       largest_values_of_interest, num_integer);
   problem2_mixint = transform_vars_discretize(problem2, smallest_values_of_interest,
       largest_values_of_interest, num_integer);
 
-  /* Third, combine the problems in a bi-objective mixed-integer problem */
+  /* Third, scale the objective values */
+  function1 = coco_problem_get_suite_dep_function(problem1);
+  function2 = coco_problem_get_suite_dep_function(problem2);
+  problem1_mixint = transform_obj_scale(problem1_mixint, suite_bbob_mixint_scaling_factors[function1 - 1]);
+  problem2_mixint = transform_obj_scale(problem2_mixint, suite_bbob_mixint_scaling_factors[function2 - 1]);
+
+  /* Fourth, combine the problems in a bi-objective mixed-integer problem */
   problem = coco_problem_stacked_allocate(problem1_mixint, problem2_mixint, smallest_values_of_interest,
       largest_values_of_interest);
 

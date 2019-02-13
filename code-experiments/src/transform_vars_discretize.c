@@ -12,7 +12,7 @@
  * needs to be discretized to n integer values of the outer problem. First, [l, u] is discretized to n
  * integers by placing the integers so that there is a (u-l)/(n+1) distance between them (and the border
  * points). Then, the transformation is shifted so that the optimum aligns with the closest integer. In
- * this way, we make sure that the all the shifted points are still within [l, u].
+ * this way, we make sure that if the optimum is within [l, u], so are all the shifted points.
  *
  * When evaluating such a problem, the x values of the integer variables are first discretized. Any value
  * x < 0 is mapped to 0 and any value x > (n-1) is mapped to (n-1).
