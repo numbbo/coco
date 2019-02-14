@@ -596,10 +596,10 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
 
         num_of_instances = []
         for alg in algorithms_with_data:
-            if len(dictFunc[f][alg]) > 0:
+            try:
                 num_of_instances.append(len((dictFunc[f][alg])[0].instancenumbers))
-            else:
-                warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
+            except IndexError:
+                pass
         # issue a warning if number of instances is inconsistant, otherwise
         # display only the present number of instances, i.e. remove copies
         if len(set(num_of_instances)) > 1:

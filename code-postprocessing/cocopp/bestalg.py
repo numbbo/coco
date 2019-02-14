@@ -404,9 +404,7 @@ def load_reference_algorithm(best_algo_filename, force=False, relative_load=True
     # If the file or folder name is not specified then we skip the load.
     if not best_algo_filename:
         # print the following line only once to not mess the output:
-        if not (bestAlgorithmEntries == None):
-            warnings.warn("no best algorithm data specified")        
-        bestAlgorithmEntries = None        
+        bestAlgorithmEntries = None
         return bestAlgorithmEntries
 
     print("Loading best algorithm data from %s ..." % best_algo_filename)
