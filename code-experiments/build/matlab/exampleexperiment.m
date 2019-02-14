@@ -26,12 +26,15 @@ NUM_OF_INDEPENDENT_RESTARTS = 1e9; % max. number of independent algorithm
 % choose a test suite and a matching logger, for
 % example one of the following:
 %
-% bbob              24 unconstrained noiseless single-objective functions
-% bbob-biobj        55 unconstrained noiseless bi-objective functions
-% bbob-biobj-ext    92 unconstrained noiseless bi-objective functions
-% bbob-largescale   24 unconstrained noiseless single-objective functions in large dimensions
-% bbob-constrained  48 constrained noiseless single-objective functions
-% bbob-mixint       mixed-integer single-objective functions
+% bbob               24 unconstrained noiseless single-objective functions
+% bbob-biobj         55 unconstrained noiseless bi-objective functions
+% bbob-biobj-ext     92 unconstrained noiseless bi-objective functions
+% bbob-largescale    24 unconstrained noiseless single-objective functions in large dimensions
+% [bbob-constrained* 48 constrained noiseless single-objective functions]
+% bbob-mixint        24 unconstrained noiseless single-objective functions with mixed-integer variables
+% bbob-biobj-mixint  92 unconstrained noiseless bi-objective functions with mixed-integer variables
+%
+% Suites with a star are partly implemented but not yet fully supported.
 %
 suite_name = 'bbob';
 observer_name = 'bbob';
