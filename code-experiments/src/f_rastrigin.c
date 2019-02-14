@@ -244,7 +244,7 @@ static coco_problem_t *f_rastrigin_permblockdiag_bbob_problem_allocate(const siz
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
-  coco_problem_set_type(problem, "block-rotated_multi-modal");
+  coco_problem_set_type(problem, "4-multi-modal");
 
   coco_free_block_matrix(B1, dimension);
   coco_free_block_matrix(B2, dimension);

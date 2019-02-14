@@ -303,7 +303,7 @@ static coco_problem_t *f_step_ellipsoid_permblockdiag_bbob_problem_allocate(cons
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
-  coco_problem_set_type(problem, "large_scale_block_rotated");
+  coco_problem_set_type(problem, "2-moderate");
 
   coco_free_block_matrix(B1, dimension);
   coco_free_block_matrix(B2, dimension);

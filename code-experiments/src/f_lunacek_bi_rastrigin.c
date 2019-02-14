@@ -404,7 +404,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
-  coco_problem_set_type(problem, "block-rotated_weakly-structured");
+  coco_problem_set_type(problem, "5-weakly-structured");
 
   coco_free_memory(tmp_normal);
   coco_free_block_matrix(B1, dimension);

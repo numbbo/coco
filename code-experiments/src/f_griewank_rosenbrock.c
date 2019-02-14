@@ -202,7 +202,7 @@ static coco_problem_t *f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_all
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
-  coco_problem_set_type(problem, "block-rotated_multi-modal");
+  coco_problem_set_type(problem, "4-multi-modal");
   
   coco_free_memory(best_parameter);
   coco_free_memory(shift);

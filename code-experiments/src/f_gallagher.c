@@ -536,7 +536,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
-  coco_problem_set_type(problem, "large_scale_block_rotated");
+  coco_problem_set_type(problem, "5-weakly-structured");
 
   coco_free_block_matrix(B, dimension);
   coco_free_memory(tmp_uniform);
