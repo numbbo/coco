@@ -1,7 +1,9 @@
 /**
  * @file suite_bbob_mixint.c
- * @brief Implementation of a suite with mixed-integer bbob problems (based on the 24 bbob functions,
- * but using their large-scale implementations instead of the original ones).
+ * @brief Implementation of a suite with mixed-integer bbob problems. The functions are the same
+ * as those in the bbob suite with 24 functions, but the large-scale implementations of the
+ * functions are used instead of the original ones for dimensions over 40. Additionally, the
+ * functions are scaled as given by suite_bbob_mixint_scaling_factors.
  */
 
 #include "coco.h"
@@ -15,7 +17,9 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
                                          const char *default_instances);
-
+/**
+ * @brief Factors used to scale separate functions in order to achieve similar difficulty.
+ */
 static double suite_bbob_mixint_scaling_factors[] = {
        1, 1e-3, 1e-1, 1e-1,    1,  /* f1 to f5 */
     1e-2,    1, 1e-2, 1e-2, 1e-3,  /* f6 to f10 */
