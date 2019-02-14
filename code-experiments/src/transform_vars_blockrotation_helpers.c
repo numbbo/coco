@@ -23,8 +23,8 @@ static size_t coco_rotation_matrix_block_size(size_t const dimension) {
   const size_t MAX_BLOCK_SIZE_ABSOLUTE = 40;  /* for block rotations */
 
   return coco_double_to_size_t(coco_double_min(
-                  BLOCK_SIZE_RELATIVE * dimension,
-                  MAX_BLOCK_SIZE_ABSOLUTE));
+                  BLOCK_SIZE_RELATIVE * (double)dimension,
+                  (double)MAX_BLOCK_SIZE_ABSOLUTE));
 }
 
 /**
