@@ -732,7 +732,10 @@ ee.SOLVER = ee.random_search  # which is default anyway
 for ee.suite_name, ee.observer_options['result_folder'] in [
         ["bbob-biobj", "RS-bi"],  # use a short path for Jenkins
         ["bbob", "RS-bb"],
-        ["bbob-constrained", "RS-co"]
+        ["bbob-constrained", "RS-co"],
+        ["bbob-largescale", "RS-la"],
+        ["bbob-mixint", "RS-mi"],
+        ["bbob-biobj-mixint", "RS-bi-mi"]
     ]:
     print("  suite %s" % ee.suite_name, end=' ')  # these prints are swallowed
     if ee.suite_name in ee.cocoex.known_suite_names:
@@ -754,7 +757,7 @@ for ee.suite_name, ee.observer_options['result_folder'] in [
         sys.exit(-1)
     finally:
         # always remove folder of previously run experiments:
-        for s in ['bi', 'bb', 'co']:
+        for s in ['bi', 'bb', 'co', 'la', 'mi', 'bi-mi']:
             shutil.rmtree('code-experiments/build/python/exdata/RS-' + s,
                           ignore_errors=True)
 
