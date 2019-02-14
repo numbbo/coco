@@ -12,6 +12,7 @@ import numpy as np
 import cocoex as ex
 from cocoex import Suite
 from cocoex.utilities import about_equal
+from cocoex import known_suite_names
 import example_experiment
 
 default_testcases = ["bbob2009_testcases.txt"]
@@ -139,7 +140,8 @@ def main(args):
     run_doctests()
     print('doctests done.\nRunning example_experiment:'), sys.stdout.flush()
     example_experiment.main()
-    # run_constrained_suite_test()
+    if "bbob-constrained" in known_suite_names:
+        run_constrained_suite_test()
     for arg in args if args else default_testcases:
         if arg is None or arg == 'None':
             break
