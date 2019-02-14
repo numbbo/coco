@@ -26,7 +26,7 @@ def read_test_vectors(fd):
     test_vectors = number_of_test_vectors * [None]
     for i in range(number_of_test_vectors):
         line = fd.readline().rstrip()
-        test_vectors[i] = np.fromstring(line, dtype=float, sep=" ")    
+        test_vectors[i] = np.fromstring(line, dtype=float, sep=" ")
     return test_vectors
 
 def process_test_cases(fd, suite_name, test_vectors):
@@ -42,7 +42,7 @@ def process_test_cases(fd, suite_name, test_vectors):
         number_of_testcases += 1
 
         ## A test case is a 4-tuple (deprecated_problem_index, problem_index, test_vector_id,
-        ## expected_y) separated by a tab. 
+        ## expected_y) separated by a tab.
         deprecated_problem_index, problem_index, test_vector_id, expected_y = test_case.split()
         ## Do type conversion. Python gurus probably know an elegant
         ## one line solution...
@@ -64,7 +64,7 @@ def process_test_cases(fd, suite_name, test_vectors):
             elif number_of_failures == 100:
                 print("... further failed tests suppressed ...")
     print("%i of %i tests passed (failure rate %.2f%%)" % (number_of_testcases - number_of_failures, number_of_testcases, (100.0 * number_of_failures) / number_of_testcases))
-    if number_of_failures > 0: 
+    if number_of_failures > 0:
         sys.exit(-1)
 
 def process_testfile(testfile):
@@ -118,7 +118,7 @@ def _clean_up(folder, start_matches, protected):
     `start_matches`, where `""` matches any string, and which are not in
     `protected`.
 
-    CAVEAT: use with care, as with `"", ""` as second and third arguments 
+    CAVEAT: use with care, as with `"", ""` as second and third arguments
     this deletes all folder entries like `rm *` does. """
     if not os.path.isdir(folder):
         return
@@ -139,7 +139,7 @@ def main(args):
     run_doctests()
     print('doctests done.\nRunning example_experiment:'), sys.stdout.flush()
     example_experiment.main()
-    run_constrained_suite_test()
+    # run_constrained_suite_test()
     for arg in args if args else default_testcases:
         if arg is None or arg == 'None':
             break
