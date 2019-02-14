@@ -115,7 +115,8 @@ def get_light_brown_line_text(testbedname):
         return r"""Shown are aggregations over functions where the single
             objectives are in the same BBOB function class, as indicated on the
             left side and the aggregation over all 55 functions in the last row."""
-    elif (testbedname == testbedsettings.testbed_name_bi_ext):
+    elif (testbedname in [testbedsettings.testbed_name_bi_ext,
+                          testbedsettings.testbed_name_bi_mixint]):
         return r"""Shown are aggregations over functions where the single
             objectives are in the same BBOB function class, as indicated on the
             left side and the aggregation over all 92 functions in the last row."""
@@ -123,10 +124,12 @@ def get_light_brown_line_text(testbedname):
         return r"""Shown are aggregations over problems where the objective
             functions are in the same BBOB function class and the aggregation
             over all 48 functions in the last row."""  # TODO: check whether this makes sense
-    elif (testbedname in [testbedsettings.testbed_name_single, testbedsettings.testbed_name_single_noisy]):
+    elif (testbedname in [testbedsettings.testbed_name_single,
+                          testbedsettings.testbed_name_single_noisy]):
         return r"""Light brown lines in the background show ECDFs for the most difficult target of all
             algorithms benchmarked during BBOB-2009."""
-    elif (testbedname == testbedsettings.testbed_name_ls):
+    elif (testbedname in [testbedsettings.testbed_name_ls,
+                          testbedsettings.testbed_name_mixint]):
         return ""
     else:
         warnings.warn("Current testbed not supported for this caption text.")

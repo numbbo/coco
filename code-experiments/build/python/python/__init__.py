@@ -48,7 +48,7 @@ _default_observers = {
     'bbob-biobj': 'bbob-biobj',
     'bbob-biobj-ext': 'bbob-biobj',
     'bbob-constrained': 'bbob',
-    'bbob-largescale': 'bbob',  # todo: needs to be confirmed
+    'bbob-largescale': 'bbob',
     'bbob-mixint': 'bbob',
     'bbob-biobj-minxint': 'bbob-biobj',
     }
