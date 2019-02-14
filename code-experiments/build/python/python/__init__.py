@@ -49,6 +49,8 @@ _default_observers = {
     'bbob-biobj-ext': 'bbob-biobj',
     'bbob-constrained': 'bbob',
     'bbob-largescale': 'bbob',  # todo: needs to be confirmed
+    'bbob-mixint': 'bbob',
+    'bbob-biobj-minxint': 'bbob-biobj',
     }
 
 class Suite(_Suite):

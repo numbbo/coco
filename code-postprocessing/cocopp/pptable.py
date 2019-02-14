@@ -98,7 +98,8 @@ def get_table_caption():
         else:
             table_caption = table_caption_start + table_caption_fixedtargets + table_caption_rest
     elif testbedsettings.current_testbed.name in ['bbob-biobj-ext', 'bbob-constrained',
-                                                  'bbob-largescale', 'bbob-mixint']:
+                                                  'bbob-largescale', 'bbob-mixint',
+                                                  'bbob-biobj-mixint']:
         # all testbeds without provided reference algorithm
         table_caption = table_caption_no_reference_algorithm
     else:
