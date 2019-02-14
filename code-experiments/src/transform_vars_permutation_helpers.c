@@ -50,20 +50,9 @@ static void coco_compute_random_permutation(size_t *P, long seed, size_t n) {
 
 
 /**
- * @brief returns a uniformly distributed integer between lower_bound and upper_bound using seed.
- * Wassim: move to coco_utilities?
- */
-static long coco_random_unif_int(long lower_bound, long upper_bound, coco_random_state_t *rng){
-  long range;
-  range = upper_bound - lower_bound + 1;
-  printf("%ld\n", ((long)(coco_random_uniform(rng) * (double) range)) + lower_bound);
-  return ((long)(coco_random_uniform(rng) * (double) range)) + lower_bound;
-}
-
-
-/**
  * @brief returns a uniformly distributed integer between lower_bound and upper_bound using seed
  * without using coco_random_new.
+ * Move to coco_utilities?
  */
 static long coco_random_unif_integer(long lower_bound, long upper_bound, long seed){
   long range, rand_int;
