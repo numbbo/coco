@@ -66,14 +66,6 @@ void example_experiment(const char *suite_name,
                         const char *observer_options,
                         coco_random_state_t *random_generator);
 
-void line_walk_experiment(const char *suite_name,
-                          const char *suite_options,
-                          const char *observer_name,
-                          const char *observer_options,
-                          coco_random_state_t *random_generator,
-                          const char *origin_solution_type,
-                          const size_t num_solutions);
-
 void my_random_search(evaluate_function_t evaluate_func,
                       evaluate_function_t evaluate_cons,
                       const size_t dimension,
@@ -95,17 +87,6 @@ void my_grid_search(evaluate_function_t evaluate_func,
                     const size_t number_of_integer_variables,
                     const size_t max_budget);
 
-void my_line_walk(evaluate_function_t evaluate_func,
-                  evaluate_function_t evaluate_cons,
-                  const size_t dimension,
-                  const size_t number_of_objectives,
-                  const size_t number_of_constraints,
-                  const double *lower_bounds,
-                  const double *upper_bounds,
-                  const size_t number_of_integer_variables,
-                  const double *origin_solution,
-                  const size_t num_solutions);
-
 /* Structure and functions needed for timing the experiment */
 typedef struct {
 	size_t number_of_dimensions;
@@ -122,7 +103,7 @@ static void timing_data_finalize(timing_data_t *timing_data);
 
 /**
  * The main method initializes the random number generator and calls the example experiment on the
- * bi-objective suite.
+ * bbob suite.
  */
 int main(void) {
 
@@ -141,8 +122,9 @@ int main(void) {
    *   bbob-biobj           55 unconstrained noiseless bi-objective functions
    *   bbob-biobj-ext       92 unconstrained noiseless bi-objective functions
    *   [bbob-constrained*   48 constrained noiseless single-objective functions]
-   *   [bbob-largescale*    24 unconstrained noiseless single-objective functions in large dimension]
-   *   [bbob-mixint*        mixed-integer single-objective functions]
+   *   bbob-largescale      24 unconstrained noiseless single-objective functions in large dimension
+   *   bbob-mixint          24 unconstrained noiseless single-objective functions with mixed-integer variables
+   *   bbob-biobj-mixint    92 unconstrained noiseless bi-objective functions with mixed-integer variables
    *
    * Suites with a star are partly implemented but not yet fully supported.
    *
@@ -156,11 +138,7 @@ int main(void) {
    * http://numbbo.github.io/coco-doc/C/#suite-parameters and
    * http://numbbo.github.io/coco-doc/C/#observer-parameters. */
 
-  /* example_experiment("bbob", "dimensions: 2,3,5", "rw", "log_only_better: 0", random_generator);*/
-
-  example_experiment("bbob-mixint", "", "bbob", "log_discrete_as_int: 1", random_generator);
-
-  /*example_experiment("bbob-biobj-mixint", "dimensions: 5,10", "bbob-biobj", "log_discrete_as_int: 1", random_generator);*/
+  example_experiment("bbob", "", "bbob", "result_folder: RS_on_bbob", random_generator);
 
   printf("Done!\n");
   fflush(stdout);
@@ -175,8 +153,10 @@ int main(void) {
  * that can serve also as a timing experiment.
  *
  * @param suite_name Name of the suite (e.g. "bbob" or "bbob-biobj").
+ * @param suite_options Options of the suite (e.g. "dimensions: 2,3,5,10,20 instance_indices: 1-5").
  * @param observer_name Name of the observer matching with the chosen suite (e.g. "bbob-biobj" 
  * when using the "bbob-biobj-ext" suite).
+ * @param observer_options Options of the observer (e.g. "result_folder: folder_name")
  * @param random_generator The random number generator.
  */
 void example_experiment(const char *suite_name,
@@ -244,86 +224,6 @@ void example_experiment(const char *suite_name,
 
   coco_observer_free(observer);
   coco_suite_free(suite);
-
-}
-
-/**
- * A function that calls the line walk for all the problems in the suite.
- *
- * @param suite_name Name of the suite (e.g. "bbob" or "bbob-biobj").
- * @param observer_name Name of the observer matching with the chosen suite (e.g. "bbob-biobj"
- * when using the "bbob-biobj-ext" suite).
- * @param random_generator The random number generator.
- * @param origin_solution_type Type of the origin solution (either "middle" or "random", the default is "random")
- * @param num_solutions Number of solutions in the walk in each dimension
- */
-void line_walk_experiment(const char *suite_name,
-                          const char *suite_options,
-                          const char *observer_name,
-                          const char *observer_options,
-                          coco_random_state_t *random_generator,
-                          const char *origin_solution_type,
-                          const size_t num_solutions) {
-
-  coco_suite_t *suite;
-  coco_observer_t *observer;
-  size_t i, largest_dimension;
-  coco_problem_t *last_problem = NULL;
-  double *origin_solution;
-  int *r, j;
-
-  /* Initialize the suite and observer. */
-  suite = coco_suite(suite_name, "", suite_options);
-  observer = coco_observer(observer_name, observer_options);
-
-  /* Initialize the fixed random point for the line walk */
-  j = (int)(coco_suite_get_number_of_problems(suite) - 1);
-  while (last_problem == NULL) {
-    last_problem = coco_suite_get_problem(suite, (size_t)j);
-    j--;
-    if (j < 0)
-      return;
-  }
-  largest_dimension = coco_problem_get_dimension(last_problem);
-  coco_problem_free(last_problem);
-  r = (int *) coco_allocate_memory(largest_dimension * sizeof(int));
-  for (i = 0; i < largest_dimension; ++i)
-    r[i] = (int) ((double)(num_solutions) * coco_random_uniform(random_generator));
-
-  /* Iterate over all problems in the suite */
-  while ((PROBLEM = coco_suite_get_next_problem(suite, observer)) != NULL) {
-
-    size_t dimension = coco_problem_get_dimension(PROBLEM);
-
-    origin_solution = coco_allocate_vector(dimension);
-    if (strcmp(origin_solution_type, "middle") == 0) {
-      /* Set origin to be the middle point of the domain */
-      coco_problem_get_initial_solution(PROBLEM, origin_solution);
-    } else {
-      /* Set origin to be a random point in the domain */
-      for (i = 0; i < dimension; ++i)
-        origin_solution[i] = coco_problem_get_smallest_values_of_interest(PROBLEM)[i] + r[i] / ((double) num_solutions - 1) *
-            (coco_problem_get_largest_values_of_interest(PROBLEM)[i] - coco_problem_get_smallest_values_of_interest(PROBLEM)[i]);
-    }
-
-    /* Call the line walk */
-    my_line_walk(evaluate_function,
-                 evaluate_constraint,
-                 dimension,
-                 coco_problem_get_number_of_objectives(PROBLEM),
-                 coco_problem_get_number_of_constraints(PROBLEM),
-                 coco_problem_get_smallest_values_of_interest(PROBLEM),
-                 coco_problem_get_largest_values_of_interest(PROBLEM),
-                 coco_problem_get_number_of_integer_variables(PROBLEM),
-                 origin_solution,
-                 num_solutions);
-
-    coco_free_memory(origin_solution);
-  }
-
-  coco_observer_free(observer);
-  coco_suite_free(suite);
-  coco_free_memory(r);
 
 }
 
@@ -501,106 +401,6 @@ void my_grid_search(evaluate_function_t evaluate_func,
   coco_free_memory(nodes);
   coco_free_memory(grid_step);
   coco_free_memory(max_nodes);
-}
-
-
-/**
- * A line walk that can be used for single- as well as multi-objective optimization.
- *
- * It evaluates num_solutions in axis-aligned lines in each dimension that go through the origin_solution.
- * Performs redundant evaluations (equal to the dimension) of the origin_solution to ease the post-processing
- * of the results.
- *
- * @param evaluate_func The evaluation function used to evaluate the solutions.
- * @param evaluate_cons The function used to evaluate the constraints.
- * @param dimension The number of variables.
- * @param number_of_objectives The number of objectives.
- * @param number_of_constraints The number of constraints.
- * @param lower_bounds The lower bounds of the region of interested (a vector containing dimension values).
- * @param upper_bounds The upper bounds of the region of interested (a vector containing dimension values).
- * @param number_of_integer_variables The number of integer variables (if > 0, all integer variables come
- * before any continuous ones).
- * @param origin_solution The solution that is common to all axis-aligned lines
- * @param num_solutions The number of solutions in the walk in each dimension
- */
-void my_line_walk(evaluate_function_t evaluate_func,
-                  evaluate_function_t evaluate_cons,
-                  const size_t dimension,
-                  const size_t number_of_objectives,
-                  const size_t number_of_constraints,
-                  const double *lower_bounds,
-                  const double *upper_bounds,
-                  const size_t number_of_integer_variables,
-                  const double *origin_solution,
-                  const size_t num_solutions) {
-
-  double *x = NULL;
-  double *func_values = coco_allocate_vector(number_of_objectives);
-  double *cons_values = NULL;
-  size_t i, j;
-  size_t evaluations = 0;
-
-  if (number_of_constraints > 0 )
-    cons_values = coco_allocate_vector(number_of_constraints);
-
-  for (i = 0; i < dimension; i++) {
-    /* Check that all num_solutions are odd numbers */
-    if (num_solutions % 2 == 0) {
-      printf("ERROR: The line search needs an odd number of solutions (%lu solutions in dim %lu)\n",
-          (unsigned long) num_solutions, (unsigned long) i);
-      return;
-    }
-  }
-
-  /* origin_solution is the first evaluated solution */
-  if (number_of_constraints > 0 )
-    evaluate_cons(origin_solution, cons_values);
-  evaluate_func(origin_solution, func_values);
-
-  /* Perform the line search */
-  for (i = 0; i < dimension; i++) {
-
-    /* Skip the origin solution, if there is a single point */
-    if (num_solutions <= 1)
-      continue;
-
-    /* Set x to be the origin */
-    if (x != NULL) {
-      coco_free_memory(x);
-      x = NULL;
-    }
-    x = coco_allocate_vector(dimension);
-    for (j = 0; j < dimension; j++) {
-      x[j] = origin_solution[j];
-    }
-
-    /* Search the line starting at the lower_bounds */
-    for (j = 0; j < num_solutions; j++) {
-
-      if (i < number_of_integer_variables) {
-        x[i] = lower_bounds[i] + (double) j;
-        if (x[i] > upper_bounds[i]) {
-          break;
-        }
-      }
-      else  {
-        x[i] = lower_bounds[i] + (double) j * (upper_bounds[i] - lower_bounds[i]) / (double) (num_solutions - 1);
-      }
-
-      /* Evaluate COCO's constraints function if problem is constrained */
-      if (number_of_constraints > 0 )
-        evaluate_cons(x, cons_values);
-
-      /* Call COCO's evaluate function where all the logging is performed */
-      evaluate_func(x, func_values);
-      evaluations++;
-    }
-  }
-
-  coco_free_memory(x);
-  coco_free_memory(func_values);
-  if (number_of_constraints > 0 )
-    coco_free_memory(cons_values);
 }
 
 /**
