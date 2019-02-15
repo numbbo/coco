@@ -29,8 +29,6 @@ clean:
 	IF EXIST "test_bbob-constrained.exe" DEL /F test_bbob-constrained.exe
 	IF EXIST  "test_bbob-mixint.o" DEL /F test_bbob-mixint.o
 	IF EXIST  "test_bbob-mixint.exe" DEL /F test_bbob-mixint.exe  
-	IF EXIST  "test_rw_suites.o" DEL /F test_rw_suites.o
-	IF EXIST  "test_rw_suites.exe" DEL /F test_rw_suites.exe  
 
 ########################################################################
 ## Programs
@@ -49,9 +47,6 @@ test_bbob-constrained: test_bbob-constrained.o coco.o
 test_bbob-mixint: test_bbob-mixint.o
 	${CC} ${CCFLAGS} -o test_bbob-mixint test_bbob-mixint.o ${LDFLAGS}  
 
-test_rw_suites: test_rw_suites.o
-	${CC} ${CCFLAGS} -o test_rw_suites test_rw_suites.o ${LDFLAGS}  
-
 ########################################################################
 ## Additional dependencies
 coco.o: coco.h coco.c
@@ -66,5 +61,3 @@ test_bbob-constrained.o: coco.h coco.c test_bbob-constrained.c
 	${CC} -c ${CCFLAGS} -o test_bbob-constrained.o test_bbob-constrained.c
 test_bbob-mixint.o: test_bbob-mixint.c
 	${CC} -c ${CCFLAGS} -o test_bbob-mixint.o test_bbob-mixint.c
-test_rw_suites.o: test_rw_suites.c
-	${CC} -c ${CCFLAGS} -o test_rw_suites.o test_rw_suites.c
