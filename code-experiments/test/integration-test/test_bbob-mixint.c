@@ -10,6 +10,54 @@
 #include "coco.h"
 #include "coco.c"
 
+/**
+ * A random search optimizer.
+ */
+void my_optimizer(coco_problem_t *problem) {
+
+  const size_t budget = 2;
+  coco_random_state_t *rng = coco_random_new(0xdeadbeef);
+  const double *lbounds = coco_problem_get_smallest_values_of_interest(problem);
+  const double *ubounds = coco_problem_get_largest_values_of_interest(problem);
+  size_t dimension = coco_problem_get_dimension(problem);
+  size_t number_of_objectives = coco_problem_get_number_of_objectives(problem);
+  double *x = coco_allocate_vector(dimension);
+  double *y = coco_allocate_vector(number_of_objectives);
+  double range;
+  size_t i, j;
+
+  for (i = 0; i < budget; ++i) {
+
+    for (j = 0; j < dimension; ++j) {
+      range = ubounds[j] - lbounds[j];
+      x[j] = lbounds[j] + coco_random_uniform(rng) * range;
+    }
+
+    coco_evaluate_function(problem, x, y);
+
+  }
+
+  coco_random_free(rng);
+  coco_free_memory(x);
+  coco_free_memory(y);
+}
+
+/* Each time: run the benchmark and delete the output folder */
+void run_once(char *suite_name, char *suite_options, char *observer_name, char *observer_options) {
+
+  coco_suite_t *suite;
+  coco_observer_t *observer;
+  coco_problem_t *problem;
+
+  suite = coco_suite(suite_name, NULL, suite_options);
+  observer = coco_observer(observer_name, observer_options);
+  while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
+    my_optimizer(problem);
+  }
+  coco_observer_free(observer);
+  coco_suite_free(suite);
+}
+
 /* Tests whether the discretization in the single-objective suite was implemented correctly by
  * checking if the optima of the continuous and mixint problems match. This is not a comprehensive
  * test, because it disregards problems with dimension != 5 and those that have more than 20,000
@@ -269,10 +317,16 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
   fflush(stdout);
 }
 
-int main(void)  {
+int main(int argc, char *argv[])  {
 
-  check_discretization_single("bbob-mixint", "dimensions: 5 instance_indices: 1-2");
-  check_discretization_bi("bbob-biobj-mixint", "dimensions: 5 instance_indices: 1-2");
+  if ((argc == 2) && (strcmp(argv[1], "leak_check") == 0)) {
+    run_once("bbob-mixint", "instance_indices: 1 dimensions: 5,160", "bbob", "");
+    run_once("bbob-biobj-mixint", "function_indices: 1-5,90-92 instance_indices: 1 dimensions: 5,160", "bbob-biobj", "");
+  }
+  else {
+    check_discretization_single("bbob-mixint", "dimensions: 5 instance_indices: 1-2");
+    check_discretization_bi("bbob-biobj-mixint", "dimensions: 5 instance_indices: 1-2");
+  }
 
   coco_remove_directory("exdata");
   return 0;
