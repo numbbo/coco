@@ -487,7 +487,8 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
 
   /* Use the standard stacked problem_id as problem_name and construct a new problem_id */
   coco_problem_set_name(problem, problem->problem_id);
-  coco_problem_set_id(problem, "bbob-biobj_f%03lu_i%02lu_d%02lu", (unsigned long) function,
+  /* Attention! Any change to the problem id affects also archive processing! */
+  coco_problem_set_id(problem, "bbob-biobj_f%02lu_i%02lu_d%02lu", (unsigned long) function,
       (unsigned long) instance, (unsigned long) dimension);
 
   /* Construct problem type */
