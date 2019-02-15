@@ -18,6 +18,7 @@
 typedef struct {
   double **B; /**< @brief the block-diagonal matrices*/
   double *x;
+  size_t dimension;
   size_t *block_sizes; /**< @brief the list of block-sizes*/
   size_t nb_blocks; /**< @brief the number of blocks in the matrix */
   size_t *block_size_map; /**< @brief maps a row to the block-size of the block to which it belong, keep until better way is found */
@@ -45,10 +46,9 @@ static void transform_vars_blockrotation_evaluate(coco_problem_t *problem, const
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
-static void transform_vars_blockrotation_free(coco_problem_t *problem) {
-  transform_vars_blockrotation_t *data;
-  data = (transform_vars_blockrotation_t *) problem->data;
-  bbob2009_free_matrix(data->B, problem->number_of_variables);
+static void transform_vars_blockrotation_free(void *stuff) {
+  transform_vars_blockrotation_t *data = (transform_vars_blockrotation_t *) stuff;
+  coco_free_block_matrix(data->B, data->dimension);
   coco_free_memory(data->block_sizes);
   coco_free_memory(data->x);
   coco_free_memory(data->block_size_map);
@@ -71,6 +71,7 @@ static coco_problem_t *transform_vars_blockrotation(coco_problem_t *inner_proble
     entries_in_M += block_sizes[i] * block_sizes[i];
   }
   data = (transform_vars_blockrotation_t *) coco_allocate_memory(sizeof(*data));
+  data->dimension = number_of_variables;
   data->B = coco_copy_block_matrix(B, number_of_variables, block_sizes, nb_blocks);
   data->x = coco_allocate_vector(inner_problem->number_of_variables);
   data->block_sizes = coco_duplicate_size_t_vector(block_sizes, nb_blocks);
