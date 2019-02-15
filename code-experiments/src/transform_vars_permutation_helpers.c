@@ -126,6 +126,7 @@ static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed
 
   }
   coco_free_memory(tmp_uniform);
+  coco_free_memory(idx_order);
 }
 
 
