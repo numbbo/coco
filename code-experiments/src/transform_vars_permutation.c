@@ -35,6 +35,7 @@ static void transform_vars_permutation_evaluate(coco_problem_t *problem, const d
 
 static void transform_vars_permutation_free(void *thing) {
   transform_vars_permutation_t *data = (transform_vars_permutation_t *) thing;
+  coco_free_memory(data->x);
   coco_free_memory(data->P);
 }
 
