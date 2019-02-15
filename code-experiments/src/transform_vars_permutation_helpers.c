@@ -1,6 +1,6 @@
 /**
  * @file transform_vars_permutation_helpers.c
- * @brief implements fonctions needed by transform_vars_permutation.c
+ * @brief implements functions needed by transform_vars_permutation.c
  */
 
 #include <stdio.h>
@@ -79,7 +79,6 @@ static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed
   double *tmp_uniform;
   tmp_uniform = coco_allocate_vector(n);
   bbob2009_unif(tmp_uniform, n, seed);
-
 
   perm_random_data = coco_allocate_vector(n);
   idx_order = coco_allocate_vector_size_t(n);
