@@ -45,9 +45,10 @@ static void transform_vars_blockrotation_evaluate(coco_problem_t *problem, const
   assert(y[0] + 1e-13 >= problem->best_value[0]);
 }
 
-static void transform_vars_blockrotation_free(void *thing) {
-  transform_vars_blockrotation_t *data = (transform_vars_blockrotation_t *) thing;
-  coco_free_memory(data->B);
+static void transform_vars_blockrotation_free(coco_problem_t *problem) {
+  transform_vars_blockrotation_t *data;
+  data = (transform_vars_blockrotation_t *) problem->data;
+  bbob2009_free_matrix(data->B, problem->number_of_variables);
   coco_free_memory(data->block_sizes);
   coco_free_memory(data->x);
   coco_free_memory(data->block_size_map);

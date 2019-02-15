@@ -57,7 +57,7 @@ static void coco_compute_random_permutation(size_t *P, long seed, size_t n) {
 static long coco_random_unif_integer(long lower_bound, long upper_bound, long seed){
   long range, rand_int;
   double *tmp_uniform;
-  tmp_uniform=coco_allocate_vector(1);
+  tmp_uniform = coco_allocate_vector(1);
   bbob2009_unif(tmp_uniform, 1, seed);
   range = upper_bound - lower_bound + 1;
   rand_int = ((long)(tmp_uniform[0] * (double) range)) + lower_bound;
