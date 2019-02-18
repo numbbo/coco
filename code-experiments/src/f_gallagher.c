@@ -464,7 +464,6 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     versatile_data->block_size_map[i] = current_blocksize;
     versatile_data->first_non_zero_map[i] = next_bs_change - current_blocksize;
   }
-  versatile_data->B = coco_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
   versatile_data->B = coco_copy_block_matrix(B_copy, dimension, block_sizes, nb_blocks);
 
   alpha_i_vals = coco_allocate_vector(number_of_peaks - 1);
@@ -536,7 +535,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
-  coco_problem_set_type(problem, "large_scale_block_rotated");
+  coco_problem_set_type(problem, "5-weakly-structured");
 
   coco_free_block_matrix(B, dimension);
   coco_free_memory(tmp_uniform);

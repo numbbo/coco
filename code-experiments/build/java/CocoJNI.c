@@ -442,6 +442,28 @@ JNIEXPORT jdoubleArray JNICALL Java_CocoJNI_cocoProblemGetLargestValuesOfInteres
 
 /*
  * Class:     CocoJNI
+ * Method:    cocoProblemGetNumberOfIntegerVariables
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_CocoJNI_cocoProblemGetNumberOfIntegerVariables
+(JNIEnv *jenv, jclass interface_cls, jlong jproblem_pointer) {
+
+  coco_problem_t *problem = NULL;
+  jint jresult;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoProblemGetNumberOfIntegerVariables\n");
+  }
+
+  problem = (coco_problem_t *) jproblem_pointer;
+  jresult = (jint) coco_problem_get_number_of_integer_variables(problem);
+  return jresult;
+}
+
+/*
+ * Class:     CocoJNI
  * Method:    cocoProblemGetLargestFValuesOfInterest
  * Signature: (J)[D
  */

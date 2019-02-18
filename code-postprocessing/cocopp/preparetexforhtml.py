@@ -59,6 +59,7 @@ def main(latex_commands_for_html):
 
     single_objective_testbed = testbedsettings.default_testbed_single_noisy if genericsettings.isNoisy \
         else testbedsettings.default_testbed_single
+
     for scenario in testbedsettings.all_scenarios:
         # set up scenario, especially wrt genericsettings
         if scenario == testbedsettings.scenario_rlbased:
@@ -82,6 +83,9 @@ def main(latex_commands_for_html):
         elif scenario == testbedsettings.scenario_largescalefixed:
             genericsettings.runlength_based_targets = False
             config.config(testbedsettings.default_testbed_ls)
+        elif scenario == testbedsettings.scenario_mixintfixed:
+            genericsettings.runlength_based_targets = False
+            config.config(testbedsettings.default_testbed_mixint)
         else:
             warnings.warn("Scenario not supported yet in HTML")
 

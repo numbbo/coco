@@ -1,6 +1,6 @@
 /**
  * @file transform_vars_blockrotation_helpers.c
- * @brief implements fonctions needed by transform_vars_blockrotation.c
+ * @brief implements functions needed by transform_vars_blockrotation.c
  */
 
 #include <stdio.h>
@@ -31,7 +31,7 @@ static size_t coco_rotation_matrix_block_size(size_t const dimension) {
  * @brief
  * Allocate a ${n} by ${m} block matrix of nb_blocks block sizes block_sizes structured as an array of pointers
  * to double arrays.
- * each row constains only the block_sizes[i] possibly non-zero elements
+ * each row contains only the block_sizes[i] possibly non-zero elements
  */
 static double **coco_allocate_blockmatrix(const size_t n, const size_t* block_sizes, const size_t nb_blocks) {
   double **matrix = NULL;

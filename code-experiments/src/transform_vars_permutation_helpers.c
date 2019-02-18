@@ -1,6 +1,6 @@
 /**
  * @file transform_vars_permutation_helpers.c
- * @brief implements fonctions needed by transform_vars_permutation.c
+ * @brief implements functions needed by transform_vars_permutation.c
  */
 
 #include <stdio.h>
@@ -57,7 +57,7 @@ static void coco_compute_random_permutation(size_t *P, long seed, size_t n) {
 static long coco_random_unif_integer(long lower_bound, long upper_bound, long seed){
   long range, rand_int;
   double *tmp_uniform;
-  tmp_uniform=coco_allocate_vector(1);
+  tmp_uniform = coco_allocate_vector(1);
   bbob2009_unif(tmp_uniform, 1, seed);
   range = upper_bound - lower_bound + 1;
   rand_int = ((long)(tmp_uniform[0] * (double) range)) + lower_bound;
@@ -79,7 +79,6 @@ static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed
   double *tmp_uniform;
   tmp_uniform = coco_allocate_vector(n);
   bbob2009_unif(tmp_uniform, n, seed);
-
 
   perm_random_data = coco_allocate_vector(n);
   idx_order = coco_allocate_vector_size_t(n);
@@ -127,6 +126,7 @@ static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed
 
   }
   coco_free_memory(tmp_uniform);
+  coco_free_memory(idx_order);
 }
 
 

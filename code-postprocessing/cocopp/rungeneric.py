@@ -328,8 +328,9 @@ def main(argv=None):
             # and rungenericmany.main() or lower-level functions are called.
             genericsettings.foreground_algorithm_list = []
             dsld = rungenericmany.main(genopts + ["-o", outputdir] + args)
-            toolsdivers.prepend_to_file(latex_commands_filename,
-                                        ['\\providecommand{\\numofalgs}{2+}']
+            
+        toolsdivers.prepend_to_file(latex_commands_filename,
+                                        ['\\providecommand{\\numofalgs}{%d}' % len(args)]
                                         )
         toolsdivers.prepend_to_file(latex_commands_filename,
                                     ['\\providecommand{\\cocoversion}{\\hspace{\\textwidth}\\scriptsize\\sffamily{}' +

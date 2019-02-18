@@ -7,9 +7,11 @@ cimport numpy as np
 
 from cocoex.exceptions import InvalidProblemException, NoSuchProblemException, NoSuchSuiteException
 
-known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-largescale"]
-# known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained"]
-_known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale"]
+known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale",
+                     "bbob-mixint", "bbob-biobj-mixint"]
+# known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext"]
+_known_suite_names = ["bbob", "bbob-biobj", "bbob-biobj-ext", "bbob-constrained", "bbob-largescale",
+                      "bbob-mixint", "bbob-biobj-mixint"]
 
 # _test_assignment = "seems to prevent an 'export' error (i.e. induce export) to make this module known under Linux and Windows (possibly because of the leading underscore of _interface)"
 # __all__ = ['Observer', 'Problem', 'Suite']
@@ -54,6 +56,7 @@ cdef extern from "coco.h":
     size_t coco_problem_get_dimension(const coco_problem_t *problem)
     size_t coco_problem_get_number_of_objectives(const coco_problem_t *problem)
     size_t coco_problem_get_number_of_constraints(const coco_problem_t *problem)
+    size_t coco_problem_get_number_of_integer_variables(const coco_problem_t *problem)
     const char *coco_problem_get_id(const coco_problem_t *problem)
     const char *coco_problem_get_name(const coco_problem_t *problem)
     const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t *problem)
@@ -65,6 +68,7 @@ cdef extern from "coco.h":
     double coco_problem_get_best_observed_fvalue1(const coco_problem_t *problem)
     int coco_problem_final_target_hit(const coco_problem_t *problem)
     void bbob_problem_best_parameter_print(const coco_problem_t *problem)
+    void bbob_biobj_problem_best_parameter_print(const coco_problem_t *problem)
 
 cdef bytes _bstring(s):
     if type(s) is bytes:
@@ -514,6 +518,7 @@ cdef class Problem:
     cdef size_t _number_of_variables
     cdef size_t _number_of_objectives
     cdef size_t _number_of_constraints
+    cdef size_t _number_of_integer_variables
     cdef _suite_name  # for the record
     cdef _list_of_observers  # for the record
     cdef _problem_index  # for the record, this is not public but used in index property
@@ -540,6 +545,7 @@ cdef class Problem:
         self._number_of_variables = coco_problem_get_dimension(self.problem)
         self._number_of_objectives = coco_problem_get_number_of_objectives(self.problem)
         self._number_of_constraints = coco_problem_get_number_of_constraints(self.problem)
+        self._number_of_integer_variables = coco_problem_get_number_of_integer_variables(self.problem)
         self.y_values = np.zeros(self._number_of_objectives)
         self.constraint_values = np.zeros(self._number_of_constraints)
         self.x_initial = np.zeros(self._number_of_variables)
@@ -719,6 +725,10 @@ cdef class Problem:
         "number of constraints"
         return self._number_of_constraints
     @property
+    def number_of_integer_variables(self):
+        "number of integer variables"
+        return self._number_of_integer_variables
+    @property
     def lower_bounds(self):
         """depending on the test bed, these are not necessarily strict bounds
         """
@@ -759,7 +769,10 @@ cdef class Problem:
 
     def _best_parameter(self, what=None):
         if what == 'print':
-            bbob_problem_best_parameter_print(self.problem)
+            if self._number_of_objectives == 2:
+                bbob_biobj_problem_best_parameter_print(self.problem)
+            else:
+                bbob_problem_best_parameter_print(self.problem)
 
     def free(self, force=False):
         """Free the given test problem.
@@ -864,8 +877,13 @@ cdef class Problem:
                 " with %d constraint%s" % (self.number_of_constraints,
                                            "s" if self.number_of_constraints > 1 else "")
                 )
-            return '%s: a %s %s problem%s (problem %d of suite "%s" with name "%s")' % (
-                    self.id, dimensional, objective, constraints, self.index,
+            integer_variables = "" if self.number_of_integer_variables == 0 else (
+                " %s %d integer variable%s" % ("and" if constraints != "" else "with",
+                self.number_of_integer_variables,
+                "s" if self.number_of_integer_variables > 1 else "")
+            )
+            return '%s: a %s %s problem%s%s (problem %d of suite "%s" with name "%s")' % (
+                    self.id, dimensional, objective, constraints, integer_variables, self.index,
                     self.suite, self.name)
                     # self.name.replace(self.name.split()[0],
                     #               self.name.split()[0] + "(%d)"

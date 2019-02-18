@@ -349,8 +349,8 @@ def main(arguments):
         # testing data from recent runs, prepared in do.py:
         recent_data_path = os.path.abspath(join_path(os.path.dirname(__file__),
                                                      '../../code-experiments/build/python/exdata'))
-        t0 = time.time()
         with InfolderGoneWithTheWind():
+            t0 = time.time()
             result = os.system(python + command +
                                join_path(recent_data_path, 'RS-bb'))
             print('**  subtest 10 finished in ', time.time() - t0, ' seconds')
@@ -362,19 +362,36 @@ def main(arguments):
             print('**  subtest 11 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-biobj`.'
 
-        # t0 = time.time()
-        # result = os.system(python + command +
-        #                    join_path(recent_data_path, 'RS-co'))
-        # print('**  subtest 12 finished in ', time.time() - t0, ' seconds')
-        # assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-constrained`.'
-        # delete_files(all_files=True)
+            # t0 = time.time()
+            # result = os.system(python + command +
+            #                    join_path(recent_data_path, 'RS-co'))
+            # print('**  subtest 12 finished in ', time.time() - t0, ' seconds')
+            # assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-constrained`.'
+            # delete_files(all_files=True)
 
-        t0 = time.time()
-        with InfolderGoneWithTheWind():
+            t0 = time.time()
             result = os.system(python + command + data_archive_get(
-                                'test/RS-4.zip'))
-        print('**  subtest 13 finished in ', time.time() - t0, ' seconds')
-        assert result == 0, 'Test failed: rungeneric on RS-4.zip.'
+                'test/RS-4.zip'))
+            print('**  subtest 13 finished in ', time.time() - t0, ' seconds')
+            assert result == 0, 'Test failed: rungeneric on RS-4.zip.'
+
+            t0 = time.time()
+            result = os.system(python + command +
+                               join_path(recent_data_path, 'RS-la'))
+            print('**  subtest 14 finished in ', time.time() - t0, ' seconds')
+            assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-largescale`.'
+
+            t0 = time.time()
+            result = os.system(python + command +
+                               join_path(recent_data_path, 'RS-mi'))
+            print('**  subtest 15 finished in ', time.time() - t0, ' seconds')
+            assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-mixint`.'
+
+            t0 = time.time()
+            result = os.system(python + command +
+                               join_path(recent_data_path, 'RS-bi-mi'))
+            print('**  subtest 16 finished in ', time.time() - t0, ' seconds')
+            assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-biobj-mixint`.'
 
     print('launching doctest (it might be necessary to close a few pop up windows to finish)')
     t0 = time.time()

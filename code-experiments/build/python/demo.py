@@ -62,6 +62,8 @@ observer_name = "bbob"      # -----------------------------------------------
                             # bbob-biobj              bbob-biobj
                             # bbob-biobj-ext          bbob-biobj
                             # bbob-largescale         bbob
+                            # bbob-mixint             bbob
+                            # bbob-biobj-mixint       bbob-biobj
 suite_options = ""  # options syntax could be: "instances:1-5; dimensions:2-20",
 observer_options = "%s_on_%s" % (solver.__name__, suite_name)  # TODO: "folder:random_search; verbosity:1"
 # for more details on suite and observer options, see 

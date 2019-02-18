@@ -51,7 +51,6 @@ typedef void (*coco_recommend_function_t)(coco_problem_t *problem, const double 
  */
 typedef coco_problem_t *(*coco_logger_allocate_function_t)(coco_observer_t *observer,
                                                            coco_problem_t *problem);
-
 /**
  * @brief The free logger function type.
  *
@@ -59,6 +58,14 @@ typedef coco_problem_t *(*coco_logger_allocate_function_t)(coco_observer_t *obse
  */
 typedef void (*coco_logger_free_function_t)(void *logger);
 
+/**
+ * @brief The get problem function type.
+ *
+ * This is a template for functions that return a problem based on function, dimension and instance.
+ */
+typedef coco_problem_t *(*coco_get_problem_function_t)(const size_t function,
+                                                       const size_t dimension,
+                                                       const size_t instance);
 
 /**
  * @brief The transformed COCO problem data type.
@@ -127,6 +134,8 @@ struct coco_problem_s {
 
   double *smallest_values_of_interest; /**< @brief The lower bounds of the ROI in the decision space. */
   double *largest_values_of_interest;  /**< @brief The upper bounds of the ROI in the decision space. */
+  size_t number_of_integer_variables;  /**< @brief Number of integer variables (if > 0, all integer variables come
+                                       before any continuous ones). */
 
   double *initial_solution;            /**< @brief Initial feasible solution. */
   double *best_value;                  /**< @brief Optimal (smallest) function value */
@@ -183,6 +192,8 @@ struct coco_observer_s {
                              /**< @brief The "base evaluations" used to evaluations that trigger logging. */
   int precision_x;           /**< @brief Output precision for decision variables. */
   int precision_f;           /**< @brief Output precision for function values. */
+  int precision_g;           /**< @brief Output precision for constraint values. */
+  int log_discrete_as_int;   /**< @brief Whether to output discrete variables in int or double format. */
   void *data;                /**< @brief Void pointer that can be used to point to data specific to an observer. */
 
   coco_data_free_function_t data_free_function;             /**< @brief  The function for freeing this observer. */
@@ -226,6 +237,7 @@ struct coco_suite_s {
 static void bbob_evaluate_gradient(coco_problem_t *problem, const double *x, double *y);
 
 void bbob_problem_best_parameter_print(const coco_problem_t *problem);
+void bbob_biobj_problem_best_parameter_print(const coco_problem_t *problem);
 
 #ifdef __cplusplus
 }

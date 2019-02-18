@@ -12,6 +12,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
+#include <limits.h>
 
 #include "coco.h"
 #include "coco_internal.h"
@@ -412,6 +413,30 @@ int coco_remove_directory(const char *path) {
     r = rmdir(path);
   }
 
+  return r;
+#endif
+}
+
+
+
+/**
+ * The method should work across different platforms/compilers.
+ *
+ * @file_name The path to the file
+ *
+ * @return 0 on successful completion, and -1 on error.
+ */
+int coco_remove_file(const char *file_name) {
+#if _MSC_VER
+  int r = -1;
+  /* Try to delete the file */
+  /* Careful, DeleteFile returns 0 if it fails and nonzero otherwise! */
+  r = -(DeleteFile(file_name) == 0);
+  return r;
+#else
+  int r = -1;
+  /* Try to delete the file */
+  r = unlink(file_name);
   return r;
 #endif
 }
@@ -868,9 +893,31 @@ static double coco_double_min(const double a, const double b) {
 
 /**
  * @brief Performs a "safer" double to size_t conversion.
+ *
+ * TODO: This method could (should?) check for overflow when casting (similarly as is done in
+ * coco_double_to_int()).
  */
 static size_t coco_double_to_size_t(const double number) {
   return (size_t) coco_double_round(number);
+}
+
+/**
+ * @brief Rounds the given double to the nearest integer (returns the number in int type)
+ */
+static int coco_double_to_int(const double number) {
+  if (number > (double)INT_MAX) {
+    coco_error("coco_double_to_int(): Cannot cast %f to the nearest integer, max %d allowed",
+        number, INT_MAX);
+    return -1; /* Never reached */
+  }
+  else if (number < (double)INT_MIN) {
+    coco_error("coco_double_to_int(): Cannot cast %f to the nearest integer, min %d allowed",
+        number, INT_MIN);
+    return -1; /* Never reached */
+  }
+  else {
+    return (int)(number + 0.5);
+  }
 }
 
 /**

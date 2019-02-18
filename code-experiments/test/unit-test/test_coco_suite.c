@@ -52,7 +52,7 @@ static void test_coco_suite_encode_problem_index_with_wrapping(void **state) {
  */
 MU_TEST(test_coco_suite_get_problem) {
 
-  coco_suite_t *suite = coco_suite("bbob-biobj", "year: 0000", "dimensions: 5");
+  coco_suite_t *suite = coco_suite("bbob-biobj", "instances: 1-10", "dimensions: 5");
   coco_problem_t *problem;
 
   problem = coco_suite_get_problem(suite, 0);

@@ -208,7 +208,7 @@ static coco_problem_t *f_attractive_sector_permblockdiag_bbob_problem_allocate(c
   
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
-  coco_problem_set_type(problem, "block_rotated_moderate");
+  coco_problem_set_type(problem, "2-moderate");
   
   coco_free_block_matrix(B1, dimension);
   coco_free_block_matrix(B2, dimension);
