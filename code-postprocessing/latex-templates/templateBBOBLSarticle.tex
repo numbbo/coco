@@ -57,19 +57,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % read in data and deal with the different number of algorithms:
 \input{\bbobdatapath cocopp_commands.tex}
-\ifthenelse{\isundefined{\numofalgs}}
-{
-		\newcommand{\numberofalgorithms}{one}
-}{
-           \ifthenelse{\isundefined{\algorithmC}}
-	  {
-	      \newcommand{\numberofalgorithms}{two}
-	  }{
-	      \newcommand{\numberofalgorithms}{three}
-	  }
-}
 
-\ifthenelse{\equal{\numberofalgorithms}{one}}{
+\ifthenelse{\equal{\numofalgs}{1}}{
    \graphicspath{{\bbobdatapath\algfolder}}}{
 	 \graphicspath{{\bbobdatapath\algsfolder}}
 }
@@ -240,7 +229,7 @@ to be written
 % note that the following text is just a proposal and can/should be changed to your needs:
 In order to evaluate the CPU timing of the algorithm, we have run the \change{\algorithmA} with restarts on the entire \bbobls test suite \cite{bbobls2019func} for $2 D$ function evaluations according to \cite{hansen2016exp}. The \change{C/Java/Matlab/Octave/Python} code was run on a \change{Mac Intel(R) Core(TM) i5-2400S CPU @ 2.50GHz} with \change{1} processor and \change{4} cores \change{and (compile) options xxx}. The time per function evaluation for dimensions 20, 40, 80, 160, 320\change{, 640} equals \change{$x.x$}, \change{$x.x$}, \change{$x.x$}, \change{$xx$}, \change{$xxx$}\change{, and $xxx$} seconds respectively. 
 
-\ifthenelse{\equal{\numberofalgorithms}{one}}{}{
+\ifthenelse{\equal{\numofalgs}{1}}{}{
 \change{repeat the above for any algorithm tested}
 }
 
@@ -252,11 +241,11 @@ Results from experiments according to \cite{hansen2016exp} and \cite{hansen2016p
 benchmark functions given in \cite{bbobls2019func} are
 presented in
 %%
-\ifthenelse{\equal{\numberofalgorithms}{one}}{
+\ifthenelse{\equal{\numofalgs}{1}}{
 Figures~\ref{fig:aRTgraphs}, \ref{fig:ECDFs}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:aRTs80} and \ref{tab:aRTs320}.
-}{\ifthenelse{\equal{\numberofalgorithms}{two}}{
+}{\ifthenelse{\equal{\numofalgs}{2}}{
 Figures~\ref{fig:scaling}, \ref{fig:scatterplots}, \ref{fig:ECDFs80D}, \ref{fig:ECDFs320D} and \ref{fig:ECDFsingleOne}, and Tables~\ref{tab:aRTs80} and \ref{tab:aRTs320}.
-}{\ifthenelse{\equal{\numberofalgorithms}{three}}{
+}{\ifthenelse{\(\numofalgs > 2\)}{
 Figures~\ref{fig:scaling}, \ref{fig:ECDFs80D}, \ref{fig:ECDFs320D}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:aRTs80} and \ref{tab:aRTs320}.
 }{}}}
 %%
@@ -279,7 +268,7 @@ the smallest number of overall function evaluations for any
 unsuccessful trial under consideration.
 
 
-\ifthenelse{\equal{\numberofalgorithms}{one}}{
+\ifthenelse{\equal{\numofalgs}{1}}{
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -535,7 +524,7 @@ unsuccessful trial under consideration.
 
 
 
-\ifthenelse{\equal{\numberofalgorithms}{two} \or \equal{\numberofalgorithms}{three}}{
+\ifthenelse{\numofalgs > 1}{
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -783,7 +772,7 @@ ill-conditioned fcts & multi-modal fcts \\
 
 
 
-\ifthenelse{\equal{\numberofalgorithms}{two}}{
+\ifthenelse{\numofalgs = 2}{
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
