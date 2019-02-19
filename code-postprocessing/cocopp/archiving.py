@@ -44,10 +44,14 @@ a local archive.
 
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
+
+# from archiving import COCOUserDataArchive
+
 __author__ = 'Nikolaus Hansen'
 del absolute_import, division, print_function, unicode_literals
 
 import os
+import time
 import warnings
 import hashlib
 import ast
@@ -59,7 +63,8 @@ try:
 except ImportError:
     from urllib import urlretrieve
 
-default_definition_filename = 'coco_archive_definition.txt'
+default_definition_filename = 'archive_definition.txt'
+default_archive_location = '~/.cocopp'  # only partly in use so far
 
 
 def _abs_path(path):
@@ -71,6 +76,22 @@ def _makedirs(path, error_ok=True):
     except os.error:  # python 2&3 compatible
         if not error_ok:
             raise
+
+def _make_backup(fullname):
+    """backup file with added time stamp if it exists, otherwise do nothing."""
+    try:
+        with open(fullname, 'rt') as file_:
+            # path and file exist, so we make a backup with a time stamp
+            with open(fullname + time.asctime()[3:].replace(' ', '_'), 'wt') as file2:
+                file2.write(file_.read())
+    except IOError:
+        pass
+
+def _url_to_folder_name(url):
+    name = url.lstrip('http://').lstrip('https://')
+    name = name.replace('/', os.path.sep)
+    name = os.path.join([_abs_path(default_archive_location), name])
+    return name
 
 def _definition_file_to_read(local_path_or_definition_file):
     """return absolute path to a definition file name.
@@ -91,9 +112,9 @@ def _definition_file_to_write(local_path_or_filename,
     already includes the filename. In case, `default_definition_filename`
     is appended.
 
-    ``raise ValueError`` if the file exists.
+    Creates a backup if the file exists. Does not create the file or folders
+    when they do not exist.
 
-    TODO-DECIDE: should non-existing folders be created here?
     """
     if filename:
         local_path_or_filename = os.path.join(local_path_or_filename,
@@ -105,13 +126,8 @@ def _definition_file_to_write(local_path_or_filename,
             local_path_or_filename = os.path.join(local_path_or_filename,
                                             default_definition_filename)
     fullname = _abs_path(local_path_or_filename)
-    try:
-        with open(fullname, 'rt') as file_:
-            pass
-        raise ValueError("file %s exists already" % fullname)
-    except IOError:
-        return fullname
-    raise RuntimeError
+    _make_backup(fullname)
+    return fullname
 
 def _hash(file_name, hash_function=hashlib.sha256):
     """compute hash of file `file_name`"""
@@ -136,7 +152,8 @@ def create_from_remote(local_path, url_definition_file):
     """copy a definition file from url to ``local_path/coco_archive_definition.txt``.
 
     `local_path` is the storage location and should (better) be empty.
-    It is created if it does not exist.
+    It is created if it does not exist. The definition file is backuped
+    if it exists.
 
     TODO: need more testing?
 
@@ -166,8 +183,9 @@ def create_from_remote(local_path, url_definition_file):
     """
     # warnings.warn("create_from_remote has never been tested")
     definition_file = _definition_file_to_write(local_path)
-    _makedirs(os.path.split(definition_file)[0])
-    urlretrieve(url_definition_file, definition_file)
+    _make_backup(definition_file)  # in case it exists
+    _makedirs(os.path.split(definition_file)[0])  # in case it does not exist
+    urlretrieve(url_definition_file, definition_file)  # download
     with open(definition_file, 'rt') as file_:
         definitions = ast.literal_eval(file_.read().replace('L)', ')'))
     _url_ = COCOUserDataArchive._url_(definitions)
@@ -183,6 +201,8 @@ def create_from_remote(local_path, url_definition_file):
 
 def create(local_path):
     """create a definition file for an existing local "archive" of data.
+
+    Raise `ValueError` if definition file exsists.
 
     >>> from cocopp import archiving
     >>> # folder containing the data we want to become known in the archive:
@@ -236,7 +256,7 @@ def create(local_path):
     for dirpath, dirnames, filenames in os.walk(full_local_path):
         for filename in filenames:
             if ('.extracted' not in dirpath
-                and not filename.endswith(('.dat', '.info', '.txt', '.md', '.py', '.ipynb'))
+                and not filename.endswith(('.dat', '.rdat', '.tdat', '.info', '.txt', '.md', '.py', '.ipynb'))
                 and not filename in ('README', 'readme')
                     # and not ('BBOB' in filename and 'rawdata' in filename)
                 ):
@@ -258,6 +278,35 @@ def create(local_path):
     with open(definition_file, 'wt') as file_:
         file_.write(repr(res).replace('L)', ')'))
     return COCOUserDataArchive(definition_file)
+
+def _get_local(folder):
+    """return data archive, `folder` may be a definition file.
+
+    Create a definition file if none is found.
+    """
+    try:
+        return COCOUserDataArchive(folder)
+    except FileNotFoundError:
+        pass
+    return create(folder)  # create does not overwrite a definition file
+
+def _get_remote(url, target_folder=None):
+    """return data archive"""
+    # create target folder
+    if not target_folder:
+        target_folder = _url_to_folder_name(url)
+    # download definition file
+    try:
+        urlretrieve(url.rstrip('/') + '/' + default_definition_filename, target_folder)
+    except:
+        urlretrieve(url, target_folder)
+    return COCOUserDataArchive(target_folder)
+
+def get(url_or_local):
+    """return a data archive"""
+    if os.path.exists(url_or_local):
+        return _get_local(url_or_local)
+    return _get_remote(url_or_local)
 
 
 class COCODataArchive(list):
@@ -1028,6 +1077,14 @@ class COCOUserDataArchive(COCODataArchive):
         if os.path.isfile(local_path):
             local_path = os.path.split(local_path)[0]
         COCODataArchive.__init__(self, local_path)
+
+    def update(self):
+        """update definition file, either from remote location or from local data"""
+        warning.warn("method update was never tested")
+        if self.remote_data_path:
+            create_from_remote(self.local_data_path, self.remote_data_path)
+        else:
+            create(self.local_data_path)
 
     @staticmethod
     def _url_(definition_list):
