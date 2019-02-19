@@ -109,6 +109,16 @@ int main(void) {
 
   coco_random_state_t *random_generator = coco_random_new(RANDOM_SEED);
 
+  coco_suite_t *suite;
+  coco_problem_t *problem;
+  suite = coco_suite("bbob", "", "dimensions: 20 instance_indices: 1 function_indices: 10");
+  problem = coco_suite_get_next_problem(suite, NULL);
+  coco_suite_free(suite);
+  suite = coco_suite("bbob-largescale", "", "dimensions: 20 instance_indices: 1 function_indices: 10");
+  problem = coco_suite_get_next_problem(suite, NULL);
+  coco_suite_free(suite);
+  return 0;
+
   /* Change the log level to "warning" to get less output */
   coco_set_log_level("info");
 
