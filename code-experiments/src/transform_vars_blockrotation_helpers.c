@@ -107,12 +107,7 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
     current_nb_entries = current_blocksize * current_blocksize;
     tmp_normal = coco_allocate_vector(current_nb_entries);
     bbob2009_gauss(tmp_normal, current_nb_entries, seed + (long) 1000000 * (long) current_blocksize);/* TODO: To be discussed */
-
-    for (i = 0; i < current_blocksize; i++) {
-      for (j = 0; j < current_blocksize; j++) {
-        current_block[i][j] = tmp_normal[i * j + j];
-      }
-    }
+    bbob2009_reshape(current_block, tmp_normal, current_blocksize, current_blocksize);
 
     for (i = 0; i < current_blocksize; i++) {
       for (j = 0; j < i; j++) {
