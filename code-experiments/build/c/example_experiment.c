@@ -115,7 +115,7 @@ int main(void) {
   while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL)
     fprintf(stdout, "\n%s\n", coco_problem_get_id(problem));
   coco_suite_free(suite);*/
-  suite = coco_suite("bbob-largescale", "", "dimensions: 20 instance_indices: 1 function_indices: 1-24");
+  suite = coco_suite("bbob-largescale", "", "dimensions: 20 instance_indices: 1 function_indices: 21");
   while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL)
     fprintf(stdout, "\n%s\n", coco_problem_get_id(problem));
   coco_suite_free(suite);

@@ -491,8 +491,24 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
       for (j = versatile_data->first_non_zero_map[i]; j < versatile_data->first_non_zero_map[i] + versatile_data->block_size_map[i]; ++j) {
         y_i_tmp[i] += B_copy[i][j - versatile_data->first_non_zero_map[i]] * y_i[j];
       }
+    }
+
+    /*fprintf(stdout, "\ntmp_uniform, y_i, y_i_tmp (peak_index=%d, peak_seed=%ld)\n", (int)peak_index, peak_seed);*/
+    for (i = 0; i < dimension; ++i) {
+      /*fprintf(stdout, "%7.4f %7.4f %7.4f\n", tmp_uniform[i], y_i[i], y_i_tmp[i]);*/
       y_i[i] = y_i_tmp[i];
     }
+
+    /*********************************************************************
+    for (i = 0; i < inner_problem->number_of_variables; ++i) {
+      current_blocksize = data->block_size_map[i];
+      first_non_zero_ind = data->first_non_zero_map[i];
+      data->x[i] = 0;
+      for (j = first_non_zero_ind; j < first_non_zero_ind + current_blocksize; ++j) {
+        data->x[i] += data->B[i][j - first_non_zero_ind] * x[j];
+      }
+    }
+    *********************************************************************/
 
     if (peak_index == 0) {
       for (i = 0; i < dimension; i++){
@@ -512,7 +528,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     /* apply var transformations to sub problem*/
     *problem_i = transform_vars_scale(*problem_i, 1. / sqrt(sqrt(sqrt(alpha_i))));/* sqrt( alpha^1/4) */
     *problem_i = transform_vars_conditioning(*problem_i, alpha_i);
-    /**problem_i = transform_vars_blockrotation(*problem_i, B_copy, dimension, block_sizes, nb_blocks);*/
+    *problem_i = transform_vars_blockrotation(*problem_i, B_copy, dimension, block_sizes, nb_blocks);
     *problem_i = transform_vars_permutation(*problem_i, P_Lambda, dimension);
     *problem_i = transform_vars_shift(*problem_i, y_i, 0);
 
