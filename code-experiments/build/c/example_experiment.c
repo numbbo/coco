@@ -111,11 +111,13 @@ int main(void) {
 
   coco_suite_t *suite;
   coco_problem_t *problem;
-  suite = coco_suite("bbob", "", "dimensions: 20 instance_indices: 1 function_indices: 10");
-  problem = coco_suite_get_next_problem(suite, NULL);
-  coco_suite_free(suite);
-  suite = coco_suite("bbob-largescale", "", "dimensions: 20 instance_indices: 1 function_indices: 10");
-  problem = coco_suite_get_next_problem(suite, NULL);
+  /*suite = coco_suite("bbob", "", "dimensions: 40 instance_indices: 1 function_indices: 1-24");
+  while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL)
+    fprintf(stdout, "\n%s\n", coco_problem_get_id(problem));
+  coco_suite_free(suite);*/
+  suite = coco_suite("bbob-largescale", "", "dimensions: 20 instance_indices: 1 function_indices: 1-24");
+  while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL)
+    fprintf(stdout, "\n%s\n", coco_problem_get_id(problem));
   coco_suite_free(suite);
   return 0;
 
