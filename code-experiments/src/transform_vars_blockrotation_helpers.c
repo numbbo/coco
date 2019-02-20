@@ -141,19 +141,6 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
     coco_free_memory(tmp_normal);
   }
   /*coco_free_memory(gvect);*/
-
-  fprintf(stdout, "n=%d, nb_blocks=%d\n", (int)n, (int)nb_blocks);
-  for (i = 0; i < nb_blocks; i++) {
-    fprintf(stdout, "i=%d, block_sizes[i]=%d\n", (int)i, (int)block_sizes[i]);
-    for (j = 0; j < block_sizes[i]; j++) {
-      for (k = 0; k < n; k++) {
-        fprintf(stdout, "%7.4f ", B[k][j]);
-      }
-      fprintf(stdout, "\n");
-    }
-    fprintf(stdout, "\n");
-  }
-  fflush(stdout);
 }
 
 /**

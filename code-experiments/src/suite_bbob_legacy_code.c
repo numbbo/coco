@@ -157,13 +157,6 @@ static void bbob2009_compute_rotation(double **B, const long seed, const size_t 
       B[k][i] /= sqrt(prod);
   }
 
-  fprintf(stdout, "n=%d\n", (int)DIM);
-  for (i = 0; i < DIM; i++) {
-    for (j = 0; j < DIM; j++) {
-      fprintf(stdout, "%7.4f ", B[i][j]);
-    }
-    fprintf(stdout, "\n");
-  }
 }
 
 static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b, const size_t DIM) {
