@@ -110,7 +110,7 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
 
     for (i = 0; i < current_blocksize; i++) {
       for (j = 0; j < current_blocksize; j++) {
-        current_block[i][j] = tmp_normal[i * j + j];
+        current_block[i][j] = tmp_normal[j * current_blocksize + i];
       }
     }
 
@@ -136,7 +136,7 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
     /* now fill the block matrix*/
     for (i = 0 ; i < current_blocksize; i++) {
       for (j = 0; j < current_blocksize; j++) {
-        B[i + cumsum_prev_block_sizes][j]=current_block[i][j];
+        B[i + cumsum_prev_block_sizes][j] = current_block[i][j];
       }
     }
 
@@ -158,6 +158,7 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
     }
     fprintf(stdout, "\n");
   }
+  fflush(stdout);
 }
 
 /**
