@@ -227,7 +227,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
     }
     qsort(rperm, dimension, sizeof(*rperm), f_gallagher_compare_doubles);
     for (j = 0; j < dimension; ++j) {
-      data->arr_scales[i][j] = pow(arrCondition[i],
+      data->arr_scales[i][j] = pow(arrCondition[i],                             /* Lambda^alpha_i from the doc */
           ((double) rperm[j].index) / ((double) (dimension - 1)) - 0.5);
     }
   }
@@ -388,7 +388,6 @@ static coco_problem_t *f_gallagher_problem_allocate(const size_t number_of_varia
   return problem;
 }
 
-
 static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const size_t function,
                                                                        const size_t dimension,
                                                                        const size_t instance,
@@ -416,18 +415,24 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   const size_t peaks_21 = 21;
   const size_t peaks_101 = 101;
   double a = 0.8, b, c;
-  double maxcondition = 1000.0;
+  double first_condition;
   double alpha_i, *alpha_i_vals;
   size_t *P_alpha_i, *P_Lambda;
-  /* maxcondition satisfies the old code and the doc but seems wrong in that it is, with very high
+  /* first_condition satisfies the old code and the doc but seems wrong in that it is, with very high
    * probability, not the largest condition level!!! */
+
+  /* Done to silence unused function warnings */
+  coco_problem_t *(*fun_ptr1)(coco_problem_t *) = transform_vars_gallagher_blockrotation;
+  coco_problem_t *(*fun_ptr2)(coco_problem_t *) = fun_ptr1;
+  fun_ptr1 = fun_ptr2;
 
   fopt = bbob2009_compute_fopt(function, instance);
   if (number_of_peaks == peaks_101) {
-    maxcondition = sqrt(maxcondition);
+    first_condition = 1000;
     b = 10.0;
     c = 5.0;
   } else if (number_of_peaks == peaks_21) {
+    first_condition = 1000 * 1000;
     b = 9.8;
     c = 4.9;
   } else {
@@ -468,7 +473,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
 
   alpha_i_vals = coco_allocate_vector(number_of_peaks - 1);
   for (i = 0; i < number_of_peaks - 1; i++) {
-    alpha_i_vals[i] = pow(maxcondition, (double) (i) / ((double) (number_of_peaks - 2)));
+    alpha_i_vals[i] = pow(1000, 2 * (double) (i) / ((double) (number_of_peaks - 2)));
   }
   P_alpha_i = coco_allocate_vector_size_t(number_of_peaks - 1);/* random permutation of the alpha_i's to allow sampling without replacement*/
   coco_compute_random_permutation(P_alpha_i, rseed + 4000000, number_of_peaks - 1);
@@ -490,7 +495,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
       for (i = 0; i < dimension; i++){
         problem->best_parameter[i] = y_i[i];
       }
-      alpha_i = maxcondition;
+      alpha_i = first_condition;
     } else {
       alpha_i = alpha_i_vals[P_alpha_i[peak_index - 1]];/*already square-rooted */
     }
@@ -502,11 +507,10 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
 
     /* apply var transformations to sub problem*/
     *problem_i = transform_vars_scale(*problem_i, 1. / sqrt(sqrt(sqrt(alpha_i))));/* sqrt( alpha^1/4) */
-    *problem_i = transform_vars_conditioning(*problem_i, alpha_i);
+    *problem_i = transform_vars_conditioning(*problem_i, sqrt(alpha_i));
     *problem_i = transform_vars_blockrotation(*problem_i, B_copy, dimension, block_sizes, nb_blocks);
     *problem_i = transform_vars_permutation(*problem_i, P_Lambda, dimension);
     *problem_i = transform_vars_shift(*problem_i, y_i, 0);
-
 
     coco_free_memory(P_Lambda);
     coco_free_memory(y_i);
@@ -519,9 +523,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   problem = transform_obj_power(problem, 2.0);
   problem = transform_obj_penalize(problem, penalty_factor);
   problem = transform_obj_shift(problem, fopt);
-  /* Wassim: TODO: re-activate*/
   /*problem = transform_vars_gallagher_blockrotation(problem);*//* block-matrix in versatile_data*/
-
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
