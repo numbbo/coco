@@ -397,9 +397,9 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
                                                                        const char *problem_id_template,
                                                                        const char *problem_name_template) {
 
-  size_t i, j;
+  size_t i;
   int peak_index;
-  double fopt, *y_i, *y_i_tmp;
+  double fopt, *y_i;
   double penalty_factor = 1.0;
   coco_problem_t *problem = NULL, **problem_i;
   f_gallagher_versatile_data_t *versatile_data;
@@ -482,37 +482,12 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     y_i = coco_allocate_vector(dimension);
     for (i = 0; i < dimension; i++) {
       y_i[i] = b * tmp_uniform[i] - c; /* Wassim: not sure the random numbers are used in the same order as for the standard case*/
+      if (peak_index == 0)
+        y_i[i] *= a;
     }
-    y_i_tmp = coco_allocate_vector(dimension);
-    /* block rotate y_i */
-    /* TODO: there should be an independent code to apply the rotations and block-rotations, a helper_function maybe*/
-    for (i = 0; i < dimension; ++i) {
-      y_i_tmp[i] = 0;
-      for (j = versatile_data->first_non_zero_map[i]; j < versatile_data->first_non_zero_map[i] + versatile_data->block_size_map[i]; ++j) {
-        y_i_tmp[i] += B_copy[i][j - versatile_data->first_non_zero_map[i]] * y_i[j];
-      }
-    }
-
-    /*fprintf(stdout, "\ntmp_uniform, y_i, y_i_tmp (peak_index=%d, peak_seed=%ld)\n", (int)peak_index, peak_seed);*/
-    for (i = 0; i < dimension; ++i) {
-      /*fprintf(stdout, "%7.4f %7.4f %7.4f\n", tmp_uniform[i], y_i[i], y_i_tmp[i]);*/
-      y_i[i] = y_i_tmp[i];
-    }
-
-    /*********************************************************************
-    for (i = 0; i < inner_problem->number_of_variables; ++i) {
-      current_blocksize = data->block_size_map[i];
-      first_non_zero_ind = data->first_non_zero_map[i];
-      data->x[i] = 0;
-      for (j = first_non_zero_ind; j < first_non_zero_ind + current_blocksize; ++j) {
-        data->x[i] += data->B[i][j - first_non_zero_ind] * x[j];
-      }
-    }
-    *********************************************************************/
 
     if (peak_index == 0) {
       for (i = 0; i < dimension; i++){
-        y_i[i] *= a;
         problem->best_parameter[i] = y_i[i];
       }
       alpha_i = maxcondition;
@@ -535,7 +510,6 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
 
     coco_free_memory(P_Lambda);
     coco_free_memory(y_i);
-    coco_free_memory(y_i_tmp);
     y_i = NULL;
   }
   f_gallagher_evaluate_core(problem, problem->best_parameter, problem->best_value);
