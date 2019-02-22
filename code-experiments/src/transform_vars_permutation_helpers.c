@@ -73,14 +73,17 @@ static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed
   long i, idx_swap, tmp_seed;
   size_t lower_bound, upper_bound, first_swap_var, second_swap_var, tmp;
   size_t *idx_order;
-  perm_random_data = coco_allocate_vector(n);
-  bbob2009_unif(perm_random_data, n, seed);
+
+  for (i = 0; i < n; i++)
+    P[i] = (size_t) i;
+  if (n <= 40) {
+    /* Do an identity permutation for dimensions <= 40 */
+    return;
+  }
 
   idx_order = coco_allocate_vector_size_t(n);
-  for (i = 0; i < n; i++){
-    P[i] = (size_t) i;
+  for (i = 0; i < n; i++)
     idx_order[i] = (size_t) i;
-  }
 
   if (swap_range > 0) {
     /*sort the random data in random_data and arange idx_order accordingly*/
@@ -119,7 +122,6 @@ static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed
     }
 
   }
-  coco_free_memory(perm_random_data);
   coco_free_memory(idx_order);
 }
 
