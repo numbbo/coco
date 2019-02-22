@@ -400,17 +400,17 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   int peak_index;
   double fopt, *y_i;
   double penalty_factor = 1.0;
-  coco_problem_t *problem = NULL, **problem_i;
+  coco_problem_t *problem = NULL, **problem_i, *rotation_problem;
   f_gallagher_versatile_data_t *versatile_data;
   double **B;
-  const double *const *B_copy;
+  const double *const *B_const;
   /*size_t *P1, *P2;*/
   size_t *block_sizes;
   size_t nb_blocks;
   size_t idx_blocksize, current_blocksize, next_bs_change; /* needed for the rotated y_i*/
   /*size_t swap_range;
   size_t nb_swaps;*/
-  double *tmp_uniform;
+  double *tmp_uniform, *best_param_before_rotation, *best_param_after_rotation;
   long peak_seed;
   const size_t peaks_21 = 21;
   const size_t peaks_101 = 101;
@@ -446,8 +446,8 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   nb_swaps = coco_get_nb_swaps(dimension, "bbob-largescale");*/
 
   B = coco_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
-  B_copy = (const double *const *)B;
-  coco_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
+  coco_compute_blockrotation(B, rseed, dimension, block_sizes, nb_blocks);
+  B_const = (const double *const *)B;   /* Required because of the type */
 
   /*P1 = coco_allocate_vector_size_t(dimension);
   P2 = coco_allocate_vector_size_t(dimension);
@@ -469,32 +469,44 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     versatile_data->block_size_map[i] = current_blocksize;
     versatile_data->first_non_zero_map[i] = next_bs_change - current_blocksize;
   }
-  versatile_data->B = coco_copy_block_matrix(B_copy, dimension, block_sizes, nb_blocks);
+  versatile_data->B = coco_copy_block_matrix(B_const, dimension, block_sizes, nb_blocks);
+
+  rotation_problem = coco_problem_allocate(dimension, 1, 0);
+  rotation_problem = transform_vars_blockrotation(rotation_problem, B_const, dimension, block_sizes, nb_blocks);
 
   alpha_i_vals = coco_allocate_vector(number_of_peaks - 1);
   for (i = 0; i < number_of_peaks - 1; i++) {
     alpha_i_vals[i] = pow(1000, 2 * (double) (i) / ((double) (number_of_peaks - 2)));
   }
   P_alpha_i = coco_allocate_vector_size_t(number_of_peaks - 1);/* random permutation of the alpha_i's to allow sampling without replacement*/
-  coco_compute_random_permutation(P_alpha_i, rseed + 4000000, number_of_peaks - 1);
+  coco_compute_random_permutation(P_alpha_i, rseed, number_of_peaks - 1);
   tmp_uniform = coco_allocate_vector(dimension);
+  best_param_before_rotation = coco_allocate_vector(dimension);
+  best_param_after_rotation = coco_allocate_vector(dimension);
   for (peak_index = 0; peak_index < number_of_peaks; peak_index++) {
-    peak_seed = rseed + (long) peak_index * (long) 1000000;
+    peak_seed = rseed + (long) peak_index * (long) 1000;
     bbob2009_unif(tmp_uniform, dimension, peak_seed); /*TODO: To be discussed*/
     problem_i = &(versatile_data->sub_problems[peak_index]);
+
     /* compute transformation parameters: */
     /* y_i and block-rotate it once and for all */
     y_i = coco_allocate_vector(dimension);
     for (i = 0; i < dimension; i++) {
       y_i[i] = b * tmp_uniform[i] - c; /* Wassim: not sure the random numbers are used in the same order as for the standard case*/
-      if (peak_index == 0)
+      if (peak_index == 0) {
         y_i[i] *= a;
+        problem->best_parameter[i] = 0;
+        best_param_before_rotation[i] = y_i[i];
+      }
+    }
+    transform_vars_blockrotation_apply(rotation_problem, y_i, y_i);
+    if (peak_index == 0) {
+      for (i = 0; i < dimension; i++) {
+        best_param_after_rotation[i] = y_i[i];
+      }
     }
 
     if (peak_index == 0) {
-      for (i = 0; i < dimension; i++){
-        problem->best_parameter[i] = y_i[i];
-      }
       alpha_i = first_condition;
     } else {
       alpha_i = alpha_i_vals[P_alpha_i[peak_index - 1]];/*already square-rooted */
@@ -508,7 +520,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     /* apply var transformations to sub problem*/
     *problem_i = transform_vars_scale(*problem_i, 1. / sqrt(sqrt(sqrt(alpha_i))));/* sqrt( alpha^1/4) */
     *problem_i = transform_vars_conditioning(*problem_i, sqrt(alpha_i));
-    *problem_i = transform_vars_blockrotation(*problem_i, B_copy, dimension, block_sizes, nb_blocks);
+    /**problem_i = transform_vars_blockrotation(*problem_i, B_copy, dimension, block_sizes, nb_blocks);*/
     *problem_i = transform_vars_permutation(*problem_i, P_Lambda, dimension);
     *problem_i = transform_vars_shift(*problem_i, y_i, 0);
 
@@ -516,7 +528,12 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     coco_free_memory(y_i);
     y_i = NULL;
   }
-  f_gallagher_evaluate_core(problem, problem->best_parameter, problem->best_value);
+
+  f_gallagher_evaluate_core(problem, best_param_after_rotation, problem->best_value);
+  problem = transform_vars_blockrotation(problem, B_const, dimension, block_sizes, nb_blocks);
+  for (i = 0; i < dimension; i++) {
+    problem->best_parameter[i] = best_param_before_rotation[i];
+  }
 
   /*transform global objective function*/
   problem = transform_obj_oscillate(problem);
@@ -536,5 +553,8 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   coco_free_memory(block_sizes);
   coco_free_memory(alpha_i_vals);
   coco_free_memory(P_alpha_i);
+  coco_free_memory(rotation_problem);
+  coco_free_memory(best_param_before_rotation);
+  coco_free_memory(best_param_after_rotation);
   return problem;
 }
