@@ -333,7 +333,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
   B1_copy = (const double *const *)B1;
   B2_copy = (const double *const *)B2;
   coco_compute_blockrotation(B1, rseed + 1000000, dimension, block_sizes1, nb_blocks1);
-  coco_compute_blockrotation(B2, rseed + 2000000, dimension, block_sizes2, nb_blocks2);
+  coco_compute_blockrotation(B2, rseed, dimension, block_sizes2, nb_blocks2);
 
   P11 = coco_allocate_vector_size_t(dimension);
   P12 = coco_allocate_vector_size_t(dimension);

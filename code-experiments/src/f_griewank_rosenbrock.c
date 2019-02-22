@@ -169,7 +169,7 @@ static coco_problem_t *f_griewank_rosenbrock_permblockdiag_bbob_bbob_problem_all
   B = coco_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
   B_copy = (const double *const *)B;
   
-  coco_compute_blockrotation(B, rseed + 1000000, dimension, block_sizes, nb_blocks);
+  coco_compute_blockrotation(B, rseed, dimension, block_sizes, nb_blocks);
   coco_compute_truncated_uniform_swap_permutation(P1, rseed + 2000000, dimension, nb_swaps, swap_range);
   coco_compute_truncated_uniform_swap_permutation(P2, rseed + 3000000, dimension, nb_swaps, swap_range);
   
