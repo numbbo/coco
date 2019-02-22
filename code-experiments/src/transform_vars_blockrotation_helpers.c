@@ -88,7 +88,7 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
   double **current_block;
   size_t i, j;
   size_t idx_block, current_blocksize, cumsum_prev_block_sizes, sum_block_sizes;
-  size_t nb_entries, current_nb_entries;
+  size_t nb_entries;
   nb_entries = 0;
   sum_block_sizes = 0;
   for (i = 0; i < nb_blocks; i++){
@@ -101,7 +101,6 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
   for (idx_block = 0; idx_block < nb_blocks; idx_block++) {
     current_blocksize = block_sizes[idx_block];
     current_block = bbob2009_allocate_matrix(current_blocksize, current_blocksize);
-    current_nb_entries = current_blocksize * current_blocksize;
     assert(current_blocksize <= 44);
     bbob2009_compute_rotation(current_block, seed + (long) 1000000 * (long) idx_block, current_blocksize);
 
