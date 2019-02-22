@@ -185,11 +185,11 @@ static coco_problem_t *f_katsuura_permblockdiag_bbob_problem_allocate(const size
 
   problem = f_katsuura_allocate(dimension);
   problem = transform_vars_permutation(problem, P22, dimension);
-  problem = transform_vars_blockrotation(problem, B2_copy, dimension, block_sizes1, nb_blocks1);
+  problem = transform_vars_blockrotation(problem, B1_copy, dimension, block_sizes2, nb_blocks2);
   problem = transform_vars_permutation(problem, P21, dimension);
   problem = transform_vars_conditioning(problem, 100.0);
   problem = transform_vars_permutation(problem, P12, dimension);
-  problem = transform_vars_blockrotation(problem, B1_copy, dimension, block_sizes2, nb_blocks2);
+  problem = transform_vars_blockrotation(problem, B2_copy, dimension, block_sizes1, nb_blocks1);
   problem = transform_vars_permutation(problem, P11, dimension);
   problem = transform_vars_shift(problem, xopt, 0);
 
