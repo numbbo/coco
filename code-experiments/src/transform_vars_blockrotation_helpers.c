@@ -85,13 +85,10 @@ static void coco_free_block_matrix(double **matrix, const size_t n) {
  * B is a 2D vector with DIM lines and each line has blocksize(line) elements (the zeros are not stored)
  */
 static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *block_sizes, size_t nb_blocks) {
-  double prod;
-  /*double *gvect;*/
   double **current_block;
-  size_t i, j, k; /* Loop over pairs of column vectors. */
-  size_t idx_block, current_blocksize,cumsum_prev_block_sizes, sum_block_sizes;
+  size_t i, j;
+  size_t idx_block, current_blocksize, cumsum_prev_block_sizes, sum_block_sizes;
   size_t nb_entries, current_nb_entries;
-  double *tmp_normal;
   nb_entries = 0;
   sum_block_sizes = 0;
   for (i = 0; i < nb_blocks; i++){
@@ -105,28 +102,8 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
     current_blocksize = block_sizes[idx_block];
     current_block = bbob2009_allocate_matrix(current_blocksize, current_blocksize);
     current_nb_entries = current_blocksize * current_blocksize;
-    tmp_normal = coco_allocate_vector(current_nb_entries);
-    bbob2009_gauss(tmp_normal, current_nb_entries, seed + (long) 1000000 * (long) current_blocksize);/* TODO: To be discussed */
-    bbob2009_reshape(current_block, tmp_normal, current_blocksize, current_blocksize);
-
-    for (i = 0; i < current_blocksize; i++) {
-      for (j = 0; j < i; j++) {
-        prod = 0;
-        for (k = 0; k < current_blocksize; k++){
-          prod += current_block[k][i] * current_block[k][j];
-        }
-        for (k = 0; k < current_blocksize; k++){
-          current_block[k][i] -= prod * current_block[k][j];
-        }
-      }
-      prod = 0;
-      for (k = 0; k < current_blocksize; k++){
-        prod += current_block[k][i] * current_block[k][i];
-      }
-      for (k = 0; k < current_blocksize; k++){
-        current_block[k][i] /= sqrt(prod);
-      }
-    }
+    assert(current_blocksize <= 44);
+    bbob2009_compute_rotation(current_block, seed + (long) 1000000 * (long) idx_block, current_blocksize);
 
     /* now fill the block matrix*/
     for (i = 0 ; i < current_blocksize; i++) {
@@ -138,9 +115,7 @@ static void coco_compute_blockrotation(double **B, long seed, size_t n, size_t *
     cumsum_prev_block_sizes+=current_blocksize;
     /*current_gvect_pos += current_blocksize * current_blocksize;*/
     coco_free_block_matrix(current_block, current_blocksize);
-    coco_free_memory(tmp_normal);
   }
-  /*coco_free_memory(gvect);*/
 }
 
 /**
