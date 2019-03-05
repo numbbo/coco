@@ -617,8 +617,9 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - bbob-biobj: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - bbob-biobj-ext: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - bbob-noisy (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
+  - bbob-largescale: http://numbbo.github.io/coco-doc/bbob-largescale/functions/
   - bbob-constrained (in progress): http://numbbo.github.io/coco-doc/bbob-constrained/functions/
-  - bbob-largescale (in progress): http://numbbo.github.io/coco-doc/bbob-largescale/functions/
+  
 
 * Performance assessment: http://numbbo.github.io/coco-doc/perf-assessment/
 * Performance assessment for biobjective testbeds: http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/
