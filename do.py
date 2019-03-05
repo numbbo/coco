@@ -166,6 +166,8 @@ def run_c_integration_tests():
         run('code-experiments/test/integration-test',
             ['./test_bbob-constrained'], verbose=_verbosity)
         run('code-experiments/test/integration-test',
+            ['./test_bbob-largescale'], verbose=_verbosity)
+        run('code-experiments/test/integration-test',
             ['./test_bbob-mixint'], verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
