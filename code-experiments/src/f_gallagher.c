@@ -555,7 +555,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   coco_free_memory(block_sizes);
   coco_free_memory(alpha_i_vals);
   coco_free_memory(P_alpha_i);
-  coco_free_problem(rotation_problem);
+  coco_problem_free(rotation_problem);
   coco_free_memory(best_param_before_rotation);
   coco_free_memory(best_param_after_rotation);
   return problem;
