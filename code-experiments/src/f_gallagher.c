@@ -447,7 +447,6 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   B = coco_allocate_blockmatrix(dimension, block_sizes, nb_blocks);
   coco_compute_blockrotation(B, rseed, dimension, block_sizes, nb_blocks);
   B_const = (const double *const *)B;   /* Required because of the type */
-
   /*P1 = coco_allocate_vector_size_t(dimension);
   P2 = coco_allocate_vector_size_t(dimension);
   coco_compute_truncated_uniform_swap_permutation(P1, rseed + 2000000, dimension, nb_swaps, swap_range);
@@ -523,7 +522,7 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
     *problem_i = transform_vars_scale(*problem_i, 1. / sqrt(sqrt(sqrt(alpha_i))));/* sqrt( alpha^1/4) */
     *problem_i = transform_vars_conditioning(*problem_i, sqrt(alpha_i));
     /**problem_i = transform_vars_blockrotation(*problem_i, B_const, dimension, block_sizes, nb_blocks);*/
-    *problem_i = transform_vars_permutation(*problem_i, P_Lambda, dimension);
+    *problem_i = transform_vars_inverse_permutation(*problem_i, P_Lambda, dimension);
     *problem_i = transform_vars_shift(*problem_i, y_i, 0);
 
     coco_free_memory(P_Lambda);
