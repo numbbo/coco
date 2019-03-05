@@ -81,28 +81,33 @@ static long coco_random_unif_integer(long lower_bound, long upper_bound, long se
 
 /**
  * @brief generates a random permutation resulting from nb_swaps truncated uniform swaps of range swap_range
- * missing paramteters: dynamic_not_static pool, seems empirically irrelevant
+ * missing parameters: dynamic_not_static pool, seems empirically irrelevant
  * for now so dynamic is implemented (simple since no need for tracking indices
- * if swap_range is the largest possible size_t value ( (size_t) -1 ), a random uniform permutation is generated
+ * if swap_range is 0, a random uniform permutation is generated
  */
 static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed, size_t n, size_t nb_swaps, size_t swap_range) {
   long i, idx_swap, tmp_seed;
   size_t lower_bound, upper_bound, first_swap_var, second_swap_var, tmp;
   size_t *idx_order;
 
-  for (i = 0; i < n; i++)
-    P[i] = (size_t) i;
   if (n <= 40) {
     /* Do an identity permutation for dimensions <= 40 */
+    for (i = 0; i < n; i++)
+      P[i] = (size_t) i;
     return;
   }
 
+  perm_random_data = coco_allocate_vector(n);
+  bbob2009_unif(perm_random_data, n, seed);
+
   idx_order = coco_allocate_vector_size_t(n);
-  for (i = 0; i < n; i++)
+  for (i = 0; i < n; i++) {
+    P[i] = (size_t) i;
     idx_order[i] = (size_t) i;
+  }
 
   if (swap_range > 0) {
-    /*sort the random data in random_data and arange idx_order accordingly*/
+    /*sort the random data in perm_random_data and arrange idx_order accordingly*/
     /*did not use coco_compute_random_permutation to only use the seed once*/
     qsort(idx_order, n, sizeof(size_t), f_compare_doubles_for_random_permutation);
     for (idx_swap = 0; idx_swap < nb_swaps; idx_swap++) {
@@ -132,13 +137,11 @@ static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed
       P[second_swap_var] = tmp;
     }
   } else {
-    if ( swap_range == (size_t) -1) {
-      /* generate random permutation instead */
-      coco_compute_random_permutation(P, seed, n);
-    }
-
+    /* generate random permutation instead */
+    coco_compute_random_permutation(P, seed, n);
   }
   coco_free_memory(idx_order);
+  coco_free_memory(perm_random_data);
 }
 
 
