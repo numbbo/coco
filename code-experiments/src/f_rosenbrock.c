@@ -176,11 +176,11 @@ static coco_problem_t *f_rosenbrock_rotated_bbob_problem_allocate(const size_t f
  * @brief Creates the BBOB permuted block-rotated Rosenbrock problem.
  */
 static coco_problem_t *f_rosenbrock_permblockdiag_bbob_problem_allocate(const size_t function,
-                                                                                const size_t dimension,
-                                                                                const size_t instance,
-                                                                                const long rseed,
-                                                                                const char *problem_id_template,
-                                                                                const char *problem_name_template) {
+                                                                        const size_t dimension,
+                                                                        const size_t instance,
+                                                                        const long rseed,
+                                                                        const char *problem_id_template,
+                                                                        const char *problem_name_template) {
   
   double *xopt, fopt;
   coco_problem_t *problem = NULL;
