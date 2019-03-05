@@ -469,7 +469,8 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   }
   versatile_data->B = coco_copy_block_matrix(B_const, dimension, block_sizes, nb_blocks);
 
-  rotation_problem = coco_problem_allocate_from_scalars("dummy rotation", NULL, NULL, dimension, -5, 5, 0);
+  rotation_problem = coco_problem_allocate_from_scalars("dummy rotation", f_gallagher_evaluate_core,
+      f_gallagher_versatile_data_free, dimension, -5, 5, 0);
   rotation_problem = transform_vars_blockrotation(rotation_problem, B_const, dimension, block_sizes, nb_blocks);
 
   alpha_i_vals = coco_allocate_vector(number_of_peaks - 1);
