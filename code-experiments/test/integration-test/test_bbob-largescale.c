@@ -25,10 +25,8 @@ void my_optimizer(coco_problem_t *problem) {
   const double *ubounds = coco_problem_get_largest_values_of_interest(problem);
   size_t dimension = coco_problem_get_dimension(problem);
   size_t number_of_objectives = coco_problem_get_number_of_objectives(problem);
-  size_t number_of_constraints = coco_problem_get_number_of_constraints(problem);
   double *x = coco_allocate_vector(dimension);
   double *function_values = coco_allocate_vector(number_of_objectives);
-  double *cons_values = coco_allocate_vector(number_of_constraints);
   double range;
   size_t i, j;
 
@@ -40,14 +38,12 @@ void my_optimizer(coco_problem_t *problem) {
     }
 
     coco_evaluate_function(problem, x, function_values);
-    coco_evaluate_constraint(problem, x, cons_values);
 
   }
 
   coco_random_free(rng);
   coco_free_memory(x);
   coco_free_memory(function_values);
-  coco_free_memory(cons_values);
 }
 
 /* Each time: run the benchmark and delete the output folder */
