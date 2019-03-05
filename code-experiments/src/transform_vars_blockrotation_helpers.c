@@ -65,7 +65,7 @@ static double **coco_allocate_blockmatrix(const size_t n, const size_t* block_si
 
 
 /**
- * @brief frees a block diagonal matrix (same as a matrix but in case of change, easier to update separatly from free_matrix)
+ * @brief frees a block diagonal matrix (same as a matrix but in case of change, easier to update separately from free_matrix)
  */
 static void coco_free_block_matrix(double **matrix, const size_t n) {
   size_t i;
