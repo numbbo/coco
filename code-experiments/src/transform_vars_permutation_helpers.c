@@ -47,6 +47,22 @@ static void coco_compute_random_permutation(size_t *P, long seed, size_t n) {
 
 
 /**
+ * @brief generates a permutation by sorting a sequence and puts it in P
+ */
+static void coco_compute_permutation_from_sequence(size_t *P, double *seq, size_t length) {
+    long i;
+    
+    perm_random_data = coco_allocate_vector(length);
+    for (i = 0; i < length; i++){
+        P[i] = (size_t) i;
+        perm_random_data[i] = seq[i];
+    }
+    qsort(P, length, sizeof(size_t), f_compare_doubles_for_random_permutation);
+    coco_free_memory(perm_random_data);
+}
+
+
+/**
  * @brief returns a uniformly distributed integer between lower_bound and upper_bound using seed
  * without using coco_random_new.
  * Move to coco_utilities?
