@@ -206,6 +206,10 @@ def leak_check():
     os.environ['CFLAGS'] = '-g -Os'
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
+                    './test_bbob-largescale', 'leak_check']
+    run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
+    valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
+                    '--leak-check=full', '--show-reachable=yes',
                     './test_bbob-mixint', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
