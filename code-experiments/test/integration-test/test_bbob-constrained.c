@@ -86,7 +86,7 @@ void run_once(char *suite_options) {
 
 int main(void)  {
 
-  run_once("dimensions: 5, 10 function_indices: 1-6 instance_indices: 1-3");
+  run_once("dimensions: 5,10 function_indices: 1-6 instance_indices: 1-3");
   run_once("dimensions: 40 function_indices: 19,25,31 instance_indices: 10-15");
   run_once("dimensions: 15,20,25 function_indices: 37,43,48 instance_indices: 5-10");
 
