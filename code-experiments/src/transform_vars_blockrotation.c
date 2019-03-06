@@ -26,22 +26,21 @@ typedef struct {
 } transform_vars_blockrotation_t;
 
 /*
- * @brief write i-th row of blockrotation problem->data->B into y.
+ * @brief return i-th row of blockrotation problem->data->B in y.
  */
 static void transform_vars_blockrotation_get_row(coco_problem_t *problem,
                                                size_t i,
                                                double *y) {
-  size_t j, current_blocksize, first_non_zero_ind;
+  size_t j, current_blocksize, first_non_zero_ind; /* cp-paste from apply */
   transform_vars_blockrotation_t *data;
 
   data = (transform_vars_blockrotation_t *) coco_problem_transformed_get_data(problem);
-  for (j = 0; j < data->dimension; ++j) {
-    y[j] = 0;
-  }
   current_blocksize = data->block_size_map[i];
   first_non_zero_ind = data->first_non_zero_map[i];
-  for (j = first_non_zero_ind; j < first_non_zero_ind + current_blocksize; ++j) {
-    y[j] = data->B[i][j - first_non_zero_ind]; /*all B lines start at 0*/
+
+  for (j = 0; j < data->dimension; ++j) {
+    y[j] = (j < first_non_zero_ind || j >= first_non_zero_ind + current_blocksize) ?
+        0 : data->B[i][j - first_non_zero_ind]; /*all B lines start at 0*/
   }
 }
 
@@ -99,14 +98,17 @@ static void transform_vars_blockrotation_free(void *stuff) {
 static void transform_vars_blockrotation_test(coco_problem_t *problem, double precision) {
     size_t i, j;
     size_t number_of_variables = coco_problem_get_dimension(problem);
-
     double *y = coco_allocate_vector(number_of_variables);
+
     for (i = 0; i < number_of_variables; ++i) { /* for each row */
       transform_vars_blockrotation_get_row(problem, i, y);
       transform_vars_blockrotation_apply(problem, y, y);
       for (j = 0; j < number_of_variables; ++j) {  /* check result */
-        assert(coco_double_almost_equal(y[j], i == j, precision));
-        /* printf("%f", y[j]); */
+        if (!coco_double_almost_equal(y[j], i == j, precision)) {
+          coco_error("transform_vars_blockrotation_test() with precision %e failed on row %i",
+                     precision, i);
+        }
+        /* printf("%f ", y[j]); */
       }
       /* printf("\n"); */
     }
@@ -154,8 +156,9 @@ static coco_problem_t *transform_vars_blockrotation(coco_problem_t *inner_proble
   problem = coco_problem_transformed_allocate(inner_problem, data, transform_vars_blockrotation_free, "transform_vars_blockrotation");
   problem->evaluate_function = transform_vars_blockrotation_evaluate;
   
-  if (1 < 3) {
-    transform_vars_blockrotation_test(problem, 1e-6); /* 1e-11 still passes and 1e-12 fails under macos */
+  if (number_of_variables < 100) {
+    /* 1e-11 still passes and 1e-12 fails under macOS */
+    transform_vars_blockrotation_test(problem, 1e-5);
   }
   return problem;
 }
