@@ -86,7 +86,7 @@ static long coco_random_unif_integer(long lower_bound, long upper_bound, long se
  * if swap_range is 0, a random uniform permutation is generated
  */
 static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed, size_t n, size_t nb_swaps, size_t swap_range) {
-  long i, idx_swap, tmp_seed;
+  long i, idx_swap;
   size_t lower_bound, upper_bound, first_swap_var, second_swap_var, tmp;
   size_t *idx_order;
 
@@ -125,11 +125,11 @@ static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed
         upper_bound = first_swap_var + swap_range;
       }
 
-      tmp_seed = 0;
-      second_swap_var = (size_t) coco_random_unif_integer((long) lower_bound, (long) upper_bound, seed);
-      while (first_swap_var == second_swap_var) {
-        tmp_seed += 1;
-        second_swap_var = (size_t) coco_random_unif_integer((long) lower_bound, (long) upper_bound, seed + tmp_seed + 5000000);
+      second_swap_var = (size_t) coco_random_unif_integer((long) lower_bound,
+                                                          (long) upper_bound - 1,
+                                                          seed + (1 + idx_swap) * 1000);
+      if (second_swap_var >= first_swap_var) {
+        second_swap_var += 1;
       }
       /* swap*/
       tmp = P[first_swap_var];
