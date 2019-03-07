@@ -93,7 +93,7 @@ static void transform_vars_blockrotation_free(void *stuff) {
 }
 
 /*
- * @brief test blockrotation on its own rows via assert
+ * @brief test blockrotation on its own rows and raise coco_error in case
  */
 static void transform_vars_blockrotation_test(coco_problem_t *problem, double precision) {
     size_t i, j;
