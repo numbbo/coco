@@ -58,7 +58,7 @@ void run_once(char *suite_options) {
       coco_strdupf("result_folder: RS_on_%s "
                    "algorithm_name: RS "
                    "algorithm_info: \"A simple random search algorithm\"", 
-                   "bbob-constrained");
+                   "bbob-largescale");
 
   printf("Running experiment with suite options %s\n", suite_options);
   fflush(stdout);
