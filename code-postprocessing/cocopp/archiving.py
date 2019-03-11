@@ -51,6 +51,7 @@ import os
 import warnings
 import hashlib
 import ast
+import re as _re
 
 from .toolsdivers import StringList
 try:
@@ -829,12 +830,15 @@ class COCODataArchive(list):
     def get_extended(self, args, remote=True):
         """return a list of valid paths.
 
-        Elements in `args` may be a valid path name or a known name
-        from the data archive, or a uniquely matching substring of such
-        a name, or a matching substring with added "!" in which case
-        the first match is taken only (calling `self.get_first`),
-        or a matching substring with added "*" in which case all
-        matches are taken (calling `self.get_all`).
+        Elements in `args` may be a valid path name or a known name from the
+        data archive, or a uniquely matching substring of such a name, or a
+        matching substring with added "!" in which case the first match is taken
+        only (calling `self.get_first`), or a matching substring with added "*"
+        in which case all matches are taken (calling `self.get_all`), or a
+        Python regular expression containing one or more '*' before the last
+        character, in which case, for example, "bbob/.*7.*cma"  matches
+        "bbob/2017/DTS-CMA-ES-Pitra.tgz" (among others).
+
         """
         res = []
         args = _str_to_list(args)
@@ -847,8 +851,14 @@ class COCODataArchive(list):
                 if res and res[-1] is None:
                     warnings.warn('"%s" seems not to be an existing file or '
                                   'match any archived data' % name)
-            elif name.endswith('*'):  # take all matches
-                res.extend(self.get_all(name[:-1], remote=remote))
+            elif '*' in name:
+                if name.index('*') == len(name) - 1:  # only trailing * -> take all matches
+                    res.extend(self.get_all(name[:-1], remote=remote))
+                else:  # assume a Python regular expression
+                    rex = _re.compile(name, _re.IGNORECASE)
+                    for s in self:
+                        if rex.match(s):
+                            res.append(self.get(s, remote=remote))
             elif self.find(name):  # get will bail out if there is not exactly one match
                 res.append(self.get(name, remote=remote))
             else:
