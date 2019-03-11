@@ -79,9 +79,9 @@ def main(argv=None):
     `cocopp.bbob`, or a uniquely matching substring of such a name, or a
     matching substring with added "!" in which case the first match is taken, or
     a matching substring with added "*" in which case all matches are taken, or
-    a Python regular expression containing a '*' before the last character,
-    in which case, for example, "bbob/.*7.*cma"  matches
-    "bbob/2017/DTS-CMA-ES-Pitra.tgz" (among others).
+    a regular expression containing a '*' before the last character, in which
+    case, for example, "bbob/.*7.*cma"  matches "bbob/2017/DTS-CMA-ES-Pitra.tgz"
+    (among others).
 
     This routine will:
 

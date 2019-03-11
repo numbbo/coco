@@ -835,8 +835,8 @@ class COCODataArchive(list):
         matching substring with added "!" in which case the first match is taken
         only (calling `self.get_first`), or a matching substring with added "*"
         in which case all matches are taken (calling `self.get_all`), or a
-        Python regular expression containing one or more '*' before the last
-        character, in which case, for example, "bbob/.*7.*cma"  matches
+        regular expression containing one or more '*' before the last character,
+        in which case, for example, "bbob/.*7.*cma"  matches
         "bbob/2017/DTS-CMA-ES-Pitra.tgz" (among others).
 
         """

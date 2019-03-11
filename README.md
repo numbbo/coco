@@ -2,6 +2,7 @@ numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
 [![CircleCI](https://circleci.com/gh/numbbo/coco/tree/master.svg?style=shield)](https://circleci.com/gh/numbbo/coco/tree/master)
+[![Appveyor](https://ci.appveyor.com/api/projects/status/4dawpqr7aq2ioici/branch/master?svg=true)](https://ci.appveyor.com/project/nikohansen/coco-j53aywshl8udzvb/branch/master)
 
 [This code](https://github.com/numbbo/coco) reimplements the original Comparing
 Continous Optimizer platform, now rewritten fully in `ANSI C` and `Python` with
@@ -164,16 +165,17 @@ Getting Started <a name="Getting-Started"></a>
   ```
 
   processes the referenced archived BFGS data set. The given substring must
-  have a unique match in the archive. Otherwise, all matches are listed but none
-  is processed with this call. For more information in how to obtain and
-  display specific archived data, see
+  have a unique match in the archive or must end with `!` or `*` or must be a
+  [regular expression](https://docs.python.org/3/library/re.html#regular-expression-syntax)
+  containing a `*` before the last character. Otherwise, all matches are listed
+  but none is processed with this call. For more information in how to obtain
+  and display specific archived data, see
   [`help(cocopp)`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html) or
-  [`help(cocopp.archives`)](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.
-  archiving.KnownArchives.html) or the class
-  [`COCODataArchive`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.
-  archiving.COCODataArchive.html).
+  [`help(cocopp.archives)`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.KnownArchives.html)
+  or the class
+  [`COCODataArchive`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.COCODataArchive.html).
   
-  For the `bbob` test suite, the data descriptions can be found at
+  Data descriptions can be found for the `bbob` test suite at
   http://coco.gforge.inria.fr/doku.php?id=algorithms and for the `bbob-biobj`
   test suite at http://coco.gforge.inria.fr/doku.php?id=algorithms-biobj.
 
