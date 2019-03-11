@@ -189,8 +189,10 @@ void example_experiment(const char *suite_name,
             coco_problem_get_evaluations_constraints(PROBLEM));
       long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - evaluations_done;
 
-      /* Break the loop if there are no more remaining evaluations */
-      if (evaluations_remaining <= 0)
+      /* Break the loop if the target was hit or there are no more remaining evaluations */
+      if ((coco_problem_final_target_hit(PROBLEM) &&
+           coco_problem_get_number_of_constraints(PROBLEM) == 0)
+           || (evaluations_remaining <= 0))
         break;
 
       /* Call the optimization algorithm for the remaining number of evaluations */
@@ -228,7 +230,8 @@ void example_experiment(const char *suite_name,
 }
 
 /**
- * A random search algorithm that can be used for single- as well as multi-objective optimization.
+ * A random search algorithm that can be used for single- as well as multi-objective optimization. The
+ * problem's initial solution is evaluated first.
  *
  * @param evaluate_func The function used to evaluate the objective function.
  * @param evaluate_cons The function used to evaluate the constraints.
