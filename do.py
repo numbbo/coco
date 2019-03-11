@@ -962,7 +962,7 @@ def main(args):
     for arg in args[1:]:
         if arg == 'and-test':
             also_test_python = True
-        elif arg == 'install-user':
+        elif arg in ('install-user', '--user'):
             package_install_option = ['--user']
         elif arg[:13] == 'install-home=':
             package_install_option = ['--home=' + arg[13:]]

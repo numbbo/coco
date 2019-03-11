@@ -595,10 +595,12 @@ Links and Documentation <a name="Links"></a>
 * For details on the experimental set-up to carry out the benchmarking
   please refer to http://numbbo.github.io/coco-doc/experimental-setup/.
 * More detailed documentation of the existing benchmark suites can be found here:
-  - for the **`bbob`** problem suite at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
+  - for the **`bbob`** problem suite at http://coco.gforge.inria.fr/downloads/download16.00/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
   - for the **`bbob-biobj`** and **`bbob-biobj-ext`** problem suites
     at http://numbbo.github.io/coco-doc/bbob-biobj/functions
+  - for the **`bbob-largescale`** problem suite
+    at http://numbbo.github.io/coco-doc/bbob-largescale/functions
 * Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
   http://numbbo.github.io/coco-doc/C
 * More detailed documentation on how the performance assessement is done can 
@@ -613,12 +615,13 @@ Comprehensive List of Documentations <a name="Documentations"></a>
 * General introduction: http://numbbo.github.io/coco-doc
 * Experimental setup: http://numbbo.github.io/coco-doc/experimental-setup/
 * Testbeds
-  - bbob: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf ^1
+  - bbob: http://coco.gforge.inria.fr/downloads/download16.00/bbobdocfunctions.pdf
   - bbob-biobj: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - bbob-biobj-ext: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - bbob-noisy (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
+  - bbob-largescale: http://numbbo.github.io/coco-doc/bbob-largescale/functions/
   - bbob-constrained (in progress): http://numbbo.github.io/coco-doc/bbob-constrained/functions/
-  - bbob-largescale (in progress): http://numbbo.github.io/coco-doc/bbob-largescale/functions/
+  
 
 * Performance assessment: http://numbbo.github.io/coco-doc/perf-assessment/
 * Performance assessment for biobjective testbeds: http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/
@@ -633,9 +636,7 @@ Comprehensive List of Documentations <a name="Documentations"></a>
 * Somewhat outdated documents:
   - Full description of the platform: http://coco.lri.fr/COCOdoc/
   - Experimental setup before 2016: http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
- - Old framework software documentation: http://coco.lri.fr/downloads/download15.03/bbobdocsoftware.pdf
+  - Old framework software documentation: http://coco.lri.fr/downloads/download15.03/bbobdocsoftware.pdf
  
  * Some examples of [results](https://github.com/numbbo/coco/wiki/COCO-Wiki-Home).
-
-^1: see [#837](https://github.com/numbbo/coco/issues/837) and [#1266](https://github.com/numbbo/coco/issues/1266) for two pending errata
 
