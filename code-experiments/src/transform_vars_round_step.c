@@ -1,6 +1,6 @@
 /**
  * @file transform_vars_round_step.c
- * @brief Implementation of rounding the varaibles for the step-ellispoid function
+ * @brief Implementation of rounding the variables for the step-ellipsoid function
  * TODO: should this be a helper function instead?
  */
 

@@ -870,6 +870,15 @@ static double coco_double_round(const double number) {
 }
 
 /**
+ * @brief Rounds the given double to the nearest integer using an offset (safer to use for the mixed-integer
+ * suite).
+ */
+static double coco_double_round_offset(const double number) {
+  const double offset = 1e-9;
+  return floor(number + 0.5 + offset);
+}
+
+/**
  * @brief Returns the maximum of a and b.
  */
 static double coco_double_max(const double a, const double b) {
