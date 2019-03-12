@@ -568,7 +568,7 @@ void coco_problem_get_initial_solution(const coco_problem_t *problem, double *in
           * (problem->largest_values_of_interest[i] - problem->smallest_values_of_interest[i]);
     if (problem->number_of_integer_variables > 0) {
       for (i = 0; i < problem->number_of_integer_variables; ++i) {
-        initial_solution[i] = coco_double_round(initial_solution[i]);
+        initial_solution[i] = coco_double_round_offset(initial_solution[i]);
       }
     }
   }
