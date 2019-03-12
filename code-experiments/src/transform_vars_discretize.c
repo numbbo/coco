@@ -37,7 +37,7 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
   size_t i;
   transform_vars_discretize_data_t *data;
   coco_problem_t *inner_problem;
-  double *discretized_x;
+  double *discretized_x, *rounded_x;
   double l, u, inner_l, inner_u, outer_l, outer_u;
   int n;
 
@@ -50,8 +50,9 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
   /* Transform x to fit in the discretized space */
-  printf("\ni, outer_l, outer_u, inner_l, inner_u, round(x[i]), discretized_x[i], data->offset[i]");
+  printf("\ni, outer_l, outer_u, inner_l, inner_u, rounded_x[i], data->offset[i], round(x[i]) - outer_l, discretized_x[i]");
   discretized_x = coco_duplicate_vector(x, problem->number_of_variables);
+  rounded_x = coco_duplicate_vector(x, problem->number_of_variables);
   for (i = 0; i < problem->number_of_integer_variables; ++i) {
     outer_l = problem->smallest_values_of_interest[i];
     outer_u = problem->largest_values_of_interest[i];
@@ -62,17 +63,18 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
     inner_l = l + (u - l) / (n + 1);
     inner_u = u - (u - l) / (n + 1);
     /* Make sure you the bounds are respected */
-    discretized_x[i] = coco_double_round(x[i]);
-    if (discretized_x[i] < outer_l)
-      discretized_x[i] = outer_l;
-    if (discretized_x[i] > outer_u)
-      discretized_x[i] = outer_u;
-    discretized_x[i] = inner_l + (inner_u - inner_l) * (discretized_x[i] - outer_l) / (outer_u - outer_l) - data->offset[i];
-    printf("\n %3d %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f", (int) i, outer_l, outer_u, inner_l, inner_u, coco_double_round(x[i]), discretized_x[i], data->offset[i]);
+    rounded_x[i] = coco_double_round(x[i]);
+    if (rounded_x[i] < outer_l)
+      rounded_x[i] = outer_l;
+    if (rounded_x[i] > outer_u)
+      rounded_x[i] = outer_u;
+    discretized_x[i] = inner_l + (inner_u - inner_l) * (rounded_x[i] - outer_l) / (outer_u - outer_l) - data->offset[i];
+    printf("\n %3d %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f %e %e", (int) i, outer_l, outer_u, inner_l, inner_u, rounded_x[i], data->offset[i], rounded_x[i] - outer_l, discretized_x[i]);
   }
 
   coco_evaluate_function(inner_problem, discretized_x, y);
   coco_free_memory(discretized_x);
+  coco_free_memory(rounded_x);
 }
 
 /**
