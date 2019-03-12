@@ -167,7 +167,7 @@ Getting Started <a name="Getting-Started"></a>
   processes the referenced archived BFGS data set. The given substring must
   have a unique match in the archive or must end with `!` or `*` or must be a
   [regular expression](https://docs.python.org/3/library/re.html#regular-expression-syntax)
-  containing a `*` before the last character. Otherwise, all matches are listed
+  containing a `*` and not ending with `!` or `*`. Otherwise, all matches are listed
   but none is processed with this call. For more information in how to obtain
   and display specific archived data, see
   [`help(cocopp)`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html) or

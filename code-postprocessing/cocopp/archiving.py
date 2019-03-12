@@ -687,20 +687,25 @@ class COCODataArchive(list):
         - an index of `type` `int`
         - a list of indices
 
-        Returned names correspond to the unique trailing subpath of
-        data filenames. The next call to `get` without argument will
-        retrieve the first found data and return the full data path. A
-        call to `get_all` will call `get` on all found entries and
-        return a `list` of full data paths which can be used with
-        `cocopp.main`.
+        A single substring matches either if a data entry contains the substring
+        or if the substring matches as regular expression, where "." matches any
+        single character and ".*" matches any number >= 0 of characters.
+
+        Returned names correspond to the unique trailing subpath of data
+        filenames. The next call to `get` without argument will retrieve the
+        first found data and return the full data path. A call to `get_all` will
+        call `get` on all found entries and return a `list` of full data paths
+        which can be used with `cocopp.main`.
 
         Example:
 
         >>> import cocopp
-        >>> cocopp.archives.bbob.find('Auger', '2013')[1]  # doctest:+SKIP,
+        >>> cocopp.archives.bbob.find('Auger', '2013')[1]
         '2013/lmm-CMA-ES_auger_noiseless.tgz'
+        >>> cocopp.archives.all.find("bbob/2017.*cma")[0]
+        'bbob/2017/CMAES-APOP-Nguyen.tgz'
 
-        Sitting in front of a shell, we prefer using the shortcut to find
+        For typing in a Python shell, we may prefer using the shortcut to `find`
         via `__call__`:
 
         >>> cocopp.archives.bbob('Auger', '2013') == cocopp.archives.bbob.find('Auger', '2013')
@@ -719,8 +724,9 @@ class COCODataArchive(list):
                 return StringList(self._names_found)
         names = list(self)
         for s in substrs:
+            rex = _re.compile(s, _re.IGNORECASE)
             try:
-                names = [name for name in names if s.lower() in name.lower()]
+                names = [name for name in names if rex.match(name) or s.lower() in name.lower()]
             except AttributeError:
                 warnings.warn("arguments to `find` must be strings or a "
                               "single integer or an integer list")
@@ -856,13 +862,16 @@ class COCODataArchive(list):
         matching substring with added "!" in which case the first match is taken
         only (calling `self.get_first`), or a matching substring with added "*"
         in which case all matches are taken (calling `self.get_all`), or a
-        regular expression containing one or more '*' before the last character,
-        in which case, for example, "bbob/.*7.*cma"  matches
-        "bbob/2017/DTS-CMA-ES-Pitra.tgz" (among others).
+        regular expression containing a `*` and not ending with `!` or `*`, in
+        which case, for example, "bbob/2017.*cma" matches
+        "bbob/2017/DTS-CMA-ES-Pitra.tgz" among others (in a regular expression
+        "." matches any single character and ".*" matches any number >= 0 of
+        characters).
 
         """
         res = []
         args = _str_to_list(args)
+        nb_results = 0
         for i, name in enumerate(args):
             name = name.strip()
             if os.path.exists(name):
@@ -872,22 +881,20 @@ class COCODataArchive(list):
                 if res and res[-1] is None:
                     warnings.warn('"%s" seems not to be an existing file or '
                                   'match any archived data' % name)
-            elif '*' in name:
-                if name.index('*') == len(name) - 1:  # only trailing * -> take all matches
-                    res.extend(self.get_all(name[:-1], remote=remote))
-                else:  # assume a Python regular expression
-                    rex = _re.compile(name, _re.IGNORECASE)
-                    for s in self:
-                        if rex.match(s):
-                            res.append(self.get(s, remote=remote))
+            elif name.endswith('*'):  # take all matches
+                res.extend(self.get_all(name[:-1], remote=remote))
+            elif '*' in name:  # use find which also handles regular expressions
+                res.extend(self.get(found, remote=remote)
+                           for found in self.find(name))
             elif self.find(name):  # get will bail out if there is not exactly one match
                 res.append(self.get(name, remote=remote))
-            else:
+            if len(res) <= nb_results:
                 warnings.warn('"%s" seems not to be an existing file or '
                               'match any archived data' % name)
+            nb_results = len(res)
         if len(args) != len(set(args)):
             warnings.warn("Several data arguments point to the very same "
-                          "location. This will most likely lead to \n"
+                          "location. This will likely lead to \n"
                           "rather unexpected outcomes.")
             # TODO: we would like the users input with timeout to confirm
             # and otherwise raise a ValueError
