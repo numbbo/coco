@@ -39,7 +39,6 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
   coco_problem_t *inner_problem;
   double *discretized_x, *rounded_x;
   double l, u, inner_l, inner_u, outer_l, outer_u;
-  double test = 0;
   int n;
 
   if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
@@ -70,15 +69,10 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
     if (rounded_x[i] > outer_u)
       rounded_x[i] = outer_u;
     discretized_x[i] = inner_l + (inner_u - inner_l) * (rounded_x[i] - outer_l) / (outer_u - outer_l) - data->offset[i];
-    printf("\n %3d %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f %e %e", (int) i, outer_l, outer_u, inner_l, inner_u, rounded_x[i], data->offset[i], rounded_x[i] - outer_l, discretized_x[i]);
+    if ((i > 40) && (i < 51))
+      printf("\n %3d %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f %e %e", (int) i, outer_l, outer_u, inner_l, inner_u,
+          rounded_x[i], data->offset[i], rounded_x[i] - outer_l, discretized_x[i]);
   }
-  for (i = problem->number_of_integer_variables; i < problem->number_of_variables; ++i)
-    printf("\n %e", discretized_x[i]);
-
-  for (i = 0; i < problem->number_of_variables; ++i) {
-    test += discretized_x[i];
-  }
-  printf("\n %e", test);
 
   coco_evaluate_function(inner_problem, discretized_x, y);
   coco_free_memory(discretized_x);
@@ -114,6 +108,7 @@ static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
   assert(number_of_integer_variables > 0);
   problem->number_of_integer_variables = number_of_integer_variables;
 
+  printf("\n i, outer_l, outer_u, inner_l, inner_u, inner_xopt, outer_xopt, inner_approx_xopt, data->offset[i]");
   for (i = 0; i < problem->number_of_variables; i++) {
     assert(smallest_values_of_interest[i] < largest_values_of_interest[i]);
     problem->smallest_values_of_interest[i] = smallest_values_of_interest[i];
@@ -143,6 +138,9 @@ static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
       inner_approx_xopt = inner_l + (inner_u - inner_l) * (outer_xopt - outer_l) / (outer_u - outer_l);
       /* Compute the difference between the inner_approx_xopt and inner_xopt */
       data->offset[i] = inner_approx_xopt - inner_xopt;
+      if ((i > 40) && (i < 51))
+        printf("\n %3d %7.4f %7.4f %7.4f %7.4f %e %e %e %e", (int) i, outer_l, outer_u, inner_l, inner_u,
+            inner_xopt, outer_xopt, inner_approx_xopt, data->offset[i]);
     }
   }
     
