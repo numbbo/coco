@@ -67,6 +67,8 @@ void coco_evaluate_function(coco_problem_t *problem, const double *x, double *y)
       problem->best_observed_evaluation[0] = problem->evaluations;
     }
   }
+
+  printf("\n %s %e", coco_problem_get_id(problem), y[0]);
 }
 
 /**
