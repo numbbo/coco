@@ -50,6 +50,7 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
   /* Transform x to fit in the discretized space */
+  printf("\ni, outer_l, outer_u, inner_l, inner_u, round(x[i]), discretized_x[i], data->offset[i]");
   discretized_x = coco_duplicate_vector(x, problem->number_of_variables);
   for (i = 0; i < problem->number_of_integer_variables; ++i) {
     outer_l = problem->smallest_values_of_interest[i];
@@ -67,6 +68,7 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
     if (discretized_x[i] > outer_u)
       discretized_x[i] = outer_u;
     discretized_x[i] = inner_l + (inner_u - inner_l) * (discretized_x[i] - outer_l) / (outer_u - outer_l) - data->offset[i];
+    printf("\n %3d %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f", (int) i, outer_l, outer_u, inner_l, inner_u, coco_double_round(x[i]), discretized_x[i], data->offset[i]);
   }
 
   coco_evaluate_function(inner_problem, discretized_x, y);
