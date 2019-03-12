@@ -874,7 +874,7 @@ static double coco_double_round(const double number) {
  * suite).
  */
 static double coco_double_round_offset(const double number) {
-  const double offset = 1e-9;
+  const double offset = 1e-7;
   return floor(number + 0.5 + offset);
 }
 
