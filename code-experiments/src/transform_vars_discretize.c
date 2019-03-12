@@ -119,9 +119,9 @@ static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
       inner_l = l + (u - l) / (n + 1);
       inner_u = u - (u - l) / (n + 1);
       /* Find the location of the optimum in the coordinates of the outer problem */
-      inner_xopt = inner_problem->best_parameter[i] + offset;
+      inner_xopt = inner_problem->best_parameter[i];
       outer_xopt = outer_l + (outer_u - outer_l) * (inner_xopt - inner_l) / (inner_u - inner_l);
-      outer_xopt = coco_double_round(outer_xopt);
+      outer_xopt = coco_double_round(outer_xopt + offset);
       /* Make sure you the bounds are respected */
       if (outer_xopt < outer_l)
         outer_xopt = outer_l;
