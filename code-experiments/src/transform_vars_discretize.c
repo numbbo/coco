@@ -139,7 +139,7 @@ static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
       /* Compute the difference between the inner_approx_xopt and inner_xopt */
       data->offset[i] = inner_approx_xopt - inner_xopt;
       if ((i > 40) && (i < 51))
-        printf("\n %3d %7.4f %7.4f %7.4f %7.4f %e %e %e %e", (int) i, outer_l, outer_u, inner_l, inner_u,
+        printf("\n %3d %7.4f %7.4f %7.4f %7.4f %.20e %e %e %e", (int) i, outer_l, outer_u, inner_l, inner_u,
             inner_xopt, outer_xopt, inner_approx_xopt, data->offset[i]);
     }
   }
