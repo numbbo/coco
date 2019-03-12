@@ -61,7 +61,7 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
     inner_l = l + (u - l) / (n + 1);
     inner_u = u - (u - l) / (n + 1);
     /* Make sure you the bounds are respected */
-    discretized_x[i] = coco_double_round_offset(x[i]);
+    discretized_x[i] = coco_double_round(x[i]);
     if (discretized_x[i] < outer_l)
       discretized_x[i] = outer_l;
     if (discretized_x[i] > outer_u)
@@ -92,6 +92,7 @@ static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
   coco_problem_t *problem = NULL;
   double l, u, inner_l, inner_u, outer_l, outer_u;
   double outer_xopt, inner_xopt, inner_approx_xopt;
+  const double offset = 1e-9; /* Needed to avoid issues with rounding doubles */
   int n;
   size_t i;
 
@@ -118,9 +119,9 @@ static coco_problem_t *transform_vars_discretize(coco_problem_t *inner_problem,
       inner_l = l + (u - l) / (n + 1);
       inner_u = u - (u - l) / (n + 1);
       /* Find the location of the optimum in the coordinates of the outer problem */
-      inner_xopt = inner_problem->best_parameter[i];
+      inner_xopt = inner_problem->best_parameter[i] + offset;
       outer_xopt = outer_l + (outer_u - outer_l) * (inner_xopt - inner_l) / (inner_u - inner_l);
-      outer_xopt = coco_double_round_offset(outer_xopt);
+      outer_xopt = coco_double_round(outer_xopt);
       /* Make sure you the bounds are respected */
       if (outer_xopt < outer_l)
         outer_xopt = outer_l;
