@@ -39,6 +39,7 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
   coco_problem_t *inner_problem;
   double *discretized_x, *rounded_x;
   double l, u, inner_l, inner_u, outer_l, outer_u;
+  double test = 0;
   int n;
 
   if (coco_vector_contains_nan(x, coco_problem_get_dimension(problem))) {
@@ -73,6 +74,11 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
   }
   for (i = problem->number_of_integer_variables; i < problem->number_of_variables; ++i)
     printf("\n %e", discretized_x[i]);
+
+  for (i = 0; i < problem->number_of_variables; ++i) {
+    test += discretized_x[i];
+  }
+  printf("\n %e", test);
 
   coco_evaluate_function(inner_problem, discretized_x, y);
   coco_free_memory(discretized_x);
