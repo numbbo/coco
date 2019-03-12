@@ -71,6 +71,8 @@ static void transform_vars_discretize_evaluate_function(coco_problem_t *problem,
     discretized_x[i] = inner_l + (inner_u - inner_l) * (rounded_x[i] - outer_l) / (outer_u - outer_l) - data->offset[i];
     printf("\n %3d %7.4f %7.4f %7.4f %7.4f %7.4f %7.4f %e %e", (int) i, outer_l, outer_u, inner_l, inner_u, rounded_x[i], data->offset[i], rounded_x[i] - outer_l, discretized_x[i]);
   }
+  for (i = problem->number_of_integer_variables; i < problem->number_of_variables; ++i)
+    printf("\n %e", discretized_x[i]);
 
   coco_evaluate_function(inner_problem, discretized_x, y);
   coco_free_memory(discretized_x);
