@@ -51,6 +51,7 @@ import os
 import warnings
 import hashlib
 import ast
+import re as _re
 
 from .toolsdivers import StringList
 try:
@@ -539,6 +540,27 @@ class COCODataArchive(list):
         ('bbob/2018/DE-ttb.tgz', 'f08d2fa51303429b69821cd09ff1b164fc89e4dc27a40abe657706133243eb36', 15514),
         ('bbob/2018/PSA-CMA-ES.tgz', 'c6a2cd2dda68e109b8454738fc7148f6ffa4cc779c66e303bd0a077efaefce56', 11087),
         ('bbob/2018/PSA-CMA-ESwRS.tgz', '8237619d4b0bae888c3aded23b6cbbc07387a11df9af4d2a9c6bea888493a38a', 10835),
+        ('bbob/2018-others/uBBDE-best.tgz', '53d211e46fc2ac68e427ca0b525a240f0071dac686cf2a426babf5f0d300276b', 17121),
+        ('bbob/2018-others/uBBDE-N.tgz', 'd0d94d7c0e4c7cb57aa45dc68392f543bb825b185e937ef7f20d74d3feb54942', 16835),
+        ('bbob/2018-others/uBBDE-ttb.tgz', '6a13395434e4a1a44b33883ee1bd6eb49c174148e2709fbf613f7cf39afcf9ef', 17642),
+        ('bbob/2018-others/uBBDE.tgz', '2546cea871f739a69f9832e1976fd25b21be6a54c7b4f19caea8ebced1d9fd55', 14390),
+        ('bbob/2018-others/uDE-best.tgz', '00d67330af759717b2d43ac7d6d7f66c32d80614b8bb0b6cb4378ea89f4f3865', 14918),
+        ('bbob/2018-others/uDE-rand.tgz', '744e29c3e35a488224481ecad3fc2ea0fa1b13a6ec5078aaa729ef21321f83fc', 13427),
+        ('bbob/2018-others/uDE-ttb.tgz', '9833d10050ae14c74663fb8976a8b34372cb0d7cff70d7f89028648560e6bbba', 14939),
+        ('bbob/2019/RS-0p5-initIn0.tgz', '5c2b7659fb56bba698e042cda690857cc20c686d9a4ebd78bc1b8cdd8cda45e6', 10996),
+        ('bbob/2019/RS-0p5.tgz', '16dba43641078c2e5d9d0252cf46c10f78202168ff2db643e5df09df016c7d4b', 11083),
+        ('bbob/2019/RS-1-initIn0.tgz', '29a630eddf47b3503cd1503209e7a260e7051d1cbf9596bdf8e6f7ccf79b13d0', 11272),
+        ('bbob/2019/RS-1.tgz', 'cbdf7cc2d65dd45c9a35cdfc95426b9825ecc920c3fa516e7217efd3f67f2382', 11534),
+        ('bbob/2019/RS-10-initIn0.tgz', 'ae95352427b5fb9e980daea8db1d539033491dd7a874b155ebca129724a8faf2', 11001),
+        ('bbob/2019/RS-2-initIn0.tgz', '4712fc44c77c534a891f95daeef5dbecadd172393ce4f37ebc054ba88f33514c', 11495),
+        ('bbob/2019/RS-2.tgz', 'fc4c22616b8b8ca3a3170ae0648cdd7b952033cded2e4ce68b993723a73d3058', 11644),
+        ('bbob/2019/RS-20-initIn0.tgz', '09e4c37c2622eba7144a9831894cb3b9e046073ce15f64c09f0a07f93140c43d', 10678),
+        ('bbob/2019/RS-3-initIn0.tgz', '1db808f05314732e8e9b4a988a256edb3bd1d9d26502a6fb231517ba760eae58', 11427),
+        ('bbob/2019/RS-3.tgz', 'f8425a60593395587674ccfbc1ccd99c0d69a1617e816e81ac21f0c697ef2371', 11665),
+        ('bbob/2019/RS-4-initIn0.tgz', '2310762ff5b4e5bb7e55809fed3731fc11470c64c84842db43d6a969ca5dd283', 11404),
+        ('bbob/2019/RS-5-initIn0.tgz', '1c0b706b70885f2380d981a150af0f7732a69fdf274a8fe24aa5139e4d57fbb9', 11342),
+        ('bbob/2019/RS-6-initIn0.tar.gz', 'a1c0aec578079177c3cecd7fedb778a8ff08eb75f76df16f31b2e22467d7ed83', 11241),
+        ('bbob/2019/RS-6.tgz', '7b3eec226e020d333c5acc89ac3f949b5765c2ae82999170dd9e36a25e3f471d', 11688),
         ('bbob-biobj/2016/DEMO_Tusar_bbob-biobj.tgz', 'f1e4d3d19d5d36a88bec9916462432f297f5d5ee67ef137e685b45bbce631ed4', 9509),
         ('bbob-biobj/2016/HMO-CMA-ES_Loshchilov_bbob-biobj.tgz', '07254ffa5d818298bb77714e5fb08e226e31f4da60d8500e8f00a030e2e8f530', 18435),
         ('bbob-biobj/2016/MAT-DIRECT_Al-Dujaili_bbob-biobj.tgz', 'b2b08f4614c5881738d04b98246183444b21d801a804a3ce32dbf85a02783cd8', 737),
@@ -665,20 +687,25 @@ class COCODataArchive(list):
         - an index of `type` `int`
         - a list of indices
 
-        Returned names correspond to the unique trailing subpath of
-        data filenames. The next call to `get` without argument will
-        retrieve the first found data and return the full data path. A
-        call to `get_all` will call `get` on all found entries and
-        return a `list` of full data paths which can be used with
-        `cocopp.main`.
+        A single substring matches either if a data entry contains the substring
+        or if the substring matches as regular expression, where "." matches any
+        single character and ".*" matches any number >= 0 of characters.
+
+        Returned names correspond to the unique trailing subpath of data
+        filenames. The next call to `get` without argument will retrieve the
+        first found data and return the full data path. A call to `get_all` will
+        call `get` on all found entries and return a `list` of full data paths
+        which can be used with `cocopp.main`.
 
         Example:
 
         >>> import cocopp
-        >>> cocopp.archives.bbob.find('Auger', '2013')[1]  # doctest:+SKIP,
+        >>> cocopp.archives.bbob.find('Auger', '2013')[1]
         '2013/lmm-CMA-ES_auger_noiseless.tgz'
+        >>> cocopp.archives.all.find("bbob/2017.*cma")[0]
+        'bbob/2017/CMAES-APOP-Nguyen.tgz'
 
-        Sitting in front of a shell, we prefer using the shortcut to find
+        For typing in a Python shell, we may prefer using the shortcut to `find`
         via `__call__`:
 
         >>> cocopp.archives.bbob('Auger', '2013') == cocopp.archives.bbob.find('Auger', '2013')
@@ -697,8 +724,9 @@ class COCODataArchive(list):
                 return StringList(self._names_found)
         names = list(self)
         for s in substrs:
+            rex = _re.compile(s, _re.IGNORECASE)
             try:
-                names = [name for name in names if s.lower() in name.lower()]
+                names = [name for name in names if rex.match(name) or s.lower() in name.lower()]
             except AttributeError:
                 warnings.warn("arguments to `find` must be strings or a "
                               "single integer or an integer list")
@@ -829,15 +857,21 @@ class COCODataArchive(list):
     def get_extended(self, args, remote=True):
         """return a list of valid paths.
 
-        Elements in `args` may be a valid path name or a known name
-        from the data archive, or a uniquely matching substring of such
-        a name, or a matching substring with added "!" in which case
-        the first match is taken only (calling `self.get_first`),
-        or a matching substring with added "*" in which case all
-        matches are taken (calling `self.get_all`).
+        Elements in `args` may be a valid path name or a known name from the
+        data archive, or a uniquely matching substring of such a name, or a
+        matching substring with added "!" in which case the first match is taken
+        only (calling `self.get_first`), or a matching substring with added "*"
+        in which case all matches are taken (calling `self.get_all`), or a
+        regular expression containing a `*` and not ending with `!` or `*`, in
+        which case, for example, "bbob/2017.*cma" matches
+        "bbob/2017/DTS-CMA-ES-Pitra.tgz" among others (in a regular expression
+        "." matches any single character and ".*" matches any number >= 0 of
+        characters).
+
         """
         res = []
         args = _str_to_list(args)
+        nb_results = 0
         for i, name in enumerate(args):
             name = name.strip()
             if os.path.exists(name):
@@ -849,14 +883,18 @@ class COCODataArchive(list):
                                   'match any archived data' % name)
             elif name.endswith('*'):  # take all matches
                 res.extend(self.get_all(name[:-1], remote=remote))
+            elif '*' in name:  # use find which also handles regular expressions
+                res.extend(self.get(found, remote=remote)
+                           for found in self.find(name))
             elif self.find(name):  # get will bail out if there is not exactly one match
                 res.append(self.get(name, remote=remote))
-            else:
+            if len(res) <= nb_results:
                 warnings.warn('"%s" seems not to be an existing file or '
                               'match any archived data' % name)
+            nb_results = len(res)
         if len(args) != len(set(args)):
             warnings.warn("Several data arguments point to the very same "
-                          "location. This will most likely lead to \n"
+                          "location. This will likely lead to \n"
                           "rather unexpected outcomes.")
             # TODO: we would like the users input with timeout to confirm
             # and otherwise raise a ValueError
