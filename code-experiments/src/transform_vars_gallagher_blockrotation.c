@@ -1,6 +1,6 @@
 /**
  * @file transform_vars_gallagher_blockrotation.c
- * @brief Implementation of performing a block-rotation transformation on decision values for the gallagher function.
+ * @brief Implementation of performing a block-rotation transformation on decision values for the Gallagher function.
  * The block-rotation is applied only once per call and the result is stored such that the sub-problems can access it
  *
  */
