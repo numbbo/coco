@@ -700,10 +700,10 @@ class COCODataArchive(list):
         Example:
 
         >>> import cocopp
-        >>> cocopp.archives.bbob.find('Auger', '2013')[1]
-        '2013/lmm-CMA-ES_auger_noiseless.tgz'
-        >>> cocopp.archives.all.find("bbob/2017.*cma")[0]
-        'bbob/2017/CMAES-APOP-Nguyen.tgz'
+        >>> print(cocopp.archives.bbob.find('Auger', '2013')[1])
+        2013/lmm-CMA-ES_auger_noiseless.tgz
+        >>> print(cocopp.archives.all.find("bbob/2017.*cma")[0])
+        bbob/2017/CMAES-APOP-Nguyen.tgz
 
         For typing in a Python shell, we may prefer using the shortcut to `find`
         via `__call__`:
