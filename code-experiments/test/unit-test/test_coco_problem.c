@@ -108,19 +108,20 @@ MU_TEST(test_coco_is_feasible) {
   }
   coco_suite_free(suite);
   coco_free_memory(x);
+  coco_free_memory(initial_solution);
 }
 
 /**
  * Tests whether coco_problem_get_largest_fvalues_of_interest returns non-NULL values
- * on problems from the "bbob-biobj" test suite.
+ * on the first problem instances from the "bbob-biobj-ext" test suite.
  */
-MU_TEST(test_coco_problem_get_largest_fvalues_of_interest_bbob_biobj) {
+MU_TEST(test_coco_problem_get_largest_fvalues_of_interest_bbob_biobj_ext) {
 
   coco_suite_t *suite;
   coco_problem_t *problem;
   const double *result;
 
-  suite = coco_suite("bbob-biobj", NULL, NULL);
+  suite = coco_suite("bbob-biobj-ext", NULL, "instance_indices: 1");
   while ((problem = coco_suite_get_next_problem(suite, NULL)) != NULL) {
     result = coco_problem_get_largest_fvalues_of_interest(problem);
     mu_check(result);
@@ -135,6 +136,6 @@ MU_TEST_SUITE(test_all_coco_problem) {
   MU_RUN_TEST(test_coco_evaluate_function);
   MU_RUN_TEST(test_coco_evaluate_constraint);
   MU_RUN_TEST(test_coco_is_feasible);
-  MU_RUN_TEST(test_coco_problem_get_largest_fvalues_of_interest_bbob_biobj);
+  MU_RUN_TEST(test_coco_problem_get_largest_fvalues_of_interest_bbob_biobj_ext);
 }
 

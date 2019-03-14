@@ -2,7 +2,7 @@
 #include "minunit_c89.h"
 
 /**
- * Tests coco_archive-related functions.
+ * Tests coco_string-related functions.
  */
 MU_TEST(test_coco_string_trim) {
 

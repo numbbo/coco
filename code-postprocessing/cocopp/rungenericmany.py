@@ -317,7 +317,7 @@ def main(argv=None):
         config.config(dsList[0].testbed_name)
 
         for i in dsList:
-            if i.dim not in genericsettings.dimensions_to_display:
+            if i.dim not in testbedsettings.current_testbed.dimensions_to_display:
                 continue
             # check whether current set of instances correspond to correct
             # setting of a BBOB workshop and issue a warning otherwise:            
@@ -404,7 +404,7 @@ def main(argv=None):
                 dic_dim0 = ds_list0.dictByDim()
                 dic_dim1 = ds_list1.dictByDim()
                 for dim in set(dic_dim0.keys()) & set(dic_dim1.keys()):
-                    if dim in inset.rldDimsOfInterest:
+                    if dim in testbedsettings.current_testbed.rldDimsOfInterest:
                         # ECDF for all functions altogether
                         try:
                             pprldistr2.main(dic_dim0[dim], dic_dim1[dim], dim,
@@ -451,7 +451,7 @@ def main(argv=None):
                         pprldistr.fmax = None  # Resetting the max final value
                         pprldistr.evalfmax = None  # Resetting the max #fevalsfactor
                         # ECDFs of all functions altogether
-                        if dim in inset.rldDimsOfInterest:
+                        if dim in testbedsettings.current_testbed.rldDimsOfInterest:
                             try:
                                 pprldistr.comp(dic_dim1[dim], dic_dim0[dim],
                                                testbedsettings.current_testbed.rldValsOfInterest,

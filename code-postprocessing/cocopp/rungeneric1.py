@@ -403,7 +403,7 @@ def main(argv=None):
                               'results will be mixed in the "all functions" '
                               'ECDF figures.')
             dictDim = dsList.dictByDim()
-            for dim in inset.rldDimsOfInterest:
+            for dim in testbedsettings.current_testbed.rldDimsOfInterest:
                 try:
                     sliceDim = dictDim[dim]
                 except KeyError:
@@ -455,7 +455,7 @@ def main(argv=None):
                     except (SyntaxError, NameError, ValueError):
                         print("Float value required.")
                 dictDim = sliceNoise.dictByDim()
-                for d in inset.rldDimsOfInterest:
+                for d in testbedsettings.current_testbed.rldDimsOfInterest:
                     try:
                         sliceDim = dictDim[d]
                     except KeyError:
@@ -467,7 +467,6 @@ def main(argv=None):
                         info = '%s' % fGroup
                         pplogloss.main(sliceFuncGroup, CrE, True,
                                        algoutputdir, info)
-                    pplogloss.evalfmax = None  # Resetting the max #fevalsfactor
             print_done()
 
         prepend_to_file(latex_commands_file,

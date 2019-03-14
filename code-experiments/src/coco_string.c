@@ -6,10 +6,12 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "coco.h"
 
 static size_t *coco_allocate_vector_size_t(const size_t number_of_elements);
+static char *coco_allocate_string(const size_t number_of_elements);
 
 /**
  * @brief Creates a duplicate copy of string and returns a pointer to it.
@@ -127,7 +129,13 @@ static long coco_strfind(const char *base, const char *seq) {
  * @brief Splits a string based on the given delimiter.
  *
  * Returns a pointer to the resulting substrings with NULL as the last one.
- * The caller is responsible for freeing the allocated memory using coco_free_memory().
+ * The caller is responsible for freeing the allocated memory using:
+ *
+ *  for (i = 0; *(result + i); i++)
+ *    coco_free_memory(*(result + i));
+ *  coco_free_memory(*(result + i));    <- This is needed!
+ *  coco_free_memory(result);
+ *
  */
 static char **coco_string_split(const char *string, const char delimiter) {
 
@@ -431,7 +439,8 @@ static size_t *coco_string_parse_ranges(const char *string,
  * allocated, it can be still freed on the returned pointer.
  */
 static char *coco_string_trim(char *string) {
-	size_t len = 0;
+	size_t i, len = 0;
+	int all_whitespaces = 1;
 	char *frontp = string;
 	char *endp = NULL;
 
@@ -444,6 +453,13 @@ static char *coco_string_trim(char *string) {
 
 	len = strlen(string);
 	endp = string + len;
+
+	for (i = 0; ((i < len) && all_whitespaces); i++)
+		all_whitespaces = all_whitespaces && isspace(string[i]);
+	if (all_whitespaces) {
+	  string[0] = '\0';
+		return string;
+	}
 
 	/* Move the front and back pointers to address the first non-whitespace characters from each end. */
 	while (isspace((unsigned char) *frontp)) {
@@ -470,3 +486,4 @@ static char *coco_string_trim(char *string) {
 
 	return string;
 }
+

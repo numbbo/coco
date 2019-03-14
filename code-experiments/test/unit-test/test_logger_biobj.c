@@ -30,7 +30,7 @@ MU_TEST(test_logger_biobj_evaluate) {
     coco_error("test_logger_biobj_evaluate() failed to open file '%s'.", file_name);
   }
 
-  suite = coco_suite("bbob-biobj", "year: 2016", "dimensions: 2 function_indices: 23 instance_indices: 5");
+  suite = coco_suite("bbob-biobj", "instances: 1-10", "dimensions: 2 function_indices: 23 instance_indices: 5");
   observer = coco_observer("bbob-biobj", "");
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
@@ -85,7 +85,7 @@ MU_TEST(test_logger_biobj_evaluate2) {
   logger_biobj_data_t *logger;
   logger_biobj_indicator_t *indicator;
 
-  suite = coco_suite("bbob-biobj", "year: 2016", "dimensions: 2 function_indices: 12 instance_indices: 7");
+  suite = coco_suite("bbob-biobj", "instances: 1-10", "dimensions: 2 function_indices: 12 instance_indices: 7");
   observer = coco_observer("bbob-biobj", "");
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {

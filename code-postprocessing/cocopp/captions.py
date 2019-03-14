@@ -115,7 +115,8 @@ def get_light_brown_line_text(testbedname):
         return r"""Shown are aggregations over functions where the single
             objectives are in the same BBOB function class, as indicated on the
             left side and the aggregation over all 55 functions in the last row."""
-    elif (testbedname == testbedsettings.testbed_name_bi_ext):
+    elif (testbedname in [testbedsettings.testbed_name_bi_ext,
+                          testbedsettings.testbed_name_bi_mixint]):
         return r"""Shown are aggregations over functions where the single
             objectives are in the same BBOB function class, as indicated on the
             left side and the aggregation over all 92 functions in the last row."""
@@ -123,11 +124,16 @@ def get_light_brown_line_text(testbedname):
         return r"""Shown are aggregations over problems where the objective
             functions are in the same BBOB function class and the aggregation
             over all 48 functions in the last row."""  # TODO: check whether this makes sense
-    elif (testbedname in [testbedsettings.testbed_name_single, testbedsettings.testbed_name_single_noisy]):
+    elif (testbedname in [testbedsettings.testbed_name_single,
+                          testbedsettings.testbed_name_single_noisy]):
         return r"""Light brown lines in the background show ECDFs for the most difficult target of all
-            algorithms benchmarked during BBOB-2009.""" 
+            algorithms benchmarked during BBOB-2009."""
+    elif (testbedname in [testbedsettings.testbed_name_ls,
+                          testbedsettings.testbed_name_mixint]):
+        return ""
     else:
         warnings.warn("Current testbed not supported for this caption text.")
+        return ""
         
     
 # please try to avoid underscores in the labels to not break the HTML code:
@@ -135,14 +141,17 @@ replace_dict = {
         '!!NOTCHED-BOXES!!': lambda: r"""Notched boxes: interquartile range with median of simulated runs; """ 
             if genericsettings.scaling_figures_with_boxes else "",
         '!!DF!!': lambda: r"""\Df""" if not (testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi,
-                                                                                      testbedsettings.testbed_name_bi_ext]) else r"""\DI""",
+                                                                                      testbedsettings.testbed_name_bi_ext,
+                                                                                      testbedsettings.testbed_name_bi_mixint]) else r"""\DI""",
         '!!FOPT!!': lambda: r"""\fopt""" if not (testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi,
-                                                                                          testbedsettings.testbed_name_bi_ext]) else r"""\hvref""",
+                                                                                          testbedsettings.testbed_name_bi_ext,
+                                                                                          testbedsettings.testbed_name_bi_mixint]) else r"""\hvref""",
         '!!DIVIDED-BY-DIMENSION!!': lambda: r"""divided by dimension and """ if ynormalize_by_dimension else "",
         '!!LIGHT-THICK-LINE!!': lambda: r"""The light thick line with diamonds indicates """ + get_reference_algorithm_text(False) + r""" for the most difficult target. """ if testbedsettings.current_testbed.reference_algorithm_filename else "",
         '!!F!!': lambda: r"""I_{\mathrm HV}^{\mathrm COCO}""" if (testbedsettings.current_testbed.name 
                                                                     in [testbedsettings.testbed_name_bi,
-                                                                        testbedsettings.testbed_name_bi_ext]) else "f",
+                                                                        testbedsettings.testbed_name_bi_ext,
+                                                                        testbedsettings.testbed_name_bi_mixint]) else "f",
         '!!THE-REF-ALG!!': lambda: get_reference_algorithm_text(False),
         '!!HARDEST-TARGET-LATEX!!': lambda: testbedsettings.current_testbed.hardesttargetlatex,
         '!!DIM!!': lambda: r"""\DIM""",

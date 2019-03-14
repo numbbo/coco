@@ -53,7 +53,7 @@ def get_table_caption():
     """ Sets table caption, based on the testbedsettings.current_testbed
         and genericsettings.runlength_based_targets.
     """    
-        
+
     table_caption_start = r"""%
         Average running time (\aRT\ in number of function 
         evaluations) divided by the \aRT\ of !!THE-REF-ALG!! in #1. This \aRT\
@@ -81,7 +81,7 @@ def get_table_caption():
         """
     table_caption_no_reference_algorithm = r"""%
         Average runtime (\aRT) to reach given targets, measured
-        in number of function evaluations. For each function, the \aRT\ 
+        in number of function evaluations in #1. For each function, the \aRT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
         target !!DF!!-values as shown in the top row. 
@@ -97,7 +97,9 @@ def get_table_caption():
             table_caption = table_caption_start + table_caption_rlbased + table_caption_rest
         else:
             table_caption = table_caption_start + table_caption_fixedtargets + table_caption_rest
-    elif testbedsettings.current_testbed.name in ['bbob-biobj-ext', testbedsettings.testbed_name_cons]:
+    elif testbedsettings.current_testbed.name in ['bbob-biobj-ext', 'bbob-constrained',
+                                                  'bbob-largescale', 'bbob-mixint',
+                                                  'bbob-biobj-mixint']:
         # all testbeds without provided reference algorithm
         table_caption = table_caption_no_reference_algorithm
     else:

@@ -41,9 +41,9 @@
 \acmISBN{123-4567-24-567/18/07}
 
 %Conference
-\acmConference[GECCO '18]{the Genetic and Evolutionary Computation Conference 2018}{July 15--19, 2018}{Kyoto, Japan}
-\acmYear{2018}
-\copyrightyear{2018}
+\acmConference[GECCO '19]{the Genetic and Evolutionary Computation Conference 2019}{July 13--17, 2019}{Prague, Czech Republic}
+\acmYear{2019}
+\copyrightyear{2019}
 
 \acmPrice{15.00}
 
@@ -65,17 +65,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % read in data and deal with the different number of algorithms:
 \input{\bbobdatapath cocopp_commands.tex}
-\ifthenelse{\isundefined{\numofalgs}}
+\ifthenelse{\equal{\numofalgs}{1}}
 {
-		\newcommand{\numberofalgorithms}{one}
-}{
-	  \ifthenelse{\equal{\numofalgs}{2}}
-	  {
-	      \newcommand{\numberofalgorithms}{two}
-	  }{
-	      \newcommand{\numberofalgorithms}{three}
-	  }
+    \newcommand{\numberofalgorithms}{one}
 }
+{
+    \ifthenelse{\equal{\numofalgs}{2}}
+    {
+        \newcommand{\numberofalgorithms}{two}
+    }{
+	    \newcommand{\numberofalgorithms}{three}
+	}
+}
+
 
 \ifthenelse{\equal{\numberofalgorithms}{one}}{
    \graphicspath{{\bbobdatapath\algfolder}}}{
@@ -121,7 +123,7 @@
 
 \title{Black-Box Optimization Benchmarking Template for the Comparison of Algorithms on the \bbobnoisy Testbed}
 \renewcommand{\shorttitle}{Template to Compare Algorithms on the \bbobnoisy Testbed}
-\titlenote{Submission deadline: March 31st.}
+\titlenote{Submission deadline: April 3rd.}
 %Camera-ready paper due April 24th.}}
 \subtitle{Draft version}
 
@@ -267,9 +269,9 @@ The experiments were performed with COCO \cite{hansen2016cocoplat}, version
 
 The \textbf{average runtime (aRT)}, used in the %figures and
 tables,
-depends on a given quality indicator value, $\Itarget=\fopt+\Df$, and is
+depends on a given target precision, $\Itarget=\fopt+\Df$, and is
 computed over all relevant trials as the number of function
-evaluations executed during each trial while the best indicator value
+evaluations executed during each trial while the best function value
 did not reach \ftarget, summed over all trials and divided by the
 number of trials that actually reached \ftarget\
 \cite{hansen2016exp,price1997dev}.
