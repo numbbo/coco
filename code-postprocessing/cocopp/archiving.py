@@ -726,7 +726,7 @@ class COCODataArchive(list):
         for s in substrs:
             rex = _re.compile(s, _re.IGNORECASE)
             try:
-                names = [str(name) for name in names if rex.match(name) or s.lower() in name.lower()]
+                names = [name for name in names if rex.match(name) or s.lower() in name.lower()]
             except AttributeError:
                 warnings.warn("arguments to `find` must be strings or a "
                               "single integer or an integer list")
