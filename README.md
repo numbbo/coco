@@ -141,9 +141,10 @@ Getting Started <a name="Getting-Started"></a>
   Another entry point for your own experiments can be the `code-experiments/examples`
   folder. 
 
-5. Now you can **run** your favorite algorithm on the `bbob` suite (for 
-  single-objective algorithms) or on the `bbob-biobj` and `bbob-biobj-ext`
-  suites (for multi-objective algorithms). Output is automatically generated in the 
+5. Now you can **run** your favorite algorithm on the `bbob` and `bbob-largescale` suites
+  (for single-objective algorithms), on the `bbob-biobj` suite (for multi-objective 
+  algorithms), or on the mixed-integer suites (`bbob-mixint` and `bbob-biobj-mixint` 
+  respectively). Output is automatically generated in the 
   specified data `result_folder`. By now, more suites might be available, see below. 
 
   <a name="Getting-Started-pp"></a>
@@ -259,15 +260,19 @@ our issue tracker at https://github.com/numbbo/coco/issues.
     problem inheriting thereby all properties of a coco problem)
   - most other files implement more or less what they say, e.g. the actual
     benchmark functions, transformations, benchmark suites, etc.
-  - currently, four benchmark suites and corresponding logging facilities are
-    implemented:
+  - currently, the following benchmark suites and corresponding logging facilities are
+    supported:
     * `bbob`: standard single-objective BBOB benchmark suite with 24 noiseless,
       scalable test functions
     * `bbob-biobj`: a bi-objective benchmark suite, combining 10 selected
       functions from the bbob suite, resulting in 55 noiseless functions
-    * `bbob-biobj-ext`: an extended version of the bi-objective `bbob-biobj`
-       benchmark suite, adding `bbob` function combinations from the same
-       `bbob` function groups, resulting in 92 noiseless functions overall
+    * `bbob-largescale`: a version of the `bbob` benchmark suite with dimensions
+      20 to 640, employing permuted block-diagonal matrices to reduce the 
+      execution time for function evaluations in higher dimension.
+    * `bbob-mixint`: a mixed-integer version of the original `bbob` and
+      `bbob-largescale` suites in which 80% of the variables have been discretized
+    * `bbob-biobj-mixint`: a version of the (so far not supported) `bbob-biobj-ext`
+      test suite with 92 functions with 80% discretized variables
     * `toy`: a simple, probably easier-to-understand example for reading and testing
 
 * code-experiments/tools are a few meta-tools, mainly the amalgamate.py to merge all
@@ -603,6 +608,9 @@ Links and Documentation <a name="Links"></a>
     at http://numbbo.github.io/coco-doc/bbob-biobj/functions
   - for the **`bbob-largescale`** problem suite
     at http://numbbo.github.io/coco-doc/bbob-largescale/functions
+  - for the **`bbob-mixint`** and **`bbob-biobj-mixint`** problem suites, we refer to 
+    https://hal.inria.fr/hal-02067932/document and to
+    http://coco.gforge.inria.fr/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
 * Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
   http://numbbo.github.io/coco-doc/C
 * More detailed documentation on how the performance assessement is done can 
@@ -622,6 +630,8 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - bbob-biobj-ext: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - bbob-noisy (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
   - bbob-largescale: http://numbbo.github.io/coco-doc/bbob-largescale/functions/
+  - bbob-mixint and bbob-biobj-mixint: https://hal.inria.fr/hal-02067932/document and
+    http://coco.gforge.inria.fr/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
   - bbob-constrained (in progress): http://numbbo.github.io/coco-doc/bbob-constrained/functions/
   
 

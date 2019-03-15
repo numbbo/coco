@@ -50,7 +50,7 @@ _default_observers = {
     'bbob-constrained': 'bbob',
     'bbob-largescale': 'bbob',
     'bbob-mixint': 'bbob',
-    'bbob-biobj-minxint': 'bbob-biobj',
+    'bbob-biobj-mixint': 'bbob-biobj',
     }
 
 class Suite(_Suite):
