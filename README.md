@@ -608,6 +608,9 @@ Links and Documentation <a name="Links"></a>
     at http://numbbo.github.io/coco-doc/bbob-biobj/functions
   - for the **`bbob-largescale`** problem suite
     at http://numbbo.github.io/coco-doc/bbob-largescale/functions
+  - for the **`bbob-mixint`** and **`bbob-biobj-mixint`** problem suites, we refer to 
+    https://hal.inria.fr/hal-02067932/document and to
+    http://coco.gforge.inria.fr/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
 * Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
   http://numbbo.github.io/coco-doc/C
 * More detailed documentation on how the performance assessement is done can 
@@ -627,6 +630,8 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - bbob-biobj-ext: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - bbob-noisy (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
   - bbob-largescale: http://numbbo.github.io/coco-doc/bbob-largescale/functions/
+  - bbob-mixint and bbob-biobj-mixint: https://hal.inria.fr/hal-02067932/document and
+    http://coco.gforge.inria.fr/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
   - bbob-constrained (in progress): http://numbbo.github.io/coco-doc/bbob-constrained/functions/
   
 
