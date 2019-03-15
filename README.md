@@ -3,6 +3,9 @@ numbbo/coco: Comparing Continuous Optimizers
 
 [![CircleCI](https://circleci.com/gh/numbbo/coco/tree/master.svg?style=shield)](https://circleci.com/gh/numbbo/coco/tree/master)
 [![Appveyor](https://ci.appveyor.com/api/projects/status/4dawpqr7aq2ioici/branch/master?svg=true)](https://ci.appveyor.com/project/nikohansen/coco-j53aywshl8udzvb/branch/master)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2594848.svg)](https://doi.org/10.5281/zenodo.2594848)
+[[BibTeX](https://zenodo.org/record/2594848/export/hx#.XIu-BxP0nRY)] cite as:
+> Nikolaus Hansen, Dimo Brockhoff, Olaf Mersmann, Tea Tusar, Dejan Tusar, Ouassim Ait ElHara, Phillipe R. Sampaio, Asma Atamna, Konstantinos Varelas, Umut Batu, Duc Manh Nguyen, Filip Matzner, Anne Auger. (2019, March 15). COmparing Continuous Optimizers: numbbo/COCO on Github. Zenodo, [DOI:10.5281/zenodo.2594847](https://doi.org/10.5281/zenodo.2594847), March 2019.
 
 [This code](https://github.com/numbbo/coco) reimplements the original Comparing
 Continous Optimizer platform, now rewritten fully in `ANSI C` and `Python` with
