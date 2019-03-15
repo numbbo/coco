@@ -123,7 +123,7 @@ Getting Started <a name="Getting-Started"></a>
 4. **Copy** the folder `code-experiments/build/YOUR-FAVORITE-LANGUAGE` and
   its content to another location. In Python it is sufficient to copy the 
   file [`example_experiment_for_beginners.py`](./code-experiments/build/python/example_experiment_for_beginners.py)
-  or `example_experiment.py`.
+  or [`example_experiment2.py`](./code-experiments/build/python/example_experiment2.py).
   Run the example experiment (it already is compiled). As the details vary, see
   the respective read-me's and/or example experiment files:
 
@@ -134,7 +134,7 @@ Getting Started <a name="Getting-Started"></a>
   - `Matlab/Octave` [read me](./code-experiments/build/matlab/README.md)
     and [example experiment](./code-experiments/build/matlab/exampleexperiment.m) 
   - `Python` [read me](./code-experiments/build/python/README.md)
-    and [example experiment](./code-experiments/build/python/example_experiment.py)
+    and [example experiment2](./code-experiments/build/python/example_experiment2.py)
 
   If the example experiment runs, **connect** your favorite algorithm
   to Coco: replace the call to the random search optimizer in the
@@ -209,7 +209,7 @@ Getting Started <a name="Getting-Started"></a>
   
 8. The experiments can be **parallelized** with any re-distribution of single
   problem instances to batches (see
-  [`example_experiment.py`](./code-experiments/build/python/example_experiment.py#L235) 
+  [`example_experiment2.py`](./code-experiments/build/python/example_experiment2.py#L100) 
   for an example). Each batch must write in a different target folder (this
   should happen automatically). Results of each batch must be kept under their
   separate folder as is. These folders then must be moved/copied into a single
@@ -646,7 +646,7 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - ``C`` experiments code: http://numbbo.github.io/coco-doc/C
   - Python experiments code `cocoex`: http://coco.gforge.inria.fr/apidocs-cocoex/cocoex.html
   - Python short [beginners example experiment](code-experiments/build/python/example_experiment_for_beginners.py)
-  - Python `example_experiment.py`: http://coco.gforge.inria.fr/apidocs-example_experiment/example_experiment.html
+  - Python `example_experiment2.py`: http://coco.gforge.inria.fr/apidocs-example_experiment/example_experiment2.html
   - Postprocessing code: http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html
 
 * Somewhat outdated documents:
