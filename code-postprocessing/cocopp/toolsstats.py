@@ -840,6 +840,7 @@ def significance_all_best_vs_other(datasets, targets, best_alg_idx=None):
         erts = []
         for ds in datasets:
             erts.append(ds.detERT(targets))
+          
         best_alg_idx2 = np.array(erts).argsort(0)[0, :]  # indexed by target index
         assert all(best_alg_idx2 == best_alg_idx)
         

@@ -26,6 +26,7 @@ from six import advance_iterator
 from . import toolsstats, toolsdivers, bestalg, testbedsettings, genericsettings, captions
 from .pptex import writeFEvals2
 from .ppfig import save_figure, consecutiveNumbers
+from . import testbedsettings
 
 """
 aRT loss ratio of an algorithm A for comparison to a reference/best algorithm.

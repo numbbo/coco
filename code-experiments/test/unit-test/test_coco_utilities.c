@@ -84,7 +84,6 @@ static void create_time_string(char **string) {
   }
 
   /* Produce the new string */
-  new_string = coco_allocate_memory(sizeof(char) * (strlen(*string) + date_time_len));
   new_string = coco_strconcat(*string, date_time_string);
   coco_free_memory(date_time_string);
   coco_free_memory(*string);
@@ -131,12 +130,12 @@ MU_TEST(test_coco_create_remove_directory) {
 MU_TEST(test_coco_double_max_min) {
 
   double first_value = 5.0;
-	double second_value = 6.0;
+  double second_value = 6.0;
 
-	double max_value, min_value;
+  double max_value, min_value;
 
   max_value = coco_double_max(first_value, second_value);
-	mu_check(max_value == second_value);
+  mu_check(max_value == second_value);
 
   min_value = coco_double_min(first_value, second_value);
   mu_check(min_value == first_value);
@@ -155,6 +154,18 @@ MU_TEST(test_coco_double_round) {
   input_value = 5.5;
   round_value = coco_double_round(input_value);
   mu_check(round_value == 6);
+
+  input_value = 5;
+  round_value = coco_double_round(input_value);
+  mu_check(round_value == 5);
+
+  input_value = 5 - 0.0000000000000001;
+  round_value = coco_double_round(input_value);
+  mu_check(round_value == 5);
+
+  input_value = 5 + 0.0000000000000001;
+  round_value = coco_double_round(input_value);
+  mu_check(round_value == 5);
 }
 
 /**
@@ -433,7 +444,6 @@ MU_TEST(test_coco_is_orthogonal) {
 
   coco_free_memory(M);
 }
-
 
 /**
  * Run all tests in this file.

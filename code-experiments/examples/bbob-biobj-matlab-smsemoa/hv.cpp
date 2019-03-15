@@ -18,7 +18,7 @@ void mexFunction( int nlhs, mxArray *plhs[] , int nrhs, const mxArray *prhs[] )
 	double * volume;
 	double * data, * reference;
 	unsigned int row, col, row_r, col_r;
-	const int  *dims, *dims_r;
+	const mwSize *dims, *dims_r;
     
 	if(nrhs != 2 || nlhs != 1)
 	{

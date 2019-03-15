@@ -26,7 +26,7 @@ static coco_suite_t *suite_toy_initialize(void) {
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20 };
 
-  suite = coco_suite_allocate("toy", 6, 3, dimensions, "instances:1");
+  suite = coco_suite_allocate("toy", 6, 3, dimensions, "instances: 1");
 
   return suite;
 }

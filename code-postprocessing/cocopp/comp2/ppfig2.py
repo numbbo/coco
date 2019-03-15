@@ -30,7 +30,8 @@ from ..ppfig import save_figure, plotUnifLogXMarkers
     #from cocopp.toolsstats import ranksumtest
     #pass
 
-dimensions = (2, 3, 5, 10, 20, 40)
+
+
 styles = [{'color': 'c', 'marker': '+', 'markeredgecolor': 'c',
            'markerfacecolor': 'None'},
           {'color': 'g', 'marker': 'v', 'markeredgecolor': 'g',
@@ -55,7 +56,6 @@ incrstars = 1.5
 fthresh = 1e-8
 xmax = 1000
 
-dimension_index = dict([(dimensions[i], i) for i in range(len(dimensions))])
 
 def _generateData(entry0, entry1, fthresh=None, downsampling=None):
 
@@ -186,6 +186,9 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
         tmp2 = str(int(line[0][2]))
         txt = tmp + '/' + tmp2
 
+    dimensions = testbedsettings.current_testbed.dimensions_to_display
+    dimension_index = dict([(dimensions[i], i) for i in xrange(len(dimensions))])
+
     dims = dimension_index
     ax = plt.gca()
     assert line[0][2] > 0 or line[1][2] > 0
@@ -254,6 +257,9 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir=''):
     dictFun0 = dsList0.dictByFunc()
     dictFun1 = dsList1.dictByFunc()
 
+    dimensions = testbedsettings.current_testbed.dimensions_to_display
+    dimension_index = dict([(dimensions[i], i) for i in xrange(len(dimensions))])
+    
     for func in set.intersection(set(dictFun0), set(dictFun1)):
         dictDim0 = dictFun0[func].dictByDim()
         dictDim1 = dictFun1[func].dictByDim()

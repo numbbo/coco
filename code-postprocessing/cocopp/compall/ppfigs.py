@@ -73,13 +73,16 @@ def prepare_scaling_figure_caption():
     scaling_figure_caption_fixed = scaling_figure_caption_start_fixed + scaling_figure_caption_end
     scaling_figure_caption_rlbased = scaling_figure_caption_start_rlbased + scaling_figure_caption_end
 
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_bi_ext:
+    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
+                                                testbedsettings.testbed_name_cons,
+                                                testbedsettings.testbed_name_ls,
+                                                testbedsettings.testbed_name_mixint,
+                                                testbedsettings.testbed_name_bi_mixint]:
         # NOTE: no runlength-based targets supported yet
         figure_caption = scaling_figure_caption_fixed
     elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
                                                   testbedsettings.testbed_name_single_noisy,
-                                                  testbedsettings.testbed_name_bi,
-                                                  testbedsettings.testbed_name_cons]:
+                                                  testbedsettings.testbed_name_bi]:
         if genericsettings.runlength_based_targets:
             figure_caption = scaling_figure_caption_rlbased
         else:
@@ -90,6 +93,7 @@ def prepare_scaling_figure_caption():
     return figure_caption
 
 def scaling_figure_caption(for_html = False):
+
 
     if for_html:
         figure_caption = htmldesc.getValue('##bbobppfigslegend' +
@@ -128,7 +132,10 @@ def prepare_ecdfs_figure_caption():
                 )
 
     if testbed.name in [testbedsettings.testbed_name_bi_ext,
-                        testbedsettings.testbed_name_cons]:
+                        testbedsettings.testbed_name_cons,
+                        testbedsettings.testbed_name_ls,
+                        testbedsettings.testbed_name_mixint,
+                        testbedsettings.testbed_name_bi_mixint]:
         # NOTE: no runlength-based targets supported yet
         figure_caption = ecdfs_figure_caption_standard
     elif testbed.name in [testbedsettings.testbed_name_single,
@@ -364,18 +371,20 @@ def beautify(legend=False, rightlegend=False):
 
     # ticks on axes
     #axisHandle.invert_xaxis()
-    dimticklist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
-    dimannlist = (2, 3, 5, 10, 20, 40)  # TODO: should become input arg at some point? 
+    dimticklist = testbedsettings.current_testbed.dimensions_to_display
+    dimannlist = testbedsettings.current_testbed.dimensions_to_display
     # TODO: All these should depend on (xlim, ylim)
 
     axisHandle.set_xticks(dimticklist)
     axisHandle.set_xticklabels([str(n) for n in dimannlist])
 
-    # axes limites
+    dim_min_margin = testbedsettings.current_testbed.dimensions_to_display[0] * 0.9
+    dim_max_margin = testbedsettings.current_testbed.dimensions_to_display[-1] * 1.125
+
     if rightlegend:
-        plt.xlim(1.8, 101) # 101 is 10 ** (numpy.log10(45/1.8)*1.25) * 1.8
+        plt.xlim(  dim_min_margin,  10 ** (numpy.log10(dim_max_margin / dim_min_margin)*1.25) * dim_min_margin)
     else:
-        plt.xlim(1.8, 45)                # Should depend on xmin and xmax
+        plt.xlim(dim_min_margin, dim_max_margin)
 
     if 1 < 3:
         tick_locs = [n for n in axisHandle.get_yticks()
@@ -484,7 +493,6 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                             dimnbsucc.append(dim)
                             ynbsucc.append(float(data[0])/dim)
                             nbsucc.append('%d' % data[2])
-
                 # Draw lines
                 if 1 < 3:  # new version
                     # omit the line if a point in between is missing
@@ -585,13 +593,13 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
         # bottom labels with #instances and type of targets:
         infotext = ''
         algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
-        
+
         num_of_instances = []
         for alg in algorithms_with_data:
-            if len(dictFunc[f][alg]) > 0:
+            try:
                 num_of_instances.append(len((dictFunc[f][alg])[0].instancenumbers))
-            else:
-                warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
+            except IndexError:
+                pass
         # issue a warning if number of instances is inconsistant, otherwise
         # display only the present number of instances, i.e. remove copies
         if len(set(num_of_instances)) > 1:
@@ -627,17 +635,17 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
         toolsdivers.prepend_to_file(latex_commands_file,
                 [providecolorsforlatex()]) # needed since the latest change in ACM template
         toolsdivers.prepend_to_file(latex_commands_file,
-                [#'\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}' 
-                 #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
-                '\\providecommand{\\bbobppfigslegend}[1]{',
-                scaling_figure_caption(),
-                'Legend: '] + alg_definitions + ['}']
-                )
+                                    [  # '\\providecommand{\\bbobppfigsftarget}{\\ensuremath{10^{%s}}}'
+                                        #       % target.loglabel(0), # int(numpy.round(numpy.log10(target))),
+                                        '\\providecommand{\\bbobppfigslegend}[1]{',
+                                        scaling_figure_caption(),
+                                        'Legend: '] + alg_definitions + ['}']
+                                    )
         toolsdivers.prepend_to_file(latex_commands_file,
-                ['\\providecommand{\\bbobECDFslegend}[1]{',
-                ecdfs_figure_caption(), '}']
-                )
-
+                                    ['\\providecommand{\\bbobECDFslegend}[1]{',
+                                     ecdfs_figure_caption(), '}']
+                                    )
+        
         toolsdivers.replace_in_file(htmlFile, '##bbobppfigslegend##', scaling_figure_caption(True) + 'Legend: ' + alg_definitions_html)
 
         if genericsettings.verbose:

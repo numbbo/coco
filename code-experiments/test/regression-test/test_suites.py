@@ -59,6 +59,7 @@ def regression_test_a_suite(suite_name, filename):
         sys.stdout.flush()
         t0 = time.clock()
     suite = cocoex.Suite(suite_name, "year: 0000", "") # choose "default" year for test
+    failed_test_counter = 0
     for key in xfc_dict:
         f, x = suite[key[0]], key[1]
         try:
@@ -66,16 +67,19 @@ def regression_test_a_suite(suite_name, filename):
         except AssertionError:
             print(f.name, "id,x =", key, "stored f(x),con(x) =",
                   xfc_dict[key], "computed f(x) =", f(x))
-            raise
+            failed_test_counter += 1
         if f.number_of_constraints > 0:
             try:
                 assert is_equal(f.constraint(x), xfc_dict[key][1])
             except AssertionError:
                 print(f.name, "index,x =", key, "stored f,con =",
                       xfc_dict[key], "computed con =", f.constraint(x))
-                raise
+                failed_test_counter += 1
+    if failed_test_counter > 0:
+        raise AssertionError("{} assertions failed".format(failed_test_counter))
     if verbose:
         print("done in %.1fs" % (time.clock() - t0))
+
 
 if __name__ == "__main__":
     try:

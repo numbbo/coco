@@ -36,6 +36,7 @@ public class CocoJNI {
 
 	public static native double[] cocoProblemGetSmallestValuesOfInterest(long problemPointer);
 	public static native double[] cocoProblemGetLargestValuesOfInterest(long problemPointer);
+	public static native int cocoProblemGetNumberOfIntegerVariables(long problemPointer);
 	
 	public static native double[] cocoProblemGetLargestFValuesOfInterest(long problemPointer);
 

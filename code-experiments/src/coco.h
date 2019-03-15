@@ -383,6 +383,12 @@ const double *coco_problem_get_smallest_values_of_interest(const coco_problem_t 
 const double *coco_problem_get_largest_values_of_interest(const coco_problem_t *problem);
 
 /**
+ * @brief Returns the number of integer variables. If > 0, all integer variables come before any
+ * continuous ones.
+ */
+size_t coco_problem_get_number_of_integer_variables(const coco_problem_t *problem);
+
+/**
  * @brief For multi-objective problems, returns a vector of largest values of interest in each objective.
  * Currently, this equals the nadir point. For single-objective problems it raises an error.
  */
