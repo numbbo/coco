@@ -2,6 +2,11 @@ numbbo/coco: Comparing Continuous Optimizers
 ============================================
 
 [![CircleCI](https://circleci.com/gh/numbbo/coco/tree/master.svg?style=shield)](https://circleci.com/gh/numbbo/coco/tree/master)
+[![Appveyor](https://ci.appveyor.com/api/projects/status/4dawpqr7aq2ioici/branch/master?svg=true)](https://ci.appveyor.com/project/nikohansen/coco-j53aywshl8udzvb/branch/master)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2594848.svg)](https://doi.org/10.5281/zenodo.2594848)
+[[BibTeX](https://zenodo.org/record/2594848/export/hx#.XIu-BxP0nRY)] cite as:
+> Nikolaus Hansen, Dimo Brockhoff, Olaf Mersmann, Tea Tusar, Dejan Tusar, Ouassim Ait ElHara, Phillipe R. Sampaio, Asma Atamna, Konstantinos Varelas, Umut Batu, Duc Manh Nguyen, Filip Matzner, Anne Auger. COmparing Continuous Optimizers: numbbo/COCO on Github. Zenodo, [DOI:10.5281/zenodo.2594847](https://doi.org/10.5281/zenodo.2594847), March 2019.
+---
 
 [This code](https://github.com/numbbo/coco) reimplements the original Comparing
 Continous Optimizer platform, now rewritten fully in `ANSI C` and `Python` with
@@ -118,7 +123,7 @@ Getting Started <a name="Getting-Started"></a>
 4. **Copy** the folder `code-experiments/build/YOUR-FAVORITE-LANGUAGE` and
   its content to another location. In Python it is sufficient to copy the 
   file [`example_experiment_for_beginners.py`](./code-experiments/build/python/example_experiment_for_beginners.py)
-  or `example_experiment.py`.
+  or [`example_experiment2.py`](./code-experiments/build/python/example_experiment2.py).
   Run the example experiment (it already is compiled). As the details vary, see
   the respective read-me's and/or example experiment files:
 
@@ -129,7 +134,7 @@ Getting Started <a name="Getting-Started"></a>
   - `Matlab/Octave` [read me](./code-experiments/build/matlab/README.md)
     and [example experiment](./code-experiments/build/matlab/exampleexperiment.m) 
   - `Python` [read me](./code-experiments/build/python/README.md)
-    and [example experiment](./code-experiments/build/python/example_experiment.py)
+    and [example experiment2](./code-experiments/build/python/example_experiment2.py)
 
   If the example experiment runs, **connect** your favorite algorithm
   to Coco: replace the call to the random search optimizer in the
@@ -140,9 +145,10 @@ Getting Started <a name="Getting-Started"></a>
   Another entry point for your own experiments can be the `code-experiments/examples`
   folder. 
 
-5. Now you can **run** your favorite algorithm on the `bbob` suite (for 
-  single-objective algorithms) or on the `bbob-biobj` and `bbob-biobj-ext`
-  suites (for multi-objective algorithms). Output is automatically generated in the 
+5. Now you can **run** your favorite algorithm on the `bbob` and `bbob-largescale` suites
+  (for single-objective algorithms), on the `bbob-biobj` suite (for multi-objective 
+  algorithms), or on the mixed-integer suites (`bbob-mixint` and `bbob-biobj-mixint` 
+  respectively). Output is automatically generated in the 
   specified data `result_folder`. By now, more suites might be available, see below. 
 
   <a name="Getting-Started-pp"></a>
@@ -164,16 +170,17 @@ Getting Started <a name="Getting-Started"></a>
   ```
 
   processes the referenced archived BFGS data set. The given substring must
-  have a unique match in the archive. Otherwise, all matches are listed but none
-  is processed with this call. For more information in how to obtain and
-  display specific archived data, see
+  have a unique match in the archive or must end with `!` or `*` or must be a
+  [regular expression](https://docs.python.org/3/library/re.html#regular-expression-syntax)
+  containing a `*` and not ending with `!` or `*`. Otherwise, all matches are listed
+  but none is processed with this call. For more information in how to obtain
+  and display specific archived data, see
   [`help(cocopp)`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html) or
-  [`help(cocopp.archives`)](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.
-  archiving.KnownArchives.html) or the class
-  [`COCODataArchive`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.
-  archiving.COCODataArchive.html).
+  [`help(cocopp.archives)`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.KnownArchives.html)
+  or the class
+  [`COCODataArchive`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.COCODataArchive.html).
   
-  For the `bbob` test suite, the data descriptions can be found at
+  Data descriptions can be found for the `bbob` test suite at
   http://coco.gforge.inria.fr/doku.php?id=algorithms and for the `bbob-biobj`
   test suite at http://coco.gforge.inria.fr/doku.php?id=algorithms-biobj.
 
@@ -202,7 +209,7 @@ Getting Started <a name="Getting-Started"></a>
   
 8. The experiments can be **parallelized** with any re-distribution of single
   problem instances to batches (see
-  [`example_experiment.py`](./code-experiments/build/python/example_experiment.py#L235) 
+  [`example_experiment2.py`](./code-experiments/build/python/example_experiment2.py#L100) 
   for an example). Each batch must write in a different target folder (this
   should happen automatically). Results of each batch must be kept under their
   separate folder as is. These folders then must be moved/copied into a single
@@ -257,15 +264,19 @@ our issue tracker at https://github.com/numbbo/coco/issues.
     problem inheriting thereby all properties of a coco problem)
   - most other files implement more or less what they say, e.g. the actual
     benchmark functions, transformations, benchmark suites, etc.
-  - currently, four benchmark suites and corresponding logging facilities are
-    implemented:
+  - currently, the following benchmark suites and corresponding logging facilities are
+    supported:
     * `bbob`: standard single-objective BBOB benchmark suite with 24 noiseless,
       scalable test functions
     * `bbob-biobj`: a bi-objective benchmark suite, combining 10 selected
       functions from the bbob suite, resulting in 55 noiseless functions
-    * `bbob-biobj-ext`: an extended version of the bi-objective `bbob-biobj`
-       benchmark suite, adding `bbob` function combinations from the same
-       `bbob` function groups, resulting in 92 noiseless functions overall
+    * `bbob-largescale`: a version of the `bbob` benchmark suite with dimensions
+      20 to 640, employing permuted block-diagonal matrices to reduce the 
+      execution time for function evaluations in higher dimension.
+    * `bbob-mixint`: a mixed-integer version of the original `bbob` and
+      `bbob-largescale` suites in which 80% of the variables have been discretized
+    * `bbob-biobj-mixint`: a version of the (so far not supported) `bbob-biobj-ext`
+      test suite with 92 functions with 80% discretized variables
     * `toy`: a simple, probably easier-to-understand example for reading and testing
 
 * code-experiments/tools are a few meta-tools, mainly the amalgamate.py to merge all
@@ -595,10 +606,15 @@ Links and Documentation <a name="Links"></a>
 * For details on the experimental set-up to carry out the benchmarking
   please refer to http://numbbo.github.io/coco-doc/experimental-setup/.
 * More detailed documentation of the existing benchmark suites can be found here:
-  - for the **`bbob`** problem suite at http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf 
+  - for the **`bbob`** problem suite at http://coco.gforge.inria.fr/downloads/download16.00/bbobdocfunctions.pdf 
     with the experimental setup at http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
   - for the **`bbob-biobj`** and **`bbob-biobj-ext`** problem suites
     at http://numbbo.github.io/coco-doc/bbob-biobj/functions
+  - for the **`bbob-largescale`** problem suite
+    at http://numbbo.github.io/coco-doc/bbob-largescale/functions
+  - for the **`bbob-mixint`** and **`bbob-biobj-mixint`** problem suites, we refer to 
+    https://hal.inria.fr/hal-02067932/document and to
+    http://coco.gforge.inria.fr/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
 * Online documentation of the NumBBO/Coco API (i.e. for the ANSI C code) is available at 
   http://numbbo.github.io/coco-doc/C
 * More detailed documentation on how the performance assessement is done can 
@@ -613,12 +629,15 @@ Comprehensive List of Documentations <a name="Documentations"></a>
 * General introduction: http://numbbo.github.io/coco-doc
 * Experimental setup: http://numbbo.github.io/coco-doc/experimental-setup/
 * Testbeds
-  - bbob: http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf ^1
+  - bbob: http://coco.gforge.inria.fr/downloads/download16.00/bbobdocfunctions.pdf
   - bbob-biobj: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - bbob-biobj-ext: http://numbbo.github.io/coco-doc/bbob-biobj/functions/
   - bbob-noisy (only in old code basis): http://coco.lri.fr/downloads/download15.03/bbobdocnoisyfunctions.pdf
+  - bbob-largescale: http://numbbo.github.io/coco-doc/bbob-largescale/functions/
+  - bbob-mixint and bbob-biobj-mixint: https://hal.inria.fr/hal-02067932/document and
+    http://coco.gforge.inria.fr/preliminary-bbob-mixint-documentation/bbob-mixint-doc.pdf
   - bbob-constrained (in progress): http://numbbo.github.io/coco-doc/bbob-constrained/functions/
-  - bbob-largescale (in progress): http://numbbo.github.io/coco-doc/bbob-largescale/functions/
+  
 
 * Performance assessment: http://numbbo.github.io/coco-doc/perf-assessment/
 * Performance assessment for biobjective testbeds: http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment/
@@ -627,15 +646,13 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - ``C`` experiments code: http://numbbo.github.io/coco-doc/C
   - Python experiments code `cocoex`: http://coco.gforge.inria.fr/apidocs-cocoex/cocoex.html
   - Python short [beginners example experiment](code-experiments/build/python/example_experiment_for_beginners.py)
-  - Python `example_experiment.py`: http://coco.gforge.inria.fr/apidocs-example_experiment/example_experiment.html
+  - Python `example_experiment2.py`: http://coco.gforge.inria.fr/apidocs-example_experiment/example_experiment2.html
   - Postprocessing code: http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html
 
 * Somewhat outdated documents:
   - Full description of the platform: http://coco.lri.fr/COCOdoc/
   - Experimental setup before 2016: http://coco.lri.fr/downloads/download15.03/bbobdocexperiment.pdf
- - Old framework software documentation: http://coco.lri.fr/downloads/download15.03/bbobdocsoftware.pdf
+  - Old framework software documentation: http://coco.lri.fr/downloads/download15.03/bbobdocsoftware.pdf
  
  * Some examples of [results](https://github.com/numbbo/coco/wiki/COCO-Wiki-Home).
-
-^1: see [#837](https://github.com/numbbo/coco/issues/837) and [#1266](https://github.com/numbbo/coco/issues/1266) for two pending errata
 
