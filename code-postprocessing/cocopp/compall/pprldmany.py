@@ -565,7 +565,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     tmp = pp.dictAlgByDim(dictAlg)
     algorithms_with_data = [a for a in dictAlg.keys() if dictAlg[a] != []]
-    algorithms_with_data.sort()
+    # algorithms_with_data.sort()  # dictAlg now is an OrderedDict, hence sorting isn't desired
 
     if len(algorithms_with_data) > 1 and len(tmp) != 1 and dimension is None:
         raise ValueError('We never integrate over dimension for more than one algorithm.')
@@ -627,7 +627,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 # for j, t in enumerate(testbedsettings.current_testbed.ecdf_target_values(1e2, f)):
                 # funcsolved[j].add(f)
 
-                for alg in sorted(algorithms_with_data):
+                for alg in algorithms_with_data:
                     x = [np.inf] * perfprofsamplesize
                     runlengthunsucc = []
                     try:
@@ -690,7 +690,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     # Display data
     lines = []
     if displaybest:
-        args = {'ls': '-', 'linewidth': 6, 'marker': 'D', 'markersize': 11.,
+        args = {'ls': '-', 'linewidth': 4, 'marker': 'D', 'markersize': 11.,
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
                 'label': testbedsettings.current_testbed.reference_algorithm_displayname,
@@ -813,13 +813,10 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     text += '\n'
     num_of_instances = []
     for alg in algorithms_with_data:
-
-        if ((alg in genericsettings.foreground_algorithm_list
-                or alg[0] in genericsettings.foreground_algorithm_list[0]) # case of a single algorithm only
-                and len(dictAlgperFunc[alg]) > 0):
+        try:
             num_of_instances.append(len((dictAlgperFunc[alg])[0].instancenumbers))
-        else:
-            warnings.warn('The data for algorithm %s and function %s are missing' % (alg, f))
+        except IndexError:
+            pass
     # issue a warning if number of instances is inconsistant, but always
     # display only the present number of instances, i.e. remove copies
     if len(set(num_of_instances)) > 1:

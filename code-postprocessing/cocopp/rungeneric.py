@@ -76,10 +76,12 @@ def main(argv=None):
       to a location which is in the path)
 
     ``data_folder`` may be a name from the known data archive, see e.g.
-    `cocopp.bbob`, or a uniquely matching substring of such a name,
-    or a matching substring with added "!" in which case the first
-    match is taken, or a matching substring with added "*" in which
-    case all matches are taken.
+    `cocopp.bbob`, or a uniquely matching substring of such a name, or a
+    matching substring with added "!" in which case the first match is taken, or
+    a matching substring with added "*" in which case all matches are taken, or
+    a regular expression containing a '*' before the last character, in which
+    case, for example, "bbob/.*7.*cma"  matches "bbob/2017/DTS-CMA-ES-Pitra.tgz"
+    (among others).
 
     This routine will:
 
@@ -328,8 +330,9 @@ def main(argv=None):
             # and rungenericmany.main() or lower-level functions are called.
             genericsettings.foreground_algorithm_list = []
             dsld = rungenericmany.main(genopts + ["-o", outputdir] + args)
-            toolsdivers.prepend_to_file(latex_commands_filename,
-                                        ['\\providecommand{\\numofalgs}{2+}']
+            
+        toolsdivers.prepend_to_file(latex_commands_filename,
+                                        ['\\providecommand{\\numofalgs}{%d}' % len(args)]
                                         )
         toolsdivers.prepend_to_file(latex_commands_filename,
                                     ['\\providecommand{\\cocoversion}{\\hspace{\\textwidth}\\scriptsize\\sffamily{}' +

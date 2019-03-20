@@ -1,13 +1,10 @@
 /**
  * @file suite_biobj_best_values_hyp.c
- * @brief Contains the best known hypervolume values for the bob-biobj and bbob-biobj-ext
- * suite's problems.
- * @note For now, the hypervolume reference values for the problems not in the bbob-biobj
- * suite are 1.0 as well as for the new instances larger than 10 (as of 2017/01/20).
- */
-
-/**
+ *
  * @brief The best known hypervolume values for the bbob-biobj and bbob-biobj-ext suite problems.
+ *
+ * @note For now, the hypervolume reference values for the bbob-biobj-ext problems not in the
+ * bbob-biobj suite are 1.0 as well as for the new instances larger than 10 (as of 2017/01/20).
  *
  * @note Because this file is used for automatically retrieving the existing best hypervolume values for
  * pre-processing purposes, its formatting should not be altered. This means that there must be exactly one
@@ -1874,7 +1871,7 @@ static const char *suite_biobj_best_values_hyp[] = { /* Best values on 29.01.201
   "bbob-biobj_f21_i10_d05 0.979604346471867",
   "bbob-biobj_f21_i10_d10 0.977275303898697",
   "bbob-biobj_f21_i10_d20 0.972982656541522",
-  "bbob-biobj_f21_i10_d40 0.997081448699098",  
+  "bbob-biobj_f21_i10_d40 0.997081448699098",
   "bbob-biobj_f21_i11_d02 1.0",
   "bbob-biobj_f21_i11_d03 1.0",
   "bbob-biobj_f21_i11_d05 1.0",

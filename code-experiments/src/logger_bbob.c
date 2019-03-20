@@ -80,6 +80,8 @@ typedef struct {
   size_t function_id; /*TODO: consider changing name*/
   size_t instance_id;
   size_t number_of_variables;
+  size_t number_of_integer_variables;
+  int log_discrete_as_int;            /**< @brief Whether to output discrete variables in int or double format. */
   double optimal_fvalue;
   char *suite_name;
 
@@ -148,8 +150,10 @@ static void logger_bbob_write_data(FILE *target_file,
                                    double best_value,
                                    const double *x,
                                    size_t number_of_variables,
+                                   size_t number_of_integer_variables,
                                    const double *constraints,
-                                   size_t number_of_constraints) {
+                                   size_t number_of_constraints,
+                                   const int log_discrete_as_int) {
   size_t i;
   /* for some reason, it's %.0f in the old code instead of the 10.9e
    * in the documentation
@@ -168,9 +172,12 @@ static void logger_bbob_write_data(FILE *target_file,
   else
     fprintf(target_file, "%+10.9e", best_fvalue);
 
-  if (number_of_variables < 22) {
+  if ((number_of_variables - number_of_integer_variables) < 22) {
     for (i = 0; i < number_of_variables; i++) {
-      fprintf(target_file, " %+5.4e", x[i]);
+      if ((i < number_of_integer_variables) && (log_discrete_as_int))
+        fprintf(target_file, " %d", coco_double_to_int(x[i]));
+      else
+        fprintf(target_file, " %+5.4e", x[i]);
     }
   }
   fprintf(target_file, "\n");
@@ -498,8 +505,10 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
           logger->optimal_fvalue,
           x,
           problem->number_of_variables,
+          problem->number_of_integer_variables,
           cons,
-          problem->number_of_constraints);
+          problem->number_of_constraints,
+          logger->log_discrete_as_int);
     }
   }
 
@@ -515,8 +524,10 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
         logger->optimal_fvalue,
         x,
         problem->number_of_variables,
+        problem->number_of_integer_variables,
         cons,
-        problem->number_of_constraints);
+        problem->number_of_constraints,
+        logger->log_discrete_as_int);
     logger->written_last_eval = 1;
   }
 
@@ -569,8 +580,10 @@ static void logger_bbob_free(void *stuff) {
           logger->optimal_fvalue,
           logger->best_solution,
           logger->number_of_variables,
+          logger->number_of_integer_variables,
           NULL,
-          0);
+          0,
+          logger->log_discrete_as_int);
 	}
     fclose(logger->tdata_file);
     logger->tdata_file = NULL;
@@ -620,6 +633,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   logger_data->tdata_file = NULL;
   logger_data->rdata_file = NULL;
   logger_data->number_of_variables = inner_problem->number_of_variables;
+  logger_data->number_of_integer_variables = inner_problem->number_of_integer_variables;
   if (inner_problem->best_value == NULL) {
     /* coco_error("Optimal f value must be defined for each problem in order for the logger to work properly"); */
     /* Setting the value to 0 results in the assertion y>=optimal_fvalue being susceptible to failure */
@@ -641,6 +655,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   logger_data->written_last_eval = 0;
   logger_data->last_fvalue = DBL_MAX;
   logger_data->is_initialized = 0;
+  logger_data->log_discrete_as_int = observer->log_discrete_as_int;
     
   /* Initialize triggers based on target values and number of evaluations */
   logger_data->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);

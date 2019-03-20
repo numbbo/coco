@@ -14,7 +14,7 @@ typedef enum {
   LOG_NONDOM_NONE, LOG_NONDOM_FINAL, LOG_NONDOM_ALL, LOG_NONDOM_READ
 } observer_biobj_log_nondom_e;
 
-/** @brief Enum for denoting the when the decision variables are logged. */
+/** @brief Enum for denoting when the decision variables are logged. */
 typedef enum {
   LOG_VARS_NEVER, LOG_VARS_LOW_DIM, LOG_VARS_ALWAYS
 } observer_biobj_log_vars_e;

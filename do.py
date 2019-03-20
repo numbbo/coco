@@ -14,6 +14,7 @@ from subprocess import STDOUT
 import platform
 import time
 import glob
+import stat
 
 
 ## Change to the root directory of repository and add our tools/
@@ -164,6 +165,10 @@ def run_c_integration_tests():
             ['./test_biobj'], verbose=_verbosity)
         run('code-experiments/test/integration-test',
             ['./test_bbob-constrained'], verbose=_verbosity)
+        run('code-experiments/test/integration-test',
+            ['./test_bbob-largescale'], verbose=_verbosity)
+        run('code-experiments/test/integration-test',
+            ['./test_bbob-mixint'], verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
 
@@ -201,6 +206,14 @@ def leak_check():
     build_c()
     build_c_integration_tests()
     os.environ['CFLAGS'] = '-g -Os'
+    valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
+                    '--leak-check=full', '--show-reachable=yes',
+                    './test_bbob-largescale', 'leak_check']
+    run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
+    valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
+                    '--leak-check=full', '--show-reachable=yes',
+                    './test_bbob-mixint', 'leak_check']
+    run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
                     './test_coco', 'bbob2009_testcases.txt']
@@ -606,8 +619,8 @@ def build_java():
                 {'COCO_VERSION': git_version(pep440=True)})
     write_file(git_revision(), "code-experiments/build/java/REVISION")
     write_file(git_version(), "code-experiments/build/java/VERSION")
-    run('code-experiments/build/java', ['javac', 'CocoJNI.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javah', 'CocoJNI'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'CocoJNI.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javah', '-classpath', '.', 'CocoJNI'], verbose=_verbosity)
 
     # Finds the path to the headers jni.h and jni_md.h (platform-dependent)
     # and compiles the CocoJNI library (compiler-dependent). So far, only
@@ -674,11 +687,11 @@ def build_java():
             ['gcc', '-dynamiclib', '-o', 'libCocoJNI.jnilib', 'CocoJNI.o'],
             verbose=_verbosity)
 
-    run('code-experiments/build/java', ['javac', 'Problem.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'Benchmark.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'Observer.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'Suite.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'ExampleExperiment.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Problem.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Benchmark.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Observer.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Suite.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'ExampleExperiment.java'], verbose=_verbosity)
 
 
 def run_java():
@@ -686,7 +699,7 @@ def run_java():
     build_java()
     try:
         run('code-experiments/build/java',
-            ['java', '-Djava.library.path=.', 'ExampleExperiment'],
+            ['java', '-Djava.library.path=.', '-classpath', '.', 'ExampleExperiment'],
             verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
@@ -697,7 +710,7 @@ def test_java():
     build_java()
     try:
         run('code-experiments/build/java',
-            ['java', '-Djava.library.path=.', 'ExampleExperiment'],
+            ['java', '-Djava.library.path=.', '-classpath', '.', 'ExampleExperiment'],
             verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
@@ -721,7 +734,10 @@ ee.SOLVER = ee.random_search  # which is default anyway
 for ee.suite_name, ee.observer_options['result_folder'] in [
         ["bbob-biobj", "RS-bi"],  # use a short path for Jenkins
         ["bbob", "RS-bb"],
-        ["bbob-constrained", "RS-co"]
+        ["bbob-constrained", "RS-co"],
+        ["bbob-largescale", "RS-la"],
+        ["bbob-mixint", "RS-mi"],
+        ["bbob-biobj-mixint", "RS-bi-mi"]
     ]:
     print("  suite %s" % ee.suite_name, end=' ')  # these prints are swallowed
     if ee.suite_name in ee.cocoex.known_suite_names:
@@ -743,7 +759,7 @@ for ee.suite_name, ee.observer_options['result_folder'] in [
         sys.exit(-1)
     finally:
         # always remove folder of previously run experiments:
-        for s in ['bi', 'bb', 'co']:
+        for s in ['bi', 'bb', 'co', 'la', 'mi', 'bi-mi']:
             shutil.rmtree('code-experiments/build/python/exdata/RS-' + s,
                           ignore_errors=True)
 
@@ -776,6 +792,7 @@ def test_preprocessing(package_install_option = []):
     install_preprocessing(package_install_option = package_install_option)
     python('code-preprocessing/archive-update', ['-m', 'pytest'], verbose=_verbosity)
     python('code-preprocessing/log-reconstruction', ['-m', 'pytest'], verbose=_verbosity)
+
 
 ################################################################################
 ## Global
@@ -945,7 +962,7 @@ def main(args):
     for arg in args[1:]:
         if arg == 'and-test':
             also_test_python = True
-        elif arg == 'install-user':
+        elif arg in ('install-user', '--user'):
             package_install_option = ['--user']
         elif arg[:13] == 'install-home=':
             package_install_option = ['--home=' + arg[13:]]

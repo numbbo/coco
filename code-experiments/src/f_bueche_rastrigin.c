@@ -14,6 +14,7 @@
 #include "transform_vars_shift.c"
 #include "transform_obj_shift.c"
 #include "transform_obj_penalize.c"
+#include "transform_obj_norm_by_dim.c"
 
 /**
  * @brief Implements the Bueche-Rastrigin function without connections to any COCO structures.
@@ -87,6 +88,11 @@ static coco_problem_t *f_bueche_rastrigin_bbob_problem_allocate(const size_t fun
   problem = transform_vars_brs(problem);
   problem = transform_vars_oscillate(problem);
   problem = transform_vars_shift(problem, xopt, 0);
+
+  /*if large scale test-bed, normalize by dim*/
+  if (coco_strfind(problem_name_template, "BBOB large-scale suite") >= 0){
+    problem = transform_obj_norm_by_dim(problem);
+  }
   problem = transform_obj_shift(problem, fopt);
   problem = transform_obj_penalize(problem, penalty_factor);
 

@@ -225,7 +225,15 @@ def save_folder_index_file(filename, image_file_extension):
         links += add_image('pprldmany_20D_nzall.svg', True, 220)
         if os.path.isfile(os.path.join(current_dir, 'pprldmany_40D_nzall.svg')):
             links += add_image('pprldmany_40D_nzall.svg', True, 220)
-
+    if testbedsettings.current_testbed.name == 'bbob-largescale':
+        links += "<H2> %s </H2>\n" % ' Runtime distributions (ECDFs) over all targets'
+        links += add_image('pprldmany_20D_noiselessall.svg', True, 220)
+        links += add_image('pprldmany_40D_noiselessall.svg', True, 220)
+        links += add_image('pprldmany_80D_noiselessall.svg', True, 220) + ' <br />'
+        links += add_image('pprldmany_160D_noiselessall.svg', True, 220)
+        links += add_image('pprldmany_320D_noiselessall.svg', True, 220)
+        links += add_image('pprldmany_640D_noiselessall.svg', True, 220)
+    #TODO: Remove hardcoded part 
 
     lines = []
     with open(filename) as infile:
@@ -372,7 +380,7 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPRLDISTR:
             names = ['pprldistr', 'ppfvdistr']
-            dimensions = genericsettings.rldDimsOfInterest
+            dimensions = testbedsettings.current_testbed.rldDimsOfInterest
 
             header_ecdf = ' Empirical cumulative distribution functions (ECDF)'
             f.write("<H2> %s </H2>\n" % header_ecdf)
@@ -390,7 +398,7 @@ def save_single_functions_html(filename,
 
         elif htmlPage is HtmlPage.PPRLDISTR2:
             names = ['pprldistr', 'pplogabs']
-            dimensions = genericsettings.rldDimsOfInterest
+            dimensions = testbedsettings.current_testbed.rldDimsOfInterest
 
             header_ecdf = 'Empirical cumulative distribution functions ' \
                          '(ECDFs) per function group'
@@ -409,7 +417,7 @@ def save_single_functions_html(filename,
             f.write(caption_string_format % htmldesc.getValue('##' + key + '##'))
 
         elif htmlPage is HtmlPage.PPLOGLOSS:
-            dimensions = genericsettings.rldDimsOfInterest
+            dimensions = testbedsettings.current_testbed.rldDimsOfInterest
             if testbedsettings.current_testbed.reference_algorithm_filename:
                 current_header = 'aRT loss ratios'
                 f.write("<H2> %s </H2>\n" % current_header)
@@ -874,7 +882,7 @@ def get_plotting_styles(algorithms, only_foreground=False):
 
     foreground_algorithms = [key for key in algorithms
                              if key in genericsettings.foreground_algorithm_list]
-    foreground_algorithms.sort()
+    # foreground_algorithms.sort()  # sorting is not desired, we want to be able to control the order!
     plotting_styles.append(PlottingStyle({},
                                          {},
                                          foreground_algorithms if len(foreground_algorithms) > 0 else algorithms,
