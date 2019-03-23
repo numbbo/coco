@@ -63,6 +63,7 @@ fmin = scipy.optimize.fmin_slsqp
 suite_name = "bbob"  # see cocoex.known_suite_names
 budget_multiplier = 2  # times dimension, increase to 10, 100, ...
 suite_filter_options = (# "dimensions: 2,3,5,10,20 " +  # skip dimension 40
+                        # "year:2019 " +  # select instances by year
                         # "instance_indices: 1-5 " +  # relative to suite instances
                         "")  # without filtering a suite has instance_indices 1-15
 batches = 1  # number of batches, batch=3/32 works to set both, current_batch and batches
