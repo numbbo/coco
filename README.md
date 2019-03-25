@@ -3,6 +3,10 @@ numbbo/coco: Comparing Continuous Optimizers
 
 [![CircleCI](https://circleci.com/gh/numbbo/coco/tree/master.svg?style=shield)](https://circleci.com/gh/numbbo/coco/tree/master)
 [![Appveyor](https://ci.appveyor.com/api/projects/status/4dawpqr7aq2ioici/branch/master?svg=true)](https://ci.appveyor.com/project/nikohansen/coco-j53aywshl8udzvb/branch/master)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2594848.svg)](https://doi.org/10.5281/zenodo.2594848)
+[[BibTeX](https://zenodo.org/record/2594848/export/hx#.XIu-BxP0nRY)] cite as:
+> Nikolaus Hansen, Dimo Brockhoff, Olaf Mersmann, Tea Tusar, Dejan Tusar, Ouassim Ait ElHara, Phillipe R. Sampaio, Asma Atamna, Konstantinos Varelas, Umut Batu, Duc Manh Nguyen, Filip Matzner, Anne Auger. COmparing Continuous Optimizers: numbbo/COCO on Github. Zenodo, [DOI:10.5281/zenodo.2594847](https://doi.org/10.5281/zenodo.2594847), March 2019.
+---
 
 [This code](https://github.com/numbbo/coco) reimplements the original Comparing
 Continous Optimizer platform, now rewritten fully in `ANSI C` and `Python` with
@@ -119,7 +123,7 @@ Getting Started <a name="Getting-Started"></a>
 4. **Copy** the folder `code-experiments/build/YOUR-FAVORITE-LANGUAGE` and
   its content to another location. In Python it is sufficient to copy the 
   file [`example_experiment_for_beginners.py`](./code-experiments/build/python/example_experiment_for_beginners.py)
-  or `example_experiment.py`.
+  or [`example_experiment2.py`](./code-experiments/build/python/example_experiment2.py).
   Run the example experiment (it already is compiled). As the details vary, see
   the respective read-me's and/or example experiment files:
 
@@ -130,7 +134,7 @@ Getting Started <a name="Getting-Started"></a>
   - `Matlab/Octave` [read me](./code-experiments/build/matlab/README.md)
     and [example experiment](./code-experiments/build/matlab/exampleexperiment.m) 
   - `Python` [read me](./code-experiments/build/python/README.md)
-    and [example experiment](./code-experiments/build/python/example_experiment.py)
+    and [example experiment2](./code-experiments/build/python/example_experiment2.py)
 
   If the example experiment runs, **connect** your favorite algorithm
   to Coco: replace the call to the random search optimizer in the
@@ -205,7 +209,7 @@ Getting Started <a name="Getting-Started"></a>
   
 8. The experiments can be **parallelized** with any re-distribution of single
   problem instances to batches (see
-  [`example_experiment.py`](./code-experiments/build/python/example_experiment.py#L235) 
+  [`example_experiment2.py`](./code-experiments/build/python/example_experiment2.py#L100) 
   for an example). Each batch must write in a different target folder (this
   should happen automatically). Results of each batch must be kept under their
   separate folder as is. These folders then must be moved/copied into a single
@@ -642,7 +646,7 @@ Comprehensive List of Documentations <a name="Documentations"></a>
   - ``C`` experiments code: http://numbbo.github.io/coco-doc/C
   - Python experiments code `cocoex`: http://coco.gforge.inria.fr/apidocs-cocoex/cocoex.html
   - Python short [beginners example experiment](code-experiments/build/python/example_experiment_for_beginners.py)
-  - Python `example_experiment.py`: http://coco.gforge.inria.fr/apidocs-example_experiment/example_experiment.html
+  - Python `example_experiment2.py`: http://coco.gforge.inria.fr/apidocs-example_experiment/example_experiment2.html
   - Postprocessing code: http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html
 
 * Somewhat outdated documents:
