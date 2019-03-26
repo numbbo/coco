@@ -6,7 +6,7 @@ The script is fully functional but also emphasises on readability. It
 features restarts, timings and recording termination conditions.
 
 To benchmark a different solver, `fmin` must be re-assigned and another
-`elif` block added around line 136 to account for the solver-specific
+`elif` block added around line 119 to account for the solver-specific
 call.
 
 When calling the script, previously assigned variables can be re-assigned
@@ -38,7 +38,7 @@ import sys
 import time  # output some timings per evaluation
 from collections import defaultdict
 import os, webbrowser  # to show post-processed results in the browser
-import numpy as np  # for np.median
+import numpy as np  # for median, zeros, random, asarray
 import cocoex  # experimentation module
 try: import cocopp  # post-processing module
 except: pass
@@ -115,8 +115,10 @@ for batch_counter, problem in enumerate(suite):  # this loop may take hours or d
     while evalsleft() > 0 and not problem.final_target_hit:
         irestart += 1
 
-        # here we assume that `fmin` evaluates the final/returned solution:
-        if fmin is scipy.optimize.fmin:
+        # here we assume that `fmin` evaluates the final/returned solution
+        if 11 < 3:  # add solver to investigate here
+            pass
+        elif fmin is scipy.optimize.fmin:
             output = fmin(problem, propose_x0(), maxfun=evalsleft(), disp=False, full_output=True)
             stoppings[problem.index].append(output[4])
         elif fmin is scipy.optimize.fmin_slsqp:
@@ -133,8 +135,6 @@ for batch_counter, problem in enumerate(suite):  # this loop may take hours or d
         elif fmin is scipy.optimize.fmin_cobyla:
             fmin(problem, propose_x0(), lambda x: -problem.constraint(x), maxfun=evalsleft(),
                  disp=0, rhoend=1e-9)
-        else: # add another solver here
-            raise NotImplementedError
 
     timings[problem.dimension].append((time.time() - time1) / problem.evaluations
                                       if problem.evaluations else 0)
