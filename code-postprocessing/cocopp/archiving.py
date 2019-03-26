@@ -27,7 +27,7 @@ If a mirror of the archive is online, we can write a definition file and
 publish it together with the URL, such that everyone can use the archive
 on the fly like
 
->>> remote_def = 'http://my-coco-online-archive/archive_definition.txt'
+>>> remote_def = 'http://my-coco-online-archive/coco_archive_definition.txt'
 >>> new_archive = create_from_remote('~/.cocopp/new-archives/unique-name',
 ...                                  remote_def)  # doctest:+SKIP
 
@@ -59,7 +59,7 @@ try:
 except ImportError:
     from urllib import urlretrieve
 
-default_definition_filename = 'archive_definition.txt'
+default_definition_filename = 'coco_archive_definition.txt'
 
 
 def _abs_path(path):
@@ -133,7 +133,7 @@ def read_definition_file(local_path_or_definition_file):
         return ast.literal_eval(file_.read())
 
 def create_from_remote(local_path, url_definition_file):
-    """copy a definition file from url to ``local_path/archive_definition.txt``.
+    """copy a definition file from url to ``local_path/coco_archive_definition.txt``.
 
     `local_path` is the storage location and should (better) be empty.
     It is created if it does not exist.
