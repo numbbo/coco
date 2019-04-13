@@ -210,6 +210,7 @@ class GECCOBBOBTestbed(Testbed):
         name=testbed_name_single,
         short_names=get_short_names(shortinfo_filename),
         dimensions_to_display=(2, 3, 5, 10, 20, 40),
+        goto_dimension=20,  # auto-focus on this dimension in html
         rldDimsOfInterest=dimsOfInterest,
         tabDimsOfInterest=dimsOfInterest,
         hardesttargetlatex='10^{-8}',  # used for ppfigs, pptable and pptables
@@ -387,6 +388,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         name=testbed_name_bi,
         short_names=get_short_names(shortinfo_filename),
         dimensions_to_display=(2, 3, 5, 10, 20, 40),
+        goto_dimension=20,  # auto-focus on this dimension in html
         rldDimsOfInterest=dimsOfInterest,
         tabDimsOfInterest=dimsOfInterest,
         hardesttargetlatex='10^{-5}',  # used for ppfigs, pptable and pptables
@@ -491,6 +493,7 @@ class BBOBLargeScaleTestbed(GECCOBBOBTestbed):
         name=testbed_name_ls,
         short_names=get_short_names(shortinfo_filename),
         dimensions_to_display=(20, 40, 80, 160, 320, 640),
+        goto_dimension=160,  # auto-focus on this dimension in html
         tabDimsOfInterest=dimsOfInterest,
         rldDimsOfInterest=dimsOfInterest,
         hardesttargetlatex='10^{-8}',  # used for ppfigs, pptable and pptables
@@ -550,6 +553,7 @@ class GECCOBBOBMixintTestbed(GECCOBBOBTestbed):
         name=testbed_name_mixint,
         first_dimension=5,
         dimensions_to_display=[5, 10, 20, 40, 80, 160],
+        goto_dimension=40,  # auto-focus on this dimension in html
         tabDimsOfInterest=dimsOfInterest,
         rldDimsOfInterest=dimsOfInterest,
         reference_algorithm_filename=None,  # TODO produce correct reference algo and update this line
@@ -578,6 +582,7 @@ class GECCOBBOBBiObjMixintTestbed(GECCOBiObjExtBBOBTestbed):
         name=testbed_name_bi_mixint,
         first_dimension=5,
         dimensions_to_display=[5, 10, 20, 40, 80, 160],
+        goto_dimension=40,  # auto-focus on this dimension in html
         tabDimsOfInterest=dimsOfInterest,
         rldDimsOfInterest=dimsOfInterest,
         reference_algorithm_filename=None,  # TODO produce correct reference algo and update this line
