@@ -486,35 +486,8 @@ class GECCOBiObjBBOBTestbed(Testbed):
                     else:
                         print(str((dsl[algname])[i]))
                         if ((dsl[algname])[i]).funcId > 55:
-                            print(str((dsl[algname])[i]) + ' removed')
-
-                            print('--------------------------------------')
-                            print(dsl)
-                            print('now popping...........................')
-
                             dsl[algname].pop(i)
-
-                            print(dsl)
-                            print('--------------------------------------')
-
-
             return dsl
-
-        #new_dsl = {}
-        #for algname in dsl:
-        #    new_ds = DataSetList()
-        #    for d in dsl[algname]:
-        #        if not d.get_suite() in ['bbob-biobj', 'bbob-biobj-ext']:
-        #            raise ValueError("Data from %s suite is not "
-        #                             "compatible with other data from "
-        #                             "the bbob-biobj and/or bbob-biobj-ext "
-        #                             "suites" % str(ds.suite))
-        #        else:
-        #            if d.funcId <= 55:
-        #                new_ds.append(d)
-        #    new_dsl[algname] = new_ds
-        #
-        #return new_dsl
 
 
 class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
