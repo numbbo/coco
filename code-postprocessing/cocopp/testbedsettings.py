@@ -167,6 +167,8 @@ class Testbed(object):
     """
 
     reference_algorithm_displayname = None
+    instances_are_uniform = True
+    "False for biobjective suites, used (so far only) for simulated restarts in pprldmany"
 
     def info(self, fun_number=None):
         """info on the testbed if ``fun_number is None`` or one-line info
@@ -385,8 +387,6 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
                 self.instantiate_attributes(target_values, [key])
 
 
-
-
 class GECCOBiObjBBOBTestbed(Testbed):
     """Testbed used in the BBOB workshops to display
        data sets run on the `bbob-biobj` test suite.
@@ -412,6 +412,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         pprldistr_target_values=(1e-1, 1e-2, 1e-3, 1e-5),
         pprldmany_target_values=
         np.append(np.append(10 ** np.arange(0, -5.1, -0.1), [0]), -10 ** np.arange(-5, -3.9, 0.2)),
+        instances_are_uniform = False,
         pprldmany_target_range_latex='$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$',
         ppscatter_target_values=np.logspace(-5, 1, 21),  # 21 was 51
         rldValsOfInterest=(1e-1, 1e-2, 1e-3, 1e-4, 1e-5),
