@@ -497,19 +497,19 @@ class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
 
     shortinfo_filename = 'bbob-biobj-benchmarkshortinfos.txt'
     
-    settings = {} # dict(
-#        info_filename='bbob-biobj-benchmarkinfos.txt',
-#        shortinfo_filename=shortinfo_filename,
-#        name=testbed_name_bi_ext,
-#        short_names=get_short_names(shortinfo_filename),
-#        functions_with_legend=(1, 30, 31, 60, 61, 92),
-#        first_function_number=1,
-#        last_function_number=92,
-#        scenario=scenario_biobjextfixed,
-#        reference_algorithm_filename='', # TODO produce correct best2017 algo and delete this line
-#        reference_algorithm_displayname='', # TODO: should be read in from data set in reference_algorithm_filename
-#        instancesOfInterest={1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}, # None:consider all instances
-#    )
+    settings = dict(
+        info_filename='bbob-biobj-benchmarkinfos.txt',
+        shortinfo_filename=shortinfo_filename,
+        name=testbed_name_bi_ext,
+        short_names=get_short_names(shortinfo_filename),
+        functions_with_legend=(1, 30, 31, 60, 61, 92),
+        first_function_number=1,
+        last_function_number=92,
+        scenario=scenario_biobjextfixed,
+        reference_algorithm_filename='', # TODO produce correct best2017 algo and delete this line
+        reference_algorithm_displayname='', # TODO: should be read in from data set in reference_algorithm_filename
+        instancesOfInterest={1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}, # None:consider all instances
+    )
 
     def __init__(self, targetValues):        
         super(GECCOBiObjExtBBOBTestbed, self).__init__(targetValues)
