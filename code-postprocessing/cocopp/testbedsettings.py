@@ -630,6 +630,7 @@ class GECCOBBOBBiObjMixintTestbed(GECCOBiObjExtBBOBTestbed):
         name=testbed_name_bi_mixint,
         first_dimension=5,
         dimensions_to_display=[5, 10, 20, 40, 80, 160],
+        instances_are_uniform=False,
         tabDimsOfInterest=dimsOfInterest,
         rldDimsOfInterest=dimsOfInterest,
         reference_algorithm_filename=None,  # TODO produce correct reference algo and update this line
