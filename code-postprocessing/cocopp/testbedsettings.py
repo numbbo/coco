@@ -485,7 +485,6 @@ class GECCOBiObjBBOBTestbed(Testbed):
                                          "the bbob-biobj and/or bbob-biobj-ext "
                                          "suites" % str((dsl[algname])[i].suite))
                     else:
-                        print(str((dsl[algname])[i]))
                         if ((dsl[algname])[i]).funcId > 55:
                             dsl[algname].pop(i)
             return dsl
