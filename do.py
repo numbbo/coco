@@ -6,7 +6,7 @@ from __future__ import print_function
 
 import sys
 import os
-from os.path import join
+from os.path import join, abspath, realpath
 import shutil
 import tempfile
 import subprocess
@@ -14,7 +14,6 @@ from subprocess import STDOUT
 import platform
 import time
 import glob
-import stat
 
 
 ## Change to the root directory of repository and add our tools/
@@ -25,6 +24,7 @@ sys.path.insert(0, os.path.abspath(join('code-experiments', 'tools')))
 from amalgamate import amalgamate
 from cocoutils import make, run, python, check_output
 from cocoutils import copy_file, expand_file, write_file
+from cocoutils import executable_path
 from cocoutils import git_version, git_revision
 
 CORE_FILES = ['code-experiments/src/coco_random.c',
@@ -124,6 +124,31 @@ def test_c_example():
 
 def build_c_unit_tests():
     """ Builds unit tests in C """
+    library_path = 'code-experiments/test/unit-test/lib'
+    library_dir = ''
+    file_name = ''
+    if 'win32' in sys.platform:
+        file_name = 'cmocka.dll'
+        if '64' in platform.machine():
+            library_dir = 'win64'
+        elif ('32' in platform.machine()) or ('x86' in platform.machine()):
+            if 'cygwin' in os.environ['PATH']:
+                library_dir = 'win32_cygwin'
+            else:
+                library_dir = 'win32_mingw'
+    elif 'linux' in sys.platform:
+        file_name = 'libcmocka.so'
+        if 'Ubuntu' in platform.linux_distribution():
+            library_dir = 'linux_ubuntu'
+        elif 'Fedora' in platform.linux_distribution():
+            library_dir = 'linux_fedora'
+    elif 'darwin' in sys.platform:  # Mac
+        library_dir = 'macosx'
+        file_name = 'libcmocka.dylib'
+
+    if len(library_dir) > 0:
+        copy_file(os.path.join(library_path, library_dir, file_name),
+                  os.path.join('code-experiments/test/unit-test', file_name))
     copy_file('code-experiments/build/c/coco.c', 'code-experiments/test/unit-test/coco.c')
     expand_file('code-experiments/src/coco.h', 'code-experiments/test/unit-test/coco.h',
                 {'COCO_VERSION': git_version(pep440=True)})
@@ -619,8 +644,17 @@ def build_java():
                 {'COCO_VERSION': git_version(pep440=True)})
     write_file(git_revision(), "code-experiments/build/java/REVISION")
     write_file(git_version(), "code-experiments/build/java/VERSION")
-    run('code-experiments/build/java', ['javac', '-classpath', '.', 'CocoJNI.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javah', '-classpath', '.', 'CocoJNI'], verbose=_verbosity)
+
+    javacpath = executable_path('javac')
+    javahpath = executable_path('javah')
+    if javacpath and javahpath:
+        run('code-experiments/build/java', ['javac', '-classpath', '.', 'CocoJNI.java'], verbose=_verbosity)
+        run('code-experiments/build/java', ['javah', '-classpath', '.', 'CocoJNI'], verbose=_verbosity)
+    elif javacpath:
+        run('code-experiments/build/java', ['javac', '-h', '.', 'CocoJNI.java'], verbose=_verbosity)
+    else:
+        raise RuntimeError('Can not find javac path!')
+
 
     # Finds the path to the headers jni.h and jni_md.h (platform-dependent)
     # and compiles the CocoJNI library (compiler-dependent). So far, only
@@ -659,9 +693,21 @@ def build_java():
 
     # 4. Linux
     elif 'linux' in sys.platform:
-        jdkpath = check_output(['locate', 'jni.h'], stderr=STDOUT,
-                               env=os.environ, universal_newlines=True)
-        jdkpath1 = jdkpath.split("jni.h")[0]
+        # bad bad bad...
+        #jdkpath = check_output(['locate', 'jni.h'], stderr=STDOUT,
+        #                       env=os.environ, universal_newlines=True)
+        #jdkpath1 = jdkpath.split("jni.h")[0]
+        # better
+        jdkhome = os.environ.get('JAVA_HOME') or os.environ.get('JDK_HOME')
+        if not jdkhome:
+            javapath = executable_path('java')
+            if not javapath:
+                raise RuntimeError('Can not find Java executable')
+            jdkhome = abspath(join(javapath, os.pardir, os.pardir))
+            if os.path.basename(jdkhome) == 'jre':
+                jdkhome = join(jdkhome, os.pardir)
+
+        jdkpath1 = join(jdkhome, 'include')
         jdkpath2 = jdkpath1 + '/linux'
         run('code-experiments/build/java',
             ['gcc', '-I', jdkpath1, '-I', jdkpath2, '-c', 'CocoJNI.c'],
@@ -687,11 +733,11 @@ def build_java():
             ['gcc', '-dynamiclib', '-o', 'libCocoJNI.jnilib', 'CocoJNI.o'],
             verbose=_verbosity)
 
-    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Problem.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Benchmark.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Observer.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Suite.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', '-classpath', '.', 'ExampleExperiment.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', 'Problem.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', 'Benchmark.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', 'Observer.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', 'Suite.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', 'ExampleExperiment.java'], verbose=_verbosity)
 
 
 def run_java():
@@ -699,7 +745,7 @@ def run_java():
     build_java()
     try:
         run('code-experiments/build/java',
-            ['java', '-Djava.library.path=.', '-classpath', '.', 'ExampleExperiment'],
+            ['java', '-Djava.library.path=.', 'ExampleExperiment'],
             verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
@@ -710,7 +756,7 @@ def test_java():
     build_java()
     try:
         run('code-experiments/build/java',
-            ['java', '-Djava.library.path=.', '-classpath', '.', 'ExampleExperiment'],
+            ['java', '-Djava.library.path=.', 'ExampleExperiment'],
             verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
@@ -763,7 +809,6 @@ for ee.suite_name, ee.observer_options['result_folder'] in [
             shutil.rmtree('code-experiments/build/python/exdata/RS-' + s,
                           ignore_errors=True)
 
-
 def verify_postprocessing(package_install_option = []):
     install_postprocessing(package_install_option = package_install_option)
     # This is not affected by the _verbosity value. Verbose should always be True.
@@ -792,7 +837,6 @@ def test_preprocessing(package_install_option = []):
     install_preprocessing(package_install_option = package_install_option)
     python('code-preprocessing/archive-update', ['-m', 'pytest'], verbose=_verbosity)
     python('code-preprocessing/log-reconstruction', ['-m', 'pytest'], verbose=_verbosity)
-
 
 ################################################################################
 ## Global
