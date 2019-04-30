@@ -207,8 +207,7 @@ class Testbed(object):
         Right now only used for making bbob-biobj and bbob-biobj-ext suites
         consistent. Here implemented as a stub.
         """
-        if type(dsl) is list:
-            return dsl
+        return dsl
 
 
 
