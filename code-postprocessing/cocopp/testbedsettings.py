@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import os
 import numpy as np
 import warnings
@@ -194,6 +196,19 @@ class Testbed(object):
             for suffix in suffix_list:
                 if name.endswith(suffix):
                     setattr(self, name, class_(getattr(self, name)))
+
+    def filter(self, dsl):
+        """
+        Returns a new DataSetList from DataSetList dsl that is 
+        consistent with the Testbed class. Works in the same manner
+        for a dictionary dsl of DataSetLists by directly removing
+        the corresponding entries from the DataSetLists.
+        
+        Right now only used for making bbob-biobj and bbob-biobj-ext suites
+        consistent. Here implemented as a stub.
+        """
+        return dsl
+
 
 
 class GECCOBBOBTestbed(Testbed):
@@ -439,6 +454,40 @@ class GECCOBiObjBBOBTestbed(Testbed):
             # self.short_names = get_short_names(self.shortinfo_filename)
             self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 
+    def filter(self, dsl):
+        """ Returns a new DataSetList from DataSetList dsl that does only have the
+            first 55 functions, in case the original data is from either
+            the bbob-biobj or the bbob-biobj-ext suite. Filters in a similar 
+            manner by removing directly from dsl if dsl is an algorithm dictionary.
+        
+            Gives an error if the data is not compatible.    
+        """
+
+        if type(dsl) is list:
+            new_dsl = []
+            for ds in dsl:
+                if not ds.get_suite() in ['bbob-biobj', 'bbob-biobj-ext']:
+                    raise ValueError("Data from %s suite is not "
+                                     "compatible with other data from "
+                                     "the bbob-biobj and/or bbob-biobj-ext "
+                                     "suites" % str(ds.suite))
+                else:
+                    if ds.funcId <= 55:
+                        new_dsl.append(ds)
+            return new_dsl
+        elif type(dsl) is dict:
+            for algname in dsl:
+                for i in range(len(dsl[algname]) - 1, -1, -1):
+                    if not (dsl[algname])[i].get_suite() in ['bbob-biobj', 'bbob-biobj-ext']:
+                        raise ValueError("Data from %s suite is not "
+                                         "compatible with other data from "
+                                         "the bbob-biobj and/or bbob-biobj-ext "
+                                         "suites" % str((dsl[algname])[i].suite))
+                    else:
+                        if ((dsl[algname])[i]).funcId > 55:
+                            dsl[algname].pop(i)
+            return dsl
+
 
 class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
     """Biobjective testbed to display data sets run on the `bbob-biobj-ext`
@@ -459,7 +508,7 @@ class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
         reference_algorithm_filename='', # TODO produce correct best2017 algo and delete this line
         reference_algorithm_displayname='', # TODO: should be read in from data set in reference_algorithm_filename
         instancesOfInterest={1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}, # None:consider all instances
-    ) 
+    )
 
     def __init__(self, targetValues):        
         super(GECCOBiObjExtBBOBTestbed, self).__init__(targetValues)
@@ -579,6 +628,7 @@ class GECCOBBOBBiObjMixintTestbed(GECCOBiObjExtBBOBTestbed):
         name=testbed_name_bi_mixint,
         first_dimension=5,
         dimensions_to_display=[5, 10, 20, 40, 80, 160],
+        instances_are_uniform=False,
         tabDimsOfInterest=dimsOfInterest,
         rldDimsOfInterest=dimsOfInterest,
         reference_algorithm_filename=None,  # TODO produce correct reference algo and update this line
