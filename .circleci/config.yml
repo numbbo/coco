@@ -63,7 +63,7 @@ jobs:
       - run:
           name: Install octave for octave tests
           command: |
-            apt-get install -y liboctave-dev
+            DEBIAN_FRONTEND=noninteractive apt-get install -y liboctave-dev
             updatedb
       - run:
           name: Run coco octave tests
@@ -72,7 +72,7 @@ jobs:
       - run:
           name: Install jdk for java tests
           command: |
-            apt-get install -y openjdk-8-jdk
+            apt-get install -y openjdk-11-jdk
             updatedb
       - run:
           name: Run coco octave tests
@@ -163,7 +163,7 @@ jobs:
       - run:
           name: Install jdk for java tests
           command: |
-            apt-get install -y openjdk-8-jdk
+            apt-get install -y openjdk-11-jdk
             updatedb
       - run:
           name: Run coco java tests

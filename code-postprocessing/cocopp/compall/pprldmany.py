@@ -420,10 +420,19 @@ def plot(dsList, targets=None, craftingeffort=0., **kwargs):
             evals = entry.detEvals([t])[0]
             runlengthsucc = evals[np.isnan(evals) == False] / divisor
             runlengthunsucc = entry.maxevals[np.isnan(evals)] / divisor
-            if len(runlengthsucc) > 0:
-                x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
-                                      percentiles=[50],
-                                      samplesize=perfprofsamplesize)[1]
+            if len(runlengthsucc) > 0:  # else x == [inf, inf,...]
+                if testbedsettings.current_testbed.instances_are_uniform:
+                    x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
+                                          percentiles=[50],
+                                          samplesize=perfprofsamplesize)[1]
+                else:
+                    nruns = len(runlengthsucc) + len(runlengthunsucc)
+                    if perfprofsamplesize % nruns:
+                        warnings.warn("without simulated restarts nbsamples=%d"
+                                      " should be a multiple of nbruns=%d"
+                                      % (perfprofsamplesize, nruns))
+                    idx = toolsstats.randint_derandomized(nruns, size=perfprofsamplesize)
+                    x = np.hstack((runlengthsucc, len(runlengthunsucc) * [np.inf]))[idx]
             data.extend(x)
             maxevals.extend(runlengthunsucc)
 
@@ -636,10 +645,19 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                         assert entry.dim == dim
                         runlengthsucc = evals[np.isnan(evals) == False] / divisor
                         runlengthunsucc = entry.maxevals[np.isnan(evals)] / divisor
-                        if len(runlengthsucc) > 0:
-                            x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
-                                                  percentiles=[50],
-                                                  samplesize=perfprofsamplesize)[1]
+                        if len(runlengthsucc) > 0:  # else x == [inf, inf,...]
+                            if testbedsettings.current_testbed.instances_are_uniform:
+                                x = toolsstats.drawSP(runlengthsucc, runlengthunsucc,
+                                                      percentiles=[50],
+                                                      samplesize=perfprofsamplesize)[1]
+                            else:
+                                nruns = len(runlengthsucc) + len(runlengthunsucc)
+                                if perfprofsamplesize % nruns:
+                                    warnings.warn("without simulated restarts nbsamples=%d"
+                                                  " should be a multiple of nbruns=%d"
+                                                  % (perfprofsamplesize, nruns))
+                                idx = toolsstats.randint_derandomized(nruns, size=perfprofsamplesize)
+                                x = np.hstack((runlengthsucc, len(runlengthunsucc) * [np.inf]))[idx]
                     except (KeyError, IndexError):
                         # set_trace()
                         warntxt = ('Data for algorithm %s on function %d in %d-D '
