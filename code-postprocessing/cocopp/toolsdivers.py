@@ -67,7 +67,8 @@ class StringList(list):
             inlist = list_or_str.split()
         except AttributeError:
             inlist = list_or_str
-        list.__init__(self, inlist)
+        if inlist:  # prevent error on None
+            list.__init__(self, inlist)
 
     @property
     def as_string(self):

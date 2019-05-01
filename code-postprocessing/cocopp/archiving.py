@@ -1,57 +1,60 @@
 # -*- coding: utf-8 -*-
-"""Online archiving related classes.
+"""Online and offline COCO data archiving related classes.
 
-`COCODataArchive` contains all archived data as given in a folder
-hierarchy.
+`COCODataArchive` contains all "officially" archived data as given in a folder
+hierarchy. Derived classes "point" to subfolders in the folder tree and
+"contain" all archived data from a single test suites.
 
-Derived classes "point" to subfolders in the folder tree and "contain"
-all archived data from a single test suites.
+`create` and `get` are (otherwise) the main functions to manage online and
+local offline archives. Local archives can be listed via `ArchivesLocal`
+(experimental/beta).
 
-An online archive class defines (and is defined by) a source URL and a
-list of all contained datasets by name, a sha256 hash and optionally
-their approximate size. The name must reflect a (tar-)zipped path/filename
-containing a full experiment from a single algorithm.
+An online archive class defines (and is defined by) a source URL containing
+an archive definition file. The definition file as created by `create`
+contains a list of all contained datasets by name, a sha256 hash and
+optionally their approximate size. Datasets are a (tar-)zipped
+path/filename containing a full experiment from a single algorithm.
 
 A new class can be generated "on the fly" by `create` and
-re-instantiated with `cocopp.archiving.COCOUserDataArchive`, like
+re-instantiated with `cocopp.archiving.get`, like
 
 >>> from cocopp import archiving
->>> local_path='~/.cocopp/my-archives/unique-name'
+>>> local_path = 'my-archives/unique-name'
 >>> archiving.create(local_path)  # doctest:+SKIP
->>> my_archive = archiving.COCODataUserArchive(local_path)  # doctest:+SKIP
+>>> my_archive = archiving.get(local_path)  # doctest:+SKIP
 
-assuming that the new to-be-archived data reside at
-``~/.cocopp/my-archives/unique-name``.
+assuming that the new to-be-archived data resides at
+``my-archives/unique-name`` and the folder only contains zipped dataset
+files in any of its subfolders. The data of this archive can be processed
+like
 
-If a mirror of the archive is online, we can write a definition file and
-publish it together with the URL, such that everyone can use the archive
-on the fly like
+>>> cocopp.main(my_archive.get_all(''))  # doctest:+SKIP
 
->>> remote_def = 'http://my-coco-online-archive/coco_archive_definition.txt'
->>> new_archive = create_from_remote('~/.cocopp/new-archives/unique-name',
-...                                  remote_def)  # doctest:+SKIP
+If a mirror of the archive is put online, like::
 
-Now the archive can be re-used like
+    rsync -zauv my-archives/unique-name/ http://my-coco-online-archives/a-name
 
->>> arch = COCOUserDataArchive('~/.cocopp/new-archives/unique-name')  # doctest:+SKIP
+everyone can use the archive on the fly like
 
-To make all data offline available (might take long):
+>>> remote_def = 'http://my-coco-online-archives/a-name'
+>>> remote_archive = cocopp.archiving.get(remote_def)  # doctest:+SKIP
 
->>> arch.get_all('')  # doctest:+SKIP
+just as a local archive. Data are downloaded only on demand. To make all
+data available offline (which might take long):
 
-TODO: implement consistency check between a definition list and
-a local archive.
+>>> remote_archive.get_all('')  # doctest:+SKIP
+
+Remote archives that have been used once can be listed via `ArchivesKnown`
+(experimental/beta).
 
 """
 from __future__ import absolute_import, division, print_function, unicode_literals
-
-# from archiving import COCOUserDataArchive
-
-__author__ = 'Nikolaus Hansen'
 del absolute_import, division, print_function, unicode_literals
 
+__author__ = 'Nikolaus Hansen'
+
 import os
-import time
+import time as _time
 import warnings
 import hashlib
 import ast
@@ -59,16 +62,22 @@ import re as _re
 
 from .toolsdivers import StringList
 try:
-    from urllib.request import urlretrieve
+    from urllib.request import urlretrieve as _urlretrieve
 except ImportError:
-    from urllib import urlretrieve
+    from urllib import urlretrieve as _urlretrieve
 
-default_definition_filename = 'archive_definition.txt'
-default_archive_location = '~/.cocopp'  # only partly in use so far
+cocopp_home = os.path.abspath(os.path.expanduser(os.path.join("~", ".cocopp")))
+default_archive_location = os.path.join(cocopp_home, 'data-archives')
+default_definition_filename = 'coco_archive_definition.txt'
+backup_last_filename = ''  # global variable to see whether and where a backup was made
 
 
-def _abs_path(path):
-    return os.path.abspath(os.path.expanduser(path))
+def _abs_path(path, *args):
+    """return a (OS-dependent) user-expanded path.
+
+    `os.path.abspath` takes care of using the right `os.path.sep`.
+    """
+    return os.path.abspath(os.path.join(os.path.expanduser(path), *args))
 
 def _makedirs(path, error_ok=True):
     try:
@@ -79,19 +88,22 @@ def _makedirs(path, error_ok=True):
 
 def _make_backup(fullname):
     """backup file with added time stamp if it exists, otherwise do nothing."""
+    global backup_last_filename
     try:
-        with open(fullname, 'rt') as file_:
-            # path and file exist, so we make a backup with a time stamp
-            with open(fullname + time.asctime()[3:].replace(' ', '_'), 'wt') as file2:
+        with open(fullname, 'rt') as file_:  # TODO: use rather os.rename (only Python 3) or shutil2.move?
+            # the file exists, so we make a backup with a time stamp
+            backup_last_filename = fullname + _time.strftime("_%Y-%m-%d_%Hh%Mm%Ss")
+            with open(backup_last_filename, 'wt') as file2:
                 file2.write(file_.read())
     except IOError:
         pass
 
 def _url_to_folder_name(url):
-    name = url.lstrip('http://').lstrip('https://')
+    """return a path within the default archive location"""
+    name = url.strip().strip('/').lstrip('http://').lstrip('https://'
+               ).lstrip('HTTP://').lstrip('HTTPS://')
     name = name.replace('/', os.path.sep)
-    name = os.path.join([_abs_path(default_archive_location), name])
-    return name
+    return _abs_path(default_archive_location, name)
 
 def _definition_file_to_read(local_path_or_definition_file):
     """return absolute path to a definition file name.
@@ -108,13 +120,11 @@ def _definition_file_to_write(local_path_or_filename,
                               filename=None):
     """return absolute path to a non-exisiting definition file name.
 
-    If ``filename is None``, tries to guess whether the first argument
-    already includes the filename. In case, `default_definition_filename`
-    is appended.
+    If ``filename is None``, tries to guess whether the first argument already
+    includes the filename. In case, `default_definition_filename` is appended.
 
     Creates a backup if the file exists. Does not create the file or folders
     when they do not exist.
-
     """
     if filename:
         local_path_or_filename = os.path.join(local_path_or_filename,
@@ -135,81 +145,40 @@ def _hash(file_name, hash_function=hashlib.sha256):
         return hash_function(file_.read()).hexdigest()
 
 def _str_to_list(str_or_list):
-    """return a `list` in either case"""
+    """try to return a non-string iterable in either case"""
     if isinstance(str_or_list, (tuple, list, set)):
         return str_or_list
     if str(str_or_list) == str_or_list:
         return [str_or_list]
     raise ValueError(str_or_list)
 
-
 def read_definition_file(local_path_or_definition_file):
     """return definition triple `list`"""
     with open(_definition_file_to_read(local_path_or_definition_file), 'rt') as file_:
         return ast.literal_eval(file_.read())
 
-def create_from_remote(local_path, url_definition_file):
-    """copy a definition file from url to ``local_path/coco_archive_definition.txt``.
-
-    `local_path` is the storage location and should (better) be empty.
-    It is created if it does not exist. The definition file is backuped
-    if it exists.
-
-    TODO: need more testing?
-
-    >>> import os, uuid
-    >>> import cocopp
-    >>> tmp_folder = '_tmp_' + uuid.uuid4().hex[:9]
-    >>> url = 'http://coco.gforge.inria.fr/data-archive/bbob/2017-others'
-    >>> arch = cocopp.archiving.create_from_remote(tmp_folder,
-    ...              url + '/_definitions_for_testing.txt')
-    >>> assert arch.remote_data_path == url
-    >>> assert arch.local_data_path == cocopp.archiving._abs_path(tmp_folder)
-    >>> len(arch)
-    3
-
-    Technical checks:
-
-    >>> assert len(arch._url_dropped) == 1
-    >>> assert not arch.local_data_path.endswith('.txt')
-    >>> assert cocopp.archiving.COCOUserDataArchive._url_(arch._all) is None
-
-    Cleaning up:
-
-    >>> os.remove(os.path.join(tmp_folder,
-    ...               cocopp.archiving.default_definition_filename))
-    >>> os.rmdir(tmp_folder)
-
-    """
-    # warnings.warn("create_from_remote has never been tested")
-    definition_file = _definition_file_to_write(local_path)
-    _make_backup(definition_file)  # in case it exists
-    _makedirs(os.path.split(definition_file)[0])  # in case it does not exist
-    urlretrieve(url_definition_file, definition_file)  # download
-    with open(definition_file, 'rt') as file_:
-        definitions = ast.literal_eval(file_.read().replace('L)', ')'))
-    _url_ = COCOUserDataArchive._url_(definitions)
-    url = url_definition_file.rsplit('/', 1)[0]
-    if not _url_:
-        definitions += [('_url_', url)]
-        with open(definition_file, 'wt') as file_:
-            file_.write(repr(definitions))
-    elif _url_ != url:
-        warnings.warn("URLs do not match \n   %s \nvs %s" %
-                      (url, _url_))
-    return COCOUserDataArchive(definition_file, url or None)
-
 def create(local_path):
     """create a definition file for an existing local "archive" of data.
 
-    Raise `ValueError` if definition file exsists.
+    The archive in `local_path` must have been prepared such that it
+    contains only (tar-g-)zipped data set files, one file for each data
+    set / algorithm, within an otherwise arbitrary folder structure (it is
+    possible and for large archives often desirable to create and maintain
+    sub-archives within folders of an archive). Choose the name of the zip
+    files carefully as they become the displayed algorithm names.
+
+    If a definition file already exists it is backed up and replaced.
+
+    The "created" archive is registered with `ArchivesLocal` serving as a
+    user-owned machine-wide memory. ``cocopp.archiving.ArchivesLocal()``
+    shows the list.
 
     >>> from cocopp import archiving
     >>> # folder containing the data we want to become known in the archive:
-    >>> local_path = '~/.cocopp/user-archives/my-first-archive'
+    >>> local_path = 'my-archives/my-first-archive'
     >>>
     >>> my_archive = archiving.create(local_path)  # doctest:+SKIP
-    >>> same_archive = archiving.COCOUserDataArchive(local_path)  # doctest:+SKIP
+    >>> same_archive = archiving.get(local_path)  # doctest:+SKIP
 
     An archive definition file is a list of (relative file name,
     hash and (optionally) filesize) triplets.
@@ -218,46 +187,28 @@ def create(local_path):
     a definition file to be generated at the root of this archive.
 
     In itself this is not particularly useful, because we can also
-    directly load or use the zip files without archiving them.
+    directly load or use the zip files instead of archiving them first and
+    accessing the data then from the archive class within python.
 
-    However, if the data are put online together with the definition
-    file, everybody can locally re-create this archive via
-    `create_from_remote` and use `COCOUserDataArchive` without
-    downloading any data immediately, but only on demand.
-
-    >>> import os, uuid
-    >>> from cocopp import archiving, archives
-    >>> assert 'bbob' in archives.bbob.local_data_path
-    >>> print('get_all 2017-others'); archives.bbob.get_all("2017-others")  # download data (45MB) for new archive  # doctest:+ELLIPSIS
-    get_all 2017-others...
-    >>> def_name = '~/.cocopp/data-archive/bbob/2017-others/'  # make "new" archive here
-    >>> def_name += uuid.uuid4().hex[:9] + '.txt'
-    >>> my_arch = archiving.create(def_name)
-
-    Now we can use the newly defined archive like
-
-    >>> my_arch2 = archiving.COCOUserDataArchive(def_name)  # use the new archive
-    >>> assert my_arch._all == my_arch2._all
-
-    Cleaning up:
-
-    >>> os.remove(archiving._abs_path(def_name))
+    However, if the data are put online together with the definition file,
+    everybody can locally re-create this archive via `get` and use the
+    returned `COCOUserDataArchive` without downloading any data
+    immediately, but only on demand.
 
     """
-    try:
-        definition_file = _definition_file_to_write(local_path)
-    except IOError:
-        warnings.warn("file % already exists. Use a different "
-                      "name or delete the file first."
-                         % definition_file)
-        raise
+    backup_file = backup_last_filename
+    definition_file = _definition_file_to_write(local_path)
+    if backup_file != backup_last_filename:
+        warnings.warn("previous definition file has been back upped to %s"
+                      % backup_last_filename)
     full_local_path = os.path.split(definition_file)[0]
     res = []
-    for dirpath, dirnames, filenames in os.walk(full_local_path):
+    for dirpath, _dirnames, filenames in os.walk(full_local_path):
         for filename in filenames:
             if ('.extracted' not in dirpath
                 and not filename.endswith(('.dat', '.rdat', '.tdat', '.info', '.txt', '.md', '.py', '.ipynb'))
-                and not filename in ('README', 'readme')
+                and not '.txt' in filename  # catch backups of definition files
+                and not filename in ('README', 'readme', default_definition_filename)
                     # and not ('BBOB' in filename and 'rawdata' in filename)
                 ):
                 name = dirpath[len(full_local_path) + 1:].replace(os.path.sep, '/')
@@ -273,44 +224,169 @@ def create(local_path):
                                      "\nPlease change the filename."
                                      % (name, path))
     if not len(res):
-        warnings.warn('archiving.create: no data found in %s' % local_path)
+        warnings.warn('cocopp.archiving.create: no data found in %s' % local_path)
         return
     with open(definition_file, 'wt') as file_:
         file_.write(repr(res).replace('L)', ')'))
-    return COCOUserDataArchive(definition_file)
-
-def _get_local(folder):
-    """return data archive, `folder` may be a definition file.
-
-    Create a definition file if none is found.
-    """
-    try:
-        return COCOUserDataArchive(folder)
-    except FileNotFoundError:
-        pass
-    return create(folder)  # create does not overwrite a definition file
+    ArchivesLocal.register(full_local_path)  # to find splattered local archives easily
+    return COCOUserDataArchive(full_local_path)
 
 def _get_remote(url, target_folder=None):
-    """return data archive"""
-    # create target folder
+    """return remote data archive as `COCOUserDataArchive` instance.
+
+    If necessary, the archive is "created" by downloading the definition file
+    from `url` to `target_folder`. The target folder name is by default derived
+    from the `url` and created within ``default_archive_location ==
+    ~/.cocopp/data-archives``.
+    """
+    url = url.rstrip('/')
     if not target_folder:
         target_folder = _url_to_folder_name(url)
-    # download definition file
-    try:
-        urlretrieve(url.rstrip('/') + '/' + default_definition_filename, target_folder)
-    except:
-        urlretrieve(url, target_folder)
+    _makedirs(target_folder)
+    definition_filename = default_definition_filename
+    local_definition_filename = os.path.join(target_folder, definition_filename)
+    if not os.path.exists(local_definition_filename):
+        _make_backup(local_definition_filename)
+        _urlretrieve(url + '/' + definition_filename, local_definition_filename)
+        COCOUserDataArchive._url_add(target_folder, url)
+        ArchivesKnown.register(target_folder)  # TODO: instead we could just walk .cocopp/data-archives
     return COCOUserDataArchive(target_folder)
 
-def get(url_or_local):
-    """return a data archive"""
-    if os.path.exists(url_or_local):
-        return _get_local(url_or_local)
-    return _get_remote(url_or_local)
+def get(url_or_folder):
+    """return a data archive `COCODataArchive`.
 
+    `url_or_folder` must be an URL or a folder, any of which must contain
+    an archive definition file of name `coco_archive_definition.txt`. Use
+    `create` to create this file if necessary.
+
+    When an URL is given and the archive already exists locally and shall
+    be updated, ``get(url).update()`` updates the definition file and
+    returns the updated archive. Only the definition file is updated, no
+    data are downloaded before they are requested. When the hashes of
+    remote data changed, the local data must be deleted manually, according
+    to the shown error message when they are tried to be used. This
+    behavior may change in future where the data may be re-downloaded when
+    the saved hash disagrees with the data hash.
+
+    Remotely retrieved archive definitions are registered with `ArchivesKnown`
+    and ``cocopp.archiving.ArchivesKnown()`` will show a list.
+
+    # TODO: revise this:
+    >> import cocopp
+    >> url = 'http://coco.gforge.inria.fr/data-archive/bbob/2017-others'
+    >> with FolderGoneWiththeWind() as tmp_folder
+    >> arch = cocopp.archiving.get(tmp_folder,  # TODO: get does not take a folder argument
+    ...              url + '/_definitions_for_testing.txt')  # TODO: get doesn't take a definition file arg
+    >> assert arch.remote_data_path == url
+    >> assert arch.local_data_path == cocopp.archiving._abs_path(tmp_folder)
+    >> len(arch)
+    3
+    >> assert not arch.local_data_path.endswith('.txt')
+
+    # TODO-decide: re-download in COCODataArchive.get on changed hashes
+
+    """
+    if url_or_folder.lower().startswith("http"):
+        return _get_remote(url_or_folder)
+    return COCOUserDataArchive(url_or_folder)
+
+class _StrList(list):
+    """A list of `str` with advanced search functionality.
+    
+    TODO: factor out generic string-regex-find-stuff from
+    COCODataArchive to make it reusable for example in ListOfArchives
+    
+    Can be joined with StringList?
+    """
+    def __init__(self, list_or_str):
+        try:
+            inlist = list_or_str.split()
+        except AttributeError:
+            inlist = list_or_str
+        if inlist:
+            list.__init__(self, inlist)
+
+    @property
+    def as_string(self):
+        """return concatenation with spaces between.
+        
+        TODO-decide: should this rather return `found` instead of `self`?
+        """
+        return ' ' + ' '.join(self) + ' '
+
+    @property
+    def found(self):
+        """`list` of elements found during the last call to `find`.
+        """
+        return self._names_found
+
+    def __call__(self, *substrs):
+        """alias to `find`"""
+        return self.find(*substrs)
+
+    def find(self, *substrs):
+        """return entries that match all `substrs`.
+
+        This method serves for interactive exploration of available entries
+        and may be aliased to the shortcut of calling the instance itself.
+
+        When given several `substrs` arguments the results match each
+        substring (AND search, an OR can be simply achieved by appending
+        the result of two finds). Upper/lower case is ignored.
+
+        When given a single `substrs` argument, it may be
+
+        - a list of matching substrings, used as several substrings as above
+        - an index of `type` `int`
+        - a list of indices
+
+        A single substring matches either if an entry contains the
+        substring or if the substring matches as regular expression, where
+        "." matches any single character and ".*" matches any number >= 0
+        of characters.
+
+        Details: The list of matching names is stored in `found`.
+        """
+        # check whether the first arg is a list rather than a str
+        if substrs and len(substrs) == 1 and substrs[0] != str(substrs[0]):
+            substrs = substrs[0]  # we may now have a list of str as expected
+            if isinstance(substrs, int):  # or maybe just an int
+                self._names_found = [self[substrs]]
+                return StringList(self._names_found)
+            elif substrs and isinstance(substrs[0], int):  # or a list of indices
+                self._names_found = [self[i] for i in substrs]
+                return StringList(self._names_found)
+        names = list(self)
+        for s in substrs:
+            rex = _re.compile(s, _re.IGNORECASE)
+            try:
+                names = [name for name in names if rex.match(name) or s.lower() in name.lower()]
+            except AttributeError:
+                warnings.warn("arguments to `find` must be strings or a "
+                              "single integer or an integer list")
+                raise
+        self._names_found = names
+        return StringList(names)
+
+    def find_indices(self, *substrs):
+        """same as `find` but returns indices instead of names"""
+        return [self.index(name) for name in self.find(*substrs)]
+
+    def print(self, *substrs):
+        """print the result of ``find(*substrs)`` with indices.
+
+        Details: does not change `found` and returns `None`.
+        """
+        current_names = list(self._names_found)
+        for index in self.find_indices(*substrs):
+            print("%4d '%s'" % (index, self[index]))
+        self._names_found = current_names
 
 class COCODataArchive(list):
-    """[versatile/beta] An interface to retrieve archived COCO data.
+    """[versatile/beta] A `list` of archived COCO data.
+    
+    See `cocopp.archives` and/or use `get` to get a class instance
+    other than the full "official" archive.
 
     This class "is" a `list` of names which are relative file names
     separated with slashes "/". Each name represents the zipped data
@@ -320,10 +396,9 @@ class COCODataArchive(list):
     By default, all "officially" archived COCO/BBOB data are in the
     `list`.
 
-    The function `create` serves to create a new user-defined archive
-    from experiment data which can be re-instantiated with
-    `COCOUserDataArchive`. Other derived classes define other specific
-    (sub)archives.
+    The function `create` serves to create a new user-defined archive from
+    experiment data which can be loaded with `get`. Other derived classes define
+    other specific (sub)archives.
 
     Using the class
     ---------------
@@ -397,7 +472,14 @@ class COCODataArchive(list):
     ...         '2010/1komma2mirser_brockhoff_noiseless.tar.gz'])  # is the same  # doctest:+ELLIPSIS,+SKIP,
     '...
 
+    TODO: join with COCOUserDataArchive, to get there:
+    - upload definition files to official archives
+    - use uploaded definition files in the respective classes (via `get`?)
+    - remove definition lists from classes
+    - review and join classes
+
     """
+
     _all_coco_remote = [  # name, sha256 hash, size [kB]
         ('bbob/2009/ALPS_hornby_noiseless.tgz', '98810d28d879eb25d87949f3d7666b36f524a591e3c7d16ef89eb2caec02613b', 19150),
         ('bbob/2009/AMALGAM_bosman_noiseless.tgz', 'e92951f11f8d56e0d1bdea7026bb1087142c3ea054d9e7be44fea2b063c6f394', 17020),
@@ -674,7 +756,7 @@ class COCODataArchive(list):
         ('bbob-noisy/2016/PSAaSmD-CMA-ES_Nishida_bbob-noisy.tgz', '5e1f5a7ed1d96120ff054bab78dd8407cfc3d09972a1bc3f56ea20a4f0d8cb9d', 12819),
         ('test/N-II.tgz', '4e7a550277583a331276b08b309c3168edebf3ec7e5b06d72365670c3a24e9cc', 9371),
         ('test/RS-4.zip', '1e9b0f4e63eaf934bdd819113c160b4663561f2d83059d799feb0c8cb5672978', 6158),
-]
+        ]
 
     @property
     def names_found(self):
@@ -686,7 +768,7 @@ class COCODataArchive(list):
         """
         return self._names_found
 
-    def __init__(self, local_path='~/.cocopp/data-archive'):
+    def __init__(self, local_path=cocopp_home + '/data-archive'):
         """return the full "official" COCO archive unless called from a
         subclass.
 
@@ -698,8 +780,9 @@ class COCODataArchive(list):
         Details: only if the `_all` attribute does not (yet) exist on
         input, the archive is set to the coco full "official" archive.
 
-        TODO-DECIDED: always generated a local definition file if none is
-        found?
+        TODO-decide: remove default argument for local_path, as this is not (anymore)
+        the user interface?
+        TODO-decide: write out definition file in the end of __init__? Doesn't really help anything?
 
         """
         self.local_data_path = _abs_path(local_path)
@@ -710,12 +793,23 @@ class COCODataArchive(list):
         if not hasattr(self, '_all'):
             self._all = COCODataArchive._all_coco_remote
             self.remote_data_path = 'http://coco.gforge.inria.fr/data-archive'
-            # self.local_data_path = '~/.cocopp/data-archive'
+            # self.local_data_path = '~/.cocopp/data-archive'  # is default anyway
+        self._all_dict = dict((kv[0], kv[1:]) for kv in self._all)
+        if len(self._all_dict) != len(self._all):  # warn on double entries
+            keys = [v[0] for v in self._all]
+            warnings.warn("definitions contain double entries %s" %
+                          str([v for v in self._all if keys.count(v[0]) > 1]))
+        if self.remote_data_path and self._all_dict.setdefault("_url_",
+                                       (self.remote_data_path, )) != (self.remote_data_path, ):
+            warnings.warn("found different remote paths \n    %s\n vs %s"
+                          % (self.remote_data_path, self._all_dict["_url_"]))
+        # TODO-decide: sync back remote_data_path to _url_ in _all and in definition_file?
         # extract names (first column) from _all
-        list.__init__(self, (entry[0] for entry in self._all))
+        list.__init__(self, (entry[0] for entry in self._all
+                             if entry[0] != '_url_'))
         self._checked_consistency = False
         if 11 < 3:  # this takes too long on importing cocopp
-            self.consistency_check()
+            self.consistency_check_data()
 
     def __call__(self, *substrs):
         """alias to `find`"""
@@ -884,19 +978,30 @@ class COCODataArchive(list):
         # create full path
         full_name = self.full_path(names[0])
         if os.path.exists(full_name):
+            # TODO-decide: catch exception and re-download once if remote=True?
+            #     not quite necessary as the current error message is reasonably informative
             self.check_hash(full_name)
             return full_name
         if not remote:
             return ''  # like this string operations don't bail out
-
-        # create full local path and download
-        if not os.path.exists(os.path.split(full_name)[0]):
-            _makedirs(os.path.split(full_name)[0])  # create path
-        url = '/'.join((self.remote_data_path, names[0]))
-        self._print("  downloading %s to %s" % (url, full_name))
-        urlretrieve(url, full_name)
-        self.check_hash(full_name)
+        self._download(names[0])
+        if 11 < 3:  # old code
+            # create full local path and download
+            _makedirs(os.path.split(full_name)[0])  # create path if necessary
+            url = '/'.join((self.remote_data_path, names[0]))
+            self._print("  downloading %s to %s" % (url, full_name))
+            _urlretrieve(url, full_name)
+            self.check_hash(full_name)
         return full_name
+
+    def _download(self, name):
+        """create full local path and download single dataset"""
+        url = '/'.join((self.remote_data_path, name))
+        full_name = self.full_path(name)
+        _makedirs(os.path.split(full_name)[0])  # create path if necessary
+        self._print("  downloading %s to %s" % (url, full_name))
+        _urlretrieve(url, full_name)
+        self.check_hash(full_name)
 
     def get_one(self, *args, **kwargs):
         """deprecated, for backwards compatibility only, use `get` instead
@@ -964,12 +1069,16 @@ class COCODataArchive(list):
 
     @property
     def downloaded(self):
-        """return `list` of data set names of locally available data"""
+        """return `list` of data set names of locally available data
+        
+        TODO: think of a better name, `present`, `data_on_disk`, 
+        `data_locally_available`, `data_locally_present`
+        """
         return [name for name in self
                       if os.path.isfile(self.full_path(name))]
 
     def full_path(self, name):
-        """return full local path of `name` or of a full path, idempotent
+        """return full local path of `name` or any path, idempotent
         """
         name = self.name(name)
         return os.path.join(self.local_data_path,
@@ -996,7 +1105,7 @@ class COCODataArchive(list):
                           'COCODataArchive' % name)
         return name
 
-    def consistency_check(self):
+    def consistency_check_data(self):
         """basic quick consistency check of downloaded data.
 
         return ``(number_of_checked_data, number_of_all_data)``
@@ -1024,7 +1133,7 @@ class COCODataArchive(list):
                 '' % (name, self._hash(name)))
         elif self._hash(name) != known_hash:
             raise ValueError(
-                'wrong checksum for "%s".'
+                'wrong checksum for "%s". '
                 'Consider to (re)move file\n'
                 '   %s\n'
                 'as it may be a partial/unsuccessful download.\n'
@@ -1039,63 +1148,142 @@ class COCODataArchive(list):
         """return known hash or `None`
         """
         try:
-            return self._all[self.index(self.name(name))][1]
-        except IndexError:
+            return self._all_dict[self.name(name)][0]
+            # was depending on order consistency of self and self._all:
+            # return self._all[self.index(self.name(name))][1]
+        except KeyError:
             return None
 
 class COCOUserDataArchive(COCODataArchive):
     """User defined data archive.
 
-    Needs an archive definition file to begin with, which can been
-    created with `create` or `create_from_remote`.
+    This class is not (anymore) meant to be used directly. Instead use
+    `cocopp.archiving.get`.
+
+    This class needs an archive definition file to begin with, which can been
+    created with `create`.
 
     """
     __doc__ += COCODataArchive.__doc__
-    def __init__(self, local_path, url=None):
-        """Arguments are a local path and an URL (optional).
 
+    def __init__(self, local_path):
+        """Argument is a local path to the archive.
+
+        This class is not anymore meant to be used directly, rather use
+        `cocopp.archiving.get`.
+    
         ``~`` may refer to the user home folder.
 
-        `local_path` is either an archive folder containing a
-        definition file, or the name of the definition file in the
-        archive folder. The archive folder may be otherwise empty,
-        if `url` is given.
+        `local_path` is an archive folder containing a definition file,
+        possibly downloaded (with `_get_remote`) from the given `url`.
 
+        HALFDONE TODO: looks like the local/remote logic could be simplified.
+        TODO: clean up / remove drop of url argument fully
         """
-        # warnings.warn('never tested')
-        self._all = read_definition_file(local_path)
-        self.remote_data_path = url
-        if url is None:
-            self.remote_data_path = self._url_(self._all)
-            missing = len(self) - len(self.downloaded)
-            if not self.remote_data_path and missing:
-                warnings.warn(
-                    "%d data sets are not available (no url given)"
-                    % missing)
-        self._url_dropped = self._url_drop(self._all)  # keep for debugging
         local_path = _abs_path(local_path)
-        if os.path.isfile(local_path):
-            local_path = os.path.split(local_path)[0]
-        COCODataArchive.__init__(self, local_path)
+        if os.path.isfile(local_path):  # ignore filename
+            # TODO: shall become a ValueError!?
+            local_path, fn = os.path.split(local_path)
+            if fn:
+                warnings.warn("COCOUserDataArchive.__init__: filename"
+                              " %s in %s ignored" % (fn, local_path))
+        if not COCOUserDataArchive.is_archive(local_path):
+            raise ValueError('The folder "%s" seems not to "be" a COCO data'
+                            " archive it (doesn't contain a %s file)."
+                            "\nUse `create(folder)` or `get(URL)` of"
+                            " `cocopp.archiving` to create/get this file."
+                            % (local_path, default_definition_filename))
+        self.local_data_path = local_path
+        self._all = self.read_definition_file()
+        self.remote_data_path = self._url_(self._all)  # later we could use self._all_dict.get('_url_', None)
+        # self._url_dropped = self._url_drop()  # keep for debugging, TODO: drop is entirely unnecessary!?
+        if 11 < 3:  # TODO: to be removed
+            url = None  # fix pylint error
+            if 11 < 3 and self.remote_data_path and url and self.remote_data_path != url:
+                raise ValueError("Archive has already url=%s != %s as given."
+                                "\nIf necessary, remove _url_ entry in file %s"
+                                % (self.remote_data_path, url,
+                                    local_path + '/' + default_definition_filename))
+            if 11 < 3 and url and not self.remote_data_path:  # this can be removed
+                self._url_sync(url)
+                self.remote_data_path = url
+        if not self.remote_data_path and len(self) != len(self.downloaded):
+                warnings.warn(
+                    "defined=%d!=%d=downloaded data sets and no url given"
+                    % (len(self), self.downloaded))
+        COCODataArchive.__init__(self, local_path)  # uses ._all
+        self.consistency_check_read()
 
     def update(self):
-        """update definition file, either from remote location or from local data"""
-        warning.warn("method update was never tested")
+        """update definition file, either from remote location or from local data.
+        
+        A common usecase may be ``arch = cocopp.archiving.get(url).update()``.
+
+        """
+        warnings.warn("TODO: method update was never tested")
+        # if we want to be able to have a different definition file name
+        # (why would we) the name must be a class attribute and used here
         if self.remote_data_path:
-            create_from_remote(self.local_data_path, self.remote_data_path)
+            _get_remote(self.remote_data_path, self.local_data_path)
         else:
             create(self.local_data_path)
+        # update the definition list in this class
+        # and the URL in the definition file:
+        self.__init__(self.local_data_path)
+        return self  # allow for ca = get(...).update()
 
     @staticmethod
-    def _url_(definition_list):
+    def _url_add(folder, url):
+        """add ``('_url_', url), `` to the definition file in `folder`
+        
+        This is idempotent, however different urls may be in the list.
+        """
+        definition_file = _abs_path(folder, default_definition_filename)
+        with open(definition_file, 'rt') as f:
+            defs = ast.literal_eval(f.read())
+        if ('_url_', url) not in defs:
+            defs = [('_url_', url)] + defs
+        with open(definition_file, 'wt') as f:
+            f.write(repr(defs))
+
+    def _url_sync(self, url):
+        """obsolete, superseded by _url_add, write url in definition file.
+        
+        Raise `ValueError` if a different url already exists.
+        """
+        warnings.warn("implementation of _url_sync was never tested")
+        if not os.path.exists(os.path.join(self.local_data_path,
+                                           default_definition_filename)):
+            warnings.warn("no definition file to sync url to")
+            return
+
+        _url_ = self._url_()  # reads url from definition file
+        if _url_ and _url_ != url:
+            raise ValueError("URLs do not match \n   %s \nvs %s" %
+                        (url, _url_))
+        self.consistency_check_read()
+        with open(os.path.join(self.local_data_path,
+                                default_definition_filename), 'wt') as file_:
+            file_.write(repr([('_url_', url)] + self._all))
+
+    def consistency_check_read(self):
+        """check/compare against definition file on disk"""
+        all = self.read_definition_file()
+        diff = set(all).symmetric_difference(self._all)
+        assert len(diff) == 0 or (list(diff)[0][0] == "_url_" and
+                                  list(diff)[0][1] == self.remote_data_path)
+
+    def _url_(self, definition_list=None):
         """return value of _url_ entry in `definition_list` or `None`.
 
         >>> from cocopp.archiving import COCOUserDataArchive
-        >>> assert COCOUserDataArchive._url_([('_url', 'yeah')]) is None
-        >>> assert COCOUserDataArchive._url_([('_url_', None)]) is None
-        >>> assert COCOUserDataArchive._url_([('_url_', 'yeah')]) == 'yeah'
+        >>> assert COCOUserDataArchive._url_(None, [('_url', 'yeah')]) is None
+        >>> assert COCOUserDataArchive._url_(None, [('_url_', None)]) is None
+        >>> assert COCOUserDataArchive._url_(None, [('_url_', 'yeah')]) == 'yeah'
 
         """
+        if definition_list is None:
+            definition_list = self.read_definition_file()
         url_in_defs = [entry for entry in definition_list
                        if entry[0] == '_url_']
         if len(url_in_defs) > 1:
@@ -1103,14 +1291,26 @@ class COCOUserDataArchive(COCODataArchive):
         elif len(url_in_defs) == 1:
             return url_in_defs[0][1]
         return None
-    @staticmethod
-    def _url_drop(definition_list):
-        """pop ``(_url_,...)`` entries from `definition_list` and return
-        them
+    def _url_drop(self):
+        """pop ``(_url_,...)`` entries from `self._all` and return
+        them.
+        
+        Given that `self` is the goto list of names, this may be quite
+        unnecessary.
+        
         """
-        idx = [i for i, triplet in enumerate(definition_list)
-               if triplet[0] == "_url_"]
-        return [definition_list.pop(i) for i in reversed(idx)]
+        return reversed([self._all.pop(i)
+                         for i in range(len(self._all) - 1, -1 , -1)
+                         if self._all[i] == "_url_"])
+    def read_definition_file(self, local_path=None):
+        """return definition triple `list`"""
+        with open(_definition_file_to_read(local_path or self.local_data_path),
+                                           'rt') as file_:
+            return ast.literal_eval(file_.read())
+    @staticmethod
+    def is_archive(folder):
+        """return `True` if `folder` contains a COCO archive definition file"""
+        return default_definition_filename in os.listdir(folder)
 
 class COCOBBOBDataArchive(COCODataArchive):
     """`list` of archived data for the 'bbob' test suite.
@@ -1295,8 +1495,194 @@ class KnownArchives:
 
        >>> cocopp.main('-o myoutputfolder BIPOP! 2012/DE*')  # doctest:+SKIP
 
+    TODO: this should become rather the module `cocopp.archives`!?
+
     """
     all = COCODataArchive()
     bbob = COCOBBOBDataArchive()
     bbob_noisy = COCOBBOBNoisyDataArchive()
     bbob_biobj = COCOBBOBBiobjDataArchive()
+
+class ListOfArchives(_StrList):
+    """List of these COCO data archives locally available on this machine.
+
+    Archives are stored as absolute path names (OS-dependent) and can be added
+    with `append` and deleted with the respective `list` operations. After any
+    of these operations, the current state can be made "permanent" with `save`.
+
+    Before an archive can be added, it must have been created with `create` or
+    retrieved from a remote location with `get`.
+
+    TODO-decide: should `create` not add to ArchivesKnown (it does right now)?
+    Isn't the main point of ArchivesKnown the automatic registration to find
+    spattered archives more easily!?
+
+    TODO: currently a list can contain duplicates, where to prevent this?
+
+    """
+
+    listing_file = None  # abstract base class
+    search_folder = None  # TODO-decide : or better default_archive_location?
+
+    def __init__(self, listing_filename=None):
+        """print available archive lists if no listing file is given
+        """
+        if listing_filename:
+            listing_filename = os.path.join(cocopp_home, 'list_%s.txt' % listing_filename)
+        try:
+            self.listing_file = _abs_path(listing_filename or type(self).listing_file)
+        except TypeError:
+            raise ValueError("Available lists:\n %s" % str(self.lists()))
+        if os.path.exists(self.listing_file):
+            with open(self.listing_file, 'rt') as f:
+                list.__init__(self, ast.literal_eval(f.read()))
+        else:
+            _makedirs(os.path.split(self.listing_file)[0])
+            self.save()
+
+    @staticmethod
+    def lists():
+        lists = [n for n in os.listdir(cocopp_home)
+                 if n.startswith('list_') and not ".txt_2" in n]  # backups add the date like "...txt_2019-04-29_17h23m45s"
+        d = {}
+        for listfile in lists:
+            with open(_abs_path(os.path.join(cocopp_home, listfile)), 'rt') as f:
+                d[listfile] = ast.literal_eval(f.read())
+        return d
+
+    @classmethod
+    def register(cls, folder):
+        """add folder to list of archives.
+
+        Caveat: existing class instances won't be aware of new
+        registrations.
+        """
+        warnings.warn("TODO: ListOfArchives.register was never tested")
+        ls = cls()
+        ls.append(folder)
+        ls.save()  # deals with duplicates
+
+    def _add(self, folder):
+        """deprecated, like `append` but create archive if necessary.
+        
+        use `create` which does register the new archive
+        """
+        folder = _abs_path(folder)
+        if folder in self:
+            warnings.warn("%s already in list" % folder)
+            return
+        if not COCOUserDataArchive.is_archive(folder):
+            create(folder)  # calls `save` via `register`
+        self.append(folder)
+
+    def _makepathsabsolute(self):
+        for i in range(len(self)):
+            self[i] = _abs_path(self[i])
+
+    def save(self):
+        """save current list making changes permanent"""
+        for foldername in self:
+            if not COCOUserDataArchive.is_archive(_abs_path(foldername)):
+                raise ValueError('"%s" is not an archive, save aborted' % foldername)
+        self._makepathsabsolute()
+        self._remove_double_entries()
+        _make_backup(self.listing_file)
+        with open(self.listing_file, 'wt') as f:
+            f.write(repr(list(self)))
+
+    def _remove_double_entries(self):
+        for i in range(len(self) - 2, -1, -1):
+            if self[i] in self[i+1:]:
+                self.pop(i)
+
+    def update(self, list_):
+        """TODO: versatile/beta interface, may change in future
+
+        Contrary to `list.extend`, `update` also removes elements from `self`.
+        
+        TODO: update is somewhat a misnomer, rather `reset`?
+        
+        """
+        removed = []
+        for i in range(len(self) - 1, -1, -1):
+            if self[i] not in list_:
+                removed.append(self.pop(i))
+            else:
+                self.pop(i)
+        self.extend(list_)
+        return reversed(removed)
+
+    def _walk(self, folder=None):
+        """recursive search for COCO data archives in `folder` on disk.
+
+        This may take (many?) seconds, for example if using ``folder='~'``.
+
+        Use `update` and `save` to make archives "permanent" in the current
+        class instance / listing file.
+
+        TODO-decide: update the base list from _walk? Maybe keep the
+        last result and implement `save_walk`.
+        """
+        warnings.warn("_walk was never tested, by now it returns the result of the walk")
+        if folder is None:
+            folder = self.search_folder
+        skip_home = cocopp_home not in _abs_path(folder)
+        res = []
+        for dirpath, _dnames, fnames in os.walk(folder, followlinks=False):
+            if skip_home and cocopp_home in _abs_path(dirpath):
+                continue
+            if default_definition_filename in fnames:
+                res.append(_abs_path(dirpath))
+        return res
+
+    def _contains(self, folder):
+        """experimental feature, not clear what this was meant to be, superseded by _walk!?
+        
+        `_walk` returns a  `list` of absolute paths of folders containing a definition file.
+        
+        This is meant to be some sort of `_StrList.find`?
+    
+        Use a leading "./" to unambiguously indicate the current folder as location.
+
+        TODO: must take care of ./
+        """
+        res = []
+        for aname in self:
+            if aname.endswith(_abs_path(folder)):
+                res.append(aname)
+        return res
+
+class ArchiveOfficial(ListOfArchives):
+    """Official COCO data archives.
+
+    TODO: this class is not needed, as official archives don't change frequently
+    and are directly available in cocopp.archives?
+    """
+    __doc__ += ListOfArchives.__doc__
+
+    listing_file = _abs_path(cocopp_home, "list_official_archives.txt")
+    search_folder = _abs_path(cocopp_home, "data-archive") 
+
+class ArchivesLocal(ListOfArchives):
+    """COCO data archives somewhere local on this machine.
+
+    TODO: instantiate as ``cocopp.archives.local_list = ArchivesLocal()``?
+    
+    """
+    __doc__ += ListOfArchives.__doc__
+
+    listing_file = _abs_path(cocopp_home, "list_local_archives.txt")
+    search_folder = _abs_path("~/")  # TODO: somewhat ambitious?
+
+class ArchivesKnown(ListOfArchives):
+    """COCO data archives placed in the default location, that may be remote
+    (syncing) archives.
+    
+    TODO: instantiate as ``cocopp.archives.known_list = ArchivesKnown()``?
+    
+    """
+    __doc__ += ListOfArchives.__doc__
+
+    listing_file = _abs_path(cocopp_home, "list_known_archives.txt")
+    search_folder = default_archive_location 
+
