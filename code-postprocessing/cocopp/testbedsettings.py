@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import os
 import numpy as np
 import warnings
@@ -165,6 +167,8 @@ class Testbed(object):
     """
 
     reference_algorithm_displayname = None
+    instances_are_uniform = True
+    "False for biobjective suites, used (so far only) for simulated restarts in pprldmany"
 
     def info(self, fun_number=None):
         """info on the testbed if ``fun_number is None`` or one-line info
@@ -193,6 +197,19 @@ class Testbed(object):
                 if name.endswith(suffix):
                     setattr(self, name, class_(getattr(self, name)))
 
+    def filter(self, dsl):
+        """
+        Returns a new DataSetList from DataSetList dsl that is 
+        consistent with the Testbed class. Works in the same manner
+        for a dictionary dsl of DataSetLists by directly removing
+        the corresponding entries from the DataSetLists.
+        
+        Right now only used for making bbob-biobj and bbob-biobj-ext suites
+        consistent. Here implemented as a stub.
+        """
+        return dsl
+
+
 
 class GECCOBBOBTestbed(Testbed):
     """Testbed used in the GECCO BBOB workshops 2009, 2010, 2012, 2013, 2015,
@@ -210,6 +227,7 @@ class GECCOBBOBTestbed(Testbed):
         name=testbed_name_single,
         short_names=get_short_names(shortinfo_filename),
         dimensions_to_display=(2, 3, 5, 10, 20, 40),
+        goto_dimension=20,  # auto-focus on this dimension in html
         rldDimsOfInterest=dimsOfInterest,
         tabDimsOfInterest=dimsOfInterest,
         hardesttargetlatex='10^{-8}',  # used for ppfigs, pptable and pptables
@@ -369,8 +387,6 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
                 self.instantiate_attributes(target_values, [key])
 
 
-
-
 class GECCOBiObjBBOBTestbed(Testbed):
     """Testbed used in the BBOB workshops to display
        data sets run on the `bbob-biobj` test suite.
@@ -387,6 +403,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         name=testbed_name_bi,
         short_names=get_short_names(shortinfo_filename),
         dimensions_to_display=(2, 3, 5, 10, 20, 40),
+        goto_dimension=20,  # auto-focus on this dimension in html
         rldDimsOfInterest=dimsOfInterest,
         tabDimsOfInterest=dimsOfInterest,
         hardesttargetlatex='10^{-5}',  # used for ppfigs, pptable and pptables
@@ -396,6 +413,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         pprldistr_target_values=(1e-1, 1e-2, 1e-3, 1e-5),
         pprldmany_target_values=
         np.append(np.append(10 ** np.arange(0, -5.1, -0.1), [0]), -10 ** np.arange(-5, -3.9, 0.2)),
+        instances_are_uniform = False,
         pprldmany_target_range_latex='$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$',
         ppscatter_target_values=np.logspace(-5, 1, 21),  # 21 was 51
         rldValsOfInterest=(1e-1, 1e-2, 1e-3, 1e-4, 1e-5),
@@ -438,6 +456,40 @@ class GECCOBiObjBBOBTestbed(Testbed):
             # self.short_names = get_short_names(self.shortinfo_filename)
             self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 
+    def filter(self, dsl):
+        """ Returns a new DataSetList from DataSetList dsl that does only have the
+            first 55 functions, in case the original data is from either
+            the bbob-biobj or the bbob-biobj-ext suite. Filters in a similar 
+            manner by removing directly from dsl if dsl is an algorithm dictionary.
+        
+            Gives an error if the data is not compatible.    
+        """
+
+        if type(dsl) is list:
+            new_dsl = []
+            for ds in dsl:
+                if not ds.get_suite() in ['bbob-biobj', 'bbob-biobj-ext']:
+                    raise ValueError("Data from %s suite is not "
+                                     "compatible with other data from "
+                                     "the bbob-biobj and/or bbob-biobj-ext "
+                                     "suites" % str(ds.suite))
+                else:
+                    if ds.funcId <= 55:
+                        new_dsl.append(ds)
+            return new_dsl
+        elif type(dsl) is dict:
+            for algname in dsl:
+                for i in range(len(dsl[algname]) - 1, -1, -1):
+                    if not (dsl[algname])[i].get_suite() in ['bbob-biobj', 'bbob-biobj-ext']:
+                        raise ValueError("Data from %s suite is not "
+                                         "compatible with other data from "
+                                         "the bbob-biobj and/or bbob-biobj-ext "
+                                         "suites" % str((dsl[algname])[i].suite))
+                    else:
+                        if ((dsl[algname])[i]).funcId > 55:
+                            dsl[algname].pop(i)
+            return dsl
+
 
 class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
     """Biobjective testbed to display data sets run on the `bbob-biobj-ext`
@@ -458,7 +510,7 @@ class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
         reference_algorithm_filename='', # TODO produce correct best2017 algo and delete this line
         reference_algorithm_displayname='', # TODO: should be read in from data set in reference_algorithm_filename
         instancesOfInterest={1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1}, # None:consider all instances
-    ) 
+    )
 
     def __init__(self, targetValues):        
         super(GECCOBiObjExtBBOBTestbed, self).__init__(targetValues)
@@ -491,6 +543,7 @@ class BBOBLargeScaleTestbed(GECCOBBOBTestbed):
         name=testbed_name_ls,
         short_names=get_short_names(shortinfo_filename),
         dimensions_to_display=(20, 40, 80, 160, 320, 640),
+        goto_dimension=160,  # auto-focus on this dimension in html
         tabDimsOfInterest=dimsOfInterest,
         rldDimsOfInterest=dimsOfInterest,
         hardesttargetlatex='10^{-8}',  # used for ppfigs, pptable and pptables
@@ -550,6 +603,7 @@ class GECCOBBOBMixintTestbed(GECCOBBOBTestbed):
         name=testbed_name_mixint,
         first_dimension=5,
         dimensions_to_display=[5, 10, 20, 40, 80, 160],
+        goto_dimension=40,  # auto-focus on this dimension in html
         tabDimsOfInterest=dimsOfInterest,
         rldDimsOfInterest=dimsOfInterest,
         reference_algorithm_filename=None,  # TODO produce correct reference algo and update this line
@@ -578,6 +632,8 @@ class GECCOBBOBBiObjMixintTestbed(GECCOBiObjExtBBOBTestbed):
         name=testbed_name_bi_mixint,
         first_dimension=5,
         dimensions_to_display=[5, 10, 20, 40, 80, 160],
+        goto_dimension=40,  # auto-focus on this dimension in html
+        instances_are_uniform=False,
         tabDimsOfInterest=dimsOfInterest,
         rldDimsOfInterest=dimsOfInterest,
         reference_algorithm_filename=None,  # TODO produce correct reference algo and update this line

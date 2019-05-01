@@ -356,6 +356,7 @@ def main(arguments):
             print('**  subtest 10 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob`.'
 
+        with InfolderGoneWithTheWind():
             t0 = time.time()
             result = os.system(python + command +
                                join_path(recent_data_path, 'RS-bi'))
@@ -369,24 +370,28 @@ def main(arguments):
             # assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-constrained`.'
             # delete_files(all_files=True)
 
+        with InfolderGoneWithTheWind():
             t0 = time.time()
             result = os.system(python + command + data_archive_get(
                 'test/RS-4.zip'))
             print('**  subtest 13 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on RS-4.zip.'
 
+        with InfolderGoneWithTheWind():
             t0 = time.time()
             result = os.system(python + command +
                                join_path(recent_data_path, 'RS-la'))
             print('**  subtest 14 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-largescale`.'
 
+        with InfolderGoneWithTheWind():
             t0 = time.time()
             result = os.system(python + command +
                                join_path(recent_data_path, 'RS-mi'))
             print('**  subtest 15 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-mixint`.'
 
+        with InfolderGoneWithTheWind():
             t0 = time.time()
             result = os.system(python + command +
                                join_path(recent_data_path, 'RS-bi-mi'))

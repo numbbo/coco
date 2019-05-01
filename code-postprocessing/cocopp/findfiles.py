@@ -97,7 +97,7 @@ def get_directory(directory, extract_files):
                     print('    archive extracted to folder', dir_name, '...')
             directory = dir_name
         else: # i.e. either directory or .tar or zipped .tar
-            head, tail = os.path.split(directory[:directory.find('.t')])
+            head, tail = os.path.split(directory[:directory.rfind('.t')])
             dir_name = os.path.join(head, genericsettings.extraction_folder_prefix + tail)
             # extract only if extracted folder does not exist yet or if it was
             # extracted earlier than last change of archive:

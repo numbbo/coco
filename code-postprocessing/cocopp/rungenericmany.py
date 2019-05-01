@@ -289,6 +289,11 @@ def main(argv=None):
         print("  loading data...")
         dsList, sortedAlgs, dictAlg = processInputArgs(args, True)
 
+        # filter data set lists to be compliant with all suites
+        # (useful right now only for bbob-biobj and bbob-biobj-ext data)
+        dsList = testbedsettings.current_testbed.filter(dsList)
+        dictAlg = testbedsettings.current_testbed.filter(dictAlg)
+
         if not dsList:
             sys.exit()
 

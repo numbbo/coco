@@ -1,6 +1,6 @@
 1 Sphere/Sphere
 2 Sphere/sep. Ellipsoid
-3 Sphere/Attractive sector
+3 Sphere/Attr. sector
 4 Sphere/Rosenbrock
 5 Sphere/Sharp ridge
 6 Sphere/Different Powers
@@ -8,51 +8,51 @@
 8 Sphere/Schaffer F7
 9 Sphere/Schwefel
 10 Sphere/Gallagher 101
-11 sep. Ellipsoid/sep. Ellipsoid
-12 sep. Ellipsoid/Attractive sector
+11 sep. Ellipsoid/sep. Elli.
+12 sep. Ellipsoid/Attr. sector
 13 sep. Ellipsoid/Rosenbrock
 14 sep. Ellipsoid/Sharp ridge
-15 sep. Ellipsoid/Different Powers
+15 sep. Ellipsoid/Diff. Powers
 16 sep. Ellipsoid/Rastrigin
 17 sep. Ellipsoid/Schaffer F7
 18 sep. Ellipsoid/Schwefel
-19 sep. Ellipsoid/Gallagher 101
-20 Attractive sector/Attractive sector
-21 Attractive sector/Rosenbrock
-22 Attractive sector/Sharp ridge
-23 Attractive sector/Different Powers
-24 Attractive sector/Rastrigin
-25 Attractive sector/Schaffer F7
-26 Attractive sector/Schwefel
-27 Attractive sector/Gallagher 101
+19 sep. Elli./Gallagher 101
+20 Attr. sector/Attr. sector
+21 Attr. sector/Rosenbrock
+22 Attr. sector/Sharp ridge
+23 Attr. sector/Diff. Powers
+24 Attr. sector/Rastrigin
+25 Attr. sector/Schaffer F7
+26 Attr. sector/Schwefel
+27 Attr. sector/Gallagher 101
 28 Rosenbrock/Rosenbrock
 29 Rosenbrock/Sharp ridge
-30 Rosenbrock/Different Powers
+30 Rosenbrock/Diff. Powers
 31 Rosenbrock/Rastrigin
 32 Rosenbrock/Schaffer F7
 33 Rosenbrock/Schwefel
 34 Rosenbrock/Gallagher 101
 35 Sharp ridge/Sharp ridge
-36 Sharp ridge/Different Powers
+36 Sharp ridge/Diff. Powers
 37 Sharp ridge/Rastrigin
 38 Sharp ridge/Schaffer F7
 39 Sharp ridge/Schwefel
 40 Sharp ridge/Gallagher 101
-41 Different Powers/Different Powers
-42 Different Powers/Rastrigin
-43 Different Powers/Schaffer F7
-44 Different Powers/Schwefel
-45 Different Powers/Gallagher 101
+41 Diff. Powers/Diff. Powers
+42 Diff. Powers/Rastrigin
+43 Diff. Powers/Schaffer F7
+44 Diff. Powers/Schwefel
+45 Diff. Powers/Gallagher 101
 46 Rastrigin/Rastrigin
 47 Rastrigin/Schaffer F7
 48 Rastrigin/Schwefel
 49 Rastrigin/Gallagher 101
 50 Schaffer F7/Schaffer F7
 51 Schaffer F7/Schwefel
-52 Schaffer F7/Gallagher 101
+52 Schaffer F7/Gallagh. 101
 53 Schwefel/Schwefel
 54 Schwefel/Gallagher 101
-55 Gallagher 101/Gallagher 101
+55 Gallagher 101/Gallagh. 101
 56 Sphere/sep. Rastrigin
 57 Sphere/Skew Rastrigin-Bueche
 58 Sphere/Linear slope
@@ -70,12 +70,12 @@
 70 Ellipsoid/Discus
 71 Ellipsoid/Bent cigar
 72 Ellipsoid/Sharp ridge
-73 Ellipsoid/Different Powers
+73 Ellipsoid/Diff. Powers
 74 Discus/Bent cigar
 75 Discus/Sharp ridge
-76 Discus/Different Powers
+76 Discus/Diff. Powers
 77 Bent cigar/Sharp ridge
-78 Bent cigar/Different Powers
+78 Bent cigar/Diff. Powers
 79 Rastrigin/Schaffer F7 cond 1000
 80 Rastrigin/Griewank-Rosenbrock
 81 Schaffer F7/Schaffer F7 cond 1000

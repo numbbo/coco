@@ -18,7 +18,8 @@ Simple Version (without documentation)
 
 Advanced Version (with documentation)
 -------------------------------------
- 1. Draft a release (under the Code / releases tabs). Consider previous releases to see what to write. 
+ 1. Draft a release (under the Code / releases tabs). Consider previous releases to see what to write.
+ 2. check that instance numbers are up-to-date and `"year: this-year"` is implemented as suite option
  2. check that README.md is up-to-date
  3. clean and test the development branch
  4. Run tests by pushing the development branch to the `devel-test1` and `test-nightly` branches, which

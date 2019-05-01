@@ -266,15 +266,15 @@ def get_rld_link(current_dir):
 
     file_name = '%s.html' % genericsettings.pprldmany_file_name
     links += add_link(current_dir, folder, file_name,
-                      pprldmany_per_func_dim_header, dimension=20)
+                      pprldmany_per_func_dim_header, dimension=testbedsettings.current_testbed.goto_dimension)
 
     file_name = '%s.html' % genericsettings.pprldmany_group_file_name
     links += add_link(current_dir, folder, file_name,
-                      pprldmany_per_group_dim_header, dimension=20)
+                      pprldmany_per_group_dim_header, dimension=testbedsettings.current_testbed.goto_dimension)
 
     file_name = '%s.html' % genericsettings.pprldmany_file_name
     links += add_link(current_dir, '', file_name,
-                      pprldmany_per_group_dim_header, dimension=20)
+                      pprldmany_per_group_dim_header, dimension=testbedsettings.current_testbed.goto_dimension)
 
     return links
 
