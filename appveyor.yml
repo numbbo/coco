@@ -34,4 +34,5 @@ test_script:
   - cmd: python do.py test-preprocessing
   - cmd: python do.py test-postprocessing
   - cmd: python do.py test-suites
+  - cmd: python do.py test-c
   # - cmd: python do.py test-postprocessing-all
