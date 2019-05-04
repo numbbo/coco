@@ -65,7 +65,7 @@ import hashlib
 import ast
 import re as _re
 
-from .toolsdivers import StringList  # TODO: replace by _StrList
+from .toolsdivers import StrList as _StrList
 try:
     from urllib.request import urlretrieve as _urlretrieve
 except ImportError:
@@ -288,97 +288,7 @@ def get(url_or_folder):
         return _get_remote(url_or_folder)
     return COCOUserDataArchive(url_or_folder)
 
-class _StrList(list):
-    """[versatile/beta] A list of `str` with search/find functionality
-
-    TODO: review
-    """
-    def __init__(self, list_or_str):
-        try:
-            inlist = list_or_str.split()
-        except AttributeError:
-            inlist = list_or_str
-        if inlist:  # prevent failing on None
-            list.__init__(self, inlist)
-        self._names_found = []
-
-    @property
-    def as_string(self):
-        """return concatenation with spaces between.
-        
-        TODO-decide: should this rather return `self.found or self` instead of `self`?
-        """
-        return ' ' + ' '.join(self) + ' '
-
-    @property
-    def found(self):
-        """`list` of elements found during the last call to `find`.
-        """
-        return self._names_found
-
-    def __call__(self, *substrs):
-        """alias to `find`"""
-        return self.find(*substrs)
-
-    def find(self, *substrs):
-        """return entries that match all `substrs`.
-
-        This method serves for interactive exploration of available entries
-        and may be aliased to the shortcut of calling the instance itself.
-
-        When given several `substrs` arguments the results match each
-        substring (AND search, an OR can be simply achieved by appending
-        the result of two finds). Upper/lower case is ignored.
-
-        When given a single `substrs` argument, it may be
-
-        - a list of matching substrings, used as several substrings as above
-        - an index of `type` `int`
-        - a list of indices
-
-        A single substring matches either if an entry contains the
-        substring or if the substring matches as regular expression, where
-        "." matches any single character and ".*" matches any number >= 0
-        of characters.
-
-        Details: The list of matching names is stored in `found`.
-        """
-        # check whether the first arg is a list rather than a str
-        if substrs and len(substrs) == 1 and substrs[0] != str(substrs[0]):
-            substrs = substrs[0]  # we may now have a list of str as expected
-            if isinstance(substrs, int):  # or maybe just an int
-                self._names_found = [self[substrs]]
-                return _StrList(self._names_found)
-            elif substrs and isinstance(substrs[0], int):  # or a list of indices
-                self._names_found = [self[i] for i in substrs]
-                return _StrList(self._names_found)
-        names = list(self)
-        for s in substrs:
-            rex = _re.compile(s, _re.IGNORECASE)
-            try:
-                names = [name for name in names if rex.match(name) or s.lower() in name.lower()]
-            except AttributeError:
-                warnings.warn("arguments to `find` must be strings or a "
-                              "single integer or an integer list")
-                raise
-        self._names_found = names
-        return _StrList(names)
-
-    def find_indices(self, *substrs):
-        """same as `find` but returns indices instead of names"""
-        return [self.index(name) for name in self.find(*substrs)]
-
-    def print(self, *substrs):
-        """print the result of ``find(*substrs)`` with indices.
-
-        Details: does not change `found` and returns `None`.
-        """
-        current_names = list(self._names_found)
-        for index in self.find_indices(*substrs):
-            print("%4d: '%s'" % (index, self[index]))
-        self._names_found = current_names
-
-class COCODataArchive(list):
+class COCODataArchive(_StrList):
     """A `list` of archived COCO data.
     
     See `cocopp.archives` and/or use `get` to get a class instance
@@ -757,8 +667,8 @@ class COCODataArchive(list):
         ]
 
     @property
-    def names_found(self):
-        """names as (to be) used in `get` when called without argument.
+    def _names_found_(self):
+        """obsolete. names as (to be) used in `get` when called without argument.
 
         `names_found` is set in the `get` or `find` methods when called
         with a search or index argument.
@@ -808,12 +718,12 @@ class COCODataArchive(list):
         if 11 < 3:  # this takes too long on importing cocopp
             self.consistency_check_data()
 
-    def __call__(self, *substrs):
-        """alias to `find`"""
+    def _call__(self, *substrs):
+        """obsolete. alias to `find`"""
         return self.find(*substrs)
 
-    def find(self, *substrs):
-        """return names of archived data that match all `substrs`.
+    def _find(self, *substrs):
+        """obsolete. return names of archived data that match all `substrs`.
 
         This method serves for interactive exploration of available data
         and is aliased to the shortcut of calling the instance itself.
@@ -859,10 +769,10 @@ class COCODataArchive(list):
             substrs = substrs[0]  # we may now have a list of str as expected
             if isinstance(substrs, int):  # or maybe just an int
                 self._names_found = [self[substrs]]
-                return StringList(self._names_found)
+                return _StrList(self._names_found)
             elif substrs and isinstance(substrs[0], int):  # or a list of indices
                 self._names_found = [self[i] for i in substrs]
-                return StringList(self._names_found)
+                return _StrList(self._names_found)
         names = list(self)
         for s in substrs:
             rex = _re.compile(s, _re.IGNORECASE)
@@ -873,14 +783,14 @@ class COCODataArchive(list):
                               "single integer or an integer list")
                 raise
         self._names_found = names
-        return StringList(names)
+        return _StrList(names)
 
-    def find_indices(self, *substrs):
-        """same as `find` but returns indices instead of names"""
+    def _find_indices(self, *substrs):
+        """obsolete. same as `find` but returns indices instead of names"""
         return [self.index(name) for name in self.find(*substrs)]
 
-    def print(self, *substrs):
-        """print the result of ``find(*substrs)`` with indices.
+    def _print_(self, *substrs):
+        """obsolete. print the result of ``find(*substrs)`` with indices.
 
         Details: does not change `names_found` and returns `None`.
         """
@@ -890,7 +800,7 @@ class COCODataArchive(list):
         self._names_found = current_names
 
     def get_all(self, indices=None, remote=True):
-        """Return a `list` (`StringList`) of absolute pathnames,
+        """Return a `list` (`StrList`) of absolute pathnames,
 
         by repeatedly calling `get`. Elements of the `indices` list can
         be an index or a substring that matches one and only one name
@@ -900,10 +810,10 @@ class COCODataArchive(list):
         See also `get`.
         """
         if indices is None:
-            names = self.names_found
+            names = self.found
         else:
             names = self.find(indices)
-        return StringList(self.get(name, remote=remote)
+        return _StrList(self.get(name, remote=remote)
                           for name in names)
 
     def get_first(self, substrs, remote=True):
@@ -914,14 +824,14 @@ class COCODataArchive(list):
         `get_first(substrs, remote)` is a shortcut for::
 
             self.find(*substrs)
-            if self.names_found:
-                return self.get(self.names_found[0], remote=remote)
+            if self.found:
+                return self.get(self.found[0], remote=remote)
             return None
 
         """
         self.find(*_str_to_list(substrs))
-        if self.names_found:
-            return self.get(self.names_found[0], remote=remote)
+        if self.found:
+            return self.get(self.found[0], remote=remote)
         return None
 
     def get(self, substr=None, remote=True):
@@ -936,7 +846,7 @@ class COCODataArchive(list):
         on none.
 
         If ``substr is None`` (default), the first match of the last
-        call to ``find*`` or ``get*`` is used like `self.names_found[0]``.
+        call to ``find*`` or ``get*`` is used like `self.found[0]``.
 
         If ``remote is True`` (default), the respective data are
         downloaded from the remote location if necessary. Otherwise
@@ -950,7 +860,7 @@ class COCODataArchive(list):
                 "Use a `list` of `str` to define several substrings.")
         if substr is None:
             try:
-                names = [self.names_found[0]]
+                names = [self.found[0]]
             except IndexError:
                 raise ValueError("nothing specified to `get`, use `find` "
                                  "first or give a name")
