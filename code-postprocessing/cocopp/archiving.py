@@ -666,16 +666,6 @@ class COCODataArchive(_StrList):
         ('test/RS-4.zip', '1e9b0f4e63eaf934bdd819113c160b4663561f2d83059d799feb0c8cb5672978', 6158),
         ]
 
-    @property
-    def _names_found_(self):
-        """obsolete. names as (to be) used in `get` when called without argument.
-
-        `names_found` is set in the `get` or `find` methods when called
-        with a search or index argument.
-
-        """
-        return self._names_found
-
     def __init__(self, local_path=_abs_path(cocopp_home, 'data-archive')):
         """return the full "official" COCO archive unless called from a
         subclass.
@@ -717,87 +707,6 @@ class COCODataArchive(_StrList):
         self._checked_consistency = False
         if 11 < 3:  # this takes too long on importing cocopp
             self.consistency_check_data()
-
-    def _call__(self, *substrs):
-        """obsolete. alias to `find`"""
-        return self.find(*substrs)
-
-    def _find(self, *substrs):
-        """obsolete. return names of archived data that match all `substrs`.
-
-        This method serves for interactive exploration of available data
-        and is aliased to the shortcut of calling the instance itself.
-
-        When given several `substrs` arguments the results match each
-        substring (AND search, an OR can be simply achieved by appending
-        the result of two finds). Upper/lower case is ignored.
-
-        When given a single `substrs` argument, it may be
-
-        - a list of matching substrings, used as several substrings as above
-        - an index of `type` `int`
-        - a list of indices
-
-        A single substring matches either if a data entry contains the substring
-        or if the substring matches as regular expression, where "." matches any
-        single character and ".*" matches any number >= 0 of characters.
-
-        Returned names correspond to the unique trailing subpath of data
-        filenames. The next call to `get` without argument will retrieve the
-        first found data and return the full data path. A call to `get_all` will
-        call `get` on all found entries and return a `list` of full data paths
-        which can be used with `cocopp.main`.
-
-        Example:
-
-        >>> import cocopp
-        >>> print(cocopp.archives.bbob.find('Auger', '2013')[1])
-        2013/lmm-CMA-ES_auger_noiseless.tgz
-        >>> print(cocopp.archives.all.find("bbob/2017.*cma")[0])
-        bbob/2017/CMAES-APOP-Nguyen.tgz
-
-        For typing in a Python shell, we may prefer using the shortcut to `find`
-        via `__call__`:
-
-        >>> cocopp.archives.bbob('Auger', '2013') == cocopp.archives.bbob.find('Auger', '2013')
-        True
-
-        Details: The list of matching names is stored in `names_found`.
-        """
-        # check whether the first arg is a list rather than a str
-        if substrs and len(substrs) == 1 and substrs[0] != str(substrs[0]):
-            substrs = substrs[0]  # we may now have a list of str as expected
-            if isinstance(substrs, int):  # or maybe just an int
-                self._names_found = [self[substrs]]
-                return _StrList(self._names_found)
-            elif substrs and isinstance(substrs[0], int):  # or a list of indices
-                self._names_found = [self[i] for i in substrs]
-                return _StrList(self._names_found)
-        names = list(self)
-        for s in substrs:
-            rex = _re.compile(s, _re.IGNORECASE)
-            try:
-                names = [name for name in names if rex.match(name) or s.lower() in name.lower()]
-            except AttributeError:
-                warnings.warn("arguments to `find` must be strings or a "
-                              "single integer or an integer list")
-                raise
-        self._names_found = names
-        return _StrList(names)
-
-    def _find_indices(self, *substrs):
-        """obsolete. same as `find` but returns indices instead of names"""
-        return [self.index(name) for name in self.find(*substrs)]
-
-    def _print_(self, *substrs):
-        """obsolete. print the result of ``find(*substrs)`` with indices.
-
-        Details: does not change `names_found` and returns `None`.
-        """
-        current_names = list(self._names_found)
-        for index in self.find_indices(*substrs):
-            print("%4d '%s'" % (index, self[index]))
-        self._names_found = current_names
 
     def get_all(self, indices=None, remote=True):
         """Return a `list` (`StrList`) of absolute pathnames,
@@ -1001,7 +910,7 @@ class COCODataArchive(_StrList):
         If `full_path` is not from the data archive a warning is issued
         and path seperators are replaced with `/`.
 
-        Check that all names are only once found in the data archive:
+        Check that all names are only once in the data archive:
 
         >>> import cocopp
         >>> bbob = cocopp.archives.bbob
@@ -1563,7 +1472,7 @@ class ListOfArchives(_StrList):
                 res.append(aname)
         return res
 
-class _ArchiveOfficial(ListOfArchives):
+class _ArchivesOfficial(ListOfArchives):
     """Official COCO data archives.
 
     TODO-decide: this class is not needed, as official archives don't change frequently
