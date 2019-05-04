@@ -98,18 +98,25 @@ __version__ = pkg_resources.require('cocopp')[0].version
 
 archives = archiving.KnownArchives()
 data_archive = archives.all  # only for historical reasons
-bbob = archives.bbob
+bbob = archives.bbob  # TODO: remove these?
 bbob_noisy = archives.bbob_noisy
 bbob_biobj = archives.bbob_biobj
+
 # data_archive = 'use `archives.all` instead'
 # bbob = 'use `archives.bbob` instead'
 # bbob_noisy = 'use `archives.bbob_noisy` instead'
 # bbob_biobj = 'use `archives.bbob_biobj` instead'
 
+# TODO: assign "official" archives
+# for name in archiving._Official.keys():
+#     setattr(archives, name, archiving.get(name))
+
 class Interface:
     """collection of the most user-relevant modules, methods and data.
 
     `archives`: online data archives of type `KnownArchives`
+
+    `archiving`: methods to archive data and retrieve archived data put online
 
     `config`: dynamic configuration tool (advanced)
 
