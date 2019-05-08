@@ -77,16 +77,19 @@ import time as _time
 import warnings
 import hashlib
 import ast
-from . import toolsdivers as _toolsdivers  # StrList
+from . import toolsdivers as _td  # StrList
 try:
     from urllib.request import urlretrieve as _urlretrieve
 except ImportError:
     from urllib import urlretrieve as _urlretrieve
 
-cocopp_home = os.path.abspath(os.path.expanduser(os.path.join("~", ".cocopp")))
 coco_url = "http://coco.gforge.inria.fr"
+cocopp_home = os.path.abspath(os.path.expanduser(os.path.join("~", ".cocopp")))
+cocopp_home_archives = os.path.join(cocopp_home, "data-archives")
 default_archive_location = os.path.join(cocopp_home, 'data-archives')
 default_definition_filename = 'coco_archive_definition.txt'
+listing_file_start = 'list_'
+listing_file_extension = '.txt'
 backup_last_filename = ''  # global variable to see whether and where a backup was made
 
 def _abs_path(path, *args):
@@ -355,7 +358,7 @@ def create(local_path):
     return COCOUserDataArchive(full_local_path)
 
 
-class COCODataArchive(_toolsdivers.StrList):
+class COCODataArchive(_td.StrList):
     """A `list` of archived COCO data.
     
     See `cocopp.archives` and/or use `get` to get a class instance
@@ -785,8 +788,8 @@ class COCODataArchive(_toolsdivers.StrList):
             names = self.found
         else:
             names = self.find(indices)
-        return _toolsdivers.StrList(self.get(name, remote=remote)
-                          for name in names)
+        return _td.StrList(self.get(name, remote=remote)
+                           for name in names)
 
     def get_first(self, substrs, remote=True):
         """get the first archived data matching all of `substrs`.
@@ -1238,7 +1241,7 @@ class COCOBBOBBiobjDataArchive(COCODataArchive):
         self.remote_data_path = 'http://coco.gforge.inria.fr/data-archive/bbob-biobj'
         COCODataArchive.__init__(self, local_path)
 
-class ListOfArchives(_toolsdivers.StrList):
+class ListOfArchives(_td.StrList):
     """List of pathnames to COCO data archives available to this user.
 
     Archives are stored as absolute path names (OS-dependent) and can be added
@@ -1296,7 +1299,7 @@ class ListOfArchives(_toolsdivers.StrList):
         """print available archive lists if no listing file is given
         """
         if listing_name:
-            listing_name = os.path.join(cocopp_home, self._file(listing_name))
+            listing_name = self._fullfile(listing_name)
         elif not self.listing_file:
             raise ValueError("Available lists:\n %s" % str(self.lists()))
         # may overwrite/change list_file which should be fine
@@ -1321,18 +1324,25 @@ class ListOfArchives(_toolsdivers.StrList):
     @staticmethod
     def _name(listing_file):
         """"""
-        return listing_file.split('list_')[1].split(".txt")[0]
+        return listing_file.split(listing_file_start)[1].split(
+                                  listing_file_extension)[0]
     @staticmethod
     def _file(listing_name):
-        return 'list_%s.txt' % listing_name
+        return listing_file_start + listing_name + listing_file_extension
+    
+    @staticmethod
+    def _fullfile(listing_name):
+        return _abs_path(cocopp_home_archives,
+                         ListOfArchives._file(listing_name))
 
     @staticmethod
     def lists():
-        lists = [ListOfArchives._name(n) for n in os.listdir(cocopp_home)
-                 if n.startswith('list_') and not ".txt_2" in n]  # backups add the date like "...txt_2019-04-29_17h23m45s"
+        lists = [ListOfArchives._name(n) for n in os.listdir(cocopp_home_archives)
+                 if n.startswith(listing_file_start) and
+                    not listing_file_extension + "_2" in n]  # backups add the date like "...txt_2019-04-29_17h23m45s"
         d = {}
         for name in lists:
-            with open(_abs_path(cocopp_home, ListOfArchives._file(name)), 'rt') as f:
+            with open(ListOfArchives._fullfile(name), 'rt') as f:
                 d[name] = ast.literal_eval(f.read())  # read list of archive paths
         return d
 
@@ -1366,11 +1376,11 @@ class ListOfArchives(_toolsdivers.StrList):
             f.write(repr(list(self)))
 
     def remote_update(self):
-        """join in the same list from ``http://coco.gforge.inria.fr``.
+        """join in the respective list from ``http://coco.gforge.inria.fr/data-archives``.
         
         Use `save` to save the joined entries.
         """
-        warnings.warn("TODO: review and test")
+        warnings.warn("TODO: review (remove prints?) and test")
         for s in RemoteListOfArchives(self.name):  # download and read list
             if s not in self:
                 print(s, 'appended')
@@ -1598,7 +1608,8 @@ class _ArchivesOfficial(ListOfArchives):
     """
     __doc__ += ListOfArchives.__doc__
 
-    listing_file = _abs_path(cocopp_home, "data-archives", "list_official_archives.txt")
+    # TODO-decide: rename list...txt to pylist_...txt
+    listing_file = ListOfArchives._fullfile("official_archives")
     search_folder = _abs_path(cocopp_home, "data-archive") 
 
 class ArchivesLocal(ListOfArchives):
@@ -1609,7 +1620,7 @@ class ArchivesLocal(ListOfArchives):
     """
     __doc__ += ListOfArchives.__doc__
 
-    listing_file = _abs_path(cocopp_home, "data-archives", "list_local_archives.txt")
+    listing_file = ListOfArchives._fullfile("local_archives")
     search_folder = _abs_path("~/")  # TODO: somewhat ambitious?
 
 class ArchivesKnown(ListOfArchives):
@@ -1621,21 +1632,22 @@ class ArchivesKnown(ListOfArchives):
     """
     __doc__ += ListOfArchives.__doc__
 
-    listing_file = _abs_path(cocopp_home, "list_known_archives.txt")
+    listing_file = ListOfArchives._fullfile("known_archives")
     search_folder = default_archive_location 
 
-class RemoteListOfArchives(_toolsdivers.StrList):
+class RemoteListOfArchives(_td.StrList):
     """Elements of this list can be used directly in `get` 
     """
     location = coco_url + '/data-archives/'  # + 'list_known_archives.txt'
+
     def __init__(self, name='known_archives'):
         super(RemoteListOfArchives, self).__init__(self._download(name))
 
     def _download(self, name):
-        fname = 'list_' + name + '.txt'  # corresponds to ListOfArchives._file(name)
-        dstname = os.path.join(cocopp_home, '_remote_' + fname)
-        _urlretrieve(self.location + fname, dstname)
-        with open(dstname, 'rt') as f:
+        fname = ListOfArchives._file(name)
+        destname = os.path.join(cocopp_home_archives, '_remote_' + fname)  # not meant to stay
+        _urlretrieve(self.location + fname, destname)
+        with open(destname, 'rt') as f:
             return ast.literal_eval(f.read())
     
     def save(self):
