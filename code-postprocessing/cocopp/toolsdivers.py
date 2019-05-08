@@ -92,17 +92,18 @@ class StrList(list):
 
     @property
     def as_string(self):
-        """return concatenation with spaces between.
+        """return space separated string concatenation surrounded by spaces.
         
-        TODO-decide: should this rather return `self.found or self` instead of `self`?
+        To get only the recently found items use ``found.as_string``
+        instead of ``as_string``.
         """
         return ' ' + ' '.join(self) + ' '
 
     @property
     def found(self):
-        """`list` of elements found during the last call to `find`.
+        """`StrList` of elements found during the last call to `find`.
         """
-        return self._names_found
+        return StrList(self._names_found)
 
     def __call__(self, *substrs):
         """alias to `find`"""
