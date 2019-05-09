@@ -1152,7 +1152,7 @@ class COCOUserDataArchive(COCODataArchive):
                   'definition file from the local data, call this update method\n'
                   'with the "from_local=True" option. If you want to update the\n'
                   'local definition file of a remote update, use `create`. This will\n'
-                  'however remove the remote uRL from its definitions.')
+                  'however remove the remote URL from its definitions.')
         # update the definition list in this class
         # and the URL in the definition file:
         self.__init__(self.local_data_path)
