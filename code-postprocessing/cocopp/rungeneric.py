@@ -312,7 +312,7 @@ def main(argv=None):
         for path in args:
             if data_archive.contains(path):  # this is the archive of *all* testbeds
                 # extract suite name
-                suites.add(data_archive.name(path).split('/')[0])
+                suites.add(data_archive._name_with_check(path).split('/')[0])
         if len(suites) > 1:
             raise ValueError("Data from more than one suites %s cannot "
                              "be post-processed together" % str(suites))

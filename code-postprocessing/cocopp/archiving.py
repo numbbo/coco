@@ -199,6 +199,16 @@ def _download_definitions_and_sync_url(url, target_folder):
     """download definition file and sync url into it"""
     _urlretrieve(url + '/' + default_definition_filename,
                  _definition_file_to_write(target_folder))
+    try:
+        read_definition_file(_definition_file_to_read(target_folder))
+    except:
+        warnings.warn('Downloaded definition file\n  %s\n  -> %s \n'
+                      'seems not to have the proper format.\n'
+                      'Make sure that the above URL is a valid definition file and\n'
+                      'that the machine is connected to the www, and try again.'
+                      % (url + '/' + default_definition_filename,
+                         _definition_file_to_read(target_folder)))
+        raise
     _url_add(target_folder, url)
 
 def _get_remote(url, target_folder=None, redownload=False):
@@ -227,13 +237,14 @@ def _get_remote(url, target_folder=None, redownload=False):
         _download_definitions_and_sync_url(url, target_folder)
         if not official_archives.url(key):
             ArchivesKnown.register(url)
-        else:
-            pass # TODO: check that ArchivesOfficial is in order?
-    # the url is not passed as it is invariably added to the definition file
+        else:  # TODO: check that ArchivesOfficial is in order?
+            pass
+    # the url is not passed as it must be now in the definition file
     arch = official_archives.class_(key)(target_folder)  # instantiate class
-    if key in official_archives.names:  # TODO can go away later
-        arch.remote_data_path = url  # not necessary now, but allows to drop the class.__init__ without producing a bug here
-    assert arch.remote_data_path == url
+    if key in official_archives.names:
+        arch.name = key + ' (official)' # should stay?
+        arch.remote_data_path = url  # TODO: not necessary, but for the time being allows to drop the class.__init__ without producing a bug here
+    assert arch.remote_data_path == url  # check that url was in the definition file
     return arch
 
 def get(url_or_folder=None):
@@ -462,7 +473,7 @@ class COCODataArchive(_td.StrList):
     - upload definition files to official archives
     - HALFDONE use uploaded definition files (see official_archive_locations in `_get_remote`)
     - DONE? replace usages of derived data classes by `get`
-    - remove definition lists in derived data classes and root class
+    - remove definition list in code of the root class
     - review and join classes without default for local path
 
     """
@@ -746,6 +757,7 @@ class COCODataArchive(_td.StrList):
         ]
 
     local_data_path = _abs_path(cocopp_home, 'data-archive')
+
     def __init__(self, local_path=None):
         """return the full "official" COCO archive unless called from a
         subclass.
@@ -785,6 +797,10 @@ class COCODataArchive(_td.StrList):
         if 11 < 3:  # this takes too long on importing cocopp
             self.consistency_check_data()
 
+    def get_found(self, remote=True):
+        """get full entries of the last `find`"""
+        return self.get_all(self.found or None, remote=remote)
+
     def get_all(self, indices=None, remote=True):
         """Return a `list` (`StrList`) of absolute pathnames,
 
@@ -795,10 +811,10 @@ class COCODataArchive(_td.StrList):
 
         See also `get`.
         """
-        if indices is None:
-            names = self.found
-        else:
+        if indices is not None:  # TODO: just if indices should do?
             names = self.find(indices)
+        else:
+            names = self.found
         return _td.StrList(self.get(name, remote=remote)
                            for name in names)
 
@@ -955,6 +971,7 @@ class COCODataArchive(_td.StrList):
 
     def _name(self, full_path):
         """return supposed name of full_path or name without any checks"""
+        assert self.local_data_path
         if full_path.startswith(self.local_data_path):
             name = full_path[len(self.local_data_path) + 1:]  # assuming the path separator has len 1
         else:
@@ -977,11 +994,11 @@ class COCODataArchive(_td.StrList):
     def full_path(self, name):
         """return full local path of `name` or any path, idempotent
         """
-        name = self.name(name)
+        name = self._name_with_check(name)
         return os.path.join(self.local_data_path,
                             os.path.join(*name.split('/')))
 
-    def name(self, full_path):
+    def _name_with_check(self, full_path):
         """return name of `full_path`, idempotent.
 
         If `full_path` is not from the data archive a warning is issued
@@ -1048,7 +1065,7 @@ class COCODataArchive(_td.StrList):
         """return known hash or `None`
         """
         try:
-            return self._all_dict[self.name(name)][0]
+            return self._all_dict[self._name_with_check(name)][0]
             # was depending on order consistency of self and self._all:
             # return self._all[self.index(self.name(name))][1]
         except KeyError:
@@ -1089,7 +1106,7 @@ class COCOUserDataArchive(COCODataArchive):
                               " %s in %s ignored" % (fn, local_path))
         if not COCOUserDataArchive.is_archive(local_path):
             raise ValueError('The folder "%s" seems not to "be" a COCO data'
-                            " archive it (doesn't contain a %s file)."
+                            " archive as it does not contain a %s file)."
                             "\nUse `create(folder)` or `get(URL)` of"
                             " `cocopp.archiving` to create/get this file."
                             % (local_path, default_definition_filename))
@@ -1103,7 +1120,7 @@ class COCOUserDataArchive(COCODataArchive):
         COCODataArchive.__init__(self, local_path)  # uses ._all
         self.consistency_check_read()
 
-    def update(self):
+    def update(self, from_local=False):
         """update definition file, either from remote location or from local data.
         
         As remote archives may grow or change, a common usecase may be
@@ -1112,6 +1129,13 @@ class COCOUserDataArchive(COCODataArchive):
         >>> url = 'http://lq-cma.gforge.inria.fr/data-archives/lq-gecco2019'
         >>> arch = ac.get(url).update()  # doctest:+SKIP
         
+        For updating a local archive use the `from_local` option.
+        
+        Details: for updating the local definition file of a remote archive
+        from the local data rather use `create`. This will however remove
+        the remote URL from its definition as the remote and the local
+        archive can be different now. `create` makes a backup of the
+        existing definition file.
         """
         warnings.warn("TODO: method update was never tested")
         # if we want to be able to have a different definition file name
@@ -1121,8 +1145,14 @@ class COCOUserDataArchive(COCODataArchive):
                         redownload=True)  # redownload definition file
             # allow to re-download data by tagging possibly outdated data
             self._redownload_if_changed = self.downloaded
-        else:
+        elif from_local:
             create(self.local_data_path)
+        else:
+            print('This archive has no remote URL. If you intended to update the\n'
+                  'definition file from the local data, call this update method\n'
+                  'with the "from_local=True" option. If you want to update the\n'
+                  'local definition file of a remote update, use `create`. This will\n'
+                  'however remove the remote uRL from its definitions.')
         # update the definition list in this class
         # and the URL in the definition file:
         self.__init__(self.local_data_path)
@@ -1184,6 +1214,7 @@ class COCOBBOBDataArchive(COCODataArchive):
     # TODO-decide: the plan is to have
     # class COCOBBOBDataArchive(COCODataArchive) without any additional methods
     local_data_path = '~/.cocopp/data-archive/bbob'
+
     def __init__(self, local_path=None):
         """Arguments are a full local path and an URL.
 
@@ -1233,6 +1264,7 @@ class COCOBBOBBiobjDataArchive(COCODataArchive):
     """
     __doc__ += COCODataArchive.__doc__
     local_data_path = '~/.cocopp/data-archive/bbob-biobj'
+
     def __init__(self, local_path=None):
         """Arguments are a full local path and an URL.
 
@@ -1440,9 +1472,9 @@ class OfficialArchives(object):
     The `all` archive name gets special treatment. The 'all'-archive is
     currently needed in `cocopp.main` but could be dropped otherwise.
 
-    The class collects known online data archives as attributes with
-    different class names for different suites, which may be unified for
-    some or all suites in future.
+    The class collects the "official" online data archives as attributes.
+    Each suite is also a different class inheriting from `COCODataArchive`.
+    The class may become the same for some or all suites in future.
 
     `cocopp.archives` is an instance of `OfficialArchives` and contains as
     archive attributes (at this point in time):
@@ -1486,36 +1518,50 @@ class OfficialArchives(object):
 
     **3) We can extract a subset** from any test suite (such as
     `cocopp.archives.all`, `cocopp.archives.bbob`, ...) of the
-    archive by very basic pattern matching:
+    archive by sub-string matching:
 
-    >>> cocopp.archives.bbob.find('bfgs')  # doctest:+NORMALIZE_WHITESPACE,+SKIP,
+    >>> cocopp.archives.bbob.find('bfgs')  # doctest:+NORMALIZE_WHITESPACE,+ELLIPSIS,+SKIP
     ['2009/BFGS_ros_noiseless.tgz',
      '2012/DE-BFGS_voglis_noiseless.tgz',
      '2012/PSO-BFGS_voglis_noiseless.tgz',
      '2014-others/BFGS-scipy-Baudis.tgz',
-     '2014-others/L-BFGS-B-scipy-Baudis.tgz']
+     '2014-others/L-BFGS-B-scipy-Baudis.tgz'...
+    
+    or by regex pattern matching:
 
-    The `find` method will not download data and is only for inspecting
-    the archives. If we want to actually process the data we need to get
-    them to/from our disk by replacing `find` with `get` or `get_all`, or
-    use the same string in `cocopp.main`.
+    >>> cocopp.archives.bbob.find('bfgs') == cocopp.archives.bbob.find('.*bfgs')
+    True
 
-    **4) When postprocessing data via `cocopp.main`**, we can use the above
-    such as
+    but 
+
+    >>> len(cocopp.archives.bbob.find('bfgs')) > len(cocopp.archives.bbob.find('bfgs.*'))
+    True
+
+    The `find` method will not download data and is only for inspecting the
+    archives. If we want to actually process the data we need to use `get`,
+    `get_all`, `get_extended` or `get_found`, or use the same search string
+    in `cocopp.main` appending a `*` if more than one algorithm should be
+    processed:
+
+    **4) When postprocessing data via `cocopp.main`**, we can use the archive
+    like
 
     >>> cocopp.main(cocopp.archives.bbob.get_all('bfgs').as_string)  # doctest:+SKIP
 
-    When using `get` results in multiple matches, `cocopp.main` needs the
-    `as_string` qualifier.
-
-    The `get` and `get_all` methods are also called on each argument given
-    in a string to `main`, such that we can do things like
+    or the shortcut
+    
+    >>> cocopp.main('bfgs*')  # doctest:+SKIP
+    
+    using the special meaning of the trailing `*` in this case (see below).
+    The `get` and `get_extended` methods are called on each argument given in a
+    string to `main`. We can do things like
 
     >>> cocopp.main('bbob/2009/BIPOP DE-BFGS')  # doctest:+SKIP
 
-    However, the postprocessing bails out when there are multiple matches.
-    For such cases, we can use the trailing symbols `*` (AKA take all
-    matches) and `!` (AKA take the first match):
+    When a string has multiple matches, the postprocessing bails out. For
+    such cases, we can use the trailing symbols `*` (AKA take all matches)
+    and `!` (AKA take the first match) which uses the `get_extended` method
+    under the hood:
 
     >>> cocopp.main('BIPOP! 2012/DE*')  # doctest:+SKIP
 
@@ -1558,9 +1604,10 @@ class OfficialArchives(object):
                              update=False):
         """Assign all archives as attribute of `self` except for ``'test'``.
         
-        This method can only be called when the class names and the module
+        Details: This method can only be called when the class names and the module
         attribute `official_archives: OfficialArchive` (used in `get`) are
-        available.
+        available. Depending on the implementation of `get`, it may download the
+        definition files on its first-ever call by/on any given user/machine.
         """
         for name in self.names:
             if name not in except_for:
