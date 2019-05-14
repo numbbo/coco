@@ -249,8 +249,12 @@ def _get_remote(url, target_folder=None, redownload=False):
     if key in official_archives.names:
         arch.name = key + ' (official)' # should stay?
     if arch.remote_data_path is None:
-        warnings.warn("No URL found in %s.\n _url_=%s added"
-                      % (_definition_file_to_read(target_folder), url))
+        warnings.warn("No URL found in %s.\n"
+            "'_url_' = '%s' added.\n"
+            "This typically happens if the definition file was newly created locally and\n"
+            "could mean that remote and local definition files are out of sync now.\n"
+            "Use the `update` method to re-download the remote definition file."
+            % (_definition_file_to_read(target_folder), url))
         _url_add(target_folder, url)
         arch.remote_data_path = url
     assert arch.remote_data_path == url  # check that url was in the definition file
@@ -459,7 +463,7 @@ class COCODataArchive(_td.StrList):
     corresponds to ``cocopp.main('auger!')``.
 
     >>> bbob.index('2009/CMA-ESPLUSSEL_auger_noiseless.tgz')  # just list.index
-    6
+    5
 
     >>> data_path = bbob.get(bbob(['au', '2009'])[0], remote=False)
     >>> assert data_path is None or str(data_path) == data_path
@@ -1129,7 +1133,7 @@ class COCOUserDataArchive(COCODataArchive):
         COCODataArchive.__init__(self, local_path)  # uses ._all
         self.consistency_check_read()
 
-    def update(self, from_local=False):
+    def update(self):
         """update definition file, either from remote location or from local data.
         
         As remote archives may grow or change, a common usecase may be
@@ -1138,13 +1142,14 @@ class COCOUserDataArchive(COCODataArchive):
         >>> url = 'http://lq-cma.gforge.inria.fr/data-archives/lq-gecco2019'
         >>> arch = ac.get(url).update()  # doctest:+SKIP
         
-        For updating a local archive use the `from_local` option.
+        For updating a local archive use::
         
-        Details: for updating the local definition file of a remote archive
-        from the local data rather use `create`. This will however remove
-        the remote URL from its definition as the remote and the local
-        archive can be different now. `create` makes a backup of the
-        existing definition file.
+            create(self.local_data_path)
+        
+        Details: for updating the local definition file from the local data
+        rather use `create`. This will however remove a remote URL from its
+        definition and the remote and the local archive can be different
+        now. `create` makes a backup of the existing definition file.
         """
         warnings.warn("TODO: method update was never tested")
         # if we want to be able to have a different definition file name
@@ -1158,10 +1163,12 @@ class COCOUserDataArchive(COCODataArchive):
             create(self.local_data_path)
         else:
             print('This archive has no remote URL. If you intended to update the\n'
-                  'definition file from the local data, call this update method\n'
-                  'with the "from_local=True" option. If you want to update the\n'
-                  'local definition file of a remote update, use `create`. This will\n'
-                  'however remove the remote URL from its definitions.')
+                  'definition file from the local data, call\n'
+                  '    create("%s")\n'
+                  'and\n'
+                  '    get("%s")\n'
+                  'to get an updated instance.'
+                  % (2 * [self.local_data_path]))
         # update the definition list in this class
         # and the URL in the definition file:
         self.__init__(self.local_data_path)
@@ -1220,19 +1227,6 @@ class COCOBBOBDataArchive(COCOUserDataArchive):
 
     """
     __doc__ += COCODataArchive.__doc__
-    # TODO-decide: the plan is to have
-    # class COCOBBOBDataArchive(COCODataArchive) without any additional methods
-    local_data_path = '~/.cocopp/data-archive/bbob'
-
-    def __init__(self, local_path=None):
-        """Arguments are a full local path and an URL.
-
-        ``~`` refers to the user home folder.
-        """
-        self.remote_data_path = 'http://coco.gforge.inria.fr/data-archive/bbob'
-        self._all = [[line[0][5:]] + list(line[1:]) for line in COCODataArchive._all_coco_remote
-                     if line[0].startswith('bbob/')]
-        COCODataArchive.__init__(self, local_path or COCOBBOBDataArchive.local_data_path)
 
 class COCOBBOBNoisyDataArchive(COCOUserDataArchive):
     """This class "contains" archived data for the 'bbob-noisy' suite.
@@ -1247,17 +1241,6 @@ class COCOBBOBNoisyDataArchive(COCOUserDataArchive):
     functionality is inherited from the parent `class` `COCODataArchive`:
     """
     __doc__ += COCODataArchive.__doc__
-    local_data_path = '~/.cocopp/data-archive/bbob-noisy'
-    def __init__(self, local_path=None):
-        """return bbob-noisy test suite data archive.
-
-        ``~`` refers to the user home folder. By default the archive is
-        hosted at ``'~/.cocopp/data-archive/bbob-noisy'``.
-        """
-        self._all = [[line[0][11:]] + list(line[1:]) for line in COCODataArchive._all_coco_remote
-                     if line[0].startswith('bbob-noisy/')]
-        self.remote_data_path = 'http://coco.gforge.inria.fr/data-archive/bbob-noisy'
-        COCODataArchive.__init__(self, local_path or COCOBBOBNoisyDataArchive.local_data_path)
 
 class COCOBBOBBiobjDataArchive(COCOUserDataArchive):
     """This class "contains" archived data for the 'bbob-biobj' suite.
@@ -1272,18 +1255,6 @@ class COCOBBOBBiobjDataArchive(COCOUserDataArchive):
     functionality is inherited from the parent `class` `COCODataArchive`:
     """
     __doc__ += COCODataArchive.__doc__
-    local_data_path = '~/.cocopp/data-archive/bbob-biobj'
-
-    def __init__(self, local_path=None):
-        """Arguments are a full local path and an URL.
-
-        ``~`` refers to the user home folder. By default the archive is
-        hosted at ``'~/.cocopp/data-archive/bbob-biobj'``.
-        """
-        self._all = [[line[0][11:]] + list(line[1:]) for line in COCODataArchive._all_coco_remote
-                     if line[0].startswith('bbob-biobj/')]
-        self.remote_data_path = 'http://coco.gforge.inria.fr/data-archive/bbob-biobj'
-        COCODataArchive.__init__(self, local_path or COCOBBOBBiobjDataArchive.local_data_path)
 
 class ListOfArchives(_td.StrList):
     """List of URLs or path names to COCO data archives available to this user.
@@ -1597,12 +1568,30 @@ class OfficialArchives(object):
     def __init__(self):
         """"""
         self.all = None  # prevent lint error in cocopp/__init__.py
-        # self._initialize()  # needs the class instance to be assigned beforehand, because it calls `get`
-        # ListOfArchives.__init__('official')  # listing files do not provide classes
+        self._base = coco_url + '/data-archive/'
+        self._list = [
+            (self._base + 'all', COCODataArchive),
+            (self._base + 'bbob', COCOBBOBDataArchive),
+            (self._base + 'bbob-noisy', COCOBBOBNoisyDataArchive),
+            (self._base + 'bbob-biobj', COCOBBOBBiobjDataArchive),
+            (self._base + 'test', None),
+        ]
+        """all URLs and classes (optional) in one place.
+        
+        The name is identical with the last part of the URL. The only exception
+        is made for `'all'`, which is removed to get the URL.
+        """
+
+    def add_archive(self, name):
+        """Allow to use a new official archive."""
+        self._list += [(self._base + name, None),]
+        self.set_as_attributes_in()
 
     def set_as_attributes_in(self, target=None, except_for=('test',),
                              update=False):
-        """Assign all archives as attribute of `self` except for ``'test'``.
+        """Assign all archives as attribute of `target` except for ``'test'``.
+        
+        `target` is by default `self`.
         
         Details: This method can only be called when the class names and the module
         attribute `official_archives: OfficialArchive` (used in `get`) are
@@ -1616,39 +1605,33 @@ class OfficialArchives(object):
         return self
 
     @property
-    def _list(self):  # defined within a function to allow forward reference of class names
-        "all names, classes and data URLs in one place"
-        base = coco_url + '/data-archive/'
-        return (
-            (base + 'all', COCODataArchive),
-            (base + 'bbob', COCOBBOBDataArchive),
-            (base + 'bbob-noisy', COCOBBOBNoisyDataArchive),
-            (base + 'bbob-biobj', COCOBBOBBiobjDataArchive),
-            (base + 'test', None),
-        )
-    @property
     def names(self):
         """a list of valid key names"""
         return [i[0].split('/')[-1] for i in self._list]
+    
     @property
     def urls(self):
         """a name->URL dictionary"""
         return dict((key, self.url(key)) for key in self.names)
-    def _j(self, name, j):
-        for i in self._list:
-            if i[0].endswith(name):
-                return i[j]
+    
+    def _get(self, name, j):
+        """get j-th entry of `name`, where j==0 is the URL and j==1 is the class"""
+        for tup in self._list:
+            if tup[0].endswith(name):
+                return tup[j]
 
     def url(self, name):
         """return url of "official" archive named `name`.
         
         The same value as ``self.urls.get(name)``.
         """
-        url = self._j(name, 0)
+        url = self._get(name, 0)
         return url.rsplit('/', 1)[0] if name == 'all' else url
+
     def class_(self, name):
         """class of archive named `name` when returned by `get`"""
-        return self._j(name, 1) or COCOUserDataArchive
+        return self._get(name, 1) or COCOUserDataArchive
+    
     def update_all(self):
         self.set_as_attributes_in(update=True) 
 
