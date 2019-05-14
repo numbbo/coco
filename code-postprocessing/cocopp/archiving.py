@@ -180,10 +180,19 @@ def _move_official_local_data():
     """move "official" archives folder to the generic standardized location once and for all"""
     src = os.path.join(cocopp_home, 'data-archive')
     dest = _url_to_folder_name(coco_url)
-    if os.path.exists(src) and not os.path.exists(os.path.join(dest, 'data-archive')):
-        _makedirs(dest)
-        print("moving %s to %s" % (src, dest))
-        _shutil.move(src, dest)
+    if os.path.exists(src):
+        if not os.path.exists(os.path.join(dest, 'data-archive')):
+            _makedirs(dest)
+            print("moving %s to %s" % (src, dest))
+            _shutil.move(src, dest)
+        else:
+            warnings.warn("could not move the official archive location "
+                          "\n%s\n because \n%s\n already exists."
+                          "\nTo prevent this message in future, remove either one or"
+                        " the other folder (preferably the smaller one)" % (src, dest))
+
+def _repr_definitions(list_):
+    return repr(sorted(list_)).replace('(', '\n(')
 
 def _url_add(folder, url):
     """add ``('_url_', url), `` to the definition file in `folder`.
@@ -193,9 +202,9 @@ def _url_add(folder, url):
     defs = read_definition_file(folder)
     if ('_url_', url) not in defs:
         with open(_definition_file_to_write(folder), 'wt') as f:
-            f.write(repr([('_url_', url)] + defs))
+            f.write(_repr_definitions([('_url_', url)] + defs))
 
-def _download_definitions_and_sync_url(url, target_folder):
+def _download_definitions(url, target_folder):
     """download definition file and sync url into it"""
     _urlretrieve(url + '/' + default_definition_filename,
                  _definition_file_to_write(target_folder))
@@ -209,7 +218,6 @@ def _download_definitions_and_sync_url(url, target_folder):
                       % (url + '/' + default_definition_filename,
                          _definition_file_to_read(target_folder)))
         raise
-    _url_add(target_folder, url)
 
 def _get_remote(url, target_folder=None, redownload=False):
     """return remote data archive as `COCOUserDataArchive` instance.
@@ -224,17 +232,14 @@ def _get_remote(url, target_folder=None, redownload=False):
     url = official_archives.url(url) or url.rstrip('/')
     target_folder = target_folder or _url_to_folder_name(url)
     if key in official_archives.names:  # todo this special treatment can go away later
-        if 11 < 3: # TODO make this active to change official classes local path
-            raise NotImplementedError(
-                'remote definition files for "official" archives are not yet available')
-            _move_official_local_data()  # careful!!
+        if 1 < 3:
+            _move_official_local_data()  # once and for all
         else:
             target_folder = official_archives.class_(key).local_data_path
-    # TODO: allow download when we have official archive definitions
-    if key not in official_archives.names and (redownload or
-            not os.path.exists(_definition_file_to_read(target_folder))):
+    if redownload or not os.path.exists(_definition_file_to_read(target_folder)):
         _makedirs(target_folder)
-        _download_definitions_and_sync_url(url, target_folder)
+        _download_definitions(url, target_folder)
+        _url_add(target_folder, url)
         if not official_archives.url(key):
             ArchivesKnown.register(url)
         else:  # TODO: check that ArchivesOfficial is in order?
@@ -243,7 +248,11 @@ def _get_remote(url, target_folder=None, redownload=False):
     arch = official_archives.class_(key)(target_folder)  # instantiate class
     if key in official_archives.names:
         arch.name = key + ' (official)' # should stay?
-        arch.remote_data_path = url  # TODO: not necessary, but for the time being allows to drop the class.__init__ without producing a bug here
+    if arch.remote_data_path is None:
+        warnings.warn("No URL found in %s.\n _url_=%s added"
+                      % (_definition_file_to_read(target_folder), url))
+        _url_add(target_folder, url)
+        arch.remote_data_path = url
     assert arch.remote_data_path == url  # check that url was in the definition file
     return arch
 
@@ -374,7 +383,7 @@ def create(local_path):
         warnings.warn('cocopp.archiving.create: no data found in %s' % local_path)
         return
     with open(definition_file, 'wt') as file_:
-        file_.write(repr(res).replace('L)', ')'))
+        file_.write(repr(sorted(res)).replace('L)', ')').replace('(', '\n('))
     ArchivesLocal.register(full_local_path)  # to find splattered local archives easily
     return COCOUserDataArchive(full_local_path)
 
@@ -1192,7 +1201,7 @@ class COCOUserDataArchive(COCODataArchive):
                 return True
         return False
 
-class COCOBBOBDataArchive(COCODataArchive):
+class COCOBBOBDataArchive(COCOUserDataArchive):
     """`list` of archived data for the 'bbob' test suite.
 
     To see the list of all data from 2009:
@@ -1225,7 +1234,7 @@ class COCOBBOBDataArchive(COCODataArchive):
                      if line[0].startswith('bbob/')]
         COCODataArchive.__init__(self, local_path or COCOBBOBDataArchive.local_data_path)
 
-class COCOBBOBNoisyDataArchive(COCODataArchive):
+class COCOBBOBNoisyDataArchive(COCOUserDataArchive):
     """This class "contains" archived data for the 'bbob-noisy' suite.
 
     >>> import cocopp
@@ -1250,7 +1259,7 @@ class COCOBBOBNoisyDataArchive(COCODataArchive):
         self.remote_data_path = 'http://coco.gforge.inria.fr/data-archive/bbob-noisy'
         COCODataArchive.__init__(self, local_path or COCOBBOBNoisyDataArchive.local_data_path)
 
-class COCOBBOBBiobjDataArchive(COCODataArchive):
+class COCOBBOBBiobjDataArchive(COCOUserDataArchive):
     """This class "contains" archived data for the 'bbob-biobj' suite.
 
     >>> import cocopp
@@ -1277,11 +1286,11 @@ class COCOBBOBBiobjDataArchive(COCODataArchive):
         COCODataArchive.__init__(self, local_path or COCOBBOBBiobjDataArchive.local_data_path)
 
 class ListOfArchives(_td.StrList):
-    """List of pathnames to COCO data archives available to this user.
+    """List of URLs or path names to COCO data archives available to this user.
 
-    Archives are stored as absolute path names (OS-dependent) and can be added
-    with `append` and deleted with the respective `list` operations. After any
-    of these operations, the current state can be made "permanent" with `save`.
+    Elements can be added with `append` and deleted with the respective
+    `list` operations. After any of these operations, the current state can
+    be made "permanent" with `save`.
 
     Archives created with `create` are automatically added to
     `ArchivesLocal` to find splattered archives more easily, archives
@@ -1315,14 +1324,14 @@ class ListOfArchives(_td.StrList):
 
     >>> al = ar.ArchivesLocal()  # based on user home
     >>> al._walk()  # doctest:+SKIP
-    >>> al._save_walk()  # add found paths to ArchivesLocal
+    >>> al._save_walk()  # add found paths (permanently) to the ArchivesLocal class
 
-    Details: duplicates are removed during `save`.
+    Details: duplicates are removed during `save`. Path names are stored as
+    absolute path names (OS-dependent).
 
     TODO: should we be able to generate a list on the fly? Figure out usecase with
     _walk?
 
-    TODO: check whether/that list entries can also be URLs
     TODO-decide: usecase, when to decide setting search_folder?
 
     """
@@ -1408,7 +1417,7 @@ class ListOfArchives(_td.StrList):
         self._remove_double_entries()  # can have gotten here from append or extend
         _make_backup(self.listing_file)
         with open(self.listing_file, 'wt') as f:
-            f.write(repr(list(self)))
+            f.write(_repr_definitions(self))
 
     def remote_update(self, name=None):
         """join in the respective list from ``http://coco.gforge.inria.fr/data-archives``.
@@ -1420,8 +1429,6 @@ class ListOfArchives(_td.StrList):
             if s not in self:
                 print(s, 'appended')
                 self.append(s)
-            else:
-                print(s, 'not appended')
 
     def _remove_double_entries(self):
         """keep the first of duplicated entries"""
@@ -1458,13 +1465,6 @@ class ListOfArchives(_td.StrList):
         """update self from the listing file that may have changed"""
         with open(self.listing_file, 'rt') as f:
             self[:] = ast.literal_eval(f.read())  # or list.__init__(self, ...)
-
-class KnownArchives:
-    """deprecated, see `OfficialArchives`"""
-    all = COCODataArchive()
-    bbob = COCOBBOBDataArchive()
-    bbob_noisy = COCOBBOBNoisyDataArchive()
-    bbob_biobj = COCOBBOBBiobjDataArchive()
 
 class OfficialArchives(object):
     """overdesigned class to connect URLs, names, and classes of "official" archives.
@@ -1686,7 +1686,10 @@ class ArchivesKnown(ListOfArchives):
     search_folder = default_archive_location 
 
 class RemoteListOfArchives(_td.StrList):
-    """Elements of this list can be used directly in `get` 
+    """Elements of this list can be used directly in `cocopp.archiving.get`.
+
+    The only purpose of this list is to propose (or remind) known archive
+    locations to the user.
     """
     location = coco_url + '/data-archives/'  # + 'list_known_archives.txt'
 
