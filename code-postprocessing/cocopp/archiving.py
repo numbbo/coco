@@ -109,8 +109,11 @@ def _makedirs(path, error_ok=True):
 def _make_backup(fullname):
     """backup file with added time stamp if it exists, otherwise do nothing."""
     global backup_last_filename
+    fullname = _abs_path(fullname)
     if os.path.exists(fullname):
-        dst = fullname + _time.strftime("_%Y-%m-%d_%Hh%Mm%Ss")
+        p, n = os.path.split(fullname)
+        dst = os.path.join(p, '._' + n + _time.strftime("_%Y-%m-%dd%Hh%Mm%Ss")
+                              + str(_time.time()).split('.')[1])
         _shutil.copy2(fullname, dst)
         backup_last_filename = dst
 
@@ -154,11 +157,16 @@ def _definition_file_to_write(local_path_or_filename,
         local_path_or_filename = os.path.join(local_path_or_filename,
                                               filename)
     else:  # need to decide whether local_path contains the filename
-        p, f = os.path.split(local_path_or_filename)
+        _p, f = os.path.split(local_path_or_filename)
         # append default filename if...
         if '.' not in f or len(f.rsplit('.', 1)[1]) > 4:
             local_path_or_filename = os.path.join(local_path_or_filename,
                                             default_definition_filename)
+        elif f != default_definition_filename:
+            warnings.warn(
+                'Interpreted "%s" as definition filename. This\n'
+                'will fail in the further processing which expects the default\n'
+                'filename %s.' % (f, default_definition_filename))
     fullname = _abs_path(local_path_or_filename)
     _make_backup(fullname)
     return fullname
@@ -195,7 +203,7 @@ def _repr_definitions(list_):
     return repr(sorted(list_)).replace('(', '\n(')
 
 def _url_add(folder, url):
-    """add ``('_url_', url), `` to the definition file in `folder`.
+    """add ``('_url_', url),`` to the definition file in `folder`.
     
     This function is idempotent, however different urls may be in the list.
     """
@@ -240,7 +248,7 @@ def _get_remote(url, target_folder=None, redownload=False):
         _makedirs(target_folder)
         _download_definitions(url, target_folder)
         _url_add(target_folder, url)
-        if not official_archives.url(key):
+        if not official_archives.url(key) and not url in official_archives.urls.values():
             ArchivesKnown.register(url)
         else:  # TODO: check that ArchivesOfficial is in order?
             pass
@@ -249,13 +257,14 @@ def _get_remote(url, target_folder=None, redownload=False):
     if key in official_archives.names:
         arch.name = key + ' (official)' # should stay?
     if arch.remote_data_path is None:
+        _url_add(target_folder, url)
         warnings.warn("No URL found in %s.\n"
             "'_url_' = '%s' added.\n"
-            "This typically happens if the definition file was newly created locally and\n"
-            "could mean that remote and local definition files are out of sync now.\n"
-            "Use the `update` method to re-download the remote definition file."
+            "This typically happens if the definition file was newly created locally\n"
+            "and could mean that remote and local definition files are out of sync.\n"
+            "You may want to upload the above local definition file to the above URL\n"
+            "or use the `update` method to re-download the remote definition file."
             % (_definition_file_to_read(target_folder), url))
-        _url_add(target_folder, url)
         arch.remote_data_path = url
     assert arch.remote_data_path == url  # check that url was in the definition file
     return arch
@@ -267,15 +276,15 @@ def get(url_or_folder=None):
     an archive definition file of name `coco_archive_definition.txt`. Use
     `create` to create this file if necessary.
 
-    When an URL is given and the archive may already exist locally from
+    When an URL is given the archive may already exist locally from
     previous calls of `get`. Then, ``get(url).update()`` updates the
     definition file and returns the updated archive. Only the definition
     file is updated, no data are downloaded before they are requested. The
     updated class instance re-downloads requested data when the saved hash
-    disagrees with the data hash. With new instances of the archive, if
-    `update` is not called again, the local data may need to be deleted
-    manually, according to the shown error message when they are tried to
-    be used.
+    disagrees with the computed hash. With new instances of the archive, if
+    `COCOUserDataArchive.update` is not called on them, an error message
+    may be shown when they try to use outdated local data and the data can
+    be deleted manually as specified in the shown message.
 
     Remotely retrieved archive definitions are registered with `ArchivesKnown`
     and ``cocopp.archiving.ArchivesKnown()`` will show a list.
@@ -364,13 +373,18 @@ def create(local_path):
         for filename in filenames:
             fnlower = filename.lower()
             if ('.extracted' not in dirpath
-                and not filename == default_definition_filename
-                and not fnlower.endswith(('.dat', '.rdat', '.tdat', '.info',
-                                          '.txt', '.md', '.py', '.ipynb'))
-                and not '.txt' in fnlower  # catch backups of definition files
+                and not fnlower.startswith('.')
+                and not default_definition_filename in filename
                 and not fnlower == 'readme'
-                    # and not ('BBOB' in filename and 'rawdata' in filename)
+                and not fnlower.endswith(('.dat', '.rdat', '.tdat', '.info',
+                                          '.txt', '.md', '.py', '.ipynb', '.pdf'))
+                and not '.txt' in fnlower
                 ):
+                if filename[-1] not in ('2', 'z') and filename[-2:] not in ('ar', ) and '.zip' not in filename:
+                    warnings.warn('Trying to archive unusual file "%s".'
+                        'Remove the file from %s and call `create` again '
+                        'if the file was not meant to be in the archive.'
+                        % (filename, dirpath))
                 name = dirpath[len(full_local_path) + 1:].replace(os.path.sep, '/')
                 # print(dirpath, local_path, name, filename)
                 name = '/'.join([name, filename]) if name else filename
@@ -393,10 +407,10 @@ def create(local_path):
 
 
 class COCODataArchive(_td.StrList):
-    """A `list` of archived COCO data.
+    """This class is a `list` (`StrList`) of archived COCO data.
     
-    See `cocopp.archives` and/or use `get` to get a class instance
-    other than the full "official" archive.
+    See `cocopp.archives` for the "official" archives and use `get` to get
+    a class instance other than the full "official" archive.
 
     This class "is" a `list` of names which are relative file names
     separated with slashes "/". Each name represents the zipped data
@@ -483,8 +497,8 @@ class COCODataArchive(_td.StrList):
     '...
 
     TODO: join with COCOUserDataArchive, to get there:
-    - upload definition files to official archives
-    - HALFDONE use uploaded definition files (see official_archive_locations in `_get_remote`)
+    - DONE upload definition files to official archives
+    - DONE? use uploaded definition files (see official_archive_locations in `_get_remote`)
     - DONE? replace usages of derived data classes by `get`
     - remove definition list in code of the root class
     - review and join classes without default for local path
@@ -1085,13 +1099,12 @@ class COCODataArchive(_td.StrList):
             return None
 
 class COCOUserDataArchive(COCODataArchive):
-    """User defined data archive.
+    """Data archive based on an archive definition file.
 
-    This class is not (anymore) meant to be used directly. Instead use
-    `cocopp.archiving.get`.
-
-    This class needs an archive definition file to begin with, which can be
-    created with `create`.
+    This class is not meant to be instantiated directly. Instead, use
+    `cocopp.archiving.get` to get a class instance. The class needs an
+    archive definition file to begin with, as created with
+    `cocopp.archiving.create`.
 
     """
     __doc__ += COCODataArchive.__doc__
@@ -1151,16 +1164,11 @@ class COCOUserDataArchive(COCODataArchive):
         definition and the remote and the local archive can be different
         now. `create` makes a backup of the existing definition file.
         """
-        warnings.warn("TODO: method update was never tested")
-        # if we want to be able to have a different definition file name
-        # (why would we) the name must be a class attribute and used here
         if self.remote_data_path:
             _get_remote(self.remote_data_path, self.local_data_path,
                         redownload=True)  # redownload definition file
             # allow to re-download data by tagging possibly outdated data
             self._redownload_if_changed = self.downloaded
-        elif from_local:
-            create(self.local_data_path)
         else:
             print('This archive has no remote URL. If you intended to update the\n'
                   'definition file from the local data, call\n'
@@ -1566,7 +1574,11 @@ class OfficialArchives(object):
 
     """
     def __init__(self):
-        """"""
+        """all URLs and classes (optional) in one place.
+        
+        The archive names are identical with the last part of the URL. The only
+        exception is made for `'all'`, which is removed to get the URL.
+        """
         self.all = None  # prevent lint error in cocopp/__init__.py
         self._base = coco_url + '/data-archive/'
         self._list = [
@@ -1574,13 +1586,9 @@ class OfficialArchives(object):
             (self._base + 'bbob', COCOBBOBDataArchive),
             (self._base + 'bbob-noisy', COCOBBOBNoisyDataArchive),
             (self._base + 'bbob-biobj', COCOBBOBBiobjDataArchive),
+            (self._base + 'bbob-mixint', None),  # TODO: introduce a new class
             (self._base + 'test', None),
         ]
-        """all URLs and classes (optional) in one place.
-        
-        The name is identical with the last part of the URL. The only exception
-        is made for `'all'`, which is removed to get the URL.
-        """
 
     def add_archive(self, name):
         """Allow to use a new official archive."""
@@ -1618,7 +1626,7 @@ class OfficialArchives(object):
         """get j-th entry of `name`, where j==0 is the URL and j==1 is the class"""
         for tup in self._list:
             if tup[0].endswith(name):
-                return tup[j]
+                return tup[j] if j < len(tup) else None
 
     def url(self, name):
         """return url of "official" archive named `name`.
@@ -1631,7 +1639,7 @@ class OfficialArchives(object):
     def class_(self, name):
         """class of archive named `name` when returned by `get`"""
         return self._get(name, 1) or COCOUserDataArchive
-    
+
     def update_all(self):
         self.set_as_attributes_in(update=True) 
 
