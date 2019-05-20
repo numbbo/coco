@@ -62,7 +62,7 @@ from __future__ import absolute_import
 
 from .pproc import DataSetList as _DataSetList
 from .toolsdivers import StringList as _StringList
-from .archiving import COCODataArchive as _COCODataArchive
+from .archiving import official_archives
 
 def load(filename):
     """Create a :py:class:`DataSetList` instance from a file or folder.
@@ -73,7 +73,7 @@ def load(filename):
     files.
 
     """
-    return _DataSetList(_COCODataArchive().get_extended(_StringList(filename)))
+    return _DataSetList(official_archives.all.get_extended(_StringList(filename)))
 
 # info on the DataSetList: algId, function, dim
 

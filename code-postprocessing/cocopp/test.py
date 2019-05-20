@@ -133,7 +133,8 @@ def run_latex_template(filename, all_tests):
 
 
 def retrieve_algorithm(data_path, folder_name, algorithm_name, file_name=None):
-    """depreciated (replaced by cocopp._data_archive COCODataArchive instance)"""
+    """depreciated (replaced by cocopp._data_archive COCODataArchive instance
+    replaced by `cocopp.archiving.get` or `cocopp.archiving.official_archives` or `cocopp.archives.all`)"""
     algorithm_file = join_path(data_path, file_name if file_name else algorithm_name)
     if not os.path.exists(algorithm_file):
         data_url = 'http://coco.gforge.inria.fr/data-archive/%s/%s' % (folder_name, algorithm_name)

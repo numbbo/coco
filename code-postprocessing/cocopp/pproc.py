@@ -39,6 +39,7 @@ from . import testbedsettings, dataformatsettings
 from .readalign import split, align_data, HMultiReader, VMultiReader, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from .ppfig import consecutiveNumbers, Usage
+from . import archiving
 
 do_assertion = genericsettings.force_assertions # expensive assertions
 targets_displayed_for_info = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]  # only to display info in DataSetList.info
@@ -305,7 +306,7 @@ class RunlengthBasedTargetValues(TargetValues):
             self._short_info = 'reference budgets from ' + self.reference_data
             # dsl = DataSetList(os.path.join(sys.modules[globals()['__name__']].__file__.split('cocopp')[0],
             #                                'cocopp', 'data', self.reference_data))
-            dsl = DataSetList(findfiles.COCODataArchive().get_one(self.reference_data))
+            dsl = DataSetList(archiving.official_archives.all.get(self.reference_data))
             dsd = {}
             for ds in dsl:
                 # ds._clean_data()

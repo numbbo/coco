@@ -289,7 +289,7 @@ def main(argv=None):
         print('Post-processing (%s)' % ('1' if len(args) == 1 else '2+'))  # to not break doctests
 
         # manage data paths as given in args
-        data_archive = archiving.COCODataArchive()
+        data_archive = archiving.official_archives.all  # was: archiving.COCODataArchive()
         args = data_archive.get_extended(args)
         if None in args:
             raise ValueError("Data argument %d was not matching any file"
