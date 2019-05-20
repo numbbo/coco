@@ -228,7 +228,7 @@ def _download_definitions(url, target_folder):
         raise
 
 def _get_remote(url, target_folder=None, redownload=False):
-    """return remote data archive as `COCOUserDataArchive` instance.
+    """return remote data archive as `COCODataArchive` instance.
 
     If necessary, the archive is "created" by downloading the definition file
     from `url` to `target_folder` which doesn't need to exist.
@@ -282,7 +282,7 @@ def get(url_or_folder=None):
     file is updated, no data are downloaded before they are requested. The
     updated class instance re-downloads requested data when the saved hash
     disagrees with the computed hash. With new instances of the archive, if
-    `COCOUserDataArchive.update` is not called on them, an error message
+    `COCODataArchive.update` is not called on them, an error message
     may be shown when they try to use outdated local data and the data can
     be deleted manually as specified in the shown message.
 
@@ -309,7 +309,7 @@ def get(url_or_folder=None):
     if (url_or_folder.lower().startswith("http")
         or url_or_folder in official_archives.names):
         return _get_remote(url_or_folder)
-    return COCOUserDataArchive(url_or_folder)
+    return COCODataArchive(url_or_folder)
 
 def read_definition_file(local_path_or_definition_file):
     """return definition triple `list`"""
@@ -358,7 +358,7 @@ def create(local_path):
 
     However, if the data are put online together with the definition file,
     everyone can locally re-create this archive via `get` and use the
-    returned `COCOUserDataArchive` without downloading any data
+    returned `COCODataArchive` without downloading any data
     immediately, but only "on demand".
 
     """
@@ -403,22 +403,24 @@ def create(local_path):
     with open(definition_file, 'wt') as file_:
         file_.write(repr(sorted(res)).replace('L)', ')').replace('(', '\n('))
     ArchivesLocal.register(full_local_path)  # to find splattered local archives easily
-    return COCOUserDataArchive(full_local_path)
+    return COCODataArchive(full_local_path)
 
 
 class COCODataArchive(_td.StrList):
-    """This class is a `list` (`StrList`) of archived COCO data.
-    
-    See `cocopp.archives` for the "official" archives and use `get` to get
-    a class instance other than the full "official" archive.
+    """Data archive based on an archive definition file.
 
-    This class "is" a `list` of names which are relative file names
-    separated with slashes "/". Each name represents the zipped data
-    from a full experiment, benchmarking one algorithm on an entire
-    benchmark suite.
+    This class is not meant to be instantiated directly. Instead, use
+    `cocopp.archiving.get` to get a class instance. The class needs an
+    archive definition file to begin with, as created with
+    `cocopp.archiving.create`.
 
-    By default, all "officially" archived COCO/BBOB data are in the
-    `list`.
+    See `cocopp.archives` or `cocopp.archiving.official_archives` for the
+    "official" archives.
+
+    This class "is" a `list` (`StrList`) of names which are relative file
+    names separated with slashes "/". Each name represents the zipped data
+    from a full archived experiment, benchmarking one algorithm on an
+    entire benchmark suite.
 
     The function `create` serves to create a new user-defined archive from
     experiment data which can be loaded with `get`. Other derived classes define
@@ -496,12 +498,12 @@ class COCODataArchive(_td.StrList):
     ...         '2010/1komma2mirser_brockhoff_noiseless.tar.gz'])  # is the same  # doctest:+ELLIPSIS,+SKIP,
     '...
 
-    TODO: join with COCOUserDataArchive, to get there:
+    DONE: join with COCODataArchive, to get there:
     - DONE upload definition files to official archives
     - DONE? use uploaded definition files (see official_archive_locations in `_get_remote`)
     - DONE? replace usages of derived data classes by `get`
     - DONE remove definition list in code of the root class
-    - review and join classes without default for local path
+    - DONE review and join classes without default for local path
 
     """
 
@@ -779,17 +781,6 @@ class COCODataArchive(_td.StrList):
         except KeyError:
             return None
 
-class COCOUserDataArchive(COCODataArchive):
-    """Data archive based on an archive definition file.
-
-    This class is not meant to be instantiated directly. Instead, use
-    `cocopp.archiving.get` to get a class instance. The class needs an
-    archive definition file to begin with, as created with
-    `cocopp.archiving.create`.
-
-    """
-    __doc__ += COCODataArchive.__doc__
-
     def __init__(self, local_path):
         """Argument is a local path to the archive.
 
@@ -803,6 +794,10 @@ class COCOUserDataArchive(COCODataArchive):
         Set `_all` and `self` from `_all` without `_url_`` entry.
         This init does not deal with remote logic, it only reads in _url_ from
         the definition file into the `remote_data_path` attribute.
+
+        Details: Set `_all_dict` which is a (never used) dictionary
+        generated from `_all` and `self` and consists of the keys except
+        for ``'_url_'``.
         """
         local_path = _abs_path(local_path)
         if not local_path:
@@ -811,42 +806,26 @@ class COCOUserDataArchive(COCODataArchive):
             # TODO: shall become a ValueError!?
             local_path, fn = os.path.split(local_path)
             if fn:
-                warnings.warn("COCOUserDataArchive.__init__: filename"
+                warnings.warn("COCODataArchive.__init__: filename"
                               " %s in %s ignored" % (fn, local_path))
-        if not COCOUserDataArchive.is_archive(local_path):
+        if not COCODataArchive.is_archive(local_path):
             raise ValueError('The folder "%s" seems not to "be" a COCO data'
                             " archive as it does not contain a %s file)."
                             "\nUse `create(folder)` or `get(URL)` of"
                             " `cocopp.archiving` to create/get this file."
                             % (local_path, default_definition_filename))
         self.local_data_path = local_path
+        self._names_found = []  # names recently found
+        self._redownload_if_changed = []
+        self._checked_consistency = False
+        self._print = print  # like this we can make it quiet for testing
         self._all = self.read_definition_file()
+        assert hasattr(self, '_all')
         self.remote_data_path = self._url_(self._all)  # later we could use self._all_dict.get('_url_', None)
         if not self.remote_data_path and len(self) != len(self.downloaded):
                 warnings.warn(
                     "defined=%d!=%d=downloaded data sets and no url given"
                     % (len(self), self.downloaded))
-        self._initialize()  # uses ._all and .remote_data_path
-        self.consistency_check_read()
-
-    def _initialize(self):
-        """initialization previously in class COCODataArchive.
-
-        The optional argument is a local path where the archive should
-        be (incrementally) buffered, stored, extracted. ``~`` may be
-        used for the user home folder. By default the archive is hosted
-        at ``'~/.cocopp/data-archive'``.
-
-        Details: Set `_all_dict` which is a (never used) dictionary
-        generated from `_all` and `self` and consists of the keys except
-        for ``'_url_'``.
-
-        """
-        assert hasattr(self, '_all')
-        self._names_found = []  # names recently found
-        self._redownload_if_changed = []
-        self._checked_consistency = False
-        self._print = print  # like this we can make it quiet for testing
         self._all_dict = dict((kv[0], kv[1:]) for kv in self._all)
         if len(self._all_dict) != len(self._all):  # warn on double entries
             keys = [v[0] for v in self._all]
@@ -857,6 +836,7 @@ class COCOUserDataArchive(COCODataArchive):
             warnings.warn("found different remote paths \n    %s\n vs %s"
                           % (self.remote_data_path, self._all_dict["_url_"]))
         list.__init__(self, (kv[0] for kv in self._all if kv[0] != '_url_'))
+        self.consistency_check_read()
         if 11 < 3:  # this takes too long on importing cocopp
             self.consistency_check_data()
 
@@ -930,7 +910,7 @@ class COCOUserDataArchive(COCODataArchive):
                 return True
         return False
 
-class COCOBBOBDataArchive(COCOUserDataArchive):
+class COCOBBOBDataArchive(COCODataArchive):
     """`list` of archived data for the 'bbob' test suite.
 
     To see the list of all data from 2009:
@@ -950,7 +930,7 @@ class COCOBBOBDataArchive(COCOUserDataArchive):
     """
     __doc__ += COCODataArchive.__doc__
 
-class COCOBBOBNoisyDataArchive(COCOUserDataArchive):
+class COCOBBOBNoisyDataArchive(COCODataArchive):
     """This class "contains" archived data for the 'bbob-noisy' suite.
 
     >>> import cocopp
@@ -964,7 +944,7 @@ class COCOBBOBNoisyDataArchive(COCOUserDataArchive):
     """
     __doc__ += COCODataArchive.__doc__
 
-class COCOBBOBBiobjDataArchive(COCOUserDataArchive):
+class COCOBBOBBiobjDataArchive(COCODataArchive):
     """This class "contains" archived data for the 'bbob-biobj' suite.
 
     >>> import cocopp
@@ -1104,7 +1084,7 @@ class ListOfArchives(_td.StrList):
     def save(self):
         """save current list making changes permanent"""
         for foldername in self:
-            if not COCOUserDataArchive.is_archive(foldername):
+            if not COCODataArchive.is_archive(foldername):
                 raise ValueError('"%s" is not an archive, save aborted' % foldername)
         self._makepathsabsolute()
         self._remove_double_entries()  # can have gotten here from append or extend
@@ -1296,7 +1276,7 @@ class OfficialArchives(object):
         self.all = None  # prevent lint error in cocopp/__init__.py
         self._base = coco_url + '/data-archive/'
         self._list = [
-            (self._base + 'all', COCOUserDataArchive),
+            (self._base + 'all', COCODataArchive),
             (self._base + 'bbob', COCOBBOBDataArchive),
             (self._base + 'bbob-noisy', COCOBBOBNoisyDataArchive),
             (self._base + 'bbob-biobj', COCOBBOBBiobjDataArchive),
@@ -1352,7 +1332,7 @@ class OfficialArchives(object):
 
     def class_(self, name):
         """class of archive named `name` when returned by `get`"""
-        return self._get(name, 1) or COCOUserDataArchive
+        return self._get(name, 1) or COCODataArchive
 
     def update_all(self):
         self.set_as_attributes_in(update=True) 
