@@ -500,50 +500,10 @@ class COCODataArchive(_td.StrList):
     - DONE upload definition files to official archives
     - DONE? use uploaded definition files (see official_archive_locations in `_get_remote`)
     - DONE? replace usages of derived data classes by `get`
-    - remove definition list in code of the root class
+    - DONE remove definition list in code of the root class
     - review and join classes without default for local path
 
     """
-
-    def __init__(self, local_path):
-        """return the full "official" COCO archive unless called from a
-        subclass.
-
-        The optional argument is a local path where the archive should
-        be (incrementally) buffered, stored, extracted. ``~`` may be
-        used for the user home folder. By default the archive is hosted
-        at ``'~/.cocopp/data-archive'``.
-
-        Details: only if the `_all` attribute does not (yet) exist on
-        input, the archive is set to the coco full "official" archive.
-        `_all_dict` is a (never used) dictionary generated from `_all` and
-        `self` consists of the keys except for ``'_url_'``.
-
-        """
-        self.local_data_path = _abs_path(local_path or COCODataArchive.local_data_path)
-        if not self.local_data_path:
-            raise ValueError("local path folder needs to be defined")
-        self._names_found = []  # names recently found
-        self._print = print  # like this we can make it quiet for testing
-        if not hasattr(self, '_all'):
-            raise ValueError("This use case is not anymore available (local_path=%s" % local_path)
-            self._all = COCODataArchive._all_coco_remote
-            self.remote_data_path = 'http://coco.gforge.inria.fr/data-archive'
-            # self.local_data_path = '~/.cocopp/data-archive'  # is default anyway
-        self._all_dict = dict((kv[0], kv[1:]) for kv in self._all)
-        if len(self._all_dict) != len(self._all):  # warn on double entries
-            keys = [v[0] for v in self._all]
-            warnings.warn("definitions contain double entries %s" %
-                          str([v for v in self._all if keys.count(v[0]) > 1]))
-        if self.remote_data_path and self._all_dict.setdefault("_url_",
-                                       (self.remote_data_path, )) != (self.remote_data_path, ):
-            warnings.warn("found different remote paths \n    %s\n vs %s"
-                          % (self.remote_data_path, self._all_dict["_url_"]))
-        list.__init__(self, (kv[0] for kv in self._all if kv[0] != '_url_'))
-        self._redownload_if_changed = []
-        self._checked_consistency = False
-        if 11 < 3:  # this takes too long on importing cocopp
-            self.consistency_check_data()
 
     def get_found(self, remote=True):
         """get full entries of the last `find`"""
@@ -840,7 +800,7 @@ class COCOUserDataArchive(COCODataArchive):
         possibly downloaded with `get` calling `_get_remote` from a given `url`.
         ``~`` may refer to the user home folder.
 
-        Set `_all` and `_all_dict` and `self` from `_all` without `_url_`` entry.
+        Set `_all` and `self` from `_all` without `_url_`` entry.
         This init does not deal with remote logic, it only reads in _url_ from
         the definition file into the `remote_data_path` attribute.
         """
@@ -864,8 +824,46 @@ class COCOUserDataArchive(COCODataArchive):
                 warnings.warn(
                     "defined=%d!=%d=downloaded data sets and no url given"
                     % (len(self), self.downloaded))
-        COCODataArchive.__init__(self, local_path)  # uses ._all
+        self._initialize(local_path)  # uses ._all and .remote_data_path
         self.consistency_check_read()
+
+    def _initialize(self, local_path):
+        """initialization previously in class COCODataArchive.
+
+        The optional argument is a local path where the archive should
+        be (incrementally) buffered, stored, extracted. ``~`` may be
+        used for the user home folder. By default the archive is hosted
+        at ``'~/.cocopp/data-archive'``.
+
+        Details: Set `_all_dict` which is a (never used) dictionary
+        generated from `_all` and `self` and consists of the keys except
+        for ``'_url_'``.
+
+        """
+        self.local_data_path = _abs_path(local_path or COCODataArchive.local_data_path)
+        if not self.local_data_path:
+            raise ValueError("local path folder needs to be defined")
+        self._names_found = []  # names recently found
+        self._print = print  # like this we can make it quiet for testing
+        if not hasattr(self, '_all'):
+            raise ValueError("This use case is not anymore available (local_path=%s)" % local_path)
+            # self._all = COCODataArchive._all_coco_remote
+            # self.remote_data_path = 'http://coco.gforge.inria.fr/data-archive'
+            # # self.local_data_path = '~/.cocopp/data-archive'  # is default anyway
+        self._all_dict = dict((kv[0], kv[1:]) for kv in self._all)
+        if len(self._all_dict) != len(self._all):  # warn on double entries
+            keys = [v[0] for v in self._all]
+            warnings.warn("definitions contain double entries %s" %
+                          str([v for v in self._all if keys.count(v[0]) > 1]))
+        if self.remote_data_path and self._all_dict.setdefault("_url_",
+                                       (self.remote_data_path, )) != (self.remote_data_path, ):
+            warnings.warn("found different remote paths \n    %s\n vs %s"
+                          % (self.remote_data_path, self._all_dict["_url_"]))
+        list.__init__(self, (kv[0] for kv in self._all if kv[0] != '_url_'))
+        self._redownload_if_changed = []
+        self._checked_consistency = False
+        if 11 < 3:  # this takes too long on importing cocopp
+            self.consistency_check_data()
 
     def update(self):
         """update definition file, either from remote location or from local data.
