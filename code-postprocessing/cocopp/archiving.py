@@ -805,6 +805,8 @@ class COCOUserDataArchive(COCODataArchive):
         the definition file into the `remote_data_path` attribute.
         """
         local_path = _abs_path(local_path)
+        if not local_path:
+            raise ValueError("local path folder needs to be defined")
         if os.path.isfile(local_path):  # ignore filename
             # TODO: shall become a ValueError!?
             local_path, fn = os.path.split(local_path)
@@ -824,10 +826,10 @@ class COCOUserDataArchive(COCODataArchive):
                 warnings.warn(
                     "defined=%d!=%d=downloaded data sets and no url given"
                     % (len(self), self.downloaded))
-        self._initialize(local_path)  # uses ._all and .remote_data_path
+        self._initialize()  # uses ._all and .remote_data_path
         self.consistency_check_read()
 
-    def _initialize(self, local_path):
+    def _initialize(self):
         """initialization previously in class COCODataArchive.
 
         The optional argument is a local path where the archive should
@@ -840,16 +842,11 @@ class COCOUserDataArchive(COCODataArchive):
         for ``'_url_'``.
 
         """
-        self.local_data_path = _abs_path(local_path or COCODataArchive.local_data_path)
-        if not self.local_data_path:
-            raise ValueError("local path folder needs to be defined")
+        assert hasattr(self, '_all')
         self._names_found = []  # names recently found
+        self._redownload_if_changed = []
+        self._checked_consistency = False
         self._print = print  # like this we can make it quiet for testing
-        if not hasattr(self, '_all'):
-            raise ValueError("This use case is not anymore available (local_path=%s)" % local_path)
-            # self._all = COCODataArchive._all_coco_remote
-            # self.remote_data_path = 'http://coco.gforge.inria.fr/data-archive'
-            # # self.local_data_path = '~/.cocopp/data-archive'  # is default anyway
         self._all_dict = dict((kv[0], kv[1:]) for kv in self._all)
         if len(self._all_dict) != len(self._all):  # warn on double entries
             keys = [v[0] for v in self._all]
@@ -860,8 +857,6 @@ class COCOUserDataArchive(COCODataArchive):
             warnings.warn("found different remote paths \n    %s\n vs %s"
                           % (self.remote_data_path, self._all_dict["_url_"]))
         list.__init__(self, (kv[0] for kv in self._all if kv[0] != '_url_'))
-        self._redownload_if_changed = []
-        self._checked_consistency = False
         if 11 < 3:  # this takes too long on importing cocopp
             self.consistency_check_data()
 
