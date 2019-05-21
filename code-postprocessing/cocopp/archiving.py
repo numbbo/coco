@@ -506,6 +506,64 @@ class COCODataArchive(_td.StrList):
     - DONE review and join classes without default for local path
 
     """
+    def __init__(self, local_path):
+        """Argument is a local path to the archive.
+
+        This class is not anymore meant to be used directly, rather use
+        `cocopp.archiving.get`.
+
+        `local_path` is an archive folder containing a definition file,
+        possibly downloaded with `get` calling `_get_remote` from a given `url`.
+        ``~`` may refer to the user home folder.
+
+        Set `_all` and `self` from `_all` without `_url_`` entry.
+        This init does not deal with remote logic, it only reads in _url_ from
+        the definition file into the `remote_data_path` attribute.
+
+        Details: Set `_all_dict` which is a (never used) dictionary
+        generated from `_all` and `self` and consists of the keys except
+        for ``'_url_'``.
+        """
+        local_path = _abs_path(local_path)
+        if not local_path:
+            raise ValueError("local path folder needs to be defined")
+        if os.path.isfile(local_path):  # ignore filename
+            # TODO: shall become a ValueError!?
+            local_path, fn = os.path.split(local_path)
+            if fn:
+                warnings.warn("COCODataArchive.__init__: filename"
+                              " %s in %s ignored" % (fn, local_path))
+        if not COCODataArchive.is_archive(local_path):
+            raise ValueError('The folder "%s" seems not to "be" a COCO data'
+                            " archive as it does not contain a %s file)."
+                            "\nUse `create(folder)` or `get(URL)` of"
+                            " `cocopp.archiving` to create/get this file."
+                            % (local_path, default_definition_filename))
+        self.local_data_path = local_path
+        self._names_found = []  # names recently found
+        self._redownload_if_changed = []
+        self._checked_consistency = False
+        self._print = print  # like this we can make it quiet for testing
+        self._all = self.read_definition_file()
+        assert hasattr(self, '_all')
+        self.remote_data_path = self._url_(self._all)  # later we could use self._all_dict.get('_url_', None)
+        if not self.remote_data_path and len(self) != len(self.downloaded):
+                warnings.warn(
+                    "defined=%d!=%d=downloaded data sets and no url given"
+                    % (len(self), self.downloaded))
+        self._all_dict = dict((kv[0], kv[1:]) for kv in self._all)
+        if len(self._all_dict) != len(self._all):  # warn on double entries
+            keys = [v[0] for v in self._all]
+            warnings.warn("definitions contain double entries %s" %
+                          str([v for v in self._all if keys.count(v[0]) > 1]))
+        if self.remote_data_path and self._all_dict.setdefault("_url_",
+                                       (self.remote_data_path, )) != (self.remote_data_path, ):
+            warnings.warn("found different remote paths \n    %s\n vs %s"
+                          % (self.remote_data_path, self._all_dict["_url_"]))
+        list.__init__(self, (kv[0] for kv in self._all if kv[0] != '_url_'))
+        self.consistency_check_read()
+        if 11 < 3:  # this takes too long on importing cocopp
+            self.consistency_check_data()
 
     def get_found(self, remote=True):
         """get full entries of the last `find`"""
@@ -780,65 +838,6 @@ class COCODataArchive(_td.StrList):
             # return self._all[self.index(self.name(name))][1]
         except KeyError:
             return None
-
-    def __init__(self, local_path):
-        """Argument is a local path to the archive.
-
-        This class is not anymore meant to be used directly, rather use
-        `cocopp.archiving.get`.
-
-        `local_path` is an archive folder containing a definition file,
-        possibly downloaded with `get` calling `_get_remote` from a given `url`.
-        ``~`` may refer to the user home folder.
-
-        Set `_all` and `self` from `_all` without `_url_`` entry.
-        This init does not deal with remote logic, it only reads in _url_ from
-        the definition file into the `remote_data_path` attribute.
-
-        Details: Set `_all_dict` which is a (never used) dictionary
-        generated from `_all` and `self` and consists of the keys except
-        for ``'_url_'``.
-        """
-        local_path = _abs_path(local_path)
-        if not local_path:
-            raise ValueError("local path folder needs to be defined")
-        if os.path.isfile(local_path):  # ignore filename
-            # TODO: shall become a ValueError!?
-            local_path, fn = os.path.split(local_path)
-            if fn:
-                warnings.warn("COCODataArchive.__init__: filename"
-                              " %s in %s ignored" % (fn, local_path))
-        if not COCODataArchive.is_archive(local_path):
-            raise ValueError('The folder "%s" seems not to "be" a COCO data'
-                            " archive as it does not contain a %s file)."
-                            "\nUse `create(folder)` or `get(URL)` of"
-                            " `cocopp.archiving` to create/get this file."
-                            % (local_path, default_definition_filename))
-        self.local_data_path = local_path
-        self._names_found = []  # names recently found
-        self._redownload_if_changed = []
-        self._checked_consistency = False
-        self._print = print  # like this we can make it quiet for testing
-        self._all = self.read_definition_file()
-        assert hasattr(self, '_all')
-        self.remote_data_path = self._url_(self._all)  # later we could use self._all_dict.get('_url_', None)
-        if not self.remote_data_path and len(self) != len(self.downloaded):
-                warnings.warn(
-                    "defined=%d!=%d=downloaded data sets and no url given"
-                    % (len(self), self.downloaded))
-        self._all_dict = dict((kv[0], kv[1:]) for kv in self._all)
-        if len(self._all_dict) != len(self._all):  # warn on double entries
-            keys = [v[0] for v in self._all]
-            warnings.warn("definitions contain double entries %s" %
-                          str([v for v in self._all if keys.count(v[0]) > 1]))
-        if self.remote_data_path and self._all_dict.setdefault("_url_",
-                                       (self.remote_data_path, )) != (self.remote_data_path, ):
-            warnings.warn("found different remote paths \n    %s\n vs %s"
-                          % (self.remote_data_path, self._all_dict["_url_"]))
-        list.__init__(self, (kv[0] for kv in self._all if kv[0] != '_url_'))
-        self.consistency_check_read()
-        if 11 < 3:  # this takes too long on importing cocopp
-            self.consistency_check_data()
 
     def update(self):
         """update definition file, either from remote location or from local data.
