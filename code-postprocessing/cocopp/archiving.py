@@ -239,11 +239,8 @@ def _get_remote(url, target_folder=None, redownload=False):
     key = url
     url = official_archives.url(url) or url.rstrip('/')
     target_folder = target_folder or _url_to_folder_name(url)
-    if key in official_archives.names:  # todo this special treatment can go away later
-        if 1 < 3:
-            _move_official_local_data()  # once and for all
-        else:
-            target_folder = official_archives.class_(key).local_data_path
+    if key in official_archives.names:
+        _move_official_local_data()  # once and for all
     if redownload or not os.path.exists(_definition_file_to_read(target_folder)):
         _makedirs(target_folder)
         _download_definitions(url, target_folder)
@@ -252,8 +249,8 @@ def _get_remote(url, target_folder=None, redownload=False):
             ArchivesKnown.register(url)
         else:  # TODO: check that ArchivesOfficial is in order?
             pass
-    # the url is not passed as it must be now in the definition file
-    arch = official_archives.class_(key)(target_folder)  # instantiate class
+    # instantiate class the url is not used as it must be now in the definition file
+    arch = official_archives.class_(key)(target_folder)
     if key in official_archives.names:
         arch.name = key + ' (official)' # should stay?
     if arch.remote_data_path is None:
@@ -579,7 +576,7 @@ class COCODataArchive(_td.StrList):
 
         See also `get`.
         """
-        if indices is not None:  # TODO: just if indices should do?
+        if indices is not None:  # TODO: just "if indices" should do?
             names = self.find(indices)
         else:
             names = self.found
@@ -1096,7 +1093,6 @@ class ListOfArchives(_td.StrList):
         
         Use `save` to save the joined entries.
         """
-        warnings.warn("TODO: review (remove prints?) and test")
         for s in RemoteListOfArchives(name or self.name):  # download and read list
             if s not in self:
                 print(s, 'appended')
@@ -1120,8 +1116,9 @@ class ListOfArchives(_td.StrList):
             folder = self.search_folder
         # skip_home = cocopp_home not in _abs_path(folder)  # see below
         res = []
-        for dirpath, dnames, fnames in os.walk(folder, followlinks=False):
-            dnames[:] = [d for d in dnames if not d.startswith('.')]  # do not descent in any . folder, e.g. .Trash or .cocopp
+        for dirpath, dnames, fnames in os.walk(_abs_path(folder), followlinks=False):
+            dnames[:] = [d for d in dnames
+                         if not d.startswith('.')]  # do not descent in any . folder, e.g. .Trash or .cocopp
             if default_definition_filename in fnames:
                 res.append(_abs_path(dirpath))
         self._last_walk = res
@@ -1272,19 +1269,26 @@ class OfficialArchives(object):
         The archive names are identical with the last part of the URL. The only
         exception is made for `'all'`, which is removed to get the URL.
         """
-        self.all = None  # prevent lint error in cocopp/__init__.py
+        self.all = None  # only to prevent lint error in cocopp/__init__.py
         self._base = coco_url + '/data-archive/'
+        # TODO-decide: should this list better be initialized by a ListOfArchives file?
+        #              (the same transition as before with the _all attribute in COCODataArchive)
+        #              The code then only "hardcodes" the class name mapping?
         self._list = [
             (self._base + 'all', COCODataArchive),
             (self._base + 'bbob', COCOBBOBDataArchive),
             (self._base + 'bbob-noisy', COCOBBOBNoisyDataArchive),
             (self._base + 'bbob-biobj', COCOBBOBBiobjDataArchive),
             (self._base + 'bbob-mixint', None),  # TODO: introduce a new class
-            (self._base + 'test', None),
+            (self._base + 'test', None),  # None resolves to COCODataArchive
         ]
 
     def add_archive(self, name):
-        """Allow to use a new official archive."""
+        """Allow to use a new official archive.
+        
+        The archive must exist as a subfolder of
+        http://coco.gforge.inria.fr/data-archive
+        """
         self._list += [(self._base + name, None),]
         self.set_as_attributes_in()
 
@@ -1337,24 +1341,26 @@ class OfficialArchives(object):
         self.set_as_attributes_in(update=True) 
 
 official_archives = OfficialArchives()
+# TODO-decide: when should we (try to) update these?
 official_archives.set_as_attributes_in()  # set "official" archives as attributes by suite name
 
 class _ArchivesOfficial(ListOfArchives):
-    """superseded by `OfficialArchives`!?
+    """superseded by `OfficialArchives`
     
     Official COCO data archives.
 
     TODO-decide: this class is not needed, as official archives don't change frequently
-    and are directly available in cocopp.archives?
+    and are directly available in cocopp.archives? Or merge into the above OfficialArchives class, such that we only need to update a list entry in the remote list!?
     """
     __doc__ += ListOfArchives.__doc__
 
-    # TODO-decide: rename list...txt to pylist_...txt
     listing_file = ListOfArchives._fullfile("official_archives")
     search_folder = _abs_path(cocopp_home, "data-archive") 
 
 class ArchivesLocal(ListOfArchives):
-    """COCO data archives somewhere local on this machine
+    """COCO data archives somewhere local on this machine.
+
+    The archives need to be gathered with `_walk`.
     """
     __doc__ += ListOfArchives.__doc__
 
@@ -1362,7 +1368,9 @@ class ArchivesLocal(ListOfArchives):
     search_folder = _abs_path("~/")  # TODO: somewhat ambitious?
 
 class ArchivesKnown(ListOfArchives):
-    """Known (already used) remote COCO data archives
+    """Known (and already used) remote COCO data archives.
+
+    These include the official archives from `OfficialArchives`.
     """
     __doc__ += ListOfArchives.__doc__
 
@@ -1373,7 +1381,8 @@ class RemoteListOfArchives(_td.StrList):
     """Elements of this list can be used directly in `cocopp.archiving.get`.
 
     The only purpose of this list is to propose (or remind) known archive
-    locations to the user.
+    locations to the user. For this purpose, the current listing file is
+    downloaded.
     """
     location = coco_url + '/data-archives/'  # + 'list_known_archives.txt'
 
