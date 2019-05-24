@@ -715,6 +715,8 @@ class COCODataArchive(_td.StrList):
                 if res and res[-1] is None:
                     warnings.warn('"%s" seems not to be an existing file or '
                                   'match any archived data' % name)
+                    raise ValueError('"%s" seems not to be an existing file or '
+                                  'match any archived data' % name)
             elif name.endswith('*'):  # take all matches
                 res.extend(self.get_all(name[:-1], remote=remote))
             elif '*' in name:  # use find which also handles regular expressions
@@ -724,6 +726,8 @@ class COCODataArchive(_td.StrList):
                 res.append(self.get(name, remote=remote))
             if len(res) <= nb_results:
                 warnings.warn('"%s" seems not to be an existing file or '
+                              'match any archived data' % name)
+                raise ValueError('"%s" seems not to be an existing file or '
                               'match any archived data' % name)
             nb_results = len(res)
         if len(args) != len(set(args)):
