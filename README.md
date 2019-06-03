@@ -52,7 +52,7 @@ apt-get install build-essential python-dev python-numpy python-matplotlib \
 Under Windows, two alternative compile toolchains can be used: 
 
 1. [Cygwin](https://www.cygwin.com/) which comes with gcc and make, available in 32- and 64-bit versions.  
-2. MinGW's gcc (http://www.mingw.org/), which only comes in 32-bit, but also runs on 64-bit machines. 
+2. MinGW's gcc (http://www.mingw.org/ for 32-bit or https://mingw-w64.org for 64-bit machines). Make sure to update the Windows path to MinGW's make.exe and rename/link the gcc.exe to cc.exe.
 
 For using `git` under Windows (optional), we recommend installing [TortoiseGit](https://tortoisegit.org/).
 
