@@ -288,9 +288,9 @@ def get(url_or_folder=None):
 
     >>> import cocopp
     >>> url = 'http://lq-cma.gforge.inria.fr/data-archives/lq-gecco2019'
-    >>> arch = cocopp.archiving.get(url)  # downloads a 0.4KB definition file
+    >>> arch = cocopp.archiving.get(url).update()  # downloads a 0.4KB definition file
     >>> len(arch)
-    3
+    4
     >>> assert arch.remote_data_path == url
  
     See `cocopp.archives` for "officially" available archives.
@@ -398,7 +398,7 @@ def create(local_path):
         warnings.warn('cocopp.archiving.create: no data found in %s' % local_path)
         return
     with open(definition_file, 'wt') as file_:
-        file_.write(repr(sorted(res)).replace('L)', ')').replace('(', '\n('))
+        file_.write(repr(sorted(res, key=lambda s: (s.split('/')[0], s))).replace('L)', ')').replace('(', '\n('))
     ArchivesLocal.register(full_local_path)  # to find splattered local archives easily
     return COCODataArchive(full_local_path)
 
@@ -557,7 +557,7 @@ class COCODataArchive(_td.StrList):
                                        (self.remote_data_path, )) != (self.remote_data_path, ):
             warnings.warn("found different remote paths \n    %s\n vs %s"
                           % (self.remote_data_path, self._all_dict["_url_"]))
-        list.__init__(self, (kv[0] for kv in self._all if kv[0] != '_url_'))
+        _td.StrList.__init__(self, (kv[0] for kv in self._all if kv[0] != '_url_'))
         self.consistency_check_read()
         if 11 < 3:  # this takes too long on importing cocopp
             self.consistency_check_data()
