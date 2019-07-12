@@ -398,7 +398,7 @@ def create(local_path):
         warnings.warn('cocopp.archiving.create: no data found in %s' % local_path)
         return
     with open(definition_file, 'wt') as file_:
-        file_.write(repr(sorted(res, key=lambda s: (s.split('/')[0], s))).replace('L)', ')').replace('(', '\n('))
+        file_.write(repr(sorted(res, key=lambda t: (t[0].split('/')[0], t))).replace('L)', ')').replace('(', '\n('))
     ArchivesLocal.register(full_local_path)  # to find splattered local archives easily
     return COCODataArchive(full_local_path)
 
