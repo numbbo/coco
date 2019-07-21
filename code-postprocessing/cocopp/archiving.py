@@ -658,6 +658,8 @@ class COCODataArchive(_td.StrList):
                 if names[0] in self._redownload_if_changed:
                     self._download(names[0])
                     self.check_hash(full_name)
+                else:
+                    raise
             try: self._redownload_if_changed.remove(names[0])
             except ValueError: pass
             return full_name
@@ -819,11 +821,11 @@ class COCODataArchive(_td.StrList):
                 'wrong checksum for "%s". '
                 'Consider to (re)move file\n'
                 '   %s\n'
-                'as it may be a partial/unsuccessful download.\n'
+                'as it may be a partial or unsuccessful download.\n'
                 'A missing file will be downloaded again by `get`.\n'
                 'Alternatively, call `update` to update definitions\n'
                 'and checksums and allow for automatic re-downloads.\n'
-                'If this is not a remote archive consider to re- `create` it.'
+                'If this is not a remote archive consider to re-`create` it.'
                 '' % (name, self.full_path(name)))
 
     def _hash(self, name, hash_function=hashlib.sha256):
