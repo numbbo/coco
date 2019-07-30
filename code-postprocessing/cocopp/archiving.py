@@ -200,7 +200,7 @@ def _move_official_local_data():
                         " the other folder (preferably the smaller one)" % (src, dest))
 
 def _repr_definitions(list_):
-    return repr(sorted(list_)).replace('(', '\n(')
+    return repr(sorted(list_, key=lambda t: (t[0].split('/')[0], t))).replace('(', '\n(')
 
 def _url_add(folder, url):
     """add ``('_url_', url),`` to the definition file in `folder`.
@@ -398,7 +398,7 @@ def create(local_path):
         warnings.warn('cocopp.archiving.create: no data found in %s' % local_path)
         return
     with open(definition_file, 'wt') as file_:
-        file_.write(repr(sorted(res, key=lambda t: (t[0].split('/')[0], t))).replace('L)', ')').replace('(', '\n('))
+        file_.write(_repr_definitions(res).replace('L)', ')'))
     ArchivesLocal.register(full_local_path)  # to find splattered local archives easily
     return COCODataArchive(full_local_path)
 
