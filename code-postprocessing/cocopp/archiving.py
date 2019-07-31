@@ -818,7 +818,7 @@ class COCODataArchive(_td.StrList):
                 '' % (name, self._hash(name)))
         elif self._hash(name) != known_hash:
             raise ValueError(
-                'wrong checksum for "%s". '
+                'wrong checksum for\n\n   %s\n\n in archive\n\n   %s\n   %s\n\n'
                 'Consider to (re)move file\n'
                 '   %s\n'
                 'as it may be a partial or unsuccessful download.\n'
@@ -826,7 +826,8 @@ class COCODataArchive(_td.StrList):
                 'Alternatively, call `update` to update definitions\n'
                 'and checksums and allow for automatic re-downloads.\n'
                 'If this is not a remote archive consider to re-`create` it.'
-                '' % (name, self.full_path(name)))
+                '' % (name, self.local_data_path, str(self.remote_data_path),
+                self.full_path(name)))
 
     def _hash(self, name, hash_function=hashlib.sha256):
         """compute hash of `name` or path"""
