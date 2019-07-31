@@ -32,6 +32,8 @@ class InfolderGoneWithTheWind:
     temporary folder under the current folder. The temporary folder is
     deleted on exiting the block.
 
+    CAVEAT: copy-pasted to toolsdivers
+
     >>> import os
     >>> dir_ = os.getcwd()  # for the record
     >>> len_ = len(os.listdir('.'))

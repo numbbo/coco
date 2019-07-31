@@ -7,6 +7,7 @@
 from __future__ import absolute_import, print_function
 
 import os, time, warnings
+import tempfile, shutil
 from collections import OrderedDict as _OrderedDict
 import re as _re
 import numpy as np
@@ -75,6 +76,42 @@ class StringList(list):
     def as_string(self):
         """return concatenation with spaces between"""
         return ' ' + ' '.join(self) + ' '
+
+
+class InfolderGoneWithTheWind:
+    """``with InfolderGoneWithTheWind(): ...`` executes the block in a
+
+    temporary folder under the current folder. The temporary folder is
+    deleted on exiting the block.
+
+    >>> import os
+    >>> dir_ = os.getcwd()  # for the record
+    >>> len_ = len(os.listdir('.'))
+    >>> with InfolderGoneWithTheWind():  # doctest: +SKIP
+    ...     # do some work in a folder here, e.g. write files
+    ...     len(dir_) > len(os.getcwd()) and os.getcwd() in dir_
+    True
+    >>> # magically we are back in the original folder
+    >>> assert dir_ == os.getcwd()
+    >>> assert len(os.listdir('.')) == len_
+
+    """
+    def __init__(self, prefix='_'):
+        """no folder needs to be given"""
+        self.prefix = prefix
+    def __enter__(self):
+        self.root_dir = os.getcwd()
+        # self.target_dir = tempfile.mkdtemp(prefix=self.prefix, dir='.')
+        self.target_dir = tempfile.mkdtemp(prefix=self.prefix)
+        self._target_dir = self.target_dir
+        os.chdir(self.target_dir)
+    def __exit__(self, *args):
+        os.chdir(self.root_dir)
+        if self.target_dir == self._target_dir:
+            shutil.rmtree(self.target_dir)
+        else:
+            raise ValueError("inconsistent temporary folder name %s vs %s"
+                             % (self._target_dir, self.target_dir))
 
 
 class StrList(list):
