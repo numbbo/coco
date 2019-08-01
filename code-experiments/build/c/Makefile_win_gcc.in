@@ -10,7 +10,7 @@
 ## something else or install Cygwin and run GNU make from within Cygwin
 ## directly.
 
-LDFLAGS += -lm
+LDFLAGS += -lm -lwsock32
 CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow -Wno-sign-compare -Wconversion
 
 ########################################################################
