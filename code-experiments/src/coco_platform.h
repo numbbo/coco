@@ -18,7 +18,9 @@
 /* The winsock2.h header *needs* to be included before windows.h! */
 #if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
 #include <winsock2.h>
+#if _MSC_VER
 #pragma comment(lib, "ws2_32.lib") /* Winsock library */
+#endif
 #define WINSOCK 1
 #else
 #include <sys/socket.h>
