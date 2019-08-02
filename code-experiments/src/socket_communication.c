@@ -92,7 +92,7 @@ static char *socket_communication_get_message(const char *suite_name,
  * <yk> is the value of the k-th objective
  */
 static void socket_communication_save_response(const char *response,
-                                               const int response_size,
+                                               const long response_size,
                                                const size_t expected_number_of_objectives,
                                                double *y) {
 
