@@ -32,7 +32,7 @@
  *
  * @note This function needs to be updated when a new suite is added to COCO.
  */
-static coco_suite_t *coco_suite_intialize(const char *suite_name) {
+static coco_suite_t *coco_suite_intialize(const char *suite_name, const char *suite_options) {
 
   coco_suite_t *suite;
 
@@ -52,7 +52,7 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name) {
   } else if (strcmp(suite_name, "bbob-biobj-mixint") == 0) {
     suite = suite_biobj_mixint_initialize();
   } else if (strcmp(suite_name, "toy-socket") == 0) {
-    suite = suite_toy_socket_initialize();
+    suite = suite_toy_socket_initialize(suite_options);
   }
   else {
     coco_error("coco_suite_intialize(): unknown problem suite");
@@ -650,11 +650,12 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
   coco_option_keys_t *known_option_keys, *given_option_keys, *redundant_option_keys;
 
   /* Sets the valid keys for suite options and suite instance */
-  const char *known_keys_o[] = { "dimensions", "dimension_indices", "function_indices", "instance_indices" };
+  const char *known_keys_o[] = { "dimensions", "dimension_indices", "function_indices", "instance_indices",
+                                 "host_name", "port", "precision_x" };
   const char *known_keys_i[] = { "year", "instances" };
 
   /* Initialize the suite */
-  suite = coco_suite_intialize(suite_name);
+  suite = coco_suite_intialize(suite_name, suite_options);
 
   /* Set the instance */
   if ((!suite_instance) || (strlen(suite_instance) == 0))

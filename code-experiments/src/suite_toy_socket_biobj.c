@@ -10,7 +10,7 @@
 
 #include "coco.h"
 #include "toy_socket.c"
-#include "suite_toy_socket.c"
+#include "socket_communication.c"
 
 static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
@@ -21,19 +21,15 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 /**
  * @brief Sets the dimensions and default instances for the toy-socket-biobj suite.
  */
-static coco_suite_t *suite_toy_socket_biobj_initialize(void) {
+static coco_suite_t *suite_toy_socket_biobj_initialize(const char *suite_options) {
 
   coco_suite_t *suite;
-  suite_toy_socket_data_t *data;
   const size_t dimensions[] = { 2 };
 
   suite = coco_suite_allocate("toy-socket-biobj", 1, 1, dimensions, "instances: 1");
 
-  data = (suite_toy_socket_data_t *) coco_allocate_memory(sizeof(*data));
-  data->host_name = coco_strdup("localhost");     /* TODO: Read this from the suite options! */
-  data->port = 7251;                              /* TODO: Read this from the suite options! */
-  suite->data = data;
-  suite->data_free_function = suite_toy_socket_data_free;
+  suite->data = socket_communication_data_initialize(suite_options);
+  suite->data_free_function = socket_communication_data_free;
   return suite;
 }
 
@@ -52,8 +48,6 @@ static coco_problem_t *suite_toy_socket_biobj_get_problem(coco_suite_t *suite,
                                                           const size_t instance_idx) {
 
   coco_problem_t *problem = NULL;
-  suite_toy_socket_data_t *data;
-  data = (suite_toy_socket_data_t *) suite->data;
 
   const size_t function = suite->functions[function_idx];
   const size_t dimension = suite->dimensions[dimension_idx];
@@ -63,7 +57,7 @@ static coco_problem_t *suite_toy_socket_biobj_get_problem(coco_suite_t *suite,
   const char *problem_name_template = "bi-objective toy socket suite problem f%lu instance %lu in %luD";
 
   problem = toy_socket_problem_allocate(2, function, dimension, instance,
-      problem_id_template, problem_name_template, data->host_name, data->port);
+      problem_id_template, problem_name_template);
   assert(problem != NULL);
 
   problem->suite_dep_function = function;
