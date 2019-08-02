@@ -32,7 +32,6 @@ static void toy_socket_free(coco_problem_t *problem) {
  */
 static void toy_socket_evaluate(coco_problem_t *problem, const double *x, double *y) {
 
-  size_t i;
   char *message;
   toy_socket_data_t *data = (toy_socket_data_t *) problem->data;
 

@@ -1,18 +1,8 @@
 #include <stdio.h>
 #include <string.h>
+#include "coco_platform.h"
 
-#if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
-#include <winsock2.h>
-/*#pragma comment(lib, "ws2_32.lib") Winsock library */
-#define WINSOCK 1
-#else
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#define WINSOCK 0
-#endif
-
-#define REPLY_BUFFER 1024
+#define REPLY_BUFFER 1024 /* TODO: What would be a safe value to use here? */
 
 static void socket_communication_evaluate(const char* host_name, const unsigned short port,
     const char *message, const size_t number_of_objectives, double *y) {

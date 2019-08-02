@@ -647,13 +647,15 @@ def build_java():
         if '64' in platform.machine():
             run('code-experiments/build/java', ['x86_64-w64-mingw32-gcc', '-I', jdkpath1, '-I',
                                                 jdkpath2, '-shared', '-o', 'CocoJNI.dll',
-                                                'CocoJNI.c'], verbose=_verbosity)
+                                                'CocoJNI.c', '-lwsock32'],
+                verbose=_verbosity)
 
             # 2. Windows with Cygwin (both 32-bit)
         elif '32' in platform.machine() or 'x86' in platform.machine():
             run('code-experiments/build/java', ['i686-w64-mingw32-gcc', '-Wl,--kill-at', '-I',
                                                 jdkpath1, '-I', jdkpath2, '-shared', '-o',
-                                                'CocoJNI.dll', 'CocoJNI.c'], verbose=_verbosity)
+                                                'CocoJNI.dll', 'CocoJNI.c', '-lwsock32'],
+                verbose=_verbosity)
 
     # 3. Windows without Cygwin
     elif ('win32' in sys.platform) and ('cygwin' not in os.environ['PATH']):
@@ -663,7 +665,7 @@ def build_java():
         jdkpath2 = jdkpath1 + '\\win32'
         run('code-experiments/build/java',
             ['gcc', '-Wl,--kill-at', '-I', jdkpath1, '-I', jdkpath2,
-             '-shared', '-o', 'CocoJNI.dll', 'CocoJNI.c'],
+             '-shared', '-o', 'CocoJNI.dll', 'CocoJNI.c', '-lwsock32'],
             verbose=_verbosity)
 
     # 4. Linux

@@ -15,6 +15,18 @@
 
 #include <stddef.h>
 
+/* The winsock2.h header *needs* to be included before windows.h! */
+#if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
+#include <winsock2.h>
+#pragma comment(lib, "ws2_32.lib") /* Winsock library */
+#define WINSOCK 1
+#else
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#define WINSOCK 0
+#endif
+
 /* Definitions of COCO_PATH_MAX, coco_path_separator, HAVE_GFA and HAVE_STAT heavily used by functions in
  * coco_utilities.c */
 #if defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__)
