@@ -127,12 +127,12 @@ static void socket_communication_save_response(const char *response,
 static void socket_communication_evaluate(const char* host_name, const unsigned short port,
     const char *message, const size_t expected_number_of_objectives, double *y) {
 
-  struct sockaddr_in serv_addr;
   char response[RESPONSE_SIZE];
 
 #if WINSOCK
   WSADATA wsa;
   SOCKET sock;
+  SOCKADDR_IN serv_addr;
   int response_len;
 
   /* Initialize Winsock */
@@ -150,21 +150,21 @@ static void socket_communication_evaluate(const char* host_name, const unsigned 
   serv_addr.sin_port = htons(port);
 
   /* Connect to the evaluator */
-  if (connect(sock, (struct sockaddr*) &serv_addr, sizeof(serv_addr)) < 0) {
+  if (connect(sock, (SOCKADDR *) &serv_addr, sizeof(serv_addr)) < 0) {
     coco_error("socket_communication_evaluate(): Connection failed\nIs the server running?");
   }
 
   /* Send message */
   if (send(sock, message, (int)strlen(message), 0) < 0) {
-    coco_error("socket_communication_evaluate(): Send failed");
+    coco_error("socket_communication_evaluate(): Send failed: %d", WSAGetLastError());
   }
   coco_debug("Sent message: %s", message);
 
   /* Receive the response */
   if ((response_len = recv(sock, response, RESPONSE_SIZE, 0)) == SOCKET_ERROR) {
-    coco_error("socket_communication_evaluate(): Receive failed");
+    coco_error("socket_communication_evaluate(): Receive failed: %d", WSAGetLastError());
   }
-  coco_debug("Received response: %s (length %ld)", response, response_len);
+  coco_debug("Received response: %s (length %d)", response, response_len);
 
   socket_communication_save_response(response, response_len, expected_number_of_objectives, y);
 
@@ -172,6 +172,7 @@ static void socket_communication_evaluate(const char* host_name, const unsigned 
   WSACleanup();
 #else
   int sock;
+  struct sockaddr_in serv_addr;
   long response_len;
 
   /* Create a socket */
