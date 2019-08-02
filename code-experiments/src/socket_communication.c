@@ -3,7 +3,7 @@
 #include "coco_platform.h"
 #include "coco_string.c"
 
-#define RESPONSE_BUFFER 256 /* Should be enough to read a couple of objective values */
+#define RESPONSE_SIZE 256 /* Should be large enough to contain a couple of objective values */
 
 /**
  * @brief Data type needed for socket communication (used by the suites that need it).
@@ -36,17 +36,10 @@ static socket_communication_data_t *socket_communication_data_initialize(const c
   data->host_name = coco_strdup("127.0.0.1");
   if (coco_options_read_string(suite_options, "host_name", data->host_name) == 0) {
     strcpy(data->host_name, "127.0.0.1");
-    coco_warning("socket_communication_data_initialize(): Adjusted host_name value to %s",
-        data->host_name);
-  } else {
-    coco_warning("socket_communication_data_initialize(): Using default host_name value %s",
-        data->host_name);
   }
 
   data->port = 7251;
   if (coco_options_read(suite_options, "port", "%hu", &(data->port)) == 0) {
-    coco_warning("socket_communication_data_initialize(): Using default port value %hu",
-        data->port);
   }
 
   data->precision_x = 8;
@@ -56,9 +49,6 @@ static socket_communication_data_t *socket_communication_data_initialize(const c
       coco_warning("socket_communication_data_initialize(): Adjusted precision_x value to %d",
           data->precision_x);
     }
-  } else {
-    coco_warning("socket_communication_data_initialize(): Using default precision_x value %d",
-        data->precision_x);
   }
   return data;
 }
@@ -140,8 +130,8 @@ static void socket_communication_evaluate(const char* host_name, const unsigned 
   WSADATA wsa;
   SOCKET sock;
   struct sockaddr_in serv_addr;
-  char response[RESPONSE_BUFFER];
-  int response_size;
+  char response[RESPONSE_SIZE];
+  int response_len;
 
   /* Initialize Winsock */
   if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
@@ -169,19 +159,20 @@ static void socket_communication_evaluate(const char* host_name, const unsigned 
   coco_debug("Sent message: %s", message);
 
   /* Receive the response */
-  if ((response_size = recv(sock, response, RESPONSE_BUFFER, 0)) == SOCKET_ERROR) {
+  if ((response_len = recv(sock, response, RESPONSE_SIZE, 0)) == SOCKET_ERROR) {
     coco_error("socket_communication_evaluate(): Receive failed");
   }
-  coco_debug("Received response: %s (size %ld)", response, response_size);
+  coco_debug("Received response: %s (length %ld)", response, response_len);
 
-  socket_communication_save_response(response, response_size, expected_number_of_objectives, y);
+  socket_communication_save_response(response, response_len, expected_number_of_objectives, y);
 
 #else
   int sock;
   struct sockaddr_in serv_addr;
-  char response[RESPONSE_BUFFER];
-  long response_size;
+  char response[RESPONSE_SIZE];
+  long response_len;
 
+  /* Create a socket */
   if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
     coco_error("socket_communication_evaluate(): Socket creation error");
   }
@@ -206,10 +197,10 @@ static void socket_communication_evaluate(const char* host_name, const unsigned 
   coco_debug("Sent message: %s", message);
 
   /* Receive the response */
-  response_size = read(sock, response, RESPONSE_BUFFER);
-  coco_debug("Received response: %s (size %ld)", response, response_size);
+  response_len = read(sock, response, RESPONSE_SIZE);
+  coco_debug("Received response: %s (length %ld)", response, response_len);
 
-  socket_communication_save_response(response, response_size, expected_number_of_objectives, y);
+  socket_communication_save_response(response, response_len, expected_number_of_objectives, y);
 #endif
 }
 
