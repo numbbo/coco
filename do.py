@@ -662,7 +662,7 @@ def build_java():
         jdkpath1 = jdkpath.split("bin")[0] + 'include'
         jdkpath2 = jdkpath1 + '\\win32'
         run('code-experiments/build/java',
-            ['gcc', '-Wl,--kill-at', '-I', jdkpath1, '-I', jdkpath2,
+            ['gcc', '-Wl,--kill-at', '-D__int64=int64_t', '-I', jdkpath1, '-I', jdkpath2,
              '-shared', '-o', 'CocoJNI.dll', 'CocoJNI.c'],
             verbose=_verbosity)
 
