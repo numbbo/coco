@@ -58,7 +58,6 @@ static coco_problem_t *toy_socket_problem_allocate(const size_t number_of_object
   for (i = 0; i < dimension; ++i) {
     problem->smallest_values_of_interest[i] = -1;
     problem->largest_values_of_interest[i] = 1;
-    problem->best_parameter[i] = 0; /* TODO Support unknown optimum */
   }
   problem->number_of_integer_variables = 0;
   problem->evaluate_function = toy_socket_evaluate;
@@ -68,6 +67,8 @@ static coco_problem_t *toy_socket_problem_allocate(const size_t number_of_object
 
   if (number_of_objectives == 1) {
     problem->best_value[0] = -1000;
+    for (i = 0; i < dimension; ++i)
+      problem->best_parameter[i] = 0; /* TODO Support unknown optimum */
   }
   /* Need to provide estimation for the ideal and nadir points in the bi-objective case */
   else if (number_of_objectives == 2) {

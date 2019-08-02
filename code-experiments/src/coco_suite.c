@@ -23,6 +23,7 @@
 #include "suite_largescale.c"
 #include "suite_cons_bbob.c"
 #include "suite_toy_socket.c"
+#include "suite_toy_socket_biobj.c"
 
 /** @brief The maximum number of different instances in a suite. */
 #define COCO_MAX_INSTANCES 1000
@@ -53,6 +54,8 @@ static coco_suite_t *coco_suite_intialize(const char *suite_name, const char *su
     suite = suite_biobj_mixint_initialize();
   } else if (strcmp(suite_name, "toy-socket") == 0) {
     suite = suite_toy_socket_initialize(suite_options);
+  } else if (strcmp(suite_name, "toy-socket-biobj") == 0) {
+    suite = suite_toy_socket_biobj_initialize(suite_options);
   }
   else {
     coco_error("coco_suite_intialize(): unknown problem suite");
@@ -128,6 +131,8 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
     problem = suite_biobj_mixint_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else if (strcmp(suite->suite_name, "toy-socket") == 0) {
     problem = suite_toy_socket_get_problem(suite, function_idx, dimension_idx, instance_idx);
+  } else if (strcmp(suite->suite_name, "toy-socket-biobj") == 0) {
+    problem = suite_toy_socket_biobj_get_problem(suite, function_idx, dimension_idx, instance_idx);
   } else {
     coco_error("coco_suite_get_problem_from_indices(): unknown problem suite");
     return NULL;
