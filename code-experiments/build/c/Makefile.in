@@ -12,8 +12,11 @@
 ##
 ## or installing Cygwin and running GNU make from within Cygwin.
 
-LDFLAGS += -lm -lwsock32
+LDFLAGS += -lm
 CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow -Wno-sign-compare -Wconversion
+ifeq ($(OS),Windows_NT)
+	LDFLAGS += -lwsock32
+endif
 
 ########################################################################
 ## Toplevel targets
