@@ -645,9 +645,9 @@ def build_java():
         jdkpath2 = jdkpath1 + '\\win32'
 
         if '64' in platform.machine():
-            run('code-experiments/build/java', ['x86_64-w64-mingw32-gcc', '-I', jdkpath1, '-I',
-                                                jdkpath2, '-shared', '-o', 'CocoJNI.dll',
-                                                'CocoJNI.c'], verbose=_verbosity)
+            run('code-experiments/build/java', ['x86_64-w64-mingw32-gcc', '-D__int64=int64_t', '-I',
+                                                jdkpath1, '-I', jdkpath2, '-shared', '-o',
+                                                'CocoJNI.dll', 'CocoJNI.c'], verbose=_verbosity)
 
             # 2. Windows with Cygwin (both 32-bit)
         elif '32' in platform.machine() or 'x86' in platform.machine():
