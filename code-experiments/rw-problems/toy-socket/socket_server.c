@@ -102,15 +102,15 @@ char *evaluate_message(char *message) {
 void socket_server_start(void) {
 
   int address_size;
-  char yes = 0;
   char message[MESSAGE_SIZE];
   char *response;
 
-#if WINSOCK
+#if WINSOCK == 1
   WSADATA wsa;
   SOCKET sock, new_sock;
   SOCKADDR_IN address;
   int message_len;
+  char yes = 0;
 
   /* Initialize Winsock */
   if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
@@ -173,6 +173,7 @@ void socket_server_start(void) {
   int sock, new_sock;
   struct sockaddr_in address;
   long message_len;
+  int yes = 0;
 
   /* Create a socket file descriptor */
   if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
