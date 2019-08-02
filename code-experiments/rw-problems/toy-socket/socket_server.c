@@ -6,7 +6,7 @@
  */
 
 /* The winsock2.h header *needs* to be included before windows.h! */
-#if 0 & ( defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__))
+#if (defined(_WIN32) || defined(_WIN64) || defined(__MINGW64__) || defined(__CYGWIN__))
 #include <winsock2.h>
 #if _MSC_VER
 #pragma comment(lib, "ws2_32.lib") /* Winsock library */
@@ -103,13 +103,13 @@ void socket_server_start(void) {
 
   struct sockaddr_in address;
   int address_size = sizeof(address);
-  int yes = 1;
+  char yes = 0;
   char message[MESSAGE_SIZE];
   char *response;
 
 #if WINSOCK
   WSADATA wsa;
-  SOCKET sock;
+  SOCKET sock, new_sock;
   int message_len;
 
   /* Initialize Winsock */
@@ -148,7 +148,7 @@ void socket_server_start(void) {
 
   while (1) {
     /* Accept an incoming connection */
-    if ((new_sock = accept(sock, (struct sockaddr*) &address, (socklen_t*) &address_size)) < 0) {
+    if ((new_sock = accept(sock, (struct sockaddr*) &address, &address_size)) != INVALID_SOCKET) {
       perror("socket_server_start(): Accept failed");
       exit(EXIT_FAILURE);
     }
@@ -159,14 +159,14 @@ void socket_server_start(void) {
       exit(EXIT_FAILURE);
     }
 #if LOG_MESSAGES == 1
-    printf("Received message: %s (length %ld)\n", message, message_len);
+    printf("Received message: %s (length %d)\n", message, message_len);
 #endif
 
     /* Parse the message and evaluate its contents using an evaluator */
     response = evaluate_message(message);
 
     /* Send the response */
-    send(new_sock, response, strlen(response), 0);
+    send(new_sock, response, (int)strlen(response), 0);
 #if LOG_MESSAGES == 1
     printf("Sent response %s (length %ld)\n", response, strlen(response));
 #endif
