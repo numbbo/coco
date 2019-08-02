@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
 /**
- * A toy evaluator for problems from the toy-socket suite to demonstrate external evaluation.
+ * A toy evaluator for problems from the toy-socket suite to demonstrate external evaluation in C
  */
 void evaluate(char *suite_name, size_t number_of_objectives, size_t function,
     size_t instance, size_t dimension, const double *x, double *y)

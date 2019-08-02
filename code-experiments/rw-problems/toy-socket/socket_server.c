@@ -141,7 +141,7 @@ void socket_server_start(void) {
     fprintf(stderr, "socket_server_start(): Listen failed: %d", WSAGetLastError());
   }
 
-  printf("Server started, listening on port %d\n", PORT);
+  printf("Server ready, listening on port %d\n", PORT);
   address_size = sizeof(address);
 
   while (1) {
@@ -202,7 +202,7 @@ void socket_server_start(void) {
     exit(EXIT_FAILURE);
   }
 
-  printf("Server started, listening on port %d\n", PORT);
+  printf("Server ready, listening on port %d\n", PORT);
   address_size = sizeof(address);
 
   while (1) {
