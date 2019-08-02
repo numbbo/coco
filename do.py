@@ -737,6 +737,32 @@ def test_java():
 
 
 ################################################################################
+## Exxternal evaluation with sockets
+def build_socket():
+    """ Builds the server for external evaluation with sockets """
+    make("code-experiments/rw-problems/toy-socket", "clean", verbose=_build_verbosity)
+    make("code-experiments/rw-problems/toy-socket", "all", verbose=_build_verbosity)
+
+
+def run_socket():
+    """ Builds and runs the server for external evaluation with sockets """
+    build_socket()
+    pass # TODO: Run in a new console window
+
+
+def test_socket_python(package_install_option=[]):
+    """ Tests the toy-socket suite in python (runs the server) """
+    run_socket()
+    build_python(package_install_option=package_install_option)
+    try:
+        python(os.path.join('code-experiments', 'build', 'python'),
+               ['example_experiment.py', 'toy-socket'])
+    except subprocess.CalledProcessError:
+        sys.exit(-1)
+    pass
+
+
+################################################################################
 ## Post processing
 def test_postprocessing(all_tests=False, package_install_option=[]):
     install_postprocessing(package_install_option = package_install_option)
@@ -922,6 +948,9 @@ Available commands for users:
                             example experiment in Python. The optional
                             parameter "and-test" also runs the tests of
                             `coco_test.py` (see NOTE below)
+                            
+  build-socket            - Build the server for external evaluations through sockets
+  run-socket              - Build and run the server for external evaluations through sockets
 
 Available commands for developers:
 
@@ -957,6 +986,8 @@ Available commands for developers:
                             below)
   test-preprocessing      - Runs preprocessing tests [needs access to the
                             internet] (see NOTE below)
+                            
+  test-socket-python      - Test the toy-socket suite in python 
   
 NOTE: These commands install Python packages to the global site packages by
       by default. This behavior can be modified by providing one of the
@@ -1019,6 +1050,9 @@ def main(args):
     elif cmd == 'leak-check': leak_check()
     elif cmd == 'install-preprocessing': install_preprocessing(package_install_option = package_install_option)
     elif cmd == 'test-preprocessing': test_preprocessing(package_install_option = package_install_option)
+    elif cmd == 'build-socket': build_socket()
+    elif cmd == 'run-socket': run_socket()
+    elif cmd == 'test-socket-python': test_socket_python(package_install_option=package_install_option)
     else: help()
 
 
