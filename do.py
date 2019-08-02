@@ -707,11 +707,11 @@ def build_java():
             ['gcc', '-dynamiclib', '-o', 'libCocoJNI.jnilib', 'CocoJNI.o'],
             verbose=_verbosity)
 
-    run('code-experiments/build/java', ['javac', 'Problem.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'Benchmark.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'Observer.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'Suite.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'ExampleExperiment.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Problem.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Benchmark.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Observer.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Suite.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'ExampleExperiment.java'], verbose=_verbosity)
 
 
 def run_java():
@@ -719,7 +719,7 @@ def run_java():
     build_java()
     try:
         run('code-experiments/build/java',
-            ['java', '-Djava.library.path=.', 'ExampleExperiment'],
+            ['java', '-classpath', '.', '-Djava.library.path=.', 'ExampleExperiment'],
             verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)
