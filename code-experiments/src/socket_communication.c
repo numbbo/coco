@@ -126,11 +126,13 @@ static void socket_communication_save_response(const char *response,
  */
 static void socket_communication_evaluate(const char* host_name, const unsigned short port,
     const char *message, const size_t expected_number_of_objectives, double *y) {
+
+  struct sockaddr_in serv_addr;
+  char response[RESPONSE_SIZE];
+
 #if WINSOCK
   WSADATA wsa;
   SOCKET sock;
-  struct sockaddr_in serv_addr;
-  char response[RESPONSE_SIZE];
   int response_len;
 
   /* Initialize Winsock */
@@ -166,10 +168,10 @@ static void socket_communication_evaluate(const char* host_name, const unsigned 
 
   socket_communication_save_response(response, response_len, expected_number_of_objectives, y);
 
+  closesocket(sock);
+  WSACleanup();
 #else
   int sock;
-  struct sockaddr_in serv_addr;
-  char response[RESPONSE_SIZE];
   long response_len;
 
   /* Create a socket */

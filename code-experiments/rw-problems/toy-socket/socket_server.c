@@ -100,16 +100,82 @@ char *evaluate_message(char *message) {
  * Should be working for different platforms.
  */
 void socket_server_start(void) {
-#if WINSOCK == 1
 
-#else
-  int sock, new_sock;
   struct sockaddr_in address;
   int address_size = sizeof(address);
-  long message_len;
   int yes = 1;
   char message[MESSAGE_SIZE];
   char *response;
+
+#if WINSOCK
+  WSADATA wsa;
+  SOCKET sock;
+  int message_len;
+
+  /* Initialize Winsock */
+  if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+    fprintf(stderr, "socket_server_start(): Winsock initialization failed: %d", WSAGetLastError());
+  }
+
+  /* Create a socket file descriptor */
+  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+    fprintf(stderr, "socket_server_start(): Could not create socket: %d", WSAGetLastError());
+  }
+
+  /* Forcefully attach socket to the port */
+  if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes))) {
+    perror("socket_server_start(): Socket could not be attached to the port");
+    exit(EXIT_FAILURE);
+  }
+
+  address.sin_family = AF_INET;
+  address.sin_addr.s_addr = INADDR_ANY; /* "any address" in IPV4 */
+  address.sin_port = htons(PORT);
+
+  /* Bind */
+  if (bind(sock, (struct sockaddr*) &address, sizeof(address)) < 0) {
+    perror("socket_server_start(): Bind failed");
+    exit(EXIT_FAILURE);
+  }
+
+  /* Listen */
+  if (listen(sock, 3) < 0) {
+    perror("socket_server_start(): Listen failed");
+    exit(EXIT_FAILURE);
+  }
+
+  printf("Server started, listening on port %d\n", PORT);
+
+  while (1) {
+    /* Accept an incoming connection */
+    if ((new_sock = accept(sock, (struct sockaddr*) &address, (socklen_t*) &address_size)) < 0) {
+      perror("socket_server_start(): Accept failed");
+      exit(EXIT_FAILURE);
+    }
+
+    /* Read the message */
+    if ((message_len = recv(new_sock, message, MESSAGE_SIZE, 0)) == SOCKET_ERROR) {
+      perror("socket_server_start(): Receive failed");
+      exit(EXIT_FAILURE);
+    }
+#if LOG_MESSAGES == 1
+    printf("Received message: %s (length %ld)\n", message, message_len);
+#endif
+
+    /* Parse the message and evaluate its contents using an evaluator */
+    response = evaluate_message(message);
+
+    /* Send the response */
+    send(new_sock, response, strlen(response), 0);
+#if LOG_MESSAGES == 1
+    printf("Sent response %s (length %ld)\n", response, strlen(response));
+#endif
+    free(response);
+    closesocket(new_sock);
+  }
+#else
+  int sock, new_sock;
+  long message_len;
 
   /* Create a socket file descriptor */
   if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -148,7 +214,10 @@ void socket_server_start(void) {
     }
 
     /* Read the message */
-    message_len = read(new_sock, message, MESSAGE_SIZE);
+    if ((message_len = read(new_sock, message, MESSAGE_SIZE)) < 0) {
+      perror("socket_server_start(): Receive failed");
+      exit(EXIT_FAILURE);
+    }
 #if LOG_MESSAGES == 1
     printf("Received message: %s (length %ld)\n", message, message_len);
 #endif

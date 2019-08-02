@@ -1,3 +1,7 @@
+##
+## Makefile for the socket_server
+##
+
 CCFLAGS = -g -ggdb -std=c89 -pedantic -Wall -Wextra -Wstrict-prototypes -Wshadow -Wno-sign-compare -Wconversion
 
 all: socket_server
