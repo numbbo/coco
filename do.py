@@ -750,15 +750,13 @@ def run_socket():
     process to be used to close it (kill it) after it is no longer needed. """
     build_socket()
     if 'win32' in sys.platform:
-        terminal = 'start '
+        terminal = 'start'
     else:
-        terminal = 'exec '
-    server_process = subprocess.Popen(
-        terminal + 'python code-experiments/rw-problems/toy-socket/socket_server.py',
-        stdout=subprocess.PIPE, shell=True)
-    #server_process = subprocess.Popen(
-    #    terminal + 'code-experiments/rw-problems/toy-socket/socket_server.exe',
-    #    stdout=subprocess.PIPE, shell=True)
+        terminal = 'exec'
+    command = 'python'
+    file = os.path.join('code-experiments', 'rw-problems', 'toy-socket', 'socket_server.py')
+    print('RUN\t{} {} {}'.format(terminal, command, file))
+    server_process = subprocess.Popen([terminal, command, file], stdout=subprocess.PIPE, shell=True)
     return server_process
 
 
@@ -771,7 +769,11 @@ def test_socket_python(package_install_option=[]):
                ['example_experiment.py', 'toy-socket'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
-    os.kill(server_process.pid, signal.SIGTERM)
+    if 'win32' in sys.platform:
+        # Killing the proccess on Windows not yet working... TODO
+        subprocess.call(['taskkill', '/F', '/T', '/PID', str(server_process.pid)])
+    else:
+        os.kill(server_process.pid, signal.SIGTERM)
 
 
 ################################################################################
