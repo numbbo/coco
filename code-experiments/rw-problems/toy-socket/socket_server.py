@@ -44,6 +44,7 @@ def evaluate_message(message):
 
 
 def socket_server_start():
+    s = None
     try:
         # Create socket
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -51,9 +52,9 @@ def socket_server_start():
         # Bind socket to local host and port
         try:
             s.bind((HOST, PORT))
-        except socket.error as msg:
-            print('Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
-            sys.exit()
+        except socket.error as e:
+            print('Bind failed: {}'.format(e))
+            return -1
 
         # Start listening on socket
         s.listen(1)
@@ -64,9 +65,12 @@ def socket_server_start():
             try:
                 # Wait to accept a connection - blocking call
                 conn, addr = s.accept()
-            except socket.error as msg:
-                print('Accept failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1])
-                sys.exit()
+            except socket.error as e:
+                print('Accept failed: {}'.format(e))
+                return -1
+            except KeyboardInterrupt or SystemExit:
+                print('Server terminated')
+                return 0
             with conn:
                 # Read the message
                 message = conn.recv(MESSAGE_SIZE).decode("utf-8")
@@ -78,10 +82,11 @@ def socket_server_start():
                 conn.sendall(response)
                 if LOG_MESSAGES:
                     print('Sent response: {}'.format(response.decode("utf-8")))
-
     except Exception as e:
         print('Error within socket server: {}'.format(e))
         raise e
+    finally:
+        s.close()
 
 
 if __name__ == '__main__':
