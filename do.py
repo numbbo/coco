@@ -14,6 +14,7 @@ from subprocess import STDOUT
 import platform
 import time
 import glob
+import signal
 
 
 ## Change to the root directory of repository and add our tools/
@@ -737,29 +738,40 @@ def test_java():
 
 
 ################################################################################
-## Exxternal evaluation with sockets
+## External evaluation with sockets
 def build_socket():
     """ Builds the server for external evaluation with sockets """
-    make("code-experiments/rw-problems/toy-socket", "clean", verbose=_build_verbosity)
-    make("code-experiments/rw-problems/toy-socket", "all", verbose=_build_verbosity)
+    make('code-experiments/rw-problems/toy-socket', 'clean', verbose=_build_verbosity)
+    make('code-experiments/rw-problems/toy-socket', 'all', verbose=_build_verbosity)
 
 
 def run_socket():
-    """ Builds and runs the server for external evaluation with sockets """
+    """ Builds and runs the server for external evaluation with sockets. Returns the handle to the
+    process to be used to close it (kill it) after it is no longer needed. """
     build_socket()
-    pass # TODO: Run in a new console window
+    if 'win32' in sys.platform:
+        terminal = 'start '
+    else:
+        terminal = 'exec '
+    server_process = subprocess.Popen(
+        terminal + 'python code-experiments/rw-problems/toy-socket/socket_server.py',
+        stdout=subprocess.PIPE, shell=True)
+    #server_process = subprocess.Popen(
+    #    terminal + 'code-experiments/rw-problems/toy-socket/socket_server.exe',
+    #    stdout=subprocess.PIPE, shell=True)
+    return server_process
 
 
 def test_socket_python(package_install_option=[]):
     """ Tests the toy-socket suite in python (runs the server) """
-    run_socket()
+    server_process = run_socket()
     build_python(package_install_option=package_install_option)
     try:
         python(os.path.join('code-experiments', 'build', 'python'),
                ['example_experiment.py', 'toy-socket'])
     except subprocess.CalledProcessError:
         sys.exit(-1)
-    pass
+    os.kill(server_process.pid, signal.SIGTERM)
 
 
 ################################################################################
