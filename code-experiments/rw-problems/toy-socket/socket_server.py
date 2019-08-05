@@ -54,7 +54,7 @@ def socket_server_start():
             s.bind((HOST, PORT))
         except socket.error as e:
             print('Bind failed: {}'.format(e))
-            return -1
+            raise e
 
         # Start listening on socket
         s.listen(1)
@@ -67,7 +67,7 @@ def socket_server_start():
                 conn, addr = s.accept()
             except socket.error as e:
                 print('Accept failed: {}'.format(e))
-                return -1
+                raise e
             except KeyboardInterrupt or SystemExit:
                 print('Server terminated')
                 return 0
@@ -83,10 +83,11 @@ def socket_server_start():
                 if LOG_MESSAGES:
                     print('Sent response: {}'.format(response.decode("utf-8")))
     except Exception as e:
-        print('Error within socket server: {}'.format(e))
+        print('Error: {}'.format(e))
         raise e
     finally:
-        s.close()
+        if s is not None:
+            s.close()
 
 
 if __name__ == '__main__':
