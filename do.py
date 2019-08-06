@@ -750,30 +750,36 @@ def run_socket():
     process to be used to close it (kill it) after it is no longer needed. """
     build_socket()
     if 'win32' in sys.platform:
-        terminal = 'start'
+        terminal_start = ['start']
+        terminal_end = []
     else:
-        terminal = 'exec'
-    command = 'python'
-    file = os.path.join('code-experiments', 'rw-problems', 'toy-socket', 'socket_server.py')
-    print('RUN\t{} {} {}'.format(terminal, command, file))
-    server_process = subprocess.Popen([terminal, command, file], stdout=subprocess.PIPE, shell=True)
+        terminal_start = ['exec', 'xterm', '-e', '\"']
+        terminal_end = ['\"']
+    command = ['python']
+    file = [os.path.join('code-experiments', 'rw-problems', 'toy-socket', 'socket_server.py')]
+    command = terminal_start + command + file + terminal_end
+    print('RUN\t' + ' '.join(command))
+    try:
+        server_process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+    except subprocess.CalledProcessError as e:
+        raise e
     return server_process
 
 
 def test_socket_python(package_install_option=[]):
     """ Tests the toy-socket suite in python (runs the server) """
     server_process = run_socket()
-    build_python(package_install_option=package_install_option)
+    #build_python(package_install_option=package_install_option)
     try:
         python(os.path.join('code-experiments', 'build', 'python'),
                ['example_experiment.py', 'toy-socket'])
-    except subprocess.CalledProcessError:
-        sys.exit(-1)
-    if 'win32' in sys.platform:
-        # Killing the proccess on Windows not yet working... TODO
-        subprocess.call(['taskkill', '/F', '/T', '/PID', str(server_process.pid)])
-    else:
-        os.kill(server_process.pid, signal.SIGTERM)
+        if 'win32' in sys.platform:
+            # Killing the proccess on Windows not yet working... TODO
+            subprocess.call(['taskkill', '/F', '/T', '/PID', str(server_process.pid)])
+        else:
+            os.kill(server_process.pid, signal.SIGTERM)
+    except subprocess.CalledProcessError as e:
+        raise e
 
 
 ################################################################################
