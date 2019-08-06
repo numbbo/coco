@@ -534,7 +534,7 @@ static int coco_suite_is_next_item_found(const size_t *items, const size_t numbe
   *current_item_id = -1;
   do {
     (*current_item_id)++;
-  } while ((*current_item_id < number_of_items - 1) && (items[*current_item_id] == 0));
+  } while ((*current_item_id < (long) number_of_items - 1) && (items[*current_item_id] == 0));
   if (items[*current_item_id] == 0)
     coco_error("coco_suite_is_next_item_found(): the chosen suite has no valid (positive) items");
   return 0;
