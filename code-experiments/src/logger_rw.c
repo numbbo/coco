@@ -56,7 +56,7 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
 
   logger_rw_data_t *logger;
   coco_problem_t *inner_problem;
-  double *constraints;
+  double *constraints = NULL;
   size_t i;
   int log_this_time = 1;
   time_t start, end;
