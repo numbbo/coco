@@ -170,6 +170,8 @@ coco_archive_t *coco_archive(const char *suite_name,
   coco_free_memory(suite_options);
   coco_suite_free(suite);
 
+  (void) update; /* To silence compiler warnings */
+
   return archive;
 }
 

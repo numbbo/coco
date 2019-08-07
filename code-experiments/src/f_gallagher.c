@@ -169,7 +169,7 @@ static coco_problem_t *f_gallagher_bbob_problem_allocate(const size_t function,
   double *arrCondition;
   double fitvalues[2] = { 1.1, 9.1 };
   /* Parameters for generating local optima. In the old code, they are different in f21 and f22 */
-  double b, c;
+  double b = 0, c = 0;
   /* Random permutation */
   f_gallagher_permutation_t *rperm;
   double *random_numbers;
@@ -320,7 +320,7 @@ static double f_gallagher_core(const double *x, size_t number_of_variables, f_ga
   double result = 0;
   double y, w_i;
   size_t i,j;
-  double maxf;
+  double maxf = DBL_MAX;
   double *x_local;
   x_local = coco_allocate_vector(number_of_variables);
 
@@ -413,8 +413,8 @@ static coco_problem_t *f_gallagher_permblockdiag_bbob_problem_allocate(const siz
   double *tmp_uniform, *tmp_uniform2, *best_param_before_rotation, *best_param_after_rotation;
   const size_t peaks_21 = 21;
   const size_t peaks_101 = 101;
-  double a = 0.8, b, c;
-  double first_condition;
+  double a = 0.8, b = 0, c = 0;
+  double first_condition = 0;
   double alpha_i, *alpha_i_vals;
   size_t *P_alpha_i, *P_Lambda;
   /* first_condition satisfies the old code and the doc but seems wrong in that it is, with very high

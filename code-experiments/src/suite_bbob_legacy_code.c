@@ -81,7 +81,7 @@ static void bbob2009_unif(double *r, size_t N, long inseed) {
       rgrand[i] = aktseed;
   }
   aktrand = rgrand[0];
-  for (i = 0; i < N; i++) {
+  for (i = 0; i < (long) N; i++) {
     tmp = (int) floor((double) aktseed / (double) 127773);
     aktseed = 16807 * (aktseed - tmp * 127773) - 2836 * tmp;
     if (aktseed < 0)
@@ -134,7 +134,7 @@ static void bbob2009_compute_rotation(double **B, const long seed, const size_t 
   /* To ensure temporary data fits into gvec */
   double prod;
   double gvect[2000];
-  long i, j, k; /* Loop over pairs of column vectors. */
+  size_t i, j, k; /* Loop over pairs of column vectors. */
 
   assert(DIM * DIM < 2000);
 
@@ -176,7 +176,7 @@ static void bbob2009_copy_rotation_matrix(double **rot, double *M, double *b, co
  * @brief Randomly computes the location of the global optimum.
  */
 static void bbob2009_compute_xopt(double *xopt, const long seed, const size_t DIM) {
-  long i;
+  size_t i;
   bbob2009_unif(xopt, DIM, seed);
   for (i = 0; i < DIM; i++) {
     xopt[i] = 8 * floor(1e4 * xopt[i]) / 1e4 - 4;

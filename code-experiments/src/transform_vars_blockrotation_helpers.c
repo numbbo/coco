@@ -149,7 +149,7 @@ static double **coco_copy_block_matrix(const double *const *B, const size_t dime
 static size_t *coco_get_block_sizes(size_t *nb_blocks, size_t dimension, const char *suite_name){
   size_t *block_sizes;
   size_t block_size;
-  int i;
+  size_t i;
 
   if (strcmp(suite_name, "bbob-largescale") == 0) {
     /*block_size = coco_double_to_size_t(bbob2009_fmin((double)dimension / 4, 100));*/ /*old value*/

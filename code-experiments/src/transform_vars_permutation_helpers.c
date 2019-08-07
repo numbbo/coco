@@ -34,12 +34,12 @@ static int f_compare_doubles_for_random_permutation(const void *a, const void *b
  * Wassim: move to coco_utilities?
  */
 static void coco_compute_random_permutation(size_t *P, long seed, size_t n) {
-  long i;
+  size_t i;
 
   perm_random_data = coco_allocate_vector(n);
   bbob2009_gauss(perm_random_data, n, seed);
   for (i = 0; i < n; i++){
-    P[i] = (size_t) i;
+    P[i] = i;
   }
   qsort(P, n, sizeof(size_t), f_compare_doubles_for_random_permutation);
   coco_free_memory(perm_random_data);
@@ -50,15 +50,15 @@ static void coco_compute_random_permutation(size_t *P, long seed, size_t n) {
  * @brief generates a permutation by sorting a sequence and puts it in P
  */
 static void coco_compute_permutation_from_sequence(size_t *P, double *seq, size_t length) {
-    long i;
+  size_t i;
     
-    perm_random_data = coco_allocate_vector(length);
-    for (i = 0; i < length; i++){
-        P[i] = (size_t) i;
-        perm_random_data[i] = seq[i];
-    }
-    qsort(P, length, sizeof(size_t), f_compare_doubles_for_random_permutation);
-    coco_free_memory(perm_random_data);
+  perm_random_data = coco_allocate_vector(length);
+  for (i = 0; i < length; i++){
+      P[i] = i;
+      perm_random_data[i] = seq[i];
+  }
+  qsort(P, length, sizeof(size_t), f_compare_doubles_for_random_permutation);
+  coco_free_memory(perm_random_data);
 }
 
 
@@ -86,14 +86,14 @@ static long coco_random_unif_integer(long lower_bound, long upper_bound, long se
  * if swap_range is 0, a random uniform permutation is generated
  */
 static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed, size_t n, size_t nb_swaps, size_t swap_range) {
-  long i, idx_swap;
+  size_t i, idx_swap;
   size_t lower_bound, upper_bound, first_swap_var, second_swap_var, tmp;
   size_t *idx_order;
 
   if (n <= 40) {
     /* Do an identity permutation for dimensions <= 40 */
     for (i = 0; i < n; i++)
-      P[i] = (size_t) i;
+      P[i] = i;
     return;
   }
 
@@ -102,8 +102,8 @@ static void coco_compute_truncated_uniform_swap_permutation(size_t *P, long seed
 
   idx_order = coco_allocate_vector_size_t(n);
   for (i = 0; i < n; i++) {
-    P[i] = (size_t) i;
-    idx_order[i] = (size_t) i;
+    P[i] = i;
+    idx_order[i] = i;
   }
 
   if (swap_range > 0) {
