@@ -881,7 +881,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   logger_data->suite_dep_instance = inner_problem->suite_dep_instance;
 
   observer_data = (observer_biobj_data_t *) observer->data;
-  /* Copy values from the observes that you might need even if they do not exist any more */
+  /* Copy values from the observer that you need when the observer does not exist any more */
   logger_data->log_nondom_mode = observer_data->log_nondom_mode;
   logger_data->compute_indicators = observer_data->compute_indicators;
   logger_data->precision_x = observer->precision_x;

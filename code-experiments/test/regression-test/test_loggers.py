@@ -88,6 +88,7 @@ if __name__ == "__main__":
         # Get the old logger output
         old_data_folder = os.path.join('data', '{}_logger_data'.format(logger))
         if not os.path.exists(old_data_folder):
+            # TODO: Upload data to the remote location!
             remote_data_path = 'http://coco.gforge.inria.fr/regression-tests/'
             # download data from remote_data_path:
             if not os.path.exists(os.path.split(old_data_folder)[0]):
