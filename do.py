@@ -769,7 +769,7 @@ def run_socket():
 def test_socket_python(package_install_option=[]):
     """ Tests the toy-socket suite in python (runs the server) """
     server_process = run_socket()
-    #build_python(package_install_option=package_install_option)
+    build_python(package_install_option=package_install_option)
     try:
         python(os.path.join('code-experiments', 'build', 'python'),
                ['example_experiment.py', 'toy-socket'])
