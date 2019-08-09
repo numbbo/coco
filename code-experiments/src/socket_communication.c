@@ -207,4 +207,30 @@ static void socket_communication_evaluate(const char* host_name, const unsigned 
 #endif
 }
 
+/**
+ * @brief Calls the external evaluator to evaluate x.
+ */
+static void socket_evaluate(coco_problem_t *problem, const double *x, double *y) {
+
+  char *message;
+  socket_communication_data_t *data = (socket_communication_data_t *) problem->suite->data;
+
+  message = socket_communication_get_message(
+      problem->suite->suite_name,
+      problem->number_of_objectives,
+      problem->suite_dep_function,
+      problem->suite_dep_instance,
+      problem->number_of_variables,
+      x,
+      data->precision_x
+  );
+  socket_communication_evaluate(
+      data->host_name,
+      data->port,
+      message,
+      problem->number_of_objectives,
+      y
+  );
+  coco_free_memory(message);
+}
 

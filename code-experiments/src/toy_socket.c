@@ -8,33 +8,6 @@
 #include "coco_platform.h"
 #include "socket_communication.c"
 
-/**
- * @brief Calls the external evaluator to evaluate x.
- */
-static void toy_socket_evaluate(coco_problem_t *problem, const double *x, double *y) {
-
-  char *message;
-  socket_communication_data_t *data = (socket_communication_data_t *) problem->suite->data;
-
-  message = socket_communication_get_message(
-      problem->suite->suite_name,
-      problem->number_of_objectives,
-      problem->suite_dep_function,
-      problem->suite_dep_instance,
-      problem->number_of_variables,
-      x,
-      data->precision_x
-  );
-  socket_communication_evaluate(
-      data->host_name,
-      data->port,
-      message,
-      problem->number_of_objectives,
-      y
-  );
-  coco_free_memory(message);
-}
-
 
 /**
  * @brief Creates the toy-socket problem.
@@ -60,7 +33,7 @@ static coco_problem_t *toy_socket_problem_allocate(const size_t number_of_object
     problem->largest_values_of_interest[i] = 1;
   }
   problem->number_of_integer_variables = 0;
-  problem->evaluate_function = toy_socket_evaluate;
+  problem->evaluate_function = socket_evaluate;
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
