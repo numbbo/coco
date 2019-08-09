@@ -18,32 +18,48 @@ computes and returns the objective values to COCO as a response message.
 
 **IMPORTANT: The servers need to be up and running before COCO experiments are started!**
 
-## Running experiments on the two suites
+## Running experiments with these suites
 
-### Running the external evaluators
+### Running a prepared experiment on the `toy-socket` suite
+By calling
+
+````
+python do.py test-socket-python
+````
+
+form the root directory of the repository, the Python socket server will be started and the Python example experiment will be run on the `toy-socket` suite. 
+
+### Starting the external evaluator server 
 
 Compilation of the external evaluator in C can be done through `do.py` (at the root directory
 of the repository):
+
 ````
 python do.py build-socket
 ````
 
-From the current directory, the Python external evaluator is called with:
+From the current directory, the Python external evaluator server is started with:
+
 ````
 python socket_server.py
 ````
-and the C external evaluator with:
+
+and the C external evaluator server with:
+
 ````
 ./socket_server
 ````
+
 on Linux and Mac and
+
 ````
 socket_server.exe
 ````
+
 on Windows.
 
 ### Running the example experiments
 
-After the external evaluators have been called, the example experiments in the available
+After the external evaluator server has started, the example experiments in the available
 languages can be invoked as usual using `do.py`. Note that the `bbob` suite should be 
 changed to `toy-socket` in the example experiments!
