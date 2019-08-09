@@ -1,8 +1,8 @@
 /**
  * The socket server in C.
  *
- * Uses the toy_evaluator to evaluate problems from the toy-socket suite. Change code below to
- * connect it to other evaluators (for other suites).
+ * Uses the toy_socket_evaluator to evaluate problems from the toy-socket suite. Change code below to
+ * connect it to other evaluators (for other suites) -- see occurrences of 'ADD HERE'.
  */
 
 /* The winsock2.h header *needs* to be included before windows.h! */
@@ -29,7 +29,17 @@
 #define PRECISION_Y 16      /* Precision used to write objective values */
 #define LOG_MESSAGES 1      /* Set to 1 (0) to (not) print the messages */
 
-#include "toy_evaluator.c"  /* Use the toy_evaluator for evaluation */
+#include "toy-socket/toy_socket_evaluator.c"  /* Use the toy_evaluator for evaluation */
+/* ADD HERE includes of other evaluators, for example
+#include "my-suite/my_evaluator.c"
+*/
+
+/**
+ * This is an interface for the evaluation function that needs to be implemented by other
+ * evaluators.
+ */
+typedef void (*evaluate_t)(char *suite_name, size_t number_of_objectives, size_t function,
+    size_t instance, size_t dimension, const double *x, double *y);
 
 /**
  * Parses the message and calls an evaluator to compute the evaluation. Then constructs a response.
@@ -44,6 +54,7 @@ char *evaluate_message(char *message) {
   double *x, *y;
   int read_count;
   int char_count, offset = 0;
+  evaluate_t evaluate_function;
 
   /* Parse the message
    *
@@ -66,18 +77,22 @@ char *evaluate_message(char *message) {
     offset += char_count;
   }
 
-  /* Evaluate x and save the result to y
-   *
-   * Add here additional evaluators
-   */
+  /* Choose the right function */
   y = malloc(number_of_objectives * sizeof(double));
   if ((strcmp(suite_name, "toy-socket") == 0) || (strcmp(suite_name, "toy-socket-biobj") == 0)) {
-    /* Use the toy_evaluator to compute the value(s) of y from x */
-    evaluate(suite_name, number_of_objectives, function, instance, dimension, x, y);
-  } else {
+    evaluate_function = evaluate_toy_socket;
+  }
+  /* ADD HERE the function for another evaluator, for example
+  else if (strcmp(suite_name, "my-suite") == 0) {
+    evaluate_function = evaluate_my_suite;
+  } */
+  else {
     fprintf(stderr, "evaluate_message(): Suite %s not supported", suite_name);
     exit(EXIT_FAILURE);
   }
+
+  /* Evaluate x and save the result to y */
+  evaluate_function(suite_name, number_of_objectives, function, instance, dimension, x, y);
   free(x);
 
   /* Construct the response */

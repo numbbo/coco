@@ -741,8 +741,8 @@ def test_java():
 ## External evaluation with sockets
 def build_socket():
     """ Builds the server for external evaluation with sockets """
-    make('code-experiments/rw-problems/toy-socket', 'clean', verbose=_build_verbosity)
-    make('code-experiments/rw-problems/toy-socket', 'all', verbose=_build_verbosity)
+    make('code-experiments/rw-problems', 'clean', verbose=_build_verbosity)
+    make('code-experiments/rw-problems', 'all', verbose=_build_verbosity)
 
 
 def run_socket():
@@ -756,7 +756,7 @@ def run_socket():
         terminal_start = ['exec', 'xterm', '-e', '\"']
         terminal_end = ['\"']
     command = ['python']
-    file = [os.path.join('code-experiments', 'rw-problems', 'toy-socket', 'socket_server.py')]
+    file = [os.path.join('code-experiments', 'rw-problems', 'socket_server.py')]
     command = terminal_start + command + file + terminal_end
     print('RUN\t' + ' '.join(command))
     try:

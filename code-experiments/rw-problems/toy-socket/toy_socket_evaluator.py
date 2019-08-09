@@ -1,8 +1,9 @@
 """
-A toy evaluator for problems from the toy-socket suite to demonstrate external evaluation in Python
+An evaluator for problems from the toy-socket suite to demonstrate external evaluation in Python
 """
 
-def evaluate(suite_name, num_objectives, func, instance, x):
+
+def evaluate_toy_socket(suite_name, num_objectives, func, instance, x):
     if suite_name == 'toy-socket' and num_objectives == 1:
         y = instance * 100.0
         if func == 1:

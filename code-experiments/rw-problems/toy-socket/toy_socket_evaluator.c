@@ -1,9 +1,10 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 /**
- * A toy evaluator for problems from the toy-socket suite to demonstrate external evaluation in C
+ * An evaluator for problems from the toy-socket suite to demonstrate external evaluation in C
  */
-void evaluate(char *suite_name, size_t number_of_objectives, size_t function,
+void evaluate_toy_socket(char *suite_name, size_t number_of_objectives, size_t function,
     size_t instance, size_t dimension, const double *x, double *y)
 {
   double value;

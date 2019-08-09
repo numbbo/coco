@@ -1,12 +1,13 @@
 """
 The socket server in Python.
 
-Uses the toy_evaluator to evaluate problems from the toy-socket suite. Change code below to
-connect it to other evaluators (for other suites).
+Uses the toy_socket_evaluator to evaluate problems from the toy-socket suite. Change code below to
+connect it to other evaluators (for other suites) -- see occurrences of 'ADD HERE'.
 """
 import socket
-import sys
-from toy_evaluator import evaluate
+from toy_socket_evaluator import evaluate_toy_socket
+# ADD HERE imports from other evaluators, for example
+# from my_evaluator import evaluate_my_suite
 
 HOST = ''            # Symbolic name, meaning all available interfaces
 PORT = 7251          # Arbitrary non-privileged port
@@ -29,8 +30,15 @@ def evaluate_message(message):
         x = [float(m) for m in msg[msg.index('x') + 1:]]
         if len(x) != dimension:
             raise('Number of x values {} does not match dimension {}'.format(len(x), dimension))
-        if 'toy-socket' not in suite_name:
-            raise('Suite {} not supported'.format(suite_name))
+
+        # Find the right evaluator
+        if 'toy-socket' in suite_name:
+            evaluate = evaluate_toy_socket
+        # ADD HERE the function for another evaluator, for example
+        # elif 'my-suite' in suite_name:
+        #     evaluate = evaluate_my_suite
+        else:
+            raise ('Suite {} not supported'.format(suite_name))
         # Evaluate x and save the result to y
         y = evaluate(suite_name, num_objectives, func, instance, x)
         # Construct the response
