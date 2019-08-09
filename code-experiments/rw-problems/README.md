@@ -2,7 +2,8 @@
 
 Socket communication between COCO and an external evaluator can be used to ease inclusion 
 of new suites of problems into COCO, for example, those that implement real-world problems. 
-Socket communication is demonstrated on the example of two test suites, `toy-socket` and `toy-socket-biobj` - the first contains single-objective and the second bi-objective optimization problems. 
+Socket communication is demonstrated on the example of two test suites, `toy-socket` and 
+`toy-socket-biobj` – the first contains single-objective and the second bi-objective optimization problems. 
 
 An external evaluator is basically a server that needs to run and listen for messages
 from the client (COCO). At each solution evaluation, COCO sends a message with information
@@ -22,7 +23,7 @@ look for text starting with `ADD HERE` in the files `socket_server.py` and `sock
 
 ### Running a prepared experiment on the `toy-socket` suite
 
-**NOTE: Not yet well tested on all different platforms**
+**NOTE: Not yet well tested on different platforms**
 
 By calling
 
@@ -30,7 +31,8 @@ By calling
 python do.py test-socket-python
 ````
 
-form the root directory of the repository, the Python socket server will be started and the Python example experiment will be run on the `toy-socket` suite. 
+form the root directory of the repository, the Python socket server will be started in a
+separate console window and the Python example experiment will be run on the `toy-socket` suite. 
 
 ### Starting the external evaluator server 
 
@@ -51,7 +53,8 @@ of the repository) using:
 python do.py run-socket-python
 ````
 
-To view more output from the servers, they need to be run directly (not through `do.py`).
+To view output from the servers, they need to be run directly using `./socket_server` or
+`python socket_server.py` from this folder.
 
 ### Running the example experiments
 
