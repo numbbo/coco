@@ -739,37 +739,41 @@ def test_java():
 
 ################################################################################
 ## External evaluation with sockets
-def build_socket():
-    """ Builds the server for external evaluation with sockets """
+def run_socket_c():
+    """ Builds and runs the C server for external evaluation with sockets """
     make('code-experiments/rw-problems', 'clean', verbose=_build_verbosity)
     make('code-experiments/rw-problems', 'all', verbose=_build_verbosity)
+    try:
+        run('code-experiments/rw-problems', ['./socket_server'], verbose=_verbosity)
+    except subprocess.CalledProcessError:
+        sys.exit(-1)
 
 
-def run_socket():
-    """ Builds and runs the server for external evaluation with sockets. Returns the handle to the
-    process to be used to close it (kill it) after it is no longer needed. """
-    build_socket()
+def run_socket_python():
+    """ Runs the Python server for external evaluation with sockets"""
+    python(os.path.join('code-experiments', 'rw-problems'), ['socket_server.py'], verbose=_verbosity)
+
+
+def test_socket_python(package_install_option=[]):
+    """ Tests the toy-socket suite in Python with the Python socket server """
+    # Run the Python socket server
+    call = ['python']
+    file = [os.path.join('code-experiments', 'rw-problems', 'socket_server.py')]
     if 'win32' in sys.platform:
-        terminal_start = ['start']
-        terminal_end = []
+        terminal = ['start']
+        command = terminal + call + file
     else:
         terminal_start = ['exec', 'xterm', '-e', '\"']
         terminal_end = ['\"']
-    command = ['python']
-    file = [os.path.join('code-experiments', 'rw-problems', 'socket_server.py')]
-    command = terminal_start + command + file + terminal_end
+        command = terminal_start + call + file + terminal_end
     print('RUN\t' + ' '.join(command))
     try:
         server_process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
     except subprocess.CalledProcessError as e:
         raise e
-    return server_process
-
-
-def test_socket_python(package_install_option=[]):
-    """ Tests the toy-socket suite in python (runs the server) """
-    server_process = run_socket()
+    # Build the Python example experiment
     build_python(package_install_option=package_install_option)
+    # Run the Python example experiment with the toy-socket suite
     try:
         python(os.path.join('code-experiments', 'build', 'python'),
                ['example_experiment.py', 'toy-socket'])
@@ -969,8 +973,8 @@ Available commands for users:
                             parameter "and-test" also runs the tests of
                             `coco_test.py` (see NOTE below)
                             
-  build-socket            - Build the server for external evaluations through sockets
-  run-socket              - Build and run the server for external evaluations through sockets
+  run-socket-c            - Build and run the C server for external evaluations through sockets
+  run-socket-python       - Run the Python server for external evaluations through sockets
 
 Available commands for developers:
 
@@ -1007,7 +1011,7 @@ Available commands for developers:
   test-preprocessing      - Runs preprocessing tests [needs access to the
                             internet] (see NOTE below)
                             
-  test-socket-python      - Test the toy-socket suite in python 
+  test-socket-python      - Test the toy-socket suite in Python using the Python socket server
   
 NOTE: These commands install Python packages to the global site packages by
       by default. This behavior can be modified by providing one of the
@@ -1070,8 +1074,8 @@ def main(args):
     elif cmd == 'leak-check': leak_check()
     elif cmd == 'install-preprocessing': install_preprocessing(package_install_option=package_install_option)
     elif cmd == 'test-preprocessing': test_preprocessing(package_install_option=package_install_option)
-    elif cmd == 'build-socket': build_socket()
-    elif cmd == 'run-socket': run_socket()
+    elif cmd == 'run-socket-c': run_socket_c()
+    elif cmd == 'run-socket-python': run_socket_python()
     elif cmd == 'test-socket-python': test_socket_python(package_install_option=package_install_option)
     else: help()
 

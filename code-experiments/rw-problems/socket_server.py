@@ -5,9 +5,9 @@ Uses the toy_socket_evaluator to evaluate problems from the toy-socket suite. Ch
 connect it to other evaluators (for other suites) -- see occurrences of 'ADD HERE'.
 """
 import socket
-from toy_socket_evaluator import evaluate_toy_socket
+from toy_socket.toy_socket_evaluator import evaluate_toy_socket
 # ADD HERE imports from other evaluators, for example
-# from my_evaluator import evaluate_my_suite
+# from my_suite.my_evaluator import evaluate_my_suite
 
 HOST = ''            # Symbolic name, meaning all available interfaces
 PORT = 7251          # Arbitrary non-privileged port

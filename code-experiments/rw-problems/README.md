@@ -18,11 +18,12 @@ and the other of the actual evaluation of solutions (files `toy_socket_evaluator
 It should be rather easy to add aditional (real-world) evaluators to the socket servers, 
 look for text starting with `ADD HERE` in the files `socket_server.py` and `socket_server.c`. 
 
-**IMPORTANT: The servers need to be up and running before COCO experiments are started!**
-
 ## Running experiments
 
 ### Running a prepared experiment on the `toy-socket` suite
+
+**NOTE: Not yet well tested on all different platforms**
+
 By calling
 
 ````
@@ -33,34 +34,28 @@ form the root directory of the repository, the Python socket server will be star
 
 ### Starting the external evaluator server 
 
-Compilation of the external evaluator in C can be done through `do.py` (at the root directory
-of the repository):
+The external evaluator should be run in a different console window than the example experiment.
+
+The external evaluator in C can be compiled and run through `do.py` (at the root directory
+of the repository) using:
 
 ````
-python do.py build-socket
+python do.py run-socket-c
 ````
 
-From the current directory, the Python external evaluator server is started with:
+
+The external evaluator in Python can be run through `do.py` (at the root directory
+of the repository) using:
 
 ````
-python socket_server.py
+python do.py run-socket-python
 ````
 
-and the C external evaluator server with:
-
-````
-./socket_server
-````
-
-on Linux and Mac and
-
-````
-socket_server.exe
-````
-
-on Windows.
+To view more output from the servers, they need to be run directly (not through `do.py`).
 
 ### Running the example experiments
+
+**IMPORTANT: The servers need to be up and running before COCO experiments are started!**
 
 After the external evaluator server has started, the example experiments in the available
 languages can be invoked as usual using `do.py`. Note that the `bbob` suite should be 

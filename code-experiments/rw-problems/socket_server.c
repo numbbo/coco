@@ -29,7 +29,7 @@
 #define PRECISION_Y 16      /* Precision used to write objective values */
 #define LOG_MESSAGES 1      /* Set to 1 (0) to (not) print the messages */
 
-#include "toy-socket/toy_socket_evaluator.c"  /* Use the toy_evaluator for evaluation */
+#include "toy_socket/toy_socket_evaluator.c"  /* Use the toy_evaluator for evaluation */
 /* ADD HERE includes of other evaluators, for example
 #include "my-suite/my_evaluator.c"
 */
