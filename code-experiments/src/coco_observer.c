@@ -354,6 +354,7 @@ void coco_observer_free(coco_observer_t *observer) {
 }
 
 #include "logger_bbob.c"
+#include "logger_bbob_new.c"
 #include "logger_biobj.c"
 #include "logger_toy.c"
 #include "logger_rw.c"
@@ -518,6 +519,8 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     observer_toy(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob")) {
     observer_bbob(observer, observer_options, &additional_option_keys);
+  } else if (0 == strcmp(observer_name, "bbob-new")) {
+    observer_bbob_new(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob-biobj")) {
     observer_biobj(observer, observer_options, &additional_option_keys);
   } else if (0 == strcmp(observer_name, "bbob-biobj-ext")) {
