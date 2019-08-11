@@ -13,13 +13,9 @@ static void logger_bbob_new_free(void *logger);
  * @brief The bbob observer data type.
  */
 typedef struct {
-  /* TODO: Can be used to store variables that need to be accessible during one run (i.e. for multiple
-   * problems). For example, the following global variables from logger_bbob.c could be stored here: */
-  size_t current_dim;
-  size_t current_fun_id;
-  size_t info_first_instance;
-  char *info_first_instance_char;
-  /* ... and others */
+  size_t current_dim;                      /**< @brief Current dimension */
+  size_t current_fun;                      /**< @brief Current function */
+  char *prefix;                            /**< @brief Prefix in the info files */
 } observer_bbob_new_data_t;
 
 /**
@@ -27,15 +23,15 @@ typedef struct {
  */
 static void observer_bbob_new_data_free(void *stuff) {
 
-  observer_bbob_new_data_t *data;
+  observer_bbob_new_data_t *data = (observer_bbob_new_data_t *) stuff;
 
-  assert(stuff != NULL);
-  data = (observer_bbob_new_data_t *) stuff;
+  coco_debug("Started observer_bbob_new_data_free()");
 
-  if (data->info_first_instance_char) {
-    coco_free_memory(data->info_first_instance_char);
+  if (data->prefix != NULL) {
+    coco_free_memory(data->prefix);
+    data->prefix = NULL;
   }
-  data->info_first_instance_char = NULL;
+  coco_debug("Ended   observer_bbob_new_data_free()");
 }
 
 /**
@@ -44,12 +40,19 @@ static void observer_bbob_new_data_free(void *stuff) {
 static void observer_bbob_new(coco_observer_t *observer, const char *options, coco_option_keys_t **option_keys) {
 
   observer_bbob_new_data_t *observer_data;
-  observer_data = (observer_bbob_new_data_t *) coco_allocate_memory(sizeof(*observer_data));
+  /* Sets the valid keys for bbob observer options
+   * IMPORTANT: This list should be up-to-date with the code and the documentation TODO */
+  const char *known_keys[] = { "prefix" };
+  *option_keys = coco_option_keys_allocate(sizeof(known_keys) / sizeof(char *), known_keys);
 
+  observer_data = (observer_bbob_new_data_t *) coco_allocate_memory(sizeof(*observer_data));
   observer_data->current_dim = 0;
-  observer_data->current_fun_id = 0;
-  observer_data->info_first_instance = 0;
-  observer_data->info_first_instance_char = NULL;
+  observer_data->current_fun = 0;
+  observer_data->prefix = coco_allocate_string(COCO_PATH_MAX + 1);
+
+  if (coco_options_read_string(options, "prefix", observer_data->prefix) == 0) {
+    strcpy(observer_data->prefix, "bbobexp");
+  }
 
   observer->logger_allocate_function = logger_bbob_new;
   observer->logger_free_function = logger_bbob_new_free;
