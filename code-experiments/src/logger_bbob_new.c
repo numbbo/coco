@@ -26,8 +26,6 @@
 #include "coco_string.c"
 #include "observer_bbob_new.c"
 
-static const double fvalue_logged_for_infinite_new = 3e21;   /* value used for logging try */
-static const double fvalue_logged_for_nan_new = 2e21;
 static const double weight_constraints_new = 1e0;  /* factor used in logged indicator (f-f*)^+ + sum_i g_i^+ in front of the sum */
 
 static size_t bbob_new_current_dim = 0;
@@ -423,9 +421,9 @@ static void logger_bbob_new_evaluate(coco_problem_t *problem, const double *x, d
 
   y_logged = y[0];
   if (coco_is_nan(y_logged))
-    y_logged = fvalue_logged_for_nan_new;
+    y_logged = NAN_FOR_LOGGING;
   else if (coco_is_inf(y_logged))
-    y_logged = fvalue_logged_for_infinite_new;
+    y_logged = INFINITY_FOR_LOGGING;
   /* do sanity check */
   if (is_feasible)  /* infeasible solutions can have much better y0 values */
     assert(y_logged + 1e-13 >= logger->optimal_fvalue);
@@ -444,9 +442,9 @@ static void logger_bbob_new_evaluate(coco_problem_t *problem, const double *x, d
   }
   sum_cons *= weight_constraints_new;  /* do this before the checks */
   if (coco_is_nan(sum_cons))
-    sum_cons = fvalue_logged_for_nan_new;
+    sum_cons = NAN_FOR_LOGGING;
   else if (coco_is_inf(sum_cons))
-    sum_cons = fvalue_logged_for_infinite_new;
+    sum_cons = INFINITY_FOR_LOGGING;
 
   max_fvalue =  y_logged > logger->optimal_fvalue ? y_logged : logger->optimal_fvalue;
 
