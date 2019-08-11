@@ -26,12 +26,9 @@
 #include "coco_string.c"
 #include "observer_bbob_new.c"
 
-static const double weight_constraints_new = 1e0;  /* factor used in logged indicator (f-f*)^+ + sum_i g_i^+ in front of the sum */
+/** @brief Factor used in logged indicator (f-f*)^+ + sum_i g_i^+ in front of the sum */
+#define LOGGER_BBOB_WEIGHT_CONSTRAINTS 1e0
 
-static size_t bbob_new_current_dim = 0;
-static size_t bbob_new_current_funId = 0;
-static size_t bbob_new_infoFile_firstInstance = 0;
-char *bbob_new_infoFile_firstInstance_char;
 /* a possible solution: have a list of dims that are already in the file, if the ones we're about to log
  * is != bbob_current_dim and the funId is currend_funId, create a new .info file with as suffix the
  * number of the first instance */
@@ -79,6 +76,7 @@ typedef struct {
   int log_discrete_as_int;            /**< @brief Whether to output discrete variables in int or double format. */
   double optimal_fvalue;
   char *suite_name;
+
 
   coco_observer_targets_t *targets;          /**< @brief Triggers based on target values. */
   coco_observer_evaluations_t *evaluations;  /**< @brief Triggers based on the number of evaluations. */
@@ -233,12 +231,18 @@ static void logger_bbob_new_openIndexFile(logger_bbob_new_data_t *logger,
   char file_path[COCO_PATH_MAX + 2] = { 0 };
   FILE **target_file;
   FILE *tmp_file;
+  observer_bbob_new_data_t *observer_data;
+
+  assert(logger->observer != NULL);
+  observer_data = logger->observer->data;
+  assert (observer_data != NULL);
+
   strncpy(used_dataFile_path, dataFile_path, COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
-  if (bbob_new_infoFile_firstInstance == 0) {
-    bbob_new_infoFile_firstInstance = logger->instance_id;
+  if (observer_data->info_first_instance == 0) {
+    observer_data->info_first_instance = logger->instance_id;
   }
   function_id_char = coco_strdupf("%lu", (unsigned long) logger->function_id);
-  bbob_infoFile_firstInstance_char = coco_strdupf("%lu", (unsigned long) bbob_new_infoFile_firstInstance);
+  observer_data->info_first_instance_char = coco_strdupf("%lu", (unsigned long) observer_data->info_first_instance);
   target_file = &(logger->index_file);
   tmp_file = NULL; /* to check whether the file already exists. Don't want to use target_file */
   strncpy(file_name, indexFile_prefix, COCO_PATH_MAX - strlen(file_name) - 1);
@@ -250,8 +254,8 @@ static void logger_bbob_new_openIndexFile(logger_bbob_new_data_t *logger,
   coco_join_path(file_path, sizeof(file_path), folder_path, file_name, NULL);
   if (*target_file == NULL) {
     tmp_file = fopen(file_path, "r"); /* to check for existence */
-    if ((tmp_file) && (bbob_new_current_dim == logger->number_of_variables)
-        && (bbob_new_current_funId == logger->function_id)) {
+    if ((tmp_file) && (observer_data->current_dim == logger->number_of_variables)
+        && (observer_data->current_fun_id == logger->function_id)) {
         /* new instance of current funId and current dim */
       newLine = 0;
       *target_file = fopen(file_path, "a+");
@@ -262,7 +266,7 @@ static void logger_bbob_new_openIndexFile(logger_bbob_new_data_t *logger,
       fclose(tmp_file);
     } else { /* either file doesn't exist (new funId) or new Dim */
       /* check that the dim was not already present earlier in the file, if so, create a new info file */
-      if (bbob_new_current_dim != logger->number_of_variables) {
+      if (observer_data->current_dim != logger->number_of_variables) {
         int i, j;
         for (i = 0;
             i < bbob_new_number_of_dimensions && bbob_new_dimensions_in_current_infoFile[i] != 0
@@ -277,9 +281,9 @@ static void logger_bbob_new_openIndexFile(logger_bbob_new_data_t *logger,
           if (i < bbob_new_number_of_dimensions) { /* dimension already present, need to create a new file */
             newLine = 0;
             file_path[strlen(file_path) - strlen(bbob_infoFile_firstInstance_char) - 7] = 0; /* truncate the instance part */
-            bbob_new_infoFile_firstInstance = logger->instance_id;
+            observer_data->info_first_instance = logger->instance_id;
             coco_free_memory(bbob_infoFile_firstInstance_char);
-            bbob_infoFile_firstInstance_char = coco_strdupf("%lu", (unsigned long) bbob_new_infoFile_firstInstance);
+            bbob_infoFile_firstInstance_char = coco_strdupf("%lu", (unsigned long) observer_data->info_first_instance);
             strncat(file_path, "_i", COCO_PATH_MAX - strlen(file_name) - 1);
             strncat(file_path, bbob_infoFile_firstInstance_char, COCO_PATH_MAX - strlen(file_name) - 1);
             strncat(file_path, ".info", COCO_PATH_MAX - strlen(file_name) - 1);
@@ -292,7 +296,7 @@ static void logger_bbob_new_openIndexFile(logger_bbob_new_data_t *logger,
           bbob_new_dimensions_in_current_infoFile[i] = logger->number_of_variables;
         }
       } else {
-        if ( bbob_new_current_funId != logger->function_id ) {
+        if (observer_data->current_fun_id != logger->function_id) {
           /*new function in the same file */
           newLine = 1;
         }
@@ -325,8 +329,8 @@ static void logger_bbob_new_openIndexFile(logger_bbob_new_data_t *logger,
       strncat(used_dataFile_path, bbob_infoFile_firstInstance_char,
       COCO_PATH_MAX - strlen(used_dataFile_path) - 1);
       fprintf(*target_file, "%s.dat", used_dataFile_path); /* dataFile_path does not have the extension */
-      bbob_new_current_dim = logger->number_of_variables;
-      bbob_new_current_funId = logger->function_id;
+      observer_data->current_dim = logger->number_of_variables;
+      observer_data->current_fun_id = logger->function_id;
     }
   }
   coco_free_memory(function_id_char);
@@ -440,7 +444,7 @@ static void logger_bbob_new_evaluate(coco_problem_t *problem, const double *x, d
     if (cons[i] > 0)
         sum_cons += cons[i];
   }
-  sum_cons *= weight_constraints_new;  /* do this before the checks */
+  sum_cons *= LOGGER_BBOB_WEIGHT_CONSTRAINTS;  /* do this before the checks */
   if (coco_is_nan(sum_cons))
     sum_cons = NAN_FOR_LOGGING;
   else if (coco_is_inf(sum_cons))
@@ -579,8 +583,8 @@ static void logger_bbob_new_free(void *stuff) {
 }
 
 static coco_problem_t *logger_bbob_new(coco_observer_t *observer, coco_problem_t *inner_problem) {
-  logger_bbob_new_data_t *logger_data;
   coco_problem_t *problem;
+  logger_bbob_new_data_t *logger_data;
 
   logger_data = (logger_bbob_new_data_t *) coco_allocate_memory(sizeof(*logger_data));
   logger_data->observer = observer;
