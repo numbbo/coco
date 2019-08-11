@@ -531,13 +531,13 @@ static size_t *coco_suite_get_instance_indices(const coco_suite_t *suite, const 
  */
 static int coco_suite_is_next_item_found(const size_t *items, const size_t number_of_items, long *current_item_id) {
 
-  if ((*current_item_id) != number_of_items - 1)  {
+  if ((*current_item_id) != (long) number_of_items - 1)  {
     /* Not the last item, iterate through items */
     do {
       (*current_item_id)++;
-    } while (((*current_item_id) < number_of_items - 1) && (items[*current_item_id] == 0));
+    } while (((*current_item_id) < (long) number_of_items - 1) && (items[*current_item_id] == 0));
 
-    assert((*current_item_id) < number_of_items);
+    assert((*current_item_id) < (long) number_of_items);
     if (items[*current_item_id] != 0) {
       /* Next item is found, return true */
       return 1;
@@ -548,7 +548,7 @@ static int coco_suite_is_next_item_found(const size_t *items, const size_t numbe
   *current_item_id = -1;
   do {
     (*current_item_id)++;
-  } while ((*current_item_id < number_of_items - 1) && (items[*current_item_id] == 0));
+  } while ((*current_item_id < (long) number_of_items - 1) && (items[*current_item_id] == 0));
   if (items[*current_item_id] == 0)
     coco_error("coco_suite_is_next_item_found(): the chosen suite has no valid (positive) items");
   return 0;

@@ -261,7 +261,7 @@ static void logger_bbob_openIndexFile(logger_bbob_data_t *logger,
                                       const char *suite_name) {
   /* to add the instance number TODO: this should be done outside to avoid redoing this for the .*dat files */
   char used_dataFile_path[COCO_PATH_MAX + 2] = { 0 };
-  int errnum, newLine; /* newLine is at 1 if we need a new line in the info file */
+  int errnum, newLine = 0; /* newLine is at 1 if we need a new line in the info file */
   char *function_id_char; /* TODO: consider adding them to logger */
   char file_name[COCO_PATH_MAX + 2] = { 0 };
   char file_path[COCO_PATH_MAX + 2] = { 0 };
@@ -432,7 +432,7 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger, coco_problem_t *i
 static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, double *y) {
   size_t i;
   double y_logged, max_fvalue, sum_cons;
-  double *cons;
+  double *cons = NULL;
   logger_bbob_data_t *logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
   coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);
   const int is_feasible = problem->number_of_constraints <= 0

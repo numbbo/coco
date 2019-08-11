@@ -139,7 +139,7 @@ static void feasible_direction_set_length(double * feasible_direction,
   const double feas_shrink = 0.75;  /* scale randomly between 0.75 and 1.0 */
   const double feas_bound = 5.0;
 
-  int i;
+  size_t i;
   double r[1], maxabs, maxrel;
 
   for (maxabs = maxrel = i = 0; i < dimension; ++i) {
