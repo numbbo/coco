@@ -36,6 +36,19 @@ static coco_suite_t *suite_toy_socket_initialize(const char *suite_options) {
 }
 
 /**
+ * @brief Sets the instances associated with years.
+ */
+static const char *suite_toy_socket_get_instances_by_year(const int year) {
+   if (year == 0) {
+    return "1";
+  }
+  else {
+    coco_error("suite_toy_socket_get_instances_by_year(): year %d not defined for suite toy-socket", year);
+    return NULL;
+  }
+}
+
+/**
  * @brief Returns the problem from the toy-socket suite that corresponds to the given parameters.
  *
  * @param suite The COCO suite.

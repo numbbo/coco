@@ -86,6 +86,10 @@ static const char *coco_suite_get_instances_by_year(const coco_suite_t *suite, c
     year_string = suite_bbob_mixint_get_instances_by_year(year);
   } else if (strcmp(suite->suite_name, "bbob-biobj-mixint") == 0) {
     year_string = suite_biobj_mixint_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "toy-socket") == 0) {
+    year_string = suite_toy_socket_get_instances_by_year(year);
+  } else if (strcmp(suite->suite_name, "toy-socket-biobj") == 0) {
+    year_string = suite_toy_socket_biobj_get_instances_by_year(year);
   } else {
     coco_error("coco_suite_get_instances_by_year(): suite '%s' has no years defined", suite->suite_name);
     return NULL;
