@@ -41,6 +41,10 @@ typedef unsigned __int64 uint64_t;
 /** @brief Definition of isinf to be used only if undefined by the included headers */
 #define isinf(x) (0)
 #endif
+/* @brief The value that is logged instead of NAN */
+#define NAN_FOR_LOGGING 2e21
+/* @brief The value that is logged instead of INFINITY */
+#define INFINITY_FOR_LOGGING 3e21
 
 #ifdef __cplusplus
 extern "C" {
