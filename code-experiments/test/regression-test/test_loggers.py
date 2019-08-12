@@ -14,19 +14,27 @@ import math
 
 
 def regression_test_match_words(old_word, new_word, accuracy=1e-6):
-    """Checks whether the two words match
+    """Checks whether the two words match (takes into account a dictionary of exceptions)
 
     If they don't, checks whether they match as floats with the given accuracy
     """
+    exceptions = {'bbob': 'bbob-new'}
+
+    old_word = old_word.strip('\'')
+    new_word = new_word.strip('\'')
+    old_word = old_word.strip('\"')
+    new_word = new_word.strip('\"')
     if old_word != new_word:
-        try:
-            old_float = float(old_word)
-            new_float = float(new_word)
-            if not math.isclose(old_float, new_float, rel_tol=accuracy):
-                raise ValueError('floats {} and {} differ by more than {}'
-                                 ''.format(old_float, new_float, accuracy))
-        except ValueError as e:
-            raise ValueError('{} and {} do not match\n{}'.format(old_word, new_word, e))
+        if old_word not in exceptions or \
+                (old_word in exceptions and exceptions[old_word] != new_word):
+            try:
+                old_float = float(old_word)
+                new_float = float(new_word)
+                if not math.isclose(old_float, new_float, rel_tol=accuracy):
+                    raise ValueError('floats {} and {} differ by more than {}'
+                                     ''.format(old_float, new_float, accuracy))
+            except ValueError as e:
+                raise ValueError('{} and {} do not match\n{}'.format(old_word, new_word, e))
 
 
 def regression_test_match_file_contents(old_file, new_file):
@@ -48,7 +56,11 @@ def regression_test_match_file_contents(old_file, new_file):
                     if old_word == new_word == 'coco_version':
                         next(iterator)
                         next(iterator)
-                    regression_test_match_words(old_word, new_word)
+                    try:
+                        regression_test_match_words(old_word, new_word)
+                    except ValueError as e:
+                        raise ValueError('The following lines do not match\n{}\n{}\n{}'
+                                         ''.format(old_line, new_line, e))
 
 
 def regression_test_match_logger_output(old_data_folder, new_data_folder):
@@ -58,6 +70,7 @@ def regression_test_match_logger_output(old_data_folder, new_data_folder):
     `.rdat` and other files.
     """
     endings = ('.info', '.dat', '.tdat', '.adat')
+    print('\nComparing the contents of {} and {}'.format(old_data_folder, new_data_folder))
 
     for data_folder in [old_data_folder, new_data_folder]:
         if not (os.path.exists(data_folder) and os.path.getsize(data_folder) > 0):
@@ -71,12 +84,17 @@ def regression_test_match_logger_output(old_data_folder, new_data_folder):
                 if old_fname != new_fname:
                     raise ValueError('File names {} and {} do not match'.format(old_fname,
                                                                                 new_fname))
-                regression_test_match_file_contents(os.path.join(old_root, old_fname),
-                                                    os.path.join(new_root, new_fname))
+                try:
+                    regression_test_match_file_contents(os.path.join(old_root, old_fname),
+                                                        os.path.join(new_root, new_fname))
+                except ValueError as e:
+                    raise ValueError('The following files do not match\n{}\n{}\n{}'
+                                     ''.format(old_fname, new_fname, e))
 
 
 if __name__ == "__main__":
-    logger = 'bbob'
+    logger = 'bbob-new'
+    exception_count = 0
     try:
         logger = int(sys.argv[1])
     except IndexError:
@@ -86,7 +104,7 @@ if __name__ == "__main__":
 
     try:
         # Get the old logger output
-        old_data_folder = os.path.join('data', '{}_logger_data'.format(logger))
+        old_data_folder = os.path.join('data', 'bbob_logger_data')
         if not os.path.exists(old_data_folder):
             # TODO: Upload data to the remote location!
             remote_data_path = 'http://coco.gforge.inria.fr/regression-tests/'
@@ -97,16 +115,24 @@ if __name__ == "__main__":
                 except Exception as e:
                     raise e
             url = '/'.join((remote_data_path, old_data_folder))
-            print("Downloading {} to {}".format(url, old_data_folder))
+            print('Downloading {} to {}'.format(url, old_data_folder))
             urlretrieve(url, old_data_folder)
 
-        # Produce the new logger output
-        new_data_folder = os.path.join('new_data', '{}_logger_data'.format(logger))
-        new_data_folder_relative = os.path.join('..', 'new_data', '{}_logger_data'.format(logger))
-        run_experiment(logger, new_data_folder_relative)
-
-        # Check that the outputs match
-        regression_test_match_logger_output(old_data_folder, new_data_folder)
+        for random_order, name in zip([False, True], ['', '_rand']):
+            # Produce the new logger output
+            new_data_folder = os.path.join('new_data', '{}_logger_data{}'.format(logger, name))
+            new_data_folder_relative = os.path.join('..', 'new_data', '{}_logger_data{}'
+                                                    ''.format(logger, name))
+            result_folder = run_experiment('bbob', logger, new_data_folder_relative, random_order)
+            # Check that the outputs match
+            try:
+                regression_test_match_logger_output(old_data_folder, result_folder)
+            except Exception as e:
+                print('{}'.format(e))
+                exception_count += 1
+        print('Check completed!')
+        if exception_count > 0:
+            raise ValueError('Found {} exceptions'.format(exception_count))
     except Exception as e:
         print('{}'.format(e))
-        exit(1)
+        exit(exception_count)
