@@ -35,7 +35,7 @@ def run_experiment(suite_name, logger, folder, order=''):
         funcs = [x[x.find('_f')+1:x.find('_i')] for x in suite.ids()[0:int(len(suite)/num_dims)]]
         num_func = len(set(funcs))
         half_num_inst = int(len(suite) / num_func / num_dims / 2)
-        other_half_num_inst = len(suite) - half_num_inst * num_func * num_dims
+        other_half_num_inst = int((len(suite) - half_num_inst * num_func * num_dims) / num_func / num_dims)
         mask = np.tile(np.append(np.ones(half_num_inst, dtype=bool),
                                  np.zeros(other_half_num_inst, dtype=bool)),
                        num_dims * num_func)
