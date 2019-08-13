@@ -11,7 +11,6 @@
  */
 
 /* TODOs:
- * - Test the example mentioned by Niko
  * - Test wrapping of two observers
  * - Test several problems opened at the same time
  * - Can we get rid of dimensions_in_current_info_file
@@ -177,11 +176,15 @@ static void logger_bbob_new_write_data(FILE *target_file,
 }
 
 /**
- * Error when trying to create the file "path"
+ * @brief Opens the file in append mode
  */
-static void logger_bbob_new_error_io(FILE *path, int errnum) {
-  const char *error_format = "Error opening file: %s\n ";
-  coco_error(error_format, strerror(errnum), path);
+static void logger_bbob_open_file(FILE **file, const char *file_path) {
+  if (*file == NULL) {
+    *file = fopen(file_path, "a+");
+    if (*file == NULL) {
+      coco_error("logger_bbob_open_file(): Error opening file: %s\nError: %d", file_path, errno);
+    }
+  }
 }
 
 /**
@@ -193,19 +196,12 @@ static void logger_bbob_new_open_dataFile(FILE **target_file,
                                       const char *file_extension) {
   char file_path[COCO_PATH_MAX + 2] = { 0 };
   char relative_filePath[COCO_PATH_MAX + 2] = { 0 };
-  int errnum;
   strncpy(relative_filePath, dataFile_path,
   COCO_PATH_MAX - strlen(relative_filePath) - 1);
   strncat(relative_filePath, file_extension,
   COCO_PATH_MAX - strlen(relative_filePath) - 1);
   coco_join_path(file_path, sizeof(file_path), path, relative_filePath, NULL);
-  if (*target_file == NULL) {
-    *target_file = fopen(file_path, "a+");
-    errnum = errno;
-    if (*target_file == NULL) {
-      logger_bbob_new_error_io(*target_file, errnum);
-    }
-  }
+  logger_bbob_open_file(target_file, file_path);
 }
 
 /**
@@ -219,7 +215,7 @@ static void logger_bbob_new_openIndexFile(logger_bbob_new_data_t *logger,
                                       const char *suite_name) {
   /* to add the instance number TODO: this should be done outside to avoid redoing this for the .*dat files */
   char used_dataFile_path[COCO_PATH_MAX + 2] = { 0 };
-  int errnum, newLine = 0; /* newLine is at 1 if we need a new line in the info file */
+  int newLine = 0; /* newLine is at 1 if we need a new line in the info file */
   char *function_string; /* TODO: consider adding them to logger */
   char file_name[COCO_PATH_MAX + 2] = { 0 };
   char file_path[COCO_PATH_MAX + 2] = { 0 };
@@ -255,11 +251,7 @@ static void logger_bbob_new_openIndexFile(logger_bbob_new_data_t *logger,
         && (observer_data->current_fun == logger->function)) {
         /* new instance of current funId and current dim */
       newLine = 0;
-      *target_file = fopen(file_path, "a+");
-      if (*target_file == NULL) {
-        errnum = errno;
-        logger_bbob_new_error_io(*target_file, errnum);
-      }
+      logger_bbob_open_file(target_file, file_path);
       fclose(tmp_file);
     } else { /* either file doesn't exist (new funId) or new Dim */
       /* check that the dim was not already present earlier in the file, if so, create a new info file */
@@ -298,11 +290,8 @@ static void logger_bbob_new_openIndexFile(logger_bbob_new_data_t *logger,
           newLine = 1;
         }
       }
-      *target_file = fopen(file_path, "a+"); /* in any case, we append */
-      if (*target_file == NULL) {
-        errnum = errno;
-        logger_bbob_new_error_io(*target_file, errnum);
-      }
+      /* in any case, we append */
+      logger_bbob_open_file(target_file, file_path);
       if (tmp_file) { /* File already exists, new dim so just a new line. Also, close the tmp_file */
         if (newLine) {
           fprintf(*target_file, "\n");
