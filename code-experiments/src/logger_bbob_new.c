@@ -148,10 +148,6 @@ static int logger_bbob_new_start_new_line(observer_bbob_new_data_t *observer_dat
     coco_error("logger_bbob_new_start_new_line(): Cannot find function %lu", current_function);
 
   last_dimension = observer_data->last_dimensions[function_idx];
-  if (last_dimension == 0)
-    coco_error("logger_bbob_new_start_new_line(): Dimension for function index %lu invalid",
-        function_idx);
-
   /* Finally, update current dimension */
   observer_data->last_dimensions[function_idx] = current_dimension;
 
@@ -523,8 +519,7 @@ static void logger_bbob_new_free(void *stuff) {
   }
 
   observer = logger->observer;
-  if (observer != NULL) {
-    assert(observer->data);
+  if ((observer != NULL) && (observer->data != NULL)) {
     /* If the observer still exists (if it does not, logger_is_used does not matter any longer) */
     ((observer_bbob_new_data_t *)observer->data)->logger_is_used = 0;
   }
