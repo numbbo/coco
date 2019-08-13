@@ -118,18 +118,20 @@ if __name__ == "__main__":
             print('Downloading {} to {}'.format(url, old_data_folder))
             urlretrieve(url, old_data_folder)
 
-        for random_order, name in zip([False, True], ['', '_rand']):
+        for order in ['default', 'rand', 'inst']:
             # Produce the new logger output
-            new_data_folder = os.path.join('new_data', '{}_logger_data{}'.format(logger, name))
-            new_data_folder_relative = os.path.join('..', 'new_data', '{}_logger_data{}'
-                                                    ''.format(logger, name))
-            result_folder = run_experiment('bbob', logger, new_data_folder_relative, random_order)
-            # Check that the outputs match
+            new_data_folder = os.path.join('new_data', '{}_logger_data_{}'.format(logger, order))
+            new_data_folder_relative = os.path.join('..', 'new_data', '{}_logger_data_{}'
+                                                    ''.format(logger, order))
+            result_folder = run_experiment('bbob', logger, new_data_folder_relative, order)
+
             try:
+                # Check that the outputs match
                 regression_test_match_logger_output(old_data_folder, result_folder)
             except Exception as e:
                 print('{}'.format(e))
                 exception_count += 1
+
         print('Check completed!')
         if exception_count > 0:
             raise ValueError('Found {} exceptions'.format(exception_count))

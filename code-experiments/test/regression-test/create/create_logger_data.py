@@ -21,7 +21,7 @@ def run_experiment(suite_name, logger, folder, order=''):
     budget_multiplier = 5
 
     ### prepare
-    suite = cocoex.Suite(suite_name, 'instances: 5-6,1-6', 'dimensions: 2,3 function_indices: 9-20')
+    suite = cocoex.Suite(suite_name, 'instances: 1-6', 'dimensions: 2,3 function_indices: 9-20')
     observer = cocoex.Observer(logger, 'result_folder: {}'.format(folder))
     minimal_print = cocoex.utilities.MiniPrint()
     np.random.seed(12345)
@@ -53,8 +53,7 @@ def run_experiment(suite_name, logger, folder, order=''):
 
 if __name__ == "__main__":
     for logger in ['bbob', 'bbob-biobj']:
-        data_folder = '{}_logger_data'.format(logger)
-        run_experiment(logger, logger, data_folder)
-        data_folder = '{}_logger_data_rand'.format(logger)
-        run_experiment(logger, logger, data_folder, random_order=True)
+        for order in ['default', 'rand', 'inst']:
+            data_folder = '{}_logger_data_{}'.format(logger, order)
+            run_experiment(logger, logger, data_folder, order)
 
