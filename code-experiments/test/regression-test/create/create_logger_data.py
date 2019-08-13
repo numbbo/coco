@@ -23,7 +23,6 @@ def run_experiment(suite_name, logger, folder, order=''):
     ### prepare
     suite = cocoex.Suite(suite_name, 'instances: 1-6', 'dimensions: 2,3 function_indices: 9-20')
     observer = cocoex.Observer(logger, 'result_folder: {}'.format(folder))
-    minimal_print = cocoex.utilities.MiniPrint()
     np.random.seed(12345)
 
     ### go
@@ -47,13 +46,59 @@ def run_experiment(suite_name, logger, folder, order=''):
                and not problem.final_target_hit):
             x = np.random.uniform(problem.lower_bounds, problem.upper_bounds, problem.dimension)
             problem(x)
-        minimal_print(problem, final=problem.index == len(suite) - 1)
+    return observer.result_folder
+
+
+def run_two_observers(suite_name, logger, folder):
+    """Uses two observers to observe the first problem of the given suite. Performs only a few
+    random evaluations.
+
+    Returns the name of the actual output folders
+    """
+    suite = cocoex.Suite(suite_name, 'instances: 1', 'dimensions: 2 function_indices: 1')
+    observer1 = cocoex.Observer(logger, 'result_folder: {}-1'.format(folder))
+    observer2 = cocoex.Observer(logger, 'result_folder: {}-2'.format(folder))
+
+    np.random.seed(12345)
+
+    problem = suite[0]
+    problem.observe_with(observer1)
+    problem.observe_with(observer2)
+    for _ in range(10):
+        x = np.random.uniform(problem.lower_bounds, problem.upper_bounds, problem.dimension)
+        problem(x)
+
+    return observer1.result_folder, observer2.result_folder
+
+
+def run_several_problems(suite_name, logger, folder):
+    """Works with several problems at the same time. Performs only a few random evaluations of these
+    problems.
+
+    Returns the name of the actual output folder
+    """
+    suite = cocoex.Suite(suite_name, 'instances: 1-2', 'dimensions: 2,3 function_indices: 1-2')
+    observer = cocoex.Observer(logger, 'result_folder: {}'.format(folder))
+
+    np.random.seed(12345)
+
+    problems = [suite[i] for i in range(len(suite))]
+    for problem in problems:
+        problem.observe_with(observer)
+    for _ in range(10):
+        for problem in problems:
+            x = np.random.uniform(problem.lower_bounds, problem.upper_bounds, problem.dimension)
+            problem(x)
+
     return observer.result_folder
 
 
 if __name__ == "__main__":
+    # for logger in ['bbob-biobj']:
     for logger in ['bbob', 'bbob-biobj']:
         for order in ['default', 'rand', 'inst']:
             data_folder = '{}_logger_data_{}'.format(logger, order)
             run_experiment(logger, logger, data_folder, order)
-
+        if logger is not 'bbob':
+            run_two_observers(logger, logger, '{}_logger_data_{}'.format(logger, '2_observers'))
+        # run_several_problems(logger, 'bbob-new', '{}_logger_data_{}'.format(logger, '8_problems'))

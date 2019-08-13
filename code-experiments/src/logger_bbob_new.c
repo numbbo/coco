@@ -11,8 +11,6 @@
  */
 
 /* TODOs:
- * - Test wrapping of two observers
- * - Test several problems opened at the same time
  * - Can we get rid of dimensions_in_current_info_file
  * - Document this file in doxygen style!
  */
