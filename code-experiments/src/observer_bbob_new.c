@@ -16,6 +16,7 @@ typedef struct {
   size_t current_dim;                      /**< @brief Current dimension */
   size_t current_fun;                      /**< @brief Current function */
   char *prefix;                            /**< @brief Prefix in the info files */
+  int logger_is_used;                      /**< @brief Whether the logger is already used on a problem */
 } observer_bbob_new_data_t;
 
 /**
@@ -49,6 +50,7 @@ static void observer_bbob_new(coco_observer_t *observer, const char *options, co
   observer_data->current_dim = 0;
   observer_data->current_fun = 0;
   observer_data->prefix = coco_allocate_string(COCO_PATH_MAX + 1);
+  observer_data->logger_is_used = 0;
 
   if (coco_options_read_string(options, "prefix", observer_data->prefix) == 0) {
     strcpy(observer_data->prefix, "bbobexp");
