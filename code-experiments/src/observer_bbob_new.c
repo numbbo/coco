@@ -15,6 +15,7 @@ static void logger_bbob_new_free(void *logger);
 typedef struct {
   int logger_is_used;            /**< @brief Whether the logger is already used on a problem */
   char *prefix;                  /**< @brief Prefix in the name of the info and data files */
+  int write_udat_file;           /**< @brief Whether the file with uniform targets should be written */
 
   /* last_dimensions and functions_array have the same number of values - corresponding to the same function index
    * While functions_array can contain duplicate values, only the first occurrences count */
@@ -58,7 +59,7 @@ static void observer_bbob_new(coco_observer_t *observer, const char *options, co
   observer_bbob_new_data_t *observer_data;
   /* Sets the valid keys for bbob_new observer options
    * IMPORTANT: This list should be up-to-date with the code and the documentation TODO */
-  const char *known_keys[] = { "prefix" };
+  const char *known_keys[] = { "prefix", "write_uniform_targets" };
   *option_keys = coco_option_keys_allocate(sizeof(known_keys) / sizeof(char *), known_keys);
 
   observer_data = (observer_bbob_new_data_t *) coco_allocate_memory(sizeof(*observer_data));
@@ -72,6 +73,9 @@ static void observer_bbob_new(coco_observer_t *observer, const char *options, co
   if (coco_options_read_string(options, "prefix", observer_data->prefix) == 0) {
     strcpy(observer_data->prefix, "bbobexp");
   }
+
+  if (coco_options_read_int(options, "write_uniform_targets", &(observer_data->write_udat_file)) == 0)
+    observer_data->write_udat_file = 0;
 
   observer->logger_allocate_function = logger_bbob_new;
   observer->logger_free_function = logger_bbob_new_free;
