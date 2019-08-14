@@ -191,7 +191,7 @@ static void logger_bbob_new_output(FILE *data_file,
         (unsigned long) logger->num_cons_evaluations, logger->best_value, current_value);
   }
 
-  if (logger->number_of_constraints > 0) {
+  if ((logger->number_of_constraints > 0) && (constraints != NULL)) {
     for (i = 0; i < logger->number_of_constraints; ++i) {
       /* print 01234567890123..., may happen in the last line of .tdat */
       fprintf(data_file, "%d",

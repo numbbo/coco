@@ -121,6 +121,7 @@ if __name__ == "__main__":
         raise e
 
     try:
+        # TODO: Test also on the constrained suite!
         for order in ['default', 'rand', 'inst']:
             # Get the old logger output
             old_data_folder = os.path.join('data', 'bbob_logger_data_{}'.format(order))
