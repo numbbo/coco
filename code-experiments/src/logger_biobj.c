@@ -83,8 +83,8 @@ typedef struct {
   FILE *info_file;           /**< @brief File for logging summary information on algorithm performance. */
 
   int target_hit;            /**< @brief Whether the target was hit in the latest evaluation. */
-  coco_observer_targets_t *targets;
-                             /**< @brief Triggers based on target values. */
+  coco_observer_log_targets_t *targets;
+                             /**< @brief Triggers based on logarithmic target values. */
   int evaluation_logged;     /**< @brief Whether the whether the latest evaluation was logged. */
   coco_observer_evaluations_t *evaluations;
                              /**< @brief Triggers based on numbers of evaluations. */
@@ -460,7 +460,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   indicator->overall_value = 0;
   indicator->previous_value = 0;
 
-  indicator->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
+  indicator->targets = coco_observer_log_targets(observer->number_target_triggers, observer->target_precision);
   indicator->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, problem->number_of_variables);
 
   /* Prepare the info file */
@@ -555,7 +555,7 @@ static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator,
   if (!indicator->target_hit) {
     fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
         logger->precision_f, indicator->overall_value, logger->precision_f,
-        ((coco_observer_targets_t *) indicator->targets)->value);
+        ((coco_observer_log_targets_t *) indicator->targets)->value);
   }
 
   /* Log the last eval_number in the tdat file if wasn't already logged */
@@ -661,14 +661,14 @@ static void logger_biobj_output(logger_biobj_data_t *logger,
         }
 
         /* Check whether a target was hit */
-        indicator->target_hit = coco_observer_targets_trigger(indicator->targets, indicator->overall_value);
+        indicator->target_hit = coco_observer_log_targets_trigger(indicator->targets, indicator->overall_value);
       }
 
       /* Log to the dat file if a target was hit */
       if (indicator->target_hit) {
         fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
             logger->precision_f, indicator->overall_value, logger->precision_f,
-            ((coco_observer_targets_t *) indicator->targets)->value);
+            ((coco_observer_log_targets_t *) indicator->targets)->value);
       }
 
       if (logger->log_nondom_mode == LOG_NONDOM_READ) {

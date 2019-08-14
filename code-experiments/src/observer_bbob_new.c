@@ -52,14 +52,22 @@ static void observer_bbob_new_data_free(void *stuff) {
 }
 
 /**
- * @brief Initializes the bbob observer.
+ * @brief Initializes the bbob_new observer.
+ *
+ * Possible options:
+ *
+ * - "prefix: STRING" defines the prefix of the name of the info files. The default value is "bbobex".
+ *
+ * - "unif_targets_trigger: VALUE" determines whether the uniform targets should trigger logging.
+ * These triggers will always be used instead of the logarithmic triggers in case the problem does
+ * not have a known optimum. The default value is 0 (false).
  */
 static void observer_bbob_new(coco_observer_t *observer, const char *options, coco_option_keys_t **option_keys) {
 
   observer_bbob_new_data_t *observer_data;
   /* Sets the valid keys for bbob_new observer options
    * IMPORTANT: This list should be up-to-date with the code and the documentation TODO */
-  const char *known_keys[] = { "prefix", "write_uniform_targets" };
+  const char *known_keys[] = { "prefix", "unif_targets_trigger" };
   *option_keys = coco_option_keys_allocate(sizeof(known_keys) / sizeof(char *), known_keys);
 
   observer_data = (observer_bbob_new_data_t *) coco_allocate_memory(sizeof(*observer_data));
@@ -74,7 +82,7 @@ static void observer_bbob_new(coco_observer_t *observer, const char *options, co
     strcpy(observer_data->prefix, "bbobexp");
   }
 
-  if (coco_options_read_int(options, "write_uniform_targets", &(observer_data->write_udat_file)) == 0)
+  if (coco_options_read_int(options, "unif_targets_trigger", &(observer_data->write_udat_file)) == 0)
     observer_data->write_udat_file = 0;
 
   observer->logger_allocate_function = logger_bbob_new;

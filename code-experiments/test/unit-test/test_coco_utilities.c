@@ -169,6 +169,62 @@ MU_TEST(test_coco_double_round) {
 }
 
 /**
+ * Tests the function coco_double_round_up_with_precision.
+ */
+MU_TEST(test_coco_double_round_up_with_precision) {
+
+  double input_value = 5.0024;
+  double round_value = coco_double_round_up_with_precision(input_value, 0.00001);
+  mu_check(coco_double_almost_equal(round_value, 5.00240, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 0.0001);
+  mu_check(coco_double_almost_equal(round_value, 5.0024, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 0.001);
+  mu_check(coco_double_almost_equal(round_value, 5.003, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 0.01);
+  mu_check(coco_double_almost_equal(round_value, 5.01, 1e-10));
+
+  input_value = -5.0024;
+  round_value = coco_double_round_up_with_precision(input_value, 0.00001);
+  mu_check(coco_double_almost_equal(round_value, -5.00240, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 0.0001);
+  mu_check(coco_double_almost_equal(round_value, -5.0024, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 0.001);
+  mu_check(coco_double_almost_equal(round_value, -5.002, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 0.01);
+  mu_check(coco_double_almost_equal(round_value, -5, 1e-10));
+
+  input_value = 0;
+  round_value = coco_double_round_up_with_precision(input_value, 0.001);
+  mu_check(coco_double_almost_equal(round_value, 0, 1e-10));
+
+  input_value = -5.9999;
+  round_value = coco_double_round_up_with_precision(input_value, 0.00001);
+  mu_check(coco_double_almost_equal(round_value, -5.9999, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 0.0001);
+  mu_check(coco_double_almost_equal(round_value, -5.9999, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 0.001);
+  mu_check(coco_double_almost_equal(round_value, -5.999, 1e-10));
+
+  input_value = 5.0001;
+  round_value = coco_double_round_up_with_precision(input_value, 0.00001);
+  mu_check(coco_double_almost_equal(round_value, 5.0001, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 0.0001);
+  mu_check(coco_double_almost_equal(round_value, 5.0001, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 0.001);
+  mu_check(coco_double_almost_equal(round_value, 5.001, 1e-10));
+}
+
+/**
  * Tests the function coco_string_split.
  */
 MU_TEST(test_coco_string_split) {
@@ -454,6 +510,7 @@ MU_TEST_SUITE(test_all_coco_utilities) {
   MU_RUN_TEST(test_coco_set_log_level);
   MU_RUN_TEST(test_coco_double_max_min);
   MU_RUN_TEST(test_coco_double_round);
+  MU_RUN_TEST(test_coco_double_round_up_with_precision);
   MU_RUN_TEST(test_coco_string_split);
   MU_RUN_TEST(test_coco_option_keys);
   MU_RUN_TEST(test_coco_string_parse_ranges);

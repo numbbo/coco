@@ -6,79 +6,79 @@
  */
 MU_TEST(test_coco_observer_targets_trigger) {
 
-  coco_observer_targets_t *targets = coco_observer_targets(10, 1e-8);
+  coco_observer_log_targets_t *targets = coco_observer_log_targets(10, 1e-8);
   int update;
 
-  update = coco_observer_targets_trigger(targets, 12);
+  update = coco_observer_log_targets_trigger(targets, 12);
   mu_check(update);
   mu_check(targets->value >= 12);
 
-  update = coco_observer_targets_trigger(targets, 10);
+  update = coco_observer_log_targets_trigger(targets, 10);
   mu_check(update);
   mu_check(targets->value >= 10);
 
-  update = coco_observer_targets_trigger(targets, 2);
+  update = coco_observer_log_targets_trigger(targets, 2);
   mu_check(update);
   mu_check(targets->value >= 2);
 
-  update = coco_observer_targets_trigger(targets, 1.2);
+  update = coco_observer_log_targets_trigger(targets, 1.2);
   mu_check(update);
   mu_check(targets->value >= 1.2);
 
-  update = coco_observer_targets_trigger(targets, 0.12);
+  update = coco_observer_log_targets_trigger(targets, 0.12);
   mu_check(update);
   mu_check(targets->value >= 0.12);
 
-  update = coco_observer_targets_trigger(targets, 10);
+  update = coco_observer_log_targets_trigger(targets, 10);
   mu_check(!update);
 
-  update = coco_observer_targets_trigger(targets, 2);
+  update = coco_observer_log_targets_trigger(targets, 2);
   mu_check(!update);
 
-  update = coco_observer_targets_trigger(targets, 0.000012);
+  update = coco_observer_log_targets_trigger(targets, 0.000012);
   mu_check(update);
   mu_check(targets->value >= 0.000012);
 
-  update = coco_observer_targets_trigger(targets, 12);
+  update = coco_observer_log_targets_trigger(targets, 12);
   mu_check(!update);
 
-  update = coco_observer_targets_trigger(targets, 1e-8);
+  update = coco_observer_log_targets_trigger(targets, 1e-8);
   mu_check(update);
   mu_check(targets->value >= 1e-8);
 
-  update = coco_observer_targets_trigger(targets, 1e-9);
+  update = coco_observer_log_targets_trigger(targets, 1e-9);
   mu_check(!update);
 
-  update = coco_observer_targets_trigger(targets, -1.2e-8);
+  update = coco_observer_log_targets_trigger(targets, -1.2e-8);
   mu_check(update);
   mu_check(targets->value >= -1.2e-8);
 
-  update = coco_observer_targets_trigger(targets, -1.2e-7);
+  update = coco_observer_log_targets_trigger(targets, -1.2e-7);
   mu_check(update);
   mu_check(targets->value >= -1.2e-7);
 
-  update = coco_observer_targets_trigger(targets, 2);
+  update = coco_observer_log_targets_trigger(targets, 2);
   mu_check(!update);
 
-  update = coco_observer_targets_trigger(targets, -1200);
+  update = coco_observer_log_targets_trigger(targets, -1200);
   mu_check(update);
   mu_check(targets->value >= -1200);
 
   coco_free_memory(targets);
 
-  targets = coco_observer_targets(10, 1e-8);
-  update = coco_observer_targets_trigger(targets, 1e-9);
+  targets = coco_observer_log_targets(10, 1e-8);
+  update = coco_observer_log_targets_trigger(targets, 1e-9);
   mu_check(update);
-  update = coco_observer_targets_trigger(targets, 0);
+  update = coco_observer_log_targets_trigger(targets, 0);
   mu_check(update);
-  update = coco_observer_targets_trigger(targets, -1.2e-8);
+  update = coco_observer_log_targets_trigger(targets, -1.2e-8);
   mu_check(update);
-  update = coco_observer_targets_trigger(targets, -1.2e-7);
+  update = coco_observer_log_targets_trigger(targets, -1.2e-7);
   mu_check(update);
   coco_free_memory(targets);
 
-  targets = coco_observer_targets(10, 1e-8);
-  update = coco_observer_targets_trigger(targets, -1.2e-7);
+  targets = coco_observer_log_targets(10, 1e-8);
+  update = coco_observer_log_targets_trigger(targets, -1.2e-7);
   mu_check(update);
   coco_free_memory(targets);
 }

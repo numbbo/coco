@@ -870,6 +870,14 @@ static double coco_double_round(const double number) {
 }
 
 /**
+ * @brief Rounds the given double up to the nearest double value with the given precision.
+ */
+static double coco_double_round_up_with_precision(const double number, const double precision) {
+  assert(precision > 0);
+  return ceil((number / precision) - 0.1 * precision) * precision;
+}
+
+/**
  * @brief Returns the maximum of a and b.
  */
 static double coco_double_max(const double a, const double b) {

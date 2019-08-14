@@ -32,39 +32,40 @@
 #define LOGGER_BBOB_WEIGHT_CONSTRAINTS 1e0
 
 /**
- * @brief The bbob logger data type.
+ * @brief The bbob_new logger data type.
  */
 typedef struct {
-  coco_observer_t *observer;                 /**< @brief Pointer to the observer (might be NULL at the end) */
-  char *suite_name;                          /**< @brief The suite name */
-  int is_initialized;                        /**< @brief Whether the logger was already initialized */
+  coco_observer_t *observer;                  /**< @brief Pointer to the observer (might be NULL at the end) */
+  char *suite_name;                           /**< @brief The suite name */
+  int is_initialized;                         /**< @brief Whether the logger was already initialized */
 
-  FILE *info_file;                           /**< @brief Index file */
-  FILE *dat_file;                            /**< @brief File with function value aligned data (targets in log scale) */
-  FILE *udat_file;                           /**< @brief File with function value aligned data (uniform targets) */
-  FILE *tdat_file;                           /**< @brief File with number of function evaluations aligned data */
-  FILE *rdat_file;                           /**< @brief File with restart information */
-  int write_udat_file;                       /**< @brief Whether the file with uniform targets should be written */
+  FILE *info_file;                            /**< @brief Index file */
+  FILE *dat_file;                             /**< @brief File with function value aligned data (logarithmic targets) */
+  FILE *udat_file;                            /**< @brief File with function value aligned data (uniform targets) */
+  FILE *tdat_file;                            /**< @brief File with number of function evaluations aligned data */
+  FILE *rdat_file;                            /**< @brief File with restart information */
+  int write_udat_file;                        /**< @brief Whether the file with uniform targets should be written */
 
-  size_t num_func_evaluations;               /**< @brief The number of function evaluations performed so far. */
-  size_t num_cons_evaluations;               /**< @brief The number of evaluations of constraints performed so far. */
-  int last_logged_evaluation;                /**< @brief Whether the last evaluation was logged (needed for finalization) */
+  size_t num_func_evaluations;                /**< @brief The number of function evaluations performed so far. */
+  size_t num_cons_evaluations;                /**< @brief The number of evaluations of constraints performed so far. */
+  int last_logged_evaluation;                 /**< @brief Whether the last evaluation was logged (needed for finalization) */
 
-  double *best_solution;                     /**< @brief The best found solution to this problem. */
-  double best_value;                         /**< @brief The best found value for this problem. */
-  double current_value;                      /**< @brief The current value for this problem. */
-  double optimal_value;                      /**< @brief The optimal value for this problem (if it is known). */
-  int is_optimum_known;                      /**< @brief Whether the optimal value for this problem is known.  */
+  double *best_solution;                      /**< @brief The best found solution to this problem. */
+  double best_value;                          /**< @brief The best found value for this problem. */
+  double current_value;                       /**< @brief The current value for this problem. */
+  double optimal_value;                       /**< @brief The optimal value for this problem (if it is known). */
+  int is_optimum_known;                       /**< @brief Whether the optimal value for this problem is known.  */
 
-  size_t function;                           /**< @brief Suite-dependent function number */
-  size_t instance;                           /**< @brief Suite-dependent instance number */
-  size_t number_of_variables;                /**< @brief Number of all variables */
-  size_t number_of_integer_variables;        /**< @brief Number of integer variables */
-  size_t number_of_constraints;              /**< @brief Number of constraints */
-  int log_discrete_as_int;                   /**< @brief Whether to output discrete variables in integer or double format. */
+  size_t function;                            /**< @brief Suite-dependent function number */
+  size_t instance;                            /**< @brief Suite-dependent instance number */
+  size_t number_of_variables;                 /**< @brief Number of all variables */
+  size_t number_of_integer_variables;         /**< @brief Number of integer variables */
+  size_t number_of_constraints;               /**< @brief Number of constraints */
+  int log_discrete_as_int;                    /**< @brief Whether to output discrete variables in integer or double format. */
 
-  coco_observer_targets_t *targets;          /**< @brief Triggers based on target values. */
-  coco_observer_evaluations_t *evaluations;  /**< @brief Triggers based on the number of evaluations. */
+  coco_observer_log_targets_t *log_targets;   /**< @brief Triggers based on logarithmic target values. */
+  coco_observer_unif_targets_t *unif_targets; /**< @brief Triggers based on uniform target values. */
+  coco_observer_evaluations_t *evaluations;   /**< @brief Triggers based on the number of evaluations. */
 
 } logger_bbob_new_data_t;
 
@@ -92,7 +93,7 @@ typedef struct {
  * best measured fitness |
  * x1 | x2...
  */
-static const char *logger_bbob_new_data_format = "bbob-new2"; /*  */
+static const char *logger_bbob_new_data_format = "bbob-new2";
 
 /**
  * @brief The header used by the logger in .dat, .tdat and .rdat files when the optimum is known
@@ -450,14 +451,14 @@ static void logger_bbob_new_evaluate(coco_problem_t *problem, const double *x, d
       /* Add a line in the .dat file for each logging target reached
        * by a feasible solution and always at the first evaluation */
       if (logger->num_func_evaluations == 1 ||
-          coco_observer_targets_trigger(logger->targets, logger->best_value - logger->optimal_value)) {
+          coco_observer_log_targets_trigger(logger->log_targets, logger->best_value - logger->optimal_value)) {
         logger_bbob_new_output(logger->dat_file, logger, x, y_logged, constraints);
       }
     } else if (logger->write_udat_file) {
       /* Add a line in the .udat file for each uniformly spaced logging target reached by a feasible
        * solution and always at the first evaluation */
       if (logger->num_func_evaluations == 1 ||
-          coco_observer_targets_trigger(logger->targets, logger->best_value)) { /* TODO */
+          coco_observer_unif_targets_trigger(logger->unif_targets, logger->best_value)) {
         logger_bbob_new_output(logger->udat_file, logger, x, y_logged, constraints);
       }
     }
@@ -530,9 +531,14 @@ static void logger_bbob_new_free(void *stuff) {
     logger->best_solution = NULL;
   }
 
-  if (logger->targets != NULL){
-    coco_free_memory(logger->targets);
-    logger->targets = NULL;
+  if (logger->log_targets != NULL){
+    coco_free_memory(logger->log_targets);
+    logger->log_targets = NULL;
+  }
+
+  if (logger->unif_targets != NULL){
+    coco_free_memory(logger->unif_targets);
+    logger->unif_targets = NULL;
   }
 
   if (logger->evaluations != NULL){
@@ -626,7 +632,8 @@ static coco_problem_t *logger_bbob_new(coco_observer_t *observer, coco_problem_t
   logger_data->number_of_constraints = inner_problem->number_of_constraints;
     
   /* Initialize triggers based on target values and number of evaluations */
-  logger_data->targets = coco_observer_targets(observer->number_target_triggers, observer->target_precision);
+  logger_data->log_targets = coco_observer_log_targets(observer->number_target_triggers, observer->target_precision);
+  logger_data->unif_targets = coco_observer_unif_targets(observer->target_precision);
   logger_data->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, inner_problem->number_of_variables);
 
   coco_debug("Ended   logger_bbob_new()");
