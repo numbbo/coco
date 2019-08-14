@@ -41,7 +41,12 @@ def run_experiment(suite_name, logger, folder, order=''):
         problem_indices = np.append(problem_indices[mask], problem_indices[~mask])
     for problem_index in problem_indices:
         problem = suite[problem_index]
-        problem.observe_with(observer)  #
+        problem.observe_with(observer)
+        # # Check the domain middle
+        # print(problem(np.zeros(problem.dimension)))
+        # # Check also NAN and INFINITE values
+        # print(problem(np.nan * np.ones(problem.dimension)))
+        # print(problem(np.inf * np.ones(problem.dimension)))
         while (problem.evaluations < problem.dimension * budget_multiplier
                and not problem.final_target_hit):
             x = np.random.uniform(problem.lower_bounds, problem.upper_bounds, problem.dimension)

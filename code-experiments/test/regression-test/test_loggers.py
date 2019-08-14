@@ -5,16 +5,17 @@ data folder. Random search with a fixed seed is used to evaluate solutions.
 from __future__ import division, print_function
 import os
 import sys
+import math
+import re
 try:
     from urllib.request import urlretrieve
 except ImportError:
     from urllib import urlretrieve
 from create.create_logger_data import run_experiment
-import math
-
 
 def regression_test_match_words(old_word, new_word, accuracy=1e-6):
-    """Checks whether the two words match (takes into account a dictionary of exceptions)
+    """Checks whether the two words match (takes into account a dictionary of exceptions and the
+    'almost matching' file names)
 
     If they don't, checks whether they match as floats with the given accuracy
     """
@@ -25,6 +26,8 @@ def regression_test_match_words(old_word, new_word, accuracy=1e-6):
     old_word = old_word.strip('\"')
     new_word = new_word.strip('\"')
     if old_word != new_word:
+        if 'data' in old_word and regression_test_almost_match_file_names(old_word, new_word):
+            return
         if old_word not in exceptions or \
                 (old_word in exceptions and exceptions[old_word] != new_word):
             try:
@@ -63,6 +66,20 @@ def regression_test_match_file_contents(old_file, new_file):
                                          ''.format(old_line, new_line, e))
 
 
+def regression_test_almost_match_file_names(old_fname, new_fname):
+    """Checks whether the two file names match (if the files match up to name_i*.ext, it counts
+    as if they match)
+    """
+    if old_fname == new_fname:
+        return True
+
+    if '_i' in old_fname:
+        if re.sub('_i[0-9]*', '', old_fname) == new_fname:
+            return True
+
+    return False
+
+
 def regression_test_match_logger_output(old_data_folder, new_data_folder):
     """Checks whether the contents of the two folders match.
 
@@ -81,7 +98,7 @@ def regression_test_match_logger_output(old_data_folder, new_data_folder):
         # Iterate over files in both folders sorted by name
         for old_fname, new_fname in zip(sorted(old_files), sorted(new_files)):
             if old_fname.endswith(endings) and new_fname.endswith(endings):
-                if old_fname != new_fname:
+                if not regression_test_almost_match_file_names(old_fname, new_fname):
                     raise ValueError('File names {} and {} do not match'.format(old_fname,
                                                                                 new_fname))
                 try:
