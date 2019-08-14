@@ -351,7 +351,8 @@ static void logger_bbob_new_initialize(logger_bbob_new_data_t *logger) {
   if (logger->is_optimum_known) {
     logger_bbob_new_open_data_file(&(logger->dat_file), logger->observer->result_folder, relative_path, ".dat");
     fprintf(logger->dat_file, logger_bbob_new_header_opt_known, logger->optimal_value);
-  } else if (logger->write_udat_file) {
+  }
+  if (logger->write_udat_file) {
     logger_bbob_new_open_data_file(&(logger->udat_file), logger->observer->result_folder, relative_path, ".udat");
     fprintf(logger->udat_file, "%s", logger_bbob_new_header_opt_unknown);
   }
@@ -454,7 +455,8 @@ static void logger_bbob_new_evaluate(coco_problem_t *problem, const double *x, d
           coco_observer_log_targets_trigger(logger->log_targets, logger->best_value - logger->optimal_value)) {
         logger_bbob_new_output(logger->dat_file, logger, x, y_logged, constraints);
       }
-    } else if (logger->write_udat_file) {
+    }
+    if (logger->write_udat_file) {
       /* Add a line in the .udat file for each uniformly spaced logging target reached by a feasible
        * solution and always at the first evaluation */
       if (logger->num_func_evaluations == 1 ||
@@ -616,9 +618,8 @@ static coco_problem_t *logger_bbob_new(coco_observer_t *observer, coco_problem_t
   logger_data->is_optimum_known = (inner_problem->best_value != NULL);
   if (logger_data->is_optimum_known) {
     logger_data->optimal_value = *(inner_problem->best_value);
-    logger_data->write_udat_file = observer_data->write_udat_file;
-  }
-  else {
+    logger_data->write_udat_file = observer->unif_target_trigger;
+  } else {
     logger_data->optimal_value = NAN; /* Should never be used when the optimum is not known */
     logger_data->write_udat_file = 1;
   }
@@ -632,8 +633,8 @@ static coco_problem_t *logger_bbob_new(coco_observer_t *observer, coco_problem_t
   logger_data->number_of_constraints = inner_problem->number_of_constraints;
     
   /* Initialize triggers based on target values and number of evaluations */
-  logger_data->log_targets = coco_observer_log_targets(observer->number_target_triggers, observer->target_precision);
-  logger_data->unif_targets = coco_observer_unif_targets(observer->target_precision);
+  logger_data->log_targets = coco_observer_log_targets(observer->number_target_triggers, observer->log_target_precision);
+  logger_data->unif_targets = coco_observer_unif_targets(observer->log_target_precision);
   logger_data->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, inner_problem->number_of_variables);
 
   coco_debug("Ended   logger_bbob_new()");

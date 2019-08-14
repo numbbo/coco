@@ -13,6 +13,7 @@ except ImportError:
     from urllib import urlretrieve
 from create.create_logger_data import run_experiment
 
+
 def regression_test_match_words(old_word, new_word, accuracy=1e-6):
     """Checks whether the two words match (takes into account a dictionary of exceptions and the
     'almost matching' file names)
@@ -141,7 +142,12 @@ if __name__ == "__main__":
             new_data_folder = os.path.join('new_data', '{}_logger_data_{}'.format(logger, order))
             new_data_folder_relative = os.path.join('..', 'new_data', '{}_logger_data_{}'
                                                     ''.format(logger, order))
-            result_folder = run_experiment('bbob', logger, new_data_folder_relative, order)
+            result_folder = run_experiment('bbob', logger, new_data_folder_relative, order=order)
+
+            if order == 'default':
+                result_folder = run_experiment(
+                    'bbob', logger, new_data_folder_relative + '_options', order=order,
+                    observer_options='unif_target_trigger: 1 unif_target_precision: 1e6')
 
             try:
                 # Check that the outputs match

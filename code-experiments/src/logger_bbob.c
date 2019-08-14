@@ -658,7 +658,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   logger_data->log_discrete_as_int = observer->log_discrete_as_int;
     
   /* Initialize triggers based on target values and number of evaluations */
-  logger_data->targets = coco_observer_log_targets(observer->number_target_triggers, observer->target_precision);
+  logger_data->targets = coco_observer_log_targets(observer->number_target_triggers, observer->log_target_precision);
   logger_data->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, inner_problem->number_of_variables);
 
   problem = coco_problem_transformed_allocate(inner_problem, logger_data, logger_bbob_free, observer->observer_name);

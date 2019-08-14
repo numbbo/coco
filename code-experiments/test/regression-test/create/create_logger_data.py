@@ -7,7 +7,7 @@ import numpy as np
 import cocoex
 
 
-def run_experiment(suite_name, logger, folder, order=''):
+def run_experiment(suite_name, logger, folder, order='', observer_options=''):
     """Runs random search on a subset of problems from either the bbob or bbob-biobj suites.
 
     If order='', the problems are called in the usual order.
@@ -18,11 +18,11 @@ def run_experiment(suite_name, logger, folder, order=''):
     Returns the name of the actual output folder
     """
     ### input
-    budget_multiplier = 5
+    budget_multiplier = 50
 
     ### prepare
     suite = cocoex.Suite(suite_name, 'instances: 1-6', 'dimensions: 2,3 function_indices: 9-20')
-    observer = cocoex.Observer(logger, 'result_folder: {}'.format(folder))
+    observer = cocoex.Observer(logger, 'result_folder: {} {}'.format(folder, observer_options))
     np.random.seed(12345)
 
     ### go
@@ -103,7 +103,11 @@ if __name__ == "__main__":
     for logger in ['bbob', 'bbob-biobj']:
         for order in ['default', 'rand', 'inst']:
             data_folder = '{}_logger_data_{}'.format(logger, order)
-            run_experiment(logger, logger, data_folder, order)
+            run_experiment(logger, logger, data_folder, order=order)
+            if order == 'default':
+                run_experiment(
+                    logger, logger, data_folder + '_options', order=order,
+                    observer_options='unif_target_trigger: 1 unif_target_precision: 1e6')
         if logger is not 'bbob':
             run_two_observers(logger, logger, '{}_logger_data_{}'.format(logger, '2_observers'))
         # run_several_problems(logger, 'bbob-new', '{}_logger_data_{}'.format(logger, '8_problems'))

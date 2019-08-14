@@ -460,7 +460,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   indicator->overall_value = 0;
   indicator->previous_value = 0;
 
-  indicator->targets = coco_observer_log_targets(observer->number_target_triggers, observer->target_precision);
+  indicator->targets = coco_observer_log_targets(observer->number_target_triggers, observer->log_target_precision);
   indicator->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, problem->number_of_variables);
 
   /* Prepare the info file */
