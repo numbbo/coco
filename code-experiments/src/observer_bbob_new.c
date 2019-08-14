@@ -61,8 +61,8 @@ static void observer_bbob_new(coco_observer_t *observer, const char *options, co
 
   observer_bbob_new_data_t *observer_data;
   /* Sets the valid keys for bbob_new observer options
-   * IMPORTANT: This list should be up-to-date with the code and the documentation TODO */
-  const char *known_keys[] = { "prefix", "unif_target_trigger" };
+   * TODO IMPORTANT: This list should be up-to-date with the code and the documentation */
+  const char *known_keys[] = { "prefix" };
   *option_keys = coco_option_keys_allocate(sizeof(known_keys) / sizeof(char *), known_keys);
 
   observer_data = (observer_bbob_new_data_t *) coco_allocate_memory(sizeof(*observer_data));
