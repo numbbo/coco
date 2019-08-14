@@ -237,10 +237,11 @@ static void logger_bbob_new_open_info_file(logger_bbob_new_data_t *logger,
                                            const char *data_file_name,
                                            const char *suite_name) {
   char data_file_path[COCO_PATH_MAX + 2] = { 0 };
-  int start_new_line = 0;
+  int start_new_line = 0, add_empty_line = 0;
   char file_name[COCO_PATH_MAX + 2] = { 0 };
   char file_path[COCO_PATH_MAX + 2] = { 0 };
   FILE **info_file;
+  FILE *tmp_file;
   observer_bbob_new_data_t *observer_data;
 
   coco_debug("Started logger_bbob_new_open_info_file()");
@@ -261,26 +262,32 @@ static void logger_bbob_new_open_info_file(logger_bbob_new_data_t *logger,
   coco_join_path(file_path, sizeof(file_path), folder, file_name, NULL);
 
   if (*info_file == NULL) {
+    add_empty_line = 0;
+    /* If the file already exists, an empty line is needed */
+    tmp_file = fopen(file_path, "r");
+    if (tmp_file != NULL) {
+      add_empty_line = 1;
+      fclose(tmp_file);
+    }
     logger_bbob_new_open_file(info_file, file_path);
     start_new_line = logger_bbob_new_start_new_line(observer_data, logger->number_of_variables, logger->function);
     if (start_new_line) {
-      fprintf(*info_file, "\n");
-    }
-    fprintf(*info_file,
-            "suite = '%s', funcId = %lu, DIM = %lu, Precision = %.3e, algId = '%s', coco_version = '%s', logger = '%s', data_format = '%s'\n",
-            suite_name,
-            (unsigned long) logger->function,
-            (unsigned long) logger->number_of_variables,
-            pow(10, -8),
-            logger->observer->algorithm_name,
-            coco_version,
-            ((coco_observer_t *)logger->observer)->observer_name,
-            logger_bbob_new_data_format);
-
+      if (add_empty_line)
+        fprintf(*info_file, "\n");
+      fprintf(*info_file,
+              "suite = '%s', funcId = %lu, DIM = %lu, Precision = %.3e, algId = '%s', coco_version = '%s', logger = '%s', data_format = '%s'\n",
+              suite_name,
+              (unsigned long) logger->function,
+              (unsigned long) logger->number_of_variables,
+              pow(10, -8),
+              logger->observer->algorithm_name,
+              coco_version,
+              ((coco_observer_t *)logger->observer)->observer_name,
+              logger_bbob_new_data_format);
       fprintf(*info_file, "%%\n");
       fprintf(*info_file, "%s.dat", data_file_path); /* data_file_path does not have the extension */
+    }
   }
-
   coco_debug("Ended   logger_bbob_new_open_info_file()");
 }
 
@@ -349,7 +356,7 @@ static void logger_bbob_new_evaluate(coco_problem_t *problem, const double *x, d
   coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);
   const int is_feasible = problem->number_of_constraints <= 0 || coco_is_feasible(inner_problem, x, NULL);
 
-  coco_debug("Started logger_bbob_new_evaluate()");
+  coco_debug("Started logger_bbob_new_evaluate(), x[0] = %f", x[0]);
 
   if (!logger->is_initialized) {
     logger_bbob_new_initialize(logger);
@@ -449,7 +456,7 @@ static void logger_bbob_new_evaluate(coco_problem_t *problem, const double *x, d
   if (problem->number_of_constraints > 0)
     coco_free_memory(constraints);
 
-  coco_debug("Ended   logger_bbob_new_evaluate()");
+  /*coco_debug("Ended   logger_bbob_new_evaluate()");*/
 
 }
 
