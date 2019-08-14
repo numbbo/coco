@@ -8,10 +8,7 @@
  * - The "dat" files ...
  * - The "tdat" files ...
  * - The "rdat" files ...
- */
-
-/* TODOs:
- * - Document this file in doxygen style!
+ * TODO: Finish the description
  */
 
 #include <stdio.h>
@@ -28,7 +25,9 @@
 #include "coco_string.c"
 #include "observer_bbob_new.c"
 
-/** @brief Factor used in logged indicator (f-f*)^+ + sum_i g_i^+ in front of the sum */
+/**
+ * @brief Factor used in logged indicator (f-f*)^+ + sum_i g_i^+ in front of the sum
+ */
 #define LOGGER_BBOB_WEIGHT_CONSTRAINTS 1e0
 
 /**
@@ -452,7 +451,7 @@ static void logger_bbob_new_evaluate(coco_problem_t *problem, const double *x, d
 
   coco_debug("Ended   logger_bbob_new_evaluate()");
 
-}  /* end logger_bbob_evaluate */
+}
 
 /**
  * @brief Takes care of some final output and frees the logger data
