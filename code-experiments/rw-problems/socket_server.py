@@ -4,6 +4,7 @@ The socket server in Python.
 Uses the toy_socket_evaluator to evaluate problems from the toy-socket suite. Change code below to
 connect it to other evaluators (for other suites) -- see occurrences of 'ADD HERE'.
 """
+import sys
 import socket
 from toy_socket.toy_socket_evaluator import evaluate_toy_socket
 # ADD HERE imports from other evaluators, for example
@@ -13,7 +14,6 @@ HOST = ''            # Symbolic name, meaning all available interfaces
 PORT = 7251          # Arbitrary non-privileged port
 MESSAGE_SIZE = 8000  # Should be large enough to contain a number of x-values
 PRECISION_Y = 16     # Precision used to write objective values
-LOG_MESSAGES = 1     # Set to 1 (0) to (not) print the messages
 
 
 def evaluate_message(message):
@@ -51,7 +51,7 @@ def evaluate_message(message):
         raise e
 
 
-def socket_server_start():
+def socket_server_start(silent=False):
     s = None
     try:
         # Create socket
@@ -82,21 +82,30 @@ def socket_server_start():
             with conn:
                 # Read the message
                 message = conn.recv(MESSAGE_SIZE).decode("utf-8")
-                if LOG_MESSAGES:
+                if not silent:
                     print('Received message: {}'.format(message))
                 # Parse the message and evaluate its contents using an evaluator
                 response = evaluate_message(message)
                 # Send the response
                 conn.sendall(response)
-                if LOG_MESSAGES:
+                if not silent:
                     print('Sent response: {}'.format(response.decode("utf-8")))
     except Exception as e:
         print('Error: {}'.format(e))
         raise e
     finally:
         if s is not None:
+            print('Closing socket')
             s.close()
 
 
 if __name__ == '__main__':
-    socket_server_start()
+    silent = False
+    if len(sys.argv) == 2:
+        if sys.argv[1] == 'silent':
+            silent = True
+        else:
+            print('Ignoring input option {}'.format(sys.argv[1]))
+    elif len(sys.argv) > 2:
+        print('Too many options (at most one supporte), ignoring all')
+    socket_server_start(silent=silent)

@@ -27,7 +27,6 @@
 #define RESPONSE_SIZE 256   /* Should be large enough to contain a couple of objective values */
 #define SUITE_NAME_SIZE 64  /* Should be large enough to contain the name of a suite */
 #define PRECISION_Y 16      /* Precision used to write objective values */
-#define LOG_MESSAGES 1      /* Set to 1 (0) to (not) print the messages */
 
 #include "toy_socket/toy_socket_evaluator.c"  /* Use the toy_evaluator for evaluation */
 /* ADD HERE includes of other evaluators, for example
@@ -114,7 +113,7 @@ char *evaluate_message(char *message) {
  *
  * Should be working for different platforms.
  */
-void socket_server_start(void) {
+void socket_server_start(int silent) {
 
   int address_size;
   char message[MESSAGE_SIZE];
@@ -169,18 +168,17 @@ void socket_server_start(void) {
     if ((message_len = recv(new_sock, message, MESSAGE_SIZE, 0)) == SOCKET_ERROR) {
       fprintf(stderr, "socket_server_start(): Receive failed: %d", WSAGetLastError());
     }
-#if LOG_MESSAGES == 1
-    printf("Received message: %s (length %d)\n", message, message_len);
-#endif
+    if (silent == 0)
+      printf("Received message: %s (length %d)\n", message, message_len);
 
     /* Parse the message and evaluate its contents using an evaluator */
     response = evaluate_message(message);
 
     /* Send the response */
     send(new_sock, response, (int)strlen(response), 0);
-#if LOG_MESSAGES == 1
-    printf("Sent response %s (length %ld)\n", response, strlen(response));
-#endif
+    if (silent == 0)
+      printf("Sent response %s (length %ld)\n", response, strlen(response));
+
     free(response);
     closesocket(new_sock);
   }
@@ -232,25 +230,33 @@ void socket_server_start(void) {
       perror("socket_server_start(): Receive failed");
       exit(EXIT_FAILURE);
     }
-#if LOG_MESSAGES == 1
-    printf("Received message: %s (length %ld)\n", message, message_len);
-#endif
+    if (silent == 0)
+      printf("Received message: %s (length %ld)\n", message, message_len);
 
     /* Parse the message and evaluate its contents using an evaluator */
     response = evaluate_message(message);
 
     /* Send the response */
     send(new_sock, response, strlen(response), 0);
-#if LOG_MESSAGES == 1
-    printf("Sent response %s (length %ld)\n", response, strlen(response));
-#endif
+    if (silent == 0)
+      printf("Sent response %s (length %ld)\n", response, strlen(response));
+
     free(response);
   }
 #endif
 }
 
-int main(void)
+int main(int argc,char* argv[])
 {
-  socket_server_start();
-  return 0;
+  int silent = 0;
+  if (argc == 2) {
+    if (strcmp(argv[1], "silent") == 0) {
+      silent = 1;
+    } else {
+      printf("Ignoring input option %s\n", argv[1]);
+    }
+  } else if (argc > 2) {
+    printf("Too many options (at most one supported), ignoring all\n");
+  }
+  socket_server_start(silent);
 }
