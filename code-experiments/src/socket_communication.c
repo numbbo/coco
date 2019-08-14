@@ -204,6 +204,7 @@ static void socket_communication_evaluate(const char* host_name, const unsigned 
   coco_debug("Received response: %s (length %ld)", response, response_len);
 
   socket_communication_save_response(response, response_len, expected_number_of_objectives, y);
+  close(sock);
 #endif
 }
 
