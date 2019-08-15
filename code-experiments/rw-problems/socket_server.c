@@ -247,7 +247,7 @@ void socket_server_start(int silent) {
 #endif
 }
 
-int main(int argc,char* argv[])
+int main(int argc, char* argv[])
 {
   int silent = 0;
   if (argc == 2) {
@@ -260,4 +260,5 @@ int main(int argc,char* argv[])
     printf("Too many options (at most one supported), ignoring all\n");
   }
   socket_server_start(silent);
+  return 0;
 }
