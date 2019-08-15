@@ -64,7 +64,7 @@ void run_once(char *suite_options) {
   fflush(stdout);
 
   suite = coco_suite("bbob-largescale", NULL, suite_options);
-  observer = coco_observer("bbob", observer_options);
+  observer = coco_observer("bbob-new", observer_options);
   coco_free_memory(observer_options);
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {
