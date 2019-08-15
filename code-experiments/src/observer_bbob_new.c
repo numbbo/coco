@@ -82,7 +82,5 @@ static void observer_bbob_new(coco_observer_t *observer, const char *options, co
   observer->data_free_function = observer_bbob_new_data_free;
   observer->data = observer_data;
 
-  *option_keys = NULL;
-
   (void) options; /* To silence the compiler */
 }
