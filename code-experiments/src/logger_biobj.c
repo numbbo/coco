@@ -461,6 +461,8 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   char *file_name_dat = NULL, *file_name_udat = NULL;
   int info_file_exists = 0, func_result;
 
+  coco_debug("Started logger_biobj_indicator()");
+
   indicator = (logger_biobj_indicator_t *) coco_allocate_memory(sizeof(*indicator));
   assert(observer);
   assert(observer->data);
@@ -486,13 +488,16 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
     indicator->write_udat_file = 1;
   }
 
+  indicator->log_targets = NULL;
+  indicator->unif_targets = NULL;
+
   if (indicator->is_optimum_known)
     indicator->log_targets = coco_observer_log_targets(observer->number_target_triggers, observer->log_target_precision);
   if (indicator->write_udat_file)
     indicator->unif_targets = coco_observer_unif_targets(observer->log_target_precision);
   indicator->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, problem->number_of_variables);
 
-  /* Prepare the info file */
+  /* Prepare the info file TODO: make functions to avoid code duplication */
   path_name = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_create_directory(path_name);
@@ -609,6 +614,8 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
       (unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
   fprintf(indicator->tdat_file, "%% function evaluation | indicator value\n");
 
+  coco_debug("Ended   logger_biobj_indicator()");
+
   return indicator;
 }
 
@@ -616,8 +623,6 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
  * @brief Outputs the final information about this indicator.
  */
 static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, const logger_biobj_data_t *logger) {
-
-  coco_debug("Started logger_biobj_indicator_finalize()");
 
   if (indicator->is_optimum_known) {
     /* Log the last eval_number in the dat file if wasn't already logged */
@@ -647,7 +652,6 @@ static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator,
       (unsigned long) logger->number_of_evaluations, indicator->overall_value);
   fflush(indicator->info_file);
 
-  coco_debug("Ended   logger_biobj_indicator_finalize()");
 }
 
 /**

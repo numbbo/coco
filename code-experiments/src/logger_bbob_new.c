@@ -639,8 +639,12 @@ static coco_problem_t *logger_bbob_new(coco_observer_t *observer, coco_problem_t
   logger_data->number_of_constraints = inner_problem->number_of_constraints;
     
   /* Initialize triggers based on target values and number of evaluations */
-  logger_data->log_targets = coco_observer_log_targets(observer->number_target_triggers, observer->log_target_precision);
-  logger_data->unif_targets = coco_observer_unif_targets(observer->log_target_precision);
+  logger_data->log_targets = NULL;
+  logger_data->unif_targets = NULL;
+  if (logger_data->is_optimum_known)
+    logger_data->log_targets = coco_observer_log_targets(observer->number_target_triggers, observer->log_target_precision);
+  if (logger_data->write_udat_file)
+    logger_data->unif_targets = coco_observer_unif_targets(observer->log_target_precision);
   logger_data->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, inner_problem->number_of_variables);
 
   coco_debug("Ended   logger_bbob_new()");
