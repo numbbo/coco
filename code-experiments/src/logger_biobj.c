@@ -1,6 +1,6 @@
 /**
  * @file logger_biobj.c
- * @brief Implementation of the bbob-biobj logger.
+ * @brief Implementation of the bbob-biobj logger. TODO: update description (udat + rdat)
  *
  * Logs the values of the implemented indicators and archives nondominated solutions.
  * Produces four kinds of files:
@@ -25,9 +25,6 @@
  * objective space. The non-normalized ROI is a rectangle with the ideal and nadir points as its two
  * opposite vertices, while the normalized ROI is the square [0, 1]^2. If not specifically mentioned, the
  * normalized ROI is assumed.
- *
- * @note This logger can handle both the original bbob-biobj test suite with 55 and the extended
- * bbob-biobj-ext test suite with 96 functions.
  */
 
 #include <stdio.h>
@@ -72,28 +69,38 @@ const char *logger_biobj_indicators[LOGGER_BIOBJ_NUMBER_OF_INDICATORS] = { "hyp"
  *
  * overall_value = best_value - current_value + additional_penalty
  *
+ * If the suite does not provide an estimation for the best hypervolume value, best_value is set to 1.0
+ * and the is_optimum_known is set to 0.
+ *
  * @note Other indicators are yet to be implemented.
  */
 typedef struct {
 
   char *name;                /**< @brief Name of the indicator used for identification and the output. */
 
-  FILE *dat_file;            /**< @brief File for logging indicator values at predefined values. */
-  FILE *tdat_file;           /**< @brief File for logging indicator values at predefined evaluations. */
   FILE *info_file;           /**< @brief File for logging summary information on algorithm performance. */
+  FILE *dat_file;            /**< @brief File for logging indicator values at predefined values (logarithmic targets). */
+  FILE *udat_file;           /**< @brief File for logging indicator values at predefined values (uniform targets). */
+  FILE *tdat_file;           /**< @brief File for logging indicator values at predefined evaluations. */
+  /*FILE *rdat_file;           TODO **< @brief File for logging restart information */
+  int write_udat_file;       /**< @brief Whether the file with uniform targets should be written */
 
-  int target_hit;            /**< @brief Whether the target was hit in the latest evaluation. */
-  coco_observer_log_targets_t *targets;
+  int log_target_hit;        /**< @brief Whether the logarithmic target was hit in the latest evaluation. */
+  coco_observer_log_targets_t *log_targets;
                              /**< @brief Triggers based on logarithmic target values. */
+  int unif_target_hit;       /**< @brief Whether the uniform target was hit in the latest evaluation. */
+  coco_observer_unif_targets_t *unif_targets;
+                             /**< @brief Triggers based on uniform target values. */
   int evaluation_logged;     /**< @brief Whether the whether the latest evaluation was logged. */
   coco_observer_evaluations_t *evaluations;
-                             /**< @brief Triggers based on numbers of evaluations. */
+                             /**< @brief Triggers based on the number of evaluations. */
 
   double best_value;         /**< @brief The best known indicator value for this problem. */
   double current_value;      /**< @brief The current indicator value. */
   double additional_penalty; /**< @brief Additional penalty for solutions outside the ROI. */
   double overall_value;      /**< @brief The overall value of the indicator tested for target hits. */
   double previous_value;     /**< @brief The previous overall value of the indicator. */
+  int is_optimum_known;      /**< @brief Whether the optimal indicator value for this problem is known.  */
 
 } logger_biobj_indicator_t;
 
@@ -444,7 +451,8 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   observer_biobj_data_t *observer_data;
   logger_biobj_indicator_t *indicator;
   char *prefix, *file_name, *path_name;
-  int info_file_exists = 0;
+  char *file_name_dat = NULL, *file_name_udat = NULL;
+  int info_file_exists = 0, func_result;
 
   indicator = (logger_biobj_indicator_t *) coco_allocate_memory(sizeof(*indicator));
   assert(observer);
@@ -454,15 +462,25 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   indicator->name = coco_strdup(indicator_name);
 
   assert(problem->suite);
-  indicator->best_value = coco_suite_get_best_indicator_value(problem->suite, problem, indicator->name);
-  indicator->target_hit = 0;
+  indicator->log_target_hit = 0;
+  indicator->unif_target_hit = 0;
   indicator->evaluation_logged = 0;
   indicator->current_value = 0;
   indicator->additional_penalty = DBL_MAX;
   indicator->overall_value = 0;
   indicator->previous_value = 0;
 
-  indicator->targets = coco_observer_log_targets(observer->number_target_triggers, observer->log_target_precision);
+  /* Read in the best indicator value */
+  func_result = coco_suite_get_best_indicator_value(problem->suite, problem, indicator->name, &(indicator->best_value));
+  indicator->is_optimum_known = (func_result == 0);
+  if (indicator->is_optimum_known) {
+    indicator->write_udat_file = observer->unif_target_trigger;
+  } else {
+    indicator->write_udat_file = 1;
+  }
+
+  indicator->log_targets = coco_observer_log_targets(observer->number_target_triggers, observer->log_target_precision);
+  indicator->unif_targets = coco_observer_unif_targets(observer->log_target_precision);
   indicator->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, problem->number_of_variables);
 
   /* Prepare the info file */
@@ -495,19 +513,45 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   }
   coco_free_memory(file_name);
   coco_free_memory(path_name);
+  file_name = NULL;
 
-  /* Prepare the dat file */
-  path_name = coco_allocate_string(COCO_PATH_MAX + 1);
-  memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
-  coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
-  coco_create_directory(path_name);
-  file_name = coco_strdupf("%s_%s.dat", prefix, indicator_name);
-  coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
-  indicator->dat_file = fopen(path_name, "a");
-  if (indicator->dat_file == NULL) {
-    coco_error("logger_biobj_indicator() failed to open file '%s'.", path_name);
-    return NULL; /* Never reached */
+  indicator->dat_file = NULL;
+  indicator->udat_file = NULL;
+
+  if (indicator->is_optimum_known) {
+    /* Prepare the dat file */
+    path_name = coco_allocate_string(COCO_PATH_MAX + 1);
+    memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
+    coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
+    coco_create_directory(path_name);
+    file_name_dat = coco_strdupf("%s_%s.dat", prefix, indicator_name);
+    coco_join_path(path_name, COCO_PATH_MAX, file_name_dat, NULL);
+    indicator->dat_file = fopen(path_name, "a");
+    if (indicator->dat_file == NULL) {
+      coco_error("logger_biobj_indicator() failed to open file '%s'.", path_name);
+      return NULL; /* Never reached */
+    }
+    coco_free_memory(path_name);
+    file_name = file_name_dat; /* If dat file exists, it should be included in the info file */
   }
+  if (indicator->write_udat_file) {
+    /* Prepare the udat file */
+    path_name = coco_allocate_string(COCO_PATH_MAX + 1);
+    memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
+    coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
+    coco_create_directory(path_name);
+    file_name_udat = coco_strdupf("%s_%s.udat", prefix, indicator_name);
+    coco_join_path(path_name, COCO_PATH_MAX, file_name_udat, NULL);
+    indicator->udat_file = fopen(path_name, "a");
+    if (indicator->udat_file == NULL) {
+      coco_error("logger_biobj_indicator() failed to open file '%s'.", path_name);
+      return NULL; /* Never reached */
+    }
+    coco_free_memory(path_name);
+    if (file_name_dat == NULL)
+      file_name = file_name_udat; /* Use udat in the info file only if dat does not exist */
+  }
+  coco_free_memory(prefix);
 
   /* Output header information to the info file */
   if (!info_file_exists) {
@@ -527,16 +571,27 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
     fprintf(indicator->info_file, "%s", file_name);
   }
 
-  coco_free_memory(prefix);
-  coco_free_memory(file_name);
-  coco_free_memory(path_name);
+  if (file_name_dat != NULL)
+    coco_free_memory(file_name_dat);
+  if (file_name_udat != NULL)
+    coco_free_memory(file_name_udat);
 
-  /* Output header information to the dat file */
-  fprintf(indicator->dat_file, "%%\n%% index = %lu, name = %s\n", (unsigned long) problem->suite_dep_index,
-      problem->problem_name);
-  fprintf(indicator->dat_file, "%% instance = %lu, reference value = %.*e\n",
-      (unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
-  fprintf(indicator->dat_file, "%% function evaluation | indicator value | target hit\n");
+  if (indicator->is_optimum_known) {
+    /* Output header information to the dat file */
+    fprintf(indicator->dat_file, "%%\n%% index = %lu, name = %s\n", (unsigned long) problem->suite_dep_index,
+        problem->problem_name);
+    fprintf(indicator->dat_file, "%% instance = %lu, reference value = %.*e\n",
+        (unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
+    fprintf(indicator->dat_file, "%% function evaluation | indicator value | target hit\n");
+  }
+  if (indicator->write_udat_file) {
+    /* Output header information to the udat file */
+    fprintf(indicator->udat_file, "%%\n%% index = %lu, name = %s\n", (unsigned long) problem->suite_dep_index,
+        problem->problem_name);
+    fprintf(indicator->udat_file, "%% instance = %lu, reference value = %.*e\n",
+        (unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
+    fprintf(indicator->udat_file, "%% function evaluation | indicator value | target hit\n");
+  }
 
   /* Output header information to the tdat file */
   fprintf(indicator->tdat_file, "%%\n%% index = %lu, name = %s\n", (unsigned long) problem->suite_dep_index,
@@ -553,11 +608,23 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
  */
 static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator, const logger_biobj_data_t *logger) {
 
-  /* Log the last eval_number in the dat file if wasn't already logged */
-  if (!indicator->target_hit) {
-    fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
-        logger->precision_f, indicator->overall_value, logger->precision_f,
-        ((coco_observer_log_targets_t *) indicator->targets)->value);
+  coco_debug("Started logger_biobj_indicator_finalize()");
+
+  if (indicator->is_optimum_known) {
+    /* Log the last eval_number in the dat file if wasn't already logged */
+    if (!indicator->log_target_hit) {
+      fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
+          logger->precision_f, indicator->overall_value, logger->precision_f,
+          ((coco_observer_log_targets_t *) indicator->log_targets)->value);
+    }
+  }
+  if (indicator->write_udat_file) {
+    /* Log the last eval_number in the udat file if wasn't already logged */
+    if (!indicator->unif_target_hit) {
+      fprintf(indicator->udat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
+          logger->precision_f, indicator->overall_value, logger->precision_f,
+          ((coco_observer_log_targets_t *) indicator->unif_targets)->value);
+    }
   }
 
   /* Log the last eval_number in the tdat file if wasn't already logged */
@@ -570,6 +637,8 @@ static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator,
   fprintf(indicator->info_file, ", %lu:%lu|%.1e", (unsigned long) logger->suite_dep_instance,
       (unsigned long) logger->number_of_evaluations, indicator->overall_value);
   fflush(indicator->info_file);
+
+  coco_debug("Ended   logger_biobj_indicator_finalize()");
 }
 
 /**
@@ -582,6 +651,8 @@ static void logger_biobj_indicator_free(void *stuff) {
   assert(stuff != NULL);
   indicator = (logger_biobj_indicator_t *) stuff;
 
+  coco_debug("Started logger_biobj_indicator_free()");
+
   if (indicator->name != NULL) {
     coco_free_memory(indicator->name);
     indicator->name = NULL;
@@ -590,6 +661,11 @@ static void logger_biobj_indicator_free(void *stuff) {
   if (indicator->dat_file != NULL) {
     fclose(indicator->dat_file);
     indicator->dat_file = NULL;
+  }
+
+  if (indicator->udat_file != NULL) {
+    fclose(indicator->udat_file);
+    indicator->udat_file = NULL;
   }
 
   if (indicator->tdat_file != NULL) {
@@ -602,15 +678,22 @@ static void logger_biobj_indicator_free(void *stuff) {
     indicator->info_file = NULL;
   }
 
-  if (indicator->targets != NULL){
-    coco_free_memory(indicator->targets);
-    indicator->targets = NULL;
+  if (indicator->log_targets != NULL) {
+    coco_free_memory(indicator->log_targets);
+    indicator->log_targets = NULL;
+  }
+
+  if (indicator->unif_targets != NULL) {
+    coco_free_memory(indicator->unif_targets);
+    indicator->unif_targets = NULL;
   }
 
   if (indicator->evaluations != NULL){
     coco_observer_evaluations_free(indicator->evaluations);
     indicator->evaluations = NULL;
   }
+
+  coco_debug("Ended   logger_biobj_indicator_free()");
 
   coco_free_memory(stuff);
 
@@ -635,11 +718,14 @@ static void logger_biobj_output(logger_biobj_data_t *logger,
   size_t i, j;
   logger_biobj_indicator_t *indicator;
 
+  coco_debug("Started logger_biobj_output()");
+
   if (logger->compute_indicators) {
     for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
 
       indicator = logger->indicators[i];
-      indicator->target_hit = 0;
+      indicator->log_target_hit = 0;
+      indicator->unif_target_hit = 0;
       indicator->previous_value = indicator->overall_value;
 
       /* If the update was performed, update the overall indicator value */
@@ -663,14 +749,24 @@ static void logger_biobj_output(logger_biobj_data_t *logger,
         }
 
         /* Check whether a target was hit */
-        indicator->target_hit = coco_observer_log_targets_trigger(indicator->targets, indicator->overall_value);
+        if (indicator->is_optimum_known)
+          indicator->log_target_hit = coco_observer_log_targets_trigger(indicator->log_targets, indicator->overall_value);
+        if (indicator->write_udat_file)
+          indicator->unif_target_hit = coco_observer_unif_targets_trigger(indicator->unif_targets, indicator->overall_value);
       }
 
       /* Log to the dat file if a target was hit */
-      if (indicator->target_hit) {
+      if ((indicator->is_optimum_known) && (indicator->log_target_hit)) {
         fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
             logger->precision_f, indicator->overall_value, logger->precision_f,
-            ((coco_observer_log_targets_t *) indicator->targets)->value);
+            ((coco_observer_log_targets_t *) indicator->log_targets)->value);
+      }
+
+      /* Log to the udat file if a target was hit */
+      if ((indicator->write_udat_file) && (indicator->unif_target_hit)) {
+        fprintf(indicator->udat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
+            logger->precision_f, indicator->overall_value, logger->precision_f,
+            ((coco_observer_log_targets_t *) indicator->unif_targets)->value);
       }
 
       if (logger->log_nondom_mode == LOG_NONDOM_READ) {
@@ -695,6 +791,8 @@ static void logger_biobj_output(logger_biobj_data_t *logger,
 
     }
   }
+
+  coco_debug("Ended   logger_biobj_output()");
 }
 
 /**
@@ -796,6 +894,8 @@ static void logger_biobj_finalize(logger_biobj_data_t *logger) {
   avl_tree_t *resorted_tree;
   avl_node_t *solution;
 
+  coco_debug("Started logger_biobj_finalize()");
+
   /* Re-sort archive_tree according to time stamp and then output it */
   resorted_tree = avl_tree_construct((avl_compare_t) avl_tree_compare_by_eval_number, NULL);
 
@@ -813,6 +913,8 @@ static void logger_biobj_finalize(logger_biobj_data_t *logger) {
       logger->precision_x, logger->precision_f, logger->log_discrete_as_int);
 
   avl_tree_destruct(resorted_tree);
+
+  coco_debug("Ended   logger_biobj_finalize()");
 }
 
 /**
@@ -823,6 +925,8 @@ static void logger_biobj_free(void *stuff) {
   logger_biobj_data_t *logger;
   coco_observer_t *observer; /* The observer might not exist at this point */
   size_t i;
+
+  coco_debug("Started logger_biobj_free()");
 
   assert(stuff != NULL);
   logger = (logger_biobj_data_t *) stuff;
@@ -853,6 +957,8 @@ static void logger_biobj_free(void *stuff) {
     /* If the observer still exists (if it does not, logger_is_used does not matter any longer) */
     ((observer_biobj_data_t *)observer->data)->logger_is_used = 0;
   }
+
+  coco_debug("Ended   logger_biobj_free()");
 
 }
 
