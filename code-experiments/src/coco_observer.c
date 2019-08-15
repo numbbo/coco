@@ -470,7 +470,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   coco_option_keys_t *known_option_keys, *given_option_keys, *additional_option_keys, *redundant_option_keys;
 
   /* Sets the valid keys for observer options
-   * TODO IMPORTANT: This list should be up-to-date with the code and the documentation */
+   * IMPORTANT: This list should be up-to-date with the code and the documentation */
   const char *known_keys[] = { "result_folder", "algorithm_name", "algorithm_info", "number_target_triggers",
       "log_target_precision", "unif_target_precision", "unif_target_trigger", "number_evaluation_triggers",
       "base_evaluation_triggers", "precision_x", "precision_f", "precision_g", "log_discrete_as_int" };

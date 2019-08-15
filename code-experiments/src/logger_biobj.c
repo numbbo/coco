@@ -1,15 +1,22 @@
 /**
  * @file logger_biobj.c
- * @brief Implementation of the bbob-biobj logger. TODO: update description (udat + rdat)
+ * @brief Implementation of the bbob-biobj logger.
  *
  * Logs the values of the implemented indicators and archives nondominated solutions.
- * Produces four kinds of files:
+ * Produces four or five kinds of files:
  * - The "info" files contain high-level information on the performed experiment. One .info file is created
  * for each problem group (and indicator type) and contains information on all the problems in that problem
  * group (and indicator type).
- * - The "dat" files contain function evaluations, indicator values and target hits for every target hit as
- * well as for the last evaluation. One .dat file is created for each problem function and dimension (and
- * indicator type) and contains information for all instances of that problem (and indicator type).
+ * - The "dat" files contain function evaluations, indicator values and target hits for every logarithmic
+ * target hit as well as for the last evaluation. The .dat files require an estimation of the optimal
+ * indicator value to be known. If it is not, they are not created (but the .udat files are). One .dat file
+ * is created for each problem function and dimension (and indicator type) and contains information for all
+ * instances of that problem (and indicator type).
+ * - The "udat" files contain function evaluations, indicator values and target hits for every uniform
+ * target hit as well as for the last evaluation. The .udat files are created if the estimation of the
+ * optimal indicator value is unknown or if the observer flag unif_target_trigger is set to 1. One .udat file
+ * is created for each problem function and dimension (and indicator type) and contains information for all
+ * instances of that problem (and indicator type).
  * - The "tdat" files contain function evaluation and indicator values for every predefined evaluation
  * number as well as for the last evaluation. One .tdat file is created for each problem function and
  * dimension (and indicator type) and contains information for all instances of that problem (and indicator

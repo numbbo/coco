@@ -61,7 +61,7 @@ static void observer_bbob_new(coco_observer_t *observer, const char *options, co
 
   observer_bbob_new_data_t *observer_data;
   /* Sets the valid keys for bbob_new observer options
-   * TODO IMPORTANT: This list should be up-to-date with the code and the documentation */
+   * IMPORTANT: This list should be up-to-date with the code and the documentation */
   const char *known_keys[] = { "prefix" };
   *option_keys = coco_option_keys_allocate(sizeof(known_keys) / sizeof(char *), known_keys);
 

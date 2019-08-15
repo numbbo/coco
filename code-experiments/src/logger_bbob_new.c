@@ -2,14 +2,20 @@
  * @file logger_bbob.c
  * @brief Implementation of the bbob logger.
  *
- * Logs the performance of a single-objective optimizer on noisy or noiseless problems with or without constraints.
- * It produces four kinds of files:
- * - The "info" files ...
- * - The "dat" files ...
- * - The "tdat" files ...
- * - The "udat" files
- * - The "rdat" files ...
- * TODO: Finish the description
+ * Logs the performance of an optimizer on single-objective problems with or without constraints.
+ *
+ * It produces a number of files:
+ * - The "info" files contain high-level information on the performed experiment. One .info file
+ * is created for each function and contains information on all the problem instances for that
+ * function.
+ * - The remaining files ("dat", "udat", "tdat" and "rdat" files) contain detailed information on the
+ * performance of an optimizer. Logging in the "dat" and "udat" files is triggered when performance
+ * targets are reached (they are either logarithmic or uniform, respectively), logging in the "tdat"
+ * files is triggered by the number of function evaluations and logging in the "rdat" files is
+ * triggered by the restart of an algorithm.
+ *
+ * The logger can also be used if the optimum of a problem instance is unknown. In such a case, it
+ * produces "udat" files instead of "dat" files.
  */
 
 #include <stdio.h>
