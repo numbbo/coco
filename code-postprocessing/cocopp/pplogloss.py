@@ -337,7 +337,7 @@ def boxplot(x, notch=0, sym='b+', positions=None, widths=None):
     for i, pos in enumerate(positions):
         d = np.ravel(x[i])
         # get median and quartiles
-        wisk_lo, q1, med, q3, wisk_hi = mlab.prctile(d, [10, 25, 50, 75, 90])
+        wisk_lo, q1, med, q3, wisk_hi = np.percentile(d, [10, 25, 50, 75, 90])
         # get high extreme
         #iq = q3 - q1
         #hi_val = q3 + whis*iq
