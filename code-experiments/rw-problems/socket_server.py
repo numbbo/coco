@@ -20,6 +20,8 @@ def evaluate_message(message):
     """Parses the message and calls an evaluator to compute the evaluation. Then constructs a
     response. Returns the response."""
     try:
+        # Make sure to remove and null endings
+        message = message.split('\x00', 1)[0]
         # Parse the message
         msg = message.split(' ')
         suite_name = msg[msg.index('n') + 1]
