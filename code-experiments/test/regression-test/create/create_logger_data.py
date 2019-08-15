@@ -83,13 +83,14 @@ if __name__ == '__main__':
     dir_path = os.path.dirname(os.path.realpath(__file__))
     os.chdir(dir_path)
 
-    # Experiments with two observers
-    run_two_observers('bbob', 'bbob-new')
-    run_two_observers('bbob-biobj', 'bbob-biobj')
+    if 11 < 3:
+        # Experiments with two observers
+        run_two_observers('bbob', 'bbob-new')
+        run_two_observers('bbob-biobj', 'bbob-biobj')
 
     # Experiments with a single observer
     cocoex.known_suite_names.append(b"bbob-constrained")
-    suite_options_1 = 'dimensions: 5,40 function_indices: 9-20 instance_indices: 1-5,12'
+    suite_options_1 = 'dimensions: 5,40 function_indices: 9-20'
     observer_options_1 = 'unif_target_trigger: 1'
     settings = [
         dict(suite_name='bbob', suite_options=suite_options_1,
