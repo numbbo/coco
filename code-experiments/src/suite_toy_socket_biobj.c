@@ -5,7 +5,7 @@
  * of socket communication for function evaluation. A single-objective version can be found in the
  * file suite_toy_socket.c
  *
- * The suite contains 1 problem with dimension 2 and 1 instance.
+ * The suite contains 1 problem with dimensions 2, 30 and 1 instance.
  */
 
 #include "coco.h"
@@ -24,9 +24,9 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 static coco_suite_t *suite_toy_socket_biobj_initialize(const char *suite_options) {
 
   coco_suite_t *suite;
-  const size_t dimensions[] = { 2 };
+  const size_t dimensions[] = { 2, 30 };
 
-  suite = coco_suite_allocate("toy-socket-biobj", 1, 1, dimensions, "instances: 1");
+  suite = coco_suite_allocate("toy-socket-biobj", 1, 2, dimensions, "instances: 1");
 
   suite->data = socket_communication_data_initialize(suite_options);
   suite->data_free_function = socket_communication_data_free;
@@ -76,6 +76,9 @@ static coco_problem_t *suite_toy_socket_biobj_get_problem(coco_suite_t *suite,
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
   problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
+
+  /* Set problem type */
+  coco_problem_set_type(problem, "toy_socket");
 
   return problem;
 }
