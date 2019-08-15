@@ -81,7 +81,6 @@ static char *socket_communication_get_message(const char *suite_name,
     message = coco_strdupf("%s %.*e", message, precision_x, x[i]);
     coco_free_memory(tmp_string);
   }
-
   return message;
 }
 
@@ -155,7 +154,7 @@ static void socket_communication_evaluate(const char* host_name, const unsigned 
   }
 
   /* Send message */
-  if (send(sock, message, (int)strlen(message), 0) < 0) {
+  if (send(sock, message, (int)strlen(message) + 1, 0) < 0) {
     coco_error("socket_communication_evaluate(): Send failed: %d", WSAGetLastError());
   }
   coco_debug("Sent message: %s", message);
@@ -194,7 +193,7 @@ static void socket_communication_evaluate(const char* host_name, const unsigned 
   }
 
   /* Send message */
-  if (send(sock, message, strlen(message), 0) < 0) {
+  if (send(sock, message, strlen(message) + 1, 0) < 0) {
     coco_error("socket_communication_evaluate(): Send failed");
   }
   coco_debug("Sent message: %s", message);
