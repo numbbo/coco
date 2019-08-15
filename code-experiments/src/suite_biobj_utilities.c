@@ -12,7 +12,6 @@
 
 #include "coco.h"
 #include "suite_biobj_best_values_hyp.c"
-#include "suite_biobj_mixint_best_values_hyp.c"
 
 /**
  * @brief The array of triples biobj_instance - problem1_instance - problem2_instance connecting bi-objective
