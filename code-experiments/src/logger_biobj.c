@@ -105,6 +105,8 @@ typedef struct {
  * finalization.
  */
 typedef struct {
+  coco_observer_t *observer;          /**< @brief Pointer to the observer (might be NULL at the end) */
+
   observer_biobj_log_nondom_e log_nondom_mode;
                                       /**< @brief Mode for archiving nondominated solutions. */
   FILE *adat_file;                    /**< @brief File for archiving nondominated solutions (all or final). */
@@ -819,6 +821,7 @@ static void logger_biobj_finalize(logger_biobj_data_t *logger) {
 static void logger_biobj_free(void *stuff) {
 
   logger_biobj_data_t *logger;
+  coco_observer_t *observer; /* The observer might not exist at this point */
   size_t i;
 
   assert(stuff != NULL);
@@ -845,16 +848,20 @@ static void logger_biobj_free(void *stuff) {
   avl_tree_destruct(logger->archive_tree);
   avl_tree_destruct(logger->buffer_tree);
 
+  observer = logger->observer;
+  if ((observer != NULL) && (observer->data != NULL)) {
+    /* If the observer still exists (if it does not, logger_is_used does not matter any longer) */
+    ((observer_biobj_data_t *)observer->data)->logger_is_used = 0;
+  }
+
 }
 
 /**
  * @brief Initializes the biobjective logger.
  *
- * Copies all observer field values that are needed after initialization into logger field values for two
- * reasons:
- * - If the observer is deleted before the suite, the observer is not available anymore when the logger
- * is finalized.
- * - This reduces function calls.
+ * Copies all observer field values that are needed after initialization into logger field values
+ * because if the observer is deleted before the suite, the observer is not available anymore when
+ * the logger is finalized.
  */
 static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *inner_problem) {
 
@@ -865,14 +872,25 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   char *path_name, *file_name = NULL;
   size_t i;
 
+  coco_debug("Started logger_biobj()");
+
   if (inner_problem->number_of_objectives != 2) {
     coco_error("logger_biobj(): The bi-objective logger cannot log a problem with %d objective(s)",
         inner_problem->number_of_objectives);
     return NULL; /* Never reached. */
   }
 
+  assert(observer != NULL);
+  observer_data = (observer_biobj_data_t *) observer->data;
+  assert(observer_data != NULL);
+
+  if (observer_data->logger_is_used) {
+    coco_error("logger_biobj(): The current logger (observer) must be closed before a new one is opened");
+  }
+
   logger_data = (logger_biobj_data_t *) coco_allocate_memory(sizeof(*logger_data));
 
+  logger_data->observer = observer;
   logger_data->number_of_evaluations = 0;
   logger_data->previous_evaluations = 0;
   logger_data->number_of_variables = inner_problem->number_of_variables;
@@ -880,7 +898,6 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   logger_data->number_of_objectives = inner_problem->number_of_objectives;
   logger_data->suite_dep_instance = inner_problem->suite_dep_instance;
 
-  observer_data = (observer_biobj_data_t *) observer->data;
   /* Copy values from the observer that you might need even if it does not exist any more */
   logger_data->log_nondom_mode = observer_data->log_nondom_mode;
   logger_data->compute_indicators = observer_data->compute_indicators;
@@ -893,6 +910,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
     logger_data->log_vars = 0;
   else
     logger_data->log_vars = 1;
+  observer_data->logger_is_used = 1;
 
   /* Initialize logging of nondominated solutions into the archive file */
   if ((logger_data->log_nondom_mode == LOG_NONDOM_ALL) ||
@@ -949,6 +967,8 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
 
   problem = coco_problem_transformed_allocate(inner_problem, logger_data, logger_biobj_free, observer->observer_name);
   problem->evaluate_function = logger_biobj_evaluate;
+
+  coco_debug("Ended   logger_biobj()");
 
   return problem;
 }

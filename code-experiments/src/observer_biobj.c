@@ -32,6 +32,8 @@ typedef struct {
   long previous_function;                      /**< @brief Function of the previous logged problem. */
   long previous_dimension;                     /**< @brief Dimension of the previous logged problem */
 
+  int logger_is_used;                          /**< @brief Whether the logger is already used on a problem */
+
 } observer_biobj_data_t;
 
 static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *problem);
@@ -112,6 +114,8 @@ static void observer_biobj(coco_observer_t *observer, const char *options, coco_
     observer_data->previous_function = -1;
     observer_data->previous_dimension = -1;
   }
+
+  observer_data->logger_is_used = 0;
 
   observer->logger_allocate_function = logger_biobj;
   observer->logger_free_function = logger_biobj_free;
