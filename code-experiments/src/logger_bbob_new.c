@@ -320,14 +320,11 @@ static void logger_bbob_new_initialize(logger_bbob_new_data_t *logger) {
   char folder_path[COCO_PATH_MAX + 2] = { 0 };
   char *function_string;
   char *dimension_string;
-  observer_bbob_new_data_t *observer_data;
 
   coco_debug("Started logger_bbob_new_initialize()");
 
   assert(logger != NULL);
   assert(logger->observer != NULL);
-  observer_data = (observer_bbob_new_data_t *)((coco_observer_t *)logger->observer)->data;
-  assert (observer_data != NULL);
 
   function_string = coco_strdupf("%lu", (unsigned long) logger->function);
   dimension_string = coco_strdupf("%lu", (unsigned long) logger->number_of_variables);
