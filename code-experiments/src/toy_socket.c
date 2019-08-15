@@ -37,6 +37,7 @@ static coco_problem_t *toy_socket_problem_allocate(const size_t number_of_object
 
   coco_problem_set_id(problem, problem_id_template, function, instance, dimension);
   coco_problem_set_name(problem, problem_name_template, function, instance, dimension);
+  coco_problem_set_type(problem, "toy_socket");
 
   if (number_of_objectives == 1) {
     problem->best_value[0] = -1000;
