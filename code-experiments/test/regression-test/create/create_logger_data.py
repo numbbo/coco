@@ -1,44 +1,46 @@
 #!/usr/bin/env python
-"""Create logger output for the bbob and bbob-biobj loggers when random search is run on the suite
-with the same name.
+"""Create logger data for random search run on a few evaluations on the suite with the given
+options.
 """
 from __future__ import division, print_function
 import numpy as np
 import cocoex
+import os
 
 
-def run_experiment(suite_name, logger, folder, order='', observer_options=''):
-    """Runs random search on a subset of problems from either the bbob or bbob-biobj suites.
+def run_experiment(suite_name, suite_options, observer_name, observer_options, folder,
+                   instance_order=''):
+    """Runs random search on a subset of problems from the given suite.
 
     If order='', the problems are called in the usual order.
     If order='rand', the problems are called in a random order.
     If order='inst', the problems are split wrt their instances (first half of instances goes first,
     then the other half).
-    Reuses much of the code from the example experiment for beginners
+
     Returns the name of the actual output folder
     """
-    ### input
-    budget_multiplier = 50
-
-    ### prepare
-    suite = cocoex.Suite(suite_name, 'instances: 1-6', 'dimensions: 2,3 function_indices: 9-20')
-    observer = cocoex.Observer(logger, 'result_folder: {} {}'.format(folder, observer_options))
+    budget_multiplier = 5
+    suite = cocoex.Suite(suite_name, '', suite_options)
+    observer = cocoex.Observer(observer_name,
+                               '{} result_folder: {}'.format(observer_options, folder))
     np.random.seed(12345)
 
-    ### go
+    # Set the order of problem instances
     problem_indices = np.arange(len(suite))
-    if order == 'rand':
+    if instance_order == 'rand':
         np.random.shuffle(problem_indices)
-    elif order == 'inst':
+    elif instance_order == 'inst':
         num_dims = len(suite.dimensions)
         funcs = [x[x.find('_f')+1:x.find('_i')] for x in suite.ids()[0:int(len(suite)/num_dims)]]
         num_func = len(set(funcs))
         half_num_inst = int(len(suite) / num_func / num_dims / 2)
-        other_half_num_inst = int((len(suite) - half_num_inst * num_func * num_dims) / num_func / num_dims)
+        other_half_num_inst = \
+            int((len(suite) - half_num_inst * num_func * num_dims) / num_func / num_dims)
         mask = np.tile(np.append(np.ones(half_num_inst, dtype=bool),
                                  np.zeros(other_half_num_inst, dtype=bool)),
                        num_dims * num_func)
         problem_indices = np.append(problem_indices[mask], problem_indices[~mask])
+
     for problem_index in problem_indices:
         problem = suite[problem_index]
         problem.observe_with(observer)
@@ -54,15 +56,16 @@ def run_experiment(suite_name, logger, folder, order='', observer_options=''):
     return observer.result_folder
 
 
-def run_two_observers(suite_name, logger, folder):
-    """Uses two observers to observe the first problem of the given suite. Performs only a few
-    random evaluations.
+def run_two_observers(suite_name, observer_name):
+    """Uses two observers of the same kind to observe the first problem of the given suite.
+    Performs only a few random evaluations.
 
     Returns the name of the actual output folders
     """
+    folder = '2_observers_{}_{}'.format(suite_name, observer_name)
     suite = cocoex.Suite(suite_name, 'instances: 1', 'dimensions: 2 function_indices: 1')
-    observer1 = cocoex.Observer(logger, 'result_folder: {}-1'.format(folder))
-    observer2 = cocoex.Observer(logger, 'result_folder: {}-2'.format(folder))
+    observer1 = cocoex.Observer(observer_name, 'result_folder: {}-1'.format(folder))
+    observer2 = cocoex.Observer(observer_name, 'result_folder: {}-2'.format(folder))
 
     np.random.seed(12345)
 
@@ -76,38 +79,52 @@ def run_two_observers(suite_name, logger, folder):
     return observer1.result_folder, observer2.result_folder
 
 
-def run_several_problems(suite_name, logger, folder):
-    """Works with several problems at the same time. Performs only a few random evaluations of these
-    problems.
+if __name__ == '__main__':
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    os.chdir(dir_path)
 
-    Returns the name of the actual output folder
-    """
-    suite = cocoex.Suite(suite_name, 'instances: 1-2', 'dimensions: 2,3 function_indices: 1-2')
-    observer = cocoex.Observer(logger, 'result_folder: {}'.format(folder))
+    # Experiments with two observers
+    run_two_observers('bbob', 'bbob-new')
+    run_two_observers('bbob-biobj', 'bbob-biobj')
 
-    np.random.seed(12345)
+    # Experiments with a single observer
+    cocoex.known_suite_names.append(b"bbob-constrained")
+    suite_options_1 = 'dimensions: 5,40 function_indices: 9-20 instance_indices: 1-5,12'
+    observer_options_1 = 'unif_target_trigger: 1'
+    settings = [
+        dict(suite_name='bbob', suite_options=suite_options_1,
+             observer_name='bbob', observer_options=observer_options_1,
+             instance_order='def'),
+        dict(suite_name='bbob', suite_options=suite_options_1,
+             observer_name='bbob', observer_options=observer_options_1,
+             instance_order='inst'),
 
-    problems = [suite[i] for i in range(len(suite))]
-    for problem in problems:
-        problem.observe_with(observer)
-    for _ in range(10):
-        for problem in problems:
-            x = np.random.uniform(problem.lower_bounds, problem.upper_bounds, problem.dimension)
-            problem(x)
+        dict(suite_name='bbob', suite_options=suite_options_1,
+             observer_name='bbob-new', observer_options=observer_options_1,
+             instance_order='def'),
+        dict(suite_name='bbob', suite_options=suite_options_1,
+             observer_name='bbob-new', observer_options=observer_options_1,
+             instance_order='inst'),
+        dict(suite_name='bbob', suite_options=suite_options_1,
+             observer_name='bbob-new', observer_options=observer_options_1,
+             instance_order='rand'),
 
-    return observer.result_folder
+        dict(suite_name='bbob-constrained', suite_options=suite_options_1,
+             observer_name='bbob-new', observer_options=observer_options_1,
+             instance_order='def'),
+        dict(suite_name='bbob-mixint', suite_options=suite_options_1,
+             observer_name='bbob-new', observer_options=observer_options_1,
+             instance_order='def'),
 
+        dict(suite_name='bbob-biobj', suite_options=suite_options_1,
+             observer_name='bbob-biobj', observer_options=observer_options_1,
+             instance_order='def'),
+        dict(suite_name='bbob-biobj-mixint', suite_options=suite_options_1,
+             observer_name='bbob-biobj', observer_options=observer_options_1,
+             instance_order='def'),
+    ]
 
-if __name__ == "__main__":
-    # for logger in ['bbob-biobj']:
-    for logger in ['bbob', 'bbob-biobj']:
-        for order in ['default', 'rand', 'inst']:
-            data_folder = '{}_logger_data_{}'.format(logger, order)
-            run_experiment(logger, logger, data_folder, order=order)
-            if order == 'default':
-                run_experiment(
-                    logger, logger, data_folder + '_options', order=order,
-                    observer_options='unif_target_trigger: 1 unif_target_precision: 1e6')
-        if logger is not 'bbob':
-            run_two_observers(logger, logger, '{}_logger_data_{}'.format(logger, '2_observers'))
-        # run_several_problems(logger, 'bbob-new', '{}_logger_data_{}'.format(logger, '8_problems'))
+    for setting in settings:
+        folder = '{}_{}_{}'.format(setting['suite_name'], setting['observer_name'],
+                                   setting['instance_order'])
+        run_experiment(folder=folder, **setting)

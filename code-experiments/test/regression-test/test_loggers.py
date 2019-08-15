@@ -4,14 +4,12 @@ data folder. Random search with a fixed seed is used to evaluate solutions.
 """
 from __future__ import division, print_function
 import os
-import sys
 import math
 import re
 try:
     from urllib.request import urlretrieve
 except ImportError:
     from urllib import urlretrieve
-from create.create_logger_data import run_experiment
 
 
 def regression_test_match_words(old_word, new_word, accuracy=1e-6):
@@ -111,52 +109,22 @@ def regression_test_match_logger_output(old_data_folder, new_data_folder):
 
 
 if __name__ == "__main__":
-    logger = 'bbob-new'
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    os.chdir(dir_path)
+
+    path = os.path.join('create', 'exdata')
+    comparisons = [['bbob_bbob_def', 'bbob_bbob-new_def']]
+
     exception_count = 0
     try:
-        logger = int(sys.argv[1])
-    except IndexError:
-        pass
-    except Exception as e:
-        raise e
-
-    try:
-        # TODO: Test also on the constrained suite!
-        for order in ['default', 'rand', 'inst']:
-            # Get the old logger output
-            old_data_folder = os.path.join('data', 'bbob_logger_data_{}'.format(order))
-
-            if not os.path.exists(old_data_folder):
-                # TODO: Upload data to the remote location!
-                remote_data_path = 'http://coco.gforge.inria.fr/regression-tests/'
-                # download data from remote_data_path:
-                if not os.path.exists(os.path.split(old_data_folder)[0]):
-                    try:
-                        os.makedirs(os.path.split(old_data_folder)[0])
-                    except Exception as e:
-                        raise e
-                url = '/'.join((remote_data_path, old_data_folder))
-                print('Downloading {} to {}'.format(url, old_data_folder))
-                urlretrieve(url, old_data_folder)
-
-            # Produce the new logger output
-            new_data_folder = os.path.join('new_data', '{}_logger_data_{}'.format(logger, order))
-            new_data_folder_relative = os.path.join('..', 'new_data', '{}_logger_data_{}'
-                                                    ''.format(logger, order))
-            result_folder = run_experiment('bbob', logger, new_data_folder_relative, order=order)
-
-            if order == 'default':
-                result_folder = run_experiment(
-                    'bbob', logger, new_data_folder_relative + '_options', order=order,
-                    observer_options='unif_target_trigger: 1 unif_target_precision: 1e6')
-
+        for comparison in comparisons:
             try:
                 # Check that the outputs match
-                regression_test_match_logger_output(old_data_folder, result_folder)
+                regression_test_match_logger_output(os.path.join(path, comparison[0]),
+                                                    os.path.join(path, comparison[1]))
             except Exception as e:
                 print('{}'.format(e))
                 exception_count += 1
-
         print('Check completed!')
         if exception_count > 0:
             raise ValueError('Found {} exceptions'.format(exception_count))
