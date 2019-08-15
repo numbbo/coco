@@ -357,7 +357,10 @@ static void logger_bbob_new_initialize(logger_bbob_new_data_t *logger) {
   }
   if (logger->write_udat_file) {
     logger_bbob_new_open_data_file(&(logger->udat_file), logger->observer->result_folder, relative_path, ".udat");
-    fprintf(logger->udat_file, "%s", logger_bbob_new_header_opt_unknown);
+    if (logger->is_optimum_known)
+      fprintf(logger->udat_file, logger_bbob_new_header_opt_known, logger->optimal_value);
+    else
+      fprintf(logger->udat_file, "%s", logger_bbob_new_header_opt_unknown);
   }
   logger_bbob_new_open_data_file(&(logger->tdat_file), logger->observer->result_folder, relative_path, ".tdat");
   logger_bbob_new_open_data_file(&(logger->rdat_file), logger->observer->result_folder, relative_path, ".rdat");
