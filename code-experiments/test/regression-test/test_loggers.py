@@ -113,7 +113,8 @@ if __name__ == "__main__":
     os.chdir(dir_path)
 
     path = os.path.join('create', 'exdata')
-    comparisons = [['bbob_bbob_def', 'bbob_bbob-new_def']]
+    comparisons = [['bbob_bbob_def', 'bbob_bbob-new_def'],
+                   ['bbob-constrained_bbob_def', 'bbob-constrained_bbob-new_def']]
 
     exception_count = 0
     try:

@@ -111,6 +111,9 @@ if __name__ == '__main__':
              instance_order='rand'),
 
         dict(suite_name='bbob-constrained', suite_options=suite_options_1,
+             observer_name='bbob', observer_options=observer_options_1,
+             instance_order='def'),
+        dict(suite_name='bbob-constrained', suite_options=suite_options_1,
              observer_name='bbob-new', observer_options=observer_options_1,
              instance_order='def'),
         dict(suite_name='bbob-mixint', suite_options=suite_options_1,
