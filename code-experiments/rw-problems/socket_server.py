@@ -29,7 +29,8 @@ def evaluate_message(message):
         num_objectives = int(msg[msg.index('o') + 1])
         x = [float(m) for m in msg[msg.index('x') + 1:]]
         if len(x) != dimension:
-            raise('Number of x values {} does not match dimension {}'.format(len(x), dimension))
+            raise ValueError('Number of x values {} does not match dimension {}'.format(len(x),
+                                                                                        dimension))
 
         # Find the right evaluator
         if 'toy-socket' in suite_name:
@@ -38,7 +39,7 @@ def evaluate_message(message):
         # elif 'my-suite' in suite_name:
         #     evaluate = evaluate_my_suite
         else:
-            raise ('Suite {} not supported'.format(suite_name))
+            raise ValueError('Suite {} not supported'.format(suite_name))
         # Evaluate x and save the result to y
         y = evaluate(suite_name, num_objectives, func, instance, x)
         # Construct the response
