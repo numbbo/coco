@@ -242,6 +242,7 @@ void socket_server_start(int silent) {
       printf("Sent response %s (length %ld)\n", response, strlen(response));
 
     free(response);
+    close(new_sock);
   }
 #endif
 }
