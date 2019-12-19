@@ -401,6 +401,21 @@ def main(arguments):
             print('**  subtest 16 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-biobj-mixint`.'
 
+        with InfolderGoneWithTheWind():
+            t0 = time.time()
+            result = os.system(python + command +
+                               join_path(recent_data_path, 'BFGS! LBFGS!'))
+            print('**  subtest 17 finished in ', time.time() - t0, ' seconds')
+            assert result == 0, 'Test failed: rungeneric on data from `bbob` and `bbob-largescale` suite.'
+
+        with InfolderGoneWithTheWind():
+            t0 = time.time()
+            result = os.system(python + command +
+                               join_path(recent_data_path, 'NSGA-II! 2019/IBEA!'))
+            print('**  subtest 18 finished in ', time.time() - t0, ' seconds')
+            assert result == 0, 'Test failed: rungeneric on data from `bbob-biobj` and `bbob-biobj-ext` suite.'
+
+
     print('launching doctest (it might be necessary to close a few pop up windows to finish)')
     t0 = time.time()
 

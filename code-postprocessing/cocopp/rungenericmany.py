@@ -288,11 +288,15 @@ def main(argv=None):
 
         print("  loading data...")
         dsList, sortedAlgs, dictAlg = processInputArgs(args, True)
+        # TODO: dictAlg not really needed here anymore as we filter
+        #       dsList and then get dictAlg from there...
 
         # filter data set lists to be compliant with all suites
         # (useful right now only for bbob-biobj and bbob-biobj-ext data)
         dsList = testbedsettings.current_testbed.filter(dsList)
-        dictAlg = testbedsettings.current_testbed.filter(dictAlg)
+
+        dictAlg = dsList.dictByAlgName()
+        config.config() # make sure that the filtered settings are taken into account
 
         if not dsList:
             sys.exit()

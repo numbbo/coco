@@ -5,6 +5,7 @@ import numpy as np
 import warnings
 
 from . import dataformatsettings
+from . import pproc
 
 scenario_rlbased = 'rlbased'
 scenario_fixed = 'fixed'
@@ -55,7 +56,8 @@ suite_to_testbed = {
     'bbob-constrained': default_testbed_cons,
     'bbob-largescale': default_testbed_ls,
     'bbob-mixint': default_testbed_mixint,
-    'bbob-biobj-mixint': default_testbed_bi_mixint
+    'bbob-biobj-mixint': default_testbed_bi_mixint,
+    'bbob-JOINED-bbob-largescale': 'BBOBLargeScaleJOINEDTestbed',
 }
 
 
@@ -199,15 +201,14 @@ class Testbed(object):
 
     def filter(self, dsl):
         """
-        Returns a new DataSetList from DataSetList dsl that is 
-        consistent with the Testbed class. Works in the same manner
-        for a dictionary dsl of DataSetLists by directly removing
-        the corresponding entries from the DataSetLists.
+        Interface to make DataSetList dsl (either list or dictionary)
+        consistent with the retrieved Testbed class(es) in rungenericmany.
         
-        Right now only used for making bbob-biobj and bbob-biobj-ext suites
-        consistent. Here implemented as a stub.
+        Initially used for making bbob-biobj and bbob-biobj-ext suites
+        consistent.
         """
-        return dsl
+        return pproc.DataSetList(dsl)
+
 
 
 
@@ -261,7 +262,7 @@ class GECCOBBOBTestbed(Testbed):
         # independently of the testbed constrained to the data we actually
         # see, that is, not assigned here?
         number_of_points=5,  # nb of target function values for each decade
-        instancesOfInterest=None  # None: consider all instances
+        instancesOfInterest=None,  # None: consider all instances
         # .instancesOfInterest={1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1,
         #                   10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 1,
         #                   21: 1, 22: 1, 23: 1, 24: 1, 25: 1, 26: 1, 27: 1, 28: 1, 29: 1, 30: 1,
@@ -269,6 +270,9 @@ class GECCOBBOBTestbed(Testbed):
         #                   41: 1, 42: 1, 43: 1, 44: 1, 45: 1, 46: 1, 47: 1, 48: 1, 49: 1, 50: 1,
         #                   51: 1, 52: 1, 53: 1, 54: 1, 55: 1, 56: 1, 57: 1, 58: 1, 59: 1, 60: 1} # consider only 2009-2016 instances
         # .instancesOfInterest={1: 1, 2: 1}
+        plots_on_main_html_page = ['pprldmany_02D_noiselessall.svg', 'pprldmany_03D_noiselessall.svg',
+                               'pprldmany_05D_noiselessall.svg', 'pprldmany_10D_noiselessall.svg',
+                               'pprldmany_20D_noiselessall.svg', 'pprldmany_40D_noiselessall.svg'],
     ) 
 
     def __init__(self, targetValues):
@@ -291,6 +295,90 @@ class GECCOBBOBTestbed(Testbed):
         # in config:
         self.instantiate_attributes(targetValues)
 
+
+    def filter(self, dsl):
+        """ Updates the dimensions in all of dsl's entries
+            if both bbob and bbob-largescale data is in dsl
+            and sets the corresponding suite to
+            BBOBLargeScaleJOINEDTestbed in this case.
+
+            Gives an error if the data is not compatible.
+        """
+        global current_testbed
+
+        flatdsl = dsl
+        if isinstance(dsl, dict):
+            flatdsl = [d for d in dsl.values()]
+            flatdsl = [num for elem in flatdsl for num in elem]
+
+        # find out whether we have to do something:
+        bbob_detected = False
+        bbob_largescale_detected = False
+        for ds in flatdsl:
+            detected_suite = ds.get_suite()
+            if detected_suite == 'bbob':
+                bbob_detected = True
+            elif detected_suite == 'bbob-largescale':
+                bbob_largescale_detected = True
+            elif detected_suite == 'bbob-JOINED-bbob-largescale':
+                continue
+            else:
+                raise ValueError("Data from %s suite is not "
+                                 "compatible with other data from "
+                                 "the bbob and/or bbob-largescale "
+                                 "suites" % str(ds.get_suite()))
+
+        # now update all elements in flattened list if needed:
+        if bbob_detected and bbob_largescale_detected:
+            for ds in flatdsl:
+                ds.get_suite = lambda: BBOBLargeScaleJOINEDTestbed
+                ds.testbed_name = 'bbob-JOINED-bbob-largescale'
+                # make sure that the right testbed is loaded:
+                if type(current_testbed) is not BBOBLargeScaleJOINEDTestbed:
+                    current_testbed = load_current_testbed('BBOBLargeScaleJOINEDTestbed', pproc.TargetValues)
+
+
+        return pproc.DataSetList(flatdsl)
+
+
+
+
+
+class BBOBLargeScaleJOINEDTestbed(GECCOBBOBTestbed):
+    """Union of GECCOBBOBTestbed and BBOBLargeScaleTestbed with all their dimensions."""
+
+    dimsOfInterest = (80, 320)
+
+    settings = dict(
+        dimensions_to_display=(2, 3, 5, 10, 20, 40, 80, 160, 320, 640),
+        goto_dimension=160,  # auto-focus on this dimension in html
+        reference_algorithm_filename='',
+        reference_algorithm_displayname='',
+        plots_on_main_html_page=['pprldmany_02D_noiselessall.svg', 'pprldmany_03D_noiselessall.svg',
+                                 'pprldmany_05D_noiselessall.svg', 'pprldmany_10D_noiselessall.svg',
+                                 'pprldmany_20D_noiselessall.svg', 'pprldmany_40D_noiselessall.svg',
+                                 'pprldmany_80D_noiselessall.svg', 'pprldmany_160D_noiselessall.svg',
+                                 'pprldmany_320D_noiselessall.svg', 'pprldmany_640D_noiselessall.svg'],
+
+    )
+
+    def __init__(self, targetValues):
+        super(BBOBLargeScaleJOINEDTestbed, self).__init__(targetValues)
+
+        if 11 < 3:
+            # override settings if needed...
+            self.settings.reference_algorithm_filename = ''  # TODO: prepare add correct reference algo
+                                                             # with all dimensions 2..640
+            self.settings.reference_algorithm_displayname = None  # TODO: add correct algo here
+
+        for key, val in BBOBLargeScaleJOINEDTestbed.settings.items():
+            setattr(self, key, val)
+            if 'target_values' in key or 'targetsOfInterest' in key:
+                self.instantiate_attributes(targetValues, [key])
+
+    def filter(self, dsl):
+        """ Does nothing but overwriting the method from superclass"""
+        return pproc.DataSetList(dsl)
 
 
 class CONSBBOBTestbed(GECCOBBOBTestbed):
@@ -335,6 +423,7 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         # Isn't the point that the data_format should be set
         # independently of the testbed constrained to the data we actually
         # see, that is, not assigned here?
+
     )
 
 
@@ -352,6 +441,9 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
             if 'target_values' in key or 'targetsOfInterest' in key:
                 self.instantiate_attributes(target_values, [key])
 
+    def filter(self, dsl):
+        """ Does nothing but overwriting the method from superclass"""
+        return pproc.DataSetList(dsl)
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
@@ -370,7 +462,11 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
         first_function_number=101,
         last_function_number=130,
         reference_algorithm_filename='refalgs/best2009-bbob-noisy.tar.gz',
-        reference_algorithm_displayname='best 2009'  # TODO: should be read in from data set in reference_algorithm_filename
+        reference_algorithm_displayname='best 2009',  # TODO: should be read in from data set in reference_algorithm_filename
+        plots_on_main_html_page = ['pprldmany_02D_nzall.svg', 'pprldmany_03D_nzall.svg',
+                                   'pprldmany_05D_nzall.svg', 'pprldmany_10D_nzall.svg',
+                                   'pprldmany_20D_nzall.svg', 'pprldmany_40D_nzall.svg'],
+
     )
     
     def __init__(self, target_values):
@@ -385,6 +481,11 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
             setattr(self, key, val)
             if 'target_values' in key or 'targetsOfInterest' in key:
                 self.instantiate_attributes(target_values, [key])
+
+
+    def filter(self, dsl):
+        """ Does nothing but overwriting the method from superclass"""
+        return pproc.DataSetList(dsl)
 
 
 class GECCOBiObjBBOBTestbed(Testbed):
@@ -438,6 +539,9 @@ class GECCOBiObjBBOBTestbed(Testbed):
         # independently of the testbed constrained to the data we actually
         # see, that is, not assigned here?
         number_of_points=10,  # nb of target function values for each decade
+        plots_on_main_html_page=['pprldmany_02D_noiselessall.svg', 'pprldmany_03D_noiselessall.svg',
+                                 'pprldmany_05D_noiselessall.svg', 'pprldmany_10D_noiselessall.svg',
+                                 'pprldmany_20D_noiselessall.svg', 'pprldmany_40D_noiselessall.svg'],
     ) 
 
     def __init__(self, targetValues):
@@ -457,38 +561,45 @@ class GECCOBiObjBBOBTestbed(Testbed):
             self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 
     def filter(self, dsl):
-        """ Returns a new DataSetList from DataSetList dsl that does only have the
-            first 55 functions, in case the original data is from either
-            the bbob-biobj or the bbob-biobj-ext suite. Filters in a similar 
-            manner by removing directly from dsl if dsl is an algorithm dictionary.
+        """ Filters DataSetList dsl (either a list or a dictionary) to
+            contain only the first 55 functions if data from
+            both the bbob-biobj and the bbob-biobj-ext suite are detected.
+
+            Returns the filtered list as new DataSetList instance.
         
             Gives an error if the data is not compatible.    
         """
 
-        if type(dsl) is list:
-            new_dsl = []
-            for ds in dsl:
-                if not ds.get_suite() in ['bbob-biobj', 'bbob-biobj-ext']:
-                    raise ValueError("Data from %s suite is not "
-                                     "compatible with other data from "
-                                     "the bbob-biobj and/or bbob-biobj-ext "
-                                     "suites" % str(ds.suite))
-                else:
-                    if ds.funcId <= 55:
-                        new_dsl.append(ds)
-            return new_dsl
-        elif type(dsl) is dict:
-            for algname in dsl:
-                for i in range(len(dsl[algname]) - 1, -1, -1):
-                    if not (dsl[algname])[i].get_suite() in ['bbob-biobj', 'bbob-biobj-ext']:
-                        raise ValueError("Data from %s suite is not "
-                                         "compatible with other data from "
-                                         "the bbob-biobj and/or bbob-biobj-ext "
-                                         "suites" % str((dsl[algname])[i].suite))
-                    else:
-                        if ((dsl[algname])[i]).funcId > 55:
-                            dsl[algname].pop(i)
-            return dsl
+        # flatten dsl to always get a list:
+        flatdsl = dsl
+        if isinstance(dsl, dict):
+            flatdsl = [d for d in dsl.values()]
+            flatdsl = [num for elem in flatdsl for num in elem]
+
+        # find out whether we have to do something:
+        bbobbiobj_detected = False
+        bbobbiobjext_detected = False
+        for ds in flatdsl:
+            if ds.get_suite() == 'bbob-biobj':
+                bbobbiobj_detected = True
+            elif ds.get_suite() == 'bbob-biobj-ext':
+                bbobbiobjext_detected = True
+            else:
+                raise ValueError("Data from %s suite is not "
+                                 "compatible with other data from "
+                                 "the bbob-biobj and/or bbob-biobj-ext "
+                                 "suites" % str(ds.get_suite()))
+
+        # now update all elements in flattened list if needed:
+        toberemoveddatasets = []
+        if bbobbiobj_detected and bbobbiobjext_detected:
+            for ds in flatdsl:
+                if ds.funcId > 55:
+                    toberemoveddatasets.append(ds)
+        for ds in toberemoveddatasets:
+            flatdsl.remove(ds)
+
+        return pproc.DataSetList(flatdsl)
 
 
 class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
@@ -574,7 +685,10 @@ class BBOBLargeScaleTestbed(GECCOBBOBTestbed):
         # independently of the testbed constrained to the data we actually
         # see, that is, not assigned here?
         number_of_points=5,  # nb of target function values for each decade
-        instancesOfInterest=None  # None: consider all instances
+        instancesOfInterest=None,  # None: consider all instances
+        plots_on_main_html_page=['pprldmany_20D_noiselessall.svg', 'pprldmany_40D_noiselessall.svg',
+                                 'pprldmany_80D_noiselessall.svg', 'pprldmany_160D_noiselessall.svg',
+                                 'pprldmany_320D_noiselessall.svg', 'pprldmany_640D_noiselessall.svg']
     )
 
     def __init__(self, targetValues):
@@ -611,6 +725,9 @@ class GECCOBBOBMixintTestbed(GECCOBBOBTestbed):
         instancesOfInterest={1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1,
                              12: 1, 13: 1, 14: 1, 15: 1},
         scenario=scenario_mixintfixed,
+        plots_on_main_html_page=['pprldmany_05D_noiselessall.svg', 'pprldmany_10D_noiselessall.svg',
+                                 'pprldmany_20D_noiselessall.svg', 'pprldmany_40D_noiselessall.svg',
+                                 'pprldmany_80D_noiselessall.svg', 'pprldmany_160D_noiselessall.svg'],
     )
 
     def __init__(self, targetValues):
@@ -620,6 +737,10 @@ class GECCOBBOBMixintTestbed(GECCOBBOBTestbed):
             setattr(self, key, val)
             if 'target_values' in key or 'targetsOfInterest' in key:
                 self.instantiate_attributes(targetValues, [key])
+
+    def filter(self, dsl):
+        ''' Does nothing on dsl (overriding the filter method of the superclass). '''
+        return pproc.DataSetList(dsl)
 
 
 class GECCOBBOBBiObjMixintTestbed(GECCOBiObjExtBBOBTestbed):
