@@ -855,9 +855,6 @@ def main(dictAlg, order=None, outputdir='.', info='default',
         plt.title(' '.join((str(list(dictFunc.keys())[0]),
                             testbedsettings.current_testbed.short_names[list(dictFunc.keys())[0]])),
                   fontsize=title_fontsize)
-        pprldmany_adjust = dict(bottom=0.135, right=0.735, top=0.92)
-    else:
-        pprldmany_adjust = dict(bottom=0.135, right=0.735, top=0.99)
     a = plt.gca()
 
     plt.xlim(1e-0, x_limit)
@@ -880,7 +877,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                           # Relative additional space numbers are
                           # bottom, left, 1 - top, and 1 - right.
                           # bottom=0.13 still clips g in the log(#evals) xlabel
-                          subplots_adjust=pprldmany_adjust,
+                          subplots_adjust=dict(bottom=0.135, right=0.735,
+                                               top=0.92 if len(dictFunc) == 1 else 0.99  # space for a title
+                                               ),
                           )
         if plotType == PlotType.DIM:
             file_name = genericsettings.pprldmany_file_name
