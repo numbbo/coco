@@ -665,9 +665,9 @@ def logxticks(limits=[-np.inf, np.inf]):
     plt.xlim(xlims[0], xlims[1])
     # TODO: check the xlabel is changed accordingly?
 
-
 def beautify():
-    """ Customize a figure by adding a legend, axis label, etc."""
+    """ deprecated method - not used anywhere
+        Customize a figure by adding a legend, axis label, etc."""
     # TODO: what is this function for?
     # Input checking
 
