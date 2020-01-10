@@ -207,7 +207,7 @@ class Testbed(object):
         Initially used for making bbob-biobj and bbob-biobj-ext suites
         consistent.
         """
-        return pproc.DataSetList(dsl)
+        return dsl
 
 
 
@@ -301,15 +301,16 @@ class GECCOBBOBTestbed(Testbed):
             if both bbob and bbob-largescale data is in dsl
             and sets the corresponding suite to
             BBOBLargeScaleJOINEDTestbed in this case.
-
+            
+            Returns the filtered list as a flat list.
+            
             Gives an error if the data is not compatible.
         """
         global current_testbed
 
         flatdsl = dsl
         if isinstance(dsl, dict):
-            flatdsl = [d for d in dsl.values()]
-            flatdsl = [num for elem in flatdsl for num in elem]
+            flatdsl = [num for elem in dsl.values() for num in elem]
 
         # find out whether we have to do something:
         bbob_detected = False
@@ -331,14 +332,13 @@ class GECCOBBOBTestbed(Testbed):
         # now update all elements in flattened list if needed:
         if bbob_detected and bbob_largescale_detected:
             for ds in flatdsl:
-                ds.get_suite = lambda: BBOBLargeScaleJOINEDTestbed
-                ds.testbed_name = 'bbob-JOINED-bbob-largescale'
-                # make sure that the right testbed is loaded:
-                if type(current_testbed) is not BBOBLargeScaleJOINEDTestbed:
-                    current_testbed = load_current_testbed('BBOBLargeScaleJOINEDTestbed', pproc.TargetValues)
+                ds.get_suite = lambda: 'bbob-JOINED-bbob-largescale'
+                ds.testbed_name = 'bbob-largescale'  # used mainly for display in plots
+            # make sure that the right testbed is loaded:
+            if not isinstance(current_testbed, BBOBLargeScaleJOINEDTestbed):
+                current_testbed = load_current_testbed('BBOBLargeScaleJOINEDTestbed', pproc.TargetValues)
 
-
-        return pproc.DataSetList(flatdsl)
+        return flatdsl
 
 
 
@@ -352,8 +352,8 @@ class BBOBLargeScaleJOINEDTestbed(GECCOBBOBTestbed):
     settings = dict(
         dimensions_to_display=(2, 3, 5, 10, 20, 40, 80, 160, 320, 640),
         goto_dimension=160,  # auto-focus on this dimension in html
-        reference_algorithm_filename='',
-        reference_algorithm_displayname='',
+        reference_algorithm_filename=None,
+        reference_algorithm_displayname=None,
         plots_on_main_html_page=['pprldmany_02D_noiselessall.svg', 'pprldmany_03D_noiselessall.svg',
                                  'pprldmany_05D_noiselessall.svg', 'pprldmany_10D_noiselessall.svg',
                                  'pprldmany_20D_noiselessall.svg', 'pprldmany_40D_noiselessall.svg',
@@ -378,7 +378,7 @@ class BBOBLargeScaleJOINEDTestbed(GECCOBBOBTestbed):
 
     def filter(self, dsl):
         """ Does nothing but overwriting the method from superclass"""
-        return pproc.DataSetList(dsl)
+        return dsl
 
 
 class CONSBBOBTestbed(GECCOBBOBTestbed):
@@ -443,7 +443,7 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
 
     def filter(self, dsl):
         """ Does nothing but overwriting the method from superclass"""
-        return pproc.DataSetList(dsl)
+        return dsl
 
 
 class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
@@ -485,7 +485,7 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
 
     def filter(self, dsl):
         """ Does nothing but overwriting the method from superclass"""
-        return pproc.DataSetList(dsl)
+        return dsl
 
 
 class GECCOBiObjBBOBTestbed(Testbed):
@@ -565,7 +565,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
             contain only the first 55 functions if data from
             both the bbob-biobj and the bbob-biobj-ext suite are detected.
 
-            Returns the filtered list as new DataSetList instance.
+            Returns the filtered list as a flat list.
         
             Gives an error if the data is not compatible.    
         """
@@ -573,8 +573,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         # flatten dsl to always get a list:
         flatdsl = dsl
         if isinstance(dsl, dict):
-            flatdsl = [d for d in dsl.values()]
-            flatdsl = [num for elem in flatdsl for num in elem]
+            flatdsl = [num for elem in dsl.values() for num in elem]
 
         # find out whether we have to do something:
         bbobbiobj_detected = False
@@ -590,16 +589,10 @@ class GECCOBiObjBBOBTestbed(Testbed):
                                  "the bbob-biobj and/or bbob-biobj-ext "
                                  "suites" % str(ds.get_suite()))
 
-        # now update all elements in flattened list if needed:
-        toberemoveddatasets = []
+        # now filter all elements in flattened list if needed:
         if bbobbiobj_detected and bbobbiobjext_detected:
-            for ds in flatdsl:
-                if ds.funcId > 55:
-                    toberemoveddatasets.append(ds)
-        for ds in toberemoveddatasets:
-            flatdsl.remove(ds)
-
-        return pproc.DataSetList(flatdsl)
+            flatdsl = list(filter(lambda ds: ds.funcId <= 55, flatdsl))
+        return flatdsl
 
 
 class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
@@ -740,7 +733,7 @@ class GECCOBBOBMixintTestbed(GECCOBBOBTestbed):
 
     def filter(self, dsl):
         ''' Does nothing on dsl (overriding the filter method of the superclass). '''
-        return pproc.DataSetList(dsl)
+        return dsl
 
 
 class GECCOBBOBBiObjMixintTestbed(GECCOBiObjExtBBOBTestbed):

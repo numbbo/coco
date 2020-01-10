@@ -293,8 +293,7 @@ def main(argv=None):
 
         # filter data set lists to be compliant with all suites
         # (useful right now only for bbob-biobj and bbob-biobj-ext data)
-        dsList = testbedsettings.current_testbed.filter(dsList)
-
+        dsList = DataSetList(testbedsettings.current_testbed.filter(dsList))
         dictAlg = dsList.dictByAlgName()
         config.config() # make sure that the filtered settings are taken into account
 
@@ -323,7 +322,7 @@ def main(argv=None):
         from . import config
         config.config_target_values_setting(genericsettings.isExpensive,
                                             genericsettings.runlength_based_targets)
-        config.config(dsList[0].testbed_name)
+        config.config(dsList[0].get_testbed_name())
 
         for i in dsList:
             if i.dim not in testbedsettings.current_testbed.dimensions_to_display:
@@ -381,7 +380,7 @@ def main(argv=None):
 
         # empirical cumulative distribution functions (ECDFs) aka Data profiles
         if prepare_RLDistr:
-            config.config(dsList[0].testbed_name)
+            config.config(dsList[0].get_testbed_name())
 
             if len(genericsettings.foreground_algorithm_list) == 2:
                 print("ECDF runlength ratio graphs...")
