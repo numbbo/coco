@@ -5,7 +5,6 @@ import numpy as np
 import warnings
 
 from . import dataformatsettings
-from . import pproc
 
 scenario_rlbased = 'rlbased'
 scenario_fixed = 'fixed'
