@@ -334,8 +334,6 @@ class GECCOBBOBTestbed(Testbed):
                 ds.get_suite = lambda: 'bbob-JOINED-bbob-largescale'
                 ds.testbed_name = 'bbob-largescale'  # used mainly for display in plots
             # make sure that the right testbed is loaded:
-            if not isinstance(current_testbed, BBOBLargeScaleJOINEDTestbed):
-                current_testbed = load_current_testbed('BBOBLargeScaleJOINEDTestbed', pproc.TargetValues)
 
         return flatdsl
 
@@ -591,6 +589,9 @@ class GECCOBiObjBBOBTestbed(Testbed):
         # now filter all elements in flattened list if needed:
         if bbobbiobj_detected and bbobbiobjext_detected:
             flatdsl = list(filter(lambda ds: ds.funcId <= 55, flatdsl))
+            for ds in flatdsl:
+                ds.get_suite = lambda: 'bbob-biobj'
+                ds.testbed_name = 'bbob-biobj'   # hack, see issue #1933
         return flatdsl
 
 
