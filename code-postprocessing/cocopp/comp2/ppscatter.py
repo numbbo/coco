@@ -105,8 +105,6 @@ def beautify():
     a = plt.gca()
     a.set_xscale('log')
     a.set_yscale('log')
-    #a.set_xlabel('aRT0')
-    #a.set_ylabel('aRT1')
     xmin, xmax = plt.xlim()
     ymin, ymax = plt.ylim()
     minbnd = min(xmin, ymin)
@@ -383,6 +381,11 @@ def main(dsList0, dsList1, outputdir, settings):
 
             #plt.axvline(entry0.mMaxEvals(), ls='--', color=colors[i])
             #plt.axhline(entry1.mMaxEvals(), ls='--', color=colors[i])
+
+        # set x- and y-labels based on which algorithm is compared
+        a = plt.gca()
+        a.set_xlabel('log10(aRT of %s)' % dsList0[0].algId)
+        a.set_ylabel('log10(aRT of %s)' % dsList1[0].algId)
 
         fontSize = getFontSize(funInfos.values())
         if f in funInfos.keys():        
