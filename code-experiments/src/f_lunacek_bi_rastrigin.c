@@ -366,6 +366,7 @@ static coco_problem_t *f_lunacek_bi_rastrigin_permblockdiag_bbob_problem_allocat
     } else {
       sign_vector[i] = 1.0;
     }
+	coco_debug("An arbitrary message to suppress errors on Windows, see #1909. Please ignore accordingly.");
   }
 
   /* apply transformations to sub-problems */
