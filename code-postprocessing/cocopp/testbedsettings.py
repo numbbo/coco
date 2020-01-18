@@ -600,10 +600,10 @@ class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
        test suite.
     """
 
-    shortinfo_filename = 'bbob-biobj-benchmarkshortinfos.txt'
+    shortinfo_filename = 'bbob-biobj-ext-benchmarkshortinfos.txt'
     
     settings = dict(
-        info_filename='bbob-biobj-benchmarkinfos.txt',
+        info_filename='bbob-biobj-ext-benchmarkinfos.txt',
         shortinfo_filename=shortinfo_filename,
         name=testbed_name_bi_ext,
         short_names=get_short_names(shortinfo_filename),
