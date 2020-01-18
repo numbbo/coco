@@ -1,0 +1,92 @@
+1 Sphere/Sphere
+2 Sphere/sep. Ellipsoid
+3 Sphere/Attr. sector
+4 Sphere/Rosenbrock
+5 Sphere/Sharp ridge
+6 Sphere/Different Powers
+7 Sphere/Rastrigin
+8 Sphere/Schaffer F7
+9 Sphere/Schwefel
+10 Sphere/Gallagher 101
+11 sep. Ellipsoid/sep. Elli.
+12 sep. Ellipsoid/Attr. sector
+13 sep. Ellipsoid/Rosenbrock
+14 sep. Ellipsoid/Sharp ridge
+15 sep. Ellipsoid/Diff. Powers
+16 sep. Ellipsoid/Rastrigin
+17 sep. Ellipsoid/Schaffer F7
+18 sep. Ellipsoid/Schwefel
+19 sep. Elli./Gallagher 101
+20 Attr. sector/Attr. sector
+21 Attr. sector/Rosenbrock
+22 Attr. sector/Sharp ridge
+23 Attr. sector/Diff. Powers
+24 Attr. sector/Rastrigin
+25 Attr. sector/Schaffer F7
+26 Attr. sector/Schwefel
+27 Attr. sector/Gallagher 101
+28 Rosenbrock/Rosenbrock
+29 Rosenbrock/Sharp ridge
+30 Rosenbrock/Diff. Powers
+31 Rosenbrock/Rastrigin
+32 Rosenbrock/Schaffer F7
+33 Rosenbrock/Schwefel
+34 Rosenbrock/Gallagher 101
+35 Sharp ridge/Sharp ridge
+36 Sharp ridge/Diff. Powers
+37 Sharp ridge/Rastrigin
+38 Sharp ridge/Schaffer F7
+39 Sharp ridge/Schwefel
+40 Sharp ridge/Gallagher 101
+41 Diff. Powers/Diff. Powers
+42 Diff. Powers/Rastrigin
+43 Diff. Powers/Schaffer F7
+44 Diff. Powers/Schwefel
+45 Diff. Powers/Gallagher 101
+46 Rastrigin/Rastrigin
+47 Rastrigin/Schaffer F7
+48 Rastrigin/Schwefel
+49 Rastrigin/Gallagher 101
+50 Schaffer F7/Schaffer F7
+51 Schaffer F7/Schwefel
+52 Schaffer F7/Gallagh. 101
+53 Schwefel/Schwefel
+54 Schwefel/Gallagher 101
+55 Gallagher 101/Gallagh. 101
+56 Sphere/sep. Rastrigin
+57 Sphere/Skew Rastrigin-Bueche
+58 Sphere/Linear slope
+59 sep. Ellipsoid/sep. Rastrigin
+60 sep. Ellipsoid/Skew Rastr.-Bueche
+61 sep. Ellipsoid/Linear slope
+62 sep. Rastrigin/Skew Rastr.-Bueche
+63 sep. Rastrigin/Linear slope
+64 Skew Rastrigin-Bueche/Linear slope
+65 Attract. Sector/Step-ellipsoid
+66 Attract. Sector/rot. Rosenbrock
+67 Step-ellipsoid/sep. Rosenbrock
+68 Step-ellipsoid/rot. Rosenbrock
+69 sep. Rosenbrock/rot. Rosenbrock
+70 Ellipsoid/Discus
+71 Ellipsoid/Bent cigar
+72 Ellipsoid/Sharp ridge
+73 Ellipsoid/Diff. Powers
+74 Discus/Bent cigar
+75 Discus/Sharp ridge
+76 Discus/Diff. Powers
+77 Bent cigar/Sharp ridge
+78 Bent cigar/Diff. Powers
+79 Rastrigin/Schaffer F7 cond 1000
+80 Rastrigin/Griewank-Rosenbrock
+81 Schaffer F7/Schaffer F7 cond 1000
+82 Schaffer F7/Griew.-Rosen.
+83 Schaffer F7 cond 1000/Griew.-Rosen.
+84 Schwefel/Gallagher 21
+85 Schwefel/Katsuuras
+86 Schwefel/Lunacek bi-Rastrigin
+87 Gallagher 101/Gallagher 21
+88 Gallagher 101/Katsuuras
+89 Gallagher 101/Lunacek bi-Rastrigin
+90 Gallagher 21/Katsuuras
+91 Gallagher 21/Lunacek bi-Rastrigin
+92 Katsuuras/Lunacek bi-Rastrigin
