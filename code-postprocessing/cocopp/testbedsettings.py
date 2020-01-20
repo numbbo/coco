@@ -200,7 +200,7 @@ class Testbed(object):
 
     def filter(self, dsl):
         """
-        Interface to make DataSetList dsl (either list or dictionary)
+        Interface to make DataSetList or list of DataSets dsl
         consistent with the retrieved Testbed class(es) in rungenericmany.
         
         Initially used for making bbob-biobj and bbob-biobj-ext suites
@@ -303,18 +303,15 @@ class GECCOBBOBTestbed(Testbed):
             
             Returns the filtered list as a flat list.
             
-            Gives an error if the data is not compatible.
+            Gives an error if the data in the given
+            list of DataSets dsl is not compatible.
         """
         global current_testbed
-
-        flatdsl = dsl
-        if isinstance(dsl, dict):
-            flatdsl = [num for elem in dsl.values() for num in elem]
 
         # find out whether we have to do something:
         bbob_detected = False
         bbob_largescale_detected = False
-        for ds in flatdsl:
+        for ds in dsl:
             detected_suite = ds.get_suite()
             if detected_suite == 'bbob':
                 bbob_detected = True
@@ -330,12 +327,12 @@ class GECCOBBOBTestbed(Testbed):
 
         # now update all elements in flattened list if needed:
         if bbob_detected and bbob_largescale_detected:
-            for ds in flatdsl:
+            for ds in dsl:
                 ds.get_suite = lambda: 'bbob-JOINED-bbob-largescale'
                 ds.testbed_name = 'bbob-largescale'  # used mainly for display in plots
             # make sure that the right testbed is loaded:
 
-        return flatdsl
+        return dsl
 
 
 
@@ -558,7 +555,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
             self.instancesOfInterest = {1: 1, 2: 1, 3: 1, 4: 1, 5: 1}
 
     def filter(self, dsl):
-        """ Filters DataSetList dsl (either a list or a dictionary) to
+        """ Filters DataSetList or list of DataSets dsl to
             contain only the first 55 functions if data from
             both the bbob-biobj and the bbob-biobj-ext suite are detected.
 
@@ -567,15 +564,10 @@ class GECCOBiObjBBOBTestbed(Testbed):
             Gives an error if the data is not compatible.    
         """
 
-        # flatten dsl to always get a list:
-        flatdsl = dsl
-        if isinstance(dsl, dict):
-            flatdsl = [num for elem in dsl.values() for num in elem]
-
         # find out whether we have to do something:
         bbobbiobj_detected = False
         bbobbiobjext_detected = False
-        for ds in flatdsl:
+        for ds in dsl:
             if ds.get_suite() == 'bbob-biobj':
                 bbobbiobj_detected = True
             elif ds.get_suite() == 'bbob-biobj-ext':
@@ -588,11 +580,11 @@ class GECCOBiObjBBOBTestbed(Testbed):
 
         # now filter all elements in flattened list if needed:
         if bbobbiobj_detected and bbobbiobjext_detected:
-            flatdsl = list(filter(lambda ds: ds.funcId <= 55, flatdsl))
-            for ds in flatdsl:
+            dsl = list(filter(lambda ds: ds.funcId <= 55, dsl))
+            for ds in dsl:
                 ds.get_suite = lambda: 'bbob-biobj'
                 ds.testbed_name = 'bbob-biobj'   # hack, see issue #1933
-        return flatdsl
+        return dsl
 
 
 class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
