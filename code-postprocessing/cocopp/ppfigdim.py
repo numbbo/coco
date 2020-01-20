@@ -579,12 +579,16 @@ def main(dsList, _valuesOfInterest, outputdir):
                  verticalalignment="bottom")
 
         if func in testbedsettings.current_testbed.functions_with_legend:
-            toolsdivers.legend(loc="best")
+            toolsdivers.legend(loc="best", fontsize=12)
         if func in funInfos.keys():
             # print(plt.rcParams['axes.titlesize'])
             # print(plt.rcParams['font.size'])
             funcName = funInfos[func]
             plt.gca().set_title(funcName, fontsize=fontSize)
+
+        if genericsettings.scaling_plots_with_axis_labels:
+            plt.xlabel('dimension')
+            plt.ylabel('log10(# f-evals / dimension)')
 
         plot_previous_algorithms(func, _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))
