@@ -579,7 +579,7 @@ def main(dsList, _valuesOfInterest, outputdir):
                  verticalalignment="bottom")
 
         if func in testbedsettings.current_testbed.functions_with_legend:
-            toolsdivers.legend(loc="best", fontsize=12)
+            toolsdivers.legend(loc="best", fontsize=16)
         if func in funInfos.keys():
             # print(plt.rcParams['axes.titlesize'])
             # print(plt.rcParams['font.size'])
