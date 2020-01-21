@@ -207,33 +207,17 @@ def save_folder_index_file(filename, image_file_extension):
                       'Runtime distribution for selected targets and f-distributions')
 
     # add the ECDFs aggregated over all functions in all dimensions at the end:
-    if os.path.isfile(os.path.join(current_dir, 'pprldmany_02D_noiselessall.svg')):  # weird way to decide what to plot
+    if os.path.isfile(os.path.join(current_dir,
+                                   testbedsettings.current_testbed.plots_on_main_html_page[0])):
         links += "<H2> %s </H2>\n" % ' Runtime distributions (ECDFs) over all targets'
-        links += add_image('pprldmany_02D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_03D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_05D_noiselessall.svg', True, 220) + ' <br />'
-        links += add_image('pprldmany_10D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_20D_noiselessall.svg', True, 220)
-        if os.path.isfile(os.path.join(current_dir, 'pprldmany_40D_noiselessall.svg')):
-            links += add_image('pprldmany_40D_noiselessall.svg', True, 220)
-    if os.path.isfile(os.path.join(current_dir, 'pprldmany_02D_nzall.svg')):  # weird way to decide what to plot
-        links += "<H2> %s </H2>\n" % ' Runtime distributions (ECDFs) over all targets'
-        links += add_image('pprldmany_02D_nzall.svg', True, 220)
-        links += add_image('pprldmany_03D_nzall.svg', True, 220)
-        links += add_image('pprldmany_05D_nzall.svg', True, 220) + ' <br />'
-        links += add_image('pprldmany_10D_nzall.svg', True, 220)
-        links += add_image('pprldmany_20D_nzall.svg', True, 220)
-        if os.path.isfile(os.path.join(current_dir, 'pprldmany_40D_nzall.svg')):
-            links += add_image('pprldmany_40D_nzall.svg', True, 220)
-    if testbedsettings.current_testbed.name == 'bbob-largescale':
-        links += "<H2> %s </H2>\n" % ' Runtime distributions (ECDFs) over all targets'
-        links += add_image('pprldmany_20D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_40D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_80D_noiselessall.svg', True, 220) + ' <br />'
-        links += add_image('pprldmany_160D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_320D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_640D_noiselessall.svg', True, 220)
-    #TODO: Remove hardcoded part 
+        i = 1 # counter to only put three plots per line
+        for plotname in testbedsettings.current_testbed.plots_on_main_html_page:
+            if os.path.isfile(os.path.join(current_dir, plotname)):
+                if i % 3 == 0:
+                    links += add_image(plotname, True, 220) + ' <br />'
+                else:
+                    links += add_image(plotname, True, 220)
+                i = i + 1
 
     lines = []
     with open(filename) as infile:

@@ -1954,6 +1954,18 @@ class DataSetList(list):
             d.setdefault((i.algId, ''), DataSetList()).append(i)
         return d
 
+    def dictByAlgName(self):
+        """Returns a dictionary of instances of this class by algorithm.
+
+        Compared to dictByAlg, this method uses only the data folder
+        as key and the corresponding slices as values.
+
+        """
+        d = DictAlg()
+        for i in self:
+            d.setdefault(i._data_folder, DataSetList()).append(i)
+        return d
+
     def dictByDim(self):
         """Returns a dictionary of instances of this class by dimensions.
 
