@@ -645,9 +645,9 @@ def build_java():
         jdkpath2 = jdkpath1 + '\\win32'
 
         if '64' in platform.machine():
-            run('code-experiments/build/java', ['x86_64-w64-mingw32-gcc', '-I', jdkpath1, '-I',
-                                                jdkpath2, '-shared', '-o', 'CocoJNI.dll',
-                                                'CocoJNI.c'], verbose=_verbosity)
+            run('code-experiments/build/java', ['x86_64-w64-mingw32-gcc', '-I',
+                                                jdkpath1, '-I', jdkpath2, '-shared', '-o',
+                                                'CocoJNI.dll', 'CocoJNI.c'], verbose=_verbosity)
 
             # 2. Windows with Cygwin (both 32-bit)
         elif '32' in platform.machine() or 'x86' in platform.machine():
@@ -705,11 +705,11 @@ def build_java():
             ['gcc', '-dynamiclib', '-o', 'libCocoJNI.jnilib', 'CocoJNI.o'],
             verbose=_verbosity)
 
-    run('code-experiments/build/java', ['javac', 'Problem.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'Benchmark.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'Observer.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'Suite.java'], verbose=_verbosity)
-    run('code-experiments/build/java', ['javac', 'ExampleExperiment.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Problem.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Benchmark.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Observer.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'Suite.java'], verbose=_verbosity)
+    run('code-experiments/build/java', ['javac', '-classpath', '.', 'ExampleExperiment.java'], verbose=_verbosity)
 
 
 def run_java():
@@ -717,7 +717,7 @@ def run_java():
     build_java()
     try:
         run('code-experiments/build/java',
-            ['java', '-Djava.library.path=.', 'ExampleExperiment'],
+            ['java', '-classpath', '.', '-Djava.library.path=.', 'ExampleExperiment'],
             verbose=_verbosity)
     except subprocess.CalledProcessError:
         sys.exit(-1)

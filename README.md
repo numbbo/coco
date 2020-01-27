@@ -52,7 +52,7 @@ apt-get install build-essential python-dev python-numpy python-matplotlib \
 Under Windows, two alternative compile toolchains can be used: 
 
 1. [Cygwin](https://www.cygwin.com/) which comes with gcc and make, available in 32- and 64-bit versions.  
-2. MinGW's gcc (http://www.mingw.org/), which only comes in 32-bit, but also runs on 64-bit machines. 
+2. MinGW's gcc (http://www.mingw.org/ for 32-bit or https://mingw-w64.org for 64-bit machines). Make sure to update the Windows path to MinGW's make.exe and rename/link the gcc.exe to cc.exe.
 
 For using `git` under Windows (optional), we recommend installing [TortoiseGit](https://tortoisegit.org/).
 
@@ -644,10 +644,10 @@ Comprehensive List of Documentations <a name="Documentations"></a>
 
 * APIs
   - ``C`` experiments code: http://numbbo.github.io/coco-doc/C
-  - Python experiments code `cocoex`: http://coco.gforge.inria.fr/apidocs-cocoex/cocoex.html
+  - Python experiments code (module `cocoex`): http://coco.gforge.inria.fr/apidocs-cocoex/cocoex.html
   - Python short [beginners example experiment](code-experiments/build/python/example_experiment_for_beginners.py)
   - Python `example_experiment2.py`: http://coco.gforge.inria.fr/apidocs-example_experiment/example_experiment2.html
-  - Postprocessing code: http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html
+  - Postprocessing code (module `cocopp`): http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html
 
 * Somewhat outdated documents:
   - Full description of the platform: http://coco.lri.fr/COCOdoc/

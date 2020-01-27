@@ -32,6 +32,8 @@ class InfolderGoneWithTheWind:
     temporary folder under the current folder. The temporary folder is
     deleted on exiting the block.
 
+    CAVEAT: copy-pasted to toolsdivers
+
     >>> import os
     >>> dir_ = os.getcwd()  # for the record
     >>> len_ = len(os.listdir('.'))
@@ -133,7 +135,8 @@ def run_latex_template(filename, all_tests):
 
 
 def retrieve_algorithm(data_path, folder_name, algorithm_name, file_name=None):
-    """depreciated (replaced by cocopp._data_archive COCODataArchive instance)"""
+    """depreciated (replaced by cocopp._data_archive COCODataArchive instance
+    replaced by `cocopp.archiving.get` or `cocopp.archiving.official_archives` or `cocopp.archives.all`)"""
     algorithm_file = join_path(data_path, file_name if file_name else algorithm_name)
     if not os.path.exists(algorithm_file):
         data_url = 'http://coco.gforge.inria.fr/data-archive/%s/%s' % (folder_name, algorithm_name)
@@ -321,7 +324,7 @@ def main(arguments):
         print('**  subtest 7 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bbob-biobj algorithms.'
         #run_latex_template("templateBIOBJmultiple.tex", run_all_tests)
-
+        
         t0 = time.time()
         # Previous note: we use the original GA-MULTIOBJ-NSGA-II.tgz data set
         # but with a shorter file name from the biobj-test folder
@@ -345,7 +348,7 @@ def main(arguments):
         print('**  subtest 9 finished in ', time.time() - t0, ' seconds')
         assert result == 0, 'Test failed: rungeneric on two bbob-noisy algorithms.'
         #run_latex_template("templateNOISYarticle.tex", run_all_tests)
-
+        
         # testing data from recent runs, prepared in do.py:
         recent_data_path = os.path.abspath(join_path(os.path.dirname(__file__),
                                                      '../../code-experiments/build/python/exdata'))
@@ -363,6 +366,7 @@ def main(arguments):
             print('**  subtest 11 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-biobj`.'
 
+        #with InfolderGoneWithTheWind():
             # t0 = time.time()
             # result = os.system(python + command +
             #                    join_path(recent_data_path, 'RS-co'))
@@ -397,6 +401,20 @@ def main(arguments):
                                join_path(recent_data_path, 'RS-bi-mi'))
             print('**  subtest 16 finished in ', time.time() - t0, ' seconds')
             assert result == 0, 'Test failed: rungeneric on newly generated random search data on `bbob-biobj-mixint`.'
+
+        with InfolderGoneWithTheWind():
+            t0 = time.time()
+            result = os.system(python + command +
+                               'bbob/2009/BFGS! bbob-largescale/2019/LBFGS!')
+            print('**  subtest 17 finished in ', time.time() - t0, ' seconds')
+            assert result == 0, 'Test failed: rungeneric on data from `bbob` and `bbob-largescale` suite.'
+
+        with InfolderGoneWithTheWind():
+            t0 = time.time()
+            result = os.system(python + command + 'NSGA-II! 2019/IBEA!')
+            print('**  subtest 18 finished in ', time.time() - t0, ' seconds')
+            assert result == 0, 'Test failed: rungeneric on data from `bbob-biobj` and `bbob-biobj-ext` suite.'
+
 
     print('launching doctest (it might be necessary to close a few pop up windows to finish)')
     t0 = time.time()

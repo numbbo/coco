@@ -75,7 +75,10 @@ def prepare_figure_caption():
         %d:{\color{blue}$\star$},
         %d:$\circ$,
         %d:{\color{red}$\Box$},
-        %d:{\color{magenta}$\Diamond$}. """ % tuple(testbedsettings.current_testbed.dimensions_to_display)
+        %d:{\color{magenta}$\Diamond$}. """ % tuple(testbedsettings.current_testbed.dimensions_to_display[:6])
+                                                                      # the [:6] is a hack for the case of
+                                                                      # both bbob and bbob-largescale data
+                                                                      # post-processed together
 
 
     if genericsettings.runlength_based_targets:
@@ -102,8 +105,6 @@ def beautify():
     a = plt.gca()
     a.set_xscale('log')
     a.set_yscale('log')
-    #a.set_xlabel('aRT0')
-    #a.set_ylabel('aRT1')
     xmin, xmax = plt.xlim()
     ymin, ymax = plt.ylim()
     minbnd = min(xmin, ymin)
@@ -380,6 +381,11 @@ def main(dsList0, dsList1, outputdir, settings):
 
             #plt.axvline(entry0.mMaxEvals(), ls='--', color=colors[i])
             #plt.axhline(entry1.mMaxEvals(), ls='--', color=colors[i])
+
+        # set x- and y-labels based on which algorithm is compared
+        a = plt.gca()
+        a.set_xlabel('log10(ERT of %s)' % dsList0[0].algId)
+        a.set_ylabel('log10(ERT of %s)' % dsList1[0].algId)
 
         fontSize = getFontSize(funInfos.values())
         if f in funInfos.keys():        

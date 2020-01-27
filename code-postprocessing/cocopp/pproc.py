@@ -39,6 +39,7 @@ from . import testbedsettings, dataformatsettings
 from .readalign import split, align_data, HMultiReader, VMultiReader, openfile
 from .readalign import HArrayMultiReader, VArrayMultiReader, alignArrayData
 from .ppfig import consecutiveNumbers, Usage
+from . import archiving
 
 do_assertion = genericsettings.force_assertions # expensive assertions
 targets_displayed_for_info = [10, 1., 1e-1, 1e-3, 1e-5, 1e-8]  # only to display info in DataSetList.info
@@ -305,7 +306,7 @@ class RunlengthBasedTargetValues(TargetValues):
             self._short_info = 'reference budgets from ' + self.reference_data
             # dsl = DataSetList(os.path.join(sys.modules[globals()['__name__']].__file__.split('cocopp')[0],
             #                                'cocopp', 'data', self.reference_data))
-            dsl = DataSetList(findfiles.COCODataArchive().get_one(self.reference_data))
+            dsl = DataSetList(archiving.official_archives.all.get(self.reference_data))
             dsd = {}
             for ds in dsl:
                 # ds._clean_data()
@@ -572,7 +573,9 @@ class DataSet(object):
         >>> ds = dslist[3]  # a single data set of type DataSet
         >>> ds
         DataSet(BIPOP-CMA-ES on f2 10-D)
-        >>> for d in dir(ds): print(d)  # doctest:+ELLIPSIS
+        >>> for d in dir(ds):  # doctest:+ELLIPSIS
+        ...     if '_old_' not in d:
+        ...         print(d)
         _DataSet__parseHeader
         __class__
         __delattr__
@@ -591,6 +594,7 @@ class DataSet(object):
         __str__
         __subclasshook__
         __weakref__
+        _argsort
         _attributes
         _complement_data
         _cut_data
@@ -631,6 +635,7 @@ class DataSet(object):
         mMaxEvals
         max_eval
         maxevals
+        median_evals
         nbRuns
         pickle
         plot
@@ -1599,32 +1604,56 @@ class DataSet(object):
 
         return list(tmp[i][1:] for i in targets)
 
+    def _argsort(self, smallest_target_value=-np.inf):
+        """return index array for a sorted order of trials.
+
+        Sorted from best to worst, for unsuccessful runs successively
+        larger target values are queried to determine which is better.
+
+        Returned indices range from 1 to ``self.nbRuns()`` referring to
+        columns in ``self.evals``.
+
+        Target values smaller than ``smallest_target_value`` are not considered.
+        
+        Details: if two runs have the exact same evaluation profile, they
+        are sorted identically, however we could account for final f-values
+        which seems only to make sense for ``smallest_target_value<=final_target_value``.
+        """
+        idx = self.evals[:,0] >= smallest_target_value
+        if sum(idx) < 2:
+            warnings.warn("DataSet._argsort: the given smallest_target_value=%f covers"
+                          "only %d target(s) (the largest recorded target is %f).\n"
+                          "The first data row contains only 1 as evaluation count by construction."
+                          % (smallest_target_value, sum(idx), self.evals[0, 0]))
+        return 1 + np.lexsort(self.evals[idx, 1:])  # starts from the end and sorts nan last, as if it was designed to sort the evals columns
+
     def plot_funvals(self, **kwargs):
         """plot data of `funvals` attribute, versatile
 
-        TODO: seems outdated on 19/8/2016
-              (using "isfinite" instead of "np.isfinite" and not called
+        TODO: seems outdated on 19/8/2016 and 05/2019 (would fail as it was
+              using "isfinite" instead of "np.isfinite" and is not called
               from anywhere)
         """
         kwargs.setdefault('clip_on', False)
         for funvals in self.funvals.T[1:]:  # loop over the rows of the transposed array
-            idx = isfinite(funvals > 1e-19)
+            idx = np.isfinite(funvals > 1e-19)
             plt.loglog(self.funvals[idx, 0], funvals[idx], **kwargs)
             plt.ylabel('target $\Delta f$ value')
             plt.xlabel('number of function evaluations')
             plt.xlim(1, max(self.maxevals))
         return plt.gca()
-    def plot(self, **kwargs):
+
+    def _old_plot(self, **kwargs):
         """plot data from `evals` attribute.
 
         `**kwargs` is passed to `matplolib.loglog`. 
         
         TODO: seems outdated on 19/8/2016
-        ("isfinite" instead of "np.isfinite" and not called from anywhere)        
+        ("np.isfinite" was "isfinite" hence raising an error)
         """
         kwargs.setdefault('clip_on', False)
         for evals in self.evals.T[1:]:  # loop over the rows of the transposed array
-            idx = np.logical_and(self.evals[:, 0] > 1e-19, isfinite(evals))
+            idx = np.logical_and(self.evals[:, 0] > 1e-19, np.isfinite(evals))
             # plt.semilogx(self.evals[idx, 0], evals[idx])
             if 1 < 3:
                 plt.loglog(evals[idx], self.evals[idx, 0], **kwargs)
@@ -1637,6 +1666,66 @@ class DataSet(object):
                 plt.xlabel('target $\Delta f$ value')
                 plt.ylabel('number of function evaluations')
         return plt.gca()
+
+    def median_evals(self, target_values=None):
+        """return median for each target, unsuccessful runs count.
+
+        `target_values` is not in effect for now, the median is computed
+        for all target values (rows in `evals` attribute).
+
+        Return `np.nan` if the median run was unsuccessful.
+
+        Details: copies the evals attribute and sets `nan` to `inf` in
+        order to get the median with `nan` values in the sorting.
+        """
+        if target_values is not None:
+            raise NotImplementedError("median_evals is only implemented for "
+                                      "all target values")
+        evals = self.evals[:, 1:]
+        evals[~numpy.isfinite(evals)] = numpy.inf
+        m = numpy.median(evals, 1)
+        m[~np.isfinite(m)] = np.nan
+        return m
+
+    def plot(self, plot_function=plt.semilogy, smallest_target=8e-9,
+             median_format='k--', color_map=None, **kwargs):
+        """plot all data from `evals` attribute and the median.
+
+        Plotted are Delta f-value vs evaluations. The sort for the color
+        heatmap is based on the final performance.
+
+        `color_map` is a `list` or `generator` with `self.nbRuns()` colors
+        and used as ``iter(color_map)``. The maps can be generated with the
+        `matplotlib.colors.LinearSegmentedColormap` attributes of module
+        `matplotlib.cm`. Default is `brg` between 0 and 0.5, like
+        ``plt.cm.brg(np.linspace(0, 0.5, self.nbRuns()))``.
+
+        `**kwargs` is passed to `plot_function`.
+        """
+        if smallest_target > self.evals[0, 0]:
+            raise ValueError("smallest_target=%f argument is larger than the largest recorded target %f"
+                % (smallest_target, self.evals[0, 0]))
+        kwargs.setdefault('clip_on', False)  # doesn't help
+        colors = iter(color_map or plt.cm.brg(np.linspace(0, 0.5, self.nbRuns())))
+        # colors = iter(plt.cm.plasma(np.linspace(0, 0.7, self.nbRuns())))
+        for i in self._argsort(smallest_target):  # ranges from 1 to nbRuns included
+            evals = self.evals.T[i]  # i == 0 are the target values
+            idx = np.logical_and(self.evals[:, 0] >= smallest_target, np.isfinite(evals))
+            plot_function(evals[idx], self.evals[idx, 0], color=next(colors), **kwargs)
+        # plot median
+        xmedian = self.median_evals()
+        idx = np.logical_and(self.evals[:, 0] >= smallest_target, np.isfinite(xmedian))
+        assert np.any(idx)  # must always be true, because the first row of evals is always finite
+        plot_function(xmedian[idx], self.evals[idx, 0], median_format, **kwargs)
+        i = np.where(idx)[0][-1]  # mark the last median with a circle
+        plot_function(xmedian[i], self.evals[i, 0], 'ok')
+        # make labels and beautify
+        plt.ylabel(r'$\Delta f$')
+        plt.xlabel('function evaluations')
+        plt.xlim(left=0.85)  # right=max(self.maxevals)
+        plt.ylim(bottom=smallest_target if smallest_target is not None else self.precision)
+        plt.title("F %d in dimension %d" % (self.funcId, self.dim))
+        return plt.gca()  # not sure which makes most sense
 
 class DataSetList(list):
     """List of instances of :py:class:`DataSet`.
@@ -1863,6 +1952,18 @@ class DataSetList(list):
         d = DictAlg()
         for i in self:
             d.setdefault((i.algId, ''), DataSetList()).append(i)
+        return d
+
+    def dictByAlgName(self):
+        """Returns a dictionary of instances of this class by algorithm.
+
+        Compared to dictByAlg, this method uses only the data folder
+        as key and the corresponding slices as values.
+
+        """
+        d = DictAlg()
+        for i in self:
+            d.setdefault(i._data_folder, DataSetList()).append(i)
         return d
 
     def dictByDim(self):

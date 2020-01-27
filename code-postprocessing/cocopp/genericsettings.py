@@ -22,6 +22,7 @@ maxevals_fix_display = None  # 3e2 is the expensive setting only used in config,
 runlength_based_targets = False  # may be overwritten by expensive setting
 figure_file_formats = ['svg', 'pdf']
 scaling_figures_with_boxes = True
+scaling_plots_with_axis_labels = False
 
 weight_evaluations_constraints = (1, 1)
 """weights used to sum function evaluations and constraints evaluations

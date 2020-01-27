@@ -209,7 +209,8 @@ def drawSP_from_dataset_new(data_set, ftarget, dummy,
     return (None, data_set.evals_with_restarts([ftarget], sample_size_per_runtime)())
 
 def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
-           samplesize=genericsettings.simulated_runlength_bootstrap_sample_size):
+           samplesize=genericsettings.simulated_runlength_bootstrap_sample_size,
+           derandomized=True):
     """Returns the percentiles of the bootstrapped distribution of
     'simulated' running lengths of successful runs.
 
@@ -275,21 +276,18 @@ def drawSP(runlengths_succ, runlengths_unsucc, percentiles,
     # data = np.r_[udata, sdata]
     N = Ns + Nu
 
-    for i in range(int(samplesize)):
-        # relying that idx<len(data)
+    for idx in _randint_derandomized_generator(N, size=int(samplesize)):
+        # was: i in range(int(samplesize))
+        if not derandomized:
+            idx = np.random.randint(N)
+        assert 0 <= idx < N
         sumdata = 0
-        idx = np.random.randint(N)
-        # set_trace()
         while idx < Nu:
             sumdata += udata[idx]
             idx = np.random.randint(N)
-
-        sumdata += sdata[idx - Nu]
-
+        sumdata += sdata[idx - Nu]  # add evals of the successful run
         arrStats.append(sumdata)  # We know we have one success here.
-
     arrStats.sort()
-
     return (prctile(arrStats, percentiles, issorted=True),
             arrStats)
 

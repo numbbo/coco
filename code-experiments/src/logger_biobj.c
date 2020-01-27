@@ -518,8 +518,8 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
     if (logger->log_nondom_mode == LOG_NONDOM_READ)
       fprintf(indicator->info_file, " (reconstructed)");
   }
-  if ((observer_data->previous_function != problem->suite_dep_function)
-    || (observer_data->previous_dimension != problem->number_of_variables)) {
+  if ((observer_data->previous_function != (long) problem->suite_dep_function)
+    || (observer_data->previous_dimension != (long) problem->number_of_variables)) {
     fprintf(indicator->info_file, "\nfunction = %2lu, ", (unsigned long) problem->suite_dep_function);
     fprintf(indicator->info_file, "dim = %2lu, ", (unsigned long) problem->number_of_variables);
     fprintf(indicator->info_file, "%s", file_name);

@@ -32,9 +32,8 @@ Results can be explored from the ``ppdata/index.html`` file, unless a
 a different output folder is specified with the ``-o`` option.
 
 **Comparative data** from over 200 full experiments are archived online and
-can be listed, filtered, and retrieved from the `COCODataArchive` instances
-in `cocopp.archives` (of type `KnownArchives`) and processed alone or
-together with local data.
+can be listed, filtered, and retrieved from `cocopp.archives` (of type
+`OfficialArchives`) and processed alone or together with local data.
 
 For example
 
@@ -74,6 +73,7 @@ background with
 """
 
 from __future__ import absolute_import
+import sys as _sys
 
 import matplotlib  # just to make sure the following is actually done first
 matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
@@ -96,11 +96,18 @@ __all__ = [# 'main',  # import nothing with "from cocopp import *"
 
 __version__ = pkg_resources.require('cocopp')[0].version
 
-archives = archiving.KnownArchives()
-data_archive = archives.all  # only for historical reasons
-bbob = archives.bbob
-bbob_noisy = archives.bbob_noisy
-bbob_biobj = archives.bbob_biobj
+if 11 < 3:  # old version, to be removed
+    archives = archiving.KnownArchives()
+    data_archive = archives.all  # only for historical reasons
+    bbob = archives.bbob
+    bbob_noisy = archives.bbob_noisy
+    bbob_biobj = archives.bbob_biobj
+else:
+    archives = archiving.official_archives  # just an alias
+    data_archive = archives.all  # another alias, only for historical reasons
+    archives.set_as_attributes_in(_sys.modules['cocopp'],  # more individual aliases
+                                  except_for=['all', 'test'])
+
 # data_archive = 'use `archives.all` instead'
 # bbob = 'use `archives.bbob` instead'
 # bbob_noisy = 'use `archives.bbob_noisy` instead'
@@ -109,7 +116,9 @@ bbob_biobj = archives.bbob_biobj
 class Interface:
     """collection of the most user-relevant modules, methods and data.
 
-    `archives`: online data archives of type `KnownArchives`
+    `archives`: online data archives of type `OfficialArchives`
+
+    `archiving`: methods to archive data and retrieve archived data put online
 
     `config`: dynamic configuration tool (advanced)
 

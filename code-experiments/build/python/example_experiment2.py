@@ -31,6 +31,10 @@ Post-processing with `cocopp` is only invoked in the single-batch case.
 Details: ``batch=9/8`` is equivalent to ``batch=1/8``. The first number
 is taken modulo to the second.
 
+See the code: `<https://github.com/numbbo/coco/blob/master/code-experiments/build/python/example_experiment2.py>`_
+
+See a beginners example experiment: `<https://github.com/numbbo/coco/blob/master/code-experiments/build/python/example_experiment_for_beginners.py>`_
+
 """
 from __future__ import division, print_function, unicode_literals
 __author__ = "Nikolaus Hansen and ..."

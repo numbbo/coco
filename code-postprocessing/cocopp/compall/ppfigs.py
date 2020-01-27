@@ -398,11 +398,16 @@ def beautify(legend=False, rightlegend=False):
         tmp2 = []
         for i in tmp:
             tmp2.append('%d' % round(numpy.log10(i)))
-        axisHandle.set_yticklabels(tmp2)
+        axisHandle.set_yticklabels(tmp2, fontsize=ppfig.getFontSize(tmp2))
 
     if legend:
         toolsdivers.legend(loc=0, numpoints=1,
                            fontsize=fontsize * legend_fontsize_scaler())
+
+    if genericsettings.scaling_plots_with_axis_labels:
+        plt.xlabel('dimension')
+        plt.ylabel('log10(# f-evals / dimension)')
+
 
 def generateData(dataSet, target):
     """Returns an array of results to be plotted.

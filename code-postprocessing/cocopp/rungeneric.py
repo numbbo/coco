@@ -289,7 +289,7 @@ def main(argv=None):
         print('Post-processing (%s)' % ('1' if len(args) == 1 else '2+'))  # to not break doctests
 
         # manage data paths as given in args
-        data_archive = archiving.COCODataArchive()
+        data_archive = archiving.official_archives.all  # was: archiving.COCODataArchive()
         args = data_archive.get_extended(args)
         if None in args:
             raise ValueError("Data argument %d was not matching any file"
@@ -312,9 +312,9 @@ def main(argv=None):
         for path in args:
             if data_archive.contains(path):  # this is the archive of *all* testbeds
                 # extract suite name
-                suites.add(data_archive.name(path).split('/')[0])
-        if len(suites) > 1:
-            raise ValueError("Data from more than one suites %s cannot "
+                suites.add(data_archive._name_with_check(path).split('/')[0])
+        if len(suites) > 2:
+            raise ValueError("Data from more than two suites %s cannot "
                              "be post-processed together" % str(suites))
 
         if len(args) == 1 or '--include-single' in dict(opts):

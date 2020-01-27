@@ -23,6 +23,7 @@ import numpy as np
 from .. import toolsstats, readalign, ppfigparam, testbedsettings, toolsdivers
 from ..toolsstats import ranksumtest
 from ..ppfig import save_figure, plotUnifLogXMarkers
+from .. import genericsettings
 #try:
     #supersede this module own ranksumtest method
     #from scipy.stats import ranksumtest as ranksumtest
@@ -414,6 +415,11 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir=''):
 
         if func in testbedsettings.current_testbed.functions_with_legend:
             toolsdivers.legend(loc='best')
+
+        if genericsettings.scaling_plots_with_axis_labels:
+            plt.xlabel('dimension')
+            plt.ylabel('log10(# f-evals / dimension)')
+
 
         # save
         save_figure(filename, dsList0[0].algId)

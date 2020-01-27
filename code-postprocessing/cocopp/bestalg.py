@@ -517,7 +517,7 @@ def custom_generate(args=algs2009, algId='bestCustomAlg', suite=None):
     >>> def print_(*args, **kwargs): pass
     >>> cocopp.archives.bbob._print = print_  # prevent download message
     >>> filename = cocopp.archives.bbob.get('2009/ALPS_hornby_noiseless')
-    >>> with cocopp.toolsdivers.Infolder(cocopp.archives.bbob.local_data_path):
+    >>> with cocopp.toolsdivers.InfolderGoneWithTheWind(cocopp.archives.bbob.local_data_path):
     ...     print('ESC'); cocopp.bestalg.custom_generate((filename, ),
     ...                           '_doctest_refAlgFromALPS') # doctest: +ELLIPSIS
     ESC...
@@ -659,11 +659,10 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
         >>> cocopp.archives.bbob._print = print_  # prevent downloading... message
         >>> filenames = (cocopp.archives.bbob.get('2009/BIPOP-CMA-ES'),  # first match will stay the same forever
         ...              cocopp.archives.bbob.get('2009/MCS_huyer_noiseless'))
-        >>> with cocopp.toolsdivers.Infolder(cocopp.archives.bbob.local_data_path):
-        ...     cocopp.bestalg.getAllContributingAlgorithmsToBest(filenames)  # doctest:+ELLIPSIS
+        >>> with cocopp.toolsdivers.InfolderGoneWithTheWind(cocopp.archives.bbob.local_data_path):
+        ...     cocopp.bestalg.getAllContributingAlgorithmsToBest(filenames)
+        ...     assert os.path.exists('bestCustomAlg.tar.gz')  # doctest:+ELLIPSIS
         Generating best algorithm data...
-        >>> assert os.path.exists(os.path.join(
-        ...         cocopp.archives.bbob.local_data_path, 'bestCustomAlg.tar.gz'))
 
     """
 

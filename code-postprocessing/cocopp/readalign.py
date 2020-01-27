@@ -255,18 +255,25 @@ class HMultiReader(MultiReader):
         if not fvalues:
             raise ValueError('Value %g is not reached.')
 
-        if max(fvalues) <= 0.:
+        maxf = max(fvalues)
+        if maxf <= 0.:
             if currentValue > 0.:
                 self.idxCurrentFOld = self.idxCurrentF
                 self.idxCurrentF = -numpy.inf
                 currentValue = 0.
             else:
-                self.idxCurrentF = max(self.idxCurrentF,
-                                       numpy.floor(numpy.log10(-max(fvalues) + 1e-12) * self.nbPtsF))
+                self.idxCurrentF = max((self.idxCurrentF,
+                        numpy.floor(numpy.log10(-maxf + 1e-12) * self.nbPtsF)))
                 currentValue = self.calculateCurrentValue()
-        else:
+        else:  # maxf > 0
+            # it is not quite clear what this correction is for
+            # to make sure that we do not get stuck at the same level?
+            if maxf >= 2e-12:
+                maxf -= 1e-12  # this gave warnings for too small maxf-values
+            else:
+                maxf /= 2
             self.idxCurrentF = min(self.idxCurrentF,
-                                   numpy.ceil(numpy.log10(max(fvalues) - 1e-12) * self.nbPtsF))
+                                   numpy.ceil(numpy.log10(maxf) * self.nbPtsF))
             # Above line may return: Warning: divide by zero encountered in
             # log10 in the case of negative fvalues.
             # In the case of negative values for fvalues, self.idxCurrentF

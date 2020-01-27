@@ -17,8 +17,9 @@ init:
   
 
 install:
-  - cmd: conda install -y matplotlib numpy scipy setuptools six pytest cython
-  - cmd: python do.py run-python
+  # - cmd: conda install -y matplotlib numpy scipy setuptools six pytest cython
+  - cmd: pip install matplotlib numpy scipy setuptools six pytest cython  # use pip because conda install numpy fails with Python != 3.6
+  - cmd: python do.py run-python install-user
   - cmd: python do.py install-postprocessing
 
 test_script:
@@ -34,4 +35,5 @@ test_script:
   - cmd: python do.py test-preprocessing
   - cmd: python do.py test-postprocessing
   - cmd: python do.py test-suites
+  - cmd: python do.py test-c
   # - cmd: python do.py test-postprocessing-all
