@@ -350,12 +350,12 @@ def main(argv=None):
         if prepare_figures:
             print("Scaling figures...")
             # aRT/dim vs dim.
-            plt.rc("axes", **inset.rcaxeslarger)
-            plt.rc("xtick", **inset.rcticklarger)
-            plt.rc("ytick", **inset.rcticklarger)
-            plt.rc("font", **inset.rcfontlarger)
-            plt.rc("legend", **inset.rclegendlarger)
-            plt.rc('pdf', fonttype = 42)
+            #plt.rc("axes", **inset.rcaxeslarger)
+            #plt.rc("xtick", **inset.rcticklarger)
+            #plt.rc("ytick", **inset.rcticklarger)
+            #plt.rc("font", **inset.rcfontlarger)
+            #plt.rc("legend", **inset.rclegendlarger)
+            #plt.rc('pdf', fonttype = 42)
 
             ppfigdim.main(dsList, values_of_interest, algoutputdir)
 

@@ -525,11 +525,12 @@ def main(dsList, _valuesOfInterest, outputdir):
     
     """
 
-    # plt.rc("axes", labelsize=20, titlesize=24)
-    # plt.rc("xtick", labelsize=20)
-    # plt.rc("ytick", labelsize=20)
-    # plt.rc("font", size=20)
-    # plt.rc("legend", fontsize=20)
+    plt.rc("axes", **genericsettings.rcaxes)
+    plt.rc("xtick", **genericsettings.rctick)
+    plt.rc("ytick", **genericsettings.rctick)
+    plt.rc("font", **genericsettings.rcfont)
+    plt.rc("legend", **genericsettings.rclegend)
+    plt.rc('pdf', fonttype=42)
 
     _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
 
@@ -564,9 +565,10 @@ def main(dsList, _valuesOfInterest, outputdir):
             parentFileName=genericsettings.single_algorithm_file_name)
 
     ppfig.copy_js_files(outputdir)
-    
-    funInfos = ppfigparam.read_fun_infos()    
+
+    funInfos = ppfigparam.read_fun_infos()
     fontSize = ppfig.getFontSize(funInfos.values())
+
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
         beautify(axesLabel=False)
@@ -581,8 +583,6 @@ def main(dsList, _valuesOfInterest, outputdir):
         if func in testbedsettings.current_testbed.functions_with_legend:
             toolsdivers.legend(loc="best", fontsize=16)
         if func in funInfos.keys():
-            # print(plt.rcParams['axes.titlesize'])
-            # print(plt.rcParams['font.size'])
             funcName = funInfos[func]
             plt.gca().set_title(funcName, fontsize=fontSize)
 
