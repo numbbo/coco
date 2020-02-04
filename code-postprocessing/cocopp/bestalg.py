@@ -88,7 +88,7 @@ class BestAlgSet(DataSet):
     numbers of function evaluations for evals or function values for
     funvals.
 
-    Known bug: algorithms where the aRT is NaN or Inf are not taken into
+    Known bug: algorithms where the ERT is NaN or Inf are not taken into
     account!?
 
     """
@@ -148,7 +148,7 @@ class BestAlgSet(DataSet):
         sortedAlgs = list(dict_alg.keys())
         # algorithms will be sorted along sortedAlgs which is now a fixed list
 
-        # Align aRT
+        # Align ERT
         erts = list(np.transpose(np.vstack([dict_alg[i].target, dict_alg[i].ert]))
                     for i in sortedAlgs)
         res = readalign.alignArrayData(readalign.HArrayMultiReader(erts))
@@ -168,7 +168,7 @@ class BestAlgSet(DataSet):
                     continue  # TODO: don't disregard these entries
                 if tmpert == currentbestert:
                     # TODO: what do we do in case of ties?
-                    # look at function values corresponding to the aRT?
+                    # look at function values corresponding to the ERT?
                     # Look at the function evaluations? the success ratio?
                     pass
                 elif tmpert < currentbestert:
@@ -308,11 +308,11 @@ class BestAlgSet(DataSet):
         return dictinstance
 
     def detERT(self, targets):
-        """Determine the average running time to reach target values.
+        """Determine the expected running time to reach target values.
 
         :keyword list targets: target function values of interest
 
-        :returns: list of average running times corresponding to the
+        :returns: list of expected running times corresponding to the
                   targets.
 
         """
@@ -644,7 +644,7 @@ def getAllContributingAlgorithmsToBest(algnamelist, target_lb=1e-8,
                                        target_ub=1e2):
     """Computes first the artificial best algorithm from given algorithm list
        algnamelist, constructed by extracting for each target/function pair
-       thalgorithm with best aRT among the given ones. Returns then the list
+       thalgorithm with best ERT among the given ones. Returns then the list
        of algorithms that are contributing to the definition of the best
        algorithm, separated by dimension, and sorted by importance (i.e. with
        respect to the number of target/function pairs where each algorithm is
@@ -713,9 +713,9 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
     """Returns (and prints) per dimension a list of algorithms within
     algorithm list args that contains an algorithm if for any
         dimension/target/function pair this algorithm:
-        - is the best algorithm wrt aRT
-        - its own aRT lies within a factor f_factor of the best aRT
-        - there is no algorithm within a factor of f_factor of the best aRT
+        - is the best algorithm wrt ERT
+        - its own ERT lies within a factor f_factor of the best ERT
+        - there is no algorithm within a factor of f_factor of the best ERT
           and the current algorithm is the second best.
 
     """
@@ -750,7 +750,7 @@ def extractBestAlgorithms(args=algs2009, f_factor=2,
                     # add best for this target:
                     selectedAlgsPerProblemDF.append(best.algs[i])
 
-                    # add second best or all algorithms that have an aRT
+                    # add second best or all algorithms that have an ERT
                     # within a factor of f_factor of the best:
                     secondbest_ERT = np.infty
                     secondbest_str = ''

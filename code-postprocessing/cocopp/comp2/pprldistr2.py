@@ -38,7 +38,7 @@ def beautify(handles):
 
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-    plt.axvline(1, ls='-', color='k');  # symmetry line for aRT1/aRT0 = 1
+    plt.axvline(1, ls='-', color='k');  # symmetry line for ERT1/ERT0 = 1
     xlim = min(max(numpy.abs(numpy.log10(plt.xlim()))),
                numpy.ceil(numpy.log10(sys.float_info.max))-1) # correction of
                                                               # numerical issues
@@ -59,6 +59,12 @@ def beautify(handles):
         if i > 0 and i < numpy.inf:
             newxticks.append('%d' % round(numpy.log10(i)))
     axisHandle.set_xticklabels(newxticks)
+
+    print('......................')
+    print('old xticks: ')
+    print(xticks)
+    print('new xticks: ')
+    print(newxticks)
 
     # Prolong to the boundary...
     xmin, xmax = plt.xlim()
@@ -82,10 +88,21 @@ def beautify(handles):
 
     # Inverted xticks
     x = axisHandle.get_xticks()
+
+    print('xticks old:')
+    print(x)
+
     # Operation for reverting the ticks for x < 1
     x[x<1] = sorted(1/(x[x<1]*numpy.power(10, -2*numpy.floor(numpy.log10(x[x<1]))-1)))
     x = x[(x<xmax) * (x>xmin)] # why?
     axisHandle.set_xticks(x)
+
+    print('xticks new:')
+    print(x)
+
+    if not len(x) == len(newxticks):
+        1/0
+
 
 def computeERT(fevals, maxevals):
     data = fevals.copy()

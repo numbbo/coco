@@ -85,8 +85,8 @@ def main(argv=None):
             The default setting is "color".
         --tab-only, --fig-only, --rld-only, --los-only
             these options can be used to output respectively the TeX
-            tables, convergence and aRTs graphs figures, run length
-            distribution figures, aRT loss ratio figures only. A
+            tables, convergence and ERTs graphs figures, run length
+            distribution figures, ERT loss ratio figures only. A
             combination of any two of these options results in no
             output.
         --conv
@@ -349,7 +349,7 @@ def main(argv=None):
         values_of_interest = testbedsettings.current_testbed.ppfigdim_target_values
         if prepare_figures:
             print("Scaling figures...")
-            # aRT/dim vs dim.
+            # ERT/dim vs dim.
             #plt.rc("axes", **inset.rcaxeslarger)
             #plt.rc("xtick", **inset.rcticklarger)
             #plt.rc("ytick", **inset.rcticklarger)
@@ -440,7 +440,7 @@ def main(argv=None):
                 print_done()
             
         if prepare_log_loss:
-            print("aRT loss ratio figures and tables...")
+            print("ERT loss ratio figures and tables...")
             for ng, sliceNoise in dsList.dictByNoise().items():
                 if ng == 'noiselessall':
                     testbed = 'noiseless'

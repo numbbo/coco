@@ -47,7 +47,7 @@ Examples:
     Number of trials: 15
     Final target Df: 1e-08
     min / max number of evals per trial: 224 / 333
-       evals/DIM:  best     15%     50%     85%     max |  aRT/DIM  nsucc
+       evals/DIM:  best     15%     50%     85%     max |  ERT/DIM  nsucc
       ---Df---|-----------------------------------------|----------------
       1.0e+03 |       0       0       0       0       0 |      0.5  15
       1.0e+01 |       0       0       2       8      10 |      2.9  15
