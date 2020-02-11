@@ -39,12 +39,12 @@ def beautify(handles):
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
     plt.axvline(1, ls='-', color='k');  # symmetry line for ERT1/ERT0 = 1
-    xlim = min(max(numpy.abs(numpy.log10(plt.xlim()))),
-               numpy.ceil(numpy.log10(sys.float_info.max))-1) # correction of
-                                                              # numerical issues
-                                                              # with bbob-biobj
-                                                              # test
-    xlim = (min(0.1, 10.**(-xlim)), max(10., 10.**(xlim)))
+
+    xlim = numpy.minimum(numpy.maximum(plt.xlim(), 1e-9), 1e9)
+    xlim = numpy.minimum(numpy.maximum(xlim, 10), 0.1)
+    xlim = max(numpy.abs(numpy.log10(xlim)))
+    xlim = (10 ** (-xlim), 10 ** xlim)
+
     plt.axhline(0.5, ls=':', color='k', lw=2)  # symmetry line at y=0.5
     plt.xlim(xlim)
     plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
@@ -53,18 +53,7 @@ def beautify(handles):
     axisHandle.set_xlabel('log10 of FEvals ratio')
     axisHandle.set_ylabel('proportion of trials')
     axisHandle.grid(True)
-    xticks = axisHandle.get_xticks()
-    newxticks = []
-    for i in xticks:
-        if i > 0 and i < numpy.inf:
-            newxticks.append('%d' % round(numpy.log10(i)))
-    axisHandle.set_xticklabels(newxticks)
 
-    print('......................')
-    print('old xticks: ')
-    print(xticks)
-    print('new xticks: ')
-    print(newxticks)
 
     # Prolong to the boundary...
     xmin, xmax = plt.xlim()
@@ -89,19 +78,12 @@ def beautify(handles):
     # Inverted xticks
     x = axisHandle.get_xticks()
 
-    print('xticks old:')
-    print(x)
-
     # Operation for reverting the ticks for x < 1
-    x[x<1] = sorted(1/(x[x<1]*numpy.power(10, -2*numpy.floor(numpy.log10(x[x<1]))-1)))
-    x = x[(x<xmax) * (x>xmin)] # why?
-    axisHandle.set_xticks(x)
+    #x[x<1] = sorted(1/(x[x<1]*numpy.power(10, -2*numpy.floor(numpy.log10(x[x<1]))-1)))
+    #x = x[(x<xmax) * (x>xmin)] # why?
+    #axisHandle.set_xticks(x)
 
-    print('xticks new:')
-    print(x)
 
-    if not len(x) == len(newxticks):
-        1/0
 
 
 def computeERT(fevals, maxevals):
