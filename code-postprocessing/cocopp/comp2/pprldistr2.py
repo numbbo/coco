@@ -40,8 +40,9 @@ def beautify(handles):
     axisHandle.set_xscale('log')
     plt.axvline(1, ls='-', color='k');  # symmetry line for ERT1/ERT0 = 1
 
-    xlim = numpy.minimum(numpy.maximum(plt.xlim(), 1e-9), 1e9)
-    xlim = numpy.minimum(numpy.maximum(xlim, 10), 0.1)
+    xlim = plt.xlim()
+    xlim = numpy.maximum(xlim[0], 1e-9), numpy.minimum(xlim[1], 1e9)
+    xlim = numpy.minimum(xlim[0], 1. / 10.01), numpy.maximum(xlim[1], 10.01)
     xlim = max(numpy.abs(numpy.log10(xlim)))
     xlim = (10 ** (-xlim), 10 ** xlim)
 
@@ -66,7 +67,7 @@ def beautify(handles):
         if len(xdata) == 0 or len(ydata) == 0:
             continue
         if not hasattr(xdata, 'dtype') or xdata.dtype != float:
-            xdata = numpy.array(xdata, dtype=float) 
+            xdata = numpy.array(xdata, dtype=float)
         xdata = numpy.insert(xdata, 0, xmin)
         xdata = numpy.insert(xdata, len(xdata), xmax)
         ydata = numpy.insert(ydata, 0, ydata[0])
@@ -75,15 +76,10 @@ def beautify(handles):
 
     toolsdivers.legend(loc='best')
 
-    # Inverted xticks
-    x = axisHandle.get_xticks()
-
-    # Operation for reverting the ticks for x < 1
-    #x[x<1] = sorted(1/(x[x<1]*numpy.power(10, -2*numpy.floor(numpy.log10(x[x<1]))-1)))
-    #x = x[(x<xmax) * (x>xmin)] # why?
-    #axisHandle.set_xticks(x)
-
-
+    x = numpy.asarray(axisHandle.get_xticks())
+    axisHandle.set_xticklabels([str(int(numpy.log10(xx))) for xx in x])
+    axisHandle.set_xticks(x)
+    plt.xlim(xlim)
 
 
 def computeERT(fevals, maxevals):
