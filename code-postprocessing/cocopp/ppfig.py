@@ -349,7 +349,7 @@ def save_single_functions_html(filename,
             f.write(caption_string_format % '\n##bbobECDFslegend##')
 
         elif htmlPage is HtmlPage.PPTABLE:
-            current_header = 'aRT in number of function evaluations'
+            current_header = 'ERT in number of function evaluations'
             f.write("<H2> %s </H2>\n" % current_header)
             for index, dimension in enumerate(dimensions):
                 f.write(write_dimension_links(dimension, dimensions, index))
@@ -403,7 +403,7 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.PPLOGLOSS:
             dimensions = testbedsettings.current_testbed.rldDimsOfInterest
             if testbedsettings.current_testbed.reference_algorithm_filename:
-                current_header = 'aRT loss ratios'
+                current_header = 'ERT loss ratios'
                 f.write("<H2> %s </H2>\n" % current_header)
 
                 dimension_list = '-D, '.join(str(x) for x in dimensions) + '-D'
@@ -457,9 +457,9 @@ def write_dimension_links(dimension, dimensions, index):
 
 
 def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key, dimensions):
-    current_header = 'Table showing the aRT in number of function evaluations'
+    current_header = 'Table showing the ERT in number of function evaluations'
     if best_alg_exists:
-        current_header += ' divided by the best aRT measured during BBOB-2009'
+        current_header += ' divided by the best ERT measured during BBOB-2009'
 
     f.write("\n<H2> %s </H2>\n" % current_header)
     for index, dimension in enumerate(dimensions):
@@ -670,7 +670,7 @@ def beautify():
     for i in tmp:
         tmp2.append('%d' % round(np.log10(i)))
     axisHandle.set_yticklabels(tmp2)
-    axisHandle.set_ylabel('log10 of aRT')
+    axisHandle.set_ylabel('log10 of ERT')
 
 
 def generateData(dataSet, targetFuncValue):
@@ -701,7 +701,7 @@ def generateData(dataSet, targetFuncValue):
     else:
         med = np.nan
 
-    # prepare to compute runlengths / aRT with restarts (AKA SP1)
+    # prepare to compute runlengths / ERT with restarts (AKA SP1)
     data[np.isnan(data)] = dataSet.maxevals[np.isnan(data)]
 
     res = []
@@ -763,7 +763,7 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
 
         if succ:
             tmp = np.vstack(succ)
-            # aRT
+            # ERT
             res.extend(plt.plot(tmp[:, 0], tmp[:, 1], **kwargs))
             # median
             tmp2 = plt.plot(tmp[:, 0], tmp[:, -1], **kwargs)

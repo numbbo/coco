@@ -36,7 +36,7 @@ function evaluations.
    cocopp.pprldistr.plot(ds)
    cocopp.pprldistr.beautify() # resize the window to view whole figure
 
-CAVEAT: the naming conventions in this module mix up ART (an estimate
+CAVEAT: the naming conventions in this module mix up ERT (an estimate
 of the expected running length) and run lengths.
 
 """
@@ -537,7 +537,7 @@ def plotFVDistr(dsList, budget, min_f=None, **plotArgs):
         vals[vals <= 0] = min(np.append(vals[vals > 0], [min_f])) # works also when vals[vals > 0] is empty
         if genericsettings.runlength_based_targets:
             NotImplementedError('related function vals with respective budget '
-                                + '(e.g. ART(val)) see pplogloss.generateData()')
+                                + '(e.g. ERT(val)) see pplogloss.generateData()')
         x.extend(vals)
         nn += ds.nbRuns()
 

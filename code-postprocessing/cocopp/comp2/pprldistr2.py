@@ -38,13 +38,14 @@ def beautify(handles):
 
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-    plt.axvline(1, ls='-', color='k');  # symmetry line for aRT1/aRT0 = 1
-    xlim = min(max(numpy.abs(numpy.log10(plt.xlim()))),
-               numpy.ceil(numpy.log10(sys.float_info.max))-1) # correction of
-                                                              # numerical issues
-                                                              # with bbob-biobj
-                                                              # test
-    xlim = (min(0.1, 10.**(-xlim)), max(10., 10.**(xlim)))
+    plt.axvline(1, ls='-', color='k');  # symmetry line for ERT1/ERT0 = 1
+
+    xlim = plt.xlim()
+    xlim = numpy.maximum(xlim[0], 1e-9), numpy.minimum(xlim[1], 1e9)
+    xlim = numpy.minimum(xlim[0], 1. / 10.01), numpy.maximum(xlim[1], 10.01)
+    xlim = max(numpy.abs(numpy.log10(xlim)))
+    xlim = (10 ** (-xlim), 10 ** xlim)
+
     plt.axhline(0.5, ls=':', color='k', lw=2)  # symmetry line at y=0.5
     plt.xlim(xlim)
     plt.yticks(numpy.array((0., 0.25, 0.5, 0.75, 1.0)),
@@ -53,12 +54,7 @@ def beautify(handles):
     axisHandle.set_xlabel('log10 of FEvals ratio')
     axisHandle.set_ylabel('proportion of trials')
     axisHandle.grid(True)
-    xticks = axisHandle.get_xticks()
-    newxticks = []
-    for i in xticks:
-        if i > 0 and i < numpy.inf:
-            newxticks.append('%d' % round(numpy.log10(i)))
-    axisHandle.set_xticklabels(newxticks)
+
 
     # Prolong to the boundary...
     xmin, xmax = plt.xlim()
@@ -71,7 +67,7 @@ def beautify(handles):
         if len(xdata) == 0 or len(ydata) == 0:
             continue
         if not hasattr(xdata, 'dtype') or xdata.dtype != float:
-            xdata = numpy.array(xdata, dtype=float) 
+            xdata = numpy.array(xdata, dtype=float)
         xdata = numpy.insert(xdata, 0, xmin)
         xdata = numpy.insert(xdata, len(xdata), xmax)
         ydata = numpy.insert(ydata, 0, ydata[0])
@@ -80,12 +76,11 @@ def beautify(handles):
 
     toolsdivers.legend(loc='best')
 
-    # Inverted xticks
-    x = axisHandle.get_xticks()
-    # Operation for reverting the ticks for x < 1
-    x[x<1] = sorted(1/(x[x<1]*numpy.power(10, -2*numpy.floor(numpy.log10(x[x<1]))-1)))
-    x = x[(x<xmax) * (x>xmin)] # why?
+    x = numpy.asarray(axisHandle.get_xticks())
+    axisHandle.set_xticklabels([str(int(numpy.log10(xx))) for xx in x])
     axisHandle.set_xticks(x)
+    plt.xlim(xlim)
+
 
 def computeERT(fevals, maxevals):
     data = fevals.copy()

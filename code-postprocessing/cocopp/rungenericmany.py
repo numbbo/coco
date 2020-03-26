@@ -112,7 +112,7 @@ def main(argv=None):
         --tab-only, --rld-only, --fig-only
             these options can be used to output respectively the
             comparison TeX tables, the run lengths distributions or the
-            figures of aRT/dim vs dim only. A combination of any two or
+            figures of ERT/dim vs dim only. A combination of any two or
             more of these options results in no output.
         --no-rld-single-fcts
             do not generate runlength distribution figures for each
@@ -408,7 +408,7 @@ def main(argv=None):
                     parentFileName=genericsettings.many_algorithm_file_name
                 )
 
-                # ECDFs of aRT ratios
+                # ECDFs of ERT ratios
                 dic_dim0 = ds_list0.dictByDim()
                 dic_dim1 = ds_list1.dictByDim()
                 for dim in set(dic_dim0.keys()) & set(dic_dim1.keys()):

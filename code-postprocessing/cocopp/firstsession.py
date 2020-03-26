@@ -143,7 +143,7 @@ figure()
 pprldistr.plot(ds)
 pprldistr.beautify() # resize the window to view whole figure
 
-# Empirical cumulative distribution function of bootstrapped aRT figure
+# Empirical cumulative distribution function of bootstrapped ERT figure
 from .compall import pprldmany
 ds = cocopp.load(glob.glob('BBOB2009pythondata/BIPOP-CMA-ES/ppdata_f0*_20.pickle'))
 figure()
