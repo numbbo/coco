@@ -277,7 +277,7 @@ isPickled = False  # only affects rungeneric1
 isScatter = True  # only affects rungenericmany
 
 # Used by getopt:
-shortoptlist = "hvpo:"
+shortoptlist = "hvpfo:"
 longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
                "verbose", "settings=", "conv",

@@ -329,7 +329,7 @@ def main(argv=None):
             # Arguments are still accumulated if rungeneric.main() is bypassed
             # and rungenericmany.main() or lower-level functions are called.
             genericsettings.foreground_algorithm_list = []
-            dsld = rungenericmany.main(genopts + ["-o", outputdir] + args)
+            dsld = rungenericmany.main(outputdir, args)
             
         toolsdivers.prepend_to_file(latex_commands_filename,
                                         ['\\providecommand{\\numofalgs}{%d}' % len(args)]

@@ -26,12 +26,7 @@ from . import findfiles
 from .pproc import parseinfo
 from .readalign import split
 from .ppfig import Usage
-
-# Used by getopt:
-shortoptlist = "hvpfo:"
-longoptlist = ["help", "output-dir=", "noisy", "noise-free", "tab-only",
-               "fig-only", "rld-only", "los-only", "crafting-effort=",
-               "pickle", "verbose", "settings=", "conv"]
+from . import genericsettings
 
 """Use cases:
 
@@ -163,7 +158,7 @@ def main(argv=None):
 
     try:
         try:
-            opts, args = getopt.getopt(argv, shortoptlist, longoptlist)
+            opts, args = getopt.getopt(argv, genericsettings.shortoptlist, genericsettings.longoptlist)
         except getopt.error as msg:
              raise Usage(msg)
         if not (args):
