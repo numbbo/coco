@@ -574,6 +574,9 @@ class COCODataArchive(_td.StrList):
         in the archive. If ``indices is None``, the results from the
         last call to `find` are used. Download the data if necessary.
 
+        See `find` or `cocopp.archiving.OfficialArchives` for how matching
+        is determined.
+
         See also `get`.
         """
         if indices is not None:  # TODO: just "if indices" should do?
@@ -607,7 +610,9 @@ class COCODataArchive(_td.StrList):
         Retrieves the data from remote if necessary.
 
         `substr` can be a substring that matches one and only one name in
-        the data archive or an integer between 0 and `len(self)`.
+        the data archive or an integer between 0 and `len(self)`, see
+        `find` or `cocopp.archiving.OfficialArchives` for how matching is
+        determined.
 
         Raises a `ValueError` if `substr` matches several archive entries
         on none.
