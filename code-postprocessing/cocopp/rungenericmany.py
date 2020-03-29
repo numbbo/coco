@@ -64,10 +64,10 @@ def grouped_ecdf_graphs(alg_dict, order, output_dir, function_groups, settings, 
             replace_in_file(file_name, '??COCOVERSION??', '<br />Data produced with COCO %s' % (get_version_label(None)))
 
 
-def main(outputdir, args):
+def main(args, outputdir):
     r"""Main routine for post-processing the data of multiple algorithms.
 
-    Provided with some data, this routine outputs figure and TeX files
+    Provided with some data in argument args, this routine outputs figure and TeX files
     in a folder needed for the compilation of the provided LaTeX templates
     for comparing multiple algorithms (``*many.tex`` or ``*3*.tex``).
     The used template file needs to be edited so that the commands
