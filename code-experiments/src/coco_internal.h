@@ -188,8 +188,7 @@ struct coco_observer_s {
   size_t number_target_triggers;
                                 /**< @brief The number of targets between each 10**i and 10**(i+1). */
   double log_target_precision;  /**< @brief The minimal precision used for logarithmic targets. */
-  double unif_target_precision; /**< @brief The minimal precision used for uniform targets. */
-  int unif_target_trigger;      /**< @brief Whether the uniform targets should also trigger logging */
+  double lin_target_precision;  /**< @brief The minimal precision used for linear targets. */
   size_t number_evaluation_triggers;
                                 /**< @brief The number of triggers between each 10**i and 10**(i+1) evaluation number. */
   char *base_evaluation_triggers;

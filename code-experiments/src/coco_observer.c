@@ -27,16 +27,31 @@ typedef struct {
 } coco_observer_log_targets_t;
 
 /**
- * @brief The type for triggers based on uniformly distributed target values.
+ * @brief The type for triggers based on linear target values (targets that are uniformly distributed
+ * in the linear space).
  *
  * The target values that trigger logging are at every precision * integer value.
  */
 typedef struct {
 
   double value;               /**< @brief Value of the currently hit target. */
-  double precision;           /**< @brief Minimal precision of interest. */
+  double precision;           /**< @brief Precision of interest. */
 
-} coco_observer_unif_targets_t;
+} coco_observer_lin_targets_t;
+
+/**
+ * @brief The type for triggers based on both linear and logarithmic target values.
+ *
+ * The target values that trigger logging are at every lin_precision * integer value everywhere but in the
+ * (-lin_precision, lin_precision) interval, where the logging is triggered according to the logarithmic
+ * trigger with log_precision (we assume that log_precision < lin_precision).
+ */
+typedef struct {
+
+  coco_observer_lin_targets_t *lin_targets;
+  coco_observer_log_targets_t *log_targets;
+
+} coco_observer_lin_log_targets_t;
 
 /**
  * @brief The type for triggers based on numbers of evaluations.
@@ -81,13 +96,14 @@ typedef struct {
 /**
  * @brief Creates and returns a structure containing information on logarithmic targets.
  *
- * @param number_of_targets The number of targets between 10**(i/n) and 10**((i+1)/n) for each i.
+ * @param number_of_targets The number of targets between 10**i and 10**(i+1) for each i.
  * @param precision Minimal precision of interest.
  */
 static coco_observer_log_targets_t *coco_observer_log_targets(const size_t number_of_targets,
                                                               const double precision) {
 
-  coco_observer_log_targets_t *log_targets = (coco_observer_log_targets_t *) coco_allocate_memory(sizeof(*log_targets));
+  coco_observer_log_targets_t *log_targets =
+      (coco_observer_log_targets_t *) coco_allocate_memory(sizeof(*log_targets));
   log_targets->exponent = INT_MAX;
   log_targets->value = DBL_MAX;
   log_targets->number_of_triggers = number_of_targets;
@@ -99,9 +115,10 @@ static coco_observer_log_targets_t *coco_observer_log_targets(const size_t numbe
 /**
  * @brief Computes and returns whether the given value should trigger logging.
  */
-static int coco_observer_log_targets_trigger(coco_observer_log_targets_t *log_targets, const double given_value) {
+static int coco_observer_log_targets_trigger(coco_observer_log_targets_t *log_targets,
+                                             const double given_value) {
 
-  int update_performed = 0;
+  int activate_trigger = 0;
 
   const double number_of_targets_double = (double) (long) log_targets->number_of_triggers;
 
@@ -133,7 +150,7 @@ static int coco_observer_log_targets_trigger(coco_observer_log_targets_t *log_ta
       	log_targets->value = 0;
       else
       	log_targets->value = pow(10, (double) current_exponent / number_of_targets_double);
-      update_performed = 1;
+      activate_trigger = 1;
     }
   }
   /* The given_value is negative, therefore adjustments need to be made */
@@ -159,44 +176,91 @@ static int coco_observer_log_targets_trigger(coco_observer_log_targets_t *log_ta
       /* Update the target information */
       log_targets->exponent = adjusted_exponent;
       log_targets->value = - pow(10, (double) current_exponent / number_of_targets_double);
-      update_performed = 1;
+      activate_trigger = 1;
     }
   }
 
-  return update_performed;
+  return activate_trigger;
 }
 
 /**
- * @brief Creates and returns a structure containing information on uniform targets.
+ * @brief Creates and returns a structure containing information on linear targets.
  *
  * @param precision Minimal precision of interest.
  */
-static coco_observer_unif_targets_t *coco_observer_unif_targets(const double precision) {
+static coco_observer_lin_targets_t *coco_observer_lin_targets(const double precision) {
 
-  coco_observer_unif_targets_t *unif_targets = (coco_observer_unif_targets_t *) coco_allocate_memory(sizeof(*unif_targets));
-  unif_targets->value = DBL_MAX;
-  unif_targets->precision = precision;
+  coco_observer_lin_targets_t *lin_targets =
+      (coco_observer_lin_targets_t *) coco_allocate_memory(sizeof(*lin_targets));
+  lin_targets->value = DBL_MAX;
+  lin_targets->precision = precision;
 
-  return unif_targets;
+  return lin_targets;
 }
 
 /**
  * @brief Computes and returns whether the given value should trigger logging.
  */
-static int coco_observer_unif_targets_trigger(coco_observer_unif_targets_t *unif_targets, const double given_value) {
+static int coco_observer_lin_targets_trigger(coco_observer_lin_targets_t *lin_targets,
+                                             const double given_value) {
 
-  int update_performed = 0;
+  int activate_trigger = 0;
   double target_reached;
 
-  assert(unif_targets != NULL);
+  assert(lin_targets != NULL);
 
-  target_reached = coco_double_round_up_with_precision(given_value, unif_targets->precision);
-  if (target_reached < unif_targets->value) {
-    update_performed = 1;
-    unif_targets->value = target_reached;
+  target_reached = coco_double_round_up_with_precision(given_value, lin_targets->precision);
+  if (target_reached < lin_targets->value) {
+    activate_trigger = 1;
+    lin_targets->value = target_reached;
   }
 
-  return update_performed;
+  return activate_trigger;
+}
+
+/**
+ * @brief Creates and returns a structure containing information on triggers based on both linear and
+ * logarithmic target values
+ */
+static coco_observer_lin_log_targets_t *coco_observer_lin_log_targets(const double lin_precision,
+                                                                      const size_t number_of_targets,
+                                                                      const double log_precision) {
+  coco_observer_lin_log_targets_t *targets = (coco_observer_lin_log_targets_t *) coco_allocate_memory(
+          sizeof(*targets));
+  if (log_precision > lin_precision)
+    coco_error("coco_observer_lin_log_targets(): For logging with linear and logarithmic targets, the "
+        "precision of logarithmic targets (%f) needs to be lower than that of the linear targets (%f)",
+        log_precision, lin_precision);
+  targets->lin_targets = coco_observer_lin_targets(lin_precision);
+  targets->log_targets = coco_observer_log_targets(number_of_targets, log_precision);
+  return targets;
+}
+
+/**
+ * @brief Computes and returns whether the given value should trigger logging.
+ */
+static int coco_observer_lin_log_targets_trigger(coco_observer_lin_log_targets_t *targets,
+                                                 const double given_value) {
+
+  if ((given_value < targets->lin_targets->precision) && (given_value > - targets->lin_targets->precision)) {
+    /* Use the logarithmic trigger */
+    return coco_observer_log_targets_trigger(targets->log_targets, given_value);
+  } else {
+    /* Use the linear trigger */
+    return coco_observer_lin_targets_trigger(targets->lin_targets, given_value);
+  }
+
+}
+
+/**
+ * @brief Frees the given targets object.
+ */
+static void coco_observer_lin_log_targets_free(coco_observer_lin_log_targets_t *targets) {
+
+  assert(targets != NULL);
+  coco_free_memory(targets->lin_targets);
+  coco_free_memory(targets->log_targets);
+  coco_free_memory(targets);
 }
 
 /**@}*/
@@ -337,8 +401,7 @@ static coco_observer_t *coco_observer_allocate(const char *result_folder,
                                                const char *algorithm_info,
                                                const size_t number_target_triggers,
                                                const double log_target_precision,
-                                               const double unif_target_precision,
-                                               const int unif_target_trigger,
+                                               const double lin_target_precision,
                                                const size_t number_evaluation_triggers,
                                                const char *base_evaluation_triggers,
                                                const int precision_x,
@@ -355,8 +418,7 @@ static coco_observer_t *coco_observer_allocate(const char *result_folder,
   observer->algorithm_info = coco_strdup(algorithm_info);
   observer->number_target_triggers = number_target_triggers;
   observer->log_target_precision = log_target_precision;
-  observer->unif_target_precision = unif_target_precision;
-  observer->unif_target_trigger = unif_target_trigger;
+  observer->lin_target_precision = lin_target_precision;
   observer->number_evaluation_triggers = number_evaluation_triggers;
   observer->base_evaluation_triggers = coco_strdup(base_evaluation_triggers);
   observer->precision_x = precision_x;
@@ -433,10 +495,7 @@ void coco_observer_free(coco_observer_t *observer) {
  * (equally spaced in the logarithmic scale) that trigger logging. The default value is 100.
  * - "log_target_precision: VALUE" defines the precision used for logarithmic targets (there are no targets for
  * abs(values) < log_target_precision). The default value is 1e-8.
- * - "unif_target_precision: VALUE" defines the precision used for uniform targets. The default value is 1e-5.
- * - "unif_target_trigger: VALUE" determines whether the uniform targets should trigger logging.
- * These triggers will always be used instead of the logarithmic triggers in case the problem does
- * not have a known optimum. The default value is 0 (false).
+ * - "lin_target_precision: VALUE" defines the precision used for linear targets. The default value is 1e-5.
  * - "number_evaluation_triggers: VALUE" defines the number of evaluations to be logged between each 10**i
  * and 10**(i+1). The default value is 20.
  * - "base_evaluation_triggers: VALUES" defines the base evaluations used to produce an additional
@@ -460,11 +519,11 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   coco_observer_t *observer;
   char *path, *result_folder, *algorithm_name, *algorithm_info;
   const char *outer_folder_name = "exdata";
-  int precision_x, precision_f, precision_g, log_discrete_as_int, unif_target_trigger;
+  int precision_x, precision_f, precision_g, log_discrete_as_int;
 
   size_t number_target_triggers;
   size_t number_evaluation_triggers;
-  double log_target_precision, unif_target_precision;
+  double log_target_precision, lin_target_precision;
   char *base_evaluation_triggers;
 
   coco_option_keys_t *known_option_keys, *given_option_keys, *additional_option_keys, *redundant_option_keys;
@@ -472,7 +531,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   /* Sets the valid keys for observer options
    * IMPORTANT: This list should be up-to-date with the code and the documentation */
   const char *known_keys[] = { "result_folder", "algorithm_name", "algorithm_info", "number_target_triggers",
-      "log_target_precision", "unif_target_precision", "unif_target_trigger", "number_evaluation_triggers",
+      "log_target_precision", "lin_target_precision", "number_evaluation_triggers",
       "base_evaluation_triggers", "precision_x", "precision_f", "precision_g", "log_discrete_as_int" };
   additional_option_keys = NULL; /* To be set by the chosen observer */
 
@@ -518,14 +577,11 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
       log_target_precision = 1e-8;
   }
 
-  unif_target_precision = 1e-5;
-  if (coco_options_read_double(observer_options, "unif_target_precision", &log_target_precision) != 0) {
-    if (unif_target_precision <= 0)
-      unif_target_precision = 1e-5;
+  lin_target_precision = 1e-5;
+  if (coco_options_read_double(observer_options, "lin_target_precision", &log_target_precision) != 0) {
+    if (lin_target_precision <= 0)
+      lin_target_precision = 1e-5;
   }
-
-  if (coco_options_read_int(observer_options, "unif_target_trigger", &(unif_target_trigger)) == 0)
-    unif_target_trigger = 0;
 
   number_evaluation_triggers = 20;
   if (coco_options_read_size_t(observer_options, "number_evaluation_triggers", &number_evaluation_triggers) != 0) {
@@ -563,7 +619,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   }
 
   observer = coco_observer_allocate(path, observer_name, algorithm_name, algorithm_info,
-      number_target_triggers, log_target_precision, unif_target_precision, unif_target_trigger,
+      number_target_triggers, log_target_precision, lin_target_precision,
       number_evaluation_triggers, base_evaluation_triggers, precision_x, precision_f,
       precision_g, log_discrete_as_int);
 

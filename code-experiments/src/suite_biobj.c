@@ -93,6 +93,7 @@ static coco_problem_t *suite_biobj_get_problem(coco_suite_t *suite,
   problem->suite_dep_function = function;
   problem->suite_dep_instance = instance;
   problem->suite_dep_index = coco_suite_encode_problem_index(suite, function_idx, dimension_idx, instance_idx);
+  problem->is_opt_known = 1; /* Set to true so that logarithmic targets can be used with this suite */
 
   return problem;
 }
