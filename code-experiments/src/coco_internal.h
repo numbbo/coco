@@ -138,7 +138,9 @@ struct coco_problem_s {
                                        before any continuous ones). */
 
   double *initial_solution;            /**< @brief Initial feasible solution. */
-  double *best_value;                  /**< @brief Optimal (smallest) function value */
+  int is_opt_known;                    /**< @brief Whether the optimal (best) value is actually known for this problem. */
+  double *best_value;                  /**< @brief Optimal (smallest) function value if known, otherwise a reference
+                                       valued defined in the problem construction. */
   double *nadir_value;                 /**< @brief The nadir point (defined when number_of_objectives > 1) */
   double *best_parameter;              /**< @brief Optimal decision vector (defined only when unique) */
 

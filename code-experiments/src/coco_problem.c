@@ -170,11 +170,13 @@ static coco_problem_t *coco_problem_allocate(const size_t number_of_variables,
   problem->number_of_integer_variables = 0; /* No integer variables by default */
 
   if (number_of_objectives > 1) {
+    problem->is_opt_known = 0;        /* Optimum of multi-objective problems is unknown by default */
     problem->best_parameter = NULL;
     problem->best_value = coco_allocate_vector(number_of_objectives);
     problem->nadir_value = coco_allocate_vector(number_of_objectives);
   }
   else {
+    problem->is_opt_known = 1;        /* Optimum of single-objective problems is known by default */
     problem->best_parameter = coco_allocate_vector(number_of_variables);
     problem->best_value = coco_allocate_vector(1);
     problem->nadir_value = NULL;
@@ -223,6 +225,7 @@ static coco_problem_t *coco_problem_duplicate(const coco_problem_t *other) {
   if (other->initial_solution)
     problem->initial_solution = coco_duplicate_vector(other->initial_solution, other->number_of_variables);
 
+  problem->is_opt_known = other->is_opt_known;
   if (other->best_value)
     for (i = 0; i < problem->number_of_objectives; ++i) {
       problem->best_value[i] = other->best_value[i];
