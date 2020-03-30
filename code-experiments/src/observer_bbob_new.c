@@ -1,6 +1,6 @@
 /**
- * @file observer_bbob.c
- * @brief Implementation of the bbob observer.
+ * @file observer_bbob_ew.c
+ * @brief Implementation of the new bbob observer.
  */
 
 #include "coco.h"
