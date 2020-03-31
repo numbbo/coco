@@ -26,7 +26,8 @@ from . import findfiles
 from .pproc import parseinfo
 from .readalign import split
 from .ppfig import Usage
-from . import genericsettings
+from . import rungeneric
+
 
 """Use cases:
 
@@ -158,7 +159,7 @@ def main(argv=None):
 
     try:
         try:
-            opts, args = getopt.getopt(argv, genericsettings.shortoptlist, genericsettings.longoptlist)
+            opts, args = getopt.getopt(argv, rungeneric.shortoptlist, rungeneric.longoptlist)
         except getopt.error as msg:
              raise Usage(msg)
         if not (args):

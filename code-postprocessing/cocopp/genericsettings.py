@@ -276,15 +276,3 @@ isPickled = False  # only affects rungeneric1
 ##    
 isScatter = True  # only affects rungenericmany
 
-# Used by getopt:
-shortoptlist = "hvpfo:"
-longoptlist = ["help", "output-dir=", "noisy", "noise-free",
-               "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
-               "verbose", "settings=", "conv",
-               "expensive", "runlength-based",
-               "los-only", "crafting-effort=", "pickle",
-               "sca-only", "no-svg", "constrained"]
-
-
-# thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
-# and "sca-only" only affects rungenericmany
