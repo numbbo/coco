@@ -31,6 +31,17 @@ matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
 __all__ = ['main']
 
+# Used by getopt:
+shortoptlist = "hvo:"
+longoptlist = ["help", "output-dir=", "noisy", "noise-free",
+               "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
+               "verbose", "settings=", "conv",
+               "expensive", "runlength-based",
+               "los-only", "crafting-effort=", "pickle",
+               "sca-only", "no-svg"]
+# thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
+# and "sca-only" only affects rungenericmany
+
 
 def _split_short_opt_list(short_opt_list):
     """Split short options list used by getopt.
@@ -179,6 +190,10 @@ def main(argv=None):
 
             do not generate the svg figures which are used in html files
 
+        --conv
+
+            prepares also convergence plots with median function values over time
+
 
     Exceptions raised:
 
@@ -206,6 +221,8 @@ def main(argv=None):
     also be presented as a list of strings.
 
     """
+    global shortoptlist
+    global longoptlist
 
     if argv is None:
         argv = sys.argv[1:]
@@ -213,8 +230,8 @@ def main(argv=None):
         argv = argv.split()
     try:
         try:
-            opts, args = getopt.getopt(argv, genericsettings.shortoptlist,
-                                       genericsettings.longoptlist +
+            opts, args = getopt.getopt(argv, shortoptlist,
+                                       longoptlist +
                                        ['include-single', 'in-a-hurry=', 'input-path='])
         except getopt.error as msg:
             raise Usage(msg)
@@ -231,9 +248,11 @@ def main(argv=None):
 
         # Process options
         shortoptlist = list("-" + i.rstrip(":")
-                            for i in _split_short_opt_list(genericsettings.shortoptlist))
+                            for i in _split_short_opt_list(shortoptlist))
         shortoptlist.remove("-o")
-        longoptlist = list("--" + i.rstrip("=") for i in genericsettings.longoptlist)
+        longoptlist = list("--" + i.rstrip("=") for i in longoptlist)
+
+
 
         genopts = []
         outputdir = genericsettings.outputdir
@@ -251,6 +270,45 @@ def main(argv=None):
                 inputdir = a
             elif o in "--no-svg":
                 genericsettings.generate_svg_files = False
+            elif o == "--no-rld-single-fcts":
+                genericsettings.isRldOnSingleFcts = False
+            elif o == "--conv":
+                genericsettings.isConv = True
+            elif o == "--noisy":
+                genericsettings.isNoisy = True
+                warnings.warn('The usage of --noisy is deprecated and will be removed in a later release of COCO.')
+            elif o == "--noise-free":
+                genericsettings.isNoiseFree = True
+                warnings.warn('The usage of --noise-free is deprecated and will be removed in a later release of COCO.')
+            elif o in ("-p", "--pickle"):
+                genericsettings.isPickled = True
+                warnings.warn('The usage of --pickle is deprecated and will be removed in a later release of COCO.')
+            # The next 4 are for testing purpose
+            elif o == "--runlength-based":
+                genericsettings.runlength_based_targets = True
+            elif o == "--expensive":
+                genericsettings.isExpensive = True  # comprises runlength-based
+            elif o == "--crafting-effort":
+                try:
+                    genericsettings.inputCrE = float(a)
+                except ValueError:
+                    raise Usage('Expect a valid float for flag crafting-effort.')
+            elif o == "--tab-only":
+                genericsettings.isFig = False
+                genericsettings.isRLDistr = False
+                genericsettings.isLogLoss = False
+            elif o == "--fig-only":
+                genericsettings.isTab = False
+                genericsettings.isRLDistr = False
+                genericsettings.isLogLoss = False
+            elif o == "--rld-only":
+                genericsettings.isTab = False
+                genericsettings.isFig = False
+                genericsettings.isLogLoss = False
+            elif o == "--los-only":
+                genericsettings.isTab = False
+                genericsettings.isFig = False
+                genericsettings.isRLDistr = False
             else:
                 is_assigned = False
                 if o in longoptlist or o in shortoptlist:
@@ -321,7 +379,7 @@ def main(argv=None):
             genericsettings.foreground_algorithm_list = []
             for i, alg in enumerate(args):
                 genericsettings.foreground_algorithm_list.append(alg)
-                dsld = rungeneric1.main(genopts + ["-o", outputdir, alg])
+                dsld = rungeneric1.main(alg, outputdir, genopts + ["-o", outputdir, alg])
 
         if len(args) >= 2 or len(genericsettings.background) > 0:
             # Reset foreground algorithm list if cocopp.main() is called.
@@ -329,7 +387,7 @@ def main(argv=None):
             # Arguments are still accumulated if rungeneric.main() is bypassed
             # and rungenericmany.main() or lower-level functions are called.
             genericsettings.foreground_algorithm_list = []
-            dsld = rungenericmany.main(genopts + ["-o", outputdir] + args)
+            dsld = rungenericmany.main(args, outputdir)
             
         toolsdivers.prepend_to_file(latex_commands_filename,
                                         ['\\providecommand{\\numofalgs}{%d}' % len(args)]

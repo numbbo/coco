@@ -5,7 +5,7 @@
 
 This module modifies module-defined variables so
 :py:func:`cocopp.rungeneric.main` will output black and white
-figures.
+figures. Note that this is outdated code.
 
 """
 
