@@ -763,7 +763,7 @@ static void logger_biobj_output(logger_biobj_data_t *logger,
       if (indicator->lin_log_target_hit) {
         fprintf(indicator->ldat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
             logger->precision_f, indicator->overall_value, logger->precision_f,
-            ((coco_observer_lin_targets_t *)indicator->lin_log_targets)->value);
+            ((coco_observer_lin_targets_t *)((coco_observer_lin_log_targets_t *)indicator->lin_log_targets)->lin_targets)->value);
       }
 
       if (logger->log_nondom_mode == LOG_NONDOM_READ) {
