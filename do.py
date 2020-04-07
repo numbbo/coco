@@ -208,27 +208,27 @@ def leak_check():
     os.environ['CFLAGS'] = '-g -Os'
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
-                    '--gen-suppressions=yes',
+                    '--gen-suppressions=yes', '-s',
                     './test_bbob-largescale', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
-                    '--gen-suppressions=yes',
+                    '--gen-suppressions=yes', '-s',
                     './test_bbob-mixint', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
-                    '--gen-suppressions=yes',
+                    '--gen-suppressions=yes', '-s',
                     './test_coco', 'bbob2009_testcases.txt']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
-                    '--gen-suppressions=yes',
+                    '--gen-suppressions=yes', '-s',
                     './test_biobj', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
-                    '--gen-suppressions=yes',
+                    '--gen-suppressions=yes', '-s',
                     './test_bbob-constrained', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
 
