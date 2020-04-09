@@ -16,7 +16,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
-                                         const char *default_instances);
+                                         const char *default_instances,
+                                         const int known_optima);
 
 /**
  * @brief Sets the dimensions and default instances for the toy suite.
@@ -26,7 +27,7 @@ static coco_suite_t *suite_toy_initialize(void) {
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20 };
 
-  suite = coco_suite_allocate("toy", 6, 3, dimensions, "instances: 1");
+  suite = coco_suite_allocate("toy", 6, 3, dimensions, "instances: 1", 1);
 
   return suite;
 }

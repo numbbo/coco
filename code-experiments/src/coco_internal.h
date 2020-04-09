@@ -226,6 +226,8 @@ struct coco_suite_s {
   char *default_instances;         /**< @brief The instances contained in the suite by default. */
   size_t *instances;               /**< @brief The instances contained in the suite. */
 
+  int known_optima;                /**< @brief Whether the problems of the suite have known optimal values */
+
   coco_problem_t *current_problem; /**< @brief Pointer to the currently tackled problem. */
   long current_dimension_idx;      /**< @brief The dimension index of the currently tackled problem. */
   long current_function_idx;       /**< @brief The function index of the currently tackled problem. */

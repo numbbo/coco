@@ -212,7 +212,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
-                                         const char *default_instances) {
+                                         const char *default_instances,
+                                         const int known_optima) {
 
   coco_suite_t *suite;
   size_t i;
@@ -237,6 +238,7 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
 
   assert(strlen(default_instances) > 0);
   suite->default_instances = coco_strdup(default_instances);
+  suite->known_optima = known_optima;
 
   /* Will be set to the first valid dimension index before the constructor ends */
   suite->current_dimension_idx = -1;

@@ -16,7 +16,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
-                                         const char *default_instances);
+                                         const char *default_instances,
+                                         const int known_optima);
 /**
  * @brief Factors used to scale separate functions in order to achieve similar difficulty.
  */
@@ -35,7 +36,7 @@ static coco_suite_t *suite_bbob_mixint_initialize(const char *suite_name) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 5, 10, 20, 40, 80, 160 };
-  suite = coco_suite_allocate(suite_name, 24, 6, dimensions, "instances: 1-15");
+  suite = coco_suite_allocate(suite_name, 24, 6, dimensions, "instances: 1-15", 1);
 
   return suite;
 }

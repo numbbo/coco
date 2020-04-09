@@ -25,7 +25,8 @@ static coco_suite_t *coco_suite_allocate(const char *suite_name,
                                          const size_t number_of_functions,
                                          const size_t number_of_dimensions,
                                          const size_t *dimensions,
-                                         const char *default_instances);
+                                         const char *default_instances,
+                                         const int known_optima);
 
 /**
  * @brief Sets the dimensions and default instances for the bbob large-scale suite.
@@ -34,7 +35,7 @@ static coco_suite_t *suite_largescale_initialize(void) {
   
   coco_suite_t *suite;
   const size_t dimensions[] = { 20, 40, 80, 160, 320, 640};
-  suite = coco_suite_allocate("bbob-largescale", 24, 6, dimensions, "instances: 1-15");
+  suite = coco_suite_allocate("bbob-largescale", 24, 6, dimensions, "instances: 1-15", 1);
   return suite;
 }
 
