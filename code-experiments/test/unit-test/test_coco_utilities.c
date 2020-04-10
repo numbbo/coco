@@ -28,36 +28,44 @@ static char *convert_to_string_with_newlines(char **array) {
  */
 MU_TEST(test_coco_set_log_level) {
 
-  char *previous_log_level;
+  char *previous_log_level, *tmp_log_level;
 
-  /* Check whether the default set to COCO_INFO */
+  /* Remember the log level before all these tests */
+  previous_log_level = coco_strdup(coco_set_log_level("info"));
+
+  /* Check whether the level is set to COCO_INFO */
   mu_check(strcmp(coco_set_log_level(""), "info") == 0);
 
   /* Check whether the method works */
-  previous_log_level = coco_strdup(coco_set_log_level("error"));
-  mu_check(strcmp(previous_log_level, "info") == 0);
+  tmp_log_level = coco_strdup(coco_set_log_level("error"));
+  mu_check(strcmp(tmp_log_level, "info") == 0);
   mu_check(strcmp(coco_set_log_level(""), "error") == 0);
-  coco_free_memory(previous_log_level);
+  coco_free_memory(tmp_log_level);
 
-  previous_log_level = coco_strdup(coco_set_log_level("warning"));
-  mu_check(strcmp(previous_log_level, "error") == 0);
+  tmp_log_level = coco_strdup(coco_set_log_level("warning"));
+  mu_check(strcmp(tmp_log_level, "error") == 0);
   mu_check(strcmp(coco_set_log_level(""), "warning") == 0);
-  coco_free_memory(previous_log_level);
+  coco_free_memory(tmp_log_level);
 
-  previous_log_level = coco_strdup(coco_set_log_level("debug"));
-  mu_check(strcmp(previous_log_level, "warning") == 0);
+  tmp_log_level = coco_strdup(coco_set_log_level("debug"));
+  mu_check(strcmp(tmp_log_level, "warning") == 0);
   mu_check(strcmp(coco_set_log_level(""), "debug") == 0);
-  coco_free_memory(previous_log_level);
+  coco_free_memory(tmp_log_level);
 
-  previous_log_level = coco_strdup(coco_set_log_level("info"));
-  mu_check(strcmp(previous_log_level, "debug") == 0);
+  tmp_log_level = coco_strdup(coco_set_log_level("info"));
+  mu_check(strcmp(tmp_log_level, "debug") == 0);
   mu_check(strcmp(coco_set_log_level(""), "info") == 0);
-  coco_free_memory(previous_log_level);
+  coco_free_memory(tmp_log_level);
 
   /* An invalid argument shouldn't change the current value */
-  previous_log_level = coco_strdup(coco_set_log_level("bla"));
-  mu_check(strcmp(previous_log_level, "info") == 0);
-  mu_check(strcmp(coco_set_log_level(""), "info") == 0);
+  coco_set_log_level("error");
+  tmp_log_level = coco_strdup(coco_set_log_level("bla"));
+  mu_check(strcmp(tmp_log_level, "error") == 0);
+  mu_check(strcmp(coco_set_log_level(""), "error") == 0);
+  coco_free_memory(tmp_log_level);
+
+  /* Restore the log level */
+  coco_set_log_level(previous_log_level);
   coco_free_memory(previous_log_level);
 }
 
@@ -222,6 +230,26 @@ MU_TEST(test_coco_double_round_up_with_precision) {
 
   round_value = coco_double_round_up_with_precision(input_value, 0.001);
   mu_check(coco_double_almost_equal(round_value, 5.001, 1e-10));
+
+  input_value = 1e-8;
+  round_value = coco_double_round_up_with_precision(input_value, 0.00001);
+  mu_check(coco_double_almost_equal(round_value, 0.00001, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 0.0001);
+  mu_check(coco_double_almost_equal(round_value, 0.0001, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 0.001);
+  mu_check(coco_double_almost_equal(round_value, 0.001, 1e-10));
+
+  input_value = 123;
+  round_value = coco_double_round_up_with_precision(input_value, 20);
+  mu_check(coco_double_almost_equal(round_value, 140, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 120);
+  mu_check(coco_double_almost_equal(round_value, 240, 1e-10));
+
+  round_value = coco_double_round_up_with_precision(input_value, 123);
+  mu_check(coco_double_almost_equal(round_value, 123, 1e-10));
 }
 
 /**
