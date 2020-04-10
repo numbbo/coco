@@ -443,24 +443,22 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
 static void logger_biobj_indicator_initialize_file(const logger_biobj_data_t *logger,
                                                    const coco_observer_t *observer,
                                                    const coco_problem_t *problem,
-                                                   const char *indicator_name,
+                                                   logger_biobj_indicator_t *indicator,
                                                    FILE *f,
                                                    const char *file_ending) {
-  logger_biobj_indicator_t *indicator;
   char *prefix, *file_name, *path_name;
   static const char *header = "%%\n"
       "%% index = %lu, name = %s\n"
       "%% instance = %lu, reference value = %.*e\n"
       "%% function evaluation | indicator value | target hit\n";
 
-  indicator = (logger_biobj_indicator_t *) coco_allocate_memory(sizeof(*indicator));
   /* Create and open the file */
   path_name = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
   coco_create_directory(path_name);
   prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
-  file_name = coco_strdupf("%s_%s.%s", prefix, indicator_name, file_ending);
+  file_name = coco_strdupf("%s_%s.%s", prefix, indicator->name, file_ending);
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
   f = fopen(path_name, "a");
   if (f == NULL) {
@@ -552,9 +550,9 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   coco_free_memory(prefix);
 
   /* Initialize the .dat, .tdat and .rdat files */
-  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator_name, indicator->dat_file, "dat");
-  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator_name, indicator->tdat_file, "tdat");
-  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator_name, indicator->rdat_file, "rdat");
+  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator, indicator->dat_file, "dat");
+  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator, indicator->tdat_file, "tdat");
+  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator, indicator->rdat_file, "rdat");
 
   coco_debug("Ended   logger_biobj_indicator()");
 
