@@ -256,6 +256,10 @@ static int coco_observer_targets_trigger(coco_observer_targets_t *targets,
     return coco_observer_log_targets_trigger(targets->log_targets, given_value);
   } else {
     /* Use the linear trigger */
+    /* Make sure that the linear target value is updated wrt the logarithmic one */
+    ((coco_observer_lin_targets_t *) targets->lin_targets)->value = coco_double_min(
+        ((coco_observer_log_targets_t *) targets->log_targets)->value,
+        ((coco_observer_lin_targets_t *) targets->lin_targets)->value);
     return coco_observer_lin_targets_trigger(targets->lin_targets, given_value);
   }
 
