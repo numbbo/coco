@@ -9,12 +9,14 @@
 #include "test_coco_string.c"
 #include "test_coco_suite.c"
 #include "test_coco_utilities.c"
+#include "test_logger_bbob_new.c"
 #include "test_logger_biobj.c"
 #include "test_mo_utilities.c"
 /*#include "unit_test_fail.c"*/
 
 int main(void) {
 
+  MU_RUN_SUITE(test_all_logger_bbob_new);
   MU_RUN_SUITE(test_all_coco_archive);
   MU_RUN_SUITE(test_all_coco_observer);
   MU_RUN_SUITE(test_all_coco_problem);
