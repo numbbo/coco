@@ -176,7 +176,7 @@ Getting Started <a name="Getting-Started"></a>
   but none is processed with this call. For more information in how to obtain
   and display specific archived data, see
   [`help(cocopp)`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html) or
-  [`help(cocopp.archives)`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.KnownArchives.html)
+  [`help(cocopp.archives)`](https://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.OfficialArchives.html)
   or the class
   [`COCODataArchive`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.COCODataArchive.html).
   
@@ -202,6 +202,19 @@ Getting Started <a name="Getting-Started"></a>
   A summary pdf can be produced via LaTeX. The corresponding templates can be found 
   in the `code-postprocessing/latex-templates` folder.  Basic html output is also 
   available in the result folder of the postprocessing (file `templateBBOBarticle.html`).
+
+  In order to exploit more features of the post-processing module,
+  it is advisable to use the module within a [Python](https://www.python.org/)
+  or [IPython](https://ipython.org/) shell
+  or a [Jupyter notebook](https://jupyter.org/) or
+  [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/), where
+
+  ```python
+  import cocopp
+  help(cocopp)
+  ```
+
+  provides the [documentation entry pointer](https://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html).
 
 7. Once your algorithm runs well, **increase the budget** in your experiment
   script, if necessary implement randomized independent restarts, and follow 
@@ -644,10 +657,10 @@ Comprehensive List of Documentations <a name="Documentations"></a>
 
 * APIs
   - ``C`` experiments code: http://numbbo.github.io/coco-doc/C
-  - Python experiments code `cocoex`: http://coco.gforge.inria.fr/apidocs-cocoex/cocoex.html
+  - Python experiments code (module `cocoex`): http://coco.gforge.inria.fr/apidocs-cocoex/cocoex.html
   - Python short [beginners example experiment](code-experiments/build/python/example_experiment_for_beginners.py)
   - Python `example_experiment2.py`: http://coco.gforge.inria.fr/apidocs-example_experiment/example_experiment2.html
-  - Postprocessing code: http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html
+  - Postprocessing code (module `cocopp`): http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html
 
 * Somewhat outdated documents:
   - Full description of the platform: http://coco.lri.fr/COCOdoc/

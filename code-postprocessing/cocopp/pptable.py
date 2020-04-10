@@ -3,9 +3,9 @@
 
 """Module for generating tables used by rungeneric1.py.
 
-The generated tables give the aRT and in brackets the 10th to 90th
+The generated tables give the ERT and in brackets the 10th to 90th
 percentile range divided by two of 100 simulated runs divided by the
-aRT of a reference algorithm (given in the respective first row and as
+ERT of a reference algorithm (given in the respective first row and as
 indicated in testbedsettings.py)
 for different target precisions for different functions. If the reference
 algorithm did not reach the target precision, the absolute values are
@@ -39,7 +39,7 @@ from . import captions
 #     tspec = {'col%d' % i: {'what': 'fname', 'header': r'$\Delta f$', 'format': None}}
 #     for t in targets:
 #         i =  i + 1
-#         tspec.update({'col%d' % i: {'what': 'aRT ratio for df=%e' % t,
+#         tspec.update({'col%d' % i: {'what': 'ERT ratio for df=%e' % t,
 #                                     'header': r'\multicolumn{2}{@{}c@{}}{1e%+d}' % (int(np.log10(t)),
 #                                     'format': writeFEval}})
 #     i = i + 1
@@ -55,11 +55,11 @@ def get_table_caption():
     """    
 
     table_caption_start = r"""%
-        Average running time (\aRT\ in number of function 
-        evaluations) divided by the \aRT\ of !!THE-REF-ALG!! in #1. This \aRT\
+        Expected running time (\ERT\ in number of function 
+        evaluations) divided by the \ERT\ of !!THE-REF-ALG!! in #1. This \ERT\
         ratio and, in braces as dispersion measure, the half difference between 90 and
         10\%-tile of bootstrapped run lengths appear in the second row of each cell,  
-        the best \aRT\
+        the best \ERT\
         """
     table_caption_rlbased = (r"""%
         in the first. The different target !!DF!!-values are shown in the top row. 
@@ -80,8 +80,8 @@ def get_table_caption():
         functions (!!TOTAL-NUM-OF-FUNCTIONS!!).\cocoversion
         """
     table_caption_no_reference_algorithm = r"""%
-        Average runtime (\aRT) to reach given targets, measured
-        in number of function evaluations in #1. For each function, the \aRT\ 
+        Expected runtime (\ERT) to reach given targets, measured
+        in number of function evaluations in #1. For each function, the \ERT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
         target !!DF!!-values as shown in the top row. 
@@ -109,7 +109,7 @@ def get_table_caption():
         
 
 def main(dsList, dims_of_interest, outputdir, latex_commands_file):
-    """Generate a table of ratio aRT/aRTref vs target precision.
+    """Generate a table of ratio ERT/ERTref vs target precision.
     
     1 table per dimension will be generated.
 
@@ -261,7 +261,7 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                         evals = np.array(sorted(evals))[0:min(len(evals), len(refevals))]
                         refevals = np.array(sorted(refevals))[0:min(len(evals), len(refevals))]
     
-                    #The conditions for significance are now that aRT < aRT_ref and
+                    #The conditions for significance are now that ERT < ERT_ref and
                     # all(sorted(FEvals_ref) > sorted(FEvals_current)).
                     if ((nbtests * p) < 0.05 and ert - refalgdata[i] < 0. and
                                 z < 0. and (np.isinf(refalgdata[i]) or all(evals < refevals))):

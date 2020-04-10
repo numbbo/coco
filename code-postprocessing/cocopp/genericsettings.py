@@ -22,6 +22,7 @@ maxevals_fix_display = None  # 3e2 is the expensive setting only used in config,
 runlength_based_targets = False  # may be overwritten by expensive setting
 figure_file_formats = ['svg', 'pdf']
 scaling_figures_with_boxes = True
+scaling_plots_with_axis_labels = False
 
 weight_evaluations_constraints = (1, 1)
 """weights used to sum function evaluations and constraints evaluations
@@ -275,15 +276,3 @@ isPickled = False  # only affects rungeneric1
 ##    
 isScatter = True  # only affects rungenericmany
 
-# Used by getopt:
-shortoptlist = "hvpo:"
-longoptlist = ["help", "output-dir=", "noisy", "noise-free",
-               "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
-               "verbose", "settings=", "conv",
-               "expensive", "runlength-based",
-               "los-only", "crafting-effort=", "pickle",
-               "sca-only", "no-svg", "constrained"]
-
-
-# thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
-# and "sca-only" only affects rungenericmany

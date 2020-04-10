@@ -23,15 +23,15 @@ def get_table_caption():
     """
 
     table_caption_one = r"""%
-        Average runtime (\aRT\ in number of function 
-        evaluations) divided by the respective !!BEST-ART!! in
+        Expected runtime (\ERT\ in number of function 
+        evaluations) divided by the respective !!BEST-ERT!! in
         #1.
-        This \aRT\ ratio and, in braces as dispersion measure, the half difference between
+        This \ERT\ ratio and, in braces as dispersion measure, the half difference between
         10 and 90\%-tile of bootstrapped run lengths appear for each algorithm and 
         """
     table_caption_one_noreference = r"""%
-        Average runtime (\aRT) to reach given targets, measured
-        in number of function evaluations, in #1. For each function, the \aRT\ 
+        Expected runtime (\ERT) to reach given targets, measured
+        in number of function evaluations, in #1. For each function, the \ERT\ 
         and, in braces as dispersion measure, the half difference between 10 and 
         90\%-tile of (bootstrapped) runtimes is shown for the different
         target !!DF!!-values as shown in the top row. 
@@ -39,13 +39,13 @@ def get_table_caption():
         $!!FOPT!! + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
         """
     table_caption_two1 = r"""%
-        target, the corresponding reference \aRT\
+        target, the corresponding reference \ERT\
         in the first row. The different target !!DF!!-values are shown in the top row.
         \#succ is the number of trials that reached the (final) target
         $!!FOPT!! + """ + testbedsettings.current_testbed.hardesttargetlatex + r"""$.
         """
     table_caption_two2 = r"""%
-        run-length based target, the corresponding reference \aRT\
+        run-length based target, the corresponding reference \ERT\
         (preceded by the target !!DF!!-value in \textit{italics}) in the first row. 
         \#succ is the number of trials that reached the target value of the last column.
         """
@@ -461,7 +461,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
         extraeol.append(r'\hline')
         #        extraeol.append(r'\hline\arrayrulecolor{tableShade}')
 
-        # line with function name and potential aRT values of reference algorithm
+        # line with function name and potential ERT values of reference algorithm
         curline = [r'\textbf{f%d}' % df[1]]
         replaceValue = '<b>f%d, %d-D</b>' % (df[1], df[0])
         curlineHtml = [item.replace('REPLACEH', replaceValue) for item in curlineHtml]
@@ -572,7 +572,7 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                             tmpevals = numpy.array(sorted(tmpevals))[0:min(len(tmpevals), len(bestevals))]
                             bestevals = numpy.array(sorted(bestevals))[0:min(len(tmpevals), len(bestevals))]
 
-                        # The conditions are now that aRT < aRT_best and
+                        # The conditions are now that ERT < ERT_best and
                         # all(sorted(FEvals_best) > sorted(FEvals_current)).
                         if numpy.isinf(refalgert[j]) or all(tmpevals < bestevals):
                             nbstars = -numpy.ceil(numpy.log10(nbtests * p))

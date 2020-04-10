@@ -3,10 +3,10 @@
 
 """Generate performance scaling figures.
 
-The figures show the scaling of the performance in terms of aRT w.r.t.
+The figures show the scaling of the performance in terms of ERT w.r.t.
 dimensionality on a log-log scale. On the y-axis, data is represented as
 a number of function evaluations divided by dimension, this is in order
-to compare at a glance with a linear scaling for which aRT is
+to compare at a glance with a linear scaling for which ERT is
 proportional to the dimension and would therefore be represented by a
 horizontal line in the figure.
 
@@ -89,7 +89,7 @@ def scaling_figure_caption():
 
     caption_text = r"""%
         Scaling of runtime with dimension to reach certain target values !!DF!!.
-        Lines: average runtime (\aRT);
+        Lines: expected runtime (\ERT);
         Cross (+): median runtime of successful runs to reach the most difficult
         target that was reached at least once (but not always);
         Cross ({\color{red}$\times$}): maximum number of
@@ -99,17 +99,17 @@ def scaling_figure_caption():
         """
     
     caption_part_absolute_targets = (r"""%
-        Shown is the \aRT\ for fixed values of $!!DF!! = 10^k$ with $k$ given
+        Shown is the \ERT\ for fixed values of $!!DF!! = 10^k$ with $k$ given
         in the legend.
-        Numbers above \aRT-symbols (if appearing) indicate the number of trials
+        Numbers above \ERT-symbols (if appearing) indicate the number of trials
         reaching the respective target. """ + # TODO: add here "(out of XYZ trials)"
         r"""!!LIGHT-THICK-LINE!! Horizontal lines mean linear scaling, slanted
         grid lines depict quadratic scaling.""")
 
     caption_part_rlbased_targets = r"""%
-        Shown is the \aRT\ for targets just not reached by !!THE-REF-ALG!!
+        Shown is the \ERT\ for targets just not reached by !!THE-REF-ALG!!
         within the given budget $k\times\DIM$, where $k$ is shown in the
-        legend. Numbers above \aRT-symbols (if appearing) indicate the number
+        legend. Numbers above \ERT-symbols (if appearing) indicate the number
         of trials reaching the respective target. !!LIGHT-THICK-LINE!! Slanted
         grid lines indicate a scaling with $\mathcal O$$(\DIM)$ compared to
         $\mathcal O$$(1)$ when using the respective reference algorithm.
@@ -316,7 +316,7 @@ def plot_a_bar(x, y,
 
     
 def plot(dsList, valuesOfInterest=None, styles=styles):
-    """From a DataSetList, plot a figure of aRT/dim vs dim.
+    """From a DataSetList, plot a figure of ERT/dim vs dim.
     
     There will be one set of graphs per function represented in the
     input data sets. Most usually the data sets of different functions
@@ -377,7 +377,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
 
             if len(succ) > 0:
                 tmp = np.vstack(succ)
-                # aRT
+                # ERT
                 if genericsettings.scaling_figures_with_boxes:
                     for dim in dimensions: 
                         # to find finite simulated runlengths we need to have at least one successful run
@@ -511,7 +511,7 @@ def plot_previous_algorithms(func, target=None):  # lambda x: [1e-8]):
     return res
 
 def main(dsList, _valuesOfInterest, outputdir):
-    """From a DataSetList, returns a convergence and aRT/dim figure vs dim.
+    """From a DataSetList, returns a convergence and ERT/dim figure vs dim.
     
     If available, uses data of a reference algorithm as specified in 
     ``:py:genericsettings.py``.
@@ -525,11 +525,12 @@ def main(dsList, _valuesOfInterest, outputdir):
     
     """
 
-    # plt.rc("axes", labelsize=20, titlesize=24)
-    # plt.rc("xtick", labelsize=20)
-    # plt.rc("ytick", labelsize=20)
-    # plt.rc("font", size=20)
-    # plt.rc("legend", fontsize=20)
+    plt.rc("axes", **genericsettings.rcaxes)
+    plt.rc("xtick", **genericsettings.rctick)
+    plt.rc("ytick", **genericsettings.rctick)
+    plt.rc("font", **genericsettings.rcfont)
+    plt.rc("legend", **genericsettings.rclegend)
+    plt.rc('pdf', fonttype=42)
 
     _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
 
@@ -564,9 +565,10 @@ def main(dsList, _valuesOfInterest, outputdir):
             parentFileName=genericsettings.single_algorithm_file_name)
 
     ppfig.copy_js_files(outputdir)
-    
-    funInfos = ppfigparam.read_fun_infos()    
+
+    funInfos = ppfigparam.read_fun_infos()
     fontSize = ppfig.getFontSize(funInfos.values())
+
     for func in dictFunc:
         plot(dictFunc[func], _valuesOfInterest, styles=styles)  # styles might have changed via config
         beautify(axesLabel=False)
@@ -579,12 +581,14 @@ def main(dsList, _valuesOfInterest, outputdir):
                  verticalalignment="bottom")
 
         if func in testbedsettings.current_testbed.functions_with_legend:
-            toolsdivers.legend(loc="best")
+            toolsdivers.legend(loc="best", fontsize=16)
         if func in funInfos.keys():
-            # print(plt.rcParams['axes.titlesize'])
-            # print(plt.rcParams['font.size'])
             funcName = funInfos[func]
             plt.gca().set_title(funcName, fontsize=fontSize)
+
+        if genericsettings.scaling_plots_with_axis_labels:
+            plt.xlabel('dimension')
+            plt.ylabel('log10(# f-evals / dimension)')
 
         plot_previous_algorithms(func, _valuesOfInterest)
         filename = os.path.join(outputdir, 'ppfigdim_f%03d' % (func))

@@ -217,7 +217,7 @@ class RunlengthBasedTargetValues(TargetValues):
         >>> assert t[-1] == 1.00000000e-08
              
     returns a list of target f-values for F1 in 20-D, based on the 
-    aRT values ``[0.5,...,50]``. 
+    ERT values ``[0.5,...,50]``.
         
     Details: The computation starts from the smallest budget and the resulting f-target 
     must always be at least a factor of ``force_different_targets_factor`` smaller 
@@ -332,7 +332,7 @@ class RunlengthBasedTargetValues(TargetValues):
 
     def __call__(self, fun_dim=None, discretize=None):
         """Get all target values for the respective function and dimension  
-        and reference aRT values (passed during initialization). `fun_dim`
+        and reference ERT values (passed during initialization). `fun_dim`
         is a tuple ``(fun_nb, dimension)`` like ``(1, 20)`` for the 20-D
         sphere.
 
@@ -343,7 +343,7 @@ class RunlengthBasedTargetValues(TargetValues):
         where f are the values of the ``DataSet`` ``target`` attribute. The next difficult target is chosen
         not smaller as target / 10**0.2. 
         
-        Returned are the aRT for targets that, within the given budget, the
+        Returned are the ERT for targets that, within the given budget, the
         reference algorithm just failed to achieve.
 
         """            
@@ -397,7 +397,7 @@ class RunlengthBasedTargetValues(TargetValues):
         targets = []
         if genericsettings.test: 
             for rl in self.run_lengths:
-                # choose largest target not achieved by reference aRT
+                # choose largest target not achieved by reference ERT
                 indices = np.nonzero(ds.ert[:end] > np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
                 if len(indices):  # larger ert exists
                     targets.append(np.max((ds.target[indices[0]],  # first missed target 
@@ -429,7 +429,7 @@ class RunlengthBasedTargetValues(TargetValues):
         old_targets = targets
         targets = [] 
         for rl in self.run_lengths:
-            # choose best target achieved by reference aRT times step_to_next_difficult_target
+            # choose best target achieved by reference ERT times step_to_next_difficult_target
             indices = np.nonzero(ds.ert[:end] <= np.max((1, rl * (fun_dim[1] if self.times_dimension else 1))))[0]
             if not len(indices):
                 warnings.warn('  too easy run length ' + str(rl) +
@@ -667,7 +667,7 @@ class DataSet(object):
         Number of trials: 15
         Final target Df: 1e-08
         min / max number of evals per trial: 5676 / 6346
-           evals/DIM:  best     15%     50%     85%     max |  aRT/DIM  nsucc
+           evals/DIM:  best     15%     50%     85%     max |  ERT/DIM  nsucc
           ---Df---|-----------------------------------------|----------------
           1.0e+03 |     102     126     170     205     235 |    164.2  15
           1.0e+01 |     278     306     364     457     480 |    374.5  15
@@ -678,7 +678,7 @@ class DataSet(object):
 
         >>> import numpy as np
         >>> idx = list(range(0, 50, 10)) + [-1]
-        >>> # get aRT average runtime for some targets
+        >>> # get ERT (expected running time) for some targets
         >>> t = np.array([idx, ds.target[idx], ds.ert[idx]]).T  # doctest:+ELLIPSIS  
         >>> assert t[0][0] == 0
         >>> assert t[0][2] == 1
@@ -997,7 +997,7 @@ class DataSet(object):
                               '*.info file and in the data files.')
 
             self._cut_data()
-            # Compute aRT
+            # Compute ERT
             self.computeERTfromEvals()
 
     @property
@@ -1249,7 +1249,7 @@ class DataSet(object):
             sinfo += '\nFinal target Df: ' + str(self.precision)
         # sinfo += '\nmin / max number of evals: '  + str(int(min(self.evals[0]))) + ' / '  + str(int(max(self.maxevals)))
         sinfo += '\nmin / max number of evals per trial: '  + str(int(min(self.maxevals))) + ' / '  + str(int(max(self.maxevals)))
-        sinfo += '\n   evals/DIM:  best     15%     50%     85%     max |  aRT/DIM  nsucc'
+        sinfo += '\n   evals/DIM:  best     15%     50%     85%     max |  ERT/DIM  nsucc'
         sinfo += '\n  ---Df---|-----------------------------------------|----------------'
         evals = self.detEvals(targets, copy=False)
         nsucc = self.detSuccesses(targets)
@@ -1464,13 +1464,13 @@ class DataSet(object):
         # alternative output sorted by targets
         
     def detAverageEvals(self, targets):
-        """Determine the average number of f-evals for each target 
+        """Determine the average number of f-evals for each target
         in ``targets`` list. If a target is not reached within trial
         itrail, self.maxevals[itrial] contributes to the average. 
         
-        Equals to sum(evals(target)) / nbruns. If aRT is finite 
-        this equals to aRT * psucc == (sum(evals) / ntrials / psucc) * psucc, 
-        where aRT, psucc, and evals are a function of target.  
+        Equals to sum(evals(target)) / nbruns. If ERT is finite
+        this equals to ERT * psucc == (sum(evals) / ntrials / psucc) * psucc,
+        where ERT, psucc, and evals are a function of target.
           
         """
         assert not any(np.isnan(self.evals[:][0]))  # target value cannot be nan
@@ -1511,12 +1511,12 @@ class DataSet(object):
         return np.array(self.detSuccesses(targets)) / float(self.nbRuns())
 
     def detERT(self, targets):
-        """Determine the average running time to reach target values.
+        """Determine the expected running time (ERT) to reach target values.
         The value is numpy.inf, if the target was never reached. 
 
         :keyword list targets: target function values of interest
 
-        :returns: list of average running times (# f-evals) for the
+        :returns: list of expected running times (# f-evals) for the
                   respective targets.
 
         """
@@ -1541,7 +1541,7 @@ class DataSet(object):
                     break
             res[t] = prevline.copy() # is copy necessary? Yes. 
 
-        # Return a list of aRT corresponding to the input targets in
+        # Return a list of ERT corresponding to the input targets in
         # targets, sorted along targets
         return list(res[i][1] for i in targets)
 
@@ -1952,6 +1952,18 @@ class DataSetList(list):
         d = DictAlg()
         for i in self:
             d.setdefault((i.algId, ''), DataSetList()).append(i)
+        return d
+
+    def dictByAlgName(self):
+        """Returns a dictionary of instances of this class by algorithm.
+
+        Compared to dictByAlg, this method uses only the data folder
+        as key and the corresponding slices as values.
+
+        """
+        d = DictAlg()
+        for i in self:
+            d.setdefault(i._data_folder, DataSetList()).append(i)
         return d
 
     def dictByDim(self):
@@ -2409,7 +2421,7 @@ class DataSetList(list):
     def get_all_data_lines(self, target_value, fct, dim):
         """return a list of all data lines in ``self`` for each
         algorithm and a list of the respective
-        computed aRTs.
+        computed ERTs.
 
         Example
         -------

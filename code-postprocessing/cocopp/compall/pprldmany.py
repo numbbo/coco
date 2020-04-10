@@ -1,11 +1,11 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Generates figure of the bootstrap distribution of aRT.
+"""Generates figure of the bootstrap distribution of ERT.
     
 The main method in this module generates figures of Empirical
 Cumulative Distribution Functions of the bootstrap distribution of
-the Average Running Time (aRT) divided by the dimension for many
+the Expected Running Time (ERT) divided by the dimension for many
 algorithms.
 
 The outputs show the ECDFs of the running times of the simulated runs
@@ -20,7 +20,7 @@ function evaluations of unsuccessful runs divided by dimension.
 
     import cocopp
 
-    # Empirical cumulative distribution function of bootstrapped aRT figure
+    # Empirical cumulative distribution function of bootstrapped ERT figure
     ds = cocopp.load(cocopp.bbob.get('2009/BIPOP-CMA-ES'))
     figure()
     cocopp.compall.pprldmany.plot(ds) # must rather call main instead of plot?
@@ -555,7 +555,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
 
     From a dictionary of :py:class:`DataSetList` sorted by algorithms,
     generates the cumulative distribution function of the bootstrap
-    distribution of aRT for algorithms on multiple functions for
+    distribution of ERT for algorithms on multiple functions for
     multiple targets altogether.
 
     :param dict dictAlg: dictionary of :py:class:`DataSetList` instances
@@ -877,7 +877,9 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                           # Relative additional space numbers are
                           # bottom, left, 1 - top, and 1 - right.
                           # bottom=0.13 still clips g in the log(#evals) xlabel
-                          subplots_adjust=dict(bottom=0.135, right=0.735),
+                          subplots_adjust=dict(bottom=0.135, right=0.735,
+                                               top=0.92 if len(dictFunc) == 1 else 0.99  # space for a title
+                                               ),
                           )
         if plotType == PlotType.DIM:
             file_name = genericsettings.pprldmany_file_name

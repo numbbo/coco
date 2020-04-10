@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-"""Python script for the COCO experimentation module `cocoex`.
+"""DEPRECATED: use rather `example_experiment2.py`
+
+A Python script for the COCO experimentation module `cocoex`.
 
 Usage from a system shell::
 
@@ -32,6 +34,8 @@ runs the 2nd of 300 batches with budget 5 * dimension and at most 9 restarts.
 
 Calling `example_experiment` without parameters prints this
 help and the available suite names.
+
+DEPRECATED: use rather `example_experiment2.py`
 """
 from __future__ import absolute_import, division, print_function
 try: range = xrange

@@ -81,7 +81,7 @@ def get_reference_algorithm_text(best_algorithm_mandatory=True):
 
     return text
 
-def get_best_art_text():
+def get_best_ert_text():
     text = ''
     testbed = testbedsettings.current_testbed
     if testbed.reference_algorithm_filename:
@@ -90,19 +90,19 @@ def get_best_art_text():
                 or testbed.name == testbedsettings.testbed_name_bi):
             if testbed.reference_algorithm_displayname:
                 if "best 2009" in testbed.reference_algorithm_displayname:
-                    text = "best \\aRT\ measured during BBOB-2009"
+                    text = "best \\ERT\ measured during BBOB-2009"
                 elif "best 2010" in testbed.reference_algorithm_displayname:
-                    text = "best \\aRT\ measured during BBOB-2010"
+                    text = "best \\ERT\ measured during BBOB-2010"
                 elif "best 2012" in testbed.reference_algorithm_displayname:
-                    text = "best \\aRT\ measured during BBOB-2012"
+                    text = "best \\ERT\ measured during BBOB-2012"
                 elif "best 2013" in testbed.reference_algorithm_displayname:
-                    text = "best \\aRT\ measured during BBOB-2013"
+                    text = "best \\ERT\ measured during BBOB-2013"
                 elif "best 2016" in testbed.reference_algorithm_displayname:
-                    text = "best \\aRT\ measured during BBOB-2016"
+                    text = "best \\ERT\ measured during BBOB-2016"
                 elif "best 2009-16" in testbed.reference_algorithm_displayname:
-                    text = "best \\aRT\ measured during BBOB-2009-16"
+                    text = "best \\ERT\ measured during BBOB-2009-16"
                 else:
-                    text = "the \\aRT\ of the reference algorithm"
+                    text = "the \\ERT\ of the reference algorithm"
         else:
             raise NotImplementedError('reference algorithm not supported for this testbed')
     else:
@@ -161,7 +161,7 @@ replace_dict = {
         '!!NUM-OF-TARGETS-IN-ECDF!!': lambda: str(len(testbedsettings.current_testbed.pprldmany_target_values)),
         '!!TARGET-RANGES-IN-ECDF!!': lambda: str(testbedsettings.current_testbed.pprldmany_target_range_latex),
         '!!TOTAL-NUM-OF-FUNCTIONS!!': lambda: str(testbedsettings.current_testbed.last_function_number - testbedsettings.current_testbed.first_function_number + 1),
-        '!!BEST-ART!!': lambda: get_best_art_text(),
+        '!!BEST-ERT!!': lambda: get_best_ert_text(),
         '!!NBTARGETS-SCATTER!!': lambda: str(len(testbedsettings.current_testbed.ppscatter_target_values)),
         '!!NBLOW!!': lambda: get_nblow(),
         '!!NBUP!!': lambda: get_nbup()

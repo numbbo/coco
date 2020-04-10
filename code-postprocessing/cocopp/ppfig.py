@@ -207,33 +207,17 @@ def save_folder_index_file(filename, image_file_extension):
                       'Runtime distribution for selected targets and f-distributions')
 
     # add the ECDFs aggregated over all functions in all dimensions at the end:
-    if os.path.isfile(os.path.join(current_dir, 'pprldmany_02D_noiselessall.svg')):  # weird way to decide what to plot
+    if os.path.isfile(os.path.join(current_dir,
+                                   testbedsettings.current_testbed.plots_on_main_html_page[0])):
         links += "<H2> %s </H2>\n" % ' Runtime distributions (ECDFs) over all targets'
-        links += add_image('pprldmany_02D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_03D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_05D_noiselessall.svg', True, 220) + ' <br />'
-        links += add_image('pprldmany_10D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_20D_noiselessall.svg', True, 220)
-        if os.path.isfile(os.path.join(current_dir, 'pprldmany_40D_noiselessall.svg')):
-            links += add_image('pprldmany_40D_noiselessall.svg', True, 220)
-    if os.path.isfile(os.path.join(current_dir, 'pprldmany_02D_nzall.svg')):  # weird way to decide what to plot
-        links += "<H2> %s </H2>\n" % ' Runtime distributions (ECDFs) over all targets'
-        links += add_image('pprldmany_02D_nzall.svg', True, 220)
-        links += add_image('pprldmany_03D_nzall.svg', True, 220)
-        links += add_image('pprldmany_05D_nzall.svg', True, 220) + ' <br />'
-        links += add_image('pprldmany_10D_nzall.svg', True, 220)
-        links += add_image('pprldmany_20D_nzall.svg', True, 220)
-        if os.path.isfile(os.path.join(current_dir, 'pprldmany_40D_nzall.svg')):
-            links += add_image('pprldmany_40D_nzall.svg', True, 220)
-    if testbedsettings.current_testbed.name == 'bbob-largescale':
-        links += "<H2> %s </H2>\n" % ' Runtime distributions (ECDFs) over all targets'
-        links += add_image('pprldmany_20D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_40D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_80D_noiselessall.svg', True, 220) + ' <br />'
-        links += add_image('pprldmany_160D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_320D_noiselessall.svg', True, 220)
-        links += add_image('pprldmany_640D_noiselessall.svg', True, 220)
-    #TODO: Remove hardcoded part 
+        i = 1 # counter to only put three plots per line
+        for plotname in testbedsettings.current_testbed.plots_on_main_html_page:
+            if os.path.isfile(os.path.join(current_dir, plotname)):
+                if i % 3 == 0:
+                    links += add_image(plotname, True, 220) + ' <br />'
+                else:
+                    links += add_image(plotname, True, 220)
+                i = i + 1
 
     lines = []
     with open(filename) as infile:
@@ -365,7 +349,7 @@ def save_single_functions_html(filename,
             f.write(caption_string_format % '\n##bbobECDFslegend##')
 
         elif htmlPage is HtmlPage.PPTABLE:
-            current_header = 'aRT in number of function evaluations'
+            current_header = 'ERT in number of function evaluations'
             f.write("<H2> %s </H2>\n" % current_header)
             for index, dimension in enumerate(dimensions):
                 f.write(write_dimension_links(dimension, dimensions, index))
@@ -419,7 +403,7 @@ def save_single_functions_html(filename,
         elif htmlPage is HtmlPage.PPLOGLOSS:
             dimensions = testbedsettings.current_testbed.rldDimsOfInterest
             if testbedsettings.current_testbed.reference_algorithm_filename:
-                current_header = 'aRT loss ratios'
+                current_header = 'ERT loss ratios'
                 f.write("<H2> %s </H2>\n" % current_header)
 
                 dimension_list = '-D, '.join(str(x) for x in dimensions) + '-D'
@@ -473,9 +457,9 @@ def write_dimension_links(dimension, dimensions, index):
 
 
 def write_tables(f, caption_string_format, best_alg_exists, html_key, legend_key, dimensions):
-    current_header = 'Table showing the aRT in number of function evaluations'
+    current_header = 'Table showing the ERT in number of function evaluations'
     if best_alg_exists:
-        current_header += ' divided by the best aRT measured during BBOB-2009'
+        current_header += ' divided by the best ERT measured during BBOB-2009'
 
     f.write("\n<H2> %s </H2>\n" % current_header)
     for index, dimension in enumerate(dimensions):
@@ -665,9 +649,9 @@ def logxticks(limits=[-np.inf, np.inf]):
     plt.xlim(xlims[0], xlims[1])
     # TODO: check the xlabel is changed accordingly?
 
-
 def beautify():
-    """ Customize a figure by adding a legend, axis label, etc."""
+    """ deprecated method - not used anywhere
+        Customize a figure by adding a legend, axis label, etc."""
     # TODO: what is this function for?
     # Input checking
 
@@ -686,7 +670,7 @@ def beautify():
     for i in tmp:
         tmp2.append('%d' % round(np.log10(i)))
     axisHandle.set_yticklabels(tmp2)
-    axisHandle.set_ylabel('log10 of aRT')
+    axisHandle.set_ylabel('log10 of ERT')
 
 
 def generateData(dataSet, targetFuncValue):
@@ -717,7 +701,7 @@ def generateData(dataSet, targetFuncValue):
     else:
         med = np.nan
 
-    # prepare to compute runlengths / aRT with restarts (AKA SP1)
+    # prepare to compute runlengths / ERT with restarts (AKA SP1)
     data[np.isnan(data)] = dataSet.maxevals[np.isnan(data)]
 
     res = []
@@ -779,7 +763,7 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
 
         if succ:
             tmp = np.vstack(succ)
-            # aRT
+            # ERT
             res.extend(plt.plot(tmp[:, 0], tmp[:, 1], **kwargs))
             # median
             tmp2 = plt.plot(tmp[:, 0], tmp[:, -1], **kwargs)

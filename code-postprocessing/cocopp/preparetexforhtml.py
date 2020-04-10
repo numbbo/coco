@@ -29,7 +29,7 @@ header = """
 
 % pre-defined commands
 \\newcommand{\\DIM}{\ensuremath{\mathrm{DIM}}}
-\\newcommand{\\aRT}{\ensuremath{\mathrm{aRT}}}
+\\newcommand{\\ERT}{\ensuremath{\mathrm{ERT}}}
 \\newcommand{\\FEvals}{\ensuremath{\mathrm{FEvals}}}
 \\newcommand{\\nruns}{\ensuremath{\mathrm{Nruns}}}
 \\newcommand{\\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
@@ -122,10 +122,10 @@ def main(latex_commands_for_html):
 
         # 7. pplogloss
         f.writelines(prepare_providecommand('bbobloglosstablecaption', scenario,
-                                            pplogloss.table_caption().replace('Figure~\\ref{fig:aRTlogloss}',
+                                            pplogloss.table_caption().replace('Figure~\\ref{fig:ERTlogloss}',
                                                                               'the following figure')))
         f.writelines(prepare_providecommand('bbobloglossfigurecaption', scenario,
-                                            pplogloss.figure_caption().replace('Figure~\\ref{tab:aRTloss}',
+                                            pplogloss.figure_caption().replace('Figure~\\ref{tab:ERTloss}',
                                                                                'the previous figure')))
 
         # prepare tags for later HTML preparation

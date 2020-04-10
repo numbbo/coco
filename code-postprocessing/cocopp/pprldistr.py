@@ -36,7 +36,7 @@ function evaluations.
    cocopp.pprldistr.plot(ds)
    cocopp.pprldistr.beautify() # resize the window to view whole figure
 
-CAVEAT: the naming conventions in this module mix up ART (an estimate
+CAVEAT: the naming conventions in this module mix up ERT (an estimate
 of the expected running length) and run lengths.
 
 """
@@ -537,7 +537,7 @@ def plotFVDistr(dsList, budget, min_f=None, **plotArgs):
         vals[vals <= 0] = min(np.append(vals[vals > 0], [min_f])) # works also when vals[vals > 0] is empty
         if genericsettings.runlength_based_targets:
             NotImplementedError('related function vals with respective budget '
-                                + '(e.g. ART(val)) see pplogloss.generateData()')
+                                + '(e.g. ERT(val)) see pplogloss.generateData()')
         x.extend(vals)
         nn += ds.nbRuns()
 
@@ -643,7 +643,7 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
         plt.text(0.5, 0.98, text, horizontalalignment="center",
                  verticalalignment="top", transform=plt.gca().transAxes) # bbox=dict(ec='k', fill=False),
         beautifyRLD(evalfmax)
-        save_figure(filename, dsList0[0].algId)
+        save_figure(filename, dsList0[0].algId, subplots_adjust=dict(left=0.135, bottom=0.15, right=1, top=0.99))
         plt.close(fig)
 
 def beautify():
@@ -878,7 +878,7 @@ def main(dsList, isStoringXMax=False, outputdir='',
 
 
         beautifyRLD(evalfmax)
-        save_figure(filename, dsList[0].algId)
+        save_figure(filename, dsList[0].algId, subplots_adjust=dict(left=0.135, bottom=0.15, right=1, top=0.99))
         plt.close(fig)
 
         # second figure: Function Value Distribution
@@ -895,7 +895,8 @@ def main(dsList, isStoringXMax=False, outputdir='',
         plt.text(0.98, 0.02, text, horizontalalignment="right",
                  transform=plt.gca().transAxes) # bbox=dict(ec='k', fill=False),
         beautifyFVD(isStoringXMax=isStoringXMax, ylabel=False)
-        save_figure(filename, dsList[0].algId)
+        save_figure(filename, dsList[0].algId, subplots_adjust=dict(left=0.0, bottom=0.15, right=1, top=0.99))
+
         plt.close(fig)
         # plt.rcdefaults()
 

@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Creates aRTs and convergence figures for multiple algorithms."""
+"""Creates ERTs and convergence figures for multiple algorithms."""
 from __future__ import absolute_import, print_function
 import os
 import matplotlib.pyplot as plt
@@ -49,15 +49,15 @@ def fix_styles(plotting_styles, line_styles):
 
 def prepare_scaling_figure_caption():
 
-    scaling_figure_caption_start_fixed = (r"""Average running time (\aRT\ in number of $f$-evaluations
+    scaling_figure_caption_start_fixed = (r"""Expected running time (\ERT\ in number of $f$-evaluations
                     as $\log_{10}$ value), divided by dimension for target function value $!!PPFIGS-FTARGET!!$
                     versus dimension. Slanted grid lines indicate quadratic scaling with the dimension. """
                                           )
 
-    scaling_figure_caption_start_rlbased = (r"""Average running time (\aRT\ in number of $f$-evaluations
+    scaling_figure_caption_start_rlbased = (r"""Expected running time (\ERT\ in number of $f$-evaluations
                         as $\log_{10}$ value) divided by dimension versus dimension. The target function value
                         is chosen such that !!THE-REF-ALG!! just failed to achieve
-                        an \aRT\ of $!!PPFIGS-FTARGET!!\times\DIM$. """
+                        an \ERT\ of $!!PPFIGS-FTARGET!!\times\DIM$. """
                                             )
 
     scaling_figure_caption_end = (
@@ -398,11 +398,16 @@ def beautify(legend=False, rightlegend=False):
         tmp2 = []
         for i in tmp:
             tmp2.append('%d' % round(numpy.log10(i)))
-        axisHandle.set_yticklabels(tmp2)
+        axisHandle.set_yticklabels(tmp2, fontsize=ppfig.getFontSize(tmp2))
 
     if legend:
         toolsdivers.legend(loc=0, numpoints=1,
                            fontsize=fontsize * legend_fontsize_scaler())
+
+    if genericsettings.scaling_plots_with_axis_labels:
+        plt.xlabel('dimension')
+        plt.ylabel('log10(# f-evals / dimension)')
+
 
 def generateData(dataSet, target):
     """Returns an array of results to be plotted.
@@ -429,7 +434,7 @@ def generateData(dataSet, target):
 
 
 def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata', latex_commands_file=''):
-    """From a DataSetList, returns figures showing the scaling: aRT/dim vs dim.
+    """From a DataSetList, returns figures showing the scaling: ERT/dim vs dim.
     
     One function and one target per figure.
     
