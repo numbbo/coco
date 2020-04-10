@@ -863,6 +863,13 @@ static int coco_options_read_values(const char *options, const char *name, char 
 /**@{*/
 
 /**
+ * @brief  Returns 1 if |a - b| < precision and 0 otherwise.
+ */
+static int coco_double_almost_equal(const double a, const double b, const double precision) {
+  return (fabs(a - b) < precision);
+}
+
+/**
  * @brief Rounds the given double to the nearest integer.
  */
 static double coco_double_round(const double number) {
@@ -871,10 +878,24 @@ static double coco_double_round(const double number) {
 
 /**
  * @brief Rounds the given double up to the nearest double value with the given precision.
+ *
+ * @note The implementation is (probably unnecessarily) complex, but this was the only way to make
+ * sure it works also for edge cases due to float precision issue.
  */
 static double coco_double_round_up_with_precision(const double number, const double precision) {
-  assert(precision > 0);
-  return ceil((number / precision) - 0.1 * precision) * precision;
+  double rounded_up, rounded;
+  double min_precision = 1e-12;
+  assert(precision > min_precision);
+  rounded_up = ceil(number / precision) * precision;
+  rounded = coco_double_round(number / precision) * precision;
+  if (coco_double_almost_equal(rounded, rounded_up, precision))
+    return rounded_up;
+  else {
+    if (coco_double_almost_equal(number - rounded, 0, min_precision))
+      return rounded;
+    else
+      return rounded_up;
+  }
 }
 
 /**
@@ -926,13 +947,6 @@ static int coco_double_to_int(const double number) {
   else {
     return (int)(number + 0.5);
   }
-}
-
-/**
- * @brief  Returns 1 if |a - b| < precision and 0 otherwise.
- */
-static int coco_double_almost_equal(const double a, const double b, const double precision) {
-  return (fabs(a - b) < precision);
 }
 
 /**@}*/
