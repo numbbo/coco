@@ -82,6 +82,9 @@ void run_once(char *suite_options) {
 
 int main(void)  {
 
+  /* Mute output that is not error */
+  coco_set_log_level("error");
+
   run_once("dimensions: 20,40 function_indices: 1-8 instance_indices: 1");
   run_once("dimensions: 80 function_indices: 9-20 instance_indices: 15");
   run_once("dimensions: 160,320,640 function_indices: 21-24 instance_indices: 10");

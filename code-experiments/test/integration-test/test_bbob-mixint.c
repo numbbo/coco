@@ -319,6 +319,9 @@ void check_discretization_bi(char *suite_name, char *suite_options) {
 
 int main(int argc, char *argv[])  {
 
+  /* Mute output that is not error */
+  coco_set_log_level("error");
+
   if ((argc == 2) && (strcmp(argv[1], "leak_check") == 0)) {
     run_once("bbob-mixint", "instance_indices: 1 dimensions: 5,160", "bbob-new", "");
     run_once("bbob-biobj-mixint", "function_indices: 1-5,90-92 instance_indices: 1 dimensions: 5,160", "bbob-biobj", "");

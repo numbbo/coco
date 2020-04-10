@@ -16,6 +16,9 @@
 
 int main(void) {
 
+  /* Mute output that is not error */
+  coco_set_log_level("error");
+
   MU_RUN_SUITE(test_all_logger_bbob_new);
   MU_RUN_SUITE(test_all_coco_archive);
   MU_RUN_SUITE(test_all_coco_observer);
