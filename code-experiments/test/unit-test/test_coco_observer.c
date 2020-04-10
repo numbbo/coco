@@ -3,6 +3,56 @@
 static int about_equal_value(const double a, const double b);
 
 /**
+ * Tests the function coco_observer_targets_trigger.
+ */
+MU_TEST(test_coco_observer_targets_trigger) {
+
+  coco_observer_targets_t *targets = coco_observer_targets(0, 1e-3, 1, 1e-5);
+  int update;
+
+  update = coco_observer_targets_trigger(targets, 99.99999);
+  mu_check(update);
+  mu_check(about_equal_value(coco_observer_targets_get_last_target(targets), 100));
+
+  update = coco_observer_targets_trigger(targets, 0.99999);
+  mu_check(update);
+  mu_check(about_equal_value(coco_observer_targets_get_last_target(targets), 1));
+
+  update = coco_observer_targets_trigger(targets, 0.899999);
+  mu_check(update);
+  mu_check(about_equal_value(coco_observer_targets_get_last_target(targets), 0.9));
+
+  update = coco_observer_targets_trigger(targets, 0.0199999);
+  mu_check(update);
+  mu_check(about_equal_value(coco_observer_targets_get_last_target(targets), 0.02));
+
+  update = coco_observer_targets_trigger(targets, 0.00000099999);
+  mu_check(update);
+  mu_check(about_equal_value(coco_observer_targets_get_last_target(targets), 1e-5));
+
+  /* An improvement on the lin targets should not trigger an update if it is not an improvement overall */
+  update = coco_observer_targets_trigger(targets, 0.00999);
+  mu_check(!update);
+
+  update = coco_observer_targets_trigger(targets, 0);
+  mu_check(update);
+  mu_check(about_equal_value(coco_observer_targets_get_last_target(targets), 0));
+
+  update = coco_observer_targets_trigger(targets, -0.000099999);
+  mu_check(update);
+  mu_check(about_equal_value(coco_observer_targets_get_last_target(targets), -0.00001));
+
+  update = coco_observer_targets_trigger(targets, -0.99999);
+  mu_check(update);
+  mu_check(about_equal_value(coco_observer_targets_get_last_target(targets), -0.999));
+
+  update = coco_observer_targets_trigger(targets, -0.100099999);
+  mu_check(!update);
+
+  coco_free_memory(targets);
+}
+
+/**
  * Tests the function coco_observer_log_targets_trigger.
  */
 MU_TEST(test_coco_observer_log_targets_trigger) {
@@ -176,6 +226,7 @@ MU_TEST(test_coco_observer_evaluations_trigger) {
  * Run all tests in this file.
  */
 MU_TEST_SUITE(test_all_coco_observer) {
+  MU_RUN_TEST(test_coco_observer_targets_trigger);
   MU_RUN_TEST(test_coco_observer_log_targets_trigger);
   MU_RUN_TEST(test_coco_observer_lin_targets_trigger);
   MU_RUN_TEST(test_coco_observer_evaluations_trigger);

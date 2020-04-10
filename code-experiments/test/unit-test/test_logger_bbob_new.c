@@ -72,7 +72,7 @@ MU_TEST(test_logger_bbob_new_triggers) {
   /* Using the linear performance targets */
   suite = coco_suite("bbob", "", "dimensions: 2 function_indices: 1 instance_indices: 1");
   suite->known_optima = 0;
-  observer = coco_observer("bbob-new", "number_target_triggers: 1 lin_target_precision: 1e-3");
+  observer = coco_observer("bbob-new", "number_target_triggers: 1 lin_target_precision: 1e-3 log_target_precision: 1e-5");
   /* Use the 2-D sphere function */
   problem = coco_suite_get_next_problem(suite, observer);
   logger = (logger_bbob_new_data_t *) coco_problem_transformed_get_data(problem);
@@ -116,6 +116,16 @@ MU_TEST(test_logger_bbob_new_triggers) {
   mu_check(about_equal_value(logger->best_found_value - logger->optimal_value, 0.00601408));
   target = coco_observer_targets_get_last_target(logger->targets);
   mu_check(about_equal_value(target, 0.007));
+
+  /* Testing the targets that fall below log_target_precision */
+
+  x[0] = 0.252; x[1] = -1.156;
+  coco_evaluate_function(problem, x, y);
+  mu_check(about_equal_value(y[0], 79.48000128));
+  coco_observer_targets_trigger(logger->targets, logger->best_found_value - logger->optimal_value);
+  mu_check(about_equal_value(logger->best_found_value - logger->optimal_value, 1.28 * 1e-6));
+  target = coco_observer_targets_get_last_target(logger->targets);
+  mu_check(about_equal_value(target, 1e-5));
 
   coco_observer_free(observer);
   coco_suite_free(suite);
