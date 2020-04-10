@@ -44,6 +44,13 @@ typedef void (*coco_evaluate_function_t)(coco_problem_t *problem, const double *
 typedef void (*coco_recommend_function_t)(coco_problem_t *problem, const double *x);
 
 /**
+ * @brief The restart function type.
+ *
+ * This is a template for functions that signal an algorithm restart for the problem.
+ */
+typedef void (*coco_restart_function_t)(coco_problem_t *problem);
+
+/**
  * @brief The allocate logger function type.
  *
  * This is a template for functions that allocate a logger (wrap a logger around the given problem and return
@@ -202,6 +209,7 @@ struct coco_observer_s {
   coco_data_free_function_t data_free_function;             /**< @brief  The function for freeing this observer. */
   coco_logger_allocate_function_t logger_allocate_function; /**< @brief  The function for allocating the logger. */
   coco_logger_free_function_t logger_free_function;         /**< @brief  The function for freeing the logger. */
+  coco_restart_function_t restart_function;                 /**< @brief  The function for signaling algorithm restart. */
 };
 
 /**

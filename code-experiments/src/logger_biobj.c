@@ -84,10 +84,9 @@ typedef struct {
   char *name;                /**< @brief Name of the indicator used for identification and the output. */
 
   FILE *info_file;           /**< @brief File for logging summary information on algorithm performance. */
-  FILE *dat_file;            /**< @brief File for logging indicator values at predefined values (logarithmic targets). */
-  FILE *ldat_file;           /**< @brief File for logging indicator values at predefined values (uniform targets). */
+  FILE *dat_file;            /**< @brief File for logging indicator values at predefined values */
   FILE *tdat_file;           /**< @brief File for logging indicator values at predefined evaluations. */
-  /*FILE *rdat_file;           TODO **< @brief File for logging restart information */
+  FILE *rdat_file;           /**< @brief File for logging restart information */
 
   int target_hit;            /**< @brief Whether the performance target was hit in the latest evaluation. */
   coco_observer_targets_t *targets;
@@ -136,7 +135,7 @@ typedef struct {
   avl_tree_t *buffer_tree;            /**< @brief The tree with pointers to nondominated solutions that haven't
                                            been logged yet. */
 
-  /* Indicators (TODO: Implement others!) */
+  /* TODO: Implement other indicators */
   int compute_indicators;             /**< @brief Whether to compute the indicators. */
   logger_biobj_indicator_t *indicators[LOGGER_BIOBJ_NUMBER_OF_INDICATORS];
                                       /**< @brief The implemented indicators. */
@@ -439,6 +438,45 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
 }
 
 /**
+ * @brief Creates and initializes one of the *dat files (.dat, .tdat or .rdat).
+ */
+static void logger_biobj_indicator_initialize_file(const logger_biobj_data_t *logger,
+                                                   const coco_observer_t *observer,
+                                                   const coco_problem_t *problem,
+                                                   const char *indicator_name,
+                                                   FILE *f,
+                                                   const char *file_ending) {
+  logger_biobj_indicator_t *indicator;
+  char *prefix, *file_name, *path_name;
+  static const char *header = "%%\n"
+      "%% index = %lu, name = %s\n"
+      "%% instance = %lu, reference value = %.*e\n"
+      "%% function evaluation | indicator value | target hit\n";
+
+  indicator = (logger_biobj_indicator_t *) coco_allocate_memory(sizeof(*indicator));
+  /* Create and open the file */
+  path_name = coco_allocate_string(COCO_PATH_MAX + 1);
+  memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
+  coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
+  coco_create_directory(path_name);
+  prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
+  file_name = coco_strdupf("%s_%s.%s", prefix, indicator_name, file_ending);
+  coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
+  f = fopen(path_name, "a");
+  if (f == NULL) {
+    coco_error("logger_biobj_indicator_initialize_file() failed to open file '%s'.", path_name);
+  }
+  coco_free_memory(prefix);
+  coco_free_memory(file_name);
+  coco_free_memory(path_name);
+
+  /* Output header */
+  fprintf(f, header, (unsigned long) problem->suite_dep_index, problem->problem_name,
+      (unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
+
+}
+
+/**
  * @brief Initializes the indicator with name indicator_name.
  *
  * Opens files for writing and resets counters.
@@ -478,7 +516,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
       observer->number_target_triggers, observer->log_target_precision);
   indicator->evaluations = coco_observer_evaluations(observer->base_evaluation_triggers, problem->number_of_variables);
 
-  /* Prepare the info file TODO: make functions to avoid code duplication */
+  /* Prepare the info file */
   path_name = coco_allocate_string(COCO_PATH_MAX + 1);
   memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
   coco_create_directory(path_name);
@@ -493,41 +531,8 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   coco_free_memory(file_name);
   coco_free_memory(path_name);
 
-  /* Prepare the tdat file */
-  path_name = coco_allocate_string(COCO_PATH_MAX + 1);
-  memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
-  coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
-  coco_create_directory(path_name);
-  prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
-  file_name = coco_strdupf("%s_%s.tdat", prefix, indicator_name);
-  coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
-  indicator->tdat_file = fopen(path_name, "a");
-  if (indicator->tdat_file == NULL) {
-    coco_error("logger_biobj_indicator() failed to open file '%s'.", path_name);
-    return NULL; /* Never reached */
-  }
-  coco_free_memory(file_name);
-  coco_free_memory(path_name);
-  file_name = NULL;
-
-  indicator->dat_file = NULL;
-  indicator->ldat_file = NULL;
-
-  /* Prepare the dat file */
-  path_name = coco_allocate_string(COCO_PATH_MAX + 1);
-  memcpy(path_name, observer->result_folder, strlen(observer->result_folder) + 1);
-  coco_join_path(path_name, COCO_PATH_MAX, problem->problem_type, NULL);
-  coco_create_directory(path_name);
-  file_name = coco_strdupf("%s_%s.dat", prefix, indicator_name);
-  coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
-  indicator->dat_file = fopen(path_name, "a");
-  if (indicator->dat_file == NULL) {
-    coco_error("logger_biobj_indicator() failed to open file '%s'.", path_name);
-    return NULL; /* Never reached */
-  }
-  coco_free_memory(path_name);
-
   /* Output header information to the info file */
+  prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
   if (!info_file_exists) {
     /* Output algorithm name */
     assert(problem->suite);
@@ -542,25 +547,14 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
     || (observer_data->previous_dimension != (long) problem->number_of_variables)) {
     fprintf(indicator->info_file, "\nfunction = %2lu, ", (unsigned long) problem->suite_dep_function);
     fprintf(indicator->info_file, "dim = %2lu, ", (unsigned long) problem->number_of_variables);
-    fprintf(indicator->info_file, "%s", file_name);
+    fprintf(indicator->info_file, "%s_%s.tdat", prefix, indicator_name);
   }
+  coco_free_memory(prefix);
 
-  if (file_name != NULL)
-    coco_free_memory(file_name);
-
-  /* Output header information to the dat file */
-  fprintf(indicator->dat_file, "%%\n%% index = %lu, name = %s\n", (unsigned long) problem->suite_dep_index,
-      problem->problem_name);
-  fprintf(indicator->dat_file, "%% instance = %lu, reference value = %.*e\n",
-      (unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
-  fprintf(indicator->dat_file, "%% function evaluation | indicator value | target hit\n");
-
-  /* Output header information to the tdat file */
-  fprintf(indicator->tdat_file, "%%\n%% index = %lu, name = %s\n", (unsigned long) problem->suite_dep_index,
-      problem->problem_name);
-  fprintf(indicator->tdat_file, "%% instance = %lu, reference value = %.*e\n",
-      (unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
-  fprintf(indicator->tdat_file, "%% function evaluation | indicator value\n");
+  /* Initialize the .dat, .tdat and .rdat files */
+  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator_name, indicator->dat_file, "dat");
+  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator_name, indicator->tdat_file, "tdat");
+  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator_name, indicator->rdat_file, "rdat");
 
   coco_debug("Ended   logger_biobj_indicator()");
 
@@ -614,9 +608,9 @@ static void logger_biobj_indicator_free(void *stuff) {
     indicator->dat_file = NULL;
   }
 
-  if (indicator->ldat_file != NULL) {
-    fclose(indicator->ldat_file);
-    indicator->ldat_file = NULL;
+  if (indicator->rdat_file != NULL) {
+    fclose(indicator->rdat_file);
+    indicator->rdat_file = NULL;
   }
 
   if (indicator->tdat_file != NULL) {
@@ -894,6 +888,26 @@ static void logger_biobj_free(void *stuff) {
   }
 
   coco_debug("Ended   logger_biobj_free()");
+
+}
+
+/**
+ * @brief Adds one line to the .rdat file with information about the restart of the algorithm
+ */
+static void logger_biobj_signal_restart(coco_problem_t *problem) {
+
+  logger_biobj_data_t *logger = (logger_biobj_data_t *) coco_problem_transformed_get_data(problem);
+  logger_biobj_indicator_t *indicator;
+  size_t i;
+
+  if (logger->compute_indicators) {
+    for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
+      indicator = logger->indicators[i];
+      fprintf(indicator->rdat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
+          logger->precision_f, indicator->overall_value, logger->precision_f,
+          coco_observer_targets_get_last_target(indicator->targets));
+    }
+  }
 
 }
 

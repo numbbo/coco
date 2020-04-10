@@ -462,6 +462,7 @@ static coco_observer_t *coco_observer_allocate(const char *result_folder,
   observer->data_free_function = NULL;
   observer->logger_allocate_function = NULL;
   observer->logger_free_function = NULL;
+  observer->restart_function = NULL;
   observer->is_active = 1;
   return observer;
 }
@@ -492,6 +493,7 @@ void coco_observer_free(coco_observer_t *observer) {
 
     observer->logger_allocate_function = NULL;
     observer->logger_free_function = NULL;
+    observer->restart_function = NULL;
 
     coco_free_memory(observer);
     observer = NULL;
@@ -505,11 +507,13 @@ void coco_observer_free(coco_observer_t *observer) {
 #include "logger_rw.c"
 
 /**
- * Currently, three observers are supported:
+ * Currently, four observers are supported:
  * - "bbob" is the observer for single-objective (both noisy and noiseless) problems with known optima, which
  * creates *.info, *.dat, *.tdat and *.rdat files and logs the distance to the optimum.
  * - "bbob-biobj" is the observer for bi-objective problems, which creates *.info, *.dat and *.tdat files for
  * the given indicators, as well as an archive folder with *.adat files containing nondominated solutions.
+ * - "rw" is an observer for single- and bi-objective real-world problems that logs all information (can be
+ * configured to long only some information) and produces *.txt files (not readable by post-processing).
  * - "toy" is a simple observer that logs when a target has been hit.
  *
  * @param observer_name A string containing the name of the observer. Currently supported observer names are
@@ -687,6 +691,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
    * and the following observer fields:
    * - logger_allocate_function
    * - logger_free_function
+   * - restart_function
    * - data_free_function
    * - data */
   if (0 == strcmp(observer_name, "toy")) {
@@ -826,3 +831,23 @@ const char *coco_observer_get_result_folder(const coco_observer_t *observer) {
   return observer->result_folder;
 }
 
+/**
+ * Signals the restart of the algorithm.
+ *
+ * @param problem The observed COCO problem.
+ * @param observer The COCO observer that will record the restart information.
+ */
+ void coco_observer_signal_restart(coco_observer_t *observer, coco_problem_t *problem) {
+
+  if ((observer == NULL) || (observer->is_active == 0)) {
+    coco_warning("coco_observer_signal_restart(): The problem is not being observed. %s",
+        observer == NULL ? "(observer == NULL)" : "(observer not active)");
+    return;
+  }
+
+  if (observer->restart_function == NULL)
+    coco_info("coco_observer_signal_restart(): Restart signaling not supported for observer %s",
+        observer->observer_name);
+  else
+    observer->restart_function(problem);
+}

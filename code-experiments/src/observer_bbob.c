@@ -27,6 +27,7 @@ static void observer_bbob(coco_observer_t *observer, const char *options, coco_o
 
   observer->logger_allocate_function = logger_bbob;
   observer->logger_free_function = logger_bbob_free;
+  observer->restart_function = NULL;
   observer->data_free_function = NULL;
   observer->data = NULL;
 

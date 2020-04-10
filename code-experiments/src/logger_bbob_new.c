@@ -497,6 +497,21 @@ static void logger_bbob_new_free(void *stuff) {
   coco_debug("Ended   logger_bbob_new_free()");
 }
 
+/**
+ * @brief Adds one line to the .rdat file with information about the restart of the algorithm
+ */
+static void logger_bbob_new_signal_restart(coco_problem_t *problem) {
+
+  logger_bbob_new_data_t *logger = (logger_bbob_new_data_t *) coco_problem_transformed_get_data(problem);
+  assert(logger);
+
+  fprintf(logger->rdat_file, "%lu %lu %+10.9e %+10.9e\n", (unsigned long) logger->num_func_evaluations,
+    (unsigned long) logger->num_cons_evaluations, logger->best_found_value - logger->optimal_value,
+    logger->current_value);
+  fflush(logger->rdat_file);
+
+}
+
 static coco_problem_t *logger_bbob_new(coco_observer_t *observer, coco_problem_t *inner_problem) {
   coco_problem_t *problem;
   logger_bbob_new_data_t *logger_data;

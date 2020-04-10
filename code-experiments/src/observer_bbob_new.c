@@ -8,6 +8,7 @@
 
 static coco_problem_t *logger_bbob_new(coco_observer_t *observer, coco_problem_t *problem);
 static void logger_bbob_new_free(void *logger);
+static void logger_bbob_new_signal_restart(coco_problem_t *problem);
 
 /**
  * @brief The bbob observer data type.
@@ -79,6 +80,7 @@ static void observer_bbob_new(coco_observer_t *observer, const char *options, co
 
   observer->logger_allocate_function = logger_bbob_new;
   observer->logger_free_function = logger_bbob_new_free;
+  observer->restart_function = logger_bbob_new_signal_restart;
   observer->data_free_function = observer_bbob_new_data_free;
   observer->data = observer_data;
 

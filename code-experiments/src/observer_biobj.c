@@ -38,6 +38,7 @@ typedef struct {
 
 static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *problem);
 static void logger_biobj_free(void *logger);
+static void logger_biobj_signal_restart(coco_problem_t *problem);
 
 /**
  * @brief Initializes the bi-objective observer.
@@ -119,6 +120,7 @@ static void observer_biobj(coco_observer_t *observer, const char *options, coco_
 
   observer->logger_allocate_function = logger_biobj;
   observer->logger_free_function = logger_biobj_free;
+  observer->restart_function = logger_biobj_signal_restart;
   observer->data_free_function = NULL;
   observer->data = observer_data;
 
