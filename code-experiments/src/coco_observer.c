@@ -231,7 +231,7 @@ static coco_observer_targets_t *coco_observer_targets(const int optima_known,
   coco_observer_targets_t *targets = (coco_observer_targets_t *) coco_allocate_memory(
           sizeof(*targets));
   if (log_precision > lin_precision)
-    coco_error("coco_observer_lin_log_targets(): For logging with linear and logarithmic targets, the "
+    coco_error("coco_observer_targets(): For logging with linear and logarithmic targets, the "
         "precision of logarithmic targets (%f) needs to be lower than that of the linear targets (%f)",
         log_precision, lin_precision);
   targets->use_linear = !optima_known;
@@ -567,7 +567,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   if (0 == strcmp(observer_name, "no_observer")) {
     return NULL;
   } else if (strlen(observer_name) == 0) {
-    coco_warning("Empty observer_name has no effect. To prevent this warning use 'no_observer' instead");
+    coco_warning("coco_observer(): An empty observer_name has no effect. To prevent this warning use 'no_observer' instead");
     return NULL;
   }
 
@@ -596,26 +596,38 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
 
   number_target_triggers = 10;
   if (coco_options_read_size_t(observer_options, "number_target_triggers", &number_target_triggers) != 0) {
-    if (number_target_triggers == 0)
+    if (number_target_triggers == 0) {
+      coco_warning("coco_observer(): Unsuitable observer option value (number_target_triggers: %lu) ignored",
+          number_target_triggers);
       number_target_triggers = 10;
+    }
   }
 
   log_target_precision = 1e-8;
   if (coco_options_read_double(observer_options, "log_target_precision", &log_target_precision) != 0) {
-    if ((log_target_precision > 1) || (log_target_precision <= 0))
+    if ((log_target_precision > 1) || (log_target_precision <= 0)) {
+      coco_warning("coco_observer(): Unsuitable observer option value (log_target_precision: %f) ignored",
+          log_target_precision);
       log_target_precision = 1e-8;
+    }
   }
 
   lin_target_precision = 1e-5;
-  if (coco_options_read_double(observer_options, "lin_target_precision", &log_target_precision) != 0) {
-    if (lin_target_precision <= 0)
+  if (coco_options_read_double(observer_options, "lin_target_precision", &lin_target_precision) != 0) {
+    if (lin_target_precision <= 0) {
+      coco_warning("coco_observer(): Unsuitable observer option value (lin_target_precision: %f) ignored",
+          lin_target_precision);
       lin_target_precision = 1e-5;
+    }
   }
 
   number_evaluation_triggers = 20;
   if (coco_options_read_size_t(observer_options, "number_evaluation_triggers", &number_evaluation_triggers) != 0) {
-    if (number_evaluation_triggers < 4)
+    if (number_evaluation_triggers < 4) {
+      coco_warning("coco_observer(): Unsuitable observer option value (number_evaluation_triggers: %lu) ignored",
+          number_evaluation_triggers);
       number_evaluation_triggers = 20;
+    }
   }
 
   base_evaluation_triggers = coco_allocate_string(COCO_PATH_MAX);
@@ -625,26 +637,35 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
 
   precision_x = 8;
   if (coco_options_read_int(observer_options, "precision_x", &precision_x) != 0) {
-    if ((precision_x < 1) || (precision_x > 32))
+    if ((precision_x < 1) || (precision_x > 32)) {
+      coco_warning("coco_observer(): Unsuitable observer option value (precision_x: %d) ignored", precision_x);
       precision_x = 8;
+    }
   }
 
   precision_f = 15;
   if (coco_options_read_int(observer_options, "precision_f", &precision_f) != 0) {
-    if ((precision_f < 1) || (precision_f > 32))
+    if ((precision_f < 1) || (precision_f > 32)) {
+      coco_warning("coco_observer(): Unsuitable observer option value (precision_f: %d) ignored", precision_f);
       precision_f = 15;
+    }
   }
 
   precision_g = 3;
   if (coco_options_read_int(observer_options, "precision_g", &precision_g) != 0) {
-    if ((precision_g < 1) || (precision_g > 32))
+    if ((precision_g < 1) || (precision_g > 32)) {
+      coco_warning("coco_observer(): Unsuitable observer option value (precision_g: %d) ignored", precision_g);
       precision_g = 3;
+    }
   }
 
   log_discrete_as_int = 0;
   if (coco_options_read_int(observer_options, "log_discrete_as_int", &log_discrete_as_int) != 0) {
-    if ((log_discrete_as_int < 0) || (log_discrete_as_int > 1))
+    if ((log_discrete_as_int < 0) || (log_discrete_as_int > 1)) {
+      coco_warning("coco_observer(): Unsuitable observer option value (log_discrete_as_int: %d) ignored",
+          log_discrete_as_int);
       log_discrete_as_int = 0;
+    }
   }
 
   observer = coco_observer_allocate(path, observer_name, algorithm_name, algorithm_info,
@@ -685,7 +706,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   } else if (0 == strcmp(observer_name, "rw")) {
     observer_rw(observer, observer_options, &additional_option_keys);
   } else {
-    coco_warning("Unknown observer %s!", observer_name);
+    coco_warning("coco_observer(): Unknown observer %s!", observer_name);
     return NULL;
   }
 
@@ -733,7 +754,7 @@ coco_problem_t *coco_problem_add_observer(coco_problem_t *problem, coco_observer
 	  return NULL;
 
   if ((observer == NULL) || (observer->is_active == 0)) {
-    coco_warning("The problem will not be observed. %s",
+    coco_warning("coco_problem_add_observer(): The problem will not be observed. %s",
         observer == NULL ? "(observer == NULL)" : "(observer not active)");
     return problem;
   }
@@ -757,7 +778,7 @@ coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_obser
   char *prefix;
 
   if ((observer == NULL) || (observer->is_active == 0)) {
-    coco_warning("The problem was not observed. %s",
+    coco_warning("coco_problem_remove_observer(): The problem was not observed. %s",
         observer == NULL ? "(observer == NULL)" : "(observer not active)");
     return problem;
   }
@@ -791,11 +812,11 @@ coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_obser
  */
 const char *coco_observer_get_result_folder(const coco_observer_t *observer) {
   if (observer == NULL) {
-    coco_warning("coco_observer_get_result_folder: no observer to get result_folder from");
+    coco_warning("coco_observer_get_result_folder(): no observer to get result_folder from");
     return "";
   }
   else if (observer->is_active == 0) {
-    coco_warning("coco_observer_get_result_folder: observer is not active, returning empty string");
+    coco_warning("coco_observer_get_result_folder(): observer is not active, returning empty string");
     return "";
   }
   return observer->result_folder;
