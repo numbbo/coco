@@ -443,8 +443,8 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
 static void logger_biobj_indicator_initialize_file(const logger_biobj_data_t *logger,
                                                    const coco_observer_t *observer,
                                                    const coco_problem_t *problem,
-                                                   logger_biobj_indicator_t *indicator,
-                                                   FILE *f,
+                                                   const logger_biobj_indicator_t *indicator,
+                                                   FILE **f,
                                                    const char *file_ending) {
   char *prefix, *file_name, *path_name;
   static const char *header = "%%\n"
@@ -460,8 +460,8 @@ static void logger_biobj_indicator_initialize_file(const logger_biobj_data_t *lo
   prefix = coco_remove_from_string(problem->problem_id, "_i", "_d");
   file_name = coco_strdupf("%s_%s.%s", prefix, indicator->name, file_ending);
   coco_join_path(path_name, COCO_PATH_MAX, file_name, NULL);
-  f = fopen(path_name, "a");
-  if (f == NULL) {
+  *f = fopen(path_name, "a");
+  if (*f == NULL) {
     coco_error("logger_biobj_indicator_initialize_file() failed to open file '%s'.", path_name);
   }
   coco_free_memory(prefix);
@@ -469,7 +469,7 @@ static void logger_biobj_indicator_initialize_file(const logger_biobj_data_t *lo
   coco_free_memory(path_name);
 
   /* Output header */
-  fprintf(f, header, (unsigned long) problem->suite_dep_index, problem->problem_name,
+  fprintf(*f, header, (unsigned long) problem->suite_dep_index, problem->problem_name,
       (unsigned long) problem->suite_dep_instance, logger->precision_f, indicator->best_value);
 
 }
@@ -545,14 +545,14 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
     || (observer_data->previous_dimension != (long) problem->number_of_variables)) {
     fprintf(indicator->info_file, "\nfunction = %2lu, ", (unsigned long) problem->suite_dep_function);
     fprintf(indicator->info_file, "dim = %2lu, ", (unsigned long) problem->number_of_variables);
-    fprintf(indicator->info_file, "%s_%s.tdat", prefix, indicator_name);
+    fprintf(indicator->info_file, "%s_%s.dat", prefix, indicator_name);
   }
   coco_free_memory(prefix);
 
   /* Initialize the .dat, .tdat and .rdat files */
-  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator, indicator->dat_file, "dat");
-  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator, indicator->tdat_file, "tdat");
-  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator, indicator->rdat_file, "rdat");
+  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator, &(indicator->dat_file), "dat");
+  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator, &(indicator->tdat_file), "tdat");
+  logger_biobj_indicator_initialize_file(logger, observer, problem, indicator, &(indicator->rdat_file), "rdat");
 
   coco_debug("Ended   logger_biobj_indicator()");
 
