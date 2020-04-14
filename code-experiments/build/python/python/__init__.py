@@ -395,6 +395,9 @@ class Observer(_Observer):
         problem.observe_with(self)
         return self
 
+    def signal_restart(self, problem):
+        super(Observer, self).signal_restart(problem)
+
     @property
     def name(self):
         """name of the observer as used with `Observer(name, ...)` to instantiate

@@ -832,7 +832,8 @@ const char *coco_observer_get_result_folder(const coco_observer_t *observer) {
 }
 
 /**
- * Signals the restart of the algorithm.
+ * Invokes the logger function that stores the information about restarting the algorithm
+ * (if such a function exists).
  *
  * @param problem The observed COCO problem.
  * @param observer The COCO observer that will record the restart information.

@@ -34,6 +34,7 @@ cdef extern from "coco.h":
     coco_problem_t *coco_problem_add_observer(coco_problem_t *problem,
                                               coco_observer_t *observer)
     const char *coco_observer_get_result_folder(const coco_observer_t *observer)
+    void coco_observer_signal_restart(coco_observer_t *observer, coco_problem_t *problem)
 
     coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance,
                              const char *suite_options)
@@ -472,6 +473,11 @@ cdef class Observer:
         """
         problem.observe_with(self)
         return self
+
+    def signal_restart(self, problem: Problem):
+        """Signal a restart on `problem: Problem` by calling `coco_observer_signal_restart`.
+        """
+        coco_observer_signal_restart(self._observer, problem.problem)
 
     @property
     def name(self):

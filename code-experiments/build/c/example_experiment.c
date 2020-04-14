@@ -185,6 +185,8 @@ void example_experiment(const char *suite_name,
     /* Run the algorithm at least once */
     for (run = 1; run <= 1 + INDEPENDENT_RESTARTS; run++) {
 
+      coco_observer_signal_restart(observer, PROBLEM);
+
       long evaluations_done = (long) (coco_problem_get_evaluations(PROBLEM) +
             coco_problem_get_evaluations_constraints(PROBLEM));
       long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - evaluations_done;

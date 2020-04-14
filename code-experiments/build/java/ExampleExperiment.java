@@ -131,6 +131,8 @@ public class ExampleExperiment {
 					/* Break the loop if the target was hit or there are no more remaining evaluations */
 					if (PROBLEM.isFinalTargetHit() || (evaluationsRemaining <= 0))
 						break;
+					
+					observer.signalRestart(PROBLEM);
 
 					/* Call the optimization algorithm for the remaining number of evaluations */
 					myRandomSearch(evaluateFunction,

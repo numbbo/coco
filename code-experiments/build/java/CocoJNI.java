@@ -16,6 +16,7 @@ public class CocoJNI {
 	public static native void cocoFinalizeObserver(long observerPointer);
 	public static native long cocoProblemAddObserver(long problemPointer, long observerPointer);
 	public static native long cocoProblemRemoveObserver(long problemPointer, long observerPointer);
+	public static native void cocoObserverSignalRestart(long observerPointer, long problemPointer);
 
 	// Suite
 	public static native long cocoGetSuite(String suiteName, String suiteInstance, String suiteOptions);

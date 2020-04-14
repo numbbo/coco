@@ -291,6 +291,11 @@ coco_problem_t *coco_problem_remove_observer(coco_problem_t *problem, coco_obser
  */
 const char *coco_observer_get_result_folder(const coco_observer_t *observer);
 
+/**
+ * @brief Signals the restart of the algorithm
+ */
+void coco_observer_signal_restart(coco_observer_t *observer, coco_problem_t *problem);
+
 /**@}*/
 
 /***********************************************************************************************************/

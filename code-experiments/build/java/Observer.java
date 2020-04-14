@@ -41,6 +41,10 @@ public class Observer {
 	public String getName() {
 		return this.name;
 	}
+	
+	public void signalRestart(Problem problem) {
+		CocoJNI.cocoObserverSignalRestart(this.getPointer(), problem.getPointer());
+	}
 
 	/* toString method */
 	@Override
