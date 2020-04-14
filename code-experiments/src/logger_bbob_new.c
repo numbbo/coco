@@ -47,6 +47,7 @@ typedef struct {
   coco_observer_t *observer;                  /**< @brief Pointer to the observer (might be NULL at the end) */
   char *suite_name;                           /**< @brief The suite name */
   int is_initialized;                         /**< @brief Whether the logger was already initialized */
+  int algorithm_restarted;                    /**< @brief Whether the algorithm has restarted (output information to .rdat file). */
 
   FILE *info_file;                            /**< @brief Index file */
   FILE *dat_file;                             /**< @brief File with function value aligned data */
@@ -427,6 +428,12 @@ static void logger_bbob_new_evaluate(coco_problem_t *problem, const double *x, d
     logger->last_logged_evaluation = 1;
   }
 
+  /* Add a line in the .rdat file if the algorithm was restarted */
+  if (logger->algorithm_restarted) {
+    logger_bbob_new_output(logger->rdat_file, logger, x, y_logged, constraints);
+    logger->algorithm_restarted = 0;
+  }
+
   /* Free allocated memory */
   if (problem->number_of_constraints > 0)
     coco_free_memory(constraints);
@@ -498,18 +505,15 @@ static void logger_bbob_new_free(void *stuff) {
 }
 
 /**
- * @brief Adds one line to the .rdat file with information about the restart of the algorithm
+ * @brief Saves the information that the algorithm has restarted
  */
 static void logger_bbob_new_signal_restart(coco_problem_t *problem) {
 
   logger_bbob_new_data_t *logger = (logger_bbob_new_data_t *) coco_problem_transformed_get_data(problem);
   assert(logger);
 
-  fprintf(logger->rdat_file, "%lu %lu %+10.9e %+10.9e\n", (unsigned long) logger->num_func_evaluations,
-    (unsigned long) logger->num_cons_evaluations, logger->best_found_value - logger->optimal_value,
-    logger->current_value);
-  fflush(logger->rdat_file);
-
+  if (logger->num_func_evaluations > 0)
+    logger->algorithm_restarted = 1;
 }
 
 static coco_problem_t *logger_bbob_new(coco_observer_t *observer, coco_problem_t *inner_problem) {
@@ -557,6 +561,7 @@ static coco_problem_t *logger_bbob_new(coco_observer_t *observer, coco_problem_t
   logger_data->observer = observer;
   logger_data->suite_name = coco_problem_get_suite(inner_problem)->suite_name;
   logger_data->is_initialized = 0;
+  logger_data->algorithm_restarted = 0;
 
   logger_data->info_file = NULL;
   logger_data->dat_file = NULL;

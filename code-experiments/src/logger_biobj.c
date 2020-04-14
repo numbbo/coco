@@ -118,10 +118,10 @@ typedef struct {
   FILE *adat_file;                    /**< @brief File for archiving nondominated solutions (all or final). */
 
   int log_vars;                       /**< @brief Whether to log the decision values. */
-
   int precision_x;                    /**< @brief Precision for outputting decision values. */
   int precision_f;                    /**< @brief Precision for outputting objective values. */
   int log_discrete_as_int;            /**< @brief Whether to output discrete variables in int or double format. */
+  int algorithm_restarted;            /**< @brief Whether the algorithm has restarted (output information to .rdat file). */
 
   size_t number_of_evaluations;       /**< @brief The number of evaluations performed so far. */
   size_t number_of_variables;         /**< @brief Dimension of the problem. */
@@ -689,7 +689,7 @@ static void logger_biobj_output(logger_biobj_data_t *logger,
         indicator->target_hit = coco_observer_targets_trigger(indicator->targets, indicator->overall_value);
       }
 
-      /* Log to the dat file if a target was hit */
+      /* Log to the dat file if a performance target was hit */
       if (indicator->target_hit) {
         fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
             logger->precision_f, indicator->overall_value, logger->precision_f,
@@ -716,8 +716,17 @@ static void logger_biobj_output(logger_biobj_data_t *logger,
             logger->precision_f, indicator->overall_value);
       }
 
+      /* Log to the rdat file if the algorithm was restarted */
+      if (logger->algorithm_restarted) {
+        fprintf(indicator->rdat_file, "%lu\t%.*e\n", (unsigned long) logger->number_of_evaluations,
+            logger->precision_f, indicator->overall_value);
+      }
+
     }
   }
+
+  if (logger->algorithm_restarted)
+    logger->algorithm_restarted = 0;
 
   coco_debug("Ended   logger_biobj_output()");
 }
@@ -890,23 +899,15 @@ static void logger_biobj_free(void *stuff) {
 }
 
 /**
- * @brief Adds one line to the .rdat file with information about the restart of the algorithm
+ * @brief Saves the information that the algorithm has restarted
  */
 static void logger_biobj_signal_restart(coco_problem_t *problem) {
 
   logger_biobj_data_t *logger = (logger_biobj_data_t *) coco_problem_transformed_get_data(problem);
-  logger_biobj_indicator_t *indicator;
-  size_t i;
+  assert(logger);
 
-  if (logger->compute_indicators) {
-    for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++) {
-      indicator = logger->indicators[i];
-      fprintf(indicator->rdat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
-          logger->precision_f, indicator->overall_value, logger->precision_f,
-          coco_observer_targets_get_last_target(indicator->targets));
-    }
-  }
-
+  if (logger->number_of_evaluations > 0)
+    logger->algorithm_restarted = 1;
 }
 
 /**
