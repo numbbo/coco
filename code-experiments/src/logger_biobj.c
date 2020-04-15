@@ -641,7 +641,7 @@ static void logger_biobj_indicator_free(void *stuff) {
  * @brief Outputs the information according to the observer options.
  *
  * Outputs to the:
- * - dat and ldat files, if the archive was updated and a new target was reached for an indicator;
+ * - dat file, if the archive was updated and a new target was reached for an indicator;
  * - tdat file, if the number of evaluations matches one of the predefined numbers.
  *
  * Note that a target is reached when
