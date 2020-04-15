@@ -18,6 +18,8 @@
 %       Returns a new COCO observer. 
 %   * cocoObserverFree: observer
 %       Frees the given observer.
+%   * cocoObserverSignalRestart: observer, problem
+%       Signals a restart by the algoirthm.
 %   * cocoProblemAddObserver: problem, observer
 %       Adds an observer to the given problem and returns the resulting problem.
 %   * cocoProblemFinalTargetHit: problem

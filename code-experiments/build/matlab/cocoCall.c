@@ -120,6 +120,28 @@ void cocoObserverFree(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
     coco_observer_free(observer);
 }
 
+void cocoObserverSignalRestart(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
+{
+    coco_problem_t *problem;
+    coco_observer_t *observer;
+    size_t *ref, *ref2;
+
+    /* check for proper number of arguments */
+    if(nrhs!=2) {
+        mexErrMsgIdAndTxt("cocoObserverSignalRestart:nrhs","Two inputs required.");
+    }
+
+    /* get the observer */
+    ref = (size_t *)mxGetData(prhs[0]);
+    observer = (coco_observer_t *)(*ref);
+    /* get the problem */
+    ref2 = (size_t *)mxGetData(prhs[1]);
+    problem = (coco_problem_t *)(*ref2);
+
+    /* call coco_observer_signal_restart() */
+    coco_observer_signal_restart(observer, problem);
+}
+
 void cocoProblemAddObserver(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     coco_problem_t *problem;
@@ -637,6 +659,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cocoObserver(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoobserverfree") == 0) {
         cocoObserverFree(nlhs, plhs, nrhs-1, prhs+1);
+    } else if (strcmp(cocofunction, "cocoobserversignalrestart") == 0) {
+        cocoObserverSignalRestart(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemaddobserver") == 0) {
         cocoProblemAddObserver(nlhs, plhs, nrhs-1, prhs+1);
     } else if (strcmp(cocofunction, "cocoproblemfinaltargethit") == 0) {
