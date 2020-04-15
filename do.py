@@ -420,7 +420,7 @@ def build_matlab():
     write_file(git_revision(), "code-experiments/build/matlab/REVISION")
     write_file(git_version(), "code-experiments/build/matlab/VERSION")
     run('code-experiments/build/matlab',
-        ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'],
+        ['matlab', '-nodesktop', '-nosplash', '-r', 'setup, exit'],
         verbose=_verbosity)
 
 
@@ -435,7 +435,7 @@ def run_matlab():
     wait_for_compilation_to_finish('./code-experiments/build/matlab/cocoCall')
     # run after compilation finished
     run('code-experiments/build/matlab',
-        ['matlab', '-nodisplay', '-nosplash', '-r', 'exampleexperiment, exit'],
+        ['matlab', '-nodesktop', '-nosplash', '-r', 'exampleexperiment, exit'],
         verbose=_verbosity)
 
 
@@ -482,7 +482,7 @@ def build_matlab_sms():
     write_file(git_version(), join(destination_folder, "VERSION"))
     copy_file('code-experiments/build/matlab/cocoCall.c', join(destination_folder, 'cocoCall.c'))
     # compile
-    run(destination_folder, ['matlab', '-nodisplay', '-nosplash', '-r', 'setup, exit'])
+    run(destination_folder, ['matlab', '-nodesktop', '-nosplash', '-r', 'setup, exit'])
 
 
 def run_matlab_sms():
@@ -496,7 +496,7 @@ def run_matlab_sms():
     wait_for_compilation_to_finish('./code-experiments/examples/bbob-biobj-matlab-smsemoa/paretofront')
     # run after compilation finished
     run('code-experiments/examples/bbob-biobj-matlab-smsemoa',
-        ['matlab', '-nodisplay', '-nosplash', '-r', 'run_smsemoa_on_bbob_biobj, exit'],
+        ['matlab', '-nodesktop', '-nosplash', '-r', 'run_smsemoa_on_bbob_biobj, exit'],
         verbose=_verbosity)
 
 
