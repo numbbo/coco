@@ -9,12 +9,13 @@
  * - The "info" files contain high-level information on the performed experiment. One .info file
  * is created for each function and contains information on all the problem instances for that
  * function.
- * - The remaining files ("dat", "tdat" and "rdat" files) contain detailed information on the
- * performance of an optimizer. Logging in the "dat" files is triggered when performance
+ * - The remaining files ("dat", "tdat", "rdat" and "mdat" files) contain detailed information
+ * on the performance of an optimizer. Logging in the "dat" files is triggered when performance
  * targets are reached (they are either uniform in logarithmic or linear scale, depending on
  * whether the problem has a known optimal value or not*1, respectively), logging in the "tdat"
- * files is triggered by the number of function evaluations and logging in the "rdat" files is
- * triggered by the restart of an algorithm.
+ * files is triggered by the number of function evaluations, logging in the "rdat" files is
+ * triggered by the restart of an algorithm and logging in the "mdat" is triggered every time
+ * a solution is recommended.
  *
  * *1 Note that the decision about which performance targets to use is done on the suite level
  * and passed to the logger during initialization.
@@ -53,6 +54,7 @@ typedef struct {
   FILE *dat_file;                             /**< @brief File with function value aligned data */
   FILE *tdat_file;                            /**< @brief File with number of evaluations aligned data */
   FILE *rdat_file;                            /**< @brief File with restart information */
+  FILE *mdat_file;                            /**< @brief File with evaluated recommendations */
 
   size_t num_func_evaluations;                /**< @brief The number of function evaluations performed so far. */
   size_t num_cons_evaluations;                /**< @brief The number of evaluations of constraints performed so far. */
@@ -102,7 +104,7 @@ typedef struct {
 static const char *logger_bbob_new_data_format = "bbob-new2";
 
 /**
- * @brief The header used by the logger in .dat, .tdat and .rdat files
+ * @brief The header used by the logger in .?dat files
  *
  * See also logger_bbob_new_data_format
  */
@@ -335,6 +337,8 @@ static void logger_bbob_new_initialize(logger_bbob_new_data_t *logger) {
   fprintf(logger->tdat_file, logger_bbob_new_header, logger->optimal_value);
   logger_bbob_new_open_data_file(&(logger->rdat_file), logger->observer->result_folder, relative_path, ".rdat");
   fprintf(logger->rdat_file, logger_bbob_new_header, logger->optimal_value);
+  logger_bbob_new_open_data_file(&(logger->mdat_file), logger->observer->result_folder, relative_path, ".mdat");
+  fprintf(logger->mdat_file, logger_bbob_new_header, logger->optimal_value);
 
   logger->is_initialized = 1;
   coco_free_memory(dimension_string);
@@ -443,6 +447,52 @@ static void logger_bbob_new_evaluate(coco_problem_t *problem, const double *x, d
 }
 
 /**
+ * @brief Evaluates the function and outputs information according to observer options to the file with
+ * recommendations. The evaluation result is not returned and the evaluation counter is not increased.
+ */
+static void logger_bbob_new_recommend(coco_problem_t *problem, const double *x) {
+  double y_logged;
+  double *constraints = NULL, *y = NULL;
+  logger_bbob_new_data_t *logger = (logger_bbob_new_data_t *) coco_problem_transformed_get_data(problem);
+  coco_problem_t *inner_problem = coco_problem_transformed_get_inner_problem(problem);
+  const int is_feasible = problem->number_of_constraints <= 0 || coco_is_feasible(inner_problem, x, NULL);
+
+  if (!logger->is_initialized) {
+    logger_bbob_new_initialize(logger);
+  }
+
+  /* Fulfill contract of a COCO evaluate function, but do not increase the evaluation counters */
+  y = coco_allocate_vector(problem->number_of_objectives);
+  coco_evaluate_function(inner_problem, x, y);
+
+  y_logged = y[0];
+  if (coco_is_nan(y_logged))
+    y_logged = NAN_FOR_LOGGING;
+  else if (coco_is_inf(y_logged))
+    y_logged = INFINITY_FOR_LOGGING;
+  coco_free_memory(y);
+
+  /* Do sanity check */
+  if ((problem->is_opt_known) && (is_feasible)) {
+    /* Infeasible solutions can have much better y0 values */
+    assert(y_logged + 1e-13 >= logger->optimal_value);
+  }
+
+  /* Evaluate the constraints */
+  if (problem->number_of_constraints > 0) {
+    constraints = coco_allocate_vector(problem->number_of_constraints);
+    inner_problem->evaluate_constraint(inner_problem, x, constraints);
+  }
+
+  /* Add a line in the .mdat file */
+  logger_bbob_new_output(logger->mdat_file, logger, x, y_logged, constraints);
+
+  /* Free allocated memory */
+  if (problem->number_of_constraints > 0)
+    coco_free_memory(constraints);
+}
+
+/**
  * @brief Takes care of some final output and frees the logger data
  */
 static void logger_bbob_new_free(void *stuff) {
@@ -478,6 +528,11 @@ static void logger_bbob_new_free(void *stuff) {
   if (logger->rdat_file != NULL) {
     fclose(logger->rdat_file);
     logger->rdat_file = NULL;
+  }
+
+  if (logger->mdat_file != NULL) {
+    fclose(logger->mdat_file);
+    logger->mdat_file = NULL;
   }
 
   if (logger->best_found_solution != NULL) {
@@ -567,6 +622,7 @@ static coco_problem_t *logger_bbob_new(coco_observer_t *observer, coco_problem_t
   logger_data->dat_file = NULL;
   logger_data->tdat_file = NULL;
   logger_data->rdat_file = NULL;
+  logger_data->mdat_file = NULL;
 
   logger_data->num_func_evaluations = 0;
   logger_data->num_cons_evaluations = 0;
@@ -594,5 +650,6 @@ static coco_problem_t *logger_bbob_new(coco_observer_t *observer, coco_problem_t
 
   problem = coco_problem_transformed_allocate(inner_problem, logger_data, logger_bbob_new_free, observer->observer_name);
   problem->evaluate_function = logger_bbob_new_evaluate;
+  problem->recommend_solution = logger_bbob_new_recommend;
   return problem;
 }

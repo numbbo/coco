@@ -128,7 +128,6 @@ static void bbob_evaluate_gradient(coco_problem_t *problem, const double *x, dou
  * Evaluates and logs the given solution (as the coco_evaluate_function), but does not return the evaluated
  * value.
  *
- * @note None of the observers implements this function yet!
  * @note x must point to a correctly sized allocated memory region.
 
  * @param problem The given COCO problem.
