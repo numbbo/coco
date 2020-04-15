@@ -1056,8 +1056,8 @@ static int coco_vector_isfinite(const double *x, const size_t dim) {
  * @param constraint_values Vector of contraints values resulting from evaluation.
  */
 static int coco_is_feasible(coco_problem_t *problem,
-                     const double *x,
-                     double *constraint_values) {
+                            const double *x,
+                            double *constraint_values) {
 
   size_t i;
   double *cons_values = constraint_values;
