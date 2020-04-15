@@ -529,7 +529,7 @@ void coco_observer_free(coco_observer_t *observer) {
  * - "algorithm_info: STRING" stores the description of the algorithm. If it contains spaces, it must be
  * surrounded by double quotes. The default value is "" (no description).
  * - "number_target_triggers: VALUE" defines the number of targets between each 10**i and 10**(i+1)
- * (equally spaced in the logarithmic scale) that trigger logging. The default value is 100.
+ * (equally spaced in the logarithmic scale) that trigger logging. The default value is 10.
  * - "log_target_precision: VALUE" defines the precision used for logarithmic targets (there are no targets for
  * abs(values) < log_target_precision). The default value is 1e-8.
  * - "lin_target_precision: VALUE" defines the precision used for linear targets. The default value is 1e-5.

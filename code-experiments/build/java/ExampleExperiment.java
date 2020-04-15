@@ -1,24 +1,24 @@
 import java.util.Random;
 
 /**
- * An example of benchmarking random search on a COCO suite. 
+ * An example of benchmarking random search on a COCO suite.
  *
  * Set the parameter BUDGET_MULTIPLIER to suit your needs.
  */
 public class ExampleExperiment {
 
 	/**
-	 * The maximal budget for evaluations done by an optimization algorithm equals 
+	 * The maximal budget for evaluations done by an optimization algorithm equals
 	 * dimension * BUDGET_MULTIPLIER.
 	 * Increase the budget multiplier value gradually to see how it affects the runtime.
 	 */
 	public static final int BUDGET_MULTIPLIER = 2;
-	
+
 	/**
-	 * The maximal number of independent restarts allowed for an algorithm that restarts itself. 
+	 * The maximal number of independent restarts allowed for an algorithm that restarts itself.
 	 */
 	public static final int INDEPENDENT_RESTARTS = 10000;
-	
+
 	/**
 	 * The random seed. Change if needed.
 	 */
@@ -29,7 +29,7 @@ public class ExampleExperiment {
 	 * algorithm and the COCO platform).
 	 */
 	public static Problem PROBLEM;
-	
+
 	/**
 	 * Interface for function evaluation.
 	 */
@@ -55,7 +55,7 @@ public class ExampleExperiment {
 	 * bi-objective suite.
 	 */
 	public static void main(String[] args) {
-		
+
 		Random randomGenerator = new Random(RANDOM_SEED);
 
 		/* Change the log level to "warning" to get less output */
@@ -63,13 +63,13 @@ public class ExampleExperiment {
 
 		System.out.println("Running the example experiment... (might take time, be patient)");
 		System.out.flush();
-		     
+
 		/* Start the actual experiments on a test suite and use a matching logger, for
          * example one of the following:
          *
          *   bbob                 24 unconstrained noiseless single-objective functions
          *   bbob-biobj           55 unconstrained noiseless bi-objective functions
-         *   [bbob-biobj-ext       92 unconstrained noiseless bi-objective functions]
+         *   [bbob-biobj-ext*     92 unconstrained noiseless bi-objective functions]
          *   bbob-largescale      24 unconstrained noiseless single-objective functions in large dimension
          *   [bbob-constrained*   48 constrained noiseless single-objective functions]
          *   bbob-mixint          24 unconstrained noiseless single-objective functions with mixed-integer variables
@@ -87,13 +87,13 @@ public class ExampleExperiment {
 
 		return;
 	}
-	
+
 	/**
 	 * A simple example of benchmarking random search on a given suite with default instances
      * that can serve also as a timing experiment.
      *
      * @param suiteName Name of the suite (e.g. "bbob", "bbob-biobj", or "bbob-constrained").
-     * @param observerName Name of the observer matching with the chosen suite (e.g. "bbob-biobj" 
+     * @param observerName Name of the observer matching with the chosen suite (e.g. "bbob-biobj"
      * when using the "bbob-biobj-ext" suite).
 	 * @param randomGenerator The random number generator.
 	 */
@@ -101,8 +101,8 @@ public class ExampleExperiment {
 		try {
 
 			/* Set some options for the observer. See documentation for other options. */
-			final String observerOptions = 
-					  "result_folder: RS_on_" + suiteName + " " 
+			final String observerOptions =
+					  "result_folder: RS_on_" + suiteName + " "
 					+ "algorithm_name: RS "
 					+ "algorithm_info: \"A simple random search algorithm\"";
 
@@ -116,7 +116,7 @@ public class ExampleExperiment {
 
 			/* Initialize timing */
 			Timing timing = new Timing();
-			
+
 			/* Iterate over all problems in the suite */
 			while ((PROBLEM = benchmark.getNextProblem()) != null) {
 
@@ -131,7 +131,8 @@ public class ExampleExperiment {
 					/* Break the loop if the target was hit or there are no more remaining evaluations */
 					if (PROBLEM.isFinalTargetHit() || (evaluationsRemaining <= 0))
 						break;
-					
+
+					/* Signal that a restart took place */
 					observer.signalRestart(PROBLEM);
 
 					/* Call the optimization algorithm for the remaining number of evaluations */
@@ -168,27 +169,27 @@ public class ExampleExperiment {
 		}
 	}
 
-	/** 
-	 * A simple random search algorithm that can be used for single- as well as multi-objective 
+	/**
+	 * A simple random search algorithm that can be used for single- as well as multi-objective
 	 * optimization.
 	 */
-	public static void myRandomSearch(Function f, 
-			                          int dimension, 
+	public static void myRandomSearch(Function f,
+			                          int dimension,
 			                          int numberOfObjectives,
                                       int numberOfConstraints,
 			                          double[] lowerBounds,
-			                          double[] upperBounds, 
+			                          double[] upperBounds,
                                       int numberOfIntegerVariables,
-			                          long maxBudget, 
+			                          long maxBudget,
 			                          Random randomGenerator) {
 
 		double[] x = new double[dimension];
 		double[] y = new double[numberOfObjectives];
 		double[] z = new double[numberOfConstraints];
 		double range;
-		
+
 		for (int i = 0; i < maxBudget; i++) {
-			
+
 		    /* Construct x as a random point between the lower and upper bounds */
 			for (int j = 0; j < dimension; j++) {
 				range = upperBounds[j] - lowerBounds[j];
@@ -201,6 +202,6 @@ public class ExampleExperiment {
 				z = f.evaluateConstraint(x);
 			y = f.evaluate(x);
 		}
-		
+
 	}
 }

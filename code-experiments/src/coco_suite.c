@@ -101,7 +101,7 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
                                                            const size_t instance_idx) {
 
   coco_problem_t *problem;
-  
+
   if ((suite->functions[function_idx] == 0) ||
       (suite->dimensions[dimension_idx] == 0) ||
     (suite->instances[instance_idx] == 0)) {
@@ -598,14 +598,14 @@ static int coco_suite_is_next_dimension_found(coco_suite_t *suite) {
  * - "bbob-biobj" contains 55 <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective
  * functions</a> in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "bbob-biobj-ext" as an extension of "bbob-biobj" contains 92
- * <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective functions</a> in 6 dimensions 
+ * <a href="http://numbbo.github.io/coco-doc/bbob-biobj/functions">bi-objective functions</a> in 6 dimensions
  * (2, 3, 5, 10, 20, 40)
  * - "bbob-largescale" contains 24 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 6 large dimensions (40, 80, 160, 320, 640, 1280)
- * - "bbob-constrained" contains 48 linearly-constrained problems, which are combinations of 8 single 
- * objective functions with 6 different numbers of linear constraints (1, 2, 10, dimension/2, dimension-1, 
+ * - "bbob-constrained" contains 48 linearly-constrained problems, which are combinations of 8 single
+ * objective functions with 6 different numbers of linear constraints (1, 2, 10, dimension/2, dimension-1,
  * dimension+1), in 6 dimensions (2, 3, 5, 10, 20, 40).
- * - "bbob-mixint" contains mixed-integer single-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)
+ * - "bbob-mixint" contains 24 mixed-integer single-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "bbob-biobj-mixint" contains 92 mixed-integer bi-objective functions in 6 dimensions (2, 3, 5, 10, 20, 40)
  * - "toy" contains 6 <a href="http://coco.lri.fr/downloads/download15.03/bbobdocfunctions.pdf">
  * single-objective functions</a> in 5 dimensions (2, 3, 5, 10, 20)
@@ -813,7 +813,7 @@ coco_suite_t *coco_suite(const char *suite_name, const char *suite_instance, con
  * @returns The next problem of the suite or NULL if there is no next problem left.
  */
 coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t *observer) {
-  
+
   size_t function_idx;
   size_t dimension_idx;
   size_t instance_idx;
@@ -838,7 +838,7 @@ coco_problem_t *coco_suite_get_next_problem(coco_suite_t *suite, coco_observer_t
     coco_info_partial("done\n");
     return NULL;
   }
- 
+
   if (suite->current_problem) {
     coco_problem_free(suite->current_problem);
   }

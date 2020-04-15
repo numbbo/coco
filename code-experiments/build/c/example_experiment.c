@@ -185,8 +185,6 @@ void example_experiment(const char *suite_name,
     /* Run the algorithm at least once */
     for (run = 1; run <= 1 + INDEPENDENT_RESTARTS; run++) {
 
-      coco_observer_signal_restart(observer, PROBLEM);
-
       long evaluations_done = (long) (coco_problem_get_evaluations(PROBLEM) +
             coco_problem_get_evaluations_constraints(PROBLEM));
       long evaluations_remaining = (long) (dimension * BUDGET_MULTIPLIER) - evaluations_done;
@@ -196,6 +194,9 @@ void example_experiment(const char *suite_name,
            coco_problem_get_number_of_constraints(PROBLEM) == 0)
            || (evaluations_remaining <= 0))
         break;
+
+      /* Singal restart to the observer */
+      coco_observer_signal_restart(observer, PROBLEM);
 
       /* Call the optimization algorithm for the remaining number of evaluations */
       my_random_search(evaluate_function,
