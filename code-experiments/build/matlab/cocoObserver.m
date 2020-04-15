@@ -25,6 +25,8 @@
 %                      the general options, see observer_bbob, observer_biobj,
 %                      and observer_toy for options of the specific observers.
 %
+%                      "outer_folder: NAME" determines the outer folder for the 
+%                              experiment. The default value is "exdata".
 %                      "result_folder: NAME" determines the folder within the
 %                              "exdata" folder into which the results will be
 %                              output. If the folder with the given name already

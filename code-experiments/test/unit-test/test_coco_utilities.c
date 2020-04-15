@@ -471,6 +471,14 @@ MU_TEST(test_coco_option_keys) {
   option_keys = coco_option_keys("key: \"A multi-word value\"");
   mu_check(option_keys->count == 1);
   coco_option_keys_free(option_keys);
+
+  option_keys = coco_option_keys("key: \"A multi-word value with a colon (:)\"");
+  mu_check(option_keys->count == 1);
+  coco_option_keys_free(option_keys);
+
+  option_keys = coco_option_keys("\"key: value\"");
+  mu_check(option_keys->count == 1);
+  coco_option_keys_free(option_keys);
 }
 
 /**

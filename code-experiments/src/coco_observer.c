@@ -521,6 +521,7 @@ void coco_observer_free(coco_observer_t *observer) {
  * @param observer_options A string of pairs "key: value" used to pass the options to the observer. Some
  * observer options are general, while others are specific to some observers. Here we list only the general
  * options, see observer_bbob, observer_biobj and observer_toy for options of the specific observers.
+ * - "outer_folder: NAME" determines the outer folder for the experiment. The default value is "exdata".
  * - "result_folder: NAME" determines the folder within the "exdata" folder into which the results will be
  * output. If the folder with the given name already exists, first NAME_001 will be tried, then NAME_002 and
  * so on. The default value is "default".
@@ -554,8 +555,7 @@ void coco_observer_free(coco_observer_t *observer) {
 coco_observer_t *coco_observer(const char *observer_name, const char *observer_options) {
 
   coco_observer_t *observer;
-  char *path, *result_folder, *algorithm_name, *algorithm_info;
-  const char *outer_folder_name = "exdata";
+  char *path, *outer_folder, *result_folder, *algorithm_name, *algorithm_info;
   int precision_x, precision_f, precision_g, log_discrete_as_int;
 
   size_t number_target_triggers;
@@ -567,8 +567,8 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
 
   /* Sets the valid keys for observer options
    * IMPORTANT: This list should be up-to-date with the code and the documentation */
-  const char *known_keys[] = { "result_folder", "algorithm_name", "algorithm_info", "number_target_triggers",
-      "log_target_precision", "lin_target_precision", "number_evaluation_triggers",
+  const char *known_keys[] = { "outer_folder", "result_folder", "algorithm_name", "algorithm_info",
+      "number_target_triggers", "log_target_precision", "lin_target_precision", "number_evaluation_triggers",
       "base_evaluation_triggers", "precision_x", "precision_f", "precision_g", "log_discrete_as_int" };
   additional_option_keys = NULL; /* To be set by the chosen observer */
 
@@ -579,17 +579,21 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
     return NULL;
   }
 
+  outer_folder = coco_allocate_string(COCO_PATH_MAX + 1);
   result_folder = coco_allocate_string(COCO_PATH_MAX + 1);
   algorithm_name = coco_allocate_string(COCO_PATH_MAX + 1);
   algorithm_info = coco_allocate_string(5 * COCO_PATH_MAX);
-  /* Read result_folder, algorithm_name and algorithm_info from the observer_options and use
-   * them to initialize the observer */
+
+  if (coco_options_read_string(observer_options, "outer_folder", outer_folder) == 0) {
+    strcpy(outer_folder, "exdata");
+  }
   if (coco_options_read_string(observer_options, "result_folder", result_folder) == 0) {
     strcpy(result_folder, "default");
   }
-  /* Create the result_folder inside the "exdata" folder */
+
+  /* Create the result_folder inside the outer folder */
   path = coco_allocate_string(COCO_PATH_MAX + 1);
-  memcpy(path, outer_folder_name, strlen(outer_folder_name) + 1);
+  memcpy(path, outer_folder, strlen(outer_folder) + 1);
   coco_join_path(path, COCO_PATH_MAX, result_folder, NULL);
   coco_create_unique_directory(&path);
   coco_info("Results will be output to folder %s", path);
@@ -682,6 +686,7 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
       precision_g, log_discrete_as_int);
 
   coco_free_memory(path);
+  coco_free_memory(outer_folder);
   coco_free_memory(result_folder);
   coco_free_memory(algorithm_name);
   coco_free_memory(algorithm_info);

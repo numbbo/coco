@@ -177,6 +177,10 @@ static int coco_file_exists(const char *path) {
 static int coco_mkdir(const char *path) {
   int result = 0;
 
+  /* Do not create the path if is of the form "C:" (two letters, of which the second is a colon)*/
+  if ((strlen(path) == 2) && (path[1] == ':'))
+    return 1;
+
 #if _MSC_VER
   result = _mkdir(path);
 #elif defined(__MINGW32__) || defined(__MINGW64__)
@@ -621,22 +625,47 @@ static void coco_option_keys_add(coco_option_keys_t **basic_option_keys,
  * separated by colons.
  *
  * @note Relies heavily on the "key: value" format and might fail if the number of colons doesn't match the
- * number of keys.
+ * number of keys. Values that are strings surrounded by quotation marks should work as long as they come
+ * in pairs.
  */
 static coco_option_keys_t *coco_option_keys(const char *option_string) {
 
   size_t i;
   char **keys;
   coco_option_keys_t *option_keys = NULL;
-  char *string_to_parse, *key;
+  char *string_to_parse, *key, *string_pointer;
+  char *cleaned_option_string = NULL;
+  const char *replacement_string = "STR";
 
   /* Check for empty string */
   if ((option_string == NULL) || (strlen(option_string) == 0)) {
 	    return NULL;
   }
 
+  /* Construct the cleaned_option_string by replacing any string between two quotation marks with "STR"*/
+  keys = coco_string_split(option_string, '\"');
+  if (keys) {
+    for (i = 0; *(keys + i); i++) {
+      if (i == 0)
+        cleaned_option_string = coco_strdupf(*(keys + i));
+      else {
+        string_pointer = cleaned_option_string;
+        if (i % 2 == 0) {
+          /* This is outside of a pair of quotation marks */
+          cleaned_option_string = coco_strconcat(string_pointer, *(keys + i));
+        }
+        else {
+          /* This is inside of a pair of quotation marks */
+          cleaned_option_string = coco_strconcat(string_pointer, replacement_string);
+        }
+        coco_free_memory(string_pointer);
+      }
+    }
+  }
+  coco_free_memory(keys);
+
   /* Split the options w.r.t ':' */
-  keys = coco_string_split(option_string, ':');
+  keys = coco_string_split(cleaned_option_string, ':');
 
   if (keys) {
     /* Keys now contain something like this: "values_of_previous_key this_key" except for the first, which
@@ -677,6 +706,8 @@ static coco_option_keys_t *coco_option_keys(const char *option_string) {
     }
     coco_free_memory(keys);
   }
+
+  coco_free_memory(cleaned_option_string);
 
   return option_keys;
 }
