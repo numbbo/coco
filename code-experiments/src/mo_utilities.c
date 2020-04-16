@@ -55,7 +55,7 @@ static double *mo_normalize(const double *y, const double *ideal, const double *
     normalized_y[i] = (y[i] - ideal[i]) / (nadir[i] - ideal[i]);
     normalized_y[i] = coco_double_round(normalized_y[i] / mo_discretization) * mo_discretization;
     if (normalized_y[i] < 0) {
-      coco_debug("Adjusting %.15e to %.15e", y[i], ideal[i]);
+      coco_warning("mo_normalize(): Adjusting %.15e to %.15e", y[i], ideal[i]);
       normalized_y[i] = 0;
     }
   }
@@ -63,7 +63,7 @@ static double *mo_normalize(const double *y, const double *ideal, const double *
   for (i = 0; i < num_obj; i++) {
     assert(num_obj == 2);
     if (coco_double_almost_equal(normalized_y[i], 0, mo_precision) && (normalized_y[1-i] < 1)) {
-      coco_debug("Adjusting %.15e to %.15e", y[1-i], nadir[1-i]);
+      coco_warning("mo_normalize(): Adjusting %.15e to %.15e", y[1-i], nadir[1-i]);
       normalized_y[1-i] = 1;
     }
   }
