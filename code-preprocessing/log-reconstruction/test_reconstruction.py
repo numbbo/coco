@@ -124,7 +124,11 @@ def run_log_reconstruct():
                     parse_range('1-10'),
                     parse_range('2,3,5,10,20,40'))
 
+    # Ignore `.rdat`, `.mdat` and other files
+    endings = ('.info', '.dat', '.tdat', '.adat')
+
     for root, dirs, files in walk(abspath(join(base_path, 'exdata', 'reconstruction')), topdown=False):
+        files = [f for f in files if f.endswith(endings)]
         for name in files:
             compare_files(abspath(join(root, name)),
                           abspath(join(root, name)).replace('exdata', 'test-data'))
