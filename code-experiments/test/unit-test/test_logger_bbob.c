@@ -5,9 +5,9 @@
 static int about_equal_value(const double a, const double b);
 
 /**
- * Tests the logarithmic and linear triggers via the bbob_new logger.
+ * Tests the logarithmic and linear triggers via the bbob logger.
  */
-MU_TEST(test_logger_bbob_new_triggers) {
+MU_TEST(test_logger_bbob_triggers) {
 
   coco_suite_t *suite;
   coco_observer_t *observer;
@@ -17,14 +17,14 @@ MU_TEST(test_logger_bbob_new_triggers) {
   double *y = coco_allocate_vector(1);
   double target;
 
-  logger_bbob_new_data_t *logger;
+  logger_bbob_data_t *logger;
 
   /* Using only the logarithmic performance targets */
   suite = coco_suite("bbob", "", "dimensions: 2 function_indices: 1 instance_indices: 1");
-  observer = coco_observer("bbob-new", "number_target_triggers: 1");
+  observer = coco_observer("bbob", "number_target_triggers: 1");
   /* Use the 2-D sphere function */
   problem = coco_suite_get_next_problem(suite, observer);
-  logger = (logger_bbob_new_data_t *) coco_problem_transformed_get_data(problem);
+  logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
 
   x[0] = 0; x[1] = 0;
   coco_evaluate_function(problem, x, y);
@@ -72,10 +72,10 @@ MU_TEST(test_logger_bbob_new_triggers) {
   /* Using the linear performance targets */
   suite = coco_suite("bbob", "", "dimensions: 2 function_indices: 1 instance_indices: 1");
   suite->known_optima = 0;
-  observer = coco_observer("bbob-new", "number_target_triggers: 1 lin_target_precision: 1e-3 log_target_precision: 1e-5");
+  observer = coco_observer("bbob", "number_target_triggers: 1 lin_target_precision: 1e-3 log_target_precision: 1e-5");
   /* Use the 2-D sphere function */
   problem = coco_suite_get_next_problem(suite, observer);
-  logger = (logger_bbob_new_data_t *) coco_problem_transformed_get_data(problem);
+  logger = (logger_bbob_data_t *) coco_problem_transformed_get_data(problem);
 
   x[0] = 0; x[1] = 0;
   coco_evaluate_function(problem, x, y);
@@ -137,6 +137,6 @@ MU_TEST(test_logger_bbob_new_triggers) {
 /**
  * Run all tests in this file.
  */
-MU_TEST_SUITE(test_all_logger_bbob_new) {
-  MU_RUN_TEST(test_logger_bbob_new_triggers);
+MU_TEST_SUITE(test_all_logger_bbob) {
+  MU_RUN_TEST(test_logger_bbob_triggers);
 }
