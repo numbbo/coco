@@ -83,7 +83,7 @@ def regression_test_match_logger_output(old_data_folder, new_data_folder):
     """Checks whether the contents of the two folders match.
 
     The check includes only the '.info', '.dat', '.tdat', and '.adat' files, i.e., ignores and
-    `.rdat` and other files.
+    `.rdat`, `.mdat` and other files.
     """
     endings = ('.info', '.dat', '.tdat', '.adat')
     print('\nComparing the contents of {} and {}'.format(old_data_folder, new_data_folder))
@@ -94,6 +94,8 @@ def regression_test_match_logger_output(old_data_folder, new_data_folder):
 
     for (old_root, old_dirs, old_files), (new_root, new_dirs, new_files) in \
             zip(os.walk(old_data_folder), os.walk(new_data_folder)):
+        old_files = [f for f in old_files if f.endswith(endings)]
+        new_files = [f for f in new_files if f.endswith(endings)]
         # Iterate over files in both folders sorted by name
         for old_fname, new_fname in zip(sorted(old_files), sorted(new_files)):
             if old_fname.endswith(endings) and new_fname.endswith(endings):
