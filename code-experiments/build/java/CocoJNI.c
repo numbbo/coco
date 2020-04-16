@@ -342,6 +342,35 @@ JNIEXPORT jdoubleArray JNICALL Java_CocoJNI_cocoEvaluateConstraint
 
 /*
  * Class:     CocoJNI
+ * Method:    cocoRecommendSolution
+ * Signature: (J[D)V
+ */
+JNIEXPORT void JNICALL Java_CocoJNI_cocoRecommendSolution
+(JNIEnv *jenv, jclass interface_cls, jlong jproblem_pointer, jdoubleArray jx) {
+
+  coco_problem_t *problem = NULL;
+  double *x = NULL;
+
+  /* This test is both to prevent warning because interface_cls was not used and to check for exceptions */
+  if (interface_cls == NULL) {
+    jclass Exception = (*jenv)->FindClass(jenv, "java/lang/Exception");
+    (*jenv)->ThrowNew(jenv, Exception, "Exception in cocoRecommendSolution\n");
+  }
+
+  problem = (coco_problem_t *) jproblem_pointer;
+
+  /* Call coco_evaluate_constraint */
+  x = (*jenv)->GetDoubleArrayElements(jenv, jx, NULL);
+  coco_recommend_solution(problem, x);
+
+  /* Free resources */
+  (*jenv)->ReleaseDoubleArrayElements(jenv, jx, x, JNI_ABORT);
+  return;
+}
+
+
+/*
+ * Class:     CocoJNI
  * Method:    cocoProblemGetDimension
  * Signature: (J)I
  */

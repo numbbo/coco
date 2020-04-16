@@ -29,6 +29,7 @@ public class CocoJNI {
 	// Functions
 	public static native double[] cocoEvaluateFunction(long problemPointer, double[] x);
 	public static native double[] cocoEvaluateConstraint(long problemPointer, double[] x);
+	public static native void cocoRecommendSolution(long problemPointer, double[] x);
 
 	// Getters
 	public static native int cocoProblemGetDimension(long problemPointer);

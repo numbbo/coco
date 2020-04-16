@@ -36,6 +36,7 @@ public class ExampleExperiment {
 	public interface Function {
 		double[] evaluate(double[] x);
 		double[] evaluateConstraint(double[] x);
+		void recommendSolution(double[] x);
     }
 
 	/**
@@ -45,8 +46,11 @@ public class ExampleExperiment {
     	public double[] evaluate(double[] x) {
     		return PROBLEM.evaluateFunction(x);
     	}
-	public double[] evaluateConstraint(double[] x) {
-		return PROBLEM.evaluateConstraint(x);
+		public double[] evaluateConstraint(double[] x) {
+			return PROBLEM.evaluateConstraint(x);
+        }
+		public void recommendSolution(double[] x) {
+			PROBLEM.recommendSolution(x);
         }
     };
 

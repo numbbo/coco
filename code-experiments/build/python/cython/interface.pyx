@@ -595,9 +595,8 @@ cdef class Problem:
         The recommendation replaces the last evaluation or recommendation
         for the assessment of the algorithm.
         """
-        raise NotImplementedError("has never been tested, incomment this to start testing")
         cdef np.ndarray[double, ndim=1, mode="c"] _x
-        x = np.array(x, copy=False, dtype=np.double, order='C')
+        x = np.array(arx, copy=False, dtype=np.double, order='C')
         if np.size(x) != self.number_of_variables:
             raise ValueError(
                 "Dimension, `np.size(x)==%d`, of input `x` does " % np.size(x) +
