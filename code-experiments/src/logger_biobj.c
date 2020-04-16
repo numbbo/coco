@@ -938,9 +938,11 @@ static void logger_biobj_free(void *stuff) {
   avl_tree_destruct(logger->buffer_tree);
 
   observer = logger->observer;
-  if ((observer != NULL) && (observer->data != NULL)) {
-    /* If the observer still exists (if it does not, logger_is_used does not matter any longer) */
-    ((observer_biobj_data_t *)observer->data)->logger_is_used = 0;
+  if ((observer != NULL) && (observer->is_active == 1)) {
+    if (observer->data != NULL) {
+      /* If the observer still exists (if it does not, logger_is_used does not matter any longer) */
+      ((observer_biobj_data_t *)observer->data)->logger_is_used = 0;
+    }
   }
 
   coco_debug("Ended   logger_biobj_free()");
