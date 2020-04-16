@@ -52,19 +52,19 @@ void run_once(char *suite_options) {
   coco_suite_t *suite;
   coco_observer_t *observer;
   coco_problem_t *problem;
-  
+
   /* Set some options for the observer. See documentation for other options. */
   char *observer_options =
       coco_strdupf("result_folder: RS_on_%s "
                    "algorithm_name: RS "
-                   "algorithm_info: \"A simple random search algorithm\"", 
+                   "algorithm_info: \"A simple random search algorithm\"",
                    "bbob-largescale");
 
   printf("Running experiment with suite options %s\n", suite_options);
   fflush(stdout);
 
   suite = coco_suite("bbob-largescale", NULL, suite_options);
-  observer = coco_observer("bbob-new", observer_options);
+  observer = coco_observer("bbob", observer_options);
   coco_free_memory(observer_options);
 
   while ((problem = coco_suite_get_next_problem(suite, observer)) != NULL) {

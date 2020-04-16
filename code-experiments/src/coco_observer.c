@@ -597,6 +597,8 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
   coco_join_path(path, COCO_PATH_MAX, result_folder, NULL);
   coco_create_unique_directory(&path);
   coco_info("Results will be output to folder %s", path);
+  coco_free_memory(outer_folder);
+  coco_free_memory(result_folder);
 
   if (coco_options_read_string(observer_options, "algorithm_name", algorithm_name) == 0) {
     strcpy(algorithm_name, "ALG");
@@ -686,8 +688,6 @@ coco_observer_t *coco_observer(const char *observer_name, const char *observer_o
       precision_g, log_discrete_as_int);
 
   coco_free_memory(path);
-  coco_free_memory(outer_folder);
-  coco_free_memory(result_folder);
   coco_free_memory(algorithm_name);
   coco_free_memory(algorithm_info);
   coco_free_memory(base_evaluation_triggers);

@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
     if 11 < 3:
         # Experiments with two observers
-        run_two_observers('bbob', 'bbob-new')
+        run_two_observers('bbob', 'bbob-old')
         run_two_observers('bbob-biobj', 'bbob-biobj')
 
     # Experiments with a single observer
@@ -99,25 +99,25 @@ if __name__ == '__main__':
         dict(suite_name='bbob', suite_options=suite_options_1,
              observer_name='bbob', observer_options=observer_options_1,
              instance_order='inst'),
-
         dict(suite_name='bbob', suite_options=suite_options_1,
-             observer_name='bbob-new', observer_options=observer_options_1,
-             instance_order='def'),
-        dict(suite_name='bbob', suite_options=suite_options_1,
-             observer_name='bbob-new', observer_options=observer_options_1,
-             instance_order='inst'),
-        dict(suite_name='bbob', suite_options=suite_options_1,
-             observer_name='bbob-new', observer_options=observer_options_1,
+             observer_name='bbob', observer_options=observer_options_1,
              instance_order='rand'),
 
+        dict(suite_name='bbob', suite_options=suite_options_1,
+             observer_name='bbob-old', observer_options=observer_options_1,
+             instance_order='def'),
+        dict(suite_name='bbob', suite_options=suite_options_1,
+             observer_name='bbob-old', observer_options=observer_options_1,
+             instance_order='inst'),
+
+        dict(suite_name='bbob-constrained', suite_options=suite_options_1,
+             observer_name='bbob-old', observer_options=observer_options_1,
+             instance_order='def'),
         dict(suite_name='bbob-constrained', suite_options=suite_options_1,
              observer_name='bbob', observer_options=observer_options_1,
              instance_order='def'),
-        dict(suite_name='bbob-constrained', suite_options=suite_options_1,
-             observer_name='bbob-new', observer_options=observer_options_1,
-             instance_order='def'),
         dict(suite_name='bbob-mixint', suite_options=suite_options_1,
-             observer_name='bbob-new', observer_options=observer_options_1,
+             observer_name='bbob', observer_options=observer_options_1,
              instance_order='def'),
 
         dict(suite_name='bbob-biobj', suite_options=suite_options_1,

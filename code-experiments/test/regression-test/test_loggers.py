@@ -18,7 +18,7 @@ def regression_test_match_words(old_word, new_word, accuracy=1e-6):
 
     If they don't, checks whether they match as floats with the given accuracy
     """
-    exceptions = {'bbob': 'bbob-new'}
+    exceptions = {'bbob-old': 'bbob'}
 
     old_word = old_word.strip('\'')
     new_word = new_word.strip('\'')
@@ -115,8 +115,8 @@ if __name__ == "__main__":
     os.chdir(dir_path)
 
     path = os.path.join('create', 'exdata')
-    comparisons = [['bbob_bbob_def', 'bbob_bbob-new_def'],
-                   ['bbob-constrained_bbob_def', 'bbob-constrained_bbob-new_def']]
+    comparisons = [['bbob_bbob-old_def', 'bbob_bbob_def'],
+                   ['bbob-constrained_bbob-old_def', 'bbob-constrained_bbob_def']]
 
     exception_count = 0
     try:
