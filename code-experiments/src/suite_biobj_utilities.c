@@ -502,28 +502,25 @@ static coco_problem_t *coco_get_biobj_problem(const size_t function,
 /**
  * @brief Saves the best known value for the hypervolume indicator matching the given key.
  *
- * If a suite provides best known values for the hypervolume indicator and the key is not found,
- * the default value is used and the function returns 0.
- *
- * If a suite does not provide estimates of the best hypervolume values, the default value is
- * used and the function returns 0.
- *
- * @note This function needs to be updated when a new biobjective suite is added to COCO.
+ * If a suite does not have known optima or it has known optima but the key is not found,
+ * the default value is used.
  */
-static int suite_biobj_get_best_hyp_value(const char *suite_name, const char *key, double *value) {
+static void suite_biobj_get_best_hyp_value(const int known_optima,
+                                           const char *key,
+                                           double *value) {
 
   const double default_value = 1.0;
   size_t i, count;
   char *curr_key;
 
-  if ((strcmp(suite_name, "bbob-biobj") == 0) || (strcmp(suite_name, "bbob-biobj-ext") == 0)) {
+  if (known_optima) {
     curr_key = coco_allocate_string(COCO_PATH_MAX + 1);
     count = sizeof(suite_biobj_best_values_hyp) / sizeof(char *);
     for (i = 0; i < count; i++) {
       sscanf(suite_biobj_best_values_hyp[i], "%s %lf", curr_key, value);
       if (strcmp(curr_key, key) == 0) {
         coco_free_memory(curr_key);
-        return 0;
+        return;
       }
     }
     /* If it comes to this point, the key was not found */
@@ -531,17 +528,10 @@ static int suite_biobj_get_best_hyp_value(const char *suite_name, const char *ke
     coco_warning("suite_biobj_get_best_hyp_value(): best value of %s could not be found; set to %f",
         key, default_value);
     coco_free_memory(curr_key);
-    return 0;
-  }
-  else if (strcmp(suite_name, "bbob-biobj-mixint") == 0) {
-    *value = default_value;
-    return -1;
+    return;
   }
   else {
-    coco_error("suite_biobj_get_best_hyp_value(): suite %s not supported", suite_name);
-    return -1; /* Never reached */
+    *value = default_value;
+    return;
   }
-
-  coco_error("suite_biobj_get_best_hyp_value(): unexpected exception");
-  return -1; /* Never reached */
 }

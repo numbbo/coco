@@ -135,19 +135,16 @@ static coco_problem_t *coco_suite_get_problem_from_indices(coco_suite_t *suite,
 
 /**
  * @brief Saves the best indicator value for the given problem in value.
- *
- * If the best indicator values are not known for this suite, the function returns -1.
  */
-static int coco_suite_get_best_indicator_value(const coco_suite_t *suite,
-                                               const coco_problem_t *problem,
-                                               const char *indicator_name,
-                                               double *value) {
+static void coco_suite_get_best_indicator_value(const int known_optima,
+                                                const coco_problem_t *problem,
+                                                const char *indicator_name,
+                                                double *value) {
 
   if (strcmp(indicator_name, "hyp") == 0) {
-    return suite_biobj_get_best_hyp_value(suite->suite_name, problem->problem_id, value);
+    suite_biobj_get_best_hyp_value(known_optima, problem->problem_id, value);
   } else {
     coco_error("coco_suite_get_best_indicator_value(): indicator %s not supported", indicator_name);
-    return 0; /* Never reached */
   }
 }
 

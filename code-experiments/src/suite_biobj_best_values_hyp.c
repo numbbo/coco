@@ -1,7 +1,8 @@
 /**
  * @file suite_biobj_best_values_hyp.c
  *
- * @brief The best known hypervolume values for the bbob-biobj and bbob-biobj-ext suite problems.
+ * @brief The best known hypervolume values for the bi-objective suite problems (only bbob-biobj and
+ * bbob-biobj-ext problems are included at this time).
  *
  * @note For now, the hypervolume reference values for the bbob-biobj-ext problems not in the
  * bbob-biobj suite are 1.0 as well as for the new instances larger than 10 (as of 2017/01/20).

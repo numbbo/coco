@@ -518,7 +518,7 @@ static logger_biobj_indicator_t *logger_biobj_indicator(const logger_biobj_data_
   indicator->overall_value = 0;
   indicator->previous_value = 0;
 
-  coco_suite_get_best_indicator_value(problem->suite, problem, indicator->name, &(indicator->best_value));
+  coco_suite_get_best_indicator_value(suite->known_optima, problem, indicator->name, &(indicator->best_value));
 
   indicator->targets = coco_observer_targets(suite->known_optima, observer->lin_target_precision,
       observer->number_target_triggers, observer->log_target_precision);
