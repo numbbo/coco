@@ -842,10 +842,9 @@ def run_all(package_install_option = []):
     run_python(package_install_option = package_install_option)
 
 
-def test(package_install_option = []):
+def test():
     test_c()
     test_java()
-    test_python(package_install_option = package_install_option)
 
 
 def verbose(args):
@@ -989,7 +988,7 @@ def main(args):
             package_install_option = ['--home=' + arg[13:]]
     if cmd == 'build': build(package_install_option = package_install_option)
     elif cmd == 'run': run_all(package_install_option = package_install_option)
-    elif cmd == 'test': test(package_install_option = package_install_option)
+    elif cmd == 'test': test()
     elif cmd == 'build-c': build_c()
     elif cmd == 'build-java': build_java()
     elif cmd == 'build-matlab': build_matlab()
