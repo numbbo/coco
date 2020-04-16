@@ -1000,6 +1000,7 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   logger_data->number_of_integer_variables = inner_problem->number_of_integer_variables;
   logger_data->number_of_objectives = inner_problem->number_of_objectives;
   logger_data->suite_dep_instance = inner_problem->suite_dep_instance;
+  logger_data->algorithm_restarted = 0;
 
   /* Copy values from the observer that you might need even if it does not exist any more */
   logger_data->log_nondom_mode = observer_data->log_nondom_mode;
