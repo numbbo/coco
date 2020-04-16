@@ -1,14 +1,14 @@
 /**
- * @file observer_bbob_ew.c
- * @brief Implementation of the new bbob observer.
+ * @file observer_bbob.c
+ * @brief Implementation of the bbob observer.
  */
 
 #include "coco.h"
 #include "coco_utilities.c"
 
-static coco_problem_t *logger_bbob_new(coco_observer_t *observer, coco_problem_t *problem);
-static void logger_bbob_new_free(void *logger);
-static void logger_bbob_new_signal_restart(coco_problem_t *problem);
+static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *problem);
+static void logger_bbob_free(void *logger);
+static void logger_bbob_signal_restart(coco_problem_t *problem);
 
 /**
  * @brief The bbob observer data type.
@@ -22,16 +22,16 @@ typedef struct {
   size_t num_functions;          /**< @brief The number of all functions in the suite */
   size_t *last_dimensions;       /**< @brief The dimension that was last used for the function index */
   size_t *functions_array;       /**< @brief The function number that corresponds to the function index */
-} observer_bbob_new_data_t;
+} observer_bbob_data_t;
 
 /**
- * @brief  Frees the memory of the given observer_bbob_new_data_t object.
+ * @brief  Frees the memory of the given observer_bbob_data_t object.
  */
-static void observer_bbob_new_data_free(void *stuff) {
+static void observer_bbob_data_free(void *stuff) {
 
-  observer_bbob_new_data_t *data = (observer_bbob_new_data_t *) stuff;
+  observer_bbob_data_t *data = (observer_bbob_data_t *) stuff;
 
-  coco_debug("Started observer_bbob_new_data_free()");
+  coco_debug("Started observer_bbob_data_free()");
 
   if (data->prefix != NULL) {
     coco_free_memory(data->prefix);
@@ -48,25 +48,25 @@ static void observer_bbob_new_data_free(void *stuff) {
     data->functions_array = NULL;
   }
 
-  coco_debug("Ended   observer_bbob_new_data_free()");
+  coco_debug("Ended   observer_bbob_data_free()");
 }
 
 /**
- * @brief Initializes the bbob_new observer.
+ * @brief Initializes the bbob observer.
  *
  * Possible options:
  *
  * - "prefix: STRING" defines the prefix of the name of the info files. The default value is "bbobex".
  */
-static void observer_bbob_new(coco_observer_t *observer, const char *options, coco_option_keys_t **option_keys) {
+static void observer_bbob(coco_observer_t *observer, const char *options, coco_option_keys_t **option_keys) {
 
-  observer_bbob_new_data_t *observer_data;
-  /* Sets the valid keys for bbob_new observer options
+  observer_bbob_data_t *observer_data;
+  /* Sets the valid keys for bbob observer options
    * IMPORTANT: This list should be up-to-date with the code and the documentation */
   const char *known_keys[] = { "prefix" };
   *option_keys = coco_option_keys_allocate(sizeof(known_keys) / sizeof(char *), known_keys);
 
-  observer_data = (observer_bbob_new_data_t *) coco_allocate_memory(sizeof(*observer_data));
+  observer_data = (observer_bbob_data_t *) coco_allocate_memory(sizeof(*observer_data));
   observer_data->logger_is_used = 0;
   observer_data->prefix = coco_allocate_string(COCO_PATH_MAX + 1);
 
@@ -78,10 +78,10 @@ static void observer_bbob_new(coco_observer_t *observer, const char *options, co
     strcpy(observer_data->prefix, "bbobexp");
   }
 
-  observer->logger_allocate_function = logger_bbob_new;
-  observer->logger_free_function = logger_bbob_new_free;
-  observer->restart_function = logger_bbob_new_signal_restart;
-  observer->data_free_function = observer_bbob_new_data_free;
+  observer->logger_allocate_function = logger_bbob;
+  observer->logger_free_function = logger_bbob_free;
+  observer->restart_function = logger_bbob_signal_restart;
+  observer->data_free_function = observer_bbob_data_free;
   observer->data = observer_data;
 
   (void) options; /* To silence the compiler */
