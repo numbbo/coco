@@ -14,14 +14,14 @@ static void logger_bbob_signal_restart(coco_problem_t *problem);
  * @brief The bbob observer data type.
  */
 typedef struct {
-  int logger_is_used;            /**< @brief Whether the logger is already used on a problem */
-  char *prefix;                  /**< @brief Prefix in the name of the info and data files */
+  coco_problem_t *observed_problem;  /**< @brief Pointer to the observed problem (NULL if none is observed) */
+  char *prefix;                      /**< @brief Prefix in the name of the info and data files */
 
   /* last_dimensions and functions_array have the same number of values - corresponding to the same function index
    * While functions_array can contain duplicate values, only the first occurrences count */
-  size_t num_functions;          /**< @brief The number of all functions in the suite */
-  size_t *last_dimensions;       /**< @brief The dimension that was last used for the function index */
-  size_t *functions_array;       /**< @brief The function number that corresponds to the function index */
+  size_t num_functions;             /**< @brief The number of all functions in the suite */
+  size_t *last_dimensions;          /**< @brief The dimension that was last used for the function index */
+  size_t *functions_array;          /**< @brief The function number that corresponds to the function index */
 } observer_bbob_data_t;
 
 /**
@@ -48,6 +48,8 @@ static void observer_bbob_data_free(void *stuff) {
     data->functions_array = NULL;
   }
 
+  data->observed_problem = NULL;
+
   coco_debug("Ended   observer_bbob_data_free()");
 }
 
@@ -67,7 +69,7 @@ static void observer_bbob(coco_observer_t *observer, const char *options, coco_o
   *option_keys = coco_option_keys_allocate(sizeof(known_keys) / sizeof(char *), known_keys);
 
   observer_data = (observer_bbob_data_t *) coco_allocate_memory(sizeof(*observer_data));
-  observer_data->logger_is_used = 0;
+  observer_data->observed_problem = NULL;
   observer_data->prefix = coco_allocate_string(COCO_PATH_MAX + 1);
 
   observer_data->num_functions = 0;      /* Needs to be initialized when the suite is known */

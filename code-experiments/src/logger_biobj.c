@@ -940,8 +940,8 @@ static void logger_biobj_free(void *stuff) {
   observer = logger->observer;
   if ((observer != NULL) && (observer->is_active == 1)) {
     if (observer->data != NULL) {
-      /* If the observer still exists (if it does not, logger_is_used does not matter any longer) */
-      ((observer_biobj_data_t *)observer->data)->logger_is_used = 0;
+      /* If the observer still exists (if it does not, observed_problem does not matter any longer) */
+      ((observer_biobj_data_t *)observer->data)->observed_problem = NULL;
     }
   }
 
@@ -989,8 +989,8 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   observer_data = (observer_biobj_data_t *) observer->data;
   assert(observer_data != NULL);
 
-  if (observer_data->logger_is_used) {
-    coco_error("logger_biobj(): The current logger (observer) must be closed before a new one is opened");
+  if (observer_data->observed_problem != NULL) {
+    coco_error("logger_biobj(): The observed problem must be closed before a new problem can be observed");
   }
 
   logger_data = (logger_biobj_data_t *) coco_allocate_memory(sizeof(*logger_data));
@@ -1016,7 +1016,6 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
     logger_data->log_vars = 0;
   else
     logger_data->log_vars = 1;
-  observer_data->logger_is_used = 1;
 
   /* Initialize logging of nondominated solutions into the archive file */
   if ((logger_data->log_nondom_mode == LOG_NONDOM_ALL) ||
@@ -1112,5 +1111,6 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
 
   coco_debug("Ended   logger_biobj()");
 
+  observer_data->observed_problem = problem;
   return problem;
 }

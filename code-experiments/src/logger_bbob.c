@@ -553,8 +553,8 @@ static void logger_bbob_free(void *stuff) {
   observer = logger->observer;
   if ((observer != NULL) && (observer->is_active == 1)) {
     if (observer->data != NULL) {
-      /* If the observer still exists (if it does not, logger_is_used does not matter any longer) */
-      ((observer_bbob_data_t *)observer->data)->logger_is_used = 0;
+      /* If the observer still exists (if it does not, observed_problem does not matter any longer) */
+      ((observer_bbob_data_t *)observer->data)->observed_problem = NULL;
     }
   }
 
@@ -593,8 +593,8 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   assert(observer != NULL);
   observer_data = (observer_bbob_data_t *) observer->data;
   assert(observer_data != NULL);
-  if (observer_data->logger_is_used) {
-    coco_error("logger_bbob(): The current logger (observer) must be closed before a new one is opened");
+  if (observer_data->observed_problem != NULL) {
+    coco_error("logger_bbob(): The observed problem must be closed before a new problem can be observed");
   }
 
   /* These values are initialized only the first time a bbob logger is allocated */
@@ -611,8 +611,6 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
     for (i = 0; i < observer_data->num_functions; i++)
       observer_data->functions_array[i] = suite->functions[i];
   }
-
-  observer_data->logger_is_used = 1;
 
   logger_data = (logger_bbob_data_t *) coco_allocate_memory(sizeof(*logger_data));
   logger_data->observer = observer;
@@ -653,5 +651,7 @@ static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *in
   problem = coco_problem_transformed_allocate(inner_problem, logger_data, logger_bbob_free, observer->observer_name);
   problem->evaluate_function = logger_bbob_evaluate;
   problem->recommend_solution = logger_bbob_recommend;
+
+  observer_data->observed_problem = problem;
   return problem;
 }

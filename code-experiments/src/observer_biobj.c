@@ -32,13 +32,27 @@ typedef struct {
   long previous_function;                      /**< @brief Function of the previous logged problem. */
   long previous_dimension;                     /**< @brief Dimension of the previous logged problem */
 
-  int logger_is_used;                          /**< @brief Whether the logger is already used on a problem */
+  coco_problem_t *observed_problem;            /**< @brief Pointer to the observed problem (NULL if none is observed) */
 
 } observer_biobj_data_t;
 
 static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *problem);
 static void logger_biobj_free(void *logger);
 static void logger_biobj_signal_restart(coco_problem_t *problem);
+
+/**
+ * @brief  Makes sure the observer_biobj_data_t object is not pointing to any problem.
+ */
+static void observer_biobj_data_free(void *stuff) {
+
+  observer_biobj_data_t *data = (observer_biobj_data_t *) stuff;
+
+  coco_debug("Started observer_bbob_data_free()");
+
+  data->observed_problem = NULL;
+
+  coco_debug("Ended   observer_bbob_data_free()");
+}
 
 /**
  * @brief Initializes the bi-objective observer.
@@ -116,12 +130,12 @@ static void observer_biobj(coco_observer_t *observer, const char *options, coco_
     observer_data->previous_dimension = -1;
   }
 
-  observer_data->logger_is_used = 0;
+  observer_data->observed_problem = NULL;
 
   observer->logger_allocate_function = logger_biobj;
   observer->logger_free_function = logger_biobj_free;
   observer->restart_function = logger_biobj_signal_restart;
-  observer->data_free_function = NULL;
+  observer->data_free_function = observer_biobj_data_free;
   observer->data = observer_data;
 
   if ((observer_data->log_nondom_mode == LOG_NONDOM_NONE) && (!observer_data->compute_indicators)) {
