@@ -561,6 +561,16 @@ static void logger_bbob_free(void *stuff) {
   coco_debug("Ended   logger_bbob_free()");
 }
 
+/*
+ * @brief Sets the pointer to the observer to NULL
+ *
+ * Has to be taken care of here due to
+ */
+static void logger_bbob_data_nullify_observer(void *stuff) {
+  logger_bbob_data_t *logger = (logger_bbob_data_t *) stuff;
+  logger->observer = NULL;
+}
+
 /**
  * @brief Saves the information that the algorithm has restarted
  */

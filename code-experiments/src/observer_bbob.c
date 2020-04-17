@@ -9,9 +9,14 @@
 static coco_problem_t *logger_bbob(coco_observer_t *observer, coco_problem_t *problem);
 static void logger_bbob_free(void *logger);
 static void logger_bbob_signal_restart(coco_problem_t *problem);
+static void logger_bbob_data_nullify_observer(void *logger_data);
 
 /**
  * @brief The bbob observer data type.
+ *
+ * There is a cyclic reference between the bbob_logger and the bbob_observer (through the observer's
+ * observed_problem and the logger's data, which points to the observer). This is needed to be able
+ * to free both objects without problems.
  */
 typedef struct {
   coco_problem_t *observed_problem;  /**< @brief Pointer to the observed problem (NULL if none is observed) */
@@ -30,6 +35,7 @@ typedef struct {
 static void observer_bbob_data_free(void *stuff) {
 
   observer_bbob_data_t *data = (observer_bbob_data_t *) stuff;
+  coco_problem_t *problem;
 
   coco_debug("Started observer_bbob_data_free()");
 
@@ -48,7 +54,14 @@ static void observer_bbob_data_free(void *stuff) {
     data->functions_array = NULL;
   }
 
-  data->observed_problem = NULL;
+  /* Make sure that the observed problem's pointer to the observer points to NULL */
+  if (data->observed_problem != NULL) {
+    problem = (coco_problem_t *) data->observed_problem;
+    if (problem->data != NULL) {
+      logger_bbob_data_nullify_observer(coco_problem_transformed_get_data(problem));
+    }
+    data->observed_problem = NULL;
+  }
 
   coco_debug("Ended   observer_bbob_data_free()");
 }
