@@ -92,17 +92,18 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
   if (log_this_time) {
     fprintf(logger->out_file, "%lu\t", (unsigned long) logger->number_of_evaluations);
     for (i = 0; i < problem->number_of_objectives; i++)
-      fprintf(logger->out_file, "%.*e\t", logger->precision_f, y[i]);
+      fprintf(logger->out_file, "%+.*e\t", logger->precision_f, y[i]);
     if (logger->log_vars) {
       for (i = 0; i < problem->number_of_variables; i++) {
         if ((i < problem->number_of_integer_variables) && (logger->log_discrete_as_int))
-          fprintf(logger->out_file, " %d", coco_double_to_int(x[i]));
-        fprintf(logger->out_file, "%.*e\t", logger->precision_x, x[i]);
+          fprintf(logger->out_file, "%d\t", coco_double_to_int(x[i]));
+        else
+          fprintf(logger->out_file, "%+.*e\t", logger->precision_x, x[i]);
       }
     }
     if (logger->log_cons) {
       for (i = 0; i < problem->number_of_constraints; i++)
-        fprintf(logger->out_file, "%.*e\t", logger->precision_g, constraints[i]);
+        fprintf(logger->out_file, "%+.*e\t", logger->precision_g, constraints[i]);
     }
     /* Log time in seconds */
     if (logger->log_time)
