@@ -217,16 +217,18 @@ static int coco_create_directory(const char *path) {
   path_copy = coco_strdup(path);
   tmp = path_copy;
 
-  /* Remove possible leading and trailing (back)slash */
+  /* Remove possible trailing (back)slash */
   if (tmp[len - 1] == path_sep)
     tmp[len - 1] = 0;
-  if (tmp[0] == path_sep)
-    tmp++;
 
   /* Iterate through nested directories (does nothing if directories are not nested) */
   for (p = tmp; *p; p++) {
     if (*p == path_sep) {
       *p = 0;
+      if (strlen(tmp) == 0) {
+        *p = path_sep;
+        continue;
+      }
       coco_mkdir(tmp);
       *p = path_sep;
     }
