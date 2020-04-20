@@ -190,7 +190,7 @@ static void logger_bbob_output(FILE *data_file,
     fprintf(data_file, "%+10.9e", logger->best_found_value);
   }
 
-  if ((logger->number_of_variables - logger->number_of_integer_variables) < 22) {
+  if (logger->number_of_variables < 22) {
     for (i = 0; i < logger->number_of_variables; i++) {
       if ((i < logger->number_of_integer_variables) && (logger->log_discrete_as_int))
         fprintf(data_file, " %d", coco_double_to_int(x[i]));
