@@ -407,7 +407,10 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   else if (coco_is_inf(sum_constraints))
     sum_constraints = INFINITY_FOR_LOGGING;
 
-  max_value = coco_double_max(y_logged, logger->optimal_value);
+  if (problem->is_opt_known)
+    max_value = coco_double_max(y_logged, logger->optimal_value);
+  else
+    max_value = y_logged;
 
   /* Update logger state
    * At logger->number_of_evaluations == 1 the logger->best_found_value is not initialized,
