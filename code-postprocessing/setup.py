@@ -6,7 +6,7 @@
 
 Check distribution and project description:
 
-    tree build  # check that the build folders are clean
+    tree build | less  # check that the build folders are clean
     twine check dist/*
 
 Finally upload the distribution::
@@ -111,8 +111,8 @@ setup(
                           'pprldistr2009*.pickle.gz',
                           'latex_commands_for_html.html',
     # this is not supposed to copy to the subfolder, see https://docs.python.org/2/distutils/setupscript.html
-    # but it does. 
-                          'js/*', 'tth/*', 
+    # but it does.
+                          'js/*', 'tth/*',
                           '../latex-templates/*.tex',
                           '../latex-templates/*.cls',
                           '../latex-templates/*.sty',
@@ -127,7 +127,7 @@ setup(
     description = 'Benchmarking framework for all types of black-box optimization algorithms, postprocessing. ',
     long_description = open('README.md', 'r').read(),
     long_description_content_type =  'text/markdown',  # 'text/x-rst', # html doesn't exist,
-    install_requires = ['numpy>=1.7'],
+    install_requires = ['numpy>=1.7', 'matplotlib>=3.1'],
     classifiers = [
         "Intended Audience :: Science/Research",
         "Intended Audience :: Education",
