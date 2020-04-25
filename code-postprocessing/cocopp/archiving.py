@@ -1005,7 +1005,7 @@ class ListOfArchives(_td.StrList):
 
     >>> al = ar.ArchivesLocal()  # based on user home
     >>> al._walk()  # doctest:+SKIP
-    >>> al._save_walk()  # add found paths (permanently) to the ArchivesLocal class
+    >>> # al._save_walk()  # add found paths (permanently) to the ArchivesLocal class
 
     Details: duplicates are removed during `save`. Path names are stored as
     absolute path names (OS-dependent).
