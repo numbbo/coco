@@ -471,7 +471,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
                          "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
                          verticalalignment="bottom",
-                         fontsize=plt.rcParams['font.size'] * 0.85)
+                         fontsize=genericsettings.rcfont['size'] * 0.85)
         # if later the ylim[0] becomes >> 1, this might be a problem
     return res
 
@@ -524,13 +524,6 @@ def main(dsList, _valuesOfInterest, outputdir):
     :param string outputdir: output directory
     
     """
-
-    plt.rc("axes", **genericsettings.rcaxes)
-    plt.rc("xtick", **genericsettings.rctick)
-    plt.rc("ytick", **genericsettings.rctick)
-    plt.rc("font", **genericsettings.rcfont)
-    plt.rc("legend", **genericsettings.rclegend)
-    plt.rc('pdf', fonttype=42)
 
     _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
 

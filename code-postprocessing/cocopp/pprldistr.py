@@ -563,11 +563,6 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
     :param string info: string suffix for output file names.
 
     """
-    # plt.rc("axes", labelsize=20, titlesize=24)
-    # plt.rc("xtick", labelsize=20)
-    # plt.rc("ytick", labelsize=20)
-    # plt.rc("font", size=20)
-    # plt.rc("legend", fontsize=20)
 
     if not isinstance(targets, pproc.RunlengthBasedTargetValues):
         targets = pproc.TargetValues.cast(targets)
@@ -816,11 +811,6 @@ def main(dsList, isStoringXMax=False, outputdir='',
     :param string info: string suffix for output file names.
 
     """
-    # plt.rc("axes", labelsize=20, titlesize=24)
-    # plt.rc("xtick", labelsize=20)
-    # plt.rc("ytick", labelsize=20)
-    # plt.rc("font", size=20)
-    # plt.rc("legend", fontsize=20)
     testbed = testbedsettings.current_testbed
     targets = testbed.pprldistr_target_values # convenience abbreviation
 
@@ -898,5 +888,4 @@ def main(dsList, isStoringXMax=False, outputdir='',
         save_figure(filename, dsList[0].algId, subplots_adjust=dict(left=0.0, bottom=0.15, right=1, top=0.99))
 
         plt.close(fig)
-        # plt.rcdefaults()
 

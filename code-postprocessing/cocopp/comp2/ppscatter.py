@@ -141,15 +141,10 @@ def beautify():
 def main(dsList0, dsList1, outputdir, settings):
     """Generate a scatter plot figure.
     
-    TODO: """
+    """
 
     markers = genericsettings.dim_related_markers
     colors = genericsettings.dim_related_colors
-    #plt.rc("axes", labelsize=24, titlesize=24)
-    #plt.rc("xtick", labelsize=20)
-    #plt.rc("ytick", labelsize=20)
-    #plt.rc("font", size=20)
-    #plt.rc("legend", fontsize=20)
 
     dictFunc0 = dsList0.dictByFunc()
     dictFunc1 = dsList1.dictByFunc()
@@ -394,5 +389,3 @@ def main(dsList0, dsList1, outputdir, settings):
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
         save_figure(filename, dsList0[0].algId, bbox_inches='tight')
         plt.close()
-
-    #plt.rcdefaults()

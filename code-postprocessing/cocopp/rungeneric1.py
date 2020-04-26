@@ -31,8 +31,6 @@ from .toolsdivers import print_done, prepend_to_file, strip_pathname1, str_to_la
 from . import ppconverrorbars
 from .compall import pprldmany, ppfigs
 
-import matplotlib.pyplot as plt
-
 __all__ = ['main']
 
 
@@ -149,24 +147,9 @@ def main(alg, outputdir, argv=None):
     if genericsettings.isFig:
         print("Scaling figures...")
         # ERT/dim vs dim.
-        #plt.rc("axes", **inset.rcaxeslarger)
-        #plt.rc("xtick", **inset.rcticklarger)
-        #plt.rc("ytick", **inset.rcticklarger)
-        #plt.rc("font", **inset.rcfontlarger)
-        #plt.rc("legend", **inset.rclegendlarger)
-        #plt.rc('pdf', fonttype = 42)
-
         ppfigdim.main(dsList, values_of_interest, algoutputdir)
 
-        plt.rcdefaults()
         print_done()
-
-    plt.rc("axes", **genericsettings.rcaxes)
-    plt.rc("xtick", **genericsettings.rctick)
-    plt.rc("ytick", **genericsettings.rctick)
-    plt.rc("font", **genericsettings.rcfont)
-    plt.rc("legend", **genericsettings.rclegend)
-    plt.rc('pdf', fonttype = 42)
 
     if genericsettings.isConv:
         print("Generating convergence plots...")
@@ -302,7 +285,5 @@ def main(alg, outputdir, argv=None):
                      (str_to_latex(strip_pathname1(alg[0])) if len(alg) == 1 else str_to_latex(dsList[0].algId)) + '{}}'])
     print("Output data written to folder %s" %
           os.path.join(os.getcwd(), algoutputdir))
-
-    plt.rcdefaults()
 
     return dsList.dictByAlg()
