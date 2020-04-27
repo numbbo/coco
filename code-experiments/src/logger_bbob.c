@@ -42,6 +42,11 @@
 #define LOGGER_BBOB_WEIGHT_CONSTRAINTS 1e0
 
 /**
+ * Penalty used when logging infeasible solutions of problems with unknown optimal value
+ */
+#define LOGGER_BBOB_INFEASIBLE_PENALTY 1e10
+
+/**
  * @brief The bbob logger data type.
  */
 typedef struct {
@@ -111,7 +116,7 @@ static const char *logger_bbob_data_format = "bbob-new2";
 static const char *logger_bbob_header = "%% "
     "f evaluations | "
     "g evaluations | "
-    "best noise-free fitness - Fopt (%13.12e) + sum g_i+ | "
+    "best noise-free fitness - %s (%13.12e) + sum g_i+ | "
     "measured fitness | "
     "best measured fitness or single-digit g-values | "
     "x1 | "
@@ -300,12 +305,15 @@ static void logger_bbob_open_info_file(logger_bbob_data_t *logger,
 /**
  * @brief Generates the files and folders needed by the logger if they don't already exist
  */
-static void logger_bbob_initialize(logger_bbob_data_t *logger) {
+static void logger_bbob_initialize(logger_bbob_data_t *logger, int is_opt_known) {
 
   char relative_path[COCO_PATH_MAX + 2] = { 0 }; /* Relative path to the .dat file from where the .info file is */
   char folder_path[COCO_PATH_MAX + 2] = { 0 };
   char *function_string;
   char *dimension_string;
+  char *str_opt = "Fopt";
+  char *str_ref = "Fref";
+  char *str_pointer = str_opt;
 
   coco_debug("Started logger_bbob_initialize()");
 
@@ -330,15 +338,17 @@ static void logger_bbob_initialize(logger_bbob_data_t *logger) {
       relative_path, logger->suite_name);
   fprintf(logger->info_file, ", %lu", (unsigned long) logger->instance);
 
+  if (is_opt_known == 0)
+    str_pointer = str_ref;
   /* data files */
   logger_bbob_open_data_file(&(logger->dat_file), logger->observer->result_folder, relative_path, ".dat");
-  fprintf(logger->dat_file, logger_bbob_header, logger->optimal_value);
+  fprintf(logger->dat_file, logger_bbob_header, str_pointer, logger->optimal_value);
   logger_bbob_open_data_file(&(logger->tdat_file), logger->observer->result_folder, relative_path, ".tdat");
-  fprintf(logger->tdat_file, logger_bbob_header, logger->optimal_value);
+  fprintf(logger->tdat_file, logger_bbob_header, str_pointer, logger->optimal_value);
   logger_bbob_open_data_file(&(logger->rdat_file), logger->observer->result_folder, relative_path, ".rdat");
-  fprintf(logger->rdat_file, logger_bbob_header, logger->optimal_value);
+  fprintf(logger->rdat_file, logger_bbob_header, str_pointer, logger->optimal_value);
   logger_bbob_open_data_file(&(logger->mdat_file), logger->observer->result_folder, relative_path, ".mdat");
-  fprintf(logger->mdat_file, logger_bbob_header, logger->optimal_value);
+  fprintf(logger->mdat_file, logger_bbob_header, str_pointer, logger->optimal_value);
 
   logger->is_initialized = 1;
   coco_free_memory(dimension_string);
@@ -362,7 +372,7 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   coco_debug("Started logger_bbob_evaluate()");
 
   if (!logger->is_initialized) {
-    logger_bbob_initialize(logger);
+    logger_bbob_initialize(logger, problem->is_opt_known);
   }
   if ((coco_log_level >= COCO_DEBUG) && logger->num_func_evaluations == 0) {
     coco_debug("%4lu: ", (unsigned long) inner_problem->suite_dep_index);
@@ -409,8 +419,14 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
 
   if (problem->is_opt_known)
     max_value = coco_double_max(y_logged, logger->optimal_value);
-  else
-    max_value = y_logged;
+  else {
+    /* Problems with unknown optimal values */
+    if (sum_constraints > 0) {
+      max_value = LOGGER_BBOB_INFEASIBLE_PENALTY; /* Infeasible solution */
+    }
+    else
+      max_value = y_logged;                       /* Feasible solution */
+  }
 
   /* Update logger state
    * At logger->number_of_evaluations == 1 the logger->best_found_value is not initialized,
@@ -461,7 +477,7 @@ static void logger_bbob_recommend(coco_problem_t *problem, const double *x) {
   const int is_feasible = problem->number_of_constraints <= 0 || coco_is_feasible(inner_problem, x, NULL);
 
   if (!logger->is_initialized) {
-    logger_bbob_initialize(logger);
+    logger_bbob_initialize(logger, problem->is_opt_known);
   }
 
   /* Fulfill contract of a COCO evaluate function, but do not increase the evaluation counters */
