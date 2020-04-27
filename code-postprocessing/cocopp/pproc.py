@@ -2747,23 +2747,22 @@ def processInputArgs(args, process_background_algorithms=False):
 
 
 def process_arguments(args, current_hash, dictAlg, dsList, sortedAlgs):
-    for i in args:
-        i = i.strip()
-        if i == '':  # might cure an lf+cr problem when using cywin under Windows
+    for alg in args:
+        alg = alg.strip().rstrip(os.path.sep)  # lstrip would not be the same folder anymore
+        if alg == '':  # might cure an lf+cr problem when using cywin under Windows
             continue
-        if findfiles.is_recognized_repository_filetype(i):
-            filelist = findfiles.main(i)
+        if findfiles.is_recognized_repository_filetype(alg):
+            filelist = findfiles.main(alg)
             # Do here any sorting or filtering necessary.
             # filelist = list(i for i in filelist if i.count('ppdata_f005'))
             tmpDsList = DataSetList(filelist)
             for ds in tmpDsList:
-                ds._data_folder = i
-            # Nota: findfiles will find all info AND pickle files in folder i.
+                ds._data_folder = alg
+            # Nota: findfiles will find all info AND pickle files in folder alg.
             # No problem should arise if the info and pickle files have
             # redundant information. Only, the process could be more efficient
             # if pickle files were in a whole other location.
 
-            alg = i.rstrip(os.path.sep)
             if current_hash is not None and current_hash != tmpDsList.get_reference_values_hash():
                 warnings.warn(" Reference values for the algorithm '%s' are different!" % alg)
 
@@ -2779,13 +2778,13 @@ def process_arguments(args, current_hash, dictAlg, dsList, sortedAlgs):
             if all(i != alg for i in sortedAlgs):
                 sortedAlgs.append(alg)
                 dictAlg[alg] = tmpDsList
-        elif os.path.isfile(i):
+        elif os.path.isfile(alg):
             # TODO: a zipped tar file should be unzipped here, see findfiles.py
-            txt = 'The post-processing cannot operate on the single file ' + str(i)
+            txt = 'The post-processing cannot operate on the single file ' + str(alg)
             warnings.warn(txt)
             continue
         else:
-            txt = "Input folder '" + str(i) + "' could not be found."
+            txt = "Input folder '" + str(alg) + "' could not be found."
             raise Exception(txt)
 
 
