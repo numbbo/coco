@@ -2,7 +2,12 @@
  * @file logger_biobj.c
  * @brief Implementation of the bbob-biobj logger.
  *
- * Logs the values of the implemented indicators and archives nondominated solutions.
+ * Logs the performance of an optimizer on bi-objective problems with or without constraints and with or
+ * without knowing their true Pareto front (and set). Uses the hypervolume indicator, but supports
+ * inclusion of other indicators. Archives nondominated solutions.
+ *
+ * In constrained problems only the feasible solutions are logged (except for the first one).
+ *
  * Produces these files:
  * - The .info files contain high-level information on the performed experiment.
  * - The .dat files contain function evaluations, indicator values and target hits for every performance
@@ -152,6 +157,7 @@ typedef struct {
 typedef struct {
   double *x;                 /**< @brief The decision values of this solution. */
   double *y;                 /**< @brief The values of objectives of this solution. */
+  int is_feasible;           /**< @brief Whether the solution is feasible. */
   double *normalized_y;      /**< @brief The values of normalized objectives of this solution. */
   size_t evaluation_number;  /**< @brief The evaluation number of when the solution was created. */
 
@@ -167,11 +173,14 @@ typedef struct {
 static logger_biobj_avl_item_t* logger_biobj_node_create(const coco_problem_t *problem,
                                                          const double *x,
                                                          const double *y,
+                                                         const double *constraints,
                                                          const size_t evaluation_number,
                                                          const size_t dim,
-                                                         const size_t num_obj) {
+                                                         const size_t num_obj,
+                                                         const size_t num_const) {
 
   size_t i;
+  double sum_constraints = 0;
 
   /* Allocate memory to hold the data structure logger_biobj_node_t */
   logger_biobj_avl_item_t *item = (logger_biobj_avl_item_t*) coco_allocate_memory(sizeof(*item));
@@ -193,6 +202,17 @@ static logger_biobj_avl_item_t* logger_biobj_node_create(const coco_problem_t *p
   item->evaluation_number = evaluation_number;
   for (i = 0; i < LOGGER_BIOBJ_NUMBER_OF_INDICATORS; i++)
     item->indicator_contribution[i] = 0;
+
+  /* Determine whether the solution is feasible */
+  item->is_feasible = 1;
+  if (num_const > 0) {
+    assert(constraints != NULL);
+    for (i = 0; i < num_const; i++) {
+      if (constraints[i] > 0)
+        sum_constraints += constraints[i];
+    }
+    item->is_feasible = (sum_constraints > 0);
+  }
 
   return item;
 }
@@ -304,6 +324,10 @@ static int logger_biobj_tree_update(logger_biobj_data_t *logger,
   int dominance;
   size_t i;
   int previous_unavailable = 0;
+
+  /* If the node contains an infeasible solution, exit immediately (do not update the tree) */
+  if (node_item->is_feasible == 0)
+    return 0;
 
   /* Find the first point that is not worse than the new point (NULL if such point does not exist) */
   node = avl_item_search_right(logger->archive_tree, node_item, NULL);
@@ -698,6 +722,11 @@ static void logger_biobj_output(logger_biobj_data_t *logger,
         /* Check whether a target was hit */
         indicator->target_hit = coco_observer_targets_trigger(indicator->targets, indicator->overall_value);
       }
+      else if ((logger->number_of_evaluations == 1) && (node_item->is_feasible == 0)) {
+        /* Special case if the solution is infeasible and this is the first evaluation */
+        indicator->overall_value = INFINITY_FOR_LOGGING;
+        indicator->target_hit = coco_observer_targets_trigger(indicator->targets, indicator->overall_value);
+      }
 
       /* Log to the dat file if a performance target was hit */
       if (indicator->target_hit) {
@@ -751,16 +780,23 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
   logger_biobj_avl_item_t *node_item;
   int update_performed;
   coco_problem_t *inner_problem;
+  double *constraints = NULL;
 
   logger = (logger_biobj_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
-  /* Evaluate function */
+  /* Evaluate the objectives */
   coco_evaluate_function(inner_problem, x, y);
   logger->number_of_evaluations++;
 
-  node_item = logger_biobj_node_create(inner_problem, x, y, logger->number_of_evaluations, logger->number_of_variables,
-      logger->number_of_objectives);
+  /* Evaluate the constraints */
+  if (problem->number_of_constraints > 0) {
+    constraints = coco_allocate_vector(problem->number_of_constraints);
+    inner_problem->evaluate_constraint(inner_problem, x, constraints);
+  }
+
+  node_item = logger_biobj_node_create(inner_problem, x, y, constraints, logger->number_of_evaluations,
+      logger->number_of_variables, logger->number_of_objectives, problem->number_of_constraints);
 
   /* Update the archive with the new solution, if it is not dominated by or equal to existing solutions in
    * the archive */
@@ -780,6 +816,10 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
 
   /* Output according to observer options */
   logger_biobj_output(logger, update_performed, node_item);
+
+  /* Free allocated memory */
+  if (problem->number_of_constraints > 0)
+    coco_free_memory(constraints);
 }
 
 /**
@@ -792,18 +832,27 @@ static void logger_biobj_recommend(coco_problem_t *problem, const double *x) {
   coco_problem_t *inner_problem;
   size_t i, j;
   double *y = NULL;
+  double *constraints = NULL;
 
   logger = (logger_biobj_data_t *) coco_problem_transformed_get_data(problem);
   inner_problem = coco_problem_transformed_get_inner_problem(problem);
 
-  /* Evaluate function */
-  y = coco_allocate_vector(problem->number_of_objectives);
+  /* Evaluate the objectives */
   coco_evaluate_function(inner_problem, x, y);
+  logger->number_of_evaluations++;
+
+  /* Evaluate the constraints */
+  if (problem->number_of_constraints > 0) {
+    constraints = coco_allocate_vector(problem->number_of_constraints);
+    inner_problem->evaluate_constraint(inner_problem, x, constraints);
+  }
 
   /* Log to the mdat file */
   fprintf(logger->mdat_file, "%lu\t", (unsigned long) logger->number_of_evaluations);
   for (j = 0; j < problem->number_of_objectives; j++)
     fprintf(logger->mdat_file, "%.*e\t", logger->precision_f, y[j]);
+  for (j = 0; j < problem->number_of_constraints; j++)
+    fprintf(logger->mdat_file, "%.*e\t", logger->precision_f, constraints[j]);
   if (logger->log_vars) {
     for (i = 0; i < logger->number_of_variables; i++)
       if ((i < logger->number_of_integer_variables) && (logger->log_discrete_as_int))
@@ -813,7 +862,10 @@ static void logger_biobj_recommend(coco_problem_t *problem, const double *x) {
   }
   fprintf(logger->mdat_file, "\n");
 
+  /* Free allocated memory */
   coco_free_memory(y);
+  if (problem->number_of_constraints > 0)
+    coco_free_memory(constraints);
 }
 
 /**
@@ -822,6 +874,8 @@ static void logger_biobj_recommend(coco_problem_t *problem, const double *x) {
  *
  * @note Vector y must point to a correctly sized allocated memory region and the given evaluation number must
  * be larger than the existing one.
+ *
+ * Constraints are not supported.
  *
  * @param problem The given COCO problem.
  * @param evaluation The number of evaluations.
@@ -853,8 +907,8 @@ int coco_logger_biobj_feed_solution(coco_problem_t *problem, const size_t evalua
   x = coco_allocate_vector(problem->number_of_variables);
   for (i = 0; i < problem->number_of_variables; i++)
     x[i] = 0;
-  node_item = logger_biobj_node_create(inner_problem, x, y, logger->number_of_evaluations,
-      logger->number_of_variables, logger->number_of_objectives);
+  node_item = logger_biobj_node_create(inner_problem, x, y, NULL, logger->number_of_evaluations,
+      logger->number_of_variables, logger->number_of_objectives, 0);
   coco_free_memory(x);
 
   /* Update the archive */
@@ -1108,16 +1162,15 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   coco_free_memory(path_name);
 
   /* Output header information */
-  fprintf(logger_data->mdat_file, "%% instance = %lu, name = %s\n",
-      (unsigned long) inner_problem->suite_dep_instance, inner_problem->problem_name);
-  if (logger_data->log_vars) {
-    fprintf(logger_data->mdat_file, "%% function evaluation | %lu objectives | %lu variables\n",
-        (unsigned long) inner_problem->number_of_objectives,
-        (unsigned long) inner_problem->number_of_variables);
-  } else {
-    fprintf(logger_data->mdat_file, "%% function evaluation | %lu objectives \n",
-        (unsigned long) inner_problem->number_of_objectives);
-  }
+  fprintf(logger_data->mdat_file, "%% instance = %lu, name = %s\n%% function evaluation | %lu objectives",
+      (unsigned long) inner_problem->suite_dep_instance,
+      inner_problem->problem_name,
+      (unsigned long) inner_problem->number_of_objectives);
+  if (inner_problem->number_of_constraints > 0)
+    fprintf(logger_data->mdat_file, " | %lu constraints", (unsigned long) inner_problem->number_of_constraints);
+  if (logger_data->log_vars)
+    fprintf(logger_data->mdat_file, " | %lu variables", (unsigned long) inner_problem->number_of_variables);
+  fprintf(logger_data->mdat_file, "\n");
 
   coco_debug("Ended   logger_biobj()");
 
