@@ -56,6 +56,8 @@ try: from scipy.optimize import fmin_slsqp  # "pip install scipy" installs scipy
 except: pass
 try: range = xrange  # let range always be an iterator
 except NameError: pass
+try: time.process_time = time.clock
+except: pass
 
 from cocoex import default_observers  # see cocoex.__init__.py
 from cocoex.utilities import ObserverOptions, ShortInfo, ascetime, print_flush
