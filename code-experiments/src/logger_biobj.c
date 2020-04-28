@@ -839,7 +839,6 @@ static void logger_biobj_recommend(coco_problem_t *problem, const double *x) {
 
   /* Evaluate the objectives */
   coco_evaluate_function(inner_problem, x, y);
-  logger->number_of_evaluations++;
 
   /* Evaluate the constraints */
   if (problem->number_of_constraints > 0) {
