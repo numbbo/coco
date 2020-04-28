@@ -58,7 +58,7 @@ def regression_test_a_suite(suite_name, filename):
     if verbose:
         print("using file %s with %d test cases " % (filename, len(xfc_dict)), end="")
         sys.stdout.flush()
-        t0 = time.process_time)
+        t0 = time.process_time()
     suite = cocoex.Suite(suite_name, "year: 0000", "") # choose "default" year for test
     failed_test_counter = 0
     for key in xfc_dict:
