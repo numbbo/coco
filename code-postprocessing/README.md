@@ -1,4 +1,4 @@
-# `cocopp`: COmparing Continuous Optimisers (COCO) post-processing
+# COmparing Continuous Optimisers (COCO) post-processing
 
 The ([`cocopp`](https://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html)) package takes data generated with the [COCO framework](https://github.com/numbbo/coco) to compare continuous opitmizers and produces output figures and tables in <tt class="rst-docutils literal">html</tt> format and for including into LaTeX-documents.
 
