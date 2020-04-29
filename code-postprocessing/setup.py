@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 """setup cocopp
 
+Prepare distribution::
+
+    outcomment (activate) install requirements below
     python setup.py check
     python setup.py sdist bdist_wheel --universal > dist_call_output.txt ; less dist_call_output.txt  # bdist_wininst
 
-Check distribution and project description:
+Check distribution and project description::
 
     tree build | less  # check that the build folders are clean
     twine check dist/*
@@ -13,7 +16,7 @@ Finally upload the distribution::
 
     twine upload dist/*2.x.x*  # to not upload outdated stuff
 
-and tag the version
+and tag the version::
 
     git tag -a cocopp-2.3.x.xx -m "cocopp-2.3.x.xx uploaded to PyPI"
 
@@ -98,6 +101,11 @@ def git_version_print(*args, **kwargs):
     print("git_version:", res)
     return res
 
+try:
+    long_description = open('README.md', 'r').read()
+except:
+    long_description = "no long description found"
+
 setup(
     name = _name,
     version = git_version_print(pep440=True),
@@ -125,9 +133,10 @@ setup(
     maintainer_email = 'dimo.brockhoff@inria.fr',
     # author = ['Nikolaus Hansen', 'Raymond Ros', 'Dejan Tusar'],
     description = 'Benchmarking framework for all types of black-box optimization algorithms, postprocessing. ',
-    long_description = open('README.md', 'r').read(),
+    long_description = long_description,
     long_description_content_type =  'text/markdown',  # 'text/x-rst', # html doesn't exist,
-    install_requires = ['numpy>=1.7', 'matplotlib>=3.1'],
+    # THIS BREAKS TESTS BUT SHOULD BE OUTCOMMENTED TO MAKE A DISTRIBUTION:
+    # install_requires = ['numpy>=1.7', 'matplotlib>=3.1'],
     classifiers = [
         "Intended Audience :: Science/Research",
         "Intended Audience :: Education",
@@ -143,6 +152,6 @@ setup(
         "Environment :: Console",
         "Framework :: IPython",
         "Framework :: Jupyter",
-        "License :: OSI Approved :: BSD License",
+        "License :: OSI Approved :: BSD License"
     ]
 )

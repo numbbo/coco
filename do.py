@@ -270,9 +270,10 @@ To fix an access rights issue, you may try the following:
 def install_postprocessing(package_install_option = []):
     ''' Installs the COCO postprocessing as python module. '''
     global RELEASE
-    expand_file(join('code-postprocessing', 'setup.py.in'),
-                join('code-postprocessing', 'setup.py'),
-                {'COCO_VERSION': git_version(pep440=True)})
+# code-postprocessing/setup.py now takes care of itself actively
+#    expand_file(join('code-postprocessing', 'setup.py.in'),
+#                join('code-postprocessing', 'setup.py'),  # now in in setup.py
+#                {'COCO_VERSION': git_version(pep440=True)})
     # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/cocopp/latex-templates')
     python('code-postprocessing', ['setup.py', 'install']
            + package_install_option, verbose=_verbosity,
