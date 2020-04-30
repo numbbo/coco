@@ -2828,12 +2828,21 @@ def dictAlgByDim(dictAlg):
     for d in dims:
         for alg in dictAlg:
             tmp = DataSetList()
-            try:
+            if d in tmpdictAlg[alg]:
                 tmp = tmpdictAlg[alg][d]
-            except KeyError:
-                txt = ('No data for algorithm %s in %d-D.'
-                       % (alg, d))
-                warnings.warn(txt)
+            elif testbedsettings.current_testbed:
+                try:
+                    if d in testbedsettings.current_testbed.dimensions_to_display[:-1]:
+                        txt = ('No data for algorithm %s in %d-D.'
+                            % (alg, d))
+                        warnings.warn(txt)
+                except: pass
+            # try:
+            #     tmp = tmpdictAlg[alg][d]
+            # except KeyError:
+            #     txt = ('No data for algorithm %s in %d-D.'
+            #            % (alg, d))
+            #     warnings.warn(txt)
 
             if alg in res.setdefault(d, {}):
                 txt = ('Duplicate data for algorithm %s in %d-D.'
