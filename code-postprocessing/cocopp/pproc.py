@@ -1095,7 +1095,7 @@ class DataSet(object):
         elif len(self.instancenumbers) < expectedNumberOfInstances:
             is_consistent = False
             warnings.warn('  less than ' + str(expectedNumberOfInstances) +
-                                ' instances in ' + 
+                                ' instances in the set ' + 
                                 str(self.instancenumbers) + 
                                 ' (f' + str(self.funcId) + ', ' +
                                 str(self.dim) + 'D)')
@@ -2836,7 +2836,7 @@ def dictAlgByDim(dictAlg):
                         txt = ('No data for algorithm %s in %d-D.'
                             % (alg, d))
                         warnings.warn(txt)
-                except: pass
+                except AttributeError: pass
             # try:
             #     tmp = tmpdictAlg[alg][d]
             # except KeyError:
@@ -2913,9 +2913,10 @@ def dictAlgByFun(dictAlg):
             try:
                 tmp = tmpdictAlg[alg][f]
             except KeyError:
-                txt = ('No data for algorithm %s on function %d.'
-                       % (alg, f)) # This message is misleading.
-                warnings.warn(txt)
+                if genericsettings.warning_level >= 10:
+                    txt = ('No data for algorithm %s on function %d.'
+                        % (alg, f)) # This message is misleading.
+                    warnings.warn(txt)
 
             if alg in res.setdefault(f, {}):
                 txt = ('Duplicate data for algorithm %s on function %d-D.'

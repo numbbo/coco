@@ -18,6 +18,7 @@ interactive_mode = True  # open browser with results, grayscale setting (depreca
 
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000  # [0, 1000] lower resolution, no eps, saves 30% time
+warning_level = 1  # higher levels show more warnings, experimental, will not work on all warnings
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = False  # may be overwritten by expensive setting
 figure_file_formats = ['svg', 'pdf']

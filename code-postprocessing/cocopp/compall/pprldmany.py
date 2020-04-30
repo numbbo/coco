@@ -837,7 +837,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             pass
     # issue a warning if number of instances is inconsistant, but always
     # display only the present number of instances, i.e. remove copies
-    if len(set(num_of_instances)) > 1:
+    if len(set(num_of_instances)) > 1 and genericsettings.warning_level >= 5:
         warnings.warn('Number of instances inconsistent over all algorithms: %s instances found.' % str(num_of_instances))
     num_of_instances = set(num_of_instances)
     for n in num_of_instances:
