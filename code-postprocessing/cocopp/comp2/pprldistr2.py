@@ -16,9 +16,9 @@ from six import advance_iterator
 
 #__all__ = []
 
-rldStyles = ({'color': 'k', 'ls': '-'},
+rldStyles = ({'color': 'k', 'linestyle': '-'},
              {'color': 'c'},
-             {'color': 'm', 'ls': '-'},
+             {'color': 'm', 'linestyle': '-'},
              {'color': 'r'},
              {'color': 'b'},
              {'color': 'g'},

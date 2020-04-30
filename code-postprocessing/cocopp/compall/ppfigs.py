@@ -314,7 +314,7 @@ def plotLegend(handles, maxval=None):
                     legx = 10**(.85 * numpy.log10(xmax/xmin)) * xmin
                     leglabx = 10**(.87 * numpy.log10(xmax/xmin)) * xmin
                     tmp = {}
-                    for attr in ('lw', 'ls', 'marker',
+                    for attr in ('lw', 'linestyle', 'marker',
                                  'markeredgewidth', 'markerfacecolor',
                                  'markeredgecolor', 'markersize', 'zorder'):
                         tmp[attr] = plt.getp(h, attr)

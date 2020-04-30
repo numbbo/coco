@@ -393,7 +393,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir=''):
                      markerfacecolor=styles[i]['color'], markersize=4*linewidth)
 
             kwargs = styles[i].copy()
-            kwargs['ls'] = ls
+            kwargs['linestyle'] = ls
             tmp = plotUnifLogXMarkers(dataofinterest[idx, 0], ydata, nbperdecade=1, logscale=True, **kwargs)
             plt.setp(tmp, markersize=3*linewidth)
 
