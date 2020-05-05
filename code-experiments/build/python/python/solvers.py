@@ -17,7 +17,9 @@ def random_search(fun, lbounds, ubounds, budget):
         X = lbounds + (ubounds - lbounds) * np.random.rand(chunk, dim)
         if fun.number_of_constraints > 0:
             C = [fun.constraint(x) for x in X]  # call constraints
-        F = [fun(x) for x in X]
+            F = [fun(x) for i, x in enumerate(X) if np.all(C[i] <= 0)]
+        else:
+            F = [fun(x) for x in X]
         if fun.number_of_objectives == 1:
             index = np.argmin(F) if len(F) else None
             if index is not None and (f_min is None or F[index] < f_min):
