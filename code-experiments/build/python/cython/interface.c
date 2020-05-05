@@ -6336,7 +6336,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_13problem_names___get__(stru
  *         return list(self._names)
  *     @property
  *     def dimensions(self):             # <<<<<<<<<<<<<<
- *         """list of problem dimensions occuring at least once in this `Suite`"""
+ *         """list of problem dimensions occurring at least once in this `Suite`"""
  *         return sorted(set(self._dimensions))
  */
 
@@ -6364,7 +6364,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_10dimensions___get__(struct 
 
   /* "cython/interface.pyx":377
  *     def dimensions(self):
- *         """list of problem dimensions occuring at least once in this `Suite`"""
+ *         """list of problem dimensions occurring at least once in this `Suite`"""
  *         return sorted(set(self._dimensions))             # <<<<<<<<<<<<<<
  *     @property
  *     def number_of_objectives(self):
@@ -6386,7 +6386,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_10dimensions___get__(struct 
  *         return list(self._names)
  *     @property
  *     def dimensions(self):             # <<<<<<<<<<<<<<
- *         """list of problem dimensions occuring at least once in this `Suite`"""
+ *         """list of problem dimensions occurring at least once in this `Suite`"""
  *         return sorted(set(self._dimensions))
  */
 
@@ -6407,7 +6407,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_10dimensions___get__(struct 
  *         return sorted(set(self._dimensions))
  *     @property
  *     def number_of_objectives(self):             # <<<<<<<<<<<<<<
- *         """list of number of objectives occuring in this `Suite`"""
+ *         """list of number of objectives occurring in this `Suite`"""
  *         return sorted(set(self._number_of_objectives))
  */
 
@@ -6435,7 +6435,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_20number_of_objectives___get
 
   /* "cython/interface.pyx":381
  *     def number_of_objectives(self):
- *         """list of number of objectives occuring in this `Suite`"""
+ *         """list of number of objectives occurring in this `Suite`"""
  *         return sorted(set(self._number_of_objectives))             # <<<<<<<<<<<<<<
  *     @property
  *     def indices(self):
@@ -6457,7 +6457,7 @@ static PyObject *__pyx_pf_6cocoex_9interface_5Suite_20number_of_objectives___get
  *         return sorted(set(self._dimensions))
  *     @property
  *     def number_of_objectives(self):             # <<<<<<<<<<<<<<
- *         """list of number of objectives occuring in this `Suite`"""
+ *         """list of number of objectives occurring in this `Suite`"""
  *         return sorted(set(self._number_of_objectives))
  */
 
@@ -18558,8 +18558,8 @@ static struct PyGetSetDef __pyx_getsets_6cocoex_9interface_Suite[] = {
   {(char *)"current_problem", __pyx_getprop_6cocoex_9interface_5Suite_current_problem, 0, (char *)"current \"open/active\" problem to be benchmarked", 0},
   {(char *)"current_index", __pyx_getprop_6cocoex_9interface_5Suite_current_index, 0, (char *)"index in the enumerator of all problems in this suite.\n\n        Details: To get the index in the underlying C implementation, which\n        usually matches `current_index` one-to-one, use::\n\n        >>> import cocoex as ex\n        >>> suite = ex.Suite(\"bbob\", \"\", \"\")\n        >>> suite.current_index is None\n        True\n        >>> suite.next_problem().id[-17:].lower()\n        'bbob_f001_i01_d02'\n        >>> suite.current_index, suite.indices[suite.current_index]\n        (0, 0)\n\n        ", 0},
   {(char *)"problem_names", __pyx_getprop_6cocoex_9interface_5Suite_problem_names, 0, (char *)"list of problem names in this `Suite`, see also `ids`", 0},
-  {(char *)"dimensions", __pyx_getprop_6cocoex_9interface_5Suite_dimensions, 0, (char *)"list of problem dimensions occuring at least once in this `Suite`", 0},
-  {(char *)"number_of_objectives", __pyx_getprop_6cocoex_9interface_5Suite_number_of_objectives, 0, (char *)"list of number of objectives occuring in this `Suite`", 0},
+  {(char *)"dimensions", __pyx_getprop_6cocoex_9interface_5Suite_dimensions, 0, (char *)"list of problem dimensions occurring at least once in this `Suite`", 0},
+  {(char *)"number_of_objectives", __pyx_getprop_6cocoex_9interface_5Suite_number_of_objectives, 0, (char *)"list of number of objectives occurring in this `Suite`", 0},
   {(char *)"indices", __pyx_getprop_6cocoex_9interface_5Suite_indices, 0, (char *)"list of all problem indices, deprecated.\n\n        These values are (only) used to call the underlying C structures.\n        Indices used in the Python interface run between 0 and `len(self)`.\n        ", 0},
   {(char *)"name", __pyx_getprop_6cocoex_9interface_5Suite_name, 0, (char *)"see __init__.py", 0},
   {(char *)"instance", __pyx_getprop_6cocoex_9interface_5Suite_instance, 0, (char *)"instance of this suite as used to instantiate the suite via\n        `Suite(name, instance, ...)`", 0},
