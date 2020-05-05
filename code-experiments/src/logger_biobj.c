@@ -212,7 +212,7 @@ static logger_biobj_avl_item_t* logger_biobj_node_create(const coco_problem_t *p
       if (constraints[i] > 0)
         sum_constraints += constraints[i];
     }
-    item->is_feasible = (sum_constraints > 0);
+    item->is_feasible = !(sum_constraints > 0);
   }
 
   return item;
