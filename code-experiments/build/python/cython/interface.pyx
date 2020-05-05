@@ -373,11 +373,11 @@ also report back a missing name to https://github.com/numbbo/coco/issues
         return list(self._names)
     @property
     def dimensions(self):
-        """list of problem dimensions occuring at least once in this `Suite`"""
+        """list of problem dimensions occurring at least once in this `Suite`"""
         return sorted(set(self._dimensions))
     @property
     def number_of_objectives(self):
-        """list of number of objectives occuring in this `Suite`"""
+        """list of number of objectives occurring in this `Suite`"""
         return sorted(set(self._number_of_objectives))
     @property
     def indices(self):
