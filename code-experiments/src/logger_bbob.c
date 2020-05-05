@@ -381,9 +381,8 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
 
   /* Fulfill contract of a COCO evaluate function */
   coco_evaluate_function(inner_problem, x, y);
-
-  logger->num_cons_evaluations = coco_problem_get_evaluations_constraints(problem);
   logger->num_func_evaluations++;
+
   logger->last_logged_evaluation = 0;
   logger->current_value = y[0];
 
@@ -402,8 +401,9 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
   /* Evaluate the constraints */
   if (problem->number_of_constraints > 0) {
     constraints = coco_allocate_vector(problem->number_of_constraints);
-    inner_problem->evaluate_constraint(inner_problem, x, constraints);
+    inner_problem->evaluate_constraint(inner_problem, x, constraints, 0);
   }
+  logger->num_cons_evaluations = problem->evaluations_constraints;
 
   /* Compute the sum of positive constraint values */
   sum_constraints = 0;
@@ -462,7 +462,6 @@ static void logger_bbob_evaluate(coco_problem_t *problem, const double *x, doubl
     coco_free_memory(constraints);
 
   coco_debug("Ended   logger_bbob_evaluate()");
-
 }
 
 /**
@@ -500,7 +499,7 @@ static void logger_bbob_recommend(coco_problem_t *problem, const double *x) {
   /* Evaluate the constraints */
   if (problem->number_of_constraints > 0) {
     constraints = coco_allocate_vector(problem->number_of_constraints);
-    inner_problem->evaluate_constraint(inner_problem, x, constraints);
+    inner_problem->evaluate_constraint(inner_problem, x, constraints, 0);
   }
 
   /* Add a line in the .mdat file */

@@ -72,15 +72,16 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
   /* Evaluate the objective(s) */
   coco_evaluate_function(inner_problem, x, y);
   logger->num_func_evaluations++;
+
   if (problem->number_of_objectives == 1)
     logger->current_value = y[0];
 
   /* Evaluate the constraints */
   if (problem->number_of_constraints > 0) {
     constraints = coco_allocate_vector(problem->number_of_constraints);
-    inner_problem->evaluate_constraint(inner_problem, x, constraints);
+    inner_problem->evaluate_constraint(inner_problem, x, constraints, 0);
   }
-  logger->num_cons_evaluations = coco_problem_get_evaluations_constraints(problem);
+  logger->num_cons_evaluations = problem->evaluations_constraints;
 
   /* Time the evaluations */
   if (logger->log_time)
@@ -117,6 +118,7 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
 
   if (problem->number_of_constraints > 0)
     coco_free_memory(constraints);
+
 }
 
 /**

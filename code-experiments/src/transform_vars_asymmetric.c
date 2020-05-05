@@ -64,7 +64,8 @@ static void transform_vars_asymmetric_evaluate_function(coco_problem_t *problem,
  */
 static void transform_vars_asymmetric_evaluate_constraint(coco_problem_t *problem, 
                                                           const double *x, 
-                                                          double *y) {
+                                                          double *y,
+                                                          int update_counter) {
   size_t i;
   double exponent;
   transform_vars_asymmetric_data_t *data;
@@ -87,7 +88,7 @@ static void transform_vars_asymmetric_evaluate_constraint(coco_problem_t *proble
       data->x[i] = x[i];
     }
   }
-  coco_evaluate_constraint(inner_problem, data->x, y);
+  inner_problem->evaluate_constraint(inner_problem, data->x, y, update_counter);
 }
 
 static void transform_vars_asymmetric_free(void *thing) {

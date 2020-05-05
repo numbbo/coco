@@ -129,7 +129,8 @@ typedef struct {
   int log_discrete_as_int;            /**< @brief Whether to output discrete variables in int or double format. */
   int algorithm_restarted;            /**< @brief Whether the algorithm has restarted (output information to .rdat file). */
 
-  size_t number_of_evaluations;       /**< @brief The number of evaluations performed so far. */
+  size_t num_func_evaluations;        /**< @brief The number of function evaluations performed so far. */
+  size_t num_cons_evaluations;        /**< @brief The number of evaluations of constraints performed so far. */
   size_t number_of_variables;         /**< @brief Dimension of the problem. */
   size_t number_of_integer_variables; /**< @brief Number of integer variables. */
   size_t number_of_objectives;        /**< @brief Number of objectives (clearly equal to 2). */
@@ -600,20 +601,20 @@ static void logger_biobj_indicator_finalize(logger_biobj_indicator_t *indicator,
 
   /* Log the last eval_number in the dat file if wasn't already logged */
   if (!indicator->target_hit) {
-    fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
+    fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->num_func_evaluations,
         logger->precision_f, indicator->overall_value, logger->precision_f,
         coco_observer_targets_get_last_target(indicator->targets));
   }
 
   /* Log the last eval_number in the tdat file if wasn't already logged */
   if (!indicator->evaluation_logged) {
-    fprintf(indicator->tdat_file, "%lu\t%.*e\n", (unsigned long) logger->number_of_evaluations,
+    fprintf(indicator->tdat_file, "%lu\t%.*e\n", (unsigned long) logger->num_func_evaluations,
         logger->precision_f, indicator->overall_value);
   }
 
   /* Log the information in the info file */
   fprintf(indicator->info_file, ", %lu:%lu|%.1e", (unsigned long) logger->suite_dep_instance,
-      (unsigned long) logger->number_of_evaluations, indicator->overall_value);
+      (unsigned long) logger->num_func_evaluations, indicator->overall_value);
   fflush(indicator->info_file);
 
 }
@@ -722,7 +723,7 @@ static void logger_biobj_output(logger_biobj_data_t *logger,
         /* Check whether a target was hit */
         indicator->target_hit = coco_observer_targets_trigger(indicator->targets, indicator->overall_value);
       }
-      else if ((logger->number_of_evaluations == 1) && (node_item->is_feasible == 0)) {
+      else if ((logger->num_func_evaluations == 1) && (node_item->is_feasible == 0)) {
         /* Special case if the solution is infeasible and this is the first evaluation */
         indicator->overall_value = INFINITY_FOR_LOGGING;
         indicator->target_hit = coco_observer_targets_trigger(indicator->targets, indicator->overall_value);
@@ -730,7 +731,7 @@ static void logger_biobj_output(logger_biobj_data_t *logger,
 
       /* Log to the dat file if a performance target was hit */
       if (indicator->target_hit) {
-        fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->number_of_evaluations,
+        fprintf(indicator->dat_file, "%lu\t%.*e\t%.*e\n", (unsigned long) logger->num_func_evaluations,
             logger->precision_f, indicator->overall_value, logger->precision_f,
             coco_observer_targets_get_last_target(indicator->targets));
       }
@@ -738,7 +739,7 @@ static void logger_biobj_output(logger_biobj_data_t *logger,
       if (logger->log_nondom_mode == LOG_NONDOM_READ) {
         /* Log to the tdat file the previous indicator value if any evaluation number between the previous and
          * this one matches one of the predefined evaluation numbers. */
-        for (j = logger->previous_evaluations + 1; j < logger->number_of_evaluations; j++) {
+        for (j = logger->previous_evaluations + 1; j < logger->num_func_evaluations; j++) {
           indicator->evaluation_logged = coco_observer_evaluations_trigger(indicator->evaluations, j);
           if (indicator->evaluation_logged) {
             fprintf(indicator->tdat_file, "%lu\t%.*e\n", (unsigned long) j, logger->precision_f,
@@ -749,15 +750,15 @@ static void logger_biobj_output(logger_biobj_data_t *logger,
 
       /* Log to the tdat file if the number of evaluations matches one of the predefined numbers */
       indicator->evaluation_logged = coco_observer_evaluations_trigger(indicator->evaluations,
-          logger->number_of_evaluations);
+          logger->num_func_evaluations);
       if (indicator->evaluation_logged) {
-        fprintf(indicator->tdat_file, "%lu\t%.*e\n", (unsigned long) logger->number_of_evaluations,
+        fprintf(indicator->tdat_file, "%lu\t%.*e\n", (unsigned long) logger->num_func_evaluations,
             logger->precision_f, indicator->overall_value);
       }
 
       /* Log to the rdat file if the algorithm was restarted */
       if (logger->algorithm_restarted) {
-        fprintf(indicator->rdat_file, "%lu\t%.*e\n", (unsigned long) logger->number_of_evaluations,
+        fprintf(indicator->rdat_file, "%lu\t%.*e\n", (unsigned long) logger->num_func_evaluations,
             logger->precision_f, indicator->overall_value);
       }
 
@@ -787,15 +788,16 @@ static void logger_biobj_evaluate(coco_problem_t *problem, const double *x, doub
 
   /* Evaluate the objectives */
   coco_evaluate_function(inner_problem, x, y);
-  logger->number_of_evaluations++;
+  logger->num_func_evaluations++;
 
   /* Evaluate the constraints */
   if (problem->number_of_constraints > 0) {
     constraints = coco_allocate_vector(problem->number_of_constraints);
-    inner_problem->evaluate_constraint(inner_problem, x, constraints);
+    inner_problem->evaluate_constraint(inner_problem, x, constraints, 0);
   }
+  logger->num_cons_evaluations = problem->evaluations_constraints;
 
-  node_item = logger_biobj_node_create(inner_problem, x, y, constraints, logger->number_of_evaluations,
+  node_item = logger_biobj_node_create(inner_problem, x, y, constraints, logger->num_func_evaluations,
       logger->number_of_variables, logger->number_of_objectives, problem->number_of_constraints);
 
   /* Update the archive with the new solution, if it is not dominated by or equal to existing solutions in
@@ -843,11 +845,12 @@ static void logger_biobj_recommend(coco_problem_t *problem, const double *x) {
   /* Evaluate the constraints */
   if (problem->number_of_constraints > 0) {
     constraints = coco_allocate_vector(problem->number_of_constraints);
-    inner_problem->evaluate_constraint(inner_problem, x, constraints);
+    inner_problem->evaluate_constraint(inner_problem, x, constraints, 0);
   }
+  logger->num_cons_evaluations = problem->evaluations_constraints;
 
   /* Log to the mdat file */
-  fprintf(logger->mdat_file, "%lu\t", (unsigned long) logger->number_of_evaluations);
+  fprintf(logger->mdat_file, "%lu\t", (unsigned long) logger->num_func_evaluations);
   for (j = 0; j < problem->number_of_objectives; j++)
     fprintf(logger->mdat_file, "%.*e\t", logger->precision_f, y[j]);
   for (j = 0; j < problem->number_of_constraints; j++)
@@ -896,17 +899,17 @@ int coco_logger_biobj_feed_solution(coco_problem_t *problem, const size_t evalua
   assert(logger->log_nondom_mode == LOG_NONDOM_READ);
 
   /* Set the number of evaluations */
-  logger->previous_evaluations = logger->number_of_evaluations;
+  logger->previous_evaluations = logger->num_func_evaluations;
   if (logger->previous_evaluations >= evaluation)
     coco_error("coco_logger_biobj_reconstruct(): Evaluation %lu came before evaluation %lu. Note that "
         "the evaluations need to be always increasing.", logger->previous_evaluations, evaluation);
-  logger->number_of_evaluations = evaluation;
+  logger->num_func_evaluations = evaluation;
 
   /* Update the archive with the new solution */
   x = coco_allocate_vector(problem->number_of_variables);
   for (i = 0; i < problem->number_of_variables; i++)
     x[i] = 0;
-  node_item = logger_biobj_node_create(inner_problem, x, y, NULL, logger->number_of_evaluations,
+  node_item = logger_biobj_node_create(inner_problem, x, y, NULL, logger->num_func_evaluations,
       logger->number_of_variables, logger->number_of_objectives, 0);
   coco_free_memory(x);
 
@@ -977,7 +980,7 @@ static void logger_biobj_free(void *stuff) {
 
   if (((logger->log_nondom_mode == LOG_NONDOM_ALL) || (logger->log_nondom_mode == LOG_NONDOM_FINAL)) &&
       (logger->adat_file != NULL)) {
-    fprintf(logger->adat_file, "%% evaluations = %lu\n", (unsigned long) logger->number_of_evaluations);
+    fprintf(logger->adat_file, "%% evaluations = %lu\n", (unsigned long) logger->num_func_evaluations);
     fclose(logger->adat_file);
     logger->adat_file = NULL;
   }
@@ -1020,7 +1023,7 @@ static void logger_biobj_signal_restart(coco_problem_t *problem) {
   logger_biobj_data_t *logger = (logger_biobj_data_t *) coco_problem_transformed_get_data(problem);
   assert(logger);
 
-  if (logger->number_of_evaluations > 0)
+  if (logger->num_func_evaluations > 0)
     logger->algorithm_restarted = 1;
 }
 
@@ -1059,7 +1062,8 @@ static coco_problem_t *logger_biobj(coco_observer_t *observer, coco_problem_t *i
   logger_data = (logger_biobj_data_t *) coco_allocate_memory(sizeof(*logger_data));
 
   logger_data->observer = observer;
-  logger_data->number_of_evaluations = 0;
+  logger_data->num_func_evaluations = 0;
+  logger_data->num_cons_evaluations = 0;
   logger_data->previous_evaluations = 0;
   logger_data->number_of_variables = inner_problem->number_of_variables;
   logger_data->number_of_integer_variables = inner_problem->number_of_integer_variables;

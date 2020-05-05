@@ -32,9 +32,16 @@ typedef void (*coco_problem_free_function_t)(coco_problem_t *problem);
  * @brief The evaluate function type.
  *
  * This is a template for functions that perform an evaluation of the problem (to evaluate the problem
- * function, the problems constraints etc.).
+ * function, the problems constraints (externally) etc.).
  */
 typedef void (*coco_evaluate_function_t)(coco_problem_t *problem, const double *x, double *y);
+
+/**
+ * @brief The evaluate function type with optional counter update.
+ *
+ * This is used to evaluate the problem constraints internally.
+ */
+typedef void (*coco_evaluate_c_function_t)(coco_problem_t *problem, const double *x, double *y, int update_counter);
 
 /**
  * @brief The recommend solutions function type.
@@ -129,7 +136,7 @@ typedef struct {
 struct coco_problem_s {
 
   coco_evaluate_function_t evaluate_function;         /**< @brief  The function for evaluating the problem. */
-  coco_evaluate_function_t evaluate_constraint;       /**< @brief  The function for evaluating the constraints. */
+  coco_evaluate_c_function_t evaluate_constraint;     /**< @brief  The function for evaluating the constraints. */
   coco_evaluate_function_t evaluate_gradient;         /**< @brief  The function for evaluating the constraints. */
   coco_recommend_function_t recommend_solution;       /**< @brief  The function for recommending a solution. */
   coco_problem_free_function_t problem_free_function; /**< @brief  The function for freeing this problem. */

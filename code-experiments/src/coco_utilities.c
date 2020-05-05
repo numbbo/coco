@@ -1082,8 +1082,7 @@ static int coco_is_feasible(coco_problem_t *problem,
   if (constraint_values == NULL)
      cons_values = coco_allocate_vector(problem->number_of_constraints);
 
-  problem->evaluate_constraint(problem, x, cons_values);
-  /* coco_evaluate_constraint(problem, x, cons_values) increments problem->evaluations_constraints counter */
+  problem->evaluate_constraint(problem, x, cons_values, 0);
 
   for(i = 0; i < coco_problem_get_number_of_constraints(problem); ++i) {
     if (cons_values[i] > 0.0) {

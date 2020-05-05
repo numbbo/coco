@@ -465,7 +465,7 @@ static void logger_bbob_old_evaluate(coco_problem_t *problem, const double *x, d
   /* Evaluate the constraints */
   if (problem->number_of_constraints > 0) {
     cons = coco_allocate_vector(problem->number_of_constraints);
-    inner_problem->evaluate_constraint(inner_problem, x, cons);
+    inner_problem->evaluate_constraint(inner_problem, x, cons, 0);
   }
 
   /* Compute the sum of positive constraint values */

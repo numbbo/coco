@@ -64,7 +64,7 @@ static void transform_vars_oscillate_evaluate_function(coco_problem_t *problem, 
 /**
  * @brief Evaluates the transformed constraints.
  */
-static void transform_vars_oscillate_evaluate_constraint(coco_problem_t *problem, const double *x, double *y) {
+static void transform_vars_oscillate_evaluate_constraint(coco_problem_t *problem, const double *x, double *y, int update_counter) {
   static const double alpha = 0.1;
   double tmp, base, *oscillated_x;
   size_t i;
@@ -93,7 +93,7 @@ static void transform_vars_oscillate_evaluate_constraint(coco_problem_t *problem
       oscillated_x[i] = 0.0;
     }
   }
-  coco_evaluate_constraint(inner_problem, oscillated_x, y);
+  inner_problem->evaluate_constraint(inner_problem, oscillated_x, y, update_counter);
 }
 
 /**

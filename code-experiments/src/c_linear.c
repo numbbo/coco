@@ -12,6 +12,7 @@
 
 #include "coco.h"
 #include "coco_internal.h"
+#include "coco_problem.c"
 /**
  * @brief Data type for the linear constraints.
  */
@@ -22,11 +23,13 @@ typedef struct {
 
 static void c_sum_variables_evaluate(coco_problem_t *self, 
                                      const double *x, 
-                                     double *y);
+                                     double *y,
+                                     int update_counter);
                                      
 static void c_linear_single_evaluate(coco_problem_t *self, 
                                      const double *x, 
-                                     double *y);
+                                     double *y,
+                                     int update_counter);
                                         
 static coco_problem_t *c_guarantee_feasible_point(coco_problem_t *problem,
                                                   const double *feasible_point);
@@ -62,7 +65,8 @@ static coco_problem_t *c_linear_cons_bbob_problem_allocate(const size_t function
  */
 static void c_sum_variables_evaluate(coco_problem_t *self, 
                                      const double *x, 
-                                     double *y) {
+                                     double *y,
+                                     int update_counter) {
 	
   size_t i;
 
@@ -71,6 +75,8 @@ static void c_sum_variables_evaluate(coco_problem_t *self,
   y[0] = 0.0;
   for (i = 0; i < self->number_of_variables; ++i)
     y[0] += x[i];
+
+  (void) update_counter; /* To silence the compiler */
 }	
 
 /**
@@ -79,7 +85,8 @@ static void c_sum_variables_evaluate(coco_problem_t *self,
  */
 static void c_linear_single_evaluate(coco_problem_t *self, 
                                      const double *x, 
-                                     double *y) {
+                                     double *y,
+                                     int update_counter) {
 	
   size_t i;
   
@@ -94,7 +101,7 @@ static void c_linear_single_evaluate(coco_problem_t *self,
   for (i = 0; i < self->number_of_variables; ++i)
     data->x[i] = (data->gradient[i])*x[i];
   
-  coco_evaluate_constraint(inner_problem, data->x, y);
+  inner_problem->evaluate_constraint(inner_problem, data->x, y, update_counter);
   
   inner_problem = NULL;
   data = NULL;
@@ -106,7 +113,7 @@ static void c_linear_single_evaluate(coco_problem_t *self,
  *        initial feasible solution to this coco_problem.
  */
 static coco_problem_t *c_guarantee_feasible_point(coco_problem_t *problem,
-                                                const double *feasible_direction) {
+                                                  const double *feasible_direction) {
   
   size_t i;
   linear_constraint_data_t *data;
@@ -119,7 +126,7 @@ static coco_problem_t *c_guarantee_feasible_point(coco_problem_t *problem,
   /* Let p be the gradient of the constraint in "problem".
    * Check whether p' * (feasible_direction) <= 0.
    */
-  coco_evaluate_constraint(problem, feasible_direction, &constraint_value);
+  problem->evaluate_constraint(problem, feasible_direction, &constraint_value, 0);
   
   /* Flip the constraint in "problem" if feasible_direction
    * is not feasible w.r.t. the constraint in "problem".
