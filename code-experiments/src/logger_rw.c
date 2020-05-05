@@ -90,9 +90,9 @@ static void logger_rw_evaluate(coco_problem_t *problem, const double *x, double 
   /* Log to the output file */
   if ((problem->number_of_objectives == 1) && (logger->current_value < logger->best_value))
     logger->best_value = logger->current_value;
-  else
+  else if (problem->number_of_objectives == 1)
     log_this_time = !logger->log_only_better;
-  if (log_this_time) {
+  if ((logger->num_func_evaluations == 1) || log_this_time) {
     fprintf(logger->out_file, "%lu\t", (unsigned long) logger->num_func_evaluations);
     fprintf(logger->out_file, "%lu\t", (unsigned long) logger->num_cons_evaluations);
     for (i = 0; i < problem->number_of_objectives; i++)
