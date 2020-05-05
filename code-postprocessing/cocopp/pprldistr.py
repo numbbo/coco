@@ -70,9 +70,9 @@ evalfmax = runlen_xlimits_max # is manipulated/stored in this module
 # together. Therefore we should either:
 # 1. keep the targets as input argument and make rldStyles depend on them or
 # 2. remove the targets as input argument and put them here.
-rldStyles = ({'color': 'k', 'ls': '-'},
+rldStyles = ({'color': 'k', 'linestyle': '-'},
              {'color': 'c'},
-             {'color': 'm', 'ls': '-'},
+             {'color': 'm', 'linestyle': '-'},
              {'color': 'r', 'linewidth': 3.},
              {'color': 'k'},
              {'color': 'c'},
@@ -82,16 +82,16 @@ rldStyles = ({'color': 'k', 'ls': '-'},
              {'color': 'c'},
              {'color': 'm'},
              {'color': 'r', 'linewidth': 3.})
-rldUnsuccStyles = ({'color': 'c', 'ls': '-'},
-                   {'color': 'm', 'ls': '-'},
-                   {'color': 'k', 'ls': '-'},
+rldUnsuccStyles = ({'color': 'c', 'linestyle': '-'},
+                   {'color': 'm', 'linestyle': '-'},
+                   {'color': 'k', 'linestyle': '-'},
                    {'color': 'c'},
-                   {'color': 'm', 'ls': '-'},
-                   {'color': 'k', 'ls': '-'},
+                   {'color': 'm', 'linestyle': '-'},
+                   {'color': 'k', 'linestyle': '-'},
                    {'color': 'c'},
-                   {'color': 'm', 'ls': '-'},
+                   {'color': 'm', 'linestyle': '-'},
                    {'color': 'k'},
-                   {'color': 'c', 'ls': '-'},
+                   {'color': 'c', 'linestyle': '-'},
                    {'color': 'm'},
                    {'color': 'k'},
                   ) # should not be too short
@@ -563,11 +563,6 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
     :param string info: string suffix for output file names.
 
     """
-    # plt.rc("axes", labelsize=20, titlesize=24)
-    # plt.rc("xtick", labelsize=20)
-    # plt.rc("ytick", labelsize=20)
-    # plt.rc("font", size=20)
-    # plt.rc("legend", fontsize=20)
 
     if not isinstance(targets, pproc.RunlengthBasedTargetValues):
         targets = pproc.TargetValues.cast(targets)
@@ -816,11 +811,6 @@ def main(dsList, isStoringXMax=False, outputdir='',
     :param string info: string suffix for output file names.
 
     """
-    # plt.rc("axes", labelsize=20, titlesize=24)
-    # plt.rc("xtick", labelsize=20)
-    # plt.rc("ytick", labelsize=20)
-    # plt.rc("font", size=20)
-    # plt.rc("legend", fontsize=20)
     testbed = testbedsettings.current_testbed
     targets = testbed.pprldistr_target_values # convenience abbreviation
 
@@ -898,5 +888,4 @@ def main(dsList, isStoringXMax=False, outputdir='',
         save_figure(filename, dsList[0].algId, subplots_adjust=dict(left=0.0, bottom=0.15, right=1, top=0.99))
 
         plt.close(fig)
-        # plt.rcdefaults()
 

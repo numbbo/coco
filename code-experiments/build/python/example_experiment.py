@@ -56,6 +56,8 @@ try: from scipy.optimize import fmin_slsqp  # "pip install scipy" installs scipy
 except: pass
 try: range = xrange  # let range always be an iterator
 except NameError: pass
+try: time.process_time = time.clock
+except: pass
 
 from cocoex import default_observers  # see cocoex.__init__.py
 from cocoex.utilities import ObserverOptions, ShortInfo, ascetime, print_flush
@@ -250,11 +252,11 @@ def main(budget=budget,
     if number_of_batches > 1:
         print('Batch usecase, make sure you run *all* %d batches.\n' %
               number_of_batches)
-    t0 = time.clock()
+    t0 = time.process_time()
     batch_loop(SOLVER, suite, observer, budget, max_runs,
                current_batch, number_of_batches)
     print(", %s (%s total elapsed time)." %
-            (time.asctime(), ascetime(time.clock() - t0)))
+            (time.asctime(), ascetime(time.process_time() - t0)))
     print('Data written to folder', observer.result_folder)
     print('To post-process the data call \n'
           '    python -m cocopp %s \n'

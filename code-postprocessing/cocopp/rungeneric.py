@@ -27,6 +27,7 @@ from .toolsdivers import truncate_latex_command_file, print_done, diff_attr
 from .ppfig import Usage
 from .compall import ppfigs
 
+import matplotlib.pyplot as plt
 matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 
 __all__ = ['main']
@@ -38,7 +39,8 @@ longoptlist = ["help", "output-dir=", "noisy", "noise-free",
                "verbose", "settings=", "conv",
                "expensive", "runlength-based",
                "los-only", "crafting-effort=", "pickle",
-               "sca-only", "no-svg"]
+               "sca-only", "no-svg",
+               "include-fonts"]
 # thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
 # and "sca-only" only affects rungenericmany
 
@@ -194,6 +196,11 @@ def main(argv=None):
 
             prepares also convergence plots with median function values over time
 
+        --include-fonts
+
+            generated pdfs will have the fonts included (important for ACM style
+            LaTeX submissions)
+
 
     Exceptions raised:
 
@@ -252,7 +259,11 @@ def main(argv=None):
         shortoptlist.remove("-o")
         longoptlist = list("--" + i.rstrip("=") for i in longoptlist)
 
-
+        plt.rc("axes", **genericsettings.rcaxes)
+        plt.rc("xtick", **genericsettings.rctick)
+        plt.rc("ytick", **genericsettings.rctick)
+        plt.rc("font", **genericsettings.rcfont)
+        plt.rc("legend", **genericsettings.rclegend)
 
         genopts = []
         outputdir = genericsettings.outputdir
@@ -293,6 +304,8 @@ def main(argv=None):
                     genericsettings.inputCrE = float(a)
                 except ValueError:
                     raise Usage('Expect a valid float for flag crafting-effort.')
+            elif o == "--include-fonts":
+                plt.rc('pdf', fonttype=42)
             elif o == "--tab-only":
                 genericsettings.isFig = False
                 genericsettings.isRLDistr = False
@@ -422,6 +435,8 @@ def main(argv=None):
         if mess:
             print('Setting changes in `cocopp.genericsettings` compared to default:')
             print(mess, end='')
+
+        plt.rcdefaults()
 
         print_done('ALL done')
         if genericsettings.interactive_mode:

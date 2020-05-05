@@ -13,7 +13,8 @@ try:
     from urllib.request import urlretrieve
 except ImportError:
     from urllib import urlretrieve
-
+try: time.process_time = time.clock
+except: pass
 
 def _is_equal(x, y):
     """return scalar or vector, where `x` and `y` can be a scalar
@@ -57,7 +58,7 @@ def regression_test_a_suite(suite_name, filename):
     if verbose:
         print("using file %s with %d test cases " % (filename, len(xfc_dict)), end="")
         sys.stdout.flush()
-        t0 = time.clock()
+        t0 = time.process_time()
     suite = cocoex.Suite(suite_name, "year: 0000", "") # choose "default" year for test
     failed_test_counter = 0
     for key in xfc_dict:
@@ -78,7 +79,7 @@ def regression_test_a_suite(suite_name, filename):
     if failed_test_counter > 0:
         raise AssertionError("{} assertions failed".format(failed_test_counter))
     if verbose:
-        print("done in %.1fs" % (time.clock() - t0))
+        print("done in %.1fs" % (time.process_time() - t0))
 
 
 if __name__ == "__main__":

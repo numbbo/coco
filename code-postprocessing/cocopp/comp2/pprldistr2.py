@@ -16,9 +16,9 @@ from six import advance_iterator
 
 #__all__ = []
 
-rldStyles = ({'color': 'k', 'ls': '-'},
+rldStyles = ({'color': 'k', 'linestyle': '-'},
              {'color': 'c'},
-             {'color': 'm', 'ls': '-'},
+             {'color': 'm', 'linestyle': '-'},
              {'color': 'r'},
              {'color': 'b'},
              {'color': 'g'},
@@ -360,11 +360,6 @@ def main(dsList0, dsList1, dim, targetsOfInterest=None,
     Image files of the empirical cumulative distribution functions.
 
     """
-    #plt.rc("axes", labelsize=20, titlesize=24)
-    #plt.rc("xtick", labelsize=20)
-    #plt.rc("ytick", labelsize=20)
-    #plt.rc("font", size=20)
-    #plt.rc("legend", fontsize=20)
 
     figureName = os.path.join(outputdir,'pplogabs_%s' %(info))
 
@@ -384,5 +379,4 @@ def main(dsList0, dsList1, dim, targetsOfInterest=None,
     save_figure(figureName, dsList0[0].algId)
     plt.close()
 
-    #plt.rcdefaults()
 

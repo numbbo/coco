@@ -73,7 +73,8 @@ latex_color_map = {
              '#ff00ff': 'Magenta',
              '#bebebe': 'Gray',
              '#87ceeb': 'SkyBlue',
-             '#ffa500': 'Orange',
+             '#ffa500': 'Orange',  # old
+             '#ff7500': 'Orange',  # improved
              '#ffc0cb': 'Lavender',
              '#4169e1': 'RoyalBlue',
              '#228b22': 'ForestGreen',

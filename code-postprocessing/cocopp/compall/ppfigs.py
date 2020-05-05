@@ -314,7 +314,7 @@ def plotLegend(handles, maxval=None):
                     legx = 10**(.85 * numpy.log10(xmax/xmin)) * xmin
                     leglabx = 10**(.87 * numpy.log10(xmax/xmin)) * xmin
                     tmp = {}
-                    for attr in ('lw', 'ls', 'marker',
+                    for attr in ('lw', 'linestyle', 'marker',
                                  'markeredgewidth', 'markerfacecolor',
                                  'markeredgecolor', 'markersize', 'zorder'):
                         tmp[attr] = plt.getp(h, attr)
@@ -607,7 +607,7 @@ def main(dictAlg, html_file_prefix, sorted_algorithms=None, output_dir='ppdata',
                 pass
         # issue a warning if number of instances is inconsistant, otherwise
         # display only the present number of instances, i.e. remove copies
-        if len(set(num_of_instances)) > 1:
+        if len(set(num_of_instances)) > 1 and genericsettings.warning_level >= 5:
             warnings.warn('Number of instances inconsistent over all algorithms.')
         num_of_instances = set(num_of_instances)
         for n in num_of_instances:

@@ -245,12 +245,6 @@ def annotate(entry0, entry1, dim, minfvalue=1e-8, nbtests=1):
 def main(dsList0, dsList1, minfvalue=1e-8, outputdir=''):
     """Returns ERT1/ERT0 comparison figure."""
 
-    #plt.rc("axes", labelsize=20, titlesize=24)
-    #plt.rc("xtick", labelsize=20)
-    #plt.rc("ytick", labelsize=20)
-    #plt.rc("font", size=20)
-    #plt.rc("legend", fontsize=20)
-    
     # minfvalue = pproc.TargetValues.cast(minfvalue)
 
     funInfos = ppfigparam.read_fun_infos()    
@@ -399,7 +393,7 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir=''):
                      markerfacecolor=styles[i]['color'], markersize=4*linewidth)
 
             kwargs = styles[i].copy()
-            kwargs['ls'] = ls
+            kwargs['linestyle'] = ls
             tmp = plotUnifLogXMarkers(dataofinterest[idx, 0], ydata, nbperdecade=1, logscale=True, **kwargs)
             plt.setp(tmp, markersize=3*linewidth)
 
@@ -425,6 +419,3 @@ def main(dsList0, dsList1, minfvalue=1e-8, outputdir=''):
         save_figure(filename, dsList0[0].algId)
         plt.close()
         #set_trace()
-
-    #plt.rcdefaults()
-

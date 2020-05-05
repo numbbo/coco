@@ -165,13 +165,6 @@ def main(args, outputdir):
                           'of function F%d.' % i.funcId)
             last_incorrect_instances = curr_instances
 
-    plt.rc("axes", **genericsettings.rcaxes)
-    plt.rc("xtick", **genericsettings.rctick)
-    plt.rc("ytick", **genericsettings.rctick)
-    plt.rc("font", **genericsettings.rcfont)
-    plt.rc("legend", **genericsettings.rclegend)
-    plt.rc('pdf', fonttype=42)
-
     ppfig.copy_js_files(many_algorithms_output)
 
     ppfig.save_single_functions_html(
@@ -423,24 +416,15 @@ def main(args, outputdir):
 
     if genericsettings.isFig:
         print("Scaling figures...")
-        plt.rc("axes", labelsize=20, titlesize=24)
-        plt.rc("xtick", labelsize=20)
-        plt.rc("ytick", labelsize=20)
-        plt.rc("font", size=20)
-        plt.rc("legend", fontsize=20)
-        plt.rc('pdf', fonttype=42)
-
         ppfigs.main(dictAlg,
                     genericsettings.ppfigs_file_name,
                     sortedAlgs,
                     many_algorithms_output,
                     latex_commands_file)
-        plt.rcdefaults()
         print_done()
+
     print("Output data written to folder %s" %
           os.path.join(os.getcwd(), many_algorithms_output))
-
-    plt.rcdefaults()
 
     return DataSetList(dsList).dictByAlg()
 

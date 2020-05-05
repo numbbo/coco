@@ -24,6 +24,8 @@ try: from scipy.optimize import fmin_slsqp  # "pip install scipy" installs scipy
 except: pass
 try: range = xrange  # let range always be an iterator
 except NameError: pass
+try: time.process_time = time.clock
+except: pass
 
 """Timing of random_search (cma.fmin is 100x slower) on a MacBook Pro 2014 [s]: 
     evals =       [ 1e2, 1e3, 1e4, 2e4, 4e4  ],  # on 2160 problems
@@ -108,7 +110,7 @@ def coco_optimize(fun, budget=MAXEVALS):
 # run 
 def main(MAXEVALS=MAXEVALS, current_batch=current_batch, number_of_batches=number_of_batches):
     print("Benchmarking solver %s, %s" % (str(solver), time.asctime(), ))
-    t0 = time.clock()
+    t0 = time.process_time())
     if 11 < 3:
         # simple Pythonic use case, never leaves a problem unfree()ed, ctrl-C "safe"
         print('Pythonic usecase ...'); sys.stdout.flush()

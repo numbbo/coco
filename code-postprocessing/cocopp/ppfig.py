@@ -569,7 +569,7 @@ def plotUnifLogXMarkers(x, y, nbperdecade, logscale=False, **kwargs):
                                   np.log10 if logscale else None)
         marker_args = kwargs.copy()
         marker_args['drawstyle'] = 'default'
-        marker_args['linestyle'] = ''
+        marker_args['linestyle'] = ''  # 'linestyle' cannot be mixed with 'ls' as used elsewhere
         marker_args['label'] = ''
         res2 = plt.plot(x2, y2, **marker_args)
         res.extend(res2)
