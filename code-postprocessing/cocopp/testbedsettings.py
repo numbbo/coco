@@ -237,7 +237,7 @@ class GECCOBBOBTestbed(Testbed):
         pprldistr_target_values=(10., 1e-1, 1e-4, 1e-8),
         pprldmany_target_values=10 ** np.arange(2, -8.2, -0.2),
         pprldmany_target_range_latex='$10^{[-8..2]}$',
-        ppscatter_target_values=np.logspace(-8, 2, 21),  # 21 was 46
+        ppscatter_target_values=np.array(list(np.logspace(-8, 2, 21)) + [1e22]),  # 21 was 46
         rldValsOfInterest=(10, 1e-1, 1e-4, 1e-8),  # possibly changed in config
         ppfvdistr_min_target=1e-8,
         functions_with_legend=(1, 24),
@@ -406,7 +406,7 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         pprldistr_target_values = (10., 1e-1, 1e-4, min_target),
         pprldmany_target_values = 10 ** np.arange(2, min_target_exponent, -0.2),
         pprldmany_target_range_latex = '$10^{[' + min_target_latex + '..2]}$',
-        ppscatter_target_values = np.logspace(min_target_scatter, 2, 21),
+        ppscatter_target_values = np.array(list(np.logspace(min_target_scatter, 2, 21)) + [1e22]),
         rldValsOfInterest=(10, 1e-1, 1e-4, min_target),  # possibly changed in config
         pptable_ftarget = min_target,  # value for determining the success ratio in all tables
         pptable_targetsOfInterest = pptable_targetsOfInterest,
@@ -510,7 +510,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         np.append(np.append(10 ** np.arange(0, -5.1, -0.1), [0]), -10 ** np.arange(-5, -3.9, 0.2)),
         instances_are_uniform = False,
         pprldmany_target_range_latex='$\{-10^{-4}, -10^{-4.2}, $ $-10^{-4.4}, -10^{-4.6}, -10^{-4.8}, -10^{-5}, 0, 10^{-5}, 10^{-4.9}, 10^{-4.8}, \dots, 10^{-0.1}, 10^0\}$',
-        ppscatter_target_values=np.logspace(-5, 1, 21),  # 21 was 51
+        ppscatter_target_values=np.array(list(np.logspace(-5, 1, 21)) + [1e22]),  # 21 was 51
         rldValsOfInterest=(1e-1, 1e-2, 1e-3, 1e-4, 1e-5),
         ppfvdistr_min_target=1e-5,
         functions_with_legend=(1, 30, 31, 55),
@@ -649,7 +649,7 @@ class BBOBLargeScaleTestbed(GECCOBBOBTestbed):
         pprldistr_target_values=(10., 1e-1, 1e-4, 1e-8),
         pprldmany_target_values=10 ** np.arange(2, -8.2, -0.2),
         pprldmany_target_range_latex='$10^{[-8..2]}$',
-        ppscatter_target_values=np.logspace(-8, 2, 21),
+        ppscatter_target_values=np.array(list(np.logspace(-8, 2, 21)) + [1e22]),
         rldValsOfInterest=(10, 1e-1, 1e-4, 1e-8),  # possibly changed in config
         ppfvdistr_min_target=1e-8,
         functions_with_legend=(1, 24),
