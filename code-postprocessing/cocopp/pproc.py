@@ -206,7 +206,7 @@ class RunlengthBasedTargetValues(TargetValues):
         >>> # make sure to use the right `bbob` test suite for the test below:
         >>> cocopp.genericsettings.isNoisy = False
         >>> cocopp.genericsettings.isNoiseFree = False
-        >>> cocopp.config.config('GECCOBBOBTestbed')
+        >>> cocopp.config.config('bbob')
         >>> targets = cocopp.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension==True
         >>> # make also sure to have loaded the corresponding reference algo
         >>> # from BBOB-2009:
@@ -706,7 +706,7 @@ class DataSet(object):
         >>> assert 2.01200000e+03 <= (dslist[2].evals[-1])[-1] <= 2.01200001e+03
         >>> # because testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] was None
         >>> cocopp.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = [1, 3]
-        >>> cocopp.config.config('GECCOBBOBTestbed') # make sure that settings are used
+        >>> cocopp.config.config('bbob') # make sure that settings are used
         >>> dslist2 = cocopp.load(infoFile)
           Data consistent according to consistency_check() in pproc.DataSet
         >>> dslist2[2].instancenumbers
@@ -717,7 +717,7 @@ class DataSet(object):
         >>> assert 2.20700000e+03 <= (dslist2[2].evals[-1])[-1] <= 2.20700001e+03
         >>> # set things back to cause no troubles elsewhere:
         >>> cocopp.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = None
-        >>> cocopp.config.config('GECCOBBOBTestbed') # make sure that settings are used
+        >>> cocopp.config.config('bbob') # make sure that settings are used
 
     """
 
