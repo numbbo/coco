@@ -58,24 +58,24 @@ def get_table_caption():
         $p = 0.05$ or $p = 10^{-k}$ when the number $k$ following the star is larger
         than 1, with Bonferroni correction by the number of functions (!!TOTAL-NUM-OF-FUNCTIONS!!). """ +
                           (r"""A $\downarrow$ indicates the same tested against !!THE-REF-ALG!!. """
-                           if not (testbedsettings.current_testbed.name in (testbedsettings.testbed_name_bi_ext,
-                                                                            testbedsettings.testbed_name_ls,
-                                                                            testbedsettings.testbed_name_mixint,
-                                                                            testbedsettings.testbed_name_bi_mixint))
+                           if not (testbedsettings.current_testbed.name in (testbedsettings.suite_name_bi_ext,
+                                                                            testbedsettings.suite_name_ls,
+                                                                            testbedsettings.suite_name_mixint,
+                                                                            testbedsettings.suite_name_bi_mixint))
                            else "") + r"""Best results are printed in bold.
         """ + r"""\cocoversion""")
 
     table_caption = None
-    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
-                                                testbedsettings.testbed_name_cons,
-                                                testbedsettings.testbed_name_ls,
-                                                testbedsettings.testbed_name_mixint,
-                                                testbedsettings.testbed_name_bi_mixint]:
+    if testbedsettings.current_testbed.name in [testbedsettings.suite_name_bi_ext,
+                                                testbedsettings.suite_name_cons,
+                                                testbedsettings.suite_name_ls,
+                                                testbedsettings.suite_name_mixint,
+                                                testbedsettings.suite_name_bi_mixint]:
         # NOTE: no runlength-based targets supported yet
         table_caption = table_caption_one_noreference + table_caption_rest
-    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
-                                                  testbedsettings.testbed_name_single_noisy,
-                                                  testbedsettings.testbed_name_bi]:
+    elif testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
+                                                  testbedsettings.suite_name_single_noisy,
+                                                  testbedsettings.suite_name_bi]:
         if genericsettings.runlength_based_targets:
             table_caption = table_caption_one + table_caption_two2 + table_caption_rest
         else:
@@ -415,9 +415,9 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                     curline.append(r'\multicolumn{2}{@{}c@{}}{%s}' % i)
                     counter += 1
             else:
-                if (testbed.name in [testbedsettings.testbed_name_bi,
-                                     testbedsettings.testbed_name_bi_ext,
-                                     testbedsettings.testbed_name_bi_mixint]):
+                if (testbed.name in [testbedsettings.suite_name_bi,
+                                     testbedsettings.suite_name_bi_ext,
+                                     testbedsettings.suite_name_bi_mixint]):
                     curline = [r'$\Df$']
                 else:
                     curline = [r'$\Delta f_\mathrm{opt}$']
@@ -428,9 +428,9 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                     counter += 1
                 #                curline.append(r'\multicolumn{2}{@{\,}l@{}|}{%s}'
                 #                            % writeFEvals2(targets_of_interest[-1], precision=1, isscientific=True))
-            if (testbed.name in [testbedsettings.testbed_name_bi,
-                                 testbedsettings.testbed_name_bi_ext,
-                                 testbedsettings.testbed_name_bi_mixint]):
+            if (testbed.name in [testbedsettings.suite_name_bi,
+                                 testbedsettings.suite_name_bi_ext,
+                                 testbedsettings.suite_name_bi_mixint]):
                 curline.append(r'\multicolumn{2}{|@{}l@{}}{\begin{rotate}{30}\#succ\end{rotate}}')
             else:
                 curline.append(r'\multicolumn{2}{|@{}l@{}}{\#succ}')
@@ -445,9 +445,9 @@ def main(dict_alg, sorted_algs, output_dir='.', function_targets_line=True, late
                 curlineHtml.append('<td>%s<br>REPLACE%d</td>\n' % (i, counter))
                 counter += 1
         else:
-            if (testbed.name in [testbedsettings.testbed_name_bi,
-                                 testbedsettings.testbed_name_bi_ext,
-                                 testbedsettings.testbed_name_bi_mixint]):
+            if (testbed.name in [testbedsettings.suite_name_bi,
+                                 testbedsettings.suite_name_bi_ext,
+                                 testbedsettings.suite_name_bi_mixint]):
                 curlineHtml = ['<thead>\n<tr>\n<th>&#916; HV<sub>ref</sub><br>REPLACEH</th>\n']
             else:
                 curlineHtml = ['<thead>\n<tr>\n<th>&#916; f<sub>opt</sub><br>REPLACEH</th>\n']

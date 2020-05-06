@@ -534,7 +534,7 @@ def main(dsList, _valuesOfInterest, outputdir):
     joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
     caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
     header = 'Average number of <i>f</i>-evaluations to reach target'
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+    if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
         header = header.replace('<i>f</i>', '<i>(f+g)</i>')
 
     ppfig.save_single_functions_html(

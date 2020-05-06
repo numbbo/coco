@@ -625,8 +625,6 @@ class DataSet(object):
         funvals
         generateRLData
         get_data_format
-        get_suite
-        get_testbed_name
         indexFiles
         info
         instancenumbers
@@ -646,8 +644,8 @@ class DataSet(object):
         reference_values
         splitByTrials
         success_ratio
+        suite_name
         target
-        testbed_name
         >>> all(ds.evals[:, 0] == ds.target)  # first column of ds.evals is the "target" f-value
         True
         >>> # investigate row 0,10,20,... and of the result columns 0,5,6, index 0 is ftarget
@@ -748,10 +746,6 @@ class DataSet(object):
     def isBiobjective(self):
         return hasattr(self, 'indicator')
 
-    def get_testbed_name(self):
-        suite = self.get_suite()
-        return testbedsettings.get_testbed_from_suite(suite)
-
     def get_data_format(self):
         # TODO: data_format is a specification of the files written by the 
         # experiment loggers. I believe it was never meant to be a specification
@@ -762,7 +756,9 @@ class DataSet(object):
             return 'bbob-biobj'
         return None
 
-    def get_suite(self):
+    @property
+    def suite_name(self):
+        """Returns a string, with the name of the DataSet's underlying test suite."""
         suite = None
         if hasattr(self, 'suite'):
             suite = getattr(self, 'suite')
@@ -828,10 +824,9 @@ class DataSet(object):
         self.isFinalized = []
         self.readmaxevals = []
         self.readfinalFminusFtarget = []
-        self.testbed_name = self.get_testbed_name()
 
         if not testbedsettings.current_testbed:
-            testbedsettings.load_current_testbed(self.testbed_name, TargetValues)
+            testbedsettings.load_current_testbed(self.suite_name, TargetValues)
 
         # Split line in data file name(s) and run time information.
         parts = data.split(', ')

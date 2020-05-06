@@ -227,7 +227,6 @@ class BestAlgSet(DataSet):
             self.comment = dict_alg[sortedAlgs[0]].comment.lstrip('%% ')
         self.ert = np.array(reserts)
         self.target = res[:, 0]
-        self.testbed = dict_alg[sortedAlgs[0]].testbed_name # TODO: not nice
         self.suite = getattr(dict_alg[sortedAlgs[0]], 'suite', None)
         self.used_algorithms = sortedAlgs
         bestfinalfunvals = np.array([np.inf])

@@ -144,7 +144,7 @@ def main(args, outputdir):
     from . import config
     config.config_target_values_setting(genericsettings.isExpensive,
                                         genericsettings.runlength_based_targets)
-    config.config(dsList[0].get_testbed_name())
+    config.config(dsList[0].suite_name)
 
     for i in dsList:
         if i.dim not in testbedsettings.current_testbed.dimensions_to_display:
@@ -195,7 +195,7 @@ def main(args, outputdir):
 
     # empirical cumulative distribution functions (ECDFs) aka Data profiles
     if genericsettings.isRLDistr:
-        config.config(dsList[0].get_testbed_name())
+        config.config(dsList[0].suite_name)
 
         if len(genericsettings.foreground_algorithm_list) == 2:
             print("ECDF runlength ratio graphs...")
@@ -378,7 +378,7 @@ def main(args, outputdir):
                     sortedAlgs,
                     many_algorithms_output,
                     ([1, 20, 38] if (testbedsettings.current_testbed.name ==
-                                     testbedsettings.testbed_name_bi) else True),
+                                     testbedsettings.suite_name_bi) else True),
                     latex_commands_file)
         print_done()
 

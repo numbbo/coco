@@ -73,16 +73,16 @@ def prepare_scaling_figure_caption():
     scaling_figure_caption_fixed = scaling_figure_caption_start_fixed + scaling_figure_caption_end
     scaling_figure_caption_rlbased = scaling_figure_caption_start_rlbased + scaling_figure_caption_end
 
-    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
-                                                testbedsettings.testbed_name_cons,
-                                                testbedsettings.testbed_name_ls,
-                                                testbedsettings.testbed_name_mixint,
-                                                testbedsettings.testbed_name_bi_mixint]:
+    if testbedsettings.current_testbed.name in [testbedsettings.suite_name_bi_ext,
+                                                testbedsettings.suite_name_cons,
+                                                testbedsettings.suite_name_ls,
+                                                testbedsettings.suite_name_mixint,
+                                                testbedsettings.suite_name_bi_mixint]:
         # NOTE: no runlength-based targets supported yet
         figure_caption = scaling_figure_caption_fixed
-    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
-                                                  testbedsettings.testbed_name_single_noisy,
-                                                  testbedsettings.testbed_name_bi]:
+    elif testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
+                                                  testbedsettings.suite_name_single_noisy,
+                                                  testbedsettings.suite_name_bi]:
         if genericsettings.runlength_based_targets:
             figure_caption = scaling_figure_caption_rlbased
         else:
@@ -131,16 +131,16 @@ def prepare_ecdfs_figure_caption():
                 r"$\{0.5, \dots, 50\}$. "
                 )
 
-    if testbed.name in [testbedsettings.testbed_name_bi_ext,
-                        testbedsettings.testbed_name_cons,
-                        testbedsettings.testbed_name_ls,
-                        testbedsettings.testbed_name_mixint,
-                        testbedsettings.testbed_name_bi_mixint]:
+    if testbed.name in [testbedsettings.suite_name_bi_ext,
+                        testbedsettings.suite_name_cons,
+                        testbedsettings.suite_name_ls,
+                        testbedsettings.suite_name_mixint,
+                        testbedsettings.suite_name_bi_mixint]:
         # NOTE: no runlength-based targets supported yet
         figure_caption = ecdfs_figure_caption_standard
-    elif testbed.name in [testbedsettings.testbed_name_single,
-                          testbedsettings.testbed_name_single_noisy,
-                          testbedsettings.testbed_name_bi]:
+    elif testbed.name in [testbedsettings.suite_name_single,
+                          testbedsettings.suite_name_single_noisy,
+                          testbedsettings.suite_name_bi]:
         if genericsettings.runlength_based_targets:
             figure_caption = ecdfs_figure_caption_rlbased + refalgtext
         else:
