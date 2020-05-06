@@ -762,3 +762,7 @@ class GECCOBBOBBiObjMixintTestbed(GECCOBiObjExtBBOBTestbed):
             setattr(self, key, val)
             if 'target_values' in key or 'targetsOfInterest' in key:
                 self.instantiate_attributes(targetValues, [key])
+
+    def filter(self, dsl):
+        ''' Does nothing on dsl (overriding the filter method of the superclass). '''
+        return dsl
