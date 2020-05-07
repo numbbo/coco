@@ -57,8 +57,8 @@ def main(latex_commands_for_html):
 
     f.write(header)
 
-    single_objective_testbed = testbedsettings.default_testbed_single_noisy if genericsettings.isNoisy \
-        else testbedsettings.default_testbed_single
+    single_objective_testbed = testbedsettings.default_suite_single_noisy if genericsettings.isNoisy \
+        else testbedsettings.default_suite_single
 
     for scenario in testbedsettings.all_scenarios:
         # set up scenario, especially wrt genericsettings
@@ -70,22 +70,22 @@ def main(latex_commands_for_html):
             config.config(single_objective_testbed)
         elif scenario == testbedsettings.scenario_biobjfixed:
             genericsettings.runlength_based_targets = False
-            config.config(testbedsettings.default_testbed_bi)
+            config.config(testbedsettings.default_suite_bi)
         elif scenario == testbedsettings.scenario_biobjrlbased:
             genericsettings.runlength_based_targets = True
-            config.config(testbedsettings.default_testbed_bi)
+            config.config(testbedsettings.default_suite_bi)
         elif scenario == testbedsettings.scenario_biobjextfixed:
             genericsettings.runlength_based_targets = False
-            config.config(testbedsettings.default_testbed_bi_ext)
+            config.config(testbedsettings.suite_name_bi_ext)
         elif scenario == testbedsettings.scenario_constrainedfixed:
             genericsettings.runlength_based_targets = False
-            config.config(testbedsettings.default_testbed_cons)
+            config.config(testbedsettings.suite_name_cons)
         elif scenario == testbedsettings.scenario_largescalefixed:
             genericsettings.runlength_based_targets = False
-            config.config(testbedsettings.default_testbed_ls)
+            config.config(testbedsettings.suite_name_ls)
         elif scenario == testbedsettings.scenario_mixintfixed:
             genericsettings.runlength_based_targets = False
-            config.config(testbedsettings.default_testbed_mixint)
+            config.config(testbedsettings.suite_name_mixint)
         else:
             warnings.warn("Scenario not supported yet in HTML")
 
