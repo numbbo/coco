@@ -589,7 +589,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
         if bbobbiobj_detected and bbobbiobjext_detected:
             dsl = list(filter(lambda ds: ds.funcId <= 55, dsl))
             for ds in dsl:
-                ds.suite_name = 'bbob-biobj'
+                ds.suite = 'bbob-biobj'  # to be available via ds.suite_name
         return dsl
 
 
