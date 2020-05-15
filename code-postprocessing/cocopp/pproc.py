@@ -206,7 +206,7 @@ class RunlengthBasedTargetValues(TargetValues):
         >>> # make sure to use the right `bbob` test suite for the test below:
         >>> cocopp.genericsettings.isNoisy = False
         >>> cocopp.genericsettings.isNoiseFree = False
-        >>> cocopp.config.config('GECCOBBOBTestbed')
+        >>> cocopp.config.config('bbob')
         >>> targets = cocopp.pproc.RunlengthBasedTargetValues([0.5, 1.2, 3, 10, 50])  # by default times_dimension==True
         >>> # make also sure to have loaded the corresponding reference algo
         >>> # from BBOB-2009:
@@ -625,8 +625,6 @@ class DataSet(object):
         funvals
         generateRLData
         get_data_format
-        get_suite
-        get_testbed_name
         indexFiles
         info
         instancenumbers
@@ -646,8 +644,8 @@ class DataSet(object):
         reference_values
         splitByTrials
         success_ratio
+        suite_name
         target
-        testbed_name
         >>> all(ds.evals[:, 0] == ds.target)  # first column of ds.evals is the "target" f-value
         True
         >>> # investigate row 0,10,20,... and of the result columns 0,5,6, index 0 is ftarget
@@ -708,7 +706,7 @@ class DataSet(object):
         >>> assert 2.01200000e+03 <= (dslist[2].evals[-1])[-1] <= 2.01200001e+03
         >>> # because testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] was None
         >>> cocopp.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = [1, 3]
-        >>> cocopp.config.config('GECCOBBOBTestbed') # make sure that settings are used
+        >>> cocopp.config.config('bbob') # make sure that settings are used
         >>> dslist2 = cocopp.load(infoFile)
           Data consistent according to consistency_check() in pproc.DataSet
         >>> dslist2[2].instancenumbers
@@ -719,7 +717,7 @@ class DataSet(object):
         >>> assert 2.20700000e+03 <= (dslist2[2].evals[-1])[-1] <= 2.20700001e+03
         >>> # set things back to cause no troubles elsewhere:
         >>> cocopp.testbedsettings.GECCOBBOBTestbed.settings['instancesOfInterest'] = None
-        >>> cocopp.config.config('GECCOBBOBTestbed') # make sure that settings are used
+        >>> cocopp.config.config('bbob') # make sure that settings are used
 
     """
 
@@ -748,10 +746,6 @@ class DataSet(object):
     def isBiobjective(self):
         return hasattr(self, 'indicator')
 
-    def get_testbed_name(self):
-        suite = self.get_suite()
-        return testbedsettings.get_testbed_from_suite(suite)
-
     def get_data_format(self):
         # TODO: data_format is a specification of the files written by the 
         # experiment loggers. I believe it was never meant to be a specification
@@ -762,7 +756,9 @@ class DataSet(object):
             return 'bbob-biobj'
         return None
 
-    def get_suite(self):
+    @property
+    def suite_name(self):
+        """Returns a string, with the name of the DataSet's underlying test suite."""
         suite = None
         if hasattr(self, 'suite'):
             suite = getattr(self, 'suite')
@@ -828,10 +824,9 @@ class DataSet(object):
         self.isFinalized = []
         self.readmaxevals = []
         self.readfinalFminusFtarget = []
-        self.testbed_name = self.get_testbed_name()
 
         if not testbedsettings.current_testbed:
-            testbedsettings.load_current_testbed(self.testbed_name, TargetValues)
+            testbedsettings.load_current_testbed(self.suite_name, TargetValues)
 
         # Split line in data file name(s) and run time information.
         parts = data.split(', ')

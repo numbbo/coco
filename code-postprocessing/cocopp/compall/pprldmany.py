@@ -170,12 +170,12 @@ def beautify():
 
     global divide_by_dimension
     if divide_by_dimension:
-        if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
             plt.xlabel('log10(# (f+g)-evals / dimension)', fontsize=label_fontsize)
         else:
             plt.xlabel('log10(# f-evals / dimension)', fontsize=label_fontsize)
     else:
-        if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
             plt.xlabel('log10(# (f+g)-evals)', fontsize=label_fontsize)
         else:
             plt.xlabel('log10(# f-evals)', fontsize=label_fontsize)

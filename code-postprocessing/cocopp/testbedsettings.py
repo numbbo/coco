@@ -25,14 +25,14 @@ all_scenarios = [scenario_rlbased, scenario_fixed,
                  scenario_largescalefixed, scenario_mixintfixed,
                  scenario_biobjmixintfixed]
 
-testbed_name_single = 'bbob'
-testbed_name_single_noisy = 'bbob-noisy'
-testbed_name_bi = 'bbob-biobj'
-testbed_name_bi_ext = 'bbob-biobj-ext'
-testbed_name_cons = 'bbob-constrained'
-testbed_name_ls = 'bbob-largescale'
-testbed_name_mixint = 'bbob-mixint'
-testbed_name_bi_mixint = 'bbob-biobj-mixint'
+suite_name_single = 'bbob'
+suite_name_single_noisy = 'bbob-noisy'
+suite_name_bi = 'bbob-biobj'
+suite_name_bi_ext = 'bbob-biobj-ext'
+suite_name_cons = 'bbob-constrained'
+suite_name_ls = 'bbob-largescale'
+suite_name_mixint = 'bbob-mixint'
+suite_name_bi_mixint = 'bbob-biobj-mixint'
 
 default_suite_single = 'bbob'
 default_suite_single_noisy = 'bbob-noisy'
@@ -45,7 +45,6 @@ default_testbed_bi_ext = 'GECCOBiObjExtBBOBTestbed'
 default_testbed_cons = 'CONSBBOBTestbed'
 default_testbed_ls = 'BBOBLargeScaleTestbed'
 default_testbed_mixint = 'GECCOBBOBMixintTestbed'
-default_testbed_bi_mixint = 'GECCOBBOBBiObjMixintTestbed'
 
 current_testbed = None
 
@@ -57,7 +56,7 @@ suite_to_testbed = {
     'bbob-constrained': default_testbed_cons,
     'bbob-largescale': default_testbed_ls,
     'bbob-mixint': default_testbed_mixint,
-    'bbob-biobj-mixint': default_testbed_bi_mixint,
+    'bbob-biobj-mixint': 'GECCOBBOBBiObjMixintTestbed',
     'bbob-JOINED-bbob-largescale': 'BBOBLargeScaleJOINEDTestbed',
 }
 
@@ -67,15 +66,22 @@ def reset_current_testbed():
     current_testbed = None
 
 
-def load_current_testbed(testbed_name, target_values):
+def load_current_testbed(suite_name, target_values):
+    """ Loads testbed class corresponding to suite_name.
+
+    The parameter suite_name is a string, defining the
+    test suite to be loaded, for example `bbob`, `bbob-biobj`,
+    `bbob-largescale`, ...
+    """
     global current_testbed
 
+    testbed_name = get_testbed_from_suite(suite_name)
     if testbed_name in globals():
         constructor = globals()[testbed_name]
         current_testbed = constructor(target_values)
     else:
-        raise ValueError('Testbed class %s does not exist. Add it to testbedsettings.py to process this data.'
-                         % testbed_name)
+        raise ValueError('Testbed class %s (corresponding to suite %s) does not exist.\n  Add it to testbedsettings.py to process this data.'
+                         % (testbed_name, suite_name))
     return current_testbed
 
 
@@ -226,7 +232,7 @@ class GECCOBBOBTestbed(Testbed):
     settings = dict(
         info_filename='bbob-benchmarkinfos.txt',
         shortinfo_filename=shortinfo_filename,
-        name=testbed_name_single,
+        name=suite_name_single,
         short_names=get_short_names(shortinfo_filename),
         dimensions_to_display=(2, 3, 5, 10, 20, 40),
         goto_dimension=20,  # auto-focus on this dimension in html
@@ -314,7 +320,7 @@ class GECCOBBOBTestbed(Testbed):
         bbob_detected = False
         bbob_largescale_detected = False
         for ds in dsl:
-            detected_suite = ds.get_suite()
+            detected_suite = ds.suite_name
             if detected_suite == 'bbob':
                 bbob_detected = True
             elif detected_suite == 'bbob-largescale':
@@ -325,13 +331,12 @@ class GECCOBBOBTestbed(Testbed):
                 raise ValueError("Data from %s suite is not "
                                  "compatible with other data from "
                                  "the bbob and/or bbob-largescale "
-                                 "suites" % str(ds.get_suite()))
+                                 "suites" % str(ds.suite_name))
 
         # now update all elements in flattened list if needed:
         if bbob_detected and bbob_largescale_detected:
             for ds in dsl:
-                ds.get_suite = lambda: 'bbob-JOINED-bbob-largescale'
-                ds.testbed_name = 'bbob-largescale'  # used mainly for display in plots
+                ds.suite = 'bbob-largescale'  # to be available via ds.suite_name
             # make sure that the right testbed is loaded:
 
         return dsl
@@ -393,7 +398,7 @@ class CONSBBOBTestbed(GECCOBBOBTestbed):
         info_filename='bbob-constrained-benchmarkinfos.txt',
         shortinfo_filename=shortinfo_filename,
         short_names=get_short_names(shortinfo_filename),
-        name=testbed_name_cons,
+        name=suite_name_cons,
         functions_with_legend=(1, 48),
         first_function_number=1,
         last_function_number=48,
@@ -453,7 +458,7 @@ class GECCOBBOBNoisyTestbed(GECCOBBOBTestbed):
         info_filename='bbob-noisy-benchmarkinfos.txt',
         shortinfo_filename=shortinfo_filename,
         short_names=get_short_names(shortinfo_filename),
-        name=testbed_name_single, # TODO: until we clean the code which uses this name, we need to use it also here.
+        name=suite_name_single, # TODO: until we clean the code which uses this name, we need to use it also here.
         functions_with_legend=(101, 130),
         first_function_number=101,
         last_function_number=130,
@@ -497,7 +502,7 @@ class GECCOBiObjBBOBTestbed(Testbed):
     settings = dict(
         info_filename='bbob-biobj-benchmarkinfos.txt',
         shortinfo_filename=shortinfo_filename,
-        name=testbed_name_bi,
+        name=suite_name_bi,
         short_names=get_short_names(shortinfo_filename),
         dimensions_to_display=(2, 3, 5, 10, 20, 40),
         goto_dimension=20,  # auto-focus on this dimension in html
@@ -570,22 +575,21 @@ class GECCOBiObjBBOBTestbed(Testbed):
         bbobbiobj_detected = False
         bbobbiobjext_detected = False
         for ds in dsl:
-            if ds.get_suite() == 'bbob-biobj':
+            if ds.suite_name == 'bbob-biobj':
                 bbobbiobj_detected = True
-            elif ds.get_suite() == 'bbob-biobj-ext':
+            elif ds.suite_name == 'bbob-biobj-ext':
                 bbobbiobjext_detected = True
             else:
                 raise ValueError("Data from %s suite is not "
                                  "compatible with other data from "
                                  "the bbob-biobj and/or bbob-biobj-ext "
-                                 "suites" % str(ds.get_suite()))
+                                 "suites" % str(ds.suite_name))
 
         # now filter all elements in flattened list if needed:
         if bbobbiobj_detected and bbobbiobjext_detected:
             dsl = list(filter(lambda ds: ds.funcId <= 55, dsl))
             for ds in dsl:
-                ds.get_suite = lambda: 'bbob-biobj'
-                ds.testbed_name = 'bbob-biobj'   # hack, see issue #1933
+                ds.suite = 'bbob-biobj'  # to be available via ds.suite_name
         return dsl
 
 
@@ -599,7 +603,7 @@ class GECCOBiObjExtBBOBTestbed(GECCOBiObjBBOBTestbed):
     settings = dict(
         info_filename='bbob-biobj-ext-benchmarkinfos.txt',
         shortinfo_filename=shortinfo_filename,
-        name=testbed_name_bi_ext,
+        name=suite_name_bi_ext,
         short_names=get_short_names(shortinfo_filename),
         functions_with_legend=(1, 30, 31, 60, 61, 92),
         first_function_number=1,
@@ -638,7 +642,7 @@ class BBOBLargeScaleTestbed(GECCOBBOBTestbed):
     settings = dict(
         info_filename='bbob-largescale-benchmarkinfos.txt',
         shortinfo_filename=shortinfo_filename,
-        name=testbed_name_ls,
+        name=suite_name_ls,
         short_names=get_short_names(shortinfo_filename),
         dimensions_to_display=(20, 40, 80, 160, 320, 640),
         goto_dimension=160,  # auto-focus on this dimension in html
@@ -701,7 +705,7 @@ class GECCOBBOBMixintTestbed(GECCOBBOBTestbed):
     dimsOfInterest = (10, 40)
 
     settings = dict(
-        name=testbed_name_mixint,
+        name=suite_name_mixint,
         first_dimension=5,
         dimensions_to_display=[5, 10, 20, 40, 80, 160],
         goto_dimension=40,  # auto-focus on this dimension in html
@@ -737,7 +741,7 @@ class GECCOBBOBBiObjMixintTestbed(GECCOBiObjExtBBOBTestbed):
     dimsOfInterest = (10, 40)
 
     settings = dict(
-        name=testbed_name_bi_mixint,
+        name=suite_name_bi_mixint,
         first_dimension=5,
         dimensions_to_display=[5, 10, 20, 40, 80, 160],
         goto_dimension=40,  # auto-focus on this dimension in html
@@ -758,3 +762,7 @@ class GECCOBBOBBiObjMixintTestbed(GECCOBiObjExtBBOBTestbed):
             setattr(self, key, val)
             if 'target_values' in key or 'targetsOfInterest' in key:
                 self.instantiate_attributes(targetValues, [key])
+
+    def filter(self, dsl):
+        ''' Does nothing on dsl (overriding the filter method of the superclass). '''
+        return dsl

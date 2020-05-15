@@ -67,6 +67,7 @@ def main(alg, outputdir, argv=None):
     algoutputdir = os.path.join(outputdir, algfolder)
 
     print("\nPost-processing (1)")
+    print("  loading data...")
 
     dsList = DataSetList(alg)
 
@@ -81,6 +82,9 @@ def main(alg, outputdir, argv=None):
     if genericsettings.isNoiseFree and not genericsettings.isNoisy:
         dsList = dsList.dictByNoise().get('noiselessall', DataSetList())
 
+    # filter to allow postprocessing data from different test suites:
+    dsList = testbedsettings.current_testbed.filter(dsList)
+
     store_reference_values(dsList)
 
     # compute maxfuneval values
@@ -91,7 +95,7 @@ def main(alg, outputdir, argv=None):
     from . import config
     config.config_target_values_setting(genericsettings.isExpensive,
                                         genericsettings.runlength_based_targets)
-    config.config(dsList[0].testbed_name)
+    config.config(dsList[0].suite_name)
     if genericsettings.verbose:
         for i in dsList:
             # check whether current set of instances correspond to correct
@@ -137,7 +141,7 @@ def main(alg, outputdir, argv=None):
     else:
         algorithm_string = ""
     page_title = 'Results%s on the <TT>%s</TT> Benchmark Suite' % \
-                 (algorithm_string, dictFunc[list(dictFunc.keys())[0]][0].get_suite())
+                 (algorithm_string, dictFunc[list(dictFunc.keys())[0]][0].suite_name)
     ppfig.save_single_functions_html(os.path.join(algoutputdir, genericsettings.single_algorithm_file_name),
                                      page_title,
                                      htmlPage=ppfig.HtmlPage.ONE,

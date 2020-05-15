@@ -256,7 +256,8 @@ def main(argv=None):
         # Process options
         shortoptlist = list("-" + i.rstrip(":")
                             for i in _split_short_opt_list(shortoptlist))
-        shortoptlist.remove("-o")
+        if "-o" in shortoptlist:
+            shortoptlist.remove("-o") # 2020/6/5: TODO: not sure why this is done
         longoptlist = list("--" + i.rstrip("=") for i in longoptlist)
 
         plt.rc("axes", **genericsettings.rcaxes)

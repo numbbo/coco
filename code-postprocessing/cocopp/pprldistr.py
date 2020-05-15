@@ -146,13 +146,13 @@ def caption_single():
          #1"""
     caption_left_fixed_targets = r"""%
          Left subplots: ECDF of the number of function evaluations """ + (
-         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons
          else r"""(FEvals)""") + (r""" divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ with $!!DF!!=10^{k}$, where $k$ is the first value in the legend.
          The thick red line represents the most difficult target value $!!FOPT!!+ !!HARDEST-TARGET-LATEX!!$. """)
     caption_left_rlbased_targets = r"""%
          Left subplots: ECDF of number of function evaluations """ + (
-         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons
          else r"""(FEvals)""") + r""" divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ where !!DF!!{} is the
          target just not reached by !!THE-REF-ALG!! within a budget of
@@ -167,18 +167,18 @@ def caption_single():
          where !!DF!! and \textsf{Df} denote the difference to the optimal function value. 
          !!LIGHT-BROWN-LINES!!"""
 
-    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
+    if testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
                                                 testbedsettings.default_testbed_single_noisy,
-                                                testbedsettings.testbed_name_bi]:
+                                                testbedsettings.suite_name_bi]:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_part_one + caption_left_rlbased_targets + caption_right
         else:
             figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
-    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
-                                                  testbedsettings.testbed_name_cons,
-                                                  testbedsettings.testbed_name_ls,
-                                                  testbedsettings.testbed_name_mixint,
-                                                  testbedsettings.testbed_name_bi_mixint]:
+    elif testbedsettings.current_testbed.name in [testbedsettings.suite_name_bi_ext,
+                                                  testbedsettings.suite_name_cons,
+                                                  testbedsettings.suite_name_ls,
+                                                  testbedsettings.suite_name_mixint,
+                                                  testbedsettings.suite_name_bi_mixint]:
         # no best algorithm defined yet:
         figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
     else:
@@ -207,8 +207,8 @@ def caption_two():
     caption_two_fixed_targets_part3 = r""")%
         . """ + (r"""Light beige lines show the ECDF of FEvals for target value
         $!!DF!!=!!HARDEST-TARGET-LATEX!!$ of all algorithms benchmarked during
-        BBOB-2009. """ if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
-                                                                   testbedsettings.testbed_name_single_noisy]
+        BBOB-2009. """ if testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
+                                                                   testbedsettings.suite_name_single_noisy]
         else "") + r"""Right sub-columns:
         ECDF of FEval ratios of \algorithmA\ divided by \algorithmB\ for target
         function values $10^k$ with $k$ given in the legend; all
@@ -246,16 +246,16 @@ def caption_two():
                            + symbAlgorithmB
                            + caption_two_rlbased_targets_part3)
 
-    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
-                                                testbedsettings.testbed_name_cons,
-                                                testbedsettings.testbed_name_ls,
-                                                testbedsettings.testbed_name_mixint,
-                                                testbedsettings.testbed_name_bi_mixint]:
+    if testbedsettings.current_testbed.name in [testbedsettings.suite_name_bi_ext,
+                                                testbedsettings.suite_name_cons,
+                                                testbedsettings.suite_name_ls,
+                                                testbedsettings.suite_name_mixint,
+                                                testbedsettings.suite_name_bi_mixint]:
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_two_fixed
-    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
-                                                  testbedsettings.testbed_name_single_noisy,
-                                                  testbedsettings.testbed_name_bi]:
+    elif testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
+                                                  testbedsettings.suite_name_single_noisy,
+                                                  testbedsettings.suite_name_bi]:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_two_rlbased
         else:
@@ -319,7 +319,7 @@ def beautifyRLD(xlimit_max=None):
     """
     a = plt.gca()
     a.set_xscale('log')
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+    if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
         a.set_xlabel('log10 of (f+g)-evals / dimension')
     else:
         a.set_xlabel('log10 of FEvals / DIM')
@@ -651,7 +651,7 @@ def beautify():
     plt.subplot(121)
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+    if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
         axisHandle.set_xlabel('log10 of (f+g)-evals / dimension')
     else:
         axisHandle.set_xlabel('log10 of FEvals / DIM')
