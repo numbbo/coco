@@ -33,8 +33,8 @@ matplotlib.use('Agg')  # To avoid window popup and use without X forwarding
 __all__ = ['main']
 
 # Used by getopt:
-shortoptlist = "hvo:"
-longoptlist = ["help", "output-dir=", "noisy", "noise-free",
+short_options = "hvo:"
+long_options = ["help", "output-dir=", "noisy", "noise-free",
                "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
                "verbose", "settings=", "conv",
                "expensive", "runlength-based",
@@ -228,8 +228,8 @@ def main(argv=None):
     also be presented as a list of strings.
 
     """
-    global shortoptlist
-    global longoptlist
+    # global shortoptlist
+    # global longoptlist
 
     if argv is None:
         argv = sys.argv[1:]
@@ -237,8 +237,8 @@ def main(argv=None):
         argv = argv.split()
     try:
         try:
-            opts, args = getopt.getopt(argv, shortoptlist,
-                                       longoptlist +
+            opts, args = getopt.getopt(argv, short_options,
+                                       long_options +
                                        ['include-single', 'in-a-hurry=', 'input-path='])
         except getopt.error as msg:
             raise Usage(msg)
@@ -255,10 +255,10 @@ def main(argv=None):
 
         # Process options
         shortoptlist = list("-" + i.rstrip(":")
-                            for i in _split_short_opt_list(shortoptlist))
+                            for i in _split_short_opt_list(short_options))
         if "-o" in shortoptlist:
             shortoptlist.remove("-o") # 2020/6/5: TODO: not sure why this is done
-        longoptlist = list("--" + i.rstrip("=") for i in longoptlist)
+        longoptlist = list("--" + i.rstrip("=") for i in long_options)
 
         plt.rc("axes", **genericsettings.rcaxes)
         plt.rc("xtick", **genericsettings.rctick)
