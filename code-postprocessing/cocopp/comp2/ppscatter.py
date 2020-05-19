@@ -380,9 +380,9 @@ def main(dsList0, dsList1, outputdir, settings):
 
         # set x- and y-labels based on which algorithm is compared
         a = plt.gca()
-        a.set_xlabel('log10(ERT of %s)' % dsList0[0].algId,
+        a.set_xlabel('log10(ERT of %s)' % dsList0[0].algId[:19],
                      fontsize=0.85*genericsettings.rcfont["size"])
-        a.set_ylabel('log10(ERT of %s)' % dsList1[0].algId,
+        a.set_ylabel('log10(ERT of %s)' % dsList1[0].algId[:19],
                      fontsize=0.85*genericsettings.rcfont["size"])
 
         fontSize = getFontSize(funInfos.values())
