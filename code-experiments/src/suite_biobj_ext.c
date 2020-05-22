@@ -81,9 +81,10 @@ static coco_suite_t *suite_biobj_ext_initialize(void) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 2, 3, 5, 10, 20, 40 };
+  const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob-biobj-ext", 55+37, 6, dimensions, "year: 2018");
+  suite = coco_suite_allocate("bbob-biobj-ext", 55+37, num_dimensions, dimensions, "year: 2018");
 
   return suite;
 }
