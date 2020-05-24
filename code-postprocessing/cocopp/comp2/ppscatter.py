@@ -249,8 +249,10 @@ def main(dsList0, dsList1, outputdir, settings):
                              marker='x', markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=2,
                              clip_on=False)
-            #ax = plt.gca()
-            ax = plt.axes()
+            warnings.filterwarnings('ignore', category=matplotlib.MatplotlibDeprecationWarning)
+            ax = plt.gca()  # doesn't give a warning anymore in mpl version 3.1.3
+            # ax = plt.axes()
+            warnings.filterwarnings('default', category=matplotlib.MatplotlibDeprecationWarning)
 
             # plot data on the right edge
             idx = numpy.isinf(xdata) * (numpy.isinf(ydata) == False)
@@ -380,9 +382,9 @@ def main(dsList0, dsList1, outputdir, settings):
 
         # set x- and y-labels based on which algorithm is compared
         a = plt.gca()
-        a.set_xlabel('log10(ERT of %s)' % dsList0[0].algId[:19],
+        a.set_xlabel('log10(ERT of %s)' % dsList0[0].algId[:18],
                      fontsize=0.85*genericsettings.rcfont["size"])
-        a.set_ylabel('log10(ERT of %s)' % dsList1[0].algId[:19],
+        a.set_ylabel('log10(ERT of %s)' % dsList1[0].algId[:18],
                      fontsize=0.85*genericsettings.rcfont["size"])
 
         fontSize = getFontSize(funInfos.values())

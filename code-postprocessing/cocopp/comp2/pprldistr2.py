@@ -7,6 +7,7 @@ from __future__ import absolute_import
 
 import os
 import sys
+import warnings
 import numpy
 import matplotlib.pyplot as plt
 from .. import toolsstats, pproc, toolsdivers
@@ -144,12 +145,17 @@ def plotLogAbs(dsList0, dsList1, dim, targetValuesToReach):
             tmp1 = numpy.reshape(evals1[func][j], (1, len(evals1[func][j])))
             tmp0 = numpy.reshape(evals0[func][j], (len(evals0[func][j]), 1))
             try:
+                # outer product is difficult to control elementwise
+                if numpy.any(numpy.isinf(tmp1)) and numpy.any(numpy.isinf(tmp0)):
+                    warnings.filterwarnings('ignore', message=r"invalid value encountered in true_divide",
+                                            category=RuntimeWarning)
                 x.append((tmp1/tmp0).flatten())  # inf/inf results in nan
             except FloatingPointError: 
                 if numpy.isfinite(tmp1).all() or numpy.isfinite(tmp1).all():
-                    raise
-                
+                    raise          
                 #TODO: check division, check numpy.inf...
+            finally:
+                warnings.filterwarnings('default')                
 
         if isinstance(targetValuesToReach, pproc.RunlengthBasedTargetValues):
             label = '%s: %d/%d' % (targetValuesToReach.label(j), succ1[j], succ0[j])
