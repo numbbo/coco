@@ -35,7 +35,8 @@ static coco_suite_t *suite_bbob_mixint_initialize(const char *suite_name) {
 
   coco_suite_t *suite;
   const size_t dimensions[] = { 5, 10, 20, 40, 80, 160 };
-  suite = coco_suite_allocate(suite_name, 24, 6, dimensions, "instances: 1-15");
+  const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
+  suite = coco_suite_allocate(suite_name, 24, num_dimensions, dimensions, "instances: 1-15");
 
   return suite;
 }
