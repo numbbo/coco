@@ -249,10 +249,10 @@ def main(dsList0, dsList1, outputdir, settings):
                              marker='x', markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=2,
                              clip_on=False)
-            warnings.filterwarnings('ignore', category=matplotlib.MatplotlibDeprecationWarning)
+            warnings.filterwarnings('ignore')  # , category=matplotlib.MatplotlibDeprecationWarning)
             ax = plt.gca()  # doesn't give a warning anymore in mpl version 3.1.3
             # ax = plt.axes()
-            warnings.filterwarnings('default', category=matplotlib.MatplotlibDeprecationWarning)
+            warnings.filterwarnings('default')  # , category=matplotlib.MatplotlibDeprecationWarning)
 
             # plot data on the right edge
             idx = numpy.isinf(xdata) * (numpy.isinf(ydata) == False)
