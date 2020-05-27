@@ -1848,7 +1848,7 @@ class DataSetList(list):
             if 11 < 3:  # would break searching of algId in archives
                 alg_name = toolsdivers.str_to_latex(alg_name)  # not really necessary but ' ' seems nicer than '_'
         try:
-            f = openfile(indexFile)
+            f = openfile(indexFile, errors='replace')  # strange chars in names may cause errors
             if genericsettings.verbose:
                 print('Processing %s.' % indexFile)
 

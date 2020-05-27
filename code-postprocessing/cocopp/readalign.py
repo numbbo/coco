@@ -424,14 +424,15 @@ def alignArrayData(data):
     # of the data.
 
 
-def openfile(filePath):
+def openfile(filePath, **kwargs):
+    """`kwargs` are passed to `open`"""
     if not os.path.isfile(filePath):
         if ('win32' in sys.platform) and len(filePath) > 259:
             raise IOError(2, 'The path is too long for the file "%s".' % filePath)
         else:
             raise IOError(2, 'The file "%s" does not exist.' % filePath)
 
-    return open(filePath, 'r')
+    return open(filePath, 'r', **kwargs)
 
 
 def split(dataFiles, idx_to_load=None, dim=None):
