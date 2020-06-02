@@ -610,11 +610,11 @@ Links and Documentation <a name="Links"></a>
 * The [_BBOB workshop series_](http://numbbo.github.io/workshops), which uses the
   NumBBO/Coco framework extensively, can be tracked
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
-* Data sets from previous experiments for many algorithms are available
-  at http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob for the `bbob` test suite, 
-  at http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob-noisy for the `bbob-noisy`
-  test suite and at http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob-biobj
-  for the `bbob-biobj` test suite.
+* Data sets from previous experiments for many algorithms are available at
+  - http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob for the `bbob` test suite
+  - http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob-noisy for the `bbob-noisy` test suite
+  - http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob-biobj for the `bbob-biobj` test suite, and at
+  - http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob-largescale for the `bbob-largescale` test suite.
 * Postprocessed data for each year in which a BBOB workshop was taking place can be
   found at http://coco.gforge.inria.fr/ppdata-archive
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
