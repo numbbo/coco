@@ -323,8 +323,6 @@ our issue tracker at https://github.com/numbbo/coco/issues.
   output of the `bbob-biobj` logger from archive files (needed when the hypervolume
   reference values are updated)
 
-* docs should contain an updated version of the documentation, see above.
-
 * howtos contains a few text files with generic howtos.
 
 
