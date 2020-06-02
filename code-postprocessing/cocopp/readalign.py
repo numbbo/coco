@@ -431,8 +431,12 @@ def openfile(filePath, **kwargs):
             raise IOError(2, 'The path is too long for the file "%s".' % filePath)
         else:
             raise IOError(2, 'The file "%s" does not exist.' % filePath)
-
-    return open(filePath, 'r', **kwargs)
+    try:
+        return open(filePath, 'r', **kwargs)
+    except TypeError:  # prevent TypeError: 'errors' is an invalid keyword argument for this function in Jenkins test
+        if 'errors' in kwargs:
+            kwargs.pop('errors')
+        return open(filePath, 'r', **kwargs)
 
 
 def split(dataFiles, idx_to_load=None, dim=None):
