@@ -325,7 +325,7 @@ our issue tracker at https://github.com/numbbo/coco/issues.
 
 * docs should contain an updated version of the documentation, see above.
 
-* howtos contains a few text files with internal howtos.
+* howtos contains a few text files with generic howtos.
 
 
 Known Issues / Trouble-Shooting <a name="Known-Issues"></a>
