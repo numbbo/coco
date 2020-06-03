@@ -1311,16 +1311,33 @@ class OfficialArchives(object):
         
         `target` is by default `self`.
         
-        Details: This method can only be called when the class names and the module
-        attribute `official_archives: OfficialArchive` (used in `get`) are
-        available. Depending on the implementation of `get`, it may download the
-        definition files on its first-ever call by/on any given user/machine.
+        Details: This method can only be called when the class names and
+        the module attribute `official_archives: OfficialArchive` (used in
+        `get`) are available. It creates new instances of the archives.
+        Depending on the implementation of `get`, it may download the
+        definition files on its first-ever call by/on any given
+        user/machine.
         """
         for name in self.names:
             if name not in except_for:
                 setattr(target or self, name.replace('-', '_'),
                         get(name).update() if update else get(name))
         return self
+
+    def link_as_attributes_in(self, target, except_for=('test',),
+                              update=False):
+        """Assign all archives as attribute of `target` except for ``'test'``.
+        
+        `target` is by default `self`.
+        
+        Details: This method can only be called when the class names and the module
+        attribute `official_archives: OfficialArchive` (used in `get`) are
+        available. It only creates links to the existing archives.
+        """
+        for name in self.names:
+            if name not in except_for:
+                name = name.replace('-', '_')
+                setattr(target, name, getattr(self, name))
 
     @property
     def names(self):
@@ -1351,7 +1368,10 @@ class OfficialArchives(object):
         return self._get(name, 1) or COCODataArchive
 
     def update_all(self):
-        self.set_as_attributes_in(update=True) 
+        # self.set_as_attributes_in(update=True)
+        for name in self.names:
+            name = name.replace('-', '_')
+            getattr(self, name).update()
 
 official_archives = OfficialArchives()
 # TODO-decide: when should we (try to) update these?
