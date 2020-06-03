@@ -374,7 +374,7 @@ def main(argv=None):
 
         update_background_algorithms(inputdir)
 
-        print('  Using:')
+        print('  Using %d data set%s:' % (len(args), 's' if len(args) > 1 else ''))
         for path in args:
             print('    %s' % path)
 
