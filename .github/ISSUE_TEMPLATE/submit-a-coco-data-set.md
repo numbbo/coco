@@ -9,7 +9,7 @@ assignees: brockho
 
 Hello COCO user!
 
-If you would like to submit one or several COCO data sets to the official COCO archive (https://coco.gforge.inria.fr/doku.php?id=algorithms), here is the right place to do. Please provide the information requested below and we will look at your submission timely and add everything to the archive if we see no technical problems.
+If you would like to submit one or several COCO data sets to the official COCO archive (https://coco.gforge.inria.fr/doku.php?id=algorithms), here is the right place to do. Please provide the information requested below and we will look at your submission timely and add everything to the archive if we see no technical problems. Before, we kindly ask you to read about any details in our [How to publish a dataset documentation](https://github.com/numbbo/coco/blob/development/howtos/publish-a-dataset-howto.md).
 
 #### Link to Data Archive
 [Please upload a COCO data archive, created via `cocopp.archiving.create(...)`, and provide the link here. For more details on how to create such an archive, please see the corresponding howto.]
