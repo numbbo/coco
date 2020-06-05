@@ -25,10 +25,14 @@ figure_file_formats = ['svg', 'pdf']
 scaling_figures_with_boxes = True
 scaling_plots_with_axis_labels = False
 
+balance_instances = True
+""" give even weight to all instances by added columns with copies of
+    underrepresented instances in DataSet.evals
+    """
 weight_evaluations_constraints = (1, 1)
-"""weights used to sum function evaluations and constraints evaluations
-in attribute DataSet.evals, if any constraints evaluations are found"""
-
+""" weights used to sum function evaluations and constraints evaluations
+    in attribute DataSet._evals, if any constraints evaluations are found
+    """
 target_runlengths_in_scaling_figs = [0.5, 1.2, 3, 10, 50]  # used in config
 target_runlengths_in_single_rldistr = [0.5, 2, 10, 50]  # used in config
 target_runlengths_pprldmany = np.logspace(np.log10(0.5), np.log10(50), 31) # used in config

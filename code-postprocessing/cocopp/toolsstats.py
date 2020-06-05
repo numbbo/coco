@@ -698,6 +698,7 @@ def significancetest(entry0, entry1, targets):
     frequent instances are more different than the less frequent instances.
 
     """
+    balance_instances_saved, genericsettings.balance_instances = genericsettings.balance_instances, False
 
     bootstraps = False  # future extension
     res = []
@@ -820,6 +821,7 @@ def significancetest(entry0, entry1, targets):
 
         res.append(z_and_p)
 
+    genericsettings.balance_instances = balance_instances_saved
     return res
 
 def significance_all_best_vs_other(datasets, targets, best_alg_idx=None):
@@ -843,7 +845,9 @@ def significance_all_best_vs_other(datasets, targets, best_alg_idx=None):
             erts.append(ds.detERT(targets))
           
         best_alg_idx2 = np.array(erts).argsort(0)[0, :]  # indexed by target index
-        assert all(best_alg_idx2 == best_alg_idx)
+        # assert all(best_alg_idx2 == best_alg_idx)
+        if not all(best_alg_idx2 == best_alg_idx):
+            warnings.warn("best_alg_idx2 is different " + str((best_alg_idx2, best_alg_idx, datasets)))
         
     # significance test of best given algorithm against all others
     significance_versus_others = []  # indexed by target index

@@ -33,7 +33,7 @@ class DataFormat(object):
         input `data` and two column indices, namely where to find
         evaluations and function values.
         """
-        dataset.evals, maxevals, finalfunvals = aligner(data,
+        dataset._evals, maxevals, finalfunvals = aligner(data,
                             self.evaluation_idx, self.function_value_idx)
         assert all(dataset.evals[0][1:] == 1), dataset._evals[0]
         return maxevals, finalfunvals
@@ -80,19 +80,19 @@ class BBOBNewDataFormat(DataFormat):
         # evals_constraints attributes
         if np.nanmax(dataset.evals_constraints) == 0 and np.nanmax(dataset.evals_function) > 1:
             # if evals_function <= 1 we rather keep attributes to be on the save side for debugging
-            dataset.evals = dataset.evals_function
+            dataset._evals = dataset.evals_function
             del dataset.evals_function  # clean dataset namespace
             del dataset.evals_constraints
             return maxevals, finalfunvals
         else:
             # assign dataset.evals
-            dataset.evals = dataset.evals_function.copy()
+            dataset._evals = dataset.evals_function.copy()
             if genericsettings.weight_evaluations_constraints[0] != 1:
-                dataset.evals[:,1:] *= genericsettings.weight_evaluations_constraints[0]
+                dataset._evals[:,1:] *= genericsettings.weight_evaluations_constraints[0]
             # (target) f-value rows are not aligned, so we need to find for
             # each evals the respective data row in evals_constraints
             j, j_max = 0, len(dataset.evals_constraints[:, 0])
-            for i, eval_row in enumerate(dataset.evals):
+            for i, eval_row in enumerate(dataset._evals):
                 # find j such that target[j] < target[i] (don't rely on floats being equal, though we probably could)
                 while j < j_max and dataset.evals_constraints[j, 0] + 1e-14 > eval_row[0]:
                     j += 1  # next smaller (target) f-value

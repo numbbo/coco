@@ -244,7 +244,14 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                 else: 
                     dispersion.append(None)
             if data != ertdata:
-                warnings.warn("data != ertdata " + str((entry, data, ertdata)))
+                # comment before computeERT was called unconditionally at the end of DataSet.__init__:
+                # warning comes only in balance_instances=True setting only for bfgs but not for randsearch or bipop
+                # ertdata values are consistently slightly larger than data values, after calling entry.computeERTfromEvals
+                # the ertdata values become the same as the data values
+                warnings.warn("data != ertdata " + str((entry,
+                                                        getattr(entry, 'instancenumbers', '`instancenumbers` attribute is missing'),
+                                                        entry.instance_multipliers, data, ertdata)))
+                # assert data == ertdata
             for i, ert in enumerate(data):
                 alignment = 'c'
                 if i == len(data) - 1: # last element

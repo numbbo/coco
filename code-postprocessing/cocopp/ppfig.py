@@ -738,7 +738,7 @@ def plot(dsList, _valuesOfInterest=(10, 1, 1e-1, 1e-2, 1e-3, 1e-5, 1e-8),
                 tmp = StrippedUpDS()
                 idxs = list(k + 1 for k in idx)
                 idxs.insert(0, 0)
-                tmp.evals = i.evals[:, np.r_[idxs]].copy()
+                tmp._evals = i._evals[:, np.r_[idxs]].copy()
                 tmp.maxevals = i.maxevals[np.ix_(idx)].copy()
                 res.setdefault(j, [])
                 res.get(j).append(tmp)

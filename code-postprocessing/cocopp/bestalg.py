@@ -138,7 +138,7 @@ class BestAlgSet(DataSet):
                 continue
 
             tmpdictAlg[alg] = i[0]  # Assign ONLY the first element as value
-            dictMaxEvals[alg] = i[0].maxevals
+            dictMaxEvals[alg] = i[0]._maxevals
             dictFinalFunVals[alg] = i[0].finalfunvals
             best_algorithms = i[0].algs
             self.success_ratio = i[0].success_ratio
@@ -186,7 +186,7 @@ class BestAlgSet(DataSet):
 
         # write down the #fevals to reach the function value.
         for funval, alg in zip(res[:, 0], resalgs):
-            it = dictiter.setdefault(alg, iter(dict_alg[alg].evals))
+            it = dictiter.setdefault(alg, iter(dict_alg[alg].evals))  # TODO: do we want evals_appended here?
             curLine = dictcurLine.setdefault(alg, np.array([np.inf, 0]))
             while curLine[0] > funval:
                 try:
@@ -207,10 +207,10 @@ class BestAlgSet(DataSet):
                     break
             dictFunValsNoFail[alg] = curline.copy()
 
-        self.evals = resDataSet
+        self._evals = resDataSet
         # evals is not a np array but a list of arrays because they may not
         # all be of the same size.
-        self.maxevals = dict((i, dictMaxEvals[i]) for i in setalgs)
+        self._maxevals = dict((i, dictMaxEvals[i]) for i in setalgs)
         self.finalfunvals = dict((i, dictFinalFunVals[i]) for i in setalgs)
         self.funvalsnofail = dictFunValsNoFail
         self.dim = d
@@ -225,7 +225,7 @@ class BestAlgSet(DataSet):
             self.comment = 'Combination of ' + ', '.join(sortedAlgs)
         else:
             self.comment = dict_alg[sortedAlgs[0]].comment.lstrip('%% ')
-        self.ert = np.array(reserts)
+        self._ert = np.array(reserts)
         self.target = res[:, 0]
         self.suite = getattr(dict_alg[sortedAlgs[0]], 'suite', None)
         self.used_algorithms = sortedAlgs
@@ -525,7 +525,7 @@ def custom_generate(args=algs2009, algId='bestCustomAlg', suite=None):
 
     output_dir = algId
 
-    genericsettings.verbose = True
+    # genericsettings.verbose = True
     testbedsettings.reset_reference_values()
     dsList, sortedAlgs, dictAlg = pproc.processInputArgs(args)
 
