@@ -543,7 +543,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default'):
         mFE = []
 
         for i in dsdim:
-            maxevals.append(max(i.ert[np.isinf(i.ert) == False]))
+            maxevals.append(max(i.ert[np.isfinite(i.ert)]))  #  was: .isinf(i.ert) == False]))
             funcs.append(i.funcId)
             mFE.append(max(i.maxevals))
 

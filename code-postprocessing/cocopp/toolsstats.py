@@ -694,6 +694,9 @@ def significancetest(entry0, entry1, targets):
               input argument targets. z and p are values returned by the
               ranksumtest method.
 
+    TODO: we would want to correct for imbalanced instances if the more
+    frequent instances are more different than the less frequent instances.
+
     """
 
     bootstraps = False  # future extension
@@ -753,7 +756,7 @@ def significancetest(entry0, entry1, targets):
                         else:
                             FE_umin = np.inf
                         # Determine the function values for FE_umin
-                        tmpfvalues = np.array([np.inf] * entry.nbRuns())
+                        prevline = np.array([np.inf] * (entry.funvals.shape[1] - 1))
                         for curline in entry.funvals:
                             # only works because the funvals are monotonous
                             if curline[0] > FE_umin:

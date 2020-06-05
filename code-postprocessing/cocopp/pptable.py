@@ -243,7 +243,8 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                     dispersion.append((tmp2[-1] - tmp2[0]) / 2.)
                 else: 
                     dispersion.append(None)
-            assert data == ertdata
+            if data != ertdata:
+                warnings.warn("data != ertdata " + str((entry, data, ertdata)))
             for i, ert in enumerate(data):
                 alignment = 'c'
                 if i == len(data) - 1: # last element
