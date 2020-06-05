@@ -768,15 +768,10 @@ class DataSet(object):
             else:
                 # detect by hand whether we are in the noisy or the
                 # noiseless case (TODO: is there a better way?)
-                if self.funcId > 100:
-                    genericsettings.isNoisy = True
-                    genericsettings.isNoiseless = False
+                if getattr(self, 'funcId') > 100:  # getattr prevents lint error
                     suite = testbedsettings.default_suite_single_noisy
                 else:
-                    genericsettings.isNoisy = False
-                    genericsettings.isNoiseless = True
                     suite = testbedsettings.default_suite_single
-
         return suite
 
     def __init__(self, header, comment, data, indexfile):
