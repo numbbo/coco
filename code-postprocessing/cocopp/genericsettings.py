@@ -29,6 +29,10 @@ balance_instances = True
 """ give even weight to all instances by added columns with copies of
     underrepresented instances in DataSet.evals
     """
+appended_evals_minimal_trials = 6
+""" minimum number of instances required in the ``appended_evals`` array such
+    that `DataSet.appended_evals` is created to be different from `DataSet.evals`
+    """
 weight_evaluations_constraints = (1, 1)
 """ weights used to sum function evaluations and constraints evaluations
     in attribute DataSet._evals, if any constraints evaluations are found

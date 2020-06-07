@@ -69,6 +69,7 @@ def _DataSet_complement_data(self, step=10**0.2, final_target=1e-8):
 
     i = 0
     newdat = []
+    warnings.warn("implementation has changed and was never used")
     nb_columns = self._evals.shape[1]
     self._evals = np.array(self._evals, copy=False)
     for i in range(len(self._evals) - 1):
@@ -587,6 +588,7 @@ class DataSet(object):
         ert
         evals
         evals_appended
+        evals_are_appended
         evals_with_simulated_restarts
         finalfunvals
         funcId
@@ -1065,8 +1067,8 @@ class DataSet(object):
         """Sets the attributes ert and target from the attribute evals."""
         self._ert = []
         self.target = []
-        for i in self.evals:
-            data = i[1:]
+        for row in self.evals:
+            data = row[1:]
             if 1 < 3:
                 succ = numpy.isfinite(data)
                 if not any(succ):
@@ -1075,14 +1077,14 @@ class DataSet(object):
                 if not all(succ):
                     s += sum(self.maxevals[np.logical_not(succ)])
                 self._ert.append(s / sum(succ))
-            if 1 < 3:  # old code to be removed
+            if np.random.rand() < 0.01:  # old code for cross checking, to be removed TODO
                 succ = (numpy.isnan(data)==False)
                 if any(numpy.isnan(data)):
                     data = data.copy()
                     data[numpy.isnan(data)] = self.maxevals[numpy.isnan(data)]
                 ert_val = toolsstats.sp(data, issuccessful=succ)[0]
                 assert np.isclose(ert_val, self._ert[-1])
-            self.target.append(i[0])
+            self.target.append(row[0])
 
         self._ert = numpy.array(self._ert)
         self.target = numpy.array(self.target)
@@ -1138,7 +1140,7 @@ class DataSet(object):
             while samplesize < 15:
                 samplesize += self.nbRuns()
         res = []  # res[i] is a list of samplesize evals
-        for evals in self.detEvals(targets, bootstrap=bootstrap):
+        for evals in self.detEvals(targets, copy=True, bootstrap=bootstrap):
             # prepare evals array
             evals.sort()
             indices = np.isfinite(evals)
@@ -1245,7 +1247,7 @@ class DataSet(object):
         return max(self.maxevals)
     
     def _detMaxEvals(self, final_target=None):
-        """computes for each data column the (maximal) evaluation 
+        """computes for each data column of _evals the (maximal) evaluation
         until final_target was reached, or ``self.maxevals`` otherwise. 
         
         """
@@ -1568,7 +1570,7 @@ class DataSet(object):
     """
         evals = self.evals
         if append_instances:  # TODO: add append_instances=True in toolstats line 709
-            raise NotImplementedError("append_instances is not yet implemented")
+            warnings.warn("append_instances was never thoroughly tested")
             evals = self.evals_appended
         evalsrows = {}  # data rows, easiest target first
         idata = evals.shape[0] - 1  # current data line index
@@ -1625,7 +1627,7 @@ class DataSet(object):
         consider as data in `evals_row` (like in ``evals_row =
         self._evals[i]``, the first index must be 1).
 
-        If ``if self.instance_multipliers is None`` the return value is
+        If ``self.instance_multipliers is None`` the return value is
         `evals_row` or the numpy view ``self._evals[evals_row, 1:]``.
         Parameter `instance_multipliers` only serves to avoid performance
         side effects from property repeated invokation.
@@ -1692,7 +1694,7 @@ class DataSet(object):
         if not genericsettings.balance_instances or (
             isinstance(self.instancenumbers, dict)):  # self.instancenumbers of portfolios is a dict
             return np.ones(len(self.instancenumbers))
-        if (1 < 3 and  # this fails like
+        if (1 < 3 and  # this failed like
             # cocopp/pptable.py", line 219  significancetest(refalgentry, entry, ...
             # cocopp/toolsstats.py", line 806, in significancetest
             # tmp[idx] = -fvalues[j][idx]  # larger data is better
@@ -1722,6 +1724,15 @@ class DataSet(object):
         return self._instance_multipliers
 
     @property
+    def _instance_repetitions(self):  # -> int
+        """return the number of runs that repeated a previous instance.
+
+        That is, 0 if all instance number ids are unique, and >= 1 otherwise.
+        """
+        # TODO: manage when instancenumbers is not iterable?
+        return len(self.instancenumbers) - len(set(self.instancenumbers))
+
+    @property
     def evals(self):
         """``evals`` contains the central data, number of evaluations.
 
@@ -1748,14 +1759,119 @@ class DataSet(object):
 
     @property
     def evals_appended(self):
-        """like the `evals` property-attribute but here the same instances
-        are aggregated.
+        """like the `evals` property-attribute but here instances with the same ID
+        are aggregated (appended).
 
-        Aggregation is done by appending the trials in the order of
-        their appearance.
+        The aggregation appends trials with the same instance ID in the
+        order of their appearance.
+
+        >>> import warnings
+        >>> import cocopp
+        >>> _wl, cocopp.genericsettings.warning_level = cocopp.genericsettings.warning_level, 0
+        >>> print('load data set'); dsl = cocopp.load('b/2009/bay')  # doctest:+ELLIPSIS
+        load data set...
+        >>> cocopp.genericsettings.warning_level = _wl
+        >>> ds = dsl[99]
+        >>> warnings.filterwarnings('ignore', message='evals_appended is only recently implemented')
+        >>> ds.evals_are_appended
+        False
+        >>> ds.evals is ds.evals_appended
+        True
+        >>> cocopp.genericsettings.appended_evals_minimal_trials = 5  # was 6
+        >>> ds.evals_are_appended
+        True
+        >>> ds.evals is ds.evals_appended
+        False
+        >>> ds.evals.shape
+        (14, 16)
+        >>> ds.evals_appended.shape
+        (14, 6)
+
     """
-        warnings.warn("evals_appended is not yet implemented, returning/using evals")
-        return self._evals
+        warnings.warn('''evals_appended is only recently implemented'''
+                      ''' (use "warnings.filterwarnings('ignore', message='evals_appended is only*"'''
+                      ''' to suppress this warning)''')
+        self._evals_appended_compute()
+        return self._evals_appended
+
+    @property
+    def evals_are_appended(self):
+        """return `True` if `self.evals_appended` consist of appended trials (same instances are appended)
+        """
+        return (self._instance_repetitions and
+                len(self.instancenumbers) - self._instance_repetitions
+                        >= genericsettings.appended_evals_minimal_trials and
+                testbedsettings.current_testbed.instances_are_uniform)
+
+    def _evals_appended_compute(self):
+        """create evals-array with appended instances.
+
+        The `evals_appended` array mimics independent restarts.
+
+        Only append if the number of remaining trials is at least
+        `genericsettings.appended_evals_minimal_trials`. Hence a standard
+        2009 dataset which has the instances ``3 * [1,2,3,4,5]`` remains
+        unchanged by default.
+
+        Only append if ``bool(testbedsettings.current_testbed.instances_are_uniform)
+        is True``.
+        """
+        if not self.evals_are_appended:
+            self._evals_appended = self._evals
+            return
+        evals = self._evals.copy()
+        maxevals = []
+        merged_runs = []  # columns to be deleted
+        counts = collections.Counter(self.instancenumbers)  # counters of occurances
+        for i_run, instance_id in enumerate(self.instancenumbers):
+            if instance_id in counts:
+                maxevals += [sum(self._maxevals[np.asarray(self.instancenumbers) == instance_id])]
+            if counts.pop(instance_id, 1) == 1:  # instance with a single run or already consumed
+                continue
+            j_runs = []  # find runs with the same instance
+            for j_run in range(i_run + 1, len(self.instancenumbers)):
+                if self.instancenumbers[j_run] == instance_id:
+                    j_runs += [j_run]
+            irow = np.where(np.isfinite(evals[:, i_run + 1]))[0][-1] + 1  # first nonfinite index
+            assert irow > 0, (irow, evals.shape)  # first entry must always be finite
+            for irow in range(irow, len(evals)):  # complement non-finite rows
+                maxevs = self._maxevals[i_run]
+                for j_run in j_runs:
+                    if np.isfinite(evals[irow][j_run + 1]):
+                        evals[irow][i_run + 1] = maxevs + evals[irow][j_run + 1]
+                        break
+                    maxevs += self._maxevals[j_run]  # TODO: this j_run wouldn't need to be checked again
+            merged_runs += j_runs
+        assert not counts, (self.instancenumbers, counts)  # all instances must be consumed
+        assert all([i not in merged_runs for i in [0, evals.shape[1] - 1]]), (self.instancenumbers, merged_runs)
+        # remove merged columns
+        evals = evals[:, [i for i in range(evals.shape[1])
+                            if i - 1 not in merged_runs]]
+        self._evals_appended = evals
+        self._maxevals_appended = np.asarray(maxevals)
+        assert sum(self._maxevals) == sum(self._maxevals_appended), (self._maxevals, self._maxevalsappended)
+
+    @staticmethod
+    def _largest_finite_index(ar):
+        """return `i` such that ``isfinite(ar[i]) and not isfinite(ar[i+1])``,
+
+        or ``i == -1`` if ``not isfinite(ar[0])``.
+
+        Somewhat tested, but not in use.
+
+        The computation takes O(log(``len(ar)``) time and starts to become
+        faster than ``where(isfinited(ar))[0][-1]`` only for ``len(ar) > 100``.
+        """
+        i0 = -1
+        i1 = len(ar) - 1
+        while i1 - i0 > 1:
+            i = int((i0 + i1) // 2)
+            if np.isfinite(ar[i]):
+                i0 = i
+            else:
+                i1 = i
+            assert i0 <= i1
+        return i1 if np.isfinite(ar[i1]) else i0
 
     def _argsort(self, smallest_target_value=-np.inf):
         """return index array for a sorted order of trials.
@@ -1820,22 +1936,32 @@ class DataSet(object):
                 plt.ylabel('number of function evaluations')
         return plt.gca()
 
-    def median_evals(self, target_values=None):
-        """return median for each target, unsuccessful runs count.
+    def median_evals(self, target_values=None, append_instances=True):
+        """return median for each row in `self.evals`, unsuccessful runs count.
 
-        `target_values` is not in effect for now, the median is computed
-        for all target values (rows in `evals` attribute).
+        If ``target_values is not None`` compute the median evaluations to
+        reach the given target values.
 
         Return `np.nan` if the median run was unsuccessful.
 
+        If ``append_instances and self.evals_are_appended``, append all
+        instances from the same instance numbers as if the algorithm was
+        restarted. ``self.evals_are_appended is True`` if the resulting
+        number of (unique) instances is at least
+        `genericsettings.appended_evals_minimal_trials` and if
+        `testbedsettings.current_testbed.instances_are_uniform`.
+
         Details: copies the evals attribute and sets `nan` to `inf` in
         order to get the median with `nan` values in the sorting.
-
         """
+        append_instances = append_instances and self.evals_are_appended  # to prevent unnecessary warning
         if target_values is not None:
-            raise NotImplementedError("median_evals is only implemented for "
+            warnings.warn("median_evals was only recently implemented for "
                                       "all target values")
-        evals = self.evals_appended[:, 1:]
+            evals = np.asarray(self.detEvals(target_values, copy=True, append_instances=append_instances))
+        else:
+            evals = self.evals_appended[:, 1:] if append_instances else self.evals  # evals may balance instances
+            evals = evals.copy()
         evals[~numpy.isfinite(evals)] = numpy.inf
         m = numpy.median(evals, 1)
         m[~np.isfinite(m)] = np.nan
@@ -1879,6 +2005,7 @@ class DataSet(object):
         plt.xlim(left=0.85)  # right=max(self.maxevals)
         plt.ylim(bottom=smallest_target if smallest_target is not None else self.precision)
         plt.title("F %d in dimension %d" % (self.funcId, self.dim))
+        plt.grid(True)
         return plt.gca()  # not sure which makes most sense
 
 class DataSetList(list):
@@ -1980,7 +2107,8 @@ class DataSetList(list):
         for ds in self:
             data_consistent = data_consistent and ds.consistency_check()
         if len(self) and data_consistent:
-            print("  Data consistent according to consistency_check() in pproc.DataSet")
+            if genericsettings.warning_level >= 1:
+                print("  Data consistent according to consistency_check() in pproc.DataSet")
             
     def processIndexFile(self, indexFile, alg_name=None):
         """Reads in an index (.info?) file information on the different runs."""
