@@ -545,7 +545,7 @@ class DataSet(object):
     data of a row is aligned, the :py:data:`N` subsequent columns are
     either the numbers of function evaluations for :py:attr:`evals` or
     function values for :py:attr:`funvals`.
-    
+
     A short example::
 
         >>> from __future__ import print_function    
@@ -1122,12 +1122,15 @@ class DataSet(object):
 
     def evals_with_simulated_restarts(self,
             targets,
-            samplesize=genericsettings.simulated_runlength_bootstrap_sample_size,
+            samplesize=None,
             randintfirst=toolsstats.randint_derandomized,
             randintrest=toolsstats.randint_derandomized,
             bootstrap=False):
         """Return a len(targets) list of ``samplesize`` "simulated" run
-        lengths (#evaluations, sorted).
+        lengths (#evaluations, sorted) with a similar interface as `detEvals`.
+
+        `samplesize` is by default the smallest multiple of `nbRuns` that
+        is larger than 14.
 
         ``np.sort(np.concatenate(return_value))`` provides the combined
         sorted ECDF data over all targets which may be plotted with
@@ -1143,6 +1146,8 @@ class DataSet(object):
         TODO: change this: To get a bootstrap sample for estimating dispersion use
         ``min_samplesize=0, randint=np.random.randint``.
 
+        TODO: how is the sample size propagated to the bootstrapping?
+
         Details:
 
         - For targets where all runs were successful, samplesize=nbRuns()
@@ -1154,20 +1159,24 @@ class DataSet(object):
 
         TODO: if `samplesize` >> `nbRuns` and nsuccesses is large,
         the data representation becomes somewhat inefficient.
-
-        TODO: it may be useful to make the samplesize dependent on the
-        number of successes and supply the multipliers
-        max(samplesizes) / samplesizes.
-        """
+    """
         try: targets = targets([self.funcId, self.dim])
         except TypeError: pass
+        if samplesize is None:  # default sampling is derandomized, hence no need for a huge number
+            samplesize = 0
+            while samplesize < 15:
+                samplesize += self.nbRuns()
         res = []  # res[i] is a list of samplesize evals
         for evals in self.detEvals(targets, bootstrap=bootstrap):
             # prepare evals array
             evals.sort()
             indices = np.isfinite(evals)
-            if not sum(indices):  # no successes
+            nsucc = sum(indices)
+            if nsucc == 0:  # no successes
                 res += [samplesize * [np.nan]]  # TODO: this is "many" data with little information
+                continue
+            elif nsucc == len(evals) and not bootstrap:
+                res += [sorted(evals)]
                 continue
             nindices = ~indices
             assert sum(indices) + sum(nindices) == len(evals)
@@ -1175,14 +1184,10 @@ class DataSet(object):
             # let the first nsucc data in evals be those from successful runs
             evals = np.hstack([evals[indices], evals[nindices]])
             assert sum(np.isfinite(evals)) == len(evals)
-            nsucc = sum(indices)
 
             # do the job
             indices = randintfirst(0, len(evals), samplesize)
             sums = evals[indices]
-            if nsucc == len(evals):
-                res += [sorted(sums)]
-                continue
             failing = np.where(indices >= nsucc)[0]
             assert nsucc > 0  # prevent infinite loop
             while len(failing):  # add "restarts"
