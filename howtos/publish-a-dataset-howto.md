@@ -2,11 +2,11 @@
 
 There are two simple ways to make data easily accessible to the community:
 
-- host a COCO archive with your data, or
-- propose inclusion of your data into `cocopp.archives`.
+- propose inclusion of your data into `cocopp.archives`, or
+- host a COCO archive with your data.
 
-In any case, first, the data need to be prepared. For this, for each
-dataset to be published:
+In both cases, first, the data need to be prepared. For this, for each
+dataset (that is, each benchmarked algorithm variant):
 
   1. <details><summary><b>Zip the data folder.
      </b> (click to view)</summary>
@@ -21,7 +21,23 @@ dataset to be published:
      The name should represent the benchmarked algorithm and may contain
      authors names (but rather not the test suite).
      The name can have any length, but the first ten-or-so characters should
-     be a meaningful "abbreviation".
+     be a meaningful algorithm "abbreviation".
+
+## Propose Inclusion to the COCO Data Archive
+
+This option is available if one or several datasets were used in a publication (or a preprint available on
+[arXiv](https://arxiv.org) or [HAL](https://hal.archives-ouvertes.fr)).
+For this:
+
+  3. Upload the above data zipfile(s) to a file sharing site or any accessible URL.
+  4. Ask for the inclusion into `cocopp.archives`. For this, open an [issue
+     at the Gitlab repository of COCO](https://github.com/numbbo/coco/issues)
+     (you need to have a Github account) with
+
+     - the publication reference and a link to the paper
+     - a very short description of each dataset including the name of the algorithm and the test suite
+     - a link to the dataset(s)
+     - (optional) a link to the source code to reproduce the dataset
 
 ## Host an Archive
 
@@ -132,18 +148,3 @@ cocopp.main([# 'exdata/my_local_results',  # in case
              cocopp.archives.bbob.get_first('2010/IPOP-CMA'),
              arch.get('CMA-ES__2019')])
 ```
-
-## Propose Inclusion to the COCO Data Archive
-
-If a dataset was used in a publication (or a preprint available on
-[arXiv](https://arxiv.org) or [HAL](https://hal.archives-ouvertes.fr)),
-create a clean zipfile as above, upload the zipfile to a file sharing site
-and ask for its inclusion into `cocopp.archives`. For this, open an [issue
-at the Gitlab repository of COCO](https://github.com/numbbo/coco/issues)
-(you need to have a Github account) with
-
-- the publication reference and a link to the paper
-- used test suite
-- a short description of each dataset
-- a link to the dataset(s)
-- (optional) a link to the source code to reproduce the dataset
