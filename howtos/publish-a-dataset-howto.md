@@ -19,24 +19,28 @@ dataset (that is, each benchmarked algorithm variant):
      </b> (click to view)</summary>
      The name of the zipfile defines the name of the data set.
      The name should represent the benchmarked algorithm and may contain
-     authors names (but rather not the test suite).
+     authors names (but rather not the name of the test suite).
      The name can have any length, but the first ten-or-so characters should
      be a meaningful algorithm "abbreviation".
 
 ## Propose Inclusion to the COCO Data Archive
 
-This option is available if one or several datasets were used in a publication (or a preprint available on
-[arXiv](https://arxiv.org) or [HAL](https://hal.archives-ouvertes.fr)).
+This option is available if one or several datasets were used in a publication
+or in a preprint available for example on [arXiv](https://arxiv.org) or
+[HAL](https://hal.archives-ouvertes.fr).
 For this:
 
-  3. Upload the above data zipfile(s) to a file sharing site or any accessible URL.
+  3. Upload the above data zipfile(s) to a file sharing site or to an accessible URL.
   4. Ask for the inclusion into `cocopp.archives`. For this, open an [issue
      at the Gitlab repository of COCO](https://github.com/numbbo/coco/issues)
      (you need to have a Github account) with
 
      - the publication reference and a link to the paper
-     - a very short description of each dataset including the name of the algorithm and the test suite
-     - a link to the dataset(s)
+     - a very short description of each dataset including the name of
+       - the algorithm
+       - the test suite
+       - the zip file
+     - a link to the dataset zip file(s)
      - (optional) a link to the source code to reproduce the dataset
 
 ## Host an Archive
@@ -84,7 +88,7 @@ For this:
 
   1. **Open an** [**issue** at the Github repository of COCO](https://github.com/numbbo/coco/issues)
      (you need to have a Github account) signalling the URL of the archive with
-     a short description of the dataset(s).
+     a short description of the dataset(s) in the archive.
 
 ### Example of an resulting archive
 
@@ -141,10 +145,10 @@ print(arch)  # `arch` "is" a `list` of relative filenames
  'SLSQP-11_2019-gecco-surr.tgz',
  'lq-CMA-ES_2019-gecco-surr.tgz']
 
-# compare local result with data from above lq-cma archive
+# compare local result with data from lq-cma archive
 # and from the cocopp.archives.bbob archive
 cocopp.main([# 'exdata/my_local_results',  # in case
-             arch.get('SLSQP-11'),  # downloads if necessary
-             cocopp.archives.bbob.get_first('2010/IPOP-CMA'),
-             arch.get('CMA-ES__2019')])
+    arch.get('SLSQP-11'),  # downloads if necessary
+    cocopp.archives.bbob.get_first('2010/IPOP-CMA'),
+    arch.get('CMA-ES__2019')])
 ```
