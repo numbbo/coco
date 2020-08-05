@@ -22,7 +22,14 @@ for numerical optimization. Languages currently available are
 Contributions to link further languages (including a better
 example in `C++`) are more than welcome.
 
-For more general information,
+The general project structure is shown in the following figure
+where the black color indicates code or data provided by the platform
+and the red color indicates either user code or data and graphical output
+from using the platform:
+
+![General COCO Structure](coco.png)
+
+For more general information:
 - read our [benchmarking guidelines introduction](http://numbbo.github.io/coco-doc/)
 - read the [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
 - see the [`bbob-biobj` and `bbob-biobj-ext` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation and the [specificities of the performance assessment for the bi-objective testbeds](http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment).
@@ -85,7 +92,7 @@ Getting Started <a name="Getting-Started"></a>
 ---------------
 0. Check out the [_Requirements_](#Requirements) above.
 
-1. Install the post-processing for **displaying** data:
+1. Install the post-processing for **displaying** data (using Python):
 
     ```
         pip install cocopp
