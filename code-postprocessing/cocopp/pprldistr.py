@@ -70,9 +70,9 @@ evalfmax = runlen_xlimits_max # is manipulated/stored in this module
 # together. Therefore we should either:
 # 1. keep the targets as input argument and make rldStyles depend on them or
 # 2. remove the targets as input argument and put them here.
-rldStyles = ({'color': 'k', 'ls': '-'},
+rldStyles = ({'color': 'k', 'linestyle': '-'},
              {'color': 'c'},
-             {'color': 'm', 'ls': '-'},
+             {'color': 'm', 'linestyle': '-'},
              {'color': 'r', 'linewidth': 3.},
              {'color': 'k'},
              {'color': 'c'},
@@ -82,16 +82,16 @@ rldStyles = ({'color': 'k', 'ls': '-'},
              {'color': 'c'},
              {'color': 'm'},
              {'color': 'r', 'linewidth': 3.})
-rldUnsuccStyles = ({'color': 'c', 'ls': '-'},
-                   {'color': 'm', 'ls': '-'},
-                   {'color': 'k', 'ls': '-'},
+rldUnsuccStyles = ({'color': 'c', 'linestyle': '-'},
+                   {'color': 'm', 'linestyle': '-'},
+                   {'color': 'k', 'linestyle': '-'},
                    {'color': 'c'},
-                   {'color': 'm', 'ls': '-'},
-                   {'color': 'k', 'ls': '-'},
+                   {'color': 'm', 'linestyle': '-'},
+                   {'color': 'k', 'linestyle': '-'},
                    {'color': 'c'},
-                   {'color': 'm', 'ls': '-'},
+                   {'color': 'm', 'linestyle': '-'},
                    {'color': 'k'},
-                   {'color': 'c', 'ls': '-'},
+                   {'color': 'c', 'linestyle': '-'},
                    {'color': 'm'},
                    {'color': 'k'},
                   ) # should not be too short
@@ -146,13 +146,13 @@ def caption_single():
          #1"""
     caption_left_fixed_targets = r"""%
          Left subplots: ECDF of the number of function evaluations """ + (
-         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons
          else r"""(FEvals)""") + (r""" divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ with $!!DF!!=10^{k}$, where $k$ is the first value in the legend.
          The thick red line represents the most difficult target value $!!FOPT!!+ !!HARDEST-TARGET-LATEX!!$. """)
     caption_left_rlbased_targets = r"""%
          Left subplots: ECDF of number of function evaluations """ + (
-         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons
+         r"""((f+g)-evals)""" if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons
          else r"""(FEvals)""") + r""" divided by search space dimension $D$,
          to fall below $!!FOPT!!+!!DF!!$ where !!DF!!{} is the
          target just not reached by !!THE-REF-ALG!! within a budget of
@@ -167,18 +167,18 @@ def caption_single():
          where !!DF!! and \textsf{Df} denote the difference to the optimal function value. 
          !!LIGHT-BROWN-LINES!!"""
 
-    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
+    if testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
                                                 testbedsettings.default_testbed_single_noisy,
-                                                testbedsettings.testbed_name_bi]:
+                                                testbedsettings.suite_name_bi]:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_part_one + caption_left_rlbased_targets + caption_right
         else:
             figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
-    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
-                                                  testbedsettings.testbed_name_cons,
-                                                  testbedsettings.testbed_name_ls,
-                                                  testbedsettings.testbed_name_mixint,
-                                                  testbedsettings.testbed_name_bi_mixint]:
+    elif testbedsettings.current_testbed.name in [testbedsettings.suite_name_bi_ext,
+                                                  testbedsettings.suite_name_cons,
+                                                  testbedsettings.suite_name_ls,
+                                                  testbedsettings.suite_name_mixint,
+                                                  testbedsettings.suite_name_bi_mixint]:
         # no best algorithm defined yet:
         figure_caption = caption_part_one + caption_left_fixed_targets + caption_right
     else:
@@ -207,8 +207,8 @@ def caption_two():
     caption_two_fixed_targets_part3 = r""")%
         . """ + (r"""Light beige lines show the ECDF of FEvals for target value
         $!!DF!!=!!HARDEST-TARGET-LATEX!!$ of all algorithms benchmarked during
-        BBOB-2009. """ if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
-                                                                   testbedsettings.testbed_name_single_noisy]
+        BBOB-2009. """ if testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
+                                                                   testbedsettings.suite_name_single_noisy]
         else "") + r"""Right sub-columns:
         ECDF of FEval ratios of \algorithmA\ divided by \algorithmB\ for target
         function values $10^k$ with $k$ given in the legend; all
@@ -246,16 +246,16 @@ def caption_two():
                            + symbAlgorithmB
                            + caption_two_rlbased_targets_part3)
 
-    if testbedsettings.current_testbed.name in [testbedsettings.testbed_name_bi_ext,
-                                                testbedsettings.testbed_name_cons,
-                                                testbedsettings.testbed_name_ls,
-                                                testbedsettings.testbed_name_mixint,
-                                                testbedsettings.testbed_name_bi_mixint]:
+    if testbedsettings.current_testbed.name in [testbedsettings.suite_name_bi_ext,
+                                                testbedsettings.suite_name_cons,
+                                                testbedsettings.suite_name_ls,
+                                                testbedsettings.suite_name_mixint,
+                                                testbedsettings.suite_name_bi_mixint]:
         # NOTE: no runlength-based targets supported yet
         figure_caption = caption_two_fixed
-    elif testbedsettings.current_testbed.name in [testbedsettings.testbed_name_single,
-                                                  testbedsettings.testbed_name_single_noisy,
-                                                  testbedsettings.testbed_name_bi]:
+    elif testbedsettings.current_testbed.name in [testbedsettings.suite_name_single,
+                                                  testbedsettings.suite_name_single_noisy,
+                                                  testbedsettings.suite_name_bi]:
         if genericsettings.runlength_based_targets:
             figure_caption = caption_two_rlbased
         else:
@@ -319,7 +319,7 @@ def beautifyRLD(xlimit_max=None):
     """
     a = plt.gca()
     a.set_xscale('log')
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+    if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
         a.set_xlabel('log10 of (f+g)-evals / dimension')
     else:
         a.set_xlabel('log10 of FEvals / DIM')
@@ -420,11 +420,12 @@ def _plotRLDistr_old(dsList, target, **plotArgs):
         except TypeError:
             target = target
         tmp = i.detEvals((target,))[0] / i.dim
+        nn += len(tmp)
         tmp = tmp[not np.isnan(tmp)] # keep only success
         if len(tmp) > 0:
             fsolved.add(i.funcId)
         x.extend(tmp)
-        nn += i.nbRuns()
+        # nn += i.nbRuns()
     kwargs = plotArgs.copy()
     label = ''
     try:
@@ -452,11 +453,12 @@ def erld_data(dsList, target, max_fun_evals=np.inf):
     for ds in dsList: # ds is a DataSet
         funcs.add(ds.funcId)
         evals = ds.detEvals((target((ds.funcId, ds.dim)),))[0] / ds.dim
+        nruns += len(evals)
         evals = evals[not np.isnan(evals)] # keep only success
         if len(evals) > 0 and sum(evals <= max_fun_evals):
             fsolved.add(ds.funcId)
         runlength_data.extend(evals)
-        nruns += ds.nbRuns()
+        # nruns += ds.nbRuns()
     return sorted(runlength_data), nruns, funcs, fsolved
 
 
@@ -497,11 +499,12 @@ def plotRLDistr(dsList, target, label='', max_fun_evals=np.inf,
     for ds in dsList: # ds is a DataSet
         funcs.add(ds.funcId)
         tmp = ds.detEvals((target((ds.funcId, ds.dim)),))[0] / ds.dim
+        nn += len(tmp)
         tmp = tmp[np.isnan(tmp) == False] # keep only success
         if len(tmp) > 0 and sum(tmp <= max_fun_evals):
             fsolved.add(ds.funcId)
         x.extend(tmp)
-        nn += ds.nbRuns()
+        # nn += ds.nbRuns()
     kwargs = plotArgs.copy()
     label += ': %d/%d' % (len(fsolved), len(funcs))
     kwargs['label'] = kwargs.setdefault('label', label)
@@ -517,6 +520,8 @@ def plotFVDistr(dsList, budget, min_f=None, **plotArgs):
     :param plotArgs: additional arguments passed to plot
 
     :returns: handle
+
+    CAVEAT: this routine is not instance-balanced
 
     """
     if not min_f:
@@ -563,11 +568,6 @@ def comp(dsList0, dsList1, targets, isStoringXMax=False,
     :param string info: string suffix for output file names.
 
     """
-    # plt.rc("axes", labelsize=20, titlesize=24)
-    # plt.rc("xtick", labelsize=20)
-    # plt.rc("ytick", labelsize=20)
-    # plt.rc("font", size=20)
-    # plt.rc("legend", fontsize=20)
 
     if not isinstance(targets, pproc.RunlengthBasedTargetValues):
         targets = pproc.TargetValues.cast(targets)
@@ -656,7 +656,7 @@ def beautify():
     plt.subplot(121)
     axisHandle = plt.gca()
     axisHandle.set_xscale('log')
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+    if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
         axisHandle.set_xlabel('log10 of (f+g)-evals / dimension')
     else:
         axisHandle.set_xlabel('log10 of FEvals / DIM')
@@ -816,11 +816,6 @@ def main(dsList, isStoringXMax=False, outputdir='',
     :param string info: string suffix for output file names.
 
     """
-    # plt.rc("axes", labelsize=20, titlesize=24)
-    # plt.rc("xtick", labelsize=20)
-    # plt.rc("ytick", labelsize=20)
-    # plt.rc("font", size=20)
-    # plt.rc("legend", fontsize=20)
     testbed = testbedsettings.current_testbed
     targets = testbed.pprldistr_target_values # convenience abbreviation
 
@@ -898,5 +893,4 @@ def main(dsList, isStoringXMax=False, outputdir='',
         save_figure(filename, dsList[0].algId, subplots_adjust=dict(left=0.0, bottom=0.15, right=1, top=0.99))
 
         plt.close(fig)
-        # plt.rcdefaults()
 

@@ -47,6 +47,26 @@ import cocoex  # experimentation module
 try: import cocopp  # post-processing module
 except: pass
 
+### MKL bug fix
+def set_num_threads(nt=1, disp=1):
+    """see https://github.com/numbbo/coco/issues/1919
+    and https://twitter.com/jeremyphoward/status/1185044752753815552
+    """
+    try: import mkl
+    except ImportError: disp and print("mkl is not installed")
+    else:
+        mkl.set_num_threads(nt)
+    nt = str(nt)
+    for name in ['OPENBLAS_NUM_THREADS',
+                 'NUMEXPR_NUM_THREADS',
+                 'OMP_NUM_THREADS',
+                 'MKL_NUM_THREADS']:
+        os.environ[name] = nt
+    disp and print("setting mkl threads num to", nt)
+
+if sys.platform.lower() not in ('darwin', 'windows'):
+    set_num_threads(1)
+
 ### solver imports (add other imports if necessary)
 import scipy.optimize  # to define the solver to be benchmarked
 try: import cma
@@ -66,10 +86,12 @@ fmin = scipy.optimize.fmin_slsqp
 
 suite_name = "bbob"  # see cocoex.known_suite_names
 budget_multiplier = 2  # times dimension, increase to 10, 100, ...
-suite_filter_options = (# "dimensions: 2,3,5,10,20 " +  # skip dimension 40
-                        # "year:2019 " +  # select instances by year
-                        # "instance_indices: 1-5 " +  # relative to suite instances
-                        "")  # without filtering a suite has instance_indices 1-15
+suite_filter_options = (""  # without filtering a suite has instance_indices 1-15
+                        # "dimensions: 2,3,5,10,20 "  # skip dimension 40
+                        # "instance_indices: 1-5 "  # relative to suite instances
+                        # "year:2019 "  # select instances by year
+                       )
+# for more suite filter options see http://numbbo.github.io/coco-doc/C/#suite-parameters
 batches = 1  # number of batches, batch=3/32 works to set both, current_batch and batches
 current_batch = 1  # only current_batch modulo batches is relevant
 output_folder = ''

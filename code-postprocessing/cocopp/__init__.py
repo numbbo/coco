@@ -40,17 +40,35 @@ For example
 >>> cocopp.archives.bbob('bfgs')  # doctest:+ELLIPSIS,+SKIP,
 ['2009/BFGS_...
 
-lists all data sets containing ``'bfgs'`` in their name. The first in
-the list can be postprocessed by
+lists all data sets containing ``'bfgs'`` in their name. The search can
+also use regular expressions where '.' matches any single
+character and '*' means one or more repetitions:
+
+>>> cocopp.archives.bbob('.*bfgs')  # doctest:+ELLIPSIS,+SKIP,
+['2009/BFGS_...
+
+gives the same data sets as above and
+
+>>> cocopp.archives.all('bbob/.*bfgs')  # doctest:+ELLIPSIS,+SKIP,
+['bbob/2009/BFGS_...
+
+gives also the same data sets, however extracted from the archive of all
+suites, which is the search domain when using `cocopp.main`.
+
+When calling the `cocopp.main` routine, a single trailing '!' or '*'
+have the special meaning of take-the-first-only and take-all, respectively.
+Hence, the first entry of the above selecting list can be postprocessed with
 
 >>> cocopp.main('bfgs!')  # doctest:+SKIP
 
-All of them can be processed like
+All `'bfgs'` matches from the `'bbob'` suite can be processed like
 
->>> cocopp.main('bfgs*')  # doctest:+SKIP
+>>> cocopp.main('bbob/.*bfgs')  # doctest:+SKIP
 
-Only a trailing `*` is accepted and any string containing the
-substring is matched. The postprocessing result of
+(``cocopp.main('bfgs*')`` raises an error as data from incompatible suites
+cannot be processed together.)
+
+The postprocessing result of
 
 >>> cocopp.main('bbob/2009/*')  # doctest:+SKIP
 
@@ -61,7 +79,7 @@ variable needs to be set:
 
 >>> cocopp.genericsettings.background = {None: cocopp.archives.bbob.get_all('bfgs')}  # doctest:+SKIP
 
-where `None` invokes the default color (grey) and line style (solid)
+where `None` invokes the default color (gray) and line style (solid)
 ``genericsettings.background_default_style``.
 
 Now we could compare our own data with the first ``'bfgs'``-matching
@@ -105,8 +123,8 @@ if 11 < 3:  # old version, to be removed
 else:
     archives = archiving.official_archives  # just an alias
     data_archive = archives.all  # another alias, only for historical reasons
-    archives.set_as_attributes_in(_sys.modules['cocopp'],  # more individual aliases
-                                  except_for=['all', 'test'])
+    archives.link_as_attributes_in(_sys.modules['cocopp'],  # more individual aliases
+                                   except_for=['all', 'test'])
 
 # data_archive = 'use `archives.all` instead'
 # bbob = 'use `archives.bbob` instead'

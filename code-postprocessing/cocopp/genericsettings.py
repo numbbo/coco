@@ -18,6 +18,7 @@ interactive_mode = True  # open browser with results, grayscale setting (depreca
 
 force_assertions = False  # another debug flag for time-consuming assertions
 in_a_hurry = 1000  # [0, 1000] lower resolution, no eps, saves 30% time
+warning_level = 1  # higher levels show more warnings, experimental, will not work on all warnings
 maxevals_fix_display = None  # 3e2 is the expensive setting only used in config, yet to be improved!?
 runlength_based_targets = False  # may be overwritten by expensive setting
 figure_file_formats = ['svg', 'pdf']
@@ -94,10 +95,10 @@ instancesOfInterest = [instancesOfInterest2009,
 line_styles = [  # used by ppfigs and pprlmany  
     {'marker': 'o', 'markersize': 31, 'linestyle': '-', 'color': '#000080'},  # 'NavyBlue'
     {'marker': 'd', 'markersize': 26, 'linestyle': '-', 'color': '#ff00ff'},  # 'Magenta'
-    {'marker': '*', 'markersize': 33, 'linestyle': '-', 'color': '#ffa500'},  # 'Orange'
+    {'marker': '*', 'markersize': 33, 'linestyle': '-', 'color': '#ff7500'},  # 'Orange' (was too yellow)
     {'marker': 'v', 'markersize': 28, 'linestyle': '-', 'color': '#6495ed'},  # 'CornflowerBlue'
     {'marker': 'h', 'markersize': 30, 'linestyle': '-', 'color': 'r'},  # 'Red'
-    {'marker': '^', 'markersize': 25, 'linestyle': '-', 'color': '#9acd32'},  # 'YellowGreen'
+    {'marker': '^', 'markersize': 25, 'linestyle': '-', 'color': '#9acd32'},  # 'YellowGreen' (glaring)
     #          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': 'g'}, # 'green' avoid green because of
     #          {'marker': '*', 'markersize': 31, 'linestyle': '-', 'color': '#ffd700'}, # 'Goldenrod' seems too light
     #          {'marker': '^', 'markersize': 27, 'linestyle': '-', 'color': 'k'}, # 'Black' is too close to NavyBlue
@@ -114,7 +115,7 @@ line_styles = [  # used by ppfigs and pprlmany
     {'marker': 's', 'markersize': 23, 'linestyle': '-', 'color': '#ffd700'},  # 'Goldenrod'
     {'marker': 'd', 'markersize': 23, 'linestyle': '-', 'color': '#d02090'},  # square, 'VioletRed'
     {'marker': '^', 'markersize': 23, 'linestyle': '-', 'color': '#6495ed'},  # 'CornflowerBlue'
-    {'marker': '<', 'markersize': 23, 'linestyle': '-', 'color': '#ffa500'},  # 'Orange'
+    {'marker': '<', 'markersize': 23, 'linestyle': '-', 'color': '#ff7500'},  # 'Orange'
     {'marker': 'h', 'markersize': 23, 'linestyle': '-', 'color': '#ff00ff'},  # 'Magenta'
     # {'marker': 's', 'markersize': 20, 'linestyle': '-', 'color': 'm'}, # square, magenta
     {'marker': 'p', 'markersize': 23, 'linestyle': '-', 'color': '#bebebe'},  # 'Gray'
@@ -126,7 +127,7 @@ line_styles = [  # used by ppfigs and pprlmany
     {'marker': 'D', 'markersize': 23, 'linestyle': '-', 'color': '#adff2f'},  # 'GreenYellow'
     {'marker': 'd', 'markersize': 31, 'linestyle': '-', 'color': '#000080'},  # 'NavyBlue'
     {'marker': '*', 'markersize': 26, 'linestyle': '-', 'color': '#ff00ff'},  # 'Magenta'
-    {'marker': 'v', 'markersize': 33, 'linestyle': '-', 'color': '#ffa500'},  # 'Orange'
+    {'marker': 'v', 'markersize': 33, 'linestyle': '-', 'color': '#ffa500'},  # old 'Orange'
     {'marker': 'h', 'markersize': 28, 'linestyle': '-', 'color': '#6495ed'},  # 'CornflowerBlue'
     {'marker': '^', 'markersize': 30, 'linestyle': '-', 'color': 'r'},  # 'Red'
     {'marker': 'p', 'markersize': 25, 'linestyle': '-', 'color': '#9acd32'},  # 'YellowGreen'
@@ -276,15 +277,3 @@ isPickled = False  # only affects rungeneric1
 ##    
 isScatter = True  # only affects rungenericmany
 
-# Used by getopt:
-shortoptlist = "hvpo:"
-longoptlist = ["help", "output-dir=", "noisy", "noise-free",
-               "tab-only", "fig-only", "rld-only", "no-rld-single-fcts",
-               "verbose", "settings=", "conv",
-               "expensive", "runlength-based",
-               "los-only", "crafting-effort=", "pickle",
-               "sca-only", "no-svg", "constrained"]
-
-
-# thereby, "los-only", "crafting-effort=", and "pickle" affect only rungeneric1
-# and "sca-only" only affects rungenericmany

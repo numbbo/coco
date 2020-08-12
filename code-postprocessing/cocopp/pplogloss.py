@@ -543,7 +543,7 @@ def generateTable(dsList, CrE=0., outputdir='.', info='default'):
         mFE = []
 
         for i in dsdim:
-            maxevals.append(max(i.ert[np.isinf(i.ert) == False]))
+            maxevals.append(max(i.ert[np.isfinite(i.ert)]))  #  was: .isinf(i.ert) == False]))
             funcs.append(i.funcId)
             mFE.append(max(i.maxevals))
 
@@ -798,12 +798,6 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
 
     """
 
-    #plt.rc("axes", labelsize=20, titlesize=24)
-    #plt.rc("xtick", labelsize=20)
-    #plt.rc("ytick", labelsize=20)
-    #plt.rc("font", size=20)
-    #plt.rc("legend", fontsize=20)
-
     # If there is no reference algorithm.
     if not bestalg.load_reference_algorithm(testbedsettings.current_testbed.reference_algorithm_filename):
         return
@@ -863,7 +857,6 @@ def generateFigure(dsList, CrE=0., isStoringXRange=True, outputdir='.',
         #plt.show()
         plt.close()
 
-        #plt.rcdefaults()
 
 def main(dsList, CrE=0., isStoringXRange=True, outputdir='.', info='default'):
     """Generates ERT loss ratio boxplot figures.

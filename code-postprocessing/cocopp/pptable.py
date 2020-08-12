@@ -229,9 +229,9 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
             dispersion = []
             data = []
             for i in evals:
-                succ = (np.isnan(i) == False)
+                succ = np.isfinite(i)  # was: (np.isnan(i) == False)
                 tmp = i.copy()
-                tmp[succ==False] = entry.maxevals[np.isnan(i)]
+                tmp[np.logical_not(succ)] = entry.maxevals[np.logical_not(succ)]
                 #set_trace()
                 # TODO: what is the difference between data and ertdata? 
                 data.append(toolsstats.sp(tmp, issuccessful=succ)[0])
@@ -243,7 +243,8 @@ def main(dsList, dims_of_interest, outputdir, latex_commands_file):
                     dispersion.append((tmp2[-1] - tmp2[0]) / 2.)
                 else: 
                     dispersion.append(None)
-            assert data == ertdata
+            if data != ertdata:
+                warnings.warn("data != ertdata " + str((entry, data, ertdata)))
             for i, ert in enumerate(data):
                 alignment = 'c'
                 if i == len(data) - 1: # last element

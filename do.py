@@ -208,27 +208,27 @@ def leak_check():
     os.environ['CFLAGS'] = '-g -Os'
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
-                    '--gen-suppressions=yes',
+                    '--gen-suppressions=yes', '-s',
                     './test_bbob-largescale', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
-                    '--gen-suppressions=yes',
+                    '--gen-suppressions=yes', '-s',
                     './test_bbob-mixint', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
-                    '--gen-suppressions=yes',
+                    '--gen-suppressions=yes', '-s',
                     './test_coco', 'bbob2009_testcases.txt']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
-                    '--gen-suppressions=yes',
+                    '--gen-suppressions=yes', '-s',
                     './test_biobj', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
     valgrind_cmd = ['valgrind', '--error-exitcode=1', '--track-origins=yes',
                     '--leak-check=full', '--show-reachable=yes',
-                    '--gen-suppressions=yes',
+                    '--gen-suppressions=yes', '-s',
                     './test_bbob-constrained', 'leak_check']
     run('code-experiments/test/integration-test', valgrind_cmd, verbose=_verbosity)
 
@@ -270,9 +270,10 @@ To fix an access rights issue, you may try the following:
 def install_postprocessing(package_install_option = []):
     ''' Installs the COCO postprocessing as python module. '''
     global RELEASE
-    expand_file(join('code-postprocessing', 'setup.py.in'),
-                join('code-postprocessing', 'setup.py'),
-                {'COCO_VERSION': git_version(pep440=True)})
+# code-postprocessing/setup.py now takes care of itself actively
+#    expand_file(join('code-postprocessing', 'setup.py.in'),
+#                join('code-postprocessing', 'setup.py'),  # now in in setup.py
+#                {'COCO_VERSION': git_version(pep440=True)})
     # copy_tree('code-postprocessing/latex-templates', 'code-postprocessing/cocopp/latex-templates')
     python('code-postprocessing', ['setup.py', 'install']
            + package_install_option, verbose=_verbosity,
@@ -965,8 +966,8 @@ NOTE: These commands install Python packages to the global site packages by
       by default. This behavior can be modified by providing one of the
       following arguments.
   
-       install-user       - Installs under the user directory
-       install-home=<dir> - Installs under the specified home directory
+       --user OR install-user              - (recommended) installs under the user directory
+       --home=<dir> OR install-home=<dir>  - Installs under the specified home directory
 
 To build a release version which does not include debugging information in the
 amalgamations set the environment variable COCO_RELEASE to 'true'.
@@ -985,8 +986,8 @@ def main(args):
             also_test_python = True
         elif arg in ('install-user', '--user'):
             package_install_option = ['--user']
-        elif arg[:13] == 'install-home=':
-            package_install_option = ['--home=' + arg[13:]]
+        elif arg.startswith(('install-home=', '--home=')):
+            package_install_option = ['--home=' + arg.split('=', 1)[1]]
     if cmd == 'build': build(package_install_option = package_install_option)
     elif cmd == 'run': run_all(package_install_option = package_install_option)
     elif cmd == 'test': test(package_install_option = package_install_option)

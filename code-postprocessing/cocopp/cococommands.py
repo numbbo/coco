@@ -28,10 +28,10 @@ Examples:
 * Get some information on a :py:class:`DataSetList` instance::
 
     >>> print(dsl)  # doctest:+ELLIPSIS
-    [DataSet(BIPOP-CMA-ES on f1 2-D), DataSet(BIPOP-CMA-ES on f2 2-D),...
+    [DataSet(BIPOP-CMA-ES_hansen on f1 2-D), DataSet(BIPOP-CMA-ES...
     >>> dsl.info()
     144 data set(s)
-    Algorithm(s): BIPOP-CMA-ES
+    Algorithm(s): BIPOP-CMA-ES_hansen
     24 Functions with IDs 1-24
     Dimension(s): 2, 3, 5, 10, 20, 40
     Max evals: [1625595, 2349823, 3114271, 5884514, 12102699, 36849608]
@@ -39,9 +39,9 @@ Examples:
 * Get some information on a :py:class:`DataSet` instance::
 
     >>> print(ds)
-    DataSet(BIPOP-CMA-ES on f1 2-D)
+    DataSet(BIPOP-CMA-ES_hansen on f1 2-D)
     >>> ds.info()
-    Algorithm: BIPOP-CMA-ES
+    Algorithm: BIPOP-CMA-ES_hansen
     Function ID: 1
     Dimension DIM = 2
     Number of trials: 15

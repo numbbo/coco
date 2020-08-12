@@ -5,7 +5,7 @@ numbbo/coco: Comparing Continuous Optimizers
 [![Appveyor](https://ci.appveyor.com/api/projects/status/4dawpqr7aq2ioici/branch/master?svg=true)](https://ci.appveyor.com/project/nikohansen/coco-j53aywshl8udzvb/branch/master)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2594848.svg)](https://doi.org/10.5281/zenodo.2594848)
 [[BibTeX](https://zenodo.org/record/2594848/export/hx#.XIu-BxP0nRY)] cite as:
-> Nikolaus Hansen, Dimo Brockhoff, Olaf Mersmann, Tea Tusar, Dejan Tusar, Ouassim Ait ElHara, Phillipe R. Sampaio, Asma Atamna, Konstantinos Varelas, Umut Batu, Duc Manh Nguyen, Filip Matzner, Anne Auger. COmparing Continuous Optimizers: numbbo/COCO on Github. Zenodo, [DOI:10.5281/zenodo.2594847](https://doi.org/10.5281/zenodo.2594847), March 2019.
+> Nikolaus Hansen, Dimo Brockhoff, Olaf Mersmann, Tea Tusar, Dejan Tusar, Ouassim Ait ElHara, Phillipe R. Sampaio, Asma Atamna, Konstantinos Varelas, Umut Batu, Duc Manh Nguyen, Filip Matzner, Anne Auger. COmparing Continuous Optimizers: numbbo/COCO on Github. Zenodo, [DOI:10.5281/zenodo.2594848](https://doi.org/10.5281/zenodo.2594848), March 2019.
 ---
 
 [This code](https://github.com/numbbo/coco) reimplements the original Comparing
@@ -22,7 +22,14 @@ for numerical optimization. Languages currently available are
 Contributions to link further languages (including a better
 example in `C++`) are more than welcome.
 
-For more general information,
+The general project structure is shown in the following figure
+where the black color indicates code or data provided by the platform
+and the red color indicates either user code or data and graphical output
+from using the platform:
+
+![General COCO Structure](coco.png)
+
+For more general information:
 - read our [benchmarking guidelines introduction](http://numbbo.github.io/coco-doc/)
 - read the [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
 - see the [`bbob-biobj` and `bbob-biobj-ext` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation and the [specificities of the performance assessment for the bi-objective testbeds](http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment).
@@ -38,9 +45,9 @@ Requirements  <a name="Requirements"></a>
   - A `C` compiler, such as gcc
   - Python >=2.6 with `setuptools` installed
   - optional: `git`
-2. For a machine running the post-processing
-  - Python >=2.6 with `setuptools`, `numpy`, `scipy`, `matplotlib`, and `six` installed.
-    We recommend to install the [Anaconda Python 2.7 library](https://www.continuum.io/downloads). 
+2. For a machine displaying data by running the post-processing
+  - Python 3 with `numpy`, `scipy`, `matplotlib`, and `six` installed.
+    We recommend to install the [Anaconda Python library](https://www.continuum.io/downloads)
 
 For Ubuntu 16.04+, all the requirements can be installed using the following command:
 ```
@@ -85,65 +92,64 @@ Getting Started <a name="Getting-Started"></a>
 ---------------
 0. Check out the [_Requirements_](#Requirements) above.
 
-1. **Download** the COCO framework code from github, 
+1. Install the post-processing for **displaying** data (using Python):
 
-  - either by clicking the [Download ZIP button](https://github.com/numbbo/coco/archive/master.zip) 
-    and unzip the `zip` file, 
-  - or by typing `git clone https://github.com/numbbo/coco.git`. This way 
-    allows to remain up-to-date easily (but needs `git` to be installed). After 
-    cloning, `git pull` keeps the code up-to-date with the latest release. 
+    ```
+        pip install cocopp
+    ```
 
-  The record of official releases can 
-  be found [here](https://github.com/numbbo/coco/releases). The latest release corresponds 
-  to the [master branch](https://github.com/numbbo/coco/tree/master) as linked above. 
+    As long as no experiments are meant to be run, the next points 2.-6. can be skipped and continue with points 7. and 8. below.
+
+1. **Download** the COCO framework code from github,
+
+    - either by clicking the [Download ZIP button](https://github.com/numbbo/coco/archive/master.zip) 
+      and unzip the `zip` file, 
+    - or by typing `git clone https://github.com/numbbo/coco.git`. This way 
+      allows to remain up-to-date easily (but needs `git` to be installed). After 
+      cloning, `git pull` keeps the code up-to-date with the latest release. 
+
+    The record of official releases can 
+    be found [here](https://github.com/numbbo/coco/releases). The latest release corresponds 
+    to the [master branch](https://github.com/numbbo/coco/tree/master) as linked above. 
 
 2. In a system shell, **`cd` into** the `coco` or `coco-<version>` folder (framework root), 
-  where the file `do.py` can be found. Type, i.e. **execute**, one of the following commands once
-  ```
-    python do.py run-c
-    python do.py run-java
-    python do.py run-matlab
-    python do.py run-octave
-    python do.py run-python
-  ```  
-  depending on which language shall be used to run the experiments. `run-*` will build the 
-  respective code and run the example experiment once. The build result and the example
-  experiment code can be found under `code-experiments/build/<language>` (`<language>=matlab` 
-  for Octave). `python do.py` lists all available commands. 
-  
-3. On the computer where experiment data shall be post-processed, run
-
-  ```
-    python do.py install-postprocessing
-  ```
-  to (user-locally) install the post-processing. From here on, `do.py` has done
-  its job and is only needed again for updating the builds to a new release.
-  
+    where the file `do.py` can be found. Type, i.e. **execute**, one of the following commands once
+    ```sh
+      python do.py run-c
+      python do.py run-java
+      python do.py run-matlab
+      python do.py run-octave
+      python do.py run-python
+    ```  
+    depending on which language shall be used to run the experiments. `run-*` will build the 
+    respective code and run the example experiment once. The build result and the example
+    experiment code can be found under `code-experiments/build/<language>` (`<language>=matlab` 
+    for Octave). `python do.py` lists all available commands. 
   
 4. **Copy** the folder `code-experiments/build/YOUR-FAVORITE-LANGUAGE` and
-  its content to another location. In Python it is sufficient to copy the 
-  file [`example_experiment_for_beginners.py`](./code-experiments/build/python/example_experiment_for_beginners.py)
-  or [`example_experiment2.py`](./code-experiments/build/python/example_experiment2.py).
-  Run the example experiment (it already is compiled). As the details vary, see
-  the respective read-me's and/or example experiment files:
+    its content to another location. In Python it is sufficient to copy the 
+    file [`example_experiment_for_beginners.py`](./code-experiments/build/python/example_experiment_for_beginners.py)
+    or [`example_experiment2.py`](./code-experiments/build/python/example_experiment2.py).
+    Run the example experiment (it already is compiled). As the details vary, see
+    the respective read-me's and/or example experiment files:
 
-  - `C` [read me](./code-experiments/build/c/README.md) 
-    and [example experiment](./code-experiments/build/c/example_experiment.c)
-  - `Java` [read me](./code-experiments/build/java/README.md)
-    and [example experiment](./code-experiments/build/java/ExampleExperiment.java)
-  - `Matlab/Octave` [read me](./code-experiments/build/matlab/README.md)
-    and [example experiment](./code-experiments/build/matlab/exampleexperiment.m) 
-  - `Python` [read me](./code-experiments/build/python/README.md)
-    and [example experiment2](./code-experiments/build/python/example_experiment2.py)
+    - `C` [read me](./code-experiments/build/c/README.md) 
+      and [example experiment](./code-experiments/build/c/example_experiment.c)
+    - `Java` [read me](./code-experiments/build/java/README.md)
+      and [example experiment](./code-experiments/build/java/ExampleExperiment.java)
+    - `Matlab/Octave` [read me](./code-experiments/build/matlab/README.md)
+      and [example experiment](./code-experiments/build/matlab/exampleexperiment.m) 
+    - `Python` [read me](./code-experiments/build/python/README.md)
+      and [example experiment2](./code-experiments/build/python/example_experiment2.py)
 
-  If the example experiment runs, **connect** your favorite algorithm
-  to Coco: replace the call to the random search optimizer in the
-  example experiment file by a call to your algorithm (see above).
-  **Update** the output `result_folder`, the `algorithm_name` and `algorithm_info` 
-  of the observer options in the example experiment file.
+    If the example experiment runs, **connect** your favorite algorithm
+    to Coco: replace the call to the random search optimizer in the
+    example experiment file by a call to your algorithm (see above).
+    **Update** the output `result_folder`, the `algorithm_name` and `algorithm_info` 
+    of the observer options in the example experiment file.
 
-  Another entry point for your own experiments can be the `code-experiments/examples`
-  folder. 
+    Another entry point for your own experiments can be the `code-experiments/examples`
+    folder.
 
 5. Now you can **run** your favorite algorithm on the `bbob` and `bbob-largescale` suites
   (for single-objective algorithms), on the `bbob-biobj` suite (for multi-objective 
@@ -151,57 +157,70 @@ Getting Started <a name="Getting-Started"></a>
   respectively). Output is automatically generated in the 
   specified data `result_folder`. By now, more suites might be available, see below. 
 
-  <a name="Getting-Started-pp"></a>
-6.  **Postprocess** the data from the results folder by typing
+6. <a name="Getting-Started-pp"></a>**Postprocess** the data from the results folder by
+  typing
 
-  ```
-    python -m cocopp [-o OUTPUT_FOLDERNAME] YOURDATAFOLDER [MORE_DATAFOLDERS]
-  ```
+    ```sh
+        python -m cocopp [-o OUTPUT_FOLDERNAME] YOURDATAFOLDER [MORE_DATAFOLDERS]
+    ```
 
-  Any subfolder in the folder arguments will be searched for logged data. That is, 
+    Any subfolder in the folder arguments will be searched for logged data. That is, 
   experiments from different batches can be in different folders collected under a 
   single "root"  `YOURDATAFOLDER` folder. We can also compare more than one algorithm 
   by specifying several data result folders generated by different algorithms.
 
-  We also provide many archived algorithm data sets. For example
+7. We also provide many **archived algorithm data sets**. For example
 
-  ```
-    python -m cocopp 'bbob/2009/BFGS_ros'
-  ```
+    ```sh
+      python -m cocopp 'bbob/2009/BFGS_ros' 'bbob/2010/IPOP-ACTCMA'
+    ```
 
-  processes the referenced archived BFGS data set. The given substring must
-  have a unique match in the archive or must end with `!` or `*` or must be a
-  [regular expression](https://docs.python.org/3/library/re.html#regular-expression-syntax)
-  containing a `*` and not ending with `!` or `*`. Otherwise, all matches are listed
-  but none is processed with this call. For more information in how to obtain
-  and display specific archived data, see
-  [`help(cocopp)`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html) or
-  [`help(cocopp.archives)`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.KnownArchives.html)
-  or the class
-  [`COCODataArchive`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.COCODataArchive.html).
-  
-  Data descriptions can be found for the `bbob` test suite at
-  http://coco.gforge.inria.fr/doku.php?id=algorithms and for the `bbob-biobj`
-  test suite at http://coco.gforge.inria.fr/doku.php?id=algorithms-biobj.
+    processes the referenced archived BFGS data set and an IPOP-CMA data set. The given substring must
+    have a unique match in the archive or must end with `!` or `*` or must be a
+    [regular expression](https://docs.python.org/3/library/re.html#regular-expression-syntax)
+    containing a `*` and not ending with `!` or `*`. Otherwise, all matches are listed
+    but none is processed with this call. For more information in how to obtain
+    and display specific archived data, see
+    [`help(cocopp)`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html) or
+    [`help(cocopp.archives)`](https://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.OfficialArchives.html)
+    or the class
+    [`COCODataArchive`](http://coco.gforge.inria.fr/apidocs-cocopp/cocopp.archiving.COCODataArchive.html).
 
-  Local and archived data can be freely mixed like
+    Data descriptions can be found for the `bbob` test suite at
+    [coco-algorithms](http://coco.gforge.inria.fr/doku.php?id=algorithms) and for the `bbob-biobj`
+    test suite at [coco-algorithms-biobj](http://coco.gforge.inria.fr/doku.php?id=algorithms-biobj).
 
-  ```
-    python -m cocopp YOURDATAFOLDER 'bbob/2010/IPOP-ACT'
-  ```
+    Local and archived data can be freely mixed like
 
-  which processes the data from `YOURDATAFOLDER` and the archived IPOP-ACT data
-  set in comparison.
+    ```sh
+      python -m cocopp YOURDATAFOLDER 'bbob/2010/IPOP-ACT'
+    ```
 
-  The output folder, `ppdata` by default, contains all output from 
-  the post-processing. The `index.html` file is the main entry point to 
-  explore the result with a browser. Data from the same foldername as
-  previously processed may be overwritten. If this is not desired, a different
-  output folder name can be chosen with the `-o OUTPUT_FOLDERNAME` option.
+    which processes the data from `YOURDATAFOLDER` and the archived IPOP-ACT data
+    set in comparison.
 
-  A summary pdf can be produced via LaTeX. The corresponding templates can be found 
-  in the `code-postprocessing/latex-templates` folder.  Basic html output is also 
-  available in the result folder of the postprocessing (file `templateBBOBarticle.html`).
+    The output folder, `ppdata` by default, contains all output from 
+    the post-processing. The `index.html` file is the main entry point to 
+    explore the result with a browser. Data from the same foldername as
+    previously processed may be overwritten. If this is not desired, a different
+    output folder name can be chosen with the `-o OUTPUT_FOLDERNAME` option.
+
+    A summary pdf can be produced via LaTeX. The corresponding templates can be found 
+    in the `code-postprocessing/latex-templates` folder.  Basic html output is also 
+    available in the result folder of the postprocessing (file `templateBBOBarticle.html`).
+
+8. In order to exploit more features of the post-processing module,
+  it is advisable to use the module within a [Python](https://www.python.org/)
+  or [IPython](https://ipython.org/) shell
+  or a [Jupyter notebook](https://jupyter.org/) or
+  [JupyterLab](https://jupyterlab.readthedocs.io/en/stable/), where
+
+    ```python
+    import cocopp
+    help(cocopp)
+    ```
+
+    provides the [documentation entry pointer](https://coco.gforge.inria.fr/apidocs-cocopp/cocopp.html).
 
 7. Once your algorithm runs well, **increase the budget** in your experiment
   script, if necessary implement randomized independent restarts, and follow 
@@ -304,9 +323,7 @@ our issue tracker at https://github.com/numbbo/coco/issues.
   output of the `bbob-biobj` logger from archive files (needed when the hypervolume
   reference values are updated)
 
-* docs should contain an updated version of the documentation, see above.
-
-* howtos contains a few text files with internal howtos.
+* howtos contains a few text files with generic howtos.
 
 
 Known Issues / Trouble-Shooting <a name="Known-Issues"></a>
@@ -593,11 +610,11 @@ Links and Documentation <a name="Links"></a>
 * The [_BBOB workshop series_](http://numbbo.github.io/workshops), which uses the
   NumBBO/Coco framework extensively, can be tracked
   [here](http://numbbo.github.io/workshops "BBOB Workshops")
-* Data sets from previous experiments for many algorithms are available
-  at http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob for the `bbob` test suite, 
-  at http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob-noisy for the `bbob-noisy`
-  test suite and at http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob-biobj
-  for the `bbob-biobj` test suite.
+* Data sets from previous experiments for many algorithms are available at
+  - http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob for the `bbob` test suite
+  - http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob-noisy for the `bbob-noisy` test suite
+  - http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob-biobj for the `bbob-biobj` test suite, and at
+  - http://coco.gforge.inria.fr/doku.php?id=algorithms-bbob-largescale for the `bbob-largescale` test suite.
 * Postprocessed data for each year in which a BBOB workshop was taking place can be
   found at http://coco.gforge.inria.fr/ppdata-archive
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 

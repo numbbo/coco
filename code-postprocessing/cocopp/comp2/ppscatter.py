@@ -34,6 +34,7 @@ import numpy
 import numpy as np
 import warnings
 from pdb import set_trace
+import matplotlib
 from matplotlib import pyplot as plt
 try:
     from matplotlib.transforms import blended_transform_factory as blend
@@ -107,7 +108,7 @@ def beautify():
     a.set_yscale('log')
     xmin, xmax = plt.xlim()
     ymin, ymax = plt.ylim()
-    minbnd = min(xmin, ymin)
+    minbnd = max(min(xmin, ymin), 1)
     maxbnd = max(xmax, ymax)
     maxbnd = maxbnd ** (1 + 11.*offset/(numpy.log10(float(maxbnd)/minbnd)))
     plt.plot([minbnd, maxbnd], [minbnd, maxbnd], ls='-', color='k')
@@ -129,10 +130,10 @@ def beautify():
     tick_locs = [n for n in a.get_xticks() if n > minbnd and n < maxbnd]
     tick_labels = ['%d' % round(np.log10(n)) if n < 1e10  # assure 1 digit for uniform figure sizes
                    else '' for n in tick_locs]
-    a.set_xticks(tick_locs)
     a.set_yticks(tick_locs)
-    a.set_xticklabels(tick_labels)
-    a.set_yticklabels(tick_labels)
+    a.set_xticks(tick_locs)
+    a.set_xticklabels(tick_labels, fontsize=0.85*genericsettings.rctick["labelsize"])
+    a.set_yticklabels(tick_labels, fontsize=0.85*genericsettings.rctick["labelsize"])
 
     #for line in a.get_xticklines():# + a.get_yticklines():
     #    plt.setp(line, color='b', marker='o', markersize=10)
@@ -141,15 +142,10 @@ def beautify():
 def main(dsList0, dsList1, outputdir, settings):
     """Generate a scatter plot figure.
     
-    TODO: """
+    """
 
     markers = genericsettings.dim_related_markers
     colors = genericsettings.dim_related_colors
-    #plt.rc("axes", labelsize=24, titlesize=24)
-    #plt.rc("xtick", labelsize=20)
-    #plt.rc("ytick", labelsize=20)
-    #plt.rc("font", size=20)
-    #plt.rc("legend", fontsize=20)
 
     dictFunc0 = dsList0.dictByFunc()
     dictFunc1 = dsList1.dictByFunc()
@@ -253,8 +249,10 @@ def main(dsList0, dsList1, outputdir, settings):
                              marker='x', markerfacecolor='None',
                              markeredgecolor=colors[i], markeredgewidth=2,
                              clip_on=False)
-            #ax = plt.gca()
-            ax = plt.axes()
+            warnings.filterwarnings('ignore')  # , category=matplotlib.MatplotlibDeprecationWarning)
+            ax = plt.gca()  # doesn't give a warning anymore in mpl version 3.1.3
+            # ax = plt.axes()
+            warnings.filterwarnings('default')  # , category=matplotlib.MatplotlibDeprecationWarning)
 
             # plot data on the right edge
             idx = numpy.isinf(xdata) * (numpy.isinf(ydata) == False)
@@ -384,15 +382,15 @@ def main(dsList0, dsList1, outputdir, settings):
 
         # set x- and y-labels based on which algorithm is compared
         a = plt.gca()
-        a.set_xlabel('log10(ERT of %s)' % dsList0[0].algId)
-        a.set_ylabel('log10(ERT of %s)' % dsList1[0].algId)
+        a.set_xlabel('log10(ERT of %s)' % dsList0[0].algId[:18],
+                     fontsize=0.85*genericsettings.rcfont["size"])
+        a.set_ylabel('log10(ERT of %s)' % dsList1[0].algId[:18],
+                     fontsize=0.85*genericsettings.rcfont["size"])
 
         fontSize = getFontSize(funInfos.values())
-        if f in funInfos.keys():        
+        if f in funInfos.keys():
             plt.title(funInfos[f], fontsize=0.75*fontSize)
 
         filename = os.path.join(outputdir, 'ppscatter_f%03d' % f)
         save_figure(filename, dsList0[0].algId, bbox_inches='tight')
         plt.close()
-
-    #plt.rcdefaults()

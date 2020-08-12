@@ -471,7 +471,7 @@ def plot(dsList, valuesOfInterest=None, styles=styles):
                          "%.0f" % j[2], axes=a,
                          horizontalalignment="center",
                          verticalalignment="bottom",
-                         fontsize=plt.rcParams['font.size'] * 0.85)
+                         fontsize=genericsettings.rcfont['size'] * 0.85)
         # if later the ylim[0] becomes >> 1, this might be a problem
     return res
 
@@ -525,13 +525,6 @@ def main(dsList, _valuesOfInterest, outputdir):
     
     """
 
-    plt.rc("axes", **genericsettings.rcaxes)
-    plt.rc("xtick", **genericsettings.rctick)
-    plt.rc("ytick", **genericsettings.rctick)
-    plt.rc("font", **genericsettings.rcfont)
-    plt.rc("legend", **genericsettings.rclegend)
-    plt.rc('pdf', fonttype=42)
-
     _valuesOfInterest = pproc.TargetValues.cast(_valuesOfInterest)
 
     dictFunc = dsList.dictByFunc()
@@ -541,7 +534,7 @@ def main(dsList, _valuesOfInterest, outputdir):
     joined_values_of_interest = ', '.join(values_of_interest.labels()) if genericsettings.runlength_based_targets else ', '.join(values_of_interest.loglabels())
     caption = htmldesc.getValue('##' + key + '##').replace('valuesofinterest', joined_values_of_interest)
     header = 'Average number of <i>f</i>-evaluations to reach target'
-    if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+    if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
         header = header.replace('<i>f</i>', '<i>(f+g)</i>')
 
     ppfig.save_single_functions_html(

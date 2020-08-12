@@ -227,7 +227,6 @@ class BestAlgSet(DataSet):
             self.comment = dict_alg[sortedAlgs[0]].comment.lstrip('%% ')
         self.ert = np.array(reserts)
         self.target = res[:, 0]
-        self.testbed = dict_alg[sortedAlgs[0]].testbed_name # TODO: not nice
         self.suite = getattr(dict_alg[sortedAlgs[0]], 'suite', None)
         self.used_algorithms = sortedAlgs
         bestfinalfunvals = np.array([np.inf])
@@ -590,7 +589,7 @@ def create_data_files(output_dir, result, suite):
             test_suite = suite
 
         algorithm_id = value.algId
-        if result[list(result.keys())[0]].testbed == testbedsettings.default_testbed_bi:
+        if result[list(result.keys())[0]].suite_name == testbedsettings.default_testbed_bi:
             info_lines.append("function = %d, dim = %d, %s, %s"
                               % (key[1], key[0], filename_template % (key[1], key[0], 'dat'), instance_data))
         else:
@@ -611,7 +610,7 @@ def create_data_files(output_dir, result, suite):
             if algorithm not in algorithms_used:
                 algorithms_used.append(algorithm)
 
-    if result[list(result.keys())[0]].testbed == testbedsettings.default_testbed_bi:
+    if result[list(result.keys())[0]].suite_name == testbedsettings.default_testbed_bi:
         header = "algorithm = '%s', indicator = 'hyp'" % algorithm_id
         if test_suite is not None:
             header += ", suite = '%s'" % test_suite

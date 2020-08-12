@@ -170,12 +170,12 @@ def beautify():
 
     global divide_by_dimension
     if divide_by_dimension:
-        if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
             plt.xlabel('log10(# (f+g)-evals / dimension)', fontsize=label_fontsize)
         else:
             plt.xlabel('log10(# f-evals / dimension)', fontsize=label_fontsize)
     else:
-        if testbedsettings.current_testbed.name == testbedsettings.testbed_name_cons:
+        if testbedsettings.current_testbed.name == testbedsettings.suite_name_cons:
             plt.xlabel('log10(# (f+g)-evals)', fontsize=label_fontsize)
         else:
             plt.xlabel('log10(# f-evals)', fontsize=label_fontsize)
@@ -255,7 +255,7 @@ def plotdata(data, maxval=None, maxevals=None, CrE=0., **kwargs):
                              markeredgewidth=median_max_evals_marker_format[2],
                              # marker='x', markersize=24, markeredgewidth=3, 
                              markeredgecolor=plt.getp(res[0], 'color'),
-                             ls=plt.getp(res[0], 'ls'),
+                             ls=plt.getp(res[0], 'linestyle'),
                              color=plt.getp(res[0], 'color'),
                              # zorder=1.6   # zorder=0;1;1.5 is behind the grid lines, 2 covers other lines, 1.6 is between
                              )
@@ -356,7 +356,7 @@ def plotLegend(handles, maxval):
                                  plt.getp(h, 'label') in show_algorithms)):
                     y = 0.02 + i * 0.96 / (lh - 1)
                     tmp = {}
-                    for attr in ('lw', 'ls', 'marker',
+                    for attr in ('lw', 'linestyle', 'marker',
                                  'markeredgewidth', 'markerfacecolor',
                                  'markeredgecolor', 'markersize', 'zorder'):
                         tmp[attr] = plt.getp(h, attr)
@@ -708,7 +708,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
     # Display data
     lines = []
     if displaybest:
-        args = {'ls': '-', 'linewidth': 4, 'marker': 'D', 'markersize': 11.,
+        args = {'linestyle': '-', 'linewidth': 4, 'marker': 'D', 'markersize': 11.,
                 'markeredgewidth': 1.5, 'markerfacecolor': refcolor,
                 'markeredgecolor': refcolor, 'color': refcolor,
                 'label': testbedsettings.current_testbed.reference_algorithm_displayname,
@@ -747,7 +747,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
                 # args['markevery'] = perfprofsamplesize # option available in latest version of matplotlib
                 # elif len(show_algorithms) > 0:
                 # args['color'] = 'wheat'
-                # args['ls'] = '-'
+                # args['linestyle'] = '-'
                 # args['zorder'] = -1
             # plotdata calls pprldistr.plotECDF which calls ppfig.plotUnifLog... which does the work
 
@@ -837,7 +837,7 @@ def main(dictAlg, order=None, outputdir='.', info='default',
             pass
     # issue a warning if number of instances is inconsistant, but always
     # display only the present number of instances, i.e. remove copies
-    if len(set(num_of_instances)) > 1:
+    if len(set(num_of_instances)) > 1 and genericsettings.warning_level >= 5:
         warnings.warn('Number of instances inconsistent over all algorithms: %s instances found.' % str(num_of_instances))
     num_of_instances = set(num_of_instances)
     for n in num_of_instances:
