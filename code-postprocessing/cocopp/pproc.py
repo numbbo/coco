@@ -962,11 +962,13 @@ class DataSet(object):
                               '*.info file and in the data files.')
 
             self._cut_data()
-        # Compute ERT
-        self.computeERTfromEvals()
+        if len(self._evals):
+            self.target = self._evals[:,0]  # needed for biobj best alg computation
+        # Compute ERT (will be done lazy from .ert access)
+        # self.computeERTfromEvals()
         # asserts don't help though
-        assert self._evals.shape[1] - 1 == len(self.instancenumbers), self
-        assert self.evals.shape[1] - 1 == len(self.maxevals), self
+        # assert self._evals.shape[1] - 1 == len(self.instancenumbers), self
+        # assert self.evals.shape[1] - 1 == len(self.maxevals), self
         
     def _cut_data(self):
         """attributes `target`, `evals`, and `ert` are truncated to target values not 
@@ -1065,7 +1067,11 @@ class DataSet(object):
             
     def computeERTfromEvals(self):
         """Sets the attributes ert and target from the attribute evals."""
+        if isinstance(self.maxevals, dict):
+            warnings.warn("computeERT is not executed when maxevals is a `dict`")
+            return
         self._ert = []
+        self._ert_nb_of_data = len(self.evals[0]) - 1
         self.target = []
         for row in self.evals:
             data = row[1:]
@@ -1088,6 +1094,9 @@ class DataSet(object):
 
         self._ert = numpy.array(self._ert)
         self.target = numpy.array(self.target)
+        # asserts don't help though
+        # assert self._evals.shape[1] - 1 == len(self.instancenumbers), self
+        # assert self.evals.shape[1] - 1 == len(self.maxevals), self
 
     def evals_with_simulated_restarts(self,
             targets,
@@ -1273,6 +1282,12 @@ class DataSet(object):
         Depending on `genericsettings.balance_instances`, the average is
         weighted to make up for unbalanced problem instance occurances.
         """
+        if not isinstance(self.maxevals, dict) and (  # bestalg DataSets have correctly computed _ert
+            not hasattr(self, '_ert_nb_of_data') or   # evals may contain column copies for balancing
+            set((self._ert_nb_of_data,
+                 len(self.evals[0]) - 1,
+                 len(self.maxevals))).__len__() > 1):
+            self.computeERTfromEvals()
         return self._ert
 
     @property  # cave: setters work only with new style classes
