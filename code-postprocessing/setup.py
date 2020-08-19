@@ -27,8 +27,10 @@ from __future__ import print_function
 
 import os
 import sys
-import setuptools
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 _name = 'cocopp'
 
