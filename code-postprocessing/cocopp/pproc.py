@@ -962,6 +962,9 @@ class DataSet(object):
             self._cut_data()
         # Compute ERT
         self.computeERTfromEvals()
+        # asserts don't help though
+        assert self._evals.shape[1] - 1 == len(self.instancenumbers), self
+        assert self.evals.shape[1] - 1 == len(self.maxevals), self
         
     def _cut_data(self):
         """attributes `target`, `evals`, and `ert` are truncated to target values not 
@@ -1054,6 +1057,8 @@ class DataSet(object):
         elif (instancedict not in genericsettings.instancesOfInterest):
             is_consistent = False
             warnings.warn('  instance numbers not among the ones specified in 2009, 2010, 2012, 2013, and 2015-2018')
+        assert self._evals.shape[1] - 1 == len(self.instancenumbers), self
+        assert self.evals.shape[1] - 1 == len(self.maxevals), self
         return is_consistent
             
     def computeERTfromEvals(self):
@@ -1642,19 +1647,27 @@ class DataSet(object):
         and further columns are added according to `instance_multipliers` to
         balance uneven repetitions over different instances.
         """
+        if 11 < 3 and self.funcId == 3 and self.dim == 40:
+            print(self.instance_multipliers)
+            print(self._evals_balanced_raw_data_columns
+                  if hasattr(self, '_evals_balanced_raw_data_columns') else 'blanc')
         if hasattr(self, '_evals_balanced') and (
-            self._evals_balanced_raw_data_columns == self._evals.shape[1] - 1) and (
+            self._instance_multipliers_instancenumbers == tuple(self.instancenumbers)) and (
+            # self._evals_balanced_instance_numbers == tuple(self.instancenumbers)) and ( # is for some reason not enough
+            self._evals_balanced_raw_data_columns == self._evals.shape[1] - 1 == len(self.instancenumbers)) and (
             self._need_balancing + (self._evals_balanced is self._evals) == 1):
                 return
-        if not self._need_balancing:
-            self._evals_balanced = self._evals
-        else:
-            instance_multipliers = self.instance_multipliers  # avoid multiple invokation
+        # print('proceeding')
+        self._evals_balanced = self._evals
+        instance_multipliers = self.instance_multipliers  # avoid multiple invokation
+        if self._need_balancing:
             self._evals_balanced = np.vstack(
                     [self._balanced_evals_row(self._evals[i, :], first_index=1,
                                               instance_multipliers=instance_multipliers)
                      for i in range(self._evals.shape[0])])
-        self._evals_balanced_raw_data_columns = self._evals.shape[1] - 1
+        self._evals_balanced_raw_data_columns = len(self.instancenumbers)
+        # self._evals_balanced_instance_numbers = tuple(self.instancenumbers)
+        # print('done', self._evals.shape, self._evals_balanced.shape, self.instance_multipliers, self.instancenumbers)
 
     @property
     def _need_balancing(self):
@@ -1706,8 +1719,6 @@ class DataSet(object):
                           str((self, self.instancenumbers, self._instance_multipliers, instance_multipliers)))
         self._instance_multipliers = instance_multipliers
         self._instance_multipliers_instancenumbers = tuple(self.instancenumbers)
-        try: hash(self._instance_multipliers_instancenumbers)
-        except: self._instance_multipliers_instancenumbers = None  # prevent storing a mutable
         return self._instance_multipliers
 
     @property
