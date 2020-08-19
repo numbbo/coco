@@ -1965,6 +1965,20 @@ class DataSetList(list):
         for i in self:
             i.pickle(*args, **kwargs)
 
+    def by(self, attr_name):
+        """Returns a dictionary of `DataSetList` instances by `attr_name`.
+
+        `attr_name` values are the dictionary keys and the corresponding
+        slices (partial lists) are the values.
+
+        May in future replace some of the specific methods, for example,
+        ``dsl.dictByDim() == dsl.by('dim')``.
+        """
+        d = {}
+        for i in self:
+            d.setdefault(getattr(i, attr_name), DataSetList()).append(i)
+        return d
+
     def dictByAlg(self):
         """Returns a dictionary of instances of this class by algorithm.
 
