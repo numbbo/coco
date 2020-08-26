@@ -797,6 +797,7 @@ def verify_postprocessing(package_install_option = []):
 ## Pre-processing
 def install_preprocessing(package_install_option = []):
     global RELEASE
+    install_postprocessing(package_install_option=package_install_option)
     expand_file(join('code-preprocessing/archive-update', 'setup.py.in'),
                 join('code-preprocessing/archive-update', 'setup.py'),
                 {'COCO_VERSION': git_version(pep440=True)})
