@@ -35,7 +35,7 @@ class DataFormat(object):
         """
         dataset.evals, maxevals, finalfunvals = aligner(data,
                             self.evaluation_idx, self.function_value_idx)
-        assert all(dataset.evals[0][1:] == 1)
+        assert all(dataset.evals[0][1:] == 1), dataset._evals[0]
         return maxevals, finalfunvals
 
 
