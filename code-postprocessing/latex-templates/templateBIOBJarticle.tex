@@ -48,7 +48,7 @@
 \graphicspath{{\bbobdatapath\algfolder}}
 
 \newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\aRT}{\ensuremath{\mathrm{aRT}}}
+\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
 \newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
 \newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
 \newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
@@ -197,7 +197,7 @@ In order to evaluate the CPU timing of the algorithm, we have run the \change{\a
 Results of \algname\ from experiments according to \cite{hansen2016exp}, \cite{hansen2016perfass} and \cite{biobj2016perfass} on the benchmark
 functions given in \cite{biobj2016func} are presented in
 Figures~\ref{fig:ECDFsingleOne}, \ref{fig:ECDFsingleTwo}, \ref{fig:ECDFsingleThree}, and \ref{fig:ECDFsGroups}, and in
-Tables~\ref{tab:aRTs5} and \ref{tab:aRTs20}. The experiments were performed with COCO \cite{hansen2016cocoplat}, version \change{2.0}, the plots were produced with version \change{2.0}.
+Tables~\ref{tab:ERTs5} and \ref{tab:ERTs20}. The experiments were performed with COCO \cite{hansen2016cocoplat}, version \change{2.0}, the plots were produced with version \change{2.0}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -347,7 +347,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-% Table showing the average running time (aRT in number of function
+% Table showing the expected running time (ERT in number of function
 % evaluations) to reach the given targets for functions $f_1$--$f_{55}$ for dimension 5.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -491,7 +491,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 
 \end{minipage}}
 
- \caption[Table of aRTs]{\label{tab:aRTs5}\bbobpptablecaption{dimension $5$}
+ \caption[Table of ERTs]{\label{tab:ERTs5}\bbobpptablecaption{dimension $5$}
  }
 \end{table*}
 %sideways
@@ -500,7 +500,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Table showing the average running time (aRT in number of function
+% Table showing the expected running time (ERT in number of function
 % evaluations) to reach the given targets for functions $f_1$--$f_{55}$ for dimension 5.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -643,7 +643,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 
 \end{minipage}}
 
- \caption[Table of aRTs]{\label{tab:aRTs20}\bbobpptablecaption{dimension $20$}
+ \caption[Table of ERTs]{\label{tab:ERTs20}\bbobpptablecaption{dimension $20$}
  }
 \end{table*}
 
@@ -666,7 +666,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Scaling of aRT with dimension
+% Scaling of ERT with dimension
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
@@ -703,7 +703,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 \includegraphics[width=0.2\textwidth]{ppfigdim_f030}
 \end{tabular}
 \vspace{-3ex}
- \caption{\label{fig:aRTgraphs}
+ \caption{\label{fig:ERTgraphs}
  \bbobppfigdimlegend{$f_1$ and $f_{30}$}
 }
 \end{figure*}
@@ -738,8 +738,8 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 \includegraphics[width=0.2\textwidth]{ppfigdim_f055}
 \end{tabular}
 \vspace{-3ex}
- \caption{\label{fig:aRTgraphsTwo}
- Runtime versus dimension as described in Fig.~\ref{fig:aRTgraphs}, here for functions $f_{31}$ to $f_{55}$.
+ \caption{\label{fig:ERTgraphsTwo}
+ Runtime versus dimension as described in Fig.~\ref{fig:ERTgraphs}, here for functions $f_{31}$ to $f_{55}$.
  }
 \end{figure*}
 
