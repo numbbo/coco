@@ -61,7 +61,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\aRT}{\ensuremath{\mathrm{aRT}}}
+\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
 \newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
 \newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
 \newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
@@ -214,11 +214,11 @@ Results from experiments according to \cite{hansen2016exp},
 \cite{hansen2016perfass} and \cite{biobj2016perfass} on the benchmark
 functions given in \cite{biobj2016func} are presented in
 Figures~\ref{fig:ECDFsingleOne}, \ref{fig:ECDFsingleTwo}, \ref{fig:ECDFsGroupsFive} and
-\ref{fig:ECDFsGroupsTwenty} and in Tables~\ref{tab:aRTs5} and~\ref{tab:aRTs20}.
+\ref{fig:ECDFsGroupsTwenty} and in Tables~\ref{tab:ERTs5} and~\ref{tab:ERTs20}.
 The experiments were performed with COCO \cite{hansen2016cocoplat}, version
 \change{2.0}, the plots were produced with version \change{2.0}.
 
-The \textbf{average runtime (aRT)}, used in the %figures and
+The \textbf{expected runtime (ERT)}, used in the %figures and
 tables,
 depends on a given quality indicator value, $\Itarget=\hvref+\DI$, and is
 computed over all relevant trials as the number of function
@@ -396,7 +396,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Average runtime (aRT in number of function evaluations)
+% Expected runtime (ERT in number of function evaluations)
 % for functions $f_1$--$f_{55}$ of the bbob-biobj suite for dimension 5.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -544,7 +544,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 
 \end{minipage}}
 
- \caption{\label{tab:aRTs5}
+ \caption{\label{tab:ERTs5}
  \bbobpptablesmanylegend{dimension $5$}
  }
 \end{table*}
@@ -554,7 +554,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Average runtime (aRT in number of function evaluations)
+% Expected runtime (ERT in number of function evaluations)
 % for functions $f_1$--$f_{55}$ of the bbob-biobj suite for dimension 20.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -698,7 +698,7 @@ multimodal-multimodal & multimodal-weakstructure & weakstructure-weakstructure &
 
 \end{minipage}}
 
- \caption{\label{tab:aRTs20}
+ \caption{\label{tab:ERTs20}
  \bbobpptablesmanylegend{dimension $20$}
  }
 \end{table*}
@@ -722,7 +722,7 @@ The following pages present additional results that do not fit into the actual p
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Scaling of aRT with dimension
+% Scaling of ERT with dimension
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}

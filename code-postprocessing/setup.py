@@ -27,8 +27,10 @@ from __future__ import print_function
 
 import os
 import sys
-import setuptools
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 _name = 'cocopp'
 
@@ -81,7 +83,7 @@ def git_version(pep440=False):
     '0.1-6015-ga0a3769' if not pep440 else '0.1.6015'
 
     """
-    res = git(['describe', '--tags'])
+    # res = git(['describe', '--tags'])
     try:
         res = git(['describe', '--tags'])
     except:

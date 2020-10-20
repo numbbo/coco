@@ -25,9 +25,9 @@ all_scenarios = [scenario_rlbased, scenario_fixed,
                  scenario_largescalefixed, scenario_mixintfixed,
                  scenario_biobjmixintfixed]
 
-suite_name_single = 'bbob'
-suite_name_single_noisy = 'bbob-noisy'
-suite_name_bi = 'bbob-biobj'
+suite_name_single = 'bbob'        # TODO: This looks like a superfluous alias for GECCOBBOBTestbed.settings['name']
+suite_name_single_noisy = 'bbob-noisy'  # Shouldn't suite names better be defined in the classes which defined/describe
+suite_name_bi = 'bbob-biobj'            # the suite? Isn't that the whole point of having these classes?
 suite_name_bi_ext = 'bbob-biobj-ext'
 suite_name_cons = 'bbob-constrained'
 suite_name_ls = 'bbob-largescale'
@@ -38,6 +38,11 @@ default_suite_single = 'bbob'
 default_suite_single_noisy = 'bbob-noisy'
 default_suite_bi = 'bbob-biobj'
 
+# TODO: these should be class names, not strings. The introduced
+# indirection in form of a one-to-one mapping looks quite superfluous.
+# Why shoudn't the class names be used directly (for this, the
+# assignment of suite_to_testbed has to move to after the classes are
+# defined)?
 default_testbed_single = 'GECCOBBOBTestbed'
 default_testbed_single_noisy = 'GECCOBBOBNoisyTestbed'
 default_testbed_bi = 'GECCOBiObjBBOBTestbed'
@@ -84,7 +89,6 @@ def load_current_testbed(suite_name, target_values):
                          % (testbed_name, suite_name))
     return current_testbed
 
-
 def get_testbed_from_suite(suite_name):
 
     if suite_name in suite_to_testbed:
@@ -93,6 +97,11 @@ def get_testbed_from_suite(suite_name):
         raise ValueError('Mapping from suite name to testbed class for suite %s does not exist. '
                          'Add it to suite_to_testbed dictionary in testbedsettings.py to process this data.'
                          % suite_name)
+
+def SuiteClass(suite_name):
+    """return the `class` matching the string `suite_name` (e.g. the attribute of `DataSet`)
+    """
+    return globals()[get_testbed_from_suite(suite_name)]  # this indirection is here for historical reasons only
 
 reference_values = {}
 
