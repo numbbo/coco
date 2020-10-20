@@ -83,7 +83,7 @@ try:
 except ImportError:
     from urllib import urlretrieve as _urlretrieve
 
-coco_url = "http://coco.gforge.inria.fr"
+coco_url = "https://coco.gforge.inria.fr"
 cocopp_home = os.path.abspath(os.path.expanduser(os.path.join("~", ".cocopp")))
 cocopp_home_archives = os.path.join(cocopp_home, "data-archives")
 default_archive_location = os.path.join(cocopp_home, 'data-archives')
