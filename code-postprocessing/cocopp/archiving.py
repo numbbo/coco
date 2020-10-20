@@ -263,7 +263,7 @@ def _get_remote(url, target_folder=None, redownload=False):
             "or use the `update` method to re-download the remote definition file."
             % (_definition_file_to_read(target_folder), url))
         arch.remote_data_path = url
-    assert arch.remote_data_path == url  # check that url was in the definition file
+    assert arch.remote_data_path.replace('https', 'http') == url.replace('https', 'http')  # check that url was in the definition file
     return arch
 
 def get(url_or_folder=None):
