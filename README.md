@@ -642,7 +642,7 @@ Links and Documentation <a name="Links"></a>
   
 Comprehensive List of Documentations <a name="Documentations"></a>
 --------------------------------------------
-* General introduction: http://numbbo.github.io/coco-doc
+* General introduction: [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://arxiv.org/pdf/1603.08785.pdf)
 * Experimental setup: http://numbbo.github.io/coco-doc/experimental-setup/
 * Testbeds
   - bbob: http://coco.gforge.inria.fr/downloads/download16.00/bbobdocfunctions.pdf
