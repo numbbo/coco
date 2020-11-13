@@ -599,7 +599,7 @@ N. Hansen, A. Auger, R. Ros, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Plat
   title = {{COCO}: A Platform for Comparing Continuous Optimizers 
              in a Black-Box Setting},
   journal = {Optimization Methods and Software},
-  doi = {https://doi.org/10.1080/10556788.2020.1808977}
+  doi = {https://doi.org/10.1080/10556788.2020.1808977},
   year = 2020
 }
 ```
