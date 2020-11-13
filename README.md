@@ -591,7 +591,7 @@ Citation
 --------
 You may cite this work in a scientific context as
 
-N. Hansen, A. Auger, R. Ros, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://arxiv.org/pdf/1603.08785.pdf), Optimization Methods and Software, 2020.
+N. Hansen, A. Auger, R. Ros, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://doi.org/10.1080/10556788.2020.1808977), Optimization Methods and Software, 2020. [[arXiv version](https://arxiv.org/pdf/1603.08785.pdf)]
 ```
 @ARTICLE{hansen2020cocoplat, 
   author = {Hansen, N. and Auger, A. and Ros, R. and Mersmann, O. and 
