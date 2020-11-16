@@ -1300,7 +1300,7 @@ class OfficialArchives(object):
         """Allow to use a new official archive.
         
         The archive must exist as a subfolder of
-        http://coco.gforge.inria.fr/data-archive
+        https://coco.gforge.inria.fr/data-archive
         """
         self._list += [(self._base + name, None),]
         self.set_as_attributes_in()
