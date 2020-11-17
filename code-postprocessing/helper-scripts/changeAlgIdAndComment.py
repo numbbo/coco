@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import os
 import sys
 import getopt
@@ -19,17 +20,21 @@ to change these within a specified output folder.
 written: db 28/01/2010
          db 26/06/2013 corrected documentation
          db 19/06/2017 updated docstrings, allow bbob-biobj(-ext) data sets
+         db 16/11/2020 finally moved to python 3 :-)
 
 """
 
 __all__ = ['main']
 
+
 class Usage(Exception):
     def __init__(self, msg):
         self.msg = msg
 
+
 def usage():
-    print main.__doc__
+    print(main.__doc__)
+
 
 def main(argv=None):
     """Main routine.
@@ -65,7 +70,6 @@ def main(argv=None):
 
     """
 
-
     if argv is None:
         argv = sys.argv[1:]
 
@@ -73,14 +77,14 @@ def main(argv=None):
         try:
             opts, args = getopt.getopt(argv, "h",
                                        ["help"])
-        except getopt.error, msg:
-            raise Usage(msg)
+        except:
+            raise Usage(sys.exc_info()[0])
 
         if not args:
             usage()
             sys.exit()
 
-        #Process options
+        # Process options
         for o, a in opts:
             if o in ("-h", "--help"):
                 usage()
@@ -91,11 +95,11 @@ def main(argv=None):
         # check if all arguments are there and ask for them if not:
         if len(args) < 3:
             if len(args) < 2:
-                name = raw_input("You forgot to specify an algorithm name. " +
-                                 "Please enter one (algId):")
+                name = input("You forgot to specify an algorithm name. " +
+                             "Please enter one (algId):")
                 args.append(name)
-            comment = raw_input("You forgot to specify a comment. Please " +
-                                "enter one for algorithm " + args[1] + ":")
+            comment = input("You forgot to specify a comment. Please " +
+                            "enter one for algorithm " + args[1] + ":")
             args.append(comment)
         folder = args[0]
         # make sure that folder name ends with a '/' to be able to append
@@ -107,10 +111,10 @@ def main(argv=None):
         comment = args[2]
 
         if not os.path.exists(folder):
-            print "ERROR: folder " + folder + " does not exist!"
+            print("ERROR: folder " + folder + " does not exist!")
             sys.exit()
         if not os.path.isdir(folder):
-            print "ERROR: " + folder + " is not a directory"
+            print("ERROR: " + folder + " is not a directory")
             sys.exit()
 
         # get all .info files in folder:
@@ -166,9 +170,11 @@ def main(argv=None):
 
         sys.exit()
 
-    except Usage, err:
-        print >>sys.stderr, err.msg
-        print >>sys.stderr, "for help use -h or --help"
+    except IOError as e:
+        errno, strerror = e.args
+        print('>> ' + strerror + e.msg)
+        print('>> ' + errno)
+        print('for help use -h or --help')
         return 2
 
 
