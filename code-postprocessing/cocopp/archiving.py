@@ -1371,7 +1371,11 @@ class OfficialArchives(object):
         # self.set_as_attributes_in(update=True)
         for name in self.names:
             name = name.replace('-', '_')
-            getattr(self, name).update()
+            try:
+                getattr(self, name).update()
+            except AttributeError:
+                if name != 'test':
+                    raise
 
 official_archives = OfficialArchives()
 # TODO-decide: when should we (try to) update these?
