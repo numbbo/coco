@@ -76,7 +76,7 @@
 
 % pre-defined commands
 \newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\aRT}{\ensuremath{\mathrm{aRT}}}
+\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
 \newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
 \newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
 \newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
@@ -242,17 +242,17 @@ benchmark functions given in \cite{elhara:hal-02068407} are
 presented in
 %%
 \ifthenelse{\equal{\numofalgs}{1}}{
-Figures~\ref{fig:aRTgraphs}, \ref{fig:ECDFs}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:aRTs80} and \ref{tab:aRTs320}.
+Figures~\ref{fig:ERTgraphs}, \ref{fig:ECDFs}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:ERTs80} and \ref{tab:ERTs320}.
 }{\ifthenelse{\equal{\numofalgs}{2}}{
-Figures~\ref{fig:scaling}, \ref{fig:scatterplots}, \ref{fig:ECDFs80D}, \ref{fig:ECDFs320D} and \ref{fig:ECDFsingleOne}, and Tables~\ref{tab:aRTs80} and \ref{tab:aRTs320}.
+Figures~\ref{fig:scaling}, \ref{fig:scatterplots}, \ref{fig:ECDFs80D}, \ref{fig:ECDFs320D} and \ref{fig:ECDFsingleOne}, and Tables~\ref{tab:ERTs80} and \ref{tab:ERTs320}.
 }{\ifthenelse{\(\numofalgs > 2\)}{
-Figures~\ref{fig:scaling}, \ref{fig:ECDFs80D}, \ref{fig:ECDFs320D}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:aRTs80} and \ref{tab:aRTs320}.
+Figures~\ref{fig:scaling}, \ref{fig:ECDFs80D}, \ref{fig:ECDFs320D}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:ERTs80} and \ref{tab:ERTs320}.
 }{}}}
 %%
-The experiments were performed with COCO \cite{hansen2016cocoplat}, version
-\change{2.0}, the plots were produced with version \change{2.0}.
+The experiments were performed with COCO \cite{hansen2020cocoplat}, version
+\change{2.4}, the plots were produced with version \change{2.4}.
 
-The \textbf{average runtime (aRT)}, used in the figures and tables,
+The \textbf{expected runtime (ERT)}, used in the figures and tables,
 depends on a given target function value, $\ftarget=\fopt+\Df$, and is
 computed over all relevant trials as the number of function
 evaluations executed during each trial while the best function value
@@ -273,7 +273,7 @@ unsuccessful trial under consideration.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Scaling of aRT with dimension
+% Scaling of ERT with dimension
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
@@ -304,7 +304,7 @@ unsuccessful trial under consideration.
 \includegraphics[width=0.24\textwidth]{ppfigdim_f024}
 \end{tabular}
 \vspace{-3ex}
- \caption{\label{fig:aRTgraphs}
+ \caption{\label{fig:ERTgraphs}
  \bbobppfigdimlegend{$f_1$ and $f_{24}$}
  }
 \end{figure*}
@@ -312,7 +312,7 @@ unsuccessful trial under consideration.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-% Table showing the average runtime (aRT in number of function
+% Table showing the expected runtime (ERT in number of function
 % evaluations) for functions $f_1$--$f_{24} for dimension 80$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -365,14 +365,14 @@ unsuccessful trial under consideration.
 \pptablefooter
 \end{minipage}}
 
-\caption[Table of aRTs]{\label{tab:aRTs80}\bbobpptablecaption{dimension $80$}
+\caption[Table of ERTs]{\label{tab:ERTs80}\bbobpptablecaption{dimension $80$}
 }
 \end{table*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-% Table showing the average runtime (aRT in number of function
+% Table showing the expected runtime (ERT in number of function
 % evaluations) for functions $f_1$--$f_{24} for dimension 320$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -420,7 +420,7 @@ unsuccessful trial under consideration.
 
 \end{minipage}}
  
-\caption[Table of aRTs]{\label{tab:aRTs320}\bbobpptablecaption{dimension $320$}
+\caption[Table of ERTs]{\label{tab:ERTs320}\bbobpptablecaption{dimension $320$}
 }
 \end{table*}
 
@@ -529,7 +529,7 @@ unsuccessful trial under consideration.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Scaling of aRT with dimension
+% Scaling of ERT with dimension
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -562,7 +562,7 @@ unsuccessful trial under consideration.
 \includegraphics[width=0.24\textwidth]{ppfigs_f024}
 \end{tabular}
 \vspace*{-0.2cm}
-\caption[Average running time (\aRT) divided by dimension
+\caption[Expected running time (\ERT) divided by dimension
 versus dimension in log-log presentation]{
 \label{fig:scaling}
 \bbobppfigslegend{$f_1$ and $f_{24}$}. 
@@ -663,7 +663,7 @@ ill-conditioned fcts & multi-modal fcts \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-% Table showing the average runtime (aRT in number of function
+% Table showing the expected runtime (ERT in number of function
 % evaluations) for functions $f_1$--$f_{24}$ for dimension 80.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -708,7 +708,7 @@ ill-conditioned fcts & multi-modal fcts \\
 \end{tabularx}
 \end{minipage}}
 
-\caption{\label{tab:aRTs80}
+\caption{\label{tab:ERTs80}
 \bbobpptablesmanylegend{dimension $80$}
 }
 \end{table*}
@@ -716,7 +716,7 @@ ill-conditioned fcts & multi-modal fcts \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-% Table showing the average runtime (aRT in number of function
+% Table showing the expected runtime (ERT in number of function
 % evaluations) for functions $f_1$--$f_{24}$ for dimension 320.
 
 
@@ -762,7 +762,7 @@ ill-conditioned fcts & multi-modal fcts \\
 \end{tabularx}
 \end{minipage}}
 
-\caption{\label{tab:aRTs320}
+\caption{\label{tab:ERTs320}
 \bbobpptablesmanylegend{dimension $320$}
 }
 \end{table*}

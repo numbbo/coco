@@ -76,7 +76,7 @@
 
 % pre-defined commands
 \newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\aRT}{\ensuremath{\mathrm{aRT}}}
+\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
 \newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
 \newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
 \newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
@@ -219,10 +219,10 @@ In order to evaluate the CPU timing of the algorithm, we have run the \change{MY
 Results from experiments according to \cite{hansen2016exp} and \cite{hansen2016perfass} on the benchmark
 functions given in \cite{wp200901_2010,hansen2010fun} are presented in
 Figures~\ref{fig:scaling}, \ref{fig:scatterplots} and \ref{fig:RLDs} and
-in Table~\ref{tab:aRTs}. The experiments were performed with COCO \cite{hansen2016cocoplat},
-version \change{2.0}, the plots were produced with version \change{2.0}.
+in Table~\ref{tab:ERTs}. The experiments were performed with COCO \cite{hansen2020cocoplat},
+version \change{2.4}, the plots were produced with version \change{2.4}.
 
-The \textbf{average runtime (aRT)}, used in the figures and table, depends on a
+The \textbf{expected runtime (ERT)}, used in the figures and table, depends on a
 given target function value, $\ftarget=\fopt+\Df$, and is computed over all relevant trials
 as the number of function evaluations executed during each trial while the best
 function value did not reach \ftarget, summed over all trials
@@ -239,7 +239,7 @@ of overall function evaluations for any unsuccessful trial under consideration.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Scaling of aRT with dimension
+% Scaling of ERT with dimension
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
@@ -379,8 +379,8 @@ of overall function evaluations for any unsuccessful trial under consideration.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  
-% Table showing the average runtime (aRT in number of function
-% evaluations) divided by the best aRT measured during BBOB-2009 (given in the
+% Table showing the expected runtime (ERT in number of function
+% evaluations) divided by the best ERT measured during BBOB-2009 (given in the
 % first row of each cell) for functions $f_1$--$f_{24}$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -495,7 +495,7 @@ of overall function evaluations for any unsuccessful trial under consideration.
 \end{tabularx}
 \end{minipage}}
 
-\caption{\label{tab:aRTs}
+\caption{\label{tab:ERTs}
 \bbobpptablesmanylegend{dimensions $5$ (left) and $20$ (right)}
 }
 \end{table*}

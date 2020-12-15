@@ -70,7 +70,7 @@
 %\newcommand{\algorithmBshort}{algB}  % second argument in the post-processing
 
 % rungeneric.py writes data into a subfolder of ppdata
-\newcommand{\bbobdatapath}{ppdata/} % change default output folder of COCO if desired
+\newcommand{\bbobdatapath}{ppdata/mutations/} % change default output folder of COCO if desired
 \input{\bbobdatapath cocopp_commands.tex} % provide default of algname and algfolder
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -79,7 +79,7 @@
 
 % pre-defined commands
 \newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\aRT}{\ensuremath{\mathrm{aRT}}}
+\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
 \newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
 \newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
 \newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
@@ -224,11 +224,11 @@ In order to evaluate the CPU timing of the algorithm, we have run the \change{MY
 Results from experiments according to \cite{hansen2016exp} and \cite{hansen2016perfass} on the
 benchmark functions given in \cite{wp200901_2010,hansen2010fun} are
 presented in Figures~\ref{fig:scaling}, \ref{fig:ECDFs05D} and
-\ref{fig:ECDFs20D} and in Tables~\ref{tab:aRTs5} and~\ref{tab:aRTs20}.
-The experiments were performed with COCO \cite{hansen2016cocoplat}, version
-\change{2.0}, the plots were produced with version \change{2.0}.
+\ref{fig:ECDFs20D} and in Tables~\ref{tab:ERTs5} and~\ref{tab:ERTs20}.
+The experiments were performed with COCO \cite{hansen2020cocoplat}, version
+\change{2.4}, the plots were produced with version \change{2.4}.
 
-The \textbf{average runtime (aRT)}, used in the figures and tables,
+The \textbf{expected runtime (ERT)}, used in the figures and tables,
 depends on a given target function value, $\ftarget=\fopt+\Df$, and is
 computed over all relevant trials as the number of function
 evaluations executed during each trial while the best function value
@@ -248,7 +248,7 @@ unsuccessful trial under consideration.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Scaling of aRT with dimension
+% Scaling of ERT with dimension
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
@@ -360,8 +360,8 @@ ill-conditioned fcts & multi-modal fcts \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Average runtime (aRT in number of function evaluations)
-% divided by the best aRT measured during BBOB-2009 (given in the respective
+% Expected runtime (ERT in number of function evaluations)
+% divided by the best ERT measured during BBOB-2009 (given in the respective
 % first row) for functions $f_1$--$f_{24}$ for dimension 5.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -429,7 +429,7 @@ ill-conditioned fcts & multi-modal fcts \\
 \end{tabularx}
 \end{minipage}}
 
- \caption{\label{tab:aRTs5}
+ \caption{\label{tab:ERTs5}
  \bbobpptablesmanylegend{dimension $5$}
  }
 \end{table*}
@@ -438,8 +438,8 @@ ill-conditioned fcts & multi-modal fcts \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Average runtime (aRT in number of function evaluations)
-% divided by the best aRT measured during BBOB-2009 (given in the respective
+% Expected runtime (ERT in number of function evaluations)
+% divided by the best ERT measured during BBOB-2009 (given in the respective
 % first row) for functions $f_1$--$f_{24}$ for dimension 20.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -502,7 +502,7 @@ ill-conditioned fcts & multi-modal fcts \\
 \input{\bbobdatapath\algsfolder pptables_f024_20D}
 \end{tabularx}
 \end{minipage}}
- \caption{\label{tab:aRTs20}
+ \caption{\label{tab:ERTs20}
   \bbobpptablesmanylegend{dimension $20$}
 }
 \end{table*}

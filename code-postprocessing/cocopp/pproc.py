@@ -1176,7 +1176,7 @@ class DataSet(object):
                 res += [samplesize * [np.nan]]  # TODO: this is "many" data with little information
                 continue
             elif nsucc == len(evals) and not bootstrap:
-                res += [sorted(evals)]
+                res += [sorted(evals[randintfirst(0, len(evals), samplesize)])]
                 continue
             nindices = ~indices
             assert sum(indices) + sum(nindices) == len(evals)

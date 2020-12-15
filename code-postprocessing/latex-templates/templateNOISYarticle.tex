@@ -95,7 +95,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\aRT}{\ensuremath{\mathrm{aRT}}}
+\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
 \newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
 \newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
 \newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
@@ -257,17 +257,17 @@ Results from experiments according to \cite{hansen2016exp} and
 \cite{hansen2010noi} are presented in
 %%
 \ifthenelse{\equal{\numberofalgorithms}{one}}{
-Figures~\ref{fig:ERTgraphs}, \ref{fig:ECDFs}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:aRTs}, \ref{tab:aRTloss}, and \ref{fig:aRTlogloss}.
+Figures~\ref{fig:ERTgraphs}, \ref{fig:ECDFs}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:ERTs}, \ref{tab:ERTloss}, and \ref{fig:ERTlogloss}.
 }{\ifthenelse{\equal{\numberofalgorithms}{two}}{
 Figures~\ref{fig:scaling}, \ref{fig:ECDFs}, \ref{fig:ECDFsingleOne}, and \ref{fig:scatterplots} and Tables~\ref{tab:ERTs5} and \ref{tab:ERTs20}.
 }{\ifthenelse{\equal{\numberofalgorithms}{three}}{
 Figures~\ref{fig:scaling}, \ref{fig:ECDFs}, and \ref{fig:ECDFsingleOne} and Tables~\ref{tab:ERTs5} and \ref{tab:ERTs20}.
 }{}}}
 %%
-The experiments were performed with COCO \cite{hansen2016cocoplat}, version
-\change{2.0}, the plots were produced with version \change{2.0}.
+The experiments were performed with COCO \cite{hansen2020cocoplat}, version
+\change{2.4}, the plots were produced with version \change{2.4}.
 
-The \textbf{average runtime (aRT)}, used in the %figures and
+The \textbf{expected runtime (ERT)}, used in the %figures and
 tables,
 depends on a given target precision, $\Itarget=\fopt+\Df$, and is
 computed over all relevant trials as the number of function
@@ -403,9 +403,9 @@ unsuccessful trial under consideration.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Table showing the average running time (aRT in number of function
-% evaluations) divided by the the aRT of a reference algorithm (e.g. the best
-% measured aRT during BBOB-2009) as given in the first row of each cell
+% Table showing the expected running time (ERT in number of function
+% evaluations) divided by the the ERT of a reference algorithm (e.g. the best
+% measured ERT during BBOB-2009) as given in the first row of each cell
 % for functions $f_101$--$f_{130}$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -490,7 +490,7 @@ unsuccessful trial under consideration.
 \end{minipage}}
 \vspace{1em}
 
-\caption[Table of aRTs]{\label{tab:aRTs}
+\caption[Table of ERTs]{\label{tab:ERTs}
 \bbobpptablecaption{dimensions $5$ (left) and $20$ (right)}
 }
 \end{table*}
@@ -511,7 +511,7 @@ unsuccessful trial under consideration.
 %
 \input{\bbobdatapath\algfolder pploglosstable_05D_nzall}\\
 \input{\bbobdatapath\algfolder pploglosstable_20D_nzall}
-\caption{\label{tab:aRTloss}%
+\caption{\label{tab:ERTloss}%
 \bbobloglosstablecaption{}
 }
 \end{figure}
@@ -540,7 +540,7 @@ unsuccessful trial under consideration.
 \includegraphics[width=0.24\textwidth]{pplogloss_05D_nzsmm} &
 \includegraphics[width=0.24\textwidth]{pplogloss_20D_nzsmm}
 \end{tabular}
-\caption{\label{fig:aRTlogloss}%
+\caption{\label{fig:ERTlogloss}%
 \bbobloglossfigurecaption{}
 }
 \end{figure}
@@ -595,7 +595,7 @@ unsuccessful trial under consideration.
 \includegraphics[width=0.2\textwidth]{ppfigs_f127}&
 \includegraphics[width=0.2\textwidth]{ppfigs_f130}
 \end{tabular}
-\caption[Average running time (\aRT) divided by dimension
+\caption[Expected running time (\ERT) divided by dimension
 versus dimension in log-log presentation]{\label{fig:scaling}%
 \bbobppfigslegend{$f_{101}$ and $f_{130}$}
 }
@@ -678,8 +678,8 @@ versus dimension in log-log presentation]{\label{fig:scaling}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Average running time (aRT in number of function evaluations)
-% divided by the aRT of a potential reference algorithm (e.g. the best aRT
+% Expected running time (ERT in number of function evaluations)
+% divided by the ERT of a potential reference algorithm (e.g. the best ERT
 % measured during BBOB-2009) as given in the respective
 % first row for functions $f_{101}$--$f_{130}$ for dimension 5.
 
@@ -739,8 +739,8 @@ versus dimension in log-log presentation]{\label{fig:scaling}%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Average running time (aRT in number of function evaluations)
-% divided by the aRT of a potential reference algorithm (e.g. the best aRT
+% Expected running time (ERT in number of function evaluations)
+% divided by the ERT of a potential reference algorithm (e.g. the best ERT
 % measured during BBOB-2009) as given in the respective
 % first row for functions $f_{101}$--$f_{130}$ for dimension 20.
 

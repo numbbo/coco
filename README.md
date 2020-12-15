@@ -30,7 +30,7 @@ from using the platform:
 ![General COCO Structure](coco.png)
 
 For more general information:
-- read our [benchmarking guidelines introduction](http://numbbo.github.io/coco-doc/)
+- read our [benchmarking guidelines introduction](https://arxiv.org/pdf/1603.08785.pdf)
 - read the [COCO experimental setup](http://numbbo.github.io/coco-doc/experimental-setup) description
 - see the [`bbob-biobj` and `bbob-biobj-ext` COCO multi-objective functions testbed](http://numbbo.github.io/coco-doc/bbob-biobj/functions) documentation and the [specificities of the performance assessment for the bi-objective testbeds](http://numbbo.github.io/coco-doc/bbob-biobj/perf-assessment).
 - consult the [BBOB workshops series](http://numbbo.github.io/workshops),
@@ -591,17 +591,16 @@ Citation
 --------
 You may cite this work in a scientific context as
 
-N. Hansen, A. Auger, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](http://numbbo.github.io/coco-doc/), _ArXiv e-prints_, [arXiv:1603.08785](http://arxiv.org/abs/1603.08785), 2016.
-
+N. Hansen, A. Auger, R. Ros, O. Mersmann, T. Tušar, D. Brockhoff. [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://doi.org/10.1080/10556788.2020.1808977), Optimization Methods and Software, 2020. [[arXiv version](https://arxiv.org/pdf/1603.08785.pdf)]
 ```
-@ARTICLE{hansen2016cocoplat, 
-  author = {Hansen, N. and Auger, A. and Mersmann, O. and 
+@ARTICLE{hansen2020cocoplat, 
+  author = {Hansen, N. and Auger, A. and Ros, R. and Mersmann, O. and 
              Tu{\v s}ar, T. and Brockhoff, D.},
   title = {{COCO}: A Platform for Comparing Continuous Optimizers 
              in a Black-Box Setting},
-  journal = {ArXiv e-prints},
-  volume = {arXiv:1603.08785},
-  year = 2016
+  journal = {Optimization Methods and Software},
+  doi = {https://doi.org/10.1080/10556788.2020.1808977},
+  year = 2020
 }
 ```
 
@@ -619,7 +618,7 @@ Links and Documentation <a name="Links"></a>
   found at http://coco.gforge.inria.fr/ppdata-archive
 * Stay informed about the BBOB workshop series and releases of the NumBBO/Coco software 
   by registering at http://coco.gforge.inria.fr/register
-* Read about the basic principles behind the Coco platform at http://numbbo.github.io/coco-doc/.
+* Read about the basic principles behind the Coco platform in [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://arxiv.org/pdf/1603.08785.pdf).
 * For details on the experimental set-up to carry out the benchmarking
   please refer to http://numbbo.github.io/coco-doc/experimental-setup/.
 * More detailed documentation of the existing benchmark suites can be found here:
@@ -643,7 +642,7 @@ Links and Documentation <a name="Links"></a>
   
 Comprehensive List of Documentations <a name="Documentations"></a>
 --------------------------------------------
-* General introduction: http://numbbo.github.io/coco-doc
+* General introduction: [COCO: A Platform for Comparing Continuous Optimizers in a Black-Box Setting](https://arxiv.org/pdf/1603.08785.pdf)
 * Experimental setup: http://numbbo.github.io/coco-doc/experimental-setup/
 * Testbeds
   - bbob: http://coco.gforge.inria.fr/downloads/download16.00/bbobdocfunctions.pdf
