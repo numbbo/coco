@@ -1,62 +1,8 @@
 \documentclass[sigconf]{acmart}
 
-\usepackage{booktabs} % For formal tables
-\usepackage{graphicx}
-\usepackage{rotating}
-\usepackage{tabularx}
-\usepackage{xstring} % for string operations
-\usepackage{wasysym} % Table legend with symbols input from post-processing
-\usepackage{MnSymbol} % Table legend with symbols input from post-processing
-\usepackage{float}
-\usepackage{ifthen}
+% include preamble:
+\include{templatepreamble.tex}
 
-
-% define some COCO/dvipsnames colors because
-% ACM style does not allow to use them directly
-%\definecolor{NavyBlue}{HTML}{000080}
-%\definecolor{Magenta}{HTML}{FF00FF}
-%\definecolor{Orange}{HTML}{FFA500}
-%\definecolor{CornflowerBlue}{HTML}{6495ED}
-%\definecolor{YellowGreen}{HTML}{9ACD32}
-%\definecolor{Gray}{HTML}{BEBEBE}
-%\definecolor{Yellow}{HTML}{FFFF00}
-%\definecolor{GreenYellow}{HTML}{ADFF2F}
-%\definecolor{ForestGreen}{HTML}{228B22}
-%\definecolor{Lavender}{HTML}{FFC0CB}
-%\definecolor{SkyBlue}{HTML}{87CEEB}
-%\definecolor{NavyBlue}{HTML}{000080}
-%\definecolor{Goldenrod}{HTML}{DDF700}
-%\definecolor{VioletRed}{HTML}{D02090}
-%\definecolor{CornflowerBlue}{HTML}{6495ED}
-%\definecolor{LimeGreen}{HTML}{32CD32}
-
-
-% Copyright
-%\setcopyright{none}
-%\setcopyright{acmcopyright}
-%\setcopyright{acmlicensed}
-\setcopyright{rightsretained}
-%\setcopyright{usgov}
-%\setcopyright{usgovmixed}
-%\setcopyright{cagov}
-%\setcopyright{cagovmixed}
-
-
-% DOI
-\acmDOI{10.1145/123_4}
-
-% ISBN
-\acmISBN{123-4567-24-567/18/07}
-
-%Conference
-\acmConference[GECCO '21]{the Genetic and Evolutionary Computation Conference 2021}{July 10--14, 2021}{Lille, France}
-\acmYear{2021}
-\copyrightyear{2021}
-
-\acmPrice{15.00}
-
-
-%%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% TO BE EDITED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -69,33 +15,18 @@
 %\newcommand{\algorithmBshort}{algB}  % second argument in the post-processing
 
 % rungeneric.py writes data into a subfolder of ppdata
-\newcommand{\bbobdatapath}{ppdata/mutations/} % change default output folder of COCO if desired
+\newcommand{\bbobdatapath}{ppdata/} % change default output folder of COCO if desired
 \input{\bbobdatapath cocopp_commands.tex} % provide default of algname and algfolder
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \graphicspath{{\bbobdatapath\algsfolder}}
 
-% pre-defined commands
-\newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
-\newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
-\newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
-\newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
-\newcommand{\Df}{\ensuremath{\Delta f}}
-\newcommand{\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
-\newcommand{\fopt}{\ensuremath{f_\mathrm{opt}}}
-\newcommand{\ftarget}{\ensuremath{f_\mathrm{t}}}
-\newcommand{\CrE}{\ensuremath{\mathrm{CrE}}}
-\newcommand{\change}[1]{{\color{red} #1}}
-
 
 \begin{document}
 
 \title{Black-Box Optimization Benchmarking Template for the Comparison of More than Two Algorithms on the Noiseless Testbed}
 \renewcommand{\shorttitle}{Black-Box Optimization Benchmarking Template for More Than Two Algorithms}
-\titlenote{Submission deadline: April 3rd.}
-%Camera-ready paper due April 24th.}}
 \subtitle{Draft version}
 
 
@@ -225,7 +156,7 @@ benchmark functions given in \cite{wp200901_2010,hansen2010fun} are
 presented in Figures~\ref{fig:scaling}, \ref{fig:ECDFs05D} and
 \ref{fig:ECDFs20D} and in Tables~\ref{tab:ERTs5} and~\ref{tab:ERTs20}.
 The experiments were performed with COCO \cite{hansen2020cocoplat}, version
-\change{2.4}, the plots were produced with version \change{2.4}.
+\change{\version}, the plots were produced with version \change{\version}.
 
 The \textbf{expected runtime (ERT)}, used in the figures and tables,
 depends on a given target function value, $\ftarget=\fopt+\Df$, and is
@@ -296,20 +227,6 @@ versus dimension]{
 % Empirical Cumulative Distribution Functions (ECDFs) per function group
 % for dimension 5.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\rot}[2][2.5]{
-  \hspace*{-3.5\baselineskip}%
-  \begin{rotate}{90}\hspace{#1em}#2
-  \end{rotate}}
-\newcommand{\includeperfprof}[1]{% include and annotate at the side
-  \input{\bbobdatapath\algsfolder #1}%
-  \includegraphics[height=0.24\textheight]{#1}%
-  %\raisebox{.12\textheight}{
-	%\parbox[b][.24\textheight]{.0868\textwidth}{\begin{scriptsize}
-  %  \perfprofsidepanel % this is "\algaperfprof \vfill \algbperfprof \vfill" etc
-  %\end{scriptsize}}
-	%}
-}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure*}
 \begin{tabular}{@{}c@{\hspace*{0.05\textwidth}}c@{}}

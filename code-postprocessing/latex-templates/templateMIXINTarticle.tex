@@ -4,57 +4,10 @@
 % optimization algorithms, that were run on the 
 % bbob-mmixint test suite of COCO. Any number of 
 % algorithms should work with this template.
-%
 
+% include preamble:
+\include{templatepreamble.tex}
 
-\usepackage{booktabs} % For formal tables
-\usepackage{graphicx}
-\usepackage{rotating}
-\definecolor{Gray}{gray}{0.6}
-\usepackage{tabularx}
-\usepackage{xspace}
-\usepackage{float}
-\usepackage{xstring} % for string operations
-\usepackage{wasysym} % Table legend with symbols input from post-processing
-\usepackage{MnSymbol} % Table legend with symbols input from post-processing
-\usepackage{ifthen}
-\newcommand{\includeperfprof}[1]{% include and annotate at the side
-  \input{\bbobdatapath\algsfolder #1}%
-  \includegraphics[height=0.24\textheight]{#1}%
-  %\raisebox{.12\textheight}{
-	%\parbox[b][.24\textheight]{.0868\textwidth}{\begin{scriptsize}
-  %  \perfprofsidepanel % this is "\algaperfprof \vfill \algbperfprof \vfill" etc
-  %\end{scriptsize}}
-	%}
-}
-
-
-
-
-
-% Copyright
-%\setcopyright{none}
-%\setcopyright{acmcopyright}
-%\setcopyright{acmlicensed}
-\setcopyright{rightsretained}
-%\setcopyright{usgov}
-%\setcopyright{usgovmixed}
-%\setcopyright{cagov}
-%\setcopyright{cagovmixed}
-
-
-% DOI
-\acmDOI{10.1145/123_4}
-
-% ISBN
-\acmISBN{123-4567-24-567/18/07}
-
-%Conference
-\acmConference[GECCO '21]{the Genetic and Evolutionary Computation Conference 2021}{July 10--14, 2021}{Lille, France}
-\acmYear{2021}
-\copyrightyear{2021}
-
-\acmPrice{15.00}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% TO BE EDITED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -90,38 +43,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
-\newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
-\newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
-\newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
-\newcommand{\Df}{\ensuremath{\Delta f}}
-\newcommand{\DI}{\ensuremath{\Delta I_{\mathrm{HV}}^{\mathrm{COCO}}}}
-\newcommand{\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
-\newcommand{\ftarget}{\ensuremath{f_\mathrm{t}}}
-\newcommand{\Itarget}{\ensuremath{I_\mathrm{target}}}
-\newcommand{\CrE}{\ensuremath{\mathrm{CrE}}}
-\newcommand{\hvref}{\ensuremath{I_\mathrm{ref}}}
-\newcommand{\fopt}{\hvref}
-\newcommand{\change}[1]{{\color{red} #1}}
-\newcommand{\TODO}[1]{{\color{orange} !!! #1 !!!}}
-\newcommand{\bbobbiobj}{{\ttfamily bbob-biobj}\xspace}
-\newcommand{\bbobnoisy}{{\ttfamily bbob-noisy}\xspace}
-\newcommand{\bbobmixint}{{\ttfamily bbob-mixint}\xspace}
-\newcommand{\rot}[2][2.5]{
-  \hspace*{-3.5\baselineskip}%
-  \begin{rotate}{90}\hspace{#1em}#2
-  \end{rotate}}
-
-%%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \begin{document}
 
 
 \title{Black-Box Optimization Benchmarking Template for the Comparison of Algorithms on the \bbobmixint Testbed}
 \renewcommand{\shorttitle}{Template to Compare Algorithms on the \bbobmixint Testbed}
-\titlenote{Submission deadline: April 3rd.}
-%Camera-ready paper due April 24th.}}
 \subtitle{Draft version}
 
 
@@ -265,7 +191,7 @@ Figures~\ref{fig:scaling}, \ref{fig:ECDFs}, and \ref{fig:ECDFsingleOne} and Tabl
 
 
 The experiments were performed with COCO \cite{hansen2020cocoplat}, version
-\change{2.4}, the plots were produced with version \change{2.4}.
+\change{\version}, the plots were produced with version \change{\version}.
 
 The \textbf{expected runtime (ERT)}, used in the %figures and
 tables,
@@ -400,8 +326,6 @@ unsuccessful trial under consideration.
 %\begin{figure}
 %\begin{tabular}{@{}l@{}@{}l@{}}
 %\multicolumn{1}{c}{10-D} & \multicolumn{1}{c}{40-D}\\
-%%\rot{all functions}
-%%\hspace*{-2mm}
 %\rot[2.8]{separable fcts}
 %\hspace*{-1.4mm}
 %\includegraphics[width=0.24\textwidth]{pplogloss_10D_separ} &

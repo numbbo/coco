@@ -1,41 +1,7 @@
 \documentclass[sigconf]{acmart}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Packages
-\usepackage{booktabs} % For formal tables
-\usepackage{graphicx}
-\usepackage{rotating}
-\usepackage{tabularx}
-\usepackage{xspace}
-\usepackage{float}
-\usepackage{xstring} % for string operations
-\usepackage{wasysym} % Table legend with symbols input from post-processing
-\usepackage{MnSymbol} % Table legend with symbols input from post-processing
-\usepackage{ifthen}
-
-% Copyright
-%\setcopyright{none}
-%\setcopyright{acmcopyright}
-%\setcopyright{acmlicensed}
-\setcopyright{rightsretained}
-%\setcopyright{usgov}
-%\setcopyright{usgovmixed}
-%\setcopyright{cagov}
-%\setcopyright{cagovmixed}
-
-
-% DOI
-\acmDOI{10.1145/123_4}
-
-% ISBN
-\acmISBN{123-4567-24-567/18/07}
-
-%Conference
-\acmConference[GECCO '21]{the Genetic and Evolutionary Computation Conference 2021}{July 10--14, 2021}{Lille, France}
-\acmYear{2021}
-\copyrightyear{2021}
-
-\acmPrice{15.00}
+% include preamble:
+\include{templatepreamble.tex}
 
 
 
@@ -73,44 +39,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-% pre-defined commands
-\newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
-\newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
-\newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
-\newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
-\newcommand{\Df}{\ensuremath{\Delta f}}
-\newcommand{\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
-\newcommand{\fopt}{\ensuremath{f_\mathrm{opt}}}
-\newcommand{\ftarget}{\ensuremath{f_\mathrm{t}}}
-\newcommand{\CrE}{\ensuremath{\mathrm{CrE}}}
-\newcommand{\change}[1]{{\color{red} #1}}
-\newcommand{\TODO}[1]{{\color{orange} !!! #1 !!!}}
-\newcommand{\bbobls}{{\ttfamily bbob-largescale}\xspace}
-\newcommand{\rot}[2][2.5]{
-  \hspace*{-3.5\baselineskip}%
-  \begin{rotate}{90}\hspace{#1em}#2\vspace{0.5em}
-  \end{rotate}}
-\newcommand{\includeperfprof}[1]{% include and annotate at the side
-  \input{\bbobdatapath\algsfolder #1}%
-  \includegraphics[height=0.24\textheight]{#1}%
-  %\raisebox{.12\textheight}{
-	%\parbox[b][.24\textheight]{.0868\textwidth}{\begin{scriptsize}
-  %  \perfprofsidepanel % this is "\algaperfprof \vfill \algbperfprof \vfill" etc
-  %\end{scriptsize}}
-	%}
-}
-
-%%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \begin{document}
 
 
 \title{Black-Box Optimization Benchmarking Template for the Comparison of Algorithms on the \bbobls Testbed}
 \renewcommand{\shorttitle}{Template to Compare Algorithms on the \bbobls Testbed}
-\titlenote{Submission deadline: April 3rd.}
-%Camera-ready paper due April 24th.}}
 \subtitle{Draft version}
 
 
@@ -250,7 +183,7 @@ Figures~\ref{fig:scaling}, \ref{fig:ECDFs80D}, \ref{fig:ECDFs320D}, and \ref{fig
 }{}}}
 %%
 The experiments were performed with COCO \cite{hansen2020cocoplat}, version
-\change{2.4}, the plots were produced with version \change{2.4}.
+\change{\version}, the plots were produced with version \change{\version}.
 
 The \textbf{expected runtime (ERT)}, used in the figures and tables,
 depends on a given target function value, $\ftarget=\fopt+\Df$, and is

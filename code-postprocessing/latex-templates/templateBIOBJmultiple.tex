@@ -1,45 +1,8 @@
 \documentclass[sigconf]{acmart}
 
-\usepackage{booktabs} % For formal tables
-\usepackage{graphicx}
-\usepackage{rotating}
-\definecolor{Gray}{gray}{0.6}
-\usepackage{tabularx}
-\usepackage{xspace}
-\usepackage{float}
-\usepackage{xstring} % for string operations
-\usepackage{wasysym} % Table legend with symbols input from post-processing
-\usepackage{MnSymbol} % Table legend with symbols input from post-processing
-\usepackage{ifthen}
+% include preamble:
+\include{templatepreamble.tex}
 
-
-% Copyright
-%\setcopyright{none}
-%\setcopyright{acmcopyright}
-%\setcopyright{acmlicensed}
-\setcopyright{rightsretained}
-%\setcopyright{usgov}
-%\setcopyright{usgovmixed}
-%\setcopyright{cagov}
-%\setcopyright{cagovmixed}
-
-
-% DOI
-\acmDOI{10.1145/123_4}
-
-% ISBN
-\acmISBN{123-4567-24-567/18/07}
-
-%Conference
-\acmConference[GECCO '21]{the Genetic and Evolutionary Computation Conference 2021}{July 10--14, 2021}{Lille, France}
-\acmYear{2021}
-\copyrightyear{2021}
-
-\acmPrice{15.00}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% TO BE EDITED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -60,33 +23,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
-\newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
-\newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
-\newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
-\newcommand{\Df}{\ensuremath{\Delta f}}
-\newcommand{\DI}{\ensuremath{\Delta I_{\mathrm{HV}}^{\mathrm{COCO}}}}
-\newcommand{\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
-\newcommand{\ftarget}{\ensuremath{f_\mathrm{t}}}
-\newcommand{\Itarget}{\ensuremath{I_\mathrm{target}}}
-\newcommand{\CrE}{\ensuremath{\mathrm{CrE}}}
-\newcommand{\hvref}{\ensuremath{I_\mathrm{ref}}}
-\newcommand{\fopt}{\hvref}
-\newcommand{\change}[1]{{\color{red} #1}}
-\newcommand{\TODO}[1]{{\color{orange} !!! #1 !!!}}
-\newcommand{\bbobbiobj}{{\ttfamily bbob-biobj}\xspace}
+% redefine some single-objective things for the multiobjective case:
+\renewcommand{\fopt}{\hvref}
 
-
-%%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
 
 \title{Black-Box Optimization Benchmarking Template for the Comparison of Multiple Algorithms on the Biobjective \bbobbiobj Testbed}
 \renewcommand{\shorttitle}{Template to Compare Multiple Algorithms on the \bbobbiobj Testbed}
-\titlenote{Submission deadline: April 3rd.}
-%Camera-ready paper due April 24th.}}
 \subtitle{Draft version}
 
 
@@ -216,7 +161,7 @@ functions given in \cite{biobj2016func} are presented in
 Figures~\ref{fig:ECDFsingleOne}, \ref{fig:ECDFsingleTwo}, \ref{fig:ECDFsGroupsFive} and
 \ref{fig:ECDFsGroupsTwenty} and in Tables~\ref{tab:ERTs5} and~\ref{tab:ERTs20}.
 The experiments were performed with COCO \cite{hansen2020cocoplat}, version
-\change{2.4}, the plots were produced with version \change{2.4}.
+\change{\version}, the plots were produced with version \change{\version}.
 
 The \textbf{expected runtime (ERT)}, used in the %figures and
 tables,

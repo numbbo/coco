@@ -1,60 +1,8 @@
 \documentclass[sigconf]{acmart}
 
-\usepackage{booktabs} % For formal tables
-\usepackage{graphicx}
-\usepackage{rotating}
-\usepackage{tabularx}
-\usepackage{xstring} % for string operations
-\usepackage{wasysym} % Table legend with symbols input from post-processing
-\usepackage{MnSymbol} % Table legend with symbols input from post-processing
-\usepackage{float}
+% include preamble:
+\include{templatepreamble.tex}
 
-% define some COCO/dvipsnames colors
-\definecolor{Gray}{gray}{0.6}
-\definecolor{NavyBlue}{rgb}{0.0, 0.0, 0.5}
-\definecolor{Magenta}{rgb}{1.0, 0.0, 1.0}
-\definecolor{Black}{rgb}{0.0, 0.0, 0.0}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Packages
-%\usepackage{graphicx}
-%\usepackage[dvipsnames]{xcolor}
-%\usepackage{float}
-%\usepackage{xstring} % for string operations
-%\usepackage{wasysym} % Table legend with symbols input from post-processing
-%\usepackage{MnSymbol} % Table legend with symbols input from post-processing
-%\usepackage[colorlinks=true, linkcolor=blue]{hyperref} % make COCO papers clickable
-
-
-
-
-% Copyright
-%\setcopyright{none}
-%\setcopyright{acmcopyright}
-%\setcopyright{acmlicensed}
-\setcopyright{rightsretained}
-%\setcopyright{usgov}
-%\setcopyright{usgovmixed}
-%\setcopyright{cagov}
-%\setcopyright{cagovmixed}
-
-
-% DOI
-\acmDOI{10.1145/123_4}
-
-% ISBN
-\acmISBN{123-4567-24-567/18/07}
-
-%Conference
-\acmConference[GECCO '21]{the Genetic and Evolutionary Computation Conference 2021}{July 10--14, 2021}{Lille, France}
-\acmYear{2021}
-\copyrightyear{2021}
-
-\acmPrice{15.00}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%   END OF PREAMBLE   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%% TO BE EDITED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -74,26 +22,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \graphicspath{{\bbobdatapath\algsfolder}}
 
-% pre-defined commands
-\newcommand{\DIM}{\ensuremath{\mathrm{DIM}}}
-\newcommand{\ERT}{\ensuremath{\mathrm{ERT}}}
-\newcommand{\FEvals}{\ensuremath{\mathrm{FEvals}}}
-\newcommand{\nruns}{\ensuremath{\mathrm{Nruns}}}
-\newcommand{\Dfb}{\ensuremath{\Delta f_{\mathrm{best}}}}
-\newcommand{\Df}{\ensuremath{\Delta f}}
-\newcommand{\nbFEs}{\ensuremath{\mathrm{\#FEs}}}
-\newcommand{\fopt}{\ensuremath{f_\mathrm{opt}}}
-\newcommand{\ftarget}{\ensuremath{f_\mathrm{t}}}
-\newcommand{\CrE}{\ensuremath{\mathrm{CrE}}}
-\newcommand{\change}[1]{{\color{red} #1}}
-
 
 \begin{document}
 
 \title{Black-Box Optimization Benchmarking Template for the Comparison of Two Algorithms on the Noiseless Testbed}
 \renewcommand{\shorttitle}{Black-Box Optimization Benchmarking Template for Two Algorithms}
-\titlenote{Submission deadline: April 3rd.}
-%Camera-ready paper due April 24th.}}
 \subtitle{Draft version}
 
 
@@ -220,7 +153,7 @@ Results from experiments according to \cite{hansen2016exp} and \cite{hansen2016p
 functions given in \cite{wp200901_2010,hansen2010fun} are presented in
 Figures~\ref{fig:scaling}, \ref{fig:scatterplots} and \ref{fig:RLDs} and
 in Table~\ref{tab:ERTs}. The experiments were performed with COCO \cite{hansen2020cocoplat},
-version \change{2.4}, the plots were produced with version \change{2.4}.
+version \change{\version}, the plots were produced with version \change{\version}.
 
 The \textbf{expected runtime (ERT)}, used in the figures and table, depends on a
 given target function value, $\ftarget=\fopt+\Df$, and is computed over all relevant trials
@@ -285,15 +218,6 @@ of overall function evaluations for any unsuccessful trial under consideration.
  
 % Scatter plots per function.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\rot}[2][2.5]{
-  \hspace*{-3.5\baselineskip}%
-  \begin{rotate}{90}\hspace{#1em}#2
-  \end{rotate}}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{figure*}
