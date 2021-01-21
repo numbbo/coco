@@ -773,5 +773,19 @@ class GECCOBBOBBiObjMixintTestbed(GECCOBiObjExtBBOBTestbed):
                 self.instantiate_attributes(targetValues, [key])
 
     def filter(self, dsl):
-        ''' Does nothing on dsl (overriding the filter method of the superclass). '''
+        """ Checks if only data from the bbob-biobj-mixint
+            suite is included in dsl. If also other test suite
+            data sets is detected, an error is given.
+
+            Returns the filtered list as a flat list.
+        """
+
+        # find out whether we have to do something:
+        for ds in dsl:
+            if not (ds.suite_name == 'bbob-biobj-mixint'):
+                raise ValueError("Data from %s suite is not "
+                                 "compatible with data from "
+                                 "the bbob-biobj-mixint "
+                                 "suites" % str(ds.suite_name))
+
         return dsl
