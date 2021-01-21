@@ -63,7 +63,7 @@ def get_table_caption():
                                                                             testbedsettings.suite_name_mixint,
                                                                             testbedsettings.suite_name_bi_mixint))
                            else "") + r"""Best results are printed in bold.
-        """ + r"""\cocoversion""")
+        """)
 
     table_caption = None
     if testbedsettings.current_testbed.name in [testbedsettings.suite_name_bi_ext,

@@ -407,8 +407,8 @@ def main(argv=None):
                                         ['\\providecommand{\\numofalgs}{%d}' % len(args)]
                                         )
         toolsdivers.prepend_to_file(latex_commands_filename,
-                                    ['\\providecommand{\\cocoversion}{\\hspace{\\textwidth}\\scriptsize\\sffamily{}' +
-                                     '\\color{Gray}Data produced with COCO %s}' % (toolsdivers.get_version_label(None))]
+                                    ['\\providecommand{\\cocoversion}{{\\scriptsize\\sffamily{}' +
+                                     '\\color{Gray}Data produced with COCO %s}}' % (toolsdivers.get_version_label(None))]
                                     )
         toolsdivers.prepend_to_file(latex_commands_filename,
                                     ['\\providecommand{\\bbobecdfcaptionsinglefunctionssingledim}[1]{',
