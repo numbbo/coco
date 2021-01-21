@@ -43,7 +43,7 @@ static coco_suite_t *suite_bbob_initialize(void) {
   const size_t num_dimensions = sizeof(dimensions) / sizeof(dimensions[0]);
 
   /* IMPORTANT: Make sure to change the default instance for every new workshop! */
-  suite = coco_suite_allocate("bbob", 24, num_dimensions, dimensions, "year: 2018");
+  suite = coco_suite_allocate("bbob", 24, num_dimensions, dimensions, "year: 2021");
 
   return suite;
 }
@@ -76,6 +76,9 @@ static const char *suite_bbob_get_instances_by_year(const int year) {
   }
   else if (year == 2018) {
     return "1-5,71-80";
+  }
+  else if (year == 2021) {
+    return "1-5,91-100";
   }
 
   else {
